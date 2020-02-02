@@ -12,7 +12,7 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 	// 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
-		T_SETV("location", _location);
+		T_SETV_PUBLIC("location", _location);
 	} ENDMETHOD;
 
 	// Meant to do processing and enable/disable respawn at this place based on different rules
@@ -28,7 +28,7 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 	METHOD("getRecruitCount") { // For common interface
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		0
-  } ENDMETHOD;
+	} ENDMETHOD;
 
 	// Returns intel entries for display on the client map UI
 	/* public virtual */ METHOD("getMapInfoEntries") {
@@ -44,23 +44,14 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 		CALLM0(_loc, "getName")
 	} ENDMETHOD;
 
-	// Overrides the location name
-	/* public virtual */ METHOD("getDisplayColor") {
-		params [P_THISOBJECT];
-		private _loc = T_GETV("location");
-		if(CALLM1(_loc, "hasGarrisons", side player)) then {
-			[side player, false] call BIS_fnc_sideColor
-		} else {
-			[1,1,1,1]
-		};
-	} ENDMETHOD;
-
 	// STORAGE
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		T_PUBLIC_VAR("location");
 
 		true
 	} ENDMETHOD;

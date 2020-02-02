@@ -1,3 +1,15 @@
+# 0.30
+- Added: ACRE radios to military vehicles (thanks to  TahMahn)
+
+# 0.29
+- Fixed: Error which results in wrong location name to be shown
+
+# 0.28
+- Fixed: Crashes caused by civilian saboteur scripts
+- Fixed: 'Any' shown instead of location name
+- Fixed: Wrong default backpacks in arsenal
+- Fixed: Fixed wrong values of civilian instability and recruit count
+
 # 0.27
 - Added: Improved interactions with civilian saboteurs
 - Added: Ctrl and shift serve as x5, x10 and x100 modifier keys for Arsenal

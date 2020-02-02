@@ -200,10 +200,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
 
-			#ifndef RELEASE_BUILD
-			[] call pr0_fnc_initDebugMenu;
-			#endif
-
 			// Hide the allowed area markers
 			//#ifdef RELEASE_BUILD
 			CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
@@ -386,8 +382,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
 
+#ifndef _SQF_VM
 		// Start a periodic check which will restart message loops if needed
 		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+#endif
 
 	} ENDMETHOD;
 
@@ -430,8 +428,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
 
 		if (!_recovery) then {
+#ifndef _SQF_VM
 			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
 			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
+#endif
 		} else {
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
@@ -460,8 +460,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// todo: send emails, deploy pigeons
 
+#ifndef _SQF_VM
 		// Do it once in a while
 		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
+#endif
 
 	} ENDMETHOD;
 
@@ -568,13 +570,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
+				T_CALLM("createGarrison", ["military" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
 				private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
+				T_CALLM("createGarrison", ["police" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
 			};
 			default { NULL_OBJECT };
 		};
@@ -1092,7 +1094,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
-		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+		params [P_THISOBJECT, P_STRING("_locationType"), P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 
 		if (_faction == "police") exitWith {
 			
@@ -1177,7 +1179,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _gar = NEW("Garrison", _args);
 
 		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
-		
 
 		// Add default units to the garrison
 
@@ -1187,9 +1188,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			//|    |Max groups of this type
 			//|    |    |Group template
 			//|	   |    |                          |Group behaviour
-			[  0,   3,   T_GROUP_inf_sentry,   		GROUP_TYPE_PATROL],
+			[  0,   3,   T_GROUP_inf_sentry,        GROUP_TYPE_PATROL],
 			[  0,  -1,   T_GROUP_inf_rifle_squad,   GROUP_TYPE_IDLE]
 		];
+		// Officers at airports and bases only
+		if(_locationType == LOCATION_TYPE_AIRPORT) then {
+			_infSpec =
+				  [  3,  -3,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY]
+				+ [  2,  -2,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				+ _infSpec;
+		};
+		// Officers at airports and bases only
+		if(_locationType == LOCATION_TYPE_BASE) then {
+			_infSpec =
+				  [  1,  -1,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY]
+				+ [  1,  -1,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				+ _infSpec;
+		};
 
 		private _vehGroupSpec = [
 			//|Chance to spawn
