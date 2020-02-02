@@ -81,12 +81,16 @@ if (!_spawningHandled) then {
 			};
 		} forEach _units;
 	} else {
-		ASSERT_MSG(count _groups == 0, "Global garrison should not contain groups");
+		// Otherwise spawn everything around some road
+		pr _garPos = CALLM0(_thisObject, "getPos");
+		{
+			CALLM2(_x, "spawnVehiclesOnRoad", [], _garPos);
+		} forEach _groups;
 
-		// Spawn at the previous spawn position
+		// Spawn single units
 		{
 			CALLM3(_x, "spawn", [0 ARG 0 ARG 0], 0, true);
-		} forEach _units;
+		} forEach (_units select { CALL_METHOD(_x, "getGroup", []) == NULL_OBJECT });
 	};
 };
 
