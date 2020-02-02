@@ -1,3 +1,13 @@
-remote_theme: carlosperate/jekyll-theme-rtd
 title: Read The Docs Jekyll Theme
-description: Port of the Read the Docs theme to Jekyll to use with GitHub Pages.
+description: Vindicta Player Guide.
+remote_theme: carlosperate/jekyll-theme-rtd
+
+# Theme settings:
+site_author: Vindicta Team
+repo_url: "https://github.com/Sparker95/Vindicta"
+edit_on_github: true
+github_docs_folder: true
+sticky_navigation: true
+prev_next_buttons_location: bottom
+search_enabled: true
+hljs_style: github-gist
