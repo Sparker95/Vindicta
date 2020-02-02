@@ -13,7 +13,7 @@ Returns: nil
 
 #define pr private
 
-params [["_thisObject", "", [""]]];
+params [P_THISOBJECT, P_BOOL("_global")];
 
 OOP_INFO_0("SPAWN");
 
@@ -39,8 +39,11 @@ private _groups = GET_VAR(_thisObject, "groups");
 // Let the action handle spawning
 pr _AI = T_GETV("AI");
 pr _action = CALLM0(_AI, "getCurrentAction");
-if(_action != "") then { _action = CALLM0(_action, "getFrontSubaction"); };
-pr _spawningHandled = if (_action != "") then {
+
+if(_action != NULL_OBJECT) then { _action = CALLM0(_action, "getFrontSubaction"); };
+
+pr _spawningHandled = if (_action != NULL_OBJECT) then {
+	ASSERT_MSG(!_global, "Global garrison should not have an active action");
 	CALLM0(_action, "spawn");
 } else {
 	false
@@ -51,7 +54,7 @@ if (!_spawningHandled) then {
 
 	private _loc = GET_VAR(_thisObject, "location");
 
-	if (_loc != "") then {
+	if (_loc != NULL_OBJECT) then {
 		// If there is a location, spawn at it
 		// Spawn groups
 		OOP_INFO_1("Spawning groups: %1", _groups);
@@ -63,9 +66,9 @@ if (!_spawningHandled) then {
 		// Spawn single units
 		{
 			private _unit = _x;
-			if (CALL_METHOD(_x, "getGroup", []) == "") then {
+			if (CALL_METHOD(_x, "getGroup", []) == NULL_OBJECT) then {
 				private _prevLoc = CALLM0(_x, "getDespawnLocation");
-				if (_prevLoc == _loc && _prevLoc != "") then {
+				if (_prevLoc == _loc && _prevLoc != NULL_OBJECT) then {
 					// Spawn at the previous spawn position
 					CALLM3(_unit, "spawn", [0 ARG 0 ARG 0], 0, true);
 				} else {
@@ -86,16 +89,8 @@ if (!_spawningHandled) then {
 
 		// Spawn single units
 		{
-			private _unit = _x;
-			if (CALL_METHOD(_x, "getGroup", []) == "") then {
-				pr _className = CALLM0(_unit, "getClassName");
-
-				pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _garPos);
-
-				// After a good place has been found, spawn it
-				CALL_METHOD(_unit, "spawn", _posAndDir);
-			};
-		} forEach _units;
+			CALLM3(_x, "spawn", [0 ARG 0 ARG 0], 0, true);
+		} forEach (_units select { CALL_METHOD(_x, "getGroup", []) == NULL_OBJECT });
 	};
 };
 

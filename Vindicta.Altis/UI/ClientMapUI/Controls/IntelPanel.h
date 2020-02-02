@@ -133,7 +133,11 @@ class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT
     y = safeZoneY + safeZoneH * 0.822; 
     w = safeZoneW * 0.292; 
     h = safeZoneH * 0.065; 
+
+	font = "RobotoCondensed";
     text = "RESPAWN"; 
+	sizeEx = 0.06;
+	shadow = 1;
 
 	colorBackground[] = {0.2, 0.60, 0, 1};
 	colorBackgroundActive[] = MUIC_WHITE;

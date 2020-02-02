@@ -165,16 +165,16 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Process all headers and check if these files can be loaded
 		pr _return = []; // Array with server's response
 		OOP_INFO_1("Checking %1 headers:", count _recordNamesAndHeaders);
-		pr _saveVersion = call misc_fnc_getSaveVersion;
+		pr _saveVersion = parseNumber (call misc_fnc_getSaveVersion);
 		{
 			_x params ["_recordName", "_header"];
 			OOP_INFO_2("  checking header: %1 of record: %2", _header, _recordName);
 
 			pr _errors = [];
-
-			if (GETV(_header, "saveVersion") != _saveVersion) then {
+			pr _headerSaveVersion = parseNumber GETV(_header, "saveVersion");
+			if (_headerSaveVersion > _saveVersion) then {
 				_errors pushBack INCOMPATIBLE_SAVE_VERSION;
-				OOP_INFO_2("  incompatible save version: %1, current: %2", GETV(_header, "saveVersion"), _saveVersion);
+				OOP_INFO_2("  incompatible save version: %1, current: %2", _headerSaveVersion, _saveVersion);
 				// No point checking further
 			} else {
 				if ((toLower GETV(_header, "worldName")) != (tolower worldName)) then {
@@ -328,7 +328,9 @@ CLASS("GameManager", "MessageReceiverEx")
 					pr _header = CALLM2(_storage, "load", _headerRef, true); // Create a new object
 					
 					// Check if save version is compatible
-					if (GETV(_header, "saveVersion") == call misc_fnc_getSaveVersion) then {
+					pr _headerVer = parseNumber GETV(_header,"saveVersion");
+					pr _currVer = parseNumber (call misc_fnc_getSaveVersion);
+					if (_headerVer <= _currVer) then {
 						// Read other data from the header
 						T_SETV("campaignName", GETV(_header, "campaignName"));
 						T_SETV("saveID", GETV(_header, "saveID") + 1);
@@ -345,8 +347,8 @@ CLASS("GameManager", "MessageReceiverEx")
 						pr _text = "Game load is in progress...";
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
 
-						pr _gameModeRef = CALLM1(_storage, "load", "gameMode");
-						CALLM1(_storage, "load", _gameModeRef);
+						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
+						CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
 						gGameMode = _gameModeRef;
 						gGameModeServer = _gameModeRef;
 						PUBLIC_VARIABLE "gGameModeServer";
