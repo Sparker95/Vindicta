@@ -1,16 +1,24 @@
 title: Vindicta Player Guide
 description: "The player guide for the Arma 3 modification Vindicta: Guerrilla Warfare."
 remote_theme: pmarsceill/just-the-docs
-color_scheme: "dark"
+
 
 # Theme settings:
-site_author: Vindicta Team
-repo_url: "https://github.com/Sparker95/Vindicta"
-edit_on_github: true
-github_docs_folder: true
+color_scheme: "dark"
 logo: 'https://user-images.githubusercontent.com/1453936/73614082-d9b35700-45f3-11ea-936e-f8419b5e68e2.png'
-# site_favicon: 'https://your.url/here.ico'
-sticky_navigation: true
-prev_next_buttons_location: bottom
+
+# Aux links for the upper right navigation
+aux_links:
+  "Steam Workshop Page":
+    - "//steamcommunity.com/sharedfiles/filedetails/?id=1964186045"
+  "Discord":
+    - "//discord.gg/CPkgHuN"
+  "BI Forum Page":
+    - "//forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/"
+  "GitHub Page":
+    - "//github.com/Sparker95/Vindicta"
+
+# Footer content appears at the bottom of every page's main content
+footer_content: ""
+
 search_enabled: true
-hljs_style: github-gist
