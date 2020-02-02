@@ -9,6 +9,7 @@
 ["Templates\Factions\POLICE.sqf", T_FACTION_Police]					call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CIVILIAN.sqf", T_FACTION_Civ]					call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF_2020.sqf", T_FACTION_Military]			call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_AAF_2010.sqf", T_FACTION_Military]			call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF_police.sqf", T_FACTION_Police]			call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AFRF.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_USAF.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;

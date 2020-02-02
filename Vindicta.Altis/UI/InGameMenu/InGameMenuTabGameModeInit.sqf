@@ -55,7 +55,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["RHS - Russian Armed Forces", 		"tRHS_AFRF"],
 			["RHS - US Army", 		"tRHS_USAF"],
 			["RHS - Livonian Defence Forces", 		"tRHS_LDF"],
-			["AAF 2017 - Altis Armed Forces 2020",	"tRHS_AAF_2020"]//,
+			["AAF 2017 - Altis Armed Forces 2020",	"tRHS_AAF_2020"],
+			["AAF 2017 - Altis Armed Forces 2010",	"tRHS_AAF_2010"]//,
 			//["Test: must error", "test_error"]
 		];
 		{
