@@ -29,7 +29,6 @@ for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_rdg2_white";
 this addItemToVest "rhs_mag_nspd";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N22_plum_AK";};
-for "_i" from 1 to 2 do {this addItemToBackpack "APERSTripMine_Wire_Mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
