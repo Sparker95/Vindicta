@@ -10,7 +10,8 @@ removeGoggles this;
 _RandomHeadgear = selectRandom ["rhs_zsh7a_mike_green","rhs_zsh7a_mike_green_alt","rhs_gssh18"];
 this addHeadgear _RandomHeadgear;
 this forceAddUniform "U_I_HeliPilotCoveralls";
-this addVest "FGN_AAF_CIRAS_Empty";
+_RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Radio","FGN_AAF_M99Vest_Khaki_Radio"];
+this addVest _RandomVest;
 
 this addWeapon "rhs_weap_tt33";
 this addHandgunItem "rhs_mag_762x25_8";
