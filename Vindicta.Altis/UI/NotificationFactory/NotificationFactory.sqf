@@ -141,7 +141,7 @@ CLASS("NotificationFactory", "")
 		private _duration = 30;
 		private _category = "ENEMY SPOTTED";
 		private _text = format ["Friendly forces have detected enemies at %1", mapGridPosition _pos];
-		private _hint = "Check map for more info"; // Override hint!
+		private _hint = "Check your map for more info"; // Override hint!
 		private _args = [_picture, _category, _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;

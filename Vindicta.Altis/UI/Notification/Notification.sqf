@@ -22,6 +22,13 @@ Handles operation of stackable notifications.
 #define _HEIGHT				0.18
 #define _WIDTH				0.5
 
+#define IMAGE_PATH_IDX			0
+#define CATEGORY_IDX			1
+#define TEXT_IDX				2
+#define HINT_IDX				3
+#define DURATION_IDX			4
+#define IMAGE_PATH_IDX			5
+
 CLASS("Notification", "")
 
 	VARIABLE("control");		// Group control handle
@@ -33,6 +40,8 @@ CLASS("Notification", "")
 	STATIC_VARIABLE("initDone");	// Bool
 	STATIC_VARIABLE("ehID");		// Event handler ID
 	STATIC_VARIABLE("queue");		// Queue into which requests to create notifications are pushed
+	STATIC_VARIABLE("queueModified");//Time the queue was last modified, used to batch notifications
+
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_imagePath"), P_DYNAMIC("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration")];
@@ -172,6 +181,7 @@ CLASS("Notification", "")
 		pr _queue = GETSV("Notification", "queue");
 		pr _args = [_imagePath, _category, _text, _hint, _duration, _sound];
 		_queue pushBack _args;
+		SETSV("Notification", "queueModified", TIME_NOW);
 	} ENDMETHOD;
 
 	STATIC_METHOD("onEachFrame") {
@@ -218,7 +228,8 @@ CLASS("Notification", "")
 
 		// Check if we can add more notifications from the queue
 		pr _queue = GETSV(_thisClass, "queue");
-		if ((count _queue) > 0) then {
+		pr _queueModified = GETSV(_thisClass, "queueModified");
+		if ((count _queue) > 0 && (TIME_NOW - _queueModified) > 1) then {
 			//OOP_INFO_0("Queue not empty!");
 
 			// We can push only one at a time anyway
@@ -249,6 +260,19 @@ CLASS("Notification", "")
 
 			if (_canAdd) then {
 				pr _args = _queue select 0;
+
+				// Count notifications of the same type if we are allowed to coallese them
+				pr _sameType = _queue select {
+					_x#CATEGORY_IDX isEqualTo _args#CATEGORY_IDX
+				};
+
+				if(count _sameType > 6) then {
+					// coallese them
+					_args set [TEXT_IDX, format ["%1 and %2 others...", _args#TEXT_IDX, count _sameType - 1]];
+					{
+						_queue deleteAt (_queue find _x);
+					} forEach _sameType;
+				};
 
 				// Play sound if needed
 				pr _sound = _args#5;
@@ -295,6 +319,7 @@ CLASS("Notification", "")
 		SETSV(_thisClass, "initDone", true);
 		SETSV(_thisClass, "objects", []);
 		SETSV(_thisClass, "queue", []);
+		SETSV(_thisClass, "queueModified", 0);
 
 		// Add on each frame handler
 		pr _ehid = addMissionEventHandler ["EachFrame", {CALLSM0("Notification", "onEachFrame")}];
