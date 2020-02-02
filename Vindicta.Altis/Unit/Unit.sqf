@@ -732,16 +732,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
 					// Array with item class name, count
 					pr _ACREclassNames = [
-										["ACRE_SEM52SL",2],
-										["ACRE_SEM70",4],
-										["ACRE_PRC77",1],
-										["ACRE_PRC343",6],
-										["ACRE_PRC152",3],
-										["ACRE_PRC148",3],
-										["ACRE_PRC117F",1],
-										["ACRE_VHF30108SPIKE",1],
-										["ACRE_VHF30108",3],
-										["ACRE_VHF30108MAST",1]
+										["ACRE_SEM52SL",2], // medium-range radio, similar to the 148 and 152
+										["ACRE_SEM70",4], // Long-range radio, is NOT a backpack, but needs to be put in a backpack.
+										["ACRE_PRC77",1], // Vietnam-era radio, needs to be put in a backpack.
+										["ACRE_PRC343",6], // Shortest-range infantry radio. (400m-900m range, depending on terrain)
+										["ACRE_PRC152",3], //medium-range radio, 3-5km
+										["ACRE_PRC148",3], //medium-range radio, 3-5km
+										["ACRE_PRC117F",1], //Long range radio, is NOT a backpack, but needs to be put in a backpack. 10-20km
+										["ACRE_VHF30108SPIKE",1], // antenna for radio signal extension, with a spike to put it higher in the air.
+										["ACRE_VHF30108",3], // Just the antenna
+										["ACRE_VHF30108MAST",1] // Antenna with a mast.
 									];
 					{
 						_x params ["_itemName", "_itemCount"];
