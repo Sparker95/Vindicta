@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("que",["Function"],[["queryIntel",,[["IntelDatabase",,,,0,"File:Intel/IntelDatabase.sqf:IntelDatabase.queryIntel","SQFClass:IntelDatabase:queryIntel"]]]]);

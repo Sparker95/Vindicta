@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:AI/stimulusTypes.hpp","stimulusTypes.hpp");NDSummary.OnSummaryLoaded("File:AI/stimulusTypes.hpp",[["SQF","SQF"]],[["Enums","Enumeration"],["Groups","Group"]],[[300,0,1,"Types","Types"],[273,0,0,"STIMULUS_TYPE","STIMULUS_TYPE"]]);

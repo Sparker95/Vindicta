@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("ass",["Function"],[["assignVehicleRole",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.assignVehicleRole","SQFClass:Unit:assignVehicleRole"]]]]);

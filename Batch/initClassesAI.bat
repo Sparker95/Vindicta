@@ -1,10 +1,10 @@
+@echo off 
+
 REM Parameters: %1 - path to the folder relative to the mission folder for which the initClasses.sqf will be generated
 
 REM Change current folder
 set CDPrev=%CD%
-cd ..\
-cd %1
-cd %2
+cd /d "%~dp0..\%1\%2"
 
 REM cache some parameters
 set missionFolder=%1

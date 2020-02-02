@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Action.ActionCompositeParallel",{247:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">NYI</div></div>"});

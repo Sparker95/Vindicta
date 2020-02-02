@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("inc",["Function"],[["increaseCounters",,[["Garrison",,,,0,"File:Garrison/Garrison.sqf:Garrison.increaseCounters","SQFClass:Garrison:increaseCounters"]]],["incrementHumanResourcesBy",,[["SideStat",,,,0,"File:SideStat/SideStat.sqf:SideStat.incrementHumanResourcesBy","SQFClass:SideStat:incrementHumanResourcesBy"]]]]);

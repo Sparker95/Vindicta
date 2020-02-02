@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:Location/addSpawnPos.sqf","addSpawnPos.sqf");NDSummary.OnSummaryLoaded("File:Location/addSpawnPos.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[38,0,0,"Location","Location"],[39,0,2,"Functions","Location.Functions"],[40,0,1,"addSpawnPos","Location.addSpawnPos"]]);

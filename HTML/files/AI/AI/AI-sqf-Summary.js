@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:AI/AI/AI.sqf","AI.sqf");NDSummary.OnSummaryLoaded("File:AI/AI/AI.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[293,0,0,"AI","AI"]]);

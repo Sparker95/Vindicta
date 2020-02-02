@@ -1,0 +1,163 @@
+#include "common.hpp"
+
+/*
+Class: ActionGroup.ActionGroupGetInBuilding
+All members of this group will try to get into the specified building.
+
+Parameter tags:
+"building" - handle of the building object
+*/
+
+#define pr private
+
+CLASS("ActionGroupGetInBuilding", "ActionGroup")
+
+	VARIABLE("hBuilding");
+	VARIABLE("timeComplete");
+	
+	METHOD("new") {
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		
+		pr _hBuilding = CALLSM3("Action", "getParameterValue", _parameters, "building", false);
+		if (isNil "_hBuilding") exitWith {
+			OOP_ERROR_0("Building handle was not provided");
+			T_SETV("hBuilding", objNull);
+		};
+		T_SETV("hBuilding", _hBuilding);
+
+		T_SETV("timeComplete", 0);
+
+	} ENDMETHOD;
+	
+	// logic to run when the goal is activated
+	METHOD("activate") {
+		params [["_thisObject", "", [""]]];
+		
+		OOP_INFO_0("ACTIVATE");
+
+		pr _hBuilding = T_GETV("hBuilding");
+		pr _AI = T_GETV("AI");
+		pr _group = T_GETV("group");
+		pr _leaderUnit = CALLM0(_group, "getLeader");
+		if (IS_NULL_OBJECT(_leaderUnit)) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			OOP_INFO_0("Action failed: no leader");
+			ACTION_STATE_FAILED
+		};
+
+		// Estimate when they will get into the building
+		pr _posStart = ASLTOAGL (getPosASL CALLM0(_leaderUnit, "getObjectHandle"));
+		pr _bpos = ASLTOAGL (getPosASL _hBuilding);
+		pr _dist = (abs ((_bpos select 0) - (_posStart select 0)) ) + (abs ((_bpos select 1) - (_posStart select 1))) + (abs ((_bpos select 2) - (_posStart select 2))); // Manhattan distance
+		pr _ETA = time + (_dist + 60);
+		T_SETV("timeComplete", time + _ETA);
+		
+		// Find all available building positions
+		// Building is guaranteed to be alive and not null by now, it's checked in process
+		pr _countPos = count (_hBuilding buildingPos -1);
+		pr _buildingPosIDs = [];
+		_buildingPosIDs resize _countPos; // Array with available IDs of positions
+		for "_i" from 0 to (_countPos - 1) do {
+			_buildingPosIDs set [_i, _i];
+		};
+
+		// Add goals to all units
+		pr _units = +CALLM0(_group, "getInfantryUnits");
+		_units = [_leaderUnit] + (_units - [_leaderUnit]); // Move the leader to the front of the array, so that he is more likely to get the move goal into the house
+		{ // foreach units
+			pr _unit = _x;
+			pr _unitAI = CALLM0(_unit, "getAI");
+			
+			// Remove previous goals
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMoveBuilding", "");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
+
+			if (count _buildingPosIDs > 0) then {
+				pr _posID = selectRandom _buildingPosIDs;
+				_buildingPosIDs deleteAt (_buildingPosIDs find _posID);
+				pr _parameters = [["building", _hBuilding], ["posID", _posID]];
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMoveBuilding", 0, _parameters, _AI);
+			} else {
+				// Just regroup if all positions are assigned
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+			};
+		} forEach _units;
+
+		// Set group combat mode
+		pr _hG = T_GETV("hG");
+		_hG setCombatMode "GREEN"; // Hold fire, disengage. We don't want them to chase enemies right now, we want them to get into houses.
+
+		// Return ACTIVE state
+		T_SETV("state", ACTION_STATE_ACTIVE);
+		ACTION_STATE_ACTIVE
+		
+	} ENDMETHOD;
+	
+	// Logic to run each update-step
+	METHOD("process") {
+		params [["_thisObject", "", [""]]];
+		
+		CALLM0(_thisObject, "failIfNoInfantry");
+
+		// Fail if building is destroyed or null
+		pr _hBuilding = T_GETV("hBuilding");
+		if (!(alive _hBuilding)) exitWith { // Alive will return false on objNull too
+			T_SETV("state", ACTION_STATE_FAILED);
+			OOP_INFO_0("Action failed: building is null or destroyed");
+			ACTION_STATE_FAILED
+		};
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
+
+		pr _group = T_GETV("group");
+		pr _groupUnits = CALLM0(_group, "getInfantryUnits");
+		if (_state == ACTION_STATE_ACTIVE) then {
+			// Complete if everyone is in the building (very unlikely with arma AI, also not everyone might have got the goal to get into the building)
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitInfantryMoveBuilding", "")) then {
+				_state = ACTION_STATE_COMPLETED;
+			};
+
+			// For now we just use timeout which should be enough for most cases
+			if (time > T_GETV("timeComplete")) then {
+				_state = ACTION_STATE_COMPLETED;
+			};
+		};
+
+
+		T_SETV("state", _state);
+		_state
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		// Let them go, we don't care
+	} ENDMETHOD;
+
+	METHOD("handleUnitsAdded") {
+		params [P_THISOBJECT];
+		// We must replan everything
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
+	
+	// logic to run when the action is satisfied
+	METHOD("terminate") {
+		params [["_thisObject", "", [""]]];
+		
+		// Delete external goals
+		pr _group = T_GETV("group");
+		pr _units = CALLM0(_group, "getUnits");
+		pr _AI = T_GETV("AI");
+		{ // foreach units
+			pr _unit = _x;
+			pr _unitAI = CALLM0(_unit, "getAI");
+
+			if (_unitAI != "") then { // Sanity check
+				// Remove goals from this AI
+				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", _AI);
+				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMoveBuilding", _AI);
+			};
+		} forEach _units;
+		
+	} ENDMETHOD;
+
+ENDCLASS;

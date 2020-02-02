@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:AI/Action/Action.hpp","Action.hpp");NDSummary.OnSummaryLoaded("File:AI/Action/Action.hpp",[["SQF","SQF"]],[["Classes","Class"],["Enums","Enumeration"],["Groups","Group"]],[[233,0,0,"Action","Action"],[234,0,2,"Types","Action.Types"],[235,0,1,"ACTION_STATE","Action.ACTION_STATE"]]);

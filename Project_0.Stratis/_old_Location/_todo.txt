@@ -1,2 +1,0 @@
-Functions to implement:
-set incoming alert state

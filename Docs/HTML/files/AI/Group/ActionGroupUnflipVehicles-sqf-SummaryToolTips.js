@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Group/ActionGroupUnflipVehicles.sqf",{256:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Flipped vehicles get magically unflipped</div></div>"});

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("str",["Variable"],[["strength",,[["Intel.IntelCommanderAction",,,,0,"File:Intel/Intel.sqf:Intel.IntelCommanderAction.strength","SQFClass:Intel.IntelCommanderAction:strength"]]]]);

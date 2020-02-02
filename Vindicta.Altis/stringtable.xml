@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project name="Jeroen's Arsenal">
+	<Package name="Common">
+		<Container name="Actions">
+			<Key ID="STR_JNC_ACT_SELECT">
+				<Original>Select</Original>
+				<German>Auswählen</German>
+			</Key>
+			<Key ID="STR_JNC_ACT_CANCEL">
+				<Original>Cancel</Original>
+				<German>Abbrechen</German>
+			</Key>
+			<Key ID="STR_JNC_ACT_SELECT_HINT">
+				<Original>Select an object</Original>
+				<German>Objekt auswählen</German>
+			</Key>
+			<Key ID="STR_JNC_ACT_SELECT_NO_OBJECT">
+				<Original>Not looking at anything</Original>
+				<German>Nichts ausgewählt</German>
+			</Key>
+			<Key ID="STR_JNC_TARGET_HINT">
+				<Original>Loading to inventory in %1</Original>
+			</Key>
+			<Key ID="STR_JNC_MODIFIER_HINT">
+				<Original>Shift and Ctrl keys change how many items you move at once</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Arsenal">
+		<Container name="Actions">
+			<Key ID="STR_JNA_ACT_OPEN">
+				<Original>Arsenal</Original>
+				<German>Arsenal</German>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
+				<Original>Arsenal to external Inventory</Original>
+				<German>In Fahrzeug laden</German>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
+				<Original>Select something with an inventory to load into</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_UNLOAD">
+				<Original>External Inventory to Arsenal</Original>
+				<German>Fahrzeug entladen</German>
+			</Key>
+			<Key ID="STR_JNA_ACT_UNLOAD_DESC">
+				<Original>Please select an object with an inventory, or another Arsenal to load from</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
+				<Original>Not looking at an object</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
+				<Original>Object too far away</Original>
+				<German>Objekt zu weit entfernt</German>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
+				<Original>Object does not have any inventory or Arsenal</Original>
+				<German>Objekt hat kein Inventar oder Fahrzeug</German>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Garage">
+		<Container name="Actions">
+			<Key ID="STR_JNG_ACT_OPEN">
+				<Original>Open garage</Original>
+				<German>Garage öffnen</German>
+			</Key>
+			<Key ID="STR_JNG_ACT_STOREVEHICLE">
+				<Original>Garage Vehicle</Original>
+				<German>Fahrzeug verstauen</German>
+			</Key>
+			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR1">
+				<Original>Vehicle too far away</Original>
+				<German>Fahrzeug zu weit entfernt</German>
+			</Key>
+			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR2">
+				<Original>Not looking at a vehicle</Original>
+				<German>Kein Fahrzeug ausgewählt</German>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Fuel">
+		<Container name="Actions">
+			<Key ID="STR_JN_FUEL_ACT_REFUEL">
+				<Original>Refuel</Original>
+				<German>Betanken</German>
+			</Key>
+			<Key ID="STR_JN_FUEL_ACT_REFUELOPTION">
+				<Original>Refuel cargo or tank</Original>
+				<German>Tank oder Ladung betanken</German>
+			</Key>
+			<Key ID="STR_JN_FUEL_ACT_FUELTANK">
+				<Original>Tank</Original>
+				<German>Tank</German>
+			</Key>
+			<Key ID="STR_JN_FUEL_ACT_FUELCARGO">
+				<Original>Cargo</Original>
+				<German>Ladung</German>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Ammo">
+		<Container name="Actions">
+			<Key ID="STR_JN_AMMO_ACT_REARM">
+				<Original>Rearm</Original>
+				<German>Neubewaffnen</German>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Repair">
+		<Container name="Actions">
+			<Key ID="STR_JN_REPAIR_ACT_REPAIR">
+				<Original>Repair</Original>
+				<German>Reparieren</German>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+
+<Project name="Undercover">
+	<Package name="UndercoverUI">
+		<Container name="States">
+			<Key ID="STR_UM_OVERT">
+				<Original>OVERT</Original>
+				<German>FEINDLICH</German>
+			</Key>
+			<Key ID="STR_UM_SUSPICIOUS">
+				<Original>SUSPICIOUS</Original>
+				<German>VERDÄCHTIG</German>
+			</Key>
+			<Key ID="STR_UM_UNDERCOVER">
+				<Original>UNDERCOVER</Original>
+				<German>ZIVIL</German>
+			</Key>
+			<Key ID="STR_UM_COMPROMISED">
+				<Original>COMPROMISED</Original>
+				<German>AUFGEFLOGEN</German>
+			</Key>
+		</Container>
+		<Container name="Hints">
+			<Key ID="STR_UM_HINT_WEAPON">
+				<Original>OVERT: WEAPON</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_DOWNED">
+				<Original>INCAPACITATED</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SURRENDER">
+				<Original>SURRENDERED</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_HOSTILITY">
+				<Original>OVERT: WEAPON DISCHARGED!</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SUSPGEAR">
+				<Original>SUSPICIOUS OUTFIT</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_MILVEH">
+				<Original>OVERT: MILITARY VEHICLE</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SUSPGEARVEH">
+				<Original>SUSPICIOUS OUTFIT VISIBLE</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_CLOSINGIN">
+				<Original>THEY ARE GOING TO SPOT YOU!</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SUSPBEHAVIOR">
+				<Original>SUSPICIOUS BEHAVIOUR</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_OFFROAD">
+				<Original>TOO FAR FROM ROADS</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_ALLOWEDAREA">
+				<Original>THIS AREA IS BEING WATCHED! STAY ON THE ROAD!</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_MILAREA">
+				<Original>MILITARY AREA</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_ARRESTED">
+				<Original>CAPTIVE</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_MORPHINE">
+				<Original>INJECTING SOME MORPHINE?</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_ILLEGAL">
+				<Original>DO NOT DO THAT!</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_INVENTORY">
+				<Original>ACCESSING INVENTORY</Original>
+			</Key>																
+		</Container>	
+	</Package>
+</Project>
+
+<Project name="ClientMapUI">
+	<Package name="ClientMapUI">
+		<Container name="Hints">
+			<Key ID="STR_CMUI_DEFAULT">
+				<Original>Move your cursor over a button to learn more.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON1">
+				<Original>Fast travel to any location. Select fast travel then click on a location on the map.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON1_DISABLED">
+				<Original></Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON2">
+				<Original>Create a camp at your current location.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON2_DISABLED">
+				<Original>Cannot create a camp within 500m of any existing location.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON3">
+				<Original>Opens the mission menu. Closes the map.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON3_DISABLED">
+				<Original>Cannot open the mission menu right now.</Original>
+			</Key>
+			<Key ID="STR_CMUI_TAB1">
+				<Original>View collected intel about the world or a selected camp, outpost or base.</Original>
+			</Key>
+			<Key ID="STR_CMUI_TAB2">
+				<Original>View units and groups at this location and give orders to this garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_TAB3">
+				<Original>View settings and stuff. Don't really know.</Original>
+			</Key>
+			<Key ID="STR_CMUI_MORE">
+				<Original>Create a camp at your current location.</Original>
+			</Key>
+		</Container>
+		<Container name="IntelTxt">
+			<Key ID="STR_CMUI_INTEL_DEFAULT">
+				<Original>No description available.</Original>
+			</Key>
+		</Container>
+	</Package>
+</Project>

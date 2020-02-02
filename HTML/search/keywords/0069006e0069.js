@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("ini",["Function"],[["initFromEditor",,[["Location",,,,0,"File:Location/initFromEditor.sqf:Location.initFromEditor","SQFClass:Location:initFromEditor"]]]]);

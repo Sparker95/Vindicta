@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("all",["Variable"],[["allMapMarker",,[["Intel.IntelLocation",,,,0,"File:Intel/Intel.sqf:Intel.IntelLocation.allMapMarker","SQFClass:Intel.IntelLocation:allMapMarker"]]]]);

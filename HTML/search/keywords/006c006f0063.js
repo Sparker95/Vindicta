@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("loc",["Class"],[["Location",,[[,,,,0,"File:Location/addSpawnPos.sqf:Location","SQFClass:Location"]]],["LocationUnitArrayProvider",,[[,,,,0,"File:LocationUnitArrayProvider/LocationUnitArrayProvider.sqf:LocationUnitArrayProvider","SQFClass:LocationUnitArrayProvider"]]]]);

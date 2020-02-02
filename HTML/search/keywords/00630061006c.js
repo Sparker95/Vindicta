@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("cal",["Function"],[["calculateInfantryCapacity",,[["Location",,,,0,"File:Location/calculateInfantryCapacity.sqf:Location.calculateInfantryCapacity","SQFClass:Location:calculateInfantryCapacity"]]]]);

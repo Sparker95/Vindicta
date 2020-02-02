@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:AI/Garrison/AIGarrison.sqf",{});

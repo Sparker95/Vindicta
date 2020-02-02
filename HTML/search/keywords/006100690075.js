@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("aiu",["Class"],[["AIUnit",,[["AI",,,,0,"File:AI/Unit/AIUnit.sqf:AI.AIUnit","SQFClass:AI.AIUnit"]]]]);

@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("deb",["Class"],[["DebugPrinter",,[["MessageReceiver",,,,0,"File:DebugPrinter/DebugPrinter.sqf:MessageReceiver.DebugPrinter","SQFClass:MessageReceiver.DebugPrinter"]]]]);

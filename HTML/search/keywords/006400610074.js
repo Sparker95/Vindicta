@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("dat",["Variable"],[["DATA",,[["Message",,,,0,"File:Message/Message.hpp:Message.DATA","SQFClass:Message:DATA"]]]]);

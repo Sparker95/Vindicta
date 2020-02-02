@@ -1,0 +1,1 @@
+We put the mission .pbo files built with the Liberation build tool into this folder. I mean the addon-like .pbo files which contain multiple mission folders, not the mission-like .pbo files which contain only one mission. Later make.py copies these pbo files into the release/vindicta/addons folder.

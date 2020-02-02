@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("aic",["Class"],[["AICommander",,[[,,,,0,"File:AI/Commander/LocationData.hpp:AICommander","SQFClass:AICommander"],["AI",,,,0,"File:AI/Commander/AICommander.sqf:AI.AICommander","SQFClass:AI.AICommander"]]]]);

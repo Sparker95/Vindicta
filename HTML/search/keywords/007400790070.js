@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("typ",["Variable"],[["TYPE",,[["Message",,,,0,"File:Message/Message.hpp:Message.TYPE","SQFClass:Message:TYPE"],["Stimulus",,,,0,"File:AI/Stimulus/Stimulus.hpp:Stimulus.TYPE","SQFClass:Stimulus:TYPE"],["WorldFact",,,,0,"File:AI/WorldFact/WorldFact.hpp:WorldFact.TYPE","SQFClass:WorldFact:TYPE"]]]]);
