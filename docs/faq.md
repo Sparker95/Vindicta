@@ -34,13 +34,8 @@ nav_order: 1
 > It is implemented already, but not well tested. Self hosted MP is still recommended.
 
 ## I can't find the mission in game??
-> Host a MP game.
-> <details>
-> <summary>Screenshot</summary> 
-> 
-> ![](https://cdn.discordapp.com/attachments/553300822583279616/666270214983254044/unknown.png)
-> </details>
-> 
+> Host a MP game:
+> ![Screenshot](https://cdn.discordapp.com/attachments/553300822583279616/666270214983254044/unknown.png)
 > If it's not there, make sure you've loaded CBA and ACE.
 
 ## How can I holster my pistol?
@@ -50,13 +45,10 @@ nav_order: 1
 > This isn't recommended as the delayed actions and intel timestamps the AI uses will be invalidated, however you can use server skip time command if necessary (expect interesting results).
 
 ## How do I run it on a dedicated server?
-> If you have got the files from Workshop, then you have addon-type .pbo files, not user-mission-type .pbo files. 
-> You DO NOT need to put them into mpmissions folder.
-> Make sure the addon is loaded! Treat the workshop download as an addon, it must be loaded with -mod parameters, clients need it to play on your server!
-> See the server.cfg setup below: note that versions might be different!
-> <details>
-> <summary>Example</summary> 
-> 
+> If you have got the files from Workshop, then you have addon-type .pbo files, not user-mission-type .pbo files.  
+> You DO NOT need to put them into mpmissions folder.  
+> Make sure the addon is loaded! Treat the workshop download as an addon, it must be loaded with -mod parameters, clients need it to play on your server!  
+> See the server.cfg setup below: note that versions might be different!  
 > ```cpp
 > class Missions
 > {
@@ -74,8 +66,6 @@ nav_order: 1
 >     };
 > };
 > ```  
->   
-> </details>
 
 ## Headless Client Support?
 > Not now because it would cause AI code to change. Maybe later.
