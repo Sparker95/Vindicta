@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:Snek",{1002:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Snake video game</div></div>"});

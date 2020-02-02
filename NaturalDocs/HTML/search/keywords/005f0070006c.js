@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("_pl",["Function"],[["_plan",,[["AI.AICommander","(private) _plan",,"(private)_plan",0,"File:AI/Commander/AICommander.sqf:AI.AICommander.(private)_plan","SQFClass:AI.AICommander:(private)_plan"]]]]);

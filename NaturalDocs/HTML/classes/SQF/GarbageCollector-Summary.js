@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:GarbageCollector","GarbageCollector");NDSummary.OnSummaryLoaded("SQFClass:GarbageCollector",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[483,0,0,"GarbageCollector"],[484,0,2,"Functions","Functions"],[485,0,1,"addUnit","addUnit"]]);

@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("SQFClass:AST_WaitGarrison",{94:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Have a garrison wait for a period of time.</div></div>",96:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Create an AST for a garrison to wait for a period of time.</div></div>"});

@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:Action.ActionUnitShootLegTarget",{378:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a single unit shoot near a target like a warning shot with a chance of hitting leg</div></div>"});

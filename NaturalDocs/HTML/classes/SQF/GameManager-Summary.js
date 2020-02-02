@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:GameManager","GameManager");NDSummary.OnSummaryLoaded("SQFClass:GameManager",[["SQF","SQF"]],[["Classes","Class"]],[[459,0,0,"GameManager"]]);

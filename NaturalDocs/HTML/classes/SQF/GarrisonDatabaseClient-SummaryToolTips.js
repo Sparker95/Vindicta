@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:GarrisonDatabaseClient",{487:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Singleton client-only class.&nbsp; Stores data about garrisons on client side.&nbsp; Receives data from GarrisonServer.</div></div>"});

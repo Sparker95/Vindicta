@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:CivilWarCityData",{467:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">City data specific to this game mode.</div></div>"});

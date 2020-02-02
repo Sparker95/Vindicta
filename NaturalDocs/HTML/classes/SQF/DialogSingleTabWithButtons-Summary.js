@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:DialogSingleTabWithButtons","DialogSingleTabWithButtons");NDSummary.OnSummaryLoaded("SQFClass:DialogSingleTabWithButtons",[["SQF","SQF"]],[["Classes","Class"]],[[959,0,0,"DialogSingleTabWithButtons"]]);

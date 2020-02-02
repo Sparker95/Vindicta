@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:GarrisonRecord",{488:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Client-side representation of a garrison.</div></div>"});

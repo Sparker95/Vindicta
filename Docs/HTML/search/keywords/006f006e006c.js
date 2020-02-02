@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("onl",["Function"],[["onLBSelChanged",,[["ClientMapUI",,,,0,"File:UI/ClientMapUI/ClientMapUI.sqf:ClientMapUI.onLBSelChanged","SQFClass:ClientMapUI:onLBSelChanged"]]]]);

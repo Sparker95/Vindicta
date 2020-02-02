@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("cop",["Function"],[["copyFrom",,[["Grid",,,,0,"File:GridStats/Grid.sqf:Grid.copyFrom","SQFClass:Grid:copyFrom"]]],["copyIntelFrom",,[["Garrison",,,,0,"File:Garrison/Garrison.sqf:Garrison.copyIntelFrom","SQFClass:Garrison:copyIntelFrom"]]]]);

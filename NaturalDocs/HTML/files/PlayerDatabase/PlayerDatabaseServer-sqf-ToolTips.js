@@ -1,0 +1,1 @@
+NDContentPage.OnToolTipsLoaded({454:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">It\'s a hashmap (aka namespace) which uses two string keys.&nbsp; It uses CBA namespace as base.&nbsp; Implementation is not ideal because it just combines two keys into one with a separator between them, so in theory there might be conflicts, but it\'s fine for now.</div></div>"});

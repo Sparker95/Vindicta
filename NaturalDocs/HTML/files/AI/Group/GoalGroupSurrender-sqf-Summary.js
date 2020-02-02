@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/Group/GoalGroupSurrender.sqf","GoalGroupSurrender.sqf");NDSummary.OnSummaryLoaded("File:AI/Group/GoalGroupSurrender.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[314,0,0,"<span class=\"Qualifier\">Goal.</span>&#8203;GoalGroupSurrender","Goal.GoalGroupSurrender"]]);

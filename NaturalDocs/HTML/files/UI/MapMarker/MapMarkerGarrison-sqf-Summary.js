@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:UI/MapMarker/MapMarkerGarrison.sqf","MapMarkerGarrison.sqf");NDSummary.OnSummaryLoaded("File:UI/MapMarker/MapMarkerGarrison.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[973,0,0,"MapMarkerGarrison","MapMarkerGarrison"]]);

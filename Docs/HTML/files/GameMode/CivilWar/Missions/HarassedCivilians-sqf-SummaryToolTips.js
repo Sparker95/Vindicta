@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:GameMode/CivilWar/Missions/HarassedCivilians.sqf",{378:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">This mission spawns a number of civilians that police will try to arrest (when they see them).&nbsp; If the player frees them after they are arrested they will provide rewards of intel, and increase local activity.</div></div>"});

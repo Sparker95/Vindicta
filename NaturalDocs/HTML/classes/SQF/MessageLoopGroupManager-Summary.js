@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:MessageLoopGroupManager","MessageLoopGroupManager");NDSummary.OnSummaryLoaded("SQFClass:MessageLoopGroupManager",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[853,0,0,"MessageLoopGroupManager"],[854,0,2,"Functions","Functions"],[855,0,1,"deleteObject","deleteObject"]]);

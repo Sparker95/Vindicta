@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:UI/DialogBase/DialogOneTabButtons.sqf",{959:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">A simple dialog which has a multi line text field and variable amount of buttons at the bottom.&nbsp; Can be used for simple things like popup messages.</div></div>"});

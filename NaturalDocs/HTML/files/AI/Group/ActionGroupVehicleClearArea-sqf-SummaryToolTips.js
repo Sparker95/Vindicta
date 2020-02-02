@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Group/ActionGroupVehicleClearArea.sqf",{316:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">...</div></div>"});

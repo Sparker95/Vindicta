@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:ActionUnit.ActionUnitInfantryMoveBuilding",{394:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a single unit to move to a specified building position.</div></div>"});
