@@ -11,7 +11,12 @@ _array set [T_NAME, "tRHS_LDF"];
 _array set [T_DESCRIPTION, "Livoniad Defense Forces with with custom loadouts from RHS addons"];
 _array set [T_DISPLAY_NAME, "RHS LDF (Custom)"];
 _array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, ["todo_rhs_aaf_2020"]];
+_array set [T_REQUIRED_ADDONS, [
+								"FGN_AAF_Troops",	// AAF 2017
+								"rhs_c_troops",		// RHS AFRF
+								"rhsusf_c_troops",
+								"rhssaf_c_troops",
+								"rhsgref_c_troops"]];
 
 //==== Infantry ====
 _inf = +(tDefault select T_INF);

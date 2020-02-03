@@ -11,7 +11,12 @@ _array set [T_NAME, "tRHS_AAF_2020"];
 _array set [T_DESCRIPTION, "Various units from AAF 2017 and RHS addons with special loadouts for this mission."];
 _array set [T_DISPLAY_NAME, "RHS AAF 2020 (Custom)"];
 _array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, ["todo_rhs_aaf_2020"]];
+_array set [T_REQUIRED_ADDONS, [
+								"FGN_AAF_Troops",	// AAF 2017
+								"rhs_c_troops",		// RHS AFRF
+								"rhsusf_c_troops",
+								"rhssaf_c_troops",
+								"rhsgref_c_troops"]];
 
 
 //==== Infantry ====
