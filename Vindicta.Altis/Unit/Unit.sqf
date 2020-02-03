@@ -959,7 +959,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 											//["ACE_Flashlight_KSF1",12],
 											//["ACE_Flashlight_XL50",12],
 											["ACE_EarPlugs",20],
-											//["ACE_Kestrel4500",6],
+											["ACE_Kestrel4500",2],
 											["ACE_ATragMX",6],
 											["ACE_RangeCard",6]
 										];
