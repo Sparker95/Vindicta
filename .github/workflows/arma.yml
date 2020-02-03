@@ -1,10 +1,6 @@
 name: Arma Checks And Build
 
-on:
-  push:
-    branches:
-    - master
-  pull_request:
+on: [push, pull_request]
 
 jobs:
   validate:
@@ -40,8 +36,27 @@ jobs:
         node-version: '10.x'
     - name: Build
       run: |
-        ./tools/setup_and_build.bat
+        cd Vindicta-Addon
+        ../tools/setup_and_build.bat
+        ./tools/hemtt build --release --force-release --ci
+        $verDir = (Get-ChildItem -Path ../_build -Filter "vindicta_v*").Name
+        ./tools/armake_w64 build "../_build/$($verDir)" "./releases/1.0.0.0/@vindicta/addons/$($verDir).pbo" -w unquoted-string -w redefinition-wo-undef
+        ./tools/armake_w64 sign ./keys/vindicta.biprivatekey "./releases/1.0.0.0/@vindicta/addons/$($verDir).pbo"
+        ./tools/hemtt zip
+        # ren "./releases/Vindicta_1.0.0.0.zip" "$($verDir).zip"
+        
     - uses: actions/upload-artifact@v1
       with:
-        name: pbos
-        path: _build/pbo
+        name: build
+        path: Vindicta-Addon/releases/1.0.0.0
+
+    - name: Upload
+      uses: arma-actions/workshop-upload@v1
+      with:
+        appId: '107410'      # default
+        itemId: '1729562743' # Vindicta-Dev
+        contentPath: 'Vindicta-Addon/releases/1.0.0.0/@vindicta'
+        changelog: 'No changelog yet'
+      env:
+        STEAM_USERNAME: ${{ secrets.SECRET_0 }}
+        STEAM_PASSWORD: ${{ secrets.SECRET_1 }}
