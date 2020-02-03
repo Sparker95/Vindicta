@@ -22,7 +22,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["FGN_AAF_inf_rifleman"]];
+_inf set [T_INF_DEFAULT, ["FGN_AAF_Inf_Rifleman"]];
 
 _inf set [T_INF_SL, ["RHS_AAF_2020_SL"]];
 _inf set [T_INF_TL, ["RHS_AAF_2020_TL"]];
@@ -108,7 +108,6 @@ _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F
 _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
-
 
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Zamak_Open", "FGN_AAF_Zamak"]]; //"FGN_AAF_Ural", "FGN_AAF_Ural_open"
 //_veh set [T_VEH_truck_cargo, [""]];

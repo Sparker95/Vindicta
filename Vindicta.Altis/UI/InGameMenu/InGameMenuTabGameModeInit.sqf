@@ -50,6 +50,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		_cbGameMode lbSetCurSel 0;
 
 		// Add enemy factions
+
 		pr _milBlacklist = ["tDefault"];
 		pr _counter = 0;	// Counter of lines in combo box
 		{
