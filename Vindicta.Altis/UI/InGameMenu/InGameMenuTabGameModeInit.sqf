@@ -132,7 +132,15 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			// Add more text if tempalte is not valid
 			if (!(_t#T_VALID)) then {
 				if (count (_t#T_MISSING_ADDONS) > 0) then {
-					_str = _str + format ["ERROR: following addons are missing for this faction: %1\n", _t#T_MISSING_ADDONS];
+					_str = _str + "ERROR: following addons are missing for this faction: ";
+					{
+						_str = _str + _x;
+						if (_forEachIndex < (count (_t#T_MISSING_ADDONS)) - 1) then {
+							_str = _str + ", ";
+						} else {
+							_str = _str + ".\n";
+						};
+					} forEach (_t#T_MISSING_ADDONS);
 				} else {
 					_str = _str + format ["ERROR: faction file has errors. Check .RPT file for more info."];
 				};
