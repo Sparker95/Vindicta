@@ -57,16 +57,14 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: build
-        path: "@Vindicta-Dev"
     - run: |
-        ls
-        ls "@Vindicta-Dev"
+        mv build\@vindicta build\@Vindicta-Dev
     - name: Push to Steam Workshop
       uses: arma-actions/workshop-upload@v1
       with:
         appId: '107410'      # default
         itemId: '1729562743' # Vindicta-Dev
-        contentPath: '@Vindicta-Dev'
+        contentPath: 'build'
         changelog: 'No changelog yet'
       env:
         STEAM_USERNAME: ${{ secrets.SECRET_0 }}
