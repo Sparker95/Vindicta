@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Intel.IntelCommanderActionBuild",{570:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Intel about action to build something.</div></div>",572:"<div class=\"NDToolTip TVariable LSQF\"><div class=\"TTSummary\">The type of object that will be built. Format is unknown now!</div></div>"});

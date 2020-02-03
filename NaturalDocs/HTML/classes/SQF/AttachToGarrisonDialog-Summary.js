@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:AttachToGarrisonDialog","AttachToGarrisonDialog");NDSummary.OnSummaryLoaded("SQFClass:AttachToGarrisonDialog",[["SQF","SQF"]],[["Classes","Class"]],[[954,0,0,"AttachToGarrisonDialog"]]);

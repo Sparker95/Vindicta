@@ -1,0 +1,1 @@
+NDContentPage.OnToolTipsLoaded({112:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Base class for CmdrAI attack action types.</div></div>",215:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Models either the real world state, or a derivation of it that can be used for simulation.</div></div>"});

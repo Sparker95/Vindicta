@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:AST_GarrisonAttackTarget","AST_GarrisonAttackTarget");NDSummary.OnSummaryLoaded("SQFClass:AST_GarrisonAttackTarget",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[146,0,0,"AST_GarrisonAttackTarget"],[147,0,2,"Functions","Functions"],[148,0,1,"new","new"]]);

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("pha",["Class"],[["Phase1CmdrStrategy",,[[,,,,0,"File:GameMode/CivilWar/Phase1CmdrStrategy.sqf:Phase1CmdrStrategy","SQFClass:Phase1CmdrStrategy"]]],["Phase3CmdrStrategy",,[[,,,,0,"File:GameMode/CivilWar/Phase3CmdrStrategy.sqf:Phase3CmdrStrategy","SQFClass:Phase3CmdrStrategy"]]]]);

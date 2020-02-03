@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:SaveGameHeader",{453:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Class which stores crucial data about each save game record.</div></div>"});

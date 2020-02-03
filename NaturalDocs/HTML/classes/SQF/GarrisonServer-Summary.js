@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:GarrisonServer","GarrisonServer");NDSummary.OnSummaryLoaded("SQFClass:GarrisonServer",[["SQF","SQF"]],[["Classes","Class"]],[[486,0,0,"GarrisonServer"]]);

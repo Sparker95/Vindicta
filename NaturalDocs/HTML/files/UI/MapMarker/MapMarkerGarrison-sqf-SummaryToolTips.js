@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:UI/MapMarker/MapMarkerGarrison.sqf",{973:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">That\'s how we draw garrisons</div></div>"});

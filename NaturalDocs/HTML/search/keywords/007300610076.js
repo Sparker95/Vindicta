@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sav",["Function","Class"],[["save",,[["Storage",,,,0,"File:SaveSystem/Storage.sqf:Storage.save","SQFClass:Storage:save"]]],["SaveGameHeader",,[[,,,,1,"File:GameManager/SaveGameHeader.sqf:SaveGameHeader","SQFClass:SaveGameHeader"]]]]);

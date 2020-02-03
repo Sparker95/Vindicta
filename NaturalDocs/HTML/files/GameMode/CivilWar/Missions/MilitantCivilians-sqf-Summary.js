@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:GameMode/CivilWar/Missions/MilitantCivilians.sqf","MilitantCivilians.sqf");NDSummary.OnSummaryLoaded("File:GameMode/CivilWar/Missions/MilitantCivilians.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[460,0,0,"MilitantCiviliansAmbientMission","MilitantCiviliansAmbientMission"]]);

@@ -1,1 +1,0 @@
-NDContentPage.OnToolTipsLoaded({127:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Base class for ASTs.</div></div>",840:"<div class=\"NDToolTip TEnumeration LSQF\"><div class=\"TTSummary\">ActionStateTransitions are used by CmdrAction to transition between these states.</div></div>"});

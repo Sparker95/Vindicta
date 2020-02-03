@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("SQFClass:AST_SplitGarrison",{97:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Split a garrison into two parts.</div></div>",99:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Create an AST to split a garrison into two parts.</div></div>"});

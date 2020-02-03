@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:Location/isInAllowedArea.sqf","isInAllowedArea.sqf");NDSummary.OnSummaryLoaded("File:Location/isInAllowedArea.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[661,0,0,"Location","Location"],[662,0,2,"Functions","Location.Functions"],[663,0,1,"isInAllowedArea","Location.isInAllowedArea"]]);

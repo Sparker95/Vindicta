@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("was",["Function"],[["wasOccupied",,[["Location",,,,0,"File:Location/Location.sqf:Location.wasOccupied","SQFClass:Location:wasOccupied"]]]]);

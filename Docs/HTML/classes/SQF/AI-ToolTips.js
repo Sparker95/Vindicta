@@ -1,1 +1,0 @@
-NDContentPage.OnToolTipsLoaded({267:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">It abstracts the abilities of an agent to receive information from the external world</div></div>"});

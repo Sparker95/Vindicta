@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("con",["Class"],[["ConstructLocationCmdrAction",,[["AI.CmdrAI.CmdrAction.Actions",,,,0,"File:AI/Commander/CmdrAction/Actions/ConstructLocationCmdrAction.sqf:AI.CmdrAI.CmdrAction.Actions.ConstructLocationCmdrAction","SQFClass:AI.CmdrAI.CmdrAction.Actions.ConstructLocationCmdrAction"]]]]);

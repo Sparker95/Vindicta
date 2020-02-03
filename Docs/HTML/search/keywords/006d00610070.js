@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("map",["Class"],[["MapMarker",,[[,,,,0,"File:UI/MapMarker/MapMarker.sqf:MapMarker","SQFClass:MapMarker"]]],["MapMarkerLocation",,[[,,,,0,"File:UI/MapMarkerLocation/MapMarkerLocation.sqf:MapMarkerLocation","SQFClass:MapMarkerLocation"]]]]);
