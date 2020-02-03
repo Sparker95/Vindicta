@@ -57,8 +57,10 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: build
+        path: "@Vindicta-Dev"
     - run: |
-        mv @vindicta @Vindicta-Dev
+        ls
+        ls "@Vindicta-Dev"
     - name: Push to Steam Workshop
       uses: arma-actions/workshop-upload@v1
       with:
