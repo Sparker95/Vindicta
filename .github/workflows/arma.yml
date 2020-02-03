@@ -58,7 +58,9 @@ jobs:
       with:
         name: build
     - run: |
-        mv build\@vindicta build\@Vindicta-Dev
+        cd build
+        ls build
+        mv @vindicta @Vindicta-Dev
     - name: Push to Steam Workshop
       uses: arma-actions/workshop-upload@v1
       with:
