@@ -36,6 +36,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE_ATTR("activeCities", [ATTR_SAVE]);
 	// Amount of casualties during the campaign, used in getCampaignProgess method
 	VARIABLE_ATTR("casualties", [ATTR_SAVE]);
+	// Campaign progress cached value
+	VARIABLE("campaignProgress");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -45,8 +47,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("phase", 0);
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
+		T_SETV("campaignProgress", 0);
 		if (IS_SERVER) then {	// Makes no sense for client
 			T_PUBLIC_VAR("casualties");
+			T_PUBLIC_VAR("campaignProgress");
 		};
 	} ENDMETHOD;
 
@@ -263,6 +267,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("update") {
 		params [P_THISOBJECT];
 		
+		T_CALLM("updateCampaignProgress", []);
+
 		T_CALLM("updatePhase", []);
 		
 		//T_CALLM("updateEndCondition", []); // No need for it right now
@@ -280,6 +286,25 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	} ENDMETHOD;
 
+	METHOD("updateCampaignProgress") {
+		params [P_THISOBJECT];
+		private _totalInstability = 0;
+		private _maxInstability = 1;
+
+		{
+			_totalInstability = _totalInstability + _x;
+			_maxInstability = _maxInstability + 1;
+		} forEach (T_GETV("activeCities") 
+			select { GETV(_x, "gameData") }
+			select { GETV(_x, "instability") });
+
+		private _stabRatio = _totalInstability / _maxInstability;
+		// https://www.desmos.com/calculator/nttiqqlvg9
+		// Hits 0.2 when _stabRatio is 0.05 and 1 when _stabRatio is 0.8
+		private _campaignProgress = 1 min (0.9 * log(15 * _stabRatio + 1));
+		T_SETV_PUBLIC("campaignProgress", _campaignProgress);
+	} ENDMETHOD;
+	
 	METHOD("updatePhase") {
 		params [P_THISOBJECT];
 
@@ -301,7 +326,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				T_SETV("phase", 1);
 			};
 			/*
-			Locations are not taken, roadblocks are not deployed				
+			Locations are not taken, roadblocks are not deployed
 			*/
 			case 1: {
 				// We want to start deploying roadblocks fairly early
@@ -468,10 +493,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected virtual */ METHOD("getCampaignProgress") {
 		params [P_THISOBJECT];
-		pr _casualties = T_GETV("casualties") max 0;
-		// https://www.desmos.com/calculator/t3ci9okkwk
-		pr _x = _casualties*0.007;
-		_x/( sqrt(1 + _x^2) )
+		T_GETV("campaignProgress");
 	} ENDMETHOD;
 
 	/* public virtual override*/ METHOD("getPlayerSide") {
@@ -492,6 +514,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		// Broadcast public variables
 		PUBLIC_VAR(_thisObject, "casualties");
+
+		T_CALLM0("updateCampaignProgress");
 
 		true
 	} ENDMETHOD;
@@ -579,12 +603,12 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			// as we want instability to)
 			// TODO: add other interesting factors here to the instability rate.
 			// This equation makes required instability relative to area, and means you need ~100 activity at radius 300m and ~600 at radius 750m
-			_instability = 1 min (_activity * 2700 / (_cityRadius * _cityRadius));
+			_instability = 1 min (_activity * 900 / (_cityRadius * _cityRadius));
 			diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
 			// TODO: scale the instability limits using settings
 			switch true do {
 				case (_instability >= 1): { _state = CITY_STATE_IN_REVOLT; };
-				case (_instability > 0.1): { _state = CITY_STATE_AGITATED; };
+				case (_instability > 0.3): { _state = CITY_STATE_AGITATED; };
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {

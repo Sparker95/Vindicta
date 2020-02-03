@@ -14,13 +14,13 @@ CLASS("Phase1CmdrStrategy", "CmdrStrategy")
 		T_SETV("takeLocAirportPriority", 6);				// We want them very much since we bring reinforcements through them
 		T_SETV("takeLocDynamicEnemyPriority", 4);			// Big priority for everything created by players or enemies dynamicly
 		T_SETV("takeLocRoadBlockPriority", 0);
-		T_SETV("takeLocCityPriority", 0);					// 
+		T_SETV("takeLocCityPriority", 0);					// Don't hold cities
 
 		// We don't want to capture anything if there is activity in the area
-		T_SETV("takeLocOutpostCoeff", 0);	//
-		T_SETV("takeLocBaseCoeff", 0);		//
-		T_SETV("takeLocRoadBlockCoeff", 0);	//
-		T_SETV("takeLocCityCoeff", 0);		//
+		T_SETV("takeLocOutpostCoeff", 0);					//
+		T_SETV("takeLocBaseCoeff", 0);						//
+		T_SETV("takeLocRoadBlockCoeff", 0);					//
+		T_SETV("takeLocCityCoeff", 0.5);					// Take cities with enemy activity
 	} ENDMETHOD;
 
 	// We aren't deploying new locations at this stage
