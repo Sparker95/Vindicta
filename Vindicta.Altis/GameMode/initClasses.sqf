@@ -1,3 +1,6 @@
+
+call compile preprocessFileLineNumbers "GameMode\Inventory\oo_inventory.sqf";
+
 call compile preprocessFileLineNumbers "GameMode\LocationGameModeData.sqf";
 call compile preprocessFileLineNumbers "GameMode\GameModeBase.sqf";
 call compile preprocessFileLineNumbers "GameMode\ExpandGameMode.sqf";

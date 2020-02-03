@@ -1756,7 +1756,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Check if there are still enemy forces here
 		pr _thisSide = T_GETV("side");
 		CALLM0(gMessageLoopMain, "lock");
-		pr  _garsEnemy = CALLM1(_loc, "getGarrisons", CIVILIAN) select {
+		pr  _garsEnemy = CALLM0(_loc, "getGarrisons") select {
 			pr _side = CALLM0(_x, "getSide");
 			_side != _thisSide
 			&& _side != CIVILIAN

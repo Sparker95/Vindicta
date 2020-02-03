@@ -8,7 +8,7 @@ Author: Sparker 30 september 2019
 params ["_t", ["_returnString", false]];
 
 pr _catID = T_INF;
-pr _catSize = T_INF_SIZE;
+pr _catSize = 23; //T_INF_SIZE; // Quick fix to disable recon items from appearing in the weapon pool
 pr _classDefault = _t#_catID#0#0;
 pr _subCatID = T_INF_DEFAULT + 1; // We don't want to process the default loadout/unit!
 pr _group = createGroup WEST;
