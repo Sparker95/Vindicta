@@ -13,3 +13,4 @@ files = [
 ]
 folder_optionals = true
 sig_version = 3
+reuse_private_key = true
