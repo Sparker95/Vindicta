@@ -65,7 +65,7 @@ jobs:
       with:
         appId: '107410'      # default
         itemId: '1729562743' # Vindicta-Dev
-        contentPath: 'build'
+        contentPath: 'build/@Vindicta-Dev'
         changelog: 'No changelog yet'
       env:
         STEAM_USERNAME: ${{ secrets.SECRET_0 }}
