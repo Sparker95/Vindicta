@@ -436,7 +436,7 @@ class MUI_COMBOBOX : RscCombo
 		shadow = 0;
 	};
 };
-__MUI_CLASS_ABS(MUI_COMBOBOX)
+__MUI_CLASS_ABS(MUI_COMBOBOX);
 
 
 #endif

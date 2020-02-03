@@ -10,6 +10,8 @@
 
 #define pr private
 
+#define LB_CUR_SEL_DATA(lb) lb lbData (lbCurSel lb)
+
 CLASS(__CLASS_NAME, "DialogTabBase")
 
 	METHOD("new") {
@@ -48,34 +50,37 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		_cbGameMode lbSetCurSel 0;
 
 		// Add enemy factions
-		pr _data = [
-			["Arma 3 - AAF",		"tAAF"],
-			["Arma 3 - CSAT", 	"tCSAT"],
-			["Arma 3 - NATO",		"tNATO"],
-			["RHS, AAF2017 - Altis Armed Forces",	"tRHS_AAF2017_elite"],
-			["RHS - Russian Armed Forces", 		"tRHS_AFRF"],
-			["RHS - US Army", 		"tRHS_USAF"],
-			["RHS - Livonian Defence Forces", 		"tRHS_LDF"]//,
-			//["Test: must error", "test_error"]
-		];
+
+		pr _milBlacklist = ["tDefault"];
+		pr _counter = 0;	// Counter of lines in combo box
 		{
-			_x params ["_text", "_lbData"];
-			_cbEnemyFaction lbAdd _text;
-			_cbEnemyFaction lbSetData [_forEachIndex, _lbData];
-		} forEach _data;
+			pr _tName = _x;
+			if (!(_tName in _milBlacklist)) then {						// Ignore factions from blacklist
+				pr _t = [_tName] call t_fnc_getTemplate;
+				if ((_t select T_FACTION) == T_FACTION_Military) then {	// Ignore non-military factions
+					pr _lbData = _tName;
+					pr _text = _t select T_DISPLAY_NAME;
+					_cbEnemyFaction lbAdd _text;
+					_cbEnemyFaction lbSetData [_counter, _lbData];
+				};
+				_counter = _counter + 1;
+			};
+		} forEach (call t_fnc_getAllTemplateNames);
 		_cbEnemyFaction lbSetCurSel 0;
 
 		// Add police factions
-		pr _data = [
-			["Arma 3 - Police", "tPolice"],
-			["RHS, AAF2017 - Altian Police", "tRHS_AAF2017_police"],
-			["RHS - Livonian Forest Rangers ", "tRHS_LDF_ranger"]
-		];
+		pr _counter = 0;
 		{
-			_x params ["_text", "_lbData"];
-			_cbPoliceFaction lbAdd _text;
-			_cbPoliceFaction lbSetData [_forEachIndex, _lbData];
-		} forEach _data;
+			pr _tName = _x;
+			pr _t = [_tName] call t_fnc_getTemplate;
+			if (_t#T_FACTION == T_FACTION_Police) then {
+				pr _text = _t select T_DISPLAY_NAME;
+				pr _lbData = _tName;
+				_cbPoliceFaction lbAdd _text;						// Set text from template name
+				_cbPoliceFaction lbSetData [_counter, _lbData];// Set data - template internal name
+				_counter = _counter + 1;
+			};
+		} forEach (call t_fnc_getAllTemplateNames);
 		_cbPoliceFaction lbSetCurSel 0;
 
 		// Enable/disable controls depending on user's permissions
@@ -86,11 +91,66 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			_bnStart ctrlSetTooltip "Only for admins";
 		};
 
+		// Add control event handlers
+		T_CALLM3("controlAddEventHandler", "TAB_GMINIT_COMBO_ENEMY_FACTION", "LBSelChanged", "onCbSelChanged");
+		T_CALLM3("controlAddEventHandler", "TAB_GMINIT_COMBO_POLICE_FACTION", "LBSelChanged", "onCbSelChanged");
+
+		// Update the description
+		T_CALLM0("updateDescription");
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", nil);
+
+	} ENDMETHOD;
+
+	// Called when we select something new in the combo box
+	METHOD("onCbSelChanged") {
+		params [P_THISOBJECT];
+		OOP_INFO_0("CB SEL CHANGED");
+		T_CALLM0("updateDescription");
+	} ENDMETHOD;
+
+	// Updates description text.
+	METHOD("updateDescription") {
+		params [P_THISOBJECT];
+
+		pr _cbEnemyFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_ENEMY_FACTION");
+		pr _cbPoliceFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_POLICE_FACTION");
+		pr _staticDescription = T_CALLM1("findControl", "TAB_GMINIT_STATIC_DESCRIPTION");
+
+		pr _str = "Chosen factions:\n";
+
+		// Format text according to selected factions.
+		pr _enemyTemplateName = LB_CUR_SEL_DATA(_cbEnemyFaction);
+		pr _policeTemplateName = LB_CUR_SEL_DATA(_cbPoliceFaction);
+		{
+			pr _t = [_x] call t_fnc_getTemplate;
+			_str = _str + format ["- %1\n%2\n", _t#T_DISPLAY_NAME, _t#T_DESCRIPTION];
+
+			// Add more text if tempalte is not valid
+			if (!(_t#T_VALID)) then {
+				if (count (_t#T_MISSING_ADDONS) > 0) then {
+					_str = _str + "ERROR: following addons are missing for this faction: ";
+					{
+						_str = _str + _x;
+						if (_forEachIndex < (count (_t#T_MISSING_ADDONS)) - 1) then {
+							_str = _str + ", ";
+						} else {
+							_str = _str + ".\n";
+						};
+					} forEach (_t#T_MISSING_ADDONS);
+				} else {
+					_str = _str + format ["ERROR: faction file has errors. Check .RPT file for more info."];
+				};
+			};
+
+			_str = _str + "\n";
+		} forEach [_enemyTemplateName, _policeTemplateName];
+
+		_staticDescription ctrlSetText _str;
 
 	} ENDMETHOD;
 
@@ -120,8 +180,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		};
 		_enemyForcePercent = (_enemyForcePercent max 0) min 1000;
 
-		#define LB_CUR_SEL_DATA(lb) lb lbData (lbCurSel lb)
-
 		pr _gameModeClassName = LB_CUR_SEL_DATA(_cbGameMode);
 		pr _enemyTemplateName = LB_CUR_SEL_DATA(_cbEnemyFaction);
 		pr _policeTemplateName = LB_CUR_SEL_DATA(_cbPoliceFaction);
@@ -130,14 +188,15 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		// todo really we must check that on server
 		pr _templatesGood = true;
 		{
-			if (([_x] call t_fnc_getTemplate) isEqualTo []) then {
+			pr _t = [_x] call t_fnc_getTemplate;
+			if (!(_t select T_VALID)) then {
 				_templatesGood = false;
 			};
 		} forEach [_enemyTemplateName, _policeTemplateName];
 
 		// Bail if incompatible template was selected
 		if (!_templatesGood) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must select factions which are loaded");
+			CALLM1(_dialogObj, "setHintText", "ERROR: You must select factions which have all the addons loaded on the server");
 		};
 
 		// Send data to server's GameManager

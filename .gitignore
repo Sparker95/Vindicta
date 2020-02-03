@@ -3,6 +3,7 @@
 *.sqdev
 .settings
 node_modules
+package-lock.json
 
 #VSCODE
 .vscode/ipch/*
@@ -45,8 +46,6 @@ Vindicta-Addon/addons/missions/*
 configs/briefingName.hpp
 
 tools/buildtool/dist/
-
-tools/buildtool/package-lock.json
 
 Vindicta.Altis/config/user_local_config.hpp
 *.tmp

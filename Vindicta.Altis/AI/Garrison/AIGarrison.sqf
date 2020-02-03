@@ -232,8 +232,8 @@ CLASS("AIGarrison", "AI_GOAP")
 		if (!IS_NULL_OBJECT(_loc)) then {										// Copture something only if we are at location
 			pr _side = CALLM0(_gar, "getSide");									
 			if ((CALLM0(_gar, "countInfantryUnits") > 0) ||						// We must have some infantry ...
-				{ _side in CALLM0(_loc, "getPlayerSides") } ) then {				// ... or some friendly players at this location
-				pr _otherGars = CALLM1(_loc, "getGarrisons", CIVILIAN); 		// Get all garrisons of any sides
+				{ _side in CALLM0(_loc, "getPlayerSides") } ) then {			// ... or some friendly players at this location
+				pr _otherGars = CALLM0(_loc, "getGarrisons"); 					// Get all garrisons of any sides
 				{																// Iterate those garrisons
 					if (_x != _gar) then {										// We can't capture ourselves...
 						if (CALLM0(_x, "getSide") != CIVILIAN) then {			// We aren't commies to capture civilian property...
@@ -644,6 +644,9 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Register at stimulus manager
 		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
+
+		// Refresh composition
+		T_CALLM0("updateComposition");
 
 		true
 	} ENDMETHOD;

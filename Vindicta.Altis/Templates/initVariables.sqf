@@ -14,6 +14,7 @@ t_classnames_array = [];
 
 // Array with all valid template names
 t_validTemplates = [];
+t_allTemplates = [];
 
 call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
 call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
@@ -26,5 +27,6 @@ if (IS_SERVER) then {
 	call compile preprocessFileLineNumbers "Templates\initFactions.sqf";
 	#ifndef _SQF_VM
 	publicVariable "t_validTemplates";
+	publicVariable "t_allTemplates";
 	#endif
 };

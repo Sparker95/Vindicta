@@ -1,3 +1,6 @@
+# 0.30
+- Added: ACRE radios to military vehicles (thanks to  TahMahn)
+
 # 0.29
 - Fixed: Error which results in wrong location name to be shown
 

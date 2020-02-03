@@ -111,6 +111,47 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	} ENDMETHOD;
 
+	/*
+	Method: EH_GetOut
+	It is called when someone gets out of a vehicle.
+	It is called in the main thread, so it's perfectly synchronized with everything.
+
+	Parameters: "_vehicle", "_role", "_unit", "_turret"
+
+	Parameters are same as https://community.bistudio.com/wiki/Arma_3:_Event_Handlers#GetOut
+
+	Returns: nil
+	*/
+	METHOD("EH_GetOut") {
+		params ["_thisObject", "_vehicle", "_role", "_unit", "_turret"];
+
+		OOP_INFO_1("EH_GetOut: %1", _this);
+
+		ASSERT_THREAD(_thisObject);
+
+		// Is this object an instance of Unit class?
+		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
+
+		OOP_INFO_4("EH_GetOut: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
+
+		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
+			OOP_ERROR_0("EH_GetOut: vehicle doesn't have a Unit object!");
+		};
+
+		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
+			OOP_ERROR_0("EH_GetOut: unit doesn't have a Unit object!");
+		};
+
+		pr _data = GETV(_unitVeh, "data");
+		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+		if (_garrison != "") then {	// Sanity check
+			CALLM2(_garrison, "handleGetOutVehicle", _unitVeh, _unitInf);
+		} else {
+			OOP_ERROR_2("EH_GetOut: vehicle is not attached to a garrison: %1, %2", _unitVeh, _data);
+		};
+
+	} ENDMETHOD;
 	METHOD("EH_aceCargoLoaded") {
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
