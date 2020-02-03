@@ -39,12 +39,10 @@ jobs:
         $env:RUST_BACKTRACE= 1
         cd Vindicta-Addon
         ../tools/setup_and_build.bat
-        ./tools/hemtt build --release --force-release --ci
+        ./tools/hemtt.exe build --release --force --nowarn
         $verDir = (Get-ChildItem -Path ../_build -Filter "vindicta_v*").Name
         ./tools/armake_w64 build "../_build/$($verDir)" "./releases/1.0.0.0/@vindicta/addons/$($verDir).pbo" -w unquoted-string -w redefinition-wo-undef
-        ./tools/armake_w64 sign ./keys/vindicta.biprivatekey "./releases/1.0.0.0/@vindicta/addons/$($verDir).pbo"
-        ./tools/hemtt zip
-        # ren "./releases/Vindicta_1.0.0.0.zip" "$($verDir).zip"
+        ./tools/armake_w64 sign ./releases/keys/vindicta.biprivatekey "./releases/1.0.0.0/@vindicta/addons/$($verDir)"
         
     - uses: actions/upload-artifact@v1
       with:
