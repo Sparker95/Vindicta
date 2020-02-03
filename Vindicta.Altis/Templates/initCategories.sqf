@@ -40,14 +40,31 @@ T_FACTION_Guer = 1;
 T_FACTION_Military = 2;
 T_FACTION_Police = 3;
 
-T_SIZE = 9; //Number of categories in template
-T_WEIGHTS_OFFSET = T_SIZE; //Number of categories in template
+T_SIZE = 14; //Number of categories in template
+
+// Categories
+T_DECLARE_CATEGORY(T_INF, 0, 34);		// ID 0, size 34 
+T_DECLARE_CATEGORY(T_VEH, 1, 39);		// ID 1, size 39 
+T_DECLARE_CATEGORY(T_DRONE, 2, 11);		// ID 2, size 11 
+T_DECLARE_CATEGORY(T_CARGO, 3, 4);		// ID 3, size 4 
+T_DECLARE_CATEGORY(T_GROUP, 4, 14);		// ID 4, size 13
+T_NAME = 5;								// Template name(internal)
+T_INV = 6;								// All inventory items sorted by categories. Initialized by server.
+T_LOADOUT_WEAPONS = 7;					// Unit loadout weapons. Initialized by server.
+T_FACTION = 8;							// Faction
+T_REQUIRED_ADDONS = 9;					// Addons which must be loaded on the server. It checks cfgPatches for these addons.
+T_MISSING_ADDONS = 10;					// Missing addons on the server. Initialized by server.
+T_DESCRIPTION = 11;						// A string with description to be shown in UI.
+T_VALID = 12;							// Bool. Initialized by server.
+T_DISPLAY_NAME = 13;					// Name to be shown in UI
+
+T_WEIGHTS_OFFSET = T_SIZE; // Number of categories in template
 
 T_metadata resize T_SIZE;
 
 // = = = = = = = = = = I N F A N T R Y = = = = = = = = = = 
 
-T_DECLARE_CATEGORY(T_INF, 0, 34);// ID 0, size 34 
+
  
 //Main infantry
 //				Category   Entry						Index	Factions this entry is required for, if any
@@ -96,7 +113,7 @@ T_DECLARE_ENTRY_OPT(T_INF, T_INF_diver_exp,				33);	//Diver explosive specialist
 // = = = = = = = = = = V E H I C L E S = = = = = = = = = = 
 
 //Vehicles
-T_DECLARE_CATEGORY(T_VEH, 1, 39);// ID 1, size 39 
+
 
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_default,				 0)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
 //Ground vehicles
@@ -214,7 +231,7 @@ T_DECLARE_ENTRY_OPT(T_DRONE, T_DRONE_stat_AA,			10);
 // = = = = = = = = = = C A R G O = = = = = = = = = = 
 
 //Cargo
-T_DECLARE_CATEGORY(T_CARGO, 3, 4);// ID 3, size 4 
+
 
 T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_default,			 0)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
 T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_small,			 1)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
@@ -227,7 +244,7 @@ T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_big,			 3)		[T_FACTION_Civ, T_FACTION_G
 // = = = = = = = = = = G R O U P S = = = = = = = = = = 
 
 //Groups
-T_DECLARE_CATEGORY(T_GROUP, 4, 14);// ID 4, size 13
+
 
 T_DECLARE_ENTRY_REQ(T_GROUP, T_GROUP_default,			 0)	[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police]; //Default group if group is not specified
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_AA_team,		 1);
@@ -390,12 +407,11 @@ T_static = [
 
 
 // = = = = = = = = = = T E M P L A T E   N A M E = = = = = = = = = = 
-T_NAME = 5;
+
 
 
 // = = = = = = = = = = I N V E N T O R Y = = = = = = = = = = 
-// All inventory items sorted by categories
-T_INV = 6;
+
 
 // Subcategories
 T_INV_primary			= 0;	// Array of [_weapon, _magazines]
@@ -413,7 +429,10 @@ T_INV_backpacks			= 8;
 // Array
 // Each element is: [_primaryWeapons, _secondaryWeapons]
 // Each element's ID corresponds to infantry unit subcategory ID
-T_LOADOUT_WEAPONS = 7;
+
 
 // = = = = = = = = = T E M P L A T E   F A C T I O N  = = = = = = = = = 
-T_FACTION = 8;
+
+
+
+// = = = = = = = = = REQUIRED ADDONS  = = = = = = = = = 
