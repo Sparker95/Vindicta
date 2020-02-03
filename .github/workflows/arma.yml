@@ -36,6 +36,7 @@ jobs:
         node-version: '10.x'
     - name: Build
       run: |
+        $env:RUST_BACKTRACE= 1
         cd Vindicta-Addon
         ../tools/setup_and_build.bat
         ./tools/hemtt build --release --force-release --ci
