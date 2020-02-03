@@ -58,7 +58,7 @@ jobs:
       with:
         name: build
     - name: Push to Steam Workshop
-      uses: arma-actions/workshop-upload@v1
+      uses: billw2012/workshop-upload@v2
       with:
         appId: '107410'      # default
         itemId: '1729562743' # Vindicta-Dev
