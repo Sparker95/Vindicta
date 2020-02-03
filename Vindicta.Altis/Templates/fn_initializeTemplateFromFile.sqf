@@ -22,9 +22,15 @@ if (isNil "_tName") exitWith {
 diag_log format ["[Template] Initializing template from file: %1", _filePath];
 
 // Check if description is provided
-private _tDescription = _t select T_DESCTIPTION;
+private _tDescription = _t select T_DESCRIPTION;
 if (isNil "_tDescription") exitWith {
-	diag_log format ["[Template] error: tempalte description was not specified for %1", _filePath];
+	diag_log format ["[Template] error: template description was not specified for %1", _filePath];
+};
+
+// Check if display name is provided
+private _tDisplayName = _t select T_DISPLAY_NAME;
+if (isNil "_tDisplayName") exitWith {
+	diag_log format ["[Template] error: template display name was not specified for %1", _filePath];
 };
 
 // Iterate all required addons, check if they are loaded
@@ -58,7 +64,7 @@ if ((count _missingAddons) == 0) then {
 };
 
 // Set 'valid' value
-private _isValid = ((count _missingAddons) == 0) && (_errorCount = 0);
+private _isValid = ((count _missingAddons) == 0) && (_errorCount == 0);
 _t set [T_VALID, _isValid];
 
 #ifndef _SQF_VM

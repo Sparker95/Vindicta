@@ -40,7 +40,7 @@ T_FACTION_Guer = 1;
 T_FACTION_Military = 2;
 T_FACTION_Police = 3;
 
-T_SIZE = 12; //Number of categories in template
+T_SIZE = 14; //Number of categories in template
 
 // Categories
 T_DECLARE_CATEGORY(T_INF, 0, 34);		// ID 0, size 34 
@@ -48,7 +48,7 @@ T_DECLARE_CATEGORY(T_VEH, 1, 39);		// ID 1, size 39
 T_DECLARE_CATEGORY(T_DRONE, 2, 11);		// ID 2, size 11 
 T_DECLARE_CATEGORY(T_CARGO, 3, 4);		// ID 3, size 4 
 T_DECLARE_CATEGORY(T_GROUP, 4, 14);		// ID 4, size 13
-T_NAME = 5;								// Template name (shown in the UI)
+T_NAME = 5;								// Template name(internal)
 T_INV = 6;								// All inventory items sorted by categories. Initialized by server.
 T_LOADOUT_WEAPONS = 7;					// Unit loadout weapons. Initialized by server.
 T_FACTION = 8;							// Faction
@@ -56,6 +56,7 @@ T_REQUIRED_ADDONS = 9;					// Addons which must be loaded on the server. It chec
 T_MISSING_ADDONS = 10;					// Missing addons on the server. Initialized by server.
 T_DESCRIPTION = 11;						// A string with description to be shown in UI.
 T_VALID = 12;							// Bool. Initialized by server.
+T_DISPLAY_NAME = 13;					// Name to be shown in UI
 
 T_WEIGHTS_OFFSET = T_SIZE; // Number of categories in template
 
