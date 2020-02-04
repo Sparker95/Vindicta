@@ -37,5 +37,6 @@ foreach ($extraFile in $extraFiles) {
 }
 
 # Make the standalone pbos as well
+New-Item ".\dev" -ItemType "directory"
 .\tools\armake_w64 build -i include "..\_build\Vindicta_Altis_$($verStr).Altis" ".\dev\vindicta_altis_$($verStr).altis.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 .\tools\armake_w64 build -i include "..\_build\Vindicta_Enoch_$($verStr).Enoch" ".\dev\vindicta_enoch_$($verStr).enoch.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
