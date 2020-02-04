@@ -1,11 +1,13 @@
-/*
-	name = "Heer (Police)";
-		author = "MatrikSky";
-*/
 
 _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
+
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tWW2_Heer_police"];
+_array set [T_DESCRIPTION, "WW2 German Army (Police)"];
+_array set [T_FACTION, T_FACTION_Police];
+_array set [T_REQUIRED_ADDONS, ["todo_ifa3_heer"]];
 
 //==== Infantry ====
 _inf = []; _inf resize T_INF_size;

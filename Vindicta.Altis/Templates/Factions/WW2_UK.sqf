@@ -1,11 +1,13 @@
-/*
-	name = "UK Army";
-		author = "MatrikSky";
-*/
 
 _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
+
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tWW2_UK"];
+_array set [T_DESCRIPTION, "WW2 UK Army"];
+_array set [T_FACTION, T_FACTION_Military];
+_array set [T_REQUIRED_ADDONS, ["todo_ifa3_uk"]];
 
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
@@ -72,7 +74,7 @@ _veh set [T_VEH_MBT, ["fow_v_cromwell_uk", "LIB_Churchill_Mk7", "LIB_Churchill_M
 _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
 	
-_veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight"]];
+//_veh set [T_VEH_stat_HMG_high, [""]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
 _veh set [T_VEH_stat_HMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 //_veh set [T_VEH_stat_GMG_low, [""]];
