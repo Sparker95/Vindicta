@@ -9,7 +9,7 @@ $verStr = $verDir -replace "vindicta_v",""
 $privateKey = "vindicta.biprivatekey"
 New-Item ".\release\@vindicta\keys" -ItemType "directory"
 New-Item ".\release\@vindicta\addons" -ItemType "directory"
-Copy-Item "vindicta_v$($verStr).bikey" ".\release\@vindicta\keys\vindicta_v$($verStr).bikey"
+Copy-Item "vindicta.bikey" ".\release\@vindicta\keys\vindicta.bikey"
 .\tools\armake_w64 build -i include "..\_build\$($verDir)" ".\release\@vindicta\addons\vindicta_v$($verStr).pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 .\tools\DSSignFile $privateKey ".\release\@vindicta\addons\vindicta_v$($verStr).pbo"
 
