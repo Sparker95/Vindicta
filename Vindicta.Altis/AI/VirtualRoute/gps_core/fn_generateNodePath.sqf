@@ -1,12 +1,12 @@
 #include "macros.h"
 /**
-  @Author : [Utopia] Amaury
-  @Creation : 8/06/17
-  @Modified : 25/12/17
-  @Description : 
-  @Return : ARRAY - Array of road nodes
+	@Author : [Utopia] Amaury
+	@Creation : 8/06/17
+	@Modified : 25/12/17
+	@Description : 
+	@Return : ARRAY - Array of road nodes
 
-  Modified for Vindicta by billw.
+	Modified for Vindicta by billw.
 **/
 
 #ifndef RELEASE_BUILD
@@ -14,19 +14,19 @@
 #endif
 
 private _defaultCostFunction = { 
-		//params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
-		_base_cost
+	//params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
+	_base_cost
 };
 private _defaultDistanceFunction = { 
-		params ["_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
-		_goalRoute distance _next
+	params ["_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
+	_goalRoute distance _next
 };
 params [
 	["_startRoute",objNull,[objNull]],
 	["_goalRoute",objNull,[objNull]],
 	["_costFunction", ""],
 	["_distanceFunction", ""],
-  ["_callbackArgs", []]
+	["_callbackArgs", []]
 ];
 
 if(_costFunction isEqualType "") then {_costFunction = _defaultCostFunction; };
@@ -46,16 +46,16 @@ private _current = _goalRoute;
 private _path = [];
 
 while {_current != _startRoute} do {
-  _path pushBack _current;
-  _current = [_came_from,str _current] call misc_fnc_hashTable_find;
+	_path pushBack _current;
+	_current = [_came_from,str _current] call misc_fnc_hashTable_find;
 
-  // if something went wrong
-  if (isNil "_current") then { 
-    #ifdef DEBUG_GPS
-    diag_log format ["Path not found, route so far %1", _path];
-    #endif
-    throw "PATH_NOT_FOUND_TO";
-  };
+	// if something went wrong
+	if (isNil "_current") then { 
+		#ifdef DEBUG_GPS
+		diag_log format ["Path not found, route so far %1", _path];
+		#endif
+		throw "PATH_NOT_FOUND_TO";
+	};
 };
 
 #ifdef DEBUG_GPS

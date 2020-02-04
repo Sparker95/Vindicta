@@ -49,6 +49,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
+	VARIABLE_ATTR("playerInfoArray", [ATTR_SAVE_VER(11)]);
+	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE_VER(11)]);
+
 	METHOD("new") {
 		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
 								P_NUMBER("_enemyForcePercent")];
@@ -91,6 +94,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		T_SETV("locations", []);
 
+		T_SETV("playerInfoArray", []);
+
+		T_SETV("savedSpecialGarrisons", []);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -436,8 +442,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
 
+#ifdef RELEASE_BUILD
 			// Send msg to game manager to perform emergency saving
 			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
+#endif
 		};
 	} ENDMETHOD;
 
@@ -486,6 +494,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					};
 				} forEach _vehicles;
 			};
+		}];
+		addMissionEventHandler ["HandleDisconnect", {
+			params ["_unit", "_id", "_uid", "_name"];
+			CALLM3(gGameMode, "savePlayerInfo", _uid, _unit, _name);
+			false;
 		}];
 		#endif
 	} ENDMETHOD;
@@ -540,13 +553,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
-			case "police":				{ T_GETV("tNamePolice") };  //{ "tRHS_AAF2017_police" }; // { "tPOLICE" };
+			case "police":				{ T_GETV("tNamePolice") };  //{ "tRHS_AAF_police" }; // { "tPOLICE" };
 			
 			default { // "military"
 				switch(_side) do {
 					case WEST:			{ T_GETV("tNameMilWest") };
 					case EAST:			{ T_GETV("tNameMilEast") };
-					case INDEPENDENT:	{ T_GETV("tNameMilInd") }; //{"tRHS_AAF2017_elite"}; // { "tAAF" };
+					case INDEPENDENT:	{ T_GETV("tNameMilInd") }; //{"tRHS_AAF_2020"}; // { "tAAF" };
 					case CIVILIAN:		{ "tCIVILIAN" };
 					default				{ "tDEFAULT" };
 				}
@@ -585,7 +598,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Override this to do stuff when player spawns
 	// Call the method of base class(that is, this class)
 	/* protected virtual */METHOD("playerSpawn") {
-		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
+		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		OOP_INFO_1("PLAYER SPAWN: %1", _this);
 
@@ -655,7 +668,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Init the Sound Monitor on player
 		NEW("SoundMonitor", [_newUnit]);
 
-
 		// Action to start building stuff
 		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
 						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
@@ -708,6 +720,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
+
+		if(!(_restoreData isEqualTo [])) then {
+			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
+			REMOTE_EXEC_CALL_METHOD(gGameMode, "clearPlayerInfo", [player], ON_SERVER);
+			true
+		} else {
+			false
+		}
 	} ENDMETHOD;
 
 	// Player death event handler in SP
@@ -833,6 +853,49 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		PUBLIC_VARIABLE "gAICommanderEast";
 	} ENDMETHOD;
 
+	METHOD("_saveSpecialGarrisons") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		diag_log "Saving special garrisons";
+		// Save the loaded data to the garrisons
+		T_SETV("savedSpecialGarrisons", gSpecialGarrisons);
+		{
+			CALLM1(_storage, "save", _x);
+		} forEach gSpecialGarrisons;
+		diag_log "Special garrisons saved";
+	} ENDMETHOD;
+
+	METHOD("_loadSpecialGarrisons") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// SAVEBREAK
+		if(GETV(_storage, "version") >= 11) then {
+			diag_log "Loading special garrisons";
+			gSpecialGarrisons = +T_GETV("savedSpecialGarrisons");
+
+			// Add the loaded data back to the garrisons
+			{
+				CALLM1(_storage, "load", _x);
+			} forEach gSpecialGarrisons;
+
+			// Garrison objects to track players and player owned vehicles
+			gGarrisonPlayersWest 		= gSpecialGarrisons#0;
+			gGarrisonPlayersEast 		= gSpecialGarrisons#1;
+			gGarrisonPlayersInd 		= gSpecialGarrisons#2;
+			gGarrisonPlayersCiv 		= gSpecialGarrisons#3;
+			gGarrisonAmbient 			= gSpecialGarrisons#4;
+			gGarrisonAbandonedVehicles 	= gSpecialGarrisons#5;
+
+			{
+				CALLM2(_x, "postMethodAsync", "spawn", [true]); // true == global spawn
+			} forEach gSpecialGarrisons;
+
+		} else {
+			diag_log "Creating special garrisons";
+			T_CALLM0("_createSpecialGarrisons");
+		};
+		diag_log "Special garrisons done";
+	} ENDMETHOD;
+
 	METHOD("_createSpecialGarrisons") {
 		params [P_THISOBJECT];
 
@@ -845,6 +908,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gGarrisonAbandonedVehicles = NEW("Garrison", [CIVILIAN]);
 
 		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
+
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
@@ -1458,10 +1522,101 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGameMode;
 	} ENDMETHOD;
 
+	// -------------------------------------------------------------------------
+	// |                         P L A Y E R  S A V E                          |
+	// -------------------------------------------------------------------------
+
+	GameMode_fnc_getPlayerInfo = {
+		params [P_STRING("_uid"), P_OBJECT("_unit"), P_STRING("_name")];
+
+		private _inventoryObj = ["new", _unit] call OO_INVENTORY;
+		private _inv = "getInventory" call _inventoryObj;
+		["delete", _inventoryObj] call OO_INVENTORY;
+
+		[
+			_uid,
+			_name,
+			getPosASL _unit,
+			_inv
+		]
+	};
+
+	GameMode_fnc_restorePlayerInfo = {
+		params [P_OBJECT("_player"), P_ARRAY("_arr"), P_BOOL("_positionAsWell")];
+
+		//_player setName _arr#1;
+		if(_positionAsWell) then {
+			_player setPosASL _arr#2;
+		};
+
+		private _inventoryObj = ["new", _player] call OO_INVENTORY;
+		["setInventory", _arr#3] call _inventoryObj;
+		["delete", _inventoryObj] call OO_INVENTORY;
+	};
+	
+	METHOD("savePlayerInfo") {
+		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_unit"), P_STRING("_name")];
+		T_PRVAR(playerInfoArray);
+		private _obj = [_uid, _unit, _name] call GameMode_fnc_getPlayerInfo;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing == NOT_FOUND) then {
+			_playerInfoArray pushBack _obj;
+		} else {
+			_playerInfoArray set [_existing, _obj];
+		};
+		diag_log format["Saving player info for %1: %2", name _unit, _obj];
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_obj], owner _unit, false);
+	} ENDMETHOD;
 
 
+	METHOD("syncPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		private _playerInfo = if(_existing != NOT_FOUND) then {
+			_playerInfoArray#_existing;
+		} else {
+			[]
+		};
+		diag_log format["Syncing player info for %1: %2", name _player, _playerInfo];
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_playerInfo], owner _player, NO_JIP);
+	} ENDMETHOD;
 
-	// STORAGE
+	METHOD("clearPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing != NOT_FOUND) then {
+			_playerInfoArray deleteAt _existing;
+		};
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]], owner _player, false);
+	} ENDMETHOD;
+
+	METHOD("getPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing != NOT_FOUND) then {
+			_playerInfoArray#_existing
+		} else {
+			[]
+		}
+	} ENDMETHOD;
+
+	// -------------------------------------------------------------------------
+	// |                             S T O R A G E                             |
+	// -------------------------------------------------------------------------
 
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
@@ -1479,6 +1634,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM1("Location", "saveStaticVariables", _storage);
 		CALLSM1("Unit", "saveStaticVariables", _storage);
 		CALLSM1("MessageReceiver", "saveStaticVariables", _storage);
+
+		// Update player info for alive players
+		{
+			T_CALLM3("savePlayerInfo", getPlayerUID _x, _x, name _x);
+		} forEach (allPlayers select { alive _x });
 
 		// Lock all message loops in specific order
 		private _msgLoops = [
@@ -1503,7 +1663,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
 		// Start loading screen
+#ifdef RELEASE_BUILD
 		startLoadingScreen ["Saving mission"];
+#endif
 
 		// Save message loops
 		{
@@ -1527,6 +1689,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			diag_log format ["Saving location: %1", _loc];
 			CALLM1(_storage, "save", _loc);
 		} forEach T_GETV("locations");
+
+		T_CALLM1("_saveSpecialGarrisons", _storage);
 
 		true
 	} ENDMETHOD;
@@ -1563,7 +1727,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		true
 	} ENDMETHOD;
 
-
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
@@ -1576,7 +1739,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM0("Location", "deleteEditorObjects");
 
 		// Start loading screen
+#ifdef RELEASE_BUILD
 		startLoadingScreen ["Loading the mission"];
+#endif
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
@@ -1584,6 +1749,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Set default values if they weren't loaded due to older save version
+		if(isNil{T_GETV("playerInfoArray")}) then {
+			T_SETV("playerInfoArray", []);
+		};
+		if(isNil{T_GETV("savedSpecialGarrisons")}) then {
+			T_SETV("savedSpecialGarrisons", []);
+		};
+
+		// Send players their restore points from this save, if they have any
+		{
+			T_CALLM1("syncPlayerInfo", _x);
+		} forEach allPlayers;
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
@@ -1658,7 +1836,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
 		// Special garrisons
-		T_CALLM0("_createSpecialGarrisons");
+		T_CALLM1("_loadSpecialGarrisons", _storage);
 
 		// Load locations
 		{

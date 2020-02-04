@@ -106,6 +106,17 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			text = "STANDARD";
 		};
 
+		class TAB_GMINIT_STATIC_DESCRIPTION : MUI_BG_TRANSPARENT_MULTILINE_LEFT_ABS
+		{
+			idc = -1;
+			x = 0.02000014;
+			y = 0.28000028;
+			w = 0.66000017;
+			h = 0.54000017;
+			text = "Description...";
+			
+		};
+
 		class TAB_GMINIT_BUTTON_START : MUI_BUTTON_TXT_ABS 
 		{
 			type = 1;

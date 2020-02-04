@@ -257,9 +257,11 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Check if versions match
 		OOP_INFO_1(" checking record data: %1", _selRecordData);
-		if (GETV(_header,"saveVersion") != (call misc_fnc_getSaveVersion)) exitWith {
+		pr _headerVer = parseNumber GETV(_header,"saveVersion");
+		pr _currVer = parseNumber (call misc_fnc_getSaveVersion);
+		if (_headerVer > _currVer) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
-			pr _text = format ["Error: version is incompatible: save: %1, current: %2", GETV(_header,"saveVersion"), call misc_fnc_getSaveVersion];
+			pr _text = format ["Error: version is incompatible: save: %1, current: %2", _headerVer, _currVer];
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
 

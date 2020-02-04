@@ -31,7 +31,6 @@ this addItemToVest "rhs_mag_rdg2_white";
 this addItemToVest "rhs_mag_nspd";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_20rnd_9x39mm_SP5";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_20rnd_9x39mm_SP6";};
-for "_i" from 1 to 2 do {this addItemToBackpack "APERSTripMine_Wire_Mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";

@@ -28,3 +28,4 @@ private _args = ["", "WTF", "They promoted you again!", "Hint: you are a command
 CALLSM("Notification", "createNotification", _args);
 
 };
+
