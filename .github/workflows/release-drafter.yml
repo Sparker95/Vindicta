@@ -68,7 +68,7 @@ jobs:
       with:
         name: dev
     - name: Upload ftp
-      uses: sebastianpopp/ftp-action@releases/v1
+      uses: sebastianpopp/ftp-action@v1.1.0
       with:
         host: ${{ secrets.FTP_SERVER }}
         user: ${{ secrets.FTP_USERNAME }}
