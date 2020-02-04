@@ -25,6 +25,7 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_acc_perst1ik";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
 this addItemToVest "rhs_mag_rdg2_white";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_nspd";

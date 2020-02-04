@@ -19,13 +19,14 @@ this addBackpack "FGN_AAF_Bergen_SL_Olive";
 this addWeapon "rhs_weap_akm_zenitco01_b33";
 this addPrimaryWeaponItem "rhs_acc_dtk1l";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit_ris";
-this addPrimaryWeaponItem "rhs_acc_1p87";
+this addPrimaryWeaponItem "rhs_acc_ekp8_18";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
 this addWeapon "rhs_weap_tt33";
 this addHandgunItem "rhs_mag_762x25_8";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_762x25_8";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};

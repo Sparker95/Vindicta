@@ -14,7 +14,6 @@ this addVest "FGN_AAF_M99Vest_Police_Rifleman_Radio";
 
 this addWeapon "rhs_weap_ak103_1";
 this addPrimaryWeaponItem "rhs_acc_dtk";
-this addPrimaryWeaponItem "rhs_acc_ekp8_02";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm_polymer";
 this addWeapon "rhs_weap_tt33";
 this addHandgunItem "rhs_mag_762x25_8";
