@@ -47,8 +47,9 @@ jobs:
         name: build
         path: Vindicta-Addon/release
 
-  update_release_draft:
+  update-release-draft:
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
       # Drafts your next Release notes as Pull Requests are merged into "master"
     - name: Draft Release
