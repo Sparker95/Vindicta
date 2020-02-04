@@ -60,12 +60,12 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("bCaptive");													// true if unit is in arrested state, must be false to leave arrested state
 	VARIABLE("camoCoeff"); 													// modified vanilla camouflage coefficient, see: community.bistudio.com/wiki/setUnitTrait
 	VARIABLE("bGhillie");													// true if unit is wearing ghillie suit
-	VARIABLE("EHLoadout");
-	VARIABLE("EHFiredMan");
 	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
 	VARIABLE("inventoryOpen");												// Bool, set from event handlers
 	VARIABLE("inventoryContainer");											// Object handle, current inventory container we are accessing
 	VARIABLE("eventHandlers");												// Array with inventory EH IDs
+	VARIABLE("eventHandlersCBA");
+	VARIABLE("untieActionID");
 
 	// ------------ N E W ------------
 
@@ -102,8 +102,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("bGhillie", false);
 		T_SETV("inventoryOpen", false);
 		T_SETV("inventoryContainer", objNull);
-
 		T_SETV("eventHandlers", []);
+		T_SETV("eventHandlersCBA", []);
+		T_SETV("untieActionID", -1);
 
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
@@ -113,35 +114,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 		CALLM0(_thisObject, "calcGearSuspicion");							// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
-
-		// CBA event handler for checking player unit's equipment suspiciousness
-		pr _EH_loadout = ["loadout", {
-			params ["_unit", "_newLoadout"];
-			pr _uM = _unit getVariable ["undercoverMonitor", ""];
-			if (_uM != "") then { CALLM0(_uM, "calcGearSuspicion"); };
-    	}] call CBA_fnc_addPlayerEventHandler;
-		T_SETV("EHLoadout", _EH_loadout);
-
-    	// event handler to check if unit fired weapon
-    	pr _EH_firedMan = _unit addEventHandler ["FiredMan", {
-			params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
-			pr _uM = _unit getVariable ["undercoverMonitor", ""];
-			SETV(_uM, "timeHostility", (time +TIME_HOSTILITY));
-		}];
-		T_SETV("EHFiredMan", _EH_firedMan);
-
-
-		// event handler for deleting this undercover monitor
-		_unit addEventHandler ["Killed", {
-			params ["_unit", "_killer", "_instigator", "_useEffects"];
-
-			pr _um = _unit getVariable ["undercoverMonitor", ""];
-			if (_um != "") then { // Sanity check
-				pr _msg = MESSAGE_NEW();
-				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_DELETE);
-				CALLM1(_um, "postMessage", _msg);
-			};
-		}];
 
 		// show debug UI
 		#ifdef DEBUG_UNDERCOVER_MONITOR
@@ -157,8 +129,30 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 
+		// add event handler to check if unit fired weapon
+    	pr _ID =  _unit addEventHandler ["FiredMan", {
+			params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
+			pr _uM = _unit getVariable ["undercoverMonitor", ""];
+			SETV(_uM, "timeHostility", (time + TIME_HOSTILITY));
+		}];
+		T_GETV("eventHandlers") pushBack ["FiredMan", _ID];
+
+
+		// add event handler for deleting this undercover monitor
+		_ID = player addEventHandler ["Killed", {
+			params ["_unit", "_killer", "_instigator", "_useEffects"];
+
+			pr _um = _unit getVariable ["undercoverMonitor", ""];
+			if (_um != "") then { // Sanity check
+				pr _msg = MESSAGE_NEW();
+				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_DELETE);
+				CALLM1(_um, "postMessage", _msg);
+			};
+		}];
+		T_GETV("eventHandlers") pushBack ["Killed", _ID];
+
 		// Add inventory event handlers
-		pr _ID = _unit addEventHandler ["InventoryClosed", {
+		_ID = player addEventHandler ["InventoryClosed", {
 			params ["_unit", "_container"];
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
@@ -168,7 +162,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}];
 		T_GETV("eventHandlers") pushBack ["InventoryClosed", _ID];
 
-		_ID = _unit addEventHandler ["InventoryOpened", {
+		_ID = player addEventHandler ["InventoryOpened", {
 			params ["_unit", "_container"];
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
@@ -179,7 +173,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["InventoryOpened", _ID];
 
 		// Take/put event handlers
-		_ID = _unit addEventHandler ["Take", 
+		_ID = player addEventHandler ["Take", 
 		{
 			params ["_unit", "_container", "_item"];
 
@@ -196,7 +190,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["Take", _ID];
 
 		// suspicion for planting explosives (?)
-		_ID = _unit addEventHandler ["Put", 
+		_ID = player addEventHandler ["Put", 
 		{
 			params ["_unit", "_container", "_item"];
 
@@ -212,15 +206,24 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}];
 		T_GETV("eventHandlers") pushBack ["Put", _ID];
 
+		// CBA event handlers 
+		// CBA event handler for checking player unit's equipment suspiciousness
+		_ID = ["loadout", {
+			params ["_unit", "_newLoadout"];
+			pr _uM = _unit getVariable ["undercoverMonitor", ""];
+			if (_uM != "") then { CALLM0(_uM, "calcGearSuspicion"); };
+    	}] call CBA_fnc_addPlayerEventHandler;
+		T_GETV("eventHandlersCBA") pushBack ["loadout", _ID];
+
 		// Holsters weapon when leaving a vehicle, if your only weapon is a pistol
 		_ID = ["vehicle", {  
      	params ["_vehicle", "_role", "_unit", "_turret"];
-			if (primaryWeapon _unit == "" && secondaryWeapon _unit == "") then {
-				_unit action ["SwitchWeapon", _unit, _unit, 299];	
+			if (primaryWeapon player == "" && secondaryWeapon player == "") then {
+				player action ["SwitchWeapon", player, player, 299];	
 				systemchat "Holstering weapon.";
-			};		
+			};	
      	}] call CBA_fnc_addPlayerEventHandler;
-		T_GETV("eventHandlers") pushBack ["vehicle", _ID];
+		T_GETV("eventHandlersCBA") pushBack ["vehicle", _ID];
 
 	} ENDMETHOD;
 
@@ -236,15 +239,20 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		_unit setVariable ["undercoverMonitor", nil];
 
 		// Print out event handlers to check if all get deleted
+		{ OOP_INFO_1("Event handler list: %1", _x); } forEach (T_GETV("eventHandlers"));
+		// Delete vanilla event handlers
 		{
-			OOP_INFO_1("%1", _x);
-		} forEach (T_GETV("eventHandlers"));
-
-		// Delete event handlers
-		{
-			OOP_INFO_1("%1", _x);
+			OOP_INFO_1("Deleting event handler: %1", _x);
 			_unit removeEventHandler _x;
 		} forEach (T_GETV("eventHandlers"));
+
+		// Print out CBA event handlers
+		{ OOP_INFO_1("CBA event handler list: %1", _x); } forEach (T_GETV("eventHandlersCBA"));
+		// delete CBA event handlers
+		{
+			OOP_INFO_1("Deleting CBA event handler: %1", _x);
+			_x call CBA_fnc_removePlayerEventHandler;
+		} forEach (T_GETV("eventHandlersCBA"));
 
 	} ENDMETHOD;
 
@@ -567,12 +575,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							deleteMarkerLocal "markerWanted";
 							T_SETV("bCaptive", true);
 							// TODO: Sparker hide/show action behavior
-							pr _addAction = [_unit] call fnc_UM_addActionUntieLocal;
+							pr _ID = [_unit] call fnc_UM_addActionUntieLocal;
+							T_SETV("untieActionID", _ID);
 							_unit setVariable ["timeArrested", time+10, true];
 						}; // do once when state changed
 
-						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01") then {
+						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01" && time > (_unit getVariable "timeArrested")) then {
 							T_SETV("bCaptive", false);
+							if (T_GETV("untieActionID") != -1) then { _unit removeAction T_GETV("untieActionID"); };
 							OOP_INFO_0("Player appears to have glitched out of arrest animation.");
 						};
 
@@ -711,15 +721,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 			// delete dead unit's undercoverMonitor
 			case SMON_MESSAGE_DELETE: {
-				// remove CBA loadout event handler
-				pr _EH_loadout = T_GETV("EHLoadout");
-		 		["loadout", _EH_loadout] call CBA_fnc_removePlayerEventHandler;
-
-				// remove vanilla fired event handler
-				pr _unit = T_GETV("unit");
-				pr _EH_firedMan = T_GETV("EHFiredMan");
-				_unit removeEventHandler ["FiredMan", _EH_firedMan];
-
 				DELETE(_thisObject);
 			}; // end SMON_MESSAGE_DELETE
 		};
