@@ -52,22 +52,22 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	METHOD("new") {
 		params [P_THISOBJECT];
 
-		// Default is for cmdr to do nothing in any situation
-		T_SETV("takeLocOutpostPriority", 			0);
-		T_SETV("takeLocBasePriority", 				0);
-		T_SETV("takeLocAirportPriority", 			0);
-		T_SETV("takeLocDynamicEnemyPriority", 		0);
-		T_SETV("takeLocRoadBlockPriority", 			0);
-		T_SETV("takeLocCityPriority", 				0);
+		// Default is for cmdr to do everything
+		T_SETV("takeLocOutpostPriority", 			1);
+		T_SETV("takeLocBasePriority", 				1);
+		T_SETV("takeLocAirportPriority", 			1);
+		T_SETV("takeLocDynamicEnemyPriority", 		1);
+		T_SETV("takeLocRoadBlockPriority", 			1);
+		T_SETV("takeLocCityPriority", 				1);
 
-		T_SETV("takeLocOutpostCoeff", 				0);
-		T_SETV("takeLocBaseCoeff", 					0);
-		T_SETV("takeLocAirportCoeff", 				0);
-		T_SETV("takeLocRoadBlockCoeff", 			0);
-		T_SETV("takeLocCityCoeff", 					0);
+		T_SETV("takeLocOutpostCoeff", 				1);
+		T_SETV("takeLocBaseCoeff", 					1);
+		T_SETV("takeLocAirportCoeff", 				1);
+		T_SETV("takeLocRoadBlockCoeff", 			1);
+		T_SETV("takeLocCityCoeff", 					1);
 
-		T_SETV("constructLocRoadblockPriority", 	0);
-		T_SETV("constructLocRoadblockCoeff", 		0);
+		T_SETV("constructLocRoadblockPriority", 	1);
+		T_SETV("constructLocRoadblockCoeff", 		1);
 	} ENDMETHOD;
 
 	/*

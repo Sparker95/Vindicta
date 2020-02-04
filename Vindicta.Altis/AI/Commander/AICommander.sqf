@@ -3122,6 +3122,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _strategy = T_GETV("cmdrStrategy");
 		CALLM1(_storage, "load", _strategy);
 
+		// SAVEBREAK -- we should just save the strategy name, not the whole object (strategy is just some constant values)
+		// Recreate the cmdr strategy object
+		private _strategy = NEW(OBJECT_PARENT_CLASS_STR(_strategy), []);
+		T_SETV("cmdrStrategy", _strategy);
+
 		// Load actions
 		{
 			pr _action = _x;
