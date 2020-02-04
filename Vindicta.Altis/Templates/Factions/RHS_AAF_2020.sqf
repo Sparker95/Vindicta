@@ -6,6 +6,19 @@ _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tRHS_AAF_2020"];
+_array set [T_DESCRIPTION, "Various units from AAF 2017 and RHS addons with special loadouts for this mission. 2020 variant."];
+_array set [T_DISPLAY_NAME, "RHS AAF 2020 (Custom)"];
+_array set [T_FACTION, T_FACTION_Military];
+_array set [T_REQUIRED_ADDONS, [
+								"FGN_AAF_Troops",	// AAF 2017
+								"rhs_c_troops",		// RHS AFRF
+								"rhsusf_c_troops",
+								"rhssaf_c_troops",
+								"rhsgref_c_troops"]];
+
+
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
@@ -59,9 +72,10 @@ _veh set [T_VEH_DEFAULT, ["FGN_AAF_M1025_unarmed"]];
 _veh set [T_VEH_car_unarmed, ["FGN_AAF_M1025_unarmed", "FGN_AAF_M998_2D_Fulltop", "FGN_AAF_M998_4D_Fulltop", "FGN_AAF_M998_2D_Halftop"]];
 _veh set [T_VEH_car_armed, ["FGN_AAF_M1025_M2", "FGN_AAF_M1025_MK19"]];
 
-_veh set [T_VEH_MRAP_unarmed, ["FGN_AAF_Tigr_M", "FGN_AAF_Tigr"]];
-_veh set [T_VEH_MRAP_HMG, ["FGN_AAF_Tigr_STS"]];
-//_veh set [T_VEH_MRAP_GMG, [""]]; //rhsusf_M1117_D
+//cars are in MRAPS until cars are added properly
+_veh set [T_VEH_MRAP_unarmed, ["FGN_AAF_Tigr_M", "FGN_AAF_Tigr", "FGN_AAF_M1025_unarmed", "FGN_AAF_M998_2D_Fulltop", "FGN_AAF_M998_4D_Fulltop", "FGN_AAF_M998_2D_Halftop"]];
+_veh set [T_VEH_MRAP_HMG, ["FGN_AAF_Tigr_STS", "FGN_AAF_M1025_M2"]];
+_veh set [T_VEH_MRAP_GMG, ["FGN_AAF_M1025_MK19"]];
 
 _veh set [T_VEH_IFV, ["FGN_AAF_BMP3M_ERA"]]; //"rhs_bmp1p_vdv"
 _veh set [T_VEH_APC, ["rhsusf_m113d_usarmy_supply", "rhsusf_m113d_usarmy", "rhsusf_m113d_usarmy_MK19", "rhsusf_m113d_usarmy_unarmed", "rhsusf_m113d_usarmy_M240"]];
@@ -134,7 +148,5 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tRHS_AAF_2020"];
-_array set [T_FACTION, T_FACTION_Military];
 
 _array // End template

@@ -26,6 +26,7 @@ this addWeapon "rhssaf_zrak_rd7j";
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
 this addItemToUniform "rhs_acc_perst1ik";
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
 for "_i" from 1 to 4 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_762x25_8";};
 for "_i" from 1 to 2 do {this addItemToVest "rhsgref_30rnd_556x45_m21_t";};
