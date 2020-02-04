@@ -1,9 +1,9 @@
 name: Arma Checks And Build
 
-on: [push]
-  #release:
-  #  types:
-  #    - published
+on:
+  release:
+    types:
+      - published
 
 jobs:
   validate:
