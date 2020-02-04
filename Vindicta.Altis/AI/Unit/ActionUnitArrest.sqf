@@ -164,12 +164,19 @@ CLASS("ActionUnitArrest", "Action")
 								pr _newScreamTime = time + random [10, 15, 20];
 								T_SETV("screamTime", _newScreamTime);
 								
-								pr _sentence = "Hey you, stop here.";
+								pr _sentence = "Stop! Get on the ground!";
 								if (selectRandom [true,false]) then { 
 									_captor say "stop";
+									_sentence = selectRandom [
+										"Stop! Get on the ground!",
+										"Stop! Get on the ground or I'll shoot!"
+										]; 
 								} else {
 									_captor say "halt";
-									_sentence = "halt!"; 
+									_sentence = selectRandom [
+										"Halt! Get on the ground!",
+										"Halt! Get on the ground or I'll shoot!"
+										]; 
 								};
 								
 								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
@@ -236,8 +243,7 @@ CLASS("ActionUnitArrest", "Action")
 						};
 					};
 						
-					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
-					// arrest player by sending a message to unit's undercoverMonitor				
+					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;			
 					
 					T_SETV("spawnHandle", _handle);
 				} else {
