@@ -36,7 +36,11 @@ Vindicta.Enoch/
 
 #Vindicta-Addon
 Vindicta-Addon/addons/*.pbo
+Vindicta-Addon/releases
 Vindicta-Addon/release
+Vindicta-Addon/*.bikey
+Vindicta-Addon/*.biprivatekey
+Vindicta-Addon/keys
 
 Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/config.cpp
@@ -47,3 +51,4 @@ configs/briefingName.hpp
 tools/buildtool/dist/
 
 Vindicta.Altis/config/user_local_config.hpp
+*.tmp
