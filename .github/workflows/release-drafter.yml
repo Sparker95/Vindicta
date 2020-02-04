@@ -47,6 +47,11 @@ jobs:
         name: build
         path: Vindicta-Addon/release
 
+    - uses: actions/upload-artifact@v1
+      with:
+        name: dev
+        path: Vindicta-Addon/dev
+
   update-release-draft:
     runs-on: ubuntu-latest
     needs: [build]
@@ -58,24 +63,25 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@master
-    - name: Download build
+    - name: Download dev
       uses: actions/download-artifact@v1
       with:
-        name: build
-    - run: |
-        mkdir ftp
-        mv build/@vindicta/addons/vindicta*.pbo ftp
+        name: dev
     - name: Upload ftp
       uses: sebastianpopp/ftp-action@releases/v1
       with:
         host: ${{ secrets.FTP_SERVER }}
         user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        localDir: "ftp"
+        localDir: "dev"
         remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
+    - name: Download build
+      uses: actions/download-artifact@v1
+      with:
+        name: build
     - name: Zip for Release
       run: |
-        zip --junk-paths vindicta ftp
+        zip --junk-paths vindicta.zip build
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1.0.1
       env:
