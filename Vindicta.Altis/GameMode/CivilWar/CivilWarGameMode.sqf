@@ -382,6 +382,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		OOP_INFO_1("Airports: %1", _airports);
 
+		pr _campaignProgress = T_CALLM0("getCampaignProgress");
 		pr _playerSide = T_CALLM0("getPlayerSide");
 		pr _nAirportsOwned = 0;
 
@@ -401,10 +402,23 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		OOP_INFO_1("Owned airports: %1", _nAirportsOwned);
 
-		if ((count _airports) == _nAirportsOwned && _nAirportsOwned > 0) then {
+		if (((count _airports) == _nAirportsOwned && _nAirportsOwned > 0)) then {
 			// I dunno, spam in the chat maybe or make a notification?
 			// Just do nothing for now I guess :/
 			//"You won the game! Congratulations!" remoteExecCall ["systemChat", 0];
+			{
+				"winscreen" cutText ["You won! The enemy have no fight left in them.", "PLAIN", 5];
+				sleep 10;
+				"winscreen" cutFadeOut 20;
+			} remoteExecCall ["spawn", ON_CLIENTS];
+		};
+
+		if(_campaignProgress > 0.95) then {
+			{
+				"winscreen2" cutText ["You won! The people are all with you!", "PLAIN", 5];
+				sleep 10;
+				"winscreen2" cutFadeOut 20;
+			} remoteExecCall ["spawn", ON_CLIENTS];
 		};
 
 	} ENDMETHOD;
@@ -626,6 +640,16 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 					};
 				};
 				_instability = 1;
+
+				// Make sure amount of activity is appropriate for a city that is liberated
+				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
+				private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
+
+				// Activity trends upwards in liberated revolting cities until it hits an equilibrium with fade out
+				// This will ensure the enemy commander doesn't forget about them even if player isn't active in them
+				// https://www.desmos.com/calculator/kiphke1gsj
+				private _dActivity = _dt * 10 / (30 * (_activity + 10));
+				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _cityPos ARG _dActivity]);
 			};
 		};
 
@@ -641,6 +665,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _status = ["STATUS", _stateData#0, _stateData#1];
 		private _mapUIInfo = [
 			["RECRUITS", str floor T_GETV("nRecruits")],
+			["  MAX", str floor T_CALLM1("getMaxRecruits", _city)],
 			["  PER HOUR", _ratePerHour toFixed 1],
 			["INSTABILITY", format["%1%2", (_instability * 100) toFixed 0, "%"]],
 			_status
@@ -669,6 +694,11 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			CALLM(_x, "update", [_city]);
 		} forEach _ambientMissions;
 	} ENDMETHOD;
+	
+	METHOD("getMaxRecruits") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
+	} ENDMETHOD;
 
 	// Get the recruitment rate per hour
 	METHOD("getRecruitmentRate") {
@@ -679,7 +709,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			T_PRVAR(instability);
 
 			private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
-			private _nRecruitsMax = CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
+
+			private _nRecruitsMax = T_CALLM1("getMaxRecruits", _city);
 			// Recruits is filled up in 2 hours when city is at liberated
 			_rate = 0 max (_instability * _nRecruitsMax * _garrisonedMult / 2);
 		};
