@@ -9,12 +9,9 @@ removeGoggles this;
 
 this addWeapon "arifle_SPAR_01_blk_F";
 this addPrimaryWeaponItem "acc_flashlight";
-this addPrimaryWeaponItem "optic_Holosight_blk_F";
 this addPrimaryWeaponItem "30Rnd_556x45_Stanag";
 this addWeapon "hgun_Rook40_F";
 this addHandgunItem "16Rnd_9x21_Mag";
-
-this forceAddUniform "spu_uniform_02b";
 this addVest "spu_spcs_black";
 
 this addItemToUniform "FirstAidKit";
