@@ -5,17 +5,13 @@ import * as gulpPbo from "gulp-armapbo";
 import * as gulpZip from "gulp-zip";
 import * as vinylPaths from "vinyl-paths";
 import * as del from "del";
-
-var fs = require('fs');
-
 import { resolve } from "path";
-
 import { MissionPaths } from "./src";
 import { Preset, FolderStructureInfo} from "./src";
 import { ConfigCppGenerator } from "./src/ConfigCppGenerator"
 
+var fs = require('fs');
 const ROOT_DIR = resolve('../..');
-
 const presets: Preset[] = require('./_presets.json');
 
 
@@ -47,8 +43,7 @@ fs.writeFileSync(resolve(paths.configDir, "briefingName.hpp"), strBriefingName, 
 
 // Store values of addon path
 // I know the 4 lines of code below are a clustrfuck and make little sense... I'm a noob at this
-var missionTemp = new MissionPaths(presets[0], paths,
-                    strVersionUnderscores, strVersionDots);
+var missionTemp = new MissionPaths(presets[0], paths, strVersionUnderscores, strVersionDots);
 var missionAddonDir = missionTemp.getAddonDir();
 var missionNameVersion = missionTemp.getNameVersion();
 var missionBriefingName = strBriefingName;
@@ -56,7 +51,6 @@ var missionWorkDir = missionTemp.getWorkDir();
 
 // Init config.cpp generator
 var configCppGenerator = new ConfigCppGenerator(missionNameVersion);
-//console.log(configCppGenerator.getOutput());
 
 
 /**
@@ -108,23 +102,6 @@ for (let preset of presets) {
             return gulp.src(mission.getOutputDir().concat('/**/*'))
                 .pipe(gulp.dest(mission.getOutputAddonDir()));
         }
-
-        // /** Replace variables values in configuration file */
-        // function replaceVariables() {
-        //     let src = gulp.src(mission.getMissionConfigFilePath());
-
-        //     const variables = Object.getOwnPropertyNames(preset.variables);
-        //     for (let variable of variables) {
-        //         // https://regex101.com/r/YknC8r/1
-        //         const regex = new RegExp(`(${variable} += +)(?:\\d+|".+")`, 'ig');
-        //         const value = JSON.stringify(preset.variables[variable]);
-
-        //         // replace variable value
-        //         src = src.pipe(gulpReplace(regex, `$1${value}`));
-        //     }
-
-        //     return src.pipe(gulp.dest(mission.getOutputDir()));
-        // }
     ));
 
     /**
@@ -138,12 +115,8 @@ for (let preset of presets) {
                 fileName: (mission.getNameMapVersionMap() + '.pbo').toLowerCase(),
                 progress: false,
                 verbose: false,
-                // Do not compress (SLOW)
-                compress: true ? [] : [
-                    '**/*.sqf',
-                    'mission.sqm',
-                    'description.ext'
-                ]
+                // Do not compress (SLOW and avoid signing)
+                compress: false,
             }))
             .pipe(gulp.dest(mission.getWorkDir() + '/pbo'));
     });
