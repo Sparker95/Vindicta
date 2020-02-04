@@ -11,8 +11,7 @@ _array set [T_NAME, "tRHS_LDF_ranger"];
 _array set [T_DESCRIPTION, "LDF Police Rangers with custom loadouts from RHS addons."];
 _array set [T_DISPLAY_NAME, "RHS LDF Rangers"];
 _array set [T_FACTION, T_FACTION_Police];
-_array set [T_REQUIRED_ADDONS, [
-								"FGN_AAF_Troops",	// AAF 2017
+_array set [T_REQUIRED_ADDONS, [							
 								"rhs_c_troops",		// RHS AFRF
 								"rhsusf_c_troops",
 								"rhssaf_c_troops",

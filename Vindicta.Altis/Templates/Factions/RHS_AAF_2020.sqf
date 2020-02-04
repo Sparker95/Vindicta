@@ -72,9 +72,10 @@ _veh set [T_VEH_DEFAULT, ["FGN_AAF_M1025_unarmed"]];
 _veh set [T_VEH_car_unarmed, ["FGN_AAF_M1025_unarmed", "FGN_AAF_M998_2D_Fulltop", "FGN_AAF_M998_4D_Fulltop", "FGN_AAF_M998_2D_Halftop"]];
 _veh set [T_VEH_car_armed, ["FGN_AAF_M1025_M2", "FGN_AAF_M1025_MK19"]];
 
-_veh set [T_VEH_MRAP_unarmed, ["FGN_AAF_Tigr_M", "FGN_AAF_Tigr"]];
-_veh set [T_VEH_MRAP_HMG, ["FGN_AAF_Tigr_STS"]];
-//_veh set [T_VEH_MRAP_GMG, [""]]; //rhsusf_M1117_D
+//cars are in MRAPS until cars are added properly
+_veh set [T_VEH_MRAP_unarmed, ["FGN_AAF_Tigr_M", "FGN_AAF_Tigr", "FGN_AAF_M1025_unarmed", "FGN_AAF_M998_2D_Fulltop", "FGN_AAF_M998_4D_Fulltop", "FGN_AAF_M998_2D_Halftop"]];
+_veh set [T_VEH_MRAP_HMG, ["FGN_AAF_Tigr_STS", "FGN_AAF_M1025_M2"]];
+_veh set [T_VEH_MRAP_GMG, ["FGN_AAF_M1025_MK19"]];
 
 _veh set [T_VEH_IFV, ["FGN_AAF_BMP3M_ERA"]]; //"rhs_bmp1p_vdv"
 _veh set [T_VEH_APC, ["rhsusf_m113d_usarmy_supply", "rhsusf_m113d_usarmy", "rhsusf_m113d_usarmy_MK19", "rhsusf_m113d_usarmy_unarmed", "rhsusf_m113d_usarmy_M240"]];

@@ -27,6 +27,7 @@ this addHandgunItem "rhs_mag_762x25_8";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_762x25_8";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
