@@ -1,6 +1,6 @@
 ..\tools\setup_and_build.bat
 $verDir = (Get-ChildItem -Path ..\_build -Filter "vindicta_v*").Name
-$verStr = $verDir -replace "vindicta_v","" -replace "_","."
+$verStr = $verDir -replace "vindicta_v",""
 # echo "::set-env name=version::$($verStr)"
 # (Get-Content -path hemtt.json -Raw) -replace '0.0.0',$verStr | Set-Content -Path hemtt.json
 # .\tools\hemtt.exe build --release --force --nowarn
