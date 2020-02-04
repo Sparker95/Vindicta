@@ -52,3 +52,5 @@ tools/buildtool/dist/
 
 Vindicta.Altis/config/user_local_config.hpp
 *.tmp
+
+Vindicta-Addon/dev/

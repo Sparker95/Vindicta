@@ -47,12 +47,7 @@ foreach ($extraFile in $extraFiles) {
 
 # Make the standalone pbos as well
 New-Item ".\dev" -ItemType "directory"
-ls ..\_build
-
-"..\_build\Vindicta_Altis_$($verStr).Altis"
-".\dev\vindicta_altis_$($verStr).altis.pbo"
-
-"Building standalone mission vindicta_altis_$($verStr).altis.pbo..."
-.\tools\armake_w64 build -i include "..\_build\Vindicta_Altis_$($verStr).Altis" ".\dev\vindicta_altis_$($verStr).altis.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
-"Building standalone mission vindicta_enoch_$($verStr).enoch.pbo..."
-.\tools\armake_w64 build -i include "..\_build\Vindicta_Enoch_$($verStr).Enoch" ".\dev\vindicta_enoch_$($verStr).enoch.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+"Building standalone mission vindicta_altis_v$($verStr).altis.pbo..."
+.\tools\armake_w64 build -i include "..\_build\Vindicta_Altis_v$($verStr).Altis" ".\dev\vindicta_altis_v$($verStr).altis.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+"Building standalone mission vindicta_enoch_v$($verStr).enoch.pbo..."
+.\tools\armake_w64 build -i include "..\_build\Vindicta_Enoch_v$($verStr).Enoch" "vindicta.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
