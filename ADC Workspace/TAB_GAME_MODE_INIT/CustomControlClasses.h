@@ -282,4 +282,18 @@ class MUI_COMBOBOX_ABS : MUI_COMBOBOX
 	};
 	
 };
+class MUI_LISTNBOX_ABS : MUI_LISTNBOX 
+{
+	sizeEx = 0.04;
+	class ListScrollBar
+	{
+		
+	};
+	
+};
+class MUI_BUTTON_TXT_ABS : MUI_BUTTON_TXT 
+{
+	sizeEx = 0.04;
+	
+};
 #endif

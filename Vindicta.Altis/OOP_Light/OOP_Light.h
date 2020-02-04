@@ -471,6 +471,9 @@
 
 // For serialization when saving
 #define ATTR_SAVE			7
+#define ATTR_SAVE_VER(ver)	[7,ver]
+// #define ATTR_DEFAULT_KEY	8
+// #define ATTR_DEFAULT(val)	[8,val]
 
 #define ATTR_USERBASE 1000
 
@@ -913,6 +916,7 @@ objNameStr \
 
 // Serialize all variables which have a specified attributes
 #define SERIALIZE_ATTR(objNameStr, attr) ([objNameStr, attr] call OOP_serialize_attr)
+#define SERIALIZE_SAVE(objNameStr) ([objNameStr] call OOP_serialize_save)
 
 // Serialize all variables regardless of their attributes
 #define SERIALIZE_ALL(objNameStr) ([objNameStr, 0, true] call OOP_serialize_attr)
@@ -925,6 +929,8 @@ objNameStr \
 #define DESERIALIZE(objNameStr, array) ([objNameStr, array] call OOP_deserialize)
 #define DESERIALIZE_ATTR(objNameStr, array, attr) ([objNameStr, array, attr] call OOP_deserialize_attr)
 #define DESERIALIZE_ALL(objNameStr, array) ([objNameStr, array, 0, true] call OOP_deserialize_attr)
+#define DESERIALIZE_SAVE(objNameStr, array) ([objNameStr, array] call OOP_deserialize_save)
+#define DESERIALIZE_SAVE_VER(objNameStr, array, version) ([objNameStr, array, version] call OOP_deserialize_save)
 
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |
@@ -1136,3 +1142,8 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // Value to assign to an object handle to indicate it is deliberately invalid.
 #define NULL_OBJECT ""
 #define OOP_OBJECT_TYPE ""
+
+#define ON_ALL 		0
+#define ON_SERVER 	2
+#define ON_CLIENTS -2
+#define NO_JIP 		false

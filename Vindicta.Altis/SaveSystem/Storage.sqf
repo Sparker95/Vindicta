@@ -42,6 +42,8 @@ CLASS("Storage", "")
 
 	VARIABLE("saveDataOutgoing");	// Bool, set to true when any data has been saved
 
+	VARIABLE("version"); // string, storage version
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 		#ifndef _SQF_VM
@@ -57,6 +59,11 @@ CLASS("Storage", "")
 		};
 		T_SETV("sideTags", _sideTags);
 		T_SETV("saveDataOutgoing", false);
+#ifndef _SQF_VM
+		T_SETV("version", (parseNumber call misc_fnc_getVersion));
+#else
+		T_SETV("version", 666);
+#endif
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -280,18 +287,24 @@ CLASS("Storage", "")
 	Loads a variable with given name
 	Or loads an OOP object with given ref
 
-	Parameters: _ref, _createNewObject
+	Parameters: _ref, _createNewObject, _version
 
 	_ref - string, variable name to load, or object ref to load
 	_createNewObject - bool, default false, if true it will create a new object with a unique ref,
 						if false it will load the object into the same ref as it was saved into
+	_version - string, version of the object we are loading
 
 	Returns:
 	object ref or NULL_OBJECT on failure, if an OOP object ref is passed
 	value, if general variable name is passed
 	*/
 	/* public */	METHOD("load") {
-		params [P_THISOBJECT, P_DYNAMIC("_ref"), P_BOOL("_createNewObject")];
+		params [P_THISOBJECT, P_DYNAMIC("_ref"), P_BOOL("_createNewObject"), P_NUMBER("_specificVersion")];
+
+		if(_specificVersion != 0) then {
+			// This will apply to all objects loaded under after call
+			T_SETV("version", _specificVersion);
+		};
 
 		#ifdef BROADCAST_PROGRESS
 		//diag_log format ["Save: %1", _this];
@@ -353,19 +366,20 @@ CLASS("Storage", "")
 				diag_log format ["Created existing object: %1", _refLoaded];
 			};
 
-			if (!CALLM1(_refLoaded, "preDeserialize", _thisObject)) exitWith {	// Predeserialize
+			T_PRVAR(version);
+			if (!CALLM2(_refLoaded, "preDeserialize", _thisObject, _version)) exitWith {	// Predeserialize
 				OOP_ERROR_1("preDeserialize failed for %1", _refLoaded);
 				OOP_ERROR_1("  value: %1", _serial);
 				NULL_OBJECT
 			};
 
-			if (!CALLM1(_refLoaded, "deserializeFromStorage", _serial)) exitWith {			// Deserialize
+			if (!CALLM2(_refLoaded, "deserializeFromStorage", _serial, _version)) exitWith {			// Deserialize
 				OOP_ERROR_1("deserialize failed for %1", _refLoaded);
 				OOP_ERROR_1("  value: %1", _serial);
 				NULL_OBJECT
 			};
 
-			if(!CALLM1(_refLoaded, "postDeserialize", _thisObject)) exitWith {	// PostDeserialize
+			if(!CALLM2(_refLoaded, "postDeserialize", _thisObject, _version)) exitWith {	// PostDeserialize
 				OOP_ERROR_1("postDeserialize failed for %1", _refLoaded);
 				OOP_ERROR_1("  value: %1", _serial);
 				NULL_OBJECT

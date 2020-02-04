@@ -6,6 +6,13 @@ _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tRHS_USAF"];
+_array set [T_DESCRIPTION, "RHS standard US Army units."];
+_array set [T_DISPLAY_NAME, "RHS - USAF"];
+_array set [T_FACTION, T_FACTION_Military];
+_array set [T_REQUIRED_ADDONS, ["rhsusf_c_troops"]];
+
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
@@ -135,7 +142,5 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tRHS_USAF"];
-_array set [T_FACTION, T_FACTION_Military];
 
 _array // End template

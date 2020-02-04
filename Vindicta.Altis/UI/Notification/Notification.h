@@ -30,20 +30,6 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 
 		};
 
-		class NOTIFICATION_HINTBG : RscPicture {
-
-			IDC = -1; 
-			x = 0; 
-			y = 0.123; 
-			w = 0.427; 
-			h = 0.035; 
-			text = "UI\Images\gradient_LtoR.paa";
-
-			colorText[] = {0, 0, 0, 1};
-			//colorBackground[] = MUIC_BLACKTRANSP;
-
-		};
-
 		class NOTIFICATION_CATEGORYBG : RscPicture {
 
 			IDC = -1; 
@@ -54,8 +40,8 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			text = "UI\Images\gradient_LtoR.paa";
 
 			colorText[] = MUIC_MISSION;
-			//colorBackground[] = MUIC_MISSION;
-
+			// colorBackground[] = MUIC_MISSION;
+			onLoad = "uiNamespace setVariable ['vin_not_categorybg', _this#0]";
 		};
 
 		class NOTIFICATION_ICON
@@ -114,6 +100,20 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 		};
 
 
+		class NOTIFICATION_HINTBG : RscPicture {
+
+			IDC = -1; 
+			x = 0; 
+			y = 0.123; 
+			w = 0.427; 
+			h = 0.035; 
+			text = "UI\Images\gradient_LtoR.paa";
+
+			colorText[] = {0, 0, 0, 1};
+			//colorBackground[] = MUIC_BLACKTRANSP;
+			onLoad = "uiNamespace setVariable ['vin_not_hintbg', _this#0]";  // Dont delete this!
+		};
+
 		class NOTIFICATION_HINT : MUI_BASE_ABS
 		{
 			type = 0;
@@ -132,9 +132,5 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			sizeEx = 0.035;
 			onLoad = "uiNamespace setVariable ['vin_not_hint', _this#0]";  // Dont delete this!
 		};
-
-
-		
 	};
-	
 };
