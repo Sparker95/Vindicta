@@ -46,6 +46,7 @@ jobs:
         .\tools\hemtt.exe build --release --force --nowarn
         .\tools\armake_w64 build -f  "..\_build\$($verDir)" ".\releases\1.0.0.0\@vindicta\addons\$($verDir).pbo" -w unquoted-string -w redefinition-wo-undef
         .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\$($verDir).pbo"
+        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_civilian_presence.pbo"
         .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_items.pbo"
         .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_main.pbo"
         .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_module_location.pbo"
