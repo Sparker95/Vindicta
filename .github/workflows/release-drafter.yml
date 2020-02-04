@@ -72,7 +72,7 @@ jobs:
         user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         localDir: "ftp"
-        remoteDir: "mpmissions"
+        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
     - name: Zip for Release
       run: |
         zip --junk-paths vindicta ftp
