@@ -600,6 +600,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 		
 		// HandleDamage for infantry
+		/*
 		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
 		if ((_data select UNIT_DATA_ID_CAT == T_INF) &&	// Only to infantry
 			{owner _hO in [0, clientOwner]} &&			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
@@ -611,6 +612,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
+		*/
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
