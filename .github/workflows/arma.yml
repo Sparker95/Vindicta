@@ -36,27 +36,14 @@ jobs:
         node-version: '10.x'
     - name: Build
       run: |
-        $env:RUST_BACKTRACE= 1
+        $env:RUST_BACKTRACE=1
         cd Vindicta-Addon
-        ..\tools\setup_and_build.bat
-        $verDir = (Get-ChildItem -Path ..\_build -Filter "vindicta_v*").Name
-        # $verStr = $verDir -replace "vindicta_v","" -replace "_","."
-        # echo "::set-env name=version::$($verStr)"
-        # (Get-Content -path hemtt.json -Raw) -replace '0.0.0',$verStr | Set-Content -Path hemtt.json
-        .\tools\hemtt.exe build --release --force --nowarn
-        .\tools\armake_w64 build -f  "..\_build\$($verDir)" ".\releases\1.0.0.0\@vindicta\addons\$($verDir).pbo" -w unquoted-string -w redefinition-wo-undef
-        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\$($verDir).pbo"
-        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_civilian_presence.pbo"
-        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_items.pbo"
-        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_main.pbo"
-        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_module_location.pbo"
-        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_refuel.pbo"
-        .\tools\armake_w64 sign -f .\releases\keys\vindicta.biprivatekey ".\releases\1.0.0.0\@vindicta\addons\vindicta_ui.pbo"
-        del ".\releases\1.0.0.0\@vindicta\addons\*.1.0.0.0.bisign"
+        .\tools\buildv2.ps1
+        
     - uses: actions/upload-artifact@v1
       with:
         name: build
-        path: Vindicta-Addon/releases/1.0.0.0
+        path: Vindicta-Addon/release
   
   upload:
     runs-on: ubuntu-latest
