@@ -121,16 +121,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		g_rscLayerUndercoverDebug cutRsc ["UndercoverUIDebug", "PLAIN", -1, false];
 		#endif
 
-#ifndef _SQF_VM
-		// CBA event handler for checking player unit's equipment suspiciousness
-		pr _EH_loadout = ["loadout", {
-			params ["_unit", "_newLoadout"];
-			pr _uM = _unit getVariable ["undercoverMonitor", ""];
-			if (_uM != "") then { CALLM0(_uM, "calcGearSuspicion"); };
-    	}] call CBA_fnc_addPlayerEventHandler;
-		T_SETV("EHLoadout", _EH_loadout);
-#endif
-
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_PROCESS);
@@ -216,6 +206,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}];
 		T_GETV("eventHandlers") pushBack ["Put", _ID];
 
+#ifndef _SQF_VM
 		// CBA event handlers 
 		// CBA event handler for checking player unit's equipment suspiciousness
 		_ID = ["loadout", {
@@ -234,6 +225,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			};	
      	}] call CBA_fnc_addPlayerEventHandler;
 		T_GETV("eventHandlersCBA") pushBack ["vehicle", _ID];
+#endif
 
 	} ENDMETHOD;
 
@@ -745,11 +737,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			case SMON_MESSAGE_DELETE: {
 				// remove CBA loadout event handler
 				pr _EH_loadout = T_GETV("EHLoadout");
-				
-#ifndef _SQF_VM
-		 		["loadout", _EH_loadout] call CBA_fnc_removePlayerEventHandler;
-#endif
-
+			
 				// remove vanilla fired event handler
 				pr _unit = T_GETV("unit");
 				pr _EH_firedMan = T_GETV("EHFiredMan");
@@ -967,6 +955,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 3.0);
     	}] call CBA_fnc_addEventHandler;
 #endif
+
 	} ENDMETHOD;
 
 ENDCLASS;
