@@ -87,7 +87,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if (_tNameEnemy != "") then {
 			T_SETV("tNameMilInd", _tNameEnemy);
 		};
-		if (_tNamePolice != "tNamePolice") then {
+		if (_tNamePolice != "") then {
 			T_SETV("tNamePolice", _tNamePolice);
 		};
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
@@ -992,9 +992,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				_locBorder params ["_a", "_b"];
 				private _area = 4*_a*_b;
 				private _density_km2 = 60;	// Amount of civilians per square km
-				private _max = 35;			// Max amount of civilians
-				_locCapacityCiv = ((_density_km2/1e6) * _area) min 35;
-				_locCapacityCiv = ceil _locCapacityCiv;
+				private _civsRaw = ceil ((_density_km2/1e6) * _area);
+				// Clamp between 10 and 35
+				_locCapacityCiv = 10 max _civsRaw min 35;
 
 				// https://www.desmos.com/calculator/nahw1lso9f
 				/*
@@ -1034,7 +1034,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4) /*(_locCapacityCiv >= 10)*/) then {
+			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or _locCapacityCiv > 25)) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -1158,7 +1158,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
-		params [P_THISOBJECT, P_STRING("_locationType"), P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+		params [P_THISOBJECT, P_STRING("_faction"), P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 
 		if (_faction == "police") exitWith {
 			
@@ -1258,15 +1258,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Officers at airports and bases only
 		if(_locationType == LOCATION_TYPE_AIRPORT) then {
 			_infSpec =
-				  [  3,  -3,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY]
-				+ [  2,  -2,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				[
+					[  3,  3,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY],
+					[  2,  2,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				]
 				+ _infSpec;
 		};
 		// Officers at airports and bases only
 		if(_locationType == LOCATION_TYPE_BASE) then {
 			_infSpec =
-				  [  1,  -1,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY]
-				+ [  1,  -1,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				[
+					[  1,  1,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY],
+					[  1,  1,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				]
 				+ _infSpec;
 		};
 
