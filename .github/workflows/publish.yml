@@ -18,7 +18,7 @@ jobs:
       with:
         path: 'Vindicta.Altis'
 
-  validate-with-sqf-vm:
+  test:
     runs-on: windows-latest
     steps:
     - name: Checkout the code
