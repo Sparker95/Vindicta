@@ -46,7 +46,6 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 CLASS(UNIT_CLASS_NAME, "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
-	STATIC_VARIABLE("side");
 
 	//                              N E W
 	/*
@@ -299,7 +298,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} else {
 						// Otherwise just look for a close by safe position
 						OOP_INFO_1("  Looking for spawn at near desired position: %1", _pos);
-						pr _className = T_CALLM0("getClassName");
 						CALLSM2("Location", "findSafeSpawnPos", _className, _pos)
 					};
 					_posAndDir params ["_pos0", "_dir0"];
@@ -324,7 +322,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						
 						// Set loadout if requited
 						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
-						if (_loadout != "") then {
+						if (_loadout != NULL_OBJECT) then {
 							[_objectHandle, _loadout] call t_fnc_setUnitLoadout;
 						};
 
@@ -549,7 +547,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (!isNull _hO) then {
 			// Variable with a reference to Unit object
 			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true]; // Global variable!
-			SETSV("Unit", "side", (side _hO));
 			pr _cat = _data select UNIT_DATA_ID_CAT;
 			pr _subcat = _data select UNIT_DATA_ID_SUBCAT;
 			
@@ -1370,19 +1367,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		private _data = GET_VAR(_thisObject, "data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		getPos _oh
-	} ENDMETHOD;
-
-	//                             G E T   S I D E
-	/*
-	Method: getSide
-	Returns side of unit
-
-	Returns: side
-	*/
-	METHOD("getSide") {
-		params [["_thisObject", "", [""]]];
-		private _side = GETSV("Unit", "side");
-		_side
 	} ENDMETHOD;
 
 	/*
