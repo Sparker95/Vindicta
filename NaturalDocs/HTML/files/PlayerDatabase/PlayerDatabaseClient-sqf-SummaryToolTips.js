@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:PlayerDatabase/PlayerDatabaseClient.sqf",{922:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">It\'s a singleton class to be created at clients.&nbsp; Stores data about this client on this client\'s machine. Data is received data from the PlayerDatabaseServer located at server.</div></div>"});

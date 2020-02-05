@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Misc/fn_dateToISO8601.sqf","fn_dateToISO8601.sqf");NDSummary.OnSummaryLoaded("File:Misc/fn_dateToISO8601.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[915,0,1,"Functions","Functions"],[916,0,0,"misc_fnc_dateToISO8601","misc_fnc_dateToISO8601"]]);

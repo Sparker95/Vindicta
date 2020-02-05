@@ -33,7 +33,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		_buildings sort false;
 		pr _AI = T_GETV("AI");
 		pr _groups = +CALLM0(_gar, "getGroups");
-		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
+		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
 
 		// Order to some groups to occupy buildings
 		pr _i = 0;
@@ -125,6 +125,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					};
 					
 					case GROUP_TYPE_PATROL: {
+						_args = ["GoalGroupPatrol", 0, [], _AI];
+					};
+
+					case GROUP_TYPE_BUILDING_SENTRY: {
 						_args = ["GoalGroupPatrol", 0, [], _AI];
 					};
 				};

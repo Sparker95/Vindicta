@@ -321,6 +321,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 		//reverse _posAndDir;
 
+		// Bail if we have failed to get positions
+		if ((count _posAndDir) != _nVeh) exitWith {false};
+
 		// Iterate through all groups
 		pr _currentIndex = 0;
 		pr _groups = CALLM0(_gar, "getGroups");

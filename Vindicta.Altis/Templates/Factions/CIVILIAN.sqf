@@ -1,5 +1,5 @@
 /*
-POLICE templates for ARMA III
+Civilian template for ARMA III
 */
 
 // //==== Infantry ====
@@ -140,13 +140,18 @@ _array = [];
 
 _array set [T_SIZE*2-1, nil]; //Make an array having the size equal to the number of categories first
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tCivilian"];
+_array set [T_DESCRIPTION, "Arma 3 Altis civilians"];
+_array set [T_DISPLAY_NAME, "Arma III - Altis Civilians"];
+_array set [T_FACTION, T_FACTION_Civ];
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
+
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, []];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, []];
-_array set [T_NAME, "tCivilian"];
-_array set [T_FACTION, T_FACTION_Civ];
 _array set [T_VEH+T_WEIGHTS_OFFSET, _vehWeights];
 
 _array

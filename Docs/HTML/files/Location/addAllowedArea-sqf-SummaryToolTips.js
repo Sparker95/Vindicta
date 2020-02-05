@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Location/addAllowedArea.sqf",{672:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Adds a rectangular allowed area to this location</div></div>"});

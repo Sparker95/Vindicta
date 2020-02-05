@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/Group/ActionGroupStayInVehicles.sqf","ActionGroupStayInVehicles.sqf");NDSummary.OnSummaryLoaded("File:AI/Group/ActionGroupStayInVehicles.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[323,0,0,"<span class=\"Qualifier\">ActionGroup.</span>&#8203;ActionGroupStayInVehicles","ActionGroup.ActionGroupStayInVehicles"]]);

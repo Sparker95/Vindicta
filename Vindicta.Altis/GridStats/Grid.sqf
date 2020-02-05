@@ -854,7 +854,7 @@ CLASS("Grid", "Storable");
 
 		_thisObject
 	} ENDMETHOD;
-	
+
 	// - - - - - STORAGE - - - - - -
 
 	// This is perfectly storable, we just serialize everything

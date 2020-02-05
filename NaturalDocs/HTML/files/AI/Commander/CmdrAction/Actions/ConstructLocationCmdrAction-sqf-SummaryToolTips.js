@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Commander/CmdrAction/Actions/ConstructLocationCmdrAction.sqf",{111:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Action for commander to construct a location with some garrison.</div></div>"});

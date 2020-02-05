@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:AI/Unit/ActionUnitInfantryRegroup.sqf","ActionUnitInfantryRegroup.sqf");NDSummary.OnSummaryLoaded("File:AI/Unit/ActionUnitInfantryRegroup.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[318,0,0,"<span class=\"Qualifier\">ActionUnit.</span>&#8203;ActionUnitInfantryRegroup","ActionUnit.ActionUnitInfantryRegroup"]]);

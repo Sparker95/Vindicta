@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:GameMode/LocationGameModeData.sqf","LocationGameModeData.sqf");NDSummary.OnSummaryLoaded("File:GameMode/LocationGameModeData.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[469,0,0,"<span class=\"Qualifier\">GameMode.</span>&#8203;LocationGameModeData","GameMode.LocationGameModeData"]]);

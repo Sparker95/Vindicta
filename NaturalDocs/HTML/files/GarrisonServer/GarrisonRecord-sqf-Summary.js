@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:GarrisonServer/GarrisonRecord.sqf","GarrisonRecord.sqf");NDSummary.OnSummaryLoaded("File:GarrisonServer/GarrisonRecord.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[488,0,0,"GarrisonRecord","GarrisonRecord"]]);

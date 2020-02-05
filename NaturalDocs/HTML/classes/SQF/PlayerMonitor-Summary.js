@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:PlayerMonitor","PlayerMonitor");NDSummary.OnSummaryLoaded("SQFClass:PlayerMonitor",[["SQF","SQF"]],[["Classes","Class"]],[[443,0,0,"PlayerMonitor"]]);

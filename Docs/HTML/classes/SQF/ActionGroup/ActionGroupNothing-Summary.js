@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:ActionGroup.ActionGroupNothing","ActionGroupNothing");NDSummary.OnSummaryLoaded("SQFClass:ActionGroup.ActionGroupNothing",[["SQF","SQF"]],[["Classes","Class"]],[[259,0,0,"<span class=\"Qualifier\">ActionGroup.</span>&#8203;ActionGroupNothing"]]);

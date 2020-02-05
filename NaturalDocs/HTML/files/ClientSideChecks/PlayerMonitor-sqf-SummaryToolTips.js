@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:ClientSideChecks/PlayerMonitor.sqf",{443:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Performs various periodic checks on client side.&nbsp; Mainly we offload periodic heavy functions here, such as finding nearby objects.</div></div>"});

@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Location/getLocationsAtPos.sqf",{654:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns an array of locations that have the provided position/object within its border.&nbsp; Same as getLocationAtPos, but returns all locations</div></div>"});

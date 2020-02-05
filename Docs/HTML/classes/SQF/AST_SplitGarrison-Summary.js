@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:AST_SplitGarrison","AST_SplitGarrison");NDSummary.OnSummaryLoaded("SQFClass:AST_SplitGarrison",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[97,0,0,"AST_SplitGarrison"],[98,0,2,"Functions","Functions"],[99,0,1,"new","new"]]);

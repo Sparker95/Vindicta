@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:ActionUnit.ActionUnitInfantryMoveBase",{340:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Base action for movement. Has only activate, terminate, process implemented.</div></div>"});

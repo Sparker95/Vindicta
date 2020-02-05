@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Location/getRandomPos.sqf",{797:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns a random position within the border of the location.&nbsp; Distribution is uniform</div></div>"});

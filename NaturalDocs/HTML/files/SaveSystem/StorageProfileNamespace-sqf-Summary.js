@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:SaveSystem/StorageProfileNamespace.sqf","StorageProfileNamespace.sqf");NDSummary.OnSummaryLoaded("File:SaveSystem/StorageProfileNamespace.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[927,0,0,"StorageProfileNamespace","StorageProfileNamespace"]]);

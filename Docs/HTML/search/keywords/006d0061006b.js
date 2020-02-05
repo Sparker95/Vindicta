@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("mak",["Function"],[["MAKE_AST_VAR",,[["AI.CmdrAI.CmdrAction.AST_VAR",,,,0,"File:AI/CmdrAI/CmdrAction/CmdrActionStates.hpp:AI.CmdrAI.CmdrAction.AST_VAR.MAKE_AST_VAR","SQFClass:AI.CmdrAI.CmdrAction.AST_VAR:MAKE_AST_VAR"]]]]);

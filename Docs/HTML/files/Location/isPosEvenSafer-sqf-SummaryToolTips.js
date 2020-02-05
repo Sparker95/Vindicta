@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Location/isPosEvenSafer.sqf",{608:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns true if the place is guaranteed safe for spawning specific vehicle.&nbsp; It is very conservative and as such will disallow spawning in buildings or too close to existing objects.</div></div>"});

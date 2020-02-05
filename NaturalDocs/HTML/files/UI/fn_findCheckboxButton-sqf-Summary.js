@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:UI/fn_findCheckboxButton.sqf","fn_findCheckboxButton.sqf");NDSummary.OnSummaryLoaded("File:UI/fn_findCheckboxButton.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[1006,0,1,"Functions","Functions"],[1007,0,0,"ui_fnc_findCheckboxButton","ui_fnc_findCheckboxButton"]]);

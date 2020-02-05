@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:CivilWarPoliceStationData",{468:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Police station data specific to this game mode.</div></div>"});
