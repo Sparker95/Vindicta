@@ -13,9 +13,10 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: test
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
-        echo ${{ github.Arma-Checks-And-Build }}
-        echo ${{ github.Arma-Checks-And-Build.jobs.validate }}
+        echo $GITHUB_CONTEXT
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
       with:
