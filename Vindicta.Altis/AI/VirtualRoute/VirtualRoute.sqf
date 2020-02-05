@@ -134,7 +134,7 @@ CLASS("VirtualRoute", "")
 				// This gets the node to node path.
 				// TODO: add cancellation token so we can cancel route calulation on delete (token = array wrapping a bool)
 				private _path = [_startRoute,_endRoute,_costFn,"",_callbackArgs] call gps_core_fnc_generateNodePath;
-				if(count _path < 1) then { // Replaced <=1 with <1 because it might make one waypoint if it's not too far to traverl
+				if(count _path < 2) then { // Replaced <=1 with <1 because it might make one waypoint if it's not too far to traverl
 					// TODO: this could do something more intelligent. Probably ties in with travel to and from actual roads.
 					throw "failed";
 				};

@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:GameMode.CivilWarLocationData","CivilWarLocationData");NDSummary.OnSummaryLoaded("SQFClass:GameMode.CivilWarLocationData",[["SQF","SQF"]],[["Classes","Class"]],[[464,0,0,"<span class=\"Qualifier\">GameMode.</span>&#8203;CivilWarLocationData"]]);

@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("is_",["Function"],[["IS_NULL_TARGET",,[["AI.CmdrAI.CmdrAITarget",,,,0,"File:AI/CmdrAI/CmdrAITarget.sqf:AI.CmdrAI.CmdrAITarget.IS_NULL_TARGET","SQFClass:AI.CmdrAI.CmdrAITarget:IS_NULL_TARGET"]]]]);

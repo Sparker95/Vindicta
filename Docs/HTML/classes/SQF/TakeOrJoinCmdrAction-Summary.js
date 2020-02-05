@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:TakeOrJoinCmdrAction","TakeOrJoinCmdrAction");NDSummary.OnSummaryLoaded("SQFClass:TakeOrJoinCmdrAction",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[85,0,0,"TakeOrJoinCmdrAction"],[86,0,2,"Functions","Functions"],[87,0,1,"new","new"]]);

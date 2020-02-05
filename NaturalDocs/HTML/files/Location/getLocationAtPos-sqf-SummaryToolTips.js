@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Location/getLocationAtPos.sqf",{806:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns a lowermost location that has the provided position/object within its border.</div></div>"});

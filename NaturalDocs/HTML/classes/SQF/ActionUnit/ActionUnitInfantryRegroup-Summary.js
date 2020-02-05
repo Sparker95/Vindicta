@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:ActionUnit.ActionUnitInfantryRegroup","ActionUnitInfantryRegroup");NDSummary.OnSummaryLoaded("SQFClass:ActionUnit.ActionUnitInfantryRegroup",[["SQF","SQF"]],[["Classes","Class"]],[[393,0,0,"<span class=\"Qualifier\">ActionUnit.</span>&#8203;ActionUnitInfantryRegroup"]]);

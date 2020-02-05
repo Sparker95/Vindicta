@@ -143,7 +143,7 @@ while {true} do {
 				private _profileTime = diag_tickTime - _profileTimeStart;
 				pr _dest = _msg#MESSAGE_ID_DESTINATION;
 				pr _type = _msg#MESSAGE_ID_TYPE;
-				private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4} }", _name, _type, _objectClass, _profileTime];
+				private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4, ""data"": %5} }", _name, _type, _objectClass, _profileTime, str (_msg#MESSAGE_ID_DATA)];
 				OOP_DEBUG_MSG(_str, []);
 				#endif
 

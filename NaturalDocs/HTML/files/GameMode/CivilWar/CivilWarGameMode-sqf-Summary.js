@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:GameMode/CivilWar/CivilWarGameMode.sqf","CivilWarGameMode.sqf");NDSummary.OnSummaryLoaded("File:GameMode/CivilWar/CivilWarGameMode.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[466,0,0,"CivilWarGameMode","CivilWarGameMode"],[467,0,0,"CivilWarCityData","CivilWarCityData"],[468,0,0,"CivilWarPoliceStationData","CivilWarPoliceStationData"]]);

@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:AST_WaitGarrison","AST_WaitGarrison");NDSummary.OnSummaryLoaded("SQFClass:AST_WaitGarrison",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[94,0,0,"AST_WaitGarrison"],[95,0,2,"Functions","Functions"],[96,0,1,"new","new"]]);

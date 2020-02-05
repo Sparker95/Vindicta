@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:LocationVisibilityMonitor","LocationVisibilityMonitor");NDSummary.OnSummaryLoaded("SQFClass:LocationVisibilityMonitor",[["SQF","SQF"]],[["Classes","Class"]],[[676,0,0,"LocationVisibilityMonitor"]]);

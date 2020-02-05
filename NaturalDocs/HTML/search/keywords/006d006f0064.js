@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("mod",["Class"],[["ModelBase",,[[,,,,0,"File:AI/Commander/Model/ModelBase.sqf:ModelBase","SQFClass:ModelBase"]]]]);

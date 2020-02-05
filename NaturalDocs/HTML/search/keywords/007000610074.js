@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("pat",["Class"],[["PatrolCmdrAction",,[["AI.CmdrAI.CmdrAction.Actions",,,,0,"File:AI/Commander/CmdrAction/Actions/PatrolCmdrAction.sqf:AI.CmdrAI.CmdrAction.Actions.PatrolCmdrAction","SQFClass:AI.CmdrAI.CmdrAction.Actions.PatrolCmdrAction"]]]]);

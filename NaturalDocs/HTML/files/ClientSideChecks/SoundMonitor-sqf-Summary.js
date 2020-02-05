@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:ClientSideChecks/SoundMonitor.sqf","SoundMonitor.sqf");NDSummary.OnSummaryLoaded("File:ClientSideChecks/SoundMonitor.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[441,0,0,"SoundMonitor","SoundMonitor"]]);

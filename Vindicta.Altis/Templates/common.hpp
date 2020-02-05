@@ -11,3 +11,5 @@
 #endif
 
 #define pr private
+
+#define NOT_FOUND -1

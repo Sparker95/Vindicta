@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:DoubleKeyHashmap","DoubleKeyHashmap");NDSummary.OnSummaryLoaded("SQFClass:DoubleKeyHashmap",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[454,0,0,"DoubleKeyHashmap"],[455,0,2,"Functions","Functions"],[456,0,1,"set","set"],[457,0,1,"get","get"],[458,0,1,"getAllSecondaryKeys","getAllSecondaryKeys"]]);

@@ -207,26 +207,17 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]);
 		_distCoeff = _distCoeff ^ 1.5; // Make it decrease with distance faster
-		private _transportationScore = if(!_needTransport) then {
-			// If we are less than 1000m then we don't need transport so set the transport score to 1
-			// (we "fullfilled" the transport requirements of not needing transport)
-			1
-		} else {
-			//CALLM1(_srcGarr, "transportationScore", _effRemaining)
-			// We probably don't care if we have enough transport left in case of QRF?
-			1
-		};
 
 		// Our final resource score combining available efficiency, distance and transportation.
-		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
+		private _scoreResource = _detachEffStrength * _distCoeff;
 
 		// TODO: implement priority score for TakeLocationCmdrAction
 		// TODO:OPT cache these scores!
 		private _scorePriority = 1;
 
-		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _effAllocated = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _effAllocated = %6, _detachEffStrength = %7, _distCoeff = %8",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtCluster) ARG [_scorePriority ARG _scoreResource] 
-		// 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		// 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it

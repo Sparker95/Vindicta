@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:UI/fn_createControlsFromConfig.sqf","fn_createControlsFromConfig.sqf");NDSummary.OnSummaryLoaded("File:UI/fn_createControlsFromConfig.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[1008,0,1,"Functions","Functions"],[1009,0,0,"ui_fnc_createControlsFromConfig","ui_fnc_createControlsFromConfig"]]);

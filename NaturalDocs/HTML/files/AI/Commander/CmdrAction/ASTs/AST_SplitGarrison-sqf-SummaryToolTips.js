@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Commander/CmdrAction/ASTs/AST_SplitGarrison.sqf",{122:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Split a garrison into two parts.</div></div>",124:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Create an AST to split a garrison into two parts.</div></div>"});

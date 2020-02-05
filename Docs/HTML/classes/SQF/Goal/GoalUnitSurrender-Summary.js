@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Goal.GoalUnitSurrender","GoalUnitSurrender");NDSummary.OnSummaryLoaded("SQFClass:Goal.GoalUnitSurrender",[["SQF","SQF"]],[["Classes","Class"]],[[293,0,0,"<span class=\"Qualifier\">Goal.</span>&#8203;GoalUnitSurrender"]]);

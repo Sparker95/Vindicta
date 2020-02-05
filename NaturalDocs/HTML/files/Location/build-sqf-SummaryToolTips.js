@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Location/build.sqf",{824:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Builds this location depending on its type</div></div>"});

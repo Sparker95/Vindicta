@@ -1,5 +1,6 @@
 name-template: $NEXT_PATCH_VERSION
 tag-template: $NEXT_PATCH_VERSION
+branches: [master]
 categories:
   - title: 🔨 Improvements
     label: enhancement

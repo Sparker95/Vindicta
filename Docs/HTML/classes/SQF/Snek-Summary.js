@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Snek","Snek");NDSummary.OnSummaryLoaded("SQFClass:Snek",[["SQF","SQF"]],[["Classes","Class"]],[[821,0,0,"Snek"]]);

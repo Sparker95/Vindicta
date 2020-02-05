@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Intel.IntelCommanderActionRetreat","IntelCommanderActionRetreat");NDSummary.OnSummaryLoaded("SQFClass:Intel.IntelCommanderActionRetreat",[["SQF","SQF"]],[["Classes","Class"]],[[582,0,0,"<span class=\"Qualifier\">Intel.</span>&#8203;IntelCommanderActionRetreat"]]);
