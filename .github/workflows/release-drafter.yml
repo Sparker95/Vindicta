@@ -70,30 +70,29 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Download build
-      # ****** DISABLED ****** until we can get it working iteratively (i.e. replace existing release
-      if: ${{ false }}
-      uses: actions/download-artifact@v1
-      with:
-        name: build
-      
-    - name: Zip for Release
-      run: |
-        cd build
-        zip -r vindicta.zip @vindicta
-        ls
-
-    - name: Upload build to draft release
-      # ****** DISABLED ****** until we can get it working iteratively (i.e. replace existing release
-      if: ${{ false }}
-      uses: actions/upload-release-asset@v1.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.draft_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./build/vindicta.zip
-        asset_name: vindicta.zip
-        asset_content_type: application/zip
+    # ****** DISABLED ****** until we can get it working iteratively (i.e. replace existing release
+    #- name: Download build
+    #  if: ${{ false }}
+    #  uses: actions/download-artifact@v1
+    #  with:
+    #    name: build
+    #
+    #- name: Zip for Release
+    #  run: |
+    #    cd build
+    #    zip -r vindicta.zip @vindicta
+    #    ls
+    #
+    #- name: Upload build to draft release
+    #  if: ${{ false }}
+    #  uses: actions/upload-release-asset@v1.0.1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.draft_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+    #    asset_path: ./build/vindicta.zip
+    #    asset_name: vindicta.zip
+    #    asset_content_type: application/zip
 
     - name: Download dev
       uses: actions/download-artifact@v1
