@@ -1,4 +1,4 @@
-name: Arma Checks And Build
+name: Publish to Workshop
 
 on:
   release:
