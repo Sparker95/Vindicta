@@ -221,7 +221,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
      	params ["_vehicle", "_role", "_unit", "_turret"];
 			if (primaryWeapon player == "" && secondaryWeapon player == "") then {
 				player action ["SwitchWeapon", player, player, 299];	
-				systemchat "Holstering weapon.";
 			};	
      	}] call CBA_fnc_addPlayerEventHandler;
 		T_GETV("eventHandlersCBA") pushBack ["vehicle", _ID];
