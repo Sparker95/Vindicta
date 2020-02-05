@@ -70,7 +70,7 @@ jobs:
     - name: Upload ftp
       uses: sebastianpopp/git-ftp-action@2.1.0
       with:
-        url: ${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions
+        url: ftp://${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions
         user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         syncroot: "dev"
