@@ -18,7 +18,7 @@ jobs:
       with:
         path: 'Vindicta.Altis'
 
-  validate-with-sqf-vm:
+  test:
     runs-on: windows-latest
     steps:
     - name: Checkout the code
@@ -30,7 +30,7 @@ jobs:
 
   build:
     runs-on: windows-latest
-    needs: [validate, validate-with-sqf-vm]
+    needs: [validate, test]
     steps:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
