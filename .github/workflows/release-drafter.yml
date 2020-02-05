@@ -15,7 +15,8 @@ jobs:
     steps:
     - name: test
       run: |
-        echo ${{ github.workflow.Arma-Checks-And-Build.step. }}
+        echo ${{ github.Arma-Checks-And-Build }}
+        echo ${{ github.Arma-Checks-And-Build.jobs.validate }}
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
       with:
