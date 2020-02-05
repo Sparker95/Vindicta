@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Group/ActionGroupStayInVehicles.sqf",{323:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Group members will remain inside their current vehicles.&nbsp; Currently it does nothing, but it could potentially perform monitoring of units to stay inside vehicles.</div></div>"});

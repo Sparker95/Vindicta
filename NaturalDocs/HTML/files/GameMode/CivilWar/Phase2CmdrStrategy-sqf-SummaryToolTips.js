@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:GameMode/CivilWar/Phase2CmdrStrategy.sqf",{462:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Strategy for commander to use during phase 2 gameplay.&nbsp; Sends QRFs, deploys roadblocks, doesn\'t capture anything.</div></div>"});

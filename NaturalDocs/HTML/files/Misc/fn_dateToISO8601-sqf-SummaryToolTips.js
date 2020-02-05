@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Misc/fn_dateToISO8601.sqf",{916:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Converts a date into an ISO8601 string representation of the date.</div></div>"});

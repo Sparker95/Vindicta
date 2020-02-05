@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:SaveSystem/Storable.sqf","Storable.sqf");NDSummary.OnSummaryLoaded("File:SaveSystem/Storable.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[938,0,0,"Storable","Storable"]]);

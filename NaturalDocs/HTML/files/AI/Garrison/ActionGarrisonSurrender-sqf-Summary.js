@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/Garrison/ActionGarrisonSurrender.sqf","ActionGarrisonSurrender.sqf");NDSummary.OnSummaryLoaded("File:AI/Garrison/ActionGarrisonSurrender.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[300,0,0,"<span class=\"Qualifier\">ActionGarrison.</span>&#8203;ActionGarrisonSurrender","ActionGarrison.ActionGarrisonSurrender"]]);

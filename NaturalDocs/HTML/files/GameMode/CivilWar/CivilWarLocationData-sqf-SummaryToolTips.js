@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:GameMode/CivilWar/CivilWarLocationData.sqf",{464:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Game mode data for general locations</div></div>"});

@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:ActionGarrisonBehaviour","ActionGarrisonBehaviour");NDSummary.OnSummaryLoaded("SQFClass:ActionGarrisonBehaviour",[["SQF","SQF"]],[["Classes","Class"]],[[254,0,0,"ActionGarrisonBehaviour"]]);

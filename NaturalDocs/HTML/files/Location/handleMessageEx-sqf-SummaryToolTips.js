@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Location/handleMessageEx.sqf",{788:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Checks spawn conditions of this location. Spawns garrisons if needed.</div></div>"});

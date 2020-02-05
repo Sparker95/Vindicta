@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:GameMode/CivilWar/Phase3CmdrStrategy.sqf",{377:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Strategy for commander to use during phase 3 gameplay.&nbsp; Default behaviour (see CmdrStrategy class) except: - Cities that are in revolt or suppressed will be occupied, as will their nearby roadblocks.</div></div>"});

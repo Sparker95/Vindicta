@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/Group/ActionGroupPatrol.sqf","ActionGroupPatrol.sqf");NDSummary.OnSummaryLoaded("File:AI/Group/ActionGroupPatrol.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[334,0,0,"<span class=\"Qualifier\">ActionGroup.</span>&#8203;ActionGroupPatrol","ActionGroup.ActionGroupPatrol"]]);

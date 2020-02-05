@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:ActionGroupGetInGarrisonVehiclesAsCargo","ActionGroupGetInGarrisonVehiclesAsCargo");NDSummary.OnSummaryLoaded("SQFClass:ActionGroupGetInGarrisonVehiclesAsCargo",[["SQF","SQF"]],[["Classes","Class"]],[[330,0,0,"ActionGroupGetInGarrisonVehiclesAsCargo"]]);

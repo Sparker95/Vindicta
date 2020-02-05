@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Camp/Camp.sqf",{366:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Camp has garrisons at a static place and spawns units handle by location variable.&nbsp; Camp has an arsenal and maybe events and other features ?</div></div>"});
