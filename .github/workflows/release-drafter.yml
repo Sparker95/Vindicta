@@ -11,8 +11,10 @@ jobs:
     steps:
     - name: Checkout the source code
       uses: actions/checkout@master
+      
     - name: Validate Config
       run: python3 tools/SQF-validate/config_style_checker.py
+      
     - name: Check for BOM
       uses: arma-actions/bom-check@master
       with:
@@ -23,6 +25,7 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@master
+
     - name: Validate SQF with SQF-VM
       run: |
         cd Vindicta.Altis
@@ -33,9 +36,11 @@ jobs:
     needs: [validate, validate-with-sqf-vm]
     steps:
     - uses: actions/checkout@master
+      
     - uses: actions/setup-node@v1
       with:
         node-version: '10.x'
+        
     - name: Build
       run: |
         $env:RUST_BACKTRACE=1
@@ -56,24 +61,31 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-    # Drafts your next Release notes as Pull Requests are merged into "master"
     - name: Checkout
       uses: actions/checkout@v1
+      
     - name: Draft Release
       id: draft_release
       uses: release-drafter/release-drafter@v5.6.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Download build
+      # ****** DISABLED ****** until we can get it working iteratively (i.e. replace existing release
+      if: ${{ false }}
       uses: actions/download-artifact@v1
       with:
         name: build
+      
     - name: Zip for Release
       run: |
         cd build
         zip -r vindicta.zip @vindicta
         ls
+
     - name: Upload build to draft release
+      # ****** DISABLED ****** until we can get it working iteratively (i.e. replace existing release
+      if: ${{ false }}
       uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -82,10 +94,12 @@ jobs:
         asset_path: ./build/vindicta.zip
         asset_name: vindicta.zip
         asset_content_type: application/zip
+
     - name: Download dev
       uses: actions/download-artifact@v1
       with:
         name: dev
+
     - name: Upload pbo to dev server
       run: |
         cd dev
@@ -93,5 +107,6 @@ jobs:
         for f in *.altis.pbo; do mv "$f" "${f%.altis.pbo}_${{github.run_number}}.altis.pbo"; done
         for f in *.enoch.pbo; do mv "$f" "${f%.enoch.pbo}_${{github.run_number}}.enoch.pbo"; done
         ls
+        sudo apt-get install wget
         wput *.pbo "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
  
