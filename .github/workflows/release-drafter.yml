@@ -4,34 +4,18 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout the source code
-      uses: actions/checkout@master
-    - name: Validate Config
-      run: python3 tools/SQF-validate/config_style_checker.py
-    - name: Check for BOM
-      uses: arma-actions/bom-check@master
-      with:
-        path: 'Vindicta.Altis'
-
-  validate-with-sqf-vm:
-    runs-on: windows-latest
-    steps:
-    - name: Checkout the code
-      uses: actions/checkout@master
-    - name: Validate SQF with SQF-VM
-      run: |
-        cd Vindicta.Altis
-        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
-
   build:
     runs-on: windows-latest
     needs: [validate, validate-with-sqf-vm]
     steps:
+    - name: test
+    - run: |
+      echo ${{ github.workflow.Arma-Checks-And-Build.step. }}
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
       with:

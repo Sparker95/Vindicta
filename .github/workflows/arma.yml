@@ -1,4 +1,4 @@
-name: Arma Checks And Build
+name: Arma-Checks-And-Build
 
 on:
   release:
