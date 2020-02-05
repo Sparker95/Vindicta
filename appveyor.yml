@@ -1,9 +1,0 @@
-version: 1.0.{build}
-image: Visual Studio 2017
-clone_folder: c:\dev
-build: off
-test_script:
-- cmd: >-
-    cd c:\dev\Vindicta.Altis
-
-    ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i c:\dev\Vindicta.Altis\Tests\RunTests.sqf
