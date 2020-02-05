@@ -81,7 +81,9 @@ jobs:
         name: build
     - name: Zip for Release
       run: |
-        zip --junk-paths vindicta.zip build
+        ls build
+        zip --junk-paths vindicta.zip ./build
+        ls
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1.0.1
       env:
