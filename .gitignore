@@ -51,6 +51,8 @@ configs/briefingName.hpp
 tools/buildtool/dist/
 
 Vindicta.Altis/config/user_local_config.hpp
+*.pbo
+
 *.tmp
 
 Vindicta-Addon/dev/

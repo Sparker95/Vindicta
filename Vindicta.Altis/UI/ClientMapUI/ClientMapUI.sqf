@@ -2017,7 +2017,7 @@ Gets called from "onMapDraw"
 				T_CALLM1("respawnPanelSetText", "Select a respawn point");
 				_ctrlButton ctrlEnable false;
 			};
-			
+
 			if(count _locMarkers == 1) then {
 				pr _locMarker = _locMarkers#0;				// Get the location from marker
 				pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
@@ -2060,10 +2060,11 @@ Gets called from "onMapDraw"
 				} else {
 					T_CALLM1("respawnPanelSetText", "You can respawn here");
 				};
+				_ctrlButton ctrlEnable true;
 			} else {
 				T_CALLM1("respawnPanelSetText", "You can restore at your last position with your saved gear");
+				_ctrlButton ctrlEnable true;
 			};
-			_ctrlButton ctrlEnable true;
 		};
 	} ENDMETHOD;
 

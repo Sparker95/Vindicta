@@ -298,7 +298,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} else {
 						// Otherwise just look for a close by safe position
 						OOP_INFO_1("  Looking for spawn at near desired position: %1", _pos);
-						pr _className = T_CALLM0("getClassName");
 						CALLSM2("Location", "findSafeSpawnPos", _className, _pos)
 					};
 					_posAndDir params ["_pos0", "_dir0"];
@@ -323,7 +322,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						
 						// Set loadout if requited
 						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
-						if (_loadout != "") then {
+						if (_loadout != NULL_OBJECT) then {
 							[_objectHandle, _loadout] call t_fnc_setUnitLoadout;
 						};
 
