@@ -64,18 +64,6 @@ jobs:
       uses: release-drafter/release-drafter@v5.6.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Download dev
-      uses: actions/download-artifact@v1
-      with:
-        name: dev
-    - name: ftp-action
-      uses: sebastianpopp/ftp-action@v1.1.0
-      with:
-        host: ${{ secrets.FTP_SERVER }}
-        user: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        localDir: "dev"
-        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
     - name: Download build
       uses: actions/download-artifact@v1
       with:
@@ -85,7 +73,7 @@ jobs:
         cd build
         zip -r vindicta.zip @vindicta
         ls
-    - name: Upload Release Asset
+    - name: Upload build to draft release
       uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -94,5 +82,12 @@ jobs:
         asset_path: ./build/vindicta.zip
         asset_name: vindicta.zip
         asset_content_type: application/zip
-
-        
+    - name: Download dev
+      uses: actions/download-artifact@v1
+      with:
+        name: dev
+    - name: Upload pbo to dev server
+      run: |
+        cd dev
+        wput *.pbo ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
+ 
