@@ -89,5 +89,9 @@ jobs:
     - name: Upload pbo to dev server
       run: |
         cd dev
+        ls
+        for f in *.altis.pbo; do mv "$f" "${f%.altis.pbo}_${{github.run_number}}.altis.pbo"; done
+        for f in *.enoch.pbo; do mv "$f" "${f%.enoch.pbo}_${{github.run_number}}.enoch.pbo"; done
+        ls
         wput *.pbo "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
  
