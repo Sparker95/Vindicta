@@ -62,19 +62,19 @@ jobs:
       uses: release-drafter/release-drafter@v5
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
     - name: Download dev
       uses: actions/download-artifact@v1
       with:
         name: dev
     - name: Upload ftp
-      uses: sebastianpopp/ftp-action@v1.1.0
+      uses: sebastianpopp/git-ftp-action@2.1.0
       with:
-        host: ${{ secrets.FTP_SERVER }}
+        url: ${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions
         user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        localDir: "dev"
-        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
+        syncroot: "dev"
+        #remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
     - name: Download build
       uses: actions/download-artifact@v1
       with:
