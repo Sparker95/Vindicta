@@ -734,14 +734,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 			// delete dead unit's undercoverMonitor
 			case SMON_MESSAGE_DELETE: {
-				// remove CBA loadout event handler
-				pr _EH_loadout = T_GETV("EHLoadout");
-			
-				// remove vanilla fired event handler
-				pr _unit = T_GETV("unit");
-				pr _EH_firedMan = T_GETV("EHFiredMan");
-				_unit removeEventHandler ["FiredMan", _EH_firedMan];
-
 				DELETE(_thisObject);
 			}; // end SMON_MESSAGE_DELETE
 		};
