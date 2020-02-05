@@ -30,7 +30,7 @@ jobs:
 
   build:
     runs-on: windows-latest
-    needs: [validate, validate-with-sqf-vm]
+    needs: [validate, test]
     steps:
     - name: Checkout the source code
       uses: actions/checkout@master
