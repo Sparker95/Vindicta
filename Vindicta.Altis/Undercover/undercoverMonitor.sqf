@@ -448,6 +448,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 									OOP_INFO_0("Distance and bodyExposure set to player");
 								#endif
 
+								pr _vicCompromised = UNDERCOVER_GET_VIC_COMPROMISED(vehicle _unit);
+								if (_vicCompromised != -1) then {
+									if (time <= _vicCompromised) then {
+										_suspicionArr pushBack [1, "Compromised vehicle"];
+										_hintKeys pushback HK_COMPROMISED_VIC;
+									};
+								};
+
 								pr _crewSuspMod = SUSP_VEH_CREW_MOD;
 								if ((count crew vehicle _unit) > 1) then {
 									{
@@ -460,7 +468,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								/*  Suspiciousness in a civilian vehicle, based on distance to the nearest enemy who sees player unit */
 								if (_distance != -1 && _suspGearVeh >= SUSPICIOUS) then {
 									if (_distance <= SUSP_VEH_DIST) then {
-										_arg = (SUSP_VEH_DIST - _distance) * ((SUSP_VEH_DIST_MULT + (_crewSuspMod * (_crewSuspMod / SUSP_VEH_CREW_MOD))) / SUSP_VEH_DIST);
+										pr _arg = (SUSP_VEH_DIST - _distance) * ((SUSP_VEH_DIST_MULT + (_crewSuspMod * (_crewSuspMod / SUSP_VEH_CREW_MOD))) / SUSP_VEH_DIST);
 										_suspicionArr = [];
 										_suspicionArr pushBack [_arg, "Distance-based, in vehicle"];
 										_unit setVariable ["suspDistVeh", _arg];
@@ -505,6 +513,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						}; 
 
 						_suspicionArr pushBack [1, "WANTED STATE"];
+
+						if (_bInVeh) then {
+							(vehicle _unit) setVariable[UNDERCOVER_VIC_COMPROMISED, (time + TIME_VIC_COMPROMISED), true]; // global variable set on vehicle!
+						};
 
 						// Conditions for exiting WANTED state
 						if ( ((position _unit) distance2D (getMarkerPos "markerWanted")) > (WANTED_CIRCLE_RADIUS/2)) exitWith { 
