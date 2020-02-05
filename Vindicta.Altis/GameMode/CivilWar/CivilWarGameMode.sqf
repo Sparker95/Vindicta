@@ -36,6 +36,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE_ATTR("activeCities", [ATTR_SAVE]);
 	// Amount of casualties during the campaign, used in getCampaignProgess method
 	VARIABLE_ATTR("casualties", [ATTR_SAVE]);
+	// Campaign progress cached value
+	VARIABLE("campaignProgress");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -45,8 +47,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("phase", 0);
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
+		T_SETV("campaignProgress", 0);
 		if (IS_SERVER) then {	// Makes no sense for client
 			T_PUBLIC_VAR("casualties");
+			T_PUBLIC_VAR("campaignProgress");
 		};
 	} ENDMETHOD;
 
@@ -263,6 +267,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("update") {
 		params [P_THISOBJECT];
 		
+		T_CALLM("updateCampaignProgress", []);
+
 		T_CALLM("updatePhase", []);
 		
 		//T_CALLM("updateEndCondition", []); // No need for it right now
@@ -280,6 +286,25 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	} ENDMETHOD;
 
+	METHOD("updateCampaignProgress") {
+		params [P_THISOBJECT];
+		private _totalInstability = 0;
+		private _maxInstability = 1;
+
+		{
+			_totalInstability = _totalInstability + _x;
+			_maxInstability = _maxInstability + 1;
+		} forEach (T_GETV("activeCities") 
+			select { GETV(_x, "gameData") }
+			select { GETV(_x, "instability") });
+
+		private _stabRatio = _totalInstability / _maxInstability;
+		// https://www.desmos.com/calculator/nttiqqlvg9
+		// Hits 0.2 when _stabRatio is 0.05 and 1 when _stabRatio is 0.8
+		private _campaignProgress = 1 min (0.9 * log(15 * _stabRatio + 1));
+		T_SETV_PUBLIC("campaignProgress", _campaignProgress);
+	} ENDMETHOD;
+	
 	METHOD("updatePhase") {
 		params [P_THISOBJECT];
 
@@ -301,7 +326,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				T_SETV("phase", 1);
 			};
 			/*
-			Locations are not taken, roadblocks are not deployed				
+			Locations are not taken, roadblocks are not deployed
 			*/
 			case 1: {
 				// We want to start deploying roadblocks fairly early
@@ -357,6 +382,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		OOP_INFO_1("Airports: %1", _airports);
 
+		pr _campaignProgress = T_CALLM0("getCampaignProgress");
 		pr _playerSide = T_CALLM0("getPlayerSide");
 		pr _nAirportsOwned = 0;
 
@@ -376,10 +402,23 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		OOP_INFO_1("Owned airports: %1", _nAirportsOwned);
 
-		if ((count _airports) == _nAirportsOwned && _nAirportsOwned > 0) then {
+		if (((count _airports) == _nAirportsOwned && _nAirportsOwned > 0)) then {
 			// I dunno, spam in the chat maybe or make a notification?
 			// Just do nothing for now I guess :/
 			//"You won the game! Congratulations!" remoteExecCall ["systemChat", 0];
+			{
+				"winscreen" cutText ["You won! The enemy have no fight left in them.", "PLAIN", 5];
+				sleep 10;
+				"winscreen" cutFadeOut 20;
+			} remoteExecCall ["spawn", ON_CLIENTS];
+		};
+
+		if(_campaignProgress > 0.95) then {
+			{
+				"winscreen2" cutText ["You won! The people are all with you!", "PLAIN", 5];
+				sleep 10;
+				"winscreen2" cutFadeOut 20;
+			} remoteExecCall ["spawn", ON_CLIENTS];
 		};
 
 	} ENDMETHOD;
@@ -468,10 +507,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected virtual */ METHOD("getCampaignProgress") {
 		params [P_THISOBJECT];
-		pr _casualties = T_GETV("casualties") max 0;
-		// https://www.desmos.com/calculator/t3ci9okkwk
-		pr _x = _casualties*0.007;
-		_x/( sqrt(1 + _x^2) )
+		T_GETV("campaignProgress");
 	} ENDMETHOD;
 
 	/* public virtual override*/ METHOD("getPlayerSide") {
@@ -492,6 +528,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		// Broadcast public variables
 		PUBLIC_VAR(_thisObject, "casualties");
+
+		T_CALLM0("updateCampaignProgress");
 
 		true
 	} ENDMETHOD;
@@ -579,12 +617,12 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			// as we want instability to)
 			// TODO: add other interesting factors here to the instability rate.
 			// This equation makes required instability relative to area, and means you need ~100 activity at radius 300m and ~600 at radius 750m
-			_instability = 1 min (_activity * 2700 / (_cityRadius * _cityRadius));
+			_instability = 1 min (_activity * 900 / (_cityRadius * _cityRadius));
 			diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
 			// TODO: scale the instability limits using settings
 			switch true do {
 				case (_instability >= 1): { _state = CITY_STATE_IN_REVOLT; };
-				case (_instability > 0.1): { _state = CITY_STATE_AGITATED; };
+				case (_instability > 0.3): { _state = CITY_STATE_AGITATED; };
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {
@@ -602,6 +640,16 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 					};
 				};
 				_instability = 1;
+
+				// Make sure amount of activity is appropriate for a city that is liberated
+				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
+				private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
+
+				// Activity trends upwards in liberated revolting cities until it hits an equilibrium with fade out
+				// This will ensure the enemy commander doesn't forget about them even if player isn't active in them
+				// https://www.desmos.com/calculator/kiphke1gsj
+				private _dActivity = _dt * 10 / (30 * (_activity + 10));
+				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _cityPos ARG _dActivity]);
 			};
 		};
 
@@ -617,6 +665,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _status = ["STATUS", _stateData#0, _stateData#1];
 		private _mapUIInfo = [
 			["RECRUITS", str floor T_GETV("nRecruits")],
+			["  MAX", str floor T_CALLM1("getMaxRecruits", _city)],
 			["  PER HOUR", _ratePerHour toFixed 1],
 			["INSTABILITY", format["%1%2", (_instability * 100) toFixed 0, "%"]],
 			_status
@@ -645,6 +694,11 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			CALLM(_x, "update", [_city]);
 		} forEach _ambientMissions;
 	} ENDMETHOD;
+	
+	METHOD("getMaxRecruits") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
+	} ENDMETHOD;
 
 	// Get the recruitment rate per hour
 	METHOD("getRecruitmentRate") {
@@ -655,7 +709,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			T_PRVAR(instability);
 
 			private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
-			private _nRecruitsMax = CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
+
+			private _nRecruitsMax = T_CALLM1("getMaxRecruits", _city);
 			// Recruits is filled up in 2 hours when city is at liberated
 			_rate = 0 max (_instability * _nRecruitsMax * _garrisonedMult / 2);
 		};

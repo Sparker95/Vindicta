@@ -2468,7 +2468,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					pr _nInf = CALLM0(_gar, "countInfantryUnits");
 					pr _nInfMax = CMDR_MAX_INF_AIRFIELD;	// Max inf at airfields
 					if (_nInf < _nInfMax) then {
-						pr _nInfToAdd = _infMoreRequired max (_nInfMax - _nInf);
+						pr _nInfToAdd = _infMoreRequired min (_nInfMax - _nInf);
 						OOP_INFO_2("  Adding %1 infantry to location %2", _nInfToAdd, CALLM0(_loc, "getDisplayName"));
 
 						while {_nInfToAdd > 0} do {
@@ -3121,6 +3121,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Load strategy
 		pr _strategy = T_GETV("cmdrStrategy");
 		CALLM1(_storage, "load", _strategy);
+
+		// SAVEBREAK -- we should just save the strategy name, not the whole object (strategy is just some constant values)
+		// Recreate the cmdr strategy object
+		private _strategy = NEW(OBJECT_PARENT_CLASS_STR(_strategy), []);
+		T_SETV("cmdrStrategy", _strategy);
 
 		// Load actions
 		{
