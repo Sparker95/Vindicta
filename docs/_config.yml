@@ -19,6 +19,6 @@ aux_links:
     - "//github.com/Sparker95/Vindicta"
 
 # Footer content appears at the bottom of every page's main content
-footer_content: ""
+footer_content: "<a href=""{{site.github.repository_url}}/edit/master/{{page.path}}"">Edit this page</a>"
 
 search_enabled: true
