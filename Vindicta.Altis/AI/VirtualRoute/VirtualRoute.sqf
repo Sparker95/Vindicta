@@ -140,7 +140,6 @@ CLASS("VirtualRoute", "")
 				};
 				// This fills in all the actual roads between the nodes.
 				private _fullPath = [_path] call gps_core_fnc_generatePathHelpers;
-
 				T_SETV("route", _fullPath);
 
 				// Generating waypoints for AI navigation
@@ -175,6 +174,7 @@ CLASS("VirtualRoute", "")
 				// Set it last
 				T_SETV("calculated", true);
 			} catch {
+				OOP_WARNING_2("VirtualRoute calculation failed between %1 and %2", str _from, str _destination);
 				T_SETV("failed", true);
 			};
 		};
@@ -293,7 +293,6 @@ CLASS("VirtualRoute", "")
 		pr _dist = _currSpeed_ms * _dt;
 
 		// Update position
-		if (_pos isEqualType objNull) then {_pos = getPos _pos}; // WTF why does it complain that _pos is object, not array??
 		_pos = _pos vectorAdd (vectorNormalized (_nextPos vectorDiff _pos) vectorMultiply _dist);
 		T_SETV("pos", _pos);
 
