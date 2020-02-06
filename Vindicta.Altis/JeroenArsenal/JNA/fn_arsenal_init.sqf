@@ -305,6 +305,8 @@ if(hasInterface)then{
                 };
 
             };
+
+			diag_log format["JNC arsenalOpened: %1", _this];
         }] call BIS_fnc_addScriptedEventHandler;
 
     	//add close event
@@ -322,6 +324,8 @@ if(hasInterface)then{
                 [clientOwner, UINamespace getVariable "jn_object"] remoteExecCall ["jn_fnc_arsenal_requestClose",2];
 				UINamespace setVariable ["jn_type",""];
             };
+
+			diag_log format["JNC arsenalClosed: %1", _this];
         }] call BIS_fnc_addScriptedEventHandler;
     };
 };
