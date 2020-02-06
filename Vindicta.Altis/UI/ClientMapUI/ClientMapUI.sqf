@@ -513,6 +513,12 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 
 		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
 		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		if(!isNil "gGameModeServer") then {
+			private _progressHint = format["Campaign progress: %1%2", floor (100 * CALLM0(gGameModeServer, "getCampaignProgress")), "%"];
+			T_CALLM1("setHintText", _progressHint);
+		} else {
+			T_CALLM1("setHintText", "Game not initialized. Press U and then create or load a game!");
+		};
 
 		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
 		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
