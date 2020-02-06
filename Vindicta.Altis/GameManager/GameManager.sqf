@@ -213,6 +213,14 @@ CLASS("GameManager", "MessageReceiverEx")
 		diag_log "[GameManager]			GAME SAVE STARTED";
 		OOP_INFO_0("GAME SAVE STARTED");
 
+
+		// Start loading screen
+#ifdef RELEASE_BUILD
+		//startLoadingScreen ["Saving mission"];
+		["saving", ["<t size='3'>Saving...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
+#endif
+
 		pr _storage = NEW(__STORAGE_CLASS, []);
 
 		// Create save game header
@@ -284,6 +292,15 @@ CLASS("GameManager", "MessageReceiverEx")
 			_success = false;
 		};
 
+
+		// End loading screen
+		//endLoadingScreen;
+#ifdef RELEASE_BUILD
+		//startLoadingScreen ["Saving mission"];
+		["saving", ["<t size='3'>Save complete</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+#endif
+
 		OOP_INFO_0("GAME SAVE ENDED");
 		diag_log "[GameManager] GAME SAVE ENDED";
 		diag_log "[GameManager] - - - - - - - - - - - - - - - - - - - - - - - - - - -";
@@ -309,6 +326,14 @@ CLASS("GameManager", "MessageReceiverEx")
 			OOP_ERROR_0("loadGame must be executed only on server!");
 			false
 		};
+
+
+		// Start loading screen
+#ifdef RELEASE_BUILD
+		//startLoadingScreen ["Loading the mission"];
+		["loading", ["<t size='3'>Loading...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
+#endif
 
 		// Bail if game mode is already initialized (although the button should be disabled, right?)
 		if(CALLM0(gGameManager, "isGameModeInitialized")) exitWith { false };
@@ -362,7 +387,12 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						// Add data to the JIP queue so that clients can also initialize
 						// Execute everywhere but not on server
-						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], 0, "GameManager_initGameModeClient");
+						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], ON_ALL, "GameManager_initGameModeClient");
+
+						// Make sure to initialize client UI stuff if we are running combined client/server
+						if(HAS_INTERFACE) then {
+							CALLM0(gGameMode, "initClientOnly");
+						};
 
 						// Set flag
 						T_SETV("gameModeInitialized", true);
@@ -391,6 +421,15 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 
 		DELETE(_storage);
+
+
+		// End loading screen
+		//endLoadingScreen;
+#ifdef RELEASE_BUILD
+		//startLoadingScreen ["Saving mission"];
+		["loading", ["<t size='3'>Load complete</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+#endif
 
 		OOP_INFO_0("GAME LOAD ENDED");
 		diag_log "[GameManager] GAME LOAD ENDED";

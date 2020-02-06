@@ -1666,11 +1666,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
-		// Start loading screen
-#ifdef RELEASE_BUILD
-		startLoadingScreen ["Saving mission"];
-#endif
-
 		// Save message loops
 		{
 			_x params ["_loopName", "_timeout"];
@@ -1725,9 +1720,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" FINISHED SAVING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
-		// End loading screen
-		endLoadingScreen;
-
 		true
 	} ENDMETHOD;
 
@@ -1741,11 +1733,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Delete editor's special objects
 		CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
 		CALLSM0("Location", "deleteEditorObjects");
-
-		// Start loading screen
-#ifdef RELEASE_BUILD
-		startLoadingScreen ["Loading the mission"];
-#endif
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
@@ -1880,9 +1867,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
-
-		// End loading screen
-		endLoadingScreen;
 
 		true
 	} ENDMETHOD;
