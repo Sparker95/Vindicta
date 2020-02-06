@@ -1,20 +1,19 @@
 param (
-    [string]$major = "0",
-    [string]$minor = "0",
-    [string]$patch = "0"
+    [string]$patch = "666"
 )
 
+#$verStr = "$($major)_$($minor)_$($patch)"
+#$verDir = "vindicta_v$($verStr)"
+# Set-Content -Path ..\configs\majorVersion.hpp -Value $major -Force -NoNewline
+# Set-Content -Path ..\configs\minorVersion.hpp -Value $minor -Force -NoNewline
 
-$verStr = "$($major)_$($minor)_$($patch)"
-$verDir = "vindicta_v$($verStr)"
-
-"Building Vindicta v$($verStr)"
-
-Set-Content -Path ..\configs\majorVersion.hpp -Value $major -Force -NoNewline
-Set-Content -Path ..\configs\minorVersion.hpp -Value $minor -Force -NoNewline
 Set-Content -Path ..\configs\buildVersion.hpp -Value $patch -Force -NoNewline
 
 ..\tools\setup_and_build.bat
+$verDir = (Get-ChildItem -Path ..\_build -Filter "vindicta_v*").Name
+$verStr = $verDir -replace "vindicta_v",""
+
+"Building Vindicta v$($verStr)"
 
 # echo "::set-env name=version::$($verStr)"
 # (Get-Content -path hemtt.json -Raw) -replace '0.0.0',$verStr | Set-Content -Path hemtt.json
