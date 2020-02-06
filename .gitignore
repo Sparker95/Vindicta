@@ -15,7 +15,6 @@ _build
 tools/_build
 tools/_buildID.txt
 
-
 #TEMP
 temp
 temp/*
@@ -30,6 +29,7 @@ mission.sqm.backup.at*
 Vindicta.Altis/out/linecount.txt
 Vindicta.Altis/out/linecount.json
 Vindicta.Altis/mission.sqm
+Vindicta.Altis/config/user_local_config.hpp
 Vindicta.Enoch/
 
 #ADDON
@@ -41,18 +41,19 @@ Vindicta-Addon/release
 Vindicta-Addon/*.bikey
 Vindicta-Addon/*.biprivatekey
 Vindicta-Addon/keys
+Vindicta-Addon/dev/
 
 Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/config.cpp
 ~Vindicta-Addon/addons/missions/$PBOPREFIX$
 ~Vindicta-Addon/addons/missions/script_component.hpp
+
 configs/briefingName.hpp
+configs/*Version.hpp
 
 tools/buildtool/dist/
 
-Vindicta.Altis/config/user_local_config.hpp
 *.pbo
 
 *.tmp
 
-Vindicta-Addon/dev/
