@@ -59,7 +59,7 @@ jobs:
 
     - name: Upload pbo to dev server
       run: |
-        cd dev
+        cd Vindicta-Addon/dev
         sudo apt-get install wput
         wput *.pbo "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions/"
  
