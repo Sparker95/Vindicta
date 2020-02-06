@@ -1,8 +1,20 @@
-..\tools\setup_and_build.bat
-$verDir = (Get-ChildItem -Path ..\_build -Filter "vindicta_v*").Name
-$verStr = $verDir -replace "vindicta_v",""
+param (
+    [string]$major = "0",
+    [string]$minor = "0",
+    [string]$patch = "0"
+)
+
+
+$verStr = "$($major)_$($minor)_$($patch)"
+$verDir = "vindicta_v$($verStr)"
 
 "Building Vindicta v$($verStr)"
+
+Set-Content -Path ..\configs\majorVersion.hpp -Value $major -Force -NoNewline
+Set-Content -Path ..\configs\minorVersion.hpp -Value $minor -Force -NoNewline
+Set-Content -Path ..\configs\buildVersion.hpp -Value $patch -Force -NoNewline
+
+..\tools\setup_and_build.bat
 
 # echo "::set-env name=version::$($verStr)"
 # (Get-Content -path hemtt.json -Raw) -replace '0.0.0',$verStr | Set-Content -Path hemtt.json
@@ -11,11 +23,11 @@ $verStr = $verDir -replace "vindicta_v",""
 "Creating key..."
 .\tools\DSCreateKey "vindicta"
 $privateKey = "vindicta.biprivatekey"
-New-Item ".\release\@vindicta\keys" -ItemType "directory"
-New-Item ".\release\@vindicta\addons" -ItemType "directory"
-Copy-Item "vindicta.bikey" ".\release\@vindicta\keys\vindicta.bikey"
+New-Item ".\release\@vindicta\keys" -ItemType "directory" -Force | Out-Null
+New-Item ".\release\@vindicta\addons" -ItemType "directory" -Force | Out-Null
+Copy-Item "vindicta.bikey" ".\release\@vindicta\keys\vindicta.bikey" -Force
 "Building mission pbo..."
-.\tools\armake_w64 build -i include "..\_build\$($verDir)" ".\release\@vindicta\addons\vindicta_v$($verStr).pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+.\tools\armake_w64 build --force -i include "..\_build\$($verDir)" ".\release\@vindicta\addons\vindicta_v$($verStr).pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 "Signing mission pbo..."
 .\tools\DSSignFile $privateKey ".\release\@vindicta\addons\vindicta_v$($verStr).pbo"
 
@@ -26,28 +38,22 @@ $modules = Get-ChildItem -Path "addons" -Directory
 foreach ($module in $modules) {
     $pboName = ".\release\@vindicta\addons\vindicta_$($module.Name).pbo"
     "Building $($pboName)..."
-    .\tools\armake_w64 build -i include  "addons\$($module.Name)" $pboName -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+    .\tools\armake_w64 build --force -i include  "addons\$($module.Name)" $pboName -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
     "Signing $($pboName)..."
     .\tools\DSSignFile $privateKey $pboName
     # .\tools\armake_w64 sign "vindicta_v$($verStr).biprivatekey" $pboName
 }
 
-$extraFiles = @(
-    "mod.cpp",
-    "README.md",
-    "AUTHORS.txt",
-    "LICENSE",
-    "logo_vindicta.paa"
-)
+$extraFiles = Get-ChildItem -Path "extras" -File
 
 foreach ($extraFile in $extraFiles) {
-    "Copying extra file $($extraFile) ..."
-    Copy-Item $extraFile ".\release\@vindicta\$($extraFile)"
+    "Copying extra file $($extraFile.Name) ..."
+    Copy-Item ".\extras\$($extraFile.Name)" ".\release\@vindicta\$($extraFile.Name)"
 }
 
 # Make the standalone pbos as well
-New-Item ".\dev" -ItemType "directory"
+New-Item ".\dev" -ItemType "directory" -Force | Out-Null
 "Building standalone mission vindicta_altis_v$($verStr).altis.pbo..."
-.\tools\armake_w64 build -i include "..\_build\Vindicta_Altis_v$($verStr).Altis" ".\dev\vindicta_altis_v$($verStr).altis.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+.\tools\armake_w64 build --force -i include "..\_build\Vindicta_Altis_v$($verStr).Altis" ".\dev\vindicta_altis_v$($verStr).altis.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 "Building standalone mission vindicta_enoch_v$($verStr).enoch.pbo..."
-.\tools\armake_w64 build -i include "..\_build\Vindicta_Enoch_v$($verStr).Enoch" ".\dev\vindicta_enoch_v$($verStr).enoch.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+.\tools\armake_w64 build --force -i include "..\_build\Vindicta_Enoch_v$($verStr).Enoch" ".\dev\vindicta_enoch_v$($verStr).enoch.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
