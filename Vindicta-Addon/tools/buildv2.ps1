@@ -50,4 +50,4 @@ New-Item ".\dev" -ItemType "directory"
 "Building standalone mission vindicta_altis_v$($verStr).altis.pbo..."
 .\tools\armake_w64 build -i include "..\_build\Vindicta_Altis_v$($verStr).Altis" ".\dev\vindicta_altis_v$($verStr).altis.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 "Building standalone mission vindicta_enoch_v$($verStr).enoch.pbo..."
-.\tools\armake_w64 build -i include "..\_build\Vindicta_Enoch_v$($verStr).Enoch" "vindicta.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+.\tools\armake_w64 build -i include "..\_build\Vindicta_Enoch_v$($verStr).Enoch" ".\dev\vindicta_enoch_v$($verStr).enoch.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
