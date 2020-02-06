@@ -54,6 +54,13 @@ if (!_spawningHandled) then {
 
 	private _loc = GET_VAR(_thisObject, "location");
 
+	// SAVEBREAK >>> Cleanup invalid units (T_INF units *must* have a group)
+	// This might just be a bug not a savebreak
+	{
+		T_CALLM1("removeUnit", _x);
+	} forEach (_units select { CALLM0(_x, "getGroup") == NULL_OBJECT && CALLM0(_x, "getCategory") == T_INF });
+	// <<< SAVEBREAK
+
 	if (_loc != NULL_OBJECT) then {
 		// If there is a location, spawn at it
 		// Spawn groups

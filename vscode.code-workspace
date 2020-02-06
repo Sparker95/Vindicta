@@ -49,7 +49,6 @@
 			"**/SteamPreviewCache": true,
 			"**/mpStat*.*": true,
 			"**/squads": true,
-			"**/*.sqm*": true,
 			"**/~*": true
 		},
 		"todo-tree.showTagsFromOpenFilesOnly": false,
