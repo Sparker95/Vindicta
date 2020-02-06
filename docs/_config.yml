@@ -19,6 +19,15 @@ aux_links:
     - "//github.com/Sparker95/Vindicta"
 
 # Footer content appears at the bottom of every page's main content
-footer_content: [Edit this page]({{site.github.repository_url}}/edit/master/{{page.path}})
+footer_content: ''
 
 search_enabled: true
+
+# Footer metadata
+show_last_edit_time: true
+last_edit_time_format: "%b %e %Y at %I:%M %p" # uses ruby's time format: https://ruby-doc.org/stdlib-2.7.0/libdoc/time/rdoc/Time.html
+show_gh_edit_link: true
+gh_edit_repository: "https://github.com/Sparker95/Vindicta" # the github URL for your repo
+gh_edit_branch: "master" # switch to the branch that your docs is served from
+gh_edit_view_mode: "tree" # switch to "edit" if you want the user to jump into the editor immediately
+edit_link_text: "Edit this page on GitHub."
