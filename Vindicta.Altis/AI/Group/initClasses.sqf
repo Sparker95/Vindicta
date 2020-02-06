@@ -2,6 +2,7 @@
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\_ActionGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupArrest.sqf";
+call compile preprocessFileLineNumbers "AI\Group\ActionGroupAAD.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupFlee.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupGetInBuilding.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupGetInGarrisonVehiclesAsCargo.sqf";
@@ -20,6 +21,7 @@ call compile preprocessFileLineNumbers "AI\Group\ActionGroupSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupUnflipVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupVehicleClearArea.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupArrest.sqf";
+call compile preprocessFileLineNumbers "AI\Group\GoalGroupAAD.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupClearArea.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupFlee.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupGetInBuilding.sqf";
