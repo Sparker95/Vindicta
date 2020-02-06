@@ -1,5 +1,5 @@
 param (
-    [string]$patch = "0"
+    [string]$patch = "666"
 )
 
 #$verStr = "$($major)_$($minor)_$($patch)"
