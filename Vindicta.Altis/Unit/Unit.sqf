@@ -274,7 +274,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNull _objectHandle) then { //If it's not spawned yet
 			private _className = _data#UNIT_DATA_ID_CLASS_NAME;
 			private _group = _data#UNIT_DATA_ID_GROUP;
-
 			pr _posATLPrev = _data#UNIT_DATA_ID_POS_ATL;
 			pr _dirAndUpPrev = _data#UNIT_DATA_ID_VECTOR_DIR_UP;
 			if (_spawnAtPrevPos) then {
@@ -314,8 +313,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				switch(_catID) do {
 					case T_INF: {
 						private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
-						if (isNull _groupHandle) then {
-							OOP_ERROR_0("Spawn: group handle is null!");
+						if (isNull _groupHandle) exitWith {
+							OOP_ERROR_1("Spawn: group handle is null (_data = %1)!", _data);
+							// Mark it as dead?
+							T_SETV("data", []);
 						};
 						//diag_log format ["---- Received group of side: %1", side _groupHandle];
 						_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
