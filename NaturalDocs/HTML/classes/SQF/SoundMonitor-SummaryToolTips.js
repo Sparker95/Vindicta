@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:SoundMonitor",{441:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Monitors sounds emitted by player. Sends stimulus to server.</div></div>"});

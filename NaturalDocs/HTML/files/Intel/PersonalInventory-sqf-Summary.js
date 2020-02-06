@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Intel/PersonalInventory.sqf","PersonalInventory.sqf");NDSummary.OnSummaryLoaded("File:Intel/PersonalInventory.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[628,0,0,"PersonalInventory","PersonalInventory"]]);

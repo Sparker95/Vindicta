@@ -30,9 +30,6 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("selectedGarrisonMarkers");
 	VARIABLE("selectedLocationMarkers");
 
-	// todo maybe redo THIS_ACTION_NAME
-	STATIC_VARIABLE("campAllowed");
-
 	// Position where the action listbox is going to be attached to
 	VARIABLE("garActionPos");
 	// True if the garrison action listbox is shown
@@ -78,6 +75,11 @@ CLASS(CLASS_NAME, "")
 	// Int, IDC of the control under the cursor, or -1
 	VARIABLE("currentControlIDC");
 
+	// Respawn panel
+	VARIABLE("respawnPanelEnabled");
+	// If a restore point is available for the player
+	VARIABLE("playerRestoreData");
+
 	// initialize UI event handlers
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
@@ -117,6 +119,10 @@ CLASS(CLASS_NAME, "")
 		T_SETV("intelPanelSortInverse", false);
 		T_SETV("intelPanelSortCategory", "side");
 		T_SETV("currentControlIDC", -1);
+
+		// Respawn panel
+		T_SETV("respawnPanelEnabled", false);
+		T_SETV("playerRestoreData", []);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -185,12 +191,12 @@ CLASS(CLASS_NAME, "")
 		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickRespawn", _this); }];
 
 		// = = = = = = Initialize default text = = = = = =
 
 		// init headline text and color
 		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
-
 
 		//  = = = = = = = = Add event handlers to the map = = = = = = = = 
 
@@ -277,7 +283,7 @@ CLASS(CLASS_NAME, "")
 		if (isNull _ctrlGroup) then {
 			OOP_ERROR_0("Listbox button group was not found!");
 		} else {
-			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.25, 0.75], true] call ui_fnc_createButtonsInGroup;
+			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.2, 0.8], true] call ui_fnc_createButtonsInGroup;
 			_btns#0 ctrlSetText "Side";
 			_btns#1 ctrlSetText "Type";
 			_btns#2 ctrlSetText "Time";
@@ -293,8 +299,8 @@ CLASS(CLASS_NAME, "")
 			}];
 		};
 
-		
-
+		// Disable the respawn panel initially
+		T_CALLM1("respawnPanelEnable", false);
 
 		// Mouse moving
 		// Probably we don't need it now
@@ -337,6 +343,11 @@ CLASS(CLASS_NAME, "")
 88     `8'     88  88   "Y88888P"     `"Y8888Y"'   
 http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 	*/
+
+	STATIC_METHOD("setPlayerRestoreData") {
+		params ["_thisClass", "_playerRestoreData"];
+		SETV(gClientMapUI, "playerRestoreData", _playerRestoreData);
+	} ENDMETHOD;
 
 	/*
 		Method: toggleButtonEnabled
@@ -423,7 +434,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 	#define __MRK_DEST "_dst"
 	// Draws or undraws a route for a given array of positions
 	STATIC_METHOD("drawRoute") {
-		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]], ["_color", "ColorRed"] ];
 
 		//OOP_INFO_1("DRAW ROUTE: %1", _this);
 
@@ -456,8 +467,8 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 					_x params ["_name", "_pos", "_type", "_text"];
 					private _mrk = createMarkerLocal [_name, _pos];
 					_mrk setMarkerTypeLocal _type;
-					_mrk setMarkerColorLocal "ColorRed";
-					_mrk setMarkerAlphaLocal 1;
+					_mrk setMarkerColorLocal _color;
+					_mrk setMarkerAlphaLocal 0.7;
 					_mrk setMarkerTextLocal _text;
 					_markers pushBack _name; 
 				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_start", "Source"], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_end", "Destination"]];
@@ -468,7 +479,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, "ColorRed", 20, _mrkName] call misc_fnc_mapDrawLineLocal;
+				[_pos0, _pos1, _color, 20, _mrkName] call misc_fnc_mapDrawLineLocal;
 				_markers pushBack _mrkName;
 			};
 		};
@@ -502,6 +513,12 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 
 		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
 		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		if(!isNil "gGameModeServer") then {
+			private _progressHint = format["Campaign progress: %1%2", floor (100 * CALLM0(gGameModeServer, "getCampaignProgress")), "%"];
+			T_CALLM1("setHintText", _progressHint);
+		} else {
+			T_CALLM1("setHintText", "Game not initialized. Press U and then create or load a game!");
+		};
 
 		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
 		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
@@ -951,8 +968,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	http://patorjk.com/software/taag/#p=display&f=O8&t=INTEL%20PANEL
 	*/
 
+	// Flags for the function behavior use like: [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]
+	#define INTEL_PANEL_CLEAR 0
+	#define INTEL_PANEL_SHOW_COMPOSITION 1
+
 	METHOD("intelPanelUpdateFromGarrisonRecord") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), ["_clear", true]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), P_ARRAY("_flags")];
 
 		private _mapDisplay = findDisplay 12;
 
@@ -964,7 +985,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		};
 
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 		_lnb lnbSetColumnsPos [0, 0.6];
 
 		pr _comp = CALLM0(_garRecord, "getComposition");
@@ -983,7 +1004,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	} ENDMETHOD;
 
 	METHOD("intelPanelUpdateFromLocationIntel") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), ["_clear", true], ["_showComposition", true]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_ARRAY("_flags")];
 
 		private _mapDisplay = findDisplay 12;
 
@@ -995,7 +1016,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		};
 
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 		
 
 		pr _typeText = "";
@@ -1017,21 +1038,25 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		// Add amount of recruits if it's a city
 		pr _loc = GETV(_intel, "location");
-		if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
-			pr _gameModeData = GETV(_loc, "gameModeData");
-			pr _nRecruits = -666;
-			if ( !(IS_NULL_OBJECT(_gameModeData)) && {IS_OOP_OBJECT(_gameModeData)}) then {
-				_nRecruits = CALLM0(_gameModeData, "getRecruitCount");
-			};
-			_lnb lnbAddRow ["RECRUITS", str _nRecruits];
-		} else {
-			// Add amount of recruits we can recruit at this place if it's not a city
-			pr _pos = CALLM0(_loc, "getPos");
-			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
-			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
-			//_lnb lnbAddRow [format ["AVAILABLE RECRUITS %1", _nRecruits], "", ""];
-			_lnb lnbAddRow ["AVAILABLE RECRUITS", str _nRecruits];
+		pr _gameModeData = GETV(_loc, "gameModeData");
+		if ( !(IS_NULL_OBJECT(_gameModeData)) && {IS_OOP_OBJECT(_gameModeData)}) then {
+			{
+				private _rowIdx = _lnb lnbAddRow [_x#0, _x#1];
+				if(count _x > 2) then {
+					_lnb lnbSetColor [[_rowIdx, 1], _x#2];
+				};
+			} forEach CALLM0(_gameModeData, "getMapInfoEntries");
 		};
+
+		// if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
+		// } else {
+		// 	// Add amount of recruits we can recruit at this place if it's not a city
+		// 	pr _pos = CALLM0(_loc, "getPos");
+		// 	pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
+		// 	pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+		// 	//_lnb lnbAddRow [format ["AVAILABLE RECRUITS %1", _nRecruits], "", ""];
+		// 	_lnb lnbAddRow ["AVAILABLE RECRUITS", str _nRecruits];
+		// };
 
 		// Add inf capacity
 		pr _capinf = CALLM0(_loc, "getCapacityInf");
@@ -1040,7 +1065,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		// Add unit data
 		pr _ua = GETV(_intel, "unitData");
-		if (count _ua > 0 && _showComposition) then {
+		if (count _ua > 0 && {INTEL_PANEL_SHOW_COMPOSITION in _flags}) then {
 			_compositionText = "";
 			// Amount of infrantry
 			{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
@@ -1076,15 +1101,15 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	} ENDMETHOD;
 
 	METHOD("intelPanelUpdateFromIntel") {
-		params [P_THISOBJECT, ["_clear", true]];
+		params [P_THISOBJECT, P_ARRAY("_flags")];
 		
 		private _mapDisplay = findDisplay 12;
 
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		_lnb lnbSetColumnsPos [0, 0.3, 0.7];
-		if (_clear) then { T_CALLM0("intelPanelClear"); };		
+		_lnb lnbSetColumnsPos [0, 0.2, 0.8];
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
 
 		// Read some variables...
 		private _showInactive = T_GETV("showIntelInactive");
@@ -1406,6 +1431,8 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			};
 		};
 
+
+
 		if (count _markersUnderCursor == 0) then {
 			// We are definitely not clicking on any map marker
 			T_CALLM0("onMouseClickElsewhere");
@@ -1454,20 +1481,20 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 				// If we have selected both a garrison and a location
 				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
 				pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-				T_CALLM3("intelPanelUpdateFromLocationIntel", _intel, true, false); // clear
-				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, false); // don't clear
+				T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR]);
+				T_CALLM1("intelPanelUpdateFromGarrisonRecord", _garRecord);
 				//T_CALLM1("intelPanelShowButtons", false);
 			} else {
 				// If one garrison was clicked, update the panel from its record
 				if (count _garrisonsUnderCursor == 1) then {
 					pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, true); // clear
+					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, [INTEL_PANEL_CLEAR]); // clear
 					//T_CALLM1("intelPanelShowButtons", false);
 				} else {
 					// If one location was clicked, update panel from the location intel
 					if (count _locationsUnderCursor == 1) then {
 						pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, true); // clear
+						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]);
 						//T_CALLM1("intelPanelShowButtons", false);
 					};
 				};
@@ -1526,7 +1553,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		//T_CALLM0("intelPanelClear");
 
 		// Fill the intel panel from intel
-		T_CALLM1("intelPanelUpdateFromIntel", true);
+		T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 		T_CALLM0("intelPanelDeselect");
 		T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 
@@ -1545,7 +1572,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			// todo if we have something currently selected, we should select the old item, etc, etc, probably don't care much for that now ... 
 
 			// Fill the intel panel from intel
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 
@@ -1612,7 +1639,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// If nothing is selected on the map, update the intel panel too
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
@@ -1626,7 +1653,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// If nothing is selected on the map, update the intel panel too
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
@@ -1640,7 +1667,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// If nothing is selected on the map, update the intel panel too
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
@@ -1796,6 +1823,9 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Redraw the drawArrow on the map if we are currently giving order to something
 		T_CALLM0("garOrderUpdateArrow");
 
+		// Update state of respawn panel thing
+		T_CALLM0("respawnPanelOnDraw");
+
 	} ENDMETHOD;
 
 	/*
@@ -1883,6 +1913,173 @@ Gets called from "onMapDraw"
 		};
 	} ENDMETHOD;
 
+
+	// //////////////////////////////////////////////////////////////////////////////////
+	// //  R E S P A W N   B U T T O N
+	// //////////////////////////////////////////////////////////////////////////////////
+
+	METHOD("respawnPanelEnable") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+
+		pr _respawnCtrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+		_respawnCtrl ctrlShow _enable;
+		_respawnCtrl ctrlEnable false; // Disable the button initially, it will re-enable itself later
+
+		pr _respawnStaticCtrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_respawnStaticCtrl ctrlShow _enable;
+
+		// Might not be loaded yet
+		if(!isNil "gGameModeServer") then {
+			// Request update on players restore point from server
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
+		};
+
+		T_SETV("respawnPanelEnabled", _enable);
+	} ENDMETHOD;
+
+	METHOD("respawnPanelEnabled") {
+		params [P_THISOBJECT];
+		T_GETV("respawnPanelEnabled");
+	} ENDMETHOD;
+
+	METHOD("onButtonClickRespawn") {
+		params [P_THISOBJECT];
+
+		// If player has clicked this button, then it must be enabled
+		// If it's enabled, then respawn is possible here
+
+		pr _restoreGear = T_GETV("playerRestoreData");
+		pr _locMarkers = T_GETV("selectedLocationMarkers");
+
+		pr _loc = if (count _locMarkers != 0) then {
+			pr _locMarker = _locMarkers#0;				// Get the location from marker
+			pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
+			GETV(_intel, "location")
+		} else {
+			NULL_OBJECT
+		};
+
+		if (IS_OOP_OBJECT(_loc)) then {
+			// Teleport player
+			pr _respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
+			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
+			// Show a message to everyone
+			pr _text = format ["%1 has respawned at %2", name player, CALLM0(_loc, "getDisplayName")];
+			[_text] remoteExecCall ["systemChat"];
+		} else {
+			if(_restoreGear isEqualTo []) exitWith {	// We want to be super sure that all is ok
+				OOP_ERROR_1("Selected spawn Location at marker %1 does not exist", _locMarkers);
+			};
+		};
+
+		// Call gameMode method
+		pr _args = [player, objNull, "", 0, _restoreGear, !IS_OOP_OBJECT(_loc)];
+		CALLM(gGameMode, "playerSpawn", _args);
+
+		// Execute script on the server
+		_args remoteExec ["fnc_onPlayerRespawnServer", ON_SERVER, NO_JIP];
+
+		// Disable this panel
+		T_CALLM1("respawnPanelEnable", false);
+
+		// Close the map
+		openMap [false, false];
+	} ENDMETHOD;
+
+	// Sets text on the respawn panel
+	METHOD("respawnPanelSetText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+
+		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_ctrl ctrlSetText _text;
+	} ENDMETHOD;
+
+	// Gets called on each draw event of map (on each frame when map is open)
+	METHOD("respawnPanelOnDraw") {
+		params [P_THISOBJECT];
+
+		if (T_GETV("respawnPanelEnabled")) then {
+			pr _locMarkers = T_GETV("selectedLocationMarkers");
+
+			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+			
+			pr _canRestore = !(T_GETV("playerRestoreData") isEqualTo []);
+
+			if(_canRestore) then {
+				_ctrlButton ctrlSetText "RESTORE";
+			} else {
+				_ctrlButton ctrlSetText "RESPAWN";
+			};
+
+			// Bail if game mode is not initialized
+			if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
+				T_CALLM1("respawnPanelSetText", "You can't respawn because game mode is not initialized yet");
+				_ctrlButton ctrlEnable false;
+			};
+
+
+			// Bail if no markers are selected
+			if (!_canRestore && count _locMarkers != 1) exitWith {
+				T_CALLM1("respawnPanelSetText", "Select a respawn point");
+				_ctrlButton ctrlEnable false;
+			};
+
+			if(count _locMarkers == 1) then {
+				pr _locMarker = _locMarkers#0;				// Get the location from marker
+				pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
+				pr _loc = GETV(_intel, "location");			//
+				pr _locBorderArea = CALLM0(_loc, "getBorder");
+				pr _locPos = CALLM0(_loc, "getPos");
+
+				// Only one location is selected
+				
+				// Bail if location object is wrong (why??)
+				if (IS_NULL_OBJECT(_loc)) exitWith {};		// Because who knows...
+
+				// Bail if respawn is disabled
+				if (!CALLM1(_loc, "playerRespawnEnabled", playerSide)) exitWith {
+					// Respawn is disabled here through location's methods
+					T_CALLM1("respawnPanelSetText", "Respawn is disabled here");
+					_ctrlButton ctrlEnable false;
+				};
+
+				// Check if there are enemies occupying this place, etc...
+
+				pr _enemySides = [EAST, WEST, INDEPENDENT] - [playerSide];
+
+				// Check enemies in area
+				// todo: might not want to check that on each frame maybe... maybe once in a few frames instead
+				pr _index = (allUnits select {(side group _x) in _enemySides}) findIf {	// Find all enemy units...
+					// ((_x distance _locPos) < 200) ||									// Which are very close
+					(_x inArea _locBorderArea)											// Or inside the area
+				};
+
+				// Bail if there are enemies in area
+				if (_index != -1) exitWith {
+					T_CALLM1("respawnPanelSetText", "You can't respawn here because there are enemies nearby");
+					_ctrlButton ctrlEnable false;
+				};
+
+				// No enemies found there
+				if(_canRestore) then {
+					T_CALLM1("respawnPanelSetText", "You can restore here with your saved gear");
+				} else {
+					T_CALLM1("respawnPanelSetText", "You can respawn here");
+				};
+				_ctrlButton ctrlEnable true;
+			} else {
+				T_CALLM1("respawnPanelSetText", "You can restore at your last position with your saved gear");
+				_ctrlButton ctrlEnable true;
+			};
+		};
+	} ENDMETHOD;
+
+
+
+
+
+	
+
 	// Adds some random intel to debug the intel panel
 	// You can use this in the debug console:
 	// call ClientMapUI_fnc_addDummyIntel;
@@ -1916,6 +2113,3 @@ Gets called from "onMapDraw"
 	} ENDMETHOD;
 
 ENDCLASS;
-
-SET_STATIC_VAR(CLASS_NAME, "campAllowed", true);
-PUBLIC_STATIC_VAR(CLASS_NAME, "campAllowed");

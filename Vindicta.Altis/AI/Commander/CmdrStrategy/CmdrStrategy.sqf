@@ -2,6 +2,8 @@
 
 // Activity function common between different methods
 // Maps activity at area to a priority multiplier
+// https://www.desmos.com/calculator/sjoagy4rro
+// This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
 #define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
 
 /*
@@ -50,21 +52,22 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	METHOD("new") {
 		params [P_THISOBJECT];
 
-		T_SETV("takeLocOutpostPriority", 0);
-		T_SETV("takeLocBasePriority", 2);
-		T_SETV("takeLocAirportPriority", 6);				// We want them very much since we bring reinforcements through them
-		T_SETV("takeLocDynamicEnemyPriority", 4);			// Big priority for everything created by players or enemies dynamicly
-		T_SETV("takeLocRoadBlockPriority", 0);
-		T_SETV("takeLocCityPriority", 0);					// 
+		// Default is for cmdr to do everything
+		T_SETV("takeLocOutpostPriority", 			1);
+		T_SETV("takeLocBasePriority", 				1);
+		T_SETV("takeLocAirportPriority", 			1);
+		T_SETV("takeLocDynamicEnemyPriority", 		1);
+		T_SETV("takeLocRoadBlockPriority", 			1);
+		T_SETV("takeLocCityPriority", 				1);
 
-		T_SETV("takeLocOutpostCoeff", 1);	//
-		T_SETV("takeLocBaseCoeff", 0);		//
-		T_SETV("takeLocAirportCoeff", 0);	//
-		T_SETV("takeLocRoadBlockCoeff", 2);	// These stand on the road so they must be cleared
-		T_SETV("takeLocCityCoeff", 0.5);	//
+		T_SETV("takeLocOutpostCoeff", 				1);
+		T_SETV("takeLocBaseCoeff", 					1);
+		T_SETV("takeLocAirportCoeff", 				1);
+		T_SETV("takeLocRoadBlockCoeff", 			1);
+		T_SETV("takeLocCityCoeff", 					1);
 
-		T_SETV("constructLocRoadblockPriority", 0);	// Generally it makes no sense to make them everywhere
-		T_SETV("constructLocRoadblockCoeff", 1.5);	// Higher priority than constructing outpost
+		T_SETV("constructLocRoadblockPriority", 	1);
+		T_SETV("constructLocRoadblockCoeff", 		1);
 	} ENDMETHOD;
 
 	/*

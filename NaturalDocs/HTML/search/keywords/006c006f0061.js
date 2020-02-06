@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("loa",["Function"],[["load",,[["Storage",,,,0,"File:SaveSystem/Storage.sqf:Storage.load","SQFClass:Storage:load"]]]]);

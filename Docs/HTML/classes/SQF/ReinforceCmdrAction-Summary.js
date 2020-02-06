@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:ReinforceCmdrAction","ReinforceCmdrAction");NDSummary.OnSummaryLoaded("SQFClass:ReinforceCmdrAction",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[88,0,0,"ReinforceCmdrAction"],[89,0,2,"Functions","Functions"],[90,0,1,"new","new"]]);

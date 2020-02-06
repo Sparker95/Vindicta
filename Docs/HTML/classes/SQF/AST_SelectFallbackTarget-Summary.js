@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:AST_SelectFallbackTarget","AST_SelectFallbackTarget");NDSummary.OnSummaryLoaded("SQFClass:AST_SelectFallbackTarget",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[100,0,0,"AST_SelectFallbackTarget"],[101,0,2,"Functions","Functions"],[102,0,1,"new","new"]]);

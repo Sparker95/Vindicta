@@ -218,12 +218,12 @@ CLASS("UnitIntel", "")
 	STATIC_METHOD("initPlayer") {
 		params [P_THISCLASS];
 
-		diag_log "--- initPlayer";
+		//diag_log "--- initPlayer";
 
 		//player removeAllEventHandlers "InventoryOpened";
 		if (! GET_STATIC_VAR(_thisClass, "eventHandlerAdded") || !isMultiplayer) then { // In singleplayer event handler doesn't get magically on respawn transfered :/
 
-			diag_log "--- adding event handler";
+			//diag_log "--- adding event handler";
 
 			
 			// Old code which would examing intel when player would double click it

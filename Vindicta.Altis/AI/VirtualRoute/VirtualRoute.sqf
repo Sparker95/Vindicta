@@ -134,13 +134,12 @@ CLASS("VirtualRoute", "")
 				// This gets the node to node path.
 				// TODO: add cancellation token so we can cancel route calulation on delete (token = array wrapping a bool)
 				private _path = [_startRoute,_endRoute,_costFn,"",_callbackArgs] call gps_core_fnc_generateNodePath;
-				if(count _path < 1) then { // Replaced <=1 with <1 because it might make one waypoint if it's not too far to traverl
+				if(count _path < 2) then { // Replaced <=1 with <1 because it might make one waypoint if it's not too far to traverl
 					// TODO: this could do something more intelligent. Probably ties in with travel to and from actual roads.
 					throw "failed";
 				};
 				// This fills in all the actual roads between the nodes.
 				private _fullPath = [_path] call gps_core_fnc_generatePathHelpers;
-
 				T_SETV("route", _fullPath);
 
 				// Generating waypoints for AI navigation
@@ -175,6 +174,7 @@ CLASS("VirtualRoute", "")
 				// Set it last
 				T_SETV("calculated", true);
 			} catch {
+				OOP_WARNING_2("VirtualRoute calculation failed between %1 and %2", str _from, str _destination);
 				T_SETV("failed", true);
 			};
 		};
@@ -284,7 +284,7 @@ CLASS("VirtualRoute", "")
 
 				// Delete this position from the waypoint array (if it is in the waypoint array)
 				pr _waypoints = T_GETV("waypoints");
-				if (_waypoints#0 isEqualTo _nextPos) then {_waypoints deleteAt 0;};
+				if ((_waypoints#0) isEqualTo _nextPos) then {_waypoints deleteAt 0;};
 			} else {
 				T_SETV("complete", true);
 			};
@@ -293,7 +293,6 @@ CLASS("VirtualRoute", "")
 		pr _dist = _currSpeed_ms * _dt;
 
 		// Update position
-		if (_pos isEqualType objNull) then {_pos = getPos _pos}; // WTF why does it complain that _pos is object, not array??
 		_pos = _pos vectorAdd (vectorNormalized (_nextPos vectorDiff _pos) vectorMultiply _dist);
 		T_SETV("pos", _pos);
 
@@ -457,9 +456,9 @@ CLASS("VirtualRoute", "")
 			pr _i = 0;
 			pr _count = count _route;
 			pr _index = 0;
-			pr _dist = _route#0 distance2D _pos;
+			pr _dist = (getPos (_route#0)) distance2D _pos;
 			while {_i < _count} do {
-				pr _p = _route#_i;
+				pr _p = getPos (_route#_i);
 				pr _d = _p distance2D _pos;
 				if (_d < _dist) then {_dist = _d; _index = _i;};
 				_i = _i + 1;
@@ -470,14 +469,14 @@ CLASS("VirtualRoute", "")
 				_index = _index + 1;
 			};
 			T_SETV("nextIdx", _index);
-			T_SETV("pos", _route select _index);
+			T_SETV("pos", getPos (_route select _index));
 
 			// Search the route from start and delete all waypoints until this point
 			_i = 0;
 			pr _waypoints = T_GETV("waypoints");
 			while {_i <= _index} do {
-				pr _pos = _route select _i;
-				pr _wpid = _waypoints findIf {_x isEqualTo _pos};
+				pr _p = getPos (_route#_i);
+				pr _wpid = _waypoints findIf {_x isEqualTo _p};
 				if (_wpid != -1) then {
 					_waypoints deleteAt _wpid;
 				};

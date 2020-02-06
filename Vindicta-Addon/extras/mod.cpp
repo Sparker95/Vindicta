@@ -1,0 +1,12 @@
+name = "Vindicta (Alpha)";
+picture = "logo_vindicta.paa";
+actionName = "GitHub";
+action = "https://github.com/Sparker95/Vindicta";
+description = "Vindicta (Alpha)";
+logo = "logo_vindicta.paa";
+logoOver = "logo_vindicta.paa";
+tooltip = "Vindicta (Alpha)";
+tooltipOwned = "";
+overview = "Vindicta (Alpha)";
+author = "Vindicta Team";
+overviewPicture = "logo_vindicta.paa";

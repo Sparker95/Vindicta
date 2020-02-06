@@ -15,8 +15,7 @@
                 ".",
                 "-i",
                 "${file}",
-                "--disable-macro-warnings",
-                "--lint-private-var-usage"
+                "--disable-macro-warnings"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Vindicta.Altis"
@@ -393,6 +392,50 @@
                     ]
                 }
             ]
+        },
+        {
+            "label": "Build All",
+            "command": "powershell",
+            "args":  [   
+                "-ExecutionPolicy",
+                "Unrestricted",
+                "-NoProfile",
+                "-File",
+                "${workspaceRoot}/Vindicta-Addon/tools/buildv2.ps1"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/Vindicta-Addon"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean All",
+            "command": "powershell",
+            "args":  [   
+                "-ExecutionPolicy",
+                "Unrestricted",
+                "-NoProfile",
+                "-File",
+                "${workspaceRoot}/Vindicta-Addon/tools/cleanv2.ps1"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/Vindicta-Addon"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
         },
         {
             "label": "Build PBOs",

@@ -87,7 +87,7 @@ disableserialization;
 
 _mode = [_this,0,"Open",[displaynull,""]] call bis_fnc_param;
 _this = [_this,1,[]] call bis_fnc_param;
-if!(_mode in ["draw3D","KeyDown","ListCurSel"])then{diag_log format["modec: %1 %2",_mode,_this]};
+if!(_mode in ["draw3D","KeyDown","KeyUp","ListCurSel"])then{diag_log format["modec: %1 %2",_mode,_this]};
 
 
 switch _mode do {
@@ -113,7 +113,11 @@ switch _mode do {
 		["customEvents",[_display]] call jn_fnc_arsenal_container;
 		["ColorTabs",[_display]] call jn_fnc_arsenal_container;
 
-		['showMessage',[_display,"Inventory selected object"]] call jn_fnc_arsenal;
+		pr _object_name =  getText (configfile >> "CfgVehicles" >> typeOf _object_selected >> "displayName");
+		//['showMessage',[_display, format[STR_HINT_ARSENAL_TARGET, _object_name]]] call jn_fnc_arsenal;
+		"arsenal_usage_hint" cutText [format["<t color='#FFFF00' size='1.5'>%1</t><br/><t color='#CCCCCC' size='1.25'>%2</t>", format[STR_HINT_ARSENAL_TARGET, _object_name], STR_HINT_ARSENAL_USAGE], "PLAIN DOWN", -1, false, true];
+		"arsenal_usage_hint" cutFadeOut 300;
+
 		["jn_fnc_arsenal"] call BIS_fnc_endLoadingScreen;
 	};
 
@@ -225,7 +229,9 @@ switch _mode do {
 
 		//Keys
 		_display displayRemoveAllEventHandlers "keydown";
+		_display displayRemoveAllEventHandlers "keyup";
 		_display displayAddEventHandler ["keydown",{['KeyDown',_this] call jn_fnc_arsenal;}];
+		_display displayAddEventHandler ["keyup",{['KeyUp',_this] call jn_fnc_arsenal;}];
 
 		//--- UI event handlers
 		_ctrlButtonRandom = _display displayctrl IDC_RSCDISPLAYARSENAL_CONTROLSBAR_BUTTONRANDOM;
@@ -604,7 +610,21 @@ switch _mode do {
 		_amountOld = parseNumber (_ctrlList lnbtext [_lbcursel,2]);
 		//remove or add
 		_count = 1;
-		if(((_amount > 0 || _amount == -1) || _add < 0) && (_add != 0))then{
+
+		pr _shift = uiNamespace getVariable ["arsenalShift", false];
+		pr _ctrl = uiNamespace getVariable ["arsenalCtrl", false];
+		//pr _alt = uiNamespace getVariable ["arsenalAlt", false];
+
+		if(_shift && !_ctrl) then {
+			_count = _count * 5;
+		};
+		if(!_shift && _ctrl) then {
+			_count = _count * 10;
+		};
+		if(_shift && _ctrl) then {
+			_count = _count * 100;
+		};
+		if(((_amount > 0 || _amount == -1) || _add < 0) && (_add != 0)) then {
 
 			if (_add > 0) then {//add
 
@@ -617,32 +637,35 @@ switch _mode do {
 				//magazines are handeld by bullet count
 				if(_index in [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL])then{
 					//check if full mag can be optaind
-					_count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
-					if(_amount != -1)then{
-						if(_amount<_count)then{_count = _amount};
-					};
+					_count = _count * getNumber (configfile >> "CfgMagazines" >> _item >> "count");
 				};
 
-				if(_count > 0)then{
-					_mass = jnva_loadout_mass + (["getMassItem",[_item,_count,_index]] call jn_fnc_arsenal_container);
-					if(_mass <= _max)then{
-						_ctrlList lnbsettext [[_lbcursel,2],str (_amountOld + _count)];
+				if(_amount != -1) then {
+					_count = _count min _amount;
+				};
 
-						jnva_loadout set [_index,[jnva_loadout select _index,[_item,_count]] call jn_fnc_common_array_add];
-						jnva_loadout_mass = _mass;
-						//[_index, _item, _count] remoteExecCall ["jn_fnc_arsenal_removeItem"];
-						[_object, _index, _item, _count] call jn_fnc_arsenal_removeItem; //Sparker: why execute it on all clients?
-					};
+				// We can load upto _max - jnva_loadout_mass mass items
+				pr _availMass = _max - jnva_loadout_mass;
+				pr _itemMass = ["getMassItem",[_item,1,_index]] call jn_fnc_arsenal_container;
+				pr _maxItems = floor (_availMass / _itemMass);
+				//_mass = jnva_loadout_mass + (["getMassItem",[_item,_count,_index]] call jn_fnc_arsenal_container);
+				//if(_mass <= _max)then{
+				_count = _count min _maxItems;
+
+				if(_count > 0) then {
+					_ctrlList lnbsettext [[_lbcursel,2],str (_amountOld + _count)];
+					jnva_loadout set [_index,[jnva_loadout select _index,[_item,_count]] call jn_fnc_common_array_add];
+					jnva_loadout_mass = jnva_loadout_mass + _count * _itemMass;
+					//[_index, _item, _count] remoteExecCall ["jn_fnc_arsenal_removeItem"];
+					[_object, _index, _item, _count] call jn_fnc_arsenal_removeItem; //Sparker: why execute it on all clients?
 				};
 
 			}else{
 				if(_index in [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL])then{
-					_count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
+					_count = _count * getNumber (configfile >> "CfgMagazines" >> _item >> "count");
 				};
 
-				if(_count>_amountOld)then{
-					_count = _amountOld;
-				};
+				_count = _count min _amountOld;
 
 				if(_count > 0)then{
 					_ctrlList lnbsettext [[_lbcursel,2],str (_amountOld - _count)];
@@ -713,7 +736,18 @@ switch _mode do {
 			case (_key == DIK_TAB): {
 			};
 
-
+			case (_key == DIK_LSHIFT): {
+				uiNamespace setVariable ["arsenalShift", true];
+				_return = true;
+			};
+			case (_key == DIK_LCONTROL): {
+				uiNamespace setVariable ["arsenalCtrl", true];
+				_return = true;
+			};
+			case (_key == DIK_LALT): {
+				uiNamespace setVariable ["arsenalAlt", true];
+				_return = true;
+			};
 
 			//--- Save
 			case (_key == DIK_S): {
@@ -749,6 +783,26 @@ switch _mode do {
 				playsound ["RscDisplayCurator_visionMode",true];
 				_return = true;
 
+			};
+		};
+		_return
+	};	
+	
+    /////////////////////////////////////////////////////////////////////////////////////////// event
+ 	case "KeyUp": {
+		params["_display","_key","_shift","_ctrl","_alt"];
+		switch true do {
+			case (_key == DIK_LSHIFT): {
+				uiNamespace setVariable ["arsenalShift", false];
+				_return = true;
+			};
+			case (_key == DIK_LCONTROL): {
+				uiNamespace setVariable ["arsenalCtrl", false];
+				_return = true;
+			};
+			case (_key == DIK_LALT): {
+				uiNamespace setVariable ["arsenalAlt", false];
+				_return = true;
 			};
 		};
 		_return

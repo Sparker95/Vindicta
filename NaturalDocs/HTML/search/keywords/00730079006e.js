@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("syn",["Function"],[["sync",,[["ModelBase","(virtual) sync",,"(virtual)sync",0,"File:AI/Commander/Model/ModelBase.sqf:ModelBase.(virtual)sync","SQFClass:ModelBase:(virtual)sync"]]]]);

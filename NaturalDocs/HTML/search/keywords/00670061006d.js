@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("gam",["Class"],[["GameManager",,[[,,,,0,"File:GameManager/GameManager.sqf:GameManager","SQFClass:GameManager"]]]]);

@@ -6,25 +6,36 @@ _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tRHS_LDF"];
+_array set [T_DESCRIPTION, "Livoniad Defense Forces with with custom loadouts from RHS addons"];
+_array set [T_DISPLAY_NAME, "RHS LDF (Custom)"];
+_array set [T_FACTION, T_FACTION_Military];
+_array set [T_REQUIRED_ADDONS, [
+								"rhs_c_troops",		// RHS AFRF
+								"rhsusf_c_troops",
+								"rhssaf_c_troops",
+								"rhsgref_c_troops"]];
+
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["I_E_Soldier_F"]];
 
 _inf set [T_INF_SL, ["RHS_LDF_SL"]];
-_inf set [T_INF_TL, ["RHS_LDF_TL"]];
+_inf set [T_INF_TL, ["RHS_LDF_TL", "RHS_LDF_TL_2"]];
 _inf set [T_INF_officer, ["RHS_LDF_officer"]];
-_inf set [T_INF_GL, ["RHS_LDF_grenadier"]];
+_inf set [T_INF_GL, ["RHS_LDF_grenadier", "RHS_LDF_grenadier_2"]];
 _inf set [T_INF_rifleman, ["RHS_LDF_rifleman"]];
 _inf set [T_INF_marksman, ["RHS_LDF_marksman"]];
-_inf set [T_INF_sniper, ["RHS_LDF_sniper"]];
-_inf set [T_INF_spotter, ["RHS_LDF_spotter"]];
+_inf set [T_INF_sniper, ["RHS_LDF_sniper", "RHS_LDF_sniper_2"]];
+_inf set [T_INF_spotter, ["RHS_LDF_spotter", "RHS_LDF_spotter_2"]];
 _inf set [T_INF_exp, ["RHS_LDF_explosives"]];
 _inf set [T_INF_ammo, ["RHS_LDF_MG_2", "RHS_LDF_AT_2"]];
 _inf set [T_INF_LAT, ["RHS_LDF_LAT"]];
 _inf set [T_INF_AT, ["RHS_LDF_AT"]];
 _inf set [T_INF_AA, ["RHS_LDF_AA"]];
-_inf set [T_INF_LMG, ["RHS_LDF_MG"]];
+_inf set [T_INF_LMG, ["RHS_LDF_LMG"]];
 _inf set [T_INF_HMG, ["RHS_LDF_MG"]];
 _inf set [T_INF_medic, ["RHS_LDF_medic"]];
 _inf set [T_INF_engineer, ["RHS_LDF_engineer"]];
@@ -37,7 +48,7 @@ _inf set [T_INF_pilot_heli, ["RHS_LDF_helipilot"]];
 
 // Recon
 _inf set [T_INF_recon_TL, ["RHS_LDF_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["RHS_LDF_recon_LAT"]];
+_inf set [T_INF_recon_rifleman, ["RHS_LDF_recon_rifleman"]];
 _inf set [T_INF_recon_medic, ["RHS_LDF_recon_medic"]];
 _inf set [T_INF_recon_exp, ["RHS_LDF_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["RHS_LDF_recon_LAT"]];
@@ -61,8 +72,8 @@ _veh set [T_VEH_car_unarmed, ["rhsgref_cdf_reg_uaz", "rhsgref_cdf_reg_uaz_open"]
 _veh set [T_VEH_car_armed, ["rhsgref_cdf_reg_uaz_ags", "rhsgref_cdf_reg_uaz_dshkm", "rhsgref_cdf_reg_uaz_spg9"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhsgref_BRDM2UM"]];
-_veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_HQ", "rhsgref_BRDM2"]];
-_veh set [T_VEH_MRAP_GMG, ["rhsgref_BRDM2_ATGM"]];
+_veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_HQ"]];
+_veh set [T_VEH_MRAP_GMG, ["rhsgref_BRDM2"]];
 
 _veh set [T_VEH_IFV, ["rhsgref_cdf_bmd1p", "rhsgref_cdf_bmd1pk", "rhsgref_cdf_bmd2", "rhsgref_cdf_bmd2k", "rhsgref_cdf_bmp1p", "rhsgref_cdf_bmp2e", "rhsgref_cdf_bmp2k"]];
 _veh set [T_VEH_APC, ["rhsgref_cdf_btr60", "rhsgref_cdf_btr70"]];
@@ -84,7 +95,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["rhs_D30_msv"]];
 _veh set [T_VEH_heli_light, ["rhsgref_cdf_reg_Mi8amt"]];
 _veh set [T_VEH_heli_heavy, ["rhsgref_cdf_reg_Mi17Sh"]];
 //_veh set [T_VEH_heli_cargo, [""]];
-_veh set [T_VEH_heli_attack, ["rhsgref_cdf_Mi24D", "rhsgref_cdf_Mi35","rhsgref_mi24g_CAS"]];
+_veh set [T_VEH_heli_attack, ["rhsgref_cdf_Mi24D", "rhsgref_cdf_Mi35"]];
 
 _veh set [T_VEH_plane_attack, ["rhsgref_cdf_su25", "rhs_l39_cdf"]];
 _veh set [T_VEH_plane_fighter, ["rhsgref_cdf_mig29s"]];
@@ -136,7 +147,5 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tRHS_LDF"];
-
 
 _array // End template

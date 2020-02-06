@@ -6,6 +6,13 @@ _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tPolice"];
+_array set [T_DESCRIPTION, "Arma 3 standard police."];
+_array set [T_DISPLAY_NAME, "Arma III - Police"];
+_array set [T_FACTION, T_FACTION_Police];
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
+
 //==== Infantry ====
 _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
@@ -40,8 +47,7 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_DEFAULT, ["B_GEN_Offroad_01_gen_F"]];
-_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F"]];
-
+_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F", "B_GEN_Offroad_01_comms_F", "B_GEN_Offroad_01_covered_F", "B_GEN_Van_02_transport_F"]]; // , "B_GEN_Van_02_vehicle_F" -- not enough seats in this
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
@@ -72,6 +78,5 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tPolice"];
 
 _array

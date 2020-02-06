@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Location/initFromEditor.sqf",{630:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Initializes the location parameters from editor-placed objects.</div></div>"});

@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:SaveGameHeader","SaveGameHeader");NDSummary.OnSummaryLoaded("SQFClass:SaveGameHeader",[["SQF","SQF"]],[["Classes","Class"]],[[453,0,0,"SaveGameHeader"]]);

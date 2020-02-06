@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Goal.GoalUnitFlee","GoalUnitFlee");NDSummary.OnSummaryLoaded("SQFClass:Goal.GoalUnitFlee",[["SQF","SQF"]],[["Classes","Class"]],[[295,0,0,"<span class=\"Qualifier\">Goal.</span>&#8203;GoalUnitFlee"]]);

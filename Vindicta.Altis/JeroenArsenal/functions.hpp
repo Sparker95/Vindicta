@@ -32,6 +32,7 @@ class JN {
 		class arsenal_cargoToArray {};
 		class arsenal_arrayToArsenal {};
 		class arsenal_cargoToArsenal {};
+		class arsenal_arsenalToArsenal {};
 		class arsenal_container {};
 		class arsenal_init {};
 		class arsenal_initPersistent {};

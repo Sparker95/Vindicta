@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:ActionGroup.ActionGroupGetInBuilding","ActionGroupGetInBuilding");NDSummary.OnSummaryLoaded("SQFClass:ActionGroup.ActionGroupGetInBuilding",[["SQF","SQF"]],[["Classes","Class"]],[[331,0,0,"<span class=\"Qualifier\">ActionGroup.</span>&#8203;ActionGroupGetInBuilding"]]);

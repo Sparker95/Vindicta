@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("t_g",["Function"],[["T_GET_AST_VAR",,[[,,,,0,"File:AI/Commander/CmdrAction/Actions/common.hpp:T_GET_AST_VAR"]]]]);

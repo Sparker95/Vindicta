@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:SaveSystem/Storage.sqf","Storage.sqf");NDSummary.OnSummaryLoaded("File:SaveSystem/Storage.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[928,0,0,"Storage","Storage"],[929,0,2,"Functions","Storage.Functions"],[930,0,1,"save","Storage.save"],[931,0,1,"load","Storage.load"]]);

@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Garrison/_ActionGarrisonBehaviour.sqf",{254:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Serves as a base class for behaviour-like garrison actions (relax, defend, clear area, ...)&nbsp; Garrison action.</div></div>"});

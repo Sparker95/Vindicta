@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:AI.CmdrAI.CmdrAction.ASTs.AST_GarrisonAttackTarget",{137:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Order a garrison to attack a target.</div></div>",139:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Create an AST to give an attack target order to a garrison.</div></div>"});

@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:Location/isPosEvenSafer.sqf","isPosEvenSafer.sqf");NDSummary.OnSummaryLoaded("File:Location/isPosEvenSafer.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[606,0,0,"Location","Location"],[607,0,2,"Functions","Location.Functions"],[608,0,1,"(static)isPosEvenSafer","Location.(static)isPosEvenSafer"]]);

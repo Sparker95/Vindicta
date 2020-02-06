@@ -15,7 +15,6 @@ pr  _addToArray = {
 	};
 };
 
-
 pr _removeFromArray = {
 	params ["_array","_index","_item","_amount"];
 

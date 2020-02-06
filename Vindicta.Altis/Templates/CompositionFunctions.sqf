@@ -87,51 +87,29 @@ comp_fnc_applyEfficiencyMasks = {
 
 	_CREATE_PROFILE_SCOPE("comp_fnc_applyMasks");
 
-	params ["_comp", "_whiteListMasks", "_blackistMsks", "_unitWhitelists", "_unitBlackLists"];
+	params ["_comp", "_whiteListMasks", "_blackistMasks", "_unitWhitelists", "_unitBlackLists"];
 	for "_catID" from 0 to ((count _comp) - 1) do {
 		pr _a = _comp#_catID;
 		for "_subcatID" from 0 to ((count _a) - 1) do {
 			pr _eff = (T_efficiency#_catID#_subcatID);
-			pr _allocateThisUnit = true;
-			
-			// Check against unit blacklists
-			{
-				if ([_catID, _subcatID] in _x) exitWith {
-					_allocateThisUnit = false;
-				};
-			} forEach _unitBlacklists;
 
-			// Check against whitelists masks
-			if (_allocateThisUnit) then {
-				// Result is an OR between results of applying every mask
-				pr _allowTake = false;
-				{
-					_allowTake = _allowTake || ([_eff, _x] call eff_fnc_matchesMask);
-				} forEach _whiteListMasks;
-				_allocateThisUnit = _allowTake;
-			};
-
-			// Check against blacklist masks
-			if (_allocateThisUnit) then {
-				// Any match to a blacklist will forbid taking this unit
-				{
-					if (([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
-				} forEach _blackistMsks;
-			};
-			
-			// Check if this unit is in whitelist
-			{
-				if ([_catID, _subcatID] in _x) exitWith {
-					_allocateThisUnit = true;
-				};
-			} forEach _unitWhitelists;
+			pr _allowed = 
+					// Check against whitelists masks
+					(count _whiteListMasks == 0 || {(_whiteListMasks findIf { [_eff, _x] call eff_fnc_matchesMask }) != NOT_FOUND})
+					// Check if this unit is in whitelist
+				&&	{count _unitWhitelists == 0 || {(_unitWhitelists findIf { [_catID, _subcatID] in _x }) != NOT_FOUND}}
+				&&	{
+						// Check against blacklist masks
+						((_blackistMasks findIf { [_eff, _x] call eff_fnc_matchesMask }) == NOT_FOUND)
+						&&
+						// Check against unit blacklists
+						{(_unitBlacklists findIf { [_catID, _subcatID] in _x }) == NOT_FOUND}
+					}
+				;
 
 			// If we are not taking this unit type, set counter of this unit type to zero
-			if (!_allocateThisUnit) then {
-
-				if (!_allocateThisUnit) then {
-					_a set [_subcatID, 0];
-				};
+			if (!_allowed) then {
+				_a set [_subcatID, 0];
 			};
 		};
 	};
@@ -186,7 +164,7 @@ comp_fnc_applyWhitelistMask = {
 	} forEach _compMask;
 };
 
-// Nullify all counts in _comp0 for which _comp1 is non-zero
+// Nullify all counts in _comp for which _compMask is non-zero
 comp_fnc_applyBlacklistMask = {
 	_CREATE_PROFILE_SCOPE("comp_fnc_applyBlacklistMask");
 	params ["_comp", "_compMask"];
@@ -201,28 +179,39 @@ comp_fnc_applyBlacklistMask = {
 	} forEach _compMask;
 };
 
-// Adds two compositions, result stored in comp0
+// Nullify all counts in _comp if they are contained in _blackList
+// _blackList is of the form [[catID, subCatID], ...]
+comp_fnc_applyBlacklist = {
+	_CREATE_PROFILE_SCOPE("comp_fnc_applyBlacklistMask");
+	params ["_comp", "_blackList"];
+	{
+		_x params ["_catID", "_subcatID"];
+		(_comp#_catID) set[_subcatID, 0];
+	} forEach _blackList;
+};
+
+// Adds two compositions, result stored in _to
 comp_fnc_addAccumulate = {
 	_CREATE_PROFILE_SCOPE("comp_fnc_addAcc");
-	params ["_comp0", "_comp1"];
-	for "_i" from 0 to ((count _comp0) - 1) do {
-		pr _cat0 = _comp0#_i;
-		pr _cat1 = _comp1#_i;
-		for "_j" from 0 to ((count _cat0) - 1) do {
-			_cat0 set [_j, ((_cat0#_j) + (_cat1#_j))];
+	params ["_to", "_from"];
+	for "_i" from 0 to ((count _to) - 1) do {
+		pr _catTo = _to#_i;
+		pr _catFrom = _from#_i;
+		for "_j" from 0 to ((count _catTo) - 1) do {
+			_catTo set [_j, ((_catTo#_j) + (_catFrom#_j))];
 		};
 	};
 };
 
-// Substracts two compositions, result stored in comp0
+// Substracts two compositions, result stored in _to
 comp_fnc_diffAccumulate = {
 	_CREATE_PROFILE_SCOPE("comp_fnc_subAcc");
-	params ["_comp0", "_comp1"];
-	for "_i" from 0 to ((count _comp0) - 1) do {
-		pr _cat0 = _comp0#_i;
-		pr _cat1 = _comp1#_i;
-		for "_j" from 0 to ((count _cat0) - 1) do {
-			_cat0 set [_j, ((_cat0#_j) - (_cat1#_j))];
+	params ["_to", "_from"];
+	for "_i" from 0 to ((count _to) - 1) do {
+		pr _catTo = _to#_i;
+		pr _catFrom = _from#_i;
+		for "_j" from 0 to ((count _catTo) - 1) do {
+			_catTo set [_j, ((_catTo#_j) - (_catFrom#_j))];
 		};
 	};
 };
