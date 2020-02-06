@@ -31,21 +31,49 @@ jobs:
         cd Vindicta.Altis
         ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
 
+  update-release-draft:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      
+    - name: Draft Release
+      id: draft_release
+      uses: release-drafter/release-drafter@v5.6.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Save build numbers
+      run: |
+        printf "${{ MAJOR }} ${{ MINOR }} ${{ PATCH }}" | tee version.txt
+        cat version.txt
+        
+    - uses: actions/upload-artifact@v1
+      with:
+        name: version
+        path: version.txt
+
   build:
     runs-on: windows-latest
-    needs: [validate, test]
+    needs: [validate, test, update-release-draft]
     steps:
     - uses: actions/checkout@master
       
     - uses: actions/setup-node@v1
       with:
         node-version: '10.x'
-        
+    
+    - name: Download version.txt
+      uses: actions/download-artifact@v1
+      with:
+        name: version
+
     - name: Build
       run: |
         $env:RUST_BACKTRACE=1
+        $version = Get-Content -Path .\version.txt
+        $major,$minor,$build = $version.Split()
         cd Vindicta-Addon
-        .\tools\buildv2.ps1
+        .\tools\buildv2.ps1 $major $minor $build
         
     - uses: actions/upload-artifact@v1
       with:
@@ -57,22 +85,8 @@ jobs:
         name: dev
         path: Vindicta-Addon/dev
 
-  update-release-draft:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-      
-    - name: Draft Release
-      id: draft_release
-      uses: release-drafter/release-drafter@v5.6.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     # ****** DISABLED ****** until we can get it working iteratively (i.e. replace existing release
     #- name: Download build
-    #  if: ${{ false }}
     #  uses: actions/download-artifact@v1
     #  with:
     #    name: build
@@ -84,7 +98,6 @@ jobs:
     #    ls
     #
     #- name: Upload build to draft release
-    #  if: ${{ false }}
     #  uses: actions/upload-release-asset@v1.0.1
     #  env:
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,11 +106,6 @@ jobs:
     #    asset_path: ./build/vindicta.zip
     #    asset_name: vindicta.zip
     #    asset_content_type: application/zip
-
-    - name: Download dev
-      uses: actions/download-artifact@v1
-      with:
-        name: dev
 
     - name: Upload pbo to dev server
       run: |
