@@ -58,8 +58,10 @@ jobs:
         path: Vindicta-Addon/dev
 
     - name: Upload pbo to dev server
-      run: |
-        cd Vindicta-Addon/dev
-        sudo apt-get install wput
-        wput *.pbo "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions/"
- 
+      uses: sebastianpopp/ftp-action@v1.1.0
+      with:
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: "Vindicta-Addon/dev"
+        remoteDir: "ugs-eu-germany-1.armahosts.com_2322/mpmissions"
