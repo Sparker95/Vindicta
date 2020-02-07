@@ -4,6 +4,17 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "DEV SETUP",
+            "type": "process",
+            "command": "devsetup.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "Compile with SQF-VM",
             "type": "process",
             "command": "../tools/SQF-VM/sqfvm.exe",
