@@ -19,6 +19,7 @@ Template of an Action class
 */
 
 #define pr private
+#define MIN_ARREST_DIST 1.5 // minimum distance for arrest animation and method call
 
 CLASS("ActionUnitArrest", "Action")
 	
@@ -88,43 +89,25 @@ CLASS("ActionUnitArrest", "Action")
 
 			// CATCH UP
 			case 0: {
-				OOP_DEBUG_1("CATCH UP %1", getPos _captor distance2D getPos _target);
-
-				if (
-					getPos _captor distance2D getPos _target < 6 && 
-					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
-					random 4 <= 2
-				) then {
-					/*
-					// Must rework it :/
-					[[_target], {
-						params ["_target"];
-						if (!hasInterface) exitWith {};
-
-						OOP_DEBUG_0("uncon");
-						_target playMoveNow "unconsciousfacedown"; // face plant
-						sleep 2;
-						_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
-
-					}] remoteExec ["spawn", _target, false];
-					*/
-
-					CALLSM1("ActionUnitArrest", "performArrest", _target);
-
-					_target setVariable ["timeArrested", time+10];
-
-					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
-					
-					T_SETV("stateMachine", 1);
-					breakTo "switch";
-				};
+				OOP_DEBUG_1("ActionUnitArrest: CATCH UP, Distance: %1", ((getPos _captor) distance (getPos _target)));
 
 				if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) exitWith {
 					T_SETV("state", ACTION_STATE_COMPLETED);
 					ACTION_STATE_COMPLETED
 				};
 
+				if (
+					getPos _captor distance getPos _target < MIN_ARREST_DIST && 
+					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
+					random 4 <= 2
+				) then {
+					CALLSM1("ActionUnitArrest", "performArrest", _target);				
+					T_SETV("stateMachine", 1);
+					breakTo "switch";
+				};
+
 				if (T_GETV("stateChanged")) then {
+
 					T_SETV("stateChanged", false);
 					T_SETV("stateTimer", time);
 					
@@ -145,19 +128,22 @@ CLASS("ActionUnitArrest", "Action")
 							_isMoving = !(_pos_arrest distance getpos _target < 0.1);
 							_target setVariable ["isMoving", _isMoving];
 							
-							pr _return = !_isMoving && {_pos distance getpos _captor < 1.5};
+							pr _return = !_isMoving && {_pos distance getpos _captor < MIN_ARREST_DIST};
 							_return
 						};
 					};
 					terminate T_GETV("spawnHandle");
 					T_SETV("spawnHandle", _handle);
+
 				} else {
+
 					// been following for 30 secs
 					if (time - T_GETV("stateTimer") > 30) then {
 						T_SETV("stateMachine", 2);
-
 						breakTo "switch";
+
 					} else {
+
 						// mitigate the msg flood
 						if (random 10 < 1) then {
 							if (time > T_GETV("screamTime") && (_target getVariable ["isMoving", false])) then {
@@ -167,9 +153,18 @@ CLASS("ActionUnitArrest", "Action")
 								pr _sentence = "Hey you, stop here.";
 								if (selectRandom [true,false]) then { 
 									_captor say "stop";
+									_sentence = selectRandom [
+									"STOP! Get on the fucking ground!",
+									"STOP! Get down on the ground!",
+									"DO NOT MOVE! Get down on the ground!"
+									]; 
 								} else {
 									_captor say "halt";
-									_sentence = "halt!"; 
+									_sentence = selectRandom [
+									"HALT! Get on the fucking ground!",
+									"HALT! Get down on the ground!",
+									"DO NOT MOVE! Get down on the ground!"
+									]; 
 								};
 								
 								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
@@ -177,7 +172,7 @@ CLASS("ActionUnitArrest", "Action")
 							};
 						};
 					};
-				};
+				}; // end state changed
 				
 				if (scriptDone T_GETV("spawnHandle")) then {
 					T_SETV("stateChanged", true);
@@ -204,7 +199,7 @@ CLASS("ActionUnitArrest", "Action")
 							_pos_search = getpos _target;
 
 							// play animation if close enough, finishing the script
-							if (getPos _captor distance getPos _target < 1) then {
+							if (getPos _captor distance getPos _target < MIN_ARREST_DIST) then {
 								pr _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
 									if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
@@ -224,12 +219,30 @@ CLASS("ActionUnitArrest", "Action")
 
 								_captor playMove _animation;
 								_animationDone = true;
-
-								// WTF why do we have waitUntil here @Sen ?? :O
-								waitUntil {animationState _captor == _animation};
-								waitUntil {animationState _captor != _animation};
 								
-								CALLSM1("ActionUnitArrest", "performArrest", _target);
+								// only perform arrest if unit IS actually close enough, prevent magic hands
+								if (getPos _captor distance getPos _target < MIN_ARREST_DIST) then {
+									CALLSM1("ActionUnitArrest", "performArrest", _target);
+								} else {
+									// player is presumed to have gone on the run! Set overt and kill!
+									pr _sentence = selectRandom [
+									"NEVER SHOULD HAVE COME HERE!",
+									"YOU ASKED FOR IT!",
+									"HE'S GOT A GUN!",
+									"DO NOT MOVE!",
+									"HOSTILE!",
+									"SHOTS FIRED!",
+									"OPEN FIRE!"
+									]; 
+
+									[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+
+									pr _args = [_target, 3.0];
+									REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
+									_captor setBehaviour "COMBAT";
+									_captor doWatch _target;
+									
+								};
 							};
 
 							_animationDone
