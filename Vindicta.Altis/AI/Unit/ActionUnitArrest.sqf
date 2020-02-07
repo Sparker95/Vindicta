@@ -180,7 +180,11 @@ CLASS("ActionUnitArrest", "Action")
 				};
 			}; // end CATCH UP
 
-			// SEARCH AND ARREST
+			/*
+				MOVE TO AND ARREST
+
+				AI unit is now close and closing the gap to perform the actual arrest.
+			*/
 			case 1: {
 				OOP_INFO_0("ActionUnitArrest: Searching/Arresting target.");
 
@@ -223,25 +227,6 @@ CLASS("ActionUnitArrest", "Action")
 								// only perform arrest if unit IS actually close enough, prevent magic hands
 								if (getPos _captor distance getPos _target < MIN_ARREST_DIST) then {
 									CALLSM1("ActionUnitArrest", "performArrest", _target);
-								} else {
-									// player is presumed to have gone on the run! Set overt and kill!
-									pr _sentence = selectRandom [
-									"NEVER SHOULD HAVE COME HERE!",
-									"YOU ASKED FOR IT!",
-									"HE'S GOT A GUN!",
-									"DO NOT MOVE!",
-									"HOSTILE!",
-									"SHOTS FIRED!",
-									"OPEN FIRE!"
-									]; 
-
-									[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
-
-									pr _args = [_target, 3.0];
-									REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
-									_captor setBehaviour "COMBAT";
-									_captor doWatch _target;
-									
 								};
 							};
 
@@ -267,11 +252,15 @@ CLASS("ActionUnitArrest", "Action")
 
 					breakTo "switch";
 				};
-			}; // end SEARCH AND ARREST
+			}; // end MOVE TO AND ARREST
 
 			// FAILED
 			case 2: {
-				OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP.");
+				OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP. Player will be made overt.");
+
+				if (isPlayer _target) then {
+					CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);	
+				};
 
 				_state = ACTION_STATE_FAILED;
 			};
@@ -289,7 +278,10 @@ CLASS("ActionUnitArrest", "Action")
 		_state
 	} ENDMETHOD;
 
-	// Performs the actual arrest of target
+	/*
+		Performs the actual arrest of targeted civilian or player.
+		
+	*/
 	STATIC_METHOD("performArrest") {
 		params [P_THISCLASS, P_OBJECT("_target")];
 
@@ -310,9 +302,34 @@ CLASS("ActionUnitArrest", "Action")
 			};
 		
 			_target setVariable ["timeArrested", time+10];
-
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
 		};
+	} ENDMETHOD;
+
+	/*
+		Called only for PLAYER. Player is presumed to have purposely evaded arrest.
+		Makes player (target) go overt in Undercover. Makes unit doing the arrest (captor) go into combat.
+	*/
+	STATIC_METHOD("killArrestTarget") {
+		params [P_THISCLASS, P_OBJECT("_target"), P_OBJECT("_captor")];
+
+		pr _sentence = selectRandom [
+			"NEVER SHOULD HAVE COME HERE!",
+			"YOU ASKED FOR IT!",
+			"HE'S GOT A GUN!",
+			"DO NOT MOVE!",
+			"HOSTILE!",
+			"SHOTS FIRED!",
+			"OPEN FIRE!"
+		]; 
+
+		[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+
+		pr _args = [_target, 3.0];
+		REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
+
+		_captor setBehaviour "COMBAT";
+		_captor doWatch _target;
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
