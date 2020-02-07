@@ -15,6 +15,50 @@
             "problemMatcher": []
         },
         {
+            "label": "EDIT ALTIS",
+            "type": "process",
+            "command": "edit_altis.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT MALDEN",
+            "type": "process",
+            "command": "edit_malden.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT ENOCH",
+            "type": "process",
+            "command": "edit_enoch.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT SAVE",
+            "type": "process",
+            "command": "edit_save.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "Compile with SQF-VM",
             "type": "process",
             "command": "../tools/SQF-VM/sqfvm.exe",
