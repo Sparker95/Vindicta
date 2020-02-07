@@ -1854,6 +1854,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderEast = T_GETV("AICommanderEast");
 		PUBLIC_VARIABLE("gAICommanderEast");
 
+		// Refresh locations
+		CALLSM0("Location", "postLoad");
+
 		// Unlock all message loops
 		{
 			private _msgLoop = T_GETV(_x);
