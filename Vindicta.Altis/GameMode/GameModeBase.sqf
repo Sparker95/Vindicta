@@ -723,7 +723,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		if(!(_restoreData isEqualTo [])) then {
 			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
-			REMOTE_EXEC_CALL_METHOD(gGameMode, "clearPlayerInfo", [player], ON_SERVER);
+			// Clear player gear immediately on this client
+			CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]]);
+			// Tell the server to clear it as well, which will also update the client (just to make sure)
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [player], ON_SERVER);
 			true
 		} else {
 			false
