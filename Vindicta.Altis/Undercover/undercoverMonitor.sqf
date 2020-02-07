@@ -593,9 +593,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable ["timeArrested", time+10, true];
 						}; // do once when state changed
 
+						// glitched out of arrest animation
 						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01" && time > (_unit getVariable "timeArrested")) then {
 							T_SETV("bCaptive", false);
 							if (T_GETV("untieActionID") != -1) then { _unit removeAction T_GETV("untieActionID"); };
+							CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 1.0);
 							OOP_INFO_0("Player appears to have glitched out of arrest animation.");
 						};
 
