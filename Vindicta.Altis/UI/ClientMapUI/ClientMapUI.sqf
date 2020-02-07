@@ -2013,7 +2013,7 @@ Gets called from "onMapDraw"
 
 			// Bail if game mode is not initialized
 			if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
-				T_CALLM1("respawnPanelSetText", "You can't respawn because game mode is not initialized yet");
+				T_CALLM1("respawnPanelSetText", "You can not respawn because game mode is not initialized yet.");
 				_ctrlButton ctrlEnable false;
 			};
 
@@ -2056,19 +2056,19 @@ Gets called from "onMapDraw"
 
 				// Bail if there are enemies in area
 				if (_index != -1) exitWith {
-					T_CALLM1("respawnPanelSetText", "You can't respawn here because there are enemies nearby");
+					T_CALLM1("respawnPanelSetText", "You can not respawn here because there are enemies nearby.");
 					_ctrlButton ctrlEnable false;
 				};
 
 				// No enemies found there
 				if(_canRestore) then {
-					T_CALLM1("respawnPanelSetText", "You can restore here with your saved gear");
+					T_CALLM1("respawnPanelSetText", "You can restore here with your saved gear.");
 				} else {
-					T_CALLM1("respawnPanelSetText", "You can respawn here");
+					T_CALLM1("respawnPanelSetText", "You can respawn here.");
 				};
 				_ctrlButton ctrlEnable true;
 			} else {
-				T_CALLM1("respawnPanelSetText", "You can restore at your last position with your saved gear");
+				T_CALLM1("respawnPanelSetText", "You can restore at your last position with your saved gear.");
 				_ctrlButton ctrlEnable true;
 			};
 		};
