@@ -19,7 +19,8 @@ Template of an Action class
 */
 
 #define pr private
-#define MIN_ARREST_DIST 1.5 // minimum distance for arrest animation and method call
+#define MIN_ARREST_DIST 2 // minimum distance for arrest animation and method call
+#define MAX_CHASE_TIME 45 
 
 CLASS("ActionUnitArrest", "Action")
 	
@@ -137,8 +138,8 @@ CLASS("ActionUnitArrest", "Action")
 
 				} else {
 
-					// been following for 30 secs
-					if (time - T_GETV("stateTimer") > 30) then {
+					// been following for X secs
+					if (time - T_GETV("stateTimer") > MAX_CHASE_TIME) then {
 						T_SETV("stateMachine", 2);
 						breakTo "switch";
 
@@ -182,7 +183,6 @@ CLASS("ActionUnitArrest", "Action")
 
 			/*
 				MOVE TO AND ARREST
-
 				AI unit is now close and closing the gap to perform the actual arrest.
 			*/
 			case 1: {
@@ -227,12 +227,14 @@ CLASS("ActionUnitArrest", "Action")
 								// only perform arrest if unit IS actually close enough, prevent magic hands
 								if (getPos _captor distance getPos _target < MIN_ARREST_DIST) then {
 									CALLSM1("ActionUnitArrest", "performArrest", _target);
+								} else {
+									CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);
 								};
 							};
-
+							sleep 1;
 							_animationDone
-						};
-					};
+						}; // end waitUntil
+					}; // end spawn script
 						
 					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
 					// arrest player by sending a message to unit's undercoverMonitor				
@@ -258,9 +260,7 @@ CLASS("ActionUnitArrest", "Action")
 			case 2: {
 				OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP. Player will be made overt.");
 
-				if (isPlayer _target) then {
-					CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);	
-				};
+				CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);	
 
 				_state = ACTION_STATE_FAILED;
 			};
@@ -312,24 +312,25 @@ CLASS("ActionUnitArrest", "Action")
 	*/
 	STATIC_METHOD("killArrestTarget") {
 		params [P_THISCLASS, P_OBJECT("_target"), P_OBJECT("_captor")];
+		if (isPlayer _target) then {
+			pr _sentence = selectRandom [
+				"NEVER SHOULD HAVE COME HERE!",
+				"YOU ASKED FOR IT!",
+				"HE'S GOT A GUN!",
+				"DO NOT MOVE!",
+				"HOSTILE!",
+				"SHOTS FIRED!",
+				"OPEN FIRE!"
+			]; 
 
-		pr _sentence = selectRandom [
-			"NEVER SHOULD HAVE COME HERE!",
-			"YOU ASKED FOR IT!",
-			"HE'S GOT A GUN!",
-			"DO NOT MOVE!",
-			"HOSTILE!",
-			"SHOTS FIRED!",
-			"OPEN FIRE!"
-		]; 
+			[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
 
-		[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+			pr _args = [_target, 3.0];
+			REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
 
-		pr _args = [_target, 3.0];
-		REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
-
-		_captor setBehaviour "COMBAT";
-		_captor doWatch _target;
+			_captor setBehaviour "COMBAT";
+			_captor doWatch _target;
+		};
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
