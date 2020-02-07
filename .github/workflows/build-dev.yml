@@ -57,11 +57,19 @@ jobs:
         name: dev
         path: Vindicta-Addon/dev
 
-    - name: Upload pbo to dev server
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download dev
+      uses: actions/download-artifact@v1
+      with:
+        name: dev
+
+    - name: Upload ftp
       uses: sebastianpopp/ftp-action@v1.1.0
       with:
         host: ${{ secrets.FTP_SERVER }}
         user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        localDir: "Vindicta-Addon/dev"
-        remoteDir: "ugs-eu-germany-1.armahosts.com_2322/mpmissions"
+        localDir: "dev"
+        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
