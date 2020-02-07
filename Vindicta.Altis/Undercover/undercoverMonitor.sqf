@@ -351,7 +351,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
 								pr _multiplier = 1+2*_progress;
-								_suspicionArr pushBack [_multiplier*SUSP_MIL_LOCATION, "In military area"];
+								if (_bInVeh) then { _suspicionArr pushBack [1, "In military area in a vehicle"]; } else {
+									_suspicionArr pushBack [_multiplier*SUSP_MIL_LOCATION, "In military area"];
+								};
 								_hintKeys pushBack HK_MILAREA;
 								OOP_INFO_0("In military area.");
 							};
@@ -593,9 +595,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable ["timeArrested", time+10, true];
 						}; // do once when state changed
 
+						// glitched out of arrest animation
 						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01" && time > (_unit getVariable "timeArrested")) then {
 							T_SETV("bCaptive", false);
 							if (T_GETV("untieActionID") != -1) then { _unit removeAction T_GETV("untieActionID"); };
+							CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 1.0);
 							OOP_INFO_0("Player appears to have glitched out of arrest animation.");
 						};
 
