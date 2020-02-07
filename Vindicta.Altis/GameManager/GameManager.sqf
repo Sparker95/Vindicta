@@ -232,28 +232,33 @@ CLASS("GameManager", "MessageReceiverEx")
 		SETV(_header, "campaignStartDate", T_GETV("campaignStartDate"));
 		SETV(_header, "templates", []); // todo NYI
 
-		// Generate a unique record name
-		pr _recordNameBase = if (!_recovery) then {			// Normal save name
-					format ["%1 #%2 %3",
-					T_GETV("campaignName"),
-					T_GETV("saveID"),
-					date call misc_fnc_dateToISO8601];
-		} else {
-					format ["[RECOVERY] %1 #%2 %3",			// Save name in case of recovery
-					T_GETV("campaignName"),
-					T_GETV("saveID"),
-					date call misc_fnc_dateToISO8601];
-		};
+		pr _prefix = 
 #ifdef RELEASE_BUILD
-		pr _recordNameFinal = _recordNameBase;
+			"";
 #else
-		pr _recordNameFinal = format["DEV %1", _recordNameBase];
+			"[DEV]";
 #endif
+
+		// Save name in case of recovery
+		if (_recovery) then {
+			_prefix = format ["%1[RECOVERY]", _prefix];
+		};
+
+		// Generate a unique record name
+		pr _recordNameBase =
+			format ["%1%2 #%3 %4",
+				_prefix,
+				T_GETV("campaignName"),
+				T_GETV("saveID"),
+				date call misc_fnc_dateToISO8601];
+
+		pr _recordNameFinal = _recordNameBase;
 		pr _i = 1;
 		while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
 			_recordNameFinal = format ["%1 %2", _recordNameBase, _i];
 			_i = _i + 1;
 		};
+
 		diag_log format ["[GameManager] Opening record: %1", _recordNameFinal];
 		CALLM1(_storage, "open", _recordNameFinal);
 

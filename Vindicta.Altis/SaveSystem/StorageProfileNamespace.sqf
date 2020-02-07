@@ -96,10 +96,8 @@ CLASS(__CLASS_NAME, "Storage")
 			};
 		} else {
 			// Add to the record table
-			pr _recordTable = T_CALLM0("_loadRecordTable");
 			pr _prefix = T_CALLM0("_generateUniquePrefix");
-			_recordTable pushBack [_recordName, _prefix];
-			T_CALLM1("_saveRecordTable", _recordTable);
+
 			T_SETV("currentPrefix", _prefix);
 			T_SETV("allVariables", []);
 
@@ -124,6 +122,11 @@ CLASS(__CLASS_NAME, "Storage")
 		// Save 'allVariables' variable
 		pr _allVariablesStr = str T_GETV("allVariables");
 		T_CALLM2("_saveString", __VAR_ALL_VARIABLES, _allVariablesStr);
+
+		// Update the records table
+		pr _recordTable = T_CALLM0("_loadRecordTable");
+		_recordTable pushBackUnique [T_GETV("currentRecord"), T_GETV("currentPrefix")];
+		T_CALLM1("_saveRecordTable", _recordTable);
 
 		// Commit all the data we wrote
 		// Only do that if we have saved anything during this session
