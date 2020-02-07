@@ -1466,6 +1466,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		true
 	} ENDMETHOD;
 
+	STATIC_METHOD("postLoad") {
+		params [P_THISCLASS];
+
+		// Refresh spawnability
+		{
+			CALLM0(_x, "updatePlayerRespawn");
+		} forEach (GETSV("Location", "all") apply { CALLM0(_x, "getGameModeData") } select { !IS_NULL_OBJECT(_x) });
+	} ENDMETHOD;
+	
+
 	/* override */ STATIC_METHOD("saveStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 	} ENDMETHOD;
