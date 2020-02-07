@@ -20,3 +20,4 @@ params ["_clientOwner","_object"];
 _temp = _object getVariable ["jna_inUseBy",[]];
 _temp = _temp - [_clientOwner];
 _object setVariable ["jna_inUseBy",_temp,true];
+diag_log format["JNC request closed: %1, new jna_inUseBy: %2", _this, _temp];

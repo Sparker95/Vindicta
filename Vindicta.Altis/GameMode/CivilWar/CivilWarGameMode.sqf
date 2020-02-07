@@ -295,8 +295,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			_totalInstability = _totalInstability + _x;
 			_maxInstability = _maxInstability + 1;
 		} forEach (T_GETV("activeCities") 
-			select { GETV(_x, "gameData") }
-			select { GETV(_x, "instability") });
+			apply { GETV(_x, "gameModeData") }
+			apply { GETV(_x, "instability") });
 
 		private _stabRatio = _totalInstability / _maxInstability;
 		// https://www.desmos.com/calculator/nttiqqlvg9
