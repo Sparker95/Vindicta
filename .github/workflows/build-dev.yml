@@ -58,6 +58,7 @@ jobs:
         path: Vindicta-Addon/dev
 
   upload:
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Download dev
