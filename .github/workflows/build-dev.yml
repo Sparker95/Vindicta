@@ -45,7 +45,7 @@ jobs:
       run: |
         $env:RUST_BACKTRACE=1
         cd Vindicta-Addon
-        .\tools\buildv2.ps1 {{github.run_number}}
+        .\tools\buildv2.ps1 ${{ github.run_number }}
         
     - uses: actions/upload-artifact@v1
       with:
