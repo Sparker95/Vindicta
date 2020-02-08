@@ -45,7 +45,7 @@ jobs:
         $major, $minor = $latest_release.tag_name.replace('v','').split('.')
         Set-Content -Path .\configs\majorVersion.hpp -Value $major -Force -NoNewline
         Set-Content -Path .\configs\minorVersion.hpp -Value $minor -Force -NoNewline
-        $uploadurl = $latest_release.upload_url.split('{')[0]
+        $uploadurl = $latest_release.upload_url
         $changelog = $latest_release.body
         Set-Content -Path .\_uploadurl -Value $uploadurl -Force -NoNewline
         Set-Content -Path .\_changelog -Value $changelog -Force -NoNewline
