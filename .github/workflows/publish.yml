@@ -82,10 +82,12 @@ jobs:
     - uses: actions/download-artifact@v1
       with:
         name: _uploadurl
-
+        path: .
+        
     - uses: actions/download-artifact@v1
       with:
         name: _changelog
+        path: .
 
     - id: release_info
       run: |
