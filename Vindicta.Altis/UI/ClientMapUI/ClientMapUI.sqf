@@ -513,11 +513,21 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 
 		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
 		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
-		if(!isNil "gGameModeServer") then {
+		pr _gameModeInitialized = if(isNil "gGameManager") then {
+			false
+		} else {
+			CALLM0(gGameManager, "isGameModeInitialized");
+		};
+
+		if(_gameModeInitialized && {!isNil "gGameModeServer"}) then {
 			private _progressHint = format["Campaign progress: %1%2", floor (100 * CALLM0(gGameModeServer, "getCampaignProgress")), "%"];
 			T_CALLM1("setHintText", _progressHint);
 		} else {
-			T_CALLM1("setHintText", "Game not initialized. Press U and then create or load a game!");
+			if(call misc_fnc_isAdminLocal) then {
+				T_CALLM1("setHintText", "Game not initialized: press U and create or load a game");
+			} else {
+				T_CALLM1("setHintText", "Game not initialized: wait for admin to create or load the game");
+			};
 		};
 
 		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
@@ -1114,7 +1124,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		// Read some variables...
 		private _showInactive = T_GETV("showIntelInactive");
 		private _showActive = T_GETV("showIntelActive");
-		private _showEnded = T_GETV("showIntelEnded");			
+		private _showEnded = T_GETV("showIntelEnded");
 
 		// forEach _allIntels;
 		{
