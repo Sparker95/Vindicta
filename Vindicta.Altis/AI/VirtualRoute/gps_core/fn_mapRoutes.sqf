@@ -31,17 +31,17 @@ gps_blacklistRoads = gps_allRoads select { count (roadsConnectedTo _x) == 0 };
 _gps_allRoadsWithInter = gps_allRoads apply {
     private _road = _x;
     // Some values returned from roadsConnectedTo are not actually roads for some reason (e.g. mounds)
-    private _connected = (roadsConnectedTo _road) - gps_allRoads;
+    private _connected = roadsConnectedTo _road;
 
     if (count _connected > 1) then 
     {
         private _near = getPosATL _road nearRoads 15;
         {
-            private _otherConnected = count ((roadsConnectedTo _x) - gps_allRoads);
-            if(_otherConnected > 0 && _otherConnected < 3 && {!(_x in gps_blacklistRoads)}) then 
+            private _otherConnected = count roadsConnectedTo _x;
+            if(_otherConnected > 0 && _otherConnected < 3) then 
             {
                 _rID = str _x;
-                _connected pushBack _x;
+                _connected pushBackUnique _x;
                 if([gps_roadsWithConnected, _rID] call misc_fnc_hashTable_exists) then {
                     ([gps_roadsWithConnected, _rID] call misc_fnc_hashTable_find) pushBack _road;
                 } else {

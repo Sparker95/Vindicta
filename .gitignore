@@ -30,7 +30,11 @@ Vindicta.Altis/out/linecount.txt
 Vindicta.Altis/out/linecount.json
 Vindicta.Altis/mission.sqm
 Vindicta.Altis/config/user_local_config.hpp
+Vindicta.Enoch
 Vindicta.Enoch/
+Vindicta.Malden
+Vindicta.Malden/
+editing.*
 
 #ADDON
 
@@ -56,4 +60,3 @@ tools/buildtool/dist/
 *.pbo
 
 *.tmp
-
