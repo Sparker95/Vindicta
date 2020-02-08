@@ -7,7 +7,7 @@ _array set [T_NAME, "tWW2_UK"];
 _array set [T_DESCRIPTION, "WW2 UK units with equipment from 1939-1945"];
 _array set [T_DISPLAY_NAME, "WW2 - UK"];
 _array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
+_array set [T_REQUIRED_ADDONS, ["cup_terrains_core", "ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "ifa3_ace_settings", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_main", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
@@ -95,7 +95,7 @@ _veh set [T_VEH_plane_cargo, ["LIB_C47_RAF"]];
 _veh set [T_VEH_plane_unarmed, ["LIB_HORSA_RAF", "LIB_MKI_HADRIAN", "LIB_MKI_HADRIAN_raf2", "LIB_MKI_HADRIAN_raf3"]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
-_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
+//_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
 _veh set [T_VEH_boat_armed, ["sab_boat_torpedo_rn", "sab_boat_subchaser_rn"]];
 
 //Not working yet
