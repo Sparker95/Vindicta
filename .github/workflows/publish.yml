@@ -41,7 +41,7 @@ jobs:
 
     - name: Get Release Info
       run: |
-        $latest_release = Invoke-WebRequest (https://api.github.com/repos/${{ github.repository }}/releases | ConvertFrom-Json).Get(0)
+        $latest_release = (Invoke-WebRequest https://api.github.com/repos/${{ github.repository }}/releases | ConvertFrom-Json).Get(0)
         $major, $minor = $latest_release.tag_name.replace('v','').split('.')
         Set-Content -Path .\configs\majorVersion.hpp -Value $major -Force -NoNewline
         Set-Content -Path .\configs\minorVersion.hpp -Value $minor -Force -NoNewline
