@@ -41,11 +41,11 @@ jobs:
 
     - name: Get Release Info
       run: |
-        $latest_release = Invoke-WebRequest https://api.github.com/repos/${{ github.repository }}/releases/latest | ConvertFrom-Json
+        $latest_release = (Invoke-WebRequest https://api.github.com/repos/${{ github.repository }}/releases | ConvertFrom-Json).Get(0)
         $major, $minor = $latest_release.tag_name.replace('v','').split('.')
         Set-Content -Path .\configs\majorVersion.hpp -Value $major -Force -NoNewline
         Set-Content -Path .\configs\minorVersion.hpp -Value $minor -Force -NoNewline
-        $uploadurl = $latest_release.upload_url.split('{')[0]
+        $uploadurl = $latest_release.upload_url
         $changelog = $latest_release.body
         Set-Content -Path .\_uploadurl -Value $uploadurl -Force -NoNewline
         Set-Content -Path .\_changelog -Value $changelog -Force -NoNewline
@@ -94,7 +94,12 @@ jobs:
         ls
         mv build/@vindicta build/@Vindicta-Dev
         echo "::set-output name=upload_url::$(cat _uploadurl)"
-        echo "::set-output name=changelog::$(cat _changelog)"
+        changelog=`cat _changelog`
+        echo $changelog
+        changelog="${changelog//'%'/'%25'}"
+        changelog="${changelog//$'\n'/'%0A'}"
+        changelog="${changelog//$'\r'/'%0D'}" 
+        echo "::set-output name=changelog::$changelog"
 
     - name: Publish to Steam Workshop
       uses: arma-actions/workshop-upload@v1
@@ -102,7 +107,7 @@ jobs:
         appId: '107410'      # default
         itemId: '1729562743' # Vindicta-Dev
         contentPath: 'build/@Vindicta-Dev'
-        changelog: ${{ steps.release_info.outputs.changelog }}
+        changelog: "${{ steps.release_info.outputs.changelog }}"
       env:
         STEAM_USERNAME: ${{ secrets.SECRET_0 }}
         STEAM_PASSWORD: ${{ secrets.SECRET_1 }}
