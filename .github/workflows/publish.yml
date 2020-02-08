@@ -94,7 +94,12 @@ jobs:
         ls
         mv build/@vindicta build/@Vindicta-Dev
         echo "::set-output name=upload_url::$(cat _uploadurl)"
-        echo "::set-output name=changelog::$(cat _changelog)"
+        changelog=`cat _changelog`
+        echo $changelog
+        changelog="${changelog//'%'/'%25'}"
+        changelog="${changelog//$'\n'/'%0A'}"
+        changelog="${changelog//$'\r'/'%0D'}" 
+        echo "::set-output name=changelog::$changelog"
 
     - name: Publish to Steam Workshop
       uses: arma-actions/workshop-upload@v1
@@ -102,7 +107,7 @@ jobs:
         appId: '107410'      # default
         itemId: '1729562743' # Vindicta-Dev
         contentPath: 'build/@Vindicta-Dev'
-        changelog: ${{ steps.release_info.outputs.changelog }}
+        changelog: "${{ steps.release_info.outputs.changelog }}"
       env:
         STEAM_USERNAME: ${{ secrets.SECRET_0 }}
         STEAM_PASSWORD: ${{ secrets.SECRET_1 }}
