@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 /*
-Author: Sparker
+Author: Marvis 06.02.2020
 */
 
 #define pr private

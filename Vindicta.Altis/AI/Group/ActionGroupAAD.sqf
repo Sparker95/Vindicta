@@ -2,7 +2,9 @@
 
 /*
 Class: ActionGroup.ActionGroupAAD
-Every unit in the group will receive a GoalUnitAAD goal.
+Some units in the group will receive a GoalUnitAAD goal.
+
+Author: Marvis 06.02.2020
 */
 
 #define pr private
@@ -15,12 +17,6 @@ CLASS("ActionGroupAAD", "ActionGroup")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];		
 		
-		// Set behaviour
-		pr _hG = GETV(_thisObject, "hG");
-		_hG setBehaviour "AWARE";
-		_hG setSpeedMode "NORMAL";
-		{_x doFollow (leader _hG)} forEach (units _hG);
-		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 		
@@ -28,10 +24,13 @@ CLASS("ActionGroupAAD", "ActionGroup")
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitNothing", 0, [], _AI);
-		} forEach _units;
+
+		if (count _units >= 1) then {
+			{
+				pr _unitAI = CALLM0(_x, "getAI");
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitAAD", 0, [], _AI);
+			} forEach _units;
+		};
 		
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -50,7 +49,7 @@ CLASS("ActionGroupAAD", "ActionGroup")
 			pr _group = T_GETV("group");
 			pr _units = CALLM0(_group, "getUnits");
 			pr _AI = T_GETV("AI");
-			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _units, "GoalUnitNothing", _AI)) then {
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _units, "GoalUnitAAD", _AI)) then {
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};
@@ -70,7 +69,7 @@ CLASS("ActionGroupAAD", "ActionGroup")
 		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitNothing", "");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitAAD", "");
 		} forEach _units;
 		
 	} ENDMETHOD;
