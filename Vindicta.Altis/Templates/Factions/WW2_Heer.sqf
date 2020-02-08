@@ -29,6 +29,7 @@ _inf set [T_INF_HMG, ["LIB_GER_mgunner", "LNRD_Luftwaffe_mgunner2"]];
 _inf set [T_INF_medic, ["LIB_GER_medic", "LNRD_Luftwaffe_medic"]];
 _inf set [T_INF_crew, ["LIB_GER_tank_lieutenant", "LIB_GER_tank_unterofficer", "LIB_GER_tank_crew"]];
 _inf set [T_INF_pilot, ["LIB_GER_pilot"]];
+_inf set [T_INF_spotter, ["LIB_GER_scout_sniper", "LNRD_Luftwaffe_sniper"]];
 /*
 _inf set [T_INF_pilot_heli, [""]];
 _inf set [T_INF_survivor, [""]];
@@ -37,7 +38,7 @@ _inf set [T_INF_crew_heli, [""]];
 _inf set [T_INF_engineer, [""]];
 _inf set [T_INF_AA, [""]];
 _inf set [T_INF_ammo, [""]];
-_inf set [T_INF_spotter, [""]];
+
 */
 // Recon
 _inf set [T_INF_recon_TL, ["LIB_FSJ_NCO", "LIB_FSJ_Soldier_2", "LIB_FSJ_Lieutenant"]];
