@@ -1,11 +1,13 @@
-/*
-	name = "Heer";
-		author = "MatrikSky";
-*/
-
 _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
+
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tWW2_Heer"];
+_array set [T_DESCRIPTION, "WW2 Germany units with equipment from 1939-1945"];
+_array set [T_DISPLAY_NAME, "WW2 - Heer"];
+_array set [T_FACTION, T_FACTION_Military];
+_array set [T_REQUIRED_ADDONS, ["cup_terrains_core", "ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "ifa3_ace_settings", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_main", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
