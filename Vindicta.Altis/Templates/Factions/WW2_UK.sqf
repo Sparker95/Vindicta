@@ -21,14 +21,14 @@ _inf set [T_INF_GL, ["LIB_UK_Grenadier"]];
 _inf set [T_INF_rifleman, ["LIB_UK_Rifleman"]];
 _inf set [T_INF_marksman, ["LIB_UK_Sniper"]];
 _inf set [T_INF_sniper, ["LIB_UK_Sniper"]];
-_inf set [T_INF_spotter, ["LIB_UK_Sniper"]];
+//_inf set [T_INF_spotter, [""]];
 _inf set [T_INF_exp, ["LIB_UK_Engineer"]];
 //_inf set [T_INF_ammo, [""]];
 _inf set [T_INF_LAT, ["LIB_UK_AT_Soldier"]];
-_inf set [T_INF_AT, ["LIB_UK_AT_Soldier"]];
+//_inf set [T_INF_AT, [""]];
 //_inf set [T_INF_AA, [""]];
 _inf set [T_INF_LMG, ["LIB_UK_LanceCorporal"]];
-_inf set [T_INF_HMG, ["LIB_UK_LanceCorporal"]];
+//_inf set [T_INF_HMG, [""]];
 _inf set [T_INF_medic, ["LIB_UK_Medic"]];
 _inf set [T_INF_engineer, ["LIB_UK_Engineer"]];
 _inf set [T_INF_crew, ["LIB_UK_Tank_Commander", "LIB_UK_Tank_Crew"]];
@@ -73,8 +73,8 @@ _veh set [T_VEH_MBT, ["fow_v_cromwell_uk", "LIB_Churchill_Mk7", "LIB_Churchill_M
 //_veh set [T_VEH_MRLS, [""]];
 _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
-	
-_veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight"]];
+
+//_veh set [T_VEH_stat_HMG_high, [""]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
 _veh set [T_VEH_stat_HMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 //_veh set [T_VEH_stat_GMG_low, [""]];
@@ -96,14 +96,7 @@ _veh set [T_VEH_plane_unarmed, ["LIB_HORSA_RAF", "LIB_MKI_HADRIAN", "LIB_MKI_HAD
 //_veh set [T_VEH_plane_VTOL, [""]];
 
 //_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
-_veh set [T_VEH_boat_armed, ["sab_boat_torpedo_rn", "sab_boat_subchaser_rn"]];
-
-//Not working yet
-
-//_veh set [T_VEH_ship_transport, ["LIB_UK_LCA", "LIB_UK_LCI"]];
-//_veh set [T_VEH_ship_cargo, ["sab_boat_liberty_rn"]];
-//_veh set [T_VEH_ship_small, ["sab_boat_destroyer_rn"]];
-//_veh set [T_VEH_ship_big, ["sab_boat_cruiser_rn", "sab_boat_battleship_rn"]];
+_veh set [T_VEH_boat_armed, ["LIB_UK_LCA", "LIB_UK_LCI", "sab_boat_destroyer_rn", "sab_boat_subchaser_rn"]];
 
 _veh set [T_VEH_personal, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 
