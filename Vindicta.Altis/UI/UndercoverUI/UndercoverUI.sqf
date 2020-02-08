@@ -18,6 +18,7 @@ Author: Marvis
 #ifndef _SQF_VM // Not needed for tests, and SQF-VM doesn't support localize anyway
 // string for each hint key
 g_UM_Hints = [
+	HK_COMPROMISED_VIC, localize "STR_UM_HINT_COMPROMISEDVIC",
 	HK_INCAPACITATED, localize "STR_UM_HINT_DOWNED",
 	HK_ARRESTED, localize "STR_UM_HINT_ARRESTED",
 	HK_ILLEGAL, localize "STR_UM_HINT_ILLEGAL",

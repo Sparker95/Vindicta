@@ -94,10 +94,10 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			// Play the alarm sound
 			pr _gar = GETV(_AI, "agent");
 			pr _loc = CALLM0(_gar, "getLocation");
-			if (_loc != "") then {
+			if (_loc != NULL_OBJECT && {!CALLM0(_loc, "isAlarmDisabled")}) then {
 				pr _pos = CALLM0(_loc, "getPos");
-				playSound3D ["A3\Sounds_F\sfx\Alarm_OPFOR.wss", objNull, false, (AGLTOASL _pos) vectorAdd [0, 0, 5], 0.9, 1, 800];
-			};			
+				playSound3D ["A3\Sounds_F\sfx\Alarm_OPFOR.wss", objNull, false, (AGLTOASL _pos) vectorAdd [0, 0, 5], 0.5, 0.8, 800];
+			};
 			
 		} else {
 			[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;

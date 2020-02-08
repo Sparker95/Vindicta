@@ -185,6 +185,9 @@
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
+			</Key>	
+			<Key ID="STR_UM_HINT_COMPROMISEDVIC">
+				<Original>COMPROMISED VEHICLE</Original>
 			</Key>																
 		</Container>	
 	</Package>
