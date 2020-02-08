@@ -57,4 +57,22 @@ gBuildUI = NEW("BuildUI", []);
 // Update player markers
 [true] call ui_fnc_enablePlayerMarkers;
 
+// Close previous menu
+if (!(isNil "gInGameMenu")) then {
+	if (IS_OOP_OBJECT(gInGameMenu)) then {
+		DELETE(gInGameMenu);
+	};
+};
+
+// Open menu immediately if game mode is not initialized
+private _gameModeInitialized = if(isNil "gGameManager") then {
+	false
+} else {
+	CALLM0(gGameManager, "isGameModeInitialized");
+};
+
+if (!_gameModeInitialized && {call misc_fnc_isAdminLocal}) then {
+	gInGameMenu = NEW("InGameMenu", []);
+};
+
 gPlayerUIInitialized = true;

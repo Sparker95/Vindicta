@@ -16,6 +16,7 @@ Has methods specialized for customization of our typical notification types
 #define BLACK 				[ 0.0, 0.0, 0.0, 1.0]
 #define GREY 				[ 0.5, 0.5, 0.5, 1.0]
 #define RED 				[ 1.0, 0.2, 0.2, 1.0]
+#define YELLOW 				[ 1.0, 0.9, 0.2, 1.0]
 #define BLUE 				[ 0.2, 0.2, 0.4, 1.0]
 #define GREEN 				[ 0.2, 0.4, 0.2, 1.0]
 #define PURPLE 				[ 0.4, 0.2, 0.4, 1.0]
@@ -23,7 +24,7 @@ Has methods specialized for customization of our typical notification types
 
 //							Fore	Back
 #define INTEL_COLORS 		WHITE, 	BLACK
-#define ACTION_COLORS 		WHITE, 	BLUE
+#define ACTION_COLORS 		BLACK, 	YELLOW
 #define RESOURCE_COLORS 	WHITE, 	GREY
 #define RADIO_COLORS 		WHITE, 	GREEN
 #define SYSTEM_COLORS 		WHITE, 	PURPLE
@@ -36,7 +37,7 @@ CLASS("NotificationFactory", "")
 	STATIC_METHOD("createIntelLocation") {
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
-		private _sound = "defaultNotification";
+		private _sound = "UAV_01";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\map_ca.paa";
 		private _duration = 8;
 		private _hint = "Check your map for more info"; // Override hint!
@@ -48,11 +49,24 @@ CLASS("NotificationFactory", "")
 	STATIC_METHOD("createIntelCommanderAction") {
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text")];
 
-		private _sound = "defaultNotification";
+		private _sound = "UAV_02";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infoNews_ca.paa";
 		private _duration = 10;
 		private _hint = "Check your map for more info"; // Override hint!
 		private _args = [_picture, [_category, ACTION_COLORS], _text, _hint, _duration, _sound];
+		CALLSM("Notification", "createNotification", _args);
+	} ENDMETHOD;
+
+	// Intel about commander actions
+	STATIC_METHOD("createIntelCommanderActionReminder") {
+		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text")];
+
+		private _sound = "Topic_Done";
+		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\watch_ca.paa";
+		private _duration = 15;
+		private _hint = "Check your map for more info"; // Override hint!
+		private _important = true;
+		private _args = [_picture, [_category, ACTION_COLORS], _text, _hint, _duration, _sound, _important];
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 
@@ -71,7 +85,7 @@ CLASS("NotificationFactory", "")
 	STATIC_METHOD("createRadioCryptokey") {
 		params [P_THISOBJECT, P_STRING("_key")];
 
-		private _sound = "defaultNotification";
+		private _sound = "UAV_03";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\radio_ca.paa";
 		private _duration = 25;
 		private _category = "RADIO CRYPTOKEY FOUND";
@@ -85,7 +99,7 @@ CLASS("NotificationFactory", "")
 	STATIC_METHOD("createSystem") {
 		params [P_THISOBJECT, P_STRING("_text"), P_STRING("_picture")];
 
-		private _sound = "defaultNotification";
+		private _sound = "beep_target";
 		private _duration = 15;
 		private _category = "SYSTEM";
 		private _hint = ""; // Override hint!
@@ -100,7 +114,7 @@ CLASS("NotificationFactory", "")
 	STATIC_METHOD("createHint") {
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
-		private _sound = "defaultNotification";
+		private _sound = "hint";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_tutorials_ca.paa";
 		private _duration = 10;
 		private _args = [_picture, [_category, HINT_COLORS], _text, _hint, _duration, _sound];
@@ -111,7 +125,7 @@ CLASS("NotificationFactory", "")
 	STATIC_METHOD("createCritical") {
 		params [P_THISOBJECT, P_STRING("_text")];
 
-		private _sound = "defaultNotification";
+		private _sound = "error01";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\notification_ca.paa";
 		private _duration = 15;
 		private _category = "CRITICAL MISSION ERROR";
@@ -136,7 +150,7 @@ CLASS("NotificationFactory", "")
 	// Intel about us spotting something
 	STATIC_METHOD("createSpottedTargets") {
 		params [P_THISOBJECT, P_POSITION("_pos")];
-		private _sound = "defaultNotification";
+		private _sound = "UAV_04";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\binoculars_ca.paa";
 		private _duration = 30;
 		private _category = "ENEMY SPOTTED";
@@ -150,7 +164,8 @@ ENDCLASS;
 
 // ["NotificationFactory", "INTEL LOCATION", "Content here", "hint here."] call NotificationFactory_fnc_createIntelLocation;
 // ["NotificationFactory", "INTEL ACTION", "Content here", "hint here..."] call NotificationFactory_fnc_createIntelCommanderAction;
-// ["NotificationFactory", "RESOURCE", "Content here", "hint here..."] call NotificationFactory_fnc_createResourceNotification;
+// ["NotificationFactory", "REMINDER", "Content here"] call NotificationFactory_fnc_createIntelCommanderActionReminder;
+// ["NotificationFactory", "RESOURCE", "Content here"] call NotificationFactory_fnc_createResourceNotification;
 // ["NotificationFactory", "RADIO", "Key"] call NotificationFactory_fnc_createRadioCryptokey;
 // ["NotificationFactory", "Content here", "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\icon_ca.paa"] call NotificationFactory_fnc_createSystem;
 // ["NotificationFactory", "HINT", "Content here", "hint here..."] call NotificationFactory_fnc_createHint;

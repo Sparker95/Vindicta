@@ -499,33 +499,35 @@ CLASS("IntelCommanderAction", "Intel")
 		if (! isRemoteExecutedJIP) then { // Only if not JIP
 			pr _intel = _thisObject;
 			pr _actionName = CALLM0(_intel, "getShortName");
-			pr _dateDeparture = GETV(_intel, "dateDeparture");
+			pr _t = CALLM0(_intel, "getTMinutes");
 
-			pr _dateDeparture = GETV(_intel, "dateDeparture");
-			pr _dateNow = date;
-			pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
-			pr _futureEvent = true;
-			if (_numberDiff < 0) then {
-				_numberDiff = -_numberDiff;
-				_futureEvent = false;
-			};
-			pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
-			_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
-			_month = _month - 1; // Because month counting starts with 1
-			_d = _d - 1; // Because day counting starts with 1
+			// pr _dateDeparture = GETV(_intel, "dateDeparture");
+			// pr _dateNow = date;
+			// pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
+			// pr _futureEvent = true;
+			// if (_numberDiff < 0) then {
+			// 	_numberDiff = -_numberDiff;
+			// 	_futureEvent = false;
+			// };
+			// pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+			// _dateDiff params ["_y", "_month", "_d", "_h", "_m"];
+			// _month = _month - 1; // Because month counting starts with 1
+			// _d = _d - 1; // Because day counting starts with 1
 
-			OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
+			OOP_INFO_2("  Intel: %1, T:%2m", _intel, _t);
 
 			// Make a string representation of time difference
+			pr _h = abs floor (_t / 60);
+			pr _m = abs floor (_t % 60);
 			pr _timeDiffStr = if (_h > 0) then {
-				format ["%1H, %2M", _h, round _m]
+				format ["%1h %2m", _h, _m]
 			} else {
-				format ["%1M", round _m]
+				format ["%1m", _m]
 			};
-			pr _timeStr = if (_futureEvent) then {
-				format ["Will start in %1", _timeDiffStr];
+			pr _timeStr = if (_t < 0) then {
+				format ["will start in %1", _timeDiffStr];
 			} else {
-				format ["Started %1 ago", _timeDiffStr];
+				format ["started %1 ago", _timeDiffStr];
 			};
 
 			pr _method = GETV(_intel, "method");
@@ -561,6 +563,36 @@ CLASS("IntelCommanderAction", "Intel")
 	//  
 	METHOD("getShortName") {
 		"Action"
+	} ENDMETHOD;
+
+	
+	/*
+	Method: getTMinutes
+	Gets the mission time in minutes relative to its start (like spaceship launch)
+
+	Returns: float
+	*/
+	METHOD("getTMinutes") {
+		params [P_THISOBJECT];
+		pr _dateDeparture = T_GETV("dateDeparture");
+		pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
+		pr _futureEvent = true;
+		if (_numberDiff < 0) then {
+			_numberDiff = -_numberDiff;
+			_futureEvent = false;
+		};
+		pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+		_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
+		_month = _month - 1; // Because month counting starts with 1
+		_d = _d - 1; // Because day counting starts with 1
+		pr _minutes = _d * 24 * 60 + _m;
+
+		// T-1 is one minute in the future, T+1 is in the past
+		if(_futureEvent) then { 
+			-_minutes
+		} else {
+			_minutes 
+		}
 	} ENDMETHOD;
 
 	/*
@@ -690,7 +722,7 @@ CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
 		// pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-		"Make RB" // Temp, since we only deploy roadblocks now anyway
+		"Construct roadblock" // Temp, since we only deploy roadblocks now anyway
 	} ENDMETHOD;
 ENDCLASS;
 
