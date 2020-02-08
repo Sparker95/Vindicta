@@ -62,6 +62,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);				// Array of [className, posWorld, vectorDir, vectorUp] of objects
 
 				VARIABLE("playerRespawnPos");							// Position for player to respawn
+				VARIABLE("alarmDisabled");								// If the player disabled the alarm
 
 	STATIC_VARIABLE("all");
 
@@ -124,6 +125,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		
 		T_SETV("timer", NULL_OBJECT);
 
+		T_SETV_PUBLIC("alarmDisabled", false);
 
 		//Push the new object into the array with all locations
 		private _allArray = GET_STATIC_VAR("Location", "all");
@@ -403,6 +405,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		gMessageLoopMain
 	} ENDMETHOD;
 
+	METHOD("isAlarmDisabled") {
+		params [P_THISOBJECT];
+		T_GETV("alarmDisabled")
+	} ENDMETHOD;
+
+	METHOD("setAlarmDisabled") {
+		params [P_THISOBJECT, P_BOOL("_disabled")];
+		T_SETV_PUBLIC("alarmDisabled", _disabled);
+	} ENDMETHOD;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -426,7 +438,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			pr _gmdata = T_GETV("gameModeData");
 			if (!IS_NULL_OBJECT(_gmdata)) then {
 				CALLM0(_gmdata, "updatePlayerRespawn");
-			};	
+			};
+
+			// Re-enable the alarm
+			T_CALLM1("setAlarmDisabled", false);
 		};
 
 		// From now on this place is occupied or was occupied
@@ -1395,6 +1410,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityInf", 0);
 		T_SETV("timer", NULL_OBJECT);
 		T_SETV("spawned", false);
+		T_SETV_PUBLIC("alarmDisabled", false);
 
 		// Load objects which we own
 		pr _gmData = T_GETV("gameModeData");
