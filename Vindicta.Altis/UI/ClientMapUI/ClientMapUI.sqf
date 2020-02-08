@@ -1339,6 +1339,9 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Ignore right clicks for now
 		if (_button == 1) exitWith {};
 
+		// Exit if game mode isn't initialized
+		if (isNil "gGameMode") exitWith {};
+
 		/*
 		Contexts to filter:
 		Click anywhere AND givingOrder == true

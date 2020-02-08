@@ -615,8 +615,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Create scroll menu to talk to civilians
 		pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
 			private _civ = cursorObject;
-			(!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
-			&& {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
+			!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}
+			&& {(_target distance _civ) < 4}
+			&& {alive _civ}
+			&& {!(_civ getVariable ["#arrested", false])}
+			&& {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 		};
 
 		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
@@ -645,7 +648,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
-		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), // title
+		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Instigate</t>")), // title
 						"[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
 						0, // Arguments
 						8998, // Priority
@@ -721,6 +724,29 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
+		// Action to disable alarm in police stations
+		pr0_fnc_canDisableAlarm = {
+			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			_loc != NULL_OBJECT && { CALLM0(_loc, "getType") == LOCATION_TYPE_POLICE_STATION } && { !CALLM0(_loc, "isAlarmDisabled") }
+		};
+		pr0_fnc_disableAlarm = {
+			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			if(_loc != NULL_OBJECT) then {
+				CALLM1(_loc, "setAlarmDisabled", true);
+			};
+		};
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\igui\rscingameui\rscunitinfoairrtdfull\ico_cpt_sound_off_ca.paa' />  %1", "Disable alarm"], // title
+						{call pr0_fnc_disableAlarm}, // disable alarm
+						0, // Arguments
+						-1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_canDisableAlarm", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
 		if(!(_restoreData isEqualTo [])) then {
 			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
 			// Clear player gear immediately on this client
