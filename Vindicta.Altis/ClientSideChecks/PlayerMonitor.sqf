@@ -288,7 +288,6 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				["STARTED", format ["%1 started %2 ago", _actionName, _tstr]]
 			};
 
-			pr _actionName = CALLM0(_intel, "getShortName");
 			CALLSM("NotificationFactory", "createIntelCommanderActionReminder", _args);
 
 			pr _state = GETV(_intel, "state");

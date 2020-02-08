@@ -63,7 +63,7 @@ CLASS("NotificationFactory", "")
 
 		private _sound = "Topic_Done";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\watch_ca.paa";
-		private _duration = 15;
+		private _duration = 10;
 		private _hint = "Check your map for more info"; // Override hint!
 		private _important = true;
 		private _args = [_picture, [_category, ACTION_COLORS], _text, _hint, _duration, _sound, _important];
@@ -110,7 +110,7 @@ CLASS("NotificationFactory", "")
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 	
-	// System notification
+	// Hint notification
 	STATIC_METHOD("createHint") {
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 

@@ -1165,18 +1165,18 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					_d = _d - 1; // Because day counting starts with 1
 
 					OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
-					
+
 					// Make a string representation of time difference
-					pr _timeDiffStr = if (_h > 0) then {
-						format ["%1H, %2M", _h, _m]
+					pr _timeDiffStr = if(_h > 0) then {
+						format ["%1h %2m", _h, _m]
 					} else {
-						format ["%1M", _m]
+						format ["%1m", _m]
 					};
-					
-					if (_futureEvent) then {
-						_timeDiffStr = "In " + _timeDiffStr;
+
+					if (_futureEvent) then { // T-1h 13m
+						_timeDiffStr = "T-" + _timeDiffStr;
 					} else {
-						_timeDiffStr = _timeDiffStr + " ago";
+						_timeDiffStr = "T+" + _timeDiffStr;
 					};
 
 					// Make a string representation of side

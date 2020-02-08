@@ -585,7 +585,7 @@ CLASS("IntelCommanderAction", "Intel")
 		_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
 		_month = _month - 1; // Because month counting starts with 1
 		_d = _d - 1; // Because day counting starts with 1
-		pr _minutes = _d * 24 * 60 + _m;
+		pr _minutes = (_d * 24 + _h) * 60 + _m;
 
 		// T-1 is one minute in the future, T+1 is in the past
 		if(_futureEvent) then { 
