@@ -37,23 +37,10 @@ for "_i" from 1 to (T_INF_SIZE-1) do {
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_default, [
-    "C_Hatchback_01_sport_F",
-    "C_Hatchback_01_F",
-    "C_Truck_02_box_F",
-    "C_Truck_02_fuel_F",
-    "C_Offroad_02_unarmed_F",
-    "C_Van_01_fuel_F",
-    "C_Truck_02_transport_F",
-    "C_Truck_02_covered_F",
-    "C_Offroad_01_F",
-    "C_Offroad_01_repair_F",
-    "C_Quadbike_01_F",
-    "C_SUV_01_F",
-    "C_Van_01_transport_F",
-    "C_Van_02_medevac_F",
-    "C_Van_02_vehicle_F",
-    "C_Van_02_service_F",
-    "C_Van_02_transport_F"
+    "LIB_GazM1",
+    "LIB_GazM1_dirty",
+    "LIB_FRA_CitC4",
+    "LIB_FRA_CitC4Ferme"
 ]];
 _vehWeights = [];
 _vehWeights set [T_VEH_SIZE-1, nil];
@@ -141,11 +128,11 @@ _array = [];
 _array set [T_SIZE*2-1, nil]; //Make an array having the size equal to the number of categories first
 
 // Name, description, faction, addons, etc
-_array set [T_NAME, "tCivilian"];
-_array set [T_DESCRIPTION, "Arma 3 Altis civilians"];
-_array set [T_DISPLAY_NAME, "Arma III - Altis Civilians"];
+_array set [T_NAME, "tWW2_Civilian"];
+_array set [T_DESCRIPTION, "WW2 40s Civilians"];
+_array set [T_DISPLAY_NAME, "WW2 - Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
-_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F", "ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
