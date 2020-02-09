@@ -54,6 +54,7 @@ class BuildObjects
 			#define __TENT_BIG_MEDICAL_COST 40
 			__BUILD_OBJECT_CLASS(Tent0,Land_MedicalTent_01_digital_closed_F, __TENT_BIG_MEDICAL_COST)
 			__BUILD_OBJECT_CLASS(Tent1,Land_MedicalTent_01_brownhex_closed_F, __TENT_BIG_MEDICAL_COST)
+			__BUILD_OBJECT_CLASS(Tent2,Land_MedicalTent_01_tropic_closed_F, __TENT_BIG_MEDICAL_COST)
 		};
 
 		class CatStorage {
@@ -97,8 +98,10 @@ class BuildObjects
 			displayName = "Lighting";
 			// Lights
 			__BUILD_OBJECT_CLASS(Light0,Land_TentLamp_01_standing_F, 10)
-			__BUILD_OBJECT_CLASS(Light1,Land_LampShabby_F, 20)
+			__BUILD_OBJECT_CLASS(Light1,Land_LampShabby_F, 10)
 			__BUILD_OBJECT_CLASS(Light2,Campfire_burning_F, 10)
+			__BUILD_OBJECT_CLASS(Light3,Land_PortableLight_double_F, 10)
+			__BUILD_OBJECT_CLASS(Light4,Land_PortableLight_single_F, 10)
 			
 		};
 
@@ -128,7 +131,7 @@ class BuildObjects
 				displayName = "Radio Shack";
 				buildResource = 100;
 				isRadio = true;
-				description = "Small building with radio equipment. Intercepts enemy radio communications in the range of ~5km, if you have the radio key";
+				description = "A small building with radio equipment. Intercepts enemy radio communications in the range of ~5km, if you have the radio cryptokey";
 			};
 		};
 	};
