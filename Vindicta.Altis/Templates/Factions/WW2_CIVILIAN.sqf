@@ -45,23 +45,10 @@ _veh set [T_VEH_default, [
 _vehWeights = [];
 _vehWeights set [T_VEH_SIZE-1, nil];
 _vehWeights set [T_VEH_default, [
-    5, /* "C_Hatchback_01_sport_F" */
-    20, /* "C_Hatchback_01_F" */
-    3, /* "C_Truck_02_box_F" */
-    0.1, /* "C_Truck_02_fuel_F" */
-    10, /* "C_Offroad_02_unarmed_F" */
-    0.1, /* "C_Van_01_fuel_F" */
-    3, /* "C_Truck_02_transport_F" */
-    3, /* "C_Truck_02_covered_F" */
-    5, /* "C_Offroad_01_F" */
-    0.1, /* "C_Offroad_01_repair_F" */
-    1, /* "C_Quadbike_01_F" */
-    3, /* "C_SUV_01_F" */
-    1, /* "C_Van_01_transport_F" */
-    1, /* "C_Van_02_medevac_F" */
-    1, /* "C_Van_02_vehicle_F" */
-    1, /* "C_Van_02_service_F" */
-    1 /* "C_Van_02_transport_F" */
+    8, /* "LIB_GazM1" */
+    7, /* "LIB_GazM1_dirty" */
+    4, /* "LIB_FRA_CitC4" */
+    1, /* "LIB_FRA_CitC4Ferme" */
 ]];
 // _veh set [T_VEH_car_unarmed, ["B_MRAP_01_F"]];
 // _veh set [T_VEH_car_armed, ["B_MRAP_01_hmg_F"]];
