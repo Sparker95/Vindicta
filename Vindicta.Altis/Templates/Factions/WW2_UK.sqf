@@ -21,14 +21,14 @@ _inf set [T_INF_GL, ["LIB_UK_Grenadier"]];
 _inf set [T_INF_rifleman, ["LIB_UK_Rifleman"]];
 _inf set [T_INF_marksman, ["LIB_UK_Sniper"]];
 _inf set [T_INF_sniper, ["LIB_UK_Sniper"]];
-//_inf set [T_INF_spotter, [""]];
+_inf set [T_INF_spotter, ["LIB_UK_Rifleman"]];
 _inf set [T_INF_exp, ["LIB_UK_Engineer"]];
-//_inf set [T_INF_ammo, [""]];
+_inf set [T_INF_ammo, ["LIB_UK_Rifleman"]];
 _inf set [T_INF_LAT, ["LIB_UK_AT_Soldier"]];
-//_inf set [T_INF_AT, [""]];
+_inf set [T_INF_AT, ["LIB_UK_AT_Soldier"]];
 //_inf set [T_INF_AA, [""]];
 _inf set [T_INF_LMG, ["LIB_UK_LanceCorporal"]];
-//_inf set [T_INF_HMG, [""]];
+_inf set [T_INF_HMG, ["LIB_UK_LanceCorporal"]];
 _inf set [T_INF_medic, ["LIB_UK_Medic"]];
 _inf set [T_INF_engineer, ["LIB_UK_Engineer"]];
 _inf set [T_INF_crew, ["LIB_UK_Tank_Commander", "LIB_UK_Tank_Crew"]];
@@ -49,9 +49,9 @@ _inf set [T_INF_recon_JTAC, ["LIB_UK_Para_Radioman"]];
 
 
 // Divers, still vanilla
-//_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];
-//_inf set [T_INF_diver_rifleman, ["B_diver_F"]];
-//_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
+_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];
+_inf set [T_INF_diver_rifleman, ["B_diver_F"]];
+_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
 
 
 
@@ -63,26 +63,26 @@ _veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 _veh set [T_VEH_car_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 _veh set [T_VEH_car_armed, ["LIB_UK_Willys_MB_M1919", "LIB_usa_M3_Scout_FFV"]];
 
-//_veh set [T_VEH_MRAP_unarmed, [""]];
-//_veh set [T_VEH_MRAP_HMG, [""]];
-//_veh set [T_VEH_MRAP_GMG, [""]];
+_veh set [T_VEH_MRAP_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
+_veh set [T_VEH_MRAP_HMG, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack"]];
+_veh set [T_VEH_MRAP_GMG, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack"]];
 
-//_veh set [T_VEH_IFV, [""]];
+_veh set [T_VEH_IFV, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_APC, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_MBT, ["fow_v_cromwell_uk", "LIB_Churchill_Mk7", "LIB_Churchill_Mk7_AVRE", "LIB_Churchill_Mk7_Crocodile", "LIB_Crusader_Mk3", "LIB_M4A3_75"]];
 //_veh set [T_VEH_MRLS, [""]];
 _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
 
-//_veh set [T_VEH_stat_HMG_high, [""]];
-//_veh set [T_VEH_stat_GMG_high, [""]];
+_veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
+_veh set [T_VEH_stat_GMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_HMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
-//_veh set [T_VEH_stat_GMG_low, [""]];
+_veh set [T_VEH_stat_GMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_AA, ["sab_static_aa", "sab_small_static_2xaa", "sab_small_static_aa"]];
 _veh set [T_VEH_stat_AT, ["fow_w_6Pounder_uk"]];
 
 _veh set [T_VEH_stat_mortar_light, ["LIB_m2_60"]];
-//_veh set [T_VEH_stat_mortar_heavy, [""]];
+_veh set [T_VEH_stat_mortar_heavy, ["LIB_m2_60"]];
 
 //_veh set [T_VEH_heli_light, [""]];
 //_veh set [T_VEH_heli_heavy, [""]];
