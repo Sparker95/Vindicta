@@ -20,6 +20,7 @@
 ["Templates\Factions\CUP_TKA.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 
 // Other factions
+["Templates\Factions\WW2_CIVILIAN.sqf", T_FACTION_Civ]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CIVILIAN.sqf", T_FACTION_Civ]					call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GUERRILLA.sqf", T_FACTION_Guer]				call t_fnc_initializeTemplateFromFile;
 
