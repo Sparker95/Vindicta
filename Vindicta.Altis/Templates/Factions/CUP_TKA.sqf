@@ -12,10 +12,12 @@ _array set [T_DESCRIPTION, "CUP - Takistani Army."];
 _array set [T_DISPLAY_NAME, "CUP - Takistani"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
-	"CUP_Creatures_Military_Taki",	// There are about 50 cfgs in CUP Units, this is just one of them...
-	"CUP_Weapons_WeaponsCore",		// There are about 100 cfgs in CUP Weapons, this is just one of them...
-	"rhs_c_troops",
-	"rhsgref_c_troops"
+	"CUP_Creatures_Military_Taki",	// CUP Units
+	"CUP_Weapons_WeaponsCore",		// CUP Weapons
+	"CUP_Vehicles_Core",			// CUP Vehicles
+	"rhs_c_troops",					// RHSAFRF
+	"rhsgref_c_troops",				// RHSGREF
+	"rhsusf_c_troops"				// RHSUSAF
 ]];
 
 //==== Infantry ====
