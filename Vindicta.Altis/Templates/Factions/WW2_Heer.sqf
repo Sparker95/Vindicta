@@ -29,16 +29,16 @@ _inf set [T_INF_HMG, ["LIB_GER_mgunner", "LNRD_Luftwaffe_mgunner2"]];
 _inf set [T_INF_medic, ["LIB_GER_medic", "LNRD_Luftwaffe_medic"]];
 _inf set [T_INF_crew, ["LIB_GER_tank_lieutenant", "LIB_GER_tank_unterofficer", "LIB_GER_tank_crew"]];
 _inf set [T_INF_pilot, ["LIB_GER_pilot"]];
-/*
-_inf set [T_INF_pilot_heli, [""]];
-_inf set [T_INF_survivor, [""]];
-_inf set [T_INF_unarmed, [""]];
-_inf set [T_INF_crew_heli, [""]];
-_inf set [T_INF_engineer, [""]];
-_inf set [T_INF_AA, [""]];
-_inf set [T_INF_ammo, [""]];
-_inf set [T_INF_spotter, [""]];
-*/
+
+//_inf set [T_INF_pilot_heli, [""]];
+//_inf set [T_INF_survivor, [""]];
+//_inf set [T_INF_unarmed, [""]];
+//_inf set [T_INF_crew_heli, [""]];
+_inf set [T_INF_engineer, ["LIB_GER_sapper_gefr", "LIB_GER_sapper"]];
+//_inf set [T_INF_AA, [""]];
+_inf set [T_INF_ammo, ["LIB_GER_unequip", "LIB_GER_ober_rifleman", "LIB_GER_scout_ober_rifleman", "LNRD_Luftwaffe_ober_rifleman", "LIB_GER_soldier_camo_base", "LIB_GER_soldier_camo2_base", "LIB_GER_Soldier2", "LIB_GER_Soldier3", "LNRD_Luftwaffe_rifleman", "LIB_GER_soldier_camo4_base", "LIB_GER_soldier_camo3_base", "LIB_GER_rifleman", "LIB_GER_soldier_camo5_base", "LIB_GER_scout_rifleman", "LIB_GER_radioman", "LNRD_Luftwaffe_radioman", "LIB_GER_stggunner", "LNRD_Luftwaffe_stggunner"]];
+_inf set [T_INF_spotter, ["LIB_GER_unequip", "LIB_GER_ober_rifleman", "LIB_GER_scout_ober_rifleman", "LNRD_Luftwaffe_ober_rifleman", "LIB_GER_soldier_camo_base", "LIB_GER_soldier_camo2_base", "LIB_GER_Soldier2", "LIB_GER_Soldier3", "LNRD_Luftwaffe_rifleman", "LIB_GER_soldier_camo4_base", "LIB_GER_soldier_camo3_base", "LIB_GER_rifleman", "LIB_GER_soldier_camo5_base", "LIB_GER_scout_rifleman", "LIB_GER_radioman", "LNRD_Luftwaffe_radioman", "LIB_GER_stggunner", "LNRD_Luftwaffe_stggunner"]];
+
 // Recon
 _inf set [T_INF_recon_TL, ["LIB_FSJ_NCO", "LIB_FSJ_Soldier_2", "LIB_FSJ_Lieutenant"]];
 _inf set [T_INF_recon_rifleman, ["LIB_FSJ_Soldier", "LIB_FSJ_AT_grenadier", "LIB_FSJ_Mgunner2", "LIB_FSJ_Mgunner"]];
@@ -56,15 +56,15 @@ _inf set [T_INF_diver_exp, ["LIB_GER_sapper_gefr", "LIB_GER_sapper"]];
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
+_veh set [T_VEH_DEFAULT, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
 
 _veh set [T_VEH_car_unarmed, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
 _veh set [T_VEH_car_armed, ["R71Ger44Camo", "R71Ger44", "R71GerPre43", "LIB_ger_M3_Scout_IFL", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
-/*
-_veh set [T_VEH_MRAP_unarmed, [""]];
-_veh set [T_VEH_MRAP_HMG, [""]];
-_veh set [T_VEH_MRAP_GMG, [""]];
-*/
+
+_veh set [T_VEH_MRAP_unarmed, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
+_veh set [T_VEH_MRAP_HMG, ["ifa3_Ba10_wm", "LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
+_veh set [T_VEH_MRAP_GMG, ["ifa3_Ba10_wm", "LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
+
 _veh set [T_VEH_IFV, ["ifa3_Ba10_wm", "LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
 _veh set [T_VEH_APC, ["LIB_GER_M3_Halftrack", "LIB_SdKfz_7", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_MBT, ["pz2f", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_t34_76_ger", "ifa3_StuH_42", "LIB_ger_M4A3_Sherman", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "LIB_PzKpfwV", "LIB_PzKpfwVI_B", "LIB_PzKpfwVI_B_tarn51c", "LIB_PzKpfwVI_B_tarn51d", "LIB_PzKpfwVI_E", "LIB_PzKpfwVI_E_2", "LIB_PzKpfwVI_E_tarn51c", "LIB_PzKpfwVI_E_tarn51d", "LIB_PzKpfwVI_E_tarn52c", "LIB_PzKpfwVI_E_tarn52d", "LIB_PzKpfwVI_E_1"]];
@@ -72,10 +72,10 @@ _veh set [T_VEH_MRLS, ["LIB_Nebelwerfer41", "LIB_Nebelwerfer41_Camo", "LIB_Nebel
 _veh set [T_VEH_SPA, ["LIB_SdKfz124"]];
 _veh set [T_VEH_SPAA, ["LIB_FlakPanzerIV_Wirbelwind", "LIB_SdKfz_7_AA"]];
 
-//_veh set [T_VEH_stat_HMG_high, [""]];
-//_veh set [T_VEH_stat_GMG_high, [""]];
+_veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight"]];
+_veh set [T_VEH_stat_GMG_high, ["LIB_GER_SearchLight"]];
 _veh set [T_VEH_stat_HMG_low, ["LIB_MG34_Lafette_Deployed", "LIB_MG42_Lafette_Deployed", "LIB_MG34_Lafette_low_Deployed", "LIB_MG42_Lafette_low_Deployed"]];
-//_veh set [T_VEH_stat_GMG_low, [""]];
+_veh set [T_VEH_stat_GMG_low, ["LIB_MG34_Lafette_Deployed", "LIB_MG42_Lafette_Deployed", "LIB_MG34_Lafette_low_Deployed", "LIB_MG42_Lafette_low_Deployed"]];
 _veh set [T_VEH_stat_AA, ["sab_static_aa", "sab_small_static_2xaa", "sab_small_static_aa", "LIB_FlaK_30", "LIB_FlaK_38", "LIB_Flakvierling_38", "LIB_FlaK_36_AA", "LIB_GER_SearchLight"]];
 _veh set [T_VEH_stat_AT, ["ifr_lg40", "ifa3_p27G", "IFA3_Pak38", "LIB_Pak40", "LIB_leFH18_AT", "LIB_FlaK_36", "LIB_ger_Pak40_Feldgrau"]];
 
@@ -105,7 +105,7 @@ _veh set [T_VEH_truck_repair, ["LIB_OpelBlitz_Parm"]];
 _veh set [T_VEH_truck_medical , ["LIB_OpelBlitz_Ambulance"]];
 _veh set [T_VEH_truck_fuel, ["LIB_OpelBlitz_Fuel"]];
 
-//_veh set [T_VEH_submarine, ["sab_boat_u7"]];
+_veh set [T_VEH_submarine, ["sab_boat_u7"]];
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
