@@ -38,7 +38,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			x = 0.020; 
 			y = 0.324; 
 			w = 0.659; 
-			h = 0.4;
+			h = 0.436; 
 			text = "Description...";
 			
 		};
