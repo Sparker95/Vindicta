@@ -14,6 +14,7 @@
 ["Templates\Factions\RHS_USAF.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\NATO.sqf", T_FACTION_Military]					call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CSAT.sqf", T_FACTION_Military]					call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\CUP_TKA.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 
 // Other factions
 ["Templates\Factions\CIVILIAN.sqf", T_FACTION_Civ]					call t_fnc_initializeTemplateFromFile;

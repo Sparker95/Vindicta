@@ -36,7 +36,7 @@ if (isNil "_tDisplayName") exitWith {
 // Iterate all required addons, check if they are loaded
 private _requiredAddons = _t select T_REQUIRED_ADDONS;
 if (isNil "_requiredAddons") exitWith {
-	diag_log format ["[Template] error: tempalte required addons were not specified for %1", _filePath];
+	diag_log format ["[Template] error: template required addons were not specified for %1", _filePath];
 };
 private _missingAddons = [];
 #ifndef _SQF_VM

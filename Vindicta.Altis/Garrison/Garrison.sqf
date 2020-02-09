@@ -2180,6 +2180,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			//__MUTEX_UNLOCK;
+			[]
 		};
 
 		pr _units = T_GETV("units");
@@ -2895,6 +2896,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
+			[]
 		};
 
 		pr _return = [];
