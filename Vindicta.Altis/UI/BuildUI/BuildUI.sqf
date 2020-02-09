@@ -372,8 +372,10 @@ CLASS("BuildUI", "")
 			};
 
 			case DIK_DELETE: { 
-
-				//CALLSM0("BuildUI", "demolishActiveObject");
+				if (T_GETV("isMovingObjects")) then {
+					playSound ["clicksoft", false];
+					T_CALLM0("demolishActiveObject"); 
+				};
 				true; // disables default control 
 			};
 		};
@@ -759,7 +761,7 @@ CLASS("BuildUI", "")
 
 		T_PRVAR(activeObject);
 
-		if(count _activeObject == 0 or {cursorObject != _activeObject select 0}) then {
+		if(count _activeObject == 0 or {cursorObject != (_activeObject select 0)}) then {
 
 			if(count _activeObject > 0) then {
 				//CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
@@ -1085,13 +1087,49 @@ CLASS("BuildUI", "")
 
 	} ENDMETHOD;
 
-	// deletes object and returns construction points
-	STATIC_METHOD("demolishActiveObject") {
+	// deletes currently active object and returns construction points
+	METHOD("demolishActiveObject") {
 		params [P_THISOBJECT];
 
-		if !(T_GETV("isMovingObjects")) exitWith {};
+		T_PRVAR(movingObjectGhosts);
+		if (count _movingObjectGhosts == 0) exitWith { };
 
-		
+		pr _canDelete = false;
+		// check if object is about to be created
+		{
+			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+
+			// If it isn't a new object, allow demolishing
+			if !(_object getVariable ["build_ui_newObject", false]) then {
+				_canDelete = true;
+			};
+			
+		} forEach _movingObjectGhosts;
+
+		if (_canDelete) then {
+			// Show a confirmation dialog
+			pr _args = [format ["Demolish this object?"],
+				[_movingObjectGhosts],
+				{
+					params["_movingObjectGhosts"];
+
+					{
+						_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+						deleteVehicle _ghostObject;
+					} forEach _movingObjectGhosts;
+
+					SETV(g_BuildUI, "activeObject", []);
+					SETV(g_BuildUI, "movingObjectGhosts", []);
+					SETV(g_BuildUI, "isMovingObjects", false);
+
+					// Reset everything that might be active
+					CALLM0(g_BuildUI, "cancelMovingObjects");
+					CALLM0(g_BuildUI, "clearCarousel");
+					CALLM0(g_BuildUI, "exitMoveMode");
+				},
+				[], {}];
+			NEW("DialogConfirmAction", _args);
+		};
 
 	} ENDMETHOD;
 
