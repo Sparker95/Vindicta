@@ -10,6 +10,7 @@
 #include "..\AI\Commander\LocationData.hpp"
 #include "PlayerMonitor.hpp"
 #include "..\CivilianPresence\CivilianPresence.hpp"
+#include "..\Intel\Intel.hpp"
 
 /*
 Class: PlayerMonitor
@@ -32,18 +33,22 @@ Author: Sparker 19 September 2019
 
 CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
-	VARIABLE("timer");			// Timer
-	VARIABLE("timerUI");		// Timer for UI checks
+	VARIABLE("timer");						// Timer
+	VARIABLE("timerUI");					// Timer for UI checks
+	VARIABLE("timerLowFreq");				// Timer for low frequency checks
 
 	VARIABLE("prevPos");					// Previous pos when we updated nearby locations
 	VARIABLE("unit");						// Unit (object handle) this is attached to
 	VARIABLE("nearLocations");				// Nearby locations to return to other objects
 	VARIABLE("currentLocation");			// The nearest location we are currently at
-	VARIABLE("atFriendlyLocation");	// Bool, set to true if this location is friendly
+	VARIABLE("atFriendlyLocation");			// Bool, set to true if this location is friendly
 	VARIABLE("currentLocations");			// Locations we are currently located at
 	VARIABLE("currentGarrisonRecord");		// Garrison record at the current location
 	VARIABLE("currentGarrison");			// Garrison linked to current garrison record
 	VARIABLE("canBuild");
+
+	VARIABLE("intelReminded");				// Intel we have reminded the player is starting soon
+	VARIABLE("intelStarted");				// Intel we have reminded the player has started
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OBJECT("_unit")];
@@ -59,7 +64,8 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_SETV("currentGarrisonRecord", "");
 		T_SETV("currentGarrison", "");
 		T_SETV("canBuild", false);
-
+		T_SETV("intelReminded", []);
+		T_SETV("intelStarted", []);
 
 		// Create timer
 		pr _msg = MESSAGE_NEW();
@@ -81,6 +87,16 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timerUI", _timer);
 
+		// Create another timer, for low frequency checks
+		pr _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		MESSAGE_SET_TYPE(_msg, "processLowFreq");
+		MESSAGE_SET_DATA(_msg, []);
+		pr _updateInterval = 30;
+		pr _args = [_thisObject, _updateInterval, _msg, gTimerServiceMain];
+		pr _timer = NEW("Timer", _args);
+		T_SETV("timerLowFreq", _timer);
+
 		_unit setVariable [PLAYER_MONITOR_UNIT_VAR, _thisObject];
 	} ENDMETHOD;
 
@@ -92,6 +108,9 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		DELETE(_timer);
 
 		pr _timer = T_GETV("timerUI");
+		DELETE(_timer);
+		
+		pr _timer = T_GETV("timerLowFreq");
 		DELETE(_timer);
 
 		T_GETV("unit") setVariable [PLAYER_MONITOR_UNIT_VAR, nil];
@@ -216,6 +235,68 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			CALLM1(gInGameUI, "setLocationText", "");
 			CALLM1(gInGameUI, "setBuildResourcesAmount", -1);
 		};
+	} ENDMETHOD;
+
+	METHOD("processLowFreq") {
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("PROCESS LOW FREQ");
+
+		pr _intelReminded = T_GETV("intelReminded");
+		pr _intelStarted = T_GETV("intelStarted");
+
+		pr _remindableActions = [
+			"IntelCommanderActionReinforce",
+			"IntelCommanderActionAttack",
+			"IntelCommanderActionRecon",
+			"IntelCommanderActionBuild",
+			"IntelCommanderActionPatrol"
+		];
+
+		private _intelReminders = CALLM0(gIntelDatabaseClient, "getAllIntel") select {
+			(GET_OBJECT_CLASS(_x) in _remindableActions)
+			&& {
+				(GETV(_x, "state") == INTEL_ACTION_STATE_INACTIVE && !(_x in _intelReminded))
+				||
+				{GETV(_x, "state") == INTEL_ACTION_STATE_ACTIVE && !(_x in _intelStarted)}
+			}
+		} apply {
+			[CALLM0(_x, "getTMinutes"), _x]
+		};
+		// diag_log format["INTELR: %1", _intelReminders];
+		_intelReminders = _intelReminders select {
+			_x#0 >= -10 && _x#0 < 10 // reminder window
+		};
+		_intelReminders sort ASCENDING;
+
+		{// forEach _intelReminders;
+			_x params ["_t", "_intel"];
+
+			// Make a string representation of time difference
+			pr _h = floor (abs _t / 60);
+			pr _m = floor (abs _t % 60);
+			pr _tstr = if (_h > 0) then {
+				format ["%1h %2m", _h, _m]
+			} else {
+				format ["%1m", _m]
+			};
+			pr _actionName = CALLM0(_intel, "getShortName");
+
+			pr _args = if (_t < 0) then {
+				["REMINDER", format ["%1 will start in %2", _actionName, _tstr]]
+			} else {
+				["STARTED", format ["%1 started %2 ago", _actionName, _tstr]]
+			};
+
+			CALLSM("NotificationFactory", "createIntelCommanderActionReminder", _args);
+
+			pr _state = GETV(_intel, "state");
+			if(_state == INTEL_ACTION_STATE_INACTIVE) then {
+				_intelReminded pushBackUnique _intel;
+			} else {
+				_intelStarted pushBackUnique _intel;
+			};
+		} forEach _intelReminders;
 	} ENDMETHOD;
 
 	METHOD("getCurrentLocations") {

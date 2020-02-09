@@ -33,7 +33,7 @@
 // Enables output to external file with ofstream in all OOP classes
 // It's a global flag, must be defined here
 
-#define OFSTREAM_ENABLE
+// #define OFSTREAM_ENABLE
 
 // #define OOP_PROFILE
 
@@ -52,9 +52,6 @@
 // Define it at the top of the file per every class where you need to count objects
 //#define PROFILER_COUNTERS_ENABLE
 
-// Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
-#define ADE
-
 // Enables logging of each REF/UNREF on OOP objects
 //#define OOP_LOG_REF_UNREF
 
@@ -63,6 +60,14 @@
 // ----------------------------------------------------------------------
 
 #include "..\config\global_config.hpp"
+
+// Enforce some constraints
+#ifndef OFSTREAM_FILE
+#define OFSTREAM_FILE "OOP.rpt"
+#endif
+#ifndef OFSTREAM_ENABLE
+#undef OFSTREAM_FILE
+#endif
 
 #ifdef _SQF_VM
 // ___ SQF-VM ___

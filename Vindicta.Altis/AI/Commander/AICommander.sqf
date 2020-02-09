@@ -3110,7 +3110,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Load our garrisons
 		{
 			pr _gar = _x;
-			diag_log format ["Loading garrison: %1", _gar];
+			//diag_log format ["Loading garrison: %1", _gar];
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
