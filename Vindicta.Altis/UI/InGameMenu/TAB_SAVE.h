@@ -16,7 +16,7 @@ class TAB_SAVE : MUI_GROUP
 			x = 0.020; 
 			y = 0.077; 
 			w = 0.452; 
-			h = 0.565; 
+			h = 0.445; 
 		};
 
 		class TAB_SAVE_LISTNBOX_SAVES : MUI_LISTNBOX_ABS 
@@ -25,7 +25,7 @@ class TAB_SAVE : MUI_GROUP
 			x = 0.020; 
 			y = 0.077; 
 			w = 0.452; 
-			h = 0.565; 			
+			h = 0.445; 			
 			columns[] = {0, 1};	// One column
 		};
 
@@ -35,7 +35,7 @@ class TAB_SAVE : MUI_GROUP
 			x = 0.478; 
 			y = 0.077; 
 			w = 0.200; 
-			h = 0.126;  
+			h = 0.106;  
 			text = "New Save";			
 		};
 
@@ -43,9 +43,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.478; 
-			y = 0.223; 
+			y = 0.188; 
 			w = 0.200; 
-			h = 0.126; 
+			h = 0.106; 
 			text = "Overwrite";	
 		};
 
@@ -53,9 +53,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.478; 
-			y = 0.370; 
+			y = 0.298; 
 			w = 0.200; 
-			h = 0.126; 
+			h = 0.106; 
 			text = "Load";
 		};
 
@@ -63,9 +63,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.478; 
-			y = 0.508; 
+			y = 0.409; 
 			w = 0.200; 
-			h = 0.133;
+			h = 0.112;
 			text = "Delete";	
 			colorBackground[] = MUIC_BTN_RED;	
 		};
@@ -86,9 +86,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.020; 
-			y = 0.651; 
+			y = 0.538; 
 			w = 0.226; 
-			h = 0.040; 
+			h = 0.040;  
 			text = "SAVE NAME:";
 		};
 
@@ -96,9 +96,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.020; 
-			y = 0.693; 
+			y = 0.584; 
 			w = 0.226; 
-			h = 0.040;
+			h = 0.040; 
 			text = "MAP:"; 
 		};
 
@@ -106,9 +106,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.020; 
-			y = 0.735; 
+			y = 0.629; 
 			w = 0.226; 
-			h = 0.040; 
+			h = 0.040;  
 			text = "VERSION:";
 		};
 
@@ -116,9 +116,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.020; 
-			y = 0.777; 
+			y = 0.675; 
 			w = 0.226; 
-			h = 0.040; 
+			h = 0.040;
 			text = "SAVE COUNT:";
 		};
 
@@ -127,7 +127,7 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.246; 
-			y = 0.651; 
+			y = 0.538; 
 			w = 0.226; 
 			h = 0.040; 
 			text = "";
@@ -140,9 +140,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.246; 
-			y = 0.693; 
+			y = 0.584; 
 			w = 0.226; 
-			h = 0.040; 
+			h = 0.040;
 			text = "";
 			font = "RobotoCondensed";
 			style = ST_RIGHT+ST_VCENTER; 
@@ -153,7 +153,7 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.246; 
-			y = 0.735; 
+			y = 0.629; 
 			w = 0.226; 
 			h = 0.040;
 			text = ""; 
@@ -166,7 +166,7 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.246; 
-			y = 0.777; 
+			y = 0.675; 
 			w = 0.226; 
 			h = 0.040;
 			text = "";
@@ -179,9 +179,9 @@ class TAB_SAVE : MUI_GROUP
 		{
 			idc = -1;
 			x = 0.020; 
-			y = 0.827; 
+			y = 0.733; 
 			w = 0.659; 
-			h = 0.040;  
+			h = 0.112;  
 			text = "";		
 		};		
 	};
