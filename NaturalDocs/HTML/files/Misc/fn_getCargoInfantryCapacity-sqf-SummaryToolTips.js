@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Misc/fn_getCargoInfantryCapacity.sqf",{898:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns how many units can be loaded as cargo by all the vehicles from _veh</div></div>"});

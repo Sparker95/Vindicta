@@ -460,12 +460,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// specifically efficiency and transport. Score is 0 when full requirements cannot be met, and 
 		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
 		// required efficiency it is). 
-		private _transportationScore = 0;
-		if(!_needTransport) then {
-			_transportationScore = 1;
-		} else {
-			_transportationScore = CALLM(_srcGarr, "transportationScore", [_effAllocated])
-		};
 
 		// Save the calculation of the efficiency for use later.
 		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
@@ -476,7 +470,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
 
 		// Our final resource score
-		private _scoreResource = _detachEffStrength * _transportationScore;
+		private _scoreResource = _detachEffStrength;
 		private _scorePriority = 1;
 
 		// CALCULATE START DATE
@@ -500,9 +494,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		T_SET_AST_VAR("startDateVar", _startDate);
 
 		// Uncomment this for more detailed logging
-		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
-		// 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		// 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it

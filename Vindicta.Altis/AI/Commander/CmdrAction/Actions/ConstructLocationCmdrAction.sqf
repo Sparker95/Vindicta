@@ -233,13 +233,11 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		// How much to scale the score for distance to target
 		private _distCoeff = 1; //CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]); // We don't care how far is it really, it's close enough anyway
 		// How much to scale the score for transport requirements
-		private _transportationScore = CALLM1(_srcGarr, "transportationScore", _effRemaining); // We always need transport when constructing something
-
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
 
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		
-		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
+		private _scoreResource = _detachEffStrength * _distCoeff;
 
 		// Same as in takeLocation, but we generally want to build less than to occupy existing pre-defined places
 		private _scorePriority = CALLM(_strategy, "getConstructLocationDesirability", [_worldNow ARG _tgtLocPos ARG _tgtLocType ARG _side]);
@@ -264,9 +262,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		T_SET_AST_VAR("startDateVar", _startDate);
 
 		// Uncomment for some more debug logging
-		 OOP_DEBUG_MSG("[w %1 a %2] %3 construct %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		 OOP_DEBUG_MSG("[w %1 a %2] %3 construct %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8",
 		 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG [_tgtLocType ARG _tgtLocPos] ARG [_scorePriority ARG _scoreResource] 
-		 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it

@@ -6,6 +6,18 @@ _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tRHS_LDF_NATO"];
+_array set [T_DESCRIPTION, "NATO aligned LDF with with custom loadouts from RHS addons"];
+_array set [T_DISPLAY_NAME, "RHS LDF NATO (Custom)"];
+_array set [T_FACTION, T_FACTION_Military];
+_array set [T_REQUIRED_ADDONS, [
+								"rhs_c_troops",		// RHS AFRF
+								"rhsusf_c_troops",	// RHS USAF
+								"rhssaf_c_troops",	// RHS SAF
+								"rhsgref_c_troops"	// RHS GREF
+								]];
+
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
@@ -136,7 +148,5 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tRHS_LDF_NATO"];
-
 
 _array // End template

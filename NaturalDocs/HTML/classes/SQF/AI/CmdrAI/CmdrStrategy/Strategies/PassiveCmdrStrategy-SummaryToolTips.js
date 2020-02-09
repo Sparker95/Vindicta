@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:AI.CmdrAI.CmdrStrategy.Strategies.PassiveCmdrStrategy",{182:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Commander does nothing ever.&nbsp; Parent: AI.CmdrAI.CmdrStrategy.CmdrStrategy</div></div>"});

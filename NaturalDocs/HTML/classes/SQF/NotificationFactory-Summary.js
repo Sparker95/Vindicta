@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:NotificationFactory","NotificationFactory");NDSummary.OnSummaryLoaded("SQFClass:NotificationFactory",[["SQF","SQF"]],[["Classes","Class"]],[[1001,0,0,"NotificationFactory"]]);

@@ -7,12 +7,16 @@ t_fnc_checkNil = compile preprocessfilelinenumbers "Templates\fn_checkNil.sqf";
 t_fnc_find = compile preprocessfilelinenumbers "Templates\fn_find.sqf";
 t_fnc_isValid = compile preprocessfilelinenumbers "Templates\fn_isValid.sqf";
 t_fnc_getEfficiency = compile preprocessFileLineNumbers "Templates\fn_getEfficiency.sqf";
+t_fnc_getMetadata = compile preprocessFileLineNumbers "Templates\fn_getMetadata.sqf";
+
 t_fnc_convertConfigGroup = compile preprocessFileLineNumbers "Templates\fn_convertConfigGroup.sqf";
 t_fnc_getDefaultCrew = compile preprocessFileLineNumbers "Templates\fn_getDefaultCrew.sqf";
 t_fnc_canDestroy = compile preprocessFileLineNumbers "Templates\fn_canDestroy.sqf";
 t_fnc_validateTemplate = compile preprocessFileLineNumbers "Templates\fn_validateTemplate.sqf";
 t_fnc_initializeTemplateFromFile = compile preprocessFileLineNumbers "Templates\fn_initializeTemplateFromFile.sqf";
+
 t_fnc_getAllValidTemplateNames = compile preprocessFileLineNumbers "Templates\fn_getAllValidTemplateNames.sqf";
+t_fnc_getAllTemplateNames = compile preprocessFileLineNumbers "Templates\fn_getAllTemplateNames.sqf";
 
 t_fnc_classNameToNumber = compile preprocessFileLineNumbers "Templates\fn_classNameToNumber.sqf";
 t_fnc_numberToClassName = compile preprocessFileLineNumbers "Templates\fn_numberToClassName.sqf";

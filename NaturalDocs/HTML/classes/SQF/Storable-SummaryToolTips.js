@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:Storable",{938:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Base class for classes which support saving and loading features</div></div>"});

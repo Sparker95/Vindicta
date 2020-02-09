@@ -14,7 +14,7 @@ Parent: <TakeOrJoinCmdrAction>
 
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtGarrId");
-	
+
 	/*
 	Constructor: new
 
@@ -60,7 +60,12 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 			CALLM(_intel, "create", []);
 
-			SETV(_intel, "type", "Reinforce garrison");
+			private _compAllocated = T_GET_AST_VAR("detachmentCompVar");
+			if(_compAllocated#T_INF#T_INF_officer > 0) then {
+				SETV(_intel, "type", "Assign New Officer");
+			} else {
+				SETV(_intel, "type", "Reinforce Garrison");
+			};
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
 			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
 			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
@@ -107,7 +112,6 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtGarrId);
 
-		// TODO: do this properly wrt to now and future
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
@@ -124,6 +128,11 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcGarrEff = GETV(_srcGarr, "efficiency");
 		private _srcGarrComp = GETV(_srcGarr, "composition");
 
+		// TODO: full desired composition metric, not just officers
+		pr _tgtOfficerCount = CALLM0(_tgtGarr, "countOfficers");
+		pr _srcOfficerCount = CALLM0(_srcGarr, "countOfficers");
+		pr _sendAnOfficer = (_srcOfficerCount > 1) && (_tgtOfficerCount == 0);
+
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,
 		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
@@ -134,7 +143,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		pr _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
 
 		// Bail if there is no need to reinforce this
-		if (_tgtUnderEff isEqualTo T_EFF_null) exitWith {
+		if (_tgtUnderEff isEqualTo T_EFF_null && !_sendAnOfficer) exitWith {
 			OOP_DEBUG_0("No need to reinforce dst garrison");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
@@ -165,7 +174,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 		private _dist = _srcGarrPos distance _tgtGarrPos;
-		if (_dist > REINFORCE_NO_TRANSPORT_DISTANCE_MAX) then {
+		if (_sendAnOfficer || _dist > REINFORCE_NO_TRANSPORT_DISTANCE_MAX) then {
 			_needTransport = true;
 		};
 
@@ -174,13 +183,26 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		};
 
 		// Try to allocate units
-		pr _payloadWhitelistMask = if (_needTransport) then { T_comp_ground_or_infantry_mask } else { T_comp_ground_or_infantry_mask };
-		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _payloadWhitelistMask = if (_needTransport) then {
+			T_comp_ground_or_infantry_mask 
+		} else {
+			T_comp_infantry_mask 
+		};
+		pr _payloadBlacklistMask = T_comp_static_or_cargo_mask;			// Don't take static weapons or cargo under any conditions
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];
+		pr _requiredComp = [];
+		if(_sendAnOfficer) then {
+			// Lets send an officer as well!
+			_requiredComp = [[T_INF, T_INF_officer, 1]];
+			// Any make sure we have some escort.
+			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
+		};
+
 		pr _args = [_tgtUnderEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
-					_transportWhitelistMask, _transportBlacklistMask];
+					_transportWhitelistMask, _transportBlacklistMask,
+					_requiredComp];
 		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
 
 		// Bail if we have failed to allocate resources
@@ -191,6 +213,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
 
+		if(_sendAnOfficer) then {
+			ASSERT(_compAllocated#T_INF#T_INF_officer == 1);
+		};
 		// diag_log format ["Allocation results: %1", _allocResult];
 
 		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
@@ -210,28 +235,32 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		// How much to scale the score for distance to target
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
-		// How much to scale the score for transport requirements
-		private _transportationScore = if(!_needTransport) then {
-			// If we are less than XXXm then we don't need transport so set the transport score to 1
-			// (we "fullfilled" the transport requirements of not needing transport)
-			1
-		} else {
-			// We will force transport on top of scoring if we need to.
-			CALLM1(_srcGarr, "transportationScore", _effRemaining);
-		};
-
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.
-		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
+		private _scoreResource = _detachEffStrength * _distCoeff;
 
-		// TODO:OPT cache these scores!
-		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtGarr])};
+		private _scorePriority = switch true do {
+			case (_scoreResource == 0): {0};
+			case (_sendAnOfficer): {
+				// How much we want an officer can be estimated by the total strength of the 
+				// garrison (including this detachment)
+				// https://www.desmos.com/calculator/vealgnewq1
+				log (1 + (CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated) + CALLSM1("CmdrAction", "getDetachmentStrength", _tgtGarrEff)) / 8)
+				
+			};
+			// TODO:OPT cache these scores!
+			default {CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtGarr])};
+		};
 
 		// CALCULATE START DATE
 		// Work out time to start based on how much force we mustering and distance we are travelling.
 		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8 * 0.1
 		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1))  * 0.1 + (30 + random 15);
+		if(_sendAnOfficer) then {
+			// Longer wait for officer reinforcements
+			_delay = _delay * 2;
+		};
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
 		// _delay = 0 max (120 min _delay);
@@ -247,7 +276,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 		
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8 _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
@@ -260,46 +289,6 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			_side, LABEL(_srcGarr), LABEL(_tgtGarr), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
-
-	// Get composition of reinforcements we should send from src to tgt. 
-	// This is the min of what src has spare and what tgt wants.
-	// TODO: factor out logic for working out detachments for various situations
-	METHOD("getDetachmentEff") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
-		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
-		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
-
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtGarrId);
-
-		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
-		ASSERT_OBJECT(_srcGarr);
-		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
-		ASSERT_OBJECT(_tgtGarr);
-		
-		// Calculate how much efficiency is available for reinforcements then clamp desired efficiency against it
-
-		// How much resources src can spare (how much is it over its desired efficiency).
-		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
-
-		// How much resources tgt needs (how much is it under its desired efficiency).
-		private _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
-
-		// If tgt is depleted at all then we will send a min size reinforcement at least
-		if(!EFF_LTE(_tgtUnderEff, EFF_ZERO)) then {
-			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
-		};
-
-		// Result is the mininum of the available and required efficiencies
-		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
-
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _tgtUnderEff ARG _srcOverEff ARG _effAvailable]);
-
-		// Only send a reasonable amount at a time
-		if(!EFF_GTE(_effAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
-
-		_effAvailable
 	} ENDMETHOD;
 
 	/*

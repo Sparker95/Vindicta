@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:UI/DialogBase/DialogTabBase.sqf","DialogTabBase.sqf");NDSummary.OnSummaryLoaded("File:UI/DialogBase/DialogTabBase.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[956,0,1,"Functions","Functions"],[957,0,0,"getControl","getControl"],[958,0,0,"setControl","setControl"]]);

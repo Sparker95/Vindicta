@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("eff",["Variable"],[["efficiency",,[["Intel.IntelCluster",,,,0,"File:Intel/Intel.sqf:Intel.IntelCluster.efficiency","SQFClass:Intel.IntelCluster:efficiency"],["Intel.IntelLocation",,,,0,"File:Intel/Intel.sqf:Intel.IntelLocation.efficiency","SQFClass:Intel.IntelLocation:efficiency"]]]]);

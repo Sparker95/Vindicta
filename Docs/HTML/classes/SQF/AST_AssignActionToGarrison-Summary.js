@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:AST_AssignActionToGarrison","AST_AssignActionToGarrison");NDSummary.OnSummaryLoaded("SQFClass:AST_AssignActionToGarrison",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[116,0,0,"AST_AssignActionToGarrison"],[117,0,2,"Functions","Functions"],[118,0,1,"new","new"]]);

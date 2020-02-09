@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Timer","Timer");NDSummary.OnSummaryLoaded("SQFClass:Timer",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[774,0,0,"Timer"],[775,0,2,"Functions","Functions"],[776,0,1,"new","new"],[777,0,1,"delete","delete"],[778,0,1,"setInterval","setInterval"],[779,0,1,"getDataArray","getDataArray"]]);

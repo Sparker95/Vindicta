@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:GarrisonDatabaseClient","GarrisonDatabaseClient");NDSummary.OnSummaryLoaded("SQFClass:GarrisonDatabaseClient",[["SQF","SQF"]],[["Classes","Class"]],[[487,0,0,"GarrisonDatabaseClient"]]);

@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:AST_ArrayPopFront","AST_ArrayPopFront");NDSummary.OnSummaryLoaded("SQFClass:AST_ArrayPopFront",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[119,0,0,"AST_ArrayPopFront"],[120,0,2,"Functions","Functions"],[121,0,1,"new","new"]]);

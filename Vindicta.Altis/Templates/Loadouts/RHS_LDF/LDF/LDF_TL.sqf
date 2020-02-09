@@ -26,6 +26,7 @@ this addWeapon "rhssaf_zrak_rd7j";
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_acc_perst1ik";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_AK_green";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_7N6M_AK";};
 this addItemToVest "rhs_mag_rdg2_white";

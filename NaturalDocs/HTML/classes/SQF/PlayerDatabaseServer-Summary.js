@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:PlayerDatabaseServer","PlayerDatabaseServer");NDSummary.OnSummaryLoaded("SQFClass:PlayerDatabaseServer",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[923,0,0,"PlayerDatabaseServer"],[924,0,2,"Functions","Functions"],[925,0,1,"set","set"],[926,0,1,"get","get"]]);

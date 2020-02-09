@@ -1,0 +1,42 @@
+removeAllWeapons this;
+removeAllItems this;
+removeAllAssignedItems this;
+removeUniform this;
+removeVest this;
+removeBackpack this;
+removeHeadgear this;
+removeGoggles this;
+
+_RandomHeadgear = selectRandom ["FGN_AAF_Cap_Lizard","FGN_AAF_PASGT_Lizard","FGN_AAF_PASGT_Lizard_ESS","FGN_AAF_PASGT_Lizard_ESS_2","rhsgref_helmet_pasgt_olive"];
+this addHeadgear _RandomHeadgear;
+_RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","","",""];
+this addGoggles _RandomGoggles;
+this forceAddUniform "FGN_AAF_M93_Lizard";
+_RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Rifleman_Radio","FGN_AAF_M99Vest_Khaki_Rifleman_Radio"];
+this addVest _RandomVest;
+this addBackpack "FGN_AAF_Bergen_SL_Olive";
+
+this addWeapon "rhs_weap_akm_zenitco01_b33";
+this addPrimaryWeaponItem "rhs_acc_dtk1l";
+this addPrimaryWeaponItem "rhs_acc_2dpZenit_ris";
+this addPrimaryWeaponItem "rhs_acc_ekp8_18";
+this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
+this addWeapon "rhs_weap_tt33";
+this addHandgunItem "rhs_mag_762x25_8";
+this addWeapon "rhssaf_zrak_rd7j";
+
+this addItemToUniform "FirstAidKit";
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_762x25_8";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mki_mag";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm_tracer";};
+this addItemToBackpack "rhs_mag_nspd";
+this addItemToBackpack "rhs_mag_nspn_green";
+this addItemToBackpack "rhs_mag_nspn_red";
+this addItemToBackpack "rhs_mag_nspn_yellow";
+this linkItem "ItemMap";
+this linkItem "ItemCompass";
+this linkItem "ItemWatch";
+this linkItem "ItemRadio";

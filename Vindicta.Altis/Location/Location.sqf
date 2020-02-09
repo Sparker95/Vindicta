@@ -62,6 +62,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);				// Array of [className, posWorld, vectorDir, vectorUp] of objects
 
 				VARIABLE("playerRespawnPos");							// Position for player to respawn
+				VARIABLE("alarmDisabled");								// If the player disabled the alarm
 
 	STATIC_VARIABLE("all");
 
@@ -124,6 +125,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		
 		T_SETV("timer", NULL_OBJECT);
 
+		T_SETV_PUBLIC("alarmDisabled", false);
 
 		//Push the new object into the array with all locations
 		private _allArray = GET_STATIC_VAR("Location", "all");
@@ -374,7 +376,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: getPlayerSides
 	Returns array of sides of players within this location.
 
-	Returns: Bool
+	Returns: array<Side>
 	*/
 	METHOD("getPlayerSides") {
 		params [P_THISOBJECT];
@@ -403,6 +405,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		gMessageLoopMain
 	} ENDMETHOD;
 
+	METHOD("isAlarmDisabled") {
+		params [P_THISOBJECT];
+		T_GETV("alarmDisabled")
+	} ENDMETHOD;
+
+	METHOD("setAlarmDisabled") {
+		params [P_THISOBJECT, P_BOOL("_disabled")];
+		T_SETV_PUBLIC("alarmDisabled", _disabled);
+	} ENDMETHOD;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -426,7 +438,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			pr _gmdata = T_GETV("gameModeData");
 			if (!IS_NULL_OBJECT(_gmdata)) then {
 				CALLM0(_gmdata, "updatePlayerRespawn");
-			};	
+			};
+
+			// Re-enable the alarm
+			T_CALLM1("setAlarmDisabled", false);
 		};
 
 		// From now on this place is occupied or was occupied
@@ -452,19 +467,28 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	
 	
 	METHOD("getGarrisons") {
-		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		params ["_thisObject", ["_side", 0]];
 		
-		if (_side == CIVILIAN) then {
+		if (_side isEqualType 0) then {
 			+T_GETV("garrisons")
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
 		};
 	} ENDMETHOD;
 	
+	METHOD("hasGarrisons") {
+		params ["_thisObject", ["_side", 0]];
+		
+		if (_side isEqualType 0) then {
+			(count T_GETV("garrisons")) > 0
+		} else {
+			(count (T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side})) > 0
+		};
+	} ENDMETHOD;
 	
 	METHOD("getGarrisonsRecursive") {
-		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
-		private _myGarrisons = if (_side == CIVILIAN) then {
+		params ["_thisObject", ["_side", 0]];
+		private _myGarrisons = if (_side isEqualType 0) then {
 			+T_GETV("garrisons")
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
@@ -527,10 +551,37 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("getDisplayName") {
 		params [P_THISOBJECT];
-		pr _name = T_GETV("name");
-		_name
+		pr _gmdata = T_GETV("gameModeData");
+		// SAVEBREAK REPLACE >>>
+		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
+		// SAVEBREAK WITH
+		// if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REMOVE <<<
+			CALLM0(_gmdata, "getDisplayName")
+		} else {
+			T_GETV("name")
+		};
 	} ENDMETHOD;
-	
+
+	/*
+	Method: getDisplayColor
+
+	Returns a display color to show in UIs. Format is: [r,g,b,a].
+	*/
+	METHOD("getDisplayColor") {
+		params [P_THISOBJECT];
+		pr _gmdata = T_GETV("gameModeData");
+		// SAVEBREAK REPLACE >>>
+		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
+		// SAVEBREAK WITH
+		// if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REMOVE <<<
+			CALLM0(_gmdata, "getDisplayColor")
+		} else {
+			[1,1,1,1]
+		};
+	} ENDMETHOD;
+
 	/*
 	Method: getSide
 	Returns side of the garrison that controls this location.
@@ -551,7 +602,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/*
 	Method: getCapacityInf
-	Returns type of this location
+	Returns infantry capacity of this location -- how many infantry can be stationed here
 
 	Returns: Integer
 	*/
@@ -562,7 +613,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/*
 	Method: getCapacityCiv
-	Returns type of this location
+	Returns civ capacity of this location -- how many civilians this location can have
 
 	Returns: Integer
 	*/
@@ -801,7 +852,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					// Failed to find a position here, increase the radius
 					_searchRadius = _searchRadius * 3;
 				};
-			};			
+			};
 		};
 
 		_return
@@ -1034,6 +1085,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("playerRespawnEnabled") {
 		params [P_THISOBJECT, P_SIDE("_side")];
+
+		// Always true for respawn type of location
+		if (T_GETV("type") == LOCATION_TYPE_RESPAWN) exitWith { true };
+
 		_side in T_GETV("respawnSides")
 	} ENDMETHOD;
 
@@ -1312,7 +1367,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_tags
 			]
 		};
-		diag_log _savedObjects;
 
 		T_SETV("savedObjects", _savedObjects);
 
@@ -1355,6 +1409,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityInf", 0);
 		T_SETV("timer", NULL_OBJECT);
 		T_SETV("spawned", false);
+		T_SETV_PUBLIC("alarmDisabled", false);
 
 		// Load objects which we own
 		pr _gmData = T_GETV("gameModeData");
@@ -1369,7 +1424,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
-		diag_log T_GETV("savedObjects");
 		// Rebuild the objects which have been constructed here
 		{ // forEach T_GETV("savedObjects");
 			_x params ["_type", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
@@ -1425,6 +1479,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		true
 	} ENDMETHOD;
+
+	STATIC_METHOD("postLoad") {
+		params [P_THISCLASS];
+
+		// Refresh spawnability
+		{
+			CALLM0(_x, "updatePlayerRespawn");
+		} forEach (GETSV("Location", "all") apply { CALLM0(_x, "getGameModeData") } select { !IS_NULL_OBJECT(_x) });
+	} ENDMETHOD;
+	
 
 	/* override */ STATIC_METHOD("saveStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];

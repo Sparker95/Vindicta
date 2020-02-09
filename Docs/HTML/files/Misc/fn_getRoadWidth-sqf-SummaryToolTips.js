@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Misc/fn_getRoadWidth.sqf",{732:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Measures the width of a road object with given precision</div></div>"});

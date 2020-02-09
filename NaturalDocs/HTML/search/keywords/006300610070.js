@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("cap",["Function"],[["capturesGarrison",,[["Garrison",,,,0,"File:Garrison/Garrison.sqf:Garrison.capturesGarrison","SQFClass:Garrison:capturesGarrison"]]],["captureUnit",,[["Garrison",,,,0,"File:Garrison/Garrison.sqf:Garrison.captureUnit","SQFClass:Garrison:captureUnit"]]]]);

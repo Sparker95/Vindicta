@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("t_s",["Function"],[["T_SET_AST_VAR",,[["AI.CmdrAI.CmdrAction.AST_VAR",,,,0,"File:AI/CmdrAI/CmdrAction/CmdrActionStates.hpp:AI.CmdrAI.CmdrAction.AST_VAR.T_SET_AST_VAR","SQFClass:AI.CmdrAI.CmdrAction.AST_VAR:T_SET_AST_VAR"]]]]);

@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:GarrisonServer",{486:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Singleton server-only class.&nbsp; Collects garrisons which have changed their state and sends periodic updates about garrisons to clients which need the data.</div></div>"});

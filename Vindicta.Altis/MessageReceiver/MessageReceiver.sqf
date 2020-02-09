@@ -304,6 +304,17 @@ CLASS("MessageReceiver", "Storable")
 					OOP_ERROR_1("    Current line: %1", _currentLine);
 				} forEach diag_activeSQFScripts;
 				DUMP_CALLSTACK;
+				
+				// Format text
+				private _text = format["Server is under heavy load! %1 message queue overloaded.", _thisObject];
+
+				// Broadcast notification
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+
+				// Broadcast it to system chat too
+				["SERVER WARNING:"] remoteExec ["systemChat"];
+				[_text] remoteExec ["systemChat"];
+
 				// Reset warning timer
 				_timeStartedWaiting = time;
 			};

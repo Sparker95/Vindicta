@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:GameMode/CivilWar/Phase2CmdrStrategy.sqf","Phase2CmdrStrategy.sqf");NDSummary.OnSummaryLoaded("File:GameMode/CivilWar/Phase2CmdrStrategy.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[462,0,0,"Phase1CmdrStrategy","Phase1CmdrStrategy"]]);

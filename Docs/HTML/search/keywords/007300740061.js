@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("sta",["Function","Variable"],[["start",,[[,,,,0,"File:AI/VirtualRoute/VirtualRoute.sqf:start"],["AI",,,,0,"File:AI/AI/AI.sqf:AI.start","SQFClass:AI:start"]]],["state",,[["Action",,,,1,"File:AI/Action/Action.sqf:Action.state","SQFClass:Action:state"]]]]);

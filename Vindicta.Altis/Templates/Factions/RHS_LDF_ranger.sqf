@@ -6,6 +6,17 @@ _array = [];
 
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tRHS_LDF_ranger"];
+_array set [T_DESCRIPTION, "LDF Police Rangers with custom loadouts from RHS addons."];
+_array set [T_DISPLAY_NAME, "RHS LDF Rangers"];
+_array set [T_FACTION, T_FACTION_Police];
+_array set [T_REQUIRED_ADDONS, [							
+								"rhs_c_troops",		// RHS AFRF
+								"rhsusf_c_troops",
+								"rhssaf_c_troops",
+								"rhsgref_c_troops"]];
+
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
@@ -44,8 +55,8 @@ _veh set [T_VEH_DEFAULT, ["I_E_Offroad_01_F"]]; //TODO: change skin to forest ra
 _veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F", "I_E_Offroad_01_comms_F", "I_E_Offroad_01_covered_F"]];
 
 //==== Drones ====
-/*
 _drone = +(tDefault select T_DRONE);
+/*
 _drone set [T_DRONE_SIZE-1, nil];
 _drone set [T_DRONE_DEFAULT, ["O_UAV_01_F"]];
 _drone set [T_DRONE_UGV_unarmed, ["O_UGV_01_F"]];
@@ -71,9 +82,8 @@ _group set [T_GROUP_DEFAULT, [[[T_INF, T_INF_officer], [T_INF, T_INF_rifleman]]]
 //==== Set arrays ====
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
-//_array set [T_DRONE, _drone];
+_array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tRHS_LDF_ranger"];
 
 _array

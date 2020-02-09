@@ -11,13 +11,15 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 
 	// Setting it to true will force enable respawn of players here regardless of other rules
 	VARIABLE_ATTR("forceEnablePlayerRespawn", [ATTR_SAVE]);
+	VARIABLE("owner");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("forceEnablePlayerRespawn", false);
+		T_SETV_PUBLIC("owner", CIVILIAN);
 	} ENDMETHOD;
-
-	/* virtual override */ METHOD("updatePlayerRespawn") {
+	
+	/* virtual override server */ METHOD("updatePlayerRespawn") {
 		params [P_THISOBJECT];
 
 		pr _loc = T_GETV("location");
@@ -36,12 +38,23 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		pr _nearCities = CALLSM2("Location", "nearLocations", CALLM0(_loc, "getPos"), CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS) select {
 			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
 		};
+
 		{
 			pr _gmdata = CALLM0(_x, "getGameModeData");
 			if (!IS_NULL_OBJECT(_gmdata)) then {
 				CALLM0(_gmdata, "updatePlayerRespawn"); // Cities have an instance of "CivilWarCityData" class
 			};
 		} forEach _nearCities;
+
+		if(CALLM1(_loc, "hasGarrisons", FRIENDLY_SIDE)) then {
+			T_SETV_PUBLIC("owner", FRIENDLY_SIDE);
+		} else {
+			if(CALLM1(_loc, "hasGarrisons", ENEMY_SIDE)) then {
+				T_SETV_PUBLIC("owner", ENEMY_SIDE);
+			} else {
+				T_SETV_PUBLIC("owner", CIVILIAN);
+			};
+		};
 		CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS
 	} ENDMETHOD;
 
@@ -50,7 +63,23 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		T_SETV("forceEnablePlayerRespawn", _enable);
 	} ENDMETHOD;
 
-	/* virtual override */ METHOD("getMapInfoEntries") {
+	// Overrides the location name
+	/* public virtual client */ METHOD("getDisplayColor") {
+		params [P_THISOBJECT];
+		switch T_GETV("owner") do {
+			case FRIENDLY_SIDE: {
+				[FRIENDLY_SIDE, false] call BIS_fnc_sideColor
+			};
+			case ENEMY_SIDE: {
+				[ENEMY_SIDE, false] call BIS_fnc_sideColor
+			};
+			default {
+				[1,1,1,1]
+			};
+		}
+	} ENDMETHOD;
+
+	/* virtual override client */ METHOD("getMapInfoEntries") {
 		private _return = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -67,7 +96,7 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 	} ENDMETHOD;
 
 	// STORAGE
-	/* override */ METHOD("postDeserialize") {
+	/* override server */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes

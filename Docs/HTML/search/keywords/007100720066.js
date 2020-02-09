@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("qrf",["Class"],[["QRFCmdrAction",,[["AI.CmdrAI.CmdrAction.Actions",,,,0,"File:AI/CmdrAI/CmdrAction/Actions/QRFCmdrAction.sqf:AI.CmdrAI.CmdrAction.Actions.QRFCmdrAction","SQFClass:AI.CmdrAI.CmdrAction.Actions.QRFCmdrAction"]]]]);

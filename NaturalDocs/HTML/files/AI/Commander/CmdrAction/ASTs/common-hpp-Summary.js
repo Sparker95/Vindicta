@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/Commander/CmdrAction/ASTs/common.hpp","common.hpp");NDSummary.OnSummaryLoaded("File:AI/Commander/CmdrAction/ASTs/common.hpp",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[131,0,1,"Functions","Functions"],[132,0,0,"T_GET_AST_VAR","T_GET_AST_VAR"],[133,0,0,"T_SET_AST_VAR","T_SET_AST_VAR"]]);

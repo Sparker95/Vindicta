@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("pla",["Function"],[["plan",,[["AI.CmdrAI.CmdrAI",,,,0,"File:AI/CmdrAI/CmdrAI.sqf:AI.CmdrAI.CmdrAI.plan","SQFClass:AI.CmdrAI.CmdrAI:plan"]]]]);

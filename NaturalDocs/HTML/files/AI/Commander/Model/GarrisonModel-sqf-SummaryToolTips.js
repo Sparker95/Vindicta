@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Commander/Model/GarrisonModel.sqf",{237:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Counts the number of units with specified category and subcategory</div></div>",238:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns: the number of officers in the Garrison</div></div>"});

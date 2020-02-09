@@ -14,6 +14,8 @@ Access: Internal use.
 
 params [["_thisObject", "", [""]]];
 
+scriptName "Timer Service";
+
 #ifdef _SQF_VM // Don't want to run this in VM testing mode
 diag_log format ["[TimerService::threadFunc] Disabled due to SQFvm mode"];
 #else

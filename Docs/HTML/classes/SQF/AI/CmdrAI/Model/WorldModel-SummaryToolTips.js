@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("SQFClass:AI.CmdrAI.Model.WorldModel",{192:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Models either the real world state, or a derivation of it that can be used for simulation.</div></div>"});

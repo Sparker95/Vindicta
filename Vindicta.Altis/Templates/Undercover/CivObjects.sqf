@@ -13,18 +13,7 @@
 */
 
 g_UM_civUniforms = [
-	"U_BG_Guerilla2_1",
-    "U_BG_Guerilla2_2",
-    "U_BG_Guerilla2_3",
-    "U_BG_Guerilla3_1",
-    "U_BG_Guerilla3_2",
     "U_C_Commoner_shorts",
-    //"U_C_Commoner1_1",
-    //"U_C_Commoner1_2",
-    //"U_C_Commoner1_3",
-    //"U_C_Commoner2_1",
-    //"U_C_Commoner2_2",
-    //"U_C_Commoner2_3",
     "U_C_ConstructionCoverall_Black_F",
     "U_C_ConstructionCoverall_Blue_F",
     "U_C_ConstructionCoverall_Red_F",
@@ -40,10 +29,6 @@ g_UM_civUniforms = [
     "U_C_Driver_2",
     "U_C_Driver_3",
     "U_C_Driver_4",
-    //"U_C_Farmer",
-    //"U_C_Fisherman",
-    //"U_C_FishermanOveralls",
-    //"U_C_HunterBody_brn",
     "U_C_IDAP_Man_cargo_F",
     "U_C_IDAP_Man_casual_F",
     "U_C_IDAP_Man_Jeans_F",
@@ -70,39 +55,20 @@ g_UM_civUniforms = [
     "U_C_Poloshirt_tricolour",
     "U_C_Poor_1",
     "U_C_Poor_2",
-    //"U_C_Poor_shorts_1",
-    //"U_C_Poor_shorts_2",
-    //"U_C_Scavenger_1",
-    //"U_C_Scavenger_2",
     "U_C_Scientist",
-    //"U_C_ShirtSurfer_shorts",
     "U_C_TeeSurfer_shorts_1",
     "U_C_TeeSurfer_shorts_2",
     "U_C_WorkerCoveralls",
-    //"U_C_WorkerOveralls",
     "U_Competitor",
     "U_I_C_Soldier_Bandit_1_F",
     "U_I_C_Soldier_Bandit_2_F",
     "U_I_C_Soldier_Bandit_3_F",
     "U_I_C_Soldier_Bandit_4_F",
     "U_I_C_Soldier_Bandit_5_F",
-    "U_IG_Guerilla2_1",
-    "U_IG_Guerilla2_2",
-    "U_IG_Guerilla2_3",
-    "U_IG_Guerilla3_1",
-    "U_IG_Guerilla3_2",
-    //"U_IG_Menelaos",
     "U_Marshal",
-    "U_OG_Guerilla2_1",
-    "U_OG_Guerilla2_2",
-    "U_OG_Guerilla2_3",
-    "U_OG_Guerilla3_1",
-    "U_OG_Guerilla3_2",
-    //"U_OI_Scientist",
     "U_C_HunterBody_grn",
     "U_OrestesBody",
     "U_Rangemaster",
-    "U_BG_leader",
 
     // CONTACT DLC 
     "U_I_L_Uniform_01_tshirt_black_F",
@@ -119,6 +85,7 @@ g_UM_civUniforms = [
 
 
 g_UM_civHeadgear = [
+    "H_Hat_Tinfoil_F",
     "H_Bandanna_blu",
     "H_Bandanna_camo",
     "H_Bandanna_cbr",
@@ -229,7 +196,6 @@ g_UM_civFacewear = [
     "G_Aviator",
     "G_Combat",
     "G_Combat_Goggles_tna_F",
-    "G_EyeProtectors_base_F",
     "G_EyeProtectors_Earpiece_F",
     "G_EyeProtectors_F",
     "G_Lady_Blue",
@@ -237,7 +203,6 @@ g_UM_civFacewear = [
     "G_Lady_Mirror",
     "G_Lady_Red",
     "G_Lowprofile",
-    "G_Respirator_base_F",
     "G_Respirator_blue_F",
     "G_Respirator_white_F",
     "G_Respirator_yellow_F",
@@ -260,13 +225,9 @@ g_UM_civFacewear = [
 ];
 
 g_UM_civBackpacks = [
+    "ACE_TacticalLadder_Pack",
 	"B_Messenger_Black_F",
     "B_Messenger_Coyote_F",
-    "B_Messenger_Gray_F",
-    "B_Messenger_Gray_Medical_F",
-    "B_Messenger_IDAP_F",
-    "B_Messenger_IDAP_Medical_F",
-    "B_Messenger_IDAP_TrainingMines_F",
     "B_Messenger_Olive_F"
 ];
 
@@ -289,7 +250,7 @@ g_UM_ghillies = [
 
 /* 
 ----------------------------------------------------------------------------------------------
-	CIVILIAN ITEMS
+	ITEMS
 ----------------------------------------------------------------------------------------------
 */
 

@@ -42,6 +42,8 @@ CLASS("MessageLoop", "Storable");
 				VARIABLE("nMessagesInSeries");
 	// Sleep interval
 				VARIABLE_ATTR("sleepInterval", [ATTR_SAVE]);
+	// Last processed object (through message queue or process categories)
+				VARIABLE("lastObject");
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -69,7 +71,9 @@ CLASS("MessageLoop", "Storable");
 		T_SETV("updateFrequencyFractions", []);
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 		T_SETV("sleepInterval", _sleepInterval);
-		
+		T_SETV("lastObject", NULL_OBJECT);
+
+		// Do this last to avoid race condition on other members of this class
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
 		T_SETV("scriptHandle", _scriptHandle);
 	} ENDMETHOD;
@@ -300,7 +304,21 @@ CLASS("MessageLoop", "Storable");
 		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 
+	// Returns true if message loop is running
+	// That is, it has not crashed
+	METHOD("isRunning") {
+		params [P_THISOBJECT];
+		pr _scriptHandle = T_GETV("scriptHandle");
+		!(scriptDone _scriptHandle)
+	} ENDMETHOD;
 
+	// Same as above, inverted
+	// Returns true if it has crashed
+	METHOD("isNotRunning") {
+		params [P_THISOBJECT];
+		pr _scriptHandle = T_GETV("scriptHandle");
+		(scriptDone _scriptHandle)
+	} ENDMETHOD;
 
 
 	// STORAGE
@@ -308,12 +326,15 @@ CLASS("MessageLoop", "Storable");
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
-		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
-		T_SETV("scriptHandle", _scriptHandle);
 		T_SETV("mutex", MUTEX_NEW());
 		T_SETV("processCategories", []);
 		T_SETV("updateFrequencyFractions", []);
 		T_SETV("nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT);
+		T_SETV("lastObject", NULL_OBJECT);
+
+		// Do this last to avoid race condition on other members of this class
+		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
+		T_SETV("scriptHandle", _scriptHandle);
 
 		true
 	} ENDMETHOD;

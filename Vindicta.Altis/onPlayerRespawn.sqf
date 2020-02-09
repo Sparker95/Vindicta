@@ -45,15 +45,12 @@ removeAllWeapons player;
 // If it's first respawn, show a hint
 if (isNil {vin_bRespawned}) then {
     vin_bRespawned = true;
-    
-    private _sound = "defaultNotification";
-    private _picture = ""; // Default picture for now
-    private _duration = 10;
-    private _hint = "Check map for more info"; // Override hint!
-    private _args = [_picture, "CONTROLS", "Press [U] to open the in-game menu", "Make sure to check tutorial", _duration, _sound];
-    CALLSM("Notification", "createNotification", _args);
+    private _args = ["CONTROLS", "Press [U] to open the in-game menu", "Make sure to check tutorial"];
+    CALLSM("NotificationFactory", "createHint", _args);
 };
 
 // Open our beautiful map, enable respawn panel
 openMap [true, false];  // Let's not force it... who knows if arma UI locks up again
-CALLM1(gClientMapUI, "respawnPanelEnable", true);
+if(!isNil "gPlayerUIInitialized" && {gPlayerUIInitialized}) then {
+    CALLM1(gClientMapUI, "respawnPanelEnable", true);
+};

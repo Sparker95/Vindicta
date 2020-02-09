@@ -33,7 +33,7 @@
 // Enables output to external file with ofstream in all OOP classes
 // It's a global flag, must be defined here
 
-#define OFSTREAM_ENABLE
+// #define OFSTREAM_ENABLE
 
 // #define OOP_PROFILE
 
@@ -52,9 +52,6 @@
 // Define it at the top of the file per every class where you need to count objects
 //#define PROFILER_COUNTERS_ENABLE
 
-// Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
-#define ADE
-
 // Enables logging of each REF/UNREF on OOP objects
 //#define OOP_LOG_REF_UNREF
 
@@ -63,6 +60,14 @@
 // ----------------------------------------------------------------------
 
 #include "..\config\global_config.hpp"
+
+// Enforce some constraints
+#ifndef OFSTREAM_FILE
+#define OFSTREAM_FILE "OOP.rpt"
+#endif
+#ifndef OFSTREAM_ENABLE
+#undef OFSTREAM_FILE
+#endif
 
 #ifdef _SQF_VM
 // ___ SQF-VM ___
@@ -93,6 +98,7 @@
 
 #define PROFILE_NAME "Satan"
 #define SCRIPT_NULL objNull
+#define saveProfileNamespace
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -181,6 +187,7 @@
 #define P_THISCLASS ["_thisClass", "", [""]]
 #define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
+#define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
@@ -188,6 +195,7 @@
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+#define P_COLOR(paramNameStr) [paramNameStr, [1,1,1,1]]
 #define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
 #define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
@@ -233,6 +241,7 @@
 
 //Macro for global OOP variables
 #define OOP_GVAR(var) o_##var
+#define OOP_GVAR_STR(var) format["o_%1", #var]
 
 // ==== Private special members
 #define NEXT_ID_STR "nextID"
@@ -467,6 +476,9 @@
 
 // For serialization when saving
 #define ATTR_SAVE			7
+#define ATTR_SAVE_VER(ver)	[7,ver]
+// #define ATTR_DEFAULT_KEY	8
+// #define ATTR_DEFAULT(val)	[8,val]
 
 #define ATTR_USERBASE 1000
 
@@ -909,6 +921,7 @@ objNameStr \
 
 // Serialize all variables which have a specified attributes
 #define SERIALIZE_ATTR(objNameStr, attr) ([objNameStr, attr] call OOP_serialize_attr)
+#define SERIALIZE_SAVE(objNameStr) ([objNameStr] call OOP_serialize_save)
 
 // Serialize all variables regardless of their attributes
 #define SERIALIZE_ALL(objNameStr) ([objNameStr, 0, true] call OOP_serialize_attr)
@@ -921,6 +934,8 @@ objNameStr \
 #define DESERIALIZE(objNameStr, array) ([objNameStr, array] call OOP_deserialize)
 #define DESERIALIZE_ATTR(objNameStr, array, attr) ([objNameStr, array, attr] call OOP_deserialize_attr)
 #define DESERIALIZE_ALL(objNameStr, array) ([objNameStr, array, 0, true] call OOP_deserialize_attr)
+#define DESERIALIZE_SAVE(objNameStr, array) ([objNameStr, array] call OOP_deserialize_save)
+#define DESERIALIZE_SAVE_VER(objNameStr, array, version) ([objNameStr, array, version] call OOP_deserialize_save)
 
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |
@@ -1132,3 +1147,8 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // Value to assign to an object handle to indicate it is deliberately invalid.
 #define NULL_OBJECT ""
 #define OOP_OBJECT_TYPE ""
+
+#define ON_ALL 		0
+#define ON_SERVER 	2
+#define ON_CLIENTS -2
+#define NO_JIP 		false

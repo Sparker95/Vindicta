@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Location/isInAllowedArea.sqf",{744:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Checks if given position is in one of the allowed areas</div></div>"});

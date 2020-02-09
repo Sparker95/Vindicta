@@ -49,6 +49,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
+	VARIABLE_ATTR("playerInfoArray", [ATTR_SAVE_VER(11)]);
+	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE_VER(11)]);
+
 	METHOD("new") {
 		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
 								P_NUMBER("_enemyForcePercent")];
@@ -84,13 +87,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if (_tNameEnemy != "") then {
 			T_SETV("tNameMilInd", _tNameEnemy);
 		};
-		if (_tNamePolice != "tNamePolice") then {
+		if (_tNamePolice != "") then {
 			T_SETV("tNamePolice", _tNamePolice);
 		};
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
 
 		T_SETV("locations", []);
 
+		T_SETV("playerInfoArray", []);
+
+		T_SETV("savedSpecialGarrisons", []);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -170,6 +176,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
 			T_CALLM0("_initMissionEventHandlers");
+
+			missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -197,10 +205,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
-
-			#ifndef RELEASE_BUILD
-			[] call pr0_fnc_initDebugMenu;
-			#endif
 
 			// Hide the allowed area markers
 			//#ifdef RELEASE_BUILD
@@ -384,6 +388,91 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
 
+#ifndef _SQF_VM
+		// Start a periodic check which will restart message loops if needed
+		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+#endif
+
+	} ENDMETHOD;
+
+	METHOD("_checkMessageLoops") {
+		params [P_THISOBJECT];
+
+		private _recovery = false;
+		private _crashedMsgLoops = [];
+
+		{													// Check all message loops created
+			private _msgLoop = T_GETV(_x);
+			if (!IS_NULL_OBJECT(_msgLoop)) then {
+				if(CALLM0(_msgLoop, "isNotRunning")) then {	// If it is not running, something bad has happened
+					CALLM0(_msgLoop, "unlock");				// Unlock it by force, it cant unlock itself anyway
+					_crashedMsgLoops pushBack _msgLoop;
+					OOP_ERROR_0("");
+					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
+					OOP_ERROR_1("! ! ! THREAD IS NOT RUNNING: %1", GETV(_msgLoop, "name"));
+					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
+					OOP_ERROR_0("");
+
+					// Make a recursive dump of the last processed object
+					private _lastObject = GETV(_msgLoop, "lastObject");
+					if (IS_NULL_OBJECT(_lastObject)) then {
+						OOP_ERROR_0("Last processed object is null");
+					} else {
+						OOP_ERROR_1("Last processed object: %1", _lastObject);
+						if (!IS_OOP_OBJECT(_lastObject)) then {
+							OOP_ERROR_1("  %1 is not an OOP object", _lastObject);
+						} else {
+							OOP_ERROR_1("  Initiating a memory dump of %1", _lastObject);
+							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
+						};
+					};
+
+					_recovery = true;
+				};
+			};
+		} forEach ["messageLoopMain", "messageLoopGroupAI", "messageLoopGameMode",
+					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
+
+		if (!_recovery) then {
+#ifndef _SQF_VM
+			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
+			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
+#endif
+		} else {
+			// Broadcast notification
+			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
+
+#ifdef RELEASE_BUILD
+			// Send msg to game manager to perform emergency saving
+			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
+#endif
+		};
+	} ENDMETHOD;
+
+	METHOD("_broadcastCrashNotification") {
+		params [P_THISOBJECT, P_ARRAY("_crashedMsgLoops")];
+
+		// Report crashed threads, initiate emergency save
+
+		// Format text
+		private _text = "Threads have crashed: ";
+		{ _text = _text + GETV(_x, "name") + " "; } forEach _crashedMsgLoops;
+		_text = _text + ". Restart the mission after saving is over, send the .RPT to devs";
+
+		// Broadcast notification
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], 0, false);
+
+		// Broadcast it to system chat too
+		["CRITICAL MISSION ERROR:"] remoteExec ["systemChat"];
+		[_text] remoteExec ["systemChat"];
+
+		// todo: send emails, deploy pigeons
+
+#ifndef _SQF_VM
+		// Do it once in a while
+		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
+#endif
+
 	} ENDMETHOD;
 
 	METHOD("_initMissionEventHandlers") {
@@ -405,6 +494,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					};
 				} forEach _vehicles;
 			};
+		}];
+		addMissionEventHandler ["HandleDisconnect", {
+			params ["_unit", "_id", "_uid", "_name"];
+			CALLM3(gGameMode, "savePlayerInfo", _uid, _unit, _name);
+			false;
 		}];
 		#endif
 	} ENDMETHOD;
@@ -459,13 +553,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
-			case "police":				{ T_GETV("tNamePolice") };  //{ "tRHS_AAF2017_police" }; // { "tPOLICE" };
+			case "police":				{ T_GETV("tNamePolice") };  //{ "tRHS_AAF_police" }; // { "tPOLICE" };
 			
 			default { // "military"
 				switch(_side) do {
 					case WEST:			{ T_GETV("tNameMilWest") };
 					case EAST:			{ T_GETV("tNameMilEast") };
-					case INDEPENDENT:	{ T_GETV("tNameMilInd") }; //{"tRHS_AAF2017_elite"}; // { "tAAF" };
+					case INDEPENDENT:	{ T_GETV("tNameMilInd") }; //{"tRHS_AAF_2020"}; // { "tAAF" };
 					case CIVILIAN:		{ "tCIVILIAN" };
 					default				{ "tDEFAULT" };
 				}
@@ -489,13 +583,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
+				T_CALLM("createGarrison", ["military" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
 				private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
+				T_CALLM("createGarrison", ["police" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
 			};
 			default { NULL_OBJECT };
 		};
@@ -504,7 +598,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Override this to do stuff when player spawns
 	// Call the method of base class(that is, this class)
 	/* protected virtual */METHOD("playerSpawn") {
-		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
+		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		OOP_INFO_1("PLAYER SPAWN: %1", _this);
 
@@ -521,8 +615,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Create scroll menu to talk to civilians
 		pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
 			private _civ = cursorObject;
-			(!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
-			&& {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
+			!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}
+			&& {(_target distance _civ) < 4}
+			&& {alive _civ}
+			&& {!(_civ getVariable ["#arrested", false])}
+			&& {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 		};
 
 		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
@@ -551,7 +648,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
-		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), // title
+		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Instigate</t>")), // title
 						"[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
 						0, // Arguments
 						8998, // Priority
@@ -573,7 +670,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Init the Sound Monitor on player
 		NEW("SoundMonitor", [_newUnit]);
-
 
 		// Action to start building stuff
 		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
@@ -627,6 +723,40 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
+
+		// Action to disable alarm in police stations
+		pr0_fnc_canDisableAlarm = {
+			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			_loc != NULL_OBJECT && { CALLM0(_loc, "getType") == LOCATION_TYPE_POLICE_STATION } && { !CALLM0(_loc, "isAlarmDisabled") }
+		};
+		pr0_fnc_disableAlarm = {
+			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			if(_loc != NULL_OBJECT) then {
+				CALLM1(_loc, "setAlarmDisabled", true);
+			};
+		};
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\igui\rscingameui\rscunitinfoairrtdfull\ico_cpt_sound_off_ca.paa' />  %1", "Disable alarm"], // title
+						{call pr0_fnc_disableAlarm}, // disable alarm
+						0, // Arguments
+						-1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_canDisableAlarm", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+		if(!(_restoreData isEqualTo [])) then {
+			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
+			// Clear player gear immediately on this client
+			CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]]);
+			// Tell the server to clear it as well, which will also update the client (just to make sure)
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [player], ON_SERVER);
+			true
+		} else {
+			false
+		}
 	} ENDMETHOD;
 
 	// Player death event handler in SP
@@ -635,6 +765,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
 
 		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
+
+		// Bail if this has already been handled for this unit
+		// I have no idea why, killed event handler gets called twice if player dies after laying on the ground after taking too much ACE damage
+		private _handledPreviously = _oldUnit getVariable ["vin_killed_handled", false];
+		OOP_INFO_1("  handled previously: %1", _handledPreviously);
+		if (_handledPreviously) exitWith {
+			OOP_INFO_0("  handled previously, ignoring this call");
+		};
+		_oldUnit setVariable ["vin_killed_handled", true];
 
 		// Create a unit and give player control of it.
 		private _tmpGroup = createGroup (side group _oldUnit);
@@ -722,25 +861,68 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT];
 
 		// Independent
-		gCommanderInd = NEW("Commander", []); // all commanders are equal
-		private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
+		private _cmdr = NEW("Commander", []); // all commanders are equal
+		private _args = [_cmdr, INDEPENDENT, gMessageLoopCommanderInd];
 		gAICommanderInd = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderInd", gAICommanderInd);
 		PUBLIC_VARIABLE "gAICommanderInd";
 
 		// West
-		gCommanderWest = NEW("Commander", []);
-		private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
+		private _cmdr = NEW("Commander", []);
+		private _args = [_cmdr, WEST, gMessageLoopCommanderWest];
 		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderWest", gAICommanderWest);
 		PUBLIC_VARIABLE "gAICommanderWest";
 
 		// East
-		gCommanderEast = NEW("Commander", []);
-		private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
+		private _cmdr = NEW("Commander", []);
+		private _args = [_cmdr, EAST, gMessageLoopCommanderEast];
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderEast", gAICommanderEast);
 		PUBLIC_VARIABLE "gAICommanderEast";
+	} ENDMETHOD;
+
+	METHOD("_saveSpecialGarrisons") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		diag_log "Saving special garrisons";
+		// Save the loaded data to the garrisons
+		T_SETV("savedSpecialGarrisons", gSpecialGarrisons);
+		{
+			CALLM1(_storage, "save", _x);
+		} forEach gSpecialGarrisons;
+		diag_log "Special garrisons saved";
+	} ENDMETHOD;
+
+	METHOD("_loadSpecialGarrisons") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// SAVEBREAK
+		if(GETV(_storage, "version") >= 11) then {
+			diag_log "Loading special garrisons";
+			gSpecialGarrisons = +T_GETV("savedSpecialGarrisons");
+
+			// Add the loaded data back to the garrisons
+			{
+				CALLM1(_storage, "load", _x);
+			} forEach gSpecialGarrisons;
+
+			// Garrison objects to track players and player owned vehicles
+			gGarrisonPlayersWest 		= gSpecialGarrisons#0;
+			gGarrisonPlayersEast 		= gSpecialGarrisons#1;
+			gGarrisonPlayersInd 		= gSpecialGarrisons#2;
+			gGarrisonPlayersCiv 		= gSpecialGarrisons#3;
+			gGarrisonAmbient 			= gSpecialGarrisons#4;
+			gGarrisonAbandonedVehicles 	= gSpecialGarrisons#5;
+
+			{
+				CALLM2(_x, "postMethodAsync", "spawn", [true]); // true == global spawn
+			} forEach gSpecialGarrisons;
+
+		} else {
+			diag_log "Creating special garrisons";
+			T_CALLM0("_createSpecialGarrisons");
+		};
+		diag_log "Special garrisons done";
 	} ENDMETHOD;
 
 	METHOD("_createSpecialGarrisons") {
@@ -755,6 +937,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gGarrisonAbandonedVehicles = NEW("Garrison", [CIVILIAN]);
 
 		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
+
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
@@ -838,9 +1021,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				_locBorder params ["_a", "_b"];
 				private _area = 4*_a*_b;
 				private _density_km2 = 60;	// Amount of civilians per square km
-				private _max = 35;			// Max amount of civilians
-				_locCapacityCiv = ((_density_km2/1e6) * _area) min 35;
-				_locCapacityCiv = ceil _locCapacityCiv;
+				private _civsRaw = ceil ((_density_km2/1e6) * _area);
+				// Clamp between 10 and 35
+				_locCapacityCiv = 10 max _civsRaw min 35;
 
 				// https://www.desmos.com/calculator/nahw1lso9f
 				/*
@@ -880,7 +1063,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4) /*(_locCapacityCiv >= 10)*/) then {
+			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or _locCapacityCiv > 25)) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -1000,11 +1183,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
-	#define ADD_ARMED_MRAPS
-	#define ADD_ARMOR
+	//#define ADD_ARMED_MRAPS
+	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
-		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+		params [P_THISOBJECT, P_STRING("_faction"), P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 
 		if (_faction == "police") exitWith {
 			
@@ -1089,7 +1272,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _gar = NEW("Garrison", _args);
 
 		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
-		
 
 		// Add default units to the garrison
 
@@ -1099,9 +1281,27 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			//|    |Max groups of this type
 			//|    |    |Group template
 			//|	   |    |                          |Group behaviour
-			[  0,   3,   T_GROUP_inf_sentry,   		GROUP_TYPE_PATROL],
+			[  0,   3,   T_GROUP_inf_sentry,        GROUP_TYPE_PATROL],
 			[  0,  -1,   T_GROUP_inf_rifle_squad,   GROUP_TYPE_IDLE]
 		];
+		// Officers at airports and bases only
+		if(_locationType == LOCATION_TYPE_AIRPORT) then {
+			_infSpec =
+				[
+					[  3,  3,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY],
+					[  2,  2,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				]
+				+ _infSpec;
+		};
+		// Officers at airports and bases only
+		if(_locationType == LOCATION_TYPE_BASE) then {
+			_infSpec =
+				[
+					[  1,  1,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY],
+					[  1,  1,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				]
+				+ _infSpec;
+		};
 
 		private _vehGroupSpec = [
 			//|Chance to spawn
@@ -1355,10 +1555,101 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGameMode;
 	} ENDMETHOD;
 
+	// -------------------------------------------------------------------------
+	// |                         P L A Y E R  S A V E                          |
+	// -------------------------------------------------------------------------
+
+	GameMode_fnc_getPlayerInfo = {
+		params [P_STRING("_uid"), P_OBJECT("_unit"), P_STRING("_name")];
+
+		private _inventoryObj = ["new", _unit] call OO_INVENTORY;
+		private _inv = "getInventory" call _inventoryObj;
+		["delete", _inventoryObj] call OO_INVENTORY;
+
+		[
+			_uid,
+			_name,
+			getPosASL _unit,
+			_inv
+		]
+	};
+
+	GameMode_fnc_restorePlayerInfo = {
+		params [P_OBJECT("_player"), P_ARRAY("_arr"), P_BOOL("_positionAsWell")];
+
+		//_player setName _arr#1;
+		if(_positionAsWell) then {
+			_player setPosASL _arr#2;
+		};
+
+		private _inventoryObj = ["new", _player] call OO_INVENTORY;
+		["setInventory", _arr#3] call _inventoryObj;
+		["delete", _inventoryObj] call OO_INVENTORY;
+	};
+	
+	METHOD("savePlayerInfo") {
+		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_unit"), P_STRING("_name")];
+		T_PRVAR(playerInfoArray);
+		private _obj = [_uid, _unit, _name] call GameMode_fnc_getPlayerInfo;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing == NOT_FOUND) then {
+			_playerInfoArray pushBack _obj;
+		} else {
+			_playerInfoArray set [_existing, _obj];
+		};
+		diag_log format["Saving player info for %1: %2", name _unit, _obj];
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_obj], owner _unit, false);
+	} ENDMETHOD;
 
 
+	METHOD("syncPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		private _playerInfo = if(_existing != NOT_FOUND) then {
+			_playerInfoArray#_existing;
+		} else {
+			[]
+		};
+		diag_log format["Syncing player info for %1: %2", name _player, _playerInfo];
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_playerInfo], owner _player, NO_JIP);
+	} ENDMETHOD;
 
-	// STORAGE
+	METHOD("clearPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing != NOT_FOUND) then {
+			_playerInfoArray deleteAt _existing;
+		};
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]], owner _player, false);
+	} ENDMETHOD;
+
+	METHOD("getPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing != NOT_FOUND) then {
+			_playerInfoArray#_existing
+		} else {
+			[]
+		}
+	} ENDMETHOD;
+
+	// -------------------------------------------------------------------------
+	// |                             S T O R A G E                             |
+	// -------------------------------------------------------------------------
 
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
@@ -1376,6 +1667,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM1("Location", "saveStaticVariables", _storage);
 		CALLSM1("Unit", "saveStaticVariables", _storage);
 		CALLSM1("MessageReceiver", "saveStaticVariables", _storage);
+
+		// Update player info for alive players
+		{
+			T_CALLM3("savePlayerInfo", getPlayerUID _x, _x, name _x);
+		} forEach (allPlayers select { alive _x });
 
 		// Lock all message loops in specific order
 		private _msgLoops = [
@@ -1399,9 +1695,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
-		// Start loading screen
-		startLoadingScreen ["Saving mission"];
-
 		// Save message loops
 		{
 			_x params ["_loopName", "_timeout"];
@@ -1424,6 +1717,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			diag_log format ["Saving location: %1", _loc];
 			CALLM1(_storage, "save", _loc);
 		} forEach T_GETV("locations");
+
+		T_CALLM1("_saveSpecialGarrisons", _storage);
 
 		true
 	} ENDMETHOD;
@@ -1454,12 +1749,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" FINISHED SAVING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
-		// End loading screen
-		endLoadingScreen;
-
 		true
 	} ENDMETHOD;
-
 
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
@@ -1472,15 +1763,25 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
 		CALLSM0("Location", "deleteEditorObjects");
 
-		// Start loading screen
-		startLoadingScreen ["Loading the mission"];
-
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Set default values if they weren't loaded due to older save version
+		if(isNil{T_GETV("playerInfoArray")}) then {
+			T_SETV("playerInfoArray", []);
+		};
+		if(isNil{T_GETV("savedSpecialGarrisons")}) then {
+			T_SETV("savedSpecialGarrisons", []);
+		};
+
+		// Send players their restore points from this save, if they have any
+		{
+			T_CALLM1("syncPlayerInfo", _x);
+		} forEach allPlayers;
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
@@ -1555,19 +1856,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
 		// Special garrisons
-		T_CALLM0("_createSpecialGarrisons");
+		T_CALLM1("_loadSpecialGarrisons", _storage);
 
 		// Load locations
 		{
 			private _loc = _x;
-			diag_log format ["Loading location: %1", _loc];
+			OOP_INFO_1("Loading location: %1", _loc);
 			CALLM1(_storage, "load", _loc);
 		} forEach T_GETV("locations");
 
 		// Load commanders
 		{
 			private _ai = T_GETV(_x);
-			diag_log format ["Loading Commander AI: %1", _x];
+			OOP_INFO_1("Loading Commander AI: %1", _x);
 			CALLM1(_storage, "load", _ai);
 		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 
@@ -1578,6 +1879,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		PUBLIC_VARIABLE("gAICommanderWest");
 		gAICommanderEast = T_GETV("AICommanderEast");
 		PUBLIC_VARIABLE("gAICommanderEast");
+
+		// Refresh locations
+		CALLSM0("Location", "postLoad");
 
 		// Unlock all message loops
 		{
@@ -1595,9 +1899,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
-
-		// End loading screen
-		endLoadingScreen;
 
 		true
 	} ENDMETHOD;

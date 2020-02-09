@@ -9,8 +9,6 @@ Radius is recalculated in case location is specified as destination
 Parent: <ActionStateTransition>
 */
 
-#define DEBUG
-
 CLASS("AST_MoveGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
@@ -95,6 +93,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 			// Move completes at some point in the future so we apply it immediately to the FUTURE world model.
 			case WORLD_TYPE_SIM_FUTURE: {
 				CALLM(_garr, "moveSim", [_targetPos]);
+				OOP_INFO_MSG("[w %1] Move %2 to %3: complete", [_world ARG LABEL(_garr) ARG _targetPos]);
 				_arrived = true;
 			};
 			case WORLD_TYPE_REAL: {
