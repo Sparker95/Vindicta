@@ -613,12 +613,14 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		if(_state in [CITY_STATE_STABLE, CITY_STATE_AGITATED]) then {
 			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
 			private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
+
 			// For now we will just have instability directly related to activity and inversely related to city radius (activity fades over time just
 			// as we want instability to)
 			// TODO: add other interesting factors here to the instability rate.
 			// This equation makes required instability relative to area, and means you need ~100 activity at radius 300m and ~600 at radius 750m
 			_instability = 1 min (_activity * 900 / (_cityRadius * _cityRadius));
-			diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
+			// diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
+
 			// TODO: scale the instability limits using settings
 			switch true do {
 				case (_instability >= 1): { _state = CITY_STATE_IN_REVOLT; };
@@ -626,22 +628,21 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {
-			// If there is an enemy garrison occupying the city then it is suppressed
-			if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) > 0) then {
-				_state = CITY_STATE_SUPPRESSED;
-				_instability = 0;
+			// If the location is spawned and there are twice as many friendly as enemy units then it is liberated, otherwise it is suppressed
+			if(CALLM(_city, "isSpawned", [])) then {
+				private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
+				private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
+				_state = if(_friendlyCount > _enemyCount * 2) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
 			} else {
-				// If the location is spawned and there are twice as many friendly as enemy units then it is liberated
-				if(CALLM(_city, "isSpawned", [])) then {
-					private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
-					private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
-					if(_friendlyCount > _enemyCount * 2) then {
-						_state = CITY_STATE_LIBERATED;
-					};
-				};
-				_instability = 1;
+				// If there is an enemy garrison occupying the city then it is suppressed
+				_state = if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) == 0) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
+			};
+			
+			// Instability is only 0 or 1 for liberated/suppressed cities
+			_instability = if(_state == CITY_STATE_LIBERATED) then { 1 } else { 0 };
 
-				// Make sure amount of activity is appropriate for a city that is liberated
+			// Make sure amount of activity is appropriate for a city that is liberated
+			if(_state == CITY_STATE_LIBERATED) then {
 				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
 				private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
 

@@ -1,18 +1,15 @@
 /*
 ----------------------------------------------------------------------------------------------
-							LIST OF "CIVILIAN" GEAR AND VEHICLES
+    ARRAYS OF DEFAULT INFINITE ARSENAL EQUIPMENT 
 ----------------------------------------------------------------------------------------------
 */
 
-
-
-/* 
-----------------------------------------------------------------------------------------------
-	CIVILIAN CLOTHING
-----------------------------------------------------------------------------------------------
-*/
-
-g_UM_civUniforms = [
+g_ArsenalLoadout_Uniforms = [
+	"U_BG_Guerilla2_1",
+    "U_BG_Guerilla2_2",
+    "U_BG_Guerilla2_3",
+    "U_BG_Guerilla3_1",
+    "U_BG_Guerilla3_2",
     "U_C_Commoner_shorts",
     "U_C_ConstructionCoverall_Black_F",
     "U_C_ConstructionCoverall_Blue_F",
@@ -65,10 +62,28 @@ g_UM_civUniforms = [
     "U_I_C_Soldier_Bandit_3_F",
     "U_I_C_Soldier_Bandit_4_F",
     "U_I_C_Soldier_Bandit_5_F",
+    "U_IG_Guerilla2_1",
+    "U_IG_Guerilla2_2",
+    "U_IG_Guerilla2_3",
+    "U_IG_Guerilla3_1",
+    "U_IG_Guerilla3_2",
+    "U_BG_Guerrilla_6_1",
+    "U_I_C_Soldier_Para_4_F",
+    "U_I_L_Uniform_01_camo_F",
+    "U_I_L_Uniform_01_deserter_F",
+    "U_I_G_resistanceLeader_F",
+    "U_BG_Guerilla1_1",
+    "U_I_C_Soldier_Para_3_F",
     "U_Marshal",
+    "U_OG_Guerilla2_1",
+    "U_OG_Guerilla2_2",
+    "U_OG_Guerilla2_3",
+    "U_OG_Guerilla3_1",
+    "U_OG_Guerilla3_2",
     "U_C_HunterBody_grn",
     "U_OrestesBody",
     "U_Rangemaster",
+    "U_BG_leader",
 
     // CONTACT DLC 
     "U_I_L_Uniform_01_tshirt_black_F",
@@ -84,7 +99,10 @@ g_UM_civUniforms = [
 ];
 
 
-g_UM_civHeadgear = [
+g_ArsenalLoadout_Headgear = [
+    "H_Shemag_olive",
+    "H_ShemagOpen_tan",
+    "H_ShemagOpen_khk",
     "H_Hat_Tinfoil_F",
     "H_Bandanna_blu",
     "H_Bandanna_camo",
@@ -174,14 +192,8 @@ g_UM_civHeadgear = [
     "H_StrawHat_dark"
 ];
 
-g_UM_civVests = [
-    "V_DeckCrew_blue_F",
-    "V_DeckCrew_brown_F",
-    "V_DeckCrew_green_F",
-    "V_DeckCrew_red_F",
-    "V_DeckCrew_violet_F",
-    "V_DeckCrew_white_F",
-    "V_DeckCrew_yellow_F",
+/*
+g_ArsenalLoadout_Vests = [
     "V_Plain_crystal_F",
     "V_Plain_medical_F",
     "V_Pocketed_black_F",
@@ -191,9 +203,19 @@ g_UM_civVests = [
     "V_Safety_orange_F",
     "V_Safety_yellow_F"
 ];
+*/
 
-g_UM_civFacewear = [
-    "G_Aviator",
+g_ArsenalLoadout_Facewear = [
+    //"G_Aviator",
+    "G_Balaclava_blk",
+    "G_Balaclava_oli",
+    "G_Bandanna_beast",
+    "G_Bandanna_blk",
+    "G_Bandanna_khk",
+    "G_Bandanna_oli",
+    "G_Bandanna_tan",
+    "G_AirPurifyingRespirator_01_F",
+    "G_RegulatorMask_F",
     "G_Combat",
     "G_Combat_Goggles_tna_F",
     "G_EyeProtectors_Earpiece_F",
@@ -224,112 +246,9 @@ g_UM_civFacewear = [
     "G_Tactical_Clear"
 ];
 
-g_UM_civBackpacks = [
+g_ArsenalLoadout_Backpacks = [
     "ACE_TacticalLadder_Pack",
 	"B_Messenger_Black_F",
     "B_Messenger_Coyote_F",
     "B_Messenger_Olive_F"
 ];
-
-g_UM_ghillies = [
-	"U_B_FullGhillie_ard",
-    "U_B_FullGhillie_lsh",
-    "U_B_FullGhillie_sard",
-    "U_B_GhillieSuit",
-    "U_B_T_FullGhillie_tna_F",
-    "U_I_FullGhillie_ard",
-    "U_I_FullGhillie_lsh",
-    "U_I_FullGhillie_sard",
-    "U_I_GhillieSuit",
-    "U_O_FullGhillie_ard",
-    "U_O_FullGhillie_lsh",
-    "U_O_FullGhillie_sard",
-    "U_O_GhillieSuit",
-    "U_O_T_FullGhillie_tna_F"
-];
-
-/* 
-----------------------------------------------------------------------------------------------
-	ITEMS
-----------------------------------------------------------------------------------------------
-*/
-
-g_UM_civItems = [
-	"ItemWatch",
-	"Toolkit",
-	"Medikit",
-	"FirstAidKit"
-];
-
-// Exceptions for certain "dummy weapons" used in some innocent animations
-g_UM_civWeapons = [
-    "ACE_FakePrimaryWeapon",
-    "Rifle_Base_F",
-    "CarHorn",
-    "TruckHorn",
-    "Binocular",
-    "Rangefinder",
-    "Laserdesignator",
-    "Laserdesignator_02",
-    "Laserdesignator_03",
-    ""
-];
-
-g_UM_suspWeapons = [
-    "Binocular",
-    "Rangefinder",
-    "Laserdesignator",
-    "Laserdesignator_02",
-    "Laserdesignator_03"
-]; 
-
-/* 
-----------------------------------------------------------------------------------------------
-	VEHICLES
-----------------------------------------------------------------------------------------------
-*/
-
-// no longer used array of civilian vehicles 
-/*
-g_civVehs = [
-    "C_Hatchback_01_sport_F",
-    "C_Hatchback_01_F",
-    "C_Truck_02_box_F",
-    "C_Truck_02_fuel_F",
-    "C_Offroad_02_unarmed_F",
-    "C_Van_01_fuel_F",
-    "C_Truck_02_transport_F",
-    "C_Truck_02_covered_F",
-    "C_Kart_01_F",
-    "C_Kart_01_Blu_F",
-    "C_Kart_01_Fuel_F",
-    "C_Kart_01_Red_F",
-    "C_Kart_01_Vrana_F",
-    "C_Offroad_01_F",
-    "C_Offroad_01_repair_F",
-    "C_Quadbike_01_F",
-    "C_SUV_01_F",
-    "C_Van_01_transport_F",
-    "C_Van_02_medevac_F",
-    "C_Van_02_vehicle_F",
-    "C_Van_02_service_F",
-    "C_Van_02_transport_F",
-    "C_IDAP_Offroad_02_unarmed_F",
-    "C_IDAP_Offroad_01_F",
-    "C_IDAP_Van_02_medevac_F",
-    "C_IDAP_Van_02_vehicle_F",
-    "C_IDAP_Van_02_transport_F",
-    "C_IDAP_Truck_02_transport_F",
-    "C_IDAP_Truck_02_F",
-    "C_IDAP_Truck_02_water_F",
-    "C_Boat_Civil_01_F",
-    "C_Boat_Civil_01_rescue_F",
-    "C_Rubberboat",
-    "C_Boat_Transport_02_F",
-    "C_Scooter_Transport_01_F",
-    "I_C_Van_02_transport_F",
-    "I_C_Van_02_vehicle_F"
-];
-
-*/
-

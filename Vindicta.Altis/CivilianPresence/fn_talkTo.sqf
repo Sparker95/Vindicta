@@ -55,7 +55,7 @@ switch (_mode) do {
 		__SLEEP(_text);
 		if (__CHECK_EXIT_COND) exitWith {};
 
-		if (random 100 < 5) exitWith {
+		if (random 1000 < 5) exitWith {
 			_text = selectRandom [	"I am nothing but a simulation on some computer.",
 									"This all is not real! This is a simulation! What shall we do now?",
 									"How can you prove that this world is real? It's all a simulation!",

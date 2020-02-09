@@ -92,6 +92,19 @@ class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 };
 
+class CMUI_HINTS_BG : RscPicture {
+
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.184; 
+	y = safeZoneY + safeZoneH * 0.043; 
+	w = safeZoneW * 0.58; 
+	h = safeZoneH * 0.026;
+	text = "UI\Images\gradient_2way.paa";
+	colorBackground[] = {0.2,0.2,0.2,0.6};
+	colorText[] = {0.1, 0.1, 0.1, 1};
+
+};
+
 class CMUI_HINTS : MUI_BG_TRANSPARENT {
 
 	IDC = -1; 
@@ -99,9 +112,8 @@ class CMUI_HINTS : MUI_BG_TRANSPARENT {
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.58; 
 	h = safeZoneH * 0.026;
-	text = ""; // Don't really need hints any more I think? 
-	colorBackground[] = MUIC_BLACKTRANSP; 
-
+	text = "testestest"; // Don't really need hints any more I think? 
+	font = "RobotoCondensed";
 };
 
 class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE {
@@ -131,10 +143,10 @@ class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT
     IDC = -1; 
     x = safeZoneX + safeZoneW * 0.353; 
     y = safeZoneY + safeZoneH * 0.822; 
-    w = safeZoneW * 0.292; 
+    w = safeZoneW * 0.3; 
     h = safeZoneH * 0.065; 
 
-	font = "RobotoCondensed";
+	font = "PuristaLight";
     text = "RESPAWN"; 
 	sizeEx = 0.06;
 	shadow = 1;
@@ -149,9 +161,10 @@ class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID
 	IDC = -1;
 	x = safeZoneX + safeZoneW * 0.353; 
     y = safeZoneY + safeZoneH * 0.889; 
-    w = safeZoneW * 0.292; 
+    w = safeZoneW * 0.3; 
     h = safeZoneH * 0.035; 
-    text = "RESPAWN";
+    text = "Respawn hint text";
+    font = "RobotoCondensed";
 };
 
 class CMUI_INTEL_BTNGRP : MUI_GROUP {

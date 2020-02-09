@@ -615,8 +615,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Create scroll menu to talk to civilians
 		pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
 			private _civ = cursorObject;
-			(!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
-			&& {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
+			!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}
+			&& {(_target distance _civ) < 4}
+			&& {alive _civ}
+			&& {!(_civ getVariable ["#arrested", false])}
+			&& {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 		};
 
 		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
@@ -645,7 +648,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
-		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), // title
+		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Instigate</t>")), // title
 						"[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
 						0, // Arguments
 						8998, // Priority
@@ -721,9 +724,35 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
+		// Action to disable alarm in police stations
+		pr0_fnc_canDisableAlarm = {
+			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			_loc != NULL_OBJECT && { CALLM0(_loc, "getType") == LOCATION_TYPE_POLICE_STATION } && { !CALLM0(_loc, "isAlarmDisabled") }
+		};
+		pr0_fnc_disableAlarm = {
+			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			if(_loc != NULL_OBJECT) then {
+				CALLM1(_loc, "setAlarmDisabled", true);
+			};
+		};
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\igui\rscingameui\rscunitinfoairrtdfull\ico_cpt_sound_off_ca.paa' />  %1", "Disable alarm"], // title
+						{call pr0_fnc_disableAlarm}, // disable alarm
+						0, // Arguments
+						-1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_canDisableAlarm", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
 		if(!(_restoreData isEqualTo [])) then {
 			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
-			REMOTE_EXEC_CALL_METHOD(gGameMode, "clearPlayerInfo", [player], ON_SERVER);
+			// Clear player gear immediately on this client
+			CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]]);
+			// Tell the server to clear it as well, which will also update the client (just to make sure)
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [player], ON_SERVER);
 			true
 		} else {
 			false
@@ -832,22 +861,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT];
 
 		// Independent
-		gCommanderInd = NEW("Commander", []); // all commanders are equal
-		private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
+		private _cmdr = NEW("Commander", []); // all commanders are equal
+		private _args = [_cmdr, INDEPENDENT, gMessageLoopCommanderInd];
 		gAICommanderInd = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderInd", gAICommanderInd);
 		PUBLIC_VARIABLE "gAICommanderInd";
 
 		// West
-		gCommanderWest = NEW("Commander", []);
-		private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
+		private _cmdr = NEW("Commander", []);
+		private _args = [_cmdr, WEST, gMessageLoopCommanderWest];
 		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderWest", gAICommanderWest);
 		PUBLIC_VARIABLE "gAICommanderWest";
 
 		// East
-		gCommanderEast = NEW("Commander", []);
-		private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
+		private _cmdr = NEW("Commander", []);
+		private _args = [_cmdr, EAST, gMessageLoopCommanderEast];
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderEast", gAICommanderEast);
 		PUBLIC_VARIABLE "gAICommanderEast";
@@ -1832,14 +1861,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Load locations
 		{
 			private _loc = _x;
-			diag_log format ["Loading location: %1", _loc];
+			OOP_INFO_1("Loading location: %1", _loc);
 			CALLM1(_storage, "load", _loc);
 		} forEach T_GETV("locations");
 
 		// Load commanders
 		{
 			private _ai = T_GETV(_x);
-			diag_log format ["Loading Commander AI: %1", _x];
+			OOP_INFO_1("Loading Commander AI: %1", _x);
 			CALLM1(_storage, "load", _ai);
 		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 
@@ -1850,6 +1879,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		PUBLIC_VARIABLE("gAICommanderWest");
 		gAICommanderEast = T_GETV("AICommanderEast");
 		PUBLIC_VARIABLE("gAICommanderEast");
+
+		// Refresh locations
+		CALLSM0("Location", "postLoad");
 
 		// Unlock all message loops
 		{

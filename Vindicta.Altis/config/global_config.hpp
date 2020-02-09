@@ -2,17 +2,17 @@
 // If you want to modify for yourself only then use user_local_config.hpp in this same directory (it will not be committed).
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
-#define OOP_ASSERT
+//#define OOP_ASSERT
 
 // Undefine oop class member access violation asserts -- they are slow
-#undef OOP_ASSERT_ACCESS
+//#undef OOP_ASSERT_ACCESS
 
 // Undefine Arma Script Profiler
-#undef ASP_ENABLE
+//#undef ASP_ENABLE
 
 // Defined only in this file
 // Means that we are in the editor
-#define EDITOR_PREVIEW
+// #define EDITOR_PREVIEW
 
 // ========= Release config ============
 /*

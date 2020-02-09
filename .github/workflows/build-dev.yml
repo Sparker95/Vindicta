@@ -45,7 +45,7 @@ jobs:
       run: |
         $env:RUST_BACKTRACE=1
         cd Vindicta-Addon
-        .\tools\buildv2.ps1 {{github.run_number}}
+        .\tools\buildv2.ps1 ${{ github.run_number }}
         
     - uses: actions/upload-artifact@v1
       with:
@@ -57,9 +57,20 @@ jobs:
         name: dev
         path: Vindicta-Addon/dev
 
-    - name: Upload pbo to dev server
-      run: |
-        cd Vindicta-Addon/dev
-        sudo apt-get install wput
-        wput *.pbo "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/ugs-eu-germany-1.armahosts.com_2322/mpmissions/"
- 
+  upload:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download dev
+      uses: actions/download-artifact@v1
+      with:
+        name: dev
+
+    - name: Upload ftp
+      uses: sebastianpopp/ftp-action@v1.1.0
+      with:
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: "dev"
+        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
