@@ -8,7 +8,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 
 	class Controls
 	{
-		class STATIC_GAME_MODE : MUI_BASE_ABS 
+		class STATIC_GAME_MODE : MUI_DESCRIPTION_ABS 
 		{
 			idc = -1;
 			x = 0.02000013;
@@ -16,9 +16,8 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.38000013;
 			h = 0.04000007;
 			text = "GAME MODE:";
-			style = 0;
 		};
-		class STATIC_ENEMY_FORCE_PERCENTAGE : MUI_BASE_ABS 
+		class STATIC_ENEMY_FORCE_PERCENTAGE : MUI_DESCRIPTION_ABS 
 		{
 			idc = -1;
 			x = 0.02000014;
@@ -26,9 +25,8 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.38000013;
 			h = 0.04000007;
 			text = "INITIAL ENEMY %:";
-			style = ST_LEFT;
 		};
-		class STATIC_MILITARY_FACTION : MUI_BASE_ABS 
+		class STATIC_MILITARY_FACTION : MUI_DESCRIPTION_ABS 
 		{
 			idc = -1;
 			x = 0.02000014;
@@ -36,9 +34,8 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.38000007;
 			h = 0.04000007;
 			text = "MILITARY FACTION:";
-			style = ST_LEFT;
 		};
-		class STATIC_CAMPAIGN_NAME : MUI_BASE_ABS 
+		class STATIC_CAMPAIGN_NAME : MUI_DESCRIPTION_ABS 
 		{
 			idc = -1;
 			x = 0.02000013;
@@ -46,9 +43,8 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.38000013;
 			h = 0.04000007;
 			text = "CAMPAIGN NAME:";
-			style = ST_LEFT;
 		};
-		class STATIC_POLICE_FACTION : MUI_BASE_ABS 
+		class STATIC_POLICE_FACTION : MUI_DESCRIPTION_ABS 
 		{
 			idc = -1;
 			x = 0.02000014;
@@ -56,7 +52,6 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.38000007;
 			h = 0.04000007;
 			text = "POLICE FACTION:";
-			style = ST_LEFT;
 		};
 		class TAB_GMINIT_EDIT_ENEMY_PERCENTAGE : MUI_EDIT_ABS 
 		{

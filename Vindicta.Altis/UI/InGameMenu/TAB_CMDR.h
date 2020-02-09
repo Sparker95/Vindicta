@@ -99,7 +99,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			text = "666 build resources";			
 		};
 
-		class TAB_CMDR_STATIC_HELP : MUI_BASE_ABS
+		class TAB_CMDR_STATIC_HELP : MUI_BG_TRANSPARENT_MULTILINE_LEFT_ABS
 		{
 			type = 0;
 			idc = -1;
@@ -107,6 +107,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.21000008;
 			w = 0.68000039;
 			h = 0.08;
+			colorText[] = MUIC_BTN_RED;
 			style = 16+0+0x200; // multi line, no rect
 			text = "Build resources must be in your backpack or in the vehicle you are looking at.";
 			lineSpacing = 1;	

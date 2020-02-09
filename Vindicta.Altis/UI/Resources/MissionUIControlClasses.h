@@ -68,6 +68,23 @@ class MUI_BASE
 __MUI_CLASS_ABS(MUI_BASE);
 
 
+class MUI_DESCRIPTION : MUI_BASE
+{
+	idc = -1;
+	type = CT_STATIC;
+
+	x = 0;
+	y = 0;
+	w = 0;
+	h = 0;
+
+	colorBackground[] = MUIC_BLACK;
+	colorText[] = MUIC_WHITE;
+	style = ST_LEFT;
+};
+__MUI_CLASS_ABS(MUI_DESCRIPTION);
+
+
 class MUI_BG_BLACKSOLID : MUI_BASE 
 {
 	type = CT_STATIC;
@@ -100,6 +117,7 @@ class MUI_BG_TRANSPARENT_MULTILINE_LEFT : MUI_BASE
 	sizeEx = MUI_TXT_SIZE_M;
 	style = 16+0+0x200; // multi line, no rect, left alighnemt
 	lineSpacing = 1; // must set it for multi line to work
+	font = "RobotoCondensed";
 };
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT_MULTILINE_LEFT);
 
