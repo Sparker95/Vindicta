@@ -7,7 +7,7 @@ nav_order: 3
 # Frequently Asked Questions
 
 ### How do we claim an outpost?
-> Press U, strategic tab, there should be 'claim' button.
+> Press U, strategic tab, there should be 'claim' button. You can't claim an outpost if there is still 1 enemy attach to it. also, if you want to claim a neutral outpost, you will need some building ressources.
 
 ### What is the difference between a camp and an outpost?
 > Currently there is none.
@@ -19,7 +19,7 @@ nav_order: 3
 > Use it to take "ownership" of a vehicle, and to ensure that it will respawn when you load your savegame. Must be used at an owned location, like a camp or an outpost. Use it on crates that contain building resources to gain access to them in the build menu.
 
 ### Are there any air units in the mission?
-> Not yet
+> Not yet, AI commander can't manipulate them at the moment.
 
 ### How do I get building resources? 
 > From ammoboxes found in enemy police stations and outposts.
