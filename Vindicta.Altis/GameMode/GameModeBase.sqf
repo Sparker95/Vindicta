@@ -861,22 +861,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT];
 
 		// Independent
-		gCommanderInd = NEW("Commander", []); // all commanders are equal
-		private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
+		private _cmdr = NEW("Commander", []); // all commanders are equal
+		private _args = [_cmdr, INDEPENDENT, gMessageLoopCommanderInd];
 		gAICommanderInd = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderInd", gAICommanderInd);
 		PUBLIC_VARIABLE "gAICommanderInd";
 
 		// West
-		gCommanderWest = NEW("Commander", []);
-		private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
+		private _cmdr = NEW("Commander", []);
+		private _args = [_cmdr, WEST, gMessageLoopCommanderWest];
 		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderWest", gAICommanderWest);
 		PUBLIC_VARIABLE "gAICommanderWest";
 
 		// East
-		gCommanderEast = NEW("Commander", []);
-		private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
+		private _cmdr = NEW("Commander", []);
+		private _args = [_cmdr, EAST, gMessageLoopCommanderEast];
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderEast", gAICommanderEast);
 		PUBLIC_VARIABLE "gAICommanderEast";
@@ -1861,14 +1861,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Load locations
 		{
 			private _loc = _x;
-			diag_log format ["Loading location: %1", _loc];
+			OOP_INFO_1("Loading location: %1", _loc);
 			CALLM1(_storage, "load", _loc);
 		} forEach T_GETV("locations");
 
 		// Load commanders
 		{
 			private _ai = T_GETV(_x);
-			diag_log format ["Loading Commander AI: %1", _x];
+			OOP_INFO_1("Loading Commander AI: %1", _x);
 			CALLM1(_storage, "load", _ai);
 		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 

@@ -76,3 +76,6 @@ if (!_gameModeInitialized && {call misc_fnc_isAdminLocal}) then {
 };
 
 gPlayerUIInitialized = true;
+
+// Enable the respawn panel the first time
+CALLM1(gClientMapUI, "respawnPanelEnable", true);

@@ -283,7 +283,7 @@ CLASS(CLASS_NAME, "")
 		if (isNull _ctrlGroup) then {
 			OOP_ERROR_0("Listbox button group was not found!");
 		} else {
-			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.2, 0.8], true] call ui_fnc_createButtonsInGroup;
+			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.15, 0.75], true] call ui_fnc_createButtonsInGroup;
 			_btns#0 ctrlSetText "Side";
 			_btns#1 ctrlSetText "Type";
 			_btns#2 ctrlSetText "Time";
@@ -1118,7 +1118,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		_lnb lnbSetColumnsPos [0, 0.2, 0.8];
+		_lnb lnbSetColumnsPos [0, 0.15, 0.75];
 		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
 
 		// Read some variables...
@@ -1144,9 +1144,6 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 				if (_show) then {
 					// Calculate time difference between current date and departure date
-					pr _dateDeparture = GETV(_intel, "dateDeparture");
-					pr _dateNow = date;
-					pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
 					pr _intelState = GETV(_intel, "state");
 					pr _stateStr = switch (_intelState) do {
 						case INTEL_ACTION_STATE_ACTIVE: {"ACTIVE"};
@@ -1154,26 +1151,19 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 						case INTEL_ACTION_STATE_END: {"ENDED"};
 						default {"error"};
 					};
-					pr _futureEvent = true;
-					if (_numberDiff < 0) then {
-						_numberDiff = -_numberDiff;
-						_futureEvent = false;
-					};
-					pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
-					_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
-					_month = _month - 1; // Because month counting starts with 1
-					_d = _d - 1; // Because day counting starts with 1
 
-					OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
+					CALLM0(_intel, "getHoursMinutes") params ["_t", "_h", "_m", "_future"];
+
+					OOP_INFO_2("  Intel: %1, T:%2m", _intel, _t);
 
 					// Make a string representation of time difference
-					pr _timeDiffStr = if(_h > 0) then {
+					pr _timeDiffStr = if (_h > 0) then {
 						format ["%1h %2m", _h, _m]
 					} else {
 						format ["%1m", _m]
 					};
 
-					if (_futureEvent) then { // T-1h 13m
+					if (_future) then { // T-1h 13m
 						_timeDiffStr = "T-" + _timeDiffStr;
 					} else {
 						_timeDiffStr = "T+" + _timeDiffStr;
@@ -1199,14 +1189,14 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 										"IntelCommanderActionBuild", "IntelCommanderActionAttack",
 										"IntelCommanderActionPatrol", "IntelCommanderActionRetreat",
 										"IntelCommanderActionRecon"] find _className; // Enumerate class name
-					pr _valueTime = _m + _h*60 + _d*24*60 + _month*30*24*60;
-					if (!_futureEvent) then {_valueTime = -_valueTime; };
 
-					OOP_INFO_1("  value time: %1", _valuetime);
+					//if (!_future) then { _t = -_t; };
+
+					//OOP_INFO_1("  value time: %1", _t);
 
 					_lnb lnbSetValue [[_index, 0], _valueSide];
 					_lnb lnbSetValue [[_index, 1], _valueType];
-					_lnb lnbSetValue [[_index, 2], _valueTime];
+					_lnb lnbSetValue [[_index, 2], _t];
 
 					//OOP_INFO_1("ADDED ROW: %1", _rowData);
 				};

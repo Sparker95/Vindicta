@@ -499,32 +499,18 @@ CLASS("IntelCommanderAction", "Intel")
 		if (! isRemoteExecutedJIP) then { // Only if not JIP
 			pr _intel = _thisObject;
 			pr _actionName = CALLM0(_intel, "getShortName");
-			pr _t = CALLM0(_intel, "getTMinutes");
 
-			// pr _dateDeparture = GETV(_intel, "dateDeparture");
-			// pr _dateNow = date;
-			// pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
-			// pr _futureEvent = true;
-			// if (_numberDiff < 0) then {
-			// 	_numberDiff = -_numberDiff;
-			// 	_futureEvent = false;
-			// };
-			// pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
-			// _dateDiff params ["_y", "_month", "_d", "_h", "_m"];
-			// _month = _month - 1; // Because month counting starts with 1
-			// _d = _d - 1; // Because day counting starts with 1
+			CALLM0(_intel, "getHoursMinutes") params ["_t", "_h", "_m", "_future"];
 
 			OOP_INFO_2("  Intel: %1, T:%2m", _intel, _t);
 
 			// Make a string representation of time difference
-			pr _h = abs floor (_t / 60);
-			pr _m = abs floor (_t % 60);
 			pr _timeDiffStr = if (_h > 0) then {
 				format ["%1h %2m", _h, _m]
 			} else {
 				format ["%1m", _m]
 			};
-			pr _timeStr = if (_t < 0) then {
+			pr _timeStr = if (_future) then {
 				format ["will start in %1", _timeDiffStr];
 			} else {
 				format ["started %1 ago", _timeDiffStr];
@@ -585,14 +571,20 @@ CLASS("IntelCommanderAction", "Intel")
 		_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
 		_month = _month - 1; // Because month counting starts with 1
 		_d = _d - 1; // Because day counting starts with 1
-		pr _minutes = (_d * 24 + _h) * 60 + _m;
-
+		pr _minutes = ((_month * 30 + _d) * 24 + _h) * 60 + _m;
 		// T-1 is one minute in the future, T+1 is in the past
 		if(_futureEvent) then { 
 			-_minutes
 		} else {
-			_minutes 
+			_minutes
 		}
+	} ENDMETHOD;
+
+	METHOD("getHoursMinutes") {
+		params [P_THISOBJECT];
+		pr _t = T_CALLM0("getTMinutes");
+		// T, Hours, Minutes, bool Future
+		[_t, abs floor (_t / 60), abs floor (_t % 60), _t < 0];
 	} ENDMETHOD;
 
 	/*
@@ -775,7 +767,7 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	/* virtual override */ METHOD("showOnMap") {
 		params [P_THISOBJECT, P_BOOL("_show")];
 
-		OOP_INFO_1("SHOW ON MAP: %1", _show);
+		//OOP_INFO_1("SHOW ON MAP: %1", _show);
 
 		// Variable might be not initialized
 		if (isNil {T_GETV("shownOnMap")}) exitWith {
