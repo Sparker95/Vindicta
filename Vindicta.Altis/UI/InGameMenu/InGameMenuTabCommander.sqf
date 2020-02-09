@@ -62,6 +62,35 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			_ctrl lbSetData [1, LOCATION_TYPE_OUTPOST];
 			_ctrl lbSetData [2, LOCATION_TYPE_ROADBLOCK];
 
+			// set default selection to camp
+			_ctrl lbSetCurSel 0;
+
+			// randomize name
+			_ctrl = T_CALLM1("findControl", "TAB_CMDR_EDIT_LOC_NAME");
+			pr _newLocName = selectRandom [
+				"Camp Bravo",
+				"Camp Charlie",
+				"Camp Delta",
+				"Camp Echo",
+				"Camp Foxtrot",
+				"Camp Juliet",
+				"Camp Eskimo",
+				"Camp Sierra",
+				"Camp India",
+				"Camp X-Ray",
+				"Camp Lima",
+				"Camp Romeo",
+				"Camp Victory",
+				"Camp Victor",
+				"Camp Zulu",
+				"Camp William",
+				"Camp Sparklight",
+				"Camp Redstone",
+				"Camp Blackstone",
+				"Camp Alpha"
+			];
+			_ctrl ctrlSetText _newLocName;
+
 			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_CREATE_LOC", "buttonClick", "onButtonCreateLocation");
 		} else {
 			OOP_INFO_0("  Current location is not null");
