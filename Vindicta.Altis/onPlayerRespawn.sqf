@@ -51,4 +51,6 @@ if (isNil {vin_bRespawned}) then {
 
 // Open our beautiful map, enable respawn panel
 openMap [true, false];  // Let's not force it... who knows if arma UI locks up again
-CALLM1(gClientMapUI, "respawnPanelEnable", true);
+if(!isNil "gPlayerUIInitialized" && {gPlayerUIInitialized}) then {
+    CALLM1(gClientMapUI, "respawnPanelEnable", true);
+};

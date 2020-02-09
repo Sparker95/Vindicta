@@ -263,7 +263,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		} apply {
 			[CALLM0(_x, "getTMinutes"), _x]
 		};
-		diag_log format["INTELR: %1", _intelReminders];
+		// diag_log format["INTELR: %1", _intelReminders];
 		_intelReminders = _intelReminders select {
 			_x#0 >= -10 && _x#0 < 10 // reminder window
 		};
@@ -273,8 +273,8 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			_x params ["_t", "_intel"];
 
 			// Make a string representation of time difference
-			pr _h = abs floor (_t / 60);
-			pr _m = abs floor (_t % 60);
+			pr _h = floor (abs _t / 60);
+			pr _m = floor (abs _t % 60);
 			pr _tstr = if (_h > 0) then {
 				format ["%1h %2m", _h, _m]
 			} else {

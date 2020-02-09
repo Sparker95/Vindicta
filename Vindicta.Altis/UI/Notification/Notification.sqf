@@ -217,15 +217,15 @@ CLASS("Notification", "")
 							SETV(_not, "state", _STATE_IDLE);
 						};
 					};
-					_i = _i + 1;
-				};
-				if(GETV(_not, "important")) then {
-					pr _categoryBGCtrl = GETV(_not, "categoryBGCtrl")#0;
-					pr _category = GETV(_not, "category");
-					if(_category isEqualType []) then {
-						_category params ["_categoryText", "_categoryFG", "_categoryBG"];
-						_categoryBGCtrl ctrlSetTextColor (_categoryBG apply { _x * (0.75 + 0.25 * 0.5 * (1 + cos ((time - (floor time)) * 360))) });
+					if(GETV(_not, "important")) then {
+						pr _categoryBGCtrl = GETV(_not, "categoryBGCtrl")#0;
+						pr _category = GETV(_not, "category");
+						if(_category isEqualType []) then {
+							_category params ["_categoryText", "_categoryFG", "_categoryBG"];
+							_categoryBGCtrl ctrlSetTextColor (_categoryBG apply { _x * (0.75 + 0.25 * 0.5 * (1 + cos ((time - (floor time)) * 360))) });
+						};
 					};
+					_i = _i + 1;
 				};
 			};
 

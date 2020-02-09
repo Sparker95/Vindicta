@@ -125,7 +125,7 @@ CLASS("NotificationFactory", "")
 	STATIC_METHOD("createCritical") {
 		params [P_THISOBJECT, P_STRING("_text")];
 
-		private _sound = "error01";
+		private _sound = "defaultNotification";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\notification_ca.paa";
 		private _duration = 15;
 		private _category = "CRITICAL MISSION ERROR";
