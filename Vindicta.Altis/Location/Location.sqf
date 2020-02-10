@@ -49,6 +49,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
 				VARIABLE_ATTR("buildProgress", [ATTR_SAVE_VER(12)]);	// How much of the location is built from 0 to 1
+				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
 				VARIABLE("buildableObjects");							// Objects that will be constructed
 	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]);				// Custom object that the game mode can use to store info about this location
 				VARIABLE("hasPlayers"); 								// Bool, means that there are players at this location, updated at each process call
@@ -99,6 +100,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
 		T_SETV_PUBLIC("isBuilt", false);
+		T_SETV("lastBuildProgressTime", 0);
 		T_SETV_PUBLIC("buildProgress", 0);
 		T_SETV("buildableObjects", []);
 		T_SETV("children", []);
@@ -268,24 +270,30 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		private _buildables = T_GETV("buildableObjects");
 		private _buildProgress = T_GETV("buildProgress");
+
+		// https://www.desmos.com/calculator/2drp0pktyo
+		#define OFFICER_RATE(officers) (1 + log (2 * officers + 1))
+
 		// Determine if enemy is building this location
 		private _enemyUnits = 0;
 		{
-			_enemyUnits = _enemyUnits + CALLM0(_x, "countInfantryUnits") * (CALLM0(_x, "countOfficers") + 1);
+			_enemyUnits = _enemyUnits + CALLM0(_x, "countInfantryUnits") * OFFICER_RATE(CALLM0(_x, "countOfficers"));
 		} forEach T_CALLM1("getGarrisons", independent);
 
-		#define BUILD_RATE (1/3085)
+		// https://www.desmos.com/calculator/2drp0pktyo
+		// 0 men = inf hrs, 10 men = 18 hrs, 20 = 12 hrs, 100 = 7 hrs
+		#define BUILD_TIME(men) (5 + 1 / log (men / 50 + 1))
+		#define BUILD_RATE(men, hours) (hours / BUILD_TIME(men))
 
 		if(_enemyUnits == 0) then {
 			private _friendlyUnits = 0;
 			{
 				_friendlyUnits = _friendlyUnits + CALLM0(_x, "countInfantryUnits");
 			} forEach T_CALLM1("getGarrisons", west);
-			if(_friendlyUnits < 10) then {
-				_buildProgress = 0 max (_buildProgress - 20 * BUILD_RATE) min 1;
-			};
+			// 20 friendly units garrisoned will stop decay
+			_buildProgress = 0 max (_buildProgress - BUILD_RATE(0 max (20 - _friendlyUnits), 0.25)) min 1;
 		} else {
-			_buildProgress = 0 max (_buildProgress + _enemyUnits * 0.1 * BUILD_RATE) min 1;
+			_buildProgress = 0 max (_buildProgress + BUILD_RATE(_enemyUnits, 0.25)) min 1;
 		};
 
 		T_SETV_PUBLIC("buildProgress", _buildProgress);
@@ -293,8 +301,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Only update the actual building of no garrisons are spawned here
 		if((T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND) then {
 			{	
-				private _shouldBuildThisObject = (_forEachIndex / (count _buildables - 1)) < _buildProgress;
-				_x hideObjectGlobal !_shouldBuildThisObject;
+				private _hideObj = (_forEachIndex / (count _buildables - 1)) > _buildProgress;
+				if((isObjectHidden _x) isEqualTo (!_hideObj)) then
+				{
+					_x hideObjectGlobal _hideObj;
+				};
 			} forEach _buildables;
 		};
 
@@ -1460,6 +1471,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("objects", []);
 		T_SETV("buildingsOpen", []);
 		T_SETV("buildableObjects", []);
+		T_SETV("lastBuildProgressTime", 0);
 		T_SETV("hasRadio", false);
 		T_SETV("capacityInf", 0);
 		T_SETV("timer", NULL_OBJECT);
