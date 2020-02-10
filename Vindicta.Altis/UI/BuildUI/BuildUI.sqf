@@ -373,45 +373,36 @@ CLASS("BuildUI", "")
 			};
 
 			case DIK_DELETE: { 
-				if (T_GETV("isMovingObjects")) then {
-
-					T_PRVAR(movingObjectGhosts);
-					if (count _movingObjectGhosts == 0) exitWith { };
 
 					pr _canDelete = false;
-					// check if object is about to be created
-					{
-						_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+					pr _objectToDelete = cursorObject; // save in case player moves view!
 
-						// If it isn't a new object, allow demolishing
-						if !(_object getVariable ["build_ui_newObject", false]) then {
+					if !(isNil "_objectToDelete") then {
+						// If it's moveable, allow demolishing
+						if(CALLSM1("BuildUI", "isObjectMovable", _objectToDelete)) then {
 							_canDelete = true;
 							OOP_INFO_0("Can delete object.");
 						};
-						
-					} forEach _movingObjectGhosts;
-
+					};
+					
 					// show confirmation dialog before removing the object
 					if (_canDelete) then {
-
 						playSound ["clicksoft", false];
 						
 						// Show a confirmation dialog
-						pr _args = [format ["Demolish this object?"],
-							[_movingObjectGhosts],
+						pr _args = [format ["Demolish %1 and refund half of the construction resources?", _objectToDelete],
+							[_objectToDelete],
 							{
-								params["_movingObjectGhosts"];
+								params["_objectToDelete"];
 								
 								// you can unfortunately drop the object and close the buildUI before pressing either yes or no
-								if (count _movingObjectGhosts == 0) exitWith { OOP_INFO_0("Object dropped during confirmation dialog?"); };
 								if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
-								CALLM0(g_BuildUI, "demolishActiveObject"); 
+								CALLM1(g_BuildUI, "demolishActiveObject", _objectToDelete); 
 							},
 							[], {}];
 						NEW("DialogConfirmAction", _args);
 
 					}; // can delete
-				}; // is moving objects
 				true; // disables default control 
 			};
 		};
@@ -1127,36 +1118,42 @@ CLASS("BuildUI", "")
 		Method: demolishActiveObject
 
 		Called if yes was pressed in the confirmation dialog.
-		Deletes the object currently active/picked up object,
+		Deletes the object current cursorobject,
 		and refunds a part of its cost.
 
 		Assumes object really can be demolished and refunded.
 	*/
 	METHOD("demolishActiveObject") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OBJECT("_objectToDelete")];
 
 		OOP_INFO_0("demolishActiveObject called.");
 
-		T_PRVAR(movingObjectGhosts);
-
-		// you can unfortunately drop the object and close the buildUI before pressing either yes or no
-		if (count _movingObjectGhosts == 0) exitWith { OOP_INFO_0("Object dropped during confirmation dialog?"); };
+		// you can unfortunately close the buildUI before pressing either yes or no
 		if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
 
-		// These are template catID and subcatID of the object, not catID of the build menu
-		pr _currentCatID = T_GETV("currentCatID");
-		pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
-		pr _objClasses = "true" configClasses _catClass;
-		pr _objClass = _objClasses select T_GETV("currentItemID");
-		pr _buildRes = getNumber (_objClass >> "buildResource");
+		// find if object is defined in template, then get construction cost
+		pr _catClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
+		pr _objClasses = [];
+		{
+			_objClasses pushBack ("true" configClasses _x); 
+		} forEach _catClasses;
+
+		pr _buildResCost = 0;
+		{
+			{
+				pr _classname = getText(_x >> "className");
+				if ((typeof _objectToDelete) == _classname) then {
+					_buildResCost = getNumber(_x >> "buildResource");
+				};
+			} forEach _x;
+		} forEach _objClasses;
 
 		pr _refundBuildRes = 0;
+		// find amount to refund, if anything
+		// *not the number of construction resource items, using buildResource (defined in CfgMagazines in the addon) to calculate here!*
+		if (_buildResCost > 0) then {
 
-		// figure out if anything can be refunded 
-		// *not the number of construction resource items, display number!*
-		if !(isNil "_buildRes") then {
-
-			_refundBuildRes = _buildRes/2; 
+			_refundBuildRes = _buildResCost/2; 
 			if (_refundBuildRes <= 0) then { _refundBuildRes = 0; };
 
 			switch (_refundBuildRes) do {
@@ -1164,10 +1161,13 @@ CLASS("BuildUI", "")
 				case 15: { _refundBuildRes = 10; };
 			}; // end switch
 
-		}; // end !isNil
+		};
 
-		// refund it
-		if (_refundBuildRes > 0) then {
+		if (cursorobject == _objectToDelete) then {
+			deleteVehicle _objectToDelete;
+
+			// refund it
+			if (_refundBuildRes > 0) then {
 
 				systemChat format["Refunded %1 construction resources.", _refundBuildRes, (_refundBuildRes/10)];
 
@@ -1181,13 +1181,9 @@ CLASS("BuildUI", "")
 
 				// create ground weapon holder and add build resources
 				pr _groundWeapHolder = "GroundWeaponHolder" createVehicle _posGroundWeapHolder;
-				_groundWeapHolder addMagazineCargoGlobal ["vin_build_res_0", (_refundBuildRes/10)];
+				_groundWeapHolder addMagazineCargoGlobal ["vin_build_res_0", (_refundBuildRes/10)]; // divide by 10 to get no. of items
+			}; 
 		};
-
-		{
-			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
-			deleteVehicle _ghostObject;
-		} forEach _movingObjectGhosts;
 
 		T_SETV("activeObject", []);
 		T_SETV("movingObjectGhosts", []);
