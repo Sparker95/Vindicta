@@ -14,7 +14,7 @@ if((Get-Content -Path ..\configs\minorVersion.hpp).Count -gt 1) {
     "ERROR: configs\minorVersion.hpp contains a newline, it must not!"
     Exit 100
 }
-if($major.
+
 Set-Content -Path ..\configs\buildVersion.hpp -Value $patch -Force -NoNewline
 
 ..\tools\setup_and_build.bat
