@@ -8,6 +8,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@master
 
@@ -21,6 +22,7 @@ jobs:
 
   test:
     runs-on: windows-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@master
 
@@ -31,6 +33,7 @@ jobs:
 
   build:
     runs-on: windows-latest
+    timeout-minutes: 5
     needs: [validate, test]
     steps:
     - uses: actions/checkout@master
@@ -72,6 +75,7 @@ jobs:
 
   upload:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [build]
     steps:
     - name: Download build
