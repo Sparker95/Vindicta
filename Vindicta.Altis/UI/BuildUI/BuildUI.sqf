@@ -1169,7 +1169,7 @@ CLASS("BuildUI", "")
 			// refund it
 			if (_refundBuildRes > 0) then {
 
-				systemChat format["Refunded %1 construction resources.", _refundBuildRes, (_refundBuildRes/10)];
+				systemChat format["Refunded %1 construction resources.", _refundBuildRes];
 
 				pr _posGroundWeapHolder = getPos player; // default position
 
