@@ -3,6 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "buildUI.rpt"
+
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "BuildUI_Macros.h"
 #include "..\..\defineCommon.inc"
@@ -373,9 +374,44 @@ CLASS("BuildUI", "")
 
 			case DIK_DELETE: { 
 				if (T_GETV("isMovingObjects")) then {
-					playSound ["clicksoft", false];
-					T_CALLM0("demolishActiveObject"); 
-				};
+
+					T_PRVAR(movingObjectGhosts);
+					if (count _movingObjectGhosts == 0) exitWith { };
+
+					pr _canDelete = false;
+					// check if object is about to be created
+					{
+						_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+
+						// If it isn't a new object, allow demolishing
+						if !(_object getVariable ["build_ui_newObject", false]) then {
+							_canDelete = true;
+							OOP_INFO_0("Can delete object.");
+						};
+						
+					} forEach _movingObjectGhosts;
+
+					// show confirmation dialog before removing the object
+					if (_canDelete) then {
+
+						playSound ["clicksoft", false];
+						
+						// Show a confirmation dialog
+						pr _args = [format ["Demolish this object?"],
+							[_movingObjectGhosts],
+							{
+								params["_movingObjectGhosts"];
+								
+								// you can unfortunately drop the object and close the buildUI before pressing either yes or no
+								if (count _movingObjectGhosts == 0) exitWith { OOP_INFO_0("Object dropped during confirmation dialog?"); };
+								if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
+								CALLM0(g_BuildUI, "demolishActiveObject"); 
+							},
+							[], {}];
+						NEW("DialogConfirmAction", _args);
+
+					}; // can delete
+				}; // is moving objects
 				true; // disables default control 
 			};
 		};
@@ -1087,49 +1123,80 @@ CLASS("BuildUI", "")
 
 	} ENDMETHOD;
 
-	// deletes currently active object and returns construction points
+	/* 
+		Method: demolishActiveObject
+
+		Called if yes was pressed in the confirmation dialog.
+		Deletes the object currently active/picked up object,
+		and refunds a part of its cost.
+
+		Assumes object really can be demolished and refunded.
+	*/
 	METHOD("demolishActiveObject") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(movingObjectGhosts);
-		if (count _movingObjectGhosts == 0) exitWith { };
+		OOP_INFO_0("demolishActiveObject called.");
 
-		pr _canDelete = false;
-		// check if object is about to be created
+		T_PRVAR(movingObjectGhosts);
+
+		// you can unfortunately drop the object and close the buildUI before pressing either yes or no
+		if (count _movingObjectGhosts == 0) exitWith { OOP_INFO_0("Object dropped during confirmation dialog?"); };
+		if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
+
+		// These are template catID and subcatID of the object, not catID of the build menu
+		pr _currentCatID = T_GETV("currentCatID");
+		pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
+		pr _objClasses = "true" configClasses _catClass;
+		pr _objClass = _objClasses select T_GETV("currentItemID");
+		pr _buildRes = getNumber (_objClass >> "buildResource");
+
+		pr _refundBuildRes = 0;
+
+		// figure out if anything can be refunded 
+		// *not the number of construction resource items, display number!*
+		if !(isNil "_buildRes") then {
+
+			_refundBuildRes = _buildRes/2; 
+			if (_refundBuildRes <= 0) then { _refundBuildRes = 0; };
+
+			switch (_refundBuildRes) do {
+				default { if ((_refundBuildRes mod 10) != 0) then { _refundBuildRes = 0; }; };
+				case 15: { _refundBuildRes = 10; };
+			}; // end switch
+
+		}; // end !isNil
+
+		// refund it
+		if (_refundBuildRes > 0) then {
+
+				systemchat format["Refunding %1, or %2 items.", _refundBuildRes, (_refundBuildRes/10)];
+
+				pr _posGroundWeapHolder = getPos player; // default position
+
+				// get position for ground weapon holder
+				{
+					_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+					_posGroundWeapHolder = _pos;
+				} forEach _movingObjectGhosts;
+
+				// create ground weapon holder and add build resources
+				pr _groundWeapHolder = "GroundWeaponHolder" createVehicle _posGroundWeapHolder;
+				_groundWeapHolder addMagazineCargoGlobal ["vin_build_res_0", (_refundBuildRes/10)];
+		};
+
 		{
 			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
-
-			// If it isn't a new object, allow demolishing
-			if !(_object getVariable ["build_ui_newObject", false]) then {
-				_canDelete = true;
-			};
-			
+			deleteVehicle _ghostObject;
 		} forEach _movingObjectGhosts;
 
-		if (_canDelete) then {
-			// Show a confirmation dialog
-			pr _args = [format ["Demolish this object?"],
-				[_movingObjectGhosts],
-				{
-					params["_movingObjectGhosts"];
+		T_SETV("activeObject", []);
+		T_SETV("movingObjectGhosts", []);
+		T_SETV("isMovingObjects", false);
 
-					{
-						_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
-						deleteVehicle _ghostObject;
-					} forEach _movingObjectGhosts;
-
-					SETV(g_BuildUI, "activeObject", []);
-					SETV(g_BuildUI, "movingObjectGhosts", []);
-					SETV(g_BuildUI, "isMovingObjects", false);
-
-					// Reset everything that might be active
-					CALLM0(g_BuildUI, "cancelMovingObjects");
-					CALLM0(g_BuildUI, "clearCarousel");
-					CALLM0(g_BuildUI, "exitMoveMode");
-				},
-				[], {}];
-			NEW("DialogConfirmAction", _args);
-		};
+		// Reset everything that might be active
+		T_CALLM0("cancelMovingObjects");
+		T_CALLM0("clearCarousel");
+		T_CALLM0("exitMoveMode");
 
 	} ENDMETHOD;
 
