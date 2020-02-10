@@ -48,11 +48,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
 				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
+				VARIABLE_ATTR("buildProgress", [ATTR_SAVE_VER(12)]);	// How much of the location is built from 0 to 1
+				VARIABLE("buildableObjects");							// Objects that will be constructed
 	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]);				// Custom object that the game mode can use to store info about this location
 				VARIABLE("hasPlayers"); 								// Bool, means that there are players at this location, updated at each process call
 				VARIABLE("hasPlayerSides"); 							// Array of sides of players at this location
-				VARIABLE("buildingsOpen"); 							// Handles of buildings which can be entered (have buildingPos)
-				VARIABLE("objects"); 							// Handles of objects which can't be entered and other objects
+				VARIABLE("buildingsOpen"); 								// Handles of buildings which can be entered (have buildingPos)
+				VARIABLE("objects"); 									// Handles of objects which can't be entered and other objects
 	/* save */	VARIABLE_ATTR("respawnSides", [ATTR_SAVE]); 			// Sides for which player respawn is enabled
 				VARIABLE_ATTR("hasRadio", [ATTR_SAVE]); 				// Bool, means that this location has a radio
 	/* save */	VARIABLE_ATTR("wasOccupied", [ATTR_SAVE]); 				// Bool, false at start but sets to true when garrisons are attached here
@@ -83,39 +85,41 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("side", CIVILIAN);
-		SET_VAR_PUBLIC(_thisObject, "name", "noname");
-		SET_VAR_PUBLIC(_thisObject, "garrisons", []);
-		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
-		SET_VAR_PUBLIC(_thisObject, "border", 50);
+		T_SETV_PUBLIC("name", "noname");
+		T_SETV_PUBLIC("garrisons", []);
+		T_SETV_PUBLIC("boundingRadius", 50);
+		T_SETV_PUBLIC("border", 50);
 		T_SETV("borderPatrolWaypoints", []);
 		T_SETV("useParentPatrolWaypoints", false);
-		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
+		T_SETV_PUBLIC("pos", _pos);
 		T_SETV("spawnPosTypes", []);
 		T_SETV("spawned", false);
 		T_SETV("capacityInf", 0);
-		SET_VAR_PUBLIC(_thisObject, "capacityInf", 0);
+		T_SETV_PUBLIC("capacityInf", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
-		SET_VAR_PUBLIC(_thisObject, "isBuilt", true); // Location is built at start, except for roadblocks, it's changed in setType function
+		T_SETV_PUBLIC("isBuilt", false);
+		T_SETV_PUBLIC("buildProgress", 0);
+		T_SETV("buildableObjects", []);
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
-		SET_VAR_PUBLIC(_thisObject, "parent", NULL_OBJECT);
-		SET_VAR_PUBLIC(_thisObject, "gameModeData", NULL_OBJECT);
+		T_SETV_PUBLIC("parent", NULL_OBJECT);
+		T_SETV_PUBLIC("gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
 		T_SETV("hasPlayerSides", []);
 
 		T_SETV("buildingsOpen", []);
 		T_SETV("objects", []);
 
-		SET_VAR_PUBLIC(_thisObject, "respawnSides", []);
-		SET_VAR_PUBLIC(_thisObject, "playerRespawnPos", _pos);
+		T_SETV_PUBLIC("respawnSides", []);
+		T_SETV_PUBLIC("playerRespawnPos", _pos);
 
-		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
-		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
+		T_SETV_PUBLIC("allowedAreas", []);
+		T_SETV_PUBLIC("type", LOCATION_TYPE_UNKNOWN);
 
 		T_SETV("hasRadio", false);
 
-		SET_VAR_PUBLIC(_thisObject, "wasOccupied", false);
+		T_SETV_PUBLIC("wasOccupied", false);
 		T_SETV("wasOccupied", false);
 
 		T_SETV("sideCreated", _createdBySide);
@@ -247,6 +251,54 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	} ENDMETHOD;
 
+	// Add a building in the area that can be built, but starts off hidden (military base structures mostly)
+	METHOD("setBuildables") {
+		params [P_THISOBJECT, P_ARRAY("_objects")];
+		// Sort objects by height so we can build from the bottom up
+		private _objectHeights = _objects apply { [(getPos _x)#2, _x]};
+		_objectHeights sort ASCENDING;
+		private _sortedObjects = _objectHeights apply { _x#1 };
+		T_SETV("buildableObjects", _sortedObjects);
+		T_CALLM0("updateBuildProgress");
+	} ENDMETHOD;
+
+	// Build all buildables in the location
+	METHOD("updateBuildProgress") {
+		params [P_THISOBJECT];
+
+		private _buildables = T_GETV("buildableObjects");
+		private _buildProgress = T_GETV("buildProgress");
+		// Determine if enemy is building this location
+		private _enemyUnits = 0;
+		{
+			_enemyUnits = _enemyUnits + CALLM0(_x, "countInfantryUnits") * (CALLM0(_x, "countOfficers") + 1);
+		} forEach T_CALLM1("getGarrisons", independent);
+
+		#define BUILD_RATE (1/3085)
+
+		if(_enemyUnits == 0) then {
+			private _friendlyUnits = 0;
+			{
+				_friendlyUnits = _friendlyUnits + CALLM0(_x, "countInfantryUnits");
+			} forEach T_CALLM1("getGarrisons", west);
+			if(_friendlyUnits < 10) then {
+				_buildProgress = 0 max (_buildProgress - 20 * BUILD_RATE) min 1;
+			};
+		} else {
+			_buildProgress = 0 max (_buildProgress + _enemyUnits * 0.1 * BUILD_RATE) min 1;
+		};
+
+		T_SETV_PUBLIC("buildProgress", _buildProgress);
+
+		// Only update the actual building of no garrisons are spawned here
+		if((T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND) then {
+			{	
+				private _shouldBuildThisObject = (_forEachIndex / (count _buildables - 1)) < _buildProgress;
+				_x hideObjectGlobal !_shouldBuildThisObject;
+			} forEach _buildables;
+		};
+
+	} ENDMETHOD;
 
 	#ifdef DEBUG_LOCATION_MARKERS
 	METHOD("updateMarker") {
@@ -430,7 +482,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			// TODO: work out how this should work properly? This isn't terrible but we will
 			// have resource constraints etc. Probably it should be in Garrison.process to build
 			// at location when they have resources?
-			iF(!T_GETV("isBuilt")) then {
+
+			// Only build when the location is not spawned to avoid popin
+			if(!T_GETV("spawned")) then {
 				T_CALLM("build", []);
 			};
 
@@ -738,9 +792,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			
 		//};
 
-		if (_type == LOCATION_TYPE_ROADBLOCK) then {
-			SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
-		};
+		// if (_type == LOCATION_TYPE_ROADBLOCK) then {
+		// 	SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
+		// };
 
 		T_CALLM("updateWaypoints", []);
 
@@ -1405,6 +1459,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("hasPlayerSides", []);
 		T_SETV("objects", []);
 		T_SETV("buildingsOpen", []);
+		T_SETV("buildableObjects", []);
 		T_SETV("hasRadio", false);
 		T_SETV("capacityInf", 0);
 		T_SETV("timer", NULL_OBJECT);
@@ -1460,18 +1515,26 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} forEach T_GETV("respawnSides");
 
 		// Broadcast public variables
-		PUBLIC_VAR(_thisObject, "name");
-		PUBLIC_VAR(_thisObject, "garrisons");
-		PUBLIC_VAR(_thisObject, "boundingRadius");
-		PUBLIC_VAR(_thisObject, "border");
-		PUBLIC_VAR(_thisObject, "pos");
-		PUBLIC_VAR(_thisObject, "isBuilt");
-		PUBLIC_VAR(_thisObject, "allowedAreas");
-		PUBLIC_VAR(_thisObject, "type");
-		PUBLIC_VAR(_thisObject, "wasOccupied");
-		PUBLIC_VAR(_thisObject, "parent");
-		PUBLIC_VAR(_thisObject, "respawnSides");
-		PUBLIC_VAR(_thisObject, "playerRespawnPos");
+		T_PUBLIC_VAR("name");
+		T_PUBLIC_VAR("garrisons");
+		T_PUBLIC_VAR("boundingRadius");
+		T_PUBLIC_VAR("border");
+		T_PUBLIC_VAR("pos");
+		T_PUBLIC_VAR("isBuilt");
+		// SAVEBREAK >>>
+		// buildProgress was added in 12
+		if(isNil {T_GETV("buildProgress")}) then {
+			T_SETV_PUBLIC("buildProgress", 0);
+		} else {
+			T_PUBLIC_VAR("buildProgress");
+		};
+		// <<< SAVEBREAK
+		T_PUBLIC_VAR("allowedAreas");
+		T_PUBLIC_VAR("type");
+		T_PUBLIC_VAR("wasOccupied");
+		T_PUBLIC_VAR("parent");
+		T_PUBLIC_VAR("respawnSides");
+		T_PUBLIC_VAR("playerRespawnPos");
 
 		//Push the new object into the array with all locations
 		GETSV("Location", "all") pushBackUnique _thisObject;

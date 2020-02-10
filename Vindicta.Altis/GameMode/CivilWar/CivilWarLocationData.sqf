@@ -85,11 +85,13 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			params [P_THISOBJECT];
 			// By default get the amount of recruits we can recruit at this place
 			pr _loc = T_GETV("location");
+			pr _buildProgress = GETV(_loc, "buildProgress");
 			pr _pos = CALLM0(_loc, "getPos");
 			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
 			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
 			_return = [
-				["AVAILABLE RECRUITS", str _nRecruits]
+				["AVAILABLE RECRUITS", str _nRecruits],
+				["BUILD PROGRESS", format["%1%2", _buildProgress * 100, "%"]]
 			];
 		};
 		_return

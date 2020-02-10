@@ -17,6 +17,9 @@ pr _dstMin = if (count _dst > 0) then {(selectMin _dst) - _radius} else {100000}
 pr _dstSpawn = 300; // Temporary, distance from nearest player to city border when the city spawns
 pr _timer = T_GETV("timer");
 
+// Update build progress
+T_CALLM0("updateBuildProgress");
+
 switch (T_GETV("spawned")) do {
 	case false: { // Location is currently not spawned
 		if (_dstMin < _dstSpawn) then {
