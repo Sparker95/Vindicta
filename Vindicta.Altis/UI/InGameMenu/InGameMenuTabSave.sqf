@@ -327,15 +327,32 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		_selRecordData params ["_recordName", "_header", "_errors"];
 
 		// Format text
-		pr _endl = toString [13, 10];
+		//pr _endl = toString [13, 10];
 		pr _text = "";
+		/*
 		_text = _text + (format ["Campaign name: %1", GETV(_header, "campaignName")]);
 		_text = _text + (format [", Map: %1", GETV(_header, "worldName")]);
 		_text = _text + _endl;
 		_text = _text + (format ["Version: %1", GETV(_header, "missionVersion")]);
 		_text = _text + (format [", Save count: %1", GETV(_header, "saveID") + 1]);
-
+		
 		pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_SAVE_DATA");
+		*/
+
+		_text = GETV(_header, "campaignName");
+		pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_NAME");
+		_staticSaveData ctrlSetText _text;
+
+		_text = GETV(_header, "worldName");
+		_staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_MAP");
+		_staticSaveData ctrlSetText _text;
+
+		_text = GETV(_header, "missionVersion");
+		_staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_VER");
+		_staticSaveData ctrlSetText _text;
+
+		_text = (format ["%1", GETV(_header, "saveID") + 1]);
+		_staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_COUNT");
 		_staticSaveData ctrlSetText _text;
 	} ENDMETHOD;
 

@@ -12,7 +12,7 @@ Author: Sparker 12.07.2018
 
 #define pr private
 
-#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject])
+#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]); DUMP_CALLSTACK;
 
 #define MESSAGE_LOOP gMessageLoopMain
 
@@ -1248,12 +1248,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("addUnit") {
+	/* async */ METHOD("addUnit") {
 		params[P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 
-		// Assert that the unit is valid
-		if (!CALLM0(_unit, "isValid")) exitWith {
+		// Assert that the unit is valid (this function is called via message queue and as such the unit can become invalid)
+		if (!IS_OOP_OBJECT(_unit) || {!CALLM0(_unit, "isValid")}) exitWith {
 			OOP_ERROR_1("Attempt to add an invalid unit: %1", _unit);
 		};
 
@@ -1423,10 +1423,14 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("removeUnit") {
+	/* async */ METHOD("removeUnit") {
 		params[P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
-		
+		// Assert that the unit is valid (this function is called via message queue and as such the unit can become invalid)
+		if (!IS_OOP_OBJECT(_unit) || {!CALLM0(_unit, "isValid")}) exitWith {
+			OOP_ERROR_1("Attempt to add an invalid unit: %1", _unit);
+		};
+
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -1489,10 +1493,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("addGroup") {
+	/* async */ METHOD("addGroup") {
 		params[P_THISOBJECT, P_OOP_OBJECT("_group")];
 		ASSERT_OBJECT_CLASS(_group, "Group");
-
+		if (!IS_OOP_OBJECT(_group)) exitWith {
+			OOP_ERROR_1("Attempt to add a non-existant group: %1", _group);
+		};
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -2174,6 +2180,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			//__MUTEX_UNLOCK;
+			[]
 		};
 
 		pr _units = T_GETV("units");
@@ -2889,6 +2896,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
+			[]
 		};
 
 		pr _return = [];

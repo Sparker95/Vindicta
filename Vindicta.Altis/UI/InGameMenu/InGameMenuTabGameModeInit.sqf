@@ -169,14 +169,14 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		// Campaign name
 		pr _campaignName = ctrlText _editCampaignName;
 		if (count _campaignName == 0) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must enter a campaign name");
+			CALLM1(_dialogObj, "setHintText", "You must enter a campaign name.");
 		};
 
 		// Enemy force
 		pr _enemyForceText = ctrlText _editEnemyForcePercent;
 		pr _enemyForcePercent = parseNumber _enemyForceText;
 		if (isNil "_enemyForcePercent") exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must enter a valid amount of enemy forces");
+			CALLM1(_dialogObj, "setHintText", "You must enter a valid amount of enemy forces.");
 		};
 		_enemyForcePercent = (_enemyForcePercent max 0) min 1000;
 

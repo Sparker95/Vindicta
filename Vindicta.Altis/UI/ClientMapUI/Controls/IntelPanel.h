@@ -151,9 +151,9 @@ class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT
 	sizeEx = 0.06;
 	shadow = 1;
 
-	colorBackground[] = {0.2, 0.60, 0, 1};
+	colorBackground[] = MUIC_BTN_GREEN;
 	colorBackgroundActive[] = MUIC_WHITE;
-	colorBackgroundDisabled[] = {0.7, 0.1, 0, 1};
+	colorBackgroundDisabled[] = MUIC_BTN_RED;
 };
 
 class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID

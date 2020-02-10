@@ -15,10 +15,10 @@ class TAB_CMDR : MUI_GROUP_ABS
 		class TAB_CMDR_STATIC_CREATE_A_LOCATION : MUI_BASE_ABS 
 		{
 			idc = -1;
-			x = 0.01000001;
-			y = 0.01000014;
-			w = 0.34055589;
-			h = 0.04;
+			x = 0.020; 
+			y = 0.030; 
+			w = 0.659; 
+			h = 0.038; 
 			text = "CREATE A LOCATION";
 			//colorBackground[] = {0.2, 0.8, 0.2, 0.6};
 			style = 0;
@@ -27,86 +27,100 @@ class TAB_CMDR : MUI_GROUP_ABS
 
 		class TAB_CMDR_COMBO_LOC_TYPE : MUI_COMBOBOX_ABS
 		{
-			x = 0.09000001;
-			y = 0.11000001;
-			w = 0.41000004;
-			h = 0.04;
+			idc = -1;
+			x = 0.183; 
+			y = 0.124; 
+			w = 0.305; 
+			h = 0.038;
 			maxHistoryDelay = 0;	
 		};
+
 		class TAB_CMDR_EDIT_LOC_NAME : MUI_EDIT_ABS 
 		{
 			idc = -1;
-			x = 0.09000001;
-			y = 0.06000002;
-			w = 0.41000007;
-			h = 0.04;
+			x = 0.183; 
+			y = 0.080; 
+			w = 0.305; 
+			h = 0.038; 
 			style = 0;
-			text = "Noname";
+			text = "location name here";
 			autocomplete = "";			
 		};
-		class TAB_CMDR_STATIC_0 : MUI_BASE_ABS
+
+		class TAB_CMDR_STATIC_0 : MUI_DESCRIPTION_ABS
 		{
 			type = 0;
 			idc = -1;
-			x = 0.01;
-			y = 0.06000001;
-			w = 0.07000006;
-			h = 0.04;
-			style = ST_RIGHT;
+			x = 0.020; 
+			y = 0.080; 
+			w = 0.141; 
+			h = 0.038;
 			text = "NAME:";
 		};
-		class TAB_CMDR_STATIC_1 : MUI_BASE_ABS 
+
+		class TAB_CMDR_STATIC_1 : MUI_DESCRIPTION_ABS 
 		{
 			type = 0;
 			idc = -1;
-			x = 0.01;
-			y = 0.11000004;
-			w = 0.07;
-			h = 0.04;
-			style = ST_RIGHT;
+			x = 0.020; 
+			y = 0.124; 
+			w = 0.141; 
+			h = 0.038; 
 			text = "TYPE:";		
 		};
+
 		class TAB_CMDR_BUTTON_CREATE_LOC : MUI_BUTTON_TXT_ABS 
 		{
 			type = 1;
 			idc = -1;
-			x = 0.54000028;
-			y = 0.09000019;
-			w = 0.13000001;
-			h = 0.09000002;
-			text = "CREATE";			
+			x = 0.5; 
+			y = 0.080; 
+			w = 0.179; 
+			h = 0.126;
+			text = "CREATE";
+			font = "PuristaMedium";
+			colorText[] = MUIC_BLACK;
+			colorBackground[] = MUIC_MISSION;
+			colorBackgroundActive[] = MUIC_WHITE;
+			colorBackgroundDisabled[] = MUIC_TXT_DISABLED;
+			colorBorder[] = MUIC_TRANSPARENT;
+			colorDisabled[] = MUIC_WHITE;
+			colorFocused[] = MUIC_MISSION; // same as colorBackground to disable blinking
+			colorShadow[] = MUIC_TRANSPARENT;			
 		};
-		class TAB_CMDR_STATIC_2 : MUI_BASE_ABS
+
+		class TAB_CMDR_STATIC_2 : MUI_DESCRIPTION_ABS
 		{
 			type = 0;
 			idc = -1;
-			x = 0.01;
-			y = 0.16000005;
-			w = 0.07;
-			h = 0.04;
-			text = "COST:";	
-			style = ST_RIGHT;	
+			x = 0.020; 
+			y = 0.168; 
+			w = 0.141; 
+			h = 0.038; 
+			text = "COST:";		
 		};
+
 		class TAB_CMDR_STATIC_BUILD_RESOURCES : MUI_BASE_ABS 
 		{
 			type = 0;
 			idc = -1;
-			x = 0.09000001;
-			y = 0.16000005;
-			w = 0.41000007;
-			h = 0.04;
+			x = 0.183; 
+			y = 0.168; 
+			w = 0.305; 
+			h = 0.038;
 			style = ST_LEFT; 
+			font = "RobotoCondensed";
 			text = "666 build resources";			
 		};
 
-		class TAB_CMDR_STATIC_HELP : MUI_BASE_ABS
+		class TAB_CMDR_STATIC_HELP : MUI_BG_TRANSPARENT_MULTILINE_LEFT_ABS
 		{
 			type = 0;
 			idc = -1;
-			x = 0.01;
-			y = 0.21000008;
-			w = 0.68000039;
-			h = 0.08;
+			x = 0.020; 
+			y = 0.245; 
+			w = 0.468; 
+			h = 0.080; 
 			style = 16+0+0x200; // multi line, no rect
 			text = "Build resources must be in your backpack or in the vehicle you are looking at.";
 			lineSpacing = 1;	

@@ -18,7 +18,6 @@ _array set [T_REQUIRED_ADDONS, [
 								"rhssaf_c_troops",
 								"rhsgref_c_troops"]];
 
-
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;

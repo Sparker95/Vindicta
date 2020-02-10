@@ -1367,7 +1367,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_tags
 			]
 		};
-		diag_log _savedObjects;
 
 		T_SETV("savedObjects", _savedObjects);
 
@@ -1425,7 +1424,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
-		diag_log T_GETV("savedObjects");
 		// Rebuild the objects which have been constructed here
 		{ // forEach T_GETV("savedObjects");
 			_x params ["_type", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];

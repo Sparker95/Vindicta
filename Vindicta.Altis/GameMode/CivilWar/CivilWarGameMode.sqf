@@ -619,7 +619,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			// TODO: add other interesting factors here to the instability rate.
 			// This equation makes required instability relative to area, and means you need ~100 activity at radius 300m and ~600 at radius 750m
 			_instability = 1 min (_activity * 900 / (_cityRadius * _cityRadius));
-			diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
+			// diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
 
 			// TODO: scale the instability limits using settings
 			switch true do {
