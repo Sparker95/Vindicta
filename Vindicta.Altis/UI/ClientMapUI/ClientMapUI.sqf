@@ -77,6 +77,8 @@ CLASS(CLASS_NAME, "")
 
 	// Respawn panel
 	VARIABLE("respawnPanelEnabled");
+	// If a restore point is available for the player
+	VARIABLE("playerRestoreData");
 
 	// initialize UI event handlers
 	METHOD("new") {
@@ -120,6 +122,7 @@ CLASS(CLASS_NAME, "")
 
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
+		T_SETV("playerRestoreData", []);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -188,14 +191,12 @@ CLASS(CLASS_NAME, "")
 		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
-
 		([_mapDisplay, "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickRespawn", _this); }];
 
 		// = = = = = = Initialize default text = = = = = =
 
 		// init headline text and color
 		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
-
 
 		//  = = = = = = = = Add event handlers to the map = = = = = = = = 
 
@@ -298,10 +299,8 @@ CLASS(CLASS_NAME, "")
 			}];
 		};
 
-
 		// Disable the respawn panel initially
-		T_CALLM1("respawnPanelEnable", false);		
-
+		T_CALLM1("respawnPanelEnable", false);
 
 		// Mouse moving
 		// Probably we don't need it now
@@ -344,6 +343,11 @@ CLASS(CLASS_NAME, "")
 88     `8'     88  88   "Y88888P"     `"Y8888Y"'   
 http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 	*/
+
+	STATIC_METHOD("setPlayerRestoreData") {
+		params ["_thisClass", "_playerRestoreData"];
+		SETV(gClientMapUI, "playerRestoreData", _playerRestoreData);
+	} ENDMETHOD;
 
 	/*
 		Method: toggleButtonEnabled
@@ -430,7 +434,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 	#define __MRK_DEST "_dst"
 	// Draws or undraws a route for a given array of positions
 	STATIC_METHOD("drawRoute") {
-		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]], ["_color", "ColorRed"] ];
 
 		//OOP_INFO_1("DRAW ROUTE: %1", _this);
 
@@ -463,8 +467,8 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 					_x params ["_name", "_pos", "_type", "_text"];
 					private _mrk = createMarkerLocal [_name, _pos];
 					_mrk setMarkerTypeLocal _type;
-					_mrk setMarkerColorLocal "ColorRed";
-					_mrk setMarkerAlphaLocal 1;
+					_mrk setMarkerColorLocal _color;
+					_mrk setMarkerAlphaLocal 0.7;
 					_mrk setMarkerTextLocal _text;
 					_markers pushBack _name; 
 				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_start", "Source"], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_end", "Destination"]];
@@ -475,7 +479,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, "ColorRed", 20, _mrkName] call misc_fnc_mapDrawLineLocal;
+				[_pos0, _pos1, _color, 20, _mrkName] call misc_fnc_mapDrawLineLocal;
 				_markers pushBack _mrkName;
 			};
 		};
@@ -1911,11 +1915,18 @@ Gets called from "onMapDraw"
 	METHOD("respawnPanelEnable") {
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
-		pr _ctrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
-		_ctrl ctrlShow _enable;
-		_ctrl ctrlEnable false; // Disable the button initially, it will re-enable itself later
-		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
-		_ctrl ctrlShow _enable;
+		pr _respawnCtrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+		_respawnCtrl ctrlShow _enable;
+		_respawnCtrl ctrlEnable false; // Disable the button initially, it will re-enable itself later
+
+		pr _respawnStaticCtrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_respawnStaticCtrl ctrlShow _enable;
+
+		// Might not be loaded yet
+		if(!isNil "gGameModeServer") then {
+			// Request update on players restore point from server
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
+		};
 
 		T_SETV("respawnPanelEnabled", _enable);
 	} ENDMETHOD;
@@ -1931,38 +1942,42 @@ Gets called from "onMapDraw"
 		// If player has clicked this button, then it must be enabled
 		// If it's enabled, then respawn is possible here
 
+		pr _restoreGear = T_GETV("playerRestoreData");
 		pr _locMarkers = T_GETV("selectedLocationMarkers");
-		if (count _locMarkers == 0) exitWith {};	// Anything can happen...
-		pr _locMarker = _locMarkers#0;				// Get the location from marker
-		pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
-		pr _loc = GETV(_intel, "location");			//
 
-		if (IS_OOP_OBJECT(_loc)) then {				// We want to be super sure that all is ok
+		pr _loc = if (count _locMarkers != 0) then {
+			pr _locMarker = _locMarkers#0;				// Get the location from marker
+			pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
+			GETV(_intel, "location")
+		} else {
+			NULL_OBJECT
+		};
 
+		if (IS_OOP_OBJECT(_loc)) then {
 			// Teleport player
 			pr _respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
 			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
-
-			// Call gameMode method
-			pr _args = [player, objNull, "", 0];
-			CALLM(gGameMode, "playerSpawn", _args);
-
-			// Execute script on the server
-			_args remoteExec ["fnc_onPlayerRespawnServer", 2, false];
-
-			// Disable this panel
-			T_CALLM1("respawnPanelEnable", false);
-
-			// Close the map
-			openMap [false, false];
-
 			// Show a message to everyone
 			pr _text = format ["%1 has respawned at %2", name player, CALLM0(_loc, "getDisplayName")];
 			[_text] remoteExecCall ["systemChat"];
 		} else {
-			OOP_ERROR_1("Location object does not exist: %1", _loc);
+			if(_restoreGear isEqualTo []) exitWith {	// We want to be super sure that all is ok
+				OOP_ERROR_1("Selected spawn Location at marker %1 does not exist", _locMarkers);
+			};
 		};
 
+		// Call gameMode method
+		pr _args = [player, objNull, "", 0, _restoreGear, !IS_OOP_OBJECT(_loc)];
+		CALLM(gGameMode, "playerSpawn", _args);
+
+		// Execute script on the server
+		_args remoteExec ["fnc_onPlayerRespawnServer", ON_SERVER, NO_JIP];
+
+		// Disable this panel
+		T_CALLM1("respawnPanelEnable", false);
+
+		// Close the map
+		openMap [false, false];
 	} ENDMETHOD;
 
 	// Sets text on the respawn panel
@@ -1981,57 +1996,73 @@ Gets called from "onMapDraw"
 			pr _locMarkers = T_GETV("selectedLocationMarkers");
 
 			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+			
+			pr _canRestore = !(T_GETV("playerRestoreData") isEqualTo []);
+
+			if(_canRestore) then {
+				_ctrlButton ctrlSetText "RESTORE";
+			} else {
+				_ctrlButton ctrlSetText "RESPAWN";
+			};
 
 			// Bail if game mode is not initialized
 			if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
 				T_CALLM1("respawnPanelSetText", "You can't respawn because game mode is not initialized yet");
 				_ctrlButton ctrlEnable false;
 			};
-			
+
+
 			// Bail if no markers are selected
-			if (count _locMarkers != 1) exitWith {
+			if (!_canRestore && count _locMarkers != 1) exitWith {
 				T_CALLM1("respawnPanelSetText", "Select a respawn point");
 				_ctrlButton ctrlEnable false;
 			};
-
-			pr _locMarker = _locMarkers#0;				// Get the location from marker
-			pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
-			pr _loc = GETV(_intel, "location");			//
-			pr _locBorderArea = CALLM0(_loc, "getBorder");
-			pr _locPos = CALLM0(_loc, "getPos");
-
-			// Only one location is selected
 			
-			// Bail if location object is wrong (why??)
-			if (IS_NULL_OBJECT(_loc)) exitWith {};		// Because who knows...
+			if(count _locMarkers == 1) then {
+				pr _locMarker = _locMarkers#0;				// Get the location from marker
+				pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
+				pr _loc = GETV(_intel, "location");			//
+				pr _locBorderArea = CALLM0(_loc, "getBorder");
+				pr _locPos = CALLM0(_loc, "getPos");
 
-			// Bail if respawn is disabled
-			if (!CALLM1(_loc, "playerRespawnEnabled", playerSide)) exitWith {
-				// Respawn is disabled here through location's methods
-				T_CALLM1("respawnPanelSetText", "Respawn is disabled here");
-				_ctrlButton ctrlEnable false;
+				// Only one location is selected
+				
+				// Bail if location object is wrong (why??)
+				if (IS_NULL_OBJECT(_loc)) exitWith {};		// Because who knows...
+
+				// Bail if respawn is disabled
+				if (!CALLM1(_loc, "playerRespawnEnabled", playerSide)) exitWith {
+					// Respawn is disabled here through location's methods
+					T_CALLM1("respawnPanelSetText", "Respawn is disabled here");
+					_ctrlButton ctrlEnable false;
+				};
+
+				// Check if there are enemies occupying this place, etc...
+
+				pr _enemySides = [EAST, WEST, INDEPENDENT] - [playerSide];
+
+				// Check enemies in area
+				// todo: might not want to check that on each frame maybe... maybe once in a few frames instead
+				pr _index = (allUnits select {(side group _x) in _enemySides}) findIf {	// Find all enemy units...
+					// ((_x distance _locPos) < 200) ||									// Which are very close
+					(_x inArea _locBorderArea)											// Or inside the area
+				};
+
+				// Bail if there are enemies in area
+				if (_index != -1) exitWith {
+					T_CALLM1("respawnPanelSetText", "You can't respawn here because there are enemies nearby");
+					_ctrlButton ctrlEnable false;
+				};
+
+				// No enemies found there
+				if(_canRestore) then {
+					T_CALLM1("respawnPanelSetText", "You can restore here with your saved gear");
+				} else {
+					T_CALLM1("respawnPanelSetText", "You can respawn here");
+				};
+			} else {
+				T_CALLM1("respawnPanelSetText", "You can restore at your last position with your saved gear");
 			};
-
-
-			// Check if there are enemies occupying this place, etc...
-
-			pr _enemySides = [EAST, WEST, INDEPENDENT] - [playerSide];
-
-			// Check enemies in area
-			// todo: might not want to check that on each frame maybe... maybe once in a few frames instead
-			pr _index = (allUnits select {(side group _x) in _enemySides}) findIf {	// Find all enemy units...
-				// ((_x distance _locPos) < 200) ||									// Which are very close
-				(_x inArea _locBorderArea)											// Or inside the area
-			};
-
-			// Bail if there are enemies in area
-			if (_index != -1) exitWith {
-				T_CALLM1("respawnPanelSetText", "You can't respawn here because there are enemies nearby");
-				_ctrlButton ctrlEnable false;
-			};
-
-			// No enemies found there
-			T_CALLM1("respawnPanelSetText", "You can respawn here");
 			_ctrlButton ctrlEnable true;
 		};
 	} ENDMETHOD;

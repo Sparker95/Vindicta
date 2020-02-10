@@ -25,6 +25,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
 	/* save */	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
 	/* save */	VARIABLE_ATTR("side", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	// SAVEBREAK units doesn't need to be saved any more
 	/* save */	VARIABLE_ATTR("units", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
 				VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
@@ -57,9 +58,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	// It is set by various functions changing state of this garrison
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
-				VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
+				VARIABLE_ATTR("outdated", 	[ATTR_PRIVATE]);
 				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
-
+	/* save */	VARIABLE_ATTR("savedUnits",	[ATTR_PRIVATE ARG ATTR_SAVE_VER(11)]);
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -1269,26 +1270,26 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		// Check if the unit is already in a garrison
-		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
+		private _unitGarrison = CALLM0(_unit, "getGarrison");
 		OOP_INFO_1("  unit's garrison: %1", _unitGarrison);
-		if(_unitGarrison != "") then {
+		if(_unitGarrison != NULL_OBJECT) then {
 			// Remove unit from its previous garrison
 			CALLM1(_unitGarrison, "removeUnit", _unit);
 
 			/*
 			diag_log format ["[Garrison::addUnit] Error: can't add a unit which is already in a garrison, garrison: %1, unit: %2: %3",
-				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
+				GET_VAR(_thisObject, "name"), _unit, CALLM0(_unit, "getData")];
 				*/
 		};
 
 		// Check if the unit is in a group
-		private _unitGroup = CALL_METHOD(_unit, "getGroup", []);
-		if (_unitGroup != "") then {
+		private _unitGroup = CALLM0(_unit, "getGroup");
+		if (_unitGroup != NULL_OBJECT) then {
 			diag_log format ["[Garrison::addUnit] Warning: adding a unit assigned to a group, garrison : %1, unit: %2: %3",
-				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
+				T_GETV("name"), _unit, CALLM0(_unit, "getData")];
 		};
 
-		private _units = GET_VAR(_thisObject, "units");
+		private _units = T_GETV("units");
 		_units pushBackUnique _unit;
 
 		// Spawn or despawn the unit if needed
@@ -1296,13 +1297,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
 			if (!_unitIsSpawned) then {
 				pr _loc = T_GETV("location");
-				if (_loc == "") then {
-					pr _pos = CALLM0(_thisObject, "getPos");
+				if (_loc == NULL_OBJECT) then {
+					pr _pos = T_CALLM0("getPos");
 					pr _className = CALLM0(_unit, "getClassName");
 					pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _pos);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
 				} else {
-					pr _unitData = CALL_METHOD(_unit, "getMainData", []);
+					pr _unitData = CALLM0(_unit, "getMainData");
 					pr _group = CALLM0(_unit, "getGroup");
 					pr _groupType = if (_group != "") then {
 						CALLM0(_group, "getType")
@@ -1310,8 +1311,8 @@ CLASS("Garrison", "MessageReceiverEx");
 						GROUP_TYPE_IDLE
 					};
 					pr _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
-					pr _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-					CALL_METHOD(_unit, "spawn", _posAndDir);
+					pr _posAndDir = CALLM(_loc, "getSpawnPos", _args);
+					CALLM(_unit, "spawn", _posAndDir);
 				};
 			};
 		} else {
@@ -1333,7 +1334,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Add to the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
-		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+		T_CALLM3("increaseCounters", _catID, _subcatID, _className);
  
 		// Move all cargo of this unit too!
 		pr _unitAI = CALLM0(_unit, "getAI");
@@ -1440,7 +1441,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Notify AI of the garrison about unit removal
 		pr _AI = T_GETV("AI");
-		if (_AI != "") then {
+		if (_AI != NULL_OBJECT) then {
 			CALLM1(_AI, "handleUnitsRemoved", [_unit]);
 		};
 		
@@ -1461,7 +1462,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Remove all cargo of this unit too!
 		pr _unitAI = CALLM0(_unit, "getAI");
-		if (_unitAI != "") then {
+		if (_unitAI != NULL_OBJECT) then {
 			pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
 			{
 				T_CALLM1("removeUnit", _x);
@@ -2345,7 +2346,41 @@ CLASS("Garrison", "MessageReceiverEx");
 		[_compNumbers, _catID, _subcatID, 1] call comp_fnc_addValue;
 
 		__MUTEX_UNLOCK;
-	} ENDMETHOD;	
+	} ENDMETHOD;
+
+	/*
+	Method: _recalculateCounters
+	Recalculates efficiency vector and other counters from scratch,
+	used during loading.
+	
+	Private use!
+	
+	Returns: nil
+	*/
+	METHOD("_recalculateCounters") {
+		params [P_THISOBJECT];
+		T_SETV("effTotal", +T_EFF_null);
+		T_SETV("effMobile", +T_EFF_null);
+		T_SETV("countInf", 0);
+		T_SETV("countVeh", 0);
+		T_SETV("countDrone", 0);
+		T_SETV("countCargo", 0);
+
+		pr _comp = [];
+		{
+			pr _tempArray = [];
+			_tempArray resize _x;
+			_comp pushBack (_tempArray apply {[]});
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
+		T_SETV("compositionClassNames", _comp);
+		T_SETV("compositionNumbers", +T_comp_null);
+
+		{
+			// Add to the efficiency vector
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			T_CALLM3("increaseCounters", _catID, _subcatID, _className);
+		} forEach T_GETV("units");
+	} ENDMETHOD;
 	
 	/*
 	Method: subEfficiency
@@ -2609,29 +2644,150 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		__MUTEX_LOCK;
+
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
+		// Get the inf handle, we only auto detach vics (which is all this function does) by player action
+		pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
+		if(isNull _infHandle or {!isPlayer _infHandle}) exitWith {
+			__MUTEX_UNLOCK;
+		};
+
 		// Get garrison of the unit that entered the vehicle
 		pr _garDest = CALLM0(_unitInf, "getGarrison");
-		if (_garDest == "") then {
+		if (_garDest == NULL_OBJECT) then {
+			// Shouldn't be possible...
 			_garDest = gGarrisonAmbient;
-			OOP_ERROR_2("handleGetInVehicle: infantry unit has no garrison: %1, %2", _unitInf, CALLM0(_unitInf, "getData"));
 		};
 
 		// Check garrison of the unit that entered this vehicle
 		if (_garDest != _thisObject) then {
 			// Remove the vehicle from its group
 			pr _vehGroup = CALLM0(_unitVeh, "getGroup");
-			if (_vehGroup != "") then {
+			if (_vehGroup != NULL_OBJECT) then {
 				CALLM1(_vehGroup, "removeUnit", _unitVeh);
 			};
 
 			// Move the vehicle into the other garrison
 			CALLM1(_garDest, "addUnit", _unitVeh);
+
+			pr _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
+
+			pr _location = T_CALLM0("getLocation");
+			pr _msg = if(_location != NULL_OBJECT) then {
+				format["%1 was automatically detached from garrison at %2", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"), CALLM0(_location, "getDisplayName")]
+			} else {
+				format["%1 was automatically detached from garrison", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")]
+			};
+
+			private _ourSide = T_CALLM0("getSide");
+
+			// Notify nearby players of what happened
+			pr _nearbyClients = allPlayers select {side group _x == _ourSide && (_x distance _vicHandle) < 100} apply { owner _x };
+			private _args = ["VEHICLE DETACHED", _msg, "It will be no longer be saved here"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, false);
+			OOP_INFO_0(_msg);
+		};
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
+	/*
+	Method: handleGetOutVehicle
+	Called when someone leaves a vehicle that belongs to this garrison.
+
+	Must be called inside the garrison thread through postMethodAsync, not inside event handler.
+
+	Parameters: _unitVeh, _unitInf
+
+	_unitVeh - the vehicle
+	_unitInf - the unit that left the vehicle
+
+	Returns: nil
+	*/
+	METHOD("handleGetOutVehicle") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_unitVeh"), P_OOP_OBJECT("_unitInf")];
+		ASSERT_OBJECT_CLASS(_unitVeh, "Unit");
+		ASSERT_OBJECT_CLASS(_unitInf, "Unit");
+
+		OOP_INFO_2("HANDLE UNIT GET OUT VEHICLE: %1, %2", _unitVeh, _unitInf);
+
+		ASSERT_THREAD(_thisObject);
+
+		__MUTEX_LOCK;
+
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+		};
+
+		// Get the inf handle, we only auto attach vics (which is all this function does) by player action
+		pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
+		if(isNull _infHandle or {!isPlayer _infHandle}) exitWith {
+			__MUTEX_UNLOCK;
+		};
+
+		// If the unit is the last one to leave the vehicle then we might
+		// assign the vehicle to the nearest locations garrison, if we are 
+		// at a location
+		pr _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
+		if(isNull _vicHandle) exitWith {
+			__MUTEX_UNLOCK; 
+			pr _data = CALLM0(_unitVeh, "getData");
+			OOP_ERROR_2("handleGetOutVehicle: vehicle unit doesn't have valid arma handle: %1, %2", _unitVeh, _data);
+		};
+
+		// Players remain in the vehicle so we don't change the owner
+		if ({ isPlayer _x } count (crew _vicHandle) != 0) exitWith { __MUTEX_UNLOCK; };
+
+		private _infSide = side group _infHandle;
+
+		// Find nearest appropriate garrison
+		// Use the side of the inf unit not the garrison, as the garrison isn't necessarily the same side as the unit
+		pr _ourLocs = CALLSM1("Location", "getLocationsAtPos", getPos _vicHandle) apply {
+			[getPos _vicHandle distance CALLM0(_x, "getPos"), _x, CALLM1(_x, "getGarrisons", _infSide)]
+		} select {
+			// garrisons exist
+			count (_x#2) > 0
+		};
+
+		// No friendly location found
+		if(count _ourLocs == 0) exitWith { 
+			__MUTEX_UNLOCK;
+		};
+
+		// Get closest one
+		_ourLocs sort ASCENDING;
+		_ourLocs#0 params ["_dist", "_nearestLocation", "_ourGarrisons"];
+
+		// Get garrison of the location
+		pr _garDest = _ourGarrisons#0;
+
+		// This can't really happen if _thisObject is always the ambient garrison, but may as well check
+		if (_garDest != _thisObject) then {
+			// Remove the vehicle from its group
+			pr _vehGroup = CALLM0(_unitVeh, "getGroup");
+			if (_vehGroup != NULL_OBJECT) then {
+				CALLM1(_vehGroup, "removeUnit", _unitVeh);
+			};
+
+			// Move the vehicle into the other garrison
+			CALLM1(_garDest, "addUnit", _unitVeh);
+
+			// Find nearest appropriate garrison
+			// Notify nearby players of what happened if its on player side
+			pr _nearbyClients = allPlayers select {side group _x == _infSide && (_x distance _vicHandle) < 100} apply { owner _x };
+
+			private _args = ["VEHICLE ATTACHED", format["%1 was automatically attached to garrison at %2", 
+				getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"),
+				CALLM0(_nearestLocation, "getDisplayName")
+			], "It will be saved here"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, false);
+			OOP_INFO_0(_msg);
 		};
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -2649,7 +2805,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-
 	METHOD("handleCargoLoaded") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_unitCargo"), P_OOP_OBJECT("_unitVeh")];
 
@@ -2928,15 +3083,19 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -
-
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
-		// Save all units
+		// Save all units (except players)
+		pr _savedUnits = T_GETV("units") select {
+			// Don't save players
+			!CALLM0(_x, "isPlayer")
+		};
+		T_SETV("savedUnits", _savedUnits);
 		{
 			private _unit = _x;
 			CALLM1(_storage, "save", _unit);
-		} forEach T_GETV("units");
+		} forEach _savedUnits;
 
 		// Save our groups
 		{
@@ -2965,11 +3124,20 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Load all our units
 		// We don't care that groups will try to restore them as well
 		// Storage class will not load same object twice anyway
+		private _savedUnits = if(GETV(_storage, "version") >= 11) then {
+			T_GETV("savedUnits")
+		} else {
+			T_GETV("units")
+		};
+
 		{
 			private _unit = _x;
 			//diag_log format ["Loading unit: %1", _unit];
 			CALLM1(_storage, "load", _unit);
-		} forEach T_GETV("units");
+		} forEach _savedUnits;
+
+		T_SETV("units", _savedUnits);
+		T_SETV("savedUnits", []);
 
 		// Load groups
 		{
@@ -2991,21 +3159,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("outdated", true);
 		T_SETV("regAtServer", false);
 
-		// Restore composition class names
-		// Since we convert class names to numbers...
-		pr _comp = [];
-		{
-			pr _tempArray = [];
-			_tempArray resize _x;
-			_comp pushBack (_tempArray apply {[]});
-		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
-		{
-			pr _className = CALLM0(_x, "getClassName");
-			pr _catID = CALLM0(_x, "getCategory");
-			pr _subCatID = CALLM0(_x, "getSubcategory");
-			(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
-		} forEach T_GETV("units");
-		T_SETV("compositionClassNames", _comp);
+		// SAVEBREAK -- we can remove these from the save entirely now, cached data shouldn't be saved anyway, it leads to fragility.
+		// Recalculate all the counters, efficiency, classnames etc.
+		T_CALLM0("_recalculateCounters");
 
 		// Load AI object
 		pr _AI = T_GETV("AI");
@@ -3014,6 +3170,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Start AI object
 			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
 		};
+
 
 		// Register at garrison server if active
 		if (T_GETV("active")) then {

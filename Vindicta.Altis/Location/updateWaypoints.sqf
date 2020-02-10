@@ -123,7 +123,7 @@ private _waypoints =
 // Adjust waypoints onto nearest roads if we are in a city
 if(T_GETV("type") == LOCATION_TYPE_CITY) then {
 	_waypoints = (_waypoints apply {
-		private _nearestRoad = [_x, 500] call BIS_fnc_nearestRoad;
+		private _nearestRoad = [_x, 500, gps_blacklistRoads] call BIS_fnc_nearestRoad;
 		if !(isNull _nearestRoad) then { getPos _nearestRoad } else { _x };
 	}) call BIS_fnc_arrayShuffle;
 };

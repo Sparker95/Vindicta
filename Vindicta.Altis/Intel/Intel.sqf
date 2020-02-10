@@ -535,7 +535,7 @@ CLASS("IntelCommanderAction", "Intel")
 				"INTEL INTERCEPTED BY RADIO"
 			};
 			pr _text = format ["%1 %2", _actionName, _timeStr];
-			pr _args = [_categoryText, _text, ""];
+			pr _args = [_categoryText, _text];
 			CALLSM("NotificationFactory", "createIntelCommanderAction", _args);
 		};
 
@@ -598,7 +598,9 @@ CLASS("IntelCommanderAction", "Intel")
 							_thisObject, // Unique string
 							true, // Enable
 							false, // Cycle
-							true]; // Draw src and dest markers
+							true, // Draw src and dest markers
+							[T_GETV("side"), true] call BIS_fnc_sideColor
+							];
 				CALLSM("ClientMapUI", "drawRoute", _args);
 				T_SETV("shownOnMap", true);
 			};
@@ -612,7 +614,9 @@ CLASS("IntelCommanderAction", "Intel")
 							_thisObject, // Unique string
 							false, // Enable
 							false, // Cycle
-							false]; // Draw src and dest markers
+							false, // Draw src and dest markers
+							[T_GETV("side"), true] call BIS_fnc_sideColor
+							];
 				CALLSM("ClientMapUI", "drawRoute", _args);
 				T_SETV("shownOnMap", false);
 			};
@@ -650,6 +654,7 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 		The source garrison that sent the reinforcements. Probably players have no use to this.
 	*/
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+
 	/* 
 		variable: tgtGarrison
 		The destination garrison that will be reinforced. Probably players have no use to this.
@@ -751,7 +756,9 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 							_thisObject, // Unique string
 							true, // Enable
 							true, // Cycle
-							false]; // Draw src and dest markers
+							false, // Draw src and dest markers
+							[T_GETV("side"), true] call BIS_fnc_sideColor
+							];
 				CALLSM("ClientMapUI", "drawRoute", _args);
 				// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 				T_SETV("shownOnMap", true);
@@ -763,7 +770,9 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 							_thisObject, // Unique string
 							false, // Enable
 							false, // Cycle
-							false]; // Draw src and dest markers
+							false, // Draw src and dest markers
+							[T_GETV("side"), true] call BIS_fnc_sideColor
+							];
 				CALLSM("ClientMapUI", "drawRoute", _args);
 				T_SETV("shownOnMap", false);
 			};

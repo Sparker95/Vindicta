@@ -14,7 +14,9 @@ t_fnc_getDefaultCrew = compile preprocessFileLineNumbers "Templates\fn_getDefaul
 t_fnc_canDestroy = compile preprocessFileLineNumbers "Templates\fn_canDestroy.sqf";
 t_fnc_validateTemplate = compile preprocessFileLineNumbers "Templates\fn_validateTemplate.sqf";
 t_fnc_initializeTemplateFromFile = compile preprocessFileLineNumbers "Templates\fn_initializeTemplateFromFile.sqf";
+
 t_fnc_getAllValidTemplateNames = compile preprocessFileLineNumbers "Templates\fn_getAllValidTemplateNames.sqf";
+t_fnc_getAllTemplateNames = compile preprocessFileLineNumbers "Templates\fn_getAllTemplateNames.sqf";
 
 t_fnc_classNameToNumber = compile preprocessFileLineNumbers "Templates\fn_classNameToNumber.sqf";
 t_fnc_numberToClassName = compile preprocessFileLineNumbers "Templates\fn_numberToClassName.sqf";
