@@ -1,5 +1,9 @@
 name: Validate Test and Build
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore: [master, development]
+  pull_request:
+    branches-ignore: master
 
 jobs:
   validate:
