@@ -384,20 +384,57 @@ CLASS("BuildUI", "")
 							OOP_INFO_0("Can delete object.");
 						};
 					};
-					
+
+					// find if object is defined in template, then get construction cost
+					// also check if it's an arsenal box
+					pr _catClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
+					pr _objClasses = [];
+					{
+						_objClasses pushBack ("true" configClasses _x); 
+					} forEach _catClasses;
+
+					pr _buildResCost = 0;
+					{
+						{
+							pr _classname = getText(_x >> "className");
+							if ((typeof _objectToDelete) == _classname) then {
+								_buildResCost = getNumber(_x >> "buildResource");
+
+								// if it's an arsenal box, we won't allow demolishing
+								if ((isClass(missionConfigFile >> "BuildObjects" >> "Categories" >> "CatStorage" >> configName(_x)))) then {
+									_canDelete = false;
+								};
+							};
+						} forEach _x;
+					} forEach _objClasses;
+
+					pr _refundBuildRes = 0;
+					// find amount to refund, if anything
+					// *not the number of construction resource items, using buildResource (defined in CfgMagazines in the addon) to calculate here!*
+					if (_buildResCost > 0) then {
+
+						_refundBuildRes = _buildResCost/2; 
+						if (_refundBuildRes <= 0) then { _refundBuildRes = 0; };
+
+						switch (_refundBuildRes) do {
+							default { if ((_refundBuildRes mod 10) != 0) then { _refundBuildRes = 0; }; };
+							case 15: { _refundBuildRes = 10; };
+						}; // end switch
+					};
+								
 					// show confirmation dialog before removing the object
 					if (_canDelete) then {
 						playSound ["clicksoft", false];
 						
 						// Show a confirmation dialog
-						pr _args = [format ["Demolish %1 and refund half of the construction resources?", _objectToDelete],
-							[_objectToDelete],
+						pr _args = [format ["Demolish %1 and refund %2 construction resources?", (typeof(_objectToDelete)), _refundBuildRes],
+							[_objectToDelete, _refundBuildRes],
 							{
-								params["_objectToDelete"];
+								params["_objectToDelete", "_refundBuildRes"];
 								
 								// you can unfortunately drop the object and close the buildUI before pressing either yes or no
 								if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
-								CALLM1(g_BuildUI, "demolishActiveObject", _objectToDelete); 
+								CALLM2(g_BuildUI, "demolishActiveObject", _objectToDelete, _refundBuildRes); 
 							},
 							[], {}];
 						NEW("DialogConfirmAction", _args);
@@ -1124,52 +1161,19 @@ CLASS("BuildUI", "")
 		Assumes object really can be demolished and refunded.
 	*/
 	METHOD("demolishActiveObject") {
-		params [P_THISOBJECT, P_OBJECT("_objectToDelete")];
+		params [P_THISOBJECT, P_OBJECT("_objectToDelete"), P_NUMBER("_refundBuildRes")];
 
-		OOP_INFO_0("demolishActiveObject called.");
+		OOP_INFO_2("demolishActiveObject called. Object: %1. Refund amount: %2", _objectToDelete, _refundBuildRes);
 
 		// you can unfortunately close the buildUI before pressing either yes or no
 		if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
 
-		// find if object is defined in template, then get construction cost
-		pr _catClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
-		pr _objClasses = [];
-		{
-			_objClasses pushBack ("true" configClasses _x); 
-		} forEach _catClasses;
-
-		pr _buildResCost = 0;
-		{
-			{
-				pr _classname = getText(_x >> "className");
-				if ((typeof _objectToDelete) == _classname) then {
-					_buildResCost = getNumber(_x >> "buildResource");
-				};
-			} forEach _x;
-		} forEach _objClasses;
-
-		pr _refundBuildRes = 0;
-		// find amount to refund, if anything
-		// *not the number of construction resource items, using buildResource (defined in CfgMagazines in the addon) to calculate here!*
-		if (_buildResCost > 0) then {
-
-			_refundBuildRes = _buildResCost/2; 
-			if (_refundBuildRes <= 0) then { _refundBuildRes = 0; };
-
-			switch (_refundBuildRes) do {
-				default { if ((_refundBuildRes mod 10) != 0) then { _refundBuildRes = 0; }; };
-				case 15: { _refundBuildRes = 10; };
-			}; // end switch
-
-		};
-
 		if (cursorobject == _objectToDelete) then {
 			deleteVehicle _objectToDelete;
+			systemChat format["Refunded %1 construction resources.", _refundBuildRes];
 
-			// refund it
+			// refund if anything can be refunded, else do nothing
 			if (_refundBuildRes > 0) then {
-
-				systemChat format["Refunded %1 construction resources.", _refundBuildRes];
 
 				pr _posGroundWeapHolder = getPos player; // default position
 
