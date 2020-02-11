@@ -41,20 +41,31 @@ class BuildObjects
 			displayName = "Tents";
 			// Big tents
 			#define __TENT_BIG_COST 40
-			//__BUILD_OBJECT_CLASS(Tent0,Land_MedicalTent_01_wdl_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent1,Land_MedicalTent_01_aaf_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent2,Land_MedicalTent_01_CSAT_brownhex_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent3,Land_MedicalTent_01_NATO_generic_inner_F, __TENT_BIG_COST)
-			//__BUILD_OBJECT_CLASS(Tent4,Land_MedicalTent_01_CSAT_greenhex_generic_inner_F, __TENT_BIG_COST)
-			//__BUILD_OBJECT_CLASS(Tent5,Land_MedicalTent_01_NATO_tropic_generic_inner_F, __TENT_BIG_COST)
+			
+			__BUILD_OBJECT_CLASS(Tent0,Land_MedicalTent_01_white_generic_closed_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent1,Land_MedicalTent_01_NATO_generic_closed_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent2,Land_MedicalTent_01_NATO_tropic_generic_closed_F, __TENT_BIG_COST)			
 		};
 
 		class CatMedical {
 			displayName = "Medical";
 			#define __TENT_BIG_MEDICAL_COST 40
-			__BUILD_OBJECT_CLASS(Tent0,Land_MedicalTent_01_digital_closed_F, __TENT_BIG_MEDICAL_COST)
-			__BUILD_OBJECT_CLASS(Tent1,Land_MedicalTent_01_brownhex_closed_F, __TENT_BIG_MEDICAL_COST)
-			__BUILD_OBJECT_CLASS(Tent2,Land_MedicalTent_01_tropic_closed_F, __TENT_BIG_MEDICAL_COST)
+
+			// plain brown
+			__BUILD_OBJECT_CLASS(Tent0,Land_MedicalTent_01_NATO_generic_outer_F, __TENT_BIG_MEDICAL_COST)
+			__BUILD_OBJECT_CLASS(Tent1,Land_MedicalTent_01_NATO_generic_inner_F, __TENT_BIG_MEDICAL_COST)
+			__BUILD_OBJECT_CLASS(Tent2,Land_DeconTent_01_NATO_F, __TENT_BIG_MEDICAL_COST)
+
+			// plain green
+			__BUILD_OBJECT_CLASS(Tent3,Land_MedicalTent_01_NATO_tropic_generic_outer_F, __TENT_BIG_MEDICAL_COST)
+			__BUILD_OBJECT_CLASS(Tent4,Land_MedicalTent_01_wdl_generic_inner_F, __TENT_BIG_MEDICAL_COST)
+			__BUILD_OBJECT_CLASS(Tent5,Land_DeconTent_01_NATO_tropic_F, __TENT_BIG_MEDICAL_COST)
+			
+			// plain white
+			__BUILD_OBJECT_CLASS(Tent6,Land_MedicalTent_01_white_generic_outer_F, __TENT_BIG_MEDICAL_COST)
+			__BUILD_OBJECT_CLASS(Tent7,Land_MedicalTent_01_white_generic_inner_F, __TENT_BIG_MEDICAL_COST)
+			__BUILD_OBJECT_CLASS(Tent8,Land_DeconTent_01_white_F, __TENT_BIG_MEDICAL_COST)
+
 		};
 
 		class CatStorage {
@@ -92,6 +103,7 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(Camo0,CamoNet_OPFOR_F, 20)
 			__BUILD_OBJECT_CLASS(Camo1,CamoNet_OPFOR_open_F, 20)
 			__BUILD_OBJECT_CLASS(Camo2,CamoNet_OPFOR_big_F, 20)
+
 		};
 
 		class Lighting {
@@ -118,10 +130,40 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(Defense5,Land_SandbagBarricade_01_F, 10)
 			__BUILD_OBJECT_CLASS(Defense6,Land_SandbagBarricade_01_half_F, 10)
 			__BUILD_OBJECT_CLASS(Defense7,Land_Barricade_01_10m_F, 20)
+			__BUILD_OBJECT_CLASS(Defense8,Land_Barricade_01_4m_F, 10)
+			
 
 			// dirt mound
-			__BUILD_OBJECT_CLASS(Defense8,Dirthump_1_F, 20)
-			
+			__BUILD_OBJECT_CLASS(Defense9,Dirthump_1_F, 20)
+
+			// razorwire
+			__BUILD_OBJECT_CLASS(Defense10,Land_Razorwire_F, 10)
+
+			// garbage
+			__BUILD_OBJECT_CLASS(Defense11,Land_ConcretePipe_F, 10)
+			__BUILD_OBJECT_CLASS(Defense12,Land_Bricks_V4_F, 10)
+			__BUILD_OBJECT_CLASS(Defense13,Land_Timbers_F, 10)
+		
+		};
+
+		class TargetRange {
+			displayName = "Shooting Range";
+			// small targets
+			__BUILD_OBJECT_CLASS(TargetR0,Land_Target_Dueling_01_F, 10)
+			__BUILD_OBJECT_CLASS(TargetR1,Zombie_PopUp_Moving_F, 20)
+			__BUILD_OBJECT_CLASS(TargetR2,Zombie_PopUp_Moving_90deg_F, 20)
+
+			// concrete targets
+			__BUILD_OBJECT_CLASS(TargetR3,Land_Target_Concrete_01_v2_F, 60)
+			__BUILD_OBJECT_CLASS(TargetR4,Land_Target_Concrete_01_v1_F, 60)
+			__BUILD_OBJECT_CLASS(TargetR5,Land_Target_Concrete_Support_01_F, 20)
+
+			// RPG targets
+			__BUILD_OBJECT_CLASS(TargetR6,Land_Wreck_Skodovka_F, 60)
+			__BUILD_OBJECT_CLASS(TargetR7,Land_Wreck_Van_F, 60)
+			__BUILD_OBJECT_CLASS(TargetR8,Land_Wreck_Truck_dropside_F, 60)
+			__BUILD_OBJECT_CLASS(TargetR9,Land_Wreck_BMP2_F, 80)
+
 		};
 
 		class Special {
@@ -136,3 +178,11 @@ class BuildObjects
 		};
 	};
 };
+
+
+
+
+
+
+
+
