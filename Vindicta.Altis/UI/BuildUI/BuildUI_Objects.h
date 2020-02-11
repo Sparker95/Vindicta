@@ -80,7 +80,7 @@ class BuildObjects
 			};
 			class Box3 : BuildObjectBase {
 				className = "B_CargoNet_01_ammo_F";
-				buildResource = 30;
+				buildResource = 40;
 				templateCatID = 3;
 				templateSubcatID = 3;
 			};
@@ -89,9 +89,9 @@ class BuildObjects
 		class CatCamo {
 			displayName = "Camouflage";
 			// Camo nets
-			__BUILD_OBJECT_CLASS(Camo0,CamoNet_OPFOR_F, 30)
-			__BUILD_OBJECT_CLASS(Camo1,CamoNet_OPFOR_open_F, 30)
-			__BUILD_OBJECT_CLASS(Camo2,CamoNet_OPFOR_big_F, 30)
+			__BUILD_OBJECT_CLASS(Camo0,CamoNet_OPFOR_F, 20)
+			__BUILD_OBJECT_CLASS(Camo1,CamoNet_OPFOR_open_F, 20)
+			__BUILD_OBJECT_CLASS(Camo2,CamoNet_OPFOR_big_F, 20)
 		};
 
 		class Lighting {
@@ -110,7 +110,7 @@ class BuildObjects
 			// brown h-barriers
 			__BUILD_OBJECT_CLASS(Defense0,Land_HBarrier_Big_F, 20)
 			__BUILD_OBJECT_CLASS(Defense1,Land_HBarrier_3_F, 20)
-			__BUILD_OBJECT_CLASS(Defense2,Land_HBarrierWall6_F, 30)
+			__BUILD_OBJECT_CLASS(Defense2,Land_HBarrierWall6_F, 40)
 			__BUILD_OBJECT_CLASS(Defense3,Land_HBarrierTower_F, 40)
 
 			// cheap makeshift barriers
