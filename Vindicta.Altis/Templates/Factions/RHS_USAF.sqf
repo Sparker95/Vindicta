@@ -11,7 +11,9 @@ _array set [T_NAME, "tRHS_USAF"];
 _array set [T_DESCRIPTION, "RHS standard US Army units."];
 _array set [T_DISPLAY_NAME, "RHS - USAF"];
 _array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, ["rhsusf_c_troops"]];
+_array set [T_REQUIRED_ADDONS, [
+	"rhsusf_c_troops"	// RHSUSAF
+]];
 
 //==== Infantry ====
 _inf = [];
