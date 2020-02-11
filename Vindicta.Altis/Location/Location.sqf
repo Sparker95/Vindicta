@@ -254,10 +254,27 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 
 	// Add a building in the area that can be built, but starts off hidden (military base structures mostly)
-	METHOD("setBuildables") {
-		params [P_THISOBJECT, P_ARRAY("_objects")];
-		// Sort objects by height so we can build from the bottom up
-		private _objectHeights = _objects apply { [(getPos _x)#2, _x]};
+	METHOD("findBuildables") {
+		params [P_THISOBJECT];
+
+		private _radius = T_GETV("boundingRadius");
+		private _locPos = T_GETV("pos");
+		private _buildables = [];
+#ifndef _SQF_VM
+		{
+			_object = _x;
+			private _objectName = str _object;
+			private _modelName = _objectName select [(_objectName find " ") + 1];
+			if(T_CALLM1("isInBorder", _object) && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
+			{
+				_buildables pushBackUnique _object;
+			};
+		} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
+#endif
+		// Randomize
+		_buildables = _buildables call BIS_fnc_arrayShuffle;
+		// Sort objects by height above ground (to nearest 20cm) so we can build from the bottom up
+		private _objectHeights = _buildables apply { [(floor ((getPos _x)#2 * 5)) / 5, _x]};
 		_objectHeights sort ASCENDING;
 		private _sortedObjects = _objectHeights apply { _x#1 };
 		T_SETV("buildableObjects", _sortedObjects);
@@ -295,6 +312,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} else {
 			_buildProgress = 0 max (_buildProgress + BUILD_RATE(_enemyUnits, 0.25)) min 1;
 		};
+
+		OOP_INFO_2("UpdateBuildProgress: %1 %2", T_GETV("name"), _buildProgress);
 
 		T_SETV_PUBLIC("buildProgress", _buildProgress);
 
@@ -693,7 +712,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("getOpenBuildings") {
 		params [P_THISOBJECT];
-		T_GETV("buildingsOpen") select {damage _x < 0.98}
+		T_GETV("buildingsOpen") select { damage _x < 0.98 && !isObjectHidden _x }
 	} ENDMETHOD;
 
 	/*
@@ -1386,6 +1405,27 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			""]; //memoryPoint
 	} ENDMETHOD;
 
+	STATIC_METHOD("registerBuildingClasses") {
+		params [P_THISCLASS];
+		// Get the list of military buildings if defined
+		private _militaryBuildingsMarkers = (allMapMarkers select {(tolower _x) find "military_buildings" == 0});
+		gMilitaryBuildingModels = [];
+		gMilitaryBuildingTypes = [];
+		{
+			private _pos = markerPos _x;
+			private _size = markerSize _x;
+			private _radius = sqrt (_size#0 * _size#0 + _size#1 * _size#1);
+			{
+				private _objectName = str _x;
+				private _modelName = _objectName select [(_objectName find ": ") + 2];
+				gMilitaryBuildingModels pushBackUnique _modelName;
+				gMilitaryBuildingTypes pushBackUnique (typeOf _x);
+				deleteVehicle _x;
+			} forEach (_pos nearObjects ["Building", _radius]);
+			deleteMarker _x;
+		} forEach _militaryBuildingsMarkers;
+	} ENDMETHOD;
+	
 
 	STATIC_METHOD("deleteEditorAllowedAreaMarkers") {
 		params [P_THISCLASS];
@@ -1551,6 +1591,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		//Push the new object into the array with all locations
 		GETSV("Location", "all") pushBackUnique _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
+
+		T_CALLM0("findBuildables");
 
 		true
 	} ENDMETHOD;

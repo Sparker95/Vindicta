@@ -990,6 +990,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// First generate location modules for any cities/towns etc that don't have them manually placed
 		T_CALLM("createMissingCityLocations", []);
 
+		CALLSM0("Location", "registerBuildingClasses");
+
 		// Get the list of military buildings if defined
 		private _militaryBuildingsMarkers = (allMapMarkers select {(tolower _x) find "military_buildings" == 0});
 		gMilitaryBuildingModels = [];
@@ -1768,6 +1770,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
 		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("preDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Register our map locations
+		CALLSM0("Location", "registerBuildingClasses");
 	} ENDMETHOD;
 
 	/* override */ METHOD("postDeserialize") {

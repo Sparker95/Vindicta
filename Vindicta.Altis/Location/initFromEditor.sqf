@@ -128,15 +128,4 @@ private _bdir = 0; //Building direction
 	};
 } forEach _no;
 
-private _buildables = [];
-{
-	_object = _x;
-	private _objectName = str _object;
-	private _modelName = _objectName select [(_objectName find " ") + 1];
-	if(CALLM1(_thisObject, "isInBorder", _object) && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
-	{
-		_buildables pushBackUnique _object;
-	};
-} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
-
-T_CALLM1("setBuildables", _buildables);
+T_CALLM0("findBuildables");
