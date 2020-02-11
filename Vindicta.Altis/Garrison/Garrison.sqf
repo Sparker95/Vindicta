@@ -3085,6 +3085,88 @@ CLASS("Garrison", "MessageReceiverEx");
 		} forEach _garsToCheck;
 	} ENDMETHOD;
 
+	STATIC_METHOD("staticAddUnitsToPlayerGroup") {
+		params [P_THISCLASS, P_OBJECT("_player"), P_OBJECT("_unitHandles")];
+
+		OOP_INFO_2("Adding units %1 to group of player %2", _unitHandles, name _player);
+
+		// Work out what garrison we are moving these units to
+		private _tgtGarrison = switch(side _player) do {
+			case WEST: { gGarrisonPlayersWest };
+			case EAST: { gGarrisonPlayersEast };
+			case INDEPENDENT: { gGarrisonPlayersInd };
+			default { gGarrisonPlayersWest }; // what?!
+		};
+
+		// Get the units OOP objects
+		private _units = _unitHandles apply {
+			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
+		} select {
+			!IS_NULL_OBJECT(_x)
+		};
+
+		// Remove the units from thier group
+		{
+			private _unit = _x;
+			pr _unitGroup = CALLM0(_unit, "getGroup");
+			if (_unitGroup != NULL_OBJECT) then {
+				CALLM1(_unitGroup, "removeUnit", _unit);
+			};
+		} forEach _units;
+
+		// Move the units into the players garrison
+		CALLM1(_tgtGarrison, "addUnits", _units);
+
+		// HACK: somewhat of a hack as we aren't making OOP groups, however the player garrisons do not 
+		// have any AI so they won't interfere with this
+		[_unitHandles] join _player;
+	} ENDMETHOD;
+
+	STATIC_METHOD("staticReleaseUnitsFromPlayerGroup") {
+		params [P_THISCLASS, P_OBJECT("_player"), P_OBJECT("_unitHandles")];
+
+		OOP_INFO_2("Releasing units %1 from group of player %2", _unitHandles, name _player);
+
+		// Work out what garrison we are moving these units to
+		private _srcGarrison = switch(side _player) do {
+			case WEST: { gGarrisonPlayersWest };
+			case EAST: { gGarrisonPlayersEast };
+			case INDEPENDENT: { gGarrisonPlayersInd };
+			default { gGarrisonPlayersWest }; // what?!
+		};
+
+		// Get the units OOP objects
+		private _units = _unitHandles apply {
+			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
+		} select {
+			!IS_NULL_OBJECT(_x)
+		};
+
+		// Make a new garrison
+		private _side = CALLM(_srcGarrison, "getSide", []);
+		private _faction = CALLM(_srcGarrison, "getFaction", []);
+		private _templateName = CALLM(_srcGarrison, "getTemplateName", []);
+		private _newGarrison = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
+		private _pos = CALLM(_srcGarrison, "getPos", []);
+		CALLM2(_newGarrison, "postMethodAsync", "setPos", [_pos]);
+
+		// Remove the units from thier group
+		{
+			private _unit = _x;
+			pr _unitGroup = CALLM0(_unit, "getGroup");
+			if (_unitGroup != NULL_OBJECT) then {
+				CALLM1(_unitGroup, "removeUnit", _unit);
+			};
+		} forEach _units;
+
+		// Add the units to thier new group
+		CALLM1(_newGarrison, "addUnits", _units);
+
+		// Register it at the commander (do it after adding the units so the sync is correct)
+		CALLM(_newGarrison, "activate", []);
+
+	} ENDMETHOD;	
+
 	METHOD("getTemplateName") {
 		params [P_THISOBJECT];
 		T_GETV("templateName")

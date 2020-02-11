@@ -185,7 +185,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		SET_MEM(_thisObject, "data", nil);
 	} ENDMETHOD;
 
-
+	METHOD("release") {
+		params [P_THISOBJECT];
+		// detach the Arma unit handle from this object if it is spawned
+		// Despawn this unit if it was spawned
+		if (T_CALLM0("isSpawned")) then {
+			CALLM1(_thisObject, "despawn", true);
+		};
+	} ENDMETHOD;
 
 	//                              I S   V A L I D
 	/*
@@ -1020,7 +1027,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: nil
 	*/
 	METHOD("despawn") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_releaseHandle")];
 
 		OOP_INFO_0("DESPAWN");
 
@@ -1066,9 +1073,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
 
-			// Delete the vehicle
-			deleteVehicle _objectHandle;
-			private _group = _data select UNIT_DATA_ID_GROUP;
+			// If we are releasing the handle then we don't actually delete the unit!
+			if(!_releaseHandle) then {
+				// Delete the vehicle
+				deleteVehicle _objectHandle;
+			};
+
+			//private _group = _data select UNIT_DATA_ID_GROUP;
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {

@@ -706,7 +706,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_co = cursorObject;
 			(vehicle player == player)                                              // Player must be on foot
 			&& {_co distance player < 7}                                            // Player must be close to object
-			&& {! (_co isKindOf "Man")}                                               // Object must not be infantry
+			&& {! (_co isKindOf "Man")}                                             // Object must not be infantry
 			&& {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}       // Player must be at a friendly location
 			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}   // Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive cursorObject}                                                 // Object must be alive
@@ -720,6 +720,35 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //shortcut
 						"call pr0_fnc_attachUnitCond", //condition
 						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		// Action to add unit to player squad
+		pr0_fnc_groupUnitCond = {
+			_co = cursorObject;
+			(vehicle player == player)                                              		// Player must be on foot
+			&& {_co distance player < 7}                                            		// Player must be close to object
+			&& {!isPlayer _co}																// Object must not be player
+			&& {_co isKindOf "Man"}                                             			// Object must be infantry
+			&& {!isPlayer leader _co}														// Object must not be already owned by a player
+			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
+			&& {alive cursorObject}															// Object must be alive
+		};
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Add unit to group"], // title // pic: arrow pointing down
+						{
+							isNil {
+								private _args = [player, [cursorObject]];
+								REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "staticAddUnitToPlayerGroup", _args, ON_SERVER, NO_JIP)
+							}
+						}, // Steal the unit to players group
+						0, // Arguments
+						0.1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_groupUnitCond", //condition
+						5, //radius
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
