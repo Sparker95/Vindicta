@@ -8,6 +8,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@master
 
@@ -21,6 +22,7 @@ jobs:
 
   test:
     runs-on: windows-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@master
 
@@ -31,6 +33,7 @@ jobs:
 
   build:
     runs-on: windows-latest
+    timeout-minutes: 5
     needs: [validate, test]
     steps:
     - uses: actions/checkout@master
@@ -72,6 +75,7 @@ jobs:
 
   upload:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [build]
     steps:
     - name: Download build
@@ -92,7 +96,6 @@ jobs:
     - id: release_info
       run: |
         ls
-        mv build/@vindicta build/@Vindicta-Dev
         echo "::set-output name=upload_url::$(cat _uploadurl)"
         changelog=`cat _changelog`
         echo $changelog
@@ -105,8 +108,8 @@ jobs:
       uses: arma-actions/workshop-upload@v1
       with:
         appId: '107410'      # default
-        itemId: '1729562743' # Vindicta-Dev
-        contentPath: 'build/@Vindicta-Dev'
+        itemId: '1964186045' # Vindicta (Alpha) https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+        contentPath: 'build/@vindicta'
         changelog: "${{ steps.release_info.outputs.changelog }}"
       env:
         STEAM_USERNAME: ${{ secrets.SECRET_0 }}
@@ -115,7 +118,7 @@ jobs:
     - name: Prepare for Release
       run: |
         cd build
-        zip -r vindicta.zip @Vindicta-Dev
+        zip -r vindicta.zip @vindicta
         ls
 
     - name: Publish to GitHub Release

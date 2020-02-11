@@ -1,5 +1,5 @@
 /*
-custom Livonian Forest Rangers for ARMA III (RHS)
+custom Livonian Police for ARMA III - Representing a nation in a time of equipment flux(RHS)
 */
 
 _array = [];
@@ -7,24 +7,25 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 // Name, description, faction, addons, etc
-_array set [T_NAME, "tRHS_LDF_ranger"];
-_array set [T_DESCRIPTION, "LDF Police Rangers with custom loadouts from RHS addons."];
-_array set [T_DISPLAY_NAME, "RHS LDF Rangers"];
+_array set [T_NAME, "tRHS_LDF_NATO_police"];
+_array set [T_DESCRIPTION, "NATO aligned LDF Police with with custom loadouts from RHS addons"];
+_array set [T_DISPLAY_NAME, "RHS LDF NATO Police (Custom)"];
 _array set [T_FACTION, T_FACTION_Police];
-_array set [T_REQUIRED_ADDONS, [							
+_array set [T_REQUIRED_ADDONS, [
 								"rhs_c_troops",		// RHS AFRF
-								"rhsusf_c_troops",
-								"rhssaf_c_troops",
-								"rhsgref_c_troops"]];
+								"rhsusf_c_troops",	// RHS USAF
+								"rhssaf_c_troops",	// RHS SAF
+								"rhsgref_c_troops"	// RHS GREF
+								]];
 
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_officer, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun","RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
-_inf set [T_INF_rifleman, ["RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
-_inf set [T_INF_SL, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun","RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
+_inf set [T_INF_officer, ["RHS_LDF_NATO_police_TL_SMG","RHS_LDF_NATO_police_TL_rifle","RHS_LDF_NATO_police_TL_shotgun","RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];
+_inf set [T_INF_rifleman, ["RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];
+_inf set [T_INF_SL, ["RHS_LDF_NATO_police_TL_SMG","RHS_LDF_NATO_police_TL_rifle","RHS_LDF_NATO_police_TL_shotgun","RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];
 /*
 _inf set [T_INF_TL, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_SL, ["B_GEN_Soldier_F"]];

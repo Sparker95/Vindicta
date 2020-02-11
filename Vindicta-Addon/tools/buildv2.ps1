@@ -6,6 +6,14 @@ param (
 #$verDir = "vindicta_v$($verStr)"
 # Set-Content -Path ..\configs\majorVersion.hpp -Value $major -Force -NoNewline
 # Set-Content -Path ..\configs\minorVersion.hpp -Value $minor -Force -NoNewline
+if((Get-Content -Path ..\configs\majorVersion.hpp).Count -gt 1) {
+    "ERROR: configs\majorVersion.hpp contains a newline, it must not!"
+    Exit 100
+}
+if((Get-Content -Path ..\configs\minorVersion.hpp).Count -gt 1) {
+    "ERROR: configs\minorVersion.hpp contains a newline, it must not!"
+    Exit 100
+}
 
 Set-Content -Path ..\configs\buildVersion.hpp -Value $patch -Force -NoNewline
 
