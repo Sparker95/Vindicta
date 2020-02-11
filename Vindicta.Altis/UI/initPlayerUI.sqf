@@ -32,7 +32,7 @@ g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register
 CALLSM0("PlayerListUI", "new");
 gClientMapUI = NEW("ClientMapUI", []);
 gInGameUI = NEW("InGameUI", []);
-g_BuildUI = NEW("BuildUI", []);
+gBuildUI = NEW("BuildUI", []);
 
 // In Game Menu event handler
 (finddisplay 46) displayAddEventHandler ["KeyDown", {
