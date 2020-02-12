@@ -10,17 +10,12 @@ See implementations in TakeLocationCmdrAction and ReinforceCmdrAction.
 Parent: <CmdrAction>
 */
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
-	VARIABLE("srcGarrId");
-	VARIABLE("targetVar");
-	VARIABLE("detachmentEffVar");	// Efficiency
-	VARIABLE("detachmentCompVar");	// Composition
-	VARIABLE("detachedGarrIdVar");
-	VARIABLE("startDateVar");
-
-#ifdef DEBUG_CMDRAI
-	VARIABLE("debugColor");
-	VARIABLE("debugSymbol");
-#endif
+	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
+	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("detachmentEffVar", [ATTR_SAVE]);	// Efficiency
+	VARIABLE_ATTR("detachmentCompVar", [ATTR_SAVE]);	// Composition
+	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
 
 	/*
 	Constructor: new
@@ -226,8 +221,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
 		if(_targetPos isEqualType []) then {
-			T_PRVAR(debugColor);
-			T_PRVAR(debugSymbol);
+			GET_DEBUG_MARKER_STYLE(_thisObject) params ["debugColor", "debugSymbol"];
 
 			[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 

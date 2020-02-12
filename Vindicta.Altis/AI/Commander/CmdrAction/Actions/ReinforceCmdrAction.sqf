@@ -12,8 +12,17 @@ Parent: <TakeOrJoinCmdrAction>
 
 #define pr private
 
+#define ACTION_REINFORCE_TYPE_DEFAULT 0
+#define ACTION_REINFORCE_TYPE_OFFICER 1
+#define ACTION_REINFORCE_TYPE_BUILDING 2
+#define ACTION_REINFORCE_TYPE_AMMO 3
+#define ACTION_REINFORCE_TYPE_EXPLOSIVES 4
+#define ACTION_REINFORCE_TYPE_MEDICAL 5
+#define ACTION_REINFORCE_TYPE_MISC 6
+
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
-	VARIABLE("tgtGarrId");
+	VARIABLE_ATTR("tgtGarrId", [ATTR_SAVE]);
+	VARIABLE_ATTR("type", [ATTR_SAVE_VER(14)]);
 
 	/*
 	Constructor: new
@@ -32,10 +41,6 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
 		// T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG OCCUPYING_FORCE_HINT]);
-#ifdef DEBUG_CMDRAI
-		T_SETV("debugColor", "ColorWhite");
-		T_SETV("debugSymbol", "mil_join")
-#endif
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("updateIntel") {
@@ -319,6 +324,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+REGISTER_DEBUG_MARKER_STYLE("ReinforceCmdrAction", "ColorWhite", "mil_join");
 
 #ifdef _SQF_VM
 

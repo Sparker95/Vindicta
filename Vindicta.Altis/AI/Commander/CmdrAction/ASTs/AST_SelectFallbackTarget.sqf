@@ -8,10 +8,10 @@ target.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new
