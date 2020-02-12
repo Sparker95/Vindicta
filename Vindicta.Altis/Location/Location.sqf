@@ -1326,6 +1326,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Estimate usage radius
 		private _radius = (sizeof typeof _object) + 5;
 
+		_object setVariable["ACE_medical_isMedicalFacility", true];
+		_object allowdamage false;
+
 		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
 			{
 				player setdamage 0;
