@@ -380,20 +380,20 @@ CLASS("AICommander", "AI")
 	METHOD("updateLocationData") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
-		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
-		OOP_INFO_1("  Location type: %1", CALLM0(_loc, "getType"));
+		// OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
+		// OOP_INFO_1("  Location type: %1", CALLM0(_loc, "getType"));
 	
 		// Check if we have intel about such location already
 		pr _intelResult = T_CALLM1("getIntelAboutLocation", _loc);
 		pr _intelDB = T_GETV("intelDB");
 
 		if (!IS_NULL_OBJECT(_intelResult)) then {
-			OOP_INFO_1("Intel query result: %1;", _intelResult);
+			//OOP_INFO_1("Intel query result: %1;", _intelResult);
 
 			// There is an intel item with this location
 
 			if (_updateIfFound) then {
-				OOP_INFO_1("Intel was found in existing database: %1", _loc);
+				//OOP_INFO_1("Intel was found in existing database: %1", _loc);
 				// Update only if incoming accuracy is more or equal to existing one
 				if (_updateLevel >= GETV(_intelResult, "accuracy")) then {
 					// Create intel item from location, update the old item
@@ -437,13 +437,13 @@ CLASS("AICommander", "AI")
 		} else {
 			// There is no intel item with this location
 			
-			OOP_INFO_1("Intel was NOT found in existing database: %1", _loc);
+			//OOP_INFO_1("Intel was NOT found in existing database: %1", _loc);
 
 			// Create intel from location, add it
 			pr _args = [_loc, _updateLevel, _accuracyRadius];
 			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 			
-			OOP_INFO_1("Created intel item from location: %1", _intel);
+			//OOP_INFO_1("Created intel item from location: %1", _intel);
 			//[_intel] call OOP_dumpAllVariables;
 
 			CALLM1(_intelDB, "addIntel", _intel);
