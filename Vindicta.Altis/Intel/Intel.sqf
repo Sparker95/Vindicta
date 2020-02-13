@@ -247,7 +247,7 @@ CLASS("IntelLocation", "Intel")
 	If this variable is equal to [], it means unit amounts are not known
 	*/
 	VARIABLE_ATTR("unitData", [ATTR_SERIALIZABLE]);
-	
+
 	/* variable: accuracyRadius
 	Number, radius in meters that specifies how accurate is the intel.
 	The actual location should be somewhere within this radius.
@@ -313,7 +313,7 @@ CLASS("IntelLocation", "Intel")
 		/*if (! (T_GETV("unitData") isEqualTo GETV(_intelSrc, "unitData"))) then {
 			_string = _string + " Updated unit data.";
 		};*/
-		
+
 		// Add notification
 		if (_needNotify && (! isRemoteExecutedJIP) && (time > 60) ) then {
 			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
@@ -349,7 +349,7 @@ CLASS("IntelLocation", "Intel")
 		*/
 
 		pr _color = if (_type == LOCATION_TYPE_RESPAWN) then {	// Override for respawn marker, it must be very visible
-			[[1, 0, 0], "ColorRed"]
+			[[0.3, 0.3, 1], "ColorOrange"]
 		} else {
 			switch(_side) do { // See colors defined right above the class
 				case WEST: {[COLOR_WEST, "ColorWEST"]};

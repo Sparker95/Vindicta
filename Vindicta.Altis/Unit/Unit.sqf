@@ -304,7 +304,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} else {
 						// Otherwise just look for a close by safe position
 						OOP_INFO_1("  Looking for spawn at near desired position: %1", _pos);
-						CALLSM2("Location", "findSafeSpawnPos", _className, _pos)
+						CALLSM2("Location", "findSafePos", _pos, _className)
 					};
 					_posAndDir params ["_pos0", "_dir0"];
 					_pos = _pos0;
@@ -492,44 +492,45 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
 			// Try and restore saved inventory, otherwise generate one
-			if(!T_CALLM0("restoreInventory")) then {
+			private _restoredInventory = !T_CALLM0("restoreInventory");
+			if(!_restoredInventory) then {
 				// Initialize cargo if there is no limited arsenal
 				CALLM0(_thisObject, "initObjectInventory");
-			};
 
-			// Set build resources
-			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
-				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
-			};
-					
-			// Give intel to this unit
-
-			switch (_catID) do {
-				case T_INF: {
-					// Leaders get intel tablets
-					if (CALLM0(_group, "getLeader") == _thisObject) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
-					} else {
-						// todo give intel to some special unit types, like radio specialists, etc...
-						// Some random infantry units get tablets too
-						if (random 10 < 2) then {
+				// Set build resources
+				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
+					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+				};
+						
+				// Give intel to this unit
+				switch (_catID) do {
+					case T_INF: {
+						// Leaders get intel tablets
+						if (CALLM0(_group, "getLeader") == _thisObject) then {
+							CALLSM1("UnitIntel", "initUnit", _thisObject);
+						} else {
+							// todo give intel to some special unit types, like radio specialists, etc...
+							// Some random infantry units get tablets too
+							if (random 10 < 2) then {
+								CALLSM1("UnitIntel", "initUnit", _thisObject);
+							};
+						};
+					};
+					case T_VEH: {
+						// A very little amount of vehicles gets intel
+						if (random 10 < 3) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-				};
-				case T_VEH: {
-					// A very little amount of vehicles gets intel
-					if (random 10 < 3) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					case T_DRONE: {
+						// Don't put intel into drones?
+					};
+					case T_CARGO: {
+						// Don't put intel into cargo boxes?
 					};
 				};
-				case T_DRONE: {
-					// Don't put intel into drones?
-				};
-				case T_CARGO: {
-					// Don't put intel into cargo boxes?
-				};
 			};
+
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
@@ -1525,21 +1526,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		params ["_thisClass", ["_units", [], [[]]]];
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
-	} ENDMETHOD;
-
-	/*
-	Function: (static) getTemplateForSide
-	Get the appropriate unit template for the side specified
-	
-	Parameters: _side
-	
-	_side - side (WEST/EAST/INDEPENDENT/etc.)
-	
-	Returns: Template
-	*/
-	STATIC_METHOD("getTemplateForSide") {
-		params [P_THISCLASS, P_SIDE("_side")];
-		if(_side == INDEPENDENT) then { tAAF } else { if(_side == WEST) then { tGUERILLA } else { tGUERILLA } };
 	} ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

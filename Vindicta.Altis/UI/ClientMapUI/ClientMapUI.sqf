@@ -79,6 +79,8 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("respawnPanelEnabled");
 	// If a restore point is available for the player
 	VARIABLE("playerRestoreData");
+	// Last place the player respawned
+	VARIABLE("lastRespawnPos");
 
 	// initialize UI event handlers
 	METHOD("new") {
@@ -123,6 +125,8 @@ CLASS(CLASS_NAME, "")
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
 		T_SETV("playerRestoreData", []);
+
+		T_SETV("lastRespawnPos", []);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -1768,7 +1772,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// Post method to commander thread to add a group
 		private _AI = CALLSM1("AICommander", "getAICommander", WEST);
-		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc ARG 5]);
+		CALLM2(_AI, "postMethodAsync", "debugAddGroupToLocation", [_loc ARG 5]);
 
 		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText "A friendly group has been added to the location!";
 		*/
@@ -1935,6 +1939,19 @@ Gets called from "onMapDraw"
 		if(!isNil "gGameModeServer") then {
 			// Request update on players restore point from server
 			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
+
+			private _lastRespawnPos = T_GETV("lastRespawnPos");
+			if(_lastRespawnPos isEqualTo []) then {
+				private _locs = CALLSM0("Location", "getAll");
+				private _locIdx = _locs  findIf { CALLM0(_x, "getType") == LOCATION_TYPE_RESPAWN };
+				if(_locIdx == NOT_FOUND) then {
+					private _loc = _locs#_locIdx;
+					_lastRespawnPos = CALLM0(_loc, "getPos");
+				} else {
+					_lastRespawnPos = [worldSize / 2, worldSize / 2, 0];
+				}
+			};
+			mapAnimAdd [1, 0.1, _lastRespawnPos];
 		};
 
 		T_SETV("respawnPanelEnabled", _enable);
@@ -1962,17 +1979,23 @@ Gets called from "onMapDraw"
 			NULL_OBJECT
 		};
 
-		if (IS_OOP_OBJECT(_loc)) then {
+		private _respawnOkay = if (IS_OOP_OBJECT(_loc)) then {
 			// Teleport player
 			pr _respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
 			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
 			// Show a message to everyone
 			pr _text = format ["%1 has respawned at %2", name player, CALLM0(_loc, "getDisplayName")];
 			[_text] remoteExecCall ["systemChat"];
+			// Save the last respawn position
+			T_SETV("lastRespawnPos", _respawnPos);
+			true
 		} else {
-			if(_restoreGear isEqualTo []) exitWith {	// We want to be super sure that all is ok
-				OOP_ERROR_1("Selected spawn Location at marker %1 does not exist", _locMarkers);
-			};
+			// We want to be super sure that all is ok
+			!(_restoreGear isEqualTo [])
+		};
+
+		if(!_respawnOkay) exitWith {
+			OOP_ERROR_1("Selected spawn Location at marker %1 does not exist", _locMarkers);
 		};
 
 		// Call gameMode method

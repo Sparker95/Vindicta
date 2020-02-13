@@ -79,3 +79,6 @@ gPlayerUIInitialized = true;
 
 // Enable the respawn panel the first time
 CALLM1(gClientMapUI, "respawnPanelEnable", true);
+
+// Center map
+mapAnimAdd [1, 0.1, [worldSize / 2, worldSize / 2, 0]];

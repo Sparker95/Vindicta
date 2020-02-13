@@ -718,7 +718,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Handle vehicles first
 			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
 			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
-			if ((count _vehUnits > count _posAndDir) || (count _startPos > 0)) then {
+			if ((count _vehUnits > count _posAndDir) || !(_startPos isEqualTo [])) then {
 				if (count _vehUnits > count _posAndDir) then {
 					OOP_WARNING_0("Not enough positions for all vehicles!");
 				};
@@ -748,13 +748,17 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Handle infantry
 			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
 			// Get position around which infantry will be spawning
-			pr _infSpawnPos = if (count _startPos > 0) then {_startPos} else {_posAndDir select 0 select 0};
+			pr _infSpawnPos = if !(_startPos isEqualTo []) then {
+				_startPos
+			} else {
+				// First position
+				_posAndDir#0#0
+			};
 			{
 				// todo improve this
 				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
 				CALLM2(_x, "spawn", _pos, 0);
 			} forEach _infUnits;
-
 
 			// todo Handle drones??
 

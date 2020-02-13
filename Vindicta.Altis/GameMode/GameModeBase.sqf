@@ -704,12 +704,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Action to attach units to garrison
 		pr0_fnc_attachUnitCond = {
 			_co = cursorObject;
-			(vehicle player == player)                                              // Player must be on foot
-			&& {_co distance player < 7}                                            // Player must be close to object
-			&& {! (_co isKindOf "Man")}                                             // Object must not be infantry
-			&& {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}       // Player must be at a friendly location
-			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}   // Object must be a valid unit OOP object (no shit spawned by zeus for now)
-			&& {alive cursorObject}                                                 // Object must be alive
+			(vehicle player == player)												// Player must be on foot
+			&& {_co distance player < 7}											// Player must be close to object
+			&& {! (_co isKindOf "Man")}												// Object must not be infantry
+			&& {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}		// Player must be at a friendly location
+			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
+			&& {alive cursorObject}													// Object must be alive
 		};
 		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
 						{isNil {NEW("AttachToGarrisonDialog", [cursorObject])}}, // Open the UI dialog
@@ -727,10 +727,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Action to add unit to player squad
 		pr0_fnc_groupUnitCond = {
 			_co = cursorObject;
-			(vehicle player == player)                                              		// Player must be on foot
-			&& {_co distance player < 7}                                            		// Player must be close to object
+			(vehicle player == player)														// Player must be on foot
+			&& {_co distance player < 7}													// Player must be close to object
 			&& {!isPlayer _co}																// Object must not be player
-			&& {_co isKindOf "Man"}                                             			// Object must be infantry
+			&& {_co isKindOf "Man"}															// Object must be infantry
 			&& {!isPlayer leader _co}														// Object must not be already owned by a player
 			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive cursorObject}															// Object must be alive
@@ -739,9 +739,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						{
 							isNil {
 								private _args = [player, [cursorObject]];
-								REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "staticAddUnitToPlayerGroup", _args, ON_SERVER, NO_JIP)
+								// Steal the unit to players group
+								REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "addUnitsToPlayerGroup", _args, ON_SERVER, NO_JIP);
 							}
-						}, // Steal the unit to players group
+						},
 						0, // Arguments
 						0.1, // Priority
 						false, // ShowWindow
@@ -972,6 +973,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach gSpecialGarrisons;
 	} ENDMETHOD;
 
+	STATIC_METHOD("getPlayerGarrisonForSide") {
+		params [P_THISCLASS, P_SIDE("_side")];
+		switch(_side) do {
+			case WEST: { gGarrisonPlayersWest };
+			case EAST: { gGarrisonPlayersEast };
+			case INDEPENDENT: { gGarrisonPlayersInd };
+			default { gGarrisonPlayersCiv }; // what?!
+		}
+	} ENDMETHOD;
+	
 	fnc_getLocName = {
 		params["_name"];
 		private _names = "getText( _x >> 'name') == _name" configClasses ( configFile >> "CfgWorlds" >> worldName >> "Names" );
