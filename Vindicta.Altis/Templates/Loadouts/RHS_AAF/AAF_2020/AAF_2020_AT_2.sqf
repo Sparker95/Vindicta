@@ -17,16 +17,15 @@ this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addBackpack "FGN_AAF_Bergen_Type07";
 
 this addWeapon "rhs_weap_m21s";
-this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
+this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
 for "_i" from 1 to 4 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
-this addItemToBackpack "rhs_mag_maaws_HE";
-this addItemToBackpack "rhs_mag_maaws_HEDP";
-this addItemToBackpack "rhs_mag_maaws_HEAT";;
+this addItemToBackpack "MRAWS_HEAT_F";
+for "_i" from 1 to 2 do {this addItemToBackpack "MRAWS_HEAT55_F";};
+for "_i" from 1 to 2 do {this addItemToBackpack "MRAWS_HE_F";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-
