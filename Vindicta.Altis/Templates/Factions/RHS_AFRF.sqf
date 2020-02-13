@@ -72,7 +72,7 @@ _veh set [T_VEH_car_unarmed, ["rhs_uaz_open_MSV_01", "RHS_UAZ_MSV_01"]];
 _veh set [T_VEH_car_armed, ["rhsgref_nat_uaz_spg9", "rhsgref_nat_uaz_dshkm", "rhsgref_nat_uaz_ags"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhs_tigr_msv", "rhs_tigr_m_msv", "rhsgref_BRDM2UM_msv"]];
-_veh set [T_VEH_MRAP_HMG, ["rhs_tigr_sts_msv", "rhsgref_BRDM2_msv", "rhsgref_BRDM2_HQ_msv"]];
+_veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_msv", "rhsgref_BRDM2_HQ_msv"]];
 _veh set [T_VEH_MRAP_GMG, ["rhs_tigr_sts_msv"]];
 
 _veh set [T_VEH_IFV, ["rhs_bmp2_tv", "rhs_bmp2k_tv", "rhs_bmp3_msv", "rhs_bmp3_late_msv"]];

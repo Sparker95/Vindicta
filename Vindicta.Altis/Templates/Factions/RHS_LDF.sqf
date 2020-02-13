@@ -75,7 +75,7 @@ _veh set [T_VEH_MRAP_unarmed, ["rhsgref_BRDM2UM"]];
 _veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_HQ"]];
 _veh set [T_VEH_MRAP_GMG, ["rhsgref_BRDM2"]];
 
-_veh set [T_VEH_IFV, ["rhsgref_cdf_bmd1p", "rhsgref_cdf_bmd1pk", "rhsgref_cdf_bmd2", "rhsgref_cdf_bmd2k", "rhsgref_cdf_bmp1p", "rhsgref_cdf_bmp2e", "rhsgref_cdf_bmp2k"]];
+_veh set [T_VEH_IFV, ["rhsgref_cdf_bmd1p", "rhsgref_cdf_bmd1pk", "rhs_bmd1r", "rhsgref_cdf_bmd2", "rhsgref_cdf_bmd2k", "rhsgref_cdf_bmp1p", "rhsgref_cdf_bmp2e", "rhsgref_cdf_bmp2k"]];
 _veh set [T_VEH_APC, ["rhsgref_cdf_btr60", "rhsgref_cdf_btr70"]];
 _veh set [T_VEH_MBT, ["rhsgref_cdf_t80b_tv", "rhsgref_cdf_t80bv_tv", "rhs_t80bvk"]];
 _veh set [T_VEH_MRLS, ["rhsgref_cdf_reg_BM21"]];
