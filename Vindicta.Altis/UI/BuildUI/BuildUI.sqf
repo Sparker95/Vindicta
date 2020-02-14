@@ -381,14 +381,28 @@ CLASS("BuildUI", "")
 
 					pr _canDelete = false;
 					pr _objectToDelete = cursorObject; // save in case player moves view!
+					pr _isGarbage = false; // true if object is to be deleted as garbage
 
 					if !(isNil "_objectToDelete") then {
 						// If it's moveable, allow demolishing
 						if(CALLSM1("BuildUI", "isObjectMovable", _objectToDelete)) then {
 							_canDelete = true;
 							OOP_INFO_0("Can delete object.");
-						};
-					};
+						} else {
+							// valid garbage
+
+							pr _fullCargo = (itemCargo _objectToDelete) + (magazineCargo _objectToDelete) + (weaponCargo _objectToDelete);
+
+							if ((typeof _objectToDelete) in g_BuildUI_garbageObjects && _fullCargo isEqualTo []) then {
+								_isGarbage = true;
+							} else {
+								if (cursorobject == _objectToDelete) then {
+									hint "Object must be empty to demolish. Cannot delete the arsenal.";
+								};
+							};
+
+						}; // end if-else
+					}; // end if !isNil
 
 					// find if object is defined in template, then get construction cost
 					// also check if it's an arsenal box
@@ -444,7 +458,28 @@ CLASS("BuildUI", "")
 							[], {}];
 						NEW("DialogConfirmAction", _args);
 
-					}; // can delete
+					} else {
+						// check if object can be deleted as garbage
+						if (_isGarbage) then {
+
+						// Show a confirmation dialog
+						pr _args = [format ["Demolish %1? This object cannot be refunded.", (typeof(_objectToDelete))],
+							[_objectToDelete],
+							{
+								params["_objectToDelete"];
+								
+								if (cursorobject == _objectToDelete) then {
+									systemChat format["Object %1 was demolished.", (typeof(_objectToDelete))];
+									deleteVehicle _objectToDelete;
+								};
+							},
+							[], {}];
+						NEW("DialogConfirmAction", _args);
+
+						};
+					};
+
+					
 				true; // disables default control 
 			};
 		};
