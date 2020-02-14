@@ -279,6 +279,8 @@ CLASS("AICommander", "AI")
 			// Unit has valid handle
 			private _unitHandle = _x;
 			!(isNull _unitHandle) 
+			&& {alive _unitHandle}
+			&& {!isPlayer _unitHandle}
 			// Group has no player in it
 			&& {((units group _unitHandle) findIf { _x in allPlayers}) == NOT_FOUND}
 		} apply {

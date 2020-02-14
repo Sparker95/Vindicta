@@ -486,8 +486,6 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Sets the position, because it is stored in the world state
 	METHOD("setPos") {
 		params ["_thisObject", "_pos"];
-
-		DUMP_CALLSTACK;
 		
 		OOP_INFO_1("SET POS AI: %1", _pos);
 		pr _ws = T_GETV("worldState");

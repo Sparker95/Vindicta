@@ -3217,11 +3217,19 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("makeGarrisonFromUnits") {
 		params [P_THISOBJECT, P_ARRAY("_unitHandles")];
 
+		if(count _unitHandles == 0) exitWith {
+			OOP_WARNING_0("makeGarrisonFromUnits: No unit handles specified");
+		};
+
 		// Get the units OOP objects
 		private _units = _unitHandles apply {
 			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
 			!IS_NULL_OBJECT(_x)
+		};
+
+		if(count _units == 0) exitWith {
+			OOP_WARNING_1("makeGarrisonFromUnits: No unit objects found for unit handles %1", _unitHandles);
 		};
 
 		private _side = T_GETV("side");

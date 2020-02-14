@@ -612,51 +612,76 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Create a suspiciousness monitor for player
 		NEW("UndercoverMonitor", [_newUnit]);
 
+		pr0_fnc_coneTarget = {
+			params ["_range"];
+			private _tgts = (nearestObjects [position player, ["Man"], _range]) apply { 
+				[_x, vectorNormalized (position player vectorFromTo position _x) vectorCos getCameraViewDirection player]
+			} select { 
+				_x#1 > 0.9
+			};
+			if(count _tgts > 0) then {
+				_tgts#0#0
+			} else {
+				objNull
+			}
+		};
+
 		// Create scroll menu to talk to civilians
 		pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
-			private _civ = cursorObject;
-			!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}
-			&& {(_target distance _civ) < 4}
+			private _civ = [7] call pr0_fnc_coneTarget;
+			!isNull _civ
+			&& {!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}}
+			//&& {(_target distance _civ) < 7}
 			&& {alive _civ}
 			&& {!(_civ getVariable ["#arrested", false])}
 			&& {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 		};
 
 		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
-						"[cursorObject, 'talk'] spawn CivPresence_fnc_talkTo", // Script
+						{
+							private _civ = [7] call pr0_fnc_coneTarget;
+							if(!isNull _civ) then {
+								[_civ, 'talk'] spawn CivPresence_fnc_talkTo;
+							};
+						}, // Script
 						0, // Arguments
 						9000, // Priority
 						true, // ShowWindow
 						false, //hideOnUse
 						"", //shortcut
 						"call pr0_fnc_talkCond", //condition
-						2, //radius
+						7, //radius
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
 
 		_newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.paa' size='1' color = '#FFA300'/>") + ("<t size='1' color = '#FFA300'> Ask about intel</t>")), // title
-						"[cursorObject, 'intel'] spawn CivPresence_fnc_talkTo", // Script
+						{
+							private _civ = [7] call pr0_fnc_coneTarget;
+							if(!isNull _civ) then {
+								[_civ, 'intel'] spawn CivPresence_fnc_talkTo;
+							};
+						}, // Script
 						0, // Arguments
 						8999, // Priority
 						true, // ShowWindow
 						false, //hideOnUse
 						"", //shortcut
 						"call pr0_fnc_talkCond", //condition
-						2, //radius
+						7, //radius
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
 
 		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Instigate</t>")), // title
-						"[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
+						"[cursorTarget, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
 						0, // Arguments
 						8998, // Priority
 						true, // ShowWindow
 						false, //hideOnUse
 						"", //shortcut
 						"call pr0_fnc_talkCond", //condition
-						2, //radius
+						7, //radius
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
@@ -703,16 +728,24 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Action to attach units to garrison
 		pr0_fnc_attachUnitCond = {
-			_co = cursorObject;
-			(vehicle player == player)												// Player must be on foot
-			&& {_co distance player < 7}											// Player must be close to object
-			&& {! (_co isKindOf "Man")}												// Object must not be infantry
-			&& {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}		// Player must be at a friendly location
-			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
-			&& {alive cursorObject}													// Object must be alive
+			private _co = cursorObject;
+			!isNull _co 
+			&& {vehicle player == player}										// Player must be on foot
+			&& {_co distance player < 7}										// Player must be close to object
+			&& {! (_co isKindOf "Man")}											// Object must not be infantry
+			&& {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}	// Player must be at a friendly location
+			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != ''}		// Object must be a valid unit OOP object (no shit spawned by zeus for now)
+			&& {alive _co}														// Object must be alive
 		};
 		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
-						{isNil {NEW("AttachToGarrisonDialog", [cursorObject])}}, // Open the UI dialog
+						{
+							isNil {
+								private _co = cursorObject;
+								if(!isNull _co) then {
+									NEW("AttachToGarrisonDialog", [_co])
+								};
+							}
+						}, // Open the UI dialog
 						0, // Arguments
 						0.1, // Priority
 						false, // ShowWindow
@@ -726,21 +759,24 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Action to add unit to player squad
 		pr0_fnc_groupUnitCond = {
-			_co = cursorObject;
-			(vehicle player == player)														// Player must be on foot
-			&& {_co distance player < 7}													// Player must be close to object
-			&& {!isPlayer _co}																// Object must not be player
-			&& {_co isKindOf "Man"}															// Object must be infantry
-			&& {!isPlayer leader _co}														// Object must not be already owned by a player
-			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
-			&& {alive cursorObject}															// Object must be alive
+			private _co = [7] call pr0_fnc_coneTarget;
+			!isNull _co
+			&& {vehicle player == player}											// Player must be on foot
+			&& {!isPlayer _co}														// Object must not be player
+			&& {_co isKindOf "Man"}													// Object must be infantry
+			&& {!isPlayer leader _co}												// Object must not be already owned by a player
+			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
+			&& {alive _co}															// Object must be alive
 		};
 		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Add unit to group"], // title // pic: arrow pointing down
 						{
 							isNil {
-								private _args = [player, [cursorObject]];
-								// Steal the unit to players group
-								REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "addUnitsToPlayerGroup", _args, ON_SERVER, NO_JIP);
+								private _co = [7] call pr0_fnc_coneTarget;
+								if(!isNull _co) then {
+									private _args = [player, [_co]];
+									// Steal the unit to players group
+									REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "addUnitsToPlayerGroup", _args, ON_SERVER, NO_JIP);
+								};
 							}
 						},
 						0, // Arguments
@@ -806,12 +842,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		_oldUnit setVariable ["vin_killed_handled", true];
 
 		// Create a unit and give player control of it.
-		private _tmpGroup = createGroup (side group _oldUnit);
-		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, [0,0,0], [], 0, "NONE"];
-		[_newUnit] joinSilent (group _oldUnit);
-		deleteGroup _tmpGroup;
-		_newUnit setName (name _oldUnit);
+		private _newGroup = createGroup (side group _oldUnit);
+		private _newUnit = _newGroup createUnit [typeOf _oldUnit, [0,0,0], [], 0, "NONE"];
 		selectPlayer _newUnit;
+		deleteGroup group _oldUnit;
+		_newUnit spawn {
+			waitUntil {
+				player setName profileName;
+				sleep 0.01;
+				name _this == profileName
+			};
+		};
+
 		//unassignCurator zeus1;		zeus1 is nil anyway? I think we can use ACE now to add zeus
 		//player assignCurator zeus1;
 
