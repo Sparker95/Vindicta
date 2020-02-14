@@ -320,7 +320,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Only update the actual building of no garrisons are spawned here
 		if((T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND) then {
 			{	
-				private _hideObj = (_forEachIndex / (count _buildables - 1)) > _buildProgress;
+				private _hideObj = ((_forEachIndex + 1) / count _buildables) > _buildProgress;
 				if((isObjectHidden _x) isEqualTo (!_hideObj)) then
 				{
 					_x hideObjectGlobal _hideObj;
@@ -1328,6 +1328,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Estimate usage radius
 		private _radius = (sizeof typeof _object) + 5;
 
+		_object setVariable["ACE_medical_isMedicalFacility", true];
+		_object allowdamage false;
+
 		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
 			{
 				player setdamage 0;
@@ -1560,9 +1563,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Restore civ presense module
 		T_CALLM1("setCapacityCiv", T_GETV("capacityCiv"));
 
-		// Restore timer
-		T_CALLM0("initTimer");
-
 		// Enable player respawn
 		{
 			pr _side = _x;
@@ -1596,6 +1596,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		PUBLIC_STATIC_VAR("Location", "all");
 
 		T_CALLM0("findBuildables");
+
+		// Restore timer
+		T_CALLM0("initTimer");
 
 		true
 	} ENDMETHOD;

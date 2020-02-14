@@ -65,7 +65,7 @@ class BuildUI
 			style = 2;
 			text = "TAB: OPEN BUILD MENU";
 			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,1};
+			colorText[] = MUIC_BLACK;
 			font = "RobotoCondensed";
 			size = TEXT_SIZE_TOOLTIP;
 			shadow = 1;
@@ -81,7 +81,7 @@ class BuildUI
 			style = 2;
 			text = "TAB: OPEN BUILD MENU";
 			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,1};
+			colorText[] = MUIC_BLACK;
 			font = "RobotoCondensed";
 			size = TEXT_SIZE_TOOLTIP;
 			shadow = 1;

@@ -9,6 +9,36 @@
 
 // format: Classname, Display name string, build resources (cost), template category, template subcategory 
 
+// global array of objects that can be deleted in buildUI
+g_BuildUI_garbageObjects = [
+	"I_supplyCrate_F",
+	"B_CargoNet_01_ammo_F",
+	"Box_IND_Ammo_F",
+	"O_supplyCrate_F",
+	"C_T_supplyCrate_F",
+	"C_supplyCrate_F",
+	"IG_supplyCrate_F",
+	"C_IDAP_supplyCrate_F",
+	"I_EAF_supplyCrate_F",
+	"B_supplyCrate_F",
+	"Box_IND_WpsSpecial_F",
+	"Box_T_East_WpsSpecial_F",
+	"Box_East_WpsSpecial_F",
+	"Box_EAF_WpsSpecial_F",
+	"Box_T_NATO_WpsSpecial_F",
+	"Box_NATO_WpsSpecial_F",
+	"Box_NATO_Grenades_F",
+	"Box_EAF_Grenades_F",
+	"Box_East_Grenades_F",
+	"Box_IND_Grenades_F",
+	"Box_FIA_Support_F",
+	"Box_FIA_Wps_F",
+	"Box_Syndicate_Ammo_F",
+	"Box_NATO_Ammo_F",
+	"Box_EAF_Ammo_F",
+	"Box_FIA_Ammo_F"
+];
+
 pr _catDefense = [
 	// format: Classname, Display name string, build resource
 	["Land_HBarrier_01_big_4_green_F", "H-Barrier 1x4 L",			50,	-1, -1],
