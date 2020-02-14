@@ -1,5 +1,10 @@
 #include "\A3\ui_f\hpp\defineDIKCodes.inc"
 #include "\A3\Ui_f\hpp\defineResinclDesign.inc"
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#define OOP_DEBUG
+#include "..\OOP_Light\OOP_Light.h"
 
 #define ERROR_JN_6(A,B,C,D,E,F) diag_log format["JN_ERROR: ,%1,%2,%3,%4,%5,%6",A,B,C,D,E,F]
 #define ERROR_JN_5(A,B,C,D,E) diag_log format["JN_ERROR: ,%1,%2,%3,%4,%5",A,B,C,D,E]
