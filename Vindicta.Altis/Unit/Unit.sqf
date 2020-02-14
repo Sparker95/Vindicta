@@ -140,10 +140,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
 			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
-			CALLM0(_thisObject, "initObjectVariables");
-			CALLM0(_thisObject, "initObjectEventHandlers");
-			CALLM0(_thisObject, "initObjectDynamicSimulation");
-			CALLM0(_thisObject, "applyInfantryWeapons");
+			T_CALLM0("initObjectVariables");
+			T_CALLM0("initObjectEventHandlers");
+			T_CALLM0("initObjectDynamicSimulation");
+			T_CALLM0("applyInfantryWeapons");
 		};
 
 	} ENDMETHOD;
@@ -351,7 +351,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						pr _groupType = CALLM0(_group, "getType");
 
 						// Give weapons to the unit (if he has special weapons)
-						CALLM0(_thisObject, "applyInfantryWeapons");
+						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
 						_objectHandle setSkill ["aimingAccuracy", 0.6];	// Aiming and precision
@@ -480,22 +480,22 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 
 				// Initialize variables
-				CALLM0(_thisObject, "initObjectVariables");
+				T_CALLM0("initObjectVariables");
 
 				// Initialize event handlers
-				CALLM0(_thisObject, "initObjectEventHandlers");
+				T_CALLM0("initObjectEventHandlers");
 
 				// Initialize dynamic simulation
-				CALLM0(_thisObject, "initObjectDynamicSimulation");
+				T_CALLM0("initObjectDynamicSimulation");
 			}; // CRITICAL_SECTION
 
 			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
 			// Try and restore saved inventory, otherwise generate one
-			private _restoredInventory = !T_CALLM0("restoreInventory");
+			private _restoredInventory = T_CALLM0("restoreInventory");
 			if(!_restoredInventory) then {
 				// Initialize cargo if there is no limited arsenal
-				CALLM0(_thisObject, "initObjectInventory");
+				T_CALLM0("initObjectInventory");
 
 				// Set build resources
 				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
