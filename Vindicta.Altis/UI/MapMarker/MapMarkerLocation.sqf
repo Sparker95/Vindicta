@@ -282,9 +282,9 @@ CLASS(CLASS_NAME, "MapMarker")
 			case LOCATION_TYPE_ROADBLOCK:		{ "vin_location_roadblock" };
 			case LOCATION_TYPE_CAMP:			{ "vin_location_camp" };
 
-			case LOCATION_TYPE_UNKNOWN: { "mil_unknown"; };
+			case LOCATION_TYPE_UNKNOWN: 		{ "mil_unknown"; };
 
-			case LOCATION_TYPE_RESPAWN: { "respawn_unknown" };
+			case LOCATION_TYPE_RESPAWN: 		{ "respawn_unknown" };
 
 			// The rest are military places
 			default {
@@ -303,6 +303,8 @@ CLASS(CLASS_NAME, "MapMarker")
 			pr _displayName = CALLM0(_loc, "getDisplayName");
 			_mrkName setMarkerTextLocal ("  " + _displayName);
 		};
+		T_SETV("type", _type);
+		
 	} ENDMETHOD;
 
 	METHOD("updateAccuracyRadiusMarker") {

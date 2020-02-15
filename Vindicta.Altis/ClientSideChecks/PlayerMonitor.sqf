@@ -49,6 +49,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 	VARIABLE("intelReminded");				// Intel we have reminded the player is starting soon
 	VARIABLE("intelStarted");				// Intel we have reminded the player has started
+	VARIABLE("playerGroupUnits");			// Cache for units known to be in the players group so we can determine when we need to update it
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OBJECT("_unit")];
@@ -66,6 +67,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_SETV("canBuild", false);
 		T_SETV("intelReminded", []);
 		T_SETV("intelStarted", []);
+		T_SETV("playerGroupUnits", []);
 
 		// Create timer
 		pr _msg = MESSAGE_NEW();
@@ -198,6 +200,17 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 					};
 				};
 			};
+		};
+
+		// How to auto arrange AI in player groups:
+		// If player is in a group with AI then AI must be moved to player garrison
+		// If player garrison has groups in it that don't have players then these groups should be converted to garrisons and transferred back to 
+		// the Cmdr AI.
+
+		// Check for changes in players group
+		if !((units group player) isEqualTo T_GETV("playerGroupUnits")) then {
+			T_SETV("playerGroupUnits", units group player);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "updatePlayerGroup", [player], ON_SERVER, NO_JIP);
 		};
 
 		OOP_INFO_1("NEAR LOCATIONS: %1", T_GETV("nearLocations"));

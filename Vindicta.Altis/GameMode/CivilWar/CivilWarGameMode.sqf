@@ -207,7 +207,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			[[getPos player], {
 				params ["_playerPos"];
 				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 10]);
-			}] remoteExec ["call", 0];
+			}] remoteExec ["call", ON_SERVER];
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Add 50 activity here", {
@@ -215,18 +215,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			[[getPos player], {
 				params ["_playerPos"];
 				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 50]);
-			}] remoteExec ["call", 0];
-		}] call pr0_fnc_addDebugMenuItem;
-
-		["Game Mode", "Get local info", {
-			// Call to server to get the info
-			[[getPos player, clientOwner], {
-				params ["_playerPos", "_clientOwner"];
-				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
-				private _activity = CALLM(_enemyCmdr, "getActivity", [_playerPos ARG 500]);
-				// Callback to client with the result
-				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];
-			}] remoteExec ["spawn", 0];
+			}] remoteExec ["call", ON_SERVER];
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Update game mode now", {

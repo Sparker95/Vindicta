@@ -270,9 +270,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_buildables pushBackUnique _object;
 			};
 		} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
-#endif
 		// Randomize
 		_buildables = _buildables call BIS_fnc_arrayShuffle;
+#endif
 		// Sort objects by height above ground (to nearest 20cm) so we can build from the bottom up
 		private _objectHeights = _buildables apply { [(floor ((getPos _x)#2 * 5)) / 5, _x]};
 		_objectHeights sort ASCENDING;
@@ -878,13 +878,14 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	#define ROAD_DIR_LIMIT 15
 
 	STATIC_METHOD("findSafePosOnRoad") {
-		params ["_thisClass", ["_startPos", [], [[]]], ["_className", "", [""]] ];
+		params [P_THISCLASS, P_POSITION("_startPos"), P_STRING("_className"), P_NUMBER("_maxRange")];
 
 		// Try to find a safe position on a road for this vehicle
 		private _found = false;
 		private _searchRadius = 100;
 		pr _return = [];
-		while {!_found} do {
+		_maxRange = _maxRange max _searchRadius;
+		while {!_found && {_maxRange == 0 || _searchRadius <= _maxRange}} do {
 			private _roads = _startPos nearRoads _searchRadius;
 			if (count _roads < 3) then {
 				// Search for more roads at the next iteration
@@ -934,18 +935,19 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				};
 				if (!_found) then {
 					// Failed to find a position here, increase the radius
-					_searchRadius = _searchRadius * 3;
+					_searchRadius = _searchRadius * 2;
 				};
 			};
 		};
-
+		if(_return isEqualTo []) then {
+			_return = CALLSM2("Location", "findSafePos", _startPos, _className);
+		};
 		_return
 	} ENDMETHOD;
 
 	/*
 	Method: (static)findSafePos
 	Finds a safe spawn position for a vehicle with given class name.
-
 
 	Parameters: _className, _pos
 
@@ -954,8 +956,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: [_pos, _dir]
 	*/
-	STATIC_METHOD("findSafeSpawnPos") {
-		params ["_thisClass", ["_className", "", [""]], ["_startPos", [], [[]]]];
+	STATIC_METHOD("findSafePos") {
+		params [P_THISCLASS, P_POSITION("_startPos"), P_STRING("_className")];
 
 		private _found = false;
 		private _searchRadius = 50;
@@ -1524,9 +1526,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Load objects which we own
 		pr _gmData = T_GETV("gameModeData");
 		if (!IS_NULL_OBJECT(_gmData)) then {
-			CALLM1(_storage, "load", T_GETV("gameModeData"));
-			PUBLIC_VAR(_thisObject, "gameModeData");
+			CALLM1(_storage, "load", _gmData);
 		};
+		T_PUBLIC_VAR("gameModeData");
 
 		// Load garrisons
 		{
@@ -1555,6 +1557,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			};
 			T_CALLM2("addObject", _hO, false); // Don't add spawn position, it's saved separately
 		} forEach T_GETV("savedObjects");
+
 		T_SETV("savedObjects", []);
 
 		// Restore civ presense module

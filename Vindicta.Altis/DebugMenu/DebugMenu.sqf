@@ -126,12 +126,17 @@ pr0_fnc_toggleMarkers = {
 	} ] remoteExec ["call", 2];
 }] call pr0_fnc_addDebugMenuItem;
 
-["Add", "Add friendly inf to this location", {
+["Add", "Add friendly group to this location", {
 	private _loc = CALLSM1("Location", "getLocationAtPos", getpos player);
 	if (!IS_NULL_OBJECT(_loc)) then {
 		private _AI = CALLSM1("AICommander", "getAICommander", playerSide);
-		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc]);
+		CALLM2(_AI, "postMethodAsync", "debugAddGroupToLocation", [_loc]);
 	};
+}] call pr0_fnc_addDebugMenuItem;
+
+["Add", "Create friendly garrison here", {
+	private _AI = CALLSM1("AICommander", "getAICommander", playerSide);
+	CALLM2(_AI, "postMethodAsync", "debugCreateGarrison", [getpos player]);
 }] call pr0_fnc_addDebugMenuItem;
 
 ["Commander", "Enable Radio Intel Interception Cheat", {

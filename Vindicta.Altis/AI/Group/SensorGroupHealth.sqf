@@ -72,14 +72,17 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		// Check if the group leader is the proper unit
 		// ... just to be sure
 		pr _hActualLeader = leader _hG;
-		pr _actualLeaderUnit = CALLSM1("Unit", "getUnitFromObjectHandle", _hActualLeader);
-		pr _properLeaderUnit = CALLM0(_group, "getLeader");
-		pr _hProperLeader = if (_properLeaderUnit != "") then { CALLM0(_properLeaderUnit, "getObjectHandle") } else {objNull};
-		if (_actualLeaderUnit != _properLeaderUnit) then {
-			if (alive _hActualLeader && _properLeaderUnit != "") then {
-				OOP_ERROR_6("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5, %6", _group, _hActualLeader, _actualLeaderUnit, _hProperLeader, _properLeaderUnit, alive _hProperLeader);
+		// Only interfere if leader isn't a player
+		if !(_hActualLeader in allPlayers) then {
+			pr _actualLeaderUnit = CALLSM1("Unit", "getUnitFromObjectHandle", _hActualLeader);
+			pr _properLeaderUnit = CALLM0(_group, "getLeader");
+			pr _hProperLeader = if (_properLeaderUnit != "") then { CALLM0(_properLeaderUnit, "getObjectHandle") } else {objNull};
+			if (_actualLeaderUnit != _properLeaderUnit) then {
+				if (alive _hActualLeader && _properLeaderUnit != "") then {
+					OOP_ERROR_6("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5, %6", _group, _hActualLeader, _actualLeaderUnit, _hProperLeader, _properLeaderUnit, alive _hProperLeader);
+				};
+				if (_properLeaderUnit != "") then { CALLM1(_group, "setLeader", _properLeaderUnit); };
 			};
-			if (_properLeaderUnit != "") then { CALLM1(_group, "setLeader", _properLeaderUnit); };
 		};
 		
 	} ENDMETHOD;

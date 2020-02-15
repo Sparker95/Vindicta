@@ -1152,3 +1152,4 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define ON_SERVER 	2
 #define ON_CLIENTS -2
 #define NO_JIP 		false
+#define ALWAYS_JIP	false

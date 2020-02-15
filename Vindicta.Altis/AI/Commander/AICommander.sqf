@@ -265,6 +265,34 @@ CLASS("AICommander", "AI")
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
 		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
 
+		// Reassign abandonned AI groups to commander
+		private _side = T_GETV("side");
+		private _playerGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _side);
+
+		// Find all arma groups without players in them
+		private _abandonnedGroups = [];
+		{ // Get unique set of groups
+			_abandonnedGroups pushBackUnique _x;
+		} forEach (CALLM0(_playerGarrison, "getUnits") apply {
+			CALLM0(_x, "getObjectHandle")
+		} select {
+			// Unit has valid handle
+			private _unitHandle = _x;
+			!(isNull _unitHandle) 
+			&& {alive _unitHandle}
+			&& {!isPlayer _unitHandle}
+			// Group has no player in it
+			&& {((units group _unitHandle) findIf { _x in allPlayers}) == NOT_FOUND}
+		} apply {
+			group _x
+		});
+
+		// Return the groups to this commander
+		{ // forEach _abandonnedGroups;
+			private _args = [units _x];
+			CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG _args]);
+		} forEach _abandonnedGroups;
+
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
 		T_SETV("stateStart", TIME_NOW);
@@ -1455,8 +1483,28 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 
 	// Temporary function that adds infantry to some location
-	METHOD("addGroupToLocation") {
-		params [P_THISCLASS, P_OOP_OBJECT("_loc"), P_NUMBER("_nTroops")];
+	METHOD("debugCreateGarrison") {
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		pr _side = T_GETV("side");
+
+		// Create a new garrison and register it
+		pr _gar = NEW("Garrison", [_side ARG _pos]);
+		// Create some infantry group
+		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+
+		// Try to spawn more units at the selected locations
+		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
+		pr _t = [_templateName] call t_fnc_getTemplate;
+
+		CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_rifle_squad);
+		CALLM1(_gar, "addGroup", _group);
+
+		CALLM0(_gar, "activate");
+	} ENDMETHOD;
+
+	// Temporary function that adds infantry to some location
+	METHOD("debugAddGroupToLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		pr _side = T_GETV("side");
 
@@ -1476,8 +1524,12 @@ CLASS("AICommander", "AI")
 
 		// Create some infantry group
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
-		CALLM2(_group, "createUnitsFromTemplate", tGUERILLA, T_GROUP_inf_rifle_squad);
-		CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
+		// Try to spawn more units at the selected locations
+		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
+		pr _t = [_templateName] call t_fnc_getTemplate;
+
+		CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_rifle_squad);
+		CALLM2(_gar, "postMethodAsync", "addGroup", _group);
 
 		// That's all!
 	} ENDMETHOD;

@@ -140,10 +140,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
 			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
-			CALLM0(_thisObject, "initObjectVariables");
-			CALLM0(_thisObject, "initObjectEventHandlers");
-			CALLM0(_thisObject, "initObjectDynamicSimulation");
-			CALLM0(_thisObject, "applyInfantryWeapons");
+			T_CALLM0("initObjectVariables");
+			T_CALLM0("initObjectEventHandlers");
+			T_CALLM0("initObjectDynamicSimulation");
+			T_CALLM0("applyInfantryWeapons");
 		};
 
 	} ENDMETHOD;
@@ -185,7 +185,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		SET_MEM(_thisObject, "data", nil);
 	} ENDMETHOD;
 
-
+	METHOD("release") {
+		params [P_THISOBJECT];
+		// detach the Arma unit handle from this object if it is spawned
+		// Despawn this unit if it was spawned
+		if (T_CALLM0("isSpawned")) then {
+			CALLM1(_thisObject, "despawn", true);
+		};
+	} ENDMETHOD;
 
 	//                              I S   V A L I D
 	/*
@@ -297,7 +304,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} else {
 						// Otherwise just look for a close by safe position
 						OOP_INFO_1("  Looking for spawn at near desired position: %1", _pos);
-						CALLSM2("Location", "findSafeSpawnPos", _className, _pos)
+						CALLSM2("Location", "findSafePos", _pos, _className)
 					};
 					_posAndDir params ["_pos0", "_dir0"];
 					_pos = _pos0;
@@ -344,7 +351,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						pr _groupType = CALLM0(_group, "getType");
 
 						// Give weapons to the unit (if he has special weapons)
-						CALLM0(_thisObject, "applyInfantryWeapons");
+						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
 						_objectHandle setSkill ["aimingAccuracy", 0.6];	// Aiming and precision
@@ -473,56 +480,57 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 
 				// Initialize variables
-				CALLM0(_thisObject, "initObjectVariables");
+				T_CALLM0("initObjectVariables");
 
 				// Initialize event handlers
-				CALLM0(_thisObject, "initObjectEventHandlers");
+				T_CALLM0("initObjectEventHandlers");
 
 				// Initialize dynamic simulation
-				CALLM0(_thisObject, "initObjectDynamicSimulation");
+				T_CALLM0("initObjectDynamicSimulation");
 			}; // CRITICAL_SECTION
 
 			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
 			// Try and restore saved inventory, otherwise generate one
-			if(!T_CALLM0("restoreInventory")) then {
+			private _restoredInventory = T_CALLM0("restoreInventory");
+			if(!_restoredInventory) then {
 				// Initialize cargo if there is no limited arsenal
-				CALLM0(_thisObject, "initObjectInventory");
-			};
+				T_CALLM0("initObjectInventory");
 
-			// Set build resources
-			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
-				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
-			};
-					
-			// Give intel to this unit
-
-			switch (_catID) do {
-				case T_INF: {
-					// Leaders get intel tablets
-					if (CALLM0(_group, "getLeader") == _thisObject) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
-					} else {
-						// todo give intel to some special unit types, like radio specialists, etc...
-						// Some random infantry units get tablets too
-						if (random 10 < 2) then {
+				// Set build resources
+				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
+					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+				};
+						
+				// Give intel to this unit
+				switch (_catID) do {
+					case T_INF: {
+						// Leaders get intel tablets
+						if (CALLM0(_group, "getLeader") == _thisObject) then {
+							CALLSM1("UnitIntel", "initUnit", _thisObject);
+						} else {
+							// todo give intel to some special unit types, like radio specialists, etc...
+							// Some random infantry units get tablets too
+							if (random 10 < 2) then {
+								CALLSM1("UnitIntel", "initUnit", _thisObject);
+							};
+						};
+					};
+					case T_VEH: {
+						// A very little amount of vehicles gets intel
+						if (random 10 < 3) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-				};
-				case T_VEH: {
-					// A very little amount of vehicles gets intel
-					if (random 10 < 3) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					case T_DRONE: {
+						// Don't put intel into drones?
+					};
+					case T_CARGO: {
+						// Don't put intel into cargo boxes?
 					};
 				};
-				case T_DRONE: {
-					// Don't put intel into drones?
-				};
-				case T_CARGO: {
-					// Don't put intel into cargo boxes?
-				};
 			};
+
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
@@ -1020,7 +1028,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: nil
 	*/
 	METHOD("despawn") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_releaseHandle")];
 
 		OOP_INFO_0("DESPAWN");
 
@@ -1066,9 +1074,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
 
-			// Delete the vehicle
-			deleteVehicle _objectHandle;
-			private _group = _data select UNIT_DATA_ID_GROUP;
+			// If we are releasing the handle then we don't actually delete the unit!
+			if(!_releaseHandle) then {
+				// Delete the vehicle
+				deleteVehicle _objectHandle;
+			};
+
+			//private _group = _data select UNIT_DATA_ID_GROUP;
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
@@ -1514,21 +1526,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		params ["_thisClass", ["_units", [], [[]]]];
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
-	} ENDMETHOD;
-
-	/*
-	Function: (static) getTemplateForSide
-	Get the appropriate unit template for the side specified
-	
-	Parameters: _side
-	
-	_side - side (WEST/EAST/INDEPENDENT/etc.)
-	
-	Returns: Template
-	*/
-	STATIC_METHOD("getTemplateForSide") {
-		params [P_THISCLASS, P_SIDE("_side")];
-		if(_side == INDEPENDENT) then { tAAF } else { if(_side == WEST) then { tGUERILLA } else { tGUERILLA } };
 	} ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
