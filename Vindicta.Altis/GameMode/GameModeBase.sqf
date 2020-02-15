@@ -1079,8 +1079,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// First generate location modules for any cities/towns etc that don't have them manually placed
 		T_CALLM("createMissingCityLocations", []);
 
-		CALLSM0("Location", "registerBuildingClasses");
-
 		// Array of positions
 		// These positions have very high priority if map maker has placed them. We will not delete them.
 		private _predefinedRoadblockPositions = [];
@@ -1855,9 +1853,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
-
-		// Register our map locations
-		CALLSM0("Location", "registerBuildingClasses");
 	} ENDMETHOD;
 
 	/* override */ METHOD("postDeserialize") {
@@ -1869,7 +1864,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Delete editor's special objects
 		CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
-		CALLSM0("Location", "deleteEditorObjects");
+		// CALLSM0("Location", "deleteEditorObjects");
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];

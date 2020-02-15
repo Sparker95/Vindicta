@@ -28,7 +28,7 @@ if(count _stAll > 0) then {
 };
 
 // If a suitable array has not been found
-private _spawnPos = [_pos, _dir]; //[_pos, _dir, _building]; // Can't add building, it makes it not storable
+private _spawnPos = [_pos, _dir, _building];
 if (count _stCurrent == 0) then {
 	// Create a new array
 	private _stNew = [_unitTypes, _groupTypes, [_spawnPos], 0];

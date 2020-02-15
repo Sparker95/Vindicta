@@ -51,10 +51,13 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 			private _spawnPositions = _stCurrent select LOCATION_SPT_ID_SPAWN_POS;
 			private _nextFreePosID = _stCurrent select LOCATION_SPT_ID_COUNTER;
 			private _posArray = (_spawnPositions select _nextFreePosID);
-			_posReturn = _posArray select LOCATION_SP_ID_POS;
-			_dirReturn = _posArray select LOCATION_SP_ID_DIR;			
-			_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter
-			_found = true;
+			private _building = _posArray select LOCATION_SP_ID_BUILDING;
+			if(!isObjectHidden _building) then {
+				_posReturn = _posArray select LOCATION_SP_ID_POS;
+				_dirReturn = _posArray select LOCATION_SP_ID_DIR;			
+				_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter
+				_found = true;
+			};
 		};
 		_i = _i + 1;
 	};
@@ -72,26 +75,28 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
 					OOP_DEBUG_MSG("Checking position for HMG/GMG: %1 ...", [_posArray]);
 				};
-				
-				private _pos = _posArray select LOCATION_SP_ID_POS;
-				private _dir = _posArray select LOCATION_SP_ID_DIR;
-				// Check if given position is safe to spawn the unit here
-				private _args = [_pos, _dir, _className];
-				private _posFree = CALL_STATIC_METHOD("Location", "isPosSafe", _args);
-				if(_posFree) exitWith {
-					if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-						OOP_DEBUG_MSG("Position is free!", []);
+				private _building = _posArray select LOCATION_SP_ID_BUILDING;
+				if(!isObjectHidden _building) then {
+					private _pos = _posArray select LOCATION_SP_ID_POS;
+					private _dir = _posArray select LOCATION_SP_ID_DIR;
+					// Check if given position is safe to spawn the unit here
+					private _args = [_pos, _dir, _className];
+					private _posFree = CALL_STATIC_METHOD("Location", "isPosSafe", _args);
+					if(_posFree) exitWith {
+						if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
+							OOP_DEBUG_MSG("Position is free!", []);
+						};
+					
+						_posReturn = _pos;
+						_dirReturn = _dir;
+						_found = true;
+						private _nextFreePosID = _stCurrent select LOCATION_SPT_ID_COUNTER;
+						_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter, although it doesn't matter here
 					};
-				
-					_posReturn = _pos;
-					_dirReturn = _dir;
-					_found = true;
-					private _nextFreePosID = _stCurrent select LOCATION_SPT_ID_COUNTER;
-					_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter, although it doesn't matter here
-				};
-				
-				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-					OOP_DEBUG_MSG("Position is occupied!", []);
+					
+					if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
+						OOP_DEBUG_MSG("Position is occupied!", []);
+					};
 				};
 			} forEach (_stCurrent select LOCATION_SPT_ID_SPAWN_POS);
 		};

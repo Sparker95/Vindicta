@@ -325,3 +325,10 @@ _arrayExport
 //Code to get class names of all selected eden objects
 (get3DENSelected "object") apply {typeof _x}
 */
+
+gMilitaryBuildingModels = [];
+gMilitaryBuildingTypes = [];
+{
+	gMilitaryBuildingModels pushBack (_x#0);
+	gMilitaryBuildingTypes pushBack (_x#1);
+} forEach (call compile preprocessFileLineNumbers "Location\militaryBuildings.sqf");
