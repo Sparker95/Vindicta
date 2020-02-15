@@ -4,8 +4,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tWW2_UK"];
-_array set [T_DESCRIPTION, "WW2 UK units with equipment from 1939-1945"];
-_array set [T_DISPLAY_NAME, "WW2 - UK"];
+_array set [T_DESCRIPTION, "The British Armed Forces also known as Her Majesty's Armed Forces, are the military services responsible for the defense of the United Kingdom and the Crown dependencies. Consisting of allied and captured axis equipment from 1939 to 1945, mainly using USA backed weaponry."];
+_array set [T_DISPLAY_NAME, "WW2 - British Armed Forces"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 
@@ -26,17 +26,17 @@ _inf set [T_INF_exp, ["LIB_UK_Engineer"]];
 _inf set [T_INF_ammo, ["LIB_UK_Rifleman"]];
 _inf set [T_INF_LAT, ["LIB_UK_AT_Soldier"]];
 _inf set [T_INF_AT, ["LIB_UK_AT_Soldier"]];
-//_inf set [T_INF_AA, [""]];
 _inf set [T_INF_LMG, ["LIB_UK_LanceCorporal"]];
 _inf set [T_INF_HMG, ["LIB_UK_LanceCorporal"]];
 _inf set [T_INF_medic, ["LIB_UK_Medic"]];
 _inf set [T_INF_engineer, ["LIB_UK_Engineer"]];
 _inf set [T_INF_crew, ["LIB_UK_Tank_Commander", "LIB_UK_Tank_Crew"]];
-//_inf set [T_INF_crew_heli, [""]];
 _inf set [T_INF_pilot, ["LIB_US_Pilot"]];
-//_inf set [T_INF_pilot_heli, [""]];
-//_inf set [T_INF_survivor, [""]];
-//_inf set [T_INF_unarmed, [""]];
+/*_inf set [T_INF_crew_heli, [""]];
+_inf set [T_INF_AA, [""]];
+_inf set [T_INF_pilot_heli, [""]];
+_inf set [T_INF_survivor, [""]];
+_inf set [T_INF_unarmed, [""]];*/
 
 // Recon
 _inf set [T_INF_recon_TL, ["LIB_UK_Para_Officer", "LIB_UK_Para_Sergeant", "LIB_UK_Para_Corporal"]];
@@ -49,16 +49,16 @@ _inf set [T_INF_recon_JTAC, ["LIB_UK_Para_Radioman"]];
 
 
 // Divers, still vanilla
-_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];
-_inf set [T_INF_diver_rifleman, ["B_diver_F"]];
-_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
+//_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];
+//_inf set [T_INF_diver_rifleman, ["B_diver_F"]];
+//_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
 
 
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
+_veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB"]];
 
 _veh set [T_VEH_car_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 _veh set [T_VEH_car_armed, ["LIB_UK_Willys_MB_M1919", "LIB_usa_M3_Scout_FFV"]];
@@ -70,7 +70,7 @@ _veh set [T_VEH_MRAP_GMG, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack"]];
 _veh set [T_VEH_IFV, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_APC, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_MBT, ["fow_v_cromwell_uk", "LIB_Churchill_Mk7", "LIB_Churchill_Mk7_AVRE", "LIB_Churchill_Mk7_Crocodile", "LIB_Crusader_Mk3", "LIB_M4A3_75"]];
-//_veh set [T_VEH_MRLS, [""]];
+_veh set [T_VEH_MRLS, ["LIB_Nebelwerfer41", "LIB_Nebelwerfer41_Camo", "LIB_Nebelwerfer41_Gelbbraun"]]; 
 _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
 
@@ -95,7 +95,7 @@ _veh set [T_VEH_plane_cargo, ["LIB_C47_RAF"]];
 _veh set [T_VEH_plane_unarmed, ["LIB_HORSA_RAF", "LIB_MKI_HADRIAN", "LIB_MKI_HADRIAN_raf2", "LIB_MKI_HADRIAN_raf3"]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
-//_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
+_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
 _veh set [T_VEH_boat_armed, ["LIB_UK_LCA", "LIB_UK_LCI", "sab_boat_destroyer_rn", "sab_boat_subchaser_rn"]];
 
 _veh set [T_VEH_personal, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];

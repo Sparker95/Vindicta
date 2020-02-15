@@ -4,8 +4,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tWW2_UK_police"];
-_array set [T_DESCRIPTION, "WW2 UK units with equipment from 1939-1945"];
-_array set [T_DISPLAY_NAME, "WW2 - UK (Police)"];
+_array set [T_DESCRIPTION, "The British Peacekeeping Forces, are the military services responsible for keeping the peace in occupied territories. This particular formation is inexperienced with law enforcement and lacking specialized equipment such as heavier weaponry and armored vehicles. (This formation is fake)"];
+_array set [T_DISPLAY_NAME, "WW2 - British Peacekeeping Forces"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 
@@ -15,9 +15,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["LIB_UK_Rifleman"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Officer", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Sniper", "LIB_UK_Engineer", "LIB_UK_AT_Soldier", "LIB_UK_LanceCorporal", "LIB_UK_Medic", "LIB_UK_Engineer"]];
-_inf set [T_INF_TL, ["LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Officer", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Sniper", "LIB_UK_Engineer", "LIB_UK_AT_Soldier", "LIB_UK_LanceCorporal", "LIB_UK_Medic", "LIB_UK_Engineer"]];
-_inf set [T_INF_officer, ["LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Officer", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Sniper", "LIB_UK_Engineer", "LIB_UK_AT_Soldier", "LIB_UK_LanceCorporal", "LIB_UK_Medic", "LIB_UK_Engineer"]];
+_inf set [T_INF_SL, ["LIB_UK_Officer", "LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Medic"]];
+_inf set [T_INF_TL, ["LIB_UK_Officer", "LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Medic"]];
+_inf set [T_INF_officer, ["LIB_UK_Officer", "LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Medic"]];
 /*
 _inf set [T_INF_GL, [""]];
 _inf set [T_INF_rifleman, [""]];
@@ -43,7 +43,7 @@ _inf set [T_INF_unarmed, [""]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
+_veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB"]];
 _veh set [T_VEH_car_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 
 
