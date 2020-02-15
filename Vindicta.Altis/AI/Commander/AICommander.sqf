@@ -2497,7 +2497,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_INFO_1("  More armor required: %1", _armorMoreRequired);
 
 		// Max amount of vehicles at airfields
-		pr _nVehMax = if (_progress < 0.5) then {
+		pr _nVehMax = if (_progress < 0.25) then {
 			round 0.5*CMDR_MAX_VEH_AIRFIELD
 		} else {
 			CMDR_MAX_VEH_AIRFIELD
@@ -2570,69 +2570,61 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Try to spawn more transport
 		if (_transportMoreRequired > 0) then {
 			OOP_INFO_1("  Trying to add more transport: %1", _transportMoreRequired);
-			pr _transportTypes = [];
-			
+			pr _transportTypes = [T_VEH_truck_inf];
+
 			// If campaign progress is big enough, give them more armored transport
 			// If it's low, just give trucks
 			if (_progress > 0.3) then {
-				_transportTypes = [T_VEH_IFV, T_VEH_APC];
-			} else {
-				_transportTypes = [T_VEH_truck_inf];
+				_transportTypes = _transportTypes + [T_VEH_truck_inf, T_VEH_IFV, T_VEH_APC];
 			};
 
-			if (_transportMoreRequired > 0) then {
-				{
-					pr _locModel = _x;
-					pr _loc = GETV(_locModel, "actual");
-					OOP_INFO_1("    Considering location: %1", CALLM0(_loc, "getDisplayName"));
-					pr _garModel = CALLM(_locModel, "getGarrison", [_side]);
-					if (!IS_NULL_OBJECT(_garModel)) then {
-						pr _gar = GETV(_garModel, "actual");
-						pr _query = +T_PL_tracked_wheeled; // All tracked and wheeled vehicles
-						pr _nVeh = CALLM1(_gar, "countUnits", _query);
-						OOP_INFO_2("    Amount of veh at this place: %1 / %2", _nVeh, _nVehMax);
-						if (_nVeh < _nVehMax) then {
-							pr _nVehToAdd = (_nVeh - _nVehMax) min 5; // Don't give more than a few trucks/APCs at a time, we might also want to add more transport
-							OOP_INFO_2("  Adding %1 transport capability to location %2", _transportMoreRequired, CALLM0(_loc, "getDisplayName"));
+			{
+				pr _locModel = _x;
+				pr _loc = GETV(_locModel, "actual");
+				OOP_INFO_1("    Considering location: %1", CALLM0(_loc, "getDisplayName"));
+				pr _garModel = CALLM(_locModel, "getGarrison", [_side]);
+				if (!IS_NULL_OBJECT(_garModel)) then {
+					pr _gar = GETV(_garModel, "actual");
+					pr _query = +T_PL_tracked_wheeled; // All tracked and wheeled vehicles
+					pr _nVeh = CALLM1(_gar, "countUnits", _query);
+					OOP_INFO_2("    Amount of veh at this place: %1 / %2", _nVeh, _nVehMax);
+					if (_nVeh < _nVehMax) then {
+						pr _nVehToAdd = (_nVeh - _nVehMax) min 5; // Don't give more than a few trucks/APCs at a time, we might also want to add more transport
+						OOP_INFO_2("  Adding %1 transport capability to location %2", _transportMoreRequired, CALLM0(_loc, "getDisplayName"));
 
-							while {_transportMoreRequired > 0} do {
-								pr _subcatID = selectRandom _transportTypes;
-								pr _args = [_t, T_VEH, _subcatID, -1]; // Select a random class ID
-								pr _vehUnit = NEW("Unit", _args);
+						while {_transportMoreRequired > 0} do {
+							pr _subcatID = selectRandom _transportTypes;
+							pr _args = [_t, T_VEH, _subcatID, -1]; // Select a random class ID
+							pr _vehUnit = NEW("Unit", _args);
 
-								CALLM2(_gar, "postMethodAsync", "addUnit", [_vehUnit]);
+							CALLM2(_gar, "postMethodAsync", "addUnit", [_vehUnit]);
 
-								// Decrease the counter
-								_transportMoreRequired = _transportMoreRequired - (T_efficiency#T_VEH#_subcatID#T_EFF_transport);
+							// Decrease the counter
+							_transportMoreRequired = _transportMoreRequired - (T_efficiency#T_VEH#_subcatID#T_EFF_transport);
 
-								OOP_INFO_2("   Added vehicle unit: %1 %2", _vehUnit, T_NAMES#T_VEH#_subcatID);
-							};
-						} else {
-							OOP_INFO_1("   Max vehicle count at location %1 has been reached, cant add more vehicles!", CALLM0(_loc, "getDisplayName"));
+							OOP_INFO_2("   Added vehicle unit: %1 %2", _vehUnit, T_NAMES#T_VEH#_subcatID);
 						};
+					} else {
+						OOP_INFO_1("   Max vehicle count at location %1 has been reached, cant add more vehicles!", CALLM0(_loc, "getDisplayName"));
 					};
-				} forEach _reinfLocations;
-			};
+				};
+			} forEach _reinfLocations;
 		};
 
 		// Try to spawn more armor
 		if (_armorMoreRequired > 0) then {
 			OOP_INFO_0("  Trying to add more armor");
-			pr _armorTypes = [];
-			
+
 			// Armor types depend on progress
-			if (_progress < 0.3) then {
-				// Only MRAPs at game start
-				_armorTypes = [T_VEH_MRAP_HMG, T_VEH_MRAP_GMG];
-			} else {
-				if (_progress < 0.6) then {
-					// APCs, IFVs, tanks...
-					_armorTypes = [T_VEH_IFV, T_VEH_APC, T_VEH_MBT];
-				} else {
-					// Lots of tanks, some artillery
-					// Although artillery isn't necessary armored in some templates
-					_armorTypes = [T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MBT, T_VEH_MBT, T_VEH_MBT, T_VEH_SPA, T_VEH_MRLS];
-				};
+			pr _armorTypes = [T_VEH_MRAP_HMG, T_VEH_MRAP_GMG];
+			if (_progress > 0.2) then {
+				// APCs, IFVs, tanks...
+				_armorTypes = _armorTypes + [T_VEH_IFV, T_VEH_APC, T_VEH_MBT];
+			};
+			if(_progress > 0.5) then {
+				// Lots of tanks, some artillery
+				// Although artillery isn't necessary armored in some templates
+				_armorTypes = _armorTypes + [T_VEH_MBT, T_VEH_MBT, T_VEH_MBT, T_VEH_MBT, T_VEH_SPA, T_VEH_MRLS];
 			};
 
 			{

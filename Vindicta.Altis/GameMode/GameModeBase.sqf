@@ -538,7 +538,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* protected virtual */ METHOD("initClientOnly") {
 		params [P_THISOBJECT];
 		// Request saved inventory
-		REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
+		#ifndef _SQF_VM
+		if(!isNil "gGameModeServer") then {
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
+		};
+		#endif
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("postInitAll") {
