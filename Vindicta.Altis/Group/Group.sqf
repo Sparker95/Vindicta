@@ -724,7 +724,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				};
 				{
 					pr _className = CALLM0(_x, "getClassName");
-					pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _startPos, _className);
+					pr _posAndDir = CALLSM3("Location", "findSafePosOnRoad", _startPos, _className, 300);
 					CALLM(_x, "spawn", _posAndDir);
 				} forEach _vehUnits;
 			} else {
@@ -735,7 +735,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 					//diag_log format ["--- Finding a pos for a vehicle: %1", _className];
 					if (!CALLSM3("Location", "isPosSafe", _pos, _dir, _className)) then {
 						//diag_log format ["   Provided position is not safe. Finding a safe pos on road"];
-						pr _return = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+						pr _return = CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300);
 						_return params ["_posReturn", "_dirReturn"];
 						CALLM2(_x, "spawn", _posReturn, _dirReturn);
 					} else {
@@ -812,7 +812,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
 			{
 				pr _className = CALLM0(_x, "getClassName");
-				pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+				pr _posAndDir = CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300);
 				CALLM(_x, "spawn", _posAndDir);
 			} forEach _vehUnits;
 

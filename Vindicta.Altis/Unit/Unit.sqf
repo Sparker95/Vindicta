@@ -285,12 +285,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _dirAndUpPrev = _data#UNIT_DATA_ID_VECTOR_DIR_UP;
 			if (_spawnAtPrevPos) then {
 				OOP_INFO_2("  Trying to spawn at prev location: %1, %2", _posATLPrev, _dirAndUpPrev);
-
 				// Ensure that position is safe
-				pr _vectorDir = _dirAndUpPrev#0;
-				pr _dirToCheck = (_vectorDir#0) atan2 (_vectorDir#1);
+				pr _prevPosSafe = if !(_posATLPrev isEqualTo NULL_POSITION) then {
+					pr _vectorDir = _dirAndUpPrev#0;
+					pr _dirToCheck = (_vectorDir#0) atan2 (_vectorDir#1);
 
-				pr _prevPosSafe = CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className);
+					CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className)
+				} else {
+					false 
+				};
+				
 				if (_prevPosSafe) then {
 					_pos = _posATLPrev;
 				} else {
@@ -304,7 +308,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} else {
 						// Otherwise just look for a close by safe position
 						OOP_INFO_1("  Looking for spawn at near desired position: %1", _pos);
-						CALLSM2("Location", "findSafePos", _pos, _className)
+						CALLSM3("Location", "findSafePos", _pos, _className, 400)
 					};
 					_posAndDir params ["_pos0", "_dir0"];
 					_pos = _pos0;

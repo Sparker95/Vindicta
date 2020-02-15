@@ -1300,7 +1300,7 @@ CLASS("Garrison", "MessageReceiverEx");
 				if (_loc == NULL_OBJECT) then {
 					pr _pos = T_CALLM0("getPos");
 					pr _className = CALLM0(_unit, "getClassName");
-					pr _posAndDir = CALLSM2("Location", "findSafePos", _pos, _className);
+					pr _posAndDir = CALLSM3("Location", "findSafePos", _pos, _className, 400);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
 				} else {
 					pr _unitData = CALLM0(_unit, "getMainData");

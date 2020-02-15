@@ -21,7 +21,7 @@ Author: Sparker 29.07.2018
 params [["_thisObject", "", [""]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
 
 //First try to find it in building spawn positions
-private _stAll = GET_VAR(_thisObject, "spawnPosTypes");
+private _stAll = T_GETV("spawnPosTypes");
 
 //Local variables
 private _stCurrent = [];
@@ -122,6 +122,7 @@ else
 
 private _return = 0;
 if(_found) then {//If the spawn position has been found
+	OOP_INFO_3("[Location::getSpawnPos] Found spawn for %1 (%2): %3", [_catID ARG _subcatID ARG _groupType], _className, _return);
 	_return = [_posReturn, _dirReturn];
 } else {
 	//Provide default spawn position
@@ -131,18 +132,18 @@ if(_found) then {//If the spawn position has been found
 		while {_groupType == GROUP_TYPE_PATROL && {GETV(_locToUse, "useParentPatrolWaypoints")}} do {
 			_locToUse = GETV(_locToUse, "parent");
 		};
-		private _r = (0.5 * (GET_VAR(_locToUse, "boundingRadius"))) min 60;
-		private _locPos = GET_VAR(_locToUse, "pos");
-		_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
-		OOP_WARNING_MSG("[Location::getSpawnPos] Warning: spawn position not found for unit: %1. Returning default position.", [_catID ARG _subcatID ARG _groupType]);
+		private _radius = (0.5 * (GETV(_locToUse, "boundingRadius"))) min 60;
+		private _locPos = GETV(_locToUse, "pos");
+		_return = [[_locPos#0 - _radius + random (2 * _radius), _locPos#1 - _radius + random (2 * _radius), 0], random 360];
+		OOP_WARNING_3("[Location::getSpawnPos] Warning: spawn position not found for unit %1 (%2), returning random position %3", [_catID ARG _subcatID ARG _groupType], _className, _return);
 	} else {
 		// Try to find a random safe position on a road for this vehicle
-		private _locPos = GET_VAR(_thisObject, "pos");
-		private _locRadius = GET_VAR(_thisObject, "boundingRadius");
+		private _locPos = T_GETV("pos");
+		private _locRadius = T_GETV("boundingRadius");
 		private _testPos = [_locPos, _locRadius min random [0, 0, _locRadius*5], random 360] call BIS_fnc_relPos;
 		// DUMP_CALLSTACK;
 		// [[[_locPos, _locRadius]],[]] call BIS_fnc_randomPos;
-		_return = CALLSM2("Location", "findSafePosOnRoad", _testPos, _className);
+		_return = CALLSM3("Location", "findSafePosOnRoad", _testPos, _className, 200 max (_locRadius * 2));
 	};
 };
 
