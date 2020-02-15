@@ -195,7 +195,7 @@ CLASS("Storage", "")
 	/* public */	METHOD("save") {
 		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
 		private _result = nil;
-		CRITICAL_SECTION {
+		//CRITICAL_SECTION {
 			_result = call {
 				#ifdef BROADCAST_PROGRESS
 				//diag_log format ["Save: %1", _this];
@@ -281,7 +281,7 @@ CLASS("Storage", "")
 					true
 				};
 			};
-		};
+		//};
 		_result
 	} ENDMETHOD;
 
@@ -305,7 +305,7 @@ CLASS("Storage", "")
 	/* public */	METHOD("load") {
 		params [P_THISOBJECT, P_DYNAMIC("_ref"), P_BOOL("_createNewObject"), P_NUMBER("_specificVersion")];
 		private _result = nil;
-		CRITICAL_SECTION {
+		//CRITICAL_SECTION {
 			_result = call {
 
 				if(_specificVersion != 0) then {
@@ -413,7 +413,7 @@ CLASS("Storage", "")
 					_array select 0
 				};
 			};
-		};
+		//};
 		if (!isNil "_result") then { _result } else { nil }
 	} ENDMETHOD;
 

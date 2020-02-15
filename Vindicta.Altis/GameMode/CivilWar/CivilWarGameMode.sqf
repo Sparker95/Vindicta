@@ -202,6 +202,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected virtual */ METHOD("initClientOnly") {
 		params [P_THISOBJECT];
 
+		CALL_CLASS_METHOD("GameModeBase", _thisObject, "initClientOnly", []);
+		
 		["Game Mode", "Add 10 activity here", {
 			// Call to server to add the activity
 			[[getPos player], {

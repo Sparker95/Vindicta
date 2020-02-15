@@ -497,7 +497,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		}];
 		addMissionEventHandler ["HandleDisconnect", {
 			params ["_unit", "_id", "_uid", "_name"];
-			CALLM3(gGameMode, "savePlayerInfo", _uid, _unit, _name);
+			if(alive _unit) then {
+				CALLM3(gGameMode, "savePlayerInfo", _uid, _unit, _name);
+			};
 			false;
 		}];
 		#endif
@@ -535,7 +537,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	/* protected virtual */ METHOD("initClientOnly") {
 		params [P_THISOBJECT];
-
+		// Request saved inventory
+		REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("postInitAll") {
@@ -1670,23 +1673,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		["setInventory", _arr#3] call _inventoryObj;
 		["delete", _inventoryObj] call OO_INVENTORY;
 	};
-	
+
 	METHOD("savePlayerInfo") {
-		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_unit"), P_STRING("_name")];
+		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_player"), P_STRING("_name")];
 		T_PRVAR(playerInfoArray);
-		private _obj = [_uid, _unit, _name] call GameMode_fnc_getPlayerInfo;
+		private _playerInfo = [_uid, _player, _name] call GameMode_fnc_getPlayerInfo;
 		private _existing = _playerInfoArray findIf {
 			_x#0 isEqualTo _uid
 		};
 		if(_existing == NOT_FOUND) then {
-			_playerInfoArray pushBack _obj;
+			_playerInfoArray pushBack _playerInfo;
 		} else {
-			_playerInfoArray set [_existing, _obj];
+			_playerInfoArray set [_existing, _playerInfo];
 		};
-		diag_log format["Saving player info for %1: %2", name _unit, _obj];
-		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_obj], owner _unit, false);
+		diag_log format["Saving player info for %1: %2", name _player, _playerInfo];
+		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
 	} ENDMETHOD;
-
 
 	METHOD("syncPlayerInfo") {
 		params [P_THISOBJECT, P_OBJECT("_player")];
@@ -1701,7 +1703,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			[]
 		};
 		diag_log format["Syncing player info for %1: %2", name _player, _playerInfo];
-		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_playerInfo], owner _player, NO_JIP);
+		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
 	} ENDMETHOD;
 
 	METHOD("clearPlayerInfo") {
@@ -1714,7 +1716,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(_existing != NOT_FOUND) then {
 			_playerInfoArray deleteAt _existing;
 		};
-		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]], owner _player, false);
+		diag_log format["Clearing player info for %1", name _player];
+		[[], { gPlayerRestoreData = [] }] remoteExecCall ["call", owner _player, NO_JIP];
 	} ENDMETHOD;
 
 	METHOD("getPlayerInfo") {
@@ -1779,27 +1782,34 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
+		
 		// Save message loops
 		{
-			_x params ["_loopName", "_timeout"];
-			private _msgLoop = T_GETV(_loopName);
-			diag_log format ["Saving thread: %1", _loopName];
-			CALLM1(_storage, "save", _msgLoop);
+			CRITICAL_SECTION {
+				_x params ["_loopName", "_timeout"];
+				private _msgLoop = T_GETV(_loopName);
+				diag_log format ["Saving thread: %1", _loopName];
+				CALLM1(_storage, "save", _msgLoop);
+			};
 		} forEach _msgLoops;
 
 		// Save commanders
 		// They will also save their garrisons
 		{
-			private _ai = T_GETV(_x);
-			diag_log format ["Saving Commander AI: %1", _x];
-			CALLM1(_storage, "save", _ai);
+			CRITICAL_SECTION {
+				private _ai = T_GETV(_x);
+				diag_log format ["Saving Commander AI: %1", _x];
+				CALLM1(_storage, "save", _ai);
+			};
 		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 
 		// Save locations
 		{
-			private _loc = _x;
-			diag_log format ["Saving location: %1", _loc];
-			CALLM1(_storage, "save", _loc);
+			CRITICAL_SECTION {
+				private _loc = _x;
+				diag_log format ["Saving location: %1", _loc];
+				CALLM1(_storage, "save", _loc);
+			};
 		} forEach T_GETV("locations");
 
 		T_CALLM1("_saveSpecialGarrisons", _storage);
@@ -1872,11 +1882,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_SETV("savedSpecialGarrisons", []);
 		};
 
-		// Send players their restore points from this save, if they have any
-		{
-			T_CALLM1("syncPlayerInfo", _x);
-		} forEach allPlayers;
-
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
 
@@ -1900,10 +1905,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Load message loops
 		{
-			private _msgLoop = T_GETV(_x);
-			diag_log format ["Loading message loop: %1", _x];
-			CALLM1(_storage, "load", _msgLoop);
-			CALLM0(_msgLoop, "lock"); // We lock the message loops during the game load process
+			CRITICAL_SECTION {
+				private _msgLoop = T_GETV(_x);
+				diag_log format ["Loading message loop: %1", _x];
+				CALLM1(_storage, "load", _msgLoop);
+				CALLM0(_msgLoop, "lock"); // We lock the message loops during the game load process
+			};
 		} forEach	_msgLoops;
 
 		// Set global variables
@@ -1954,16 +1961,20 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Load locations
 		{
-			private _loc = _x;
-			OOP_INFO_1("Loading location: %1", _loc);
-			CALLM1(_storage, "load", _loc);
+			CRITICAL_SECTION {
+				private _loc = _x;
+				OOP_INFO_1("Loading location: %1", _loc);
+				CALLM1(_storage, "load", _loc);
+			};
 		} forEach T_GETV("locations");
 
 		// Load commanders
 		{
-			private _ai = T_GETV(_x);
-			OOP_INFO_1("Loading Commander AI: %1", _x);
-			CALLM1(_storage, "load", _ai);
+			CRITICAL_SECTION {
+				private _ai = T_GETV(_x);
+				OOP_INFO_1("Loading Commander AI: %1", _x);
+				CALLM1(_storage, "load", _ai);
+			};
 		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 
 		// Set global variables
@@ -1989,6 +2000,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Init dynamic simulation
 		T_CALLM0("initDynamicSimulation");
+
+		// Send players their restore points from this save, if they have any
+		{
+			T_CALLM1("syncPlayerInfo", _x);
+		} forEach allPlayers;
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];

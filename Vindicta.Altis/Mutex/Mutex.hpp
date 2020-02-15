@@ -31,23 +31,29 @@ Tries to lock the mutex without blocking. Returns immediately if the mutex is al
 Returns: true if successful, false if the mutex has already been locked
 */
 
-#define MUTEX_TRY_LOCK(mutex) if((mutex pushBackUnique 0) == 0) then {true} else {false}
-#define MUTEX_IS_LOCKED(mutex) (count mutex > 0)
+#define MUTEX_TRY_LOCK(mutex) if(((mutex) pushBackUnique 0) == 0) then {true} else {false}
+#define MUTEX_IS_LOCKED(mutex) (count (mutex) > 0)
 
 // diag_tickTime becomes less accurate the longer a mission is running, so higher timeout value is better for robustness
 #define MUTEX_TRY_LOCK_TIMEOUT(mutex, timeout) \
     [] call { \
-        _timer = diag_tickTime; \
-        _locked = false; \
+        private _timer = diag_tickTime; \
+        private _locked = false; \
         waitUntil { \
-            _locked = (mutex pushBackUnique 0) == 0; \
-            _locked || (diag_tickTime > (_timer + timeout)) \
+            _locked = ((mutex) pushBackUnique 0) == 0; \
+            _locked || {diag_tickTime > (_timer + (timeout))} \
         }; \
         _locked \
     }
 
 #ifndef _SQF_VM
-#define MUTEX_SCOPED_LOCK(mutex) for [{private _runOnce = true; waitUntil {(mutex pushBackUnique 0) == 0}}, {_runOnce}, {mutex deleteAt 0; _runOnce = false}] do
+#define MUTEX_SCOPED_LOCK(mutex) \
+    for [{ \
+            private _runOnce = true; \
+            waitUntil { ((mutex) pushBackUnique 0) == 0 } \
+        }, \
+        { _runOnce }, \
+        { (mutex) deleteAt 0; _runOnce = false }] do
 #else
 #define MUTEX_SCOPED_LOCK(mutex) call
 #endif 

@@ -77,8 +77,7 @@ CLASS(CLASS_NAME, "")
 
 	// Respawn panel
 	VARIABLE("respawnPanelEnabled");
-	// If a restore point is available for the player
-	VARIABLE("playerRestoreData");
+
 	// Last place the player respawned
 	VARIABLE("lastRespawnPos");
 
@@ -124,7 +123,6 @@ CLASS(CLASS_NAME, "")
 
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
-		T_SETV("playerRestoreData", []);
 
 		T_SETV("lastRespawnPos", []);
 
@@ -350,7 +348,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 
 	STATIC_METHOD("setPlayerRestoreData") {
 		params ["_thisClass", "_playerRestoreData"];
-		SETV(gClientMapUI, "playerRestoreData", _playerRestoreData);
+		gPlayerRestoreData = _playerRestoreData;
 	} ENDMETHOD;
 
 	/*
@@ -1968,7 +1966,7 @@ Gets called from "onMapDraw"
 		// If player has clicked this button, then it must be enabled
 		// If it's enabled, then respawn is possible here
 
-		pr _restoreGear = T_GETV("playerRestoreData");
+		pr _restoreGear = gPlayerRestoreData;
 		pr _locMarkers = T_GETV("selectedLocationMarkers");
 
 		pr _loc = if (count _locMarkers != 0) then {
@@ -2029,7 +2027,7 @@ Gets called from "onMapDraw"
 
 			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
 			
-			pr _canRestore = !(T_GETV("playerRestoreData") isEqualTo []);
+			pr _canRestore = !isNil "gPlayerRestoreData" && {!(gPlayerRestoreData isEqualTo [])};
 
 			if(_canRestore) then {
 				_ctrlButton ctrlSetText "RESTORE";
@@ -2139,3 +2137,7 @@ Gets called from "onMapDraw"
 	} ENDMETHOD;
 
 ENDCLASS;
+
+if(isNil "gPlayerRestoreData") then {
+	gPlayerRestoreData = [];
+};
