@@ -528,9 +528,9 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 			T_CALLM1("setHintText", _progressHint);
 		} else {
 			if(call misc_fnc_isAdminLocal) then {
-				T_CALLM1("setHintText", "Game not initialized: press U and create or load a game");
+				T_CALLM1("setHintText", "Game not initialized: Press U and create or load a game.");
 			} else {
-				T_CALLM1("setHintText", "Game not initialized: wait for admin to create or load the game");
+				T_CALLM1("setHintText", "Game not initialized: Wait for admin to create or load a game.");
 			};
 		};
 
@@ -538,19 +538,19 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
 
 		if (T_GETV("garActionLBShown")) exitWith {
-			T_CALLM1("setHintText", "Select the order to give to this garrison");
+			T_CALLM1("setHintText", "Select the order to give to this garrison.");
 		};
 
 		if (T_GETV("givingOrder")) exitWith {
-			T_CALLM1("setHintText", "Left-click on the map to set destination");
+			T_CALLM1("setHintText", "Left-click on the map to set destination.");
 		};
 		
 		if (T_GETV("garSplitDialog") != "") exitWith {
-			T_CALLM1("setHintText", "Choose composition of the new garrison on the right column and push the 'Split' button");
+			T_CALLM1("setHintText", "Choose composition of the new garrison on the right column and push the 'Split' button.");
 		};
 
 		if (count _selectedGarrisons >= 1) exitWith {
-			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison");
+			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison.");
 		};
 
 		pr _idc = T_GETV("currentControlIDC");
@@ -2065,7 +2065,7 @@ Gets called from "onMapDraw"
 				// Bail if respawn is disabled
 				if (!CALLM1(_loc, "playerRespawnEnabled", playerSide)) exitWith {
 					// Respawn is disabled here through location's methods
-					T_CALLM1("respawnPanelSetText", "Respawn is disabled here");
+					T_CALLM1("respawnPanelSetText", "Respawn is disabled here.");
 					_ctrlButton ctrlEnable false;
 				};
 

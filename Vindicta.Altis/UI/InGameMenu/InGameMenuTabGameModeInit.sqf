@@ -196,7 +196,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Bail if incompatible template was selected
 		if (!_templatesGood) exitWith {
-			CALLM1(_dialogObj, "setHintText", "ERROR: You must select factions which have all the addons loaded on the server");
+			CALLM1(_dialogObj, "setHintText", "ERROR: You must select factions which have all the addons loaded on the server.");
 		};
 
 		// Send data to server's GameManager
