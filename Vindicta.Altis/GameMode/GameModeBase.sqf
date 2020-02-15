@@ -1074,24 +1074,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		CALLSM0("Location", "registerBuildingClasses");
 
-		// Get the list of military buildings if defined
-		private _militaryBuildingsMarkers = (allMapMarkers select {(tolower _x) find "military_buildings" == 0});
-		gMilitaryBuildingModels = [];
-		gMilitaryBuildingTypes = [];
-		{
-			private _pos = markerPos _x;
-			private _size = markerSize _x;
-			private _radius = sqrt (_size#0 * _size#0 + _size#1 * _size#1);
-			{
-				private _objectName = str _x;
-				private _modelName = _objectName select [(_objectName find ": ") + 2];
-				gMilitaryBuildingModels pushBackUnique _modelName;
-				gMilitaryBuildingTypes pushBackUnique (typeOf _x);
-				deleteVehicle _x;
-			} forEach (_pos nearObjects ["Building", _radius]);
-			deleteMarker _x;
-		} forEach _militaryBuildingsMarkers;
-
 		// Array of positions
 		// These positions have very high priority if map maker has placed them. We will not delete them.
 		private _predefinedRoadblockPositions = [];

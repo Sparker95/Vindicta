@@ -3,6 +3,8 @@
 
 #define pr private
 
+// #define DEBUG_BUILDING
+
 params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);
@@ -19,10 +21,15 @@ pr _timer = T_GETV("timer");
 
 // Update build progress every 15 mins or so
 private _lastBuildProgressTime = T_GETV("lastBuildProgressTime");
+#ifdef DEBUG_BUILDING
+T_SETV("lastBuildProgressTime", TIME_NOW);
+T_CALLM0("updateBuildProgress");
+#else
 if(TIME_NOW - _lastBuildProgressTime > 15 * 60) then {
 	T_SETV("lastBuildProgressTime", TIME_NOW);
 	T_CALLM0("updateBuildProgress");
 };
+#endif
 
 
 switch (T_GETV("spawned")) do {

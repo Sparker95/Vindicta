@@ -259,12 +259,15 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
+
+		OOP_INFO_3("Finding buildables for %1 with radius %2 at %3", T_GETV("name"), _radius, _locPos);
+
 		private _buildables = [];
 #ifndef _SQF_VM
 		{
 			_object = _x;
 			private _objectName = str _object;
-			private _modelName = _objectName select [(_objectName find " ") + 1];
+			private _modelName = _objectName select [(_objectName find ": ") + 2];
 			if(T_CALLM1("isInBorder", _object) && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
 			{
 				_buildables pushBackUnique _object;
@@ -274,10 +277,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_buildables = _buildables call BIS_fnc_arrayShuffle;
 #endif
 		// Sort objects by height above ground (to nearest 20cm) so we can build from the bottom up
-		private _objectHeights = _buildables apply { [(floor ((getPos _x)#2 * 5)) / 5, _x]};
+		private _objectHeights = _buildables apply { 
+			private _zHeight = 0 max (getPosATL _x)#2;
+			// alias height at 1/3 m
+			[(floor (_zHeight * 3)) / 3, _x]
+		};
 		_objectHeights sort ASCENDING;
 		private _sortedObjects = _objectHeights apply { _x#1 };
 		T_SETV("buildableObjects", _sortedObjects);
+
+		OOP_INFO_2("Buildables for %1: %2", T_GETV("name"), _sortedObjects);
 		T_CALLM0("updateBuildProgress");
 	} ENDMETHOD;
 
@@ -313,12 +322,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			_buildProgress = 0 max (_buildProgress + BUILD_RATE(_enemyUnits, 0.25)) min 1;
 		};
 
-		OOP_INFO_2("UpdateBuildProgress: %1 %2", T_GETV("name"), _buildProgress);
+		OOP_INFO_3("UpdateBuildProgress: %1 %2 %3", T_GETV("name"), _buildProgress, _buildables);
 
 		T_SETV_PUBLIC("buildProgress", _buildProgress);
 
 		// Only update the actual building of no garrisons are spawned here
-		if((T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND) then {
+		if(count _buildables > 0 && {(T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND}) then {
+			OOP_INFO_2("UpdateBuildProgress: updaing buildable states %1 %2", T_GETV("name"), _buildables);
 			{	
 				private _hideObj = ((_forEachIndex + 1) / count _buildables) > _buildProgress;
 				if((isObjectHidden _x) isEqualTo (!_hideObj)) then
@@ -1412,8 +1422,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	STATIC_METHOD("registerBuildingClasses") {
 		params [P_THISCLASS];
+
 		// Get the list of military buildings if defined
 		private _militaryBuildingsMarkers = (allMapMarkers select {(tolower _x) find "military_buildings" == 0});
+		OOP_INFO_1("initLocations: military building registration for markers %1", _militaryBuildingsMarkers);
 		gMilitaryBuildingModels = [];
 		gMilitaryBuildingTypes = [];
 		{
@@ -1425,6 +1437,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				private _modelName = _objectName select [(_objectName find ": ") + 2];
 				gMilitaryBuildingModels pushBackUnique _modelName;
 				gMilitaryBuildingTypes pushBackUnique (typeOf _x);
+				OOP_INFO_2("initLocations: registering model %1, type %2", _modelName, typeOf _x);
 				deleteVehicle _x;
 			} forEach (_pos nearObjects ["Building", _radius]);
 			deleteMarker _x;
