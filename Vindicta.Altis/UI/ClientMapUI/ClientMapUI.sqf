@@ -818,7 +818,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			case "split" : {
 				if (T_GETV("garSplitDialog") == "") then {
 					pr _garSplitDialog = CALLSM1("GarrisonSplitDialog", "newInstance", _garRecord);
-					T_SETV("garSplitDialog", _garSplitDialog);					
+					T_SETV("garSplitDialog", _garSplitDialog);
 				};
 				// Abort giving order if we were giving order
 				if (T_GETV("givingOrder")) then {

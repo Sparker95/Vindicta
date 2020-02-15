@@ -1805,20 +1805,24 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
-		// Check if there are still enemy forces here
+		// Check if there are still much enemy forces here
 		pr _thisSide = T_GETV("side");
 		CALLM0(gMessageLoopMain, "lock");
-		pr  _garsEnemy = CALLM0(_loc, "getGarrisons") select {
+
+		pr _enemies = 0;
+		{
+			_enemies = _enemies + _x;
+		} forEach (CALLM0(_loc, "getGarrisons") select {
 			pr _side = CALLM0(_x, "getSide");
-			_side != _thisSide
-			&& _side != CIVILIAN
-			&& (CALLM0(_x, "countInfantryUnits") > 0)
-		};
+			_side != _thisSide && _side != CIVILIAN
+		} apply {
+			CALLM0(_x, "countInfantryUnits")
+		});
 		CALLM0(gMessageLoopMain, "unlock");
 
 		// Bail if this place is still occupied by enemy
-		if (count _garsEnemy > 0) exitWith {
-			pr _args = ["We can't capture this place because enemies still control it!"];
+		if (_enemies > 4) exitWith {
+			pr _args = ["We can't capture this place because too many enemies still remain alive in the area!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 

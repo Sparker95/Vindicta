@@ -56,11 +56,11 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_COMBO_LOC_TYPE");
 			OOP_INFO_1("COMBO CTRL: %1", ctrlClassName _ctrl);
 			_ctrl lbAdd "Camp";
-			_ctrl lbAdd "Outpost";
 			_ctrl lbAdd "Roadblock";
 			_ctrl lbSetData [0, LOCATION_TYPE_CAMP];
-			_ctrl lbSetData [1, LOCATION_TYPE_OUTPOST];
-			_ctrl lbSetData [2, LOCATION_TYPE_ROADBLOCK];
+			_ctrl lbSetData [1, LOCATION_TYPE_ROADBLOCK];
+			//_ctrl lbAdd "Outpost";
+			//_ctrl lbSetData [1, LOCATION_TYPE_OUTPOST];
 
 			// set default selection to camp
 			_ctrl lbSetCurSel 0;
