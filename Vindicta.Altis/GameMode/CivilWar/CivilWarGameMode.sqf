@@ -621,9 +621,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		} else {
 			// If the location is spawned and there are twice as many friendly as enemy units then it is liberated, otherwise it is suppressed
 			if(CALLM(_city, "isSpawned", [])) then {
-				private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
-				private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
-				_state = if(_friendlyCount > _enemyCount * 2) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
+				private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {(_x distance _cityPos) < _cityRadius * 1.5});
+				private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {(_x distance _cityPos) < _cityRadius * 1.5});
+				_state = if(_friendlyCount >= _enemyCount * 2) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
 			} else {
 				// If there is an enemy garrison occupying the city then it is suppressed
 				_state = if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) == 0) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
