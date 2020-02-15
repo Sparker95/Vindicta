@@ -192,11 +192,11 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 		// Ensure proper input
 		if (count _locName == 0) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must specify a proper name");
+			CALLM1(_dialogObj, "setHintText", "You must specify a proper name.");
 		};
 
 		if (_row < 0) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must select a location type");
+			CALLM1(_dialogObj, "setHintText", "You must select a location type.");
 		};
 
 		// Send data to cmdr at the server

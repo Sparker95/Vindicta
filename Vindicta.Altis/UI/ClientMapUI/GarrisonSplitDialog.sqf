@@ -605,11 +605,11 @@ CLASS("GarrisonSplitDialog", "")
 			switch (_responseCode) do {
 			// Garrison is destroyed
 			case 11: {
-				systemChat "Error: garrison is destroyed";
+				systemChat "Error: Garrison is destroyed.";
 			};
 			case 22: {
 				// It's a success
-				systemChat "Garrison was split successfully";
+				systemChat "Garrison was split successfully.";
 			};
 		};
 		};
@@ -620,11 +620,11 @@ CLASS("GarrisonSplitDialog", "")
 		switch (_responseCode) do {
 			// Garrison is destroyed
 			case 11: {
-				T_CALLM1("setHintText", "Error: garrison is destroyed");
+				T_CALLM1("setHintText", "Error: Garrison is destroyed.");
 			};
 			case 22: {
 				// It's a success
-				T_CALLM1("setHintText", "Garrison was split successfully");
+				T_CALLM1("setHintText", "Garrison was split successfully.");
 				systemChat "Garrison was split successfully";
 				//CALLSM0("GarrisonSplitDialog", "deleteInstance"); no let's rather not auto-close it, because we might have opened another dialog already
 			};
