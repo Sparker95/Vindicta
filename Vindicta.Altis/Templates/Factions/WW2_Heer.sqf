@@ -62,8 +62,8 @@ _veh set [T_VEH_car_unarmed, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_serny
 _veh set [T_VEH_car_armed, ["R71Ger44Camo", "R71Ger44", "R71GerPre43", "LIB_ger_M3_Scout_IFL", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
-_veh set [T_VEH_MRAP_HMG, ["ifa3_Ba10_wm", "LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
-_veh set [T_VEH_MRAP_GMG, ["ifa3_Ba10_wm", "LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
+_veh set [T_VEH_MRAP_HMG, ["R71Ger44Camo", "R71Ger44", "R71GerPre43", "LIB_ger_M3_Scout_IFL", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
+_veh set [T_VEH_MRAP_GMG, ["R71Ger44Camo", "R71Ger44", "R71GerPre43", "LIB_ger_M3_Scout_IFL", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
 
 _veh set [T_VEH_IFV, ["ifa3_Ba10_wm", "LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
 _veh set [T_VEH_APC, ["LIB_GER_M3_Halftrack", "LIB_SdKfz_7", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
