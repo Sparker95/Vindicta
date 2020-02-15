@@ -414,6 +414,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("updateBuildProgress") {
 		params [P_THISOBJECT];
 
+		if !(T_GETV("type") in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) exitWith {};
+
 		private _buildables = T_GETV("buildableObjects");
 		private _buildProgress = T_GETV("buildProgress");
 

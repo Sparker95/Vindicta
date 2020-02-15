@@ -1143,13 +1143,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Create a new location
 			private _args = [_locSectorPos, CIVILIAN]; // Location created by noone
 			private _loc = NEW_PUBLIC("Location", _args);
-			CALLM1(_loc, "initFromEditor", _locSector);
 			CALLM1(_loc, "setName", _locName);
 			CALLM1(_loc, "setSide", _side);
 			CALLM1(_loc, "setType", _locType);
 			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
 			//CALLM1(_loc, "setCapacityInf", _locCapacityInf); // capacityInf is calculated from actual buildings
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
+			CALLM1(_loc, "initFromEditor", _locSector);
 
 			// Create police stations in cities
 			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or _locCapacityCiv > 25)) then {

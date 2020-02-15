@@ -646,7 +646,7 @@ switch _mode do {
 
 				// We can load upto _max - jnva_loadout_mass mass items
 				pr _availMass = _max - jnva_loadout_mass;
-				pr _itemMass = ["getMassItem",[_item,1,_index]] call jn_fnc_arsenal_container;
+				pr _itemMass = (["getMassItem",[_item,_count,_index]] call jn_fnc_arsenal_container) / _count;
 				pr _maxItems = floor (_availMass / _itemMass);
 				//_mass = jnva_loadout_mass + (["getMassItem",[_item,_count,_index]] call jn_fnc_arsenal_container);
 				//if(_mass <= _max)then{

@@ -44,7 +44,7 @@ class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 	y = safeZoneY + safeZoneH * 0.454; 
 	w = safeZoneW * 0.230; 
 	h = safeZoneH * 0.029;
-	text = "SHOW ACTIVE ACTIONS"; 
+	text = "SHOW STARTED ACTIONS"; 
 
 };
 
@@ -55,7 +55,7 @@ class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 	y = safeZoneY + safeZoneH * 0.485;  
 	w = safeZoneW * 0.230; 
 	h = safeZoneH * 0.029; 
-	text = "SHOW INACTIVE ACTIONS"; 
+	text = "SHOW PLANNED ACTIONS"; 
 
 };
 

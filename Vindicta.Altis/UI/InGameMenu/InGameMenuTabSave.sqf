@@ -119,6 +119,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			DESERIALIZE_ALL(_header, _headerSerial);
 			[_recordName, _header, _errors];
 		};
+		// They are in order of when they were created so reverse them so we get newest at the top
+		reverse _recordDataLocal;
 
 		T_CALLM0("clearRecordData");
 		T_SETV("recordData", _recordDataLocal);
@@ -148,9 +150,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			_lnbSavedGames lnbSetValue [[_row, 0], GETV(_header, "saveID")];
 			_lnbSavedGames lnbSetData [[_row, 0], str _row]; // Set data to index of this record
 		} forEach T_GETV("recordData");
-
-		// Sort by save ID
-		_lnbSavedGames lnbSortByValue [0, true];
 
 		// Select something
 		if (count T_GETV("recordData") > 0) then {

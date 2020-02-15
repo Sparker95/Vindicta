@@ -336,6 +336,11 @@ if(hasInterface)then{
 				UINamespace setVariable ["jn_type",""];
             };
 
+			//remove missing item message
+			titleText["", "PLAIN"];
+			//remove hint message
+			"arsenal_usage_hint" cutFadeOut 0;
+
 			diag_log format["JNC arsenalClosed: %1", _this];
         }] call BIS_fnc_addScriptedEventHandler;
     };
