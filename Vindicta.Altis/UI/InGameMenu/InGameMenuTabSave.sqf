@@ -210,6 +210,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		OOP_INFO_1("Sending request to overwrite saved game: %1", _recordName);
 		pr _args = [clientOwner, _recordName];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientOverwriteSavedGame", _args);
+
+		// Close in game menu after overwriting
+		CALLM0(gInGameMenu, "close");
 	} ENDMETHOD;
 
 	METHOD("onButtonOverwriteSavedGame") {
