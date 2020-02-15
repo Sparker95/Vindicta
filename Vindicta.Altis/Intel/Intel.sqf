@@ -584,7 +584,7 @@ CLASS("IntelCommanderAction", "Intel")
 		params [P_THISOBJECT];
 		pr _t = T_CALLM0("getTMinutes");
 		// T, Hours, Minutes, bool Future
-		[_t, abs floor (_t / 60), abs floor (_t % 60), _t < 0];
+		[_t, floor (abs _t / 60), abs floor (abs _t % 60), _t < 0];
 	} ENDMETHOD;
 
 	/*
