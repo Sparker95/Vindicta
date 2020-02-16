@@ -64,8 +64,8 @@ _veh set [T_VEH_car_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 _veh set [T_VEH_car_armed, ["LIB_UK_Willys_MB_M1919", "LIB_usa_M3_Scout_FFV"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
-_veh set [T_VEH_MRAP_HMG, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack"]];
-_veh set [T_VEH_MRAP_GMG, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack"]];
+_veh set [T_VEH_MRAP_HMG, ["LIB_UK_Willys_MB_M1919", "LIB_usa_M3_Scout_FFV"]];
+_veh set [T_VEH_MRAP_GMG, ["LIB_UK_Willys_MB_M1919", "LIB_usa_M3_Scout_FFV"]];
 
 _veh set [T_VEH_IFV, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_APC, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
