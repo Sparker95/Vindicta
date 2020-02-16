@@ -49,7 +49,7 @@ class BuildObjects
 
 		class CatMedical {
 			displayName = "Medical";
-			#define __TENT_BIG_MEDICAL_COST 40
+			#define __TENT_BIG_MEDICAL_COST 60
 
 			// plain brown
 			__BUILD_OBJECT_CLASS(Tent0,Land_MedicalTent_01_NATO_generic_outer_F, __TENT_BIG_MEDICAL_COST)
@@ -73,25 +73,25 @@ class BuildObjects
 			// Note that we have increased capacity of these boxes through the addon 
 			class Box0 : BuildObjectBase {
 				className = "Box_FIA_Support_F";
-				buildResource = 20;
+				buildResource = 40;
 				templateCatID = 3;
 				templateSubcatID = 2;
 			};
 			class Box1 : BuildObjectBase {
 				className = "Box_Syndicate_Ammo_F";
-				buildResource = 10;
+				buildResource = 20;
 				templateCatID = 3;
 				templateSubcatID = 1;
 			};
 			class Box2 : BuildObjectBase {
 				className = "I_supplyCrate_F";
-				buildResource = 20;
+				buildResource = 40;
 				templateCatID = 3;
 				templateSubcatID = 2;
 			};
 			class Box3 : BuildObjectBase {
 				className = "B_CargoNet_01_ammo_F";
-				buildResource = 40;
+				buildResource = 80;
 				templateCatID = 3;
 				templateSubcatID = 3;
 			};
@@ -126,23 +126,27 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(Defense3,Land_HBarrierTower_F, 40)
 
 			// cheap makeshift barriers
-			__BUILD_OBJECT_CLASS(Defense4,Land_SandbagBarricade_01_hole_F, 10)
-			__BUILD_OBJECT_CLASS(Defense5,Land_SandbagBarricade_01_F, 10)
-			__BUILD_OBJECT_CLASS(Defense6,Land_SandbagBarricade_01_half_F, 10)
-			__BUILD_OBJECT_CLASS(Defense7,Land_Barricade_01_10m_F, 20)
-			__BUILD_OBJECT_CLASS(Defense8,Land_Barricade_01_4m_F, 10)
-			
+			__BUILD_OBJECT_CLASS(Defense4,Land_SandbagBarricade_01_hole_F, 40)
+			__BUILD_OBJECT_CLASS(Defense5,Land_SandbagBarricade_01_F, 40)
+			__BUILD_OBJECT_CLASS(Defense6,Land_SandbagBarricade_01_half_F, 40)
+			__BUILD_OBJECT_CLASS(Defense7,Land_Barricade_01_10m_F, 40)
+			__BUILD_OBJECT_CLASS(Defense8,Land_Barricade_01_4m_F, 40)
 
 			// dirt mound
-			__BUILD_OBJECT_CLASS(Defense9,Dirthump_1_F, 20)
+			__BUILD_OBJECT_CLASS(Defense9,Dirthump_1_F, 60)
 
 			// razorwire
 			__BUILD_OBJECT_CLASS(Defense10,Land_Razorwire_F, 10)
 
 			// garbage
-			__BUILD_OBJECT_CLASS(Defense11,Land_ConcretePipe_F, 10)
+			__BUILD_OBJECT_CLASS(Defense11,Land_ConcretePipe_F, 20)
 			__BUILD_OBJECT_CLASS(Defense12,Land_Bricks_V4_F, 10)
 			__BUILD_OBJECT_CLASS(Defense13,Land_Timbers_F, 10)
+
+			__BUILD_OBJECT_CLASS(Defense14,Land_CncBarrier_F, 20)
+			__BUILD_OBJECT_CLASS(Defense15,Land_CncBarrierMedium_F, 40)
+			__BUILD_OBJECT_CLASS(Defense16,Land_CncBarrierMedium4_F, 60)
+			__BUILD_OBJECT_CLASS(Defense17,Land_CncBarrier_stripes_F, 20)
 		
 		};
 
@@ -163,6 +167,29 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(TargetR7,Land_Wreck_Van_F, 60)
 			__BUILD_OBJECT_CLASS(TargetR8,Land_Wreck_Truck_dropside_F, 60)
 			__BUILD_OBJECT_CLASS(TargetR9,Land_Wreck_BMP2_F, 80)
+
+		};
+
+		class BuildingsA {
+			displayName = "Buildings";
+			
+			// towers and bunkers
+			__BUILD_OBJECT_CLASS(Buildings0,Land_GuardTower_01_F, 160)
+			__BUILD_OBJECT_CLASS(Buildings1,Land_BagBunker_Large_F, 160)
+			__BUILD_OBJECT_CLASS(Buildings3,Land_BagBunker_Small_F, 80)
+			__BUILD_OBJECT_CLASS(Buildings4,Land_BagBunker_Tower_F, 160)
+			__BUILD_OBJECT_CLASS(Buildings5,Land_Cargo_Patrol_V2_F, 120)
+
+		};
+
+		class Concealment {
+			displayName = "Concealment";
+			
+			// towers and bunkers
+			__BUILD_OBJECT_CLASS(ConcealM0,Land_Wall_Tin_4_2, 10)
+			__BUILD_OBJECT_CLASS(ConcealM1,Land_Wall_Tin_4, 10)
+			__BUILD_OBJECT_CLASS(ConcealM2,Land_TinWall_02_l_4m_F, 10)
+			__BUILD_OBJECT_CLASS(ConcealM3,Land_TinWall_02_l_8m_F, 20)
 
 		};
 
