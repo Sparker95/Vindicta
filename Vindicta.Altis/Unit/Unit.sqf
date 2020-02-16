@@ -975,7 +975,8 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 											["ACE_EarPlugs",20],
 											["ACE_Kestrel4500",2],
 											["ACE_ATragMX",6],
-											["ACE_RangeCard",6]
+											["ACE_RangeCard",6],
+											["vin_build_res_0", 8]
 										];
 						{
 							_x params ["_itemName", "_itemCount"];
