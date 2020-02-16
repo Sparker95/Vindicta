@@ -1515,10 +1515,9 @@ CLASS("AICommander", "AI")
 		} else {
 			pr _locPos = CALLM0(_loc, "getPos");
 			// Create a new garrison and register it
-			_gar = NEW("Garrison", [_side ARG _locPos]);
+			pr _gar = NEW("Garrison", [_side ARG _locPos]);
 			CALLM0(_gar, "activate");
 			CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
-			_activate = true;
 			_gar
 		};
 
@@ -1529,7 +1528,7 @@ CLASS("AICommander", "AI")
 		pr _t = [_templateName] call t_fnc_getTemplate;
 
 		CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_rifle_squad);
-		CALLM2(_gar, "postMethodAsync", "addGroup", _group);
+		CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
 
 		// That's all!
 	} ENDMETHOD;
