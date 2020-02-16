@@ -1862,10 +1862,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			OOP_ERROR_0("Game mode must be loaded on server only!");
 		};
 
-		// Delete editor's special objects
-		CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
-		// CALLSM0("Location", "deleteEditorObjects");
-
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
@@ -1986,6 +1982,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Refresh locations
 		CALLSM0("Location", "postLoad");
+
+		// Delete editor's special objects, after all initialization is complete
+		//CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
+		// CALLSM0("Location", "deleteEditorObjects");
 
 		// Unlock all message loops
 		{
