@@ -34,7 +34,7 @@ if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_ind
 			
 			//update
 			["UpdateItemAdd",[_index, _item, _amount, _object]] remoteExecCall ["jn_fnc_arsenal",_playersInArsenal];
-
+			OOP_INFO_3("Adding item %1, index %2: %1, amount: %3", _item, _index, _amount);
 		};
 	} forEach _x;
 }foreach _array;
