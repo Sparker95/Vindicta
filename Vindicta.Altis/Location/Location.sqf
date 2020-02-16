@@ -211,6 +211,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("findAllObjects") {
 		params [P_THISOBJECT];
 
+		OOP_DEBUG_1("findAllObjects for %1", T_GETV("name"));
+
 		// Setup marker allowed areas
 		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0}) select {
 			T_CALLM1("isInBorder", markerPos _x)
@@ -253,41 +255,47 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				//A truck's position defined the position for tracked and wheeled vehicles
 				if(_type == "B_Truck_01_transport_F") then {
 					private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_NON_STATIC], getPosATL _object, direction _object, objNull];
-					CALL_METHOD(_thisObject, "addSpawnPos", _args);
+					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
 				};
 
 				//A mortar's position defines the position for mortars
 				if(_type == "B_Mortar_01_F") then {
 					private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
-					CALL_METHOD(_thisObject, "addSpawnPos", _args);
+					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
 				};
 
 				//A low HMG defines a position for low HMGs and low GMGs
 				if(_type == "B_HMG_01_F") then {
 					private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
-					CALL_METHOD(_thisObject, "addSpawnPos", _args);
+					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
 				};
 
 				//A high HMG defines a position for high HMGs and high GMGs
 				if(_type == "B_HMG_01_high_F") then {
 					private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
-					CALL_METHOD(_thisObject, "addSpawnPos", _args);
+					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
 				};
 
 				// A cargo container defines a position for cargo boxes
 				if (_type == "B_Slingload_01_Cargo_F") then {
 					private _args = [T_PL_cargo, [GROUP_TYPE_IDLE], getPosATL _object, direction _object, objNull];
-					CALL_METHOD(_thisObject, "addSpawnPos", _args);
+					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
 				};
 				
 				// Process buildings
 				if (_type isKindOf "House") then {
 					T_CALLM1("addObject", _object);
+					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 				};
 
 				if(_type == "Flag_BI_F") then {
@@ -1624,7 +1632,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("spawned", false);
 		T_SETV_PUBLIC("alarmDisabled", false);
 
-		// Load objects which we own
 		pr _gmData = T_GETV("gameModeData");
 		if (!IS_NULL_OBJECT(_gmData)) then {
 			CALLM1(_storage, "load", _gmData);
