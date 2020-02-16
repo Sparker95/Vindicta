@@ -153,6 +153,59 @@ pr0_fnc_toggleMarkers = {
 	} ] remoteExec ["call", 2];
 }] call pr0_fnc_addDebugMenuItem;
 
+["Location", "Add 20 recruits to city", {
+	private _pos = getPos player;
+	[[_pos], {
+		params ["_pos"];
+
+		// get location at player position
+		
+		private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
+		
+		if (_loc != "") then { 	
+
+				private _recruits = 20;
+				private _gmdata = GETV(_loc, "gameModeData");
+				CALLM2(_gmdata, "addRecruits", _loc, _recruits);
+				systemChat "Added 20 recruits to current location.";
+
+		} else {
+			systemChat "Invalid location.";
+		};
+
+	} ] remoteExec ["call", 2];
+}] call pr0_fnc_addDebugMenuItem;
+
+["BuildUI", "1 ConRes > cursorObject", {
+
+		private _cursorObj = cursorObject;
+
+		if !(isNil "_cursorObj") then {
+
+			_cursorObj addMagazineCargo ["vin_build_res_0", 1];
+			systemChat "Added 1 construction resource to cursorObject.";
+
+		} else {
+			systemChat "Not looking at an object.";
+		};
+		
+}] call pr0_fnc_addDebugMenuItem;
+
+["BuildUI", "100 ConRes > cursorObject", {
+
+		private _cursorObj = cursorObject;
+
+		if !(isNil "_cursorObj") then {
+
+			_cursorObj addMagazineCargo ["vin_build_res_0", 100];
+			systemChat "Added 100 construction resource to cursorObject.";
+
+		} else {
+			systemChat "Not looking at an object.";
+		};
+		
+}] call pr0_fnc_addDebugMenuItem;
+
 #else
 
 pr0_fnc_addDebugMenuItem = {};
