@@ -5,6 +5,7 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 #include "..\OOP_Light\OOP_Light.h"
+#define OFSTREAM_FILE "JeroenArsenal.rpt"
 
 #define ERROR_JN_6(A,B,C,D,E,F) diag_log format["JN_ERROR: ,%1,%2,%3,%4,%5,%6",A,B,C,D,E,F]
 #define ERROR_JN_5(A,B,C,D,E) diag_log format["JN_ERROR: ,%1,%2,%3,%4,%5",A,B,C,D,E]
@@ -12,10 +13,6 @@
 #define ERROR_JN_3(A,B,C) diag_log format["JN_ERROR: ,%1,%2,%3",A,B,C]
 #define ERROR_JN_2(A,B) diag_log format["JN_ERROR: ,%1,%2",A,B]
 #define ERROR_JN_1(A) diag_log format["JN_ERROR: ,%1",A]
-
-
-
-
 
 #define pr private// Sparker Pr(ivate)© all rights resevered 
 
