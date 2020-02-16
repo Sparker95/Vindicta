@@ -9,7 +9,7 @@
 
 #define pr private
 
-#define CREATE_LOCATION_COST 200
+#define CREATE_LOCATION_COST 60
 
 CLASS("InGameMenuTabCommander", "DialogTabBase")
 
@@ -46,8 +46,14 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			// Tab headline
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_CREATE_A_LOCATION");
 			_ctrl ctrlSetText "Create a location";
+
 			// Build resource cost
 			pr _buildResCost = CREATE_LOCATION_COST;
+			pr _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+			_buildResCost = 80 * (exp (1 + _progress));
+			if (_progress < 0.04) then { _buildResCost = CREATE_LOCATION_COST; };
+			_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
+
 			T_SETV("buildResourcesCost", _buildResCost);
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_BUILD_RESOURCES");
 			_ctrl ctrlSetText (format ["%1 construction resources", _buildResCost]);
@@ -138,6 +144,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 				pr _borderLinearSize = sqrt _borderArea;
 				pr _buildResPerSize = CREATE_LOCATION_COST / (sqrt (3.14*50*50)); // We require CREATE_LOCATION_COST build res for a circle with 50 meter radius
 				_buildResCost = _borderLinearSize * _buildResPerSize;
+				pr _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 				_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
 			};
 			

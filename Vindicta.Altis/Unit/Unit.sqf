@@ -976,7 +976,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 											["ACE_Kestrel4500",2],
 											["ACE_ATragMX",6],
 											["ACE_RangeCard",6],
-											["vin_build_res_0", 8]
+											["vin_build_res_0", 10]
 										];
 						{
 							_x params ["_itemName", "_itemCount"];
