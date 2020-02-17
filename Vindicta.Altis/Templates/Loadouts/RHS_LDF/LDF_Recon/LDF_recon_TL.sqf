@@ -7,8 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomUniform = selectRandom ["U_O_R_Gorka_01_F", "U_O_R_Gorka_01_brown_F"];
-this addUniform _RandomUniform;
+this forceAddUniform "U_O_R_Gorka_01_F";
 _RandomHeadgear = selectRandom ["rhssaf_booniehat_digital", "rhssaf_bandana_digital", "rhs_beanie_green", "H_MilCap_grn"];
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["G_Bandanna_khk", "G_Bandanna_oli", "" ];

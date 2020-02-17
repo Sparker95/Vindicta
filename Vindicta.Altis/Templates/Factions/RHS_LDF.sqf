@@ -22,7 +22,7 @@ _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["I_E_Soldier_F"]];
 
-_inf set [T_INF_SL, ["RHS_LDF_SL"]];
+_inf set [T_INF_SL, ["RHS_LDF_SL", "RHS_LDF_SL_2"]];
 _inf set [T_INF_TL, ["RHS_LDF_TL", "RHS_LDF_TL_2"]];
 _inf set [T_INF_officer, ["RHS_LDF_officer"]];
 _inf set [T_INF_GL, ["RHS_LDF_grenadier", "RHS_LDF_grenadier_2"]];
@@ -119,20 +119,18 @@ _veh set [T_VEH_truck_fuel, ["rhsgref_cdf_ural_fuel"]];
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
-_drone set [T_DRONE_SIZE-1, nil];
-_drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
-
-
-//_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
-//_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
-//_drone set [T_DRONE_plane_attack, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_plane_unarmed, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_heli_attack, ["B_T_UAV_03_dynamicLoadout_F"]];
-//_drone set [T_DRONE_quadcopter, ["B_UAV_01_F"]];
-//_drone set [T_DRONE_designator, ["B_Static_Designator_01_F"]];
-//_drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
-//_drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
-//_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
+//_drone set [T_DRONE_SIZE-1, nil];
+//_drone set [T_DRONE_DEFAULT, ["I_UGV_01_F"]];
+//_drone set [T_DRONE_UGV_unarmed, ["I_UGV_01_F"]];
+//_drone set [T_DRONE_UGV_armed, ["I_UGV_01_rcws_F"]];
+//_drone set [T_DRONE_plane_attack, ["I_UAV_02_dynamicLoadout_F"]];
+//_drone set [T_DRONE_plane_unarmed, ["I_UAV_02_dynamicLoadout_F"]];
+//_drone set [T_DRONE_heli_attack, ["I_UAV_02_dynamicLoadout_F"]];
+//_drone set [T_DRONE_quadcopter, ["I_UAV_01_F"]];
+//_drone set [T_DRONE_designator, [""]];
+//_drone set [T_DRONE_stat_HMG_low, ["I_HMG_01_A_F"]];
+//_drone set [T_DRONE_stat_GMG_low, ["I_GMG_01_A_F"]];
+//_drone set [T_DRONE_stat_AA, [""]];
 
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
