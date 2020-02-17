@@ -15,14 +15,14 @@ this forceAddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital_rifleman";
 this addBackpack "B_LegStrapBag_olive_F";
 
-this addWeapon "rhs_weap_ak74n_gp25";
+this addWeapon "rhs_weap_ak74n_2_gp25";
 this addPrimaryWeaponItem "rhs_acc_dtk1983";
-this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N6M_AK";
+this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 this addPrimaryWeaponItem "rhs_VOG25";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
-for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N6M_AK";};
+for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_plum_AK";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_VG40MD";};
 this addItemToBackpack "rhs_GRD40_Green";
 this addItemToBackpack "rhs_GRD40_Red";

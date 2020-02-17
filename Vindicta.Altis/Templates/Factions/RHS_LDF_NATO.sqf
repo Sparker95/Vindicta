@@ -120,10 +120,8 @@ _veh set [T_VEH_truck_fuel, ["rhsgref_cdf_ural_fuel"]];
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
-_drone set [T_DRONE_SIZE-1, nil];
-_drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
-
-
+//_drone set [T_DRONE_SIZE-1, nil];
+//_drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 //_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
 //_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
 //_drone set [T_DRONE_plane_attack, ["B_UAV_02_dynamicLoadout_F"]];

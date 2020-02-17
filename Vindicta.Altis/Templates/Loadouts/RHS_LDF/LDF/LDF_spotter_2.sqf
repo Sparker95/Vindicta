@@ -24,17 +24,12 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "rhs_pdu4";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_rdg2_white";
 this addItemToVest "rhs_mag_nspd";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N22_plum_AK";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_9x18_8_57N181S";};
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-
-
-
-
