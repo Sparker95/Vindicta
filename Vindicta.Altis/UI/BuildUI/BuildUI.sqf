@@ -30,6 +30,36 @@ g_BuildUI = nil;
 #define __RESOURCE_SOURCE_LOCATION 0
 #define __RESOURCE_SOURCE_INVENTORY 1
 
+// List of objects that can be removed as garbage
+g_BuildUI_garbageObjects = [
+	"I_supplyCrate_F",
+	"B_CargoNet_01_ammo_F",
+	"Box_IND_Ammo_F",
+	"O_supplyCrate_F",
+	"C_T_supplyCrate_F",
+	"C_supplyCrate_F",
+	"IG_supplyCrate_F",
+	"C_IDAP_supplyCrate_F",
+	"I_EAF_supplyCrate_F",
+	"B_supplyCrate_F",
+	"Box_IND_WpsSpecial_F",
+	"Box_T_East_WpsSpecial_F",
+	"Box_East_WpsSpecial_F",
+	"Box_EAF_WpsSpecial_F",
+	"Box_T_NATO_WpsSpecial_F",
+	"Box_NATO_WpsSpecial_F",
+	"Box_NATO_Grenades_F",
+	"Box_EAF_Grenades_F",
+	"Box_East_Grenades_F",
+	"Box_IND_Grenades_F",
+	"Box_FIA_Support_F",
+	"Box_FIA_Wps_F",
+	"Box_Syndicate_Ammo_F",
+	"Box_NATO_Ammo_F",
+	"Box_EAF_Ammo_F",
+	"Box_FIA_Ammo_F"
+];
+
 CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");
