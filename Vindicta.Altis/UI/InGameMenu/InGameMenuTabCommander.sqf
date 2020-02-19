@@ -9,7 +9,7 @@
 
 #define pr private
 
-#define CREATE_LOCATION_COST 60
+#define CREATE_LOCATION_COST 100
 
 CLASS("InGameMenuTabCommander", "DialogTabBase")
 
@@ -50,9 +50,9 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			// Build resource cost
 			pr _buildResCost = CREATE_LOCATION_COST;
 			pr _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
-			_buildResCost = 80 * (exp (1 + _progress));
-			if (_progress < 0.04) then { _buildResCost = CREATE_LOCATION_COST; };
-			_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
+			//_buildResCost = 80 * (exp (1 + _progress));
+			//if (_progress < 0.03) then { _buildResCost = CREATE_LOCATION_COST; };
+			//_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
 
 			T_SETV("buildResourcesCost", _buildResCost);
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_BUILD_RESOURCES");

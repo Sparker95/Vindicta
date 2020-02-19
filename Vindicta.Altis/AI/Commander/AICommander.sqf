@@ -1765,10 +1765,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Remove build resources from player or vehicle
 		if (_hBuildResSrc isKindOf "man") then {
 			// Remove resources from player
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG 100], _clientOwner, false);
 		} else {
 			// Remove resources from vehicle
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG 100], _clientOwner, false);
 		};
 
 		// Create a little composition at this place
