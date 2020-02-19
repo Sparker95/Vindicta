@@ -272,6 +272,7 @@ g_UM_civWeapons = [
     "Laserdesignator",
     "Laserdesignator_02",
     "Laserdesignator_03",
+    "ACE_Flashlight_Maglite_ML300L",
     ""
 ];
 

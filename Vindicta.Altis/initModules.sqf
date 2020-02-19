@@ -24,9 +24,6 @@ call compile preprocessFileLineNumbers "SaveSystem\initClasses.sqf";
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 
-// Initialize Build menu object templates
-call compile preprocessFileLineNumbers "Templates\BuildUI\init.sqf";
-
 // UI classes and functions
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 

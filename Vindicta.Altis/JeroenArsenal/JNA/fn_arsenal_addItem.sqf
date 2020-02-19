@@ -18,7 +18,6 @@ if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_ind
 		pr _item = _x select 0;
 		pr _amount = _x select 1;
 
-
 		if!(_item isEqualTo "" || {_item isEqualTo "ACE_PreloadedMissileDummy"}) then{
 
 			if(_index == -1)exitWith{["ERROR in additemarsenal: %1", _this] call BIS_fnc_error};
@@ -34,7 +33,7 @@ if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_ind
 			
 			//update
 			["UpdateItemAdd",[_index, _item, _amount, _object]] remoteExecCall ["jn_fnc_arsenal",_playersInArsenal];
-
+			OOP_INFO_3("jn_arsenal_addItem ----- item: %1 ----- index: %2 ----- amount: %3", _item, _index, _amount);
 		};
 	} forEach _x;
 }foreach _array;

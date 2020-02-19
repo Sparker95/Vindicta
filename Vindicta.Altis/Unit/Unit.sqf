@@ -975,7 +975,8 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 											["ACE_EarPlugs",20],
 											["ACE_Kestrel4500",2],
 											["ACE_ATragMX",6],
-											["ACE_RangeCard",6]
+											["ACE_RangeCard",6],
+											["vin_build_res_0", 10]
 										];
 						{
 							_x params ["_itemName", "_itemCount"];
@@ -1165,6 +1166,18 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Bail if unit is not spawned
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
+
+		// hopefully catch inventory wipe bug!
+		if (isPlayer _hO) then { 
+			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 2"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+
+			diag_log format ["INVENTORY WIPED, ERROR CODE 2: _data: %1", _data];
+		};
 
 		// Remove all weapons
 		removeAllWeapons this;
@@ -1987,7 +2000,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				pr _className = _x;
 				pr _index = [_className] call jn_fnc_arsenal_itemType;
 				(_arsenalArray#_index) pushBack [_className, -1];
-			} forEach (g_ArsenalLoadout_Headgear + g_ArsenalLoadout_Uniforms + g_ArsenalLoadout_Facewear + g_ArsenalLoadout_Backpacks);
+			} forEach (g_ArsenalLoadout_Headgear + g_ArsenalLoadout_Uniforms + g_ArsenalLoadout_Facewear + g_ArsenalLoadout_Backpacks + g_ArsenalLoadout_Items);
 
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {
@@ -1998,6 +2011,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				// Clear the inventory
 				/// although, maybe we should move it into the arsenal?
 				// For now I only care to clear the inventory when we create an ammo box
+
+				// hopefully catch inventory wipe bug!
+				if (isPlayer _hO) then { 
+					private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 1"];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+
+					diag_log format ["INVENTORY WIPED, ERROR CODE 1: _data: %1", _data];
+				};
+
 				clearItemCargoGlobal _hO;
 				clearWeaponCargoGlobal _hO;
 				clearMagazineCargoGlobal _hO;
