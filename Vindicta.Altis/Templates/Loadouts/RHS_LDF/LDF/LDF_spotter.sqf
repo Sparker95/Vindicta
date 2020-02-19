@@ -15,7 +15,7 @@ this forceAddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital_rifleman_radio";
 this addBackpack "rhs_sidor";
 
-this addWeapon "rhs_weap_asval_grip";
+this addWeapon "rhs_weap_asval_grip1";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit_ris";
 this addPrimaryWeaponItem "rhs_20rnd_9x39mm_SP5";
 this addPrimaryWeaponItem "rhsusf_acc_kac_grip";
@@ -25,17 +25,13 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "rhs_pdu4";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_rdg2_white";
 this addItemToVest "rhs_mag_nspd";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_20rnd_9x39mm_SP5";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_20rnd_9x39mm_SP6";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_9x18_8_57N181S";};
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-
-
-

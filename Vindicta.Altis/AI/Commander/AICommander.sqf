@@ -1227,7 +1227,13 @@ CLASS("AICommander", "AI")
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "getThreat", [_pos])
 	} ENDMETHOD;
-		
+
+	METHOD("getDamage") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "getDamage", [_pos])
+	} ENDMETHOD;
+
 	// Thread unsafe
 	METHOD("_addActivity") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
