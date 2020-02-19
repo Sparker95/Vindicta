@@ -1336,7 +1336,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			while {_i < _cCargoBoxes} do {
 				private _subcatid = selectRandom [T_CARGO_box_small, T_CARGO_box_medium];
 				private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG _subcatid ARG -1 ARG ""]);
-				CALLM1(_newUnit, "setBuildResources", 40);
+				CALLM1(_newUnit, "setBuildResources", 60);
 				//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
 				if (CALL_METHOD(_newUnit, "isValid", [])) then {
 					if(canSuspend) then {
