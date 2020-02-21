@@ -11,6 +11,7 @@
 
 // Offset between button's bottom and group's edge, also between text's bottom and button
 #define VERT_GAP 0.02
+#define HORIZONTAL_GAP 0.005
 #define BUTTON_HEIGHT 0.04
 
 /*
@@ -180,8 +181,18 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 			pr _tag = format ["TAG_BUTTON_%1", _i];
 			pr _ctrl = T_CALLM1("findControl", _tag);
 
+			// simply fill window width with buttons
+			pr _bwidth = (_width/_nButtons);
+			pr _bheight = _buttonHeight;
+			pr _bposy = _height - _bheight;
+			pr _bposx = 0;
+			if (_i > 0) then {
+				_bposx = (_bwidth * _i); // - 0.001 to hopefully fix protruding buttons
+			};
+
+			/*
 			// Calculate positions of buttons
-			pr _bposy = _textHeight + VERT_GAP;
+			
 			pr _bposxcenter = (_i+1) * (_width/(_nbuttons+1)); // Center of button
 			#ifndef _SQF_VM
 			// WTF we can't get text width for a button?? Ok we will create a static control instead :/
@@ -194,7 +205,8 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 			ctrlDelete _tempctrl;
 			#endif
 			pr _bposx = _bposxcenter - 0.5*_bwidth;
-			pr _bheight = _buttonHeight;
+			
+			*/
 			
 			pr _posarray = [_bposx, _bposy, _bwidth, _bheight];
 			OOP_INFO_2("Setting button %1 pos: %2", _i, _posarray);
