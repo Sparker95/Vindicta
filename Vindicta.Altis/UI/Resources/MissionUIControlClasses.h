@@ -193,6 +193,16 @@ class MUI_BUTTON_TXT : RscButton
 __MUI_CLASS_ABS(MUI_BUTTON_TXT);
 
 
+// special override for sorting buttons for CMUI
+class MUI_BUTTON_LISTNBOX : MUI_BUTTON_TXT 
+{
+    IDC = -1; 
+	font = "PuristaSemibold";
+	style = ST_LEFT;
+};
+__MUI_CLASS_ABS(MUI_BUTTON_LISTNBOX);
+
+
 // Dummy button with no visuals
 class MUI_BUTTON_DUMMY : MUI_BUTTON_TXT
 {

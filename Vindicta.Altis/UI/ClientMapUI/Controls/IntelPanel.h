@@ -1,7 +1,8 @@
 #include "..\..\Resources\UIProfileColors.h"
 #include "..\ClientMapUI_Macros.h"
 
-class CMUI_INTEL_LISTBOX_BG : MUI_BASE {
+class CMUI_INTEL_LISTBOX_BG : MUI_BASE 
+{
 
 	IDC = -1;
 	x = safeZoneX + safeZoneW * 0.763; 
@@ -14,7 +15,8 @@ class CMUI_INTEL_LISTBOX_BG : MUI_BASE {
 
 };
 
-class CMUI_INTEL_LISTBOX : MUI_LISTNBOX {
+class CMUI_INTEL_LISTBOX : MUI_LISTNBOX 
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.763; 
@@ -26,7 +28,8 @@ class CMUI_INTEL_LISTBOX : MUI_LISTNBOX {
 	//columns[] = {0,0.2,0.8};
 };
 
-class CMUI_INTEL_HEADLINE : MUI_HEADLINE {
+class CMUI_INTEL_HEADLINE : MUI_HEADLINE 
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.763; 
@@ -37,7 +40,8 @@ class CMUI_INTEL_HEADLINE : MUI_HEADLINE {
 	colorBackground[] = MUIC_MISSION; 
 };
 
-class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
+class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.763; 
@@ -48,7 +52,8 @@ class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 };
 
-class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
+class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.763; 
@@ -59,7 +64,8 @@ class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 };
 
-class CMUI_INTEL_ENDED : MUI_BUTTON_TXT_CHECKBOX_LIKE {
+class CMUI_INTEL_ENDED : MUI_BUTTON_TXT_CHECKBOX_LIKE
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.763; 
@@ -70,7 +76,8 @@ class CMUI_INTEL_ENDED : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 };
 
-class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT {
+class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT 
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.580; 
@@ -81,7 +88,8 @@ class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT {
 
 };
 
-class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE {
+class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.459; 
@@ -92,7 +100,8 @@ class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 };
 
-class CMUI_HINTS_BG : RscPicture {
+class CMUI_HINTS_BG : RscPicture
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.184; 
@@ -105,7 +114,8 @@ class CMUI_HINTS_BG : RscPicture {
 
 };
 
-class CMUI_HINTS : MUI_BG_TRANSPARENT {
+class CMUI_HINTS : MUI_BG_TRANSPARENT 
+{
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.184; 
@@ -167,14 +177,21 @@ class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID
     font = "RobotoCondensed";
 };
 
-class CMUI_INTEL_BTNGRP : MUI_GROUP {
+class CMUI_INTEL_BTNGRP_BG : MUI_BG_BLACKSOLID 
+{
+	IDC = -1;
+	x = safeZoneX + safeZoneW * 0.763; 
+	y = safeZoneY + safeZoneH * 0.069; 
+	w = safeZoneW * 0.230; 
+	h = safeZoneH * 0.028; 
+};
 
+// black background for buttons to fix ugly gap
+class CMUI_INTEL_BTNGRP : MUI_GROUP 
+{
 	IDC = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
 	x = safeZoneX + safeZoneW * 0.763; 
 	y = safeZoneY + safeZoneH * 0.069; 
 	w = safeZoneW * 0.230; 
 	h = safeZoneH * 0.028; 
-
 };
-
-
