@@ -285,7 +285,7 @@ CLASS(CLASS_NAME, "")
 		if (isNull _ctrlGroup) then {
 			OOP_ERROR_0("Listbox button group was not found!");
 		} else {
-			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.15, 0.75], true] call ui_fnc_createButtonsInGroup;
+			pr _btns = [(finddisplay 12), "MUI_BUTTON_LISTNBOX", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.15, 0.75], true] call ui_fnc_createButtonsInGroup;
 			_btns#0 ctrlSetText "Side";
 			_btns#1 ctrlSetText "Type";
 			_btns#2 ctrlSetText "Time";
