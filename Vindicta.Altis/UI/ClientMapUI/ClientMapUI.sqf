@@ -1192,7 +1192,7 @@ CLASS(CLASS_NAME, "")
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		_lnb lnbSetColumnsPos [0, 0.13, 0.35, 0.78];
+		_lnb lnbSetColumnsPos [0, 0.13, 0.35, 0.76];
 		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
 
 		// Read some variables...
