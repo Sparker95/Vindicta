@@ -253,7 +253,7 @@
 				<Original>Select a single intel item to view a detailed description.</Original>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_ATTACK">
-				<Original>The enemy commander has detected activity in this area and is dispatching an attack. Hold your ground kill enough enemy soldiers to stop the attacks.</Original>
+				<Original>The enemy commander has detected activity in this area and is dispatching an attack. Hold your ground and kill enough enemy soldiers to stop the attacks.</Original>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_RB">
 				<Original>The enemy commander is constructing a roadblock at this location.</Original>
