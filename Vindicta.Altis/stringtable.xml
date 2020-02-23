@@ -235,7 +235,7 @@
 			</Key>
 
 			<Key ID="STR_CMUI_INTEL_TOOLTIP">
-				<Original>Double click to center on attack. Use Shift + LMB to multiselect items.</Original>
+				<Original>Double click to center on attack. Use Shift + LMB or Ctrl + LMB to multiselect items.</Original>
 			</Key>
 
 			

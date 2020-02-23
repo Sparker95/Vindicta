@@ -136,23 +136,23 @@ CLASS(CLASS_NAME, "")
 		pr _mapDisplay = findDisplay 12;
 
 		/*																											
-88888888888  8b           d8  88888888888  888b      88  888888888888                                            
-88           `8b         d8'  88           8888b     88       88                                                 
-88            `8b       d8'   88           88 `8b    88       88                                                 
-88aaaaa        `8b     d8'    88aaaaa      88  `8b   88       88                                                 
-88"""""         `8b   d8'     88"""""      88   `8b  88       88                                                 
-88               `8b d8'      88           88    `8b 88       88                                                 
-88                `888'       88           88     `8888       88                                                 
-88888888888        `8'        88888888888  88      `888       88                                                 
+		88888888888  8b           d8  88888888888  888b      88  888888888888                                            
+		88           `8b         d8'  88           8888b     88       88                                                 
+		88            `8b       d8'   88           88 `8b    88       88                                                 
+		88aaaaa        `8b     d8'    88aaaaa      88  `8b   88       88                                                 
+		88"""""         `8b   d8'     88"""""      88   `8b  88       88                                                 
+		88               `8b d8'      88           88    `8b 88       88                                                 
+		88                `888'       88           88     `8888       88                                                 
+		88888888888        `8'        88888888888  88      `888       88                                                 
 
-88        88         db         888b      88  88888888ba,    88           88888888888  88888888ba    ad88888ba   
-88        88        d88b        8888b     88  88      `"8b   88           88           88      "8b  d8"     "8b  
-88        88       d8'`8b       88 `8b    88  88        `8b  88           88           88      ,8P  Y8,          
-88aaaaaaaa88      d8'  `8b      88  `8b   88  88         88  88           88aaaaa      88aaaaaa8P'  `Y8aaaaa,    
-88""""""""88     d8YaaaaY8b     88   `8b  88  88         88  88           88"""""      88""""88'      `"""""8b,  
-88        88    d8""""""""8b    88    `8b 88  88         8P  88           88           88    `8b            `8b  
-88        88   d8'        `8b   88     `8888  88      .a8P   88           88           88     `8b   Y8a     a8P  
-88        88  d8'          `8b  88      `888  88888888Y"'    88888888888  88888888888  88      `8b   "Y88888P"   
+		88        88         db         888b      88  88888888ba,    88           88888888888  88888888ba    ad88888ba   
+		88        88        d88b        8888b     88  88      `"8b   88           88           88      "8b  d8"     "8b  
+		88        88       d8'`8b       88 `8b    88  88        `8b  88           88           88      ,8P  Y8,          
+		88aaaaaaaa88      d8'  `8b      88  `8b   88  88         88  88           88aaaaa      88aaaaaa8P'  `Y8aaaaa,    
+		88""""""""88     d8YaaaaY8b     88   `8b  88  88         88  88           88"""""      88""""88'      `"""""8b,  
+		88        88    d8""""""""8b    88    `8b 88  88         8P  88           88           88    `8b            `8b  
+		88        88   d8'        `8b   88     `8888  88      .a8P   88           88           88     `8b   Y8a     a8P  
+		88        88  d8'          `8b  88      `888  88888888Y"'    88888888888  88888888888  88      `8b   "Y88888P"   
 		*/
 
 		// open map EH
@@ -317,18 +317,16 @@ CLASS(CLASS_NAME, "")
 		// Disable the respawn panel initially
 		T_CALLM1("respawnPanelEnable", false);
 
+
 		/*
 		ooooooooooo   ooooooo     ooooooo  ooooo    ooooooooooo ooooo oooooooooo   oooooooo8  
 		88  888  88 o888   888o o888   888o 888     88  888  88  888   888    888 888         
 			888     888     888 888     888 888         888      888   888oooo88   888oooooo  
 			888     888o   o888 888o   o888 888      o  888      888   888                888 
 			o888o      88ooo88     88ooo88  o888ooooo88 o888o    o888o o888o       o88oooo888 
-		*/
-
-		/* 
+		
 			A truly lazy way to set localized tooltips?
 			Each localize string = "STR_LOCALIZE_" + "Control class name".
-
 		*/
 		
 		{
@@ -379,28 +377,23 @@ CLASS(CLASS_NAME, "")
 
 
 
-
-
-
-
-
-
 	/*                                           
-88b           d88  88   ad88888ba     ,ad8888ba,   
-888b         d888  88  d8"     "8b   d8"'    `"8b  
-88`8b       d8'88  88  Y8,          d8'            
-88 `8b     d8' 88  88  `Y8aaaaa,    88             
-88  `8b   d8'  88  88    `"""""8b,  88             
-88   `8b d8'   88  88          `8b  Y8,            
-88    `888'    88  88  Y8a     a8P   Y8a.    .a8P  
-88     `8'     88  88   "Y88888P"     `"Y8888Y"'   
-http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
+	88b           d88  88   ad88888ba     ,ad8888ba,   
+	888b         d888  88  d8"     "8b   d8"'    `"8b  
+	88`8b       d8'88  88  Y8,          d8'            
+	88 `8b     d8' 88  88  `Y8aaaaa,    88             
+	88  `8b   d8'  88  88    `"""""8b,  88             
+	88   `8b d8'   88  88          `8b  Y8,            
+	88    `888'    88  88  Y8a     a8P   Y8a.    .a8P  
+	88     `8'     88  88   "Y88888P"     `"Y8888Y"'   
+	http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 	*/
 
 	STATIC_METHOD("setPlayerRestoreData") {
 		params ["_thisClass", "_playerRestoreData"];
 		gPlayerRestoreData = _playerRestoreData;
 	} ENDMETHOD;
+
 
 	/*
 		Method: toggleButtonEnabled
@@ -414,6 +407,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		params ["_thisClass", "_control", ["_enable", true]];
 		
 	} ENDMETHOD;
+
 
 	// Returns marker text of closest marker
 	STATIC_METHOD("getNearestLocationName") {
@@ -429,8 +423,15 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		_return
 	} ENDMETHOD;
 
-	// Shows/hides all map representations of intel, depending on which intel types are selected
-	// Or depending on the bools passed
+
+	/*
+		Method: mapShowAllIntel
+		Description: Shows or hides all map representations of intel, depending on which intel types are selected,
+					 or depending on the bools that are passed.
+
+		Parameters: 
+		TODO
+	*/
 	METHOD("mapShowAllIntel") {
 		params [P_THISOBJECT, P_BOOL("_forceShow"), P_BOOL("_forceHide")];
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
@@ -458,7 +459,17 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		} forEach _allIntels;
 	} ENDMETHOD;
 
-	// Finds a control by its class name
+
+	/*
+		Method: findControl
+		Description: Finds a control by its classname.
+
+		Parameters: 
+		0: _className - Class name string
+
+		Returns: control 
+
+	*/
 	METHOD("findControl") {
 		params [P_THISOBJECT, P_STRING("_className")];
 		pr _display = findDisplay 12;
@@ -472,20 +483,24 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		};
 	} ENDMETHOD;
 
-/*                                                                      
-ooooooooo  oooooooooo       o  oooo     oooo      oooooooooo    ooooooo  ooooo  oooo ooooooooooo ooooooooooo 
- 888    88o 888    888     888  88   88  88        888    888 o888   888o 888    88  88  888  88  888    88  
- 888    888 888oooo88     8  88  88 888 88         888oooo88  888     888 888    88      888      888ooo8    
- 888    888 888  88o     8oooo88  888 888          888  88o   888o   o888 888    88      888      888    oo  
-o888ooo88  o888o  88o8 o88o  o888o 8   8          o888o  88o8   88ooo88    888oo88      o888o    o888ooo8888 
 
-http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
-*/
+	/*                                                                      
+	ooooooooo  oooooooooo       o  oooo     oooo      oooooooooo    ooooooo  ooooo  oooo ooooooooooo ooooooooooo 
+	888    88o 888    888     888  88   88  88        888    888 o888   888o 888    88  88  888  88  888    88  
+	888    888 888oooo88     8  88  88 888 88         888oooo88  888     888 888    88      888      888ooo8    
+	888    888 888  88o     8oooo88  888 888          888  88o   888o   o888 888    88      888      888    oo  
+	o888ooo88  o888o  88o8 o88o  o888o 8   8          o888o  88o8   88ooo88    888oo88      o888o    o888ooo8888 
+	http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
+	*/
 
 	#define __MRK_ROUTE "_route_"
 	#define __MRK_SOURCE "_src"
 	#define __MRK_DEST "_dst"
-	// Draws or undraws a route for a given array of positions
+
+	/*
+		Method: drawRoute
+		Description: Draws a route on the map, for example for attacks, reinforcements...
+	*/
 	STATIC_METHOD("drawRoute") {
 		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]], ["_color", "ColorRed"] ];
 
@@ -544,33 +559,61 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 	} ENDMETHOD;
 
 
-/*
-ooooo ooooo ooooo oooo   oooo ooooooooooo      ooooooooooo ooooooooooo ooooo  oooo ooooooooooo 
- 888   888   888   8888o  88  88  888  88      88  888  88  888    88    888  88   88  888  88 
- 888ooo888   888   88 888o88      888              888      888ooo8        888         888     
- 888   888   888   88   8888      888              888      888    oo     88 888       888     
-o888o o888o o888o o88o    88     o888o            o888o    o888ooo8888 o88o  o888o    o888o    
-http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
+	/*
+	ooooo ooooo ooooo oooo   oooo ooooooooooo      ooooooooooo ooooooooooo ooooo  oooo ooooooooooo 
+	888   888   888   8888o  88  88  888  88      88  888  88  888    88    888  88   88  888  88 
+	888ooo888   888   88 888o88      888              888      888ooo8        888         888     
+	888   888   888   88   8888      888              888      888    oo     88 888       888     
+	o888o o888o o888o o88o    88     o888o            o888o    o888ooo8888 o88o  o888o    o888o    
+	http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 
-We only use the hint panel for displaying progress now. Normal tooltips are used for everything else.
+	We only use the hint panel for displaying progress now. Normal tooltips are used for everything else.
+	*/
 
-*/
+	/*
+		Method: setHintText
+		Description: Called by updateHintTextFromContext to set hint panel text. Do NOT call anywhere else.
 
-	// Sets hint text at the bottom of the screen
+		Parameters: 
+		0: _text - String that should be set on the hint panel
+
+	*/
 	METHOD("setHintText") {
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _mapDisplay = findDisplay 12;
-		([_mapDisplay, "CMUI_HINTS"] call ui_fnc_findControl) ctrlSetText _text; // (localize "STR_CMUI_BUTTON1");
+		([_mapDisplay, "CMUI_HINTS"] call ui_fnc_findControl) ctrlSetText _text;
 	} ENDMETHOD;
 
-	// Updates the hint text based on the current context
+
+	/*
+		Method: updateHintTextFromContext
+		Description: Calls setHintText to set hint text on the hint panel.
+
+		Parameters: 
+		None
+
+		old code:
+		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
+		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+
+	*/
 	METHOD("updateHintTextFromContext") {
 		params [P_THISOBJECT];
 
-		pr _mapDisplay = findDisplay 12; 
+		pr _mapDisplay = findDisplay 12;
+		pr _idc = T_GETV("currentControlIDC");
 
-		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
-		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		/* Let's prioritize control hints, because we will reset to 
+			progress as soon as the mouse cursor leaves a control anyway. 
+		if (_idc != -1) exitWith {
+			switch (_idc) do {
+				default {};
+				case 
+
+			};
+		};
+		*/
+
 		pr _gameModeInitialized = if(isNil "gGameManager") then {
 			false
 		} else {
@@ -607,19 +650,18 @@ We only use the hint panel for displaying progress now. Normal tooltips are used
 			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison.");
 		};
 
-		//T_CALLM1("setHintText", "... Hints are displayed here ...");
-
 	} ENDMETHOD;
 
-/*                                                                                                                                       
-     o       oooooooo8 ooooooooooo ooooo  ooooooo  oooo   oooo      oooo     oooo ooooooooooo oooo   oooo ooooo  oooo 
-    888    o888     88 88  888  88  888 o888   888o 8888o  88        8888o   888   888    88   8888o  88   888    88  
-   8  88   888             888      888 888     888 88 888o88        88 888o8 88   888ooo8     88 888o88   888    88  
-  8oooo88  888o     oo     888      888 888o   o888 88   8888        88  888  88   888    oo   88   8888   888    88  
-o88o  o888o 888oooo88     o888o    o888o  88ooo88  o88o    88       o88o  8  o88o o888ooo8888 o88o    88    888oo88   
-                                                                     
-Methods for the action listbox appears when we click on something to send some garrison do something
-*/
+
+	/*                                                                                                                                       
+	o       oooooooo8 ooooooooooo ooooo  ooooooo  oooo   oooo      oooo     oooo ooooooooooo oooo   oooo ooooo  oooo 
+	888    o888     88 88  888  88  888 o888   888o 8888o  88        8888o   888   888    88   8888o  88   888    88  
+	8  88   888             888      888 888     888 88 888o88        88 888o8 88   888ooo8     88 888o88   888    88  
+	8oooo88  888o     oo     888      888 888o   o888 88   8888        88  888  88   888    oo   88   8888   888    88  
+	o88o  o888o 888oooo88     o888o    o888o  88ooo88  o88o    88       o88o  8  o88o o888ooo8888 o88o    88    888oo88   
+																		
+	Methods for the action listbox appears when we click on something to send some garrison do something
+	*/
 
 	// Enables or disables the garrison action listbox
 	METHOD("garActionMenuEnable") {
@@ -745,34 +787,26 @@ Methods for the action listbox appears when we click on something to send some g
 
 
 
+	/*                                                                                                  
+	ooooooo8      o      oooooooooo  oooooooooo  ooooo  oooooooo8    ooooooo  oooo   oooo       
+	o888    88     888      888    888  888    888  888  888         o888   888o 8888o  88        
+	888    oooo   8  88     888oooo88   888oooo88   888   888oooooo  888     888 88 888o88        
+	888o    88   8oooo88    888  88o    888  88o    888          888 888o   o888 88   8888        
+	888ooo888 o88o  o888o o888o  88o8 o888o  88o8 o888o o88oooo888    88ooo88  o88o    88        
+																								
+	oooooooo8 ooooooooooo ooooo       ooooooooooo  oooooooo8 ooooooooooo ooooooooooo ooooooooo   
+	888         888    88   888         888    88 o888     88 88  888  88  888    88   888    88o 
+	888oooooo  888ooo8     888         888ooo8   888             888      888ooo8     888    888 
+			888 888    oo   888      o  888    oo 888o     oo     888      888    oo   888    888 
+	o88oooo888 o888ooo8888 o888ooooo88 o888ooo8888 888oooo88     o888o    o888ooo8888 o888ooo88   
 
-
-
-
-
-
-
-/*                                                                                                  
-  ooooooo8      o      oooooooooo  oooooooooo  ooooo  oooooooo8    ooooooo  oooo   oooo       
-o888    88     888      888    888  888    888  888  888         o888   888o 8888o  88        
-888    oooo   8  88     888oooo88   888oooo88   888   888oooooo  888     888 88 888o88        
-888o    88   8oooo88    888  88o    888  88o    888          888 888o   o888 88   8888        
- 888ooo888 o88o  o888o o888o  88o8 o888o  88o8 o888o o88oooo888    88ooo88  o88o    88        
-                                                                                              
- oooooooo8 ooooooooooo ooooo       ooooooooooo  oooooooo8 ooooooooooo ooooooooooo ooooooooo   
-888         888    88   888         888    88 o888     88 88  888  88  888    88   888    88o 
- 888oooooo  888ooo8     888         888ooo8   888             888      888ooo8     888    888 
-        888 888    oo   888      o  888    oo 888o     oo     888      888    oo   888    888 
-o88oooo888 o888ooo8888 o888ooooo88 o888ooo8888 888oooo88     o888o    o888ooo8888 o888ooo88   
-                                                                                              
-oooo     oooo ooooooooooo oooo   oooo ooooo  oooo                                             
- 8888o   888   888    88   8888o  88   888    88                                              
- 88 888o8 88   888ooo8     88 888o88   888    88                                              
- 88  888  88   888    oo   88   8888   888    88                                              
-o88o  8  o88o o888ooo8888 o88o    88    888oo88     
-
-http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
-*/
+	oooo     oooo ooooooooooo oooo   oooo ooooo  oooo                                             
+	8888o   888   888    88   8888o  88   888    88                                              
+	88 888o8 88   888ooo8     88 888o88   888    88                                              
+	88  888  88   888    oo   88   8888   888    88                                              
+	o88o  8  o88o o888ooo8888 o88o    88    888oo88     
+	http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
+	*/
 
 	METHOD("garSelMenuEnable") {
 		params [P_THISOBJECT, P_BOOL("_enable")];
@@ -916,11 +950,11 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		pr _ctrl = T_CALLM1("findControl", "CMUI_LSELECTED_MENU");
 		_ctrl ctrlShow _enable;
 
-/*
+		/*
 		if (!_enable) then {	
 			T_SETV("garRecordCurrent", "");
 		};
-*/
+		*/
 
 		// Check if we can command garrisons at all
 		pr _canCommand = CALLM1(gPlayerDatabaseClient, "get", PDB_KEY_ALLOW_COMMAND_GARRISONS);
@@ -1011,7 +1045,6 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	888   88 888o88      888      888ooo8     888              888oooo88 8  88     88 888o88   888ooo8     888        
 	888   88   8888      888      888    oo   888      o       888      8oooo88    88   8888   888    oo   888      o 
 	o888o o88o    88     o888o    o888ooo8888 o888ooooo88      o888o   o88o  o888o o88o    88  o888ooo8888 o888ooooo88 
-
 	http://patorjk.com/software/taag/#p=display&f=O8&t=INTEL%20PANEL
 	*/
 
@@ -1049,6 +1082,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			} forEach _x;
 		} forEach _comp;
 	} ENDMETHOD;
+
 
 	METHOD("intelPanelUpdateFromLocationIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_ARRAY("_flags")];
@@ -1385,30 +1419,35 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		T_SETV("intelPanelSortCategory", _button);
 	} ENDMETHOD;
 
-/*                                                                                                        
-ooooooooooo ooooo  oooo ooooooooooo oooo   oooo ooooooooooo                                    
- 888    88   888    88   888    88   8888o  88  88  888  88                                    
- 888ooo8      888  88    888ooo8     88 888o88      888                                        
- 888    oo     88888     888    oo   88   8888      888                                        
-o888ooo8888     888     o888ooo8888 o88o    88     o888o                                       
-                                                                                               
-ooooo ooooo      o      oooo   oooo ooooooooo  ooooo       ooooooooooo oooooooooo   oooooooo8  
- 888   888      888      8888o  88   888    88o 888         888    88   888    888 888         
- 888ooo888     8  88     88 888o88   888    888 888         888ooo8     888oooo88   888oooooo  
- 888   888    8oooo88    88   8888   888    888 888      o  888    oo   888  88o           888 
-o888o o888o o88o  o888o o88o    88  o888ooo88  o888ooooo88 o888ooo8888 o888o  88o8 o88oooo888  
 
-http://patorjk.com/software/taag/#p=display&f=O8&t=EVENT%0AHANDLERS
-*/
 
+	/*                                                                                                        																										
+	88888888888  8b           d8  88888888888  888b      88  888888888888                                            
+	88           `8b         d8'  88           8888b     88       88                                                 
+	88            `8b       d8'   88           88 `8b    88       88                                                 
+	88aaaaa        `8b     d8'    88aaaaa      88  `8b   88       88                                                 
+	88"""""         `8b   d8'     88"""""      88   `8b  88       88                                                 
+	88               `8b d8'      88           88    `8b 88       88                                                 
+	88                `888'       88           88     `8888       88                                                 
+	88888888888        `8'        88888888888  88      `888       88                                                 
+
+	88        88         db         888b      88  88888888ba,    88           88888888888  88888888ba    ad88888ba   
+	88        88        d88b        8888b     88  88      `"8b   88           88           88      "8b  d8"     "8b  
+	88        88       d8'`8b       88 `8b    88  88        `8b  88           88           88      ,8P  Y8,          
+	88aaaaaaaa88      d8'  `8b      88  `8b   88  88         88  88           88aaaaa      88aaaaaa8P'  `Y8aaaaa,    
+	88""""""""88     d8YaaaaY8b     88   `8b  88  88         88  88           88"""""      88""""88'      `"""""8b,  
+	88        88    d8""""""""8b    88    `8b 88  88         8P  88           88           88    `8b            `8b  
+	88        88   d8'        `8b   88     `8888  88      .a8P   88           88           88     `8b   Y8a     a8P  
+	88        88  d8'          `8b  88      `888  88888888Y"'    88888888888  88888888888  88      `8b   "Y88888P"   
+	*/
 
 
 	/*
-  ooooooo  oooo   oooo      oooo     oooo oooooooooo       ooooooooo     ooooooo  oooo     oooo oooo   oooo 
-o888   888o 8888o  88        8888o   888   888    888       888    88o o888   888o 88   88  88   8888o  88  
-888     888 88 888o88        88 888o8 88   888oooo88        888    888 888     888  88 888 88    88 888o88  
-888o   o888 88   8888        88  888  88   888    888       888    888 888o   o888   888 888     88   8888  
-  88ooo88  o88o    88       o88o  8  o88o o888ooo888       o888ooo88     88ooo88      8   8     o88o    88  
+	ooooooo  oooo   oooo      oooo     oooo oooooooooo       ooooooooo     ooooooo  oooo     oooo oooo   oooo 
+	o888   888o 8888o  88        8888o   888   888    888       888    88o o888   888o 88   88  88   8888o  88  
+	888     888 88 888o88        88 888o8 88   888oooo88        888    888 888     888  88 888 88    88 888o88  
+	888o   o888 88   8888        88  888  88   888    888       888    888 888o   o888   888 888     88   8888  
+	88ooo88  o88o    88       o88o  8  o88o o888ooo888       o888ooo88     88ooo88      8   8     o88o    88  
 
 	Method: onMouseButtonDown
 	Gets called when user clicks on the map. There might be map markers under cursor and it will still be called.
@@ -1503,7 +1542,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 			if (_targetType == TARGET_TYPE_INVALID) then {
 				T_SETV("garActionTargetType", TARGET_TYPE_INVALID);
-				OOP_ERROR_0("Can't resolve target position");
+				OOP_ERROR_0("Cannot resolve target position.");
 			} else {
 				// We are good to go!
 
@@ -1660,6 +1699,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		//T_CALLM1("intelPanelShowButtons", true);
 	} ENDMETHOD;
 
+
 	METHOD("onIntelAdded") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 
@@ -1680,6 +1720,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			T_CALLM0("mapShowAllIntel");
 		};
 	} ENDMETHOD;
+
 
 	METHOD("onIntelRemoved") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
@@ -1903,6 +1944,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		false // Must return false to still make it do the config-defined action
 	} ENDMETHOD;
 
+
 	/*
 		Method: onMapDraw
 		Description: Gets called each frame if map is open and being redrawn.
@@ -1917,6 +1959,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		pr _lbSel = T_GETV("lbSelectionIndices");
 		if !(_lbSel isEqualTo []) then {
 			if ((count lbSelection _lnb) != (count _lbSel)) then { 
+				systemchat "0";
 				T_CALLM1("intelPanelOnSelChanged", _lnb); // lbSelection size has changed, update selected intel
 			};
 		};
@@ -1981,24 +2024,26 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	} ENDMETHOD;
 
 
-/*
-ooooo  oooo oooooooooo ooooooooo      o   ooooooooooo ooooooooooo 
- 888    88   888    888 888    88o   888  88  888  88  888    88  
- 888    88   888oooo88  888    888  8  88     888      888ooo8    
- 888    88   888        888    888 8oooo88    888      888    oo  
-  888oo88   o888o      o888ooo88 o88o  o888o o888o    o888ooo8888 
-                                                                  
-     o      oooooooooo  oooooooooo    ooooooo  oooo     oooo      
-    888      888    888  888    888 o888   888o 88   88  88       
-   8  88     888oooo88   888oooo88  888     888  88 888 88        
-  8oooo88    888  88o    888  88o   888o   o888   888 888         
-o88o  o888o o888o  88o8 o888o  88o8   88ooo88      8   8          
 
-http://patorjk.com/software/taag/#p=display&f=O8&t=UPDATE%0AARROW
+	/*
+	ooooo  oooo oooooooooo ooooooooo      o   ooooooooooo ooooooooooo 
+	888    88   888    888 888    88o   888  88  888  88  888    88  
+	888    88   888oooo88  888    888  8  88     888      888ooo8    
+	888    88   888        888    888 8oooo88    888      888    oo  
+	888oo88   o888o      o888ooo88 o88o  o888o o888o    o888ooo8888 
+																	
+		o      oooooooooo  oooooooooo    ooooooo  oooo     oooo      
+		888      888    888  888    888 o888   888o 88   88  88       
+	8  88     888oooo88   888oooo88  888     888  88 888 88        
+	8oooo88    888  88o    888  88o   888o   o888   888 888         
+	o88o  o888o o888o  88o8 o888o  88o8   88ooo88      8   8          
 
-Redraws the order arrow when we are giving a waypoint
-Gets called from "onMapDraw"
-*/
+	http://patorjk.com/software/taag/#p=display&f=O8&t=UPDATE%0AARROW
+
+	Redraws the order arrow when we are giving a waypoint
+	Gets called from "onMapDraw"
+	*/
+
 	METHOD("garOrderUpdateArrow") {
 		params [P_THISOBJECT];
 
@@ -2206,12 +2251,15 @@ Gets called from "onMapDraw"
 
 
 
+	/* 
+		Method: addDummyIntel
+		Description: Adds some random intel to debug the intel panel
+					 You can use this in the debug console:
+					 Currently creates an error, but still works to visualize 
+					 intel in the listbox and on the map.
 
-	
-
-	// Adds some random intel to debug the intel panel
-	// You can use this in the debug console:
-	// call ClientMapUI_fnc_addDummyIntel;
+		Example: call ClientMapUI_fnc_addDummyIntel;
+	*/
 	STATIC_METHOD("addDummyIntel") {
 		params [P_THISCLASS];
 
