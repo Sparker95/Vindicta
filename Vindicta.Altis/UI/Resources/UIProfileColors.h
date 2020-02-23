@@ -43,4 +43,4 @@ Macros for user-defined GUI colors
 #define MUIC_COLOR_WHITE [1, 1, 1, 1]
 #define MUIC_COLOR_DISABLED [0.3, 0.3, 0.3, 1]
 #define MUIC_COLOR_MISSION [1, 0.682, 0, 1]
-#define MUIC_COLOR_MISSION_HOVER [1, 0.75, 0.36, 1]
+#define MUIC_COLOR_MISSION_HOVER [1, 0.8, 0.4, 1]

@@ -197,7 +197,7 @@
 	<Package name="ClientMapUI">
 		<Container name="Hints">
 			<Key ID="STR_CMUI_DEFAULT"> 
-				<Original>Move your cursor over a button to learn more.</Original>
+				<Original>There is no context hint available for this control.</Original>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_LISTBOX">
 				<Original>This list displays all known intel. Click on a row to display only that piece of intel on your map.</Original>
@@ -223,15 +223,21 @@
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_PLAYERS">
 				<Original>Press to toggle players being shown on your map.</Original>
 			</Key>
+			<Key ID="STR_LOCALIZE_MUI_BUTTON_DUMMY">
+				<Original>Press to toggle this setting on or off.</Original>
+			</Key>
 	
 			<Key ID="STR_CMUI_SORTINGBTN_SIDE">
-				<Original>Press to sort the intel list by the side. Can be WEST for BLUFOR, EAST for OPFOR, or IND for Independent.</Original>
+				<Original>Sort intel list by faction side. WEST for BLUFOR, EAST for OPFOR, and IND for Independent.</Original>
+			</Key>
+			<Key ID="STR_CMUI_SORTINGBTN_STATUS">
+				<Original>Sort intel list by current status of the intel items.</Original>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TYPE">
-				<Original>Press to sort the intel list by type.</Original>
+				<Original>Sort intel list by type.</Original>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TIME">
-				<Original>Press to sort the intel list by most recent or oldest intel.</Original>
+				<Original>Sort intel list by most recent or oldest intel.</Original>
 			</Key>
 
 			<Key ID="STR_CMUI_INTEL_TOOLTIP">
