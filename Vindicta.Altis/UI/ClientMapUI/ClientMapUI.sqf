@@ -1361,6 +1361,9 @@ CLASS(CLASS_NAME, "")
 				};
 			} else {
 				T_CALLM0("mapShowAllIntel");
+				// reset selected listbox entries
+				T_SETV("lbSelectionIndices", []);
+				T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT"));
 			};
 		};
 
@@ -1673,6 +1676,10 @@ CLASS(CLASS_NAME, "")
 			_btns#2 ctrlSetText "TYPE";
 			_btns#3 ctrlSetText "TIME";
 		};
+
+		// reset selected listbox entries
+		T_SETV("lbSelectionIndices", []);
+		T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT")); // reset intel description panel
 
 		// Disable the garrison action listbox
 		T_CALLM1("garActionMenuEnable", false);
@@ -2030,7 +2037,7 @@ CLASS(CLASS_NAME, "")
 		// listbox selection changed event handler is called before lbSelection updates 
 		// so we check here and call the method again to properly enable multiselction
 		pr _mapDisplay = findDisplay 12;
-		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
+		pr _lnb = (_mapdisplay displayCtrl IDC_LOCP_LISTNBOX);
 		pr _lbSel = T_GETV("lbSelectionIndices");
 		if !(_lbSel isEqualTo []) then {
 			if ((count lbSelection _lnb) != (count _lbSel)) then { 

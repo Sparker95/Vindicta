@@ -15,7 +15,7 @@ class CMUI_INTEL_LISTBOX_BG : MUI_BASE
 
 class CMUI_INTEL_LISTBOX : MUI_LISTNBOX 
 {
-	IDC = -1; 
+	IDC = IDC_LOCP_LISTNBOX; 
 	x = safeZoneX + safeZoneW * 0.760; 
 	y = safeZoneY + safeZoneH * 0.111; 
 	w = safeZoneW * 0.233; 
@@ -264,7 +264,7 @@ class CMUI_INTEL_DESCRIPTION : MUI_BG_TRANSPARENT_MULTILINE_LEFT
 	w = safeZoneW * 0.208; 
 	h = safeZoneH * 0.134; 
 	colorBackground[] = MUIC_TRANSPARENT;
-	text = "More information will be displayed here in an upcoming version.";
+	text = "Select a single intel item to view a detailed description.";
 	font = "EtelkaMonospacePro";
 	sizeEx = safeZoneH*0.016;
 	style = ST_MULTI;
