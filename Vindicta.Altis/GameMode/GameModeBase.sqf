@@ -1857,6 +1857,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		FIX_LINE_NUMBERS()
 
 		if(!isServer) exitWith { // What the fuck?
 			OOP_ERROR_0("Game mode must be loaded on server only!");
@@ -1982,6 +1983,43 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Refresh locations
 		CALLSM0("Location", "postLoad");
+
+		// Cleanup dirty garrisons etc.
+		
+		// Cleanup broken garrisons
+		private _nonSpecialGarrisons = GETSV("Garrison", "all") - gSpecialGarrisons;
+		private _brokenCivilianGarrisons = _nonSpecialGarrisons select {
+			// Civilian garrisons should be at a location only, and autoSpawn always
+			GETV(_x, "side") == civilian && (GETV(_x, "location") == NULL_OBJECT || !GETV(_x, "autoSpawn"))
+		};
+		private _brokenMilitaryGarrisons = _nonSpecialGarrisons select {
+			// Non civilian garrisons should be at a location or position, and autoSpawn always
+			GETV(_x, "side") != civilian && ((GETV(_x, "location") == NULL_OBJECT && CALLM0(_x, "getPos") isEqualTo [0,0,0]) || !GETV(_x, "autoSpawn"))
+		};
+		// Delete the units, the garrisons should get cleaned up automatically
+		{
+			private _gar = _x;
+			{
+				DELETE(_x);
+			} forEach GETV(_gar, "units");
+		} forEach (_brokenCivilianGarrisons + _brokenMilitaryGarrisons);
+
+		private _brokenSpecialGarrisonUnits = gSpecialGarrisons apply {
+			GETV(_x, "units") select {
+				// groups aren't allowed in special garrisons!
+				!IS_NULL_OBJECT(CALLM0(_x, "getGroup")) || 
+				// inf isn't allowed in special garrisons (on load, players are in it obviously after load)
+				CALLM0(_x, "isInfantry")
+			}
+		};
+
+		// Delete the units
+		{
+			private _units = _x;
+			{
+				DELETE(_x);
+			} forEach _units;
+		} forEach _brokenSpecialGarrisonUnits;
 
 		// Delete editor's special objects, after all initialization is complete
 		//CALLSM0("Location", "deleteEditorAllowedAreaMarkers");

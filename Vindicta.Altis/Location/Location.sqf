@@ -234,7 +234,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Setup location's spawn positions
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
+		#ifndef _SQF_VM
 		private _no = _locPos nearObjects _radius;
+		#else
+		private _no = [];
+		#endif
 
 		private _object = objNull;
 		private _type = "";

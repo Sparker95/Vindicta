@@ -3379,6 +3379,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Push to 'all' static variable
 		GETSV("Garrison", "all") pushBack _thisObject;
 
+		// Delete out empty groups
+		T_CALLM0("deleteEmptyGroups");
+
 		true
 	} ENDMETHOD;
 

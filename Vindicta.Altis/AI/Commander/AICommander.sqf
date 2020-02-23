@@ -1,12 +1,10 @@
 #include "common.hpp"
 
-/*
-Class: AI.AICommander
-AI class for the commander.
+// Class: AI.AICommander
+// AI class for the commander.
 
-Author: Bill 2018 (CmdrAI logic, planning, world model, action generation, etc)
-Sparker 12.11.2018 (initial file)
-*/
+// Author: Bill 2018 (CmdrAI logic, planning, world model, action generation, etc)
+// Sparker 12.11.2018 (initial file)
 
 // Ported from CmdrAI
 #define ACTION_SCORE_CUTOFF 0.001
@@ -215,6 +213,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "update clusters");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// TODO: we should just respond to new cluster creation explicitly instead?
 		// Register for new clusters		
@@ -235,6 +234,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "action update");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		T_CALLM("update", [_worldModel]);
 
@@ -242,12 +242,14 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		#ifndef CMDR_AI_NO_PLAN
 		if(T_GETV("planningEnabled")) then {
 			T_CALLM("plan", [_worldModel]);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Consider bringing more units into the map
 		if(T_GETV("planningEnabled")) then {
@@ -259,6 +261,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "cleanup");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 		{
 			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);
@@ -299,6 +302,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "inactive");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -3114,6 +3118,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		FIX_LINE_NUMBERS()
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
@@ -3126,6 +3131,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_SETV("nextMarkerID", 0);
 		T_SETV("clusterMarkers", []);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Restore sensors
 		T_CALLM0("_initSensors");
@@ -3158,6 +3164,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			};
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Set process interval
 		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
@@ -3197,7 +3204,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _radioKeyGrid = T_GETV("radioKeyGrid");
 		CALLM1(_storage, "load", _radioKeyGrid);
 
-		//
 		T_SETV("cheatIntelInterception", false);
 
 		true

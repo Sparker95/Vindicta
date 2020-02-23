@@ -1,13 +1,13 @@
 // Class: Action
-/*
-Enum: ACTION_STATE
-These are possible action states
+// /*
+// Enum: ACTION_STATE
+// These are possible action states
 
-ACTION_STATE_ACTIVE - 
-ACTION_STATE_INACTIVE -
-ACTION_STATE_COMPLETED -
-ACTION_STATE_FAILED -
-*/
+// ACTION_STATE_ACTIVE - 
+// ACTION_STATE_INACTIVE -
+// ACTION_STATE_COMPLETED -
+// ACTION_STATE_FAILED -
+// */
 
 // States of a goal
 #define ACTION_STATE_ACTIVE		0

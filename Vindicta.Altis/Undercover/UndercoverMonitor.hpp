@@ -1,7 +1,4 @@
-/*
-	This file contains a number of global variables for the undercoverMonitor, as well as values for suspiciousness.
-*/
-
+// This file contains a number of global variables for the undercoverMonitor, as well as values for suspiciousness.
 
 // Name of the 'exposed' variable that we set on unit
 #define UNDERCOVER_EXPOSED "bExposed"

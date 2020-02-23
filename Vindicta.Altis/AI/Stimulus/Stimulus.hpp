@@ -1,35 +1,35 @@
-/*
-Struct: Stimulus
-File: AI\Stimulus\Stimulus.hpp
-*/
+// /*
+// Struct: Stimulus
+// File: AI\Stimulus\Stimulus.hpp
+// */
 
-/* Field: TYPE
-Integer, stimulus type. See <STIMULUS_TYPE>*/
+// /* Field: TYPE
+// Integer, stimulus type. See <STIMULUS_TYPE>*/
 #define STIMULUS_ID_TYPE			0
 
-/* Field: SOURCE
-source of the stimulus*/
+// /* Field: SOURCE
+// source of the stimulus*/
 #define STIMULUS_ID_SOURCE			1
 
-/* Field: POS
-position of stimulus source*/
+// /* Field: POS
+// position of stimulus source*/
 #define STIMULUS_ID_POS				2
 
-/* Field: RANGE
-How far it can be sensed*/
+// /* Field: RANGE
+// How far it can be sensed*/
 #define STIMULUS_ID_RANGE			3
 
-/* Field: VALUE
-Can be anything*/
+// /* Field: VALUE
+// Can be anything*/
 #define STIMULUS_ID_VALUE			4
 
-/* Field: EXPIRATION_TIME
-NYI
-*/
+// /* Field: EXPIRATION_TIME
+// NYI
+// */
 #define STIMULUS_ID_EXPIRATION_TIME	5
 
-/* Field: SIDES_INCLUDE
-Array of sides which can sense this stimulus. By default an empty array and every side can sense this.*/
+// /* Field: SIDES_INCLUDE
+// Array of sides which can sense this stimulus. By default an empty array and every side can sense this.*/
 #define STIMULUS_ID_SIDES_INCLUDE	6
 
 // Macro: STIMULUS_NEW()

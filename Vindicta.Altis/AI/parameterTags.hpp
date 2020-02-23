@@ -1,9 +1,9 @@
-/*
-Parameter tags used by actions are defined here
+// /*
+// Parameter tags used by actions are defined here
 
-TAG_G_... - parameters passed to goals
-TAG_... - parameters passed to actions
-*/
+// TAG_G_... - parameters passed to goals
+// TAG_... - parameters passed to actions
+// */
 
 #define TAG_MOUNT "a_mount"
 

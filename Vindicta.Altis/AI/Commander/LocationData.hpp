@@ -1,27 +1,27 @@
 // Class: AICommander
 
-/*
-Enum: CLD
-Stands for Commander Location Data
-Data about spotted locations is stored in Commander AI world facts in this way.
-*/
+// /*
+// Enum: CLD
+// Stands for Commander Location Data
+// Data about spotted locations is stored in Commander AI world facts in this way.
+// */
 
-/*Field: CLD_ID_TYPE
-Type of this location*/
+// /*Field: CLD_ID_TYPE
+// Type of this location*/
 #define CLD_ID_TYPE 0
 
-/*Field: CLD_ID_SIDE
-Side that controls this location*/
+// /*Field: CLD_ID_SIDE
+// Side that controls this location*/
 #define CLD_ID_SIDE 1
 
-/*Field: CLD_ID_UNITS
-Array with subarrays which hold how many units of specific types/subtypes are there
-Structure of the array: [infantry, vehicles, drones]
-infantry - [amount of subcategory 0, 1, 2, ...]
-vehicles - [amount of subcategory 0, 1, 2, ...]
-drones - [amount of subcategory 0, 1, 2, ...]
-If [], means unit amounts are not known
-*/
+// /*Field: CLD_ID_UNITS
+// Array with subarrays which hold how many units of specific types/subtypes are there
+// Structure of the array: [infantry, vehicles, drones]
+// infantry - [amount of subcategory 0, 1, 2, ...]
+// vehicles - [amount of subcategory 0, 1, 2, ...]
+// drones - [amount of subcategory 0, 1, 2, ...]
+// If [], means unit amounts are not known
+// */
 #define CLD_ID_UNIT_AMOUNT 2
 
 // 2D position

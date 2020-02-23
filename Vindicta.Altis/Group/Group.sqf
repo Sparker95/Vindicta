@@ -426,7 +426,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		params ["_thisObject"];
 
 		pr _data = T_GETV("data");
-		pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+		pr _infUnits = T_CALLM0("getInfantryUnits");
 		pr _leader = _data select GROUP_DATA_ID_LEADER;
 		if (count _infUnits == 0) then {
 			// There is no leader in this group any more
@@ -1281,6 +1281,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			pr _unit = _x;
 			CALLM1(_storage, "load", _unit);
 		} forEach (_data#GROUP_DATA_ID_UNITS);
+
+		// Cleanup
+		private _leader = _data#GROUP_DATA_ID_LEADER;
+		if(_leader != NULL_OBJECT && !IS_OOP_OBJECT(_leader)) then {
+			OOP_WARNING_2("Cleanup: group %1 leader %2 is not a valid object", _thisObject, _leader);
+			T_CALLM0("_selectNextLeader");
+		};
 
 		true
 	} ENDMETHOD;

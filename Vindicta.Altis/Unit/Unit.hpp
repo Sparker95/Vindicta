@@ -1,6 +1,3 @@
-/*
-*/
-
 #define UNIT_DATA_ID_CAT			0
 #define UNIT_DATA_ID_SUBCAT			1
 #define UNIT_DATA_ID_CLASS_NAME		2
