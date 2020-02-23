@@ -290,7 +290,9 @@ CLASS("AICommander", "AI")
 		// Return the groups to this commander
 		{ // forEach _abandonnedGroups;
 			private _args = [units _x];
-			CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG _args]);
+			if(count (_args#0) > 0) then {
+				CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG _args]);
+			};
 		} forEach _abandonnedGroups;
 
 		#ifdef DEBUG_COMMANDER
