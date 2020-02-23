@@ -200,6 +200,12 @@
 			"T_GROUP_inf_sniper_team", 
 			"T_GROUP_inf_officer",
 			"T_PL_tracked_wheeled", 
+			"T_CARGO",
+			"T_INV",
+			"T_INV_primary",
+			"T_INV_secondary",
+			"T_INV_handgun",
+			"t_fnc_getTemplate",
 			"T_PL_HMG_GMG_high",
 			"T_PL_HMG_GMG_low",
 			"T_PL_helicopters",
@@ -289,6 +295,8 @@
 			"opacity": 40,
 			"iconColour": "white"
 		},
-		"todo-tree.tree.showTagsFromOpenFilesOnly": false
+		"todo-tree.tree.showTagsFromOpenFilesOnly": false,
+		"sqf-debugger.verbose": true,
+		"sqf-debugger.logging": true
 	}
 }
