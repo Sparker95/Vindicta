@@ -394,13 +394,14 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		OOP_INFO_3("Finding buildables for %1 with radius %2 at %3", T_GETV("name"), _radius, _locPos);
 
+		private _objects = T_GETV("objects");
 		private _buildables = [];
 #ifndef _SQF_VM
 		{
 			_object = _x;
 			private _objectName = str _object;
 			private _modelName = _objectName select [(_objectName find ": ") + 2];
-			if(T_CALLM1("isInBorder", _object) && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
+			if(!(_object in _objects) && {T_CALLM1("isInBorder", _object)} && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
 			{
 				_buildables pushBackUnique _object;
 			};
