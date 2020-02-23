@@ -72,14 +72,17 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("showIntelPanel");
 	// todo players?
 
-	// Int, IDC of the control under the cursor, or -1
-	VARIABLE("currentControlIDC");
+	VARIABLE("sortButtons"); // array of side/type/time sorting buttons
+	VARIABLE("currentControlIDC"); // Int, IDC of the control under the cursor, or -1
 
 	// Respawn panel
 	VARIABLE("respawnPanelEnabled");
 
 	// Last place the player respawned
 	VARIABLE("lastRespawnPos");
+
+	VARIABLE("lbSelectionIndices"); // used to keep track of updates of lbSelection array
+
 
 	// initialize UI event handlers
 	METHOD("new") {
@@ -111,8 +114,8 @@ CLASS(CLASS_NAME, "")
 		T_SETV("locSelMenuEnabled", false);
 		T_SETV("locationCurrent", "");
 
-		T_SETV("showIntelInactive", false);
-		T_SETV("showIntelActive", false);
+		T_SETV("showIntelInactive", true);
+		T_SETV("showIntelActive", true);
 		T_SETV("showIntelEnded", false);
 		T_SETV("showLocations", true);
 		T_SETV("showEnemies", true);
@@ -121,12 +124,36 @@ CLASS(CLASS_NAME, "")
 		T_SETV("intelPanelSortCategory", "side");
 		T_SETV("currentControlIDC", -1);
 
+		T_SETV("sortButtons", []);
+
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
 
 		T_SETV("lastRespawnPos", []);
 
+		T_SETV("lbSelectionIndices", []); 
+
 		pr _mapDisplay = findDisplay 12;
+
+		/*																											
+88888888888  8b           d8  88888888888  888b      88  888888888888                                            
+88           `8b         d8'  88           8888b     88       88                                                 
+88            `8b       d8'   88           88 `8b    88       88                                                 
+88aaaaa        `8b     d8'    88aaaaa      88  `8b   88       88                                                 
+88"""""         `8b   d8'     88"""""      88   `8b  88       88                                                 
+88               `8b d8'      88           88    `8b 88       88                                                 
+88                `888'       88           88     `8888       88                                                 
+88888888888        `8'        88888888888  88      `888       88                                                 
+
+88        88         db         888b      88  88888888ba,    88           88888888888  88888888ba    ad88888ba   
+88        88        d88b        8888b     88  88      `"8b   88           88           88      "8b  d8"     "8b  
+88        88       d8'`8b       88 `8b    88  88        `8b  88           88           88      ,8P  Y8,          
+88aaaaaaaa88      d8'  `8b      88  `8b   88  88         88  88           88aaaaa      88aaaaaa8P'  `Y8aaaaa,    
+88""""""""88     d8YaaaaY8b     88   `8b  88  88         88  88           88"""""      88""""88'      `"""""8b,  
+88        88    d8""""""""8b    88    `8b 88  88         8P  88           88           88    `8b            `8b  
+88        88   d8'        `8b   88     `8888  88      .a8P   88           88           88     `8b   Y8a     a8P  
+88        88  d8'          `8b  88      `888  88888888Y"'    88888888888  88888888888  88      `8b   "Y88888P"   
+		*/
 
 		// open map EH
 		addMissionEventHandler ["Map", { 
@@ -136,8 +163,6 @@ CLASS(CLASS_NAME, "")
 		([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl) ctrlAddEventHandler ["LBSelChanged", { CALLM(gClientMapUI, "intelPanelOnSelChanged", _this); }];
 		([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl) ctrlAddEventHandler ["LBDblClick", { CALLM(gClientMapUI, "intelPanelOnDblClick", _this); }];
 
-		// = = = = = = Add event handlers = = = = = =
-
 		// Map OnDraw
 		// Gets called on each frame, only when the map is open
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["Draw", {CALLM0(gClientMapUI, "onMapDraw");} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
@@ -145,33 +170,18 @@ CLASS(CLASS_NAME, "")
 		// Map OnMouseMoving
 		// Fires continuously while moving the mouse with a certain interval
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseMoving", {CALLM(gClientMapUI, "onMapMouseMoving", _this);} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
+                                                                 
+		// We use a fucked up trick to make a nicely looking checkbox button. It constists of two controls: static background to manage appearence,
+		// and transparent foreground button to intercept events. The event handlers must be attached to the button obviously.
+		// Use function ui_fnc_findCheckboxButton to find the button control from given static control.
 
-
-		// bottom panel
-		// MouseEnter / MouseExit event handlers
-		/*
-		{
-			([_mapDisplay, _x] call ui_fnc_findControl) ctrlAddEventHandler ["MouseEnter", {CALLM(gClientMapUI, "onMouseEnter", _this); }];
-			([_mapDisplay, _x] call ui_fnc_findControl) ctrlAddEventHandler ["MouseExit", {CALLM(gClientMapUI, "onMouseExit", _this); }];
-		} forEach ["CMUI_BUTTON_NOTIF", "CMUI_BUTTON_INTELP", "CMUI_BUTTON_LOC", "CMUI_BUTTON_PLAYERS", "CMUI_INTEL_ENDED", "CMUI_INTEL_INACTIVE", "CMUI_INTEL_ACTIVE"];
-		*/
-
-		// Checkbox button clicks
-		/* ! ! ! ! !  ! ! ! ! ! ! ! ! !
-		We use a fucked up trick to make a nicely looking checkbox button.
-		It constists of two controls: static background to manage appearence,
-		and transparent foreground button to intercept events.
-		The event handlers must be attached to the button obviously.
-		Use function ui_fnc_findCheckboxButton to find the button control from given
-		static control.
-		 ! ! ! ! !  ! ! ! ! ! ! ! ! ! */
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_INACTIVE"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ACTIVE"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
-		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
@@ -189,19 +199,10 @@ CLASS(CLASS_NAME, "")
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelPanel", _this); }];
 		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
-
-		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
-		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickRespawn", _this); }];
 
-		// = = = = = = Initialize default text = = = = = =
-
-		// init headline text and color
-		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
-
 		//  = = = = = = = = Add event handlers to the map = = = = = = = = 
-
 		// Mouse button down
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonDown", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
@@ -224,6 +225,10 @@ CLASS(CLASS_NAME, "")
 		}];
 
 
+		// init headline text and color
+		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
+
+
 		//  = = = = = = = = Create garrison action list box = = = = = = = =
 
 		// Appears when we are about to give an order to a garrison
@@ -241,7 +246,7 @@ CLASS(CLASS_NAME, "")
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");				// This text is not displayed
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_ATTACK, "attack");			// It is for another function to check it
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE, "reinforce");	// Marvis please don't touch it!
-		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "close");			//
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "close");			// I'm sorry, Sparker
 
 		// = = = = = = = = = = = = = = = Create the selected garrison menu = = = = = = = = = = = 
 		// It appears when we have selected a garrison
@@ -280,15 +285,18 @@ CLASS(CLASS_NAME, "")
 		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_RECRUIT", "recruit");
 		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_DISBAND", "disband");
 
-		// = = = = = = = = = = = = = = = Create the listbox buttons = = = = = = = = = = = = = = =
+		// = = = = = = = = = = = = = = = Create the listbox sorting buttons = = = = = = = = = = = = = = =
 		pr _ctrlGroup = (finddisplay 12) displayCtrl IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
+
 		if (isNull _ctrlGroup) then {
 			OOP_ERROR_0("Listbox button group was not found!");
 		} else {
 			pr _btns = [(finddisplay 12), "MUI_BUTTON_LISTNBOX", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.15, 0.75], true] call ui_fnc_createButtonsInGroup;
-			_btns#0 ctrlSetText "Side";
-			_btns#1 ctrlSetText "Type";
-			_btns#2 ctrlSetText "Time";
+			_btns#0 ctrlSetText "SIDE";
+			_btns#1 ctrlSetText "TYPE";
+			_btns#2 ctrlSetText "TIME";
+
+			T_SETV("sortButtons", _btns);
 
 			_btns#0 ctrlAddEventHandler ["ButtonClick", {
 				CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "side");
@@ -299,10 +307,45 @@ CLASS(CLASS_NAME, "")
 			_btns#2 ctrlAddEventHandler ["ButtonClick", {
 				CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "time");
 			}];
+
+			// we use tooltips here 
+			_btns#0 ctrlSetTooltip (localize "STR_CMUI_SORTINGBTN_SIDE");
+			_btns#1 ctrlSetTooltip (localize "STR_CMUI_SORTINGBTN_TYPE");
+			_btns#2 ctrlSetTooltip (localize "STR_CMUI_SORTINGBTN_TIME");
 		};
 
 		// Disable the respawn panel initially
 		T_CALLM1("respawnPanelEnable", false);
+
+		/*
+		ooooooooooo   ooooooo     ooooooo  ooooo    ooooooooooo ooooo oooooooooo   oooooooo8  
+		88  888  88 o888   888o o888   888o 888     88  888  88  888   888    888 888         
+			888     888     888 888     888 888         888      888   888oooo88   888oooooo  
+			888     888o   o888 888o   o888 888      o  888      888   888                888 
+			o888o      88ooo88     88ooo88  o888ooooo88 o888o    o888o o888o       o88oooo888 
+		*/
+
+		/* 
+			A truly lazy way to set localized tooltips?
+			Each localize string = "STR_LOCALIZE_" + "Control class name".
+
+		*/
+		
+		{
+			([_mapDisplay, _x] call ui_fnc_findControl) ctrlSetTooltip (localize("STR_LOCALIZE_" + _x));
+		} forEach [
+			"CMUI_INTEL_LISTBOX", 
+			"CMUI_INTEL_ACTIVE",
+			"CMUI_INTEL_INACTIVE",
+			"CMUI_INTEL_ENDED",
+			"CMUI_BUTTON_NOTIF",
+			"CMUI_BUTTON_INTELP",
+			"CMUI_BUTTON_LOC",
+			"CMUI_BUTTON_PLAYERS"
+			];
+
+		// fix problem where intel doesn't show unless map is clicked first
+		T_CALLM0("onMouseClickElsewhere");
 
 		// Mouse moving
 		// Probably we don't need it now
@@ -332,7 +375,15 @@ CLASS(CLASS_NAME, "")
 		}];
 		*/
 
-	} ENDMETHOD;
+	} ENDMETHOD; // end "new" METHOD
+
+
+
+
+
+
+
+
 
 	/*                                           
 88b           d88  88   ad88888ba     ,ad8888ba,   
@@ -470,10 +521,13 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 					private _mrk = createMarkerLocal [_name, _pos];
 					_mrk setMarkerTypeLocal _type;
 					_mrk setMarkerColorLocal _color;
-					_mrk setMarkerAlphaLocal 0.7;
+					_mrk setMarkerAlphaLocal 1;
 					_mrk setMarkerTextLocal _text;
+					_mrk setMarkerSizeLocal [1, 1];
 					_markers pushBack _name; 
-				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_start", "Source"], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_end", "Destination"]];
+
+				// no need for source marker label, we already see where it starts and ends
+				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_dot", ""], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_dot", "Destination"]];
 			};
 
 			// Draw lines
@@ -481,7 +535,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, _color, 20, _mrkName] call misc_fnc_mapDrawLineLocal;
+				[_pos0, _pos1, _color, 8, _mrkName] call misc_fnc_mapDrawLineLocal;
 				_markers pushBack _mrkName;
 			};
 		};
@@ -496,14 +550,16 @@ ooooo ooooo ooooo oooo   oooo ooooooooooo      ooooooooooo ooooooooooo ooooo  oo
  888ooo888   888   88 888o88      888              888      888ooo8        888         888     
  888   888   888   88   8888      888              888      888    oo     88 888       888     
 o888o o888o o888o o88o    88     o888o            o888o    o888ooo8888 o88o  o888o    o888o    
-
 http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
+
+We only use the hint panel for displaying progress now. Normal tooltips are used for everything else.
+
 */
 
 	// Sets hint text at the bottom of the screen
 	METHOD("setHintText") {
 		params [P_THISOBJECT, P_STRING("_text")];
-		private _mapDisplay = findDisplay 12;
+		pr _mapDisplay = findDisplay 12;
 		([_mapDisplay, "CMUI_HINTS"] call ui_fnc_findControl) ctrlSetText _text; // (localize "STR_CMUI_BUTTON1");
 	} ENDMETHOD;
 
@@ -511,7 +567,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 	METHOD("updateHintTextFromContext") {
 		params [P_THISOBJECT];
 
-		private _mapDisplay = findDisplay 12;
+		pr _mapDisplay = findDisplay 12; 
 
 		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
 		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
@@ -524,12 +580,12 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 		if(_gameModeInitialized && {!isNil "gGameModeServer"}) then {
 			private _progressHint = format["Campaign progress: %1%2", floor (100 * CALLM0(gGameModeServer, "getCampaignProgress")), "%"];
 			T_CALLM1("setHintText", _progressHint);
-		} else {
-			if(call misc_fnc_isAdminLocal) then {
-				T_CALLM1("setHintText", "Game not initialized: Press U and create or load a game.");
 			} else {
-				T_CALLM1("setHintText", "Game not initialized: Wait for admin to create or load a game.");
-			};
+				if(call misc_fnc_isAdminLocal) then {
+					T_CALLM1("setHintText", "Game not initialized: Press U and create or load a game.");
+				} else {
+					T_CALLM1("setHintText", "Game not initialized: Wait for admin to create or load a game.");
+				};
 		};
 
 		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
@@ -549,27 +605,6 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 
 		if (count _selectedGarrisons >= 1) exitWith {
 			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison.");
-		};
-
-		pr _idc = T_GETV("currentControlIDC");
-		if (_idc != -1) exitWith {
-			if (ctrlEnabled (_mapDisplay displayCtrl _idc)) then {
-				switch (_idc) do {
-					// bottom panel
-					case IDC_BPANEL_BUTTON_1: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON1"); };
-					case IDC_BPANEL_BUTTON_2: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON2"); };
-					case IDC_BPANEL_BUTTON_3: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON3"); };
-
-				};
-			} else { // hints to display if this control is disabled
-				switch (_idc) do {
-					// bottom panel
-					case IDC_BPANEL_BUTTON_1: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON1_DISABLED"); };
-					case IDC_BPANEL_BUTTON_2: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON2_DISABLED"); };
-					case IDC_BPANEL_BUTTON_3: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON3_DISABLED"); };
-
-				};
-			};
 		};
 
 		//T_CALLM1("setHintText", "... Hints are displayed here ...");
@@ -671,25 +706,25 @@ Methods for the action listbox appears when we click on something to send some g
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateMoveAction", _args);
-				systemChat "Giving a MOVE order to garrison";
+				systemChat "Giving a MOVE order to the garrison.";
 			};
 			case "attack" : {
 				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateAttackAction", _args);
-				systemChat "Giving an ATTACK order to garrison";
+				systemChat "Giving an ATTACK order to the garrison.";
 			};
 			case "reinforce" : {
 				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateReinforceAction", _args);
-				systemChat "Giving a REINFORCE order to garrison";
+				systemChat "Giving a REINFORCE order to the garrison.";
 			};
 			case "patrol" : {
 				OOP_INFO_1("  %1 garrison action is not implemented", _action);
-				systemChat "This garrison order is not yet implemented";
+				systemChat "This garrison order is not yet implemented.";
 			};
 			case "close" : {
 				// Do nothing, it will just close itself
@@ -843,7 +878,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 				pr _garRef = CALLM0(_garRecord, "getGarrison");
 				pr _args = [_garRef];
 				CALLM2(_AI, "postMethodAsync", "cancelCurrentAction", [_garRef]);
-				systemChat "Cancelling the current order of the garrison";
+				systemChat "Cancelling the current order of the garrison.";
 			};
 			default {
 				// Do nothing
@@ -1018,9 +1053,17 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	METHOD("intelPanelUpdateFromLocationIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_ARRAY("_flags")];
 
-		private _mapDisplay = findDisplay 12;
+		pr _mapDisplay = findDisplay 12;
 
 		OOP_INFO_1("intelPanelUpdateFromLocationIntel: %1", _intel);
+
+		// set text on sorting buttons, not needed here. It will simply look like a black bar
+		pr _btns = T_GETV("sortButtons");
+		if !(_btns isEqualTo []) then {
+			_btns#0 ctrlSetText "";
+			_btns#1 ctrlSetText "";
+			_btns#2 ctrlSetText "";
+		};
 
 		// Bail if this intel item is removed for some reason
 		if (!CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) exitWith {
@@ -1048,6 +1091,11 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		_lnb lnbAddRow [ "TYPE", _typeText];
 		_lnb lnbAddRow [ "SIDE", _sideText];
 
+		// Add inf capacity
+		pr _capinf = CALLM0(_loc, "getCapacityInf");
+		//_lnb lnbAddRow [format ["MAX INFANTRY %1", _capInf], "", ""];
+		_lnb lnbAddRow ["MAX INFANTRY", str _capInf];
+
 		// Add amount of recruits if it's a city
 		pr _loc = GETV(_intel, "location");
 		pr _gameModeData = GETV(_loc, "gameModeData");
@@ -1069,11 +1117,6 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		// 	//_lnb lnbAddRow [format ["AVAILABLE RECRUITS %1", _nRecruits], "", ""];
 		// 	_lnb lnbAddRow ["AVAILABLE RECRUITS", str _nRecruits];
 		// };
-
-		// Add inf capacity
-		pr _capinf = CALLM0(_loc, "getCapacityInf");
-		//_lnb lnbAddRow [format ["MAX INFANTRY %1", _capInf], "", ""];
-		_lnb lnbAddRow ["MAX INFANTRY", str _capInf];
 
 		// Add unit data
 		pr _ua = GETV(_intel, "unitData");
@@ -1144,7 +1187,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					default {false};
 				};
 
-				if (_show) then {
+				//if (_show) then {
 					// Calculate time difference between current date and departure date
 					pr _intelState = GETV(_intel, "state");
 					pr _stateStr = switch (_intelState) do {
@@ -1200,8 +1243,26 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					_lnb lnbSetValue [[_index, 1], _valueType];
 					_lnb lnbSetValue [[_index, 2], _t];
 
+					// set tooltip, SQF-VM doesn't know lnbSetTooltip
+					// https://community.bistudio.com/wiki/lnbSetTooltip
+#ifndef _SQF_VM
+					_lnb lnbSetTooltip [[_index, 0], localize "STR_CMUI_INTEL_TOOLTIP"];
+#endif
+
+					// grey if ended
+					switch (_stateStr) do {
+						default {};
+						case "ENDED": {
+							_lnb lnbSetColor [[_index, 0], [0.45, 0.45, 0.45, 1]];
+							_lnb lnbSetColor [[_index, 1], [0.45, 0.45, 0.45, 1]];
+							_lnb lnbSetColor [[_index, 2], [0.45, 0.45, 0.45, 1]];
+						};
+						case "ACTIVE": {};
+						case "INACTIVE": {};
+					};
+
 					//OOP_INFO_1("ADDED ROW: %1", _rowData);
-				};
+				//};
 			};
 		} forEach _allIntels;
 	} ENDMETHOD;
@@ -1220,12 +1281,33 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
 			pr _row = lnbCurSelRow _lnb;
 			if (_row >= 0) then {
-				pr _intel = _lnb lnbData [_row, 0];
-				// Make sure that's a valid intel piece
-				if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
-					// Hide all intel on the map, except for this one
+
+				pr _lnbIndices = lbSelection _lnb;
+				T_SETV("lbSelectionIndices", _lnbIndices);
+				// if multiple selections were made
+				if ((count _lnbIndices) > 1) then {
+
 					T_CALLM2("mapShowAllIntel", false, true); // Force hide
-					CALLM1(_intel, "showOnMap", true);
+
+					// show each intel on map
+					{
+						pr _intel = _lnb lnbData [_x, 0];
+						// Make sure that's a valid intel piece
+						if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
+							// Hide all intel on the map, except for this one	
+							CALLM1(_intel, "showOnMap", true);
+						};
+
+					} forEach _lnbIndices;
+
+				} else {
+					pr _intel = _lnb lnbData [_row, 0];
+					// Make sure that's a valid intel piece
+					if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
+						// Hide all intel on the map, except for this one
+						T_CALLM2("mapShowAllIntel", false, true); // Force hide
+						CALLM1(_intel, "showOnMap", true);
+					};
 				};
 			} else {
 				T_CALLM0("mapShowAllIntel");
@@ -1461,7 +1543,8 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			} forEach _selectedLocations;
 
 			// Let's select it
-			{ CALLM1(_x, "select", true); } forEach _markersUnderCursor;
+			//{ CALLM1(_x, "select", true); } _markersUnderCursor; // changed it because multiselection is only annoying atm
+			CALLM1((_markersUnderCursor#0), "select", true);
 
 			// If there is any garrison under cursor
 			if (count _garrisonsUnderCursor > 0) then {
@@ -1529,6 +1612,14 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	*/
 	METHOD("onMouseClickElsewhere") {
 		params [P_THISOBJECT];
+
+		// set text on sorting buttons
+		pr _btns = T_GETV("sortButtons");
+		if !(_btns isEqualTo []) then {
+			_btns#0 ctrlSetText "SIDE";
+			_btns#1 ctrlSetText "TYPE";
+			_btns#2 ctrlSetText "TIME";
+		};
 
 		// Disable the garrison action listbox
 		T_CALLM1("garActionMenuEnable", false);
@@ -1648,6 +1739,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
+		
 	} ENDMETHOD;
 
 	METHOD("onButtonClickShowIntelActive") {
@@ -1662,6 +1754,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
+		
 	} ENDMETHOD;
 
 	METHOD("onButtonClickShowIntelEnded") {
@@ -1693,7 +1786,8 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 									"CMUI_INTEL_ACTIVE",
 									"CMUI_INTEL_INACTIVE",
 									"CMUI_INTEL_ENDED",
-									"CMUI_INTEL_BTNGRP"
+									"CMUI_INTEL_BTNGRP",
+									"CMUI_INTEL_BTNGRP_BG"
 								];
 		
 		{
@@ -1810,11 +1904,22 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	} ENDMETHOD;
 
 	/*
-		Method: onMouseDraw
+		Method: onMapDraw
 		Description: Gets called each frame if map is open and being redrawn.
 	*/
 	METHOD("onMapDraw") {
 		params [P_THISOBJECT];
+
+		// listbox selection changed event handler is called before lbSelection updates 
+		// so we check here and call the method again to properly enable multiselction
+		pr _mapDisplay = findDisplay 12;
+		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
+		pr _lbSel = T_GETV("lbSelectionIndices");
+		if !(_lbSel isEqualTo []) then {
+			if ((count lbSelection _lnb) != (count _lbSel)) then { 
+				T_CALLM1("intelPanelOnSelChanged", _lnb); // lbSelection size has changed, update selected intel
+			};
+		};
 
 		// Garrison action listbox will update its position 
 		T_CALLM0("garActionMenuUpdatePos");
@@ -1982,7 +2087,7 @@ Gets called from "onMapDraw"
 			pr _respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
 			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
 			// Show a message to everyone
-			pr _text = format ["%1 has respawned at %2", name player, CALLM0(_loc, "getDisplayName")];
+			pr _text = format ["%1 has respawned at %2.", name player, CALLM0(_loc, "getDisplayName")];
 			[_text] remoteExecCall ["systemChat"];
 			// Save the last respawn position
 			T_SETV("lastRespawnPos", _respawnPos);

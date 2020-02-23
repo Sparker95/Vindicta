@@ -8,7 +8,7 @@ class CMUI_INTEL_LISTBOX_BG : MUI_BASE
 	x = safeZoneX + safeZoneW * 0.763; 
 	y = safeZoneY + safeZoneH * 0.098; 
 	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.353;  
+	h = safeZoneH * 0.36;  
 	colorBackground[] = MUIC_BLACK;
 	colorText[] = MUIC_TRANSPARENT;
     text = ""; 
@@ -20,12 +20,15 @@ class CMUI_INTEL_LISTBOX : MUI_LISTNBOX
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.098; 
+	y = safeZoneY + safeZoneH * 0.105; 
 	w = safeZoneW * 0.230; 
 	h = safeZoneH * 0.353; 
 	colorBackground[] = MUIC_BLACK; 
-	font = "PuristaSemibold";
+	font = "EtelkaMonospacePro";
+	sizeEx = safeZoneH*0.015;
+	style = LB_MULTI;
 	//columns[] = {0,0.2,0.8};
+	rowHeight = 0.048;
 };
 
 class CMUI_INTEL_HEADLINE : MUI_HEADLINE 
@@ -49,7 +52,6 @@ class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	w = safeZoneW * 0.230; 
 	h = safeZoneH * 0.029;
 	text = "SHOW STARTED ACTIONS"; 
-
 };
 
 class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -61,7 +63,6 @@ class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	w = safeZoneW * 0.230; 
 	h = safeZoneH * 0.029; 
 	text = "SHOW PLANNED ACTIONS"; 
-
 };
 
 class CMUI_INTEL_ENDED : MUI_BUTTON_TXT_CHECKBOX_LIKE
@@ -73,7 +74,6 @@ class CMUI_INTEL_ENDED : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	w = safeZoneW * 0.230; 
 	h = safeZoneH * 0.029; 
 	text = "SHOW ENDED ACTIONS"; 
-
 };
 
 class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT 
@@ -85,7 +85,6 @@ class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
 	text = "CLEAR NOTIFICATIONS"; 
-
 };
 
 class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -97,7 +96,6 @@ class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
 	text = "SHOW INTEL PANEL"; 
-
 };
 
 class CMUI_HINTS_BG : RscPicture
@@ -134,7 +132,6 @@ class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
 	text = "SHOW LOCATIONS"; 
-
 };
 
 class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE {
@@ -145,7 +142,6 @@ class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
 	text = "SHOW PLAYERS"; 
-
 };
 
 class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT 
@@ -177,6 +173,7 @@ class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID
     font = "RobotoCondensed";
 };
 
+// black background for buttons to fix ugly gap
 class CMUI_INTEL_BTNGRP_BG : MUI_BG_BLACKSOLID 
 {
 	IDC = -1;
@@ -186,7 +183,6 @@ class CMUI_INTEL_BTNGRP_BG : MUI_BG_BLACKSOLID
 	h = safeZoneH * 0.028; 
 };
 
-// black background for buttons to fix ugly gap
 class CMUI_INTEL_BTNGRP : MUI_GROUP 
 {
 	IDC = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;

@@ -196,39 +196,49 @@
 <Project name="ClientMapUI">
 	<Package name="ClientMapUI">
 		<Container name="Hints">
-			<Key ID="STR_CMUI_DEFAULT">
+			<Key ID="STR_CMUI_DEFAULT"> 
 				<Original>Move your cursor over a button to learn more.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON1">
-				<Original>Fast travel to any location. Select fast travel then click on a location on the map.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_LISTBOX">
+				<Original>This list displays all known intel. Click on a row to display only that piece of intel on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON1_DISABLED">
-				<Original></Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_ACTIVE">
+				<Original>Press to toggle the display of active intel drawn on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON2">
-				<Original>Create a camp at your current location.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_INACTIVE">
+				<Original>Press to toggle the display of planned, inactive intel drawn on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON2_DISABLED">
-				<Original>Cannot create a camp within 500m of any existing location.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_ENDED">
+				<Original>Press to toggle the display of old, ended intel drawn on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON3">
-				<Original>Opens the mission menu. Closes the map.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_NOTIF">
+				<Original>Press to remove red alert icons on locations.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON3_DISABLED">
-				<Original>Cannot open the mission menu right now.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_INTELP">
+				<Original>Press to toggle the display of the intel panel. Useful if you want to see the entire map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_TAB1">
-				<Original>View collected intel about the world or a selected camp, outpost or base.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_LOC">
+				<Original>Press to toggle our custom locations being shown on your map. That includes outposts and cities.</Original>
 			</Key>
-			<Key ID="STR_CMUI_TAB2">
-				<Original>View units and groups at this location and give orders to this garrison.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_PLAYERS">
+				<Original>Press to toggle players being shown on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_TAB3">
-				<Original>View settings and stuff. Don't really know.</Original>
+	
+			<Key ID="STR_CMUI_SORTINGBTN_SIDE">
+				<Original>Press to sort the intel list by the side. Can be WEST for BLUFOR, EAST for OPFOR, or IND for Independent.</Original>
 			</Key>
-			<Key ID="STR_CMUI_MORE">
-				<Original>Create a camp at your current location.</Original>
+			<Key ID="STR_CMUI_SORTINGBTN_TYPE">
+				<Original>Press to sort the intel list by type.</Original>
 			</Key>
+			<Key ID="STR_CMUI_SORTINGBTN_TIME">
+				<Original>Press to sort the intel list by most recent or oldest intel.</Original>
+			</Key>
+
+			<Key ID="STR_CMUI_INTEL_TOOLTIP">
+				<Original>Double click to center on attack. Use Shift + LMB to multiselect items.</Original>
+			</Key>
+
+			
 		</Container>
 		<Container name="IntelTxt">
 			<Key ID="STR_CMUI_INTEL_DEFAULT">
