@@ -25,11 +25,13 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Add event handlers
 		T_CALLM3("controlAddEventHandler", "TAB_GMINIT_BUTTON_START", "buttonClick", "onButtonStart");
+		T_CALLM3("controlAddEventHandler", "TAB_GMINIT_BUTTON_RND", "buttonClick", "onButtonRnd");
 
 		// Populate combo boxes
 		pr _cbGameMode = T_CALLM1("findControl", "TAB_GMINIT_COMBO_GAME_MODE");
 		pr _cbEnemyFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_ENEMY_FACTION");
 		pr _cbPoliceFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_POLICE_FACTION");
+		T_CALLM0("onButtonRnd");
 
 		// Add game mode names
 		pr _gameModes = [["Civil War", "CivilWarGameMode"]];
@@ -154,6 +156,12 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 	} ENDMETHOD;
 
+	METHOD("onButtonRnd") {
+		params [P_THISOBJECT];
+		pr _editCampaignName = T_CALLM1("findControl", "TAB_GMINIT_EDIT_CAMPAIGN_NAME");
+		_editCampaignName ctrlSetText (selectRandom (call compile preprocessFileLineNumbers "Templates\campaignNames.sqf"));
+	} ENDMETHOD;
+	
 	METHOD("onButtonStart") {
 		params [P_THISOBJECT];
 

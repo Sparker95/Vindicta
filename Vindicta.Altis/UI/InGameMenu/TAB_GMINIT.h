@@ -121,10 +121,30 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			idc = -1;
 			x = 0.308; 
 			y = 0.094; 
-			w = 0.371; 
+			w = 0.333; 
 			h = 0.038;
 			text = "ENTER NAME";
 			style = 0;
+		};
+
+		class TAB_GMINIT_BUTTON_RND : MUI_BUTTON_TXT_ABS 
+		{
+			type = 1;
+			idc = -1;
+			x = 0.646; 
+			y = 0.094; 
+			w = 0.033; 
+			h = 0.038;
+			text = "~";
+			font = "PuristaMedium";
+			colorText[] = MUIC_BLACK;
+			colorBackground[] = MUIC_MISSION;
+			colorBackgroundActive[] = MUIC_WHITE;
+			colorBackgroundDisabled[] = MUIC_TXT_DISABLED;
+			colorBorder[] = MUIC_TRANSPARENT;
+			colorDisabled[] = MUIC_WHITE;
+			colorFocused[] = MUIC_MISSION; // same as colorBackground to disable blinking
+			colorShadow[] = MUIC_TRANSPARENT;
 		};
 
 		class TAB_GMINIT_COMBO_GAME_MODE : MUI_COMBOBOX_ABS 

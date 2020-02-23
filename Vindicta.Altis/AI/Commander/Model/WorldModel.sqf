@@ -49,7 +49,7 @@ CLASS("WorldModel", "Storable")
 			private _activityGridArgs = [250, 0];
 			private _rawActivityGrid = NEW("Grid", _activityGridArgs);
 			private _activityGrid = NEW("Grid", _activityGridArgs);
-			private _damageGridArgs = [1000, 0];
+			private _damageGridArgs = [500, 0];
 			private _rawDamageGrid = NEW("Grid", _damageGridArgs);
 			private _damageGrid = NEW("Grid", _damageGridArgs);
 
@@ -848,7 +848,7 @@ CLASS("WorldModel", "Storable")
 
 		// SAVEBREAK >>>
 		// All grids can be loaded above instead
-		if(GETV(_storage, "version") >= 13) then {
+		if(GETV(_storage, "version") >= 14) then {
 			{
 				private _grid = T_GETV(_x);
 				if(!IS_NULL_OBJECT(_grid)) then {
@@ -856,9 +856,8 @@ CLASS("WorldModel", "Storable")
 				};
 			} forEach ["rawDamageGrid", "damageGrid"];
 		} else {
-			private _activityGridArgs = [250, 0];
-			private _rawDamageGrid = NEW("Grid", _activityGridArgs);
-			private _damageGridArgs = [1000, 0];
+			private _damageGridArgs = [500, 0];
+			private _rawDamageGrid = NEW("Grid", _damageGridArgs);
 			private _damageGrid = NEW("Grid", _damageGridArgs);
 
 			T_SETV("rawDamageGrid", _rawDamageGrid);
