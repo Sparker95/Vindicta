@@ -1795,7 +1795,6 @@ CLASS(CLASS_NAME, "")
 	*/
 	METHOD("onButtonClickShowIntelInactive") {
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
-		OOP_INFO_1("onButtonClickShowIntelInactive: %1", _this);
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelInactive", _checked);
 		T_CALLM0("mapShowAllIntel");
@@ -1808,7 +1807,6 @@ CLASS(CLASS_NAME, "")
 	*/
 	METHOD("onButtonClickShowIntelInactiveList") {
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
-		OOP_INFO_1("onButtonClickShowIntelInactive: %1", _this);
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelInactiveList", _checked);
 
@@ -2005,7 +2003,6 @@ CLASS(CLASS_NAME, "")
 
 		pr _mapDisplay = findDisplay 12;
 		
-		systemchat format["%1", (ctrlClassName _ctrl)];
 		T_CALLM0("updateHintTextFromContext");
 		false // Must return false to still make it do the config-defined action
 	} ENDMETHOD;
