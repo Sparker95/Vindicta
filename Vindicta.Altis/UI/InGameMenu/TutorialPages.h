@@ -77,10 +77,18 @@ class TutorialPages
 		text = "The enemy will dynamically react to your actions, and the reaction will depend on the current war state. At the start of the game, however, everything is relatively calm and enemy occupation is low.\n\nExpect the enemy to bring reinforcements to their airfields as a reaction to you attacking outposts.";
 	};
 
-	class TutPage1 : TutBasePage
+	class TutPageUndercover_1 : TutBasePage
 	{
-		textHeadline = "Staying Undercover";
-		text = "When you are starting out, you should use the undercover system to your advantage until you have found better weapons, equipment, and vehicles. Watch the meter at the top of your screen: If it's full and red, you are overt. Enemy forces will shoot on sight while if they spot you while you are overt. The text below the meter informs you about reasons why the meter is filling up. Some of the factors that determine your 'suspiciousness':\n• Clothing, like headwear, uniform, vest, night vision goggles\n• Openly carrying a weapon immediately makes you overt\n• Fast movement draws attention and suspicion\n• In vehicles, only your headwear and vest count, and enemies will only spot your equipment as you get closer. The meter will only fill once you get closer to enemies\n\nOnce spotted, you can go back to being undercover by escaping a ~1km area or by killing all enemies who have recently spotted you.";
+		textHeadline = "Staying Undercover I";
+		text = "When you are starting out, you should use the undercover system to your advantage until you have found better weapons, equipment, and vehicles. Watch the meter at the top of your screen: If it's full and red, you are overt. Enemy forces will shoot on sight while if they spot you while you are overt. The text below the meter informs you about reasons why the meter is filling up. Some of the factors that determine your 'suspiciousness':\n• Clothing, like headwear, uniform, vest, night vision goggles\n• Openly carrying a weapon immediately makes you overt\n• Fast movement draws attention and suspicion\n• In vehicles, only your headwear and vest count, and enemies will only spot your equipment as you get closer. The meter will only fill once you get closer to enemies.";
+		imagePath = __TUT_IMAGE(tut_undercover.paa);
+
+	};
+
+	class TutPageUndercover_2 : TutBasePage
+	{
+		textHeadline = "Staying Undercover II";
+		text = "You can go back to being undercover by...\n\n• Escaping an approx. 1 kilometer radius at the last position where you were spotted as overt.\n• By killing all enemy groups that spotted.\n• By staying for 20 minutes.\n\nAdditionally, you should avoid approaching enemies who are in combat. You should also avoid using the ACE3 medical system while being close to enemies.";
 		imagePath = __TUT_IMAGE(tut_undercover.paa);
 
 	};

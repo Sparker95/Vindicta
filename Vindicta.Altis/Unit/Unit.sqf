@@ -369,6 +369,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						_objectHandle setSkill ["spotDistance", 1];
 						_objectHandle setSkill ["spotTime", 1];
 
+						// make it impossible to ace interact with this unit, may need better solution in the future
+						if (side _objectHandle != west) then {
+							[_objectHandle, _objectHandle] call ace_common_fnc_claim;
+						};
+
 						// Set unit insignia
 						// todo find a better way to handle this?
 						if ( (side _groupHandle) == CALLM0(gGameMode, "getPlayerSide")) then {
@@ -685,6 +690,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			[]
 		};
+
+		// hopefully catch inventory wipe bug!
+		if (isPlayer _hO) then { 
+			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 3"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+
+			diag_log format ["INVENTORY WIPED, ERROR CODE 3: _data: %1", _data];
+		};
+
 		if ((_hO call Unit_fnc_hasInventory) && count _savedInventory == 4) then {
 			// diag_log format["RESTORING INV FOR %1: %2", _hO, _savedInventory];
 			// Clear cargo
@@ -799,6 +817,18 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Bail if not spawned
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
+
+		// hopefully catch inventory wipe bug!
+		if (isPlayer _hO) then { 
+			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 2"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+
+			diag_log format ["INVENTORY WIPED, ERROR CODE 2: _data: %1", _data];
+		};
 
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
@@ -1169,14 +1199,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// hopefully catch inventory wipe bug!
 		if (isPlayer _hO) then { 
-			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 2"];
+			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 4"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
 
-			diag_log format ["INVENTORY WIPED, ERROR CODE 2: _data: %1", _data];
+			diag_log format ["INVENTORY WIPED, ERROR CODE 4: _data: %1", _data];
 		};
 
 		// Remove all weapons

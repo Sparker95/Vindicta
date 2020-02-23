@@ -214,7 +214,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		OOP_INFO_0("GAME SAVE STARTED");
 
 		// Start loading screen
-		["saving", ["<t size='8' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>SAVING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>SAVING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
 
 		pr _storage = NEW(__STORAGE_CLASS, []);
@@ -290,7 +290,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 
 		// End loading screen
-		["saving", ["<t size='8' color='#77FF77'>SAVE COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", ["<t size='4' color='#77FF77'>SAVE COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 
 		OOP_INFO_0("GAME SAVE ENDED");
@@ -321,7 +321,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 
 		// Start loading screen
-		["loading", ["<t size='8' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>LOADING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>LOADING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["loading", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
 
 		// Bail if game mode is already initialized (although the button should be disabled, right?)
@@ -415,7 +415,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 
 		// End loading screen
-		["loading", ["<t size='8' color='#77FF77'>LOAD COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", ["<t size='4' color='#77FF77'>LOAD COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["loading", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 
 		OOP_INFO_0("GAME LOAD ENDED");

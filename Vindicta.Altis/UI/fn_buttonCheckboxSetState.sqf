@@ -5,6 +5,7 @@
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\OOP_Light\OOP_Light.h"
+#include "Resources\UIProfileColors.h"
 
 #define _setv setVariable
 #define _getv getVariable
@@ -20,20 +21,29 @@ private _ctrlStatic = _ctrlButton getVariable "_static";
 
 private _colorBackground = 0;
 private _colorText = 0;
+private _font = "PuristaLight";
 
 if (_checked) then {
-	_colorBackground = [1, 1, 1, 1];
-	_colorText = [0, 0, 0, 1];
+	if (_mouseOver) then {
+		_colorBackground = MUIC_COLOR_MISSION_HOVER;
+		_colorText = MUIC_COLOR_BLACK;
+		_font = "PuristaSemibold";
+	} else {
+		_colorBackground = MUIC_COLOR_MISSION;
+		_colorText = MUIC_COLOR_BLACK;
+		_font = "PuristaSemibold";
+	};
 } else {
 	if (_mouseOver) then {
-		_colorBackground = [0.2, 0.2, 0.2, 1];
-		_colorText = [1, 1, 1, 1];
+		_colorBackground = MUIC_COLOR_WHITE;
+		_colorText = MUIC_COLOR_BLACK;
 	} else {
-		_colorBackground = [0, 0, 0, 1];
-		_colorText = [1, 1, 1, 1];
+		_colorBackground = MUIC_COLOR_BLACK;
+		_colorText = MUIC_COLOR_WHITE;
 	};
 };
 
 OOP_INFO_2(" Setting BG color: %1, text color: %2", _colorBackground, _colorText);
 _ctrlStatic ctrlSetBackgroundColor _colorBackground;
 _ctrlStatic ctrlSetTextColor _colorText;
+_ctrlStatic ctrlSetFont _font;

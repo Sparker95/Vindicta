@@ -714,7 +714,7 @@ CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
 		// pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-		"Construct roadblock" // Temp, since we only deploy roadblocks now anyway
+		"Construct Roadblock" // Temp, since we only deploy roadblocks now anyway
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -740,7 +740,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 
 	//  
 	METHOD("getShortName") {
-		"ATTACK"
+		"Attack"
 	} ENDMETHOD;
 ENDCLASS;
 
