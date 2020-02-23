@@ -1557,8 +1557,6 @@ CLASS(CLASS_NAME, "")
 			};
 		};
 
-
-
 		if (count _markersUnderCursor == 0) then {
 			// We are definitely not clicking on any map marker
 			T_CALLM0("onMouseClickElsewhere");
