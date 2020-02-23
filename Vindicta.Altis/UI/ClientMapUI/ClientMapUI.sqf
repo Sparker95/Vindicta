@@ -61,6 +61,9 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("showIntelInactive");
 	VARIABLE("showIntelActive");
 	VARIABLE("showIntelEnded");
+	VARIABLE("showIntelInactiveList");
+	VARIABLE("showIntelActiveList");
+	VARIABLE("showIntelEndedList");
 	// Defines if we are sorting intel inversed or not
 	VARIABLE("intelPanelSortInverse");
 	// By which category we're going to sort the intel panel
@@ -112,9 +115,13 @@ CLASS(CLASS_NAME, "")
 		T_SETV("locSelMenuEnabled", false);
 		T_SETV("locationCurrent", "");
 
-		T_SETV("showIntelInactive", true);
-		T_SETV("showIntelActive", true);
-		T_SETV("showIntelEnded", false);
+		T_SETV("showIntelInactive", true); // on map
+		T_SETV("showIntelActive", true); // on map
+		T_SETV("showIntelEnded", false); // on map
+		T_SETV("showIntelInactiveList", true); // in list
+		T_SETV("showIntelActiveList", true); // in list
+		T_SETV("showIntelEndedList", false); // in list
+
 		T_SETV("showLocations", true);
 		T_SETV("showEnemies", true);
 		T_SETV("showIntelPanel", true);
@@ -170,16 +177,28 @@ CLASS(CLASS_NAME, "")
 		// and transparent foreground button to intercept events. The event handlers must be attached to the button obviously.
 		// Use function ui_fnc_findCheckboxButton to find the button control from given static control.
 
-		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_INACTIVE"] call ui_fnc_findCheckboxButton);
-		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
-
-		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ACTIVE"] call ui_fnc_findCheckboxButton);
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ACTIVE_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
 		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
-		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findCheckboxButton);
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_MAP"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
+		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
+
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ACTIVE_LIST"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelActiveList", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_LIST"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactiveList", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_LIST"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEndedList", _this); }];
 		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_BUTTON_LOC"] call ui_fnc_findCheckboxButton);
@@ -222,7 +241,8 @@ CLASS(CLASS_NAME, "")
 
 		// init headline text and color
 		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
-
+		([_mapDisplay, "CMUI_BUTTON_CONTACTREP"] call ui_fnc_findControl) ctrlEnable false; // TODO
+		([_mapDisplay, "CMUI_BUTTON_CONTACTREP"] call ui_fnc_findControl) ctrlSetTooltip "Not yet implemented."; // TODO
 
 		//  = = = = = = = = Create garrison action list box = = = = = = = =
 
@@ -540,6 +560,20 @@ CLASS(CLASS_NAME, "")
 
 	We only use the hint panel for displaying progress now. Normal tooltips are used for everything else.
 	*/
+	
+	/*
+		Method: setDescriptionText
+		Description: Sets the description text for the currently selected piece of intel.
+
+		Parameters: 
+		0: _text - String description 
+
+	*/
+	METHOD("setDescriptionText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+		pr _mapDisplay = findDisplay 12;
+		([_mapDisplay, "CMUI_INTEL_DESCRIPTION"] call ui_fnc_findControl) ctrlSetText _text;
+	} ENDMETHOD;
 
 	/*
 		Method: setHintText
@@ -1162,9 +1196,9 @@ CLASS(CLASS_NAME, "")
 		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
 
 		// Read some variables...
-		private _showInactive = T_GETV("showIntelInactive");
-		private _showActive = T_GETV("showIntelActive");
-		private _showEnded = T_GETV("showIntelEnded");
+		private _showInactive = T_GETV("showIntelInactiveList");
+		private _showActive = T_GETV("showIntelActiveList");
+		private _showEnded = T_GETV("showIntelEndedList");
 
 		// forEach _allIntels;
 		{
@@ -1182,7 +1216,7 @@ CLASS(CLASS_NAME, "")
 					default {false};
 				};
 
-				//if (_show) then {
+				if (_show) then {
 					// Calculate time difference between current date and departure date
 					pr _intelState = GETV(_intel, "state");
 					pr _stateStr = switch (_intelState) do {
@@ -1218,7 +1252,6 @@ CLASS(CLASS_NAME, "")
 						default {"ALIEN"};
 					};
 
-					if (_shortName == "ATTACK") then { _shortName = "Attack"; };
 					pr _rowData = [_sideStr, _stateStr, _shortName, _timeDiffStr];
 					pr _index = _lnb lnbAddRow _rowData;
 					_lnb lnbSetData [[_index, 0], _intel];
@@ -1264,7 +1297,7 @@ CLASS(CLASS_NAME, "")
 					};
 
 					//OOP_INFO_1("ADDED ROW: %1", _rowData);
-				//};
+				};
 			};
 		} forEach _allIntels;
 	} ENDMETHOD;
@@ -1302,6 +1335,9 @@ CLASS(CLASS_NAME, "")
 
 					} forEach _lnbIndices;
 
+					// can't show multiple descriptions for intel, need to single select
+					T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT"));
+
 				} else {
 					pr _intel = _lnb lnbData [_row, 0];
 					// Make sure that's a valid intel piece
@@ -1309,6 +1345,18 @@ CLASS(CLASS_NAME, "")
 						// Hide all intel on the map, except for this one
 						T_CALLM2("mapShowAllIntel", false, true); // Force hide
 						CALLM1(_intel, "showOnMap", true);
+
+						// find description for this item
+						pr _shortName = CALLM0(_intel, "getShortName");
+
+						switch (toLower(_shortName)) do {
+							case "attack" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_ATTACK")); };
+							case "construct roadblock" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_RB")); };
+							case "reinforce garrison" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_REINFORCE")); };
+							case "patrol" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_PATROL")); };
+							case "assign new officer" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_OFFICER")); };
+							default { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_DEFAULT")); };
+						};
 					};
 				};
 			} else {
@@ -1733,14 +1781,31 @@ CLASS(CLASS_NAME, "")
 		!_checkedPrev
 	} ENDMETHOD;
 
+	/*
+		Method: onButtonClickShowIntelInactive
+		Description: Toggles visibility of inactive intel on the map.
+
+	*/
 	METHOD("onButtonClickShowIntelInactive") {
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		OOP_INFO_1("onButtonClickShowIntelInactive: %1", _this);
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelInactive", _checked);
 		T_CALLM0("mapShowAllIntel");
+	} ENDMETHOD;
 
-		// If nothing is selected on the map, update the intel panel too
+	/*
+		Method: onButtonClickShowIntelInactive
+		Description: Toggles visibility of inactive intel in the listbox.
+
+	*/
+	METHOD("onButtonClickShowIntelInactiveList") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		OOP_INFO_1("onButtonClickShowIntelInactive: %1", _this);
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showIntelInactiveList", _checked);
+
+		// If nothing is selected on the map, update the intel panel
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
 			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
@@ -1749,13 +1814,29 @@ CLASS(CLASS_NAME, "")
 		
 	} ENDMETHOD;
 
+	/*
+		Method: onButtonClickShowIntelActive
+		Description: Toggles visibility of intel on the map.
+
+	*/
 	METHOD("onButtonClickShowIntelActive") {
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelActive", _checked);
 		T_CALLM0("mapShowAllIntel");
+	} ENDMETHOD;
 
-		// If nothing is selected on the map, update the intel panel too
+	/*
+		Method: onButtonClickShowIntelActiveList
+		Description: Toggles visibility of intel in the listbox.
+
+	*/
+	METHOD("onButtonClickShowIntelActiveList") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showIntelActiveList", _checked);
+
+		// If nothing is selected on the map, update the intel panel 
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
 			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
@@ -1764,11 +1845,27 @@ CLASS(CLASS_NAME, "")
 		
 	} ENDMETHOD;
 
+	/*
+		Method: onButtonClickShowIntelEnded
+		Description: Toggles visibility of intel on the map.
+
+	*/
 	METHOD("onButtonClickShowIntelEnded") {
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelEnded", _checked);
 		T_CALLM0("mapShowAllIntel");
+	} ENDMETHOD;
+
+	/*
+		Method: onButtonClickShowIntelEndedList
+		Description: Toggles visibility of intel in the listbox.
+
+	*/
+	METHOD("onButtonClickShowIntelEndedList") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showIntelEndedList", _checked);
 
 		// If nothing is selected on the map, update the intel panel too
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
@@ -1790,11 +1887,20 @@ CLASS(CLASS_NAME, "")
 		private _controlNames = [	"CMUI_INTEL_HEADLINE", 
 									"CMUI_INTEL_LISTBOX", 
 									"CMUI_INTEL_LISTBOX_BG", 
-									"CMUI_INTEL_ACTIVE",
-									"CMUI_INTEL_INACTIVE",
-									"CMUI_INTEL_ENDED",
+									"CMUI_INTEL_BTN_INACTIVE_MAP",
+									"CMUI_INTEL_BTN_ACTIVE_MAP",
+									"CMUI_INTEL_BTN_ENDED_MAP",
+									"CMUI_INTEL_BTN_INACTIVE_LIST",
+									"CMUI_INTEL_BTN_ACTIVE_LIST",
+									"CMUI_INTEL_BTN_ENDED_LIST",
+									"CMUI_INTEL_ACTIVE_DESCR",
+									"CMUI_INTEL_INACTIVE_DESCR",
+									"CMUI_INTEL_ENDED_DESCR",
 									"CMUI_INTEL_BTNGRP",
-									"CMUI_INTEL_BTNGRP_BG"
+									"CMUI_INTEL_BTNGRP_BG",
+									"CMUI_INTEL_DESCRIPTION_BG",
+									"CMUI_INTEL_DESCRIPTION_FRAME",
+									"CMUI_INTEL_DESCRIPTION"
 								];
 		
 		{

@@ -147,7 +147,7 @@ class MUI_HEADLINE : MUI_BG_BLACKSOLID
 	colorBackground[] = MUIC_MISSION; 
 	style = ST_LEFT;
 	text = "";
-	font = "PuristaSemibold";
+	font = "PuristaMedium";
 	shadow = 0;
 };
 __MUI_CLASS_ABS(MUI_HEADLINE);
@@ -375,7 +375,7 @@ class MUI_ST_FRAME : MUI_BASE
 	sizeEx = MUI_TXT_SIZE_M;
 	style = ST_FRAME;
 	text = "";
-	font = "PuristaLight";
+	font = "PuristaBold";
 };
 __MUI_CLASS_ABS(MUI_ST_FRAME);
 

@@ -740,7 +740,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 
 	//  
 	METHOD("getShortName") {
-		"ATTACK"
+		"Attack"
 	} ENDMETHOD;
 ENDCLASS;
 

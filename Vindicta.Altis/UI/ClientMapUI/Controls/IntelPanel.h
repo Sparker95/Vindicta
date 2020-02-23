@@ -3,26 +3,23 @@
 
 class CMUI_INTEL_LISTBOX_BG : MUI_BASE 
 {
-
 	IDC = -1;
-	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.098; 
-	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.36;  
-	colorBackground[] = MUIC_BLACK;
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.103; 
+	w = safeZoneW * 0.233; 
+	h = safeZoneH * 0.374; 
+	colorBackground[] = {0, 0, 0, 0.85};
 	colorText[] = MUIC_TRANSPARENT;
     text = ""; 
-
 };
 
 class CMUI_INTEL_LISTBOX : MUI_LISTNBOX 
 {
-
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.105; 
-	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.353; 
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.111; 
+	w = safeZoneW * 0.233; 
+	h = safeZoneH * 0.366;
 	colorBackground[] = MUIC_BLACK; 
 	font = "EtelkaMonospacePro";
 	sizeEx = safeZoneH*0.015;
@@ -33,74 +30,114 @@ class CMUI_INTEL_LISTBOX : MUI_LISTNBOX
 
 class CMUI_INTEL_HEADLINE : MUI_HEADLINE 
 {
-
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.763; 
+	x = safeZoneX + safeZoneW * 0.760; 
 	y = safeZoneY + safeZoneH * 0.043; 
-	w = safeZoneW * 0.230;
+	w = safeZoneW * 0.233; 
 	text = "INTEL"; 
 	colorText[] = MUIC_BLACK; 
 	colorBackground[] = MUIC_MISSION; 
 };
 
-class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+// static control description, no interaction
+class CMUI_INTEL_ACTIVE_DESCR : MUI_DESCRIPTION 
 {
-
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.454; 
-	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.029;
-	text = "SHOW STARTED ACTIONS"; 
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.675; 
+	w = safeZoneW * 0.102; 
+	h = safeZoneH * 0.028;  
+	text = "SHOW ACTIVE:"; 
+	style = ST_RIGHT;
 };
 
-class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+// static control description, no interaction
+class CMUI_INTEL_INACTIVE_DESCR : MUI_DESCRIPTION 
 {
-
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.485;  
-	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.029; 
-	text = "SHOW PLANNED ACTIONS"; 
-};
-
-class CMUI_INTEL_ENDED : MUI_BUTTON_TXT_CHECKBOX_LIKE
-{
-
-	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.515; 
-	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.029; 
-	text = "SHOW ENDED ACTIONS"; 
-};
-
-class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT 
-{
-
-	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.580; 
-	y = safeZoneY + safeZoneH * 0.002; 
-	w = safeZoneW * 0.118; 
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.705; 
+	w = safeZoneW * 0.102; 
 	h = safeZoneH * 0.028; 
-	text = "CLEAR NOTIFICATIONS"; 
+	text = "SHOW PLANNED:"; 
+	style = ST_RIGHT;
 };
 
-class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+// static control description, no interaction
+class CMUI_INTEL_ENDED_DESCR : MUI_DESCRIPTION 
 {
-
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.459; 
-	y = safeZoneY + safeZoneH * 0.002; 
-	w = safeZoneW * 0.118; 
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.735; 
+	w = safeZoneW * 0.102; 
 	h = safeZoneH * 0.028; 
-	text = "SHOW INTEL PANEL"; 
+	text = "SHOW ENDED:";
+	style = ST_RIGHT; 
 };
 
+class CMUI_INTEL_BTN_ACTIVE_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.866; 
+	y = safeZoneY + safeZoneH * 0.675; 
+	w = safeZoneW * 0.061; 
+	h = safeZoneH * 0.028;
+	text = "ON MAP"; 
+};
+
+class CMUI_INTEL_BTN_ACTIVE_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.932; 
+	y = safeZoneY + safeZoneH * 0.675; 
+	w = safeZoneW * 0.061; 
+	h = safeZoneH * 0.028;
+	text = "IN LIST"; 
+};
+
+class CMUI_INTEL_BTN_INACTIVE_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.866; 
+	y = safeZoneY + safeZoneH * 0.705; 
+	w = safeZoneW * 0.061; 
+	h = safeZoneH * 0.028; 
+	text = "ON MAP"; 
+};
+
+class CMUI_INTEL_BTN_INACTIVE_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.932; 
+	y = safeZoneY + safeZoneH * 0.705; 
+	w = safeZoneW * 0.061; 
+	h = safeZoneH * 0.028; 
+	text = "IN LIST"; 
+};
+
+class CMUI_INTEL_BTN_ENDED_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.866; 
+	y = safeZoneY + safeZoneH * 0.735; 
+	w = safeZoneW * 0.061; 
+	h = safeZoneH * 0.028; 
+	text = "ON MAP"; 
+};
+
+class CMUI_INTEL_BTN_ENDED_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.932; 
+	y = safeZoneY + safeZoneH * 0.735; 
+	w = safeZoneW * 0.061; 
+	h = safeZoneH * 0.028;  
+	text = "IN LIST"; 
+};
+
+// background gradient image for the hint panel
 class CMUI_HINTS_BG : RscPicture
 {
-
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.184; 
 	y = safeZoneY + safeZoneH * 0.043; 
@@ -109,41 +146,134 @@ class CMUI_HINTS_BG : RscPicture
 	text = "UI\Images\gradient_2way.paa";
 	colorBackground[] = {0.2,0.2,0.2,0.6};
 	colorText[] = {0.1, 0.1, 0.1, 1};
-
 };
 
 class CMUI_HINTS : MUI_BG_TRANSPARENT 
 {
-
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.184; 
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.58; 
 	h = safeZoneH * 0.026;
-	text = "testestest"; // Don't really need hints any more I think? 
+	text = "testestest"; 
 	font = "RobotoCondensed";
 };
 
-class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE {
-
+class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.338; 
+	x = safeZoneX + safeZoneW * 0.116; 
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
-	h = safeZoneH * 0.028; 
-	text = "SHOW LOCATIONS"; 
-};
-
-class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE {
-
-	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.218; 
-	y = safeZoneY + safeZoneH * 0.002; 
-	w = safeZoneW * 0.118; 
-	h = safeZoneH * 0.028; 
+	h = safeZoneH * 0.029; 
 	text = "SHOW PLAYERS"; 
 };
 
+class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.236; 
+	y = safeZoneY + safeZoneH * 0.002; 
+	w = safeZoneW * 0.118; 
+	h = safeZoneH * 0.029; 
+	text = "SHOW LOCATIONS"; 
+};
+
+class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.357; 
+	y = safeZoneY + safeZoneH * 0.002; 
+	w = safeZoneW * 0.118; 
+	h = safeZoneH * 0.029; 
+	text = "SHOW INTEL PANEL"; 
+};
+
+class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT 
+{
+
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.478; 
+	y = safeZoneY + safeZoneH * 0.002; 
+	w = safeZoneW * 0.118; 
+	h = safeZoneH * 0.029;
+	text = "CLEAR NOTIFICATIONS"; 
+};
+
+class CMUI_BUTTON_CONTACTREP : MUI_BUTTON_TXT
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.599; 
+	y = safeZoneY + safeZoneH * 0.002; 
+	w = safeZoneW * 0.118; 
+	h = safeZoneH * 0.028; 
+	text = "SHOW CONTACT REPORTS"; 
+};
+
+
+// black background for buttons to fix ugly gap
+class CMUI_INTEL_BTNGRP_BG : MUI_BG_BLACKSOLID 
+{
+	IDC = -1;
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.070; 
+	w = safeZoneW * 0.233; 
+	h = safeZoneH * 0.028; 
+};
+
+class CMUI_INTEL_BTNGRP : MUI_GROUP 
+{
+	IDC = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.070; 
+	w = safeZoneW * 0.233; 
+	h = safeZoneH * 0.028; 
+};
+
+// description box, larger background
+class CMUI_INTEL_DESCRIPTION_BG : MUI_BG_BLACKSOLID 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.760; 
+	y = safeZoneY + safeZoneH * 0.482; 
+	w = safeZoneW * 0.233; 
+	h = safeZoneH * 0.185; 
+	colorBackground[] = {0, 0, 0, 0.85};
+	text = ""; 
+};
+
+// description box, frame with headline
+class CMUI_INTEL_DESCRIPTION_FRAME : MUI_ST_FRAME 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.766; 
+	y = safeZoneY + safeZoneH * 0.488; 
+	w = safeZoneW * 0.220; 
+	h = safeZoneH * 0.170; 
+	text = "Information"; 
+};
+
+// this is where the actual description text goes
+class CMUI_INTEL_DESCRIPTION : MUI_BG_TRANSPARENT_MULTILINE_LEFT 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.773; 
+	y = safeZoneY + safeZoneH * 0.513; 
+	w = safeZoneW * 0.208; 
+	h = safeZoneH * 0.134; 
+	colorBackground[] = MUIC_TRANSPARENT;
+	text = "More information will be displayed here in an upcoming version.";
+	font = "EtelkaMonospacePro";
+	sizeEx = safeZoneH*0.016;
+	style = ST_MULTI;
+};
+
+
+/*
+	RESPAWN CONTROLS
+*/
 class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT 
 {
     IDC = -1; 
@@ -171,23 +301,4 @@ class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID
     h = safeZoneH * 0.035; 
     text = "Respawn hint text";
     font = "RobotoCondensed";
-};
-
-// black background for buttons to fix ugly gap
-class CMUI_INTEL_BTNGRP_BG : MUI_BG_BLACKSOLID 
-{
-	IDC = -1;
-	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.069; 
-	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.028; 
-};
-
-class CMUI_INTEL_BTNGRP : MUI_GROUP 
-{
-	IDC = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
-	x = safeZoneX + safeZoneW * 0.763; 
-	y = safeZoneY + safeZoneH * 0.069; 
-	w = safeZoneW * 0.230; 
-	h = safeZoneH * 0.028; 
 };
