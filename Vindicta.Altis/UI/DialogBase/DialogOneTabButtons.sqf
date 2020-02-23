@@ -186,9 +186,8 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 			pr _bheight = _buttonHeight;
 			pr _bposy = _height - _bheight;
 			pr _bposx = 0;
-			if (_i > 0) then {
-				_bposx = (_bwidth * _i); // - 0.001 to hopefully fix protruding buttons
-			};
+			if (_i > 0) then { _bposx = (_bwidth * _i); }; 
+			if (_i == _nButtons - 1) then { _bposx = (_bwidth * _i) - 0.001; }; // - 0.001 for last button to hopefully fix protruding button
 
 			/*
 			// Calculate positions of buttons
