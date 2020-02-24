@@ -8,15 +8,25 @@ class TAB_GMINIT : MUI_GROUP_ABS
 
 	class Controls
 	{
-		/*
+
+		class LISTBOX_DESCR : MUI_DESCRIPTION_ABS 
+		{
+			IDC = -1; 
+			x = 0.020; 
+			y = 0.338; 
+			w = 0.659; 
+			h = 0.038; 
+			text = "CHOSEN FACTIONS:"
+		};
+
 		// static background, absolutely no need to manipulate in sqf!
 		class TAB_GMINIT_LISTNBOX_SETTINGS_BG : MUI_BG_BLACKTRANSPARENT_ABS 
 		{
 			IDC = -1; 
 			x = 0.020; 
-			y = 0.563; 
+			y = 0.386; 
 			w = 0.659; 
-			h = 0.197;
+			h = 0.375;
 		};
 
 		// listbox for game settings
@@ -24,13 +34,13 @@ class TAB_GMINIT : MUI_GROUP_ABS
 		{
 			IDC = -1; 
 			x = 0.020; 
-			y = 0.563; 
+			y = 0.389; 
 			w = 0.659; 
-			h = 0.197; 
+			h = 0.37; 
 			columns[] = {0, 1};	// One column 
 		};
-		*/
 
+		/*
 		// displays selected faction info and errors
 		class TAB_GMINIT_STATIC_DESCRIPTION : MUI_BG_TRANSPARENT_MULTILINE_LEFT_ABS
 		{
@@ -41,7 +51,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			h = 0.436; 
 			text = "Description...";
 			
-		};
+		}; */
 
 		class STATIC_GMINIT_HEADLINE : MUI_BASE_ABS 
 		{
@@ -178,13 +188,23 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			text = "STANDARD";
 		};
 
-		class TAB_GMINIT_BUTTON_START : MUI_BUTTON_TXT_ABS 
+		class TAB_GMINIT_BUTTON_SETTINGS : MUI_BUTTON_TXT_ABS
 		{
-			type = 1;
-			idc = -1;
+			IDC = -1; 
 			x = 0.020; 
 			y = 0.780; 
-			w = 0.659; 
+			w = 0.404; 
+			h = 0.087; 
+			text = "ADVANCED SETTINGS";
+			font = "PuristaMedium";
+		};
+
+		class TAB_GMINIT_BUTTON_START : MUI_BUTTON_TXT_ABS 
+		{
+			idc = -1;
+			x = 0.428; 
+			y = 0.780; 
+			w = 0.250; 
 			h = 0.087;
 			text = "START";
 			font = "PuristaMedium";
@@ -197,6 +217,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			colorFocused[] = MUIC_MISSION; // same as colorBackground to disable blinking
 			colorShadow[] = MUIC_TRANSPARENT;
 		};
+		
 	};
 	
 };
