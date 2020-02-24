@@ -276,7 +276,7 @@
 	<Package name="InGameMenuUI">
 		<Container name="TAB_SAVE">
 			<Key ID="STR_NEWSAVE_DISABLED">
-				<Original>You have reached the savegame limit of 6 savegames. Delete savegames to continue.</Original>
+				<Original>You have reached the savegame limit of 5 savegames. Delete savegames to continue.</Original>
 			</Key>
 			<Key ID="STR_NEWSAVE_ENABLED">
 				<Original>Create a new save game.</Original>
