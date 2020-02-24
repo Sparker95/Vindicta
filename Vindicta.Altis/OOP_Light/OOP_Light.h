@@ -659,7 +659,6 @@
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			FIX_LINE_NUMBERS2(#) \
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
