@@ -221,7 +221,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
 		if(_targetPos isEqualType []) then {
-			GET_DEBUG_MARKER_STYLE(_thisObject) params ["debugColor", "debugSymbol"];
+			GET_DEBUG_MARKER_STYLE(_thisObject) params ["_debugColor", "_debugSymbol"];
 
 			[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 

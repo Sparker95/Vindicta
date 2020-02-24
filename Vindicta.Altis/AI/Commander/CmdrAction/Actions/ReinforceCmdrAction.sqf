@@ -22,7 +22,7 @@ Parent: <TakeOrJoinCmdrAction>
 
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtGarrId", [ATTR_SAVE]);
-	VARIABLE_ATTR("type", [ATTR_SAVE_VER(14)]);
+	VARIABLE_ATTR("type", [ATTR_SAVE_VER(15)]);
 
 	/*
 	Constructor: new

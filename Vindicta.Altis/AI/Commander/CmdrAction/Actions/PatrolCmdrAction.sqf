@@ -327,7 +327,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _routeTargetPositions = T_GETV("routeTargets") apply { [_world, _x] call Target_fnc_GetPos };
 
-		GET_DEBUG_MARKER_STYLE(_thisObject) params ["debugColor", "debugSymbol"];
+		GET_DEBUG_MARKER_STYLE(_thisObject) params ["_debugColor", "_debugSymbol"];
 		
 		private _lastPos = _srcGarrPos;
 		{

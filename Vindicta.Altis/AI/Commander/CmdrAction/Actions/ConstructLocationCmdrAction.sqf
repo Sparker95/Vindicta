@@ -354,7 +354,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		private _locPos = T_GETV("locPos");
 		private _locType = T_GETV("locType");
 
-		GET_DEBUG_MARKER_STYLE(_thisObject) params ["debugColor", "debugSymbol"];
+		GET_DEBUG_MARKER_STYLE(_thisObject) params ["_debugColor", "_debugSymbol"];
 
 		[_srcGarrPos, _locPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
