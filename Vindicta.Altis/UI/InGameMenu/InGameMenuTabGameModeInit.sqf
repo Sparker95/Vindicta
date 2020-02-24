@@ -32,6 +32,12 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _cbGameMode = T_CALLM1("findControl", "TAB_GMINIT_COMBO_GAME_MODE");
 		pr _cbEnemyFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_ENEMY_FACTION");
 		pr _cbPoliceFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_POLICE_FACTION");
+
+		// TODO settings
+		pr _btnSettings = T_CALLM1("findControl", "TAB_GMINIT_BUTTON_SETTINGS");
+		_btnSettings ctrlEnable false;
+		_btnSettings ctrlSetTooltip "Not yet implemented.";
+
 		T_CALLM0("onButtonRnd");
 
 		// Add game mode names
