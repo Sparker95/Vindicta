@@ -16,7 +16,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.338; 
 			w = 0.659; 
 			h = 0.038; 
-			text = "CHOSEN FACTIONS:"
+			text = "CHOSEN FACTIONS:";
 		};
 
 		// static background, absolutely no need to manipulate in sqf!
