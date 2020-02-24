@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tCUP_TKA"];
-_array set [T_DESCRIPTION, "CUP - Takistani Army."];
-_array set [T_DISPLAY_NAME, "CUP - Takistani"];
+_array set [T_DESCRIPTION, "Takistani Army."];
+_array set [T_DISPLAY_NAME, "CUP Takistani"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"CUP_Creatures_Military_Taki",	// CUP Units

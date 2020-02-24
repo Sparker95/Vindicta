@@ -270,3 +270,27 @@
 		</Container>
 	</Package>
 </Project>
+
+
+<Project name="DialogBase">
+	<Package name="InGameMenuUI">
+		<Container name="TAB_SAVE">
+			<Key ID="STR_NEWSAVE_DISABLED">
+				<Original>You have reached the savegame limit of 5 savegames. Delete savegames to continue.</Original>
+			</Key>
+			<Key ID="STR_NEWSAVE_ENABLED">
+				<Original>Create a new save game.</Original>
+			</Key>
+		</Container>
+
+		<Container name="TAB_INIT">
+			<Key ID="STR_INIT_ERROR1">
+				<Original>ERROR: Faction file contains errors. Check your .RPT file for more info.</Original>
+			</Key>
+			<Key ID="STR_INIT_ERROR2">
+				<Original>ERROR: Missing addon:</Original>
+			</Key>
+			
+		</Container>
+	</Package>
+</Project>

@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil]; //Make an array having the size equal to the number 
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tCSAT"];
-_array set [T_DESCRIPTION, "Arma 3 standard CSAT."];
-_array set [T_DISPLAY_NAME, "Arma III - CSAT"];
+_array set [T_DESCRIPTION, "Vanilla CSAT."];
+_array set [T_DISPLAY_NAME, "Arma 3 CSAT"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
 
