@@ -426,7 +426,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		params ["_thisObject"];
 
 		pr _data = T_GETV("data");
-		pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+		pr _infUnits = T_CALLM0("getInfantryUnits");
 		pr _leader = _data select GROUP_DATA_ID_LEADER;
 		if (count _infUnits == 0) then {
 			// There is no leader in this group any more
@@ -718,13 +718,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Handle vehicles first
 			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
 			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
-			if ((count _vehUnits > count _posAndDir) || (count _startPos > 0)) then {
+			if ((count _vehUnits > count _posAndDir) || !(_startPos isEqualTo [])) then {
 				if (count _vehUnits > count _posAndDir) then {
 					OOP_WARNING_0("Not enough positions for all vehicles!");
 				};
 				{
 					pr _className = CALLM0(_x, "getClassName");
-					pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _startPos, _className);
+					pr _posAndDir = CALLSM3("Location", "findSafePosOnRoad", _startPos, _className, 300);
 					CALLM(_x, "spawn", _posAndDir);
 				} forEach _vehUnits;
 			} else {
@@ -735,7 +735,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 					//diag_log format ["--- Finding a pos for a vehicle: %1", _className];
 					if (!CALLSM3("Location", "isPosSafe", _pos, _dir, _className)) then {
 						//diag_log format ["   Provided position is not safe. Finding a safe pos on road"];
-						pr _return = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+						pr _return = CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300);
 						_return params ["_posReturn", "_dirReturn"];
 						CALLM2(_x, "spawn", _posReturn, _dirReturn);
 					} else {
@@ -748,13 +748,17 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Handle infantry
 			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
 			// Get position around which infantry will be spawning
-			pr _infSpawnPos = if (count _startPos > 0) then {_startPos} else {_posAndDir select 0 select 0};
+			pr _infSpawnPos = if !(_startPos isEqualTo []) then {
+				_startPos
+			} else {
+				// First position
+				_posAndDir#0#0
+			};
 			{
 				// todo improve this
 				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
 				CALLM2(_x, "spawn", _pos, 0);
 			} forEach _infUnits;
-
 
 			// todo Handle drones??
 
@@ -808,7 +812,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
 			{
 				pr _className = CALLM0(_x, "getClassName");
-				pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+				pr _posAndDir = CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300);
 				CALLM(_x, "spawn", _posAndDir);
 			} forEach _vehUnits;
 
@@ -1277,6 +1281,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			pr _unit = _x;
 			CALLM1(_storage, "load", _unit);
 		} forEach (_data#GROUP_DATA_ID_UNITS);
+
+		// Cleanup
+		private _leader = _data#GROUP_DATA_ID_LEADER;
+		if(_leader != NULL_OBJECT && !IS_OOP_OBJECT(_leader)) then {
+			OOP_WARNING_2("Cleanup: group %1 leader %2 is not a valid object", _thisObject, _leader);
+			T_CALLM0("_selectNextLeader");
+		};
 
 		true
 	} ENDMETHOD;

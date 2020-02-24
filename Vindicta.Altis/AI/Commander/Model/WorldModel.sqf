@@ -24,6 +24,10 @@ CLASS("WorldModel", "Storable")
 	VARIABLE_ATTR("rawActivityGrid", [ATTR_SAVE]);
 	// This is the rawActivityGrid with post processing applied
 	VARIABLE_ATTR("activityGrid", [ATTR_SAVE]);
+	// Damage dealt to us only.
+	VARIABLE_ATTR("rawDamageGrid", [ATTR_SAVE_VER(13)]);
+	// This is the rawDamageGrid with post processing applied
+	VARIABLE_ATTR("damageGrid", [ATTR_SAVE_VER(13)]);
 
 	VARIABLE("lastGridUpdate");
 
@@ -45,10 +49,19 @@ CLASS("WorldModel", "Storable")
 			private _activityGridArgs = [250, 0];
 			private _rawActivityGrid = NEW("Grid", _activityGridArgs);
 			private _activityGrid = NEW("Grid", _activityGridArgs);
+			private _damageGridArgs = [500, 0];
+			private _rawDamageGrid = NEW("Grid", _damageGridArgs);
+			private _damageGrid = NEW("Grid", _damageGridArgs);
+
 			T_SETV("rawThreatGrid", _rawThreatGrid);
 			T_SETV("threatGrid", _threatGrid);
+			
 			T_SETV("rawActivityGrid", _rawActivityGrid);
 			T_SETV("activityGrid", _activityGrid);
+			
+			T_SETV("rawDamageGrid", _rawDamageGrid);
+			T_SETV("damageGrid", _damageGrid);
+
 			T_SETV("lastGridUpdate", TIME_NOW);
 			T_SETV("gridMutex", MUTEX_NEW());
 		} else {
@@ -56,6 +69,8 @@ CLASS("WorldModel", "Storable")
 			T_SETV("threatGrid", NULL_OBJECT);
 			T_SETV("rawActivityGrid", NULL_OBJECT);
 			T_SETV("activityGrid", NULL_OBJECT);
+			T_SETV("rawDamageGrid", NULL_OBJECT);
+			T_SETV("damageGrid", NULL_OBJECT);
 		};
 
 		//T_SETV("reinforceRequiredScoreCache", []);
@@ -74,6 +89,8 @@ CLASS("WorldModel", "Storable")
 			DELETE(T_GETV("threatGrid"));
 			DELETE(T_GETV("rawActivityGrid"));
 			DELETE(T_GETV("activityGrid"));
+			DELETE(T_GETV("rawDamageGrid"));
+			DELETE(T_GETV("damageGrid"));
 		};
 	} ENDMETHOD;
 
@@ -113,6 +130,8 @@ CLASS("WorldModel", "Storable")
 		SETV(_worldCopy, "threatGrid", _threatGrid);
 		T_PRVAR(activityGrid);
 		SETV(_worldCopy, "activityGrid", _activityGrid);
+		T_PRVAR(damageGrid);
+		SETV(_worldCopy, "damageGrid", _damageGrid);
 
 		T_PRVAR(gridMutex);
 		SETV(_worldCopy, "gridMutex", _gridMutex);
@@ -139,6 +158,7 @@ CLASS("WorldModel", "Storable")
 		// Update grids
 		T_PRVAR(rawThreatGrid);
 		T_PRVAR(rawActivityGrid);
+		T_PRVAR(rawDamageGrid);
 
 		// Fade grids over time
 
@@ -152,6 +172,8 @@ CLASS("WorldModel", "Storable")
 		#define THREAT_FADE_PERIOD (30*60)
 		// Decays twice after 100 minutes
 		#define ACTIVITY_FADE_PERIOD (100*60)
+		// Decays twice after 180 minutes
+		#define DAMAGE_FADE_PERIOD (180*60)
 
 		T_PRVAR(lastGridUpdate);
 		private _dt = TIME_NOW - _lastGridUpdate;
@@ -161,6 +183,8 @@ CLASS("WorldModel", "Storable")
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
 		private _activityFade = 2 ^ (-_dt / ACTIVITY_FADE_PERIOD);
 		CALLM(_rawActivityGrid, "fade", [_activityFade]);
+		private _damageFade = 2 ^ (-_dt / DAMAGE_FADE_PERIOD);
+		CALLM(_rawDamageGrid, "fade", [_damageFade]);
 
 		#define THREAT_GRID_CLUSTER_OVERSIZE 500
 		{
@@ -172,15 +196,18 @@ CLASS("WorldModel", "Storable")
 
 		T_PRVAR(threatGrid);
 		T_PRVAR(activityGrid);
+		T_PRVAR(damageGrid);
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
 			CALLM(_activityGrid, "copyFrom", [_rawActivityGrid]);
+			CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
 		};
 
 #ifdef DEBUG_CMDRAI
 		CALLM(_threatGrid, "plot", [20 ARG false ARG "SolidFull" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
 		CALLM(_activityGrid, "plot", [20 ARG false ARG "DiagGrid" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
+		CALLM(_damageGrid, "plot", [50 ARG false ARG "SolidFull" ARG ["ColorGreen" ARG "ColorGrey" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
 #endif
 
 		// Update location desireability
@@ -200,12 +227,30 @@ CLASS("WorldModel", "Storable")
 		_threat
 	} ENDMETHOD;
 
+
 	METHOD("addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
 		T_PRVAR(rawActivityGrid);
+
 		// We just sum up all the fields for now, with some scaling
 		private _value = (_effDamage#T_EFF_soft) + 1.3*(_effDamage#T_EFF_medium) + 2*(_effDamage#T_EFF_armor) + 3*(_effDamage#T_EFF_air);
 		CALLM(_rawActivityGrid, "addValue", [_pos ARG DAMAGE_SCALE*_value]);
+
+		// Add the damage to the damage grid as well
+		T_PRVAR(rawDamageGrid);
+		CALLM(_rawDamageGrid, "addValue", [_pos ARG DAMAGE_SCALE*_value]);
+	} ENDMETHOD;
+
+	METHOD("getDamage") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+
+		private _damage = 0;
+		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
+			T_PRVAR(damageGrid);
+			//_damage = CALLM(_damageGrid, "getMaxValueCircle", [_pos ARG _radius]); // Takes too long
+			_damage = CALLM2(_damageGrid, "getMaxValueSquareNumber", _pos, _radius);
+		};
+		_damage
 	} ENDMETHOD;
 
 	METHOD("addActivity") {
@@ -617,7 +662,7 @@ CLASS("WorldModel", "Storable")
 	// Other valuable formulas:
 	// https://www.desmos.com/calculator/csjhfdmntd - exponential response
 	// https://www.desmos.com/calculator/ezdykpdcqx - log response
-	#define __FORCE_MUL(act) (ln (0.15 * act + 1) + 1.13 + 1.07^(act - 40))
+	#define __FORCE_MUL(act) (ln (0.005 * (act) + 1) + 1.003^((act) - 40))
 
 	// Returns same multiplier as in getDesiredEff 
 	METHOD("calcActivityMultiplier") {
@@ -774,7 +819,7 @@ CLASS("WorldModel", "Storable")
 			if(!IS_NULL_OBJECT(_grid)) then {
 				CALLM1(_storage, "save", _grid);
 			};
-		} forEach ["rawThreatGrid", "threatGrid", "rawActivityGrid", "activityGrid"];
+		} forEach ["rawThreatGrid", "threatGrid", "rawActivityGrid", "activityGrid", "rawDamageGrid", "damageGrid"];
 
 		true
 	} ENDMETHOD;
@@ -800,6 +845,25 @@ CLASS("WorldModel", "Storable")
 				CALLM1(_storage, "load", _grid);
 			};
 		} forEach ["rawThreatGrid", "threatGrid", "rawActivityGrid", "activityGrid"];
+
+		// SAVEBREAK >>>
+		// All grids can be loaded above instead
+		if(GETV(_storage, "version") >= 14) then {
+			{
+				private _grid = T_GETV(_x);
+				if(!IS_NULL_OBJECT(_grid)) then {
+					CALLM1(_storage, "load", _grid);
+				};
+			} forEach ["rawDamageGrid", "damageGrid"];
+		} else {
+			private _damageGridArgs = [500, 0];
+			private _rawDamageGrid = NEW("Grid", _damageGridArgs);
+			private _damageGrid = NEW("Grid", _damageGridArgs);
+
+			T_SETV("rawDamageGrid", _rawDamageGrid);
+			T_SETV("damageGrid", _damageGrid);
+		};
+		// <<< SAVEBREAK
 
 		// Set up other variables
 		T_SETV("gridMutex", MUTEX_NEW());

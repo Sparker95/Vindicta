@@ -6,6 +6,9 @@
 // This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
 #define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
 
+// https://www.desmos.com/calculator/yxhaqijv19
+#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.1 * (1 - sqrt(0.9 * (campaignProgress))) * (rawDamage)) - 0.1)
+
 /*
 Class: AI.CmdrAI.CmdrStrategy.CmdrStrategy
 
@@ -233,7 +236,11 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
-		_defaultScore
+		private _tgtClusterPos = GETV(_tgtCluster, "pos");
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtClusterPos ARG 2000]);
+		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
+		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	} ENDMETHOD;
 
 	/*
@@ -332,7 +339,11 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
-		_defaultScore
+		private _tgtPos = GETV(_tgtLoc, "pos");
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtPos ARG 2000]);
+		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
+		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getConstructLocationScore") {

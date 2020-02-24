@@ -13,10 +13,11 @@ this addVest "rhs_vydra_3m";
 
 this addWeapon "rhs_weap_aks74u";
 this addPrimaryWeaponItem "rhs_acc_pgs64_74u";
-this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N6M_AK";
+
+this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N6M_AK";};
+for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_plum_AK";};
 this addItemToVest "rhs_mag_rdg2_black";
 this linkItem "ItemWatch";
 

@@ -162,7 +162,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Set text...
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_STATIC_N_RECRUITS");
-		_ctrl ctrlSetText (format ["Recruits available: %1", _nRecruits]);
+		_ctrl ctrlSetText (format ["%1", _nRecruits]);
 		// Enable the button
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
 		_ctrl ctrlEnable true;

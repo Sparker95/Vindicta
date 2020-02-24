@@ -19,8 +19,6 @@ tools/_buildID.txt
 temp
 temp/*
 temp.sqf
-~tempMissionSP.Altis
-~Vindicta.Altis
 
 #BACKUPS
 mission.sqm.backup.at*
@@ -34,6 +32,7 @@ Vindicta.Enoch
 Vindicta.Enoch/
 Vindicta.Malden
 Vindicta.Malden/
+~*
 editing.*
 
 #ADDON
@@ -48,9 +47,6 @@ Vindicta-Addon/keys
 Vindicta-Addon/dev/
 
 Vindicta-Addon/addons/missions/*
-~Vindicta-Addon/addons/missions/config.cpp
-~Vindicta-Addon/addons/missions/$PBOPREFIX$
-~Vindicta-Addon/addons/missions/script_component.hpp
 
 configs/briefingName.hpp
 configs/*Version.hpp

@@ -202,12 +202,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected virtual */ METHOD("initClientOnly") {
 		params [P_THISOBJECT];
 
+		CALL_CLASS_METHOD("GameModeBase", _thisObject, "initClientOnly", []);
+		
 		["Game Mode", "Add 10 activity here", {
 			// Call to server to add the activity
 			[[getPos player], {
 				params ["_playerPos"];
 				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 10]);
-			}] remoteExec ["call", 0];
+			}] remoteExec ["call", ON_SERVER];
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Add 50 activity here", {
@@ -215,18 +217,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			[[getPos player], {
 				params ["_playerPos"];
 				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 50]);
-			}] remoteExec ["call", 0];
-		}] call pr0_fnc_addDebugMenuItem;
-
-		["Game Mode", "Get local info", {
-			// Call to server to get the info
-			[[getPos player, clientOwner], {
-				params ["_playerPos", "_clientOwner"];
-				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
-				private _activity = CALLM(_enemyCmdr, "getActivity", [_playerPos ARG 500]);
-				// Callback to client with the result
-				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];
-			}] remoteExec ["spawn", 0];
+			}] remoteExec ["call", ON_SERVER];
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Update game mode now", {
@@ -630,9 +621,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		} else {
 			// If the location is spawned and there are twice as many friendly as enemy units then it is liberated, otherwise it is suppressed
 			if(CALLM(_city, "isSpawned", [])) then {
-				private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
-				private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
-				_state = if(_friendlyCount > _enemyCount * 2) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
+				private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {(_x distance _cityPos) < _cityRadius * 1.5});
+				private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {(_x distance _cityPos) < _cityRadius * 1.5});
+				_state = if(_friendlyCount >= _enemyCount * 2) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
 			} else {
 				// If there is an enemy garrison occupying the city then it is suppressed
 				_state = if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) == 0) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };

@@ -15,10 +15,9 @@ this addWeapon "rhs_weap_makarov_pm";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
 this addItemToVest "rhs_mag_rdg2_black";
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_9x18_8_57N181S";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-

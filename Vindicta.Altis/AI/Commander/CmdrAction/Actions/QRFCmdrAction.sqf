@@ -160,7 +160,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
-			OOP_DEBUG_MSG("Failed to allocate resources", []);
+			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 

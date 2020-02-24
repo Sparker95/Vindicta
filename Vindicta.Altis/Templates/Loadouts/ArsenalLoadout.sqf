@@ -252,3 +252,8 @@ g_ArsenalLoadout_Backpacks = [
     "B_Messenger_Coyote_F",
     "B_Messenger_Olive_F"
 ];
+
+g_ArsenalLoadout_Items = [
+    "ACE_Flashlight_Maglite_ML300L",
+    "ACE_HandFlare_White"
+];

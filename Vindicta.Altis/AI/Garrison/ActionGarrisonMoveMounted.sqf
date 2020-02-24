@@ -383,7 +383,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			if (CALL_METHOD(_x, "getGroup", []) == "") then {
 				pr _className = CALLM0(_unit, "getClassName");
 
-				pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _garPos);
+				pr _posAndDir = CALLSM3("Location", "findSafePos", _garPos, _className, 400);
 
 				// After a good place has been found, spawn it
 				CALL_METHOD(_unit, "spawn", _posAndDir);

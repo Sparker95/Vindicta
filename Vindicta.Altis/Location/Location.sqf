@@ -41,6 +41,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */ 	VARIABLE_ATTR("useParentPatrolWaypoints", [ATTR_SAVE]);	// If true then use the parents patrol waypoints instead
 	/* save */ 	VARIABLE_ATTR("allowedAreas", [ATTR_SAVE]); 			// Array with allowed areas
 	/* save */ 	VARIABLE_ATTR("pos", [ATTR_SAVE]); 						// Position of this location
+	// SAVEBREAK : remove spawnPosTypes
 	/* save */	VARIABLE_ATTR("spawnPosTypes", [ATTR_SAVE]); 			// Array with spawn positions types
 				VARIABLE("spawned"); 									// Is this location spawned or not
 				VARIABLE("timer"); 										// Timer object which generates messages for this location
@@ -203,7 +204,127 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 
 	/*
-	Method: addStaticObject
+	Method: findAllObjects
+	Finds all relevant objects in the locations area, and records them.
+	This includes allowed areas, vehicle spawn points and buildings
+	*/
+	METHOD("findAllObjects") {
+		params [P_THISOBJECT];
+
+		OOP_DEBUG_1("findAllObjects for %1", T_GETV("name"));
+
+		// Setup marker allowed areas
+		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0}) select {
+			T_CALLM1("isInBorder", markerPos _x)
+		};
+		{
+			private _pos = markerPos _x;
+			(markerSize _x) params ["_a", "_b"];
+			private _dir = markerDir _x;
+			
+			//#ifdef RELEASE_BUILD
+			_x setMarkerAlpha 0;
+			deleteMarker _x;
+			//#endif
+			
+			OOP_INFO_1("Adding allowed area: %1", _x);
+			T_CALLM4("addAllowedArea", _pos, _a, _b, _dir);
+		} forEach _allowedAreas;
+
+		// Setup location's spawn positions
+		private _radius = T_GETV("boundingRadius");
+		private _locPos = T_GETV("pos");
+		#ifndef _SQF_VM
+		private _no = _locPos nearObjects _radius;
+		#else
+		private _no = [];
+		#endif
+
+		private _object = objNull;
+		private _type = "";
+		private _bps = []; //Building positions
+		private _bp = []; //Building position
+		private _bc = []; //Building capacity
+		private _inf_capacity = 0;
+		private _position = [];
+		private _bdir = 0; //Building direction
+
+		// forEach _no;
+		{
+			_object = _x;
+			if(CALLM1(_thisObject, "isInBorder", _object)) then
+			{
+				_type = typeOf _object;
+
+				//A truck's position defined the position for tracked and wheeled vehicles
+				if(_type == "B_Truck_01_transport_F") then {
+					private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_NON_STATIC], getPosATL _object, direction _object, objNull];
+					T_CALLM("addSpawnPos", _args);
+					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
+				};
+
+				//A mortar's position defines the position for mortars
+				if(_type == "B_Mortar_01_F") then {
+					private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
+					T_CALLM("addSpawnPos", _args);
+					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
+				};
+
+				//A low HMG defines a position for low HMGs and low GMGs
+				if(_type == "B_HMG_01_F") then {
+					private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
+					T_CALLM("addSpawnPos", _args);
+					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
+				};
+
+				//A high HMG defines a position for high HMGs and high GMGs
+				if(_type == "B_HMG_01_high_F") then {
+					private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
+					T_CALLM("addSpawnPos", _args);
+					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
+				};
+
+				// A cargo container defines a position for cargo boxes
+				if (_type == "B_Slingload_01_Cargo_F") then {
+					private _args = [T_PL_cargo, [GROUP_TYPE_IDLE], getPosATL _object, direction _object, objNull];
+					T_CALLM("addSpawnPos", _args);
+					deleteVehicle _object;
+					OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
+				};
+				
+				// Process buildings
+				if (_type isKindOf "House") then {
+					T_CALLM1("addObject", _object);
+					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
+				};
+
+				if(_type == "Flag_BI_F") then {
+					//Probably add support for the flag later
+					// Why do we even need it
+				};
+
+				if(_type == "Sign_Arrow_Large_F") then { //Red arrow
+					// Why do we need it
+					deleteVehicle _object;
+				};
+
+				if(_type == "Sign_Arrow_Large_Blue_F") then { //Blue arrow
+					// Why do we need it
+					deleteVehicle _object;
+				};
+
+			};
+		} forEach _no;
+
+		T_CALLM0("findBuildables");
+	} ENDMETHOD;
+
+	/*
+	Method: addObject
 	Adds an object to this location (building or another object)
 	
 	Arguments: _hObject
@@ -212,20 +333,31 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL_DEFAULT_TRUE("_addSpawnPos")];
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
-
-		private _type = typeOf _hObject;
 		private _countBP = count (_hObject buildingPos -1);
-
-		if (_countBP > 0) then {
-			T_GETV("buildingsOpen") pushBackUnique _hObject;
-			if (_addSpawnPos) then {
-				T_CALLM1("addSpawnPosFromBuilding", _hObject);
-			};
+		private _alreadyRegistered = if (_countBP > 0) then {
+			private _array = T_GETV("buildingsOpen");
+			if(_hObject in _array) then {
+				true
+			} else {
+				_array pushBackUnique _hObject;
+				if (_addSpawnPos) then {
+					T_CALLM1("addSpawnPosFromBuilding", _hObject);
+				};
+				false 
+			}
 		} else {
-			T_GETV("objects") pushBackUnique _hObject;
+			private _array = T_GETV("objects");
+			if(_hObject in _array) then {
+				true
+			} else {
+				_array pushBackUnique _hObject;
+				false
+			}
 		};
+		if(_alreadyRegistered) exitWith {};
 
 		// Check how it affects the location's infantry capacity
+		private _type = typeOf _hObject;
 		private _index = location_b_capacity findIf {_type in _x#0};
 		private _cap = 0;
 		if (_index != -1) then {
@@ -259,31 +391,43 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
+
+		OOP_INFO_3("Finding buildables for %1 with radius %2 at %3", T_GETV("name"), _radius, _locPos);
+
+		private _objects = T_GETV("objects");
 		private _buildables = [];
 #ifndef _SQF_VM
 		{
 			_object = _x;
 			private _objectName = str _object;
-			private _modelName = _objectName select [(_objectName find " ") + 1];
-			if(T_CALLM1("isInBorder", _object) && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
+			private _modelName = _objectName select [(_objectName find ": ") + 2];
+			if(!(_object in _objects) && {T_CALLM1("isInBorder", _object)} && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
 			{
 				_buildables pushBackUnique _object;
 			};
 		} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
-#endif
 		// Randomize
 		_buildables = _buildables call BIS_fnc_arrayShuffle;
+#endif
 		// Sort objects by height above ground (to nearest 20cm) so we can build from the bottom up
-		private _objectHeights = _buildables apply { [(floor ((getPos _x)#2 * 5)) / 5, _x]};
+		private _objectHeights = _buildables apply { 
+			private _zHeight = 0 max (getPosATL _x)#2;
+			// alias height at 1/3 m
+			[(floor (_zHeight * 3)) / 3, _x]
+		};
 		_objectHeights sort ASCENDING;
 		private _sortedObjects = _objectHeights apply { _x#1 };
 		T_SETV("buildableObjects", _sortedObjects);
+
+		OOP_INFO_2("Buildables for %1: %2", T_GETV("name"), _sortedObjects);
 		T_CALLM0("updateBuildProgress");
 	} ENDMETHOD;
 
 	// Build all buildables in the location
 	METHOD("updateBuildProgress") {
 		params [P_THISOBJECT];
+
+		if !(T_GETV("type") in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) exitWith {};
 
 		private _buildables = T_GETV("buildableObjects");
 		private _buildProgress = T_GETV("buildProgress");
@@ -313,14 +457,15 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			_buildProgress = 0 max (_buildProgress + BUILD_RATE(_enemyUnits, 0.25)) min 1;
 		};
 
-		OOP_INFO_2("UpdateBuildProgress: %1 %2", T_GETV("name"), _buildProgress);
+		OOP_INFO_3("UpdateBuildProgress: %1 %2 %3", T_GETV("name"), _buildProgress, _buildables);
 
 		T_SETV_PUBLIC("buildProgress", _buildProgress);
 
 		// Only update the actual building of no garrisons are spawned here
-		if((T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND) then {
+		if(count _buildables > 0 && {(T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND}) then {
+			OOP_INFO_2("UpdateBuildProgress: updaing buildable states %1 %2", T_GETV("name"), _buildables);
 			{	
-				private _hideObj = (_forEachIndex / (count _buildables - 1)) > _buildProgress;
+				private _hideObj = ((_forEachIndex + 1) / count _buildables) > _buildProgress;
 				if((isObjectHidden _x) isEqualTo (!_hideObj)) then
 				{
 					_x hideObjectGlobal _hideObj;
@@ -878,13 +1023,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	#define ROAD_DIR_LIMIT 15
 
 	STATIC_METHOD("findSafePosOnRoad") {
-		params ["_thisClass", ["_startPos", [], [[]]], ["_className", "", [""]] ];
+		params [P_THISCLASS, P_POSITION("_startPos"), P_STRING("_className"), P_NUMBER("_maxRange")];
 
 		// Try to find a safe position on a road for this vehicle
-		private _found = false;
-		private _searchRadius = 100;
-		pr _return = [];
-		while {!_found} do {
+		private _searchRadius = 50;
+		private _return = [];
+		_maxRange = _maxRange max _searchRadius;
+		while {_return isEqualTo [] && {_searchRadius <= _maxRange}} do {
 			private _roads = _startPos nearRoads _searchRadius;
 			if (count _roads < 3) then {
 				// Search for more roads at the next iteration
@@ -893,7 +1038,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_roads = _roads apply { [_x distance2D _startPos, _x] };
 				_roads sort ASCENDING;
 				private _i = 0;
-				while {_i < count _roads && !_found} do {
+				while {_i < count _roads && _return isEqualTo []} do {
 					(_roads select _i) params ["_dist", "_road"];
 					private _rct = roadsConnectedTo _road;
 					// TODO: we can preprocess spawn locations better than this probably.
@@ -902,22 +1047,21 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					if(count _rct > 0) then {
 						private _dir = _road getDir _rct#0;
 						private _count = {
-								private _rctOther = roadsConnectedTo _x;
-								if(count _rctOther == 0) then {
-									false
-								} else {
-									private _dirOther = _x getDir _rctOther#0;
-									private _relDir = _dir - _dirOther;
-									if(_relDir < 0) then { _relDir = _relDir + 360 };
-									(_relDir > ROAD_DIR_LIMIT and _relDir < 180-ROAD_DIR_LIMIT) or (_relDir > 180+ROAD_DIR_LIMIT and _relDir < 360-ROAD_DIR_LIMIT)
-								};
-							} count ((getPos _road) nearRoads 25);
+							private _rctOther = roadsConnectedTo _x;
+							if(count _rctOther == 0) then {
+								false
+							} else {
+								private _dirOther = _x getDir _rctOther#0;
+								private _relDir = _dir - _dirOther;
+								if(_relDir < 0) then { _relDir = _relDir + 360 };
+								(_relDir > ROAD_DIR_LIMIT and _relDir < 180-ROAD_DIR_LIMIT) or (_relDir > 180+ROAD_DIR_LIMIT and _relDir < 360-ROAD_DIR_LIMIT)
+							};
+						} count ((getPos _road) nearRoads 25);
 						if ( _count == 0 ) then {
 							// Check position if it's safe
-
 							private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
 							// Move to the edge
-							private _pos = [getPos _road, _width - 3, _dir + (selectRandom [90, 270]) ] call BIS_Fnc_relPos;
+							private _pos = [getPos _road, _width - 4, _dir + (selectRandom [90, 270]) ] call BIS_Fnc_relPos;
 							// Move up and down the street a bit
 							_pos = [_pos, _width * 0.5, _dir + (selectRandom [0, 180]) ] call BIS_Fnc_relPos;
 							// Perturb the direction a bit
@@ -926,26 +1070,31 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 							private _posPert = _pos vectorAdd [random [-1, 0, 1], random [-1, 0, 1], 0];
 							if(CALLSM3("Location", "isPosEvenSafer", _posPert, _dirPert, _className)) then {
 								_return = [_posPert, _dirPert];
-								_found = true;
 							};
 						};
 					};
 					_i = _i + 1;
 				};
-				if (!_found) then {
-					// Failed to find a position here, increase the radius
-					_searchRadius = _searchRadius * 3;
+				// Increase the radius
+				if(_searchRadius == _maxRange) then {
+					// This will just cause while loop to exit
+					_searchRadius = _searchRadius * 2 
+				} else {
+					// Make sure we do a check at the max radius
+					_searchRadius = _maxRange min (_searchRadius * 2);
 				};
 			};
 		};
-
+		if(_return isEqualTo []) then {
+			OOP_WARNING_3("[Location::findSafePosOnRoad] Warning: failed to find safe pos on road for %1 at %2 in radius %3, looking for any safe pos", _className, _startPos, _maxRange);
+			_return = CALLSM3("Location", "findSafePos", _startPos, _className, _searchRadius);
+		};
 		_return
 	} ENDMETHOD;
 
 	/*
 	Method: (static)findSafePos
 	Finds a safe spawn position for a vehicle with given class name.
-
 
 	Parameters: _className, _pos
 
@@ -954,25 +1103,29 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: [_pos, _dir]
 	*/
-	STATIC_METHOD("findSafeSpawnPos") {
-		params ["_thisClass", ["_className", "", [""]], ["_startPos", [], [[]]]];
+	STATIC_METHOD("findSafePos") {
+		params [P_THISCLASS, P_POSITION("_startPos"), P_STRING("_className"), P_NUMBER("_maxRadius")];
 
 		private _found = false;
 		private _searchRadius = 50;
+		_maxRadius = _maxRadius max _searchRadius;
 		pr _posAndDir = [_startPos, 0];
-		while {!_found and _searchRadius < 2000} do {
+		while {!_found and _searchRadius <= _maxRadius} do {
 			for "_i" from 0 to 16 do {
 				pr _pos = _startPos vectorAdd [-_searchRadius + random(2*_searchRadius), -_searchRadius + random(2*_searchRadius), 0];
-				if (CALLSM3("Location", "isPosSafe", _pos, 0, _className) && ! (surfaceIsWater _pos)) exitWith {
-					_posAndDir = [_pos, 0];
+				pr _dir = random 360;
+				if (CALLSM3("Location", "isPosEvenSafer", _pos, _dir, _className) && ! (surfaceIsWater _pos)) exitWith {
+					_posAndDir = [_pos, _dir];
 					_found = true;
 				};
 			};
 			
-			if (!_found) then {
-				// Search in a larger area at the next iteration
+			// Search in a larger area at the next iteration
+			if(_searchRadius == _maxRadius) then {
 				_searchRadius = _searchRadius * 2;
-			};			
+			} else {
+				_searchRadius = _maxRadius min (_searchRadius * 2);
+			};
 		};
 
 		_posAndDir
@@ -1326,6 +1479,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Estimate usage radius
 		private _radius = (sizeof typeof _object) + 5;
 
+		_object setVariable["ACE_medical_isMedicalFacility", true];
+		_object allowdamage false;
+
 		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
 			{
 				player setdamage 0;
@@ -1405,48 +1561,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			""]; //memoryPoint
 	} ENDMETHOD;
 
-	STATIC_METHOD("registerBuildingClasses") {
-		params [P_THISCLASS];
-		// Get the list of military buildings if defined
-		private _militaryBuildingsMarkers = (allMapMarkers select {(tolower _x) find "military_buildings" == 0});
-		gMilitaryBuildingModels = [];
-		gMilitaryBuildingTypes = [];
-		{
-			private _pos = markerPos _x;
-			private _size = markerSize _x;
-			private _radius = sqrt (_size#0 * _size#0 + _size#1 * _size#1);
-			{
-				private _objectName = str _x;
-				private _modelName = _objectName select [(_objectName find ": ") + 2];
-				gMilitaryBuildingModels pushBackUnique _modelName;
-				gMilitaryBuildingTypes pushBackUnique (typeOf _x);
-				deleteVehicle _x;
-			} forEach (_pos nearObjects ["Building", _radius]);
-			deleteMarker _x;
-		} forEach _militaryBuildingsMarkers;
-	} ENDMETHOD;
-	
-
 	STATIC_METHOD("deleteEditorAllowedAreaMarkers") {
 		params [P_THISCLASS];
 		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
 		{_x setMarkerAlpha 0;} forEach _allowedAreas;
-	} ENDMETHOD;
-
-	// Deletes special objects placed in the editor 
-	STATIC_METHOD("deleteEditorObjects") {
-		params [P_THISCLASS];
-		{
-			{
-				deleteVehicle _x;
-			} forEach (entities _x);
-		} forEach [	"B_Truck_01_transport_F",
-					"B_Mortar_01_F",
-					"B_HMG_01_F",
-					"B_HMG_01_high_F",
-					"B_Slingload_01_Cargo_F",
-					"Sign_Arrow_Large_F",
-					"Sign_Arrow_Large_Blue_F"];
 	} ENDMETHOD;
 
 	// - - - - - - S T O R A G E - - - - - -
@@ -1510,6 +1628,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("hasPlayerSides", []);
 		T_SETV("objects", []);
 		T_SETV("buildingsOpen", []);
+		T_SETV("spawnPosTypes", []);
 		T_SETV("buildableObjects", []);
 		T_SETV("lastBuildProgressTime", 0);
 		T_SETV("hasRadio", false);
@@ -1518,12 +1637,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("spawned", false);
 		T_SETV_PUBLIC("alarmDisabled", false);
 
-		// Load objects which we own
 		pr _gmData = T_GETV("gameModeData");
 		if (!IS_NULL_OBJECT(_gmData)) then {
-			CALLM1(_storage, "load", T_GETV("gameModeData"));
-			PUBLIC_VAR(_thisObject, "gameModeData");
+			CALLM1(_storage, "load", _gmData);
 		};
+		T_PUBLIC_VAR("gameModeData");
 
 		// Load garrisons
 		{
@@ -1550,15 +1668,15 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					_hO setVariable _x;
 				} forEach _tags;
 			};
-			T_CALLM2("addObject", _hO, false); // Don't add spawn position, it's saved separately
+			T_CALLM1("addObject", _hO);
 		} forEach T_GETV("savedObjects");
+
+		T_CALLM0("findAllObjects");
+
 		T_SETV("savedObjects", []);
 
 		// Restore civ presense module
 		T_CALLM1("setCapacityCiv", T_GETV("capacityCiv"));
-
-		// Restore timer
-		T_CALLM0("initTimer");
 
 		// Enable player respawn
 		{
@@ -1592,7 +1710,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		GETSV("Location", "all") pushBackUnique _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
 
-		T_CALLM0("findBuildables");
+		// T_CALLM0("findBuildables");
+
+		// Restore timer
+		T_CALLM0("initTimer");
 
 		true
 	} ENDMETHOD;
@@ -1624,8 +1745,6 @@ if (isNil {GETSV("Location", "all")}) then {
 
 // Initialize arrays with building types
 call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";
-
-
 
 // Tests
 #ifdef _SQF_VM

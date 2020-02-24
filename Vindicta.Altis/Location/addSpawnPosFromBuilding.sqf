@@ -32,12 +32,12 @@ if(_index != -1) then {
 		if(count _bp == 2) then { //This position is defined by building position ID and direction
 			_position = _building buildingPos (_bp select 0);
 			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], _position, _bdir + (_bp select 1), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			CALL_METHOD(_thisObject, "addSpawnPos", _args);
+			T_CALLM("addSpawnPos", _args);
 			//diag_log format ["Addes HMG position: ID: %1", _bp select 0];
 		} else { //This position is defined by offset in cylindrical coordinates
 			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
 			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			CALL_METHOD(_thisObject, "addSpawnPos", _args);
+			T_CALLM("addSpawnPos", _args);
 			//diag_log format ["Addes HMG position: %1", _bp];
 		};
 	} forEach (_bps select 1);
@@ -53,7 +53,7 @@ if (_index != -1) then {
 		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
 			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
 			private _args = [T_PL_cargo_small_medium, [GROUP_TYPE_IDLE], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			CALL_METHOD(_thisObject, "addSpawnPos", _args);
+			T_CALLM("addSpawnPos", _args);
 
 			//diag_log format ["Addes cargo box position: %1", _bp];
 		};
@@ -73,11 +73,11 @@ if(count _bps > 0) then {
 		if(count _bp == 2) then {//This position is defined by building position ID and direction
 			_position = _building buildingPos (_bp select 0);
 			private _args = [T_PL_inf_main, [GROUP_TYPE_BUILDING_SENTRY], _position, _bdir + (_bp select 1), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			CALL_METHOD(_thisObject, "addSpawnPos", _args);
+			T_CALLM("addSpawnPos", _args);
 		} else { //This position is defined by offset in cylindrical coordinates
 			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
 			private _args = [T_PL_inf_main, [GROUP_TYPE_BUILDING_SENTRY], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			CALL_METHOD(_thisObject, "addSpawnPos", _args);
+			T_CALLM("addSpawnPos", _args);
 		};
 	} forEach ((_bps select 0) select 1);
 };

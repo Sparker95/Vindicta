@@ -37,7 +37,7 @@ CLASS("InGameMenu", "DialogBase")
 
 			pr _text = format ["Mission Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
-			T_CALLM1("setHintText", "VINDICTA pre-alpha version.");
+			T_CALLM1("setHintText", "Vindicta pre-alpha version.");
 		};
 
 		T_CALLM1("enableMultiTab", true);

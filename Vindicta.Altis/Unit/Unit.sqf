@@ -140,10 +140,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
 			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
-			CALLM0(_thisObject, "initObjectVariables");
-			CALLM0(_thisObject, "initObjectEventHandlers");
-			CALLM0(_thisObject, "initObjectDynamicSimulation");
-			CALLM0(_thisObject, "applyInfantryWeapons");
+			T_CALLM0("initObjectVariables");
+			T_CALLM0("initObjectEventHandlers");
+			T_CALLM0("initObjectDynamicSimulation");
+			T_CALLM0("applyInfantryWeapons");
 		};
 
 	} ENDMETHOD;
@@ -185,7 +185,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		SET_MEM(_thisObject, "data", nil);
 	} ENDMETHOD;
 
-
+	METHOD("release") {
+		params [P_THISOBJECT];
+		// detach the Arma unit handle from this object if it is spawned
+		// Despawn this unit if it was spawned
+		if (T_CALLM0("isSpawned")) then {
+			CALLM1(_thisObject, "despawn", true);
+		};
+	} ENDMETHOD;
 
 	//                              I S   V A L I D
 	/*
@@ -278,12 +285,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _dirAndUpPrev = _data#UNIT_DATA_ID_VECTOR_DIR_UP;
 			if (_spawnAtPrevPos) then {
 				OOP_INFO_2("  Trying to spawn at prev location: %1, %2", _posATLPrev, _dirAndUpPrev);
-
 				// Ensure that position is safe
-				pr _vectorDir = _dirAndUpPrev#0;
-				pr _dirToCheck = (_vectorDir#0) atan2 (_vectorDir#1);
+				pr _prevPosSafe = if !(_posATLPrev isEqualTo NULL_POSITION) then {
+					pr _vectorDir = _dirAndUpPrev#0;
+					pr _dirToCheck = (_vectorDir#0) atan2 (_vectorDir#1);
 
-				pr _prevPosSafe = CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className);
+					CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className)
+				} else {
+					false 
+				};
+				
 				if (_prevPosSafe) then {
 					_pos = _posATLPrev;
 				} else {
@@ -297,7 +308,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} else {
 						// Otherwise just look for a close by safe position
 						OOP_INFO_1("  Looking for spawn at near desired position: %1", _pos);
-						CALLSM2("Location", "findSafeSpawnPos", _className, _pos)
+						CALLSM3("Location", "findSafePos", _pos, _className, 400)
 					};
 					_posAndDir params ["_pos0", "_dir0"];
 					_pos = _pos0;
@@ -344,7 +355,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						pr _groupType = CALLM0(_group, "getType");
 
 						// Give weapons to the unit (if he has special weapons)
-						CALLM0(_thisObject, "applyInfantryWeapons");
+						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
 						_objectHandle setSkill ["aimingAccuracy", 0.6];	// Aiming and precision
@@ -357,6 +368,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						_objectHandle setSkill ["reloadSpeed", 0.5];
 						_objectHandle setSkill ["spotDistance", 1];
 						_objectHandle setSkill ["spotTime", 1];
+
+						// make it impossible to ace interact with this unit, may need better solution in the future
+						if (side _objectHandle != west) then {
+							[_objectHandle, _objectHandle] call ace_common_fnc_claim;
+						};
 
 						// Set unit insignia
 						// todo find a better way to handle this?
@@ -473,56 +489,57 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 
 				// Initialize variables
-				CALLM0(_thisObject, "initObjectVariables");
+				T_CALLM0("initObjectVariables");
 
 				// Initialize event handlers
-				CALLM0(_thisObject, "initObjectEventHandlers");
+				T_CALLM0("initObjectEventHandlers");
 
 				// Initialize dynamic simulation
-				CALLM0(_thisObject, "initObjectDynamicSimulation");
+				T_CALLM0("initObjectDynamicSimulation");
 			}; // CRITICAL_SECTION
 
 			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
 			// Try and restore saved inventory, otherwise generate one
-			if(!T_CALLM0("restoreInventory")) then {
+			private _restoredInventory = T_CALLM0("restoreInventory");
+			if(!_restoredInventory) then {
 				// Initialize cargo if there is no limited arsenal
-				CALLM0(_thisObject, "initObjectInventory");
-			};
+				T_CALLM0("initObjectInventory");
 
-			// Set build resources
-			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
-				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
-			};
-					
-			// Give intel to this unit
-
-			switch (_catID) do {
-				case T_INF: {
-					// Leaders get intel tablets
-					if (CALLM0(_group, "getLeader") == _thisObject) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
-					} else {
-						// todo give intel to some special unit types, like radio specialists, etc...
-						// Some random infantry units get tablets too
-						if (random 10 < 2) then {
+				// Set build resources
+				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
+					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+				};
+						
+				// Give intel to this unit
+				switch (_catID) do {
+					case T_INF: {
+						// Leaders get intel tablets
+						if (CALLM0(_group, "getLeader") == _thisObject) then {
+							CALLSM1("UnitIntel", "initUnit", _thisObject);
+						} else {
+							// todo give intel to some special unit types, like radio specialists, etc...
+							// Some random infantry units get tablets too
+							if (random 10 < 2) then {
+								CALLSM1("UnitIntel", "initUnit", _thisObject);
+							};
+						};
+					};
+					case T_VEH: {
+						// A very little amount of vehicles gets intel
+						if (random 10 < 3) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-				};
-				case T_VEH: {
-					// A very little amount of vehicles gets intel
-					if (random 10 < 3) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					case T_DRONE: {
+						// Don't put intel into drones?
+					};
+					case T_CARGO: {
+						// Don't put intel into cargo boxes?
 					};
 				};
-				case T_DRONE: {
-					// Don't put intel into drones?
-				};
-				case T_CARGO: {
-					// Don't put intel into cargo boxes?
-				};
 			};
+
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
@@ -673,7 +690,27 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			[]
 		};
+
+		// hopefully catch inventory wipe bug!
+		if (isPlayer _hO) then { 
+			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 3"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+
+			diag_log format ["INVENTORY WIPED, ERROR CODE 3: _data: %1", _data];
+		};
+
 		if ((_hO call Unit_fnc_hasInventory) && count _savedInventory == 4) then {
+			if(_hO in allPlayers || isPlayer _hO) exitWith {
+				DUMP_CALLSTACK;
+				OOP_ERROR_MSG("PLAYERINVBUG: restoreInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+				// Broadcast notification
+				pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], 0, false);
+			};
 			// diag_log format["RESTORING INV FOR %1: %2", _hO, _savedInventory];
 			// Clear cargo
 			clearWeaponCargoGlobal _hO;
@@ -788,9 +825,28 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
 
+		// hopefully catch inventory wipe bug!
+		if (isPlayer _hO) then { 
+			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 2"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+
+			diag_log format ["INVENTORY WIPED, ERROR CODE 2: _data: %1", _data];
+		};
+
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
 			// Clear cargo
+			if(_hO in allPlayers || isPlayer _hO) exitWith {
+				DUMP_CALLSTACK;
+				OOP_ERROR_MSG("PLAYERINVBUG: initObjectInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+				// Broadcast notification
+				pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], 0, false);
+			};
 			clearItemCargoGlobal _hO;
 			clearWeaponCargoGlobal _hO;
 			clearMagazineCargoGlobal _hO;
@@ -798,16 +854,22 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			// Bail if there is a limited arsenal
 			pr _arsenalDataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
-			if ((count _arsenalDataList) != 0) exitWith {};
+			if ((count _arsenalDataList) != 0) exitWith {
+
+			};
 
 			// Otherwise fill the ammo box with stuff from the template
 			pr _gar = _data select UNIT_DATA_ID_GARRISON;
-			if (_gar == "") exitWith {};
+			if (_gar == NULL_OBJECT) exitWith {
+
+			};
 			pr _nInf = CALLM0(_gar, "countInfantryUnits");
 			pr _nVeh = CALLM0(_gar, "countVehicleUnits");
 			pr _nCargo = CALLM0(_gar, "countCargoUnits");
 			pr _tName = CALLM0(_gar, "getTemplateName");
-			if (_tName == "") exitWith {};
+			if (_tName == "") exitWith {
+
+			};
 
 			// Add stuff to cargo from the template
 			pr _t = [_tName] call t_fnc_getTemplate;
@@ -963,7 +1025,8 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 											["ACE_EarPlugs",20],
 											["ACE_Kestrel4500",2],
 											["ACE_ATragMX",6],
-											["ACE_RangeCard",6]
+											["ACE_RangeCard",6],
+											["vin_build_res_0", 10]
 										];
 						{
 							_x params ["_itemName", "_itemCount"];
@@ -1020,7 +1083,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: nil
 	*/
 	METHOD("despawn") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_releaseHandle")];
 
 		OOP_INFO_0("DESPAWN");
 
@@ -1066,9 +1129,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
 
-			// Delete the vehicle
-			deleteVehicle _objectHandle;
-			private _group = _data select UNIT_DATA_ID_GROUP;
+			// If we are releasing the handle then we don't actually delete the unit!
+			if(!_releaseHandle) then {
+				// Delete the vehicle
+				deleteVehicle _objectHandle;
+			};
+
+			//private _group = _data select UNIT_DATA_ID_GROUP;
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
@@ -1149,6 +1216,18 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Bail if unit is not spawned
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
+
+		// hopefully catch inventory wipe bug!
+		if (isPlayer _hO) then { 
+			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 4"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+
+			diag_log format ["INVENTORY WIPED, ERROR CODE 4: _data: %1", _data];
+		};
 
 		// Remove all weapons
 		removeAllWeapons this;
@@ -1514,21 +1593,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		params ["_thisClass", ["_units", [], [[]]]];
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
-	} ENDMETHOD;
-
-	/*
-	Function: (static) getTemplateForSide
-	Get the appropriate unit template for the side specified
-	
-	Parameters: _side
-	
-	_side - side (WEST/EAST/INDEPENDENT/etc.)
-	
-	Returns: Template
-	*/
-	STATIC_METHOD("getTemplateForSide") {
-		params [P_THISCLASS, P_SIDE("_side")];
-		if(_side == INDEPENDENT) then { tAAF } else { if(_side == WEST) then { tGUERILLA } else { tGUERILLA } };
 	} ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1986,7 +2050,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				pr _className = _x;
 				pr _index = [_className] call jn_fnc_arsenal_itemType;
 				(_arsenalArray#_index) pushBack [_className, -1];
-			} forEach (g_ArsenalLoadout_Headgear + g_ArsenalLoadout_Uniforms + g_ArsenalLoadout_Facewear + g_ArsenalLoadout_Backpacks);
+			} forEach (g_ArsenalLoadout_Headgear + g_ArsenalLoadout_Uniforms + g_ArsenalLoadout_Facewear + g_ArsenalLoadout_Backpacks + g_ArsenalLoadout_Items);
 
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {
@@ -1997,6 +2061,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				// Clear the inventory
 				/// although, maybe we should move it into the arsenal?
 				// For now I only care to clear the inventory when we create an ammo box
+
+				// hopefully catch inventory wipe bug!
+				if(_hO in allPlayers || isPlayer _hO) exitWith {
+					DUMP_CALLSTACK;
+					OOP_ERROR_MSG("PLAYERINVBUG: limitedArsenalEnable _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+					// Broadcast notification
+					pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], 0, false);
+				};
+
 				clearItemCargoGlobal _hO;
 				clearWeaponCargoGlobal _hO;
 				clearMagazineCargoGlobal _hO;

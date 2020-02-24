@@ -42,14 +42,14 @@ _inf set [T_INF_pilot_heli, ["I_helipilot_F"]];
 _inf set [T_INF_survivor, ["I_Survivor_F"]];
 _inf set [T_INF_unarmed, ["I_Soldier_unarmed_F"]];
 
-//Recon (FIA) 
-_inf set [T_INF_recon_TL, ["I_G_Soldier_TL_F"]];
-_inf set [T_INF_recon_rifleman, ["I_G_Soldier_F"]];
-_inf set [T_INF_recon_medic, ["I_G_medic_F"]];
-_inf set [T_INF_recon_exp, ["I_G_Soldier_exp_F"]];
-_inf set [T_INF_recon_LAT, ["I_G_Soldier_LAT2_F"]];
-_inf set [T_INF_recon_marksman, ["I_G_Soldier_M_F"]];
-_inf set [T_INF_recon_JTAC, ["I_G_Soldier_lite_F"]];
+//Recon (CTRG) 
+_inf set [T_INF_recon_TL, ["B_Captain_Jay_F"]];
+_inf set [T_INF_recon_rifleman, ["B_CTRG_soldier_AR_A_F"]];
+_inf set [T_INF_recon_medic, ["B_CTRG_soldier_M_medic_F"]];
+_inf set [T_INF_recon_exp, ["B_CTRG_soldier_engineer_exp_F"]];
+_inf set [T_INF_recon_LAT, ["B_CTRG_soldier_GL_LAT_F"]];
+_inf set [T_INF_recon_marksman, ["B_CTRG_Sharphooter_F"]];
+_inf set [T_INF_recon_JTAC, ["B_Captain_Jay_F"]];
 
 
 //Divers
