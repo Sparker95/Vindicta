@@ -23,3 +23,7 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_POLICE\Police\i
 //WW2_Heer
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Fallschirmjager\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Police\init.sqf";
+//WW2_UK
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK_Paratroopers\init.sqf";

@@ -15,37 +15,38 @@ _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["LIB_UK_Rifleman"]];
 
 _inf set [T_INF_SL, ["LIB_UK_Sergeant"]];
-_inf set [T_INF_TL, ["LIB_UK_Corporal"]];
+_inf set [T_INF_TL, ["WW2_UK_radio", "LIB_UK_Corporal"]];
 _inf set [T_INF_officer, ["LIB_UK_Officer"]];
 _inf set [T_INF_GL, ["LIB_UK_Grenadier"]];
-_inf set [T_INF_rifleman, ["LIB_UK_Rifleman"]];
+_inf set [T_INF_rifleman, ["LIB_UK_Rifleman", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman_4"]];
 _inf set [T_INF_marksman, ["LIB_UK_Sniper"]];
 _inf set [T_INF_sniper, ["LIB_UK_Sniper"]];
-_inf set [T_INF_spotter, ["LIB_UK_Rifleman"]];
-_inf set [T_INF_exp, ["LIB_UK_Engineer"]];
-_inf set [T_INF_ammo, ["LIB_UK_Rifleman"]];
+_inf set [T_INF_spotter, ["WW2_UK_spotter"]];
+_inf set [T_INF_exp, ["WW2_UK_exp"]];
+_inf set [T_INF_ammo, ["WW2_UK_ammo"]];
 _inf set [T_INF_LAT, ["LIB_UK_AT_Soldier"]];
 _inf set [T_INF_AT, ["LIB_UK_AT_Soldier"]];
-_inf set [T_INF_LMG, ["LIB_UK_LanceCorporal"]];
-_inf set [T_INF_HMG, ["LIB_UK_LanceCorporal"]];
+_inf set [T_INF_LMG, ["LIB_UK_LanceCorporal", "WW2_UK_LMG"]];
+_inf set [T_INF_HMG, ["WW2_UK_HMG", "WW2_UK_HMG_2"]];
 _inf set [T_INF_medic, ["LIB_UK_Medic"]];
 _inf set [T_INF_engineer, ["LIB_UK_Engineer"]];
 _inf set [T_INF_crew, ["LIB_UK_Tank_Commander", "LIB_UK_Tank_Crew"]];
 _inf set [T_INF_pilot, ["LIB_US_Pilot"]];
+_inf set [T_INF_survivor, ["WW2_UK_unarmed"]];
+_inf set [T_INF_unarmed, ["WW2_UK_unarmed"]];
 /*_inf set [T_INF_crew_heli, [""]];
 _inf set [T_INF_AA, [""]];
 _inf set [T_INF_pilot_heli, [""]];
-_inf set [T_INF_survivor, [""]];
-_inf set [T_INF_unarmed, [""]];*/
+*/
 
 // Recon
 _inf set [T_INF_recon_TL, ["LIB_UK_Para_Officer", "LIB_UK_Para_Sergeant", "LIB_UK_Para_Corporal"]];
-_inf set [T_INF_recon_rifleman, ["LIB_UK_Para_Rifleman", "LIB_UK_Para_Grenadier", "LIB_UK_Para_LanceCorporal"]];
+_inf set [T_INF_recon_rifleman, ["WW2_UKp_rifleman", "WW2_UKp_rifleman_2", "WW2_UKp_rifleman_3", "WW2_UKp_rifleman_4", "WW2_UKp_rifleman_5", "WW2_UKp_rifleman_6", "LIB_UK_Para_Rifleman", "LIB_UK_Para_Grenadier", "LIB_UK_Para_LanceCorporal", "WW2_UKp_LMG"]];
 _inf set [T_INF_recon_medic, ["LIB_UK_Para_Medic"]];
 _inf set [T_INF_recon_exp, ["LIB_UK_Para_Engineer"]];
 _inf set [T_INF_recon_LAT, ["LIB_UK_Para_AT_Soldier"]];
 _inf set [T_INF_recon_marksman, ["LIB_UK_Para_Sniper"]];
-_inf set [T_INF_recon_JTAC, ["LIB_UK_Para_Radioman"]];
+_inf set [T_INF_recon_JTAC, ["WW2_UKp_radio", "LIB_UK_Para_Radioman"]];
 
 
 // Divers, still vanilla

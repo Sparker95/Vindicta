@@ -15,15 +15,15 @@ _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["LIB_GER_unequip"]];
 
 _inf set [T_INF_SL, ["LIB_GER_unterofficer", "LIB_GER_gun_unterofficer", "LIB_GER_scout_unterofficer"]];
-_inf set [T_INF_TL, ["LIB_GER_smgunner", "LIB_GER_scout_smgunner", "LNRD_Luftwaffe_smgunner"]];
+_inf set [T_INF_TL, ["LIB_GER_radioman", "LIB_GER_smgunner", "LIB_GER_scout_smgunner", "LNRD_Luftwaffe_smgunner"]];
 _inf set [T_INF_officer, ["LIB_GER_oberst", "LIB_GER_hauptmann", "LIB_GER_ober_lieutenant", "LIB_GER_scout_lieutenant", "LIB_GER_lieutenant", "LIB_GER_gun_lieutenant"]];
 _inf set [T_INF_GL, ["LIB_GER_ober_grenadier", "LIB_GER_scout_ober_grenadier"]];
-_inf set [T_INF_rifleman, ["WW2_Heer_rifleman", "WW2_Heer_rifleman_2", "WW2_Heer_rifleman_3", "WW2_Heer_rifleman_4", "LIB_GER_unequip", "LIB_GER_ober_rifleman", "LIB_GER_scout_ober_rifleman", "LNRD_Luftwaffe_ober_rifleman", "LIB_GER_soldier_camo_base", "LIB_GER_soldier_camo2_base", "LIB_GER_Soldier2", "LIB_GER_Soldier3", "LNRD_Luftwaffe_rifleman", "LIB_GER_soldier_camo4_base", "LIB_GER_soldier_camo3_base", "LIB_GER_rifleman", "LIB_GER_soldier_camo5_base", "LIB_GER_scout_rifleman", "LIB_GER_radioman", "LNRD_Luftwaffe_radioman", "LIB_GER_stggunner", "LNRD_Luftwaffe_stggunner"]];
+_inf set [T_INF_rifleman, ["WW2_Heer_rifleman", "WW2_Heer_rifleman_2", "WW2_Heer_rifleman_3", "WW2_Heer_rifleman_4", "WW2_Heer_rifleman_5", "LIB_GER_unequip", "LIB_GER_ober_rifleman", "LIB_GER_scout_ober_rifleman", "LNRD_Luftwaffe_ober_rifleman", "LIB_GER_soldier_camo_base", "LIB_GER_soldier_camo2_base", "LIB_GER_Soldier2", "LIB_GER_Soldier3", "LNRD_Luftwaffe_rifleman", "LIB_GER_soldier_camo4_base", "LIB_GER_soldier_camo3_base", "LIB_GER_rifleman", "LIB_GER_soldier_camo5_base", "LIB_GER_scout_rifleman", "LNRD_Luftwaffe_radioman", "LIB_GER_stggunner", "LNRD_Luftwaffe_stggunner"]];
 _inf set [T_INF_sniper, ["LNRD_Luftwaffe_sniper"]];
 _inf set [T_INF_marksman, ["LIB_GER_scout_sniper"]];
-_inf set [T_INF_exp, ["LIB_GER_sapper_gefr", "LIB_GER_sapper"]];
+_inf set [T_INF_exp, ["LIB_GER_sapper_gefr", "LIB_GER_sapper", "WW2_Heer_saper"]];
 _inf set [T_INF_LAT, ["LIB_GER_LAT_Rifleman", "LNRD_Luftwaffe_LAT_rifleman", "LIB_GER_AT_grenadier", "LNRD_Luftwaffe_AT_grenadier"]];
-_inf set [T_INF_AT, ["LIB_GER_AT_soldier", "LNRD_Luftwaffe_AT_soldier"]];
+_inf set [T_INF_AT, ["LIB_GER_AT_soldier", "LNRD_Luftwaffe_AT_soldier", "WW2_Heer_AT"]];
 _inf set [T_INF_LMG, ["WW2_Heer_LMG", "WW2_Heer_LMG_2", "LIB_GER_mgunner2", "LNRD_Luftwaffe_mgunner"]];
 _inf set [T_INF_HMG, ["WW2_Heer_MG", "LIB_GER_mgunner", "LNRD_Luftwaffe_mgunner2"]];
 _inf set [T_INF_medic, ["LIB_GER_medic", "LNRD_Luftwaffe_medic"]];
@@ -40,7 +40,7 @@ _inf set [T_INF_AA, [""]];*/
 
 
 // Recon
-_inf set [T_INF_recon_TL, ["WW2_Heer_TL", "LIB_FSJ_NCO", "LIB_FSJ_Soldier_2", "LIB_FSJ_Lieutenant"]];
+_inf set [T_INF_recon_TL, ["WW2_Heerf_TL", "LIB_FSJ_NCO", "LIB_FSJ_Soldier_2", "LIB_FSJ_Lieutenant"]];
 _inf set [T_INF_recon_rifleman, ["LIB_FSJ_Soldier", "LIB_FSJ_AT_grenadier", "LIB_FSJ_Mgunner2", "LIB_FSJ_Mgunner"]];
 _inf set [T_INF_recon_medic, ["LIB_FSJ_medic"]];
 _inf set [T_INF_recon_exp, ["LIB_FSJ_sapper", "LIB_FSJ_sapper_gefr"]];

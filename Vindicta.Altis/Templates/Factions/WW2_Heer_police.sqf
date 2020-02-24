@@ -14,9 +14,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["SG_sturmtrooper_rifleman"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
-_inf set [T_INF_TL, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
-_inf set [T_INF_officer, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_SL, ["WW2_Heer_rif", "WW2_Heer_rif_2", "WW2_Heer_rif_3", "WW2_Heer_rif_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_TL, ["WW2_Heer_rif", "WW2_Heer_rif_2", "WW2_Heer_rif_3", "WW2_Heer_rif_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_officer, ["WW2_Heer_rif", "WW2_Heer_rif_2", "WW2_Heer_rif_3", "WW2_Heer_rif_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
 /*
 _inf set [T_INF_GL, [""]];
 _inf set [T_INF_rifleman, [""]];
