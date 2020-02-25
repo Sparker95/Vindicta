@@ -292,8 +292,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		private _stabRatio = _totalInstability / _maxInstability;
 		// https://www.desmos.com/calculator/nttiqqlvg9
 		// Hits 0.2 when _stabRatio is 0.05 and 1 when _stabRatio is 0.8
-		private _campaignProgress = 1 min (0.9 * log(15 * _stabRatio + 1));
-		T_SETV_PUBLIC("campaignProgress", _campaignProgress);
+		//private _campaignProgress = 1 min (0.9 * log(15 * _stabRatio + 1));
+		T_SETV_PUBLIC("campaignProgress", _stabRatio);
 	} ENDMETHOD;
 	
 	METHOD("updatePhase") {
