@@ -4,8 +4,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tWW2_Heer_police"];
-_array set [T_DESCRIPTION, "WW2 Germany units with equipment from 1939-1945"];
-_array set [T_DISPLAY_NAME, "WW2 - Heer (Police)"];
+_array set [T_DESCRIPTION, "WW2 German units. 1939-1945."];
+_array set [T_DISPLAY_NAME, "WW2 Heer Police"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 
@@ -14,9 +14,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["SG_sturmtrooper_rifleman"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_stggunner", "SG_sturmtrooper_sniper", "SG_sturmtrooper_sapper_gefr", "SG_sturmtrooper_sapper", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_AT_grenadier", "SG_sturmtrooper_AT_soldier", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_medic"]];
-_inf set [T_INF_TL, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_stggunner", "SG_sturmtrooper_sniper", "SG_sturmtrooper_sapper_gefr", "SG_sturmtrooper_sapper", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_AT_grenadier", "SG_sturmtrooper_AT_soldier", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_medic"]];
-_inf set [T_INF_officer, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_stggunner", "SG_sturmtrooper_sniper", "SG_sturmtrooper_sapper_gefr", "SG_sturmtrooper_sapper", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_AT_grenadier", "SG_sturmtrooper_AT_soldier", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_SL, ["WW2_Heer_rif", "WW2_Heer_rif_2", "WW2_Heer_rif_3", "WW2_Heer_rif_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_TL, ["WW2_Heer_rif", "WW2_Heer_rif_2", "WW2_Heer_rif_3", "WW2_Heer_rif_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_officer, ["WW2_Heer_rif", "WW2_Heer_rif_2", "WW2_Heer_rif_3", "WW2_Heer_rif_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
 /*
 _inf set [T_INF_GL, [""]];
 _inf set [T_INF_rifleman, [""]];
@@ -41,7 +41,7 @@ _inf set [T_INF_spotter, [""]];
 */
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_DEFAULT, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
+_veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt"]];
 _veh set [T_VEH_car_unarmed, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
 
 

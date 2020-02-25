@@ -158,6 +158,18 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_SAVE_DATA");
 			_staticSaveData ctrlSetText "";
 		};
+
+		// savegame count limit
+		if (count T_GETV("recordData") > 4) then {
+			pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
+			_newSaveBtn ctrlEnable false;
+			_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_DISABLED");
+		} else {
+			pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
+			_newSaveBtn ctrlEnable true;
+			_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_ENABLED");
+		};
+ 
 	} ENDMETHOD;
 
 	// Returns index of the currently selected saved game in the recordData array

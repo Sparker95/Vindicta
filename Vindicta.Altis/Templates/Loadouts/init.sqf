@@ -18,3 +18,12 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF_Recon\ini
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO_Police\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO_Recon\init.sqf";
+//Arma3_POLICE
+call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_POLICE\Police\init.sqf";
+//WW2_Heer
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Fallschirmjager\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Police\init.sqf";
+//WW2_UK
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK_Paratroopers\init.sqf";

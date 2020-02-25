@@ -201,7 +201,7 @@ __MUI_CLASS_ABS(MUI_BUTTON_TXT);
 class MUI_BUTTON_LISTNBOX : MUI_BUTTON_TXT 
 {
     IDC = -1; 
-	font = "PuristaMedium";
+	font = "RobotoCondensed";
 	style = ST_LEFT;
 };
 __MUI_CLASS_ABS(MUI_BUTTON_LISTNBOX);

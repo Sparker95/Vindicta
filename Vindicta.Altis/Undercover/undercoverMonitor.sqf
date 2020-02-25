@@ -130,51 +130,49 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("timer", _timer);
 
 		// add event handler to check if unit fired weapon
-    	pr _ID =  _unit addEventHandler ["FiredMan", {
+		pr _ID = [_unit, "FiredMan", {
 			params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
 			pr _uM = _unit getVariable ["undercoverMonitor", ""];
 			SETV(_uM, "timeHostility", (time + TIME_HOSTILITY));
-		}];
+		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["FiredMan", _ID];
 
-
 		// add event handler for deleting this undercover monitor
-		_ID = player addEventHandler ["Killed", {
+		_ID = [player, "Killed", {
 			params ["_unit", "_killer", "_instigator", "_useEffects"];
-
+			_unit removeEventHandler ["Killed", _thisID];
 			pr _um = _unit getVariable ["undercoverMonitor", ""];
 			if (_um != "") then { // Sanity check
 				pr _msg = MESSAGE_NEW();
 				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_DELETE);
 				CALLM1(_um, "postMessage", _msg);
 			};
-		}];
+		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["Killed", _ID];
 
 		// Add inventory event handlers
-		_ID = player addEventHandler ["InventoryClosed", {
+		_ID = [player, "InventoryClosed", {
 			params ["_unit", "_container"];
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
 				T_SETV("inventoryOpen", false);
 				T_SETV("inventoryContainer", objNull);
 			};
-		}];
+		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["InventoryClosed", _ID];
 
-		_ID = player addEventHandler ["InventoryOpened", {
+		_ID = [player, "InventoryOpened", {
 			params ["_unit", "_container"];
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
 				T_SETV("inventoryOpen", true);
 				T_SETV("inventoryContainer", _container);
 			};
-		}];
+		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["InventoryOpened", _ID];
 
 		// Take/put event handlers
-		_ID = player addEventHandler ["Take", 
-		{
+		_ID = [player, "Take", {
 			params ["_unit", "_container", "_item"];
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
@@ -186,12 +184,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
-		}];
+		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["Take", _ID];
 
 		// suspicion for planting explosives (?)
-		_ID = player addEventHandler ["Put", 
-		{
+		_ID = [player, "Put", {
 			params ["_unit", "_container", "_item"];
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
@@ -203,7 +200,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
-		}];
+		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["Put", _ID];
 
 #ifndef _SQF_VM

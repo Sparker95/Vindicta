@@ -212,10 +212,10 @@ CLASS("BuildUI", "")
 		T_SETV("EHKeyDown", _EHKeyDown);
 
 		pr _playerEvents = [
-			player addEventHandler ["Dammaged", { CALLM0(g_BuildUI, "closeUI"); }],
-			player addEventHandler ["GetInMan", { CALLM0(g_BuildUI, "closeUI"); }],
-			player addEventHandler ["Killed", { CALLM0(g_BuildUI, "closeUI"); }],
-			player addEventHandler ["InventoryOpened", { CALLM0(g_BuildUI, "closeUI"); }]
+			[player, "Dammaged", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler,
+			[player, "GetInMan", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler,
+			[player, "Killed", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler,
+			[player, "InventoryOpened", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler
 		];
 
 		T_SETV("playerEvents", _playerEvents);

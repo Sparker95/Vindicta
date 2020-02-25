@@ -5,6 +5,7 @@
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
+#include "..\Resources\UIProfileColors.h"
 
 #define __CLASS_NAME "InGameMenuTabGameModeInit"
 
@@ -31,6 +32,12 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _cbGameMode = T_CALLM1("findControl", "TAB_GMINIT_COMBO_GAME_MODE");
 		pr _cbEnemyFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_ENEMY_FACTION");
 		pr _cbPoliceFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_POLICE_FACTION");
+
+		// TODO settings
+		pr _btnSettings = T_CALLM1("findControl", "TAB_GMINIT_BUTTON_SETTINGS");
+		_btnSettings ctrlEnable false;
+		_btnSettings ctrlSetTooltip "Not yet implemented.";
+
 		T_CALLM0("onButtonRnd");
 
 		// Add game mode names
@@ -121,39 +128,36 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		pr _cbEnemyFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_ENEMY_FACTION");
 		pr _cbPoliceFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_POLICE_FACTION");
-		pr _staticDescription = T_CALLM1("findControl", "TAB_GMINIT_STATIC_DESCRIPTION");
-
-		pr _str = "Chosen factions:\n";
+		pr _staticDescription = T_CALLM1("findControl", "TAB_GMINIT_LISTNBOX_SETTINGS");
+		lnbClear _staticDescription;
+		_staticDescription lnbSetColumnsPos [0, 0.35];
 
 		// Format text according to selected factions.
 		pr _enemyTemplateName = LB_CUR_SEL_DATA(_cbEnemyFaction);
 		pr _policeTemplateName = LB_CUR_SEL_DATA(_cbPoliceFaction);
 		{
 			pr _t = [_x] call t_fnc_getTemplate;
-			_str = _str + format ["- %1\n%2\n", _t#T_DISPLAY_NAME, _t#T_DESCRIPTION];
+			_staticDescription lnbAddRow [_t#T_DISPLAY_NAME, _t#T_DESCRIPTION];
 
-			// Add more text if tempalte is not valid
+			// Add more text if template is not valid
 			if (!(_t#T_VALID)) then {
 				if (count (_t#T_MISSING_ADDONS) > 0) then {
-					_str = _str + "ERROR: following addons are missing for this faction: ";
+					_strCol1 = (localize "STR_INIT_ERROR2");
 					{
-						_str = _str + _x;
-						if (_forEachIndex < (count (_t#T_MISSING_ADDONS)) - 1) then {
-							_str = _str + ", ";
-						} else {
-							_str = _str + ".\n";
-						};
+						pr _rowIndex = _staticDescription lnbAddRow [_strCol1, _x];
+
+						// warning red!
+						_staticDescription lnbSetColor [[_rowIndex, 0], MUIC_COLOR_BTN_RED];
+						_staticDescription lnbSetColor [[_rowIndex, 1], MUIC_COLOR_BTN_RED];		
 					} forEach (_t#T_MISSING_ADDONS);
 				} else {
-					_str = _str + format ["ERROR: faction file has errors. Check .RPT file for more info."];
+					pr _strError = (localize "STR_INIT_ERROR1");
+					pr _rowIndex = _staticDescription lnbAddRow [_strError];
+					_staticDescription lnbSetColor [[_rowIndex, 0], MUIC_COLOR_BTN_RED];
+					_staticDescription lnbSetColor [[_rowIndex, 1], MUIC_COLOR_BTN_RED];
 				};
 			};
-
-			_str = _str + "\n";
 		} forEach [_enemyTemplateName, _policeTemplateName];
-
-		_staticDescription ctrlSetText _str;
-
 	} ENDMETHOD;
 
 	METHOD("onButtonRnd") {
