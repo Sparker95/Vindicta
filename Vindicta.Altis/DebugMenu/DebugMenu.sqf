@@ -206,6 +206,19 @@ pr0_fnc_toggleMarkers = {
 		
 }] call pr0_fnc_addDebugMenuItem;
 
+["Undercover", "Toggle captive", {
+
+		private _thisObject = player getVariable ["undercoverMonitor", ""];
+		if (_thisObject != "") then {
+			if (T_GETV("debugOverride")) then {
+				T_SETV("debugOverride", false);
+			} else {
+				T_SETV("debugOverride", true);
+			};
+		};	
+		
+}] call pr0_fnc_addDebugMenuItem;
+
 #else
 
 pr0_fnc_addDebugMenuItem = {};

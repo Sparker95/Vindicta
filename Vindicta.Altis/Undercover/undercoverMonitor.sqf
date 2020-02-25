@@ -66,6 +66,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("eventHandlers");												// Array with inventory EH IDs
 	VARIABLE("eventHandlersCBA");
 	VARIABLE("untieActionID");
+	VARIABLE("debugOverride"); 												// override make player captive for debug
 
 	// ------------ N E W ------------
 
@@ -105,6 +106,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("eventHandlers", []);
 		T_SETV("eventHandlersCBA", []);
 		T_SETV("untieActionID", -1);
+		T_SETV("debugOverride", false);
 
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
@@ -276,6 +278,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				//OOP_INFO_1("undercoverMonitor START state: %1", _state);
 
 				pr _unit = T_GETV("unit");
+				if (T_GETV("debugOverride")) then { T_CALLM("setState", [sARRESTED]); };
 
 				pr _suspicionArr = [[0, "default"]];			
 				pr _hintKeys = [];									// UI keys for displaying hints
@@ -295,9 +298,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				if !(isNull _nearestEnemy) then { 
 					_distance = (position _nearestEnemy) distance (position _unit); 
 
-					if (behaviour _nearestEnemy == "COMBAT" && _distance < 30) then {
-						CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.3);
-					};
+					// suspicion for being close to hostile enemy, behavior is too unpredictable
+					//if (behaviour _nearestEnemy == "COMBAT" && _distance < 30) then {
+					//	CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.3);
+					//};
 				};
 
 				// check if unit is in vehicle
@@ -322,6 +326,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							deleteMarkerLocal "markerWanted";
 							T_SETV("stateChanged", false);
 						}; // do once when state changed
+
 
 						if (!(currentWeapon _unit in g_UM_civWeapons) && currentWeapon _unit != "" && !(_bInVeh)) exitWith { 
 							_suspicionArr pushBack [1, "On foot & weapon"]; _hintKeys pushback HK_WEAPON; 
