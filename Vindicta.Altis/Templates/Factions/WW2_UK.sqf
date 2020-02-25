@@ -4,8 +4,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tWW2_UK"];
-_array set [T_DESCRIPTION, "The British Armed Forces also known as Her Majesty's Armed Forces, are the military services responsible for the defense of the United Kingdom and the Crown dependencies. Consisting of allied and captured axis equipment from 1939 to 1945, mainly using USA backed weaponry."];
-_array set [T_DISPLAY_NAME, "WW2 - British Armed Forces"];
+_array set [T_DESCRIPTION, "WW2 UK units. 1939-1945."];
+_array set [T_DISPLAY_NAME, "WW2 UK"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 

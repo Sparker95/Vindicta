@@ -4,8 +4,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tWW2_UK_police"];
-_array set [T_DESCRIPTION, "The British Peacekeeping Forces, are the military services responsible for keeping the peace in occupied territories. This particular formation is inexperienced with law enforcement and lacking specialized equipment such as heavier weaponry and armored vehicles. (This formation is fake)"];
-_array set [T_DISPLAY_NAME, "WW2 - British Peacekeeping Forces"];
+_array set [T_DESCRIPTION, "WW2 UK units. 1939-1945."];
+_array set [T_DISPLAY_NAME, "WW2 UK Police"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 

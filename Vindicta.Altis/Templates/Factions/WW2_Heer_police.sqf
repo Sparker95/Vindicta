@@ -4,8 +4,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tWW2_Heer_police"];
-_array set [T_DESCRIPTION, "The Schutzstaffel also known as SS, are the foremost agency of security, surveillance, and terror within Germany and German occupied Europe. They were tasked with the detection of actual or potential enemies of the Nazi state, the neutralization of any opposition and policing the occupied regions. The SS was the organization most responsible for the genocidal killing of an estimated 5.5 to 6 million Jews and millions of other victims during the Holocaust. Consisting of axis equipment from 1939 to 1945."];
-_array set [T_DISPLAY_NAME, "WW2 - Schutzstaffel"];
+_array set [T_DESCRIPTION, "WW2 German units. 1939-1945."];
+_array set [T_DISPLAY_NAME, "WW2 Heer Police"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
 
