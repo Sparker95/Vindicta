@@ -612,7 +612,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Killed
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
-			pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
+			pr _ehid = [_hO, "Killed", {
+				params ["_unit"];
+				_unit removeEventHandler ["Killed", _thisID];
+				_this call Unit_fnc_EH_Killed;
+			}] call CBA_fnc_addBISEventHandler;
+			//pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
 		

@@ -129,6 +129,16 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		// This is an async message, either vehicle or unit could have been deleted by now... this is a bit of a problem.
+		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the asynchronous part of the handler.
+		if(isNull _unit) exitWith {
+			OOP_WARNING_1("EH_GetOut: unit handle is null (%1)", _this);
+		};
+
+		if(isNull _vehicle) exitWith {
+			OOP_WARNING_1("EH_GetOut: vehicle handle is null (%1)", _this);
+		};
+
 		// Is this object an instance of Unit class?
 		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
 		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
