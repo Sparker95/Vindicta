@@ -48,7 +48,7 @@ _vehWeights set [T_VEH_default, [
     8, /* "LIB_GazM1" */
     7, /* "LIB_GazM1_dirty" */
     4, /* "LIB_FRA_CitC4" */
-    1, /* "LIB_FRA_CitC4Ferme" */
+    1  /* "LIB_FRA_CitC4Ferme" */
 ]];
 // _veh set [T_VEH_car_unarmed, ["B_MRAP_01_F"]];
 // _veh set [T_VEH_car_armed, ["B_MRAP_01_hmg_F"]];
