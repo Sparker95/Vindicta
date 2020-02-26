@@ -977,8 +977,8 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define ADE_HALT halt
 #define ADE_ASSERT assert 
 #else
-#define DUMP_CALLSTACK 
-#define ADE_HALT
+#define DUMP_CALLSTACK diag_log "callstack"
+#define ADE_HALT diag_log "halt"
 #define ADE_ASSERT
 #endif
 
