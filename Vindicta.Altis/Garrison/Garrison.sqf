@@ -1020,6 +1020,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_CALLM0("updateBuildResources");
 	} ENDMETHOD;
 
+	METHOD("assignCargo") {
+		params [P_THISOBJECT, P_ARRAY("_cargo")];
+		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
+		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_cargo]]);
+
+		{
+			private _unit = _x;
+			CALLM1(_unit, "addToInventory", _cargo);
+		} forEach _cargoVehicles;
+	} ENDMETHOD;
+
 	// 						G E T   A I
 	/*
 	Method: getAI

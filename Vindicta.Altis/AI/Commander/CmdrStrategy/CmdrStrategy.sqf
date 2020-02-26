@@ -308,6 +308,42 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	} ENDMETHOD;
 
 	/*
+	Method: (virtual) getSupplyScore
+	Return a value indicating the commanders desire to send supplies from the specified source garrison to the
+	specified target garrison of the specified type and amount.
+	Default <CmdrAction.Actions.SupplyCmdrAction> behaviour is to send supplies whenever they are needed.
+	
+	Parameters:
+		_action - <CmdrAction.Actions.SupplyCmdrAction>, action being evaluated.
+		_defaultScore - Array of Numbers, score vector, the score as calculated by the default algorithm. This can be returned as 
+			it to get default behaviour (detailed above in the method description).
+		_worldNow - <Model.WorldModel>, the current world model (only resource requirements of new and planned actions are applied).
+		_worldFuture - <Model.WorldModel>, the predicted future world model (in progress and planned actions are applied to completion).
+		_srcGarr - <Model.GarrisonModel>, garrison that would send the supplies.
+		_tgtGarr - <Model.GarrisonModel>, garrison that would receive the supplies.
+		_detachEff - Array of Numbers, efficiency vector, the efficiency of the detachment the source garrison is capable of
+			sending, capped against what is required by the target garrison.
+		_type - Number, type of the supplies to send (as per the ACTION_SUPPLY_TYPE_* macros in SupplyCmdrAction.sqf)
+		_amount - Number, 0-1 representing the amount of supplies (no specific units)
+
+	Returns: Array of Numbers, score vector
+	*/
+	/* virtual */ METHOD("getSupplyScore") {
+		params [P_THISOBJECT,
+			P_OOP_OBJECT("_action"), 
+			P_ARRAY("_defaultScore"),
+			P_OOP_OBJECT("_worldNow"),
+			P_OOP_OBJECT("_worldFuture"),
+			P_OOP_OBJECT("_srcGarr"),
+			P_OOP_OBJECT("_tgtGarr"),
+			P_ARRAY("_detachEff"),
+			P_NUMBER("_type"),
+			P_NUMBER("_amount")
+			];
+		_defaultScore
+	} ENDMETHOD;
+
+	/*
 	Method: (virtual) getTakeLocationScore
 	Return a value indicating the commanders desire to take the specified location using the specified source 
 	garrison.

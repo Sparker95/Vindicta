@@ -76,6 +76,8 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _splitGarrIdVar = T_CALLM("createVariable", [MODEL_HANDLE_INVALID]);
 		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
 
+		private _targetVar = T_GETV("targetVar");// T_GET_AST_VAR("targetVar");
+
 		private _splitAST_Args = [
 				_thisObject,						// This action (for debugging context)
 				[CMDR_ACTION_STATE_START], 			// First action we do
@@ -87,9 +89,20 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
+		private _perpareArgs = [
+				[CMDR_ACTION_STATE_SPLIT],				// Do this after splitting
+				CMDR_ACTION_STATE_PREPARED,				// If preperation was successful
+				CMDR_ACTION_STATE_TARGET_DEAD,			// If prep failed then we will abort and rtb
+				_srcGarrIdVar,
+				_splitGarrIdVar,
+				_targetVar
+		];
+		// Optional customization of the detachment can happen here
+		private _prepareAST = T_CALLM("getPrepareActions", _perpareArgs);
+
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
-				[CMDR_ACTION_STATE_SPLIT], 			// Do this after splitting
+				[CMDR_ACTION_STATE_PREPARED], 		// Do this after preperation
 				CMDR_ACTION_STATE_ASSIGNED, 		// State change when successful (can't fail)
 				_splitGarrIdVar]; 					// Id of garrison to assign the action to
 		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
@@ -103,8 +116,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
 		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);	
 
-		T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
-
+		_targetVar params ["_targetType", "_target"];
 		private _moveAST = if(_targetType == TARGET_TYPE_GARRISON) then {
 			// If we are merging to a garrison we will just move there and merge
 			private _moveAST_Args = [
@@ -150,9 +162,28 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				_targetVar]; 						// New target
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 
-		[_splitAST, _assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
+		[_splitAST, _prepareAST, _assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
 	} ENDMETHOD;
 	
+	// Optional customization of the actions detachment
+	/* protected virtual */ METHOD("getPrepareActions") {
+		params [P_THISOBJECT,
+				P_ARRAY("_fromStates"),
+				P_AST_STATE("_successState"),
+				P_AST_STATE("_failedState"),
+				P_NUMBER("_failedState"),
+				P_AST_VAR("_srcGarrIdVar"),
+				P_AST_VAR("_detachedGarrIdVar"),
+				P_AST_VAR("_targetVar")
+		];
+		private _astArgs = [
+			_thisObject,
+			_fromStates,
+			_successState
+		];
+		NEW("AST_Success", _astArgs)
+	} ENDMETHOD;
+
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 

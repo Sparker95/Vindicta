@@ -682,7 +682,55 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		(_tb > 0  || _tm > 0 || _tw > 0)
 	};
 
-	METHOD("restoreInventory") {
+	/* private */ METHOD("setInventory") {
+		params [P_THISOBJECT, P_ARRAY("_inventory")];
+
+		T_PRVAR(data);
+		private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if(!(isNull _hO)) then {
+			CALLSM2("Unit", "_setRealInventory", _hO, _inventory);
+		} else {
+			if(count _data > UNIT_DATA_ID_INVENTORY) then {
+				_data set[UNIT_DATA_ID_INVENTORY, +_inventory];
+			};
+		};
+	} ENDMETHOD;
+
+	/* private */ METHOD("addToInventory") {
+		params [P_THISOBJECT, P_ARRAY("_inventory")];
+
+		T_PRVAR(data);
+		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if(!(isNull _hO)) then {
+			CALLSM2("Unit", "_addToRealInventory", _hO, +_inventory);
+		} else {
+			if(count _data > UNIT_DATA_ID_INVENTORY) then {
+				private _savedInventory = _data#UNIT_DATA_ID_INVENTORY;
+				if(count _savedInventory == 4) then {
+					// Merge inventories
+					{
+						private _sourceInventorySlot = _inventory#_forEachIndex;
+						private _targetInventorySlot = _x;
+						{
+							_x params ["_item", "_amount"];
+							private _idx = _targetInventorySlot findIf { (_x#0) isEqualTo _item };
+							if(_idx == NOT_FOUND) then {
+								_targetInventorySlot pushBack [_item, _amount];
+							} else {
+								private _existingCount = _targetInventorySlot#_idx#1;
+								(_targetInventorySlot#_idx) set [1, _existingCount + _amount];
+							};
+						} forEach _sourceInventorySlot;
+					} forEach _savedInventory;
+				} else {
+					// Saved inventory wasn't valid, just replace it
+					_data set[UNIT_DATA_ID_INVENTORY, +_inventory];
+				};
+			};
+		};
+	} ENDMETHOD;
+		
+	/* private */ METHOD("restoreInventory") {
 		params [P_THISOBJECT];
 		T_PRVAR(data);
 
@@ -717,41 +765,52 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], 0, false);
 			};
 			// diag_log format["RESTORING INV FOR %1: %2", _hO, _savedInventory];
-			// Clear cargo
-			clearWeaponCargoGlobal _hO;
-			clearItemCargoGlobal _hO;
-			clearMagazineCargoGlobal _hO;
-			clearBackpackCargoGlobal _hO;
-			//weapons
-			{
-				_hO addWeaponCargoGlobal _x;
-			} forEach _savedInventory#0;
-			//items
-			{
-				_hO addItemCargoGlobal _x;
-			} forEach _savedInventory#1;
-			//magazines
-			{
-				_x params ["_item", "_amount"];
-				private _count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
-				private _full = floor (_amount / _count);
-				if(_full > 0) then {
-					_hO addMagazineAmmoCargo [_item, _full, _count];
-				};
-				private _remainder = floor(_amount % _count);
-				if(_remainder > 0) then {
-					_hO addMagazineAmmoCargo [_item, 1, _remainder];
-				};
-			} forEach _savedInventory#2;
-			//backpack
-			{
-				_hO addBackpackCargoGlobal _x;
-			} forEach _savedInventory#3;
-
+			CALLSM2("Unit", "_setRealInventory", _hO, _savedInventory);
 			true
 		} else {
 			false
 		}
+	} ENDMETHOD;
+
+	METHOD("_setRealInventory") {
+		params [P_THISOBJECT, P_OBJECT("_hO"), P_ARRAY("_inventory")];
+
+		// Clear cargo
+		clearWeaponCargoGlobal _hO;
+		clearItemCargoGlobal _hO;
+		clearMagazineCargoGlobal _hO;
+		clearBackpackCargoGlobal _hO;
+
+		CALLSM2("Unit", "_addToRealInventory", _hO, _inventory);
+	} ENDMETHOD;
+	
+	/* private */ STATIC_METHOD("_addToRealInventory") {
+		params [P_THISCLASS, P_OBJECT("_hO"), P_ARRAY("_inventory")];
+		//weapons
+		{
+			_hO addWeaponCargoGlobal _x;
+		} forEach _inventory#0;
+		//items
+		{
+			_hO addItemCargoGlobal _x;
+		} forEach _inventory#1;
+		//magazines
+		{
+			_x params ["_item", "_amount"];
+			private _count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
+			private _full = floor (_amount / _count);
+			if(_full > 0) then {
+				_hO addMagazineAmmoCargo [_item, _full, _count];
+			};
+			private _remainder = floor(_amount % _count);
+			if(_remainder > 0) then {
+				_hO addMagazineAmmoCargo [_item, 1, _remainder];
+			};
+		} forEach _inventory#2;
+		//backpack
+		{
+			_hO addBackpackCargoGlobal _x;
+		} forEach _inventory#3;
 	} ENDMETHOD;
 
 	METHOD("saveInventory") {
@@ -868,13 +927,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			if (_gar == NULL_OBJECT) exitWith {
 
 			};
-			pr _nInf = CALLM0(_gar, "countInfantryUnits");
-			pr _nVeh = CALLM0(_gar, "countVehicleUnits");
-			pr _nCargo = CALLM0(_gar, "countCargoUnits");
 			pr _tName = CALLM0(_gar, "getTemplateName");
 			if (_tName == "") exitWith {
 
 			};
+
+			pr _nInf = CALLM0(_gar, "countInfantryUnits");
+			pr _nVeh = CALLM0(_gar, "countVehicleUnits");
+			pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 			// Add stuff to cargo from the template
 			pr _t = [_tName] call t_fnc_getTemplate;

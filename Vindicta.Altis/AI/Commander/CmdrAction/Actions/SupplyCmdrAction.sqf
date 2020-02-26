@@ -1,36 +1,73 @@
 #include "common.hpp"
 
 /*
-Class: AI.CmdrAI.CmdrAction.Actions.ReinforceCmdrAction
+Class: AI.CmdrAI.CmdrAction.Actions.SupplyCmdrAction
 
-CmdrAI garrison reinforcement action. 
+CmdrAI garrison supply action. 
 Takes a source and target garrison id.
 Sends a detachment from the source garrison to join the target garrison.
+Both garrisons must be at a location.
 
 Parent: <TakeOrJoinCmdrAction>
 */
 
-#define pr private
+#define private private
 
-CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
+// These are defined in CmdrActionStates.hpp
+// #define ACTION_SUPPLY_TYPE_BUILDING 0
+// #define ACTION_SUPPLY_TYPE_AMMO 1
+// #define ACTION_SUPPLY_TYPE_EXPLOSIVES 2
+// #define ACTION_SUPPLY_TYPE_MEDICAL 3
+// #define ACTION_SUPPLY_TYPE_MISC 4
+
+CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtGarrId", [ATTR_SAVE]);
+	// Type ACTION_SUPPLY_*
+	VARIABLE_ATTR("type", [ATTR_SAVE]);
+	// Amount - abstract value representing "how much" of the stuff to supply from 0-1.
+	VARIABLE_ATTR("amount", [ATTR_SAVE]);
+	// Array of UI names for the types of supplies
+	STATIC_VARIABLE("SupplyNames");
 
 	/*
 	Constructor: new
 
-	Create a CmdrAI action to send a detachment from the source garrison to join
+	Create a CmdrAI action to send a detachment with supplies, from the source garrison to join
 	the target garrison.
 	
 	Parameters:
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
 		_tgtGarrId - Number, <Model.GarrisonModel> id to reinforce with the detachment.
+		_type - Number, type of supplies we are sending (from the ACTION_SUPPLY_* macros)
+		_amount - Number, 0-1, how much, non-specific units
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];
+		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId"), P_NUMBER("_type"), P_NUMBER("_amount")];
 		T_SETV("tgtGarrId", _tgtGarrId);
+		T_SETV("type", _type);
+		T_SETV("amount", _amount);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
+	} ENDMETHOD;
+	
+	/* protected override */ METHOD("getPrepareActions") {
+		params [P_THISOBJECT,
+				P_ARRAY("_fromStates"),
+				P_AST_STATE("_successState"),
+				P_AST_STATE("_failedState"),
+				P_AST_VAR("_srcGarrIdVar"),
+				P_AST_VAR("_detachedGarrIdVar"),
+				P_AST_VAR("_targetVar")
+		];
+		private _astArgs = [
+			_thisObject,
+			_fromStates,
+			_successState,
+			_detachedGarrIdVar,
+			T_CALLM0("calculateCargo")
+		];
+		NEW("AST_AssignCargo", _astArgs)
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("updateIntel") {
@@ -44,7 +81,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
-			_intel = NEW("IntelCommanderActionReinforce", []);
+			_intel = NEW("IntelCommanderActionSupply", []);
 
 			T_PRVAR(srcGarrId);
 			T_PRVAR(tgtGarrId);
@@ -55,17 +92,15 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 			CALLM(_intel, "create", []);
 
-			private _compAllocated = T_GET_AST_VAR("detachmentCompVar");
-			if(_compAllocated#T_INF#T_INF_officer > 0) then {
-				SETV(_intel, "type", "Assign New Officer");
-			} else {
-				SETV(_intel, "type", "Reinforce Garrison");
-			};
+			private _typeName = GETSV("SupplyCmdrAction", "SupplyNames") select T_GETV("type");
+			SETV(_intel, "type", _typeName);
+			private _amount = T_GETV("amount");
+			SETV(_intel, "amount", _amount);
+
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
 			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
 			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
 			SETV(_intel, "tgtGarrison", GETV(_tgtGarr, "actual"));
-			// SETV(_intel, "location", GETV(_tgtGarr, "actual"));
 			SETV(_intel, "posTgt", GETV(_tgtGarr, "pos"));
 			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar"));
 
@@ -123,78 +158,27 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcGarrEff = GETV(_srcGarr, "efficiency");
 		private _srcGarrComp = GETV(_srcGarr, "composition");
 
-		// TODO: full desired composition metric, not just officers
-		pr _tgtOfficerCount = CALLM0(_tgtGarr, "countOfficers");
-		pr _srcOfficerCount = CALLM0(_srcGarr, "countOfficers");
-		pr _sendAnOfficer = (_srcOfficerCount > 1) && (_tgtOfficerCount == 0);
-
-		// CALCULATE THE RESOURCE SCORE
-		// In this case it is how well the source garrison can meet the resource requirements of this action,
-		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
-		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
-		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
-
-		// How much more efficiency we must overcompensate at this place
-		pr _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
-
-		// Bail if there is no need to reinforce this
-		if (_tgtUnderEff isEqualTo T_EFF_null && !_sendAnOfficer) exitWith {
-			OOP_DEBUG_0("No need to reinforce dst garrison");
-			T_CALLM("setScore", [ZERO_SCORE]);
-		};
-
-		pr _allocationFlags = [	SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
-								SPLIT_VALIDATE_CREW_EXT];	// Ensure we provide enough crew to destination
-
-		private _needTransport = false;
-
-		// Calculate if dst needs more crew
-		private _extraCrewRequired = 0;
-		private _crewCurrent = (_tgtGarrEff#T_EFF_crew);
-		if (_crewCurrent <= (_tgtGarrEff#T_EFF_reqCrew)) then {
-			_extraCrewRequired = 1.3 * ((_tgtGarrEff#T_EFF_reqCrew) - _crewCurrent) min 6;
-			_tgtUnderEff set [T_EFF_crew, ceil _extraCrewRequired];
-		};
-
-		// Calculate if dst needs more transport
-		private _extraTransportRequired = 0;
-		if ((_tgtGarrEff#T_EFF_transport) <= (_tgtGarrEff#T_EFF_reqTransport)) then {
-			_extraTransportRequired = 1.3 * ((_tgtGarrEff#T_EFF_reqTransport) - (_tgtGarrEff#T_EFF_transport)) min 3;
-			_tgtUnderEff set [T_EFF_transport, ceil _extraTransportRequired];
-			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT_EXT;	// Ensure we provide enough extra transport
-			_needTransport = true;
-		};
-
-		// Check if we will need transport or not
-		private _srcGarrPos = GETV(_srcGarr, "pos");
-		private _tgtGarrPos = GETV(_tgtGarr, "pos");
-		private _dist = _srcGarrPos distance _tgtGarrPos;
-		if (_sendAnOfficer || _dist > REINFORCE_NO_TRANSPORT_DISTANCE_MAX) then {
-			_needTransport = true;
-		};
-
-		if (_needTransport) then {
-			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;	// Ensure we can transport ourselves
-		};
+		private _allocationFlags = [	
+			SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
+			SPLIT_VALIDATE_CREW_EXT,	// Ensure we provide enough crew to destination
+			SPLIT_VALIDATE_TRANSPORT	// Definitely need transport as we are moving supplies
+		];
 
 		// Try to allocate units
-		pr _payloadWhitelistMask = if (_needTransport) then {
-			T_comp_ground_or_infantry_mask 
-		} else {
-			T_comp_infantry_mask 
-		};
-		pr _payloadBlacklistMask = T_comp_static_or_cargo_mask;			// Don't take static weapons or cargo under any conditions
-		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
-		pr _transportBlacklistMask = [];
-		pr _requiredComp = [];
-		if(_sendAnOfficer) then {
-			// Lets send an officer as well!
-			_requiredComp = [[T_INF, T_INF_officer, 1]];
-			// Any make sure we have some escort.
-			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
-		};
-
-		pr _args = [_tgtUnderEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+		private _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+		// Don't take static weapons or cargo under any conditions
+		// (we will manually assign cargo to our trucks, don't need T_CARGO stuff)
+		private _payloadBlacklistMask = T_comp_static_or_cargo_mask;
+		// Take ground units, take any infantry to satisfy crew requirements
+		private _transportWhitelistMask = T_comp_ground_or_infantry_mask;
+		private _transportBlacklistMask = [];
+		// Obviously we need a cargo truck!
+		private _requiredComp =  [
+			[T_VEH, T_VEH_truck_cargo, 1]
+		];
+		// Don't need specific efficiency
+		private _requiredEff = +T_EFF_null;
+		private _args = [_requiredEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask,
 					_requiredComp];
@@ -208,12 +192,10 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
 
-		if(_sendAnOfficer) then {
-			ASSERT(_compAllocated#T_INF#T_INF_officer == 1);
-		};
-		// diag_log format ["Allocation results: %1", _allocResult];
+		ASSERT(_compAllocated#T_VEH#T_VEH_truck_cargo >= 1);
 
-		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		private _srcGarrPos = GETV(_srcGarr, "pos");
+		private _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 
 		// Bail if remaining efficiency is below minimum level for this garrison
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
@@ -229,33 +211,21 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
 
 		// How much to scale the score for distance to target
+		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
 
-		private _scorePriority = switch true do {
-			case (_scoreResource == 0): {0};
-			case (_sendAnOfficer): {
-				// How much we want an officer can be estimated by the total strength of the 
-				// garrison (including this detachment)
-				// https://www.desmos.com/calculator/vealgnewq1
-				log (1 + (CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated) + CALLSM1("CmdrAction", "getDetachmentStrength", _tgtGarrEff)) / 8)
-				
-			};
-			// TODO:OPT cache these scores!
-			default {CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtGarr])};
-		};
+		
+		private _dist = _srcGarrPos distance _tgtGarrPos;
 
 		// CALCULATE START DATE
-		// Work out time to start based on how much force we mustering and distance we are travelling.
-		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8 * 0.1
-		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1))  * 0.1 + (30 + random 15);
-		if(_sendAnOfficer) then {
-			// Longer wait for officer reinforcements
-			_delay = _delay * 2;
-		};
+		// Work out time to start based on amount of supplies we mustering and distance we are travelling.
+		// linear * https://www.desmos.com/calculator/0vb92pzcz8 * 0.1
+		private _amount = T_GETV("amount");
+		private _delay = 50 * (_amount + 0.5) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + (30 + random 15);
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
 		// _delay = 0 max (120 min _delay);
@@ -265,19 +235,19 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		T_SET_AST_VAR("startDateVar", _startDate);
 
-		//private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
-		//OOP_INFO_0(_str);
-		// if(_scorePriority > 0 and _scoreResource > 0) then {
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 		
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
+		private _type = T_GETV("type");
+		private _typeName = GETSV("SupplyCmdrAction", "SupplyNames") select _type;
+		private _amount = T_GETV("amount");
+		OOP_DEBUG_MSG("[w %1 a %2] %3 supply %4 with %5 %6, Score %7 _detachEff = %8 _detachEffStrength = %9 _distCoeff = %10", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG _typeName ARG _amount ARG [1 ARG _scoreResource] ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
-		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
-		private _score = CALLM(_strategy, "getReinforceScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _effAllocated]);
+		private _baseScore = MAKE_SCORE_VEC(1, _scoreResource, 1, 1);
+		private _score = CALLM(_strategy, "getSupplyScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _effAllocated ARG _type ARG _amount]);
 		T_CALLM("setScore", [_score]);
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""src_garrison"": ""%2"", ""tgt_garrison"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
@@ -298,7 +268,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
-		private _record = NEW("ReinforceCmdrActionRecord", []);
+		private _record = NEW("SupplyCmdrActionRecord", []);
 
 		// Fill data values
 		//SETV(_record, "garRef", GETV(_garModel, "actual"));
@@ -313,16 +283,62 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		_serial
 	} ENDMETHOD;
 
+	METHOD("calculateCargo") {
+		params [P_THISOBJECT];
+		private _type = T_GETV("type");
+		private _amount = T_GETV("amount");
+
+		// Cargo/inventory array format:
+		// 	[
+		//		[[weapon, count],...],
+		//		[[item, count],...],
+		//		[[mag, count],...],
+		//		[[backpack, count],...]
+		// 	]
+		switch (_type) do {
+			case ACTION_SUPPLY_TYPE_BUILDING: {
+				[[],[["vin_build_res_0", 30 + floor (_amount * 50)]],[],[]]
+			};
+			case ACTION_SUPPLY_TYPE_AMMO: {
+				// To get T_INV stuff etc (locking?)
+				// T_PRVAR(srcGarrId);
+				// T_PRVAR(tgtGarrId);
+				// private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+				// pr _t = [_tName] call t_fnc_getTemplate;
+				// pr _tInv = _t#T_INV;
+				// [[],[["vin_build_res_0", 30 + floor (_amount * 50)],[],[]]
+			};
+			case ACTION_SUPPLY_TYPE_EXPLOSIVES: {
+			};
+			case ACTION_SUPPLY_TYPE_MEDICAL: {
+			};
+			case ACTION_SUPPLY_TYPE_MISC: {
+			};
+		}
+	} ENDMETHOD;
+	
+
 ENDCLASS;
 
-REGISTER_DEBUG_MARKER_STYLE("ReinforceCmdrAction", "ColorWhite", "mil_join");
+REGISTER_DEBUG_MARKER_STYLE("SupplyCmdrAction", "ColorPink", "mil_pickup");
+
+if(isNil { GETSV("SupplyCmdrAction", "SupplyNames")}) then {
+	private _actionSupplyNames = [
+		"Building Supplies",
+		"Ammunition",
+		"Explosives",
+		"Medical",
+		"Miscellaneous"
+	];
+	SETSV("SupplyCmdrAction", "SupplyNames", _actionSupplyNames);
+};
 
 #ifdef _SQF_VM
 
 #define SRC_POS [1, 2, 0]
 #define TARGET_POS [1000, 2, 3]
 
-["ReinforceCmdrAction", {
+["SupplyCmdrAction", {
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
@@ -344,7 +360,7 @@ REGISTER_DEBUG_MARKER_STYLE("ReinforceCmdrAction", "ColorWhite", "mil_join");
 	SETV(_targetGarrison, "composition", _targetComp);
 	SETV(_targetGarrison, "pos", TARGET_POS);
 
-	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id")]);
+	private _thisObject = NEW("SupplyCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id") ARG ACTION_SUPPLY_TYPE_BUILDING ARG 0.2]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 	CALLM(_thisObject, "updateScore", [_world ARG _future]);
