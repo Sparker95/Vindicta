@@ -12,7 +12,7 @@ Author: Sparker 12.07.2018
 
 #define pr private
 
-#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]); DUMP_CALLSTACK;
+#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]); DUMP_CALLSTACK
 
 #define MESSAGE_LOOP gMessageLoopMain
 
@@ -915,7 +915,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
-
 	/*
 	Method: getBuildResources
 
@@ -924,12 +923,13 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getBuildResources") {
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
-		pr _buildRes = 0;
+		private _buildRes = T_GETV("buildResources");
+
 		//__MUTEX_LOCK;
 		if (_buildRes == -1 || _forceUpdate) then {
 			T_CALLM0("updateBuildResources");
+			_buildRes = T_GETV("buildResources");
 		};
-		_buildRes = T_GETV("buildResources");
 		//__MUTEX_UNLOCK;
 
 		_buildRes
@@ -940,8 +940,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("_getBuildResources") {
 		params [P_THISOBJECT];
 
-		pr _return = 0;
-		pr _units = T_GETV("units");
+		private _return = 0;
+		private _units = T_GETV("units");
 		{
 			_return = _return + CALLM0(_x, "getBuildResources");
 		} forEach _units;
@@ -954,7 +954,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("updateBuildResources") {
 		params [P_THISOBJECT];
 
-		_buildRes = T_CALLM0("_getBuildResources");
+		private _buildRes = T_CALLM0("_getBuildResources");
 		T_SETV("buildResources", _buildRes);
 
 		OOP_INFO_1("UPDATE BUILD RESOURCES: %1", _buildRes);
@@ -970,12 +970,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (_value <= 0) exitWith {};
 		
 		// Find units which can have build resources
-		pr _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+		private _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
 
 		// Bail if there are no units which can have build resources
 		if (count _units == 0) exitWith {};
 
-		pr _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
+		private _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
 		{
 			CALLM1(_x, "addBuildResources", _valuePerUnit);
 		} forEach _units;
@@ -3381,6 +3381,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Delete out empty groups
 		T_CALLM0("deleteEmptyGroups");
+
+		// Recalculate build resources
+		T_CALLM0("updateBuildResources");
 
 		true
 	} ENDMETHOD;
