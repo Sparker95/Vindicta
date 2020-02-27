@@ -158,7 +158,8 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcGarrEff = GETV(_srcGarr, "efficiency");
 		private _srcGarrComp = GETV(_srcGarr, "composition");
 
-		private _allocationFlags = [	
+		private _allocationFlags = [
+			SPLIT_VALIDATE_ATTACK,		// Validate our escort strength	
 			SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
 			SPLIT_VALIDATE_CREW_EXT,	// Ensure we provide enough crew to destination
 			SPLIT_VALIDATE_TRANSPORT	// Definitely need transport as we are moving supplies
@@ -183,9 +184,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		private _requiredEff = +T_eff_null;
 
 		// Add some armor if we need it
-		_requiredEff set [_requiredEff#T_EFF_soft, floor (12 + 24 * _amount)];
-		_requiredEff set [_requiredEff#T_EFF_medium, floor (3 * _amount)];
-		_requiredEff set [_requiredEff#T_EFF_armor, floor (3 * _amount)];
+		_requiredEff set [T_EFF_aSoft, floor (12 + 24 * _amount)];
+		_requiredEff set [T_EFF_aMedium, floor (3 * _amount)];
+		_requiredEff set [T_EFF_aArmor, floor (3 * _amount)];
 
 		// [6, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 0, 6]
 		private _args = [_requiredEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
@@ -348,16 +349,16 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 					_x params ["_subcatID", "_nTypes", "_nOfEach"];
 					if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
 						private _weaponsAndMags = (+_tInv#_subcatID) call BIS_fnc_arrayShuffle;
-
-						for "_i" from 0 to (_nTypes-1) do {
+						private _maxType = _nTypes min count _weaponsAndMags;
+						for "_i" from 0 to (_maxType-1) do {
 							private _weaponAndMag = _weaponsAndMags#_i;
 							_weaponAndMag params ["_weaponClassName", "_magazines"];
 							_weapons = _weapons + [[_weaponClassName, ceil (_nOfEach * random[0.5, 1, 1.5])]];
 							if(count _magazines > 0) then {
 								private _nMags = ceil (_nOfEach * 10 * random[0.5, 1, 1.5]);
-								_mags = _magazines apply { [_x, 0] };
+								_mags = _magazines apply { [_x, 0] } ;
 								while {_nMags > 0} do {
-									private _mag = _mags#(floor random count _magazines);
+									private _mag = selectRandom _mags;
 									_mag set [1, _mag#1 + 1];
 									_nMags = _nMags - 1;
 								};

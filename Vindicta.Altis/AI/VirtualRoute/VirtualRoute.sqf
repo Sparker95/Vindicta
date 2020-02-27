@@ -80,7 +80,7 @@ CLASS("VirtualRoute", "")
 		if(_speedFn isEqualType "") then {
 			pr _default_speedFn = {
 				params ["_road", "_next_road", "_callbackArgs"];
-#ifdef CMDR_AI_TESTING
+#ifdef DEBUG_FAST_VIRTUALROUTE
 				300
 #else
 				if([_road] call misc_fnc_isHighWay) exitWith {
