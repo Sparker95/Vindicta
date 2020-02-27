@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_AAF_police"];
-_array set [T_DESCRIPTION, "Police units using AAF 2017 and RHS."];
-_array set [T_DISPLAY_NAME, "RHS AAF Police Custom"];
+_array set [T_DESCRIPTION, "Custom Police units. Uses RHS and AAF2017 assets. This faction was built specifically for this mission."];
+_array set [T_DISPLAY_NAME, "RHS AAF Police (custom)"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [
 								"FGN_AAF_Troops",	// AAF 2017
@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
+_inf set [T_INF_DEFAULT, ["FGN_AAF_Police_Policeman"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_officer, ["RHS_AAF_police_TL_SMG","RHS_AAF_police_TL_rifle","RHS_AAF_police_SMG","RHS_AAF_police_shotgun","RHS_AAF_police_rifle"]];
 _inf set [T_INF_rifleman, ["RHS_AAF_police_SMG","RHS_AAF_police_shotgun","RHS_AAF_police_rifle"]];
