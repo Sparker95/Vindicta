@@ -90,7 +90,7 @@ if (_debugDraw3D_Data isEqualTo []) then {
 	player setVariable ["_debugDraw3D_DataStored", _debugDraw3D_Data];
 };
 
-systemChat format["Current EH: %1", (_debugDraw3D_Data select DRAW_3D_DEBUG_EH)];
+
 
 // only create EH if it doesn't exist yet
 if ((_debugDraw3D_Data select DRAW_3D_DEBUG_EH) == -1) then {
@@ -135,7 +135,7 @@ if ((_debugDraw3D_Data select DRAW_3D_DEBUG_EH) == -1) then {
 					// workaround to ensure that this EH doesn't get OOP unit variables each frame 
 					pr _time = player getVariable "_debugDraw3D_time";
 					pr _unitData = [];
-					if ((_time + 3) < time) then {
+					if ((_time + 2) < time) then {
 						player setVariable ["_debugDraw3D_time", time];
 						
 						if !(isNil "_myUnit") then {
@@ -149,7 +149,7 @@ if ((_debugDraw3D_Data select DRAW_3D_DEBUG_EH) == -1) then {
 
 					if !(_unitData isEqualTo []) then { // update with new unit data, if possible
 
-						pr _txtStart = "<t shadow=2 color='#7CFC00'>";
+						pr _txtStart = "<t shadow=2>";
 						pr _txtEnd = "</t>";
 
 						pr _currentAction = parseText format[_txtStart + "unitAction: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_UNIT_ACTION)];	
@@ -201,7 +201,7 @@ if ((_debugDraw3D_Data select DRAW_3D_DEBUG_EH) == -1) then {
 					pr _alphaVal = linearConversion [0, DRAW_3D_MAX_DIST,_dist,1, 0,true];
 
 					//_control ctrlSetBackgroundColor [0, 0, 0, _alphaVal];
-					_control ctrlSetTextColor [1, 1, 1, _alphaVal];
+					_control ctrlSetTextColor [1, 1, 1, 1];
 
 					// scale font according to distance 
 
