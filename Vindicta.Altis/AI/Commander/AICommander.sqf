@@ -2218,7 +2218,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					GETV(_loc, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]
 				}
 			} and
-			// And have an officer
+			// And have an officer (we only want to set supplies )
 			{ CALLM0(_x, "countOfficers") > 0 }
 		};
 
@@ -2230,7 +2230,16 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				private _tgtId = GETV(_x, "id");
 				private _tgtFac = GETV(_x, "faction");
 				if(_srcId != _tgtId and {_srcFac == _tgtFac}) then {
-					private _params = [_srcId, _tgtId, ACTION_SUPPLY_TYPE_BUILDING, random 1];
+					private _type = selectRandomWeighted [
+						ACTION_SUPPLY_TYPE_BUILDING,	10,
+						ACTION_SUPPLY_TYPE_AMMO,		5,
+						ACTION_SUPPLY_TYPE_EXPLOSIVES,	1,
+						ACTION_SUPPLY_TYPE_MEDICAL,		1,
+						ACTION_SUPPLY_TYPE_MISC,		1
+					];
+					private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+					private _amount = 0 max random [_progress * 0.5, _progress, _progress * 1.5] min 1;
+					private _params = [_srcId, _tgtId, _type, _amount];
 					_actions pushBack (NEW("SupplyCmdrAction", _params));
 				};
 			} forEach _tgtGarrisons;

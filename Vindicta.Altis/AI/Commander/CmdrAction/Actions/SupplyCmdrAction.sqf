@@ -11,7 +11,7 @@ Both garrisons must be at a location.
 Parent: <TakeOrJoinCmdrAction>
 */
 
-#define private private
+//#define private private
 
 // These are defined in CmdrActionStates.hpp
 // #define ACTION_SUPPLY_TYPE_BUILDING 0
@@ -176,8 +176,18 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		private _requiredComp =  [
 			[T_VEH, T_VEH_truck_cargo, 1]
 		];
-		// Don't need specific efficiency
-		private _requiredEff = +T_EFF_null;
+
+		private _amount = T_GETV("amount");
+
+		// Determine an appropriate escort for our cargo
+		private _requiredEff = +T_eff_null;
+
+		// Add some armor if we need it
+		_requiredEff set [_requiredEff#T_EFF_soft, floor (12 + 24 * _amount)];
+		_requiredEff set [_requiredEff#T_EFF_medium, floor (3 * _amount)];
+		_requiredEff set [_requiredEff#T_EFF_armor, floor (3 * _amount)];
+
+		// [6, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 0, 6]
 		private _args = [_requiredEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask,
@@ -224,7 +234,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// CALCULATE START DATE
 		// Work out time to start based on amount of supplies we mustering and distance we are travelling.
 		// linear * https://www.desmos.com/calculator/0vb92pzcz8 * 0.1
-		private _amount = T_GETV("amount");
+		
 		private _delay = 50 * (_amount + 0.5) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + (30 + random 15);
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
@@ -283,6 +293,16 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		_serial
 	} ENDMETHOD;
 
+	STATIC_METHOD("randomAmount") {
+		params [P_THISCLASS, P_NUMBER("_base"), P_NUMBER("_variation")];
+		#ifdef _SQF_VM
+		1
+		#else
+		floor (_base + _variation * random [0, 0.5, 1])
+		#endif
+	} ENDMETHOD;
+	
+
 	METHOD("calculateCargo") {
 		params [P_THISOBJECT];
 		private _type = T_GETV("type");
@@ -297,22 +317,141 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// 	]
 		switch (_type) do {
 			case ACTION_SUPPLY_TYPE_BUILDING: {
-				[[],[["vin_build_res_0", 30 + floor (_amount * 50)]],[],[]]
+				[
+					[],
+					[["vin_build_res_0", CALLSM2("SupplyCmdrAction", "randomAmount", 25, 50 * _amount)]],
+					[],
+					[]
+				]
 			};
 			case ACTION_SUPPLY_TYPE_AMMO: {
-				// To get T_INV stuff etc (locking?)
-				// T_PRVAR(srcGarrId);
-				// T_PRVAR(tgtGarrId);
-				// private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-				// pr _t = [_tName] call t_fnc_getTemplate;
-				// pr _tInv = _t#T_INV;
-				// [[],[["vin_build_res_0", 30 + floor (_amount * 50)],[],[]]
+				T_PRVAR(srcGarrId);
+				T_PRVAR(tgtGarrId);
+				private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+				private _side = GETV(_srcGarr, "side");
+				private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "");
+				private _t = [_templateName] call t_fnc_getTemplate;
+				private _tInv = _t#T_INV;
+
+				// Add weapons and magazines
+				private _arr = [[T_INV_handgun, ceil (1 + random 2), CALLSM2("SupplyCmdrAction", "randomAmount", 2, 5 * _amount)]];
+				_arr = _arr + (if(random 10 < 7) then {
+					[[T_INV_primary, ceil (1 + random 2), CALLSM2("SupplyCmdrAction", "randomAmount", 5, 20 * _amount)]]
+				} else {
+					[[T_INV_secondary, ceil (1 + random 2), CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)]]
+				});
+
+				private _weapons = [];
+				private _mags = [];
+
+				{ // forEach _arr;
+					_x params ["_subcatID", "_nTypes", "_nOfEach"];
+					if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
+						private _weaponsAndMags = (+_tInv#_subcatID) call BIS_fnc_arrayShuffle;
+
+						for "_i" from 0 to (_nTypes-1) do {
+							private _weaponAndMag = _weaponsAndMags#_i;
+							_weaponAndMag params ["_weaponClassName", "_magazines"];
+							_weapons = _weapons + [[_weaponClassName, ceil (_nOfEach * random[0.5, 1, 1.5])]];
+							if(count _magazines > 0) then {
+								private _nMags = ceil (_nOfEach * 10 * random[0.5, 1, 1.5]);
+								_mags = _magazines apply { [_x, 0] };
+								while {_nMags > 0} do {
+									private _mag = _mags#(floor random count _magazines);
+									_mag set [1, _mag#1 + 1];
+									_nMags = _nMags - 1;
+								};
+								_mags = _mags select { _x#1 > 0 };
+							};
+						};
+					};
+				} forEach _arr;
+
+				[
+					_weapons,
+					[],
+					_mags,
+					[]
+				]
 			};
 			case ACTION_SUPPLY_TYPE_EXPLOSIVES: {
+				[
+					[],
+					[
+						["IEDLandSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
+						["IEDUrbanSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
+						["IEDLandBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
+						["IEDUrbanBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
+						["DemoCharge_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
+						["SatchelCharge_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
+						["TrainingMine_Mag", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 20 * _amount)],
+						["ACE_DeadManSwitch", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+						["ACE_DefusalKit", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+						["ACE_M26_Clacker", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+						["ACE_Clacker", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+						["MineDetector", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)]
+					],
+					[],
+					[]
+				]
 			};
 			case ACTION_SUPPLY_TYPE_MEDICAL: {
+				[
+					[],
+					[
+						["ACE_adenosine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_fieldDressing", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_elasticBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_packingBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_quikclot", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_bloodIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_bloodIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_bloodIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_bodyBag", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5,  5 * _amount)],
+						["ACE_epinephrine", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_morphine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_personalAidKit", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_plasmaIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_plasmaIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_plasmaIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_salineIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_salineIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_salineIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_surgicalKit", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_tourniquet", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)]
+					],
+					[],
+					[]
+				]
 			};
 			case ACTION_SUPPLY_TYPE_MISC: {
+				[
+					[],
+					[
+						["ACE_adenosine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_fieldDressing", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_elasticBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_packingBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_quikclot", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
+						["ACE_bloodIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_bloodIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_bloodIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_bodyBag", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5,  5 * _amount)],
+						["ACE_epinephrine", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_morphine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_personalAidKit", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
+						["ACE_plasmaIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_plasmaIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_plasmaIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_salineIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_salineIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_salineIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_surgicalKit", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
+						["ACE_tourniquet", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)]
+					],
+					[],
+					[]
+				]
 			};
 		}
 	} ENDMETHOD;
