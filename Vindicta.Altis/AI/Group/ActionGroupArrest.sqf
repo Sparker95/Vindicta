@@ -134,8 +134,17 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitArrest", "");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitShootLegTarget", "");
+			pr _currentGoal = GETV(_unitAI, "currentGoal");
+
+			// check because if not it creates *massive* thousands of lines type rpt spam
+			if (_currentGoal == "GoalUnitArrest") then {
+				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitArrest", "");
+			};
+
+			if (_currentGoal == "GoalUnitShootLegTarget") then {
+				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitShootLegTarget", "");
+
+			};
 		} forEach _units;
 		
 	} ENDMETHOD;
