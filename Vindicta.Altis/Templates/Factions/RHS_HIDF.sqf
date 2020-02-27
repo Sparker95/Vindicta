@@ -110,7 +110,7 @@ _veh set [T_VEH_truck_cargo, ["rhsusf_M1078A1P2_WD_flatbed_fmtv_usarmy", "rhsusf
 _veh set [T_VEH_truck_ammo, ["rhsusf_M977A4_AMMO_usarmy_wd", "rhsusf_M1078A1R_SOV_M2_D_fmtv_socom"]];
 _veh set [T_VEH_truck_repair, ["rhsusf_M977A4_REPAIR_usarmy_wd", "rhsusf_M1078A1R_SOV_M2_D_fmtv_socom"]];
 _veh set [T_VEH_truck_medical , ["rhsusf_m113_usarmy_medical", "rhsusf_M1085A1P2_B_WD_Medical_fmtv_usarmy"]];
-_veh set [T_VEH_truck_fuel, ["rhsusf_M978A4_usarmy_wd", "", "rhsusf_M1078A1R_SOV_M2_D_fmtv_socom"]];
+_veh set [T_VEH_truck_fuel, ["rhsusf_M978A4_usarmy_wd", "rhsusf_M1078A1R_SOV_M2_D_fmtv_socom"]];
 
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
