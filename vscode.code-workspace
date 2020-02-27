@@ -63,6 +63,7 @@
 		"sqf.enableCBA": true,
 		"sqf.enableACE3": true,
 		"sqflint.ignoredVariables": [
+			"ade_dumpCallstack",
 			"_input0",
 			"_thisArgs",
 			"_thisId",

@@ -12,7 +12,7 @@ Author: Sparker 12.07.2018
 
 #define pr private
 
-#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]); DUMP_CALLSTACK;
+#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]); DUMP_CALLSTACK
 
 #define MESSAGE_LOOP gMessageLoopMain
 
@@ -915,7 +915,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
-
 	/*
 	Method: getBuildResources
 
@@ -924,12 +923,13 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getBuildResources") {
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
-		pr _buildRes = 0;
+		private _buildRes = T_GETV("buildResources");
+
 		//__MUTEX_LOCK;
 		if (_buildRes == -1 || _forceUpdate) then {
 			T_CALLM0("updateBuildResources");
+			_buildRes = T_GETV("buildResources");
 		};
-		_buildRes = T_GETV("buildResources");
 		//__MUTEX_UNLOCK;
 
 		_buildRes
@@ -940,8 +940,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("_getBuildResources") {
 		params [P_THISOBJECT];
 
-		pr _return = 0;
-		pr _units = T_GETV("units");
+		private _return = 0;
+		private _units = T_GETV("units");
 		{
 			_return = _return + CALLM0(_x, "getBuildResources");
 		} forEach _units;
@@ -954,7 +954,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("updateBuildResources") {
 		params [P_THISOBJECT];
 
-		_buildRes = T_CALLM0("_getBuildResources");
+		private _buildRes = T_CALLM0("_getBuildResources");
 		T_SETV("buildResources", _buildRes);
 
 		OOP_INFO_1("UPDATE BUILD RESOURCES: %1", _buildRes);
@@ -970,12 +970,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (_value <= 0) exitWith {};
 		
 		// Find units which can have build resources
-		pr _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+		private _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
 
 		// Bail if there are no units which can have build resources
 		if (count _units == 0) exitWith {};
 
-		pr _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
+		private _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
 		{
 			CALLM1(_x, "addBuildResources", _valuePerUnit);
 		} forEach _units;
@@ -3177,12 +3177,13 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Work out what garrison we are moving these units to
 		private _tgtGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", side group _player);
+		private _tgtUnits = GETV(_tgtGarrison, "units");
 
 		// Get the units OOP objects
 		private _units = _unitHandles apply {
 			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
-			!IS_NULL_OBJECT(_x)
+			!IS_NULL_OBJECT(_x) && !(_x in _tgtGarrison)
 		};
 
 		// Remove the units from thier group
@@ -3221,15 +3222,17 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_WARNING_0("makeGarrisonFromUnits: No unit handles specified");
 		};
 
+		private _ourUnits = T_GETV("units");
+
 		// Get the units OOP objects
-		private _units = _unitHandles apply {
+		private _unitObjects = _unitHandles apply {
 			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
-			!IS_NULL_OBJECT(_x)
+			!IS_NULL_OBJECT(_x) && {_x in _ourUnits}
 		};
 
-		if(count _units == 0) exitWith {
-			OOP_WARNING_1("makeGarrisonFromUnits: No unit objects found for unit handles %1", _unitHandles);
+		if(count _unitObjects == 0) exitWith {
+			OOP_WARNING_1("makeGarrisonFromUnits: No unit objects found for unit handles %1 in our garrison", _unitHandles);
 		};
 
 		private _side = T_GETV("side");
@@ -3252,15 +3255,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Populate the new group
 		{
 			CALLM1(_group, "addUnit", _x);
-			//private _unit = _x;
-			// pr _unitGroup = CALLM0(_unit, "getGroup");
-			// if (_unitGroup != NULL_OBJECT) then {
-			// 	CALLM1(_unitGroup, "removeUnit", _unit);
-			// };
-		} forEach _units;
-
-		// // Add the units to thier new group
-		//CALLM1(_newGarrison, "addUnits", _units);
+		} forEach _unitObjects;
 
 		// Add group to new garrison
 		CALLM1(_newGarrison, "addGroup", _group);
@@ -3268,10 +3263,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Register it at the commander (do it after adding the units so the sync is correct)
 		CALLM(_newGarrison, "activate", []);
 
-		// Delete out empty groups
+		// Delete our empty groups
 		T_CALLM0("deleteEmptyGroups");
 
-		private _msg = format ["%1 units formed new garrison at %2", count _units, mapGridPosition _pos];
+		private _msg = format ["%1 units formed new garrison at %2", count _unitObjects, mapGridPosition _pos];
 		private _args = ["GARRISON FORMED", _msg, "They are now available for map control"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_ALL, NO_JIP);
 	} ENDMETHOD;	
@@ -3381,6 +3376,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Delete out empty groups
 		T_CALLM0("deleteEmptyGroups");
+
+		// Recalculate build resources
+		T_CALLM0("updateBuildResources");
 
 		true
 	} ENDMETHOD;

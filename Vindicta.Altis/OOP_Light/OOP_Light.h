@@ -659,7 +659,6 @@
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			FIX_LINE_NUMBERS2(#) \
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
@@ -978,8 +977,8 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define ADE_HALT halt
 #define ADE_ASSERT assert 
 #else
-#define DUMP_CALLSTACK 
-#define ADE_HALT
+#define DUMP_CALLSTACK diag_log "callstack"
+#define ADE_HALT diag_log "halt"
 #define ADE_ASSERT
 #endif
 

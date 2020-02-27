@@ -612,7 +612,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Killed
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
-			pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
+			pr _ehid = [_hO, "Killed", {
+				params ["_unit"];
+				_unit removeEventHandler ["Killed", _thisID];
+				_this call Unit_fnc_EH_Killed;
+			}] call CBA_fnc_addBISEventHandler;
+			//pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
 		
@@ -824,18 +829,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Bail if not spawned
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
-
-		// hopefully catch inventory wipe bug!
-		if (isPlayer _hO) then { 
-			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 2"];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-
-			diag_log format ["INVENTORY WIPED, ERROR CODE 2: _data: %1", _data];
-		};
 
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {

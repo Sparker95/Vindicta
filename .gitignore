@@ -56,3 +56,6 @@ tools/buildtool/dist/
 *.pbo
 
 *.tmp
+
+# Random mods
+tools/mods
