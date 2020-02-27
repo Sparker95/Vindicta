@@ -139,8 +139,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Get unit's group
 		pr _unitGroup = CALLM0(_unit, "getGroup");
 
+		if(_unitGroup == _thisObject) exitWith {
+			// Already in this group, this can happen quite easily
+		};
+
 		// Remove the unit from its previous group
-		if (_unitGroup != "") then {
+		if (_unitGroup != NULL_OBJECT) then {
 			//if (CALLM0(_unitGroup, "getOwner") == clientOwner) then {
 				CALLM1(_unitGroup, "removeUnit", _unit);
 			//} else {
@@ -158,7 +162,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// todo
 
 		// Handle spawn states
-		if (CALLM0(_thisObject,"isSpawned")) then {
+		if (CALLM0(_thisObject, "isSpawned")) then {
 
 			// Make the unit join the actual group
 			pr _newGroupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
