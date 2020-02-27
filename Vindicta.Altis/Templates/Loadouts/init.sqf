@@ -14,6 +14,9 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_police\in
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF_Ranger\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF_Recon\init.sqf";
+//RHS_HIDF
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf";
 //RHS_LDF_NATO
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO_Police\init.sqf";
