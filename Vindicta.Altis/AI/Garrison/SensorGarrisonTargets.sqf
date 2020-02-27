@@ -195,7 +195,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		{ // forEach (STIMULUS_GET_VALUE(_stimulus));
 			// Check if the target is already known
 			pr _unit = _x select TARGET_ID_UNIT;
-			if (!(isNull _unit)) then {
+			if (!IS_NULL_OBJECT(_unit)) then {
 				pr _index = _knownTargets findIf {(_x select TARGET_ID_UNIT) isEqualTo _unit};
 				if (_index == -1) then {
 					// Didn't find an existing entry
