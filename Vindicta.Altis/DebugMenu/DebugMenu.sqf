@@ -219,6 +219,12 @@ pr0_fnc_toggleMarkers = {
 		
 }] call pr0_fnc_addDebugMenuItem;
 
+["AI", "Toggle draw3D goals", {
+
+	call compile preprocessFileLineNumbers "DebugMenu\fn_draw3dUnitDetails.sqf";
+		
+}] call pr0_fnc_addDebugMenuItem;
+
 #else
 
 pr0_fnc_addDebugMenuItem = {};
