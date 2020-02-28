@@ -1,9 +1,18 @@
-class Dialog {
+class pr0 {
 	
-	class HUD {
-		file = "Dialogue\HUD";
-		class hud_init {postinit = 1;};
-		class hud_createSentence {};
+	class dialogue {
+		file = "Dialogue";
+		class dialogue_array {postinit = 1;};
+		
+		class dialogue_findConversation {};
+		class dialogue_createConversation {};
+		
+		class dialogue_createSentence {};
+		class dialogue_removeSentence {};
+		class dialogue_updateSentence {};
+		
+		class dialogue_createHUD {};
+		class dialogue_removeHUD {postinit = 1;};//remove old hud
 	};
 	class Voice {
 		file = "Dialogue\Voice";

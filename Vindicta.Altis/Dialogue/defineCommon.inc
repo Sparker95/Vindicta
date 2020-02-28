@@ -1,2 +1,21 @@
 #include "..\defineCommon.inc"
 
+#define STRING_ICON_UP_ARROW "\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa"
+
+#define FLOAT_TEXT_HIGHT 0.05
+#define FLOAT_POS_Y  (1 - safezoney-0.2)
+#define FLOAT_DISPLAYTIME  7
+#define FLOAT_FADE_TIME  1
+#define FLOAT_ICON_WITDH  0.2
+#define INT_SENTENCE_LIMIT 6
+
+#define TYPE_SENTENCE 0
+#define TYPE_QUESTION 1
+#define TYPE_OPTION 2
+#define TYPE_JUMP_TO 3
+#define TYPE_EVENT_WALKED_AWAY 4
+#define TYPE_EVENT_OUT_OF_TIME 5
+#define TYPE_EXIT_IF 5
+
+#define FLOAT_MAX_LISTENING_DISTANCE 50.0
+#define FLOAT_MAX_WAIT_FOR_ANSWER 7.0
