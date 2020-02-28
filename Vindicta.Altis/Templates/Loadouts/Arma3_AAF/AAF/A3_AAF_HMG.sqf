@@ -7,26 +7,26 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_HelmetHBK_ear_F"];
+_RandomHeadgear = selectRandom ["H_HelmetIA_camo"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "U_I_E_Uniform_01_shortsleeve_F";
-this addVest "V_CarrierRigKBT_01_light_EAF_F";
-this addBackpack "B_AssaultPack_eaf_F";
+this forceAddUniform "U_I_CombatUniform_shortsleeve";
+this addVest "V_PlateCarrierIA2_dgtl";
+this addBackpack "B_AssaultPack_rgr";
 
-this addWeapon "MMG_02_black_F";
-this addPrimaryWeaponItem "ACE_muzzle_mzls_338";
+this addWeapon "MMG_01_tan_F";
+this addPrimaryWeaponItem "ACE_muzzle_mzls_93mmg";
 this addPrimaryWeaponItem "acc_flashlight";
-this addPrimaryWeaponItem "optic_Hamr";
-this addPrimaryWeaponItem "130Rnd_338_Mag";
-this addPrimaryWeaponItem "bipod_01_F_blk";
+this addPrimaryWeaponItem "optic_ERCO_khk_F";
+this addPrimaryWeaponItem "150Rnd_93x64_Mag";
+this addPrimaryWeaponItem "bipod_03_F_blk";
 
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToBackpack "130Rnd_338_Mag";};
+for "_i" from 1 to 3 do {this addItemToBackpack "150Rnd_93x64_Mag";};
 for "_i" from 1 to 2 do {this addItemToVest "SmokeShell";};
 for "_i" from 1 to 2 do {this addItemToVest "HandGrenade";};
 for "_i" from 1 to 2 do {this addItemToVest "MiniGrenade";};
-for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_blue";};
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
 
 this linkItem "ItemMap";
 this linkItem "ItemGPS";

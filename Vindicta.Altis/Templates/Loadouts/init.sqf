@@ -2,6 +2,9 @@
 
 ADD_LOADOUT("superDude", "superDude.sqf")
 
+//Arma3_AAF
+call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_AAF\AAF\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_AAF\SF\init.sqf";
 //Arma3_LDF
 call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_LDF\LDF\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_LDF\SF\init.sqf";
