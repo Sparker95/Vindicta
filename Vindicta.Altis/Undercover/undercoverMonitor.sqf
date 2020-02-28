@@ -347,8 +347,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		if (_loc != "") then { 	
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
-                				_hintKeys pushback HK_ALLOWEDAREA;
-               					 OOP_INFO_0("In allowed area");
+                				//_hintKeys pushback HK_ALLOWEDAREA;
+               					OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
