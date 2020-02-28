@@ -46,7 +46,7 @@ _this spawn {
 		//check if both units are alive is dead or unconsious and stup conversation
 		if(
 			(!alive _unit_1 || {_unit_1 getVariable ["ace_isunconscious",false]}) ||
-			{!(isnull _unit_2) && {!alive _unit_2 || _unit_2 getVariable ["ace_isunconscious",false]}} || //can be null if talking to no one
+			{!(isnull _unit_2) && {!alive _unit_2 || _unit_2 getVariable ["ace_isunconscious",false]}} //can be null if talking to no one
 		)exitWith{};
 	
 		private _conversation_script = _conversation_id call pr0_fnc_dialogue_findConversation;//returns {} when not found
