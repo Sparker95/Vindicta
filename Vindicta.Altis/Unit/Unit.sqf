@@ -798,13 +798,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		{
 			_x params ["_item", "_amount"];
 			private _count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
-			private _full = floor (_amount / _count);
-			if(_full > 0) then {
-				_hO addMagazineAmmoCargo [_item, _full, _count];
-			};
-			private _remainder = floor(_amount % _count);
-			if(_remainder > 0) then {
-				_hO addMagazineAmmoCargo [_item, 1, _remainder];
+			if(_count > 0) then {
+				private _full = floor (_amount / _count);
+				if(_full > 0) then {
+					_hO addMagazineAmmoCargo [_item, _full, _count];
+				};
+				private _remainder = floor(_amount % _count);
+				if(_remainder > 0) then {
+					_hO addMagazineAmmoCargo [_item, 1, _remainder];
+				};
 			};
 		} forEach _inventory#2;
 		//backpack
