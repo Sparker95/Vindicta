@@ -22,7 +22,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 
 		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
-		OOP_INFO_1("ActionGroupArrest: Target: %1", _target);
+		//OOP_INFO_1("ActionGroupArrest: Target: %1", _target);
 
 		T_SETV("target", _target);
 
@@ -32,9 +32,9 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
-		OOP_INFO_0("ActionGroupArrest: Activated.");
+		//OOP_INFO_0("ActionGroupArrest: Activated.");
 		pr _target = T_GETV("target");
-		OOP_INFO_1("ActionGroupArrest: Activated: Target: %1", _target);
+		//OOP_INFO_1("ActionGroupArrest: Activated: Target: %1", _target);
 
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 
@@ -50,7 +50,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 				
 		// we only want one unit from the group to arrest the target
 		pr _unit = selectRandom _groupUnits;
-		OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
+		//OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
 
 		if(isNil "_unit") then {
 			// Return FAILED state
@@ -67,7 +67,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
 			};
 
-			OOP_INFO_1("ActionGroupArrest: unit performing arrest: %1", _unit);
+			//OOP_INFO_1("ActionGroupArrest: unit performing arrest: %1", _unit);
 
 			// Return ACTIVE state
 			T_SETV("state", ACTION_STATE_ACTIVE);
@@ -80,7 +80,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 
-		OOP_INFO_0("ActionGroupArrest: Processing.");
+		//OOP_INFO_0("ActionGroupArrest: Processing.");
 
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 
@@ -101,13 +101,13 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 			if (1 == _isOneSuccess) then {
 				_state = ACTION_STATE_COMPLETED;
-				OOP_INFO_0("ActionGroupArrest: Completed.");
+				//OOP_INFO_0("ActionGroupArrest: Completed.");
 			};
 		};
 		
 		// Return the current state
 		T_SETV("state", _state);
-		OOP_INFO_1("ActionGroupArrest: State: %1", _state);
+		//OOP_INFO_1("ActionGroupArrest: State: %1", _state);
 		_state
 	} ENDMETHOD;
 
@@ -126,7 +126,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 
-		OOP_INFO_0("ActionGroupArrest: Terminating.");
+		//OOP_INFO_0("ActionGroupArrest: Terminating.");
 		
 		// Delete given goals
 		pr _AI = T_GETV("AI");
