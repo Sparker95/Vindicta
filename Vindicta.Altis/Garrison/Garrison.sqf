@@ -1023,7 +1023,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("assignCargo") {
 		params [P_THISOBJECT, P_ARRAY("_cargo")];
 		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
-		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_cargo]]);
+		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
 
 		{
 			private _unit = _x;
@@ -2248,11 +2248,13 @@ CLASS("Garrison", "MessageReceiverEx");
 				};
 			};
 			
-			// Also move ungrouped vehicles
+			// Also move ungrouped vehicles, or those in non-vehicle groups
 			pr _vehicleUnits = CALLM0(_thisObject, "getVehicleUnits");
 			{
 				pr _vehGroup = CALLM0(_x, "getGroup");
-				if (_vehGroup == "") then {
+				if (_vehGroup != _destGroup 
+					&& {IS_NULL_OBJECT(_vehGroup) 
+						|| {!(CALLM0(_vehGroup, "getType") in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC])}}) then {
 					CALLM1(_destGroup, "addUnit", _x);
 				};
 			} forEach _vehicleUnits;
@@ -2270,7 +2272,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					// Temporarily stop the AI object of the group because it can perform vehicle assignments in the other thread
 					// Event handlers when units are destroyed are disposed from this thread anyway
 					pr _groupAI = CALLM0(_group, "getAI");
-					if (_groupAI != "") then {
+					if (!IS_NULL_OBJECT(_groupAI)) then {
 						CALLM2(_groupAI, "postMethodSync", "stop",  []);
 					};
 					
@@ -2287,7 +2289,7 @@ CLASS("Garrison", "MessageReceiverEx");
 						CALLM1(_thisObject, "addGroup", _newGroup);
 						
 						// Get crew of this vehicle
-						if (_vehAI != "") then {
+						if (!IS_NULL_OBJECT(_vehAI)) then {
 							pr _vehCrew = CALLM3(_vehAI, "getAssignedUnits", true, true, false) select {
 								// We only need units in this vehicle that are also in this group
 								CALLM0(_x, "getGroup") == _group
@@ -2303,7 +2305,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					};
 					
 					// Start up the AI object again
-					if (_groupAI != "") then {
+					if (!IS_NULL_OBJECT(_groupAI)) then {
 						CALLM2(_groupAI, "postMethodSync", "start",  []);
 					};
 				};

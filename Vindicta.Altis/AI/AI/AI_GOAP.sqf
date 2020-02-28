@@ -560,6 +560,26 @@ CLASS("AI_GOAP", "AI")
 		_return
 	} ENDMETHOD;
 	
+	/*
+	Method: (static)anyAgentHasExternalGoal
+	Returns true if any agent has in the array has the specified external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/	
+	STATIC_METHOD("anyAgentHasExternalGoal") {
+		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		(_agents findIf {
+			pr _AI = CALLM0(_x, "getAI");
+			CALLM2(_AI, "hasExternalGoal", _goalClassName, _goalSource)
+		}) != -1
+	} ENDMETHOD;
+
 	// --------------------------------------------------------------------------------
 	// |                G E T   E X T E R N A L   G O A L   P A R A M E T E R S
 	// --------------------------------------------------------------------------------
@@ -643,6 +663,7 @@ CLASS("AI_GOAP", "AI")
 			(_actionState == ACTION_STATE_FAILED)
 		}) != -1
 	} ENDMETHOD;
+
 	
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- A C T I O N S -------------------------------------------
