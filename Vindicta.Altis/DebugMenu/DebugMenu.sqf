@@ -176,21 +176,6 @@ pr0_fnc_toggleMarkers = {
 	} ] remoteExec ["call", 2];
 }] call pr0_fnc_addDebugMenuItem;
 
-["BuildUI", "1 ConRes > cursorObject", {
-
-		private _cursorObj = cursorObject;
-
-		if !(isNil "_cursorObj") then {
-
-			_cursorObj addMagazineCargo ["vin_build_res_0", 1];
-			systemChat "Added 1 construction resource to cursorObject.";
-
-		} else {
-			systemChat "Not looking at an object.";
-		};
-		
-}] call pr0_fnc_addDebugMenuItem;
-
 ["BuildUI", "100 ConRes > cursorObject", {
 
 		private _cursorObj = cursorObject;
@@ -219,6 +204,7 @@ pr0_fnc_toggleMarkers = {
 		
 }] call pr0_fnc_addDebugMenuItem;
 
+// shows unit and group actions and goals in an overlay text
 ["AI", "Toggle draw3D goals", {
 
 	call compile preprocessFileLineNumbers "DebugMenu\fn_draw3dUnitDetails.sqf";

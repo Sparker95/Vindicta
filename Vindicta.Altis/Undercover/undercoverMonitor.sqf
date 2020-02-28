@@ -275,7 +275,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				//OOP_INFO_1("undercoverMonitor START state: %1", _state);
 
 				pr _unit = T_GETV("unit");
-				if (T_GETV("debugOverride")) then { T_CALLM("setState", [sARRESTED]); };
+				if (T_GETV("debugOverride")) exitWith { _unit setCaptive true; };
 
 				pr _suspicionArr = [[0, "default"]];			
 				pr _hintKeys = [];									// UI keys for displaying hints
