@@ -62,12 +62,12 @@ _this spawn {
 		private _event_walkAway = "#end";
 		private _event_outOfTime = "#end";
 		{
-			_x params ["_type", "_a", "_b"];
+			_x params ["_type", "_a", "_b","_c"];
 			if(isnil "_type" || {!(_type isEqualType 0)})exitWith{diag_log format["ERROR WRONG OR NO TYPE GIVEN FOR: %1 (%2)",_conversation_id]};
 			switch (_type) do {
-				case TYPE_SENTENCE: {_sentences pushBack [_a,_b]};
+				case TYPE_SENTENCE: {_sentences pushBack [_a,_b,_c]};
 				case TYPE_QUESTION: {_question = _a};
-				case TYPE_OPTION:   {_options pushBack [_a,_b]};
+				case TYPE_OPTION:   {_options pushBack [_a,_b,_c]};
 				case TYPE_JUMP_TO:  {_new_conversation_id = _a};
 				case TYPE_EVENT_WALKED_AWAY: 	{_event_walkAway = _a};
 				case TYPE_EVENT_OUT_OF_TIME: 	{_event_outOfTime = _a};
@@ -79,10 +79,21 @@ _this spawn {
 		if((count _sentences + count _question) == 0)exitWith{diag_log format["ERROR NO SENTENCE OR QUESTION: %1 (%2)",_conversation_id]};
 		if(count _question > 0 && count _options == 0)exitWith{diag_log format["ERROR NO OPTIONS FOR QUESTION: %1 (%2)",_conversation_id]};
 
+		//select random sentence if array was given
+		{
+			_x params ["_array"];
+			if(_array isEqualType [])then{
+				_x set [0, selectRandom _array];
+			};
+		}forEach _sentences;
+		if(_question isEqualType [])then{_question = selectRandom _question};
+
 		//loop all sentences and show them one by one
 		{
-			_x params ["_sentence","_who"];
-			
+			_x params [["_sentence","",[""]],["_who",-1,[0]],["_script",{},[{}]]];
+
+			[_unit_1,_unit_2] call _script;//run optional code if it was given
+
 			private _speaker = [_unit_1,_unit_2] select (_who-1);
 			private _listener = [_unit_2,_unit_1] select (_who-1);
 			
