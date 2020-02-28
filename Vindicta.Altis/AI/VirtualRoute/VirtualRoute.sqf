@@ -81,7 +81,7 @@ CLASS("VirtualRoute", "")
 			pr _default_speedFn = {
 				params ["_road", "_next_road", "_callbackArgs"];
 #ifdef DEBUG_FAST_VIRTUALROUTE
-				300
+				300 * 0.277778
 #else
 				if([_road] call misc_fnc_isHighWay) exitWith {
 					60 * 0.277778

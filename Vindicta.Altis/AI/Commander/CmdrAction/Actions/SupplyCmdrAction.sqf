@@ -175,7 +175,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		private _transportBlacklistMask = [];
 		// Obviously we need a cargo truck!
 		private _requiredComp =  [
-			[T_VEH, T_VEH_truck_cargo, 1]
+			[T_VEH, T_VEH_truck_ammo, 1]
 		];
 
 		private _amount = T_GETV("amount");
@@ -184,9 +184,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		private _requiredEff = +T_eff_null;
 
 		// Add some armor if we need it
-		_requiredEff set [T_EFF_aSoft, floor (12 + 24 * _amount)];
-		_requiredEff set [T_EFF_aMedium, floor (3 * _amount)];
-		_requiredEff set [T_EFF_aArmor, floor (3 * _amount)];
+		_requiredEff set [T_EFF_soft, floor (12 + 24 * _amount)];
+		_requiredEff set [T_EFF_medium, floor (3 * _amount)];
+		_requiredEff set [T_EFF_armor, floor (3 * _amount)];
 
 		// [6, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 0, 6]
 		private _args = [_requiredEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
@@ -203,7 +203,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
 
-		ASSERT(_compAllocated#T_VEH#T_VEH_truck_cargo >= 1);
+		ASSERT(_compAllocated#T_VEH#T_VEH_truck_ammo >= 1);
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
@@ -229,7 +229,6 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
 
-		
 		private _dist = _srcGarrPos distance _tgtGarrPos;
 
 		// CALCULATE START DATE
@@ -246,13 +245,10 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 
 		T_SET_AST_VAR("startDateVar", _startDate);
 
-		private _srcEff = GETV(_srcGarr, "efficiency");
-		private _tgtEff = GETV(_tgtGarr, "efficiency");
-		
 		private _type = T_GETV("type");
 		private _typeName = GETSV("SupplyCmdrAction", "SupplyNames") select _type;
-		private _amount = T_GETV("amount");
-		OOP_DEBUG_MSG("[w %1 a %2] %3 supply %4 with %5 %6, Score %7 _detachEff = %8 _detachEffStrength = %9 _distCoeff = %10", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG _typeName ARG _amount ARG [1 ARG _scoreResource] ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3 supply %4 with %5 %6, Score %7 _detachEff = %8 _detachEffStrength = %9 _distCoeff = %10", 
+			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG _typeName ARG _amount ARG [1 ARG _scoreResource] ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it

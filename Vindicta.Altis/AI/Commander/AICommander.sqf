@@ -2193,7 +2193,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			(GETV(_x, "side") == _side) and 
 			{ !CALLM0(_x, "isBusy") } and
 			// Has a cargo truck
-			{ CALLM1(_x, "countUnits", [[T_VEH ARG T_VEH_truck_cargo]]) > 0 } and
+			{ CALLM1(_x, "countUnits", [[T_VEH ARG T_VEH_truck_ammo]]) > 0 } and
 			// At a fixed location
 			{ CALLM0(_x, "getLocation") != NULL_OBJECT } and
 			// Has an officer
@@ -2693,11 +2693,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Spawn in more supply trucks
 		{
 			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
-			private _nSupplyTrucksRequired = 2 - CALLM1(_garrison, "countUnits", [[T_VEH ARG T_VEH_truck_cargo]]);
+			private _nSupplyTrucksRequired = 2 - CALLM1(_garrison, "countUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
 
 			OOP_INFO_2("  Adding %1 supply trucks at %2", _nSupplyTrucksRequired, _name);
 			while { _nSupplyTrucksRequired > 0 } do {
-				private _args = [_t, T_VEH, T_VEH_truck_cargo, -1];
+				private _args = [_t, T_VEH, T_VEH_truck_ammo, -1];
 				private _vehUnit = NEW("Unit", _args);
 
 				CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
