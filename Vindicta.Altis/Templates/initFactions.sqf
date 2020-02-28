@@ -7,6 +7,7 @@
 
 // Military factions
 ["Templates\Factions\AAF.sqf", T_FACTION_Military]					call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\Arma3_LDF.sqf", T_FACTION_Military]			call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF_2020.sqf", T_FACTION_Military]			call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF_2010.sqf", T_FACTION_Military]			call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
