@@ -3179,11 +3179,26 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _tgtGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", side group _player);
 		private _tgtUnits = GETV(_tgtGarrison, "units");
 
+		if(isNull _player || {!alive _player}) exitWith {
+			OOP_WARNING_1("Can't add units, player is null or dead: %1", _player);
+		};
+
+		// Some sanity checks on the handles
+		_unitHandles = _unitHandles select {
+			!isNull _x 
+			// Only units on real player side
+			&& {side group _x isEqualTo side group player}
+		};
+
 		// Get the units OOP objects
 		private _units = _unitHandles apply {
 			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
-			!IS_NULL_OBJECT(_x) && !(_x in _tgtGarrison)
+			!IS_NULL_OBJECT(_x) && {!(CALLM0(_x, "getGarrison") isEqualTo _tgtGarrison)} 
+		};
+
+		if(count _units == 0) exitWith {
+			OOP_WARNING_2("Can't add units, no valid units to add, player: %1, unit handles: %2", _player, _unitHandles);
 		};
 
 		// Remove the units from thier group
