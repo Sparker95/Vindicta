@@ -26,7 +26,7 @@ this addHandgunItem "9Rnd_45ACP_Mag";
 
 for "_i" from 1 to 2 do {this addItemToUniform "FirstAidKit";};
 for "_i" from 1 to 4 do {this addItemToVest "150Rnd_556x45_Drum_Sand_Mag_F";};
-for "_i" from 2 to 3 do {this addItemToVest "9Rnd_45ACP_Mag";};
+for "_i" from 1 to 3 do {this addItemToVest "9Rnd_45ACP_Mag";};
 for "_i" from 1 to 2 do {this addItemToVest "SmokeShell";};
 for "_i" from 1 to 2 do {this addItemToVest "HandGrenade";};
 for "_i" from 1 to 2 do {this addItemToVest "MiniGrenade";};

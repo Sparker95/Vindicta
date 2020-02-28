@@ -28,8 +28,8 @@ this addHandgunItem "11Rnd_45ACP_Mag";
 
 
 for "_i" from 1 to 2 do {this addItemToUniform "FirstAidKit";};
-for "_i" from 2 to 4 do {this addItemToVest "100Rnd_65x39_caseless_black_mag";};
-for "_i" from 2 to 3 do {this addItemToVest "11Rnd_45ACP_Mag";};
+for "_i" from 1 to 4 do {this addItemToVest "100Rnd_65x39_caseless_black_mag";};
+for "_i" from 1 to 3 do {this addItemToVest "11Rnd_45ACP_Mag";};
 for "_i" from 1 to 2 do {this addItemToVest "SmokeShell";};
 for "_i" from 1 to 2 do {this addItemToVest "HandGrenade";};
 for "_i" from 1 to 2 do {this addItemToVest "MiniGrenade";};

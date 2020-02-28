@@ -25,14 +25,14 @@ this addHandgunItem "9Rnd_45ACP_Mag";
 
 
 for "_i" from 1 to 2 do {this addItemToUniform "FirstAidKit";};
-for "_i" from 3 to 5 do {this addItemToVest "30Rnd_556x45_Stanag_Sand";};
-for "_i" from 2 to 3 do {this addItemToVest "9Rnd_45ACP_Mag";};
+for "_i" from 1 to 5 do {this addItemToVest "30Rnd_556x45_Stanag_Sand";};
+for "_i" from 1 to 3 do {this addItemToVest "9Rnd_45ACP_Mag";};
 for "_i" from 1 to 2 do {this addItemToVest "SmokeShell";};
 for "_i" from 1 to 2 do {this addItemToVest "HandGrenade";};
 for "_i" from 1 to 2 do {this addItemToVest "MiniGrenade";};
 for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
-for "_i" from 2 to 4 do {this addItemToBackpack "1Rnd_Smoke_Grenade_shell";};
-for "_i" from 2 to 6 do {this addItemToBackpack "1Rnd_HE_Grenade_shell";};
+for "_i" from 1 to 4 do {this addItemToBackpack "1Rnd_Smoke_Grenade_shell";};
+for "_i" from 1 to 6 do {this addItemToBackpack "1Rnd_HE_Grenade_shell";};
 
 
 this linkItem "ItemMap";

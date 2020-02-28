@@ -21,8 +21,8 @@ this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "9Rnd_45ACP_Mag";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 2 to 5 do {this addItemToVest "50Rnd_570x28_SMG_03";};
-for "_i" from 2 to 3 do {this addItemToVest "9Rnd_45ACP_Mag";};
+for "_i" from 1 to 5 do {this addItemToVest "50Rnd_570x28_SMG_03";};
+for "_i" from 1 to 3 do {this addItemToVest "9Rnd_45ACP_Mag";};
 for "_i" from 1 to 2 do {this addItemToVest "SmokeShell";};
 for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_blue";};
 
