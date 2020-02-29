@@ -199,17 +199,17 @@ CLASS("ActionStateTransition", "Storable")
 
 	// // - - - - - STORAGE - - - - - -
 
-	// // Save all varaibles
-	// /* override */ METHOD("serializeForStorage") {
-	// 	params [P_THISOBJECT];
-	// 	SERIALIZE_ALL(_thisObject);
-	// } ENDMETHOD;
-
-	// /* override */ METHOD("deserializeFromStorage") {
-	// 	params [P_THISOBJECT, P_ARRAY("_serial")];
-	// 	DESERIALIZE_ALL(_thisObject, _serial);
-	// 	true
-	// } ENDMETHOD;
+	// SAVEBREAK >>>
+	// We don't need this after next save break at all
+	/* virtual */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
+		if(_version >= 15) then {
+			DESERIALIZE_SAVE_VER(_thisObject, _serial, _version)
+		} else {
+			DESERIALIZE_ALL(_thisObject, _serial)
+		}
+	} ENDMETHOD;
+	// <<< SAVEBREAK
 
 ENDCLASS;
 
