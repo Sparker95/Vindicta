@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tAAF"];
-_array set [T_DESCRIPTION, "Vanilla AAF."];
+_array set [T_DESCRIPTION, "Vanilla AAF. Edited by MatrikSky"];
 _array set [T_DISPLAY_NAME, "Arma 3 - AAF"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
@@ -43,13 +43,14 @@ _inf set [T_INF_survivor, ["I_Survivor_F"]];
 _inf set [T_INF_unarmed, ["I_Soldier_unarmed_F"]];
 
 //Recon
-_inf set [T_INF_recon_TL, ["Arma3_AAFs_TL"]];
-_inf set [T_INF_recon_rifleman, ["Arma3_AAFs_rifleman", "Arma3_AAFs_autorifleman"]];
-_inf set [T_INF_recon_medic, ["Arma3_AAFs_medic"]];
-_inf set [T_INF_recon_exp, ["Arma3_AAFs_exp"]];
-_inf set [T_INF_recon_LAT, ["Arma3_AAFs_LAT"]];
-_inf set [T_INF_recon_marksman, ["Arma3_AAFs_marksman"]];
-_inf set [T_INF_recon_JTAC, ["Arma3_AAFs_radio"]];
+_inf set [T_INF_recon_TL, ["Arma3_AAF_recon_TL"]];
+_inf set [T_INF_recon_rifleman, ["Arma3_AAF_recon_rifleman", "Arma3_AAF_recon_autorifleman"]];
+_inf set [T_INF_recon_medic, ["Arma3_AAF_recon_medic"]];
+_inf set [T_INF_recon_exp, ["Arma3_AAF_recon_explosives"]];
+_inf set [T_INF_recon_LAT, ["Arma3_AAF_recon_LAT"]];
+//_inf set [T_INF_recon_LMG, ["Arma3_AAF_recon_autorifleman"]]; // There is no T_INF_recon_LMG right now
+_inf set [T_INF_recon_marksman, ["Arma3_AAF_recon_marksman"]];
+_inf set [T_INF_recon_JTAC, ["Arma3_AAF_recon_JTAC"]];
 
 
 //Divers

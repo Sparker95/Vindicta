@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LDF_NATO_police"];
-_array set [T_DESCRIPTION, "NATO aligned LDF Police. Uses RHS. Made by MatrikSky"];
+_array set [T_DESCRIPTION, "NATO aligned LDF Police. Uses RHS. Made by Straker27"];
 _array set [T_DISPLAY_NAME, "RHS LDF NATO Police (contributor faction)"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [

@@ -26,8 +26,6 @@ this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "optic_MRD_black";
 this addHandgunItem "11Rnd_45ACP_Mag";
 
-[["arifle_MXC_Black_F","muzzle_snds_65_TI_blk_F","acc_pointer_IR","optic_Holosight_blk_F",["30Rnd_65x39_caseless_black_mag",30],[],""],[],["hgun_Pistol_heavy_01_green_F","muzzle_snds_acp","acc_flashlight_pistol","optic_MRD_black",["11Rnd_45ACP_Mag",11],[],""],["U_B_CTRG_Soldier_F",[["FirstAidKit",1],["SmokeShell",1,1],["Chemlight_blue",1,1]]],["V_CarrierRigKBT_01_light_EAF_F",[]],["B_AssaultPack_eaf_F",[["Medikit",1]]],"H_HelmetSpecB_blk","G_Balaclava_TI_tna_F",[],["ItemMap","ItemGPS","ItemRadio","ItemCompass","ItemWatch","NVGogglesB_blk_F"]]
-
 
 for "_i" from 1 to 2 do {this addItemToUniform "FirstAidKit";};
 for "_i" from 1 to 6 do {this addItemToVest "30Rnd_65x39_caseless_black_mag";};
