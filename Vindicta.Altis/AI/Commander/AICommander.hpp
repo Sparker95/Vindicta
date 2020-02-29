@@ -122,8 +122,8 @@
 #define EFF_MIN_EFF					[6, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 0, 6]
 #define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 12,0, 0, 0, 12]
 
-#define EFF_FOOT_PATROL_EFF			[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_MOUNTED_PATROL_EFF		[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_FOOT_PATROL_EFF			[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_MOUNTED_PATROL_EFF		[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 // Frequency of reinforcements, etc
 
@@ -133,6 +133,7 @@
 // Max amount of simultaneous actions
 #define CMDR_MAX_TAKE_OUTPOST_ACTIONS 3
 #define CMDR_MAX_REINFORCE_ACTIONS 3
+#define CMDR_MAX_SUPPLY_ACTIONS 3
 #define CMDR_MAX_OFFICER_ASSIGNMENT_ACTIONS 3
 //#define CMDR_MAX_ATTACK_ACTIONS 100 QRFs are unlimited
 #define CMDR_MAX_PATROL_ACTIONS 6

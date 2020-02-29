@@ -8,11 +8,11 @@ For example to select the next patrol waypoint in an array of positions.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_ArrayPopFront", "ActionStateTransition")
-	VARIABLE_ATTR("notEmptyState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("emptyBeforeState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("emptyAfterState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("arrayVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("resultVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("notEmptyState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("emptyBeforeState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("emptyAfterState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("arrayVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("resultVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new

@@ -12,27 +12,22 @@ Parent: <CmdrAction>
 
 CLASS("PatrolCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
-	VARIABLE("srcGarrId");
+	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	// Route array composed of targets (see CmdrAITarget.sqf)
-	VARIABLE("routeTargets");
+	VARIABLE_ATTR("routeTargets", [ATTR_SAVE]);
 	// Efficency of the detachment, an AST_VAR wrapper
-	VARIABLE("detachmentEffVar");
+	VARIABLE_ATTR("detachmentEffVar", [ATTR_SAVE]);
 	// Composition of detachment, an AST_VAR wrapper
-	VARIABLE("detachmentCompVar");
+	VARIABLE_ATTR("detachmentCompVar", [ATTR_SAVE]);
 	// Garrison ID of the detachment performing the patrol, an AST_VAR wrapper
-	VARIABLE("detachedGarrIdVar");
+	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_SAVE]);
 	// Start date for the patrol action, an AST_VAR wrapper
-	VARIABLE("startDateVar");
+	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
 
 	// Next patrol waypoint target
-	VARIABLE("targetVar");
+	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);
 	// Patrol waypoint targets array wrapped in AST_VAR
-	VARIABLE("routeTargetsVar");
-
-#ifdef DEBUG_CMDRAI
-	VARIABLE("debugColor");
-	VARIABLE("debugSymbol");
-#endif
+	VARIABLE_ATTR("routeTargetsVar", [ATTR_SAVE]);
 
 	/*
 	Constructor: new
@@ -49,11 +44,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		T_SETV("srcGarrId", _srcGarrId);
 		T_SETV("routeTargets", +_routeTargets);
-
-#ifdef DEBUG_CMDRAI
-		T_SETV("debugColor", "ColorYellow");
-		T_SETV("debugSymbol", "mil_pickup");
-#endif
 
 		// Start date for this action, default to immediate
 		private _startDateVar = T_CALLM1("createVariable", DATE_NOW);
@@ -337,8 +327,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _routeTargetPositions = T_GETV("routeTargets") apply { [_world, _x] call Target_fnc_GetPos };
 
-		T_PRVAR(debugColor);
-		T_PRVAR(debugSymbol);
+		GET_DEBUG_MARKER_STYLE(_thisObject) params ["_debugColor", "_debugSymbol"];
 		
 		private _lastPos = _srcGarrPos;
 		{
@@ -424,7 +413,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Try to allocate units
 		pr _payloadWhitelistMask = if (_needTransport) then {T_comp_ground_or_infantry_mask} else {T_comp_infantry_mask};
-		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _payloadBlacklistMask = T_comp_static_or_cargo_mask;					// Don't take static weapons under any conditions
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];
 		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
@@ -568,6 +557,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 
 ENDCLASS;
+
+REGISTER_DEBUG_MARKER_STYLE("PatrolCmdrAction", "ColorYellow", "mil_pickup");
 
 #ifdef _SQF_VM
 

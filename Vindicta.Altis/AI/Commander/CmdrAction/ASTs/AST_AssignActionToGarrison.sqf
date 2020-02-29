@@ -11,10 +11,10 @@ doing something else.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Inputs
-	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new

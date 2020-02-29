@@ -8,13 +8,13 @@ just directly merges/joins.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("fromGarrDeadState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("targetDeadState", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("fromGarrDeadState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("targetDeadState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Inputs
-	VARIABLE_ATTR("fromGarrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("fromGarrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new

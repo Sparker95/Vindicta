@@ -1020,6 +1020,27 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_CALLM0("updateBuildResources");
 	} ENDMETHOD;
 
+	METHOD("assignCargo") {
+		params [P_THISOBJECT, P_ARRAY("_cargo")];
+		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
+		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+
+		{
+			private _unit = _x;
+			CALLM1(_unit, "addToInventory", _cargo);
+		} forEach _cargoVehicles;
+	} ENDMETHOD;
+
+	METHOD("clearCargo") {
+		params [P_THISOBJECT];
+		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
+		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+
+		{
+			private _unit = _x;
+			CALLM0(_unit, "clearInventory");
+		} forEach _cargoVehicles;
+	} ENDMETHOD;
 	// 						G E T   A I
 	/*
 	Method: getAI
@@ -2099,14 +2120,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones", "_unitsFoundCargo"];
 		// forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 		{
-			pr _catID = _x;
+			private _catID = _x;
 			// forEach _comp#_catID;
 			{
-				pr _nUnitsNeeded = _x;
-				pr _subcatID = _foreachindex;
+				private _nUnitsNeeded = _x;
+				private _subcatID = _foreachindex;
 				while {_nUnitsNeeded > 0} do {
-					pr _index = _unitsSrc findIf {
-						CALLM0(_x, "getSubcategory") == _subCatID;
+					private _index = _unitsSrc findIf {
+						private _mainData = CALLM0(_x, "getMainData");
+						(_mainData#0 == _catID) && {_mainData#1 == _subCatID}
 					};
 
 					if (_index == -1) exitWith { OOP_ERROR_0("addUnitsFromCompositionNumbers Failed to find a unit?!") }; // WTF it should not happen, we have just verified that
@@ -2115,7 +2137,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					_unitsSrc deleteAt _index;
 					_nUnitsNeeded = _nUnitsNeeded - 1;
 				};
-			} forEach _comp#_catID;
+			} forEach (_comp#_catID);
 		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 
 		// Reorganize the infantry units we are moving
@@ -2237,11 +2259,13 @@ CLASS("Garrison", "MessageReceiverEx");
 				};
 			};
 			
-			// Also move ungrouped vehicles
+			// Also move ungrouped vehicles, or those in non-vehicle groups
 			pr _vehicleUnits = CALLM0(_thisObject, "getVehicleUnits");
 			{
 				pr _vehGroup = CALLM0(_x, "getGroup");
-				if (_vehGroup == "") then {
+				if (_vehGroup != _destGroup 
+					&& {IS_NULL_OBJECT(_vehGroup) 
+						|| {!(CALLM0(_vehGroup, "getType") in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC])}}) then {
 					CALLM1(_destGroup, "addUnit", _x);
 				};
 			} forEach _vehicleUnits;
@@ -2259,7 +2283,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					// Temporarily stop the AI object of the group because it can perform vehicle assignments in the other thread
 					// Event handlers when units are destroyed are disposed from this thread anyway
 					pr _groupAI = CALLM0(_group, "getAI");
-					if (_groupAI != "") then {
+					if (!IS_NULL_OBJECT(_groupAI)) then {
 						CALLM2(_groupAI, "postMethodSync", "stop",  []);
 					};
 					
@@ -2276,7 +2300,7 @@ CLASS("Garrison", "MessageReceiverEx");
 						CALLM1(_thisObject, "addGroup", _newGroup);
 						
 						// Get crew of this vehicle
-						if (_vehAI != "") then {
+						if (!IS_NULL_OBJECT(_vehAI)) then {
 							pr _vehCrew = CALLM3(_vehAI, "getAssignedUnits", true, true, false) select {
 								// We only need units in this vehicle that are also in this group
 								CALLM0(_x, "getGroup") == _group
@@ -2292,7 +2316,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					};
 					
 					// Start up the AI object again
-					if (_groupAI != "") then {
+					if (!IS_NULL_OBJECT(_groupAI)) then {
 						CALLM2(_groupAI, "postMethodSync", "start",  []);
 					};
 				};

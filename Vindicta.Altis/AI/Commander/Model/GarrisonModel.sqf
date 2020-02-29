@@ -555,6 +555,21 @@ CLASS("GarrisonModel", "ModelBase")
 		OOP_INFO_MSG("Cancelled clear area for %1", [LABEL(_thisObject)]);
 	} ENDMETHOD;
 
+	// ASSIGN CARGO
+	METHOD("assignCargoActual") {
+		params [P_THISOBJECT, P_ARRAY("_cargo")];
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		CALLM2(_actual, "postMethodAsync", "assignCargo", [_cargo]);
+	} ENDMETHOD;
+
+	// CLEAR CARGO
+	METHOD("clearCargoActual") {
+		params [P_THISOBJECT];
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		CALLM2(_actual, "postMethodAsync", "clearCargo", []);
+	} ENDMETHOD;
 	// METHOD("joinLocationActualComplete") {
 	// 	params [P_THISOBJECT];
 
