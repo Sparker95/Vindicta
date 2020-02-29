@@ -63,28 +63,29 @@ _this spawn {
 			_x params [["_type",-1,[0]]];
 			switch (_type) do {
 				case TYPE_SENTENCE: {
-					_x params ["_type", ["_text","",[""]], "_int_talker",["_script",[],[[]]]];
+					_x params ["_type", ["_text","",[""]], "_int_talker",["_script",{},[{}]]];
+					if!(_int_talker in [1,2])exitWith{diag_log format["ERROR WRONG TALKER NR:%1",_conversation_id]};
 					_sentences pushBack [_text,_int_talker,_script]};
 
 				case TYPE_QUESTION: {
-					_x params ["_type", ["_text","",[""]],["_script",[],[[]]]];
+					_x params ["_type", ["_text","",[""]],["_script",{},[{}]]];
 					_question = [_text,_script]};
 
 				case TYPE_OPTION:   {
-					_x params ["_type", ["_text","",[""]],"_jump",["_spoke_text","",[""]],["_script",[],[[]]]];
+					_x params ["_type", ["_text","",[""]],"_jump",["_spoke_text","",[""]],["_script",{},[{}]]];
 					if(_spoke_text isEqualType "")then{_spoke_text = _text};
 					_options pushBack [_text,_jump,_spoke_text,_script]};
 
 				case TYPE_JUMP_TO:  {
-					_x params ["_type", ["_jump","",[""]],["_script",[],[[]]]];
+					_x params ["_type", ["_jump","",[""]],["_script",{},[{}]]];
 					_new_conversation_id = [_jump,_script]};
 
 				case TYPE_EVENT_WALKED_AWAY:{
-					_x params ["_type", ["_jump","",[""]],["_script",[],[[]]]];
+					_x params ["_type", ["_jump","",[""]],["_script",{},[{}]]];
 					_event_walkAway = [_jump,_script]};
 
 				case TYPE_EVENT_OUT_OF_TIME: {
-					_x params ["_type", ["_jump","",[""]],["_script",[],[[]]]];
+					_x params ["_type", ["_jump","",[""]],["_script",{},[{}]]];
 					_event_outOfTime = [_jump,_script]};
 				default {};
 			};
