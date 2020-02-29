@@ -51,6 +51,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
 	} ENDMETHOD;
 	
+	// Our prepreation will include assigning our cargo
 	/* protected override */ METHOD("getPrepareActions") {
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
@@ -68,6 +69,45 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM0("calculateCargo")
 		];
 		NEW("AST_AssignCargo", _astArgs)
+	} ENDMETHOD;
+
+	// Our arrival behavoir will include emptying our cargo, then rtb
+	/* protected override */ METHOD("getArriveAction") {
+		params [P_THISOBJECT,
+				P_ARRAY("_fromStates"),
+				P_AST_STATE("_failState"),
+				P_AST_STATE("_rtbState"),
+				P_AST_STATE("_reselectTargetState"),
+				P_AST_STATE("_mergeWithTargetState"),
+				P_AST_VAR("_srcGarrIdVar"),
+				P_AST_VAR("_detachedGarrIdVar"),
+				P_AST_VAR("_targetVar")
+		];
+		private _astArgs = [
+			_thisObject,
+			_fromStates,
+			_reselectTargetState,
+			_detachedGarrIdVar
+		];
+		NEW("AST_ClearCargo", _astArgs)
+	} ENDMETHOD;
+
+	// On arriving back at our home base we should make sure to clear up our inventory
+	/* protected override */ METHOD("getPreMergeAction") {
+		params [P_THISOBJECT,
+				P_ARRAY("_fromStates"),
+				P_AST_STATE("_mergeState"),
+				P_AST_VAR("_srcGarrIdVar"),
+				P_AST_VAR("_detachedGarrIdVar"),
+				P_AST_VAR("_targetVar")
+		];
+		private _astArgs = [
+			_thisObject,
+			_fromStates,
+			_mergeState,
+			_detachedGarrIdVar
+		];
+		NEW("AST_ClearCargo", _astArgs)
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("updateIntel") {
@@ -352,13 +392,23 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 							_weapons = _weapons + [[_weaponClassName, ceil (_nOfEach * random[0.5, 1, 1.5])]];
 							if(count _magazines > 0) then {
 								private _nMags = ceil (_nOfEach * 10 * random[0.5, 1, 1.5]);
-								_mags = _magazines apply { [_x, 0] } ;
+								private _newMags = _magazines apply { [_x, 0] } ;
 								while {_nMags > 0} do {
-									private _mag = selectRandom _mags;
+									private _mag = selectRandom _newMags;
 									_mag set [1, _mag#1 + 1];
 									_nMags = _nMags - 1;
 								};
-								_mags = _mags select { _x#1 > 0 };
+								_mags = _mags + (_newMags select { 
+									_x#1 > 0
+								} apply {
+									// Scale by mag size
+									_x params ["_magType", "_count"];
+									private _magSize = getNumber (configfile >> "CfgMagazines" >> _magType >> "count");
+									[_magType, _count * _magSize]
+								} select { 
+									// Check again as some mags have no actual rounds (fake weapons etc.)
+									_x#1 > 0
+								});
 							};
 						};
 					};

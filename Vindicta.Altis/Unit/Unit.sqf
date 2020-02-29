@@ -696,6 +696,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 	} ENDMETHOD;
 
+	/* private */ METHOD("clearInventory") {
+		params [P_THISOBJECT];
+		private _emptyInventory = [[],[],[],[]];
+		T_CALLM1("setInventory", _emptyInventory);
+	} ENDMETHOD;
+
 	/* private */ METHOD("addToInventory") {
 		params [P_THISOBJECT, P_ARRAY("_inventory")];
 
@@ -729,7 +735,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 		};
 	} ENDMETHOD;
-		
+
 	/* private */ METHOD("restoreInventory") {
 		params [P_THISOBJECT];
 		T_PRVAR(data);
@@ -742,18 +748,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_data#UNIT_DATA_ID_INVENTORY
 		} else {
 			[]
-		};
-
-		// hopefully catch inventory wipe bug!
-		if (isPlayer _hO) then { 
-			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 3"];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-
-			diag_log format ["INVENTORY WIPED, ERROR CODE 3: _data: %1", _data];
 		};
 
 		if ((_hO call Unit_fnc_hasInventory) && count _savedInventory == 4) then {
@@ -772,7 +766,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		}
 	} ENDMETHOD;
 
-	METHOD("_setRealInventory") {
+	/* private */ METHOD("_setRealInventory") {
 		params [P_THISOBJECT, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 
 		// Clear cargo

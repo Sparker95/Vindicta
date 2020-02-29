@@ -122,47 +122,78 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 			private _moveAST_Args = [
 					_thisObject, 						// This action (for debugging context)
 					[CMDR_ACTION_STATE_READY_TO_MOVE], 		
-					CMDR_ACTION_STATE_MOVED, 			// State change when successful
+					CMDR_ACTION_STATE_ARRIVED, 			// State change when successful
 					CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
 					CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
 					_splitGarrIdVar, 					// Id of garrison to move
 					_targetVar, 						// Target to move to (initially the target garrison)
-					T_CALLM1("createVariable", 200)]; 				// Radius to move within
+					T_CALLM1("createVariable", 200)]; 	// Radius to move within
 			NEW("AST_MoveGarrison", _moveAST_Args)
 		} else {
 			// If we are occupying a location we will attack and clear the area then occupy it (attack includes move)
 			private _attackAST_Args = [
 					_thisObject,
 					[CMDR_ACTION_STATE_READY_TO_MOVE], 	// Once we are split and assigned the action we can go
-					CMDR_ACTION_STATE_MOVED,			// State when we succeed, it leads to occupying the location
+					CMDR_ACTION_STATE_ARRIVED,			// State when we succeed, it leads to occupying the location
 					CMDR_ACTION_STATE_END, 				// If we are dead then go to end
-					CMDR_ACTION_STATE_MOVED,			// If we timeout then occupy the location
+					CMDR_ACTION_STATE_ARRIVED,			// If we timeout then occupy the location
 					_splitGarrIdVar, 					// Id of the garrison doing the attacking
 					_targetVar, 						// Target to attack (cluster or garrison supported)
-					T_CALLM1("createVariable", 500)];					// Move radius
+					T_CALLM1("createVariable", 500)];	// Move radius
 			NEW("AST_GarrisonAttackTarget", _attackAST_Args)
 		};
 
+		private _arrive_Args = [
+				[CMDR_ACTION_STATE_ARRIVED],		// Called after move complete
+				CMDR_ACTION_STATE_END, 				// If we failed
+				CMDR_ACTION_STATE_RTB,				// If arrive action has set a new target directly
+				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// If we should auto select a new target (will default to home again)
+				CMDR_ACTION_STATE_MERGE,			// If we should merge with target
+				_srcGarrIdVar,						// Original source garrison
+				_splitGarrIdVar, 					// Id of the garrison we are merging
+				_targetVar]; 						// Target to merge to (garrison or location is valid)
+		private _arriveAST = T_CALLM("getArriveAction", _arrive_Args);
+
 		private _mergeAST_Args = [
 				_thisObject,
-				[CMDR_ACTION_STATE_MOVED], 			// Merge once we reach the destination (whatever it is)
+				[CMDR_ACTION_STATE_MERGE], 			// Merge once we reach the destination (whatever it is)
 				CMDR_ACTION_STATE_END, 				// Once merged we are done
 				CMDR_ACTION_STATE_END, 				// If the detachment is dead then we can just end the action
-				CMDR_ACTION_STATE_TARGET_DEAD, 		// If the target is dead then reselect a new target
+				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// If the target is dead then reselect a new target
 				_splitGarrIdVar, 					// Id of the garrison we are merging
 				_targetVar]; 						// Target to merge to (garrison or location is valid)
 		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
 		private _newTargetAST_Args = [
 				_thisObject,
-				[CMDR_ACTION_STATE_TARGET_DEAD], 	// We select a new target when the old one is dead
-				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful
+				[CMDR_ACTION_STATE_RTB_SELECT_TARGET],// We select a new target when the old one is dead
+				CMDR_ACTION_STATE_RTB, 				// State change when successful
 				_srcGarrIdVar, 						// Originating garrison (default we return to)
 				_splitGarrIdVar, 					// Id of the garrison we are moving (for context)
 				_targetVar]; 						// New target
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 
-		[_splitAST, _prepareAST, _assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
+		// If we are merging to a garrison we will just move there and merge
+		private _rtbAST_Args = [
+				_thisObject, 						// This action (for debugging context)
+				[CMDR_ACTION_STATE_RTB], 		
+				CMDR_ACTION_STATE_PREMERGE,			// State change when successful
+				CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
+				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when target is dead
+				_splitGarrIdVar, 					// Id of garrison to move
+				_targetVar, 						// Target to move to (initially the target garrison)
+				T_CALLM1("createVariable", 200)]; 	// Radius to move within
+		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
+
+		private _preMergeAST_Args = [
+				[CMDR_ACTION_STATE_PREMERGE],		// Called after rtb, before merge to target (for cleanup etc)
+				CMDR_ACTION_STATE_MERGE,			// Complete the merge
+				_srcGarrIdVar,						// Original source garrison
+				_splitGarrIdVar, 					// Id of the garrison we are merging
+				_targetVar]; 						// Target to merge to (garrison or location is valid)
+		private _preMergeAST = T_CALLM("getPreMergeAction", _preMergeAST_Args);
+
+		[_splitAST, _prepareAST, _assignAST, _waitAST, _moveAST, _arriveAST, _mergeAST, _newTargetAST, _rtbAST, _preMergeAST]
 	} ENDMETHOD;
 	
 	// Optional customization of the actions detachment
@@ -171,7 +202,6 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_successState"),
 				P_AST_STATE("_failedState"),
-				P_NUMBER("_failedState"),
 				P_AST_VAR("_srcGarrIdVar"),
 				P_AST_VAR("_detachedGarrIdVar"),
 				P_AST_VAR("_targetVar")
@@ -180,6 +210,43 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 			_thisObject,
 			_fromStates,
 			_successState
+		];
+		NEW("AST_Success", _astArgs)
+	} ENDMETHOD;
+	
+	// Overridable arrival action, defaults to merging with the target
+	/* protected virtual */ METHOD("getArriveAction") {
+		params [P_THISOBJECT,
+				P_ARRAY("_fromStates"),
+				P_AST_STATE("_failState"),
+				P_AST_STATE("_rtbState"),
+				P_AST_STATE("_reselectTargetState"),
+				P_AST_STATE("_mergeWithTargetState"),
+				P_AST_VAR("_srcGarrIdVar"),
+				P_AST_VAR("_detachedGarrIdVar"),
+				P_AST_VAR("_targetVar")
+		];
+		private _astArgs = [
+			_thisObject,
+			_fromStates,
+			_mergeWithTargetState
+		];
+		NEW("AST_Success", _astArgs)
+	} ENDMETHOD;
+
+	// Optional pre-merge override, called just before a garrison doing RTB will merge with target
+	/* protected virtual */ METHOD("getPreMergeAction") {
+		params [P_THISOBJECT,
+				P_ARRAY("_fromStates"),
+				P_AST_STATE("_mergeState"),
+				P_AST_VAR("_srcGarrIdVar"),
+				P_AST_VAR("_detachedGarrIdVar"),
+				P_AST_VAR("_targetVar")
+		];
+		private _astArgs = [
+			_thisObject,
+			_fromStates,
+			_mergeState
 		];
 		NEW("AST_Success", _astArgs)
 	} ENDMETHOD;

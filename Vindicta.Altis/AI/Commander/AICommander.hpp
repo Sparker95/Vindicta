@@ -122,8 +122,8 @@
 #define EFF_MIN_EFF					[6, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 0, 6]
 #define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 12,0, 0, 0, 12]
 
-#define EFF_FOOT_PATROL_EFF			[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_MOUNTED_PATROL_EFF		[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_FOOT_PATROL_EFF			[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_MOUNTED_PATROL_EFF		[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 // Frequency of reinforcements, etc
 

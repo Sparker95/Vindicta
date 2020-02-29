@@ -76,6 +76,11 @@
 // Once a split garrison is prepared
 #define CMDR_ACTION_STATE_PREPARED							(CMDR_ACTION_STATE_CUSTOM+15)
 
+// Just before a garrison will merge with a target
+#define CMDR_ACTION_STATE_PREMERGE							(CMDR_ACTION_STATE_CUSTOM+16)
+// When a garrison should merge with the target
+#define CMDR_ACTION_STATE_MERGE								(CMDR_ACTION_STATE_CUSTOM+17)
+
 // ActionStateTransition priority values. Potential ASTs are sorted by the priority levels in 
 // ascending order and the first valid one is used. You can use any value for priority
 // these just define some reasonable defaults.

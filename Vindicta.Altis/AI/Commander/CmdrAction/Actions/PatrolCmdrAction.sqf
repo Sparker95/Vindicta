@@ -413,7 +413,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Try to allocate units
 		pr _payloadWhitelistMask = if (_needTransport) then {T_comp_ground_or_infantry_mask} else {T_comp_infantry_mask};
-		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _payloadBlacklistMask = T_comp_static_or_cargo_mask;					// Don't take static weapons under any conditions
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];
 		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,

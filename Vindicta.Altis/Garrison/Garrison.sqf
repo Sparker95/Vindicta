@@ -1031,6 +1031,16 @@ CLASS("Garrison", "MessageReceiverEx");
 		} forEach _cargoVehicles;
 	} ENDMETHOD;
 
+	METHOD("clearCargo") {
+		params [P_THISOBJECT];
+		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
+		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+
+		{
+			private _unit = _x;
+			CALLM0(_unit, "clearInventory");
+		} forEach _cargoVehicles;
+	} ENDMETHOD;
 	// 						G E T   A I
 	/*
 	Method: getAI
@@ -2110,14 +2120,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones", "_unitsFoundCargo"];
 		// forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 		{
-			pr _catID = _x;
+			private _catID = _x;
 			// forEach _comp#_catID;
 			{
-				pr _nUnitsNeeded = _x;
-				pr _subcatID = _foreachindex;
+				private _nUnitsNeeded = _x;
+				private _subcatID = _foreachindex;
 				while {_nUnitsNeeded > 0} do {
-					pr _index = _unitsSrc findIf {
-						CALLM0(_x, "getSubcategory") == _subCatID;
+					private _index = _unitsSrc findIf {
+						private _mainData = CALLM0(_x, "getMainData");
+						(_mainData#0 == _catID) && {_mainData#1 == _subCatID}
 					};
 
 					if (_index == -1) exitWith { OOP_ERROR_0("addUnitsFromCompositionNumbers Failed to find a unit?!") }; // WTF it should not happen, we have just verified that
@@ -2126,7 +2137,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					_unitsSrc deleteAt _index;
 					_nUnitsNeeded = _nUnitsNeeded - 1;
 				};
-			} forEach _comp#_catID;
+			} forEach (_comp#_catID);
 		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 
 		// Reorganize the infantry units we are moving
