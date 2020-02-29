@@ -160,29 +160,19 @@ CLASS("AICommander", "AI")
 	METHOD("_initPlanActionGenerators") {
 		params [P_THISOBJECT];
 
-		// pr _value = [
-		// 	// High priority
-		// 	[
-		// 	"generateAttackActions"
-		// 	],
-		// 	// Low priority
-		// 	[
-		// 	"generateConstructRoadblockActions",
-		// 	"generatePatrolActions",
-		// 	"generateReinforceActions",
-		// 	"generateOfficerAssignmentActions",
-		// 	"generateTakeOutpostActions",
-		// 	"generateSupplyActions"
-		// 	]
-		// ];
 		pr _value = [
 			// High priority
 			[
-			"generateSupplyActions"
+			"generateAttackActions"
 			],
 			// Low priority
 			[
-			"generateAttackActions"
+			"generateConstructRoadblockActions",
+			"generatePatrolActions",
+			"generateReinforceActions",
+			"generateOfficerAssignmentActions",
+			"generateTakeOutpostActions",
+			"generateSupplyActions"
 			]
 		];
 
