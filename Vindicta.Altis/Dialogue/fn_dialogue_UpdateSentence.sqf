@@ -50,10 +50,17 @@ if(_speaker isequalto player)then{
 			_answer_nr = _answer_nr + count (_x getVariable ["_options",[]])
 		}forEach _ctrl_questions;
 		
-		diag_log str ["_options",_options];
-		
+		//add options to structured text		
 		{
-			_structedText = composeText [_structedText, lineBreak," - ", str (_forEachIndex + _answer_nr), ": ", _x#0];
+			private _option = _x;
+			_structedText = composeText [
+				_structedText,
+				lineBreak,
+				" - ",
+				str (_forEachIndex + _answer_nr),
+				": ",
+				_option#INDEX_OPTION_TEXT
+			];
 		}forEach _options;
 		
 		private _pos = ctrlposition _ctrl_sentence;

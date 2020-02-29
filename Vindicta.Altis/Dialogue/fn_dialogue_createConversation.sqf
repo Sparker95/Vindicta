@@ -53,24 +53,39 @@ _this spawn {
 		private _conversation_array = [_unit_1,_unit_2] call _conversation_script;
 		if(isnil "_conversation_array")exitWith{diag_log format["ERROR SENTENCE ID NOT FOUND: %1",_conversation_id]};
 		
-		diag_log str["CREATE CONVERSTAION 1", _conversation_array];
-
 		private _sentences = [];
-		private _question = "";
+		private _question = [];
 		private _options = [];
-		private _new_conversation_id = "";
-		private _event_walkAway = "#end";
-		private _event_outOfTime = "#end";
+		private _new_conversation_id = ["",{}];
+		private _event_walkAway = ["#end",{}];
+		private _event_outOfTime = ["#end",{}];
 		{
-			_x params ["_type", "_a", "_b","_c"];
-			if(isnil "_type" || {!(_type isEqualType 0)})exitWith{diag_log format["ERROR WRONG OR NO TYPE GIVEN FOR: %1 (%2)",_conversation_id]};
+			_x params [["_type",-1,[0]]];
 			switch (_type) do {
-				case TYPE_SENTENCE: {_sentences pushBack [_a,_b,_c]};
-				case TYPE_QUESTION: {_question = _a};
-				case TYPE_OPTION:   {_options pushBack [_a,_b,_c]};
-				case TYPE_JUMP_TO:  {_new_conversation_id = _a};
-				case TYPE_EVENT_WALKED_AWAY: 	{_event_walkAway = _a};
-				case TYPE_EVENT_OUT_OF_TIME: 	{_event_outOfTime = _a};
+				case TYPE_SENTENCE: {
+					_x params ["_type", ["_text","",[""]], "_int_talker",["_script",[],[[]]]];
+					_sentences pushBack [_text,_int_talker,_script]};
+
+				case TYPE_QUESTION: {
+					_x params ["_type", ["_text","",[""]],["_script",[],[[]]]];
+					_question = [_text,_script]};
+
+				case TYPE_OPTION:   {
+					_x params ["_type", ["_text","",[""]],"_jump",["_spoke_text","",[""]],["_script",[],[[]]]];
+					if(_spoke_text isEqualType "")then{_spoke_text = _text};
+					_options pushBack [_text,_jump,_spoke_text,_script]};
+
+				case TYPE_JUMP_TO:  {
+					_x params ["_type", ["_jump","",[""]],["_script",[],[[]]]];
+					_new_conversation_id = [_jump,_script]};
+
+				case TYPE_EVENT_WALKED_AWAY:{
+					_x params ["_type", ["_jump","",[""]],["_script",[],[[]]]];
+					_event_walkAway = [_jump,_script]};
+
+				case TYPE_EVENT_OUT_OF_TIME: {
+					_x params ["_type", ["_jump","",[""]],["_script",[],[[]]]];
+					_event_outOfTime = [_jump,_script]};
 				default {};
 			};
 		}forEach _conversation_array;
@@ -81,21 +96,20 @@ _this spawn {
 
 		//select random sentence if array was given
 		{
-			_x params ["_array"];
-			if(_array isEqualType [])then{
-				_x set [0, selectRandom _array];
+			if(_x#INDEX_SENTENCE_TEXT isEqualType [])then{
+				_x set [INDEX_SENTENCE_TEXT, selectRandom (_x#INDEX_SENTENCE_TEXT)];
 			};
 		}forEach _sentences;
 		if(_question isEqualType [])then{_question = selectRandom _question};
 
 		//loop all sentences and show them one by one
 		{
-			_x params [["_sentence","",[""]],["_who",-1,[0]],["_script",{},[{}]]];
+			_x params ["_sentence","_int_talker","_script"];
 
 			[_unit_1,_unit_2] call _script;//run optional code if it was given
 
-			private _speaker = [_unit_1,_unit_2] select (_who-1);
-			private _listener = [_unit_2,_unit_1] select (_who-1);
+			private _speaker = [_unit_1,_unit_2] select (_int_talker-1);
+			private _listener = [_unit_2,_unit_1] select (_int_talker-1);
 			
 			{
 				if(_x distance _speaker < FLOAT_MAX_LISTENING_DISTANCE)then{
@@ -196,16 +210,16 @@ _this spawn {
 			//what did we answer?
 			private _selected_option = _options#(_selected_index);
 			//update conversation_id
-			_new_conversation_id = _selected_option#1;
+			_new_conversation_id = _selected_option#INDEX_OPTION_JUMP;
 			
 			//let everone know what we have answers!
 			{
 				if(_x distance _unit_1 < FLOAT_MAX_LISTENING_DISTANCE)then{
-					[_unit_1, _unit_2, _selected_option#0] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+					[_unit_1, _unit_2, _selected_option#INDEX_OPTION_FULL_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
 				};
 			}forEach (Allplayers - entities "HeadlessClient_F");		
 		
-			sleep (count(_selected_option#0)/12 + 0.5);
+			sleep (count(_selected_option#INDEX_OPTION_FULL_TEXT)/12 + 0.5);
 		};// end if question
 		
 		if(_new_conversation_id == "#end")exitWith{};
