@@ -12,19 +12,14 @@ Parent: <CmdrAction>
 
 CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
-	VARIABLE("srcGarrID");
-	VARIABLE("locPos");
-	VARIABLE("locType");
-	VARIABLE("detachmentEffVar");	// Efficiency
-	VARIABLE("detachmentCompVar");	// Composition
-	VARIABLE("detachedGarrIdVar");
-	VARIABLE("startDateVar");
-	VARIABLE("buildRes");
-
-	#ifdef DEBUG_CMDRAI
-	VARIABLE("debugColor");
-	VARIABLE("debugSymbol");
-	#endif
+	VARIABLE_ATTR("srcGarrID", [ATTR_SAVE]);
+	VARIABLE_ATTR("locPos", [ATTR_SAVE]);
+	VARIABLE_ATTR("locType", [ATTR_SAVE]);
+	VARIABLE_ATTR("detachmentEffVar", [ATTR_SAVE]);	// Efficiency
+	VARIABLE_ATTR("detachmentCompVar", [ATTR_SAVE]);	// Composition
+	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("buildRes", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrID"), P_POSITION("_locPos"), P_DYNAMIC("_locType")];
@@ -43,11 +38,6 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		
 		private _startDateVar = T_CALLM1("createVariable", DATE_NOW); // Default to immediate, overriden at updateScore
 		T_SETV("startDateVar", _startDateVar);
-
-		#ifdef DEBUG_CMDRAI
-		T_SETV("debugColor", "ColorBrown");
-		T_SETV("debugSymbol", "loc_Ruin")
-		#endif
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -364,8 +354,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		private _locPos = T_GETV("locPos");
 		private _locType = T_GETV("locType");
 
-		T_PRVAR(debugColor);
-		T_PRVAR(debugSymbol);
+		GET_DEBUG_MARKER_STYLE(_thisObject) params ["_debugColor", "_debugSymbol"];
 
 		[_srcGarrPos, _locPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
@@ -414,6 +403,8 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+REGISTER_DEBUG_MARKER_STYLE("ConstructLocationCmdrAction", "ColorBrown", "loc_Ruin");
 
 #ifdef _SQF_VM
 

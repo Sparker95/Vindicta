@@ -77,22 +77,23 @@ CLASS("VirtualRoute", "")
 			T_SETV("costFn", _costFn);
 		};
 
+#ifdef DEBUG_FAST_VIRTUALROUTE
+		pr _fast_speedFn = { 300 * 0.277778 };
+		T_SETV("speedFn", _fast_speedFn);
+#else
 		if(_speedFn isEqualType "") then {
 			pr _default_speedFn = {
 				params ["_road", "_next_road", "_callbackArgs"];
-#ifdef CMDR_AI_TESTING
-				300
-#else
 				if([_road] call misc_fnc_isHighWay) exitWith {
 					60 * 0.277778
 				};
 				40 * 0.277778
-#endif
 			};
 			T_SETV("speedFn", _default_speedFn);
 		} else {
 			T_SETV("speedFn", _speedFn);
 		};
+#endif
 
 		T_SETV("calculated", false);
 		T_SETV("failed", false);

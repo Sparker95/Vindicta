@@ -12,14 +12,14 @@ Parent: <CmdrAction>
 CLASS("DirectReinforceCmdrAction", "CmdrAction")
 
 	// ID of the garrison
-	VARIABLE("garrId");
+	VARIABLE_ATTR("garrId", [ATTR_SAVE]);
 
 	// Target where to move to
-	VARIABLE("target");
+	VARIABLE_ATTR("target", [ATTR_SAVE]);
 
 	// Move radius, only makes sense if position is specified
 	// Otherwise it is determined automatically
-	VARIABLE("radius");
+	VARIABLE_ATTR("radius", [ATTR_SAVE]);
 
 	// _garrID - the ID of the garrison to move
 	// _target - target variable

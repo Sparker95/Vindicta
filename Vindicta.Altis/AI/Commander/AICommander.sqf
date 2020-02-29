@@ -162,14 +162,17 @@ CLASS("AICommander", "AI")
 
 		pr _value = [
 			// High priority
-			["generateAttackActions"],
+			[
+			"generateAttackActions"
+			],
 			// Low priority
 			[
 			"generateConstructRoadblockActions",
 			"generatePatrolActions",
 			"generateReinforceActions",
 			"generateOfficerAssignmentActions",
-			"generateTakeOutpostActions"
+			"generateTakeOutpostActions",
+			"generateSupplyActions"
 			]
 		];
 
@@ -622,7 +625,7 @@ CLASS("AICommander", "AI")
 
 			pr _enemyDB = GETV(_x, "intelDB");
 			// Select intel items of the classes we are interested in
-			pr _classes = ["IntelCommanderActionReinforce", "IntelCommanderActionBuild", "IntelCommanderActionAttack", "IntelCommanderActionRecon"];
+			pr _classes = ["IntelCommanderActionReinforce", "IntelCommanderActionBuild", "IntelCommanderActionAttack", "IntelCommanderActionRecon", "IntelCommanderActionSupply"];
 			pr _potentialIntel = CALLM0(_enemyDB, "getAllIntel") select {
 				if (!CALLM1(_thisDB, "isIntelAddedFromSource", _x)) then { // We only care to steal it if we don't have it yet!
 					GET_OBJECT_CLASS(_x) in _classes; // Make sure the intel item is one of the interesting classes
@@ -2081,7 +2084,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	/*
 	Method: (private) generateOfficerAssignmentActions
-	Generate a list of officer assignments required (from aifields to outposts without officers)
+	Generate a list of officer assignments required (from airfields to bases/outposts without officers)
 	
 	Parameters:
 		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
@@ -2149,6 +2152,93 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Officer Assignment"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
+		_actions
+	} ENDMETHOD;
+
+	/*
+	Method: (private) generateSupplyActions
+	Generate a list of supply missions (from airfields to bases and outposts with officers)
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+
+	Returns: Array of <CmdrAction.Actions.SupplyCmdrAction>
+	*/
+	/* private */ METHOD("generateSupplyActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
+		T_PRVAR(side);
+
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "SupplyCmdrAction"} count _activeActions;
+		if (_count >= CMDR_MAX_SUPPLY_ACTIONS) exitWith {[]};
+
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+			// Must be on our side and not involved in another action
+			(GETV(_x, "side") == _side) and 
+			{ !CALLM0(_x, "isBusy") } and
+			// Has a cargo truck
+			{ CALLM1(_x, "countUnits", [[T_VEH ARG T_VEH_truck_ammo]]) > 0 } and
+			// At a fixed location
+			{ CALLM0(_x, "getLocation") != NULL_OBJECT } and
+			// Has an officer
+			{ CALLM0(_x, "countOfficers") > 0 } and
+			// Has some forces to spare for escort
+			{
+				// Must have at least a minimum strength of twice min efficiency
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			};
+		};
+
+		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
+		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
+			// Must be on our side
+			(GETV(_x, "side") == _side) and 
+			// At a fixed base or outpost location
+			{ 
+				private _loc = CALLM0(_x, "getLocation");
+				(_loc != NULL_OBJECT) and 
+				{
+					GETV(_loc, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]
+				}
+			} and
+			// And have an officer (we only want to set supplies )
+			{ CALLM0(_x, "countOfficers") > 0 }
+		};
+
+		private _actions = [];
+		{
+			private _srcId = GETV(_x, "id");
+			private _srcFac = GETV(_x, "faction");
+			{
+				private _tgtId = GETV(_x, "id");
+				private _tgtFac = GETV(_x, "faction");
+				if(_srcId != _tgtId and {_srcFac == _tgtFac}) then {
+					private _type = selectRandomWeighted [
+						ACTION_SUPPLY_TYPE_BUILDING,	10,
+						ACTION_SUPPLY_TYPE_AMMO,		5,
+						ACTION_SUPPLY_TYPE_EXPLOSIVES,	1,
+						ACTION_SUPPLY_TYPE_MEDICAL,		1,
+						ACTION_SUPPLY_TYPE_MISC,		1
+					];
+					private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+					private _amount = 0 max random [_progress * 0.5, _progress, _progress * 1.5] min 1;
+					private _params = [_srcId, _tgtId, _type, _amount];
+					_actions pushBack (NEW("SupplyCmdrAction", _params));
+				};
+			} forEach _tgtGarrisons;
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 Supply actions from %2 garrisons to %3 garrisons", [count _actions ARG count _srcGarrisons ARG count _tgtGarrisons]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Supply"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons];
 		OOP_INFO_MSG(_str, []);
 		#endif
 
@@ -2578,18 +2668,32 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Spawn in more officers
 		{
 			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
-			private _nOfficers = CALLM0(_garrison, "countOfficers");
+			private _nOfficersRequired = 3 - CALLM0(_garrison, "countOfficers");
 
-			OOP_INFO_2("  Adding %1 officers at %2", 3 - _nOfficers, _name);
-			while { _nOfficers < 3 } do {
+			OOP_INFO_2("  Adding %1 officers at %2", _nOfficersRequired, _name);
+			while { _nOfficersRequired > 0 } do {
 				// Create an officer group
 				private _group = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
 				CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_officer);
 				CALLM2(_garrison, "postMethodAsync", "addGroup", [_group]);
-				_nOfficers = _nOfficers + 1;
+				_nOfficersRequired = _nOfficersRequired - 1;
 			};
 		} forEach _reinfInfo;
 
+		// Spawn in more supply trucks
+		{
+			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
+			private _nSupplyTrucksRequired = 2 - CALLM1(_garrison, "countUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+
+			OOP_INFO_2("  Adding %1 supply trucks at %2", _nSupplyTrucksRequired, _name);
+			while { _nSupplyTrucksRequired > 0 } do {
+				private _args = [_t, T_VEH, T_VEH_truck_ammo, -1];
+				private _vehUnit = NEW("Unit", _args);
+
+				CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
+				_nSupplyTrucksRequired = _nSupplyTrucksRequired - 1;
+			};
+		} forEach _reinfInfo;
 		// Spawn in more vehicles
 
 		// Construct a pool of vehicles we could add and shuffle them up then add some of them

@@ -7,13 +7,13 @@ Have a garrison wait for a period of time.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_WaitGarrison", "ActionStateTransition")
-	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Inputs
-	VARIABLE_ATTR("waitUntilDateVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("waitUntilDateVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new

@@ -290,6 +290,9 @@
 			<Key ID="STR_INIT_ERROR2">
 				<Original>ERROR: Missing addon:</Original>
 			</Key>
+			<Key ID="STR_INIT_TOOLTIPHOVER">
+				<Original>Hover to show description.</Original>
+			</Key>
 			
 		</Container>
 	</Package>

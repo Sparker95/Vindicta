@@ -209,7 +209,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					breakTo "s0";
 				};
 				
-				// Succede if all groups have completed the goal
+				// Succeed if all groups have completed the goal
 				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 					OOP_INFO_0("All groups have arrived");
 					

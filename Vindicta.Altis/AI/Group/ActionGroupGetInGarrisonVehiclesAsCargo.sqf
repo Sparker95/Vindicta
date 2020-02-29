@@ -46,6 +46,14 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 				
 		// Get all infantry
 		pr _unitsInf = CALLM0(_group, "getInfantryUnits");
+				
+		// Fail if there are no infantry
+		if (count _unitsInf == 0) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+		
+
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitGetInVehicle", ""); // Delete any other goals like this first
