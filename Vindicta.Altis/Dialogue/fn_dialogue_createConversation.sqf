@@ -19,7 +19,7 @@
 #define INT_ID_UNIT_KILLED -4
 
 
-params[["_unit_1",objNull,[objNull]],["_unit_2",objNull,[objNull]],["_conversation_id","",[""]]];
+params[["_unit_1",objNull,[objNull]],["_unit_2",objNull,[objNull]],["_conversation_id","",[""]],["_end_script",{},[{}]]];
 
 if(isnull _unit_1)exitWith {diag_log format["ERROR SENTENCE UNIT_1 CANT BE A NONE: %1",_conversation_id]};
 
@@ -34,11 +34,7 @@ if(_unit_1 in _allPLayers && { !(_unit_1 isEqualTo player) })then{
 };
 
 _this spawn {
-	params[["_unit_1",objNull,[objNull]],["_unit_2",objNull,[objNull]],["_conversation_id","",[""]]];
-
-
-
-
+	params[["_unit_1",objNull,[objNull]],["_unit_2",objNull,[objNull]],["_conversation_id","",[""]],["_end_script",{},[{}]]];
 
 	//main loop for the conversation
 	while{true}do{
@@ -53,6 +49,7 @@ _this spawn {
 		private _conversation_array = [_unit_1,_unit_2] call _conversation_script;
 		if(isnil "_conversation_array")exitWith{diag_log format["ERROR SENTENCE ID NOT FOUND: %1",_conversation_id]};
 		
+		//format the conversation_array
 		private _sentences = [];
 		private _question = [];
 		private _options = [];
@@ -63,16 +60,16 @@ _this spawn {
 			_x params [["_type",-1,[0]]];
 			switch (_type) do {
 				case TYPE_SENTENCE: {
-					_x params ["_type", ["_text","",[""]], "_int_talker",["_script",{},[{}]]];
+					_x params ["_type", ["_text","",["",[]]], "_int_talker",["_script",{},[{}]]];
 					if!(_int_talker in [1,2])exitWith{diag_log format["ERROR WRONG TALKER NR:%1",_conversation_id]};
 					_sentences pushBack [_text,_int_talker,_script]};
 
 				case TYPE_QUESTION: {
-					_x params ["_type", ["_text","",[""]],["_script",{},[{}]]];
+					_x params ["_type", ["_text","",["",[]]],["_script",{},[{}]]];
 					_question = [_text,_script]};
 
 				case TYPE_OPTION:   {
-					_x params ["_type", ["_text","",[""]],"_jump",["_spoke_text","",[""]],["_script",{},[{}]]];
+					_x params ["_type", ["_text","",["",[]]],["_jump","",[""]],["_spoke_text","",["",[]]],["_script",{},[{}]]];
 					if(_spoke_text isEqualType "")then{_spoke_text = _text};
 					_options pushBack [_text,_jump,_spoke_text,_script]};
 
@@ -94,14 +91,23 @@ _this spawn {
 		//check if conversation is properly structured 
 		if((count _sentences + count _question) == 0)exitWith{diag_log format["ERROR NO SENTENCE OR QUESTION: %1 (%2)",_conversation_id]};
 		if(count _question > 0 && count _options == 0)exitWith{diag_log format["ERROR NO OPTIONS FOR QUESTION: %1 (%2)",_conversation_id]};
-
+		if(count _question > 0 && _new_conversation_id != "")exitWith{diag_log format["ERROR QUESTION AND JUMP GIVEN: %1 (%2)",_conversation_id]};
+		
 		//select random sentence if array was given
 		{
 			if(_x#INDEX_SENTENCE_TEXT isEqualType [])then{
 				_x set [INDEX_SENTENCE_TEXT, selectRandom (_x#INDEX_SENTENCE_TEXT)];
 			};
 		}forEach _sentences;
-		if(_question isEqualType [])then{_question = selectRandom _question};
+		{
+			if(_x#INDEX_OPTION_TEXT isEqualType [])then{
+				_x set [INDEX_OPTION_TEXT, selectRandom (_x#INDEX_OPTION_TEXT)];
+			};
+			if(_x#INDEX_OPTION_FULL_TEXT isEqualType [])then{
+				_x set [INDEX_OPTION_FULL_TEXT, selectRandom (_x#INDEX_OPTION_FULL_TEXT)];
+			};
+		}forEach _options;
+		if(_question#INDEX_QUESTION_TEXT isEqualType [])then{_question set [INDEX_QUESTION_TEXT, selectRandom _question#INDEX_QUESTION_TEXT]};
 
 		//loop all sentences and show them one by one
 		{
@@ -204,8 +210,14 @@ _this spawn {
 			_ctrl_question setVariable ["_type", TYPE_SENTENCE];
 			
 			//No answer given waited to long or player walked away.
-			if(_selected_index == INT_ID_WALKED_AWAY)exitWith {_new_conversation_id = _event_walkAway};
-			if(_selected_index == INT_ID_OUT_OF_TIME)exitWith {_new_conversation_id = _event_outOfTime};
+			if(_selected_index == INT_ID_WALKED_AWAY)exitWith {
+				_new_conversation_id = _event_walkAway#INDEX_EVENT_JUMP;
+				[_unit_1, _unit_2] call (_event_walkAway#INDEX_EVENT_SCRIPT);
+			};
+			if(_selected_index == INT_ID_OUT_OF_TIME)exitWith {
+				_new_conversation_id = _event_outOfTime #INDEX_EVENT_JUMP;
+				[_unit_1, _unit_2] call (_event_outOfTime#INDEX_EVENT_SCRIPT);
+			};
 			if(_selected_index == INT_ID_UNIT_KILLED)exitWith {_new_conversation_id = "#end"};
 			
 			//what did we answer?
@@ -230,5 +242,8 @@ _this spawn {
 		
 		_conversation_id = _new_conversation_id;
 		
-	};
-};
+	};//end while
+
+	[_unit_1, _unit_2] call _end_script;
+
+};//end spawn
