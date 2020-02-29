@@ -9,32 +9,47 @@
 		_unit_1:
 		_unit_2(optional): 
 		_conversation_id: The id of the conversation you want to start
+		_script: Code that needs to run at the end of the conversation
 	Output:
 		nil
 */
 
+//locally used variables
 #define INT_ID_UNDEFINED -1
 #define INT_ID_WALKED_AWAY -2
 #define INT_ID_OUT_OF_TIME -3
 #define INT_ID_UNIT_KILLED -4
 
 
-params[["_unit_1",objNull,[objNull]],["_unit_2",objNull,[objNull]],["_conversation_id","",[""]],["_end_script",{},[{}]]];
+params[
+	["_unit_1",objNull,[objNull]],
+	["_unit_2",objNull,[objNull]],//optional
+	["_conversation_id","",[""]],
+	["_end_script",{},[{}]],//optional
+	["_end_script_args"],[],[[]]//optional
+];
 
-if(isnull _unit_1)exitWith {diag_log format["ERROR SENTENCE UNIT_1 CANT BE A NONE: %1",_conversation_id]};
+if(isnull _unit_1)exitWith {diag_log format["ERROR SENTENCE UNIT_1 CANT BE NONE: %1",_conversation_id]};
 
+
+
+//AI cant use questions with options
 private _allPLayers = (Allplayers - entities "HeadlessClient_F");
-
-//player needs to be unit_1
 if(_unit_2 in _allPLayers)exitWith{diag_log format["ERROR SENTENCE UNIT_2 CANT BE A PLAYER: %1",_unit_2]};
 
-//run code on client if possible
-if(_unit_1 in _allPLayers && { !(_unit_1 isEqualTo player) })then{
+//run locally when player is involved
+if(!(_unit_1 isEqualTo player)  && {_unit_1 in _allPLayers})then{
 	[_unit_1, _unit_2, _conversation_id] remoteExecCall ["pr0_fnc_dialogue_createConversation",_unit_1];
 };
 
 _this spawn {
-	params[["_unit_1",objNull,[objNull]],["_unit_2",objNull,[objNull]],["_conversation_id","",[""]],["_end_script",{},[{}]]];
+	params[
+		["_unit_1",objNull,[objNull]],
+		["_unit_2",objNull,[objNull]],
+		["_conversation_id","",[""]],
+		["_end_script",{},[{}]],
+		["_end_script_args"],[],[[]]
+	];
 
 	//main loop for the conversation
 	while{true}do{
@@ -53,41 +68,87 @@ _this spawn {
 		private _sentences = [];
 		private _question = [];
 		private _options = [];
-		private _new_conversation_id = ["",{}];
+		private _new_conversation_array = [];
 		private _event_walkAway = ["#end",{}];
 		private _event_outOfTime = ["#end",{}];
 		{
 			_x params [["_type",-1,[0]]];
 			switch (_type) do {
+				case TYPE_SENTENCE_SILENCE:{
+					_x params [
+						"_type", 
+						["_text","",["",[]]],
+						["_script",{},[{}]],
+						["_args",[],[[]]]
+					];
+					_sentences pushBack [_text,true,1,_script,_args];
+				};
 				case TYPE_SENTENCE: {
-					_x params ["_type", ["_text","",["",[]]], "_int_talker",["_script",{},[{}]]];
+					_x params [
+						"_type",
+						["_text","",["",[]]], 
+						["_int_talker",0,[0]],
+						["_script",{},[{}]],
+						["_args",[],[[]]]
+					];
+
 					if!(_int_talker in [1,2])exitWith{diag_log format["ERROR WRONG TALKER NR:%1",_conversation_id]};
-					_sentences pushBack [_text,_int_talker,_script]};
-
+					_sentences pushBack [_text,false,_int_talker,_script,_args];
+				};
 				case TYPE_QUESTION: {
-					_x params ["_type", ["_text","",["",[]]],["_script",{},[{}]]];
-					_question = [_text,_script]};
-
+					_x params [
+						"_type", 
+						["_text","",["",[]]],
+						["_script",{},[{}]],
+						["_args",[],[[]]]
+					];
+					_question = [_text,_script,_args]
+				};
 				case TYPE_OPTION:   {
-					_x params ["_type", ["_text","",["",[]]],["_jump","",[""]],["_spoke_text","",["",[]]],["_script",{},[{}]]];
+					_x params [
+						"_type",
+						["_text","",["",[]]],
+						["_jump","",[""]],
+						["_spoke_text","",["",[]]],
+						["_script",{},[{}]],
+						["_args",[],[[]]
+					]];
 					if(_spoke_text isEqualType "")then{_spoke_text = _text};
-					_options pushBack [_text,_jump,_spoke_text,_script]};
-
+					_options pushBack [_text,_jump,_spoke_text,_script,_args]
+				};
 				case TYPE_JUMP_TO:  {
-					_x params ["_type", ["_jump","",[""]],["_script",{},[{}]]];
-					_new_conversation_id = [_jump,_script]};
-
+					_x params [
+						"_type",
+						["_jump","",[""]],
+						["_script",{},[{}]],
+						["_args",[],[[]]]
+					];
+					_new_conversation_array = [_jump,_script,_args]
+				};
 				case TYPE_EVENT_WALKED_AWAY:{
-					_x params ["_type", ["_jump","",[""]],["_script",{},[{}]]];
-					_event_walkAway = [_jump,_script]};
-
+					_x params [
+						"_type", 
+						["_jump","",[""]],
+						["_script",{},[{}]],
+						["_args",[],[[]]]
+					];
+					_event_walkAway = [_jump,_script,_args]
+				};
 				case TYPE_EVENT_OUT_OF_TIME: {
-					_x params ["_type", ["_jump","",[""]],["_script",{},[{}]]];
-					_event_outOfTime = [_jump,_script]};
+					_x params [
+						"_type",
+						["_jump","",[""]],
+						["_script",{},[{}]],
+						["_args",[],[[]]]
+					];
+					_event_outOfTime = [_jump,_script,_args]
+				};
 				default {};
 			};
 		}forEach _conversation_array;
 		
+		private _new_conversation_id = _new_conversation_array#INDEX_NEW_CONVERSATION_JUMP;
+
 		//check if conversation is properly structured 
 		if((count _sentences + count _question) == 0)exitWith{diag_log format["ERROR NO SENTENCE OR QUESTION: %1 (%2)",_conversation_id]};
 		if(count _question > 0 && count _options == 0)exitWith{diag_log format["ERROR NO OPTIONS FOR QUESTION: %1 (%2)",_conversation_id]};
@@ -111,20 +172,25 @@ _this spawn {
 
 		//loop all sentences and show them one by one
 		{
-			_x params ["_sentence","_int_talker","_script"];
-
-			[_unit_1,_unit_2] call _script;//run optional code if it was given
-
-			private _speaker = [_unit_1,_unit_2] select (_int_talker-1);
-			private _listener = [_unit_2,_unit_1] select (_int_talker-1);
+			private _returned = [_unit_1,_unit_2] call (_x#INDEX_SENTENCE_SCRIPT);//run optional code if it was given
+			//Maybe we need to do something when a value was returned?
 			
-			{
-				if(_x distance _speaker < FLOAT_MAX_LISTENING_DISTANCE)then{
-					[_speaker, _listener, _sentence] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
-				};
-			}forEach (Allplayers - entities "HeadlessClient_F");
-			
-			sleep ((count _sentence)/12 + 0.5);
+			//Check if sentences is a hint or silince sentence
+			if(_x#INDEX_SENTENCE_SILENCE)then{
+				//show sentence only to player
+				[player, _unit_2, (_x#INDEX_SENTENCE_TEXT)] call pr0_fnc_dialogue_createSentence;
+			}else{
+
+				//show sentence to everone who is nearby
+				private _speaker = [_unit_1,_unit_2] select ((_x#INDEX_SENTENCE_SPEAKER_NR)-1);
+				private _listener = [_unit_2,_unit_1] select ((_x#INDEX_SENTENCE_SPEAKER_NR)-1);
+				{
+					if(_x distance _speaker < FLOAT_MAX_LISTENING_DISTANCE)then{
+						[_speaker, _listener, (_x#INDEX_SENTENCE_TEXT)] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+					};
+				}forEach (Allplayers - entities "HeadlessClient_F");
+			};
+			sleep ((count (_x#INDEX_SENTENCE_TEXT))/12 + 0.5);
 		}foreach _sentences;
 
 		//create question and show it to the player
@@ -136,16 +202,17 @@ _this spawn {
 			private _speaker = _unit_2;
 			private _listener = player;
 			
-			
+			[_unit_1,_unit_2] call _question#INDEX_QUESTION_SCRIPT;
+
 			//show the question to all players except player. 
 			{
 				if(_x distance _speaker < FLOAT_MAX_LISTENING_DISTANCE)then{
-					[_speaker, _listener, _question] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+					[_speaker, _listener, _question#INDEX_QUESTION_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
 				};
 			}forEach (Allplayers - entities "HeadlessClient_F" - [player]);
 			
 			//Create sentence with answers for player
-			private _ctrl_question = [_speaker,_listener,_question,_options] call pr0_fnc_dialogue_createSentence;
+			private _ctrl_question = [_speaker,_listener,_question#INDEX_QUESTION_TEXT,_options] call pr0_fnc_dialogue_createSentence;
 			
 			private _ctrl_questions = _display getvariable ["pr0_dialogue_question_list" ,[]];
 			_ctrl_questions pushBack _ctrl_question;
@@ -224,7 +291,8 @@ _this spawn {
 			private _selected_option = _options#(_selected_index);
 			//update conversation_id
 			_new_conversation_id = _selected_option#INDEX_OPTION_JUMP;
-			
+			([_unit_1, _unit_2]+_new_conversation_array#INDEX_NEW_CONVERSATION_ARGS) call _new_conversation_array#INDEX_NEW_CONVERSATION_SCRIPT;
+
 			//let everone know what we have answers!
 			{
 				if(_x distance _unit_1 < FLOAT_MAX_LISTENING_DISTANCE)then{
@@ -244,6 +312,6 @@ _this spawn {
 		
 	};//end while
 
-	[_unit_1, _unit_2] call _end_script;
+	([_unit_1, _unit_2]+_end_script_args) call _end_script;
 
 };//end spawn

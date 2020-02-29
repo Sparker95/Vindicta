@@ -117,28 +117,26 @@ if(count _ctrl_sentences > INT_SENTENCE_LIMIT)then{
 };
 
 //lip sycn
-call {
-	private _timer = _speaker getvariable ["pr0_dialogue_lip_timer",0];
-	private _timer_new = (count _sentence / 12) + time;
-	if(_timer_new >_timer)then{
-		_speaker setvariable ["pr0_dialogue_lip_timer",_timer_new];
-		private _script = _speaker getvariable ["pr0_dialogue_lip_script",scriptnull];
-		terminate _script;//close old
-		_script = [_speaker,_listener] spawn {
-			params["_speaker","_listener"];
-			_speaker setRandomLip true;
-			waitUntil{
-				if (!isNull _listener) then { _speaker lookAt _listener; };
-				sleep 0.3;
-				( time > _speaker getvariable ["pr0_dialogue_lip_timer",0]);
-			};
-			_speaker setRandomLip false;
-			_speaker doWatch objnull;
-		};
-		_speaker setvariable ["pr0_dialogue_lip_script",_script];
-	};
-};
 
+private _timer = _speaker getvariable ["pr0_dialogue_lip_timer",0];
+private _timer_new = (count _sentence / 12) + time;
+if(_timer_new >_timer)then{
+	_speaker setvariable ["pr0_dialogue_lip_timer",_timer_new];
+	private _script = _speaker getvariable ["pr0_dialogue_lip_script",scriptnull];
+	terminate _script;//close old
+	_script = [_speaker,_listener] spawn {
+		params["_speaker","_listener"];
+		_speaker setRandomLip true;
+		waitUntil{
+			if (!isNull _listener) then { _speaker lookAt _listener; };
+			sleep 0.3;
+			( time > _speaker getvariable ["pr0_dialogue_lip_timer",0]);
+		};
+		_speaker setRandomLip false;
+		_speaker doWatch objnull;
+	};
+	_speaker setvariable ["pr0_dialogue_lip_script",_script];
+};
 
 
 _ctrl_sentence;

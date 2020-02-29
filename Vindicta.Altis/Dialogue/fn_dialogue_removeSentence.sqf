@@ -7,7 +7,9 @@ disableSerialization;
 private _display = findDisplay 46;
 
 //remove from list
-call {
+[_ctrl_sentence, _display] call {
+	params ["_ctrl_sentence","_display"];
+
 	private _ctrl_sentences = _display getvariable ["pr0_dialogue_sentence_list" ,[]];
 	_ctrl_sentences = _ctrl_sentences - [_ctrl_sentence];
 	_display setvariable ["pr0_dialogue_sentence_list" ,_ctrl_sentences];
@@ -17,7 +19,8 @@ call {
 };
 
 //remove sentence from icon list and remove icon if no other sentence uses it.
-call {
+[_ctrl_sentence, _display]  call {
+	params ["_ctrl_sentence","_display"];
 	private _ctrl_icon = _ctrl_sentence getVariable ["_ctrl_icon",controlNull];
 	private _ctrl_sentences = _ctrl_icon getVariable ["_ctrl_sentences", []];
 

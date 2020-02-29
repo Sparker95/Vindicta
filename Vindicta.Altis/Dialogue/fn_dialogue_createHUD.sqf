@@ -26,7 +26,7 @@ if(isnull _hud)then{
 		{
 			private _ctrl_icon = _x;		
 			
-			private _speaker = _ctrl_icon getVariable ["_speaker", _speaker];
+			private _speaker = _ctrl_icon getVariable ["_speaker", objNull];
 			
 			//worldToScreen BASED works nice but doesnt work when unit is out of side (returns [] if object is out of screen)
 			private _pos_screen = (worldToScreen visiblePosition _speaker);
