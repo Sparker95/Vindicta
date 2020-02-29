@@ -775,7 +775,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {vehicle player == player}											// Player must be on foot
 			&& {!isPlayer _co}														// Object must not be player
 			&& {_co isKindOf "Man"}													// Object must be infantry
-			&& {!isPlayer leader _co}												// Object must not be already owned by a player
+			&& {side group _co isEqualTo side group player}							// Object must be on real player side
+			&& {!(group _co isEqualTo group player)}								// Object must not already be in player group
+			&& {!isPlayer leader _co}												// Object must not be already led by a player
 			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive _co}															// Object must be alive
 		};

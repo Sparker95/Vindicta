@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_AAF_2020"];
-_array set [T_DESCRIPTION, "Units using AAF 2017 and RHS. 2020 variant."];
+_array set [T_DESCRIPTION, "Altis Armed Forces units. 2020 variant. Uses RHS and AAF2017."];
 _array set [T_DISPLAY_NAME, "RHS AAF 2020 Custom"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
@@ -17,7 +17,6 @@ _array set [T_REQUIRED_ADDONS, [
 								"rhsusf_c_troops",
 								"rhssaf_c_troops",
 								"rhsgref_c_troops"]];
-
 
 //==== Infantry ====
 _inf = [];

@@ -3201,12 +3201,28 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Work out what garrison we are moving these units to
 		private _tgtGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", side group _player);
+		private _tgtUnits = GETV(_tgtGarrison, "units");
+
+		if(isNull _player || {!alive _player}) exitWith {
+			OOP_WARNING_1("Can't add units, player is null or dead: %1", _player);
+		};
+
+		// Some sanity checks on the handles
+		_unitHandles = _unitHandles select {
+			!isNull _x 
+			// Only units on real player side
+			&& {side group _x isEqualTo side group player}
+		};
 
 		// Get the units OOP objects
 		private _units = _unitHandles apply {
 			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
-			!IS_NULL_OBJECT(_x)
+			!IS_NULL_OBJECT(_x) && {!(CALLM0(_x, "getGarrison") isEqualTo _tgtGarrison)} 
+		};
+
+		if(count _units == 0) exitWith {
+			OOP_WARNING_2("Can't add units, no valid units to add, player: %1, unit handles: %2", _player, _unitHandles);
 		};
 
 		// Remove the units from thier group
@@ -3245,15 +3261,17 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_WARNING_0("makeGarrisonFromUnits: No unit handles specified");
 		};
 
+		private _ourUnits = T_GETV("units");
+
 		// Get the units OOP objects
-		private _units = _unitHandles apply {
+		private _unitObjects = _unitHandles apply {
 			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
-			!IS_NULL_OBJECT(_x)
+			!IS_NULL_OBJECT(_x) && {_x in _ourUnits}
 		};
 
-		if(count _units == 0) exitWith {
-			OOP_WARNING_1("makeGarrisonFromUnits: No unit objects found for unit handles %1", _unitHandles);
+		if(count _unitObjects == 0) exitWith {
+			OOP_WARNING_1("makeGarrisonFromUnits: No unit objects found for unit handles %1 in our garrison", _unitHandles);
 		};
 
 		private _side = T_GETV("side");
@@ -3276,15 +3294,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Populate the new group
 		{
 			CALLM1(_group, "addUnit", _x);
-			//private _unit = _x;
-			// pr _unitGroup = CALLM0(_unit, "getGroup");
-			// if (_unitGroup != NULL_OBJECT) then {
-			// 	CALLM1(_unitGroup, "removeUnit", _unit);
-			// };
-		} forEach _units;
-
-		// // Add the units to thier new group
-		//CALLM1(_newGarrison, "addUnits", _units);
+		} forEach _unitObjects;
 
 		// Add group to new garrison
 		CALLM1(_newGarrison, "addGroup", _group);
@@ -3292,10 +3302,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Register it at the commander (do it after adding the units so the sync is correct)
 		CALLM(_newGarrison, "activate", []);
 
-		// Delete out empty groups
+		// Delete our empty groups
 		T_CALLM0("deleteEmptyGroups");
 
-		private _msg = format ["%1 units formed new garrison at %2", count _units, mapGridPosition _pos];
+		private _msg = format ["%1 units formed new garrison at %2", count _unitObjects, mapGridPosition _pos];
 		private _args = ["GARRISON FORMED", _msg, "They are now available for map control"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_ALL, NO_JIP);
 	} ENDMETHOD;	

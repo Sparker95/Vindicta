@@ -130,14 +130,18 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _cbPoliceFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_POLICE_FACTION");
 		pr _staticDescription = T_CALLM1("findControl", "TAB_GMINIT_LISTNBOX_SETTINGS");
 		lnbClear _staticDescription;
-		_staticDescription lnbSetColumnsPos [0, 0.35];
+		_staticDescription lnbSetColumnsPos [0, 0.4];
 
 		// Format text according to selected factions.
 		pr _enemyTemplateName = LB_CUR_SEL_DATA(_cbEnemyFaction);
 		pr _policeTemplateName = LB_CUR_SEL_DATA(_cbPoliceFaction);
 		{
 			pr _t = [_x] call t_fnc_getTemplate;
-			_staticDescription lnbAddRow [_t#T_DISPLAY_NAME, _t#T_DESCRIPTION];
+			pr _rowIndex = _staticDescription lnbAddRow [_t#T_DISPLAY_NAME, (localize "STR_INIT_TOOLTIPHOVER")];
+
+#ifndef _SQF_VM
+			_staticDescription lnbSetTooltip [[_rowIndex, 0], _t#T_DESCRIPTION];
+#endif
 
 			// Add more text if template is not valid
 			if (!(_t#T_VALID)) then {

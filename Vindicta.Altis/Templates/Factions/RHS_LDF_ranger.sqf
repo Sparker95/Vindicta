@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LDF_ranger"];
-_array set [T_DESCRIPTION, "LDF Police Rangers. Uses RHS."];
-_array set [T_DISPLAY_NAME, "RHS LDF Rangers"];
+_array set [T_DESCRIPTION, "Livonian forest rangers. Uses RHS."];
+_array set [T_DISPLAY_NAME, "RHS LDF Rangers Custom"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [							
 								"rhs_c_troops",		// RHS AFRF
