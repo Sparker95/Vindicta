@@ -10,6 +10,7 @@
 		_unit_2(optional): 
 		_conversation_id: The id of the conversation you want to start
 		_script: Code that needs to run at the end of the conversation
+		_args: arguments that will be feed to the endscript
 	Output:
 		nil
 */
@@ -53,7 +54,11 @@ _this spawn {
 
 	//main loop for the conversation
 	while{true}do{
-	
+			
+		//-----------------------------------------------------------
+		//			Find the conversation with given ID				|
+		//-----------------------------------------------------------
+
 		//check if both units are alive is dead or unconsious and stup conversation
 		if(
 			(!alive _unit_1 || {_unit_1 getVariable ["ace_isunconscious",false]}) ||
@@ -64,7 +69,12 @@ _this spawn {
 		private _conversation_array = [_unit_1,_unit_2] call _conversation_script;
 		if(isnil "_conversation_array")exitWith{diag_log format["ERROR SENTENCE ID NOT FOUND: %1",_conversation_id]};
 		
-		//format the conversation_array
+
+
+		//-----------------------------------------------------------
+		//				Format conversation into arrays				|
+		//-----------------------------------------------------------
+
 		private _sentences = [];
 		private _question = [];
 		private _options = [];
@@ -170,7 +180,12 @@ _this spawn {
 		}forEach _options;
 		if(_question#INDEX_QUESTION_TEXT isEqualType [])then{_question set [INDEX_QUESTION_TEXT, selectRandom _question#INDEX_QUESTION_TEXT]};
 
-		//loop all sentences and show them one by one
+
+
+		//-----------------------------------------------------------
+		//		Loop all sentences and show them on screen			|
+		//-----------------------------------------------------------
+
 		{
 			private _returned = [_unit_1,_unit_2] call (_x#INDEX_SENTENCE_SCRIPT);//run optional code if it was given
 			//Maybe we need to do something when a value was returned?
@@ -193,7 +208,12 @@ _this spawn {
 			sleep ((count (_x#INDEX_SENTENCE_TEXT))/12 + 0.5);
 		}foreach _sentences;
 
-		//create question and show it to the player
+
+
+		//-----------------------------------------------------------
+		//				Create Question if there is one				|
+		//-----------------------------------------------------------
+
 		if(count _question > 0)then{
 		
 			disableSerialization;
@@ -219,6 +239,10 @@ _this spawn {
 			_display setvariable ["pr0_dialogue_question_list" ,_ctrl_questions];
 			
 			
+			//-----------------------------------------------------------
+			//		Create keyevent and wait until its clicked			|
+			//-----------------------------------------------------------
+
 			private _keyDownEvent = _display getVariable "pr0_dialogue_keyDownEvent";
 			if(isNil "_keyDownEvent")then{
 				private _keyDownEvent = _display displayAddEventHandler ["KeyDown", { 
@@ -260,6 +284,11 @@ _this spawn {
 				
 				_selected_index != -1;
 			};
+
+
+			//-----------------------------------------------------------
+			//					Check given answer						|
+			//-----------------------------------------------------------
 			
 			//Remove options from question sentence
 			_ctrl_question setVariable ["_options",[]];
@@ -308,10 +337,12 @@ _this spawn {
 			diag_log format["ERROR NO NEW SENTENCE_ID OR OPTIONS ARE GIVEN IN: %1",_conversation_id]
 		};
 		
+		//valid new conversation found. Loop back and do everything again!
 		_conversation_id = _new_conversation_id;
 		
 	};//end while
 
+	//execute optional code
 	([_unit_1, _unit_2]+_end_script_args) call _end_script;
 
 };//end spawn
