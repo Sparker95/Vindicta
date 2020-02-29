@@ -17,7 +17,7 @@ this addVest _RandomVest;
 this addWeapon "srifle_DMR_04_Tan_F";
 this addPrimaryWeaponItem "muzzle_snds_m_khk_F";
 this addPrimaryWeaponItem "ACE_acc_pointer_green";
-this addPrimaryWeaponItem "optic_tws";
+this addPrimaryWeaponItem "optic_MRCO";
 this addPrimaryWeaponItem "10Rnd_127x54_Mag";
 this addPrimaryWeaponItem "bipod_03_F_oli";
 this addWeapon "hgun_ACPC2_F";
