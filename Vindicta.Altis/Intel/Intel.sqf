@@ -692,6 +692,37 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 	} ENDMETHOD;
 ENDCLASS;
 
+
+/*
+	Class: Intel.IntelCommanderActionSupply
+	Intel about reinforcement commander action.
+*/
+CLASS("IntelCommanderActionSupply", "IntelCommanderAction")
+
+	// Type of supplies
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+
+	// How much supplies
+	VARIABLE_ATTR("amount", [ATTR_SERIALIZABLE]);
+
+	/* 
+		variable: srcGarrison
+		The source garrison that sent the reinforcements. Probably players have no use to this.
+	*/
+	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+
+	/* 
+		variable: tgtGarrison
+		The destination garrison that will be reinforced. Probably players have no use to this.
+	*/
+	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
+
+	METHOD("getShortName") {
+		params [P_THISOBJECT];
+		T_GETV("type");
+	} ENDMETHOD;
+ENDCLASS;
+
 /*
 	Class: Intel.IntelCommanderActionConstructLocation
 	Intel about action to build something.

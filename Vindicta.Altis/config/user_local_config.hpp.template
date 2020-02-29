@@ -27,8 +27,16 @@
 //#define RELEASE_BUILD
 
 // Accelerates virtual route speed
+// #define DEBUG_FAST_VIRTUALROUTE
+
 // Increases planning frequency, plans all action types on each iteration
 //#define CMDR_AI_TESTING
+
+// Show commander debug marker on map with current commander activity (at bottom left)
+//#define DEBUG_COMMANDER
+
+// External reinforcement will run every commander process cycle
+//#define REINFORCEMENT_TESTING
 
 // Disables planning for cmdr ai
 //#define CMDR_AI_NO_PLAN
