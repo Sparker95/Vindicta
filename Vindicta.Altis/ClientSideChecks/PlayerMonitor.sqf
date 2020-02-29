@@ -310,6 +310,87 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				_intelStarted pushBackUnique _intel;
 			};
 		} forEach _intelReminders;
+
+		/*
+			Hotfix for crappy night time experience, until we can skip night.
+
+			We use setApertureNew based on tested values. We modify only then
+			min parameter of the command for the following times, interpolating
+			between them as time passes. I've tested the following times:
+
+			18h min: 18
+			19h min: 7
+			20h min: 4
+			21h min: 2.4
+			22h min: 2.2
+			23h min: 2
+			0h min: 1.85
+			1h min: 1.7
+			2h min: 1.6
+			3h min: 1.5
+			4h min: 9
+			5h min: 9
+			6h min: 40
+			7h min: 50
+
+			To complete this, we would have to take moonphases into consideration.
+		*/
+
+		// index is the hour, value is the aperture min value
+		pr _apertureTable = [
+			1.85, 	// 0000
+			1.6, 	// 0100
+			1.5,	// 0200
+			2.2,	// 0300
+			2,		// 0400
+			29,		// 0500
+			37,		// 0600
+			90,		// 0700
+			90,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			22,		// 1800
+			11,		// 1900
+			2.6,	// 2000
+			2,		// 2100
+			1.6,	// 2200
+			1.7,	// 2300
+			1.65	// 0000 – because we do index + 1
+		];
+
+
+		pr _dateTime = date;
+		pr _hour = (_dateTime#3);
+		pr _minute = (_dateTime#4);
+
+		// our night time is between 1800 and 0700 the day after
+		if (_hour > 20 || _hour < 6) then {
+
+			pr _hourVal = _apertureTable select _hour; // aperture min for current hour
+			pr _nextHourVal = _apertureTable select (_hour+1); // aperture min for next full hour
+			pr _hourValDiff = (selectMax [_hourVal, _nextHourVal]) - (selectMin [_hourVal, _nextHourVal]);
+			pr _apertureMin = _hourVal + (_hourValDiff * linearConversion[0, 59, _minute, 0, 1, true]);
+			pr _moonIntensity = linearConversion[0, 1, moonIntensity, 0.37, 1, true];
+			_apertureMin = _apertureMin * _moonIntensity; // final aperture min
+
+			// aperture base values
+			// need to scale over time
+			pr _apMax = _apertureMin * 1.15; // max slightly higher than min
+			_args = [_apertureMin, 3, _apMax, 0.9];
+
+			//systemChat format["Setting aperture values: %1", _args];
+			setApertureNew _args; // set new aperture
+		} else {
+			//systemChat "Resetting aperture values.";
+			setApertureNew [-1]; // reset
+		};
 	} ENDMETHOD;
 
 	METHOD("getCurrentLocations") {
