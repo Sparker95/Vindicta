@@ -4,22 +4,18 @@
     By: Jeroen Notenbomer
 
     Create dialogue based on given conversation ID.
+	Check out https://github.com/Sparker95/Vindicta/wiki/Conversation-framework
 
 	Input:
 		_unit_1:
 		_unit_2(optional): 
 		_conversation_id: The id of the conversation you want to start
-		_script: Code that needs to run at the end of the conversation
-		_args: arguments that will be feed to the endscript
+		_script(optional): Code that needs to run at the end of the conversation
+		_args(optional): arguments that will be feed to all scripts 
 	Output:
 		nil
 */
 
-//locally used variables
-#define INT_ID_UNDEFINED -1
-#define INT_ID_WALKED_AWAY -2
-#define INT_ID_OUT_OF_TIME -3
-#define INT_ID_UNIT_KILLED -4
 
 
 params[
@@ -27,11 +23,8 @@ params[
 	["_unit_2",objNull,[objNull]],//optional
 	["_conversation_id","",[""]],
 	["_end_script",{},[{}]],//optional
-	"_script_args"//optional
+	"_conversation_args"//optional
 ];
-if(isNil "_script_args")then{_script_args = [];};
-if!(_script_args isEqualType [])then{_script_args = [_script_args];};
-
 if(isnull _unit_1)exitWith {diag_log format["ERROR SENTENCE UNIT_1 CANT BE NONE: %1",_conversation_id]};
 
 //AI cant use questions with options
@@ -49,8 +42,11 @@ _this spawn {
 		["_unit_2",objNull,[objNull]],
 		["_conversation_id","",[""]],
 		["_end_script",{},[{}]],
-		["_script_args"],[],[[]]
+		"_conversation_args"
 	];
+
+	//we need something from it after the while loop so we need to declare it here
+	private _events = nil;
 
 	//main loop for the conversation
 	while{true}do{
@@ -58,18 +54,9 @@ _this spawn {
 		//-----------------------------------------------------------
 		//			Find the conversation with given ID				|
 		//-----------------------------------------------------------
-
-		//check if both units are alive is dead or unconsious and stup conversation
-		if(
-			(!alive _unit_1 || {_unit_1 getVariable ["ace_isunconscious",false]}) ||
-			{!(isnull _unit_2) && {!alive _unit_2 || _unit_2 getVariable ["ace_isunconscious",false]}} //can be null if talking to no one
-		)exitWith{};
-	
 		private _conversation_script = _conversation_id call pr0_fnc_dialogue_findConversation;//returns {} when not found
 		private _conversation_array = [_unit_1,_unit_2] call _conversation_script;
 		if(isnil "_conversation_array")exitWith{diag_log format["ERROR SENTENCE ID NOT FOUND: %1",_conversation_id]};
-		
-
 
 		//-----------------------------------------------------------
 		//				Format conversation into arrays				|
@@ -79,43 +66,50 @@ _this spawn {
 		private _question = [];
 		private _options = [];
 		private _new_conversation_array = [];
+		_events = [];//Dont make privated! already decleared outside while loop
+		{
+			_events set [_x, ["#end",{}]];
+		}forEach [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_DEATH,TYPE_EVENT_UNEXPECTED_END,TYPE_EVENT_END];
+		
+		[["#end",{}],["#end",{}],["#end",{}],["#end",{}]];
 
-
-		private _events = [["#end",{}],["#end",{}],["#end",{}],["#end",{}]];
-
+		//loop the conversation array and pupulate the above arrays 
 		{
 			_x params [["_type",-1,[0]]];
 			switch (_type) do {
-				case TYPE_SENTENCE_SILENCE:{
-					_x params [
-						"_type", 
-						["_text","",["",[]]],
-						["_script",{},[{}]],
-						["_args",[],[[]]]
-					];
-					_sentences pushBack [_text,true,1,_script,_args];
-				};
 				case TYPE_SENTENCE: {
 					_x params [
 						"_type",
 						["_text","",["",[]]], 
 						["_int_talker",0,[0]],
 						["_script",{},[{}]],
-						["_args",[],[[]]]
+						"_args"
 					];
 
 					if!(_int_talker in [1,2])exitWith{diag_log format["ERROR WRONG TALKER NR:%1",_conversation_id]};
 					_sentences pushBack [_text,false,_int_talker,_script,_args];
 				};
+				case TYPE_SENTENCE_SILENECE:{
+					_x params [
+						"_type", 
+						["_text","",["",[]]],
+						["_script",{},[{}]],
+						"_args"
+					];
+					_sentences pushBack [_text,true,1,_script,_args];
+				};
+				case TYPE_QUESTION_SILENECE;
 				case TYPE_QUESTION: {
 					_x params [
 						"_type", 
 						["_text","",["",[]]],
 						["_script",{},[{}]],
-						["_args",[],[[]]]
+						"_args"
 					];
-					_question = [_text,_script,_args];
+					private _silence = _type == TYPE_QUESTION_SILENECE;
+					_question = [_text,_silence,_script,_args];
 				};
+				case TYPE_OPTION_SILENECE;
 				case TYPE_OPTION:   {
 					_x params [
 						"_type",
@@ -123,8 +117,9 @@ _this spawn {
 						["_jump","",[""]],
 						["_spoke_text","",["",[]]],
 						["_script",{},[{}]],
-						["_args",[],[[]]
-					]];
+						"_args"
+					];
+					private _silence = _type == TYPE_OPTION_SILENECE;
 					if(_spoke_text isEqualType "")then{_spoke_text = _text};
 					_options pushBack [_text,_jump,_spoke_text,_script,_args];
 				};
@@ -133,19 +128,20 @@ _this spawn {
 						"_type",
 						["_jump","",[""]],
 						["_script",{},[{}]],
-						["_args",[],[[]]]
+						"_args"
 					];
 					_new_conversation_array = [_jump,_script,_args];
 				};
 				case TYPE_EVENT_WALKED_AWAY;
 				case TYPE_EVENT_OUT_OF_TIME;
 				case TYPE_EVENT_DEATH;
-				case TYPE_EVENT_UNEXPECTED_END: {
+				case TYPE_EVENT_UNEXPECTED_END;
+				case TYPE_EVENT_END: {
 					_x params [
 						"_type",
 						["_jump","",[""]],
 						["_script",{},[{}]],
-						["_args",[],[[]]]
+						"_args"
 					];
 					_events set [_type,[_jump,_script,_args]];
 				};
@@ -156,9 +152,10 @@ _this spawn {
 		private _new_conversation_id = _new_conversation_array#INDEX_NEW_CONVERSATION_JUMP;
 
 		//check if conversation is properly structured 
-		if((count _sentences + count _question) == 0)exitWith{diag_log format["ERROR NO SENTENCE OR QUESTION: %1 (%2)",_conversation_id]};
-		if(count _question > 0 && count _options == 0)exitWith{diag_log format["ERROR NO OPTIONS FOR QUESTION: %1 (%2)",_conversation_id]};
-		if(count _question > 0 && _new_conversation_id != "")exitWith{diag_log format["ERROR QUESTION AND JUMP GIVEN: %1 (%2)",_conversation_id]};
+		if((count _sentences + count _question) == 0)exitWith{diag_log format["ERROR NO SENTENCE OR QUESTION: %1",_conversation_id]};
+		if(count _question > 0 && count _options == 0)exitWith{diag_log format["ERROR NO OPTIONS FOR QUESTION: %1",_conversation_id]};
+		if(count _question > 0 && _new_conversation_id != "")exitWith{diag_log format["ERROR QUESTION AND JUMP GIVEN: %1",_conversation_id]};
+		if(count _new_conversation_id == "" && count _question == 0)exitWith{diag_log format["ERROR NO QUESTION OR JUMP GIVEN IN: %1",_conversation_id]};
 		
 		//select random sentence if array was given
 		{
@@ -177,13 +174,46 @@ _this spawn {
 		if(_question#INDEX_QUESTION_TEXT isEqualType [])then{_question set [INDEX_QUESTION_TEXT, selectRandom _question#INDEX_QUESTION_TEXT]};
 
 
+		//check if both units are alive or unconsious and stop conversation
+		if(
+			(!alive _unit_1 || {_unit_1 getVariable ["ace_isunconscious",false]}) ||
+			{!(isnull _unit_2) && {!alive _unit_2 || _unit_2 getVariable ["ace_isunconscious",false]}} //can be null if talking to no one
+		)exitWith{
+			_new_conversation_id = _events # TYPE_EVENT_DEATH # INDEX_EVENT_JUMP;
+			
+			//i think we can ignore empty strings
+			if(count _new_conversation_id == 0)then{_new_conversation_id == "#end"};
+
+			//Check if script was given in case of this event
+			private _args = [_unit_1,_unit_2]; 
+			_args pushBack _conversation_args;
+			_args pushBack (_events # TYPE_EVENT_DEATH # INDEX_EVENT_ARGS);
+			_args call (_events # TYPE_EVENT_DEATH # INDEX_EVENT_SCRIPT);
+		};
+
+		if(_unit_1 distance _unit_2 > FLOAT_MAX_LEAVING_DISTANCE)exitWith{
+			_new_conversation_id = _events # TYPE_EVENT_WALKED_AWAY # INDEX_EVENT_JUMP;
+			
+			//i think we can ignore empty strings
+			if(count _new_conversation_id == 0)then{_new_conversation_id == "#end"};
+
+			//Check if script was given in case of this event
+			private _args = [_unit_1,_unit_2]; 
+			_args pushBack _conversation_args;
+			_args pushBack (_events # TYPE_EVENT_WALKED_AWAY # INDEX_EVENT_ARGS);
+			_args call (_events # TYPE_EVENT_WALKED_AWAY # INDEX_EVENT_SCRIPT);
+		};
+
 
 		//-----------------------------------------------------------
 		//		Loop all sentences and show them on screen			|
 		//-----------------------------------------------------------
 
 		{
-			private _returned = ([_unit_1,_unit_2]+[_script_args]) call (_x#INDEX_SENTENCE_SCRIPT);//run optional code if it was given
+			private _args = [_unit_1,_unit_2];
+			_args pushBack _conversation_args;
+			_args pushBack (_x#INDEX_SENTENCE_ARGS);
+			private _returned = _args call (_x#INDEX_SENTENCE_SCRIPT);//run optional code if it was given
 			//Maybe we need to do something when a value was returned?
 			
 			//Check if sentences is a hint or silince sentence
@@ -218,15 +248,20 @@ _this spawn {
 			private _speaker = _unit_2;
 			private _listener = player;
 			
-			([_unit_1,_unit_2]+[_script_args]) call (_question#INDEX_QUESTION_SCRIPT);
+			private _args = [_unit_1,_unit_2];
+			_args pushBack _conversation_args;
+			_args pushBack (_question#INDEX_QUESTION_ARGS);
+			_args call (_question#INDEX_QUESTION_SCRIPT);
 
-			//show the question to all players except player. 
-			{
-				if(_x distance _speaker < FLOAT_MAX_LISTENING_DISTANCE)then{
-					[_speaker, _listener, _question#INDEX_QUESTION_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
-				};
-			}forEach (Allplayers - entities "HeadlessClient_F" - [player]);
-			
+			if(_question#INDEX_OPTION_SILENCE)then{
+				//show the question to all players except player.
+				{
+					if(_x distance _speaker < FLOAT_MAX_QUESTION_DISTANCE)then{
+						[_speaker, _listener, _question#INDEX_QUESTION_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+					};
+				}forEach (Allplayers - entities "HeadlessClient_F" - [player]);
+			};
+
 			//Create sentence with answers for player
 			private _ctrl_question = [_speaker,_listener,_question#INDEX_QUESTION_TEXT,_options] call pr0_fnc_dialogue_createSentence;
 			
@@ -262,9 +297,9 @@ _this spawn {
 				}];
 				_display setVariable ["pr0_dialogue_keyDownEvent",_keyDownEvent];
 			};
-			
+
 			//wait untill we get an answer
-			private _selected_index = INT_ID_UNDEFINED;
+			private _selected_index = -1;
 			private _waiting_since = time; 
 			waitUntil {
 				sleep 0.1;
@@ -301,19 +336,18 @@ _this spawn {
 			//change type so it can be removed
 			_ctrl_question setVariable ["_type", TYPE_SENTENCE];
 			
-			//No answer given waited to long or player walked away.
-			if(_selected_index == TYPE_EVENT_WALKED_AWAY)then {
-				_new_conversation_id = _event_walkAway#INDEX_EVENT_JUMP;
-				([_unit_1, _unit_2]+[_script_args]) call (_event_walkAway#INDEX_EVENT_SCRIPT);
-			};
-			if(_selected_index == TYPE_EVENT_OUT_OF_TIME)then {
-				_new_conversation_id = _event_outOfTime #INDEX_EVENT_JUMP;
-				([_unit_1, _unit_2]+[_script_args]) call (_event_outOfTime#INDEX_EVENT_SCRIPT);
-			};
-			if(_selected_index == TYPE_EVENT_DEATH)then {_new_conversation_id = "#end"};
-			if(_selected_index in [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH])exitWith{
-				_new_conversation_id = _event_walkAway#INDEX_EVENT_JUMP;
-				([_unit_1, _unit_2]+[_script_args]) call (_event_outOfTime#INDEX_EVENT_SCRIPT);
+			//No answer given for some reason.
+			if(-_selected_index in [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH])exitWith{
+				_new_conversation_id = _events # -_selected_index # INDEX_EVENT_JUMP;
+				
+				//i think we can ignore empty strings
+				if(count _new_conversation_id == 0)then{_new_conversation_id == "#end"};
+
+				//Check if script was given in case of this event
+				private _args = [_unit_1,_unit_2]; 
+				_args pushBack _conversation_args;
+				_args pushBack (_events # -_selected_index # INDEX_EVENT_ARGS);
+				_args call (_events # -_selected_index # INDEX_EVENT_SCRIPT);
 			};
 			
 			//what did we answer?
@@ -322,20 +356,19 @@ _this spawn {
 			_new_conversation_id = _selected_option#INDEX_OPTION_JUMP;
 			([_unit_1, _unit_2]+[_new_conversation_array#INDEX_NEW_CONVERSATION_ARGS]) call _new_conversation_array#INDEX_NEW_CONVERSATION_SCRIPT;
 
-			//let everone know what we have answers!
-			{
-				if(_x distance _unit_1 < FLOAT_MAX_LISTENING_DISTANCE)then{
-					[_unit_1, _unit_2, _selected_option#INDEX_OPTION_FULL_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
-				};
-			}forEach (Allplayers - entities "HeadlessClient_F");		
-		
+			if(_selected_option#INDEX_OPTION_SILENCE)then{
+				//let everone know what we have answers!
+				{
+					if(_x distance _unit_1 < FLOAT_MAX_LISTENING_DISTANCE)then{
+						[_unit_1, _unit_2, _selected_option#INDEX_OPTION_FULL_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+					};
+				}forEach (Allplayers - entities "HeadlessClient_F");		
+			};
+
 			sleep (count(_selected_option#INDEX_OPTION_FULL_TEXT)/12 + 0.5);
 		};// end if question
 		
 		if(_new_conversation_id == "#end")exitWith{};
-		if(_new_conversation_id == "")exitWith{
-			diag_log format["ERROR NO NEW SENTENCE_ID OR OPTIONS ARE GIVEN IN: %1",_conversation_id]
-		};
 		
 		//valid new conversation found. Loop back and do everything again!
 		_conversation_id = _new_conversation_id;
@@ -343,6 +376,11 @@ _this spawn {
 	};//end while
 
 	//execute optional code
-	([_unit_1, _unit_2]+[_script_args]) call _end_script;
+	private _args = [_unit_1, _unit_2];
+	_args pushBack _conversation_args;
+	if!(isnil "_events")then{_args call (_events#TYPE_EVENT_END#INDEX_EVENT_SCRIPT);};
+	_args call _end_script;
+	
+	
 
 };//end spawn
