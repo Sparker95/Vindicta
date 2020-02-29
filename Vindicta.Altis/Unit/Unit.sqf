@@ -982,9 +982,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 			} forEach _arr;
 
-			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
-			_hO addItemCargoGlobal ["ItemGPS", 1 + round (random 2)];
-			_hO addItemCargoGlobal ["ToolKit", random [1, 2, 5]];
+			_hO addItemCargoGlobal ["FirstAidKit", 2 + round (random 5)];
+			_hO addItemCargoGlobal ["ItemGPS", 0 + round (random 5)];
+			_hO addItemCargoGlobal ["ToolKit", random [0, 3, 6]];
 			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)]; // Backpacks
 
 			// Customize non-civilian containers
@@ -999,20 +999,22 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
 					// Array with item class name, count
 					pr _ACREclassNames = [
-										["ACRE_SEM52SL",2],
-										["ACRE_SEM70",4],
-										["ACRE_PRC77",1],
-										["ACRE_PRC343",6],
-										["ACRE_PRC152",3],
-										["ACRE_PRC148",3],
-										["ACRE_PRC117F",1],
-										["ACRE_VHF30108SPIKE",1],
-										["ACRE_VHF30108",3],
-										["ACRE_VHF30108MAST",1]
-									];
+						["ACRE_SEM52SL",2],
+						["ACRE_SEM70",4],
+						["ACRE_PRC77",1],
+						["ACRE_PRC343",6],
+						["ACRE_PRC152",3],
+						["ACRE_PRC148",3],
+						["ACRE_PRC117F",1],
+						["ACRE_VHF30108SPIKE",1],
+						["ACRE_VHF30108",3],
+						["ACRE_VHF30108MAST",1]
+					];
 					{
-						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						if(random 10 < 7) then {
+							_x params ["_itemName", "_itemCount"];
+							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						};
 					} forEach _ACREclassNames;
 				};
 
@@ -1021,9 +1023,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					// Add ACE medical items
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
-							pr _itemName = getText (_x >> "name");
-							pr _itemCount = getNumber (_x >> "count");
-							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+							if(random 10 < 7) then {
+								pr _itemName = getText (_x >> "name");
+								pr _itemCount = getNumber (_x >> "count");
+								_hO addItemCargoGlobal [_itemName, round (0.5 * (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
+							};
 						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
 					};
 
@@ -1033,76 +1037,78 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						// Exported from the ACE_Box_Misc
 						// Then modified a bit
 						pr _classNames = [
-											//["ACE_muzzle_mzls_H",2],
-											//["ACE_muzzle_mzls_B",2],
-											//["ACE_muzzle_mzls_L",2],
-											//["ACE_muzzle_mzls_smg_01",2],
-											//["ACE_muzzle_mzls_smg_02",2],
-											//["ACE_muzzle_mzls_338",5],
-											//["ACE_muzzle_mzls_93mmg",5],
-											//["ACE_HuntIR_monitor",5],
-											//["ACE_acc_pointer_green",4],
-											["ACE_UAVBattery",6],
-											["ACE_wirecutter",4],
-											["ACE_MapTools",12],
-											["ACE_microDAGR",3],
-											//["ACE_MX2A",6], // Thermal imager
-											//["ACE_NVG_Gen1",6],
-											//["ACE_NVG_Gen2",6],
-											//["ACE_NVG_Gen4",6],
-											//["ACE_NVG_Wide",6],
-											//["ACE_optic_Hamr_2D",2],
-											//["ACE_optic_Hamr_PIP",2],
-											//["ACE_optic_Arco_2D",2],
-											//["ACE_optic_Arco_PIP",2],
-											//["ACE_optic_MRCO_2D",2],
-											//["ACE_optic_SOS_2D",2],
-											//["ACE_optic_SOS_PIP",2],
-											//["ACE_optic_LRPS_2D",2],
-											//["ACE_optic_LRPS_PIP",2],
-											["ACE_Altimeter",3],
-											["ACE_Sandbag_empty",10],
-											["ACE_SpottingScope",1],
-											//["ACE_SpraypaintBlack",5],
-											//["ACE_SpraypaintRed",5],
-											//["ACE_SpraypaintBlue",5],
-											//["ACE_SpraypaintGreen",5],
-											["ACE_EntrenchingTool",8],
-											["ACE_Tripod",1],
-											//["ACE_Vector",6],
-											//["ACE_Yardage450",4],
-											//["ACE_IR_Strobe_Item",12],
-											["ACE_CableTie",12],
-											//["ACE_Chemlight_Shield",12],
-											["ACE_DAGR",3],
-											["ACE_Clacker",12],
-											["ACE_M26_Clacker",6],
-											["ACE_DefusalKit",4],
-											//["ACE_Deadmanswitch",6],
-											//["ACE_Cellphone",10],
-											//["ACE_Flashlight_MX991",12],
-											//["ACE_Flashlight_KSF1",12],
-											//["ACE_Flashlight_XL50",12],
-											["ACE_EarPlugs",20],
-											["ACE_Kestrel4500",2],
-											["ACE_ATragMX",6],
-											["ACE_RangeCard",6],
-											["vin_build_res_0", 10]
-										];
+							//["ACE_muzzle_mzls_H",2],
+							//["ACE_muzzle_mzls_B",2],
+							//["ACE_muzzle_mzls_L",2],
+							//["ACE_muzzle_mzls_smg_01",2],
+							//["ACE_muzzle_mzls_smg_02",2],
+							//["ACE_muzzle_mzls_338",5],
+							//["ACE_muzzle_mzls_93mmg",5],
+							//["ACE_HuntIR_monitor",5],
+							//["ACE_acc_pointer_green",4],
+							["ACE_UAVBattery",6],
+							["ACE_wirecutter",4],
+							["ACE_MapTools",12],
+							["ACE_microDAGR",3],
+							//["ACE_MX2A",6], // Thermal imager
+							//["ACE_NVG_Gen1",6],
+							//["ACE_NVG_Gen2",6],
+							//["ACE_NVG_Gen4",6],
+							//["ACE_NVG_Wide",6],
+							//["ACE_optic_Hamr_2D",2],
+							//["ACE_optic_Hamr_PIP",2],
+							//["ACE_optic_Arco_2D",2],
+							//["ACE_optic_Arco_PIP",2],
+							//["ACE_optic_MRCO_2D",2],
+							//["ACE_optic_SOS_2D",2],
+							//["ACE_optic_SOS_PIP",2],
+							//["ACE_optic_LRPS_2D",2],
+							//["ACE_optic_LRPS_PIP",2],
+							["ACE_Altimeter",3],
+							["ACE_Sandbag_empty",10],
+							["ACE_SpottingScope",1],
+							//["ACE_SpraypaintBlack",5],
+							//["ACE_SpraypaintRed",5],
+							//["ACE_SpraypaintBlue",5],
+							//["ACE_SpraypaintGreen",5],
+							["ACE_EntrenchingTool",8],
+							["ACE_Tripod",1],
+							//["ACE_Vector",6],
+							//["ACE_Yardage450",4],
+							//["ACE_IR_Strobe_Item",12],
+							["ACE_CableTie",12],
+							//["ACE_Chemlight_Shield",12],
+							["ACE_DAGR",3],
+							["ACE_Clacker",12],
+							["ACE_M26_Clacker",6],
+							["ACE_DefusalKit",4],
+							//["ACE_Deadmanswitch",6],
+							//["ACE_Cellphone",10],
+							//["ACE_Flashlight_MX991",12],
+							//["ACE_Flashlight_KSF1",12],
+							//["ACE_Flashlight_XL50",12],
+							["ACE_EarPlugs",20],
+							["ACE_Kestrel4500",2],
+							["ACE_ATragMX",6],
+							["ACE_RangeCard",6],
+							["vin_build_res_0", 10]
+						];
 						{
 							_x params ["_itemName", "_itemCount"];
-							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+							if(random 10 < 7) then {
+								_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+							};
 						} forEach _classNames;
 					};
 
 					// Add ADV medical items
 					// Defibrilator
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [4, 8, 12]];
+						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [0, 3, 6]];
 					};
 					// Splint
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
-						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [10, 20, 30]];
+						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [0, 5, 10]];
 					};
 
 					// What else?

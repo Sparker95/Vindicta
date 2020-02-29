@@ -442,60 +442,34 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 					[]
 				]
 			};
-			case ACTION_SUPPLY_TYPE_MEDICAL: {
-				[
-					[],
-					[
-						["ACE_adenosine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_fieldDressing", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_elasticBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_packingBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_quikclot", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_bloodIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_bloodIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_bloodIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_bodyBag", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5,  5 * _amount)],
-						["ACE_epinephrine", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_morphine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_personalAidKit", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_plasmaIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_plasmaIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_plasmaIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_salineIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_salineIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_salineIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_surgicalKit", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_tourniquet", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)]
-					],
-					[],
-					[]
-				]
-			};
+			case ACTION_SUPPLY_TYPE_MEDICAL;
 			case ACTION_SUPPLY_TYPE_MISC: {
+				// Add ACE medical items
+				private _medical = if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
+					("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems")) apply {
+						private _itemName = getText (_x >> "name");
+						private _itemCount = getNumber (_x >> "count");
+						[_itemName, CALLSM2("SupplyCmdrAction", "randomAmount", 2 * _itemCount, 3 * _itemCount * _amount)]
+					}
+				} else {
+					// wat
+					[]
+				};
+				// Add ADV medical items
+				// Defibrilator
+				if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
+					_medical pushBack ["adv_aceCPR_AED", CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)];
+				};
+				// Splint
+				if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
+					_medical pushBack ["adv_aceSplint_splint", CALLSM2("SupplyCmdrAction", "randomAmount", 10, 30 * _amount)];
+				};
+
+				_medical pushBack ["FirstAidKit", CALLSM2("SupplyCmdrAction", "randomAmount", 5, 15 * _amount)];
+
 				[
 					[],
-					[
-						["ACE_adenosine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_fieldDressing", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_elasticBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_packingBandage", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_quikclot", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 20 * _amount)],
-						["ACE_bloodIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_bloodIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_bloodIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_bodyBag", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5,  5 * _amount)],
-						["ACE_epinephrine", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_morphine", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_personalAidKit", 			CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)],
-						["ACE_plasmaIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_plasmaIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_plasmaIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_salineIV", 				CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_salineIV_250", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_salineIV_500", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_surgicalKit", 			CALLSM2("SupplyCmdrAction", "randomAmount",  5, 10 * _amount)],
-						["ACE_tourniquet", 				CALLSM2("SupplyCmdrAction", "randomAmount", 10, 10 * _amount)]
-					],
+					_medical,
 					[],
 					[]
 				]

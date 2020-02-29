@@ -30,6 +30,7 @@ CLASS("AST_Success", "ActionStateTransition")
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
+		params [P_THISOBJECT];
 		T_GETV("successState")
 	} ENDMETHOD;
 ENDCLASS;
