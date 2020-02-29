@@ -14,9 +14,11 @@
 #define TYPE_QUESTION 2
 #define TYPE_OPTION 3
 #define TYPE_JUMP_TO 4
-#define TYPE_EVENT_WALKED_AWAY 5
-#define TYPE_EVENT_OUT_OF_TIME 6
-#define TYPE_EXIT_IF 7
+#define TYPE_EVENT_WALKED_AWAY 5        // when you walk a way to far
+#define TYPE_EVENT_OUT_OF_TIME 6        // when waiting to long
+#define TYPE_EVENT_DEATH 7              // when unit gets killed or unconciuos
+#define TYPE_EVENT_UNEXPECTED_END 8     // when conversation ends without reaching #end (same as the other events combined)
+
 
 #define FLOAT_MAX_LISTENING_DISTANCE 50.0
 #define FLOAT_MAX_WAIT_FOR_ANSWER 7.0

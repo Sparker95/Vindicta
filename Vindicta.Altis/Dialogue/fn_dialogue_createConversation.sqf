@@ -27,12 +27,12 @@ params[
 	["_unit_2",objNull,[objNull]],//optional
 	["_conversation_id","",[""]],
 	["_end_script",{},[{}]],//optional
-	["_end_script_args"],[],[[]]//optional
+	"_script_args"//optional
 ];
+if(isNil "_script_args")then{_script_args = [];};
+if!(_script_args isEqualType [])then{_script_args = [_script_args];};
 
 if(isnull _unit_1)exitWith {diag_log format["ERROR SENTENCE UNIT_1 CANT BE NONE: %1",_conversation_id]};
-
-
 
 //AI cant use questions with options
 private _allPLayers = (Allplayers - entities "HeadlessClient_F");
@@ -49,7 +49,7 @@ _this spawn {
 		["_unit_2",objNull,[objNull]],
 		["_conversation_id","",[""]],
 		["_end_script",{},[{}]],
-		["_end_script_args"],[],[[]]
+		["_script_args"],[],[[]]
 	];
 
 	//main loop for the conversation
@@ -79,8 +79,10 @@ _this spawn {
 		private _question = [];
 		private _options = [];
 		private _new_conversation_array = [];
-		private _event_walkAway = ["#end",{}];
-		private _event_outOfTime = ["#end",{}];
+
+
+		private _events = [["#end",{}],["#end",{}],["#end",{}],["#end",{}]];
+
 		{
 			_x params [["_type",-1,[0]]];
 			switch (_type) do {
@@ -112,7 +114,7 @@ _this spawn {
 						["_script",{},[{}]],
 						["_args",[],[[]]]
 					];
-					_question = [_text,_script,_args]
+					_question = [_text,_script,_args];
 				};
 				case TYPE_OPTION:   {
 					_x params [
@@ -124,7 +126,7 @@ _this spawn {
 						["_args",[],[[]]
 					]];
 					if(_spoke_text isEqualType "")then{_spoke_text = _text};
-					_options pushBack [_text,_jump,_spoke_text,_script,_args]
+					_options pushBack [_text,_jump,_spoke_text,_script,_args];
 				};
 				case TYPE_JUMP_TO:  {
 					_x params [
@@ -133,25 +135,19 @@ _this spawn {
 						["_script",{},[{}]],
 						["_args",[],[[]]]
 					];
-					_new_conversation_array = [_jump,_script,_args]
+					_new_conversation_array = [_jump,_script,_args];
 				};
-				case TYPE_EVENT_WALKED_AWAY:{
-					_x params [
-						"_type", 
-						["_jump","",[""]],
-						["_script",{},[{}]],
-						["_args",[],[[]]]
-					];
-					_event_walkAway = [_jump,_script,_args]
-				};
-				case TYPE_EVENT_OUT_OF_TIME: {
+				case TYPE_EVENT_WALKED_AWAY;
+				case TYPE_EVENT_OUT_OF_TIME;
+				case TYPE_EVENT_DEATH;
+				case TYPE_EVENT_UNEXPECTED_END: {
 					_x params [
 						"_type",
 						["_jump","",[""]],
 						["_script",{},[{}]],
 						["_args",[],[[]]]
 					];
-					_event_outOfTime = [_jump,_script,_args]
+					_events set [_type,[_jump,_script,_args]];
 				};
 				default {};
 			};
@@ -187,7 +183,7 @@ _this spawn {
 		//-----------------------------------------------------------
 
 		{
-			private _returned = [_unit_1,_unit_2] call (_x#INDEX_SENTENCE_SCRIPT);//run optional code if it was given
+			private _returned = ([_unit_1,_unit_2]+[_script_args]) call (_x#INDEX_SENTENCE_SCRIPT);//run optional code if it was given
 			//Maybe we need to do something when a value was returned?
 			
 			//Check if sentences is a hint or silince sentence
@@ -222,7 +218,7 @@ _this spawn {
 			private _speaker = _unit_2;
 			private _listener = player;
 			
-			[_unit_1,_unit_2] call _question#INDEX_QUESTION_SCRIPT;
+			([_unit_1,_unit_2]+[_script_args]) call (_question#INDEX_QUESTION_SCRIPT);
 
 			//show the question to all players except player. 
 			{
@@ -274,13 +270,13 @@ _this spawn {
 				sleep 0.1;
 				_selected_index = _ctrl_question getVariable ["answer_index",-1];
 				
-				if(_unit_1 distance _unit_2 > 10)then{_selected_index = INT_ID_WALKED_AWAY};
-				if(time > _waiting_since + FLOAT_MAX_WAIT_FOR_ANSWER)then{_selected_index = INT_ID_OUT_OF_TIME};
+				if(_unit_1 distance _unit_2 > 10)then{_selected_index = TYPE_EVENT_WALKED_AWAY};
+				if(time > _waiting_since + FLOAT_MAX_WAIT_FOR_ANSWER)then{_selected_index = TYPE_EVENT_OUT_OF_TIME};
 				if(
 					!alive _unit_2 || {
 					_unit_2 getVariable ["ace_isunconscious",false] || {
 					_unit_2 getVariable ["ace_isunconscious",false] }}
-				)then{_selected_index = INT_ID_UNIT_KILLED};
+				)then{_selected_index = TYPE_EVENT_DEATH};
 				
 				_selected_index != -1;
 			};
@@ -306,21 +302,25 @@ _this spawn {
 			_ctrl_question setVariable ["_type", TYPE_SENTENCE];
 			
 			//No answer given waited to long or player walked away.
-			if(_selected_index == INT_ID_WALKED_AWAY)exitWith {
+			if(_selected_index == TYPE_EVENT_WALKED_AWAY)then {
 				_new_conversation_id = _event_walkAway#INDEX_EVENT_JUMP;
-				[_unit_1, _unit_2] call (_event_walkAway#INDEX_EVENT_SCRIPT);
+				([_unit_1, _unit_2]+[_script_args]) call (_event_walkAway#INDEX_EVENT_SCRIPT);
 			};
-			if(_selected_index == INT_ID_OUT_OF_TIME)exitWith {
+			if(_selected_index == TYPE_EVENT_OUT_OF_TIME)then {
 				_new_conversation_id = _event_outOfTime #INDEX_EVENT_JUMP;
-				[_unit_1, _unit_2] call (_event_outOfTime#INDEX_EVENT_SCRIPT);
+				([_unit_1, _unit_2]+[_script_args]) call (_event_outOfTime#INDEX_EVENT_SCRIPT);
 			};
-			if(_selected_index == INT_ID_UNIT_KILLED)exitWith {_new_conversation_id = "#end"};
+			if(_selected_index == TYPE_EVENT_DEATH)then {_new_conversation_id = "#end"};
+			if(_selected_index in [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH])exitWith{
+				_new_conversation_id = _event_walkAway#INDEX_EVENT_JUMP;
+				([_unit_1, _unit_2]+[_script_args]) call (_event_outOfTime#INDEX_EVENT_SCRIPT);
+			};
 			
 			//what did we answer?
 			private _selected_option = _options#(_selected_index);
 			//update conversation_id
 			_new_conversation_id = _selected_option#INDEX_OPTION_JUMP;
-			([_unit_1, _unit_2]+_new_conversation_array#INDEX_NEW_CONVERSATION_ARGS) call _new_conversation_array#INDEX_NEW_CONVERSATION_SCRIPT;
+			([_unit_1, _unit_2]+[_new_conversation_array#INDEX_NEW_CONVERSATION_ARGS]) call _new_conversation_array#INDEX_NEW_CONVERSATION_SCRIPT;
 
 			//let everone know what we have answers!
 			{
@@ -343,6 +343,6 @@ _this spawn {
 	};//end while
 
 	//execute optional code
-	([_unit_1, _unit_2]+_end_script_args) call _end_script;
+	([_unit_1, _unit_2]+[_script_args]) call _end_script;
 
 };//end spawn
