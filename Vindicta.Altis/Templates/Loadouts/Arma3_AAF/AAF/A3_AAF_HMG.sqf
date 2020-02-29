@@ -7,8 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_HelmetIA_camo"];
-this addHeadgear _RandomHeadgear;
+this addHeadgear "H_HelmetIA_camo";
 this forceAddUniform "U_I_CombatUniform_shortsleeve";
 this addVest "V_PlateCarrierIA2_dgtl";
 this addBackpack "B_AssaultPack_rgr";

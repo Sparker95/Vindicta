@@ -9,9 +9,10 @@ removeGoggles this;
 
 _RandomHeadgear = selectRandom ["H_Beret_gen_F","H_MilCap_gen_F","H_PASGT_basic_blue_F", "H_PASGT_basic_black_F"];
 this addHeadgear _RandomHeadgear;
-_RandomVest = selectRandom ["V_TacVest_gen_F", "V_Rangemaster_belt", "V_TacVestIR_blk", "V_Chestrig_blk"];
+_RandomVest = selectRandom ["V_TacVest_gen_F", "V_TacVestIR_blk", "V_Chestrig_blk"];
 this addVest _RandomVest;
-this forceAddUniform "U_B_GEN_Commander_F", "U_B_GEN_Soldier_F";
+_RandomUniform = selectRandom ["U_B_GEN_Commander_F", "U_B_GEN_Soldier_F"];
+this forceAddUniform _RandomUniform;
 
 this addWeapon "SMG_05_F";
 this addPrimaryWeaponItem "acc_flashlight";

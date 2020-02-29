@@ -7,8 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_LIB_GER_Helmet"];
-this addHeadgear _RandomHeadgear;
+this addHeadgear "H_LIB_GER_Helmet";
 this forceAddUniform "U_LIB_GER_Pionier";
 this addVest "V_LIB_GER_PioneerVest";
 this addBackpack "B_LIB_GER_SapperBackpack";

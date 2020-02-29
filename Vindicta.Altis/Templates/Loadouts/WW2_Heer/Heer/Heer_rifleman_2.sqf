@@ -7,8 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_LIB_GER_Cap"];
-this addHeadgear _RandomHeadgear;
+this addHeadgear "H_LIB_GER_Cap";
 this forceAddUniform "U_LIB_GER_Oberschutze";
 this addVest "V_LIB_GER_VestG43";
 this addBackpack "B_LIB_GER_A_frame";

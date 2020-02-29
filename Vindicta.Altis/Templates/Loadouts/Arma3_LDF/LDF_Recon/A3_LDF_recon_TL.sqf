@@ -7,11 +7,11 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_HelmetSpecB_blk"];
-this addHeadgear _RandomHeadgear;
+this addHeadgear "H_HelmetSpecB_blk";
 _RandomGoggles = selectRandom ["G_Balaclava_TI_tna_F", "G_Balaclava_TI_G_tna_F"];
 this addGoggles _RandomGoggles;
-this forceAddUniform "U_B_CTRG_Soldier_F";
+_RandomUniform = selectRandom ["U_B_CTRG_Soldier_F", "U_B_CTRG_Soldier_3_F", "U_B_CTRG_Soldier_2_F"];
+this forceAddUniform _RandomUniform;
 this addVest "V_CarrierRigKBT_01_heavy_EAF_F";
 this addBackpack "B_AssaultPack_eaf_F";
 

@@ -9,8 +9,10 @@ removeGoggles this;
 
 _RandomHeadgear = selectRandom ["H_HelmetB_light_black", "H_Bandanna_khk", "H_Watchcap_khk", "H_Cap_blk_Raven"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "U_I_CombatUniform";
-this addVest "V_SmershVest_01_F", "V_SmershVest_01_radio_F";
+_RandomVest = selectRandom ["V_SmershVest_01_F", "V_SmershVest_01_radio_F"];
+this addVest _RandomVest;
+_RandomUniform = selectRandom ["U_I_CombatUniform", "U_I_CombatUniform_shortsleeve"];
+this forceAddUniform _RandomUniform;
 this addBackpack "B_FieldPack_green_F";
 
 this addWeapon "arifle_SPAR_01_snd_F";

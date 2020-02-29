@@ -7,10 +7,12 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_Booniehat_dgtl"];
-this addHeadgear _RandomHeadgear;
-this forceAddUniform "U_I_CombatUniform";
-this addVest "V_SmershVest_01_F", "V_SmershVest_01_radio_F";
+this addHeadgear "H_Booniehat_dgtl";
+_RandomVest = selectRandom ["V_SmershVest_01_F", "V_SmershVest_01_radio_F"];
+this addVest _RandomVest;
+_RandomUniform = selectRandom ["U_I_CombatUniform", "U_I_CombatUniform_shortsleeve"];
+this forceAddUniform _RandomUniform;
+this addVest _RandomVest;
 
 this addWeapon "srifle_DMR_04_Tan_F";
 this addPrimaryWeaponItem "muzzle_snds_m_khk_F";

@@ -7,8 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomGoggles = selectRandom ["G_Balaclava_oli"];
-this addGoggles _RandomGoggles;
+this addGoggles "G_Balaclava_oli";
 this forceAddUniform "U_B_FullGhillie_lsh";
 this addVest "V_Chestrig_rgr";
 

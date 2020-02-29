@@ -11,7 +11,8 @@ _RandomHeadgear = selectRandom ["H_LIB_UK_Para_Helmet_Mk2_Camo", "H_LIB_UK_Para_
 this addHeadgear _RandomHeadgear;
 this forceAddUniform "U_LIB_UK_DenisonSmock";
 this addVest "V_LIB_UK_P37_Rifleman_Blanco";
-this addBackpack "B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_Cape", "B_LIB_UK_HSack_Blanco_Tea";
+_RandomBackpack = selectRandom ["B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_Cape", "B_LIB_UK_HSack_Blanco_Tea"];
+this addBackpack _RandomBackpack;
 
 this addWeapon "LIB_M1A1_Thompson";
 this addPrimaryWeaponItem "LIB_30Rnd_45ACP";
