@@ -9,7 +9,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_APD"];
 _array set [T_DESCRIPTION, "Altis Police Department. Uses RHS. Made by MatrikSky"];
-_array set [T_DISPLAY_NAME, "RHS APD"];
+_array set [T_DISPLAY_NAME, "RHS APD (USAF)"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [
 	"rhsusf_c_troops",			// RHSUSAF

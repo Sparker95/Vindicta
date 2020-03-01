@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["State_Hat","APD_Berett", "rhsusf_ach_bare", "rhsusf_ach_bare_headset"];
+_RandomHeadgear = selectRandom ["State_Hat","APD_Berett"];
 this addHeadgear _RandomHeadgear;
 _RandomVest = selectRandom ["S_VHO_OV_BLK_1", "S_VHO_OV_BLK_2", "S_VHO_OV_BLK_3", "S_VHO_OV_BLK_4"];
 this addVest _RandomVest;
