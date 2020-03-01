@@ -16,7 +16,8 @@ this forceAddUniform _RandomUniform;
 
 this addWeapon "SMG_02_F";
 this addPrimaryWeaponItem "acc_flashlight";
-this addPrimaryWeaponItem "optic_Holosight_smg_blk_F";
+_RandomPrimaryWeaponItem = selectRandom ["optic_Yorris", "optic_Holosight_smg_blk_F", ""];
+this addPrimaryWeaponItem _RandomPrimaryWeaponItem;
 this addPrimaryWeaponItem "30Rnd_9x21_Mag_SMG_02";
 this addWeapon "hgun_P07_F";
 this addHandgunItem "16Rnd_9x21_Mag";
