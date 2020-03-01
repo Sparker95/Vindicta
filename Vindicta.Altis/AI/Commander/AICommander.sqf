@@ -2687,20 +2687,31 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			};
 		} forEach _reinfInfo;
 
-		// Spawn in more supply trucks
-		{
+		private _fn_spawnNUnits = {
+			params ["_cat", "_subcat", "_desired", "_t", "_unitDebugName"];
 			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
-			private _nSupplyTrucksRequired = 2 - CALLM1(_garrison, "countUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+			private _nRequired = _desired - CALLM1(_garrison, "countUnits", [[_cat ARG _subcat]]);
 
-			OOP_INFO_2("  Adding %1 supply trucks at %2", _nSupplyTrucksRequired, _name);
-			while { _nSupplyTrucksRequired > 0 } do {
-				private _args = [_t, T_VEH, T_VEH_truck_ammo, -1];
+			OOP_INFO_3("  Adding %1 %2 at %3", _nRequired, _unitDebugName, _name);
+			while { _nRequired > 0 } do {
+				private _args = [_t, _cat, _subcat, -1];
 				private _vehUnit = NEW("Unit", _args);
 
 				CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
-				_nSupplyTrucksRequired = _nSupplyTrucksRequired - 1;
+				_nRequired = _nRequired - 1;
 			};
+		};
+
+		// Spawn in more supply trucks
+		{
+			[T_VEH, T_VEH_truck_ammo, 2, _t, "supply trucks"] call _fn_spawnNUnits;
 		} forEach _reinfInfo;
+
+		// Spawn in more inf trucks
+		{
+			[T_VEH, T_VEH_truck_inf, 3, _t, "inf trucks"] call _fn_spawnNUnits;
+		} forEach _reinfInfo;
+
 		// Spawn in more vehicles
 
 		// Construct a pool of vehicles we could add and shuffle them up then add some of them
@@ -2770,11 +2781,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				};
 
 				// Decrease the counter
-				private _roomLeft = _targetLoc#3 - 1;
+				private _roomLeft = _vicSpace - 1;
 				if(_roomLeft <= 0) then {
 					_vicReinfLocations = _vicReinfLocations - [_targetLoc];
 				} else {
-					_targetLoc set [3, _roomLeft];
+					_targetLoc set [4, _roomLeft];
 				};
 			};
 
