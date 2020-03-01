@@ -585,6 +585,10 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		if(_version >= 15) then {
 			DESERIALIZE_SAVE_VER(_thisObject, _serial, _version)
 		} else {
+			#ifndef RELEASE_BUILD
+			_serial deleteAt 22;
+			_serial deleteAt 21;
+			#endif
 			DESERIALIZE_ALL(_thisObject, _serial)
 		}
 	} ENDMETHOD;
