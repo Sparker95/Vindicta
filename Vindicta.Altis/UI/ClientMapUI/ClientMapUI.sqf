@@ -1361,14 +1361,6 @@ CLASS(CLASS_NAME, "")
 							case "medical" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MEDICAL")); };
 							case "miscellaneous" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MISC")); };
 							default { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_DEFAULT")); };
-
-							/*
-							"Building Supplies",
-							"Ammunition",
-							"Explosives",
-							"Medical",
-							"Miscellaneous"
-							*/
 						};
 					};
 				};
