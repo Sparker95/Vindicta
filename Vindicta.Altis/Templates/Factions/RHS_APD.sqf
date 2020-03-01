@@ -7,20 +7,20 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 // Name, description, faction, addons, etc
-_array set [T_NAME, "tRHS_SAPD"];
-_array set [T_DESCRIPTION, "San Andreas Police Department. Uses RHS. Made by MatrikSky"];
-_array set [T_DISPLAY_NAME, "RHS SAPD"];
+_array set [T_NAME, "tRHS_APD"];
+_array set [T_DESCRIPTION, "Altis Police Department. Uses RHS. Made by MatrikSky"];
+_array set [T_DISPLAY_NAME, "RHS APD"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [
-	"rhsusf_c_troops",	// RHSUSAF
-	"ivory_skins",		//Ivory Cars
-	"San_Andreas_PD"	//SAPD Uniforms
+	"rhsusf_c_troops",			// RHSUSAF
+	"demian2435_police_mod",	//Demian2535 Police Mod
+	"Altis_PD"					//APD Uniforms
 ]];
 
 //==== Infantry ====
 _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["rhsusf_army_ocp_officer"]];					//Default infantry if nothing is found
+_inf set [T_INF_DEFAULT, ["APD_2"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["RHS_POLICE_1", "RHS_POLICE_2", "RHS_POLICE_3", "RHS_POLICE_4", "RHS_POLICE_5", "RHS_POLICE_6", "RHS_POLICE_7", "RHS_POLICE_8", "RHS_POLICE_9", "RHS_POLICE_10"]];
 _inf set [T_INF_TL, ["RHS_POLICE_1", "RHS_POLICE_2", "RHS_POLICE_3", "RHS_POLICE_4", "RHS_POLICE_5", "RHS_POLICE_6", "RHS_POLICE_7", "RHS_POLICE_8", "RHS_POLICE_9", "RHS_POLICE_10"]];
@@ -50,8 +50,8 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_DEFAULT, ["ivory_cv_marked"]];
-_veh set [T_VEH_car_unarmed, ["ivory_suburban_marked", "ivory_suburban_marked_classic", "ivory_suburban_slicktop_norb", "ivory_suburban_slicktop", "ivory_suburban_slicktop_classic", "ivory_suburban_marked_norb", "ivory_charger_marked", "ivory_charger_marked_classic", "ivory_charger_marked_norb", "ivory_charger_slicktop", "ivory_charger_slicktop_classic", "ivory_charger_slicktop_norb", "ivory_cv_marked", "ivory_cv_marked_classic", "ivory_cv_marked_norb", "ivory_cv_slicktop", "ivory_cv_slicktop_classic", "ivory_cv_slicktop_norb", "ivory_taurus_marked", "ivory_taurus_marked_classic", "ivory_taurus_marked_norb", "ivory_taurus_slicktop", "ivory_taurus_slicktop_classic", "ivory_taurus_slicktop_norb", "ivory_challenger_marked", "ivory_challenger_marked_classic", "ivory_challenger_marked_norb", "ivory_challenger_slicktop", "ivory_challenger_slicktop_classic", "ivory_challenger_slicktop_norb"]];
+_veh set [T_VEH_DEFAULT, ["demian2435_police_car"]];
+_veh set [T_VEH_car_unarmed, ["demian2435_police_car", "demian2435_police_Hatchback", "demian2435_police_offroad"]];
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
