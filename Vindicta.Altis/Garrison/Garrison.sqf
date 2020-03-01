@@ -1825,6 +1825,23 @@ CLASS("Garrison", "MessageReceiverEx");
 			T_CALLM1("captureUnit", _x);
 		} forEach _srcUnits;
 
+		// Notify players of what happened
+		private _loc = CALLM0(_garrison, "getLocation");
+		private _garrDesc = if(!IS_NULL_OBJECT(_loc)) then {
+			format["at %1", CALLM0(_loc, "getDisplayName")]
+		} else {
+			private _pos = CALLM0(_garrison, "getPos");
+			format["at %1", mapGridPosition _pos]
+		};
+		private _action = if(count _srcUnits > 0) then {
+			"captured"
+		} else {
+			"destroyed"
+		};
+
+		private _args = ["GARRISON CAPTURED", format["Garrison %1 was %2 by enemy", _garrDesc, _action], "Garrisons must contain infantry"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createGarrisonNotification", _args, 0, false);
+
 		// Destroy the source garrison
 		if (_destroy) then {
 			CALLSM2("AICommander", "unregisterGarrison", _garrison, true); // Unregister and destroy
@@ -2987,7 +3004,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		// findUnits will do asserts and locks for us
 		pr _units = CALLM1(_thisObject, "findUnits", _query);
-		count _units	
+		count _units
 	} ENDMETHOD;
 
 	/*
@@ -3001,6 +3018,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_GETV("countInf")
 	} ENDMETHOD;
 
+	/*
+	Method: countConsciousInfantryUnits
+	Returns the amount of conscious infantry units
+
+	Returns: Number
+	*/
+	METHOD("countConsciousInfantryUnits") {
+		params [P_THISOBJECT];
+		{CALLM0(_x, "isConscious")} count T_CALLM0("getInfantryUnits")
+	} ENDMETHOD;
+	
 	/*
 	Method: countOfficers
 	Returns the amount of officers

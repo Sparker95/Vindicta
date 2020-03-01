@@ -1804,7 +1804,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientClaimLocation") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_OBJECT("_hBuildResSrc")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
 		// Check if we already own it
 		pr _garsFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
@@ -1817,14 +1817,15 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		pr _thisSide = T_GETV("side");
 		CALLM0(gMessageLoopMain, "lock");
 
+		private _enemyGarrisons = CALLM0(_loc, "getGarrisons") select {
+			pr _side = CALLM0(_x, "getSide");
+			_side != _thisSide && _side != CIVILIAN
+		};
 		pr _enemies = 0;
 		{
 			_enemies = _enemies + _x;
-		} forEach (CALLM0(_loc, "getGarrisons") select {
-			pr _side = CALLM0(_x, "getSide");
-			_side != _thisSide && _side != CIVILIAN
-		} apply {
-			CALLM0(_x, "countInfantryUnits")
+		} forEach (_enemyGarrisons apply {
+			CALLM0(_x, "countConsciousInfantryUnits")
 		});
 		CALLM0(gMessageLoopMain, "unlock");
 
@@ -1834,20 +1835,26 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
+		// Kick out the enemy garrisons
+		{
+			CALLM2(_x, "postMethodAsync", "setLocation", [NULL_OBJECT]);
+		} forEach _enemyGarrisons;
+
 		// Remove build resources from player or vehicle
 		if (_hBuildResSrc isKindOf "man") then {
 			// Remove resources from player
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		} else {
 			// Remove resources from vehicle
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		};
 
 		// Create the garrison
 		pr _pos = CALLM0(_loc, "getPos");
 		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
-		CALLM0(_gar, "activate");
 		CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
+		// Need to do this *after* assigning a location as we don't want it to get destroyed
+		CALLM2(_gar, "postMethodAsync", "activate", []);
 
 		// Update intel about the location
 		//T_CALLM1("updateLocationData", _loc);

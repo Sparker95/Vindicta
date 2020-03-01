@@ -3,8 +3,6 @@
 
 #define pr private
 
-// #define DEBUG_BUILDING
-
 params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);

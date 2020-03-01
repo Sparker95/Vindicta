@@ -1689,6 +1689,25 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 	} ENDMETHOD;
 
+	/*
+	Method: isConscious
+	Returns true if this unit is conscious, false otherwise.
+	Despawned unit is always considered conscious.
+
+	Returns: Bool
+	*/
+	METHOD("isConscious") {
+		params [P_THISOBJECT];
+		private _data = GETV(_thisObject, "data");
+		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (_object isEqualTo objNull) then {
+			// Unit is despawned
+			true
+		} else {
+			!(_object getVariable ["ACE_isUnconscious", false])
+		};
+	} ENDMETHOD;
+
 	//                          I S   S P A W N E D
 	/*
 	Method: isSpawned

@@ -27,7 +27,7 @@
 //#define RELEASE_BUILD
 
 // Accelerates virtual route speed
-// #define DEBUG_FAST_VIRTUALROUTE
+//#define DEBUG_FAST_VIRTUALROUTE
 
 // Increases planning frequency, plans all action types on each iteration
 //#define CMDR_AI_TESTING
@@ -40,6 +40,9 @@
 
 // Disables planning for cmdr ai
 //#define CMDR_AI_NO_PLAN
+
+// Debug construction system
+//#define DEBUG_BUILDING
 
 // Enable Profiling
 //#define OOP_PROFILE

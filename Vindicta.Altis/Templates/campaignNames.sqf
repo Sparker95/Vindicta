@@ -8,10 +8,10 @@
 	"The Homies Holidays", 
 	"Boxer Rebellion", 
 	"Real Estate Rebellion", 
-	"the Wineyard Uprising", 
+	"The Wineyard Uprising", 
 	"The Du-Rag rebellion", 
 	"The Goat conflict", 
-	"the Cotton mutiny", 
+	"The Cotton mutiny", 
 	"The Irish War Of Independence", 
 	"The Woolly Rebellion", 
 	"James Rebellion", 
@@ -45,5 +45,9 @@
 	"Just Cause", 
 	"Eskimo Coat Factory Springtime Shindig", 
 	"Yttrium Iodine Fluorine Fluorine", 
-	"Totally Real Revolution"
+	"Totally Real Revolution",
+	"The Boys from the Woods",
+	"Fenian Rising",
+	"The Second War of the Bucket",
+	"Changing of the Guard"
 ]

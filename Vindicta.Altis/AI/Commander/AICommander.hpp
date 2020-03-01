@@ -97,9 +97,6 @@
 #define SPLIT_VALIDATE_CREW				13
 #define SPLIT_VALIDATE_CREW_EXT			14
 
-#ifndef RELEASE_BUILD
-#define DEBUG_CMDRAI
-#endif
 #ifdef _SQF_VM
 #undef DEBUG_CMDRAI
 #endif

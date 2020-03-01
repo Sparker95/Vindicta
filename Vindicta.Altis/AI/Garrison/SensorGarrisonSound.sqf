@@ -79,23 +79,26 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 			pr _dateNumber = dateToNumber date;
 			pr _targets = _soundSources apply {
 				_x params ["_hO", "_time"];
-				pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_hO);
 				pr _ret = 0;
 				CRITICAL_SECTION {
-					_ret = if (IS_OOP_OBJECT(_unit)) then {
-						pr _distance = (getPos _hO) distance2D _garPos;
-						pr _inaccuracy = _distance*0.1; // We randomize the position a little, depending on how far the target is
-						pr _hOpos = getPos _hO;
-						pr _pos = [(_hOpos#0) + (random _inaccuracy) - 0.5*_inaccuracy, (_hOpos#1) + (random _inaccuracy) - 0.5*_inaccuracy, 0];
-						pr _eff = GET_UNIT_EFFICIENCY_FROM_OBJECT_HANDLE(_hO);
-						pr _target = TARGET_NEW(_unit, 2.0, _pos, _dateNumber, +_eff);
+					// Check inside the critical section, or we have race condition
+					if !(isNull _hO) then {
+						pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_hO);
+						_ret = if (IS_OOP_OBJECT(_unit)) then {
+							pr _distance = (getPos _hO) distance2D _garPos;
+							pr _inaccuracy = _distance*0.1; // We randomize the position a little, depending on how far the target is
+							pr _hOpos = getPos _hO;
+							pr _pos = [(_hOpos#0) + (random _inaccuracy) - 0.5*_inaccuracy, (_hOpos#1) + (random _inaccuracy) - 0.5*_inaccuracy, 0];
+							pr _eff = GET_UNIT_EFFICIENCY_FROM_OBJECT_HANDLE(_hO);
+							pr _target = TARGET_NEW(_unit, 2.0, _pos, _dateNumber, +_eff);
 
-						OOP_INFO_1("    %1", _target);
+							OOP_INFO_1("    %1", _target);
 
-						// Return stimulus
-						_target
-					} else {
-						TARGET_NEW(format ["unknown %1", _hO], 2.0, _pos, _dateNumber, +(T_efficiency#T_INF#T_INF_rifleman));
+							// Return stimulus
+							_target
+						} else {
+							TARGET_NEW(format ["unknown %1", _hO], 2.0, _pos, _dateNumber, +(T_efficiency#T_INF#T_INF_rifleman));
+						};
 					};
 				};
 				_ret

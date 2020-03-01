@@ -7,7 +7,7 @@
 #ifndef RELEASE_BUILD
 //#define __SMALL_MAP
 #endif
-
+FIX_LINE_NUMBERS()
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
 
@@ -64,6 +64,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Faster spawning when we are testing
 		T_SETV("spawningInterval", 120);
 		#endif
+		FIX_LINE_NUMBERS()
 		T_SETV("lastSpawn", TIME_NOW);
 
 		T_SETV("messageLoopMain", NULL_OBJECT);
@@ -162,6 +163,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_CALLM("initMissionEventHandlers", []);
 			T_CALLM("startCommanders", []);
 			#endif
+			FIX_LINE_NUMBERS()
 			T_CALLM("populateLocations", []);
 
 			T_CALLM("initServerOnly", []);
@@ -297,6 +299,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					};
 				};
 			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
+
+			CALLM0(_loc, "initBuildProgress");
 		} forEach GET_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
 
@@ -392,7 +396,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Start a periodic check which will restart message loops if needed
 		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
 #endif
-
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	METHOD("_checkMessageLoops") {
@@ -438,6 +442,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
 			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
 #endif
+FIX_LINE_NUMBERS()
 		} else {
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
@@ -446,6 +451,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Send msg to game manager to perform emergency saving
 			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
 #endif
+FIX_LINE_NUMBERS()
 		};
 	} ENDMETHOD;
 
@@ -472,7 +478,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Do it once in a while
 		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
 #endif
-
+FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	METHOD("_initMissionEventHandlers") {
@@ -503,6 +509,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			false;
 		}];
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
@@ -543,6 +550,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("postInitAll") {
@@ -1100,6 +1108,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_locSectorPos params ["_posX", "_posY"];
 			if (_posX > 20000 && _posY > 16000) then {
 			#endif
+			FIX_LINE_NUMBERS()
 
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
@@ -1211,6 +1220,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#ifdef __SMALL_MAP
 			};
 			#endif
+			FIX_LINE_NUMBERS()
 		} forEach (entities "Vindicta_LocationSector");
 
 		// Process locations for roadblocks
@@ -1272,6 +1282,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_mrk setMarkerAlpha 1;
 			_mrk setMarkerText "<Future roadblock>";
 			#endif;
+			FIX_LINE_NUMBERS()
 		} forEach _roadblockPositionsFinal;
 
 	} ENDMETHOD;
@@ -1458,6 +1469,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_i = _i + 1;
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Unarmed MRAPs
 		_i = 0;
@@ -1478,6 +1490,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_i = _i + 1;
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// APCs, IFVs, tanks, MRAPs
 		#ifdef ADD_ARMOR
@@ -1494,6 +1507,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		} forEach _vehGroupSpec;
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Static weapons
 		if (_cHMGGMG > 0) then {
@@ -1579,6 +1593,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// Returns the side of player faction
@@ -1958,9 +1973,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Group message loop manager
 		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
-		// Special garrisons
-		T_CALLM1("_loadSpecialGarrisons", _storage);
-
 		// Load locations
 		{
 			CRITICAL_SECTION {
@@ -1969,6 +1981,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM1(_storage, "load", _loc);
 			};
 		} forEach T_GETV("locations");
+
+		// Special garrisons
+		T_CALLM1("_loadSpecialGarrisons", _storage);
 
 		// Load commanders
 		{
