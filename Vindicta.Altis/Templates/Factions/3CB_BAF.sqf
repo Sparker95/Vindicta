@@ -64,11 +64,11 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["UK3CB_BAF_LandRover_Snatch_FFR_Green_A_MTP"]];
 
 _veh set [T_VEH_car_unarmed, ["UK3CB_BAF_LandRover_Soft_FFR_Green_A_MTP", "UK3CB_BAF_LandRover_Snatch_FFR_Green_A_MTP", "UK3CB_BAF_LandRover_Hard_FFR_Green_A_MTP"]];
-_veh set [T_VEH_car_armed, ["UK3CB_BAF_LandRover_WMIK_GMG_FFR_Green_A_MTP", "UK3CB_BAF_LandRover_WMIK_GPMG_FFR_Green_A_MTP", "UK3CB_BAF_LandRover_WMIK_HMG_FFR_Green_A_MTP", "UK3CB_BAF_LandRover_WMIK_Milan_FFR_Green_A_MTP"]];
+_veh set [T_VEH_car_armed, ["UK3CB_BAF_LandRover_WMIK_GMG_FFR_Green_A_MTP", "UK3CB_BAF_LandRover_WMIK_GPMG_FFR_Green_A_MTP", "UK3CB_BAF_LandRover_WMIK_HMG_FFR_Green_A_MTP"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["UK3CB_BAF_LandRover_Hard_FFR_Green_A_MTP"]];
-_veh set [T_VEH_MRAP_HMG, ["UK3CB_BAF_Husky_Passenger_HMG_Green_MTP", "UK3CB_BAF_Husky_Logistics_HMG_Green_MTP", "UK3CB_BAF_Husky_Passenger_GPMG_Green_MTP", "UK3CB_BAF_Husky_Logistics_GPMG_Green_MTP"]];
-_veh set [T_VEH_MRAP_GMG, ["UK3CB_BAF_Husky_Logistics_GMG_Green_MTP", "UK3CB_BAF_Husky_Passenger_GMG_Green_MTP"]];
+_veh set [T_VEH_MRAP_HMG, ["UK3CB_BAF_Husky_Passenger_HMG_Green_MTP", "UK3CB_BAF_Husky_Passenger_GPMG_Green_MTP"]];
+_veh set [T_VEH_MRAP_GMG, ["UK3CB_BAF_Husky_Passenger_GMG_Green_MTP"]];
 
 _veh set [T_VEH_IFV, ["UK3CB_BAF_Warrior_A3_W_MTP", "UK3CB_BAF_Warrior_A3_W_Cage_MTP", "UK3CB_BAF_Warrior_A3_W_Cage_Camo_MTP", "UK3CB_BAF_Warrior_A3_W_Camo_MTP"]];
 _veh set [T_VEH_APC, ["UK3CB_BAF_FV432_Mk3_GPMG_Green_MTP", "UK3CB_BAF_FV432_Mk3_RWS_Green_MTP"]];
