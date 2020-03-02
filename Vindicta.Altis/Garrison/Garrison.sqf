@@ -3239,7 +3239,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		_unitHandles = _unitHandles select {
 			!isNull _x 
 			// Only units on real player side
-			&& {side group _x isEqualTo side group player}
+			&& {side group _x isEqualTo side group _player}
 		};
 
 		// Get the units OOP objects
