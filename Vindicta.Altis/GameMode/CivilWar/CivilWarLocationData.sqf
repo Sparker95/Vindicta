@@ -62,12 +62,12 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			if(_newOwner == FRIENDLY_SIDE) then {
 				// Notify players of what happened
 				private _args = ["LOCATION CLAIMED", format["%1 was claimed", CALLM0(_loc, "getDisplayName")], "Garrison some fighters to hold it"];
-				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, 0, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
 			} else {
 				if(_oldOwner == FRIENDLY_SIDE) then {
 					// Notify players of what happened
 					private _args = ["LOCATION LOST", format["%1 was lost", CALLM0(_loc, "getDisplayName")], "Send some fighters to retake it"];
-					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
 				};
 			};
 		};

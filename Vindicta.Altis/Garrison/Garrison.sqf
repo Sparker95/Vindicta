@@ -1840,7 +1840,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		private _args = ["GARRISON CAPTURED", format["Garrison %1 was %2 by enemy", _garrDesc, _action], "Garrisons must contain infantry"];
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createGarrisonNotification", _args, 0, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createGarrisonNotification", _args, ON_CLIENTS, NO_JIP);
 
 		// Destroy the source garrison
 		if (_destroy) then {
@@ -2769,7 +2769,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Notify nearby players of what happened
 			pr _nearbyClients = allPlayers select {side group _x == _ourSide && (_x distance _vicHandle) < 100} apply { owner _x };
 			private _args = ["VEHICLE DETACHED", _msg, "It will be no longer be saved here"];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
 			OOP_INFO_0(_msg);
 		};
 		__MUTEX_UNLOCK;
@@ -2866,7 +2866,7 @@ CLASS("Garrison", "MessageReceiverEx");
 				getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"),
 				CALLM0(_nearestLocation, "getDisplayName")
 			], "It will be saved here"];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
 			OOP_INFO_0(_msg);
 		};
 		__MUTEX_UNLOCK;
@@ -3335,7 +3335,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		private _msg = format ["%1 units formed new garrison at %2", count _unitObjects, mapGridPosition _pos];
 		private _args = ["GARRISON FORMED", _msg, "They are now available for map control"];
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_ALL, NO_JIP);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
 	} ENDMETHOD;	
 
 	METHOD("getTemplateName") {

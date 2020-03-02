@@ -756,7 +756,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				OOP_ERROR_MSG("PLAYERINVBUG: restoreInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
 				// Broadcast notification
 				pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
-				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], 0, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
 			};
 			// diag_log format["RESTORING INV FOR %1: %2", _hO, _savedInventory];
 			CALLSM2("Unit", "_setRealInventory", _hO, _savedInventory);
@@ -893,7 +893,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				OOP_ERROR_MSG("PLAYERINVBUG: initObjectInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
 				// Broadcast notification
 				pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
-				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], 0, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
 			};
 			clearItemCargoGlobal _hO;
 			clearWeaponCargoGlobal _hO;
@@ -1275,11 +1275,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// hopefully catch inventory wipe bug!
 		if (isPlayer _hO) then { 
 			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 4"];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
 
 			diag_log format ["INVENTORY WIPED, ERROR CODE 4: _data: %1", _data];
 		};
@@ -2142,7 +2142,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					OOP_ERROR_MSG("PLAYERINVBUG: limitedArsenalEnable _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
 					// Broadcast notification
 					pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
-					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
 				};
 
 				clearItemCargoGlobal _hO;

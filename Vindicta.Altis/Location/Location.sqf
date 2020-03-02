@@ -497,7 +497,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				if(ALIASED_VALUE(_oldBuildProgress * 100, 5) < ALIASED_VALUE(_buildProgress * 100, 5)) then {
 					// Notify players of what happened
 					private _args = ["LOCATION DETERIORATED", format["Some buildings at %1 have been removed", T_GETV("name")], "Garrison fighters to maintain locations"];
-					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
 				};
 			};
 		};

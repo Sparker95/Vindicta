@@ -466,7 +466,7 @@ FIX_LINE_NUMBERS()
 		_text = _text + ". Restart the mission after saving is over, send the .RPT to devs";
 
 		// Broadcast notification
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], 0, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], ON_CLIENTS, NO_JIP);
 
 		// Broadcast it to system chat too
 		["CRITICAL MISSION ERROR:"] remoteExec ["systemChat"];
