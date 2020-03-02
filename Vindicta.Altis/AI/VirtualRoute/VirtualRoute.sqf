@@ -58,9 +58,10 @@ CLASS("VirtualRoute", "")
 			["_async", true],
 			["_debugDraw", false]
 		];
-		
-		T_SETV("from", _from);
-		T_SETV("destination", _destination);
+		private _fromATL = [_from#0, _from#1, 0];
+		private _destinationATL = [_destination#0, _destination#1, 0];
+		T_SETV("from", _fromATL);
+		T_SETV("destination", _destinationATL);
 		T_SETV("recalculateInterval", _recalculateInterval);
 
 		T_SETV("callbackArgs", _callbackArgs);
