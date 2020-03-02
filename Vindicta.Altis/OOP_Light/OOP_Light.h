@@ -1135,6 +1135,15 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )
 
 // ----------------------------------------------------------------------
+// |                       R E M O T E   E X E C                        |
+// ----------------------------------------------------------------------
+#define ON_ALL 		0
+#define ON_SERVER 	2
+#define ON_CLIENTS -2
+#define NO_JIP 		false
+#define ALWAYS_JIP	true
+
+// ----------------------------------------------------------------------
 // |                               M I S C                              |
 // ----------------------------------------------------------------------
 #define ARG ,
@@ -1151,8 +1160,4 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define NULL_OBJECT ""
 #define OOP_OBJECT_TYPE ""
 
-#define ON_ALL 		0
-#define ON_SERVER 	2
-#define ON_CLIENTS -2
-#define NO_JIP 		false
-#define ALWAYS_JIP	true
+#define POS_TO_ATL(pos) ([(pos) select 0, (pos) select 1, 0])

@@ -751,13 +751,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 
 		if ((_hO call Unit_fnc_hasInventory) && count _savedInventory == 4) then {
-			if(_hO in allPlayers || isPlayer _hO) exitWith {
-				DUMP_CALLSTACK;
-				OOP_ERROR_MSG("PLAYERINVBUG: restoreInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
-				// Broadcast notification
-				pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
-				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
-			};
 			// diag_log format["RESTORING INV FOR %1: %2", _hO, _savedInventory];
 			CALLSM2("Unit", "_setRealInventory", _hO, _savedInventory);
 			true
@@ -768,6 +761,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	/* private */ METHOD("_setRealInventory") {
 		params [P_THISOBJECT, P_OBJECT("_hO"), P_ARRAY("_inventory")];
+
+		if(_hO in allPlayers) exitWith {
+			DUMP_CALLSTACK;
+			OOP_ERROR_MSG("PLAYERINVBUG: _setRealInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+			// Broadcast notification
+			pr _msg = format["%1 just avoided the inventory clear bug (_setRealInventory), please send your .rpt to the developers so we can fix it!", name _hO];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
+		};
 
 		// Clear cargo
 		clearWeaponCargoGlobal _hO;
@@ -888,11 +889,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
 			// Clear cargo
-			if(_hO in allPlayers || isPlayer _hO) exitWith {
+			if(_hO in allPlayers) exitWith {
 				DUMP_CALLSTACK;
 				OOP_ERROR_MSG("PLAYERINVBUG: initObjectInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
 				// Broadcast notification
-				pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
+				pr _msg = format["%1 just avoided the inventory clear bug (initObjectInventory), please send your .rpt to the developers so we can fix it!", name _hO];
 				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
 			};
 			clearItemCargoGlobal _hO;
@@ -1273,15 +1274,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNull _hO) exitWith {};
 
 		// hopefully catch inventory wipe bug!
-		if (isPlayer _hO) then { 
-			private _args = ["INVENTORY WIPED?", "Was your inventory wiped? Tell the developers! Please send us the .rpt file!", "ERROR CODE: 4"];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, ON_CLIENTS, NO_JIP);
-
-			diag_log format ["INVENTORY WIPED, ERROR CODE 4: _data: %1", _data];
+		if(_hO in allPlayers) exitWith {
+			DUMP_CALLSTACK;
+			OOP_ERROR_MSG("PLAYERINVBUG: applyInfantryWeapons _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+			// Broadcast notification
+			pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
 		};
 
 		// Remove all weapons
@@ -2137,7 +2135,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				// For now I only care to clear the inventory when we create an ammo box
 
 				// hopefully catch inventory wipe bug!
-				if(_hO in allPlayers || isPlayer _hO) exitWith {
+				if(_hO in allPlayers) exitWith {
 					DUMP_CALLSTACK;
 					OOP_ERROR_MSG("PLAYERINVBUG: limitedArsenalEnable _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
 					// Broadcast notification
