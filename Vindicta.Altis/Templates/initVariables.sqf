@@ -8,8 +8,9 @@ diag_log "[Templates] initVariables";
 
 #ifndef _SQF_VM
 // Hashmap that matches class name to number
-t_classnames_hashmap = [false] call CBA_fnc_createNamespace;
+t_classnames_hashmap = [true] call CBA_fnc_createNamespace;
 t_classnames_array = [];
+publicVariable "t_classnames_array";
 #endif
 
 // Array with all valid template names
