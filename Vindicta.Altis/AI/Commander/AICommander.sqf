@@ -823,21 +823,21 @@ CLASS("AICommander", "AI")
 					if (_radioKey in T_GETV("enemyRadioKeys")) then {
 						"We have this cryptokey already..." remoteExecCall ["systemChat", _clientOwner];
 					} else {
-						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createRadioCryptokey", [_radioKey], _clientOwner, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createRadioCryptokey", [_radioKey], _clientOwner, NO_JIP);
 
 						// Copy stuff into player's notes
 						pr _text = format [_endl + "%1 Found enemy radio cryptokey: %2" + _endl, date call misc_fnc_dateToISO8601, _radioKey];
-						REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabNotes", "staticAppendText", [_text], _clientOwner, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabNotes", "staticAppendText", [_text], _clientOwner, NO_JIP);
 					};
 				};
 
 				// Send data to tablet
 				pr _text = format [_endl + "  Radio cryptokey: %1" + _endl, _radioKey];
-				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, NO_JIP);
 			} else {
 				// Send data to tablet
 				pr _text = _endl + "  Radio cryptokey: only in military tablets" + _endl;
-				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, NO_JIP);
 			};
 		};
 

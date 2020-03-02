@@ -311,7 +311,7 @@ CLASS("MessageReceiver", "Storable")
 				private _text = format["Server is under heavy load! %1 message queue overloaded.", _thisObject];
 
 				// Broadcast notification
-				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 				// Broadcast it to system chat too
 				["SERVER WARNING:"] remoteExec ["systemChat"];
