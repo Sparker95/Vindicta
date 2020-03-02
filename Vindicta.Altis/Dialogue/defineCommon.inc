@@ -19,24 +19,32 @@
 
 
 //Converstion types
-#define TYPE_SENTENCE 0
-#define TYPE_SENTENCE_SILENECE 1
-#define TYPE_QUESTION 2
-#define TYPE_QUESTION_SILENECE 1
-#define TYPE_OPTION 3
-#define TYPE_OPTION_SILENECE 1
-#define TYPE_JUMP_TO 4
+#define TYPE_CREATE 0
+#define TYPE_OVERWRITE 1
+#define TYPE_INHERIT 2
+
+#define TYPE_SENTENCE 10
+#define TYPE_SENTENCE_SILENECE 11
+#define TYPE_QUESTION 12
+#define TYPE_QUESTION_SILENECE 13
+#define TYPE_OPTION 14
+#define TYPE_OPTION_SILENECE 15
+#define TYPE_REMOVE_OPTION 16
+#define TYPE_JUMP_TO 17
 
 #define TYPE_EVENT_WALKED_AWAY 5        // when you walk a way to far
 #define TYPE_EVENT_OUT_OF_TIME 6        // when waiting to long
 #define TYPE_EVENT_DEATH 7              // when unit gets killed or unconciuos
 #define TYPE_EVENT_UNEXPECTED_END 8     // when conversation ends without reaching #end (same as the other events combined)
 #define TYPE_EVENT_END 9                // when conversation ends (always)
+#define EVENT_TYPES [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH,TYPE_EVENT_UNEXPECTED_END,TYPE_EVENT_END]
+
+#define INHERIT_TYPES ([TYPE_JUMP_TO,TYPE_OPTION,TYPE_REMOVE_OPTION] + EVENT_TYPES)
 
 
 #define INDEX_SENTENCE_TEXT 0
 #define INDEX_SENTENCE_SILENCE 1
-#define INDEX_SENTENCE_SPEAKER 2
+#define INDEX_SENTENCE_SPEAKER_NR 2
 #define INDEX_SENTENCE_SCRIPT 3
 #define INDEX_SENTENCE_ARGS 4
 
@@ -52,9 +60,9 @@
 #define INDEX_OPTION_SCRIPT 4
 #define INDEX_OPTION_ARGS 5
 
-#define INDEX_NEW_CONVERSATION_JUMP 0
-#define INDEX_NEW_CONVERSATION_SCRIPT 1
-#define INDEX_NEW_CONVERSATION_ARGS 2
+#define INDEX_NEW_NODE_JUMP 0
+#define INDEX_NEW_NODE_SCRIPT 1
+#define INDEX_NEW_NODE_ARGS 2
 
 #define INDEX_EVENT_JUMP 0
 #define INDEX_EVENT_SCRIPT 1

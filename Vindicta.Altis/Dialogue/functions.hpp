@@ -1,11 +1,16 @@
 class pr0 {
-	
+
+	class dialogue_common {
+		file = "Dialogue\Common";
+		class dialogue_common_bearingToID {};
+	};
+
 	class dialogue {
 		file = "Dialogue";
-		class dialogue_array {postinit = 1;};
-		
-		class dialogue_findConversation {};
-		class dialogue_createConversation {};
+		class dialogue_create {};
+
+		class dialogue_setDataSets {};
+		class dialogue_registerDataSet {};
 		
 		class dialogue_createSentence {};
 		class dialogue_removeSentence {};
@@ -14,10 +19,13 @@ class pr0 {
 		class dialogue_createHUD {};
 		class dialogue_removeHUD {postinit = 1;};//remove old hud
 	};
-	class Voice {
+	/*
+	class voice {
 		file = "Dialogue\Voice";
 		class voice_init {preinit = 1;};
 		class voice_say {};
 	};
+	*/
+
 
 };

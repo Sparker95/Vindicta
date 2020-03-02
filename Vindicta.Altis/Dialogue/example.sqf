@@ -1,0 +1,73 @@
+#include "defineCommon.inc"
+
+_array1 = [
+	["main_intro",{
+		[
+			[TYPE_SENTENCE, "Hello, player", 2],
+			[TYPE_SENTENCE, "Hello, ai", 1],
+			[TYPE_JUMP_TO, "main_question"]
+		]
+	}],
+	["main_question",{
+		[
+			[TYPE_QUESTION, "How can i help you?"]
+		]
+	}]
+];
+
+_array2 = [
+	["main_question",TYPE_INHERIT,{
+		[
+			[TYPE_OPTION, "Lets do some math", "math_intro"]
+		]
+	}],
+	["math_intro",{
+		[
+			[TYPE_SENTENCE, "So you want to play some game", 2],
+			[TYPE_SENTENCE, "Yes, plz!", 1],
+			[TYPE_JUMP_TO, "math_question"]
+		]
+	}],
+	["math_question",{
+		[
+			[TYPE_QUESTION, "What is 1+1?"],
+			[TYPE_OPTION, "2", "math_good"],
+			[TYPE_OPTION, "4", "math_bad"],
+			[TYPE_EVENT_WALKED_AWAY, "math_WALKED_AWAY"],
+			[TYPE_EVENT_OUT_OF_TIME, "math_OUT_OF_TIME"]
+		]
+	}],
+	["math_WALKED_AWAY",{
+		[
+			[TYPE_SENTENCE, "Yes walk away!", 2],
+			[TYPE_JUMP_TO, "#end"]
+		]
+		
+	}],
+	["math_OUT_OF_TIME",{
+		[
+			[TYPE_SENTENCE, "To slow", 2],
+			[TYPE_JUMP_TO, "#end"]
+		]
+	}],
+	["math_good",{
+		[
+			[TYPE_SENTENCE, ["You got it!","Not bad"], 2],
+			[TYPE_JUMP_TO, "#end"]
+		]
+	}],
+	["math_bad",{
+		[
+			[TYPE_SENTENCE, "No stupid try again!", 2],
+			[TYPE_JUMP_TO, "math_question"]
+		]
+	}]
+
+];
+
+
+["main", _array1] call pr0_fnc_dialogue_registerDataSet;
+["math", _array2] call pr0_fnc_dialogue_registerDataSet;
+
+[cursorObject, ["main","math"]] call pr0_fnc_dialogue_setDataSets;
+

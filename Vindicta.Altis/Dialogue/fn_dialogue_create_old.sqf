@@ -23,7 +23,7 @@ params[
 	["_unit_2",objNull,[objNull]],//optional
 	["_conversation_id","",[""]],
 	["_end_script",{},[{}]],//optional
-	"_conversation_args"//optional
+	["_conversation_args",[],[]]//optional
 ];
 if(isnull _unit_1)exitWith {diag_log format["ERROR SENTENCE UNIT_1 CANT BE NONE: %1",_conversation_id]};
 
@@ -42,14 +42,19 @@ _this spawn {
 		["_unit_2",objNull,[objNull]],
 		["_conversation_id","",[""]],
 		["_end_script",{},[{}]],
-		"_conversation_args"
+		["_conversation_args",[],[]]
 	];
+
+
+
+
+
 
 	//we need something from it after the while loop so we need to declare it here
 	private _events = nil;
 
 	//main loop for the conversation
-	while{true}do{
+	while{false}do{
 			
 		//-----------------------------------------------------------
 		//			Find the conversation with given ID				|
@@ -83,7 +88,7 @@ _this spawn {
 						["_text","",["",[]]], 
 						["_int_talker",0,[0]],
 						["_script",{},[{}]],
-						"_args"
+						["_args",[],[]]
 					];
 
 					if!(_int_talker in [1,2])exitWith{diag_log format["ERROR WRONG TALKER NR:%1",_conversation_id]};
@@ -94,7 +99,7 @@ _this spawn {
 						"_type", 
 						["_text","",["",[]]],
 						["_script",{},[{}]],
-						"_args"
+						["_args",[],[]]
 					];
 					_sentences pushBack [_text,true,1,_script,_args];
 				};
@@ -104,7 +109,7 @@ _this spawn {
 						"_type", 
 						["_text","",["",[]]],
 						["_script",{},[{}]],
-						"_args"
+						["_args",[],[]]
 					];
 					private _silence = _type == TYPE_QUESTION_SILENECE;
 					_question = [_text,_silence,_script,_args];
@@ -117,7 +122,7 @@ _this spawn {
 						["_jump","",[""]],
 						["_spoke_text","",["",[]]],
 						["_script",{},[{}]],
-						"_args"
+						["_args",[],[]]
 					];
 					private _silence = _type == TYPE_OPTION_SILENECE;
 					if(_spoke_text isEqualType "")then{_spoke_text = _text};
@@ -128,7 +133,7 @@ _this spawn {
 						"_type",
 						["_jump","",[""]],
 						["_script",{},[{}]],
-						"_args"
+						["_args",[],[]]
 					];
 					_new_conversation_array = [_jump,_script,_args];
 				};
@@ -141,7 +146,7 @@ _this spawn {
 						"_type",
 						["_jump","",[""]],
 						["_script",{},[{}]],
-						"_args"
+						["_args",[],[]]
 					];
 					_events set [_type,[_jump,_script,_args]];
 				};
@@ -376,8 +381,7 @@ _this spawn {
 	};//end while
 
 	//execute optional code
-	private _args = [_unit_1, _unit_2];
-	_args pushBack _conversation_args;
+	private _args = [_unit_1, _unit_2,_conversation_args];
 	if!(isnil "_events")then{_args call (_events#TYPE_EVENT_END#INDEX_EVENT_SCRIPT);};
 	_args call _end_script;
 	
