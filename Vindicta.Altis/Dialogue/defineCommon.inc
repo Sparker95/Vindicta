@@ -2,6 +2,7 @@
 
 #define STRING_ICON_UP_ARROW "\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa"
 
+
 //general settings
 #define FLOAT_MAX_LISTENING_DISTANCE 60.0           // how far you can hear the conversation
 #define FLOAT_MAX_LEAVING_DISTANCE 30.0             // cancel conversation if you go further then this

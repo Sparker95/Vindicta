@@ -72,12 +72,12 @@ if!(_speaker isequalto player)then{
 		private _color = [side _speaker,false] call BIS_fnc_sideColor; // Some colors don't look readable...
 		private _colorHTML = _color call BIS_fnc_colorRGBtoHTML;
 		private _colorTextHTML = ["#FFFFFF","#898989"] select (_listener != player);
-		
+		private _fade = 1-((_listener distance _speaker)/FLOAT_MAX_LISTENING_DISTANCE * 0.2);
 		
 		_ctrl_icon = _display ctrlCreate ["rscstructuredtext", -1, _hud];
 		_ctrl_icon ctrlSetPosition [666,0,FLOAT_ICON_WITDH,0.2];//spawn it out of view 
-		_ctrl_icon ctrlSetStructuredText parseText format ["<t font='RobotoCondensed' align = 'center' size = '1.05'><t color = '#FFFFFF'><img image='%2'/><t color = '%1'><br/>%3:</t>",_colorHTML,STRING_ICON_UP_ARROW,name _speaker];
-		_ctrl_icon ctrlSetFade 1;//start hidden and slowly fade in
+		_ctrl_icon ctrlSetStructuredText parseText format ["<t font='RobotoCondensed' align = 'center' size = '1.05'><t color = '#FFFFFF'><img image='%2'/><t color = '%1' shadow = '2' shadowColor = ''><br/>%3:</t>",_colorHTML,STRING_ICON_UP_ARROW,name _speaker];
+		_ctrl_icon ctrlSetFade _fade;//start hidden and slowly fade in
 		_ctrl_icon ctrlCommit 0;
 		
 		_ctrl_icon setVariable ["_ctrl_sentences", [_ctrl_sentence]];
@@ -86,7 +86,7 @@ if!(_speaker isequalto player)then{
 		_ctrl_icons pushBack _ctrl_icon;
 		_display setvariable ["pr0_dialogue_icon_list" ,_ctrl_icons];
 	};
-	
+
 	//needs to be done here because used icon might have start fading away
 	_ctrl_icon ctrlSetFade 0;
 	_ctrl_icon ctrlCommit FLOAT_FADE_TIME;

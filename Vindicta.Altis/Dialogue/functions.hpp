@@ -19,6 +19,11 @@ class pr0 {
 		class dialogue_createHUD {};
 		class dialogue_removeHUD {postinit = 1;};//remove old hud
 	};
+
+	class dialogue_example {
+		file = "Dialogue";
+		class example {};
+	}
 	/*
 	class voice {
 		file = "Dialogue\Voice";

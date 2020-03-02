@@ -26,6 +26,7 @@ private _display = ctrlParent _ctrl_sentence;
 private _color = [side _speaker,false] call BIS_fnc_sideColor; // Some colors don't look readable...
 private _colorHTML = _color call BIS_fnc_colorRGBtoHTML;
 private _colorTextHTML = "#FFFFFF";
+_colorHTML = "#660080";
 
 
 diag_log str ["sentenceUpdateText",_sentence];
@@ -34,7 +35,8 @@ diag_log str ["sentenceUpdateText",_sentence];
 if(_speaker isequalto player)then{
 	_ctrl_sentence ctrlSetStructuredText parseText format ["<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence];
 }else{
-	private _structedText =  parseText format ["<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1'>%2:</t> <t color = '%3'>%4",_colorHTML,name _speaker,_colorTextHTML,_sentence];
+	private _structedText =  parseText format [
+		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1'><t shadow = '2' shadowColor = '#ffffff'>%2:</t> <t color = '%3'>%4",_colorHTML,name _speaker,_colorTextHTML,_sentence];
 
 	if(_type == TYPE_SENTENCE)then{
 		_ctrl_sentence ctrlSetStructuredText  _structedText;
