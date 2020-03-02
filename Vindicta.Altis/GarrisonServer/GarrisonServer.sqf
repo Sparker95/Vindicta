@@ -92,7 +92,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			if (IS_OOP_OBJECT(_gar)) then {
 				if (CALLM0(_gar, "isAlive")) then { // We only serve update events here
 					pr _side = GETV(_gar, "side");
-					T_CALLM2("_sendUpdate", _gar, _side); // Send data to all clients of same side as this garrison
+					T_CALLM2("_sendUpdate", _gar, [_side ARG civilian]); // Send data to all clients of same side as this garrison
 				};
 			};
 		} forEach _outdatedGarrisons;
@@ -145,7 +145,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Transmit data about all garrisons with the same side
 		pr _garrisons = CALLSM2("Garrison", "getAllActive", [_side], []);
 		{
-			T_CALLM2("_sendUpdate", _x, _side); // Send data to all clients of same side as this garrison
+			T_CALLM2("_sendUpdate", _x, [_side ARG civilian]); // Send data to all clients of same side as this garrison
 		} forEach _garrisons;
 
 	} ENDMETHOD;
