@@ -20,6 +20,8 @@
 ["Templates\Factions\WW2_Heer.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_UK.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\3CB_BAF.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RAF2035.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
+
 
 // Other factions
 ["Templates\Factions\CIVILIAN.sqf", T_FACTION_Civ]					call t_fnc_initializeTemplateFromFile;
