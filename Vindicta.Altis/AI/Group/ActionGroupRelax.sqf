@@ -76,7 +76,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			pr _waypoints = []; // Array with waypoint IDs
 			pr _angleStart = random 360;
 			while {_i < 5} do {
-				pr _wp = _hG addWaypoint [POS_TO_ATL(_pos getPos [_radius, _angleStart + _i*2*360/5]), 0];
+				private _rnd = _pos getPos [_radius, _angleStart + _i*2*360/5];
+				pr _wp = _hG addWaypoint [POS_TO_ATL(_rnd), 0];
 				_wp setWaypointType "MOVE";
 				_wp setWaypointBehaviour "SAFE"; //"AWARE"; //"SAFE";
 				//_wp setWaypointForceBehaviour true; //"AWARE"; //"SAFE";
@@ -88,7 +89,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			};
 			
 			// Add cycle waypoint
-			pr _wp = _hG addWaypoint [POS_TO_ATL(_pos getPos [_radius, _angleStart + _i*2*360/5]), 0]; //Cycle the waypoints
+			private _rnd = _pos getPos [_radius, _angleStart + _i*2*360/5];
+			pr _wp = _hG addWaypoint [POS_TO_ATL(_rnd), 0]; //Cycle the waypoints
 			_wp setWaypointType "CYCLE";
 			_wp setWaypointBehaviour "SAFE";
 			_wp setWaypointSpeed "LIMITED";
