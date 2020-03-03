@@ -1763,7 +1763,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// T_CALLM0("findBuildables");
 
-		// Restore timer
+		// Restore timer -- don't panic: processing won't start until the processing threads are unlocked at the 
+		// very end of loading process.
 		T_CALLM0("initTimer");
 
 		true
@@ -1773,11 +1774,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISCLASS];
 
 		{
-			// Refresh spawnability
-			CALLM0(_x, "updatePlayerRespawn");
+			private _loc = _x;
+			private _gmData = CALLM0(_x, "getGameModeData");
+			if(!IS_NULL_OBJECT(_gmData)) then {
+				// Refresh spawnability
+				CALLM0(_gmData, "updatePlayerRespawn");			
+			};
 			// Update build progress
-			CALLM0(_x, "updateBuildProgress");
-		} forEach (GETSV("Location", "all") apply { CALLM0(_x, "getGameModeData") } select { !IS_NULL_OBJECT(_x) });
+			CALLM0(_loc, "updateBuildProgress");
+		} forEach GETSV("Location", "all");
+		
 	} ENDMETHOD;
 	
 
