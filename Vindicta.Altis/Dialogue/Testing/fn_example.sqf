@@ -1,11 +1,11 @@
 #include "defineCommon.inc"
 
-_array1 = [
+private _array1 = [
 	["main_intro",{
 		[
-			[TYPE_SENTENCE, "Hello, player", 2],
-			[TYPE_SENTENCE, "Hello, ai", 1],
-			[TYPE_JUMP_TO, "main_question"]
+			[TYPE_SENTENCE, "Hello, sir", 2],
+			[TYPE_SENTENCE, "Hello, person", 1],
+			[TYPE_JUMP_TO, "main_intro"]
 		]
 	}],
 	["main_question",{
@@ -15,7 +15,7 @@ _array1 = [
 	}]
 ];
 
-_array2 = [
+private _array2 = [
 	["main_question",TYPE_INHERIT,{
 		[
 			[TYPE_OPTION, "Lets do some math", "math_intro"]
@@ -66,8 +66,9 @@ _array2 = [
 ];
 
 
+params [["_unit",objNull,[objNull]]];
+
 ["main", _array1] call pr0_fnc_dialogue_registerDataSet;
 ["math", _array2] call pr0_fnc_dialogue_registerDataSet;
 
-[cursorObject, ["main","math"]] call pr0_fnc_dialogue_setDataSets;
-
+[_unit, ["main","math"]] call pr0_fnc_dialogue_setDataSets;

@@ -4,20 +4,21 @@
 
 
 //general settings
-#define FLOAT_MAX_LISTENING_DISTANCE 60.0           // how far you can hear the conversation
-#define FLOAT_MAX_LEAVING_DISTANCE 30.0             // cancel conversation if you go further then this
-#define FLOAT_MAX_LEAVING_QUESTION_DISTANCE 10.0    // cancel question if you go further then this
+#define FLOAT_MAX_LISTENING_DISTANCE 20.0           // how far you can hear the conversation
+#define FLOAT_MAX_LEAVING_DISTANCE 8.0             // cancel conversation if you go further then this
+#define FLOAT_MAX_LEAVING_QUESTION_DISTANCE 5.0    // cancel question if you go further then this
 #define FLOAT_MAX_WAIT_FOR_ANSWER 7.0               // cancel question if you wait longer then this 
 
 
 //HUD settings
-#define FLOAT_TEXT_HIGHT 0.05
+#define FLOAT_TEXT_HIGHT 0.04
 #define FLOAT_POS_Y  (1 - safezoney-0.2)
 #define FLOAT_DISPLAYTIME  7
 #define FLOAT_FADE_TIME  1
+#define FLOAT_SCROLL_TIME  0.05
 #define FLOAT_ICON_WITDH  0.2
-#define INT_SENTENCE_LIMIT 6
-
+#define INT_SENTENCE_LIMIT 3
+#define INT_SENTENCE_LIMIT_PLAYER_INVOLVED 6
 
 //Converstion types
 #define TYPE_CREATE 0

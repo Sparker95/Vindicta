@@ -317,11 +317,12 @@
 			"pr0_fnc_dialogue_createHUD",
 			"pr0_fnc_dialogue_createSentence",
 			"pr0_fnc_dialogue_registerDataSet",
-			"pr0_fnc_dialogue_removeHUD",
-			"pr0_fnc_dialogue_removeSentence",
+			"pr0_fnc_dialogue_deleteHUD",
+			"pr0_fnc_dialogue_deleteSentence",
 			"pr0_fnc_dialogue_setDataSets",
 			"pr0_fnc_dialogue_updateSentence",
-			"pr0_fnc_dialogue_common_bearingToID"
+			"pr0_fnc_dialogue_common_bearingToID",
+			"pr0_fnc_dialogue_common_unitSideColor"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"

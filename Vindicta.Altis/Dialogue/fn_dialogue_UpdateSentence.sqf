@@ -20,23 +20,21 @@ private _listener = _ctrl_sentence getVariable ["_listener",objNull];
 private _sentence = _ctrl_sentence getVariable ["_sentence",""];
 private _options = _ctrl_sentence getVariable ["_options",[]];
 private _type = _ctrl_sentence getVariable ["_type", TYPE_SENTENCE];
+private _distance_normal = _ctrl_sentence getVariable ["_distance_normal",1];
 
 private _display = ctrlParent _ctrl_sentence;
 
-private _color = [side _speaker,false] call BIS_fnc_sideColor; // Some colors don't look readable...
-private _colorHTML = _color call BIS_fnc_colorRGBtoHTML;
-private _colorTextHTML = "#FFFFFF";
-_colorHTML = "#660080";
-
-
-diag_log str ["sentenceUpdateText",_sentence];
-
 //when player is talking it will show up different
-if(_speaker isequalto player)then{
-	_ctrl_sentence ctrlSetStructuredText parseText format ["<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence];
+if(player isEqualTo _speaker)then{
+	_ctrl_sentence ctrlSetStructuredText parseText format [
+		"<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence
+	];
 }else{
+	private _color_unit = [_speaker, _listener] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_common_unitSideColor;
 	private _structedText =  parseText format [
-		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1'><t shadow = '2' shadowColor = '#ffffff'>%2:</t> <t color = '%3'>%4",_colorHTML,name _speaker,_colorTextHTML,_sentence];
+		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1' shadow = '2'>%2:</t> <t color = '#ffffff'>%3",
+		_color_unit,["Unknown",name _speaker]select (player knowsAbout _speaker == 4),_sentence
+	];
 
 	if(_type == TYPE_SENTENCE)then{
 		_ctrl_sentence ctrlSetStructuredText  _structedText;
@@ -68,6 +66,7 @@ if(_speaker isequalto player)then{
 		private _pos = ctrlposition _ctrl_sentence;
 		_pos set [3, (count _options + 1) * FLOAT_TEXT_HIGHT];
 		_ctrl_sentence ctrlsetposition _pos;
+		_ctrl_sentence setVariable ["_size_y",_pos#3];
 		_ctrl_sentence ctrlCommit 0;
 		
 		_ctrl_sentence ctrlSetStructuredText _structedText;
