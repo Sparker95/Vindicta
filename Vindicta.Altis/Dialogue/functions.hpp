@@ -24,14 +24,6 @@ class pr0 {
 	class dialogue_example {
 		file = "Dialogue\Testing";
 		class example {};
-	}
-	/*
-	class voice {
-		file = "Dialogue\Voice";
-		class voice_init {preinit = 1;};
-		class voice_say {};
 	};
-	*/
-
 
 };
