@@ -10,5 +10,5 @@ if!(_unused isEqualTo "")then{
 
 if(_dataSets isEqualType "")then{_dataSets = [_dataSets]};
 
-_unit setVariable ["dialogue_dataSet_ids",_dataSets];
+_unit setVariable ["dialogue_dataSet_ids",_dataSets,true];
 
