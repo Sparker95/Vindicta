@@ -48,6 +48,17 @@
             "problemMatcher": []
         },
         {
+            "label": "EDIT STASZOW",
+            "type": "process",
+            "command": "edit_staszow.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "EDIT SAVE",
             "type": "process",
             "command": "edit_save.bat",

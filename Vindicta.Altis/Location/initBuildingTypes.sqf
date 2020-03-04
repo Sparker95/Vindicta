@@ -161,7 +161,11 @@ location_bt_police =
 
 	//Livonia
 	"Land_PoliceStation_01_F",
-	"Land_House_2B04_F"
+	"Land_House_2B04_F",
+
+	// WW2 Staszo
+	"Land_WW2_Admin"
+	
 ];
 
 location_decorations_police =
