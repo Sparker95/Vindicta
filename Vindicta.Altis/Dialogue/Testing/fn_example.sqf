@@ -18,7 +18,7 @@ private _array1 = [
 private _array2 = [
 	["main_question",TYPE_INHERIT,{
 		[
-			[TYPE_OPTION, "Lets do some math", "math_intro"]
+			[TYPE_ANSWER, "Lets do some math", "math_intro"]
 		]
 	}],
 	["math_intro",{
@@ -31,8 +31,8 @@ private _array2 = [
 	["math_question",{
 		[
 			[TYPE_QUESTION, "What is 1+1?"],
-			[TYPE_OPTION, "2", "math_good"],
-			[TYPE_OPTION, "4", "math_bad"],
+			[TYPE_ANSWER, "2", "math_good"],
+			[TYPE_ANSWER, "4", "math_bad"],
 			[TYPE_EVENT_WALKED_AWAY, "math_WALKED_AWAY"],
 			[TYPE_EVENT_OUT_OF_TIME, "math_OUT_OF_TIME"]
 		]

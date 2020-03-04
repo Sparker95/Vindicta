@@ -16,9 +16,8 @@ params [["_ctrl_sentence",controlNull,[controlNull]]];
 disableSerialization;
 
 private _speaker = _ctrl_sentence getVariable ["_speaker",objNull];
-private _listener = _ctrl_sentence getVariable ["_listener",objNull];
 private _sentence = _ctrl_sentence getVariable ["_sentence",""];
-private _options = _ctrl_sentence getVariable ["_options",[]];
+private _answers = _ctrl_sentence getVariable ["_answers",[]];
 private _type = _ctrl_sentence getVariable ["_type", TYPE_SENTENCE];
 private _distance_normal = _ctrl_sentence getVariable ["_distance_normal",1];
 
@@ -30,7 +29,7 @@ if(player isEqualTo _speaker)then{
 		"<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence
 	];
 }else{
-	private _color_unit = [_speaker, _listener] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_common_unitSideColor;
+	private _color_unit = [_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_common_unitSideColor;
 	private _structedText =  parseText format [
 		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1' shadow = '2'>%2:</t> <t color = '#ffffff'>%3",
 		_color_unit,["Unknown",name _speaker]select (player knowsAbout _speaker == 4),_sentence
@@ -47,24 +46,24 @@ if(player isEqualTo _speaker)then{
 		private _answer_nr = 1;
 		{
 			if(_x isEqualTo _ctrl_sentence)exitWith{};
-			_answer_nr = _answer_nr + count (_x getVariable ["_options",[]])
+			_answer_nr = _answer_nr + count (_x getVariable ["_answers",[]])
 		}forEach _ctrl_questions;
 		
-		//add options to structured text		
+		//add answers to structured text		
 		{
-			private _option = _x;
+			private _answer = _x;
 			_structedText = composeText [
 				_structedText,
 				lineBreak,
 				" - ",
 				str (_forEachIndex + _answer_nr),
 				": ",
-				_option#INDEX_OPTION_TEXT
+				_answer#INDEX_ANSWER_TEXT
 			];
-		}forEach _options;
+		}forEach _answers;
 		
 		private _pos = ctrlposition _ctrl_sentence;
-		_pos set [3, (count _options + 1) * FLOAT_TEXT_HIGHT];
+		_pos set [3, (count _answers + 1) * FLOAT_TEXT_HIGHT];
 		_ctrl_sentence ctrlsetposition _pos;
 		_ctrl_sentence setVariable ["_size_y",_pos#3];
 		_ctrl_sentence ctrlCommit 0;

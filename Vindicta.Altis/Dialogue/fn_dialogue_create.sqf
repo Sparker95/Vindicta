@@ -21,18 +21,14 @@ _this spawn {
 
 params[
 	["_unit_1",objNull,[objNull]],
-	["_unit_2",objNull,[objNull]],
+	["_unit_2",objNull,[objNull]],//optional
 	["_node_id","",[""]],
 	["_end_script",{},[{}]],//optional
 	["_conversation_args",[],[]]//optional
 ];
 
-//run code on player if possible
-if(!(_unit_1 isEqualTo player) && {_unit_1 in Allplayers}) exitWith{
-	_this remoteExec ["pr0_fnc_dialogue_createConversation",_unit_1];
-};
-
 if(isnull _unit_2)then {_unit_2 = _unit_1};
+if(isNull _unit_1)exitWith{};
 
 //search for dateSets that are going to be used
 private _dataSets_registered = missionNamespace getVariable ["dialogue_dataSets",[]];
@@ -107,7 +103,8 @@ while{true}do{
 
 	private _sentences = [];
 	private _question = [];
-	private _options = [];
+	private _answers = [];
+	private _answer_ai = ["#end",{},[]];
 	private _new_node_array = ["#end",{},[]];
 	_events = [];{_events set [_x, ["#end",{},[]]];}forEach EVENT_TYPES;
 	
@@ -124,54 +121,59 @@ while{true}do{
 				format ["ERROR I: %1 TYPE: CAN NOT BE USED WITH INHERITENCE",_node_id,_type] call _fnc_error;
 			};
 
+			private _silence = _type == TYPE_SENTENCE_SILENECE;
+
 			switch (_type) do {
+				case TYPE_SENTENCE;
 				case TYPE_SENTENCE_SILENECE;
-				case TYPE_SENTENCE:{
+				case TYPE_QUESTION;
+				case TYPE_QUESTION_SILENECE:{
 					_x params [
 						["_text","",["",[]]], 
 						["_int_talker",0,[0]],
+						["_loudness",1,[0]],
 						["_script",{},[{}]],
 						["_args",[],[]]
 					];
-					private _silence = _type == TYPE_SENTENCE_SILENECE;
+					
+					private _speaker = [_unit_1, _unit_2] select (_int_talker-1);
+					private _listener = [_unit_2, _unit_1] select (_int_talker-1);
 
-					if!(_int_talker in [1,2])exitWith{
-						format["ERROR WRONG TALKER NR:%1",_node_id] call _fnc_error;
+					if!(_int_talker in [1,2])exitWith{format["ERROR WRONG TALKER NR:%1",_node_id] call _fnc_error;};
+					if(_text isEqualType [])then{_text = selectRandom _text};
+					
+					if(_type in [TYPE_SENTENCE_SILENECE,TYPE_SENTENCE])then{
+						_sentences pushBack [_text,_silence,_speaker,_listener,_loudness,_script,_args];
+					}else{
+						
+						if(_speaker in allPlayers)then{
+							_question = [_text,_silence,_speaker,_listener,_loudness,_script,_args];
+						};
 					};
-					_sentences pushBack [_text,_silence,_int_talker,_script,_args];
+					
 				};
-				case TYPE_QUESTION_SILENECE;
-				case TYPE_QUESTION: {
+				case TYPE_ANSWER;
+				case TYPE_ANSWER_AI:{
 					_x params [
-						["_text","",["",[]]],
+						["_jump","",["",[]]],
 						["_script",{},[{}]],
 						["_args",[],[]]
 					];
-					private _silence = _type == TYPE_QUESTION_SILENECE;
-					_question = [_text,_silence,_script,_args];
+					if(TYPE_ANSWER_AI)then{
+						_answer_ai = [_jump,_script,_args];
+					}else{
+						_answers pushBack [_jump,_script,_args];
+					};	
 				};
-				case TYPE_OPTION_SILENECE;
-				case TYPE_OPTION:   {
-					_x params [
-						["_text","",["",[]]],
-						["_jump","",[""]],
-						["_spoke_text","",["",[]]],
-						["_script",{},[{}]],
-						["_args",[],[]]
-					];
-					private _silence = _type == TYPE_OPTION_SILENECE;
-					if(_spoke_text isEqualType "")then{_spoke_text = _text};
-					_options pushBack [_text,_silence,_jump,_spoke_text,_script,_args];
-				};
-				case TYPE_REMOVE_OPTION:{
+				case TYPE_REMOVE_ANSWER:{
 					_x params [["_jump","",[""]]];
-					private _a = (count _options -1);
+					private _a = (count _answers -1);
 					for "_i" from _a to 0 do{
-						(_options#_i) params [
+						(_answers#_i) params [
 							["_text_i","",["",[]]],
 							["_jump_i","",[""]]
 						];
-						if(_jump isEqualto _jump_i)then{_options deleteAt _i}
+						if(_jump isEqualto _jump_i)then{_answers deleteAt _i}
 					};
 				};
 				case TYPE_JUMP_TO: {
@@ -200,39 +202,16 @@ while{true}do{
 
 	}; 
 
-	private _new_node_id = _new_node_array#INDEX_NEW_NODE_JUMP;
 
 	//check if conversation is properly structured 
 	if((count _sentences + count _question) == 0)exitWith{
 		format["ERROR NO SENTENCE OR QUESTION: %1",_node_id]call _fnc_error};
-	if(count _question > 0 && count _options == 0)exitWith{
-		format["ERROR NO OPTIONS FOR QUESTION: %1",_node_id]call _fnc_error};
-	if(count _question > 0 && {!(_new_node_id isEqualTo "#end")})exitWith{
+	if(count _question > 0 && count _answers == 0)exitWith{
+		format["ERROR NO ANSWERS FOR QUESTION: %1",_node_id]call _fnc_error};
+	if(count _question > 0 && {!(_new_node_array#INDEX_EVENT_JUMP isEqualTo "#end")})exitWith{
 		format["ERROR QUESTION AND JUMP GIVEN: %1",_node_id]call _fnc_error};
-	if(_new_node_id isEqualTo "" && count _question == 0)exitWith{
+	if(_new_node_array#INDEX_EVENT_JUMP isEqualTo "#end" && count _question == 0)exitWith{
 		format["ERROR NO QUESTION OR JUMP GIVEN IN: %1",_node_id]call _fnc_error};
-	if(count _question > 0 && {!(_unit_1 isequalto player)})exitWith{
-		format["ERROR QUESTION AND NO PLAYER: %1",_node_id]call _fnc_error};
-
-
-	//select random sentence if array was given
-	{
-		if(_x#INDEX_SENTENCE_TEXT isEqualType [])then{
-			_x set [INDEX_SENTENCE_TEXT, selectRandom (_x#INDEX_SENTENCE_TEXT)];
-		};
-	}forEach _sentences;
-	{
-		if(_x#INDEX_OPTION_TEXT isEqualType [])then{
-			_x set [INDEX_OPTION_TEXT, selectRandom (_x#INDEX_OPTION_TEXT)];
-		};
-		if(_x#INDEX_OPTION_FULL_TEXT isEqualType [])then{
-			_x set [INDEX_OPTION_FULL_TEXT, selectRandom (_x#INDEX_OPTION_FULL_TEXT)];
-		};
-	}forEach _options;
-	if(_question#INDEX_QUESTION_TEXT isEqualType [])then{
-		_question set [INDEX_QUESTION_TEXT, selectRandom _question#INDEX_QUESTION_TEXT]
-	};
-
 
 	//stop conversation if one unit is dead or unconsious 
 	if(
@@ -273,164 +252,97 @@ while{true}do{
 		[_unit_1,_unit_2,_conversation_args,(_x#INDEX_SENTENCE_ARGS)] call (_x#INDEX_SENTENCE_SCRIPT);
 		
 		//Check if sentences is a hint or silince sentence
-		private _text = (_x#INDEX_SENTENCE_TEXT);
-
-		if(_x#INDEX_SENTENCE_SILENCE)then{
-			//show sentence only to player
-			[_unit_1, _unit_2, _text] call pr0_fnc_dialogue_createSentence;
+		private _text = _x#INDEX_SENTENCE_TEXT;
+		private _speaker = _x#INDEX_SENTENCE_SPEAKER;
+		private _listener = _x#INDEX_SENTENCE_LISTENER;
+		private _loudness = _x#INDEX_SENTENCE_LOUDNESS;
+		private _silence = _x#INDEX_SENTENCE_SILENCE;
+		if(_silence)then{
+			//show sentence to the ones who are having the conversation
+			if(_speaker in Allplayers)then{
+				[_speaker, _text, _loudness] remoteExecCall [pr0_fnc_dialogue_createSentence,_speaker];
+			};
+			if(_listener in Allplayers)then{
+				[_speaker, _text, _loudness] remoteExecCall [pr0_fnc_dialogue_createSentence,_listener];
+			};
 		}else{
 			//show sentence to everone who is nearby
-			private _speaker = [_unit_1,_unit_2] select ((_x#INDEX_SENTENCE_SPEAKER_NR)-1);
-			private _listener = [_unit_2,_unit_1] select ((_x#INDEX_SENTENCE_SPEAKER_NR)-1);
 			{
 				if(_x distance _speaker < FLOAT_MAX_LISTENING_DISTANCE)then{
-					
-					[_speaker, _listener, _text] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+					[_speaker,_text,_loudness] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
 				};
 			}forEach (Allplayers - entities "HeadlessClient_F");
 		};
 		sleep ((count (_x#INDEX_SENTENCE_TEXT))/12 + 0.5);
 	}foreach _sentences;
 
-
-
 	//-----------------------------------------------------------
 	//				Create Question if there is one				|
 	//-----------------------------------------------------------
 
 	if(count _question > 0)then{
-	
-		disableSerialization;
-		private _display = findDisplay 46;
-
-		private _speaker = _unit_2;
-		private _listener = player;
 		
-		[_unit_1,_unit_2,_conversation_args,(_question#INDEX_QUESTION_ARGS)] call (_question#INDEX_QUESTION_SCRIPT);
+		//run optional code if it was given
+		[_unit_1,_unit_2,_conversation_args,(_question#INDEX_SENTENCE_ARGS)] call (_question#INDEX_SENTENCE_SCRIPT);
 
-		if(_question#INDEX_QUESTION_SILENCE)then{
-			//show the question to all players except player.
+		private _text = _question#INDEX_SENTENCE_TEXT;
+		private _speaker = _question#INDEX_SENTENCE_SPEAKER;
+		private _listener = _question#INDEX_SENTENCE_LISTENER;
+		private _loudness = _question#INDEX_SENTENCE_LOUDNESS;
+		private _silence = _question#INDEX_SENTENCE_SILENCE;
+		
+
+
+		if(!_silence)then{
+			//show the question to all players except listener.
+			//listener needs dialogue with options
 			{
 				if(_x distance _speaker < FLOAT_MAX_LEAVING_QUESTION_DISTANCE)then{
-					[_speaker, _listener, _question#INDEX_QUESTION_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+					[_speaker, _text,_loudness] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
 				};
-			}forEach (Allplayers - entities "HeadlessClient_F" - [player]);
+			}forEach (Allplayers - entities "HeadlessClient_F" - _listener);
 		};
 
-		//Create sentence with answers for player
-		private _ctrl_question = [_speaker,_listener,_question#INDEX_QUESTION_TEXT,_options] call pr0_fnc_dialogue_createSentence;
-		
-		private _ctrl_questions = _display getvariable ["pr0_dialogue_question_list" ,[]];
-		_ctrl_questions pushBack _ctrl_question;
-		_display setvariable ["pr0_dialogue_question_list" ,_ctrl_questions];
-		
-		
-		//-----------------------------------------------------------
-		//		Create keyevent and wait until its clicked			|
-		//-----------------------------------------------------------
 
-		private _keyDownEvent = _display getVariable "pr0_dialogue_keyDownEvent";
-		if(isNil "_keyDownEvent")then{
-			private _keyDownEvent = _display displayAddEventHandler ["KeyDown", { 
-				params ["_display", "_key", "_shift", "_ctrl", "_alt"];
-				_key = _key-1;//normalize to number on keyboard key_1 == 2
-				if (_key >0 && _key  <=9) then {
-					private _ctrl_questions = _display getvariable ["pr0_dialogue_question_list" ,[]];
-					private _answers_total = 0;
-					{
-						private _ctrl_question = _x;
-						private _answers_ = count (_ctrl_question getVariable ["_options",[]]);
-						if(_key<=_answers_)exitWith{
-							_ctrl_question setVariable ["answer_index", _key-1-_answers_total];
-						};
-						_answers_total = _answers_total + _answers_;
-					}forEach _ctrl_questions;
-					true;//disable default key events (commanding menu)
-				}else{
-					false;
-				};   
-			}];
-			_display setVariable ["pr0_dialogue_keyDownEvent",_keyDownEvent];
-		};
-
-		//wait untill we get an answer
-		private _selected_index = -1;
-		private _waiting_since = time; 
-		waitUntil {
-			sleep 0.1;
-			_selected_index = _ctrl_question getVariable ["answer_index",-1];
+		if(_listener in Allplayers)then{
 			
-			if(_unit_1 distance _unit_2 > 10)then{_selected_index = -TYPE_EVENT_WALKED_AWAY};
-			if(time > _waiting_since + FLOAT_MAX_WAIT_FOR_ANSWER)then{_selected_index = -TYPE_EVENT_OUT_OF_TIME};
-			if(
-				!alive _unit_2 || {
-				_unit_2 getVariable ["ace_isunconscious",false] || {
-				_unit_2 getVariable ["ace_isunconscious",false] }}
-			)then{_selected_index = -TYPE_EVENT_DEATH};
-			_selected_index != -1;
-		};
+			//create question for client
+			[_speaker,_text,_loudness] remoteExec ["pr0_fnc_dialogue_createQuestion",_listener];
 
-
-		//-----------------------------------------------------------
-		//					Check given answer						|
-		//-----------------------------------------------------------
-
-
-		
-		//Remove options from question sentence
-		_ctrl_question setVariable ["_options",[]];
-		[_ctrl_question] call pr0_fnc_dialogue_updateSentence;
-		
-		//remove question from question list so its not being used anymore
-		private _ctrl_questions = _display getvariable ["pr0_dialogue_question_list" ,[]];
-		_ctrl_questions pushBack _ctrl_question;
-		_display setvariable ["pr0_dialogue_question_list" ,_ctrl_questions];
-		
-		//update all questions (renumber answers and remove answers from the question that has been answered)
-		{_x  call pr0_fnc_dialogue_updateSentence;}foreach _ctrl_questions;
-		
-		//change type so it can be removed
-		_ctrl_question setVariable ["_type", TYPE_SENTENCE];
-
-		//No answer given for some reason.
-		if(-_selected_index in EVENT_TYPES)exitWith{
-			_new_node_id = _events # -_selected_index # INDEX_EVENT_JUMP;
+			//wait for answer from player
+			_listener setVariable ["pr0_dialogue_answer_index",[]];
+			waitUntil{
+				sleep 0.1;
+				(_listener getVariable ["pr0_dialogue_answer_index", []] isEqualto []);
+			};
+			_answer_index = _listener getVariable ["pr0_dialogue_answer_index", []];
 			
-			//i think we can ignore empty strings
-			if(_new_node_id isEqualTo "")then{_new_node_id isEqualTo "#end"};
+			//No answer given for some reason.
+			if(_answer_index < 0)exitWith{
+				_new_node_array = _events # -_answer_index;
+			};
 
-			//Check if script was given in case of this event
-			[_unit_1,_unit_2,_conversation_args,(_events # -_selected_index # INDEX_EVENT_ARGS)]
-				call (_events # -_selected_index # INDEX_EVENT_SCRIPT);
-		};
-		
-		//what did we answer?
-		private _selected_option = _options#(_selected_index);
+			//what did we answer?
+			private _answer = _answers#(_answer_index);
 
-		//update conversation_id
-		_new_node_id = _selected_option#INDEX_OPTION_JUMP;
-		([_unit_1, _unit_2]+[_new_node_array#INDEX_NEW_NODE_ARGS]) call _new_node_array#INDEX_NEW_NODE_SCRIPT;
+			//update conversation_id
+			_new_node_array = _answer;
 
-		if(_selected_option#INDEX_OPTION_SILENCE)then{
-			[_unit_1, _unit_2, _selected_option#INDEX_OPTION_FULL_TEXT] call "pr0_fnc_dialogue_createSentence";
 		}else{
-			//let everone know what we have answers!
-			{
-				if(_x distance _unit_1 < FLOAT_MAX_LISTENING_DISTANCE)then{
-					[_unit_1, _unit_2, _selected_option#INDEX_OPTION_FULL_TEXT] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
-				};
-			}forEach (Allplayers - entities "HeadlessClient_F");		
+			//question asked to a AI
+			_new_node_array = _answer_ai;
 		};
-
-		sleep (count(_selected_option#INDEX_OPTION_FULL_TEXT)/12 + 0.5);
+		
 	};// end if question
 
+	//run optional script
+	private _args = [_unit_1, _unit_2, _conversation_args,_new_node_array#INDEX_EVENT_ARGS];
+	_args call (_new_node_array#INDEX_EVENT_SCRIPT);
 
+	_new_node_id = _new_node_array#INDEX_EVENT_JUMP;
 	if(_new_node_array isEqualTo "")exitWith{
 		format["ERROR NO NEW NODE ID GIVEN FOR: %1",_node_id]call _fnc_error;
 	};
-
-
 	if(_new_node_id isEqualTo "#end")exitWith{};
 	
 	//valid new conversation found. Loop back and do everything again!

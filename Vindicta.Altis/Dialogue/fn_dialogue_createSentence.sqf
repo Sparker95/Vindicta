@@ -8,16 +8,15 @@
 	
 	Input:
 		_speaker: unit who is talking
-		_listener(optional): To whome is he talking, by default talking to nearby units
 		_sentence: What needs to be said
-		_options: If you want to create a question with some answers
+		_anwers: If you want to create a question with some answers
 		
 	Output:
 		controlObj: the created sentence 
 */
 
 
-params[["_speaker",objnull,[objnull]],["_listener",objnull,[objnull]],["_sentence","",[""]],["_options",[],[[]]]];
+params[["_speaker",objnull,[objnull]],["_sentence","",[""]],["_loudness",1,[0]],["_answers",[],[[]]]];
 
 diag_log str ["createSentence1",_sentence];
 
@@ -51,14 +50,13 @@ _ctrl_sentence ctrlSetFade 1;
 _ctrl_sentence ctrlCommit 0;
 _ctrl_sentence ctrlSetFade _fade;
 
-private _type = 		[TYPE_SENTENCE, TYPE_QUESTION]		select (count _options > 0);
+private _type = 		[TYPE_SENTENCE, TYPE_QUESTION]		select (count _answers > 0);
 private _removeTime = 	time + FLOAT_DISPLAYTIME; 
 _ctrl_sentence setVariable ["_removeTime",_removeTime];
 
 _ctrl_sentence setVariable ["_speaker", _speaker];
-_ctrl_sentence setVariable ["_listener", _listener];
 _ctrl_sentence setVariable ["_sentence", _sentence];
-_ctrl_sentence setVariable ["_options", _options];
+_ctrl_sentence setVariable ["_answers", _answers];
 _ctrl_sentence setVariable ["_type", _type];
 _ctrl_sentence setVariable ["_size_y",FLOAT_TEXT_HIGHT];
 
@@ -157,11 +155,7 @@ for "_i" from count _ctrl_sentences -1 to 0 step -1 do{
 	_ctrl_sentence ctrlsetposition [0,FLOAT_POS_Y - FLOAT_TEXT_HIGHT - _pos_y,1,FLOAT_TEXT_HIGHT];
 	_ctrl_sentence ctrlCommit FLOAT_SCROLL_TIME;
 
-	if!(_player_involved)then{
-		private _speaker = _ctrl_sentence getVariable ["_speaker",objNull];
-		private _listener = _ctrl_sentence getVariable ["_listener",objNull];
-		_player_involved = player in [_speaker,_listener];
-	};
+	_player_involved = (_player_involved || {player isEqualType _speaker});
 	
 	private _size_y = _ctrl_sentence getVariable ["_size_y",0];//(ctrlPosition _ctrl_sentence) # 3; doesnt work because its 0 when we create it
 	_pos_y = _pos_y + _size_y;
@@ -185,18 +179,16 @@ if(count _ctrl_sentences > ([INT_SENTENCE_LIMIT, INT_SENTENCE_LIMIT_PLAYER_INVOL
 };
 
 //lip sycn
-
 private _timer = _speaker getvariable ["pr0_dialogue_lip_timer",0];
 private _timer_new = (count _sentence / 12) + time;
 if(_timer_new >_timer)then{
 	_speaker setvariable ["pr0_dialogue_lip_timer",_timer_new];
 	private _script = _speaker getvariable ["pr0_dialogue_lip_script",scriptnull];
 	terminate _script;//close old
-	_script = [_speaker,_listener] spawn {
-		params["_speaker","_listener"];
+	_script = [_speaker] spawn {
+		params["_speaker"];
 		_speaker setRandomLip true;
 		waitUntil{
-			//if (!isNull _listener) then {_speaker lookAt ASLToAGL eyepos _listener;};
 			sleep 0.3;
 			( time > _speaker getvariable ["pr0_dialogue_lip_timer",0]);
 		};

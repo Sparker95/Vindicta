@@ -16,6 +16,8 @@ class pr0 {
 		class dialogue_createSentence {};
 		class dialogue_deleteSentence {};
 		class dialogue_updateSentence {};
+
+		class dialogue_createQuestion {};
 		
 		class dialogue_createHUD {};
 		class dialogue_deleteHUD {postinit = 1;};//remove old hud
