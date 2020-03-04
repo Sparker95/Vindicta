@@ -311,6 +311,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			};
 		} forEach _intelReminders;
 
+
 		/*
 			Hotfix for crappy night time experience, until we can skip night.
 
@@ -334,7 +335,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			7h min: 50
 
 			To complete this, we would have to take moonphases into consideration.
-		*/
+
 
 		// index is the hour, value is the aperture min value
 		pr _apertureTable = [
@@ -391,6 +392,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			//systemChat "Resetting aperture values.";
 			setApertureNew [-1]; // reset
 		};
+		*/
 	} ENDMETHOD;
 
 	METHOD("getCurrentLocations") {
