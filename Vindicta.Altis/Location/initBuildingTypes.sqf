@@ -127,6 +127,11 @@ location_bp_cargo_medium =
 	[
 		["Land_PoliceStation_01_F"],
 		[[2.60131,61.8427,1.29491], [7.02257,323.042,0.777817], [4.66018,296.356,0.788269], [7.448,319.591,4.42163], [8.1648,252.885,4.26756]]
+	],
+	//WW2 Staszow
+	[
+		["Land_WW2_Admin"],
+		[[2.64597,143.778,0.32269], [3.85001,153.389,0.32269], [5.09535,16.3686,0.32269], [3.9212,24.0332,0.32269]]
 	]
 ];
 
@@ -202,6 +207,11 @@ location_decorations_police =
 	[
 		["Land_u_House_Small_01_V1_F","Land_i_House_Small_01_V3_F","Land_i_House_Small_01_V1_F","Land_i_House_Small_01_V2_F"],
 		[[[-1.12695,-4.81641,1.56931],[[0.012478,0.999922,0],[0,0,1]]],[[1.53125,5.28711,1.06545],[[-0.01174,-0.999931,0],[0,0,1]]]]
+	],
+	//WW2 Staszow
+	[
+		["Land_WW2_Admin"],
+		[[[-3.9,1.5,2],[[1,-4.37114e-008,0],[0,0,1]]]]	
 	]
 ];
 
@@ -214,6 +224,9 @@ location_bt_radio =
 	"Land_TTowerBig_1_F",		// A-like transmitter tower
 	"Land_TTowerBig_2_F",		// Tall I-like transmitter tower
 	"Land_Communication_F"		// Tall tower with antennas on top, often found at military outposts
+	
+	// WW2
+	"Land_wx_radiomast" 		// WW2 radio mast.
 ];
 
 // Objects which heal units
