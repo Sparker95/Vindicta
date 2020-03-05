@@ -247,9 +247,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _surfaceVectorUp = surfaceNormal _pos;
 
 		// Remove exec it so that it updates instantly on all computers
-		[_hO, _pos] remoteExec ["setPos"];
+		//[_hO, _pos] remoteExec ["setPos"];
 		//[_hO, _dir] remoteExec ["setDir"];
 		//[_hO, _surfaceVectorUp] remoteExec ["setVectorUp"];
+		
+		_hO setPos _pos;
 		_hO setVectorDirAndUp [_dir, _surfaceVectorUp];
 
 		if (_catID != -1) then {
