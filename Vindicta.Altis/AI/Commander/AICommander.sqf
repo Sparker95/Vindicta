@@ -1630,7 +1630,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	// Call it through postMethodAsync !
 	METHOD("clientCreateMoveAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
@@ -1638,7 +1638,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateReinforceAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
@@ -1646,7 +1646,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateAttackAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
@@ -1655,15 +1655,28 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	// Thread unsafe, private
 	METHOD("_clientCreateGarrisonAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
 
 		OOP_INFO_1("CLIENT CREATE GARRISON ACTION: %1", _this);
 
+		// First split us off a new garrison if the specified one is at a location, we never want to abandon a location entirely
+		// like this
+		private _loc = CALLM0(_garRef, "getLocation");
+		private _finalGar = if(!IS_NULL_OBJECT(_loc)) then {
+			T_CALLM1("splitGarrisonFromLocation", _garRef)
+		} else {
+			_garRef
+		};
+
+		if(IS_NULL_OBJECT(_finalGar)) exitWith {
+			OOP_ERROR_1("_clientCreateGarrisonAction: Could not split any usable garrison from location of %1", _garRef);
+		};
+
 		// Get the garrison model associated with this _garRef
 		T_PRVAR(worldModel);
-		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _finalGar);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
-			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
+			OOP_ERROR_1("_clientCreateGarrisonAction: No model of garrison %1", _finalGar);
 		};
 
 		// Resolve the destination position
@@ -1705,6 +1718,35 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
 	} ENDMETHOD;
 
+	// Gets called if player moves a garrison attached to a location to instead create
+	// a new garrison split from the location, taking only non static vehicles and inf
+	METHOD("splitGarrisonFromLocation") {
+		PARAMS[P_THISOBJECT, P_STRING("_garSrcRef")];
+
+		ASSERT_THREAD(_thisObject);
+
+		// Create a new garrison
+		pr _pos = CALLM0(_garSrcRef, "getPos");
+		pr _faction = CALLM(_garSrcRef, "getFaction", []);
+
+		// Get all the units except statics and cargo
+		private _combatUnits = (CALLM0(_garSrcRef, "getUnits") select { !CALLM0(_x, "isStatic") && {!CALLM0(_x, "isCargo")} });
+
+		// Take the units
+		if(count _combatUnits > 0) then {
+			pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
+			pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
+			CALLM2(_newGarr, "postMethodSync", "takeUnits", [_garSrcRef ARG _combatUnits]);
+			// Activate the new garrison
+			// it will register itself here as well
+			CALLM0(_newGarr, "activate");
+			// Return the new garrison
+			_newGarr
+		} else {
+			// Failed
+			NULL_OBJECT
+		}
+	} ENDMETHOD;
 
 	// Gets called remotely from player's 'split garrison' dialog
 	METHOD("splitGarrisonFromComposition") {
@@ -1829,15 +1871,29 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		});
 		CALLM0(gMessageLoopMain, "unlock");
 
-		// Bail if this place is still occupied by enemy
+		// Bail if this place is still occupied by too many enemy
 		if (_enemies > 4) exitWith {
 			pr _args = ["We can't capture this place because too many enemies still remain alive in the area!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
-		// Kick out the enemy garrisons
+		// Create new empty garrison for the location
+		pr _pos = CALLM0(_loc, "getPos");
+		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+
+		// Kick out the enemy garrisons (and claim their empty vehicles and cargo)
 		{
-			CALLM2(_x, "postMethodAsync", "setLocation", [NULL_OBJECT]);
+			private _enemyGar = _x;
+			// Get all the empty vehicles and cargo
+			private _spoils = (CALLM1(_enemyGar, "findUnits", [[T_VEH ARG -1] ARG [T_CARGO ARG -1]]) select {
+				// (isEmpty returns true for non vehicles always)
+				CALLM0(_x, "isEmpty")
+			});
+			// Take the spoils
+			if(count _spoils > 0) then {
+				CALLM2(_gar, "takeUnits", _enemyGar, _spoils);
+			};
+			CALLM2(_enemyGar, "postMethodAsync", "setLocation", [NULL_OBJECT]);
 		} forEach _enemyGarrisons;
 
 		// Remove build resources from player or vehicle
@@ -1849,9 +1905,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		};
 
-		// Create the garrison
-		pr _pos = CALLM0(_loc, "getPos");
-		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
 		CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 		// Need to do this *after* assigning a location as we don't want it to get destroyed
 		CALLM2(_gar, "postMethodAsync", "activate", []);

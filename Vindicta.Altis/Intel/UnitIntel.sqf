@@ -338,15 +338,6 @@ CLASS("UnitIntel", "")
 
 		private _inst = CALLSM0("TacticalTablet", "newInstance");
 
-		private _tipOfTheDay = 	[	"Always wear a helmet, even at base!",
-									"Have you checked your ammo?",
-									"Stay alert when on patrol!",
-									"Ensure your radio frequency and channel!",
-									"Never do a selfie in fight!",
-									"Remember to stay in formation, ... but not too close!",
-									"Remember to check fuel of your vehicles!",
-									"Find your gun safety switch before fight!"];
-
 		// Make us some time while we are waiting for server response...
 		pr _endl = toString [13,10];
 		CALLM2(_inst,"appendTextDelay", "Welcome to TactiCool OS v28.3!" + _endl + "Detected 128 GB RAM, 16 TB SSD" + _endl, 0.1);
@@ -362,7 +353,7 @@ CLASS("UnitIntel", "")
 		CALLM2(_inst,"appendTextDelay", _text, 0.05);
 
 		CALLM2(_inst,"appendTextDelay", _endl + "Tip of the day:" + _endl,  0.1 + random 0.2);
-		CALLM2(_inst,"appendTextDelay", selectrandom _tipOfTheDay, 0);
+		CALLM2(_inst,"appendTextDelay", selectrandom gCombatTips, 0);
 		CALLM2(_inst,"appendTextDelay", _endl, 0);
 
 		CALLM2(_inst,"appendTextDelay", _endl + "Connecting to TactiCommNetwork server..." + _endl,  0.15 + random 0.2);

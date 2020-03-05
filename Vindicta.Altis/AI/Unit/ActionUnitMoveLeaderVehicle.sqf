@@ -100,7 +100,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			_wp setWaypointFormation "COLUMN";
 			_wp setWaypointBehaviour "SAFE";
 			_wp setWaypointCombatMode "GREEN";
-			_wp setWaypointCompletionRadius 20;
+			_wp setWaypointCompletionRadius 100;
 			_waypoints pushBack _wp;
 		};
 

@@ -23,6 +23,7 @@ call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
 call compile preprocessFileLineNumbers "Templates\initComposition.sqf";
 call compile preprocessFileLineNumbers "Templates\initPlayerSpawnTemplates.sqf";
 call compile preprocessFileLineNumbers "Templates\initLoadouts.sqf";
+call compile preprocessFileLineNumbers "Templates\combatTips.sqf";
 
 if (IS_SERVER) then {
 	call compile preprocessFileLineNumbers "Templates\initFactions.sqf";

@@ -1375,6 +1375,97 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
+	Method: assignUnits
+	Same as assignUnits, but removes units from thier existing group.
+
+	Parameters: _units
+
+	_units - array of <Unit> object
+
+	Returns: nil
+	*/
+	METHOD("assignUnits") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		// Remove the units from thier group
+		{
+			private _unit = _x;
+			pr _unitGroup = CALLM0(_unit, "getGroup");
+			if (_unitGroup != NULL_OBJECT) then {
+				CALLM1(_unitGroup, "removeUnit", _unit);
+			};
+		} forEach _units;
+
+		// Move the units into the players garrison
+		T_CALLM1("addUnits", _units);
+	} ENDMETHOD;
+
+	/*
+	Method: takeUnits
+	Same as takeUnits, but creates new groups for the units where required
+
+	Parameters: _units
+
+	_units - array of <Unit> object
+
+	Returns: nil
+	*/
+	METHOD("takeUnits") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_units")];
+		
+		private _inf = _units select { CALLM0(_x, "getCategory") == T_INF };
+		private _vehiclesStaticsAndDrones = _units select { CALLM0(_x, "getCategory") in [T_VEH, T_DRONE] };
+		private _cargo = _units select { CALLM0(_x, "getCategory") == T_CARGO };
+
+		private _statics = _vehiclesStaticsAndDrones select { CALLM0(_x, "getSubcategory") in T_VEH_static };
+		private _vehiclesAndDrones = _vehiclesStaticsAndDrones - _statics;
+
+		// Reorganize the infantry units we are moving
+		if (count _inf > 0) then {
+			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+			pr _newInfGroups = [_newGroup];
+			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
+			// forEach _inf;
+			{
+				// Create a new inf group if the current one is 'full'
+				if (count CALLM0(_newGroup, "getUnits") > 6) then {
+					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+					_newInfGroups pushBack _newGroup;
+					CALLM1(_garSrc, "addGroup", _newGroup);
+				};
+
+				// Add the unit to the group
+				CALLM1(_newGroup, "addUnit", _x);
+			} forEach _inf;
+
+			// Move all the infantry groups
+			{
+				T_CALLM1("addGroup", _x);
+			} forEach _newInfGroups;
+		};
+
+		// Move all the vehicle units into one group
+		// Vehicles need to be moved within a group too
+		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		if (count _vehiclesAndDrones > 0) then {
+			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]);
+			CALLM1(_garSrc, "addGroup", _newVehGroup);
+			{
+				CALLM1(_newVehGroup, "addUnit", _x);
+			} forEach _vehiclesAndDrones;
+
+			// Move the veh group
+			T_CALLM1("addGroup", _newVehGroup);
+		};
+
+		// TODO: static groups?
+		// We will keep cargo and statics not in groups for now
+		T_CALLM1("assignUnits", _cargo + _statics);
+
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
+	} ENDMETHOD;
+
+	/*
 	Method: addUnits
 	Same as addUnit, but for an array of units.
 
@@ -1384,7 +1475,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-
 	METHOD("addUnits") {
 		params[P_THISOBJECT, P_ARRAY("_units")];
 		__MUTEX_LOCK;
@@ -2020,10 +2110,11 @@ CLASS("Garrison", "MessageReceiverEx");
 			[_catID, _subcatID, _classID]
 		};
 
-		// Find units for each category
-		pr _unitsFound = [[], [], []];
-		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones"];
+		//// Find units for each category
+		//pr _unitsFound = [[], [], []];
+		//_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones"];
 		// forEach [T_INF, T_VEH, T_DRONE];
+		private _unitsFound = [];
 		{
 			pr _catID = _x;
 			// forEach _comp#_catID;
@@ -2037,7 +2128,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					pr _index = _unitsSrcData find [_catID, _subcatID, _classID];
 					if (_index != -1) then {
 						// There is a match
-						(_unitsFound#_catID) pushBack (_unitsSrc#_index); // Move to the array with found units
+						_unitsFound pushBack (_unitsSrc#_index); // Move to the array with found units
 						_unitsSrc deleteAt _index;
 						_unitsSrcData deleteAt _index;
 					} else {
@@ -2046,49 +2137,50 @@ CLASS("Garrison", "MessageReceiverEx");
 					};
 				} forEach _classes;
 			} forEach _comp#_catID;
-		} forEach [T_INF, T_VEH, T_DRONE];
+		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 
-		// Reorganize the infantry units we are moving
-		if (count _unitsFoundInf > 0) then {
-			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
-			pr _newInfGroups = [_newGroup];
-			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
-			// forEach _unitsFoundInf;
-			{
-				// Create a new inf group if the current one is 'full'
-				if (count CALLM0(_newGroup, "getUnits") > 6) then {
-					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
-					_newInfGroups pushBack _newGroup;
-					CALLM1(_garSrc, "addGroup", _newGroup);
-				};
+		T_CALLM1("takeUnits", _unitsFound);
+		// // Reorganize the infantry units we are moving
+		// if (count _unitsFoundInf > 0) then {
+		// 	_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+		// 	pr _newInfGroups = [_newGroup];
+		// 	CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
+		// 	// forEach _unitsFoundInf;
+		// 	{
+		// 		// Create a new inf group if the current one is 'full'
+		// 		if (count CALLM0(_newGroup, "getUnits") > 6) then {
+		// 			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+		// 			_newInfGroups pushBack _newGroup;
+		// 			CALLM1(_garSrc, "addGroup", _newGroup);
+		// 		};
 
-				// Add the unit to the group
-				CALLM1(_newGroup, "addUnit", _x);
-			} forEach _unitsFoundInf;
+		// 		// Add the unit to the group
+		// 		CALLM1(_newGroup, "addUnit", _x);
+		// 	} forEach _unitsFoundInf;
 
-			// Move all the infantry groups
-			{
-				CALLM1(_thisObject, "addGroup", _x);
-			} forEach _newInfGroups;
-		};
+		// 	// Move all the infantry groups
+		// 	{
+		// 		CALLM1(_thisObject, "addGroup", _x);
+		// 	} forEach _newInfGroups;
+		// };
 
-		// Move all the vehicle units into one group
-		// Vehicles need to be moved within a group too
-		pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
-		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
-		if (count _vehiclesAndDrones > 0) then {
-			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
-			CALLM1(_garSrc, "addGroup", _newVehGroup);
-			{
-				CALLM1(_newVehGroup, "addUnit", _x);
-			} forEach _vehiclesAndDrones;
+		// // Move all the vehicle units into one group
+		// // Vehicles need to be moved within a group too
+		// pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
+		// OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		// if (count _vehiclesAndDrones > 0) then {
+		// 	pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
+		// 	CALLM1(_garSrc, "addGroup", _newVehGroup);
+		// 	{
+		// 		CALLM1(_newVehGroup, "addUnit", _x);
+		// 	} forEach _vehiclesAndDrones;
 
-			// Move the veh group
-			CALLM1(_thisObject, "addGroup", _newVehGroup);
-		};
+		// 	// Move the veh group
+		// 	CALLM1(_thisObject, "addGroup", _newVehGroup);
+		// };
 
-		// Delete empty groups in the src garrison
-		CALLM0(_garSrc, "deleteEmptyGroups");
+		// // Delete empty groups in the src garrison
+		// CALLM0(_garSrc, "deleteEmptyGroups");
 
 		__MUTEX_UNLOCK;
 
@@ -3253,17 +3345,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_WARNING_2("Can't add units, no valid units to add, player: %1, unit handles: %2", _player, _unitHandles);
 		};
 
-		// Remove the units from thier group
-		{
-			private _unit = _x;
-			pr _unitGroup = CALLM0(_unit, "getGroup");
-			if (_unitGroup != NULL_OBJECT) then {
-				CALLM1(_unitGroup, "removeUnit", _unit);
-			};
-		} forEach _units;
-
-		// Move the units into the players garrison
-		CALLM1(_tgtGarrison, "addUnits", _units);
+		// Assign the units to the players garrison
+		CALLM1(_tgtGarrison, "assignUnits", _units);
 
 		pr _nearbyClients = allPlayers select { side group _x == side group _player && (_x distance _player) < 100 } apply { owner _x };
 		private _msg = format ["%1 units assigned to %2", count _units, name _player];
