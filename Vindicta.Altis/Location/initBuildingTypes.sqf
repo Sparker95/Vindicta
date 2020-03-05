@@ -223,7 +223,7 @@ location_bt_radio =
 	"Land_TTowerSmall_2_F",		// Verticall array of small dipoles
 	"Land_TTowerBig_1_F",		// A-like transmitter tower
 	"Land_TTowerBig_2_F",		// Tall I-like transmitter tower
-	"Land_Communication_F"		// Tall tower with antennas on top, often found at military outposts
+	"Land_Communication_F",		// Tall tower with antennas on top, often found at military outposts
 	
 	// WW2
 	"Land_wx_radiomast" 		// WW2 radio mast.
