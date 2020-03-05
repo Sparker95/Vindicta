@@ -2139,7 +2139,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			} forEach _comp#_catID;
 		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 
-		T_CALLM1("takeUnits", _unitsFound);
+		T_CALLM2("takeUnits", _garSrc, _unitsFound);
 		// // Reorganize the infantry units we are moving
 		// if (count _unitsFoundInf > 0) then {
 		// 	_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
