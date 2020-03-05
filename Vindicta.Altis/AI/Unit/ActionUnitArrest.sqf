@@ -168,7 +168,7 @@ CLASS("ActionUnitArrest", "Action")
 									]; 
 								};
 								
-								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+								[_captor, _sentence] call pr0_fnc_dialogue_createSimple;
 								_captor setSpeedMode "FULL";
 							};
 						};
@@ -236,7 +236,7 @@ CLASS("ActionUnitArrest", "Action")
 						}; // end waitUntil
 					}; // end spawn script
 						
-					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+					//[_captor,"So who do whe have here?"] call pr0_fnc_dialogue_createSimple;
 					// arrest player by sending a message to unit's undercoverMonitor				
 					
 					T_SETV("spawnHandle", _handle);
@@ -323,7 +323,7 @@ CLASS("ActionUnitArrest", "Action")
 				"OPEN FIRE!"
 			]; 
 
-			[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+			[_captor, _sentence] call pr0_fnc_dialogue_createSimple;
 
 			pr _args = [_target, 3.0];
 			REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);

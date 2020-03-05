@@ -10,4 +10,4 @@ if (_start) then {
 	_lookedAtBy deleteAt (_lookedAtBy find _whoIsTalking);
 };
 
-_civ setVariable ["#interactWith", _lookedAtBy];
+_civ setVariable ["#interactWith", _lookedAtBy, true];

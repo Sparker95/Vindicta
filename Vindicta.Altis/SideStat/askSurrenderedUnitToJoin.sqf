@@ -27,7 +27,7 @@ params ["_target", "_caller", "_actionId", "_arguments"];
 	} else {
 		_sentence = "fuck ya mate"; 
 	};
-
-	[_target, _sentence, _caller, false] remoteExecCall ["Dialog_fnc_hud_createSentence", owner _caller];
+	[_target, _sentence] call pr0_fnc_dialogue_createSimple;
+	//[_target, _sentence, _caller, false] remoteExecCall ["Dialog_fnc_hud_createSentence", owner _caller];
 
 }] remoteExec ["spawn", 2, false];

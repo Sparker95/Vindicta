@@ -32,7 +32,7 @@ pr0_fnc_CivilianJoinPlayer = {
 				"I need your help",
 				"Follow me!",
 				"We should work together"
-				], _target] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSimple;
 
 			sleep 2;
 
@@ -42,7 +42,7 @@ pr0_fnc_CivilianJoinPlayer = {
 				"Together we will be stronger!",
 				"Okay",
 				"What are we waiting for?"
-				], _caller] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSimple;
 
 			// Join on server
 			[[_target, _caller, clientOwner], {
@@ -70,7 +70,7 @@ pr0_fnc_CivilianJoinPlayer = {
 							"...",
 							"Do you have any spare bullets?",
 							"Hi neighbour!"
-						], _target] call Dialog_fnc_hud_createSentence;
+						]] call pr0_fnc_dialogue_createSimple;
 					}] remoteExec ["call", _clientOwner];
 				} foreach _otherUnits;
 
@@ -79,7 +79,7 @@ pr0_fnc_CivilianJoinPlayer = {
 
 		};
 	} else {
-		[_target, "You are too many already, we must be inconspicuous!", _caller] call Dialog_fnc_hud_createSentence;
+		[_target, "You are too many already, we must be inconspicuous!"] call pr0_fnc_dialogue_createSimple;
 	};
 };
 

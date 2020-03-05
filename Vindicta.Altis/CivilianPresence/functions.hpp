@@ -8,7 +8,7 @@ class CivPresence {
 		class createUnit {};
 		class isUnitCreatedByCP {};
 
-		class talkTo {};
+		class dialogue {postinit = 1;};
 		class talkToServer {};
 
 		class aimAtCivilian {};
@@ -16,7 +16,6 @@ class CivPresence {
 		class initUnitDialogVariables {};
 		class getUnitState {};
 
-		class saySurrenderPhrase {};
 
 		class arrestUnit {};
 		class addUntieActionLocal {};
