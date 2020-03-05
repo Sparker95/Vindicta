@@ -322,7 +322,8 @@
 			"pr0_fnc_dialogue_setDataSets",
 			"pr0_fnc_dialogue_updateSentence",
 			"pr0_fnc_dialogue_common_bearingToID",
-			"pr0_fnc_dialogue_common_unitSideColor"
+			"pr0_fnc_dialogue_common_unitSideColor",
+			"pr0_fnc_dialogue_createSimple"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"
