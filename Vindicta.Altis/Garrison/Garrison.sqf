@@ -3293,17 +3293,22 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLSM2("Garrison", "_addUnitsToPlayerGroup", _player, _unitsNeedReassigning);
 		};
 
-		// Make sure the group leader is a player
-		if !(leader group _player in allPlayers) then {
-			group _player selectLeader _player;
-		};
+		// Disable all this for now, player can make them selves leader
+		// // Make sure the group leader is a player
+		// if !(leader group _player in allPlayers) then {
 
-		// remake the group so players are first
-		private _units = units group _player;
-		private _players = [_player] + (_units - [_player]) select { _x in allPlayers };
-		private _reorderedUnits = _players + (_units - _players);
-		private _newGroup = createGroup (side group _player);
-		_reorderedUnits joinSilent _newGroup;
+		// 	// remove and re-add AI to the group so players are first
+		// 	private _units = (units group _player) select { !(_x in allPlayers) };
+		// 	private _dummyGroup = createGroup (side group _player);
+		// 	_units joinSilent _dummyGroup;
+		// 	_units joinSilent group _player;
+		// 	group _player selectLeader _player;
+
+		// 	// private _players = [_player] + (_units - [_player]) select { _x in allPlayers };
+		// 	// private _reorderedUnits = _players + (_units - _players);
+		// 	// _reorderedUnits joinSilent _newGroup;
+		// };
+
 	} ENDMETHOD;
 	
 	STATIC_METHOD("addUnitsToPlayerGroup") {
