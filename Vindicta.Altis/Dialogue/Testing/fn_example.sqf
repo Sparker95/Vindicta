@@ -5,12 +5,12 @@ private _array1 = [
 		[
 			[TYPE_SENTENCE, "Hello, sir", 2],
 			[TYPE_SENTENCE, "Hello, person", 1],
-			[TYPE_JUMP_TO, "main_intro"]
+			[TYPE_JUMP_TO, "main_question"]
 		]
 	}],
 	["main_question",{
 		[
-			[TYPE_QUESTION, "How can i help you?"]
+			[TYPE_QUESTION, "How can i help you?",2]
 		]
 	}]
 ];
@@ -30,7 +30,7 @@ private _array2 = [
 	}],
 	["math_question",{
 		[
-			[TYPE_QUESTION, "What is 1+1?"],
+			[TYPE_QUESTION, "What is 1+1?",2],
 			[TYPE_ANSWER, "2", "math_good"],
 			[TYPE_ANSWER, "4", "math_bad"],
 			[TYPE_EVENT_WALKED_AWAY, "math_WALKED_AWAY"],

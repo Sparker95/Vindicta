@@ -104,8 +104,8 @@ while{true}do{
 	private _sentences = [];
 	private _question = [];
 	private _answers = [];
-	private _answer_ai = ["#end",{},[]];
-	private _new_node_array = ["#end",{},[]];
+	private _answer_ai = ["",{},[]];
+	private _new_node_array = ["",{},[]];
 	_events = [];{_events set [_x, ["#end",{},[]]];}forEach EVENT_TYPES;
 	
 	//loop the nodes
@@ -136,54 +136,44 @@ while{true}do{
 						["_args",[],[]]
 					];
 					
+
+					if!(_int_talker in [1,2])exitWith{format["ERROR WRONG TALKER NR:%1",_node_id] call _fnc_error;};
+
 					private _speaker = [_unit_1, _unit_2] select (_int_talker-1);
 					private _listener = [_unit_2, _unit_1] select (_int_talker-1);
 
-					if!(_int_talker in [1,2])exitWith{format["ERROR WRONG TALKER NR:%1",_node_id] call _fnc_error;};
+					
 					if(_text isEqualType [])then{_text = selectRandom _text};
 					
 					if(_type in [TYPE_SENTENCE_SILENECE,TYPE_SENTENCE])then{
 						_sentences pushBack [_text,_silence,_speaker,_listener,_loudness,_script,_args];
 					}else{
 						
-						if(_speaker in allPlayers)then{
+						if(_listener in allPlayers)then{
 							_question = [_text,_silence,_speaker,_listener,_loudness,_script,_args];
 						};
 					};
 					
 				};
-				case TYPE_ANSWER;
-				case TYPE_ANSWER_AI:{
+				case TYPE_ANSWER:{
 					_x params [
+						["_text","",[""]],
 						["_jump","",["",[]]],
 						["_script",{},[{}]],
 						["_args",[],[]]
 					];
-					if(TYPE_ANSWER_AI)then{
-						_answer_ai = [_jump,_script,_args];
-					}else{
-						_answers pushBack [_jump,_script,_args];
-					};	
+					_answers pushBack [_jump,_script,_args,_text];//same structure as event
 				};
 				case TYPE_REMOVE_ANSWER:{
 					_x params [["_jump","",[""]]];
 					private _a = (count _answers -1);
-					for "_i" from _a to 0 do{
-						(_answers#_i) params [
-							["_text_i","",["",[]]],
-							["_jump_i","",[""]]
-						];
+					for "_i" from _a to 0 step -1do{
+						private _answer = (_answers#_i);
+						private _jump_i = _answer#INDEX_ANSWER_SCRIPT;
 						if(_jump isEqualto _jump_i)then{_answers deleteAt _i}
 					};
 				};
-				case TYPE_JUMP_TO: {
-					_x params [
-						["_jump","",[""]],
-						["_script",{},[{}]],
-						["_args",[],[]]
-					];
-					_new_node_array = [_jump,_script,_args];
-				};
+				case TYPE_JUMP_TO;
 				case TYPE_EVENT_WALKED_AWAY;
 				case TYPE_EVENT_OUT_OF_TIME;
 				case TYPE_EVENT_DEATH;
@@ -194,7 +184,12 @@ while{true}do{
 						["_script",{},[{}]],
 						["_args",[],[]]
 					];
-					_events set [_type,[_jump,_script,_args]];
+					switch _type do{
+						case TYPE_JUMP_TO:{_new_node_array = [_jump,_script,_args];};
+						case TYPE_ANSWER_AI:{_answer_ai = [_jump,_script,_args];};
+						default {_events set [_type,[_jump,_script,_args]];};
+					};
+					
 				};
 				default {};
 			};
@@ -202,15 +197,17 @@ while{true}do{
 
 	}; 
 
-
 	//check if conversation is properly structured 
 	if((count _sentences + count _question) == 0)exitWith{
 		format["ERROR NO SENTENCE OR QUESTION: %1",_node_id]call _fnc_error};
+
 	if(count _question > 0 && count _answers == 0)exitWith{
 		format["ERROR NO ANSWERS FOR QUESTION: %1",_node_id]call _fnc_error};
-	if(count _question > 0 && {!(_new_node_array#INDEX_EVENT_JUMP isEqualTo "#end")})exitWith{
+
+	if(count _question > 0 && {!(_new_node_array#INDEX_EVENT_JUMP isEqualTo "")})exitWith{
 		format["ERROR QUESTION AND JUMP GIVEN: %1",_node_id]call _fnc_error};
-	if(_new_node_array#INDEX_EVENT_JUMP isEqualTo "#end" && count _question == 0)exitWith{
+
+	if(count _question == 0 && _new_node_array#INDEX_EVENT_JUMP isEqualTo "")exitWith{
 		format["ERROR NO QUESTION OR JUMP GIVEN IN: %1",_node_id]call _fnc_error};
 
 	//stop conversation if one unit is dead or unconsious 
@@ -267,11 +264,7 @@ while{true}do{
 			};
 		}else{
 			//show sentence to everone who is nearby
-			{
-				if(_x distance _speaker < FLOAT_MAX_LISTENING_DISTANCE)then{
-					[_speaker,_text,_loudness] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
-				};
-			}forEach (Allplayers - entities "HeadlessClient_F");
+			[_speaker,_text,_loudness] call pr0_fnc_dialogue_createSimple;
 		};
 		sleep ((count (_x#INDEX_SENTENCE_TEXT))/12 + 0.5);
 	}foreach _sentences;
@@ -297,23 +290,25 @@ while{true}do{
 			//show the question to all players except listener.
 			//listener needs dialogue with options
 			{
-				if(_x distance _speaker < FLOAT_MAX_LEAVING_QUESTION_DISTANCE)then{
+				if(_x distance _speaker < (FLOAT_MAX_LISTENING_DISTANCE * _loudness))then{
 					[_speaker, _text,_loudness] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
 				};
-			}forEach (Allplayers - entities "HeadlessClient_F" - _listener);
+			}forEach (Allplayers - entities "HeadlessClient_F" - [_listener]);
 		};
 
 
 		if(_listener in Allplayers)then{
 			
+			//TODO multiquestion support here
+
 			//create question for client
-			[_speaker,_text,_loudness] remoteExec ["pr0_fnc_dialogue_createQuestion",_listener];
+			[_speaker,_text,_loudness,_answers] remoteExec ["pr0_fnc_dialogue_createQuestion",_listener];
 
 			//wait for answer from player
 			_listener setVariable ["pr0_dialogue_answer_index",[]];
 			waitUntil{
 				sleep 0.1;
-				(_listener getVariable ["pr0_dialogue_answer_index", []] isEqualto []);
+				!(_listener getVariable ["pr0_dialogue_answer_index", []] isEqualto []);
 			};
 			_answer_index = _listener getVariable ["pr0_dialogue_answer_index", []];
 			

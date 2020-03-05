@@ -8,7 +8,7 @@
 #define FLOAT_MAX_LEAVING_DISTANCE 8.0             // cancel conversation if you go further then this
 #define FLOAT_MAX_LEAVING_QUESTION_DISTANCE 5.0    // cancel question if you go further then this
 #define FLOAT_MAX_WAIT_FOR_ANSWER 7.0               // cancel question if you wait longer then this 
-
+#define FLOAT_TIME_INCREASE_SENTENCE_LIMIT 5.0     // If player is talking the dialogue gets bigger for this amount of time
 
 //HUD settings
 #define FLOAT_TEXT_HIGHT 0.04
@@ -58,6 +58,7 @@
 #define INDEX_ANSWER_JUMP 0
 #define INDEX_ANSWER_SCRIPT 1
 #define INDEX_ANSWER_ARGS 2
+#define INDEX_ANSWER_TEXT 3
 
 #define INDEX_EVENT_JUMP 0
 #define INDEX_EVENT_SCRIPT 1

@@ -3,8 +3,8 @@
 /*
     By: Jeroen Notenbomer
 
-    Create simple dialogue for nearby and spoken to playable units.
-	Script needs to be run locally
+    Show sentence on screen
+	Script needs to be run locally. So better use CreateSimple.sqf!
 	
 	Input:
 		_speaker: unit who is talking
@@ -18,8 +18,6 @@
 
 params[["_speaker",objnull,[objnull]],["_sentence","",[""]],["_loudness",1,[0]],["_answers",[],[[]]]];
 
-diag_log str ["createSentence1",_sentence];
-
 if(!hasinterface)exitWith{};
 
 disableSerialization;
@@ -28,7 +26,9 @@ private _display = findDisplay 46;
 
 private _hud = call pr0_fnc_dialogue_createHUD;
 
-private _fade = ((_speaker distance player) / FLOAT_MAX_LISTENING_DISTANCE)*0.9;
+
+//fade if player is further away
+private _fade = ((_speaker distance player) / FLOAT_MAX_LISTENING_DISTANCE * _loudness)*0.9;
 
 
 /*remove random letters if far away
@@ -59,9 +59,6 @@ _ctrl_sentence setVariable ["_sentence", _sentence];
 _ctrl_sentence setVariable ["_answers", _answers];
 _ctrl_sentence setVariable ["_type", _type];
 _ctrl_sentence setVariable ["_size_y",FLOAT_TEXT_HIGHT];
-
-//create the text that is displayed.
-[_ctrl_sentence] call pr0_fnc_dialogue_updateSentence;
 
 //create compas icon
 private _ctrl_icon = controlNull;
@@ -145,28 +142,22 @@ private _ctrl_sentences = _display getvariable ["pr0_dialogue_sentence_list" ,[]
 _ctrl_sentences pushBack _ctrl_sentence;
 _display setvariable ["pr0_dialogue_sentence_list" ,_ctrl_sentences];
 
-//update position for all sentences
-private _player_involved = false;
-private _pos_y = 0;
-_test = [];
-for "_i" from count _ctrl_sentences -1 to 0 step -1 do{
-	private _ctrl_sentence = _ctrl_sentences#_i;
-	
-	_ctrl_sentence ctrlsetposition [0,FLOAT_POS_Y - FLOAT_TEXT_HIGHT - _pos_y,1,FLOAT_TEXT_HIGHT];
-	_ctrl_sentence ctrlCommit FLOAT_SCROLL_TIME;
+//create the text that is displayed.
+[_ctrl_sentence] call pr0_fnc_dialogue_updateSentence;
 
-	_player_involved = (_player_involved || {player isEqualType _speaker});
-	
-	private _size_y = _ctrl_sentence getVariable ["_size_y",0];//(ctrlPosition _ctrl_sentence) # 3; doesnt work because its 0 when we create it
-	_pos_y = _pos_y + _size_y;
-};
-
-_hud ctrlSetPosition [0, FLOAT_POS_Y - _pos_y, 1, _pos_y];
-_hud ctrlSetFade 0;
-_hud ctrlCommit FLOAT_SCROLL_TIME;
+//check if a message on screen was ment for player so we dont remove them as fast
+{
+	private _ctrl_sentence = _x;
+	if (_ctrl_sentence getVariable ["_speaker", objNull] isEqualTo player)exitWith{
+		uiNamespace setVariable ["dialogue_player_involved_timer", time + FLOAT_TIME_INCREASE_SENTENCE_LIMIT];
+	};
+}forEach _ctrl_sentences;
 
 //if there are to many sentences on the screen remove one
-if(count _ctrl_sentences > ([INT_SENTENCE_LIMIT, INT_SENTENCE_LIMIT_PLAYER_INVOLVED] select _player_involved))then{
+if(count _ctrl_sentences > 
+	([INT_SENTENCE_LIMIT, INT_SENTENCE_LIMIT_PLAYER_INVOLVED] select 
+		(time > uiNamespace getVariable ["dialogue_player_involved_timer",-666]))
+)then{
 	{
 		private _ctrl_sentence = _x;
 		private _type = _ctrl_sentence getVariable ["_type",TYPE_SENTENCE];

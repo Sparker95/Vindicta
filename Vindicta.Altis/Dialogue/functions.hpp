@@ -9,6 +9,7 @@ class pr0 {
 	class dialogue {
 		file = "Dialogue";
 		class dialogue_create {};
+		class dialogue_createSimple {};
 
 		class dialogue_setDataSets {};
 		class dialogue_registerDataSet {};

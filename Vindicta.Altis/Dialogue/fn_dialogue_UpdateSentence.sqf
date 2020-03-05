@@ -48,6 +48,7 @@ if(player isEqualTo _speaker)then{
 			if(_x isEqualTo _ctrl_sentence)exitWith{};
 			_answer_nr = _answer_nr + count (_x getVariable ["_answers",[]])
 		}forEach _ctrl_questions;
+
 		
 		//add answers to structured text		
 		{
@@ -61,14 +62,28 @@ if(player isEqualTo _speaker)then{
 				_answer#INDEX_ANSWER_TEXT
 			];
 		}forEach _answers;
-		
-		private _pos = ctrlposition _ctrl_sentence;
-		_pos set [3, (count _answers + 1) * FLOAT_TEXT_HIGHT];
-		_ctrl_sentence ctrlsetposition _pos;
-		_ctrl_sentence setVariable ["_size_y",_pos#3];
-		_ctrl_sentence ctrlCommit 0;
-		
-		_ctrl_sentence ctrlSetStructuredText _structedText;
-	};
 
+		_ctrl_sentence ctrlSetStructuredText _structedText;
+		_ctrl_sentence setVariable ["_size_y",(count _answers + 1) * FLOAT_TEXT_HIGHT];
+		
+	};
 };
+
+//update position for all sentences
+private _ctrl_sentences = _display getvariable ["pr0_dialogue_sentence_list" ,[]];
+private _pos_y = 0;
+for "_i" from count _ctrl_sentences -1 to 0 step -1 do{
+	private _ctrl_sentence = _ctrl_sentences#_i;
+	private _size_y = _ctrl_sentence getVariable ["_size_y",0];
+	
+	_ctrl_sentence ctrlsetposition [0,FLOAT_POS_Y - _size_y - _pos_y,1,_size_y];
+	_ctrl_sentence ctrlCommit FLOAT_SCROLL_TIME;
+
+	_pos_y = _pos_y + _size_y;
+};
+
+//update hut size
+private _hud = call pr0_fnc_dialogue_createHUD;		
+_hud ctrlSetPosition [0, FLOAT_POS_Y - _pos_y, 1, _pos_y];
+_hud ctrlSetFade 0;//might have started to fade so we set it to 0 again
+_hud ctrlCommit FLOAT_SCROLL_TIME;
