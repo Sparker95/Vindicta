@@ -159,7 +159,11 @@ CLASS(CLASS_NAME, "")
 
 		// open map EH
 		addMissionEventHandler ["Map", { 
-		params ["_mapIsOpened", "_mapIsForced"]; if !(visibleMap) then { CALLM0(gClientMapUI, "onMapOpen"); }; }];
+			params ["_mapIsOpened", "_mapIsForced"]; 
+			if !(visibleMap) then { 
+				CALLM0(gClientMapUI, "onMapOpen"); 
+			}; 
+		}];
 		
 		//listbox events
 		([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl) ctrlAddEventHandler ["LBSelChanged", { CALLM(gClientMapUI, "intelPanelOnSelChanged", _this); }];
@@ -528,7 +532,7 @@ CLASS(CLASS_NAME, "")
 					private _mrk = createMarkerLocal [_name, _pos];
 					_mrk setMarkerTypeLocal _type;
 					_mrk setMarkerColorLocal _color;
-					_mrk setMarkerAlphaLocal 1;
+					_mrk setMarkerAlphaLocal 0.75;
 					_mrk setMarkerTextLocal _text;
 					_markers pushBack _name; 
 
@@ -538,12 +542,40 @@ CLASS(CLASS_NAME, "")
 
 			// Draw lines
 			for "_i" from 0 to (_count - 2) do {
-				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, _color, 8, _mrkName] call misc_fnc_mapDrawLineLocal;
+
+				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
+				[_pos0, _pos1, _color, 4, _mrkName] call misc_fnc_mapDrawLineLocal;
+				_mrkName setMarkerAlphaLocal 0.5;
 				_markers pushBack _mrkName;
+
+				pr _mrkName2 = _uniqueString + __MRK_ROUTE + (str _i) + "2";
+				[_pos0, _pos1, _color, 0, _mrkName2] call misc_fnc_mapDrawLineLocal;
+				_mrkName2 setMarkerAlphaLocal 1;
+				_mrkName2 setMarkerBrushLocal "Border";
+				_markers pushBack _mrkName2;
 			};
+
+			// // Draw lines as dots (doesn't look good as it is right now)
+			// for "_i" from 0 to (_count - 2) do {
+			// 	pr _pos0 = _positions#_i;
+			// 	pr _pos1 = _positions#(_i+1);
+			// 	pr _v = vectorNormalized (_pos1 vectorDiff _pos0);
+			// 	pr _d = _pos0 distance2D _pos1;
+			// 	pr _dp = 0;
+			// 	while { _dp <= _d } do {
+			// 		pr _mrkName = _uniqueString + __MRK_ROUTE + str _i + str _dp;
+			// 		_dp = _dp + 50;
+			// 		pr _p = _pos0 vectorAdd (_v vectorMultiply (_d min _dp));
+			// 		private _mrk = createMarkerLocal [_mrkName, _p];
+			// 		_mrk setMarkerTypeLocal "mil_dot";
+			// 		_mrk setMarkerColorLocal _color;
+			// 		_mrk setMarkerAlphaLocal 1;
+			// 		// [_pos0, _pos1, _color, 8, _mrkName] call misc_fnc_mapDrawLineLocal;
+			// 		_markers pushBack _mrk;
+			// 	};
+			// };
 		};
 
 		_markers
@@ -2170,20 +2202,25 @@ CLASS(CLASS_NAME, "")
 		if(!isNil "gGameModeServer") then {
 			// Request update on players restore point from server
 			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
-
-			private _lastRespawnPos = T_GETV("lastRespawnPos");
-			if(_lastRespawnPos isEqualTo []) then {
-				private _locs = CALLSM0("Location", "getAll");
-				private _locIdx = _locs  findIf { CALLM0(_x, "getType") == LOCATION_TYPE_RESPAWN };
-				if(_locIdx == NOT_FOUND) then {
-					private _loc = _locs#_locIdx;
-					_lastRespawnPos = CALLM0(_loc, "getPos");
-				} else {
-					_lastRespawnPos = [worldSize / 2, worldSize / 2, 0];
-				}
-			};
-			mapAnimAdd [1, 0.1, _lastRespawnPos];
+			//mapAnimAdd [1, 0.1, _lastRespawnPos];
+			//mapAnimCommit;
 		};
+
+		private _lastRespawnPos = T_GETV("lastRespawnPos");
+		if(_lastRespawnPos isEqualTo []) then {
+			private _locs = CALLSM0("Location", "getAll");
+			private _locIdx = _locs  findIf { CALLM0(_x, "getType") == LOCATION_TYPE_RESPAWN };
+			if(_locIdx != NOT_FOUND) then {
+				private _loc = _locs#_locIdx;
+				_lastRespawnPos = CALLM0(_loc, "getPos");
+			} else {
+				_lastRespawnPos = [worldSize / 2, worldSize / 2, 0];
+			}
+		};
+
+		private _ctrl = ((finddisplay 12) displayCtrl 51);
+		_ctrl ctrlMapAnimAdd [0, 0.5, _lastRespawnPos];
+		ctrlMapAnimCommit _ctrl;
 
 		T_SETV("respawnPanelEnabled", _enable);
 	} ENDMETHOD;
@@ -2273,7 +2310,6 @@ CLASS(CLASS_NAME, "")
 				T_CALLM1("respawnPanelSetText", "You can not respawn because the game mode is not initialized yet.");
 				_ctrlButton ctrlEnable false;
 			};
-
 
 			// Bail if no markers are selected
 			if (!_canRestore && count _locMarkers != 1) exitWith {

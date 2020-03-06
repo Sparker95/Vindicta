@@ -81,4 +81,6 @@ gPlayerUIInitialized = true;
 CALLM1(gClientMapUI, "respawnPanelEnable", true);
 
 // Center map
-mapAnimAdd [1, 0.1, [worldSize / 2, worldSize / 2, 0]];
+private _ctrl = ((finddisplay 12) displayCtrl 51);
+_ctrl ctrlMapAnimAdd [0, 1, [worldSize / 2, worldSize / 2, 0]];
+ctrlMapAnimCommit _ctrl;

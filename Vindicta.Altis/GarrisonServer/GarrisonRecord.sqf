@@ -103,14 +103,17 @@ CLASS("GarrisonRecord", "")
 
 	// Updates the map markers of the action (line, pointer, etc)
 	#define __MRK_LINE "_line"
+	#define __MRK_LINE2 "_line2"
 	#define __MRK_END "_end"
 	METHOD("_updateActionMapMarkers") {
 		params [P_THISOBJECT];
 
 		// Delete previous map markers
 		pr _mrkLine = _thisObject + __MRK_LINE;
+		pr _mrkLine2 = _thisObject + __MRK_LINE2;
 		pr _mrkEnd = _thisObject + __MRK_END;
 		deleteMarkerLocal _mrkLine;
+		deleteMarkerLocal _mrkLine2;
 		deleteMarkerLocal _mrkEnd;
 
 		// Create them again if needed
@@ -130,9 +133,12 @@ CLASS("GarrisonRecord", "")
 					// Print an error? CmdrActionRecord already prints an error
 				} else {
 					pr _color = "colorRed"; // [T_GETV("side"), true] call BIS_fnc_sideColor;
-					[_posStart, _posEnd, _color, 8, _mrkLine] call misc_fnc_mapDrawLineLocal;
-					_mrkLine setMarkerBrushLocal "SolidFull";
-					_mrkLine setMarkerAlphaLocal 1.0;
+					[_posStart, _posEnd, _color, 0, _mrkLine] call misc_fnc_mapDrawLineLocal;
+					_mrkLine setMarkerBrushLocal "Border";
+					_mrkLine setMarkerAlphaLocal 1;
+					[_posStart, _posEnd, _color, 4, _mrkLine2] call misc_fnc_mapDrawLineLocal;
+					_mrkLine2 setMarkerBrushLocal "Solid";
+					_mrkLine2 setMarkerAlphaLocal 0.75;
 
 					// Draw one marker at destination
 					createMarkerLocal [_mrkEnd, _posEnd];
@@ -141,7 +147,7 @@ CLASS("GarrisonRecord", "")
 					_mrkEnd setMarkerTypeLocal "mil_dot";
 					//_mrkEnd setMarkerTextLocal _actionText;
 					_mrkEnd setMarkerColorLocal "colorRed";
-					_mrkEnd setMarkerAlphaLocal 1.0;
+					_mrkEnd setMarkerAlphaLocal 0.75;
 					_mrkEnd setMarkerSizeLocal [1.5, 1.5];
 				};
 			} else {
@@ -156,8 +162,10 @@ CLASS("GarrisonRecord", "")
 	METHOD("_removeActionMapMarkers") {
 		params [P_THISOBJECT];
 		pr _mrkLine = _thisObject + __MRK_LINE;
+		pr _mrkLine2 = _thisObject + __MRK_LINE2;
 		pr _mrkEnd = _thisObject + __MRK_END;
 		deleteMarkerLocal _mrkLine;
+		deleteMarkerLocal _mrkLine2;
 		deleteMarkerLocal _mrkEnd;
 	} ENDMETHOD;
 
