@@ -24,7 +24,7 @@ if(T_CALLM("isDestroyed", [])) exitWith {
 	DUMP_CALLSTACK;
 };
 
-private _spawned = GET_VAR(_thisObject, "spawned");
+private _spawned = T_GETV("spawned");
 
 if (_spawned) exitWith {
 	OOP_ERROR_0("Already spawned");
@@ -32,10 +32,10 @@ if (_spawned) exitWith {
 };
 
 // Set spawned flag
-SET_VAR(_thisObject, "spawned", true);
+T_SETV("spawned", true);
 
-private _units = GET_VAR(_thisObject, "units");
-private _groups = GET_VAR(_thisObject, "groups");
+private _units = T_GETV("units");
+private _groups = T_GETV("groups");
 
 // Let the action handle spawning
 pr _AI = T_GETV("AI");
@@ -51,9 +51,9 @@ pr _spawningHandled = if (_action != NULL_OBJECT) then {
 };
 
 if (!_spawningHandled) then {
-	// If there is no current action (how is that possible??) we perform spawning manually
+	// Current action doesn't handle spawning
 
-	private _loc = GET_VAR(_thisObject, "location");
+	private _loc = T_GETV("location");
 
 	// SAVEBREAK >>> Cleanup invalid units (T_INF units *must* have a group)
 	// This might just be a bug not a savebreak
@@ -90,20 +90,21 @@ if (!_spawningHandled) then {
 		} forEach _units;
 	} else {
 		// Otherwise spawn everything around some road
-		pr _garPos = CALLM0(_thisObject, "getPos");
+		pr _garPos = T_CALLM0("getPos");
+		OOP_INFO_2("Spawning groups without location at pos %1: %2", _groups, _garPos);
 		{
 			CALLM2(_x, "spawnVehiclesOnRoad", [], _garPos);
 		} forEach _groups;
 
 		// Spawn single units
 		{
-			CALLM3(_x, "spawn", [0 ARG 0 ARG 0], 0, true);
+			CALLM3(_x, "spawn", _garPos, 0, _global);
 		} forEach (_units select { CALL_METHOD(_x, "getGroup", []) == NULL_OBJECT });
 	};
 };
 
 // Call onGarrisonSpawned
-if (_action != "") then {
+if (_action != NULL_OBJECT) then {
 	OOP_INFO_1("Calling %1.onGarrisonSpawned", _action);
 	CALLM0(_action, "onGarrisonSpawned");
 } else {
@@ -115,7 +116,7 @@ if (_action != "") then {
 
 // Change process category if it's active
 if (T_GETV("active")) then {
-	pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+	pr _msgLoop = T_CALLM0("getMessageLoop");
 	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
 	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonSpawned", _AI);
 };

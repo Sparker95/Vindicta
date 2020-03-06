@@ -14,25 +14,23 @@ this addGoggles _RandomGoggles;
 this forceAddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital_rifleman_radio";
 
-this addWeapon "rhs_weap_ak74n";
+this addWeapon "rhs_weap_ak74_2";
 this addPrimaryWeaponItem "rhs_acc_dtk3";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-this addPrimaryWeaponItem "rhs_acc_1p78";
-this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N6M_AK";
+this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 this addWeapon "rhs_weap_makarov_pm";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_acc_perst1ik";
-for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
 for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_AK_green";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_7N6M_AK";};
 this addItemToVest "rhs_mag_rdg2_white";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_nspd";
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_9x18_8_57N181S";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_AK_plum_green";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_7N10_AK";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "rhs_1PN138";
-

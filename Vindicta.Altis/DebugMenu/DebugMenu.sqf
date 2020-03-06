@@ -126,12 +126,24 @@ pr0_fnc_toggleMarkers = {
 	} ] remoteExec ["call", 2];
 }] call pr0_fnc_addDebugMenuItem;
 
-["Add", "Add friendly inf to this location", {
+["Add", "New group", {
+	private _AI = CALLSM1("AICommander", "getAICommander", playerSide);
+	CALLM2(_AI, "postMethodAsync", "debugCreateGarrison", [getpos player]);
+}] call pr0_fnc_addDebugMenuItem;
+
+["Add", "New group in location", {
 	private _loc = CALLSM1("Location", "getLocationAtPos", getpos player);
 	if (!IS_NULL_OBJECT(_loc)) then {
 		private _AI = CALLSM1("AICommander", "getAICommander", playerSide);
-		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc]);
+		CALLM2(_AI, "postMethodAsync", "debugAddGroupToLocation", [_loc]);
 	};
+}] call pr0_fnc_addDebugMenuItem;
+
+["Add", "Kill all enemy nearby", {
+	private _nearbyEnemy = player nearEntities ["Man", 100] select { side _x isEqualTo CALLM0(gGameMode, "getEnemySide") };
+	{
+		_x setDamage 1;
+	} forEach _nearbyEnemy;
 }] call pr0_fnc_addDebugMenuItem;
 
 ["Commander", "Enable Radio Intel Interception Cheat", {
@@ -146,6 +158,64 @@ pr0_fnc_toggleMarkers = {
 			};
 		} forEach [gAICommanderEast, gAICommanderInd, gAICommanderWest];
 	} ] remoteExec ["call", 2];
+}] call pr0_fnc_addDebugMenuItem;
+
+["Location", "Add 20 recruits to city", {
+	private _pos = getPos player;
+	[[_pos], {
+		params ["_pos"];
+
+		// get location at player position
+		
+		private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
+		
+		if (_loc != "") then { 	
+
+				private _recruits = 20;
+				private _gmdata = GETV(_loc, "gameModeData");
+				CALLM2(_gmdata, "addRecruits", _loc, _recruits);
+				systemChat "Added 20 recruits to current location.";
+
+		} else {
+			systemChat "Invalid location.";
+		};
+
+	} ] remoteExec ["call", 2];
+}] call pr0_fnc_addDebugMenuItem;
+
+["BuildUI", "100 ConRes > cursorObject", {
+
+		private _cursorObj = cursorObject;
+
+		if !(isNil "_cursorObj") then {
+
+			_cursorObj addMagazineCargo ["vin_build_res_0", 100];
+			systemChat "Added 100 construction resource to cursorObject.";
+
+		} else {
+			systemChat "Not looking at an object.";
+		};
+		
+}] call pr0_fnc_addDebugMenuItem;
+
+["Undercover", "Toggle captive", {
+
+		private _thisObject = player getVariable ["undercoverMonitor", ""];
+		if (_thisObject != "") then {
+			if (T_GETV("debugOverride")) then {
+				T_SETV("debugOverride", false);
+			} else {
+				T_SETV("debugOverride", true);
+			};
+		};	
+		
+}] call pr0_fnc_addDebugMenuItem;
+
+// shows unit and group actions and goals in an overlay text
+["AI", "Toggle draw3D goals", {
+
+	call compile preprocessFileLineNumbers "DebugMenu\fn_draw3dUnitDetails.sqf";
+		
 }] call pr0_fnc_addDebugMenuItem;
 
 #else

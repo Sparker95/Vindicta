@@ -11,12 +11,12 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 
 	// Setting it to true will force enable respawn of players here regardless of other rules
 	VARIABLE_ATTR("forceEnablePlayerRespawn", [ATTR_SAVE]);
-	VARIABLE("owner");
+	VARIABLE("ownerSide");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("forceEnablePlayerRespawn", false);
-		T_SETV_PUBLIC("owner", CIVILIAN);
+		T_SETV_PUBLIC("ownerSide", CIVILIAN);
 	} ENDMETHOD;
 	
 	/* virtual override server */ METHOD("updatePlayerRespawn") {
@@ -46,13 +46,29 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			};
 		} forEach _nearCities;
 
-		if(CALLM1(_loc, "hasGarrisons", FRIENDLY_SIDE)) then {
-			T_SETV_PUBLIC("owner", FRIENDLY_SIDE);
+		private _oldOwner = T_GETV("ownerSide");
+		private _newOwner = if(FRIENDLY_SIDE in _sidesOccupied) then {
+			FRIENDLY_SIDE
 		} else {
-			if(CALLM1(_loc, "hasGarrisons", ENEMY_SIDE)) then {
-				T_SETV_PUBLIC("owner", ENEMY_SIDE);
+			if(ENEMY_SIDE in _sidesOccupied) then {
+				ENEMY_SIDE
 			} else {
-				T_SETV_PUBLIC("owner", CIVILIAN);
+				CIVILIAN
+			};
+		};
+
+		if(_newOwner != _oldOwner) then {
+			T_SETV_PUBLIC("ownerSide", _newOwner);
+			if(_newOwner == FRIENDLY_SIDE) then {
+				// Notify players of what happened
+				private _args = ["LOCATION CLAIMED", format["%1 was claimed", CALLM0(_loc, "getDisplayName")], "Garrison some fighters to hold it"];
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
+			} else {
+				if(_oldOwner == FRIENDLY_SIDE) then {
+					// Notify players of what happened
+					private _args = ["LOCATION LOST", format["%1 was lost", CALLM0(_loc, "getDisplayName")], "Send some fighters to retake it"];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
+				};
 			};
 		};
 		CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS
@@ -66,7 +82,7 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 	// Overrides the location name
 	/* public virtual client */ METHOD("getDisplayColor") {
 		params [P_THISOBJECT];
-		switch T_GETV("owner") do {
+		switch T_GETV("ownerSide") do {
 			case FRIENDLY_SIDE: {
 				[FRIENDLY_SIDE, false] call BIS_fnc_sideColor
 			};
@@ -85,11 +101,13 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			params [P_THISOBJECT];
 			// By default get the amount of recruits we can recruit at this place
 			pr _loc = T_GETV("location");
+			pr _buildProgress = GETV(_loc, "buildProgress");
 			pr _pos = CALLM0(_loc, "getPos");
 			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
 			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
 			_return = [
-				["AVAILABLE RECRUITS", str _nRecruits]
+				["AVAILABLE RECRUITS", str _nRecruits],
+				["BUILD PROGRESS", format["%1%2", _buildProgress * 100, "%"]]
 			];
 		};
 		_return
@@ -101,6 +119,7 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("LocationGameModeData", _thisObject, "postDeserialize", [_storage]);
+		T_SETV_PUBLIC("ownerSide", CIVILIAN);
 
 		true
 	} ENDMETHOD;

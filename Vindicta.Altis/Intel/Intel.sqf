@@ -247,7 +247,7 @@ CLASS("IntelLocation", "Intel")
 	If this variable is equal to [], it means unit amounts are not known
 	*/
 	VARIABLE_ATTR("unitData", [ATTR_SERIALIZABLE]);
-	
+
 	/* variable: accuracyRadius
 	Number, radius in meters that specifies how accurate is the intel.
 	The actual location should be somewhere within this radius.
@@ -313,7 +313,7 @@ CLASS("IntelLocation", "Intel")
 		/*if (! (T_GETV("unitData") isEqualTo GETV(_intelSrc, "unitData"))) then {
 			_string = _string + " Updated unit data.";
 		};*/
-		
+
 		// Add notification
 		if (_needNotify && (! isRemoteExecutedJIP) && (time > 60) ) then {
 			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
@@ -349,7 +349,7 @@ CLASS("IntelLocation", "Intel")
 		*/
 
 		pr _color = if (_type == LOCATION_TYPE_RESPAWN) then {	// Override for respawn marker, it must be very visible
-			[[1, 0, 0], "ColorRed"]
+			[[0.3, 0.3, 1], "ColorOrange"]
 		} else {
 			switch(_side) do { // See colors defined right above the class
 				case WEST: {[COLOR_WEST, "ColorWEST"]};
@@ -584,7 +584,7 @@ CLASS("IntelCommanderAction", "Intel")
 		params [P_THISOBJECT];
 		pr _t = T_CALLM0("getTMinutes");
 		// T, Hours, Minutes, bool Future
-		[_t, abs floor (_t / 60), abs floor (_t % 60), _t < 0];
+		[_t, floor (abs _t / 60), abs floor (abs _t % 60), _t < 0];
 	} ENDMETHOD;
 
 	/*
@@ -692,6 +692,37 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 	} ENDMETHOD;
 ENDCLASS;
 
+
+/*
+	Class: Intel.IntelCommanderActionSupply
+	Intel about reinforcement commander action.
+*/
+CLASS("IntelCommanderActionSupply", "IntelCommanderAction")
+
+	// Type of supplies
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+
+	// How much supplies
+	VARIABLE_ATTR("amount", [ATTR_SERIALIZABLE]);
+
+	/* 
+		variable: srcGarrison
+		The source garrison that sent the reinforcements. Probably players have no use to this.
+	*/
+	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+
+	/* 
+		variable: tgtGarrison
+		The destination garrison that will be reinforced. Probably players have no use to this.
+	*/
+	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
+
+	METHOD("getShortName") {
+		params [P_THISOBJECT];
+		T_GETV("type");
+	} ENDMETHOD;
+ENDCLASS;
+
 /*
 	Class: Intel.IntelCommanderActionConstructLocation
 	Intel about action to build something.
@@ -714,7 +745,7 @@ CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
 		// pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-		"Construct roadblock" // Temp, since we only deploy roadblocks now anyway
+		"Construct Roadblock" // Temp, since we only deploy roadblocks now anyway
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -740,7 +771,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 
 	//  
 	METHOD("getShortName") {
-		"ATTACK"
+		"Attack"
 	} ENDMETHOD;
 ENDCLASS;
 

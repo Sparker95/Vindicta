@@ -131,7 +131,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			_state
 		};
 	} ENDMETHOD;
-	
+
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];

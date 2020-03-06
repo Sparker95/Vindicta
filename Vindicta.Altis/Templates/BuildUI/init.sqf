@@ -1,1 +1,0 @@
-call compile preprocessFileLineNumbers "Templates\BuildUI\BuildUI_Objects.sqf";

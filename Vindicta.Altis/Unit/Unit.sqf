@@ -140,10 +140,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
 			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
-			CALLM0(_thisObject, "initObjectVariables");
-			CALLM0(_thisObject, "initObjectEventHandlers");
-			CALLM0(_thisObject, "initObjectDynamicSimulation");
-			CALLM0(_thisObject, "applyInfantryWeapons");
+			T_CALLM0("initObjectVariables");
+			T_CALLM0("initObjectEventHandlers");
+			T_CALLM0("initObjectDynamicSimulation");
+			T_CALLM0("applyInfantryWeapons");
 		};
 
 	} ENDMETHOD;
@@ -185,7 +185,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		SET_MEM(_thisObject, "data", nil);
 	} ENDMETHOD;
 
-
+	METHOD("release") {
+		params [P_THISOBJECT];
+		// detach the Arma unit handle from this object if it is spawned
+		// Despawn this unit if it was spawned
+		if (T_CALLM0("isSpawned")) then {
+			CALLM1(_thisObject, "despawn", true);
+		};
+	} ENDMETHOD;
 
 	//                              I S   V A L I D
 	/*
@@ -278,12 +285,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _dirAndUpPrev = _data#UNIT_DATA_ID_VECTOR_DIR_UP;
 			if (_spawnAtPrevPos) then {
 				OOP_INFO_2("  Trying to spawn at prev location: %1, %2", _posATLPrev, _dirAndUpPrev);
-
 				// Ensure that position is safe
-				pr _vectorDir = _dirAndUpPrev#0;
-				pr _dirToCheck = (_vectorDir#0) atan2 (_vectorDir#1);
+				pr _prevPosSafe = if !(_posATLPrev isEqualTo NULL_POSITION) then {
+					pr _vectorDir = _dirAndUpPrev#0;
+					pr _dirToCheck = (_vectorDir#0) atan2 (_vectorDir#1);
 
-				pr _prevPosSafe = CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className);
+					CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className)
+				} else {
+					false 
+				};
+				
 				if (_prevPosSafe) then {
 					_pos = _posATLPrev;
 				} else {
@@ -297,7 +308,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} else {
 						// Otherwise just look for a close by safe position
 						OOP_INFO_1("  Looking for spawn at near desired position: %1", _pos);
-						CALLSM2("Location", "findSafeSpawnPos", _className, _pos)
+						CALLSM3("Location", "findSafePos", _pos, _className, 400)
 					};
 					_posAndDir params ["_pos0", "_dir0"];
 					_pos = _pos0;
@@ -344,7 +355,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						pr _groupType = CALLM0(_group, "getType");
 
 						// Give weapons to the unit (if he has special weapons)
-						CALLM0(_thisObject, "applyInfantryWeapons");
+						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
 						_objectHandle setSkill ["aimingAccuracy", 0.6];	// Aiming and precision
@@ -357,6 +368,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						_objectHandle setSkill ["reloadSpeed", 0.5];
 						_objectHandle setSkill ["spotDistance", 1];
 						_objectHandle setSkill ["spotTime", 1];
+
+						// make it impossible to ace interact with this unit, may need better solution in the future
+						if (side _objectHandle != west) then {
+							[_objectHandle, _objectHandle] call ace_common_fnc_claim;
+						};
 
 						// Set unit insignia
 						// todo find a better way to handle this?
@@ -473,56 +489,57 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 
 				// Initialize variables
-				CALLM0(_thisObject, "initObjectVariables");
+				T_CALLM0("initObjectVariables");
 
 				// Initialize event handlers
-				CALLM0(_thisObject, "initObjectEventHandlers");
+				T_CALLM0("initObjectEventHandlers");
 
 				// Initialize dynamic simulation
-				CALLM0(_thisObject, "initObjectDynamicSimulation");
+				T_CALLM0("initObjectDynamicSimulation");
 			}; // CRITICAL_SECTION
 
 			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
 			// Try and restore saved inventory, otherwise generate one
-			if(!T_CALLM0("restoreInventory")) then {
+			private _restoredInventory = T_CALLM0("restoreInventory");
+			if(!_restoredInventory) then {
 				// Initialize cargo if there is no limited arsenal
-				CALLM0(_thisObject, "initObjectInventory");
-			};
+				T_CALLM0("initObjectInventory");
 
-			// Set build resources
-			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
-				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
-			};
-					
-			// Give intel to this unit
-
-			switch (_catID) do {
-				case T_INF: {
-					// Leaders get intel tablets
-					if (CALLM0(_group, "getLeader") == _thisObject) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
-					} else {
-						// todo give intel to some special unit types, like radio specialists, etc...
-						// Some random infantry units get tablets too
-						if (random 10 < 2) then {
+				// Set build resources
+				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
+					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+				};
+						
+				// Give intel to this unit
+				switch (_catID) do {
+					case T_INF: {
+						// Leaders get intel tablets
+						if (CALLM0(_group, "getLeader") == _thisObject) then {
+							CALLSM1("UnitIntel", "initUnit", _thisObject);
+						} else {
+							// todo give intel to some special unit types, like radio specialists, etc...
+							// Some random infantry units get tablets too
+							if (random 10 < 2) then {
+								CALLSM1("UnitIntel", "initUnit", _thisObject);
+							};
+						};
+					};
+					case T_VEH: {
+						// A very little amount of vehicles gets intel
+						if (random 10 < 3) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-				};
-				case T_VEH: {
-					// A very little amount of vehicles gets intel
-					if (random 10 < 3) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					case T_DRONE: {
+						// Don't put intel into drones?
+					};
+					case T_CARGO: {
+						// Don't put intel into cargo boxes?
 					};
 				};
-				case T_DRONE: {
-					// Don't put intel into drones?
-				};
-				case T_CARGO: {
-					// Don't put intel into cargo boxes?
-				};
 			};
+
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
@@ -595,7 +612,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Killed
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
-			pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
+			pr _ehid = [_hO, "Killed", {
+				params ["_unit"];
+				_unit removeEventHandler ["Killed", _thisID];
+				_this call Unit_fnc_EH_Killed;
+			}] call CBA_fnc_addBISEventHandler;
+			//pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
 		
@@ -660,7 +682,61 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		(_tb > 0  || _tm > 0 || _tw > 0)
 	};
 
-	METHOD("restoreInventory") {
+	/* private */ METHOD("setInventory") {
+		params [P_THISOBJECT, P_ARRAY("_inventory")];
+
+		T_PRVAR(data);
+		private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if(!(isNull _hO)) then {
+			CALLSM2("Unit", "_setRealInventory", _hO, _inventory);
+		} else {
+			if(count _data > UNIT_DATA_ID_INVENTORY) then {
+				_data set[UNIT_DATA_ID_INVENTORY, +_inventory];
+			};
+		};
+	} ENDMETHOD;
+
+	/* private */ METHOD("clearInventory") {
+		params [P_THISOBJECT];
+		private _emptyInventory = [[],[],[],[]];
+		T_CALLM1("setInventory", _emptyInventory);
+	} ENDMETHOD;
+
+	/* private */ METHOD("addToInventory") {
+		params [P_THISOBJECT, P_ARRAY("_inventory")];
+
+		T_PRVAR(data);
+		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if(!(isNull _hO)) then {
+			CALLSM2("Unit", "_addToRealInventory", _hO, +_inventory);
+		} else {
+			if(count _data > UNIT_DATA_ID_INVENTORY) then {
+				private _savedInventory = _data#UNIT_DATA_ID_INVENTORY;
+				if(count _savedInventory == 4) then {
+					// Merge inventories
+					{
+						private _sourceInventorySlot = _inventory#_forEachIndex;
+						private _targetInventorySlot = _x;
+						{
+							_x params ["_item", "_amount"];
+							private _idx = _targetInventorySlot findIf { (_x#0) isEqualTo _item };
+							if(_idx == NOT_FOUND) then {
+								_targetInventorySlot pushBack [_item, _amount];
+							} else {
+								private _existingCount = _targetInventorySlot#_idx#1;
+								(_targetInventorySlot#_idx) set [1, _existingCount + _amount];
+							};
+						} forEach _sourceInventorySlot;
+					} forEach _savedInventory;
+				} else {
+					// Saved inventory wasn't valid, just replace it
+					_data set[UNIT_DATA_ID_INVENTORY, +_inventory];
+				};
+			};
+		};
+	} ENDMETHOD;
+
+	/* private */ METHOD("restoreInventory") {
 		params [P_THISOBJECT];
 		T_PRVAR(data);
 
@@ -673,25 +749,51 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			[]
 		};
+
 		if ((_hO call Unit_fnc_hasInventory) && count _savedInventory == 4) then {
 			// diag_log format["RESTORING INV FOR %1: %2", _hO, _savedInventory];
-			// Clear cargo
-			clearWeaponCargoGlobal _hO;
-			clearItemCargoGlobal _hO;
-			clearMagazineCargoGlobal _hO;
-			clearBackpackCargoGlobal _hO;
-			//weapons
-			{
-				_hO addWeaponCargoGlobal _x;
-			} forEach _savedInventory#0;
-			//items
-			{
-				_hO addItemCargoGlobal _x;
-			} forEach _savedInventory#1;
-			//magazines
-			{
-				_x params ["_item", "_amount"];
-				private _count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
+			CALLSM2("Unit", "_setRealInventory", _hO, _savedInventory);
+			true
+		} else {
+			false
+		}
+	} ENDMETHOD;
+
+	/* private */ METHOD("_setRealInventory") {
+		params [P_THISOBJECT, P_OBJECT("_hO"), P_ARRAY("_inventory")];
+
+		if(_hO in allPlayers) exitWith {
+			DUMP_CALLSTACK;
+			OOP_ERROR_MSG("PLAYERINVBUG: _setRealInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+			// Broadcast notification
+			pr _msg = format["%1 just avoided the inventory clear bug (_setRealInventory), please send your .rpt to the developers so we can fix it!", name _hO];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
+		};
+
+		// Clear cargo
+		clearWeaponCargoGlobal _hO;
+		clearItemCargoGlobal _hO;
+		clearMagazineCargoGlobal _hO;
+		clearBackpackCargoGlobal _hO;
+
+		CALLSM2("Unit", "_addToRealInventory", _hO, _inventory);
+	} ENDMETHOD;
+	
+	/* private */ STATIC_METHOD("_addToRealInventory") {
+		params [P_THISCLASS, P_OBJECT("_hO"), P_ARRAY("_inventory")];
+		//weapons
+		{
+			_hO addWeaponCargoGlobal _x;
+		} forEach _inventory#0;
+		//items
+		{
+			_hO addItemCargoGlobal _x;
+		} forEach _inventory#1;
+		//magazines
+		{
+			_x params ["_item", "_amount"];
+			private _count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
+			if(_count > 0) then {
 				private _full = floor (_amount / _count);
 				if(_full > 0) then {
 					_hO addMagazineAmmoCargo [_item, _full, _count];
@@ -700,16 +802,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if(_remainder > 0) then {
 					_hO addMagazineAmmoCargo [_item, 1, _remainder];
 				};
-			} forEach _savedInventory#2;
-			//backpack
-			{
-				_hO addBackpackCargoGlobal _x;
-			} forEach _savedInventory#3;
-
-			true
-		} else {
-			false
-		}
+			};
+		} forEach _inventory#2;
+		//backpack
+		{
+			_hO addBackpackCargoGlobal _x;
+		} forEach _inventory#3;
 	} ENDMETHOD;
 
 	METHOD("saveInventory") {
@@ -791,6 +889,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
 			// Clear cargo
+			if(_hO in allPlayers) exitWith {
+				DUMP_CALLSTACK;
+				OOP_ERROR_MSG("PLAYERINVBUG: initObjectInventory _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+				// Broadcast notification
+				pr _msg = format["%1 just avoided the inventory clear bug (initObjectInventory), please send your .rpt to the developers so we can fix it!", name _hO];
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
+			};
 			clearItemCargoGlobal _hO;
 			clearWeaponCargoGlobal _hO;
 			clearMagazineCargoGlobal _hO;
@@ -798,16 +903,23 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			// Bail if there is a limited arsenal
 			pr _arsenalDataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
-			if ((count _arsenalDataList) != 0) exitWith {};
+			if ((count _arsenalDataList) != 0) exitWith {
+
+			};
 
 			// Otherwise fill the ammo box with stuff from the template
 			pr _gar = _data select UNIT_DATA_ID_GARRISON;
-			if (_gar == "") exitWith {};
+			if (_gar == NULL_OBJECT) exitWith {
+
+			};
+			pr _tName = CALLM0(_gar, "getTemplateName");
+			if (_tName == "") exitWith {
+
+			};
+
 			pr _nInf = CALLM0(_gar, "countInfantryUnits");
 			pr _nVeh = CALLM0(_gar, "countVehicleUnits");
 			pr _nCargo = CALLM0(_gar, "countCargoUnits");
-			pr _tName = CALLM0(_gar, "getTemplateName");
-			if (_tName == "") exitWith {};
 
 			// Add stuff to cargo from the template
 			pr _t = [_tName] call t_fnc_getTemplate;
@@ -859,9 +971,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 			} forEach _arr;
 
-			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
-			_hO addItemCargoGlobal ["ItemGPS", 1 + round (random 2)];
-			_hO addItemCargoGlobal ["ToolKit", random [1, 2, 5]];
+			_hO addItemCargoGlobal ["FirstAidKit", 2 + round (random 5)];
+			_hO addItemCargoGlobal ["ItemGPS", 0 + round (random 5)];
+			_hO addItemCargoGlobal ["ToolKit", random [0, 3, 6]];
 			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)]; // Backpacks
 
 			// Customize non-civilian containers
@@ -876,20 +988,22 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
 					// Array with item class name, count
 					pr _ACREclassNames = [
-										["ACRE_SEM52SL",2],
-										["ACRE_SEM70",4],
-										["ACRE_PRC77",1],
-										["ACRE_PRC343",6],
-										["ACRE_PRC152",3],
-										["ACRE_PRC148",3],
-										["ACRE_PRC117F",1],
-										["ACRE_VHF30108SPIKE",1],
-										["ACRE_VHF30108",3],
-										["ACRE_VHF30108MAST",1]
-									];
+						["ACRE_SEM52SL",2],
+						["ACRE_SEM70",4],
+						["ACRE_PRC77",1],
+						["ACRE_PRC343",6],
+						["ACRE_PRC152",3],
+						["ACRE_PRC148",3],
+						["ACRE_PRC117F",1],
+						["ACRE_VHF30108SPIKE",1],
+						["ACRE_VHF30108",3],
+						["ACRE_VHF30108MAST",1]
+					];
 					{
-						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						if(random 10 < 7) then {
+							_x params ["_itemName", "_itemCount"];
+							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						};
 					} forEach _ACREclassNames;
 				};
 
@@ -898,9 +1012,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					// Add ACE medical items
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
-							pr _itemName = getText (_x >> "name");
-							pr _itemCount = getNumber (_x >> "count");
-							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+							if(random 10 < 7) then {
+								pr _itemName = getText (_x >> "name");
+								pr _itemCount = getNumber (_x >> "count");
+								_hO addItemCargoGlobal [_itemName, round (0.5 * (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
+							};
 						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
 					};
 
@@ -910,75 +1026,78 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						// Exported from the ACE_Box_Misc
 						// Then modified a bit
 						pr _classNames = [
-											//["ACE_muzzle_mzls_H",2],
-											//["ACE_muzzle_mzls_B",2],
-											//["ACE_muzzle_mzls_L",2],
-											//["ACE_muzzle_mzls_smg_01",2],
-											//["ACE_muzzle_mzls_smg_02",2],
-											//["ACE_muzzle_mzls_338",5],
-											//["ACE_muzzle_mzls_93mmg",5],
-											//["ACE_HuntIR_monitor",5],
-											//["ACE_acc_pointer_green",4],
-											["ACE_UAVBattery",6],
-											["ACE_wirecutter",4],
-											["ACE_MapTools",12],
-											["ACE_microDAGR",3],
-											//["ACE_MX2A",6], // Thermal imager
-											//["ACE_NVG_Gen1",6],
-											//["ACE_NVG_Gen2",6],
-											//["ACE_NVG_Gen4",6],
-											//["ACE_NVG_Wide",6],
-											//["ACE_optic_Hamr_2D",2],
-											//["ACE_optic_Hamr_PIP",2],
-											//["ACE_optic_Arco_2D",2],
-											//["ACE_optic_Arco_PIP",2],
-											//["ACE_optic_MRCO_2D",2],
-											//["ACE_optic_SOS_2D",2],
-											//["ACE_optic_SOS_PIP",2],
-											//["ACE_optic_LRPS_2D",2],
-											//["ACE_optic_LRPS_PIP",2],
-											["ACE_Altimeter",3],
-											["ACE_Sandbag_empty",10],
-											["ACE_SpottingScope",1],
-											//["ACE_SpraypaintBlack",5],
-											//["ACE_SpraypaintRed",5],
-											//["ACE_SpraypaintBlue",5],
-											//["ACE_SpraypaintGreen",5],
-											["ACE_EntrenchingTool",8],
-											["ACE_Tripod",1],
-											//["ACE_Vector",6],
-											//["ACE_Yardage450",4],
-											//["ACE_IR_Strobe_Item",12],
-											["ACE_CableTie",12],
-											//["ACE_Chemlight_Shield",12],
-											["ACE_DAGR",3],
-											["ACE_Clacker",12],
-											["ACE_M26_Clacker",6],
-											["ACE_DefusalKit",4],
-											//["ACE_Deadmanswitch",6],
-											//["ACE_Cellphone",10],
-											//["ACE_Flashlight_MX991",12],
-											//["ACE_Flashlight_KSF1",12],
-											//["ACE_Flashlight_XL50",12],
-											["ACE_EarPlugs",20],
-											["ACE_Kestrel4500",2],
-											["ACE_ATragMX",6],
-											["ACE_RangeCard",6]
-										];
+							//["ACE_muzzle_mzls_H",2],
+							//["ACE_muzzle_mzls_B",2],
+							//["ACE_muzzle_mzls_L",2],
+							//["ACE_muzzle_mzls_smg_01",2],
+							//["ACE_muzzle_mzls_smg_02",2],
+							//["ACE_muzzle_mzls_338",5],
+							//["ACE_muzzle_mzls_93mmg",5],
+							//["ACE_HuntIR_monitor",5],
+							//["ACE_acc_pointer_green",4],
+							["ACE_UAVBattery",6],
+							["ACE_wirecutter",4],
+							["ACE_MapTools",12],
+							["ACE_microDAGR",3],
+							//["ACE_MX2A",6], // Thermal imager
+							//["ACE_NVG_Gen1",6],
+							//["ACE_NVG_Gen2",6],
+							//["ACE_NVG_Gen4",6],
+							//["ACE_NVG_Wide",6],
+							//["ACE_optic_Hamr_2D",2],
+							//["ACE_optic_Hamr_PIP",2],
+							//["ACE_optic_Arco_2D",2],
+							//["ACE_optic_Arco_PIP",2],
+							//["ACE_optic_MRCO_2D",2],
+							//["ACE_optic_SOS_2D",2],
+							//["ACE_optic_SOS_PIP",2],
+							//["ACE_optic_LRPS_2D",2],
+							//["ACE_optic_LRPS_PIP",2],
+							["ACE_Altimeter",3],
+							["ACE_Sandbag_empty",10],
+							["ACE_SpottingScope",1],
+							//["ACE_SpraypaintBlack",5],
+							//["ACE_SpraypaintRed",5],
+							//["ACE_SpraypaintBlue",5],
+							//["ACE_SpraypaintGreen",5],
+							["ACE_EntrenchingTool",8],
+							["ACE_Tripod",1],
+							//["ACE_Vector",6],
+							//["ACE_Yardage450",4],
+							//["ACE_IR_Strobe_Item",12],
+							["ACE_CableTie",12],
+							//["ACE_Chemlight_Shield",12],
+							["ACE_DAGR",3],
+							["ACE_Clacker",12],
+							["ACE_M26_Clacker",6],
+							["ACE_DefusalKit",4],
+							//["ACE_Deadmanswitch",6],
+							//["ACE_Cellphone",10],
+							//["ACE_Flashlight_MX991",12],
+							//["ACE_Flashlight_KSF1",12],
+							//["ACE_Flashlight_XL50",12],
+							["ACE_EarPlugs",20],
+							["ACE_Kestrel4500",2],
+							["ACE_ATragMX",6],
+							["ACE_RangeCard",6],
+							["vin_build_res_0", 10]
+						];
 						{
 							_x params ["_itemName", "_itemCount"];
-							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+							if(random 10 < 7) then {
+								_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+							};
 						} forEach _classNames;
 					};
 
 					// Add ADV medical items
 					// Defibrilator
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [4, 8, 12]];
+						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [0, 3, 6]];
 					};
 					// Splint
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
-						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [10, 20, 30]];
+						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [0, 5, 10]];
 					};
 
 					// What else?
@@ -1020,7 +1139,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: nil
 	*/
 	METHOD("despawn") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_releaseHandle")];
 
 		OOP_INFO_0("DESPAWN");
 
@@ -1066,9 +1185,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
 
-			// Delete the vehicle
-			deleteVehicle _objectHandle;
-			private _group = _data select UNIT_DATA_ID_GROUP;
+			// If we are releasing the handle then we don't actually delete the unit!
+			if(!_releaseHandle) then {
+				// Delete the vehicle
+				deleteVehicle _objectHandle;
+			};
+
+			//private _group = _data select UNIT_DATA_ID_GROUP;
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
@@ -1149,6 +1272,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Bail if unit is not spawned
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
+
+		// hopefully catch inventory wipe bug!
+		if(_hO in allPlayers) exitWith {
+			DUMP_CALLSTACK;
+			OOP_ERROR_MSG("PLAYERINVBUG: applyInfantryWeapons _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+			// Broadcast notification
+			pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
+		};
 
 		// Remove all weapons
 		removeAllWeapons this;
@@ -1515,21 +1647,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
 	} ENDMETHOD;
-
-	/*
-	Function: (static) getTemplateForSide
-	Get the appropriate unit template for the side specified
-	
-	Parameters: _side
-	
-	_side - side (WEST/EAST/INDEPENDENT/etc.)
-	
-	Returns: Template
-	*/
-	STATIC_METHOD("getTemplateForSide") {
-		params [P_THISCLASS, P_SIDE("_side")];
-		if(_side == INDEPENDENT) then { tAAF } else { if(_side == WEST) then { tGUERILLA } else { tGUERILLA } };
-	} ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
@@ -1567,6 +1684,25 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			true
 		} else {
 			alive _object
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: isConscious
+	Returns true if this unit is conscious, false otherwise.
+	Despawned unit is always considered conscious.
+
+	Returns: Bool
+	*/
+	METHOD("isConscious") {
+		params [P_THISOBJECT];
+		private _data = GETV(_thisObject, "data");
+		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (_object isEqualTo objNull) then {
+			// Unit is despawned
+			true
+		} else {
+			!(_object getVariable ["ACE_isUnconscious", false])
 		};
 	} ENDMETHOD;
 
@@ -1986,7 +2122,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				pr _className = _x;
 				pr _index = [_className] call jn_fnc_arsenal_itemType;
 				(_arsenalArray#_index) pushBack [_className, -1];
-			} forEach (g_ArsenalLoadout_Headgear + g_ArsenalLoadout_Uniforms + g_ArsenalLoadout_Facewear + g_ArsenalLoadout_Backpacks);
+			} forEach (g_ArsenalLoadout_Headgear + g_ArsenalLoadout_Uniforms + g_ArsenalLoadout_Facewear + g_ArsenalLoadout_Backpacks + g_ArsenalLoadout_Items);
 
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {
@@ -1997,6 +2133,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				// Clear the inventory
 				/// although, maybe we should move it into the arsenal?
 				// For now I only care to clear the inventory when we create an ammo box
+
+				// hopefully catch inventory wipe bug!
+				if(_hO in allPlayers) exitWith {
+					DUMP_CALLSTACK;
+					OOP_ERROR_MSG("PLAYERINVBUG: limitedArsenalEnable _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
+					// Broadcast notification
+					pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
+				};
+
 				clearItemCargoGlobal _hO;
 				clearWeaponCargoGlobal _hO;
 				clearMagazineCargoGlobal _hO;

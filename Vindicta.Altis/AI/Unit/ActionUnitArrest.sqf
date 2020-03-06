@@ -54,7 +54,7 @@ CLASS("ActionUnitArrest", "Action")
 		_captor lockWP false;
 		_captor setSpeedMode "NORMAL";
 
-		OOP_INFO_0("ActionUnitArrest: ACTIVATE");
+		//OOP_INFO_0("ActionUnitArrest: ACTIVATE");
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 
@@ -74,13 +74,13 @@ CLASS("ActionUnitArrest", "Action")
 		pr _target = T_GETV("target");
 
 		if (!(alive _captor) || (behaviour _captor == "COMBAT")) then {
-			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
+			//OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 2);
 		};
 
 		if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) then {
-			OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested."); 
+			//OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested."); 
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 3);
 		};
@@ -186,7 +186,7 @@ CLASS("ActionUnitArrest", "Action")
 				AI unit is now close and closing the gap to perform the actual arrest.
 			*/
 			case 1: {
-				OOP_INFO_0("ActionUnitArrest: Searching/Arresting target.");
+				//OOP_INFO_0("ActionUnitArrest: Searching/Arresting target.");
 
 				if (T_GETV("stateChanged")) then {
 					T_SETV("stateChanged", false);
@@ -258,7 +258,7 @@ CLASS("ActionUnitArrest", "Action")
 
 			// FAILED
 			case 2: {
-				OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP. Player will be made overt.");
+				//OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP. Player will be made overt.");
 
 				CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);	
 
@@ -267,7 +267,7 @@ CLASS("ActionUnitArrest", "Action")
 			
 			// COMPLETED SUCCESSFULLY
 			case 3: {
-				OOP_INFO_0("ActionUnitArrest: COMPLETED.");
+				//OOP_INFO_0("ActionUnitArrest: COMPLETED.");
 
 				_state = ACTION_STATE_COMPLETED;
 			};

@@ -3,6 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "buildUI.rpt"
+
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "BuildUI_Macros.h"
 #include "..\..\defineCommon.inc"
@@ -29,6 +30,36 @@ g_BuildUI = nil;
 #define __RESOURCE_SOURCE_LOCATION 0
 #define __RESOURCE_SOURCE_INVENTORY 1
 
+// List of objects that can be removed as garbage
+g_BuildUI_garbageObjects = [
+	"I_supplyCrate_F",
+	"B_CargoNet_01_ammo_F",
+	"Box_IND_Ammo_F",
+	"O_supplyCrate_F",
+	"C_T_supplyCrate_F",
+	"C_supplyCrate_F",
+	"IG_supplyCrate_F",
+	"C_IDAP_supplyCrate_F",
+	"I_EAF_supplyCrate_F",
+	"B_supplyCrate_F",
+	"Box_IND_WpsSpecial_F",
+	"Box_T_East_WpsSpecial_F",
+	"Box_East_WpsSpecial_F",
+	"Box_EAF_WpsSpecial_F",
+	"Box_T_NATO_WpsSpecial_F",
+	"Box_NATO_WpsSpecial_F",
+	"Box_NATO_Grenades_F",
+	"Box_EAF_Grenades_F",
+	"Box_East_Grenades_F",
+	"Box_IND_Grenades_F",
+	"Box_FIA_Support_F",
+	"Box_FIA_Wps_F",
+	"Box_Syndicate_Ammo_F",
+	"Box_NATO_Ammo_F",
+	"Box_EAF_Ammo_F",
+	"Box_FIA_Ammo_F"
+];
+
 CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");
@@ -40,7 +71,6 @@ CLASS("BuildUI", "")
 	VARIABLE("UICatTexts");					// array of strings for category names
 	VARIABLE("UIItemTexts");				// array of strings for item names in current category
 	VARIABLE("TimeFadeIn");					// fade in time for category change UI effect
-	VARIABLE("TimeFadeInTT");				// fade in time for tool tip text
 	VARIABLE("ItemCatOpen");				// true if item list should be shown
 	VARIABLE("playerEvents");				// handles to player event handlers when ui is open
 
@@ -75,7 +105,6 @@ CLASS("BuildUI", "")
 		T_SETV("currentCatID", 0);  			// index in Categories class
 		T_SETV("currentItemID", 0);  			// index in the current Category class
 		T_SETV("TimeFadeIn", 0);
-		T_SETV("TimeFadeInTT", 0);
 		T_SETV("UICatTexts", []);
 
 		pr _args = ["", "", "", "", ""];
@@ -183,10 +212,10 @@ CLASS("BuildUI", "")
 		T_SETV("EHKeyDown", _EHKeyDown);
 
 		pr _playerEvents = [
-			player addEventHandler ["Dammaged", { CALLM0(g_BuildUI, "closeUI"); }],
-			player addEventHandler ["GetInMan", { CALLM0(g_BuildUI, "closeUI"); }],
-			player addEventHandler ["Killed", { CALLM0(g_BuildUI, "closeUI"); }],
-			player addEventHandler ["InventoryOpened", { CALLM0(g_BuildUI, "closeUI"); }]
+			[player, "Dammaged", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler,
+			[player, "GetInMan", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler,
+			[player, "Killed", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler,
+			[player, "InventoryOpened", { CALLM0(g_BuildUI, "closeUI"); }] call CBA_fnc_addBISEventHandler
 		];
 
 		T_SETV("playerEvents", _playerEvents);
@@ -208,6 +237,20 @@ CLASS("BuildUI", "")
 	METHOD("UIFrameUpdate") {
 		params [P_THISOBJECT];
 
+		// Tooltips
+		_colorTooltip = '#ffffff'; // tooltip text color = black
+		pr _tooltipRobotoBold = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedBold'>%2</t>";
+		pr _tooltipRobotoLight = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedLight'> %2</t>";
+		pr _tooltipSeparator = (format[_tooltipRobotoBold, _colorTooltip, "    |    "]);
+		pr _tooltipBuild = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Build/Place"]); 
+		pr _tooltipPickup = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Pick up highlighted object"]); 
+		pr _tooltipBuildItemCat = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Select current object"]); 
+		pr _tooltipCloseMenu = (format[_tooltipRobotoBold, _colorTooltip, "BACKSPACE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Close menu"]);
+		pr _tooltipCancelPlace = (format[_tooltipRobotoBold, _colorTooltip, "BACKSPACE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Cancel placement"]);
+		pr _tooltipRotate = (format[_tooltipRobotoBold, _colorTooltip, "Q and E:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Rotate object"]);
+		pr _tooltipNavigate = (format[_tooltipRobotoBold, _colorTooltip, "ARROW KEYS:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Navigate through categories and items"]);
+		pr _tooltipDelete = (format[_tooltipRobotoBold, _colorTooltip, "DELETE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Delete highlighted object"]);
+
 		// Bail if we can't build any more here
 		if ((!CALLSM1("PlayerMonitor", "canUnitBuildAtLocation", player)) && (T_GETV("resourceSource") != -1)) exitWith {
 			T_CALLM0("closeUI");
@@ -216,27 +259,19 @@ CLASS("BuildUI", "")
 		pr _UICatTexts = GETV(g_BuildUI, "UICatTexts");
 		pr _UIItemTexts = GETV(g_BuildUI, "UIItemTexts");
 		pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
-		pr _TimeFadeInTT = GETV(g_BuildUI, "TimeFadeInTT");
 		pr _ItemCatOpen = GETV(g_BuildUI, "ItemCatOpen");
-		pr _color = [1, 1, 1, 1] call BIS_fnc_colorRGBAtoHTML;
 		pr _isMovingObj = GETV(g_BuildUI, "isMovingObjects");
 
 		pr _display = uinamespace getVariable "buildUI_display";
 
 		if (displayNull != _display) then {
 
-			if (_TimeFadeInTT > time) then {
-				pr _alpha = (-1 * ((_TimeFadeInTT) - (time + TIME_FADE_TT))) + 0.02;
-				_color = [1, 1, 1, _alpha] call BIS_fnc_colorRGBAtoHTML;
-
-			}; 
-
 			// item menu
 			if (_ItemCatOpen) then { 
 
-				// tooltips
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
+				// tooltips while item category is open
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format [_tooltipNavigate + _tooltipSeparator + _tooltipCloseMenu];
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format [_tooltipRotate + _tooltipSeparator + _tooltipBuildItemCat];
 
 				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
 				(_display displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
@@ -251,9 +286,9 @@ CLASS("BuildUI", "")
 				} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
 
 			} else { 
-				// tooltips
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>BACKSPACE: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> CLOSE MENU</t> <t color='%1' align='center' valign='bottom'>  |  ARROW KEYS: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> NAVIGATE MENU</t>", _color];
+				// tooltips while not moving objects & while itemcategory is closed
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format [_tooltipNavigate + _tooltipSeparator + _tooltipCloseMenu];
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format [_tooltipDelete + _tooltipSeparator + _tooltipPickup];
 
 				//(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
 				{
@@ -263,8 +298,9 @@ CLASS("BuildUI", "")
 			};
 
 			if (_isMovingObj) then { 
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
+				// tooltips while moving object
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format [_tooltipNavigate + _tooltipSeparator + _tooltipCancelPlace];
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format [_tooltipRotate + _tooltipSeparator + _tooltipBuild];
 			};
 
 			// cat menu
@@ -373,7 +409,107 @@ CLASS("BuildUI", "")
 
 			case DIK_DELETE: { 
 
-				//CALLSM0("BuildUI", "demolishActiveObject");
+					pr _canDelete = false;
+					pr _objectToDelete = cursorObject; // save in case player moves view!
+					pr _isGarbage = false; // true if object is to be deleted as garbage
+
+					if !(isNil "_objectToDelete") then {
+						// If it's moveable, allow demolishing
+						if(CALLSM1("BuildUI", "isObjectMovable", _objectToDelete)) then {
+							_canDelete = true;
+							OOP_INFO_0("Can delete object.");
+						} else {
+							// valid garbage
+
+							pr _fullCargo = (itemCargo _objectToDelete) + (magazineCargo _objectToDelete) + (weaponCargo _objectToDelete);
+
+							if ((typeof _objectToDelete) in g_BuildUI_garbageObjects && _fullCargo isEqualTo []) then {
+								_isGarbage = true;
+							} else {
+								if (cursorobject == _objectToDelete) then {
+									hint "Object must be empty to demolish. Cannot delete the arsenal.";
+								};
+							};
+
+						}; // end if-else
+					}; // end if !isNil
+
+					// find if object is defined in template, then get construction cost
+					// also check if it's an arsenal box
+					pr _catClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
+					pr _objClasses = [];
+					{
+						_objClasses pushBack ("true" configClasses _x); 
+					} forEach _catClasses;
+
+					pr _buildResCost = 0;
+					{
+						{
+							pr _classname = getText(_x >> "className");
+							if ((typeof _objectToDelete) == _classname) then {
+								_buildResCost = getNumber(_x >> "buildResource");
+
+								// if it's an arsenal box, we won't allow demolishing
+								if ((isClass(missionConfigFile >> "BuildObjects" >> "Categories" >> "CatStorage" >> configName(_x)))) then {
+									_canDelete = false;
+								};
+							};
+						} forEach _x;
+					} forEach _objClasses;
+
+					pr _refundBuildRes = 0;
+					// find amount to refund, if anything
+					// *not the number of construction resource items, using buildResource (defined in CfgMagazines in the addon) to calculate here!*
+					if (_buildResCost > 0) then {
+
+						_refundBuildRes = _buildResCost/2; 
+						if (_refundBuildRes <= 0) then { _refundBuildRes = 0; };
+
+						switch (_refundBuildRes) do {
+							default { if ((_refundBuildRes mod 10) != 0) then { _refundBuildRes = 0; }; };
+							case 15: { _refundBuildRes = 10; };
+						}; // end switch
+					};
+								
+					// show confirmation dialog before removing the object
+					if (_canDelete) then {
+						playSound ["clicksoft", false];
+						
+						// Show a confirmation dialog
+						pr _args = [format ["Demolish %1 and refund %2 construction resources?", (typeof(_objectToDelete)), _refundBuildRes],
+							[_objectToDelete, _refundBuildRes],
+							{
+								params["_objectToDelete", "_refundBuildRes"];
+								
+								// you can unfortunately drop the object and close the buildUI before pressing either yes or no
+								if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
+								CALLM2(g_BuildUI, "demolishActiveObject", _objectToDelete, _refundBuildRes); 
+							},
+							[], {}];
+						NEW("DialogConfirmAction", _args);
+
+					} else {
+						// check if object can be deleted as garbage
+						if (_isGarbage) then {
+
+						// Show a confirmation dialog
+						pr _args = [format ["Demolish %1? This object cannot be refunded.", (typeof(_objectToDelete))],
+							[_objectToDelete],
+							{
+								params["_objectToDelete"];
+								
+								if (cursorobject == _objectToDelete) then {
+									systemChat format["Object %1 was demolished.", (typeof(_objectToDelete))];
+									REMOTE_EXEC_CALL_STATIC_METHOD("MessageLoopMainManager", "KillUnit", [_objectToDelete], ON_SERVER, NO_JIP);
+								};
+							},
+							[], {}];
+						NEW("DialogConfirmAction", _args);
+
+						};
+					};
+
+					
 				true; // disables default control 
 			};
 		};
@@ -452,7 +588,6 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'openItems' method called");
 		T_SETV("ItemCatOpen", true);
 		T_SETV("currentItemID", 0);
-		T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
 		T_SETV("rotation", 0);
 		T_SETV("targetRotation", 0);
 
@@ -468,7 +603,6 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
 		//T_SETV("currentItemID", 0);
-		T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
 		T_CALLM0("clearCarousel");
 		T_CALLM0("enterMoveMode");
 	} ENDMETHOD;
@@ -759,7 +893,7 @@ CLASS("BuildUI", "")
 
 		T_PRVAR(activeObject);
 
-		if(count _activeObject == 0 or {cursorObject != _activeObject select 0}) then {
+		if(count _activeObject == 0 or {cursorObject != (_activeObject select 0)}) then {
 
 			if(count _activeObject > 0) then {
 				//CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
@@ -994,7 +1128,7 @@ CLASS("BuildUI", "")
 				// Ask server to do that
 
 				pr _pos = [_currPos select 0, _currPos select 1, 0];
-				pr _dir = getDir _ghostObject;
+				pr _vecDir = vectorDir _ghostObject;
 				// These are template catID and subcatID of the object, not catID of the build menu
 				pr _currentCatID = T_GETV("currentCatID");
 				pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
@@ -1014,13 +1148,13 @@ CLASS("BuildUI", "")
 					if (_playerBuildRes >= _buildRes) then {
 						CALLSM2("Unit", "removeInfantryBuildResources", player, _buildRes);
 						_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
-						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, false];
+						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _vecDir, false];
 						// Send the request to server
 						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 					} else {
 						// God mode
 						if(!isDamageAllowed player) then {
-							pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, false];
+							pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _vecDir, false];
 							// Send the request to server
 							CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 						} else {
@@ -1031,7 +1165,7 @@ CLASS("BuildUI", "")
 					
 				} else {
 					// We are building from the location garrison's resources
-					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, true];
+					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _vecDir, true];
 
 					// Send the request to server
 					CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
@@ -1085,13 +1219,52 @@ CLASS("BuildUI", "")
 
 	} ENDMETHOD;
 
-	// deletes object and returns construction points
-	STATIC_METHOD("demolishActiveObject") {
-		params [P_THISOBJECT];
+	/* 
+		Method: demolishActiveObject
 
-		if !(T_GETV("isMovingObjects")) exitWith {};
+		Called if yes was pressed in the confirmation dialog.
+		Deletes the object current cursorobject,
+		and refunds a part of its cost.
 
-		
+		Assumes object really can be demolished and refunded.
+	*/
+	METHOD("demolishActiveObject") {
+		params [P_THISOBJECT, P_OBJECT("_objectToDelete"), P_NUMBER("_refundBuildRes")];
+
+		OOP_INFO_2("demolishActiveObject called. Object: %1. Refund amount: %2", _objectToDelete, _refundBuildRes);
+
+		// you can unfortunately close the buildUI before pressing either yes or no
+		if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
+
+		if (cursorobject == _objectToDelete) then {
+			deleteVehicle _objectToDelete;
+			systemChat format["Refunded %1 construction resources.", _refundBuildRes];
+
+			// refund if anything can be refunded, else do nothing
+			if (_refundBuildRes > 0) then {
+
+				pr _posGroundWeapHolder = getPos player; // default position
+
+				// get position for ground weapon holder
+				{
+					_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+					_posGroundWeapHolder = _pos;
+				} forEach _movingObjectGhosts;
+
+				// create ground weapon holder and add build resources
+				pr _groundWeapHolder = "GroundWeaponHolder" createVehicle _posGroundWeapHolder;
+				_groundWeapHolder addMagazineCargoGlobal ["vin_build_res_0", (_refundBuildRes/10)]; // divide by 10 to get no. of items
+			}; 
+		};
+
+		T_SETV("activeObject", []);
+		T_SETV("movingObjectGhosts", []);
+		T_SETV("isMovingObjects", false);
+
+		// Reset everything that might be active
+		T_CALLM0("cancelMovingObjects");
+		T_CALLM0("clearCarousel");
+		T_CALLM0("exitMoveMode");
 
 	} ENDMETHOD;
 

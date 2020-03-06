@@ -8,6 +8,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@master
 
@@ -21,16 +22,19 @@ jobs:
 
   test:
     runs-on: windows-latest
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@master
 
     - name: Validate SQF with SQF-VM
       run: |
         cd Vindicta.Altis
+        New-Item .\config\user_local_config.hpp -ItemType File
         ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
 
   build:
     runs-on: windows-latest
+    timeout-minutes: 5
     needs: [validate, test]
     steps:
     - uses: actions/checkout@master
@@ -72,6 +76,7 @@ jobs:
 
   upload:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [build]
     steps:
     - name: Download build

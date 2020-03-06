@@ -104,10 +104,17 @@ switch _mode do {
 		//save crap in array
 		jnva_loadout = (_object_selected call jn_fnc_arsenal_cargoToArray);
 		jnva_loadout_mass = ["getMass"] call jn_fnc_arsenal_container;
-       	clearMagazineCargoGlobal _object_selected;
-        clearItemCargoGlobal _object_selected;
-        clearweaponCargoGlobal _object_selected;
-        clearbackpackCargoGlobal _object_selected;
+
+		if(_object_selected in allPlayers) exitWith {
+			[format["PLAYERINVBUG: CustomInit _this:%1, _object_selected:%2", _this, _object_selected]] remoteExecCall ["diag_log", 0, false];
+			private _msg = format["%1 just avoided the inventory clear bug (CustomInit), please send your .rpt to the developers so we can fix it!", name _object_selected];
+			[_msg] remoteExecCall ["hint", 0, false];
+		};
+
+		clearMagazineCargoGlobal _object_selected;
+		clearItemCargoGlobal _object_selected;
+		clearweaponCargoGlobal _object_selected;
+		clearbackpackCargoGlobal _object_selected;
 
 		["customGUI",[_display]] call jn_fnc_arsenal_container;
 		["customEvents",[_display]] call jn_fnc_arsenal_container;
@@ -646,7 +653,7 @@ switch _mode do {
 
 				// We can load upto _max - jnva_loadout_mass mass items
 				pr _availMass = _max - jnva_loadout_mass;
-				pr _itemMass = ["getMassItem",[_item,1,_index]] call jn_fnc_arsenal_container;
+				pr _itemMass = (["getMassItem",[_item,_count,_index]] call jn_fnc_arsenal_container) / _count;
 				pr _maxItems = floor (_availMass / _itemMass);
 				//_mass = jnva_loadout_mass + (["getMassItem",[_item,_count,_index]] call jn_fnc_arsenal_container);
 				//if(_mass <= _max)then{

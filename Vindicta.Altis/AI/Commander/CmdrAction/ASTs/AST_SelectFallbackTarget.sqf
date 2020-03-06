@@ -8,10 +8,10 @@ target.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new
@@ -85,13 +85,13 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 				OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_nearGarr)]);
 			} else {
 				// Otherwise find a nearby empty location and go there
-				private _nearLocs = CALLM(_world, "getNearestLocations", [_pos ARG 4000]) select { CALLM(_x, "isEmpty", []) };
+				private _nearLocs = CALLM(_world, "getNearestLocations", [_pos ARG 4000]) select { CALLM(_x select 1, "isEmpty", []) };
 				if(count _nearLocs == 0) then {
 					_nearLocs = CALLM(_world, "getNearestLocations", [_pos]);
 				};
 				if(count _nearLocs > 0) then {
-					private _nearLocGarr = _nearGarrs#0;
-					_nearLocGarr params ["_dist", "_nearLoc"];
+					private _nearLoc = _nearLocs#0;
+					_nearLoc params ["_dist", "_nearLoc"];
 					_newTarget = [TARGET_TYPE_LOCATION, GETV(_nearLoc, "id")];
 					OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_nearLoc)]);
 				} else {

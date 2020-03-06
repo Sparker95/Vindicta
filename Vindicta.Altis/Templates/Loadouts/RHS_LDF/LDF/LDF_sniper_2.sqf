@@ -16,18 +16,17 @@ this addVest "rhssaf_vest_md99_digital_radio";
 
 this addWeapon "rhs_weap_svdp";
 this addPrimaryWeaponItem "rhs_acc_pso1m2";
-this addPrimaryWeaponItem "rhs_10Rnd_762x54mmR_7N1";
+this addPrimaryWeaponItem "rhs_10Rnd_762x54mmR_7N14";
 this addWeapon "rhs_weap_pb_6p9";
 this addHandgunItem "rhs_acc_6p9_suppressor";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
-this addItemToVest "rhs_mag_rdg2_white";
 this addItemToVest "rhs_mag_nspd";
-for "_i" from 1 to 6 do {this addItemToVest "rhs_10Rnd_762x54mmR_7N1";};
+for "_i" from 1 to 6 do {this addItemToVest "rhs_10Rnd_762x54mmR_7N14";};
+this addItemToVest "rhs_mag_rdg2_white";
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_9x18_8_57N181S";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

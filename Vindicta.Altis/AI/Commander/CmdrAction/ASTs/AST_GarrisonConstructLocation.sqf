@@ -13,13 +13,13 @@ Parent: <ActionStateTransition>
 CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 
 	// Inputs
-	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("locPos", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("locType", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("buildRes", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("locPos", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("locType", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("buildRes", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 			P_OOP_OBJECT("_action"), - action

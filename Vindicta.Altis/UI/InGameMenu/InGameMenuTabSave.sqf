@@ -119,6 +119,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			DESERIALIZE_ALL(_header, _headerSerial);
 			[_recordName, _header, _errors];
 		};
+		// They are in order of when they were created so reverse them so we get newest at the top
+		reverse _recordDataLocal;
 
 		T_CALLM0("clearRecordData");
 		T_SETV("recordData", _recordDataLocal);
@@ -149,9 +151,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			_lnbSavedGames lnbSetData [[_row, 0], str _row]; // Set data to index of this record
 		} forEach T_GETV("recordData");
 
-		// Sort by save ID
-		_lnbSavedGames lnbSortByValue [0, true];
-
 		// Select something
 		if (count T_GETV("recordData") > 0) then {
 			_lnbSavedGames lnbSetCurSelRow 0; // It will cause a static box update too
@@ -159,6 +158,18 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_SAVE_DATA");
 			_staticSaveData ctrlSetText "";
 		};
+
+		// savegame count limit
+		if (count T_GETV("recordData") > 4) then {
+			pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
+			_newSaveBtn ctrlEnable false;
+			_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_DISABLED");
+		} else {
+			pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
+			_newSaveBtn ctrlEnable true;
+			_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_ENABLED");
+		};
+ 
 	} ENDMETHOD;
 
 	// Returns index of the currently selected saved game in the recordData array
@@ -210,6 +221,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		OOP_INFO_1("Sending request to overwrite saved game: %1", _recordName);
 		pr _args = [clientOwner, _recordName];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientOverwriteSavedGame", _args);
+
+		// Close in game menu after overwriting
+		CALLM0(gInGameMenu, "close");
 	} ENDMETHOD;
 
 	METHOD("onButtonOverwriteSavedGame") {

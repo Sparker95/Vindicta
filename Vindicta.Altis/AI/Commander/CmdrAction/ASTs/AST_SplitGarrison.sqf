@@ -7,17 +7,17 @@ Split a garrison into two parts.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_SplitGarrison", "ActionStateTransition")
-	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("failState", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("failState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Inputs
-	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("detachCompVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("detachEffVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("detachCompVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("detachEffVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Outputs
-	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new

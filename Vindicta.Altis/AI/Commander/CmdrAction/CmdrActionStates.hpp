@@ -1,39 +1,39 @@
 
 
-/*
-Enum: AI.CmdrAI.CmdrAction.CMDR_ACTION_STATE
+// /*
+// Enum: AI.CmdrAI.CmdrAction.CMDR_ACTION_STATE
 
-<ActionStateTransitions> are used by <CmdrAction> to transition between these states.
+// <ActionStateTransitions> are used by <CmdrAction> to transition between these states.
 
-CMDR_ACTION_STATE_NONE - Indicates no change to the current state, return from 
-<ActionStateTransition.update> when the update didn't cause a state change, e.g. on a long running
-AST that is currently in progress but not yet finished, like a garrison move or wait.
+// CMDR_ACTION_STATE_NONE - Indicates no change to the current state, return from 
+// <ActionStateTransition.update> when the update didn't cause a state change, e.g. on a long running
+// AST that is currently in progress but not yet finished, like a garrison move or wait.
 
-CMDR_ACTION_STATE_START - Indicates the final state of a CmdrAction, once it is completed 
-(successfully or not). The any final ASTs should transition TO this state.
+// CMDR_ACTION_STATE_START - Indicates the final state of a CmdrAction, once it is completed 
+// (successfully or not). The any final ASTs should transition TO this state.
 
-CMDR_ACTION_STATE_END - Indicates the final state of a CmdrAction, once it is completed 
-(successfully or not). The any final ASTs should transition TO this state.
+// CMDR_ACTION_STATE_END - Indicates the final state of a CmdrAction, once it is completed 
+// (successfully or not). The any final ASTs should transition TO this state.
 
-CMDR_ACTION_STATE_ALL - Used in places to indicate that ALL states are being considered 
-(in whatever context that makes sense).
+// CMDR_ACTION_STATE_ALL - Used in places to indicate that ALL states are being considered 
+// (in whatever context that makes sense).
 
-CMDR_ACTION_STATE_CUSTOM - Lowest value for custom states, as seen below.
-CMDR_ACTION_STATE_SPLIT - After a garrison is split into tw
-CMDR_ACTION_STATE_READY_TO_MOVE - When a garrison is ready toove
-CMDR_ACTION_STATE_MOVED - After a garrison has completed a mo
-CMDR_ACTION_STATE_TARGET_DEAD - When a target is dead, could beuccess or failure state depending on the context (e.g. kill or join)
-CMDR_ACTION_STATE_ARRIVED - When a garrison has arrived somwher
-CMDR_ACTION_STATE_ASSIGNED - When a garrison has been assigd an action
-CMDR_ACTION_STATE_RTB - When a garrison should return to ba
-CMDR_ACTION_STATE_RTB_SUCCESS - After a garrison has successfully returned to ba
-CMDR_ACTION_STATE_RTB_SELECT_TARGET - When a garrison needs to select a target for R
-CMDR_ACTION_STATE_FAILED_OUT_OF_RANGE - When an AST fails due to an out of rnge errorof some kind
-CMDR_ACTION_STATE_FAILED_GARRISON_DEAD - When as AST fails due to a garrisoneing dead
-CMDR_ACTION_STATE_FAILED_TIMEOUT - When an AST fails due to a generic time o
-CMDR_ACTION_STATE_NEXT_WAYPOINT - When the next waypoint in a route should be selcted
-CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a route
-*/
+// CMDR_ACTION_STATE_CUSTOM - Lowest value for custom states, as seen below.
+// CMDR_ACTION_STATE_SPLIT - After a garrison is split into tw
+// CMDR_ACTION_STATE_READY_TO_MOVE - When a garrison is ready toove
+// CMDR_ACTION_STATE_MOVED - After a garrison has completed a mo
+// CMDR_ACTION_STATE_TARGET_DEAD - When a target is dead, could beuccess or failure state depending on the context (e.g. kill or join)
+// CMDR_ACTION_STATE_ARRIVED - When a garrison has arrived somwher
+// CMDR_ACTION_STATE_ASSIGNED - When a garrison has been assigd an action
+// CMDR_ACTION_STATE_RTB - When a garrison should return to ba
+// CMDR_ACTION_STATE_RTB_SUCCESS - After a garrison has successfully returned to ba
+// CMDR_ACTION_STATE_RTB_SELECT_TARGET - When a garrison needs to select a target for R
+// CMDR_ACTION_STATE_FAILED_OUT_OF_RANGE - When an AST fails due to an out of rnge errorof some kind
+// CMDR_ACTION_STATE_FAILED_GARRISON_DEAD - When as AST fails due to a garrisoneing dead
+// CMDR_ACTION_STATE_FAILED_TIMEOUT - When an AST fails due to a generic time o
+// CMDR_ACTION_STATE_NEXT_WAYPOINT - When the next waypoint in a route should be selcted
+// CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a route
+// */
 
 
 // It is perfectly fine to add new values here, you don't have to use these ones, except for:
@@ -72,6 +72,14 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 #define CMDR_ACTION_STATE_NEXT_WAYPOINT 					(CMDR_ACTION_STATE_CUSTOM+13)
 // When there are no more waypoints in a route
 #define CMDR_ACTION_STATE_FINISHED_WAYPOINTS				(CMDR_ACTION_STATE_CUSTOM+14)
+
+// Once a split garrison is prepared
+#define CMDR_ACTION_STATE_PREPARED							(CMDR_ACTION_STATE_CUSTOM+15)
+
+// Just before a garrison will merge with a target
+#define CMDR_ACTION_STATE_PREMERGE							(CMDR_ACTION_STATE_CUSTOM+16)
+// When a garrison should merge with the target
+#define CMDR_ACTION_STATE_MERGE								(CMDR_ACTION_STATE_CUSTOM+17)
 
 // ActionStateTransition priority values. Potential ASTs are sorted by the priority levels in 
 // ascending order and the first valid one is used. You can use any value for priority
@@ -122,3 +130,10 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 #define TARGET_TYPE_CLUSTER  3
 #define NULL_TARGET []
 #define IS_NULL_TARGET(target) (target isEqualTo [])
+
+// Supply types for SupplyCmdrAction
+#define ACTION_SUPPLY_TYPE_BUILDING 0
+#define ACTION_SUPPLY_TYPE_AMMO 1
+#define ACTION_SUPPLY_TYPE_EXPLOSIVES 2
+#define ACTION_SUPPLY_TYPE_MEDICAL 3
+#define ACTION_SUPPLY_TYPE_MISC 4

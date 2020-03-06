@@ -13,7 +13,7 @@ Parent: <AttackCmdrAction>
 
 CLASS("QRFCmdrAction", "AttackCmdrAction")
 	// The target cluster model ID
-	VARIABLE("tgtClusterId");
+	VARIABLE_ATTR("tgtClusterId", [ATTR_SAVE]);
 
 	/*
 	Constructor: new
@@ -31,11 +31,6 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_CLUSTER ARG _tgtClusterId]);
-
-#ifdef DEBUG_CMDRAI
-		T_SETV("debugColor", "ColorRed");
-		T_SETV("debugSymbol", "mil_destroy")
-#endif
 	} ENDMETHOD;
 
 	// Create the intel object for this action
@@ -165,7 +160,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
-			OOP_DEBUG_MSG("Failed to allocate resources", []);
+			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
@@ -305,6 +300,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+REGISTER_DEBUG_MARKER_STYLE("QRFCmdrAction", "ColorRed", "mil_destroy");
 
 #ifdef _SQF_VM
 

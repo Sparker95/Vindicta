@@ -8,20 +8,15 @@ setting up an OP (maybe a dynamic location) and then remaining for a certain
 amount of time (retreating if discovered?).
 */
 CLASS("ReconCmdrAction", "CmdrAction")
-	VARIABLE("srcGarrId");
+	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	// Actual position we are interested in
-	VARIABLE("position");
+	VARIABLE_ATTR("position", [ATTR_SAVE]);
 	// Where we will move to (this is an OP, not the same as position)
-	VARIABLE("targetVar");
-	VARIABLE("splitFlagsVar");
-	VARIABLE("detachmentEffVar");
-	VARIABLE("detachedGarrIdVar");
-	VARIABLE("startDateVar");
-
-#ifdef DEBUG_CMDRAI
-	VARIABLE("debugColor");
-	VARIABLE("debugSymbol");
-#endif
+	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("splitFlagsVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("detachmentEffVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_SAVE]);
+	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_POSITION("_position")];
@@ -206,8 +201,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
-		T_PRVAR(debugColor);
-		T_PRVAR(debugSymbol);
+		GET_DEBUG_MARKER_STYLE(_thisObject) params ["_debugColor", "_debugSymbol"];
 
 		[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 

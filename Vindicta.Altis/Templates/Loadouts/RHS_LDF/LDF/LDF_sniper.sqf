@@ -24,14 +24,12 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_rdg2_white";
 this addItemToVest "rhs_mag_nspd";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_10rnd_9x39mm_SP5";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_10rnd_9x39mm_SP6";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_9x18_8_57N181S";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-

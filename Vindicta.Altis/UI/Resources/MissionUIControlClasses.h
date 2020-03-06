@@ -64,6 +64,10 @@ class MUI_BASE
 	shadow = 0;
 	tileH = 0;
 	tileW = 0;
+
+	tooltipColorText[] = MUIC_WHITE;
+	tooltipColorBox[] = MUIC_BLACK;
+	tooltipColorShade[] = MUIC_BLACK;
 };
 __MUI_CLASS_ABS(MUI_BASE);
 
@@ -193,6 +197,16 @@ class MUI_BUTTON_TXT : RscButton
 __MUI_CLASS_ABS(MUI_BUTTON_TXT);
 
 
+// special override for sorting buttons for CMUI
+class MUI_BUTTON_LISTNBOX : MUI_BUTTON_TXT 
+{
+    IDC = -1; 
+	font = "RobotoCondensed";
+	style = ST_LEFT;
+};
+__MUI_CLASS_ABS(MUI_BUTTON_LISTNBOX);
+
+
 // Dummy button with no visuals
 class MUI_BUTTON_DUMMY : MUI_BUTTON_TXT
 {
@@ -246,9 +260,9 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 	colorSelect[] = {0, 0, 0, 0}; // unknown
 	colorTextDisable[] = {0, 0, 0, 1};
 	colorDisable[] = {0, 0, 0, 1};
-	tooltipColorText[] = {1, 1, 1, 1};
-	tooltipColorBox[] = {1, 1, 1, 1};
-	tooltipColorShade[] = {0, 0, 0, 0.65};
+	tooltipColorText[] = MUIC_WHITE;
+	tooltipColorBox[] = MUIC_BLACK;
+	tooltipColorShade[] = MUIC_BLACK;
 
 	font = "RobotoCondensed";
 	sizeEx = MUI_TXT_SIZE_M;
@@ -293,7 +307,11 @@ class MUI_LISTNBOX : MUI_BASE
 	colorSelectBackground[] = MUIC_WHITE;
 	colorSelectBackground2[] = MUIC_WHITE;
 
-	soundSelect[] = {"\A3\ui_f\data\sound\RscListbox\soundSelect",0.09,1};
+	tooltipColorText[] = MUIC_WHITE;
+	tooltipColorBox[] = MUIC_BLACK;
+	tooltipColorShade[] = MUIC_BLACK;
+
+	soundSelect[] = {"\A3\ui_f\data\sound\RscListbox\soundSelect", 1, 1};
 
 	autoScrollSpeed = -1; 
 	autoScrollDelay = 5; 
@@ -357,7 +375,7 @@ class MUI_ST_FRAME : MUI_BASE
 	sizeEx = MUI_TXT_SIZE_M;
 	style = ST_FRAME;
 	text = "";
-	font = "PuristaLight";
+	font = "PuristaBold";
 };
 __MUI_CLASS_ABS(MUI_ST_FRAME);
 

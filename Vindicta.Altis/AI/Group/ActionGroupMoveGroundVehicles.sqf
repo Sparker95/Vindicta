@@ -14,8 +14,8 @@ TAG_MAX_SPEED_KMH
 
 // Needed vehicle separation in meters
 #define SEPARATION 18
-#define SPEED_MAX 60
-#define SPEED_MIN 8
+#define SPEED_MAX 25
+#define SPEED_MIN 5
 
 #ifndef RELEASE_BUILD
 #define DEBUG_FORMATION

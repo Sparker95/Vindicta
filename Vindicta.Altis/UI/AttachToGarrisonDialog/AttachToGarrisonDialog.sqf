@@ -58,12 +58,12 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 
 		// Bail if wrong object...
 		if (IS_NULL_OBJECT(_unit)) exitWith {
-			T_CALLM1("setText", "Error: wrong unit!\nPlease try again!");
+			T_CALLM1("setText", "Error: Wrong unit!\nPlease try again!");
 		};
 
 		// Bail if we aren't at location...
 		if (IS_NULL_OBJECT(_loc)) exitWith {
-			T_CALLM1("setText", "Error: there is no location to attach the unit!\nPlease try again!");
+			T_CALLM1("setText", "Error: There is no location to attach the unit!\nPlease try again!");
 		};
 
 		// All is fine! (for now)

@@ -112,13 +112,13 @@ _eff_veh set [T_VEH_car_armed,				[3,		0,		0,		0,		3,		0,		0,		0,		0,		2,		1,		0
 _eff_veh set [T_VEH_MRAP_unarmed,			[0,		1,		0,		0,		0,		0,		0,		0,		0,		2,		1,		0,		1,		0]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_veh set [T_VEH_MRAP_HMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		4,		0]]; // temp boost of crew req
-_eff_veh set [T_VEH_MRAP_GMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		4,		0]]; // temp boost of crew req
-_eff_veh set [T_VEH_IFV,					[0,		0,		1,		0,		10,		4,		0.7,	0,		0,		7,		1,		0,		6,		0]]; // temp boost of crew req
-_eff_veh set [T_VEH_APC,					[0,		0,		1,		0,		8,		3,		0.5,	0,		0,		7,		1,		0,		6,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_MRAP_HMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		2,		0]];
+_eff_veh set [T_VEH_MRAP_GMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		2,		0]];
+_eff_veh set [T_VEH_IFV,					[0,		0,		1,		0,		10,		4,		0.7,	0,		0,		7,		1,		0,		3,		0]];
+_eff_veh set [T_VEH_APC,					[0,		0,		1,		0,		8,		3,		0.5,	0,		0,		7,		1,		0,		3,		0]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0,		0,		0,		1,		0,		8,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0,		0,		0,		1,		0,		3,		0]];
 _eff_veh set [T_VEH_MRLS,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
 _eff_veh set [T_VEH_SPA,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
 _eff_veh set [T_VEH_SPAA,					[0,		0,		1,		0,		0,		0,		0,		6,		0,		0,		1,		0,		2,		0]];

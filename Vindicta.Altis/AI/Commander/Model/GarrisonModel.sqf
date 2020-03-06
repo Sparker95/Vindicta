@@ -555,6 +555,21 @@ CLASS("GarrisonModel", "ModelBase")
 		OOP_INFO_MSG("Cancelled clear area for %1", [LABEL(_thisObject)]);
 	} ENDMETHOD;
 
+	// ASSIGN CARGO
+	METHOD("assignCargoActual") {
+		params [P_THISOBJECT, P_ARRAY("_cargo")];
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		CALLM2(_actual, "postMethodAsync", "assignCargo", [_cargo]);
+	} ENDMETHOD;
+
+	// CLEAR CARGO
+	METHOD("clearCargoActual") {
+		params [P_THISOBJECT];
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		CALLM2(_actual, "postMethodAsync", "clearCargo", []);
+	} ENDMETHOD;
 	// METHOD("joinLocationActualComplete") {
 	// 	params [P_THISOBJECT];
 
@@ -580,12 +595,18 @@ CLASS("GarrisonModel", "ModelBase")
 				P_ARRAY("_compTransportBlacklistMask"), // Blacklist mask for transport or []
 				P_ARRAY("_requiredComp")				// Any specifically required composition or []
 		];
+		#ifdef UNIT_ALLOCATOR_DEBUG
+		diag_log format["allocateUnits: %1", _this];
+		#endif
 
 		// Perform lookup in hash map
 		pr _hashMap = GETSV("GarrisonModel", "allocatorCache");
 		pr _hashMapKey = str _this;	// 200us and more
 		pr _hashmapValue = _hashMap getVariable _hashMapKey;
 		if (!isNil "_hashmapValue") exitWith {
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log format["_hashmapValue: %1", str _hashmapValue];
+			#endif
 			SETSV("GarrisonModel", "allocatorCacheNHit", GETSV("GarrisonModel", "allocatorCacheNHit") + 1);	// Increase hit counter
 			_hashmapValue	
 		};
@@ -593,20 +614,20 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Assign validation functions according to flags
 		pr _constraintFnNames = [];
-		if (SPLIT_VALIDATE_ATTACK in _constraintFlags) then {
-			_constraintFnNames pushBack "eff_fnc_validateAttack";
+		if (SPLIT_VALIDATE_CREW in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateCrew";
 		};
 		if (SPLIT_VALIDATE_TRANSPORT in _constraintFlags) then {
 			_constraintFnNames pushBack "eff_fnc_validateTransport";
 		};
-		if (SPLIT_VALIDATE_TRANSPORT_EXT in _constraintFlags) then {
-			_constraintFnNames pushBack "eff_fnc_validateTransportExternal";
-		};
-		if (SPLIT_VALIDATE_CREW in _constraintFlags) then {
-			_constraintFnNames pushBack "eff_fnc_validateCrew";
+		if (SPLIT_VALIDATE_ATTACK in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateAttack";
 		};
 		if (SPLIT_VALIDATE_CREW_EXT in _constraintFlags) then {
 			_constraintFnNames pushBack "eff_fnc_validateCrewExternal";
+		};
+		if (SPLIT_VALIDATE_TRANSPORT_EXT in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateTransportExternal";
 		};
 
 		// Composition left after the allocation
@@ -711,9 +732,10 @@ CLASS("GarrisonModel", "ModelBase")
 
 			// Get allocated efficiency
 			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log format ["  Allocated eff: %1", _effAllocated];
 			[_compAllocated, "  Allocated composition:"] call comp_fnc_print;
+			diag_log format ["  Allocated eff: %1", _effAllocated];
 			diag_log format ["  Remaining eff: %1", _effRemaining];
+			diag_log format ["  External  eff: %1", _effExt];
 			#endif
 
 			// Validate against provided constrain functions

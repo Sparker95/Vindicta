@@ -213,13 +213,9 @@ CLASS("GameManager", "MessageReceiverEx")
 		diag_log "[GameManager]			GAME SAVE STARTED";
 		OOP_INFO_0("GAME SAVE STARTED");
 
-
 		// Start loading screen
-#ifdef RELEASE_BUILD
-		//startLoadingScreen ["Saving mission"];
-		["saving", ["<t size='3'>Saving...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>SAVING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
-#endif
 
 		pr _storage = NEW(__STORAGE_CLASS, []);
 
@@ -233,21 +229,21 @@ CLASS("GameManager", "MessageReceiverEx")
 		SETV(_header, "templates", []); // todo NYI
 
 		// Generate a unique record name
-		pr _recordNameBase = if (!_recovery) then {			// Normal save name
-					format ["%1 #%2 %3",
-					T_GETV("campaignName"),
-					T_GETV("saveID"),
-					date call misc_fnc_dateToISO8601];
-		} else {
-					format ["[RECOVERY] %1 #%2 %3",			// Save name in case of recovery
-					T_GETV("campaignName"),
-					T_GETV("saveID"),
-					date call misc_fnc_dateToISO8601];
+		pr _recordNameBase =
+			format ["%1 %2%3 #%4",
+				T_GETV("campaignName"),
+				floor (100 * CALLM0(gGameMode, "getCampaignProgress")), 
+				"%",
+				T_GETV("saveID")
+			];
+
+		if (_recovery) then {
+			_recordNameBase = format["[RECOVERY] %1", _recordNameBase];
 		};
 #ifdef RELEASE_BUILD
 		pr _recordNameFinal = _recordNameBase;
 #else
-		pr _recordNameFinal = format["DEV %1", _recordNameBase];
+		pr _recordNameFinal = format["[DEV] %1", _recordNameBase];
 #endif
 		pr _i = 1;
 		while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
@@ -261,13 +257,13 @@ CLASS("GameManager", "MessageReceiverEx")
 		if (CALLM0(_storage, "isOpen")) then {
 			// Send notification to everyone
 			pr _text = "Game state save is in progress...";
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
-
-			
 			diag_log format ["[GameManager] Saving game mode: %1", gGameMode];
 			CALLM1(_storage, "save", gGameMode);
-			CALLM2(_storage, "save", "gameMode", gGameMode);	// Ref to game mode object
+			CRITICAL_SECTION {
+				CALLM2(_storage, "save", "gameMode", gGameMode);	// Ref to game mode object
+			};
 			
 			diag_log format ["[GameManager] Saving save game header..."];
 			[_header] call OOP_dumpAllVariables;
@@ -285,7 +281,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 			// Send notification to everyone
 			pr _text = "Game state has been saved!";
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 			_success = true;
 		} else {
 			OOP_ERROR_1("Cant open storage record: %1", _recordNameFinal);
@@ -294,12 +290,8 @@ CLASS("GameManager", "MessageReceiverEx")
 
 
 		// End loading screen
-		//endLoadingScreen;
-#ifdef RELEASE_BUILD
-		//startLoadingScreen ["Saving mission"];
-		["saving", ["<t size='3'>Save complete</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", ["<t size='4' color='#77FF77'>SAVE COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 10] remoteExec ["cutFadeOut", ON_ALL, false];
-#endif
 
 		OOP_INFO_0("GAME SAVE ENDED");
 		diag_log "[GameManager] GAME SAVE ENDED";
@@ -329,11 +321,8 @@ CLASS("GameManager", "MessageReceiverEx")
 
 
 		// Start loading screen
-#ifdef RELEASE_BUILD
-		//startLoadingScreen ["Loading the mission"];
-		["loading", ["<t size='3'>Loading...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>LOADING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["loading", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
-#endif
 
 		// Bail if game mode is already initialized (although the button should be disabled, right?)
 		if(CALLM0(gGameManager, "isGameModeInitialized")) exitWith { false };
@@ -370,10 +359,12 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						// Send notification to everyone
 						pr _text = "Game load is in progress...";
-						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
-						CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
+						CRITICAL_SECTION {
+							CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
+						};
 						gGameMode = _gameModeRef;
 						gGameModeServer = _gameModeRef;
 						PUBLIC_VARIABLE "gGameModeServer";
@@ -399,7 +390,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						// Send notification to everyone
 						pr _text = "Game has been loaded. You should respawn now.";
-						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						diag_log "[GameManager] Finished loading the game mode object";
 					} else {
@@ -424,12 +415,8 @@ CLASS("GameManager", "MessageReceiverEx")
 
 
 		// End loading screen
-		//endLoadingScreen;
-#ifdef RELEASE_BUILD
-		//startLoadingScreen ["Saving mission"];
-		["loading", ["<t size='3'>Load complete</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", ["<t size='4' color='#77FF77'>LOAD COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["loading", 10] remoteExec ["cutFadeOut", ON_ALL, false];
-#endif
 
 		OOP_INFO_0("GAME LOAD ENDED");
 		diag_log "[GameManager] GAME LOAD ENDED";
@@ -549,7 +536,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Send notifications...
 		pr _text = "Game is being initialized. It can take up to several minutes.";
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 		uisleep 0.05; // Let it send the messages
 
@@ -571,7 +558,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Send notifications...
 		pr _text = "Game mode initialization is complete. You should respawn now.";
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 		// Set flag
 		T_SETV("gameModeInitialized", true);

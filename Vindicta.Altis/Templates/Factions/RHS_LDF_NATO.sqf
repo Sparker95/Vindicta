@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LDF_NATO"];
-_array set [T_DESCRIPTION, "NATO aligned LDF with with custom loadouts from RHS addons"];
-_array set [T_DISPLAY_NAME, "RHS LDF NATO (Custom)"];
+_array set [T_DESCRIPTION, "NATO aligned LDF. Uses RHS. By MatrikSky."];
+_array set [T_DISPLAY_NAME, "RHS LDF NATO"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 								"rhs_c_troops",		// RHS AFRF
@@ -120,10 +120,8 @@ _veh set [T_VEH_truck_fuel, ["rhsgref_cdf_ural_fuel"]];
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
-_drone set [T_DRONE_SIZE-1, nil];
-_drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
-
-
+//_drone set [T_DRONE_SIZE-1, nil];
+//_drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 //_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
 //_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
 //_drone set [T_DRONE_plane_attack, ["B_UAV_02_dynamicLoadout_F"]];

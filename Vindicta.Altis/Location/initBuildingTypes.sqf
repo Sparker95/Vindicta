@@ -215,8 +215,17 @@ location_bt_radio =
 // Objects which heal units
 location_bt_medical =
 [
-	"Land_MedicalTent_01_digital_closed_F",
-	"Land_MedicalTent_01_brownhex_closed_F"
+	"Land_MedicalTent_01_NATO_generic_outer_F",
+	"Land_MedicalTent_01_NATO_generic_inner_F",
+	"Land_DeconTent_01_NATO_F",
+
+	"Land_MedicalTent_01_NATO_tropic_generic_outer_F",
+	"Land_MedicalTent_01_wdl_generic_inner_F",
+	"Land_DeconTent_01_NATO_tropic_F",
+
+	"Land_MedicalTent_01_white_generic_outer_F",
+	"Land_MedicalTent_01_white_generic_inner_F",
+	"Land_DeconTent_01_white_F"
 ];
 
 /*
@@ -316,3 +325,10 @@ _arrayExport
 //Code to get class names of all selected eden objects
 (get3DENSelected "object") apply {typeof _x}
 */
+
+gMilitaryBuildingModels = [];
+gMilitaryBuildingTypes = [];
+{
+	gMilitaryBuildingModels pushBack (_x#0);
+	gMilitaryBuildingTypes pushBack (_x#1);
+} forEach (call compile preprocessFileLineNumbers "Location\militaryBuildings.sqf");

@@ -8,22 +8,22 @@ class EditorData
 	toggles=585;
 	class ItemIDProvider
 	{
-		nextID=1862;
+		nextID=2123;
 	};
 	class MarkerIDProvider
 	{
-		nextID=35;
+		nextID=36;
 	};
 	class LayerIndexProvider
 	{
-		nextID=219;
+		nextID=223;
 	};
 	class Camera
 	{
-		pos[]={14891.354,170.40622,10969.758};
-		dir[]={0.047610015,-0.8229956,0.56615102};
-		up[]={0.06896843,0.56803262,0.82011533};
-		aside[]={0.9965378,1.1459633e-009,-0.083803743};
+		pos[]={23720.549,81.351021,18069.947};
+		dir[]={-0.082080737,-0.89793354,0.43245989};
+		up[]={-0.16743781,0.44012833,0.88218254};
+		aside[]={0.98248023,5.8887963e-008,0.18647343};
 	};
 };
 binarizationWanted=0;
@@ -49,14 +49,14 @@ addons[]=
 	"A3_Structures_F_Argo_Walls_Military",
 	"A3_Structures_F_Mil_Shelters",
 	"A3_Characters_F",
+	"ace_explosives",
 	"A3_Supplies_F_Heli_Slingload",
 	"A3_Structures_F_Enoch_Wrecks",
 	"A3_Structures_F_Wrecks",
 	"A3_Props_F_Tank_Military_Wrecks",
 	"A3_Structures_F_Mil_Barracks",
 	"A3_Structures_F_Heli_Items_Airport",
-	"A3_Structures_F_Tank_Military_RepairDepot",
-	"ace_explosives"
+	"A3_Structures_F_Tank_Military_RepairDepot"
 };
 class AddonsMetaData
 {
@@ -168,52 +168,52 @@ class AddonsMetaData
 		};
 		class Item15
 		{
+			className="ace_explosives";
+			name="ACE3 - Explosives";
+			author="ACE-Team";
+			url="http://ace3mod.com/";
+		};
+		class Item16
+		{
 			className="A3_Supplies_F_Heli";
 			name="Arma 3 Helicopters - Ammoboxes and Supplies";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item16
+		class Item17
 		{
 			className="A3_Structures_F_Enoch";
 			name="Arma 3 Enoch - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item17
+		class Item18
 		{
 			className="A3_Structures_F_Wrecks";
 			name="Arma 3 - Vehicle Wrecks";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item18
+		class Item19
 		{
 			className="A3_Props_F_Tank";
 			name="Arma 3 Tank - Decorative and Mission Objects";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item19
+		class Item20
 		{
 			className="A3_Structures_F_Heli";
 			name="Arma 3 Helicopters - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item20
+		class Item21
 		{
 			className="A3_Structures_F_Tank";
 			name="Arma 3 Tank - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
-		};
-		class Item21
-		{
-			className="ace_explosives";
-			name="ACE3 - Explosives";
-			author="ACE-Team";
-			url="http://ace3mod.com/";
 		};
 	};
 };

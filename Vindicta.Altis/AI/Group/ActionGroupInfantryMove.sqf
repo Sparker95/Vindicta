@@ -19,7 +19,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		T_SETV("pos", _pos);
+		T_SETV("pos", POS_TO_ATL(_pos));
 		
 	} ENDMETHOD;
 
@@ -40,11 +40,12 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 		};
 
 		// Add a move waypoint
-		private _wp = _hG addWaypoint [_pos, 10, 0];
+		private _wp = _hG addWaypoint [_pos, -1, 0];
 		_wp setWaypointType "MOVE";
 		_wp setWaypointFormation "DIAMOND";
 		_wp setWaypointBehaviour "AWARE";
 		_wp setWaypointSpeed "NORMAL";
+		_wp setWaypointCompletionRadius 10;
 		_hG setCurrentWaypoint _wp;
 		
 		// Give goals to units to regroup
@@ -78,12 +79,17 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 			private _leader = leader _hG;
 			private _destination = GETV(_thisObject, "pos");
 			// Leader is closer than 20 meters from destination, all units are less than 50m to the leader
-			private _isGroupNearPos = (((leader _hG) distance2D _destination) < 20) && ((units _hG) findIf { (_x distance2D _leader) > 50} == -1);
+			private _isGroupNearPos = ((_leader distance2D _destination) < 20) && ((units _hG) findIf { (_x distance2D _leader) > 50} == -1);
 
 			// Return the current state
 			if (_isGroupNearPos) then {
 				_state = ACTION_STATE_COMPLETED
-			};
+			} else {
+				private _waypoints = waypoints _hG;
+				if(count _waypoints == 0) then {
+					_state = ACTION_STATE_FAILED;
+				};
+			}
 		};
 
 		T_SETV("state", _state);

@@ -35,7 +35,8 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 				if ((count _wps) > 0) then {
 					pr _wp0 = _wps#0;
 					pr _pos0 = waypointPosition _wp0;
-					if (! (_pos0 isEqualTo [0, 0, 0])) then {
+					// No teleporting over 50 meters you cheaters!
+					if (! (_pos0 isEqualTo [0, 0, 0]) && _pos0 distance _hO < 50) then {
 						{
 							_x setPos [_pos0#0 + random 10, _pos0#1 + random 10, 0];
 						} forEach (units _hG);

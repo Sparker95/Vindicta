@@ -20,10 +20,9 @@ _list = +_list;
 if(typeName _remove isEqualTo "STRING")then{_remove = [_remove,1];};
 if(typeName (_remove select 0) isEqualTo "STRING")then{_remove = [_remove]};
 
-diag_log "1";
-diag_log _list;
-diag_log "2";
-diag_log _remove;
+OOP_INFO_1("common_array_remove _list: %1", _list);
+OOP_INFO_1("common_array_remove _remove: %1", _remove);
+
 {
     pr _index = _forEachIndex;
     pr _name = _x select 0;

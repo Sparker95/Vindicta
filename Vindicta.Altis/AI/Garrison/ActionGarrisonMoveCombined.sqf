@@ -121,7 +121,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 			// Create a Virtual Route if it doesnt exist yet
 			pr _vr = T_GETV("virtualRoute");
-			if (_vr == "") then {
+			if (_vr == NULL_OBJECT) then {
 				_vr = CALLM0(_thisObject, "createVirtualRoute");
 			};
 
@@ -149,8 +149,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 						T_PRVAR(gar);
 						pr _garPos = CALLM0(_gar, "getPos");
 						T_PRVAR(pos);
-						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos]+[_pos]+[_pos distance _garPos]);
-						// TODO: maybe we want to do something else here?
+						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos ARG _pos ARG _pos distance2D _garPos]);
+						// We assume failure is due to no road between the locations
+						// TODO: Return specific problem from VirtualRoute
 						_state = ACTION_STATE_COMPLETED;
 					};
 				};
@@ -161,7 +162,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} else {
 			// Delete the Virtual Route object if it exists, we don't need it any more
 			pr _vr = T_GETV("virtualRoute");
-			if (_vr != "") then {
+			if (_vr != NULL_OBJECT) then {
 				DELETE(_vr);
 				T_SETV("virtualRoute", "");
 			};
@@ -209,7 +210,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					breakTo "s0";
 				};
 				
-				// Succede if all groups have completed the goal
+				// Succeed if all groups have completed the goal
 				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 					OOP_INFO_0("All groups have arrived");
 					
@@ -285,7 +286,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Delete old virtual route if we had it
 		pr _vr = T_GETV("virtualRoute");
-		if (_vr != "") then {
+		if (_vr != NULL_OBJECT) then {
 			DELETE(_vr);
 		};
 
@@ -305,7 +306,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Spawn vehicle groups on the road according to convoy positions
 		pr _vr = T_GETV("virtualRoute");
-		if (_vr == "") exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
+		if (_vr == NULL_OBJECT) exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
 
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");

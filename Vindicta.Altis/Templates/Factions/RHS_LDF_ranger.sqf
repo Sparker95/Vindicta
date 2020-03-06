@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LDF_ranger"];
-_array set [T_DESCRIPTION, "LDF Police Rangers with custom loadouts from RHS addons."];
-_array set [T_DISPLAY_NAME, "RHS LDF Rangers"];
+_array set [T_DESCRIPTION, "Livonian forest rangers. Uses RHS."];
+_array set [T_DISPLAY_NAME, "RHS LDF Rangers Custom"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [							
 								"rhs_c_troops",		// RHS AFRF
@@ -56,20 +56,18 @@ _veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F", "I_E_Offroad_01_comms_F", "I_E
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
-/*
-_drone set [T_DRONE_SIZE-1, nil];
-_drone set [T_DRONE_DEFAULT, ["O_UAV_01_F"]];
-_drone set [T_DRONE_UGV_unarmed, ["O_UGV_01_F"]];
-_drone set [T_DRONE_UGV_armed, ["O_UGV_01_rcws_F"]];
-_drone set [T_DRONE_plane_attack, ["O_UAV_02_dynamicLoadout_F"]];
-_drone set [T_DRONE_plane_unarmed, ["O_UAV_02_dynamicLoadout_F"]];
-_drone set [T_DRONE_heli_attack, ["O_T_UAV_04_CAS_F"]];
-_drone set [T_DRONE_quadcopter, ["O_UAV_01_F"]];
-_drone set [T_DRONE_designator, ["O_Static_Designator_02_F"]];
-_drone set [T_DRONE_stat_HMG_low, ["O_HMG_01_A_F"]];
-_drone set [T_DRONE_stat_GMG_low, ["O_GMG_01_A_F"]];
-_drone set [T_DRONE_stat_AA, ["O_SAM_System_04_F"]];
-*/
+//_drone set [T_DRONE_SIZE-1, nil];
+//_drone set [T_DRONE_DEFAULT, ["I_UGV_01_F"]];
+//_drone set [T_DRONE_UGV_unarmed, ["I_UGV_01_F"]];
+//_drone set [T_DRONE_UGV_armed, ["I_UGV_01_rcws_F"]];
+//_drone set [T_DRONE_plane_attack, ["I_UAV_02_dynamicLoadout_F"]];
+//_drone set [T_DRONE_plane_unarmed, ["I_UAV_02_dynamicLoadout_F"]];
+//_drone set [T_DRONE_heli_attack, ["I_UAV_02_dynamicLoadout_F"]];
+//_drone set [T_DRONE_quadcopter, ["I_UAV_01_F"]];
+//_drone set [T_DRONE_designator, [""]];
+//_drone set [T_DRONE_stat_HMG_low, ["I_HMG_01_A_F"]];
+//_drone set [T_DRONE_stat_GMG_low, ["I_GMG_01_A_F"]];
+//_drone set [T_DRONE_stat_AA, [""]];
 
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);

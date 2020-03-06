@@ -6,6 +6,14 @@ param (
 #$verDir = "vindicta_v$($verStr)"
 # Set-Content -Path ..\configs\majorVersion.hpp -Value $major -Force -NoNewline
 # Set-Content -Path ..\configs\minorVersion.hpp -Value $minor -Force -NoNewline
+if((Get-Content -Path ..\configs\majorVersion.hpp).Count -gt 1) {
+    "ERROR: configs\majorVersion.hpp contains a newline, it must not!"
+    Exit 100
+}
+if((Get-Content -Path ..\configs\minorVersion.hpp).Count -gt 1) {
+    "ERROR: configs\minorVersion.hpp contains a newline, it must not!"
+    Exit 100
+}
 
 Set-Content -Path ..\configs\buildVersion.hpp -Value $patch -Force -NoNewline
 
@@ -52,7 +60,10 @@ foreach ($extraFile in $extraFiles) {
 
 # Make the standalone pbos as well
 New-Item ".\dev" -ItemType "directory" -Force | Out-Null
-"Building standalone mission vindicta_altis_v$($verStr).altis.pbo..."
-.\tools\armake_w64 build --force -i include "..\_build\Vindicta_Altis_v$($verStr).Altis" ".\dev\vindicta_altis_v$($verStr).altis.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
-"Building standalone mission vindicta_enoch_v$($verStr).enoch.pbo..."
-.\tools\armake_w64 build --force -i include "..\_build\Vindicta_Enoch_v$($verStr).Enoch" ".\dev\vindicta_enoch_v$($verStr).enoch.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+
+$maps = @("Altis", "Enoch", "Malden")
+foreach ($map in $maps) {
+    $mapLower = $map.toLower();
+    "Building standalone mission vindicta_$($mapLower)_v$($verStr).$($mapLower).pbo..."
+    .\tools\armake_w64 build --force -i include "..\_build\Vindicta_$($map)_v$($verStr).$($map)" ".\dev\vindicta_$($mapLower)_v$($verStr).$($mapLower).pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+}

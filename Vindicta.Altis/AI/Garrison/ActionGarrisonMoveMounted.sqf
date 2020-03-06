@@ -159,8 +159,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 						T_PRVAR(gar);
 						pr _garPos = CALLM0(_gar, "getPos");
 						T_PRVAR(pos);
-						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos]+[_pos]+[_pos distance _garPos]);
-						_state = ACTION_STATE_FAILED;
+						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos ARG _pos ARG _pos distance2D _garPos]);
+						// We assume failure is due to no road between the locations
+						// TODO: Return specific problem from VirtualRoute
+						_state = ACTION_STATE_COMPLETED;
 					};
 				};
 			};
@@ -383,7 +385,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			if (CALL_METHOD(_x, "getGroup", []) == "") then {
 				pr _className = CALLM0(_unit, "getClassName");
 
-				pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _garPos);
+				pr _posAndDir = CALLSM3("Location", "findSafePos", _garPos, _className, 400);
 
 				// After a good place has been found, spawn it
 				CALL_METHOD(_unit, "spawn", _posAndDir);

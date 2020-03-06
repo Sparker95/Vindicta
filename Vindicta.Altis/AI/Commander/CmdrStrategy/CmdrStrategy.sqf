@@ -6,6 +6,9 @@
 // This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
 #define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
 
+// https://www.desmos.com/calculator/yxhaqijv19
+#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.1 * (1 - sqrt(0.9 * (campaignProgress))) * (rawDamage)) - 0.1)
+
 /*
 Class: AI.CmdrAI.CmdrStrategy.CmdrStrategy
 
@@ -233,7 +236,11 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
-		_defaultScore
+		private _tgtClusterPos = GETV(_tgtCluster, "pos");
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtClusterPos ARG 2000]);
+		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
+		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	} ENDMETHOD;
 
 	/*
@@ -301,6 +308,42 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	} ENDMETHOD;
 
 	/*
+	Method: (virtual) getSupplyScore
+	Return a value indicating the commanders desire to send supplies from the specified source garrison to the
+	specified target garrison of the specified type and amount.
+	Default <CmdrAction.Actions.SupplyCmdrAction> behaviour is to send supplies whenever they are needed.
+	
+	Parameters:
+		_action - <CmdrAction.Actions.SupplyCmdrAction>, action being evaluated.
+		_defaultScore - Array of Numbers, score vector, the score as calculated by the default algorithm. This can be returned as 
+			it to get default behaviour (detailed above in the method description).
+		_worldNow - <Model.WorldModel>, the current world model (only resource requirements of new and planned actions are applied).
+		_worldFuture - <Model.WorldModel>, the predicted future world model (in progress and planned actions are applied to completion).
+		_srcGarr - <Model.GarrisonModel>, garrison that would send the supplies.
+		_tgtGarr - <Model.GarrisonModel>, garrison that would receive the supplies.
+		_detachEff - Array of Numbers, efficiency vector, the efficiency of the detachment the source garrison is capable of
+			sending, capped against what is required by the target garrison.
+		_type - Number, type of the supplies to send (as per the ACTION_SUPPLY_TYPE_* macros in SupplyCmdrAction.sqf)
+		_amount - Number, 0-1 representing the amount of supplies (no specific units)
+
+	Returns: Array of Numbers, score vector
+	*/
+	/* virtual */ METHOD("getSupplyScore") {
+		params [P_THISOBJECT,
+			P_OOP_OBJECT("_action"), 
+			P_ARRAY("_defaultScore"),
+			P_OOP_OBJECT("_worldNow"),
+			P_OOP_OBJECT("_worldFuture"),
+			P_OOP_OBJECT("_srcGarr"),
+			P_OOP_OBJECT("_tgtGarr"),
+			P_ARRAY("_detachEff"),
+			P_NUMBER("_type"),
+			P_NUMBER("_amount")
+			];
+		_defaultScore
+	} ENDMETHOD;
+
+	/*
 	Method: (virtual) getTakeLocationScore
 	Return a value indicating the commanders desire to take the specified location using the specified source 
 	garrison.
@@ -332,7 +375,11 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
-		_defaultScore
+		private _tgtPos = GETV(_tgtLoc, "pos");
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtPos ARG 2000]);
+		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
+		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getConstructLocationScore") {

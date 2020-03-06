@@ -92,7 +92,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			if (IS_OOP_OBJECT(_gar)) then {
 				if (CALLM0(_gar, "isAlive")) then { // We only serve update events here
 					pr _side = GETV(_gar, "side");
-					T_CALLM2("_sendUpdate", _gar, _side); // Send data to all clients of same side as this garrison
+					T_CALLM2("_sendUpdate", _gar, [_side ARG civilian]); // Send data to all clients of same side as this garrison
 				};
 			};
 		} forEach _outdatedGarrisons;
@@ -145,7 +145,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Transmit data about all garrisons with the same side
 		pr _garrisons = CALLSM2("Garrison", "getAllActive", [_side], []);
 		{
-			T_CALLM2("_sendUpdate", _x, _side); // Send data to all clients of same side as this garrison
+			T_CALLM2("_sendUpdate", _x, [_side ARG civilian]); // Send data to all clients of same side as this garrison
 		} forEach _garrisons;
 
 	} ENDMETHOD;
@@ -208,7 +208,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		OOP_INFO_1("BUILD FROM GARRISON: %1", _this);
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"),
 				P_STRING("_catCfgClassNameStr"), P_STRING("_objCfgClassNameStr"),
-				P_POSITION("_pos"), P_NUMBER("_dir"), P_BOOL("_checkGarrisonBuildRes")];
+				P_POSITION("_pos"), P_POSITION("_dir"), P_BOOL("_checkGarrisonBuildRes")];
 		
 		// Sanity checks
 		if (_catCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Category config class name is empty. _this: %1", _this); };
@@ -247,9 +247,12 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _surfaceVectorUp = surfaceNormal _pos;
 
 		// Remove exec it so that it updates instantly on all computers
-		[_hO, _pos] remoteExec ["setPos"];
-		[_hO, _dir] remoteExec ["setDir"];
-		[_hO, _surfaceVectorUp] remoteExec ["setVectorUp"];
+		//[_hO, _pos] remoteExec ["setPos"];
+		//[_hO, _dir] remoteExec ["setDir"];
+		//[_hO, _surfaceVectorUp] remoteExec ["setVectorUp"];
+		
+		_hO setPos _pos;
+		_hO setVectorDirAndUp [_dir, _surfaceVectorUp];
 
 		if (_catID != -1) then {
 			pr _args = [[], _catID, _subcatID, -1, "", _hO];

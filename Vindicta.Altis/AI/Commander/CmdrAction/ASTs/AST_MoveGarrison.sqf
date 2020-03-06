@@ -10,15 +10,15 @@ Parent: <ActionStateTransition>
 */
 
 CLASS("AST_MoveGarrison", "ActionStateTransition")
-	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("failTargetDead", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("moving", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("failTargetDead", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("moving", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	// Inputs
-	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("radiusVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("radiusVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new

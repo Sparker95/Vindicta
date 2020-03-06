@@ -22,7 +22,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("EH_Killed") {
-		params ["_thisObject", "_objectHandle", "_killer", "_instigator", "_useEffects"];
+		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_killer"), P_OBJECT("_instigator"), P_BOOL("_useEffects")];
 
 		ASSERT_THREAD(_thisObject);
 
@@ -69,6 +69,15 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	} ENDMETHOD;
 	
+	STATIC_METHOD("KillUnit") {
+		params [P_THISCLASS, P_OBJECT("_objectHandle")];
+		// Is this object an instance of Unit class?
+		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
+		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
+			DELETE(_unit);
+		};
+	} ENDMETHOD;
+	
 	/*
 	Method: EH_GetIn
 	It is called when someone gets in a vehicle.
@@ -81,7 +90,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("EH_GetIn") {
-		params ["_thisObject", "_vehicle", "_role", "_unit", "_turret"];
+		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetIn: %1", _this);
 
@@ -123,11 +132,21 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("EH_GetOut") {
-		params ["_thisObject", "_vehicle", "_role", "_unit", "_turret"];
+		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetOut: %1", _this);
 
 		ASSERT_THREAD(_thisObject);
+
+		// This is an async message, either vehicle or unit could have been deleted by now... this is a bit of a problem.
+		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the asynchronous part of the handler.
+		if(isNull _unit) exitWith {
+			OOP_WARNING_1("EH_GetOut: unit handle is null (%1)", _this);
+		};
+
+		if(isNull _vehicle) exitWith {
+			OOP_WARNING_1("EH_GetOut: vehicle handle is null (%1)", _this);
+		};
 
 		// Is this object an instance of Unit class?
 		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
