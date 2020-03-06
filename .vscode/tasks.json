@@ -59,6 +59,17 @@
             "problemMatcher": []
         },
         {
+            "label": "EDIT VT7",
+            "type": "process",
+            "command": "edit_vt7.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "EDIT SAVE",
             "type": "process",
             "command": "edit_save.bat",

@@ -5,25 +5,25 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=585;
+	toggles=577;
 	class ItemIDProvider
 	{
-		nextID=1917;
+		nextID=2205;
 	};
 	class MarkerIDProvider
 	{
-		nextID=35;
+		nextID=36;
 	};
 	class LayerIndexProvider
 	{
-		nextID=229;
+		nextID=247;
 	};
 	class Camera
 	{
-		pos[]={13683.189,115.83801,6305.5723};
-		dir[]={-0.27229023,-0.82044333,0.50277537};
-		up[]={-0.39070946,0.57173574,0.72142881};
-		aside[]={0.87934726,-1.025619e-007,0.47623232};
+		pos[]={6854.6958,151.21349,14626.46};
+		dir[]={-0.10763723,-0.72297013,-0.68258268};
+		up[]={-0.11261714,0.69083291,-0.71418029};
+		aside[]={-0.98789591,-1.424225e-006,0.15577705};
 	};
 };
 binarizationWanted=0;
@@ -33,14 +33,25 @@ addons[]=
 	"ace_explosives",
 	"A3_Ui_F",
 	"vindicta_module_location",
-	"A3_Structures_F_Enoch_Civilian_Police",
-	"A3_Modules_F"
+	"A3_Modules_F",
+	"A3_Structures_F_Households_House_Small02",
+	"A3_Structures_F_Households_House_Big01",
+	"A3_Structures_F_Households_House_Small01",
+	"A3_Structures_F_Mil_Fortification",
+	"A3_Soft_F_Beta_Truck_01",
+	"A3_Soft_F_Exp_Truck_01",
+	"ace_realisticnames",
+	"ace_cargo",
+	"A3_Supplies_F_Heli_Slingload",
+	"A3_Structures_F_Mil_Cargo",
+	"A3_Structures_F_Ind_Transmitter_Tower",
+	"A3_Soft_F_Enoch_Truck_01"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=6;
+		items=13;
 		class Item0
 		{
 			className="A3_Characters_F";
@@ -69,15 +80,64 @@ class AddonsMetaData
 		};
 		class Item4
 		{
-			className="A3_Structures_F_Enoch_Civilian";
-			name="Arma 3 Enoch - Civilian Buildings";
+			className="A3_Modules_F";
+			name="Arma 3 Alpha - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
 		class Item5
 		{
-			className="A3_Modules_F";
-			name="Arma 3 Alpha - Scripted Modules";
+			className="A3_Structures_F_Households";
+			name="Arma 3 - Houses";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item6
+		{
+			className="A3_Structures_F_Mil";
+			name="Arma 3 - Military Buildings and Structures";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item7
+		{
+			className="A3_Soft_F_Beta";
+			name="Arma 3 Beta - Unarmored Land Vehicles";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item8
+		{
+			className="A3_Soft_F_Exp";
+			name="Arma 3 Apex - Unarmored Land Vehicles";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item9
+		{
+			className="ace_cargo";
+			name="ACE3 - Cargo";
+			author="ACE-Team";
+			url="http://ace3mod.com/";
+		};
+		class Item10
+		{
+			className="A3_Supplies_F_Heli";
+			name="Arma 3 Helicopters - Ammoboxes and Supplies";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item11
+		{
+			className="A3_Structures_F_Ind";
+			name="Arma 3 - Industrial Structures";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item12
+		{
+			className="A3_Soft_F_Enoch";
+			name="Arma 3 Enoch - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
@@ -243,7 +303,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=10;
+		items=7;
 		class Item0
 		{
 			dataType="Layer";
@@ -851,649 +911,4182 @@ class Mission
 		class Item4
 		{
 			dataType="Layer";
-			name="City - Kirkonkyla";
+			name="Cities";
 			class Entities
 			{
-				items=1;
+				items=9;
 				class Item0
 				{
-					dataType="Logic";
-					class PositionInfo
+					dataType="Layer";
+					name="City - Rannanen";
+					class Entities
 					{
-						position[]={13367.214,35.527233,6512.562};
-						angles[]={0,5.7484689,0};
+						items=1;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={10376.516,33.12294,6714.7622};
+								angles[]={0,5.4333668,0};
+							};
+							areaSize[]={286.806,0,385.68301};
+							flags=1;
+							id=1915;
+							type="Vindicta_LocationSector";
+							atlOffset=26.200001;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Rannanen";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
 					};
-					areaSize[]={465.754,0,533.64099};
-					flags=1;
-					id=1864;
-					type="Vindicta_LocationSector";
-					atlOffset=26.199001;
-					class CustomAttributes
+					id=1916;
+					atlOffset=26.200001;
+				};
+				class Item1
+				{
+					dataType="Layer";
+					name="City - Eerikkala";
+					class Entities
 					{
-						class Attribute0
+						items=1;
+						class Item0
 						{
-							property="Vindicta_LocationSector_CivPresUnitCount";
-							expression="_this setVariable ['CivPresUnitCount',_value,true];";
-							class Value
+							dataType="Logic";
+							class PositionInfo
 							{
-								class data
+								position[]={12714.793,32.408562,5889.354};
+								angles[]={0,5.4333668,0};
+							};
+							areaSize[]={286.806,0,281.867};
+							flags=1;
+							id=1913;
+							type="Vindicta_LocationSector";
+							atlOffset=26.198999;
+							class CustomAttributes
+							{
+								class Attribute0
 								{
-									class type
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"SCALAR"
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
 										};
 									};
-									value=12;
 								};
-							};
-						};
-						class Attribute1
-						{
-							property="Vindicta_LocationSector_side";
-							expression="_this setVariable ['Side',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute1
 								{
-									class type
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
 										};
 									};
-									value="east";
 								};
-							};
-						};
-						class Attribute2
-						{
-							property="Vindicta_LocationSector_type";
-							expression="_this setVariable ['Type',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute2
 								{
-									class type
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
 										};
 									};
-									value="city";
 								};
-							};
-						};
-						class Attribute3
-						{
-							property="Vindicta_LocationSector_CapacityInfantry";
-							expression="_this setVariable ['CapacityInfantry',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute3
 								{
-									class type
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"SCALAR"
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
 										};
 									};
-									value=20;
 								};
-							};
-						};
-						class Attribute4
-						{
-							property="Vindicta_LocationSector";
-							expression="_this setVariable ['Units',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute4
 								{
-									class type
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
 										};
 									};
-									value="1";
 								};
-							};
-						};
-						class Attribute5
-						{
-							property="Vindicta_LocationSector_name";
-							expression="_this setVariable ['Name',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute5
 								{
-									class type
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Eerikkala";
 										};
 									};
-									value="Kirkonkyla";
 								};
+								nAttributes=6;
 							};
 						};
-						nAttributes=6;
 					};
+					id=1914;
+					atlOffset=26.198999;
+				};
+				class Item2
+				{
+					dataType="Layer";
+					name="City - Hanski";
+					class Entities
+					{
+						items=3;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={10603.452,29.183796,4527.4492};
+								angles[]={0,5.7484689,0};
+							};
+							areaSize[]={325.59201,0,152.54201};
+							areaIsRectangle=1;
+							flags=1;
+							id=1906;
+							type="Vindicta_LocationSector";
+							atlOffset=26.629997;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Hanski";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+						class Item1
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={10696.92,5.3310328,4629.8813};
+								angles[]={6.2581763,2.2707999,6.2785754};
+							};
+							areaSize[]={6.4046273,0,6.9252582};
+							areaIsRectangle=1;
+							flags=1;
+							id=1940;
+							type="ModuleHideTerrainObjects_F";
+							atlOffset=-2.3841858e-006;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10697.015,6.7405529,4631.4854};
+								angles[]={0,0.73387605,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2043;
+							type="Land_i_House_Small_02_V3_F";
+							atlOffset=0.24475718;
+						};
+					};
+					id=1907;
+					atlOffset=6.5802908;
+				};
+				class Item3
+				{
+					dataType="Layer";
+					name="City - Kirkonkyla";
+					class Entities
+					{
+						items=5;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={13367.214,35.527233,6512.562};
+								angles[]={0,5.7484689,0};
+							};
+							areaSize[]={465.754,0,533.64099};
+							flags=1;
+							id=1864;
+							type="Vindicta_LocationSector";
+							atlOffset=26.199001;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Kirkonkyla";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+						class Item1
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={13166.65,11.587554,6591.2573};
+								angles[]={0,3.8750648,0};
+							};
+							areaSize[]={9.5309715,0,8.4363737};
+							areaIsRectangle=1;
+							flags=1;
+							id=1927;
+							type="ModuleHideTerrainObjects_F";
+							atlOffset=0.63055229;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+						class Item2
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={13618.163,11.33691,6373.2095};
+								angles[]={0,3.7173586,-0};
+							};
+							areaSize[]={9.5309715,0,10.643929};
+							areaIsRectangle=1;
+							flags=1;
+							id=1938;
+							type="ModuleHideTerrainObjects_F";
+							atlOffset=0.7670269;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={13162.388,15.53301,6588.2759};
+								angles[]={0,2.3309569,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+							};
+							id=2033;
+							type="Land_i_House_Big_01_V3_F";
+							atlOffset=1.0579996;
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={13617.793,13.107824,6373.2979};
+								angles[]={0,3.7579558,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+							};
+							id=2035;
+							type="Land_i_House_Small_01_V3_F";
+							atlOffset=1.1940002;
+						};
+					};
+					id=1865;
+					atlOffset=5.5613308;
+				};
+				class Item4
+				{
+					dataType="Layer";
+					name="City - Virojoki";
+					class Entities
+					{
+						items=1;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={14789.499,33.223656,14313.868};
+								angles[]={0,5.7484689,0};
+							};
+							areaSize[]={914.72607,0,793.02698};
+							flags=1;
+							id=2014;
+							type="Vindicta_LocationSector";
+							atlOffset=26.198997;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Virojoki";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2015;
+					atlOffset=26.198997;
+				};
+				class Item5
+				{
+					dataType="Layer";
+					name="City - Vikkila";
+					class Entities
+					{
+						items=1;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={14985.337,34.721992,7991.5591};
+								angles[]={0,5.7484689,0};
+							};
+							areaSize[]={249.271,0,254.72501};
+							flags=1;
+							id=2047;
+							type="Vindicta_LocationSector";
+							atlOffset=26.198997;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Vikkila";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2046;
+					atlOffset=26.198997;
+				};
+				class Item6
+				{
+					dataType="Layer";
+					name="City - Koivuniemi";
+					class Entities
+					{
+						items=1;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={12433.882,33.322357,7864.7422};
+								angles[]={0,5.5455217,0};
+							};
+							areaSize[]={194.843,0,274.44601};
+							flags=1;
+							id=2048;
+							type="Vindicta_LocationSector";
+							atlOffset=26.682999;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Koivuniemi";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2049;
+					atlOffset=26.682999;
+				};
+				class Item7
+				{
+					dataType="Layer";
+					name="City - Yla-Pihlaja";
+					class Entities
+					{
+						items=1;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={8061.3032,40.64016,10559.342};
+								angles[]={0,5.4821668,0};
+							};
+							areaSize[]={541.159,0,875.90802};
+							flags=1;
+							id=2050;
+							type="Vindicta_LocationSector";
+							atlOffset=26.199188;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Yla-Pihlaja";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2051;
+					atlOffset=26.199188;
+				};
+				class Item8
+				{
+					dataType="Layer";
+					name="City - Haavisto";
+					class Entities
+					{
+						items=3;
+						class Item0
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={6844.5718,28.887461,14469.274};
+								angles[]={0,3.6155531,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+							};
+							id=2203;
+							type="Land_i_House_Small_01_V3_F";
+							atlOffset=1.0001678;
+						};
+						class Item1
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={6793.748,57.202023,14743.303};
+								angles[]={0,5.4821668,0};
+							};
+							areaSize[]={360.60187,0,614.00781};
+							flags=1;
+							id=2202;
+							type="Vindicta_LocationSector";
+							atlOffset=20.425652;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Yla-Pihlaja";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={6843.8877,33.654385,14725.188};
+								angles[]={0,4.4096723,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+							};
+							id=2204;
+							type="Land_i_House_Small_02_V3_F";
+							atlOffset=0.94871902;
+						};
+					};
+					id=2201;
+					atlOffset=8.7525177;
 				};
 			};
-			id=1865;
-			atlOffset=26.199001;
+			id=1922;
+			atlOffset=6.3389702;
 		};
 		class Item5
 		{
 			dataType="Layer";
-			name="City - Hanski";
+			name="Airports";
 			class Entities
 			{
 				items=1;
 				class Item0
 				{
-					dataType="Logic";
-					class PositionInfo
+					dataType="Layer";
+					name="Airports - Virojoki Airfield";
+					class Entities
 					{
-						position[]={10603.452,29.183796,4527.4492};
-						angles[]={0,5.7484689,0};
+						items=60;
+						class Item0
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15356.297,9.8000002,16708.416};
+								angles[]={-0,2.6223495,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2123;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15362.874,9.8000002,16708.395};
+								angles[]={-0,1.0668826,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2125;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15394.079,9.8145466,16653.736};
+								angles[]={0.0068272259,4.1951609,6.2695355};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2126;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15390.702,9.8653517,16647.875};
+								angles[]={-0,2.639678,6.2740898};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2127;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15375.355,10.038238,16638.061};
+								angles[]={0.0022640675,5.7252617,6.2740831};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2128;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item5
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15368.791,10.119511,16637.834};
+								angles[]={0.0068184896,4.1697788,6.267262};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2129;
+							type="Land_HBarrier_Big_F";
+							atlOffset=9.5367432e-007;
+						};
+						class Item6
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15337.58,9.8246536,16690.975};
+								angles[]={0.013650165,1.0812232,0.0022640675};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2130;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item7
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15337.803,9.8000002,16697.539};
+								angles[]={-0,5.8089256,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2131;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item8
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15382.896,9.9483347,16643.043};
+								angles[]={0.0045412821,5.7252617,6.2695355};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2141;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item9
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15317.184,9.9329252,16683.535};
+								angles[]={0.022748843,1.0812232,0.0091022542};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2170;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item10
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15325.756,10.175009,16667.775};
+								angles[]={0.0068272259,1.0812232,6.2786441};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2171;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item11
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15335.679,10.207417,16658.73};
+								angles[]={0.011372928,0.24146554,6.2809215};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2173;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item12
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15345.513,10.369577,16646.559};
+								angles[]={0.015923677,1.116148,6.2763672};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2174;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item13
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15357.911,10.494033,16626.465};
+								angles[]={0.018198147,0.87478453,6.2536163};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2176;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item14
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15345.601,10.92211,16685.332};
+								angles[]={0.0045412821,4.1964874,0.0022640675};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2154;
+							type="B_Truck_01_transport_F";
+							atlOffset=-4.7683716e-005;
+						};
+						class Item15
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15365.534,11.065605,16650.236};
+								angles[]={0.011372928,4.1964874,6.2718124};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2155;
+							type="B_Truck_01_transport_F";
+							atlOffset=-3.8146973e-006;
+						};
+						class Item16
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15361.652,11.038447,16656.418};
+								angles[]={0.013650165,4.1964874,6.2695355};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2156;
+							type="B_Truck_01_transport_F";
+							atlOffset=-1.0490417e-005;
+						};
+						class Item17
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15383.031,10.851538,16666.033};
+								angles[]={0.0045412821,1.0481055,6.2786441};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2157;
+							type="B_Truck_01_transport_F";
+							atlOffset=4.9591064e-005;
+						};
+						class Item18
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15386.654,10.862121,16660.627};
+								angles[]={0.0068272259,1.0481055,6.2763581};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2158;
+							type="B_Truck_01_transport_F";
+							atlOffset=9.6321106e-005;
+						};
+						class Item19
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15379.805,10.835764,16671.373};
+								angles[]={0.0045412821,1.0481055,6.2809215};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2159;
+							type="B_Truck_01_transport_F";
+							atlOffset=2.5749207e-005;
+						};
+						class Item20
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15358.68,10.990318,16661.949};
+								angles[]={0.011372928,4.1964874,6.2718124};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2161;
+							type="B_Truck_01_transport_F";
+							atlOffset=-2.8610229e-005;
+						};
+						class Item21
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15349.797,10.944785,16677.887};
+								angles[]={-0,4.1964874,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2162;
+							type="B_Truck_01_transport_F";
+							atlOffset=-5.7220459e-006;
+						};
+						class Item22
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15365.304,10.814779,16696.959};
+								angles[]={-0,1.0272951,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2163;
+							type="B_Truck_01_transport_F";
+							atlOffset=-1.1444092e-005;
+						};
+						class Item23
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15369.119,10.815236,16690.557};
+								angles[]={-0,1.0272951,6.2809477};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2164;
+							type="B_Truck_01_transport_F";
+							atlOffset=-5.7220459e-006;
+						};
+						class Item24
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15413.214,10.814791,16636.646};
+								angles[]={-0,5.7486515,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2165;
+							type="B_Truck_01_transport_F";
+						};
+						class Item25
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15417.266,10.814791,16639.156};
+								angles[]={-0,5.7486515,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2166;
+							type="B_Truck_01_transport_F";
+						};
+						class Item26
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15323.965,11.017653,16682.506};
+								angles[]={0.013650165,6.1141806,0.0068272259};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2167;
+							type="B_Truck_01_transport_F";
+							atlOffset=-0.00033473969;
+						};
+						class Item27
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15328.209,11.11762,16675.902};
+								angles[]={0.013645798,6.1440101,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2168;
+							type="B_Truck_01_transport_F";
+							atlOffset=-1.6212463e-005;
+						};
+						class Item28
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15333.067,11.14271,16667.982};
+								angles[]={0.0068272259,6.1440101,6.2718124};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2169;
+							type="B_Truck_01_transport_F";
+							atlOffset=-2.6702881e-005;
+						};
+						class Item29
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15363.173,13.10972,16674.666};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2144;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=9.1552734e-005;
+						};
+						class Item30
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15366.696,13.109756,16674.027};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2146;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=4.5776367e-005;
+						};
+						class Item31
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15372.763,10.055188,16659.84};
+								angles[]={0.0068272259,0.52506423,6.2809215};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2147;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item32
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15376.558,10.058722,16657.109};
+								angles[]={0.0068272259,6.1961918,6.2786441};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2148;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-3.8146973e-006;
+						};
+						class Item33
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15358.947,9.9520378,16705.529};
+								angles[]={-0,1.2366625,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2149;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item34
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15384.44,10.054167,16650.252};
+								angles[]={0.0045412821,2.5874813,6.2786441};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2150;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item35
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15375.902,10.143114,16645.191};
+								angles[]={0.0068272259,2.6025748,6.2740831};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2151;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-1.4305115e-005;
+						};
+						class Item36
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15359.938,9.952034,16702.76};
+								angles[]={-0,1.3199047,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2160;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-3.8146973e-006;
+						};
+						class Item37
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15371.574,9.5302067,16643};
+								angles[]={0,2.5839169,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2139;
+							type="Land_Cargo_House_V1_F";
+						};
+						class Item38
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15388.345,9.3515377,16653.475};
+								angles[]={0,2.5839169,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2142;
+							type="Land_Cargo_House_V1_F";
+						};
+						class Item39
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15380.045,9.4227314,16648.203};
+								angles[]={0,2.5839169,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2143;
+							type="Land_Cargo_House_V1_F";
+						};
+						class Item40
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15365.39,12.496601,16674.131};
+								angles[]={0,4.1519861,-0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2138;
+							type="Land_Cargo_HQ_V1_F";
+							atlOffset=-9.5367432e-007;
+						};
+						class Item41
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15341.812,13.528038,16693.791};
+								angles[]={0,1.0576454,-0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2137;
+							type="Land_Cargo_Patrol_V1_F";
+						};
+						class Item42
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15450.889,21.47621,16503.299};
+								angles[]={0,0.99977261,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2133;
+							type="Land_Cargo_Tower_V1_F";
+						};
+						class Item43
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={15419.277,21.47621,16796.379};
+								angles[]={0,5.7795801,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2134;
+							type="Land_Cargo_Tower_V1_F";
+						};
+						class Item44
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={15364.14,8.6338482,16673.928};
+								angles[]={0.0045412821,1.0411953,6.2695355};
+							};
+							areaSize[]={46.666393,0,20.677376};
+							areaIsRectangle=1;
+							flags=1;
+							id=2122;
+							type="ModuleHideTerrainObjects_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+						class Item45
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={15701.517,8.5900002,16460.816};
+								angles[]={-0,1.0170907,0};
+							};
+							areaSize[]={713.0354,0,329.04779};
+							areaIsRectangle=1;
+							flags=1;
+							id=2178;
+							type="Vindicta_LocationSector";
+							atlOffset=0.31490231;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="airport";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Virojoki Airfield";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+						class Item46
+						{
+							dataType="Marker";
+							position[]={15744.7,17.343794,15932.171};
+							name="allowedarea_10";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=16.011328;
+							b=4.303154;
+							angle=254.64903;
+							id=2187;
+						};
+						class Item47
+						{
+							dataType="Marker";
+							position[]={15732.256,17.9328,15961.173};
+							name="allowedarea_11";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=16.011328;
+							b=4.303154;
+							angle=242.86748;
+							id=2188;
+						};
+						class Item48
+						{
+							dataType="Marker";
+							position[]={15714.806,16.926619,15983.554};
+							name="allowedarea_12";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=16.011328;
+							b=4.303154;
+							angle=222.46744;
+							id=2189;
+						};
+						class Item49
+						{
+							dataType="Marker";
+							position[]={15683.906,16.03982,16008.602};
+							name="allowedarea_13";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=25.156351;
+							b=4.303154;
+							angle=216.76666;
+							id=2190;
+						};
+						class Item50
+						{
+							dataType="Marker";
+							position[]={15544.135,11.741751,16114.078};
+							name="allowedarea_14";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=16.011328;
+							b=4.303154;
+							angle=128.5732;
+							id=2191;
+						};
+						class Item51
+						{
+							dataType="Marker";
+							position[]={15555.653,12.184705,16140.524};
+							name="allowedarea_15";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=16.011328;
+							b=4.303154;
+							angle=100.39165;
+							id=2192;
+						};
+						class Item52
+						{
+							dataType="Marker";
+							position[]={15546.617,15.105444,16181.744};
+							name="allowedarea_16";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=31.502789;
+							b=4.303154;
+							angle=67.674759;
+							id=2193;
+						};
+						class Item53
+						{
+							dataType="Marker";
+							position[]={15527.904,15.629988,16214.873};
+							name="allowedarea_17";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=10.132356;
+							b=4.303154;
+							angle=215.62875;
+							id=2194;
+						};
+						class Item54
+						{
+							dataType="Marker";
+							position[]={15495.483,16.382421,16212.738};
+							name="allowedarea_18";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=26.260885;
+							b=4.303154;
+							angle=350.02066;
+							id=2195;
+						};
+						class Item55
+						{
+							dataType="Marker";
+							position[]={15539.397,15.308308,16243.106};
+							name="allowedarea_19";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=26.260885;
+							b=4.303154;
+							angle=125.2981;
+							id=2196;
+						};
+						class Item56
+						{
+							dataType="Marker";
+							position[]={16217.108,12.959594,16222.467};
+							name="allowedarea_6";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=45.148502;
+							b=4.303154;
+							angle=30.544683;
+							id=2183;
+						};
+						class Item57
+						{
+							dataType="Marker";
+							position[]={16152.846,14.347618,16250.495};
+							name="allowedarea_7";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=31.990934;
+							b=4.303154;
+							angle=14.204181;
+							id=2184;
+						};
+						class Item58
+						{
+							dataType="Marker";
+							position[]={15715.575,18.74786,15835.19};
+							name="allowedarea_8";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=20.773764;
+							b=4.303154;
+							angle=101.54868;
+							id=2185;
+						};
+						class Item59
+						{
+							dataType="Marker";
+							position[]={15733.821,17.496643,15885.789};
+							name="allowedarea_9";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=35.585026;
+							b=4.303154;
+							angle=114.38216;
+							id=2186;
+						};
 					};
-					areaSize[]={325.59201,0,152.54201};
-					areaIsRectangle=1;
-					flags=1;
-					id=1906;
-					type="Vindicta_LocationSector";
-					atlOffset=26.629997;
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="Vindicta_LocationSector_CivPresUnitCount";
-							expression="_this setVariable ['CivPresUnitCount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=5;
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="Vindicta_LocationSector_side";
-							expression="_this setVariable ['Side',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="east";
-								};
-							};
-						};
-						class Attribute2
-						{
-							property="Vindicta_LocationSector_type";
-							expression="_this setVariable ['Type',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="city";
-								};
-							};
-						};
-						class Attribute3
-						{
-							property="Vindicta_LocationSector_CapacityInfantry";
-							expression="_this setVariable ['CapacityInfantry',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=20;
-								};
-							};
-						};
-						class Attribute4
-						{
-							property="Vindicta_LocationSector";
-							expression="_this setVariable ['Units',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="1";
-								};
-							};
-						};
-						class Attribute5
-						{
-							property="Vindicta_LocationSector_name";
-							expression="_this setVariable ['Name',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Hanski";
-								};
-							};
-						};
-						nAttributes=6;
-					};
+					id=2135;
+					atlOffset=8.4151897;
 				};
 			};
-			id=1907;
-			atlOffset=26.629997;
+			id=1923;
+			atlOffset=8.4151897;
 		};
 		class Item6
 		{
-			dataType="Object";
-			class PositionInfo
-			{
-				position[]={13315.578,17.613018,6559.5894};
-				angles[]={0,0.52359879,0};
-			};
-			side="Empty";
-			flags=5;
-			class Attributes
-			{
-			};
-			id=1910;
-			type="Land_PoliceStation_01_F";
-			atlOffset=0.13738728;
-		};
-		class Item7
-		{
-			dataType="Logic";
-			class PositionInfo
-			{
-				position[]={13316.999,11.249244,6557.4302};
-				angles[]={-0,0.48995215,0};
-			};
-			areaSize[]={5,-1,5};
-			areaIsRectangle=1;
-			flags=1;
-			id=1911;
-			type="ModuleHideTerrainObjects_F";
-			atlOffset=0.79394627;
-			class CustomAttributes
-			{
-				class Attribute0
-				{
-					property="#filter";
-					expression="_this setVariable [""#filter"",_value]";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=15;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="#hideLocally";
-					expression="_this setVariable [""#hideLocally"",_value]";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"BOOL"
-								};
-							};
-							value=0;
-						};
-					};
-				};
-				nAttributes=2;
-			};
-		};
-		class Item8
-		{
 			dataType="Layer";
-			name="City - Eerikkala";
+			name="Outposts";
 			class Entities
 			{
-				items=1;
+				items=3;
 				class Item0
 				{
-					dataType="Logic";
-					class PositionInfo
+					dataType="Layer";
+					name="Outpost - Woodland Watchtower";
+					class Entities
 					{
-						position[]={12714.793,32.408562,5889.354};
-						angles[]={0,5.4333668,0};
+						items=15;
+						class Item0
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9194.2422,32.03104,5110.5371};
+								angles[]={6.1654167,1.5663834,6.2695355};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1966;
+							type="Land_HBarrier_Big_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="allowDamage";
+									expression="_this allowdamage _value;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=1;
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9194.415,32.510216,5119.7808};
+								angles[]={6.2627091,1.6435732,6.2604365};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1979;
+							type="Land_HBarrier_Big_F";
+							atlOffset=1.9073486e-006;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="allowDamage";
+									expression="_this allowdamage _value;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=1;
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9197.8809,31.453407,5104.7383};
+								angles[]={6.1924233,6.2157974,0.013650165};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1982;
+							type="Land_HBarrier_Big_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="allowDamage";
+									expression="_this allowdamage _value;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=1;
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9209.623,31.751656,5102.9873};
+								angles[]={6.2218289,2.9375834,0.013650165};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1951;
+							type="B_Truck_01_transport_F";
+							atlOffset=-0.00025558472;
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9218.4229,32.446785,5107.2983};
+								angles[]={6.1879115,3.339102,0.088504851};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1986;
+							type="B_Truck_01_transport_F";
+							atlOffset=-0.0032844543;
+						};
+						class Item5
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9200.3076,32.483849,5116.2471};
+								angles[]={6.2695355,4.7269192,6.2809215};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1974;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-0.0011138916;
+						};
+						class Item6
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9203.9033,36.363514,5126.0386};
+								angles[]={0,6.281991,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+							};
+							id=1975;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=2.4971085;
+						};
+						class Item7
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9209.5498,32.303272,5115.8438};
+								angles[]={0.011372928,0.41254461,6.2059793};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1983;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-0.015571594;
+						};
+						class Item8
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9199.4941,32.714329,5110.5186};
+								angles[]={-0,6.2449131,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+							};
+							id=1984;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=0.53903198;
+						};
+						class Item9
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9201.1094,31.472576,5110.5303};
+								angles[]={0,4.6803999,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=1976;
+							type="Land_Cargo_House_V2_F";
+						};
+						class Item10
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9203.5127,35.778198,5124.6572};
+								angles[]={0,4.7481346,-0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+							};
+							id=1981;
+							type="Land_Cargo_HQ_V2_F";
+							atlOffset=0.59354591;
+						};
+						class Item11
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9221.5947,50.751778,5156.5234};
+								angles[]={0,5.3721981,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=1953;
+							type="Land_Cargo_Tower_V2_F";
+							atlOffset=3.8146973e-006;
+						};
+						class Item12
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={9217.0625,29.87681,5098.7617};
+								angles[]={6.2581606,6.1923518,0.070418544};
+							};
+							areaSize[]={6.4717493,0,16.786861};
+							areaIsRectangle=1;
+							flags=1;
+							id=1950;
+							type="ModuleHideTerrainObjects_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+						class Item13
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={9214.4229,29.657335,5099.3481};
+								angles[]={6.2399812,0,0.10653488};
+							};
+							areaSize[]={48.769283,0,74.660164};
+							areaIsRectangle=1;
+							flags=1;
+							id=1988;
+							type="Vindicta_LocationSector";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="outpost";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Woodland Observation Post";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+						class Item14
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9252.9893,60.750523,5121.5498};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+							};
+							id=2012;
+							type="Land_TTowerBig_2_F";
+							atlOffset=1.7697487;
+						};
 					};
-					areaSize[]={286.806,0,281.867};
-					flags=1;
-					id=1913;
-					type="Vindicta_LocationSector";
-					atlOffset=26.198999;
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="Vindicta_LocationSector_CivPresUnitCount";
-							expression="_this setVariable ['CivPresUnitCount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=12;
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="Vindicta_LocationSector_side";
-							expression="_this setVariable ['Side',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="east";
-								};
-							};
-						};
-						class Attribute2
-						{
-							property="Vindicta_LocationSector_type";
-							expression="_this setVariable ['Type',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="city";
-								};
-							};
-						};
-						class Attribute3
-						{
-							property="Vindicta_LocationSector_CapacityInfantry";
-							expression="_this setVariable ['CapacityInfantry',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=20;
-								};
-							};
-						};
-						class Attribute4
-						{
-							property="Vindicta_LocationSector";
-							expression="_this setVariable ['Units',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="1";
-								};
-							};
-						};
-						class Attribute5
-						{
-							property="Vindicta_LocationSector_name";
-							expression="_this setVariable ['Name',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Eerikkala";
-								};
-							};
-						};
-						nAttributes=6;
-					};
+					id=1948;
+					atlOffset=3.7157955;
 				};
-			};
-			id=1914;
-			atlOffset=26.198999;
-		};
-		class Item9
-		{
-			dataType="Layer";
-			name="City - Rannanen";
-			class Entities
-			{
-				items=1;
-				class Item0
+				class Item1
 				{
-					dataType="Logic";
-					class PositionInfo
+					dataType="Layer";
+					name="Outpost - Farmhouse";
+					class Entities
 					{
-						position[]={10376.516,33.12294,6714.7622};
-						angles[]={0,5.4333668,0};
+						items=16;
+						class Item0
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12939.967,6.3559413,8374.0986};
+								angles[]={6.2763581,6.123805,6.2786441};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1993;
+							type="Land_HBarrier_Big_F";
+							atlOffset=0.0098061562;
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12934.879,6.3827906,8369.9678};
+								angles[]={6.2740898,1.437808,6.2740898};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1995;
+							type="Land_HBarrier_Big_F";
+							atlOffset=0.019191742;
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12936.336,6.2913699,8360.7676};
+								angles[]={0.0022640675,1.437808,6.2695355};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1996;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12937.469,6.2537527,8351.5488};
+								angles[]={0.0045412821,1.4898043,6.2558889};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=1997;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12963.14,6.2465382,8354.9756};
+								angles[]={6.2763581,1.4402636,0.011372928};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2003;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item5
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12938.766,6.3988533,8335.5303};
+								angles[]={0.025022388,1.52218,6.2467976};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2008;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item6
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12944.81,6.2088919,8333.0059};
+								angles[]={0.020476174,6.2016125,6.244524};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2009;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item7
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12945.612,7.2151361,8355.5674};
+								angles[]={6.2809215,0.6175679,6.2740831};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2005;
+							type="B_Truck_01_transport_F";
+							atlOffset=-1.335144e-005;
+						};
+						class Item8
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12947.122,7.1584401,8348.3975};
+								angles[]={-0,0.6175679,6.2763672};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2006;
+							type="B_Truck_01_transport_F";
+							atlOffset=-0.00014400482;
+						};
+						class Item9
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12948.699,7.1325788,8341.7373};
+								angles[]={6.2786441,0.6175679,6.2809215};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2007;
+							type="B_Truck_01_transport_F";
+							atlOffset=-2.0027161e-005;
+						};
+						class Item10
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12940.691,6.4077282,8362.8135};
+								angles[]={6.2809215,0.75192022,6.2763581};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2002;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item11
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12942.987,6.387311,8360.7285};
+								angles[]={6.2809215,0.80803961,6.2763581};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2004;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item12
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12938.787,6.7968135,8343.6396};
+								angles[]={0,2.9867604,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+							};
+							id=2010;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=0.35137224;
+						};
+						class Item13
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12942.023,6.726778,8338.0078};
+								angles[]={0,3.292784,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+							};
+							id=2011;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=0.35153723;
+						};
+						class Item14
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={12940.892,10.009113,8368.7207};
+								angles[]={0,2.9821718,-0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=1999;
+							type="Land_Cargo_Patrol_V1_F";
+							atlOffset=0.013473511;
+						};
+						class Item15
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={12946.963,4.9632959,8353.4512};
+								angles[]={6.2740922,6.1671557,6.2740746};
+							};
+							areaSize[]={57.834,0,87.143997};
+							areaIsRectangle=1;
+							flags=1;
+							id=1990;
+							type="Vindicta_LocationSector";
+							atlOffset=4.7683716e-007;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="outpost";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Farmhouse";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
 					};
-					areaSize[]={286.806,0,385.68301};
-					flags=1;
-					id=1915;
-					type="Vindicta_LocationSector";
-					atlOffset=26.200001;
-					class CustomAttributes
+					id=1989;
+					atlOffset=0.078558445;
+				};
+				class Item2
+				{
+					dataType="Layer";
+					name="Outpost - Office Compound";
+					class Entities
 					{
-						class Attribute0
+						items=32;
+						class Item0
 						{
-							property="Vindicta_LocationSector_CivPresUnitCount";
-							expression="_this setVariable ['CivPresUnitCount',_value,true];";
-							class Value
+							dataType="Object";
+							class PositionInfo
 							{
-								class data
+								position[]={10833.449,43.124367,13251.34};
+								angles[]={0.079468332,5.8618526,0.011372928};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2098;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10829.567,43.149376,13245.97};
+								angles[]={6.2809215,1.1601075,0.0022640675};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2099;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10910.255,43.728447,13180.589};
+								angles[]={6.2809215,5.9013276,0.0045412821};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2102;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10914.229,43.755692,13186.059};
+								angles[]={6.2809215,1.1601959,0.0022640675};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2103;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10840.34,43.188324,13250.721};
+								angles[]={0.0091022542,1.1614362,0.020473262};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2104;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item5
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10847.06,43.300991,13250.488};
+								angles[]={0.0022375863,5.839201,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2106;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item6
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10853.959,43.309998,13249.538};
+								angles[]={-0,1.1614362,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2107;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item7
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10858.881,43.457352,13172.663};
+								angles[]={-0,1.1614362,0.0022375863};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2108;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item8
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10853.792,43.349247,13182.731};
+								angles[]={0.027296599,4.2842374,0.0068272259};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2109;
+							type="Land_HBarrier_Big_F";
+						};
+						class Item9
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10883.563,44.489349,13216.021};
+								angles[]={0.0045412821,4.2865634,0.0045412821};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2090;
+							type="B_Truck_01_cargo_F";
+							atlOffset=-3.0517578e-005;
+						};
+						class Item10
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10862.647,44.541279,13183.142};
+								angles[]={0.0045412821,1.1369925,0.022748843};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2093;
+							type="B_Truck_01_cargo_F";
+							atlOffset=-0.00048065186;
+						};
+						class Item11
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10885.91,44.530479,13210.008};
+								angles[]={0.0068272259,4.2865634,0.0045412821};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2095;
+							type="B_Truck_01_cargo_F";
+							atlOffset=-7.2479248e-005;
+						};
+						class Item12
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10888.76,44.605785,13203.697};
+								angles[]={0.015923677,4.2865634,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2096;
+							type="B_Truck_01_cargo_F";
+							atlOffset=-0.00019073486;
+						};
+						class Item13
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10849.045,44.418442,13239.912};
+								angles[]={-0,2.7094498,0.0022375863};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2097;
+							type="B_Truck_01_cargo_F";
+							atlOffset=-1.5258789e-005;
+						};
+						class Item14
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10866.589,44.581093,13175.723};
+								angles[]={6.2786441,1.1357611,0.0045412821};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2110;
+							type="B_Truck_01_cargo_F";
+						};
+						class Item15
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10860.173,44.382954,13188.067};
+								angles[]={0.029571336,1.1369925,0.022748843};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2112;
+							type="B_Truck_01_cargo_F";
+							atlOffset=-0.0043029785;
+						};
+						class Item16
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10869.744,44.216381,13227.513};
+								angles[]={0,2.7050636,-0};
+							};
+							side="Empty";
+							class Attributes
+							{
+							};
+							id=2086;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=0.75227737;
+						};
+						class Item17
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10881.7,44.216415,13226.377};
+								angles[]={-0,1.1307707,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2087;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item18
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10873.593,44.216415,13222.738};
+								angles[]={-0,4.1915321,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2088;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item19
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10877.75,44.216415,13230.158};
+								angles[]={-0,1.0960594,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2089;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item20
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10840.591,43.380363,13237.368};
+								angles[]={0.0022640675,6.2783461,0.022748843};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2114;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-0.00022888184;
+						};
+						class Item21
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10837.002,43.317173,13237.976};
+								angles[]={-0,0.12464534,0.0045412821};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2115;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-1.5258789e-005;
+						};
+						class Item22
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10835.738,46.878475,13246.89};
+								angles[]={0,2.7221534,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2100;
+							type="Land_Cargo_Patrol_V1_F";
+						};
+						class Item23
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={10908.159,47.368893,13185.356};
+								angles[]={0,4.2934847,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+							};
+							id=2101;
+							type="Land_Cargo_Patrol_V1_F";
+							atlOffset=-0.054008484;
+						};
+						class Item24
+						{
+							dataType="Marker";
+							position[]={10707.873,41.583763,13279.8};
+							name="allowedarea_0";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=36.005619;
+							b=5.7934809;
+							angle=356.31845;
+							id=2117;
+						};
+						class Item25
+						{
+							dataType="Marker";
+							position[]={10779.008,41.815617,13284.428};
+							name="allowedarea_1";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=36.005619;
+							b=5.7934809;
+							angle=356.31845;
+							id=2118;
+						};
+						class Item26
+						{
+							dataType="Marker";
+							position[]={10849.846,42.269226,13289.973};
+							name="allowedarea_2";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=36.005619;
+							b=5.7934809;
+							angle=354.9093;
+							id=2119;
+						};
+						class Item27
+						{
+							dataType="Marker";
+							position[]={10898.814,42.586426,13294.181};
+							name="allowedarea_3";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=14.062296;
+							b=5.7934809;
+							angle=356.31845;
+							id=2120;
+						};
+						class Item28
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={10799.533,41.199932,13197.507};
+								angles[]={0,6.2067404,-0};
+							};
+							areaSize[]={118.477,0,92.442001};
+							areaIsRectangle=1;
+							flags=1;
+							id=2116;
+							type="Vindicta_LocationSector";
+							atlOffset=0.00020599365;
+							class CustomAttributes
+							{
+								class Attribute0
 								{
-									class type
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"SCALAR"
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
 										};
 									};
-									value=12;
 								};
-							};
-						};
-						class Attribute1
-						{
-							property="Vindicta_LocationSector_side";
-							expression="_this setVariable ['Side',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute1
 								{
-									class type
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
 										};
 									};
-									value="east";
 								};
-							};
-						};
-						class Attribute2
-						{
-							property="Vindicta_LocationSector_type";
-							expression="_this setVariable ['Type',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute2
 								{
-									class type
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="outpost";
 										};
 									};
-									value="city";
 								};
-							};
-						};
-						class Attribute3
-						{
-							property="Vindicta_LocationSector_CapacityInfantry";
-							expression="_this setVariable ['CapacityInfantry',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute3
 								{
-									class type
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"SCALAR"
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
 										};
 									};
-									value=20;
 								};
-							};
-						};
-						class Attribute4
-						{
-							property="Vindicta_LocationSector";
-							expression="_this setVariable ['Units',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute4
 								{
-									class type
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
 										};
 									};
-									value="1";
 								};
-							};
-						};
-						class Attribute5
-						{
-							property="Vindicta_LocationSector_name";
-							expression="_this setVariable ['Name',_value,true];";
-							class Value
-							{
-								class data
+								class Attribute5
 								{
-									class type
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
 									{
-										type[]=
+										class data
 										{
-											"STRING"
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Office Compound";
 										};
 									};
-									value="Rannanen";
 								};
+								nAttributes=6;
 							};
 						};
-						nAttributes=6;
+						class Item29
+						{
+							dataType="Marker";
+							position[]={15208.477,15.704557,16659.158};
+							name="allowedarea_20";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=20.173389;
+							b=4.303154;
+							angle=176.20578;
+							id=2198;
+						};
+						class Item30
+						{
+							dataType="Marker";
+							position[]={15255.704,13.970503,16669.355};
+							name="allowedarea_21";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=29.994061;
+							b=4.303154;
+							angle=160.39284;
+							id=2199;
+						};
+						class Item31
+						{
+							dataType="Marker";
+							position[]={15295.978,11.850253,16685.373};
+							name="allowedarea_22";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=14.500101;
+							b=4.303154;
+							angle=154.62816;
+							id=2200;
+						};
 					};
+					id=2082;
+					atlOffset=-5.9050541;
 				};
 			};
-			id=1916;
-			atlOffset=26.200001;
+			id=1924;
+			atlOffset=0.88198471;
 		};
 	};
 };
