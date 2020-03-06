@@ -85,6 +85,15 @@ location_b_capacity =
 		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
 		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
 		8
+	],
+	// WW2
+	[
+		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L"],
+		10
+	],
+	[
+		["Land_I44_Object_Tent_Us_Small"],
+		2
 	]
 ];
 

@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=577;
+	toggles=1601;
 	class ItemIDProvider
 	{
-		nextID=2272;
+		nextID=2426;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=377;
+		nextID=547;
 	};
 	class Camera
 	{
-		pos[]={2346.9329,264.23279,12109.4};
-		dir[]={0.50567496,-0.35768914,-0.78510928};
-		up[]={0.19369289,0.93383282,-0.30072662};
-		aside[]={-0.84072894,1.6298145e-009,-0.5414983};
+		pos[]={14030.708,320.14291,8103.9419};
+		dir[]={-0.65298939,-0.6362021,0.4109354};
+		up[]={-0.53845549,0.7715168,0.33885694};
+		aside[]={0.53262478,1.1058e-007,0.84635824};
 	};
 };
 binarizationWanted=0;
@@ -45,13 +45,19 @@ addons[]=
 	"A3_Soft_F_Beta_Truck_01",
 	"A3_Soft_F_Exp_Truck_01",
 	"ace_realisticnames",
-	"A3_Modules_F"
+	"A3_Modules_F",
+	"CUP_Misc3_Config",
+	"WW2_Objects_c_Misc_WW2_SimpleObjects_c_CUP",
+	"WW2_Objects_c_Misc_I44_ShowClassInEditor_Buildings_c",
+	"WW2_Objects_c_Misc_WW2_SimpleObjects_c_I44",
+	"WW2_Objects_c_Misc_I44_EditorMapSizeAndIcon_c",
+	"WW2_Objects_c_Misc_I44_EditorPreviews_c"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=16;
+		items=22;
 		class Item0
 		{
 			className="A3_Characters_F";
@@ -147,6 +153,36 @@ class AddonsMetaData
 			name="Arma 3 Alpha - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
+		};
+		class Item16
+		{
+			className="CUP_Misc3_Config";
+			name="CUP_Misc3_Config";
+		};
+		class Item17
+		{
+			className="WW2_Objects_c_Misc_WW2_SimpleObjects_c_CUP";
+			name="WW2_Objects_c_Misc_WW2_SimpleObjects_c_CUP";
+		};
+		class Item18
+		{
+			className="WW2_Objects_c_Misc_I44_ShowClassInEditor_Buildings_c";
+			name="WW2_Objects_c_Misc_I44_ShowClassInEditor_Buildings_c";
+		};
+		class Item19
+		{
+			className="WW2_Objects_c_Misc_WW2_SimpleObjects_c_I44";
+			name="WW2_Objects_c_Misc_WW2_SimpleObjects_c_I44";
+		};
+		class Item20
+		{
+			className="WW2_Objects_c_Misc_I44_EditorMapSizeAndIcon_c";
+			name="WW2_Objects_c_Misc_I44_EditorMapSizeAndIcon_c";
+		};
+		class Item21
+		{
+			className="WW2_Objects_c_Misc_I44_EditorPreviews_c";
+			name="WW2_Objects_c_Misc_I44_EditorPreviews_c";
 		};
 	};
 };
@@ -310,7 +346,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=14;
+		items=19;
 		class Item0
 		{
 			dataType="Layer";
@@ -923,7 +959,7 @@ class Mission
 			name="Airfields";
 			class Entities
 			{
-				items=1;
+				items=2;
 				class Item0
 				{
 					dataType="Layer";
@@ -943,7 +979,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1902;
 							type="Land_WW2_Mil_Barracks_L";
@@ -960,7 +996,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1973;
 							type="Land_WW2_Mil_Barracks";
@@ -978,6 +1014,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=1975;
 							type="land_wx_guardtower_02";
@@ -995,7 +1032,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1980;
 							type="Land_WW2_Setka_Dor";
@@ -1013,7 +1050,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1981;
 							type="Land_WW2_Setka_Dor";
@@ -1031,7 +1068,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1983;
 							type="Land_WW2_Mil_Barracks";
@@ -1049,7 +1086,7 @@ class Mission
 							flags=1;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1985;
 							type="Land_WW2_Mil_Barracks";
@@ -1067,7 +1104,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1991;
 							type="Land_WW2_Mil_Barracks";
@@ -1085,7 +1122,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1992;
 							type="Land_WW2_Mil_Barracks";
@@ -1103,7 +1140,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1993;
 							type="Land_WW2_Mil_Barracks";
@@ -1121,7 +1158,7 @@ class Mission
 							flags=1;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1994;
 							type="Land_WW2_Mil_Barracks";
@@ -1139,7 +1176,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1995;
 							type="Land_WW2_Setka_Dor";
@@ -1157,7 +1194,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1996;
 							type="Land_WW2_Setka_Dor";
@@ -1175,6 +1212,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=1997;
 							type="land_wx_guardtower_02";
@@ -1192,7 +1230,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2004;
 							type="Land_WW2_Setka_Dor";
@@ -1209,7 +1247,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2005;
 							type="Land_WW2_Setka_Dor";
@@ -1227,6 +1265,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2006;
 							type="land_wx_guardtower_02";
@@ -1243,6 +1282,7 @@ class Mission
 							side="Empty";
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2007;
 							type="land_wx_guardtower_02";
@@ -1260,7 +1300,7 @@ class Mission
 							flags=1;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2008;
 							type="Land_WW2_Setka_Dor";
@@ -1278,7 +1318,7 @@ class Mission
 							flags=1;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2009;
 							type="Land_WW2_Setka_Dor";
@@ -1296,7 +1336,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2020;
 							type="Land_Setka_Car";
@@ -1314,7 +1354,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2039;
 							type="Land_WW2_Mil_Barracks";
@@ -1332,7 +1372,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2043;
 							type="Land_WW2_Mil_Barracks";
@@ -1350,7 +1390,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2049;
 							type="Land_WW2_Mil_Barracks";
@@ -1551,7 +1591,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2077;
 							type="Land_WW2_Setka_Dor";
@@ -1569,7 +1609,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2078;
 							type="Land_WW2_Setka_Dor";
@@ -1587,7 +1627,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2079;
 							type="Land_WW2_Setka_Dor";
@@ -1950,9 +1990,1027 @@ class Mission
 					id=1990;
 					atlOffset=-0.022102356;
 				};
+				class Item1
+				{
+					dataType="Layer";
+					name="Airfield - South West Airfield";
+					class Entities
+					{
+						items=41;
+						class Item0
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3464.6213,27.664322,2687.9941};
+								angles[]={0,0.3698782,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2375;
+							type="Land_Setka_Car";
+							atlOffset=-1.9073486e-006;
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3451.5068,28.045767,2743.311};
+								angles[]={0,3.485477,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2358;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=1.9073486e-006;
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3445.0564,28.010296,2737.8003};
+								angles[]={0,1.9377669,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2359;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=5.3405762e-005;
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3417.658,25.98859,2662.5789};
+								angles[]={0,1.9377669,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2366;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.050270081;
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3418.4373,25.909681,2653.9341};
+								angles[]={0,0.3438839,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2367;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.15103912;
+						};
+						class Item5
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3511.2932,26.822691,2709.5476};
+								angles[]={0,5.1288185,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2369;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=1.9073486e-006;
+						};
+						class Item6
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3510.9421,27.336412,2718.2205};
+								angles[]={0,3.5349355,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2370;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.063062668;
+						};
+						class Item7
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3478.2546,25.592697,2633.2759};
+								angles[]={0,0.33084813,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2373;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.28304672;
+						};
+						class Item8
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3484.6321,25.760586,2638.8691};
+								angles[]={0,5.0663238,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2374;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.35264778;
+						};
+						class Item9
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3433.5959,25.853662,2648.7798};
+								angles[]={0,0.3438839,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2383;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.092214584;
+						};
+						class Item10
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3447.6316,25.656122,2643.7341};
+								angles[]={0,0.3438839,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2384;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.076402664;
+						};
+						class Item11
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3462.5789,25.487003,2638.7563};
+								angles[]={0,0.3438839,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2385;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.066896439;
+						};
+						class Item12
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3448.0171,30.204653,2742.7415};
+								angles[]={6.2769322,5.0911798,6.259439};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2357;
+							type="land_wx_guardtower_02";
+						};
+						class Item13
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3416.2549,27.953781,2656.26};
+								angles[]={6.2619405,5.056273,0.014998405};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2368;
+							type="land_wx_guardtower_02";
+							atlOffset=0.081508636;
+						};
+						class Item14
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3513.0068,29.277931,2715.7891};
+								angles[]={6.222012,1.9641389,0.062418513};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2371;
+							type="land_wx_guardtower_02";
+						};
+						class Item15
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3481.7368,27.688622,2633.8901};
+								angles[]={0,1.936551,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2372;
+							type="land_wx_guardtower_02";
+							atlOffset=0.28044891;
+						};
+						class Item16
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3487.0054,27.834917,2710.4153};
+								angles[]={6.2794352,0.34446755,6.2756844};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2386;
+							type="B_Truck_01_transport_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item17
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3482.9973,27.870346,2711.8467};
+								angles[]={6.2794352,0.3444666,6.2756844};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2387;
+							type="B_Truck_01_transport_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item18
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3495.9839,27.789267,2707.8188};
+								angles[]={6.2444563,0.34446755,0.01499443};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2388;
+							type="B_Truck_01_transport_F";
+							atlOffset=-1.9073486e-006;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item19
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3491.3816,27.776669,2709.2778};
+								angles[]={6.2444563,0.3444666,0.01499443};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2389;
+							type="B_Truck_01_transport_F";
+							atlOffset=-1.9073486e-006;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item20
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3461.5518,28.356579,2720.5017};
+								angles[]={6.2519474,0.34446755,6.2644386};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2392;
+							type="B_Truck_01_transport_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item21
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3457.5435,28.476465,2721.9331};
+								angles[]={6.2519474,0.3444666,6.2644386};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2393;
+							type="B_Truck_01_transport_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item22
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3470.5315,28.102022,2717.8545};
+								angles[]={6.2619376,0.34446755,6.2606897};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2394;
+							type="B_Truck_01_transport_F";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item23
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3465.9624,28.236994,2719.3354};
+								angles[]={6.2619376,0.3444666,6.2606897};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2395;
+							type="B_Truck_01_transport_F";
+							atlOffset=1.9073486e-006;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="ammoBox";
+									expression="[_this,_value] call bis_fnc_initAmmoBox;";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="[[[[""FirstAidKit""],[10]],[[],[]],[[],[]],[[],[]]],false]";
+										};
+									};
+								};
+								nAttributes=1;
+							};
+						};
+						class Item24
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3466.0022,26.792959,2688.4875};
+								angles[]={6.270689,1.537688,0.0024897563};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2379;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item25
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3464.8535,26.7356,2686.1855};
+								angles[]={6.2619405,4.9668479,6.274437};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2380;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item26
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3460.8718,26.614019,2678.218};
+								angles[]={6.2644386,5.5599532,6.2719393};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2390;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=1.9073486e-006;
+						};
+						class Item27
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3457.4368,26.61779,2676.0127};
+								angles[]={6.2669392,5.7410226,6.2694397};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2391;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item28
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3435.1074,26.344128,2697.7246};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2356;
+							type="Land_WW2_Mil_Barracks";
+						};
+						class Item29
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3449.4172,26.236845,2692.623};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2360;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=0.041835785;
+						};
+						class Item30
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3478.8362,26.026611,2682.0637};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2361;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=0.35663223;
+						};
+						class Item31
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3426.593,25.847925,2674.125};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2362;
+							type="Land_WW2_Mil_Barracks";
+						};
+						class Item32
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3440.7258,25.987507,2668.5308};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2363;
+							type="Land_WW2_Mil_Barracks";
+						};
+						class Item33
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3455.8293,25.649714,2663.5486};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2364;
+							type="Land_WW2_Mil_Barracks";
+						};
+						class Item34
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3470.1536,25.636211,2657.9949};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2365;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=0.26800919;
+						};
+						class Item35
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3485.1733,25.210573,2653.084};
+								angles[]={0,5.0562873,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2376;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=0.04315567;
+						};
+						class Item36
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3493.0261,25.162291,2673.6487};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2377;
+							type="Land_WW2_Mil_Barracks";
+						};
+						class Item37
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3502.1948,25.913961,2698.3801};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2378;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=1.9073486e-006;
+						};
+						class Item38
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3446.363,26.518517,2722.6533};
+								angles[]={0,5.056273,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2355;
+							type="Land_WW2_Mil_Barracks_L";
+						};
+						class Item39
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={3470.1755,25.534674,2700.7822};
+								angles[]={6.2731848,1.9320465,6.2794352};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2382;
+							type="Land_wx_radiomast";
+							atlOffset=9.5367432e-006;
+						};
+						class Item40
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={3668.978,26.994238,2914.2258};
+								angles[]={0.01123992,0.4207989,6.2744412};
+							};
+							areaSize[]={203.33253,0,624.104};
+							areaIsRectangle=1;
+							flags=1;
+							id=2381;
+							type="Vindicta_LocationSector";
+							atlOffset=0.083782196;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="airport";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=20;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="South West Airfield";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2354;
+					atlOffset=-0.90770721;
+				};
 			};
 			id=2101;
-			atlOffset=-0.022102356;
+			atlOffset=-38.296658;
 		};
 		class Item5
 		{
@@ -1960,7 +3018,7 @@ class Mission
 			name="Cities";
 			class Entities
 			{
-				items=17;
+				items=20;
 				class Item0
 				{
 					dataType="Layer";
@@ -2249,7 +3307,7 @@ class Mission
 					name="City - Staszow";
 					class Entities
 					{
-						items=8;
+						items=1;
 						class Item0
 						{
 							dataType="Logic";
@@ -2381,281 +3439,6 @@ class Mission
 								nAttributes=6;
 							};
 						};
-						class Item1
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={14230.793,32.639999,9048.3291};
-								angles[]={0,5.1932969,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=1865;
-							type="Land_WW2_Admin";
-						};
-						class Item2
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={13979.973,32.194073,8963.7354};
-								angles[]={0,3.5790358,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=1869;
-							type="Land_WW2_Admin";
-							atlOffset=0.00831604;
-						};
-						class Item3
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={14391.33,32.639999,9105.5283};
-								angles[]={0,4.6530113,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=1871;
-							type="Land_WW2_Admin";
-						};
-						class Item4
-						{
-							dataType="Logic";
-							class PositionInfo
-							{
-								position[]={14232.099,32.639999,9049.3633};
-								angles[]={0,0.4560414,0};
-							};
-							areaSize[]={8.5695295,0,6.7877316};
-							areaIsRectangle=1;
-							flags=1;
-							id=1867;
-							type="ModuleHideTerrainObjects_F";
-							class CustomAttributes
-							{
-								class Attribute0
-								{
-									property="#filter";
-									expression="_this setVariable [""#filter"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"SCALAR"
-												};
-											};
-											value=15;
-										};
-									};
-								};
-								class Attribute1
-								{
-									property="#hideLocally";
-									expression="_this setVariable [""#hideLocally"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"BOOL"
-												};
-											};
-											value=0;
-										};
-									};
-								};
-								nAttributes=2;
-							};
-						};
-						class Item5
-						{
-							dataType="Logic";
-							class PositionInfo
-							{
-								position[]={13982.279,32.238911,8966.5449};
-								angles[]={0.0036154804,2.0029914,0.0078380378};
-							};
-							areaSize[]={8.5695295,0,5.5670629};
-							areaIsRectangle=1;
-							flags=1;
-							id=1870;
-							type="ModuleHideTerrainObjects_F";
-							atlOffset=3.8146973e-006;
-							class CustomAttributes
-							{
-								class Attribute0
-								{
-									property="#filter";
-									expression="_this setVariable [""#filter"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"SCALAR"
-												};
-											};
-											value=15;
-										};
-									};
-								};
-								class Attribute1
-								{
-									property="#hideLocally";
-									expression="_this setVariable [""#hideLocally"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"BOOL"
-												};
-											};
-											value=0;
-										};
-									};
-								};
-								nAttributes=2;
-							};
-						};
-						class Item6
-						{
-							dataType="Logic";
-							class PositionInfo
-							{
-								position[]={14394.899,32.983543,9104.8379};
-								angles[]={0,3.0769634,0};
-							};
-							areaSize[]={8.5695295,0,5.5670629};
-							areaIsRectangle=1;
-							flags=1;
-							id=1872;
-							type="ModuleHideTerrainObjects_F";
-							atlOffset=3.8146973e-006;
-							class CustomAttributes
-							{
-								class Attribute0
-								{
-									property="#filter";
-									expression="_this setVariable [""#filter"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"SCALAR"
-												};
-											};
-											value=15;
-										};
-									};
-								};
-								class Attribute1
-								{
-									property="#hideLocally";
-									expression="_this setVariable [""#hideLocally"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"BOOL"
-												};
-											};
-											value=0;
-										};
-									};
-								};
-								nAttributes=2;
-							};
-						};
-						class Item7
-						{
-							dataType="Logic";
-							class PositionInfo
-							{
-								position[]={14177.852,32.639999,8984.3936};
-								angles[]={0,2.0008075,0};
-							};
-							areaSize[]={65.599121,0,58.49752};
-							areaIsRectangle=1;
-							flags=1;
-							id=1873;
-							type="ModuleHideTerrainObjects_F";
-							class CustomAttributes
-							{
-								class Attribute0
-								{
-									property="#filter";
-									expression="_this setVariable [""#filter"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"SCALAR"
-												};
-											};
-											value=8;
-										};
-									};
-								};
-								class Attribute1
-								{
-									property="#hideLocally";
-									expression="_this setVariable [""#hideLocally"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"BOOL"
-												};
-											};
-											value=0;
-										};
-									};
-								};
-								nAttributes=2;
-							};
-						};
 					};
 					id=1866;
 					atlOffset=0.028781891;
@@ -2673,9 +3456,9 @@ class Mission
 							class PositionInfo
 							{
 								position[]={11114.38,39.819679,6675.5371};
-								angles[]={0,0.48914641,6.2494483};
+								angles[]={0,0.48914596,6.2494478};
 							};
-							areaSize[]={530.38208,0,260.017};
+							areaSize[]={530.38202,0,260.017};
 							areaIsRectangle=1;
 							flags=1;
 							id=2100;
@@ -3099,9 +3882,9 @@ class Mission
 							class PositionInfo
 							{
 								position[]={10908.636,73.859718,9003.6758};
-								angles[]={0.044969428,5.8517113,6.2519455};
+								angles[]={0.044977132,5.8517051,6.2519436};
 							};
-							areaSize[]={555.45081,0,260.017};
+							areaSize[]={555.45099,0,260.017};
 							flags=1;
 							id=2115;
 							type="Vindicta_LocationSector";
@@ -3661,6 +4444,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2246;
 							type="Land_WW2_Admin";
@@ -3671,7 +4455,7 @@ class Mission
 							class PositionInfo
 							{
 								position[]={11382.331,24.68992,2513.1709};
-								angles[]={-0,5.4579411,0};
+								angles[]={0,5.4579411,0};
 							};
 							areaSize[]={7.7916622,0,7.3975153};
 							areaIsRectangle=1;
@@ -4156,12 +4940,13 @@ class Mission
 							class PositionInfo
 							{
 								position[]={15002.706,37.567749,2503.7563};
-								angles[]={0,4.7801747,-0};
+								angles[]={0,4.7801747,0};
 							};
 							side="Empty";
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2249;
 							type="Land_WW2_Admin";
@@ -4178,6 +4963,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2251;
 							type="Land_WW2_Admin";
@@ -4245,7 +5031,7 @@ class Mission
 							class PositionInfo
 							{
 								position[]={14104.349,47.765415,2778.1042};
-								angles[]={-0,3.2033341,-0};
+								angles[]={0,3.2033341,0};
 							};
 							areaSize[]={7.1696925,0,6.1258926};
 							areaIsRectangle=1;
@@ -4594,6 +5380,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2255;
 							type="Land_WW2_Admin2";
@@ -4678,6 +5465,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2242;
 							type="Land_WW2_Admin";
@@ -4694,6 +5482,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2245;
 							type="Land_WW2_Admin2";
@@ -5042,6 +5831,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2258;
 							type="Land_WW2_Admin2";
@@ -5107,37 +5897,27 @@ class Mission
 					id=2256;
 					atlOffset=-0.17994881;
 				};
-			};
-			id=2102;
-			atlOffset=16.965767;
-		};
-		class Item6
-		{
-			dataType="Layer";
-			name="Outposts";
-			class Entities
-			{
-				items=3;
-				class Item0
+				class Item17
 				{
 					dataType="Layer";
-					name="Outpost - Ruined Barracks";
+					name="City - Nizny";
 					class Entities
 					{
-						items=18;
+						items=3;
 						class Item0
 						{
 							dataType="Logic";
 							class PositionInfo
 							{
-								position[]={13780.032,22.09057,8386.7275};
-								angles[]={0.019996032,0.50047332,0.0037505617};
+								position[]={7043.2583,14.933964,2462.7771};
+								angles[]={6.2369685,0.10409144,0.017500184};
 							};
-							areaSize[]={82.981903,0,83.894127};
+							areaSize[]={678.55261,0,366.81055};
 							areaIsRectangle=1;
 							flags=1;
-							id=1588;
+							id=2350;
 							type="Vindicta_LocationSector";
+							atlOffset=1.5415897;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -5193,7 +5973,7 @@ class Mission
 													"STRING"
 												};
 											};
-											value="outpost";
+											value="city";
 										};
 									};
 								};
@@ -5212,7 +5992,7 @@ class Mission
 													"SCALAR"
 												};
 											};
-											value=20;
+											value=5;
 										};
 									};
 								};
@@ -5250,7 +6030,523 @@ class Mission
 													"STRING"
 												};
 											};
-											value="ENTER OUTPOST NAME";
+											value="Nizny";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={7316.6704,22.412601,2164.4387};
+								angles[]={0.0037505617,0.14102846,0.021244843};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2351;
+							type="Land_WW2_Admin2";
+						};
+						class Item2
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={7316.0562,23.033203,2165.1514};
+								angles[]={0.0037505617,1.6931849,0.021244843};
+							};
+							areaSize[]={7.1696925,0,6.1258926};
+							areaIsRectangle=1;
+							flags=1;
+							id=2352;
+							type="ModuleHideTerrainObjects_F";
+							atlOffset=0.40313148;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+					};
+					id=2353;
+					atlOffset=1.829483;
+				};
+				class Item18
+				{
+					dataType="Layer";
+					name="City - Niecieslawice";
+					class Entities
+					{
+						items=1;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={3456.116,24.362,1971.71};
+								angles[]={0,0.27829275,0};
+							};
+							areaSize[]={151.14999,0,218.616};
+							areaIsRectangle=1;
+							flags=1;
+							id=2396;
+							type="Vindicta_LocationSector";
+							atlOffset=1.5419998;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Niecieslawice";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2397;
+					atlOffset=1.5419998;
+				};
+				class Item19
+				{
+					dataType="Layer";
+					name="City - Jaroslawice";
+					class Entities
+					{
+						items=1;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={4978.4238,47.714497,1546.818};
+								angles[]={0,1.6122828,0};
+							};
+							areaSize[]={98.195999,0,410.73401};
+							areaIsRectangle=1;
+							flags=1;
+							id=2399;
+							type="Vindicta_LocationSector";
+							atlOffset=1.3030014;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="city";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Jaroslawice";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2398;
+					atlOffset=0.89580154;
+				};
+			};
+			id=2102;
+			atlOffset=-3.0137596;
+		};
+		class Item6
+		{
+			dataType="Layer";
+			name="Outposts";
+			class Entities
+			{
+				items=4;
+				class Item0
+				{
+					dataType="Layer";
+					name="Outpost - Ruined Barracks";
+					class Entities
+					{
+						items=18;
+						class Item0
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={13780.032,22.09057,8386.7275};
+								angles[]={0.020001473,0.50047314,0.0037524579};
+							};
+							areaSize[]={82.982002,0,83.893997};
+							areaIsRectangle=1;
+							flags=1;
+							id=1588;
+							type="Vindicta_LocationSector";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="none";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="outpost";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Ruined Barracks";
 										};
 									};
 								};
@@ -5445,7 +6741,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1885;
 							type="Land_Setka_Car";
@@ -5466,7 +6762,7 @@ class Mission
 													"BOOL"
 												};
 											};
-											value=0;
+											value=1;
 										};
 									};
 								};
@@ -5485,7 +6781,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=1887;
 							type="Land_Setka_Car";
@@ -5507,7 +6803,7 @@ class Mission
 													"BOOL"
 												};
 											};
-											value=0;
+											value=1;
 										};
 									};
 								};
@@ -5526,7 +6822,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2110;
 							type="Land_WW2_Setka_Dor";
@@ -5547,7 +6843,7 @@ class Mission
 													"BOOL"
 												};
 											};
-											value=0;
+											value=1;
 										};
 									};
 								};
@@ -5566,7 +6862,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2111;
 							type="Land_WW2_Setka_Dor";
@@ -5588,7 +6884,7 @@ class Mission
 													"BOOL"
 												};
 											};
-											value=0;
+											value=1;
 										};
 									};
 								};
@@ -5607,7 +6903,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
-								createAsSimpleObject=1;
+								dynamicSimulation=1;
 							};
 							id=2112;
 							type="Land_WW2_Setka_Dor";
@@ -5628,7 +6924,7 @@ class Mission
 													"BOOL"
 												};
 											};
-											value=0;
+											value=1;
 										};
 									};
 								};
@@ -5645,7 +6941,7 @@ class Mission
 							colorName="ColorCIV";
 							a=11.960588;
 							b=31.587919;
-							angle=28.174227;
+							angle=28.174217;
 							id=2178;
 							atlOffset=7.6293945e-006;
 						};
@@ -5659,7 +6955,7 @@ class Mission
 							colorName="ColorCIV";
 							a=11.960588;
 							b=54.38451;
-							angle=28.174229;
+							angle=28.174217;
 							id=2177;
 						};
 						class Item16
@@ -5703,753 +6999,8 @@ class Mission
 				{
 					dataType="Layer";
 					name="Outpost - Roadside FOB";
-					class Entities
-					{
-						items=36;
-						class Item0
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9020.6885,77.654068,7371.9404};
-								angles[]={0,1.9198622,0};
-							};
-							side="Empty";
-							flags=1;
-							class Attributes
-							{
-							};
-							id=2130;
-							type="Land_WW2_Setka_Dor";
-							atlOffset=0.45378876;
-						};
-						class Item1
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9017.4551,77.14946,7362.9092};
-								angles[]={0,1.9198622,0};
-							};
-							side="Empty";
-							flags=1;
-							class Attributes
-							{
-							};
-							id=2150;
-							type="Land_WW2_Setka_Dor";
-							atlOffset=0.47584534;
-						};
-						class Item2
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9031.958,78.607719,7402.7993};
-								angles[]={0,1.9198622,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2151;
-							type="Land_WW2_Setka_Dor";
-							atlOffset=-0.074256897;
-						};
-						class Item3
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9028.7246,78.419518,7393.7681};
-								angles[]={0,1.9198622,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2152;
-							type="Land_WW2_Setka_Dor";
-							atlOffset=0.094009399;
-						};
-						class Item4
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9021.0674,77.064529,7357.1987};
-								angles[]={0,0.34906584,0};
-							};
-							side="Empty";
-							flags=1;
-							class Attributes
-							{
-							};
-							id=2153;
-							type="Land_WW2_Setka_Dor";
-							atlOffset=0.45823669;
-						};
-						class Item5
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9038.0254,78.75087,7404.6416};
-								angles[]={0,3.4906585,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2155;
-							type="Land_WW2_Setka_Dor";
-						};
-						class Item6
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9047.0215,78.433502,7401.2329};
-								angles[]={0,3.4906585,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2160;
-							type="Land_WW2_Setka_Dor";
-						};
-						class Item7
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9070.9287,77.332878,7351.124};
-								angles[]={0,5.0620413,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2161;
-							type="Land_WW2_Setka_Dor";
-						};
-						class Item8
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9064.8633,77.346642,7349.2891};
-								angles[]={0,0.34964368,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2162;
-							type="Land_WW2_Setka_Dor";
-						};
-						class Item9
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9080.5771,76.826309,7375.4194};
-								angles[]={0,5.0613194,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2166;
-							type="Land_WW2_Setka_Dor";
-						};
-						class Item10
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9076.9639,77.016068,7381.1211};
-								angles[]={0,3.4907486,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2167;
-							type="Land_WW2_Setka_Dor";
-						};
-						class Item11
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9024.6406,78.242813,7399.7778};
-								angles[]={0,3.4906585,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2174;
-							type="Land_WW2_Setka_Dor";
-						};
-						class Item12
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9013.9619,77.235611,7370.0073};
-								angles[]={0,0.34906584,0};
-							};
-							side="Empty";
-							flags=1;
-							class Attributes
-							{
-							};
-							id=2175;
-							type="Land_WW2_Setka_Dor";
-							atlOffset=0.45828247;
-						};
-						class Item13
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9017.9775,78.697479,7360.3389};
-								angles[]={6.2382159,5.0614548,0.052451372};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2140;
-							type="land_wx_guardtower_02";
-							atlOffset=0.025489807;
-						};
-						class Item14
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9034.1436,80.816055,7403.6978};
-								angles[]={6.255693,5.0614548,0.0099949092};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2156;
-							type="land_wx_guardtower_02";
-							atlOffset=7.6293945e-006;
-						};
-						class Item15
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9068.7441,79.420868,7350.2261};
-								angles[]={0.0075011365,1.9204297,0};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2163;
-							type="land_wx_guardtower_02";
-							atlOffset=-0.005355835;
-						};
-						class Item16
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9080.0508,79.160812,7377.9902};
-								angles[]={6.283185,1.9197019,0.062408347};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2164;
-							type="land_wx_guardtower_02";
-							atlOffset=0.24909973;
-						};
-						class Item17
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9033.2832,78.925156,7376.7539};
-								angles[]={6.2344737,5.0609617,0.031239824};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2170;
-							type="B_Truck_01_transport_F";
-							atlOffset=-0.00022125244;
-						};
-						class Item18
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9035.7783,79.272507,7382.46};
-								angles[]={6.2382159,5.0609617,0.027492445};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2171;
-							type="B_Truck_01_transport_F";
-						};
-						class Item19
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9021.1738,79.200424,7395.7656};
-								angles[]={6.2694354,4.6262841,0.059927464};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2172;
-							type="B_Truck_01_transport_F";
-							atlOffset=-0.00076293945;
-						};
-						class Item20
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9013.5488,78.188278,7375.9482};
-								angles[]={6.2519455,5.5613341,0.061173465};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2173;
-							type="B_Truck_01_transport_F";
-							atlOffset=4.5776367e-005;
-						};
-						class Item21
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9037.0117,78.893684,7393.4644};
-								angles[]={6.2619405,0.70786881,0.016246082};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2168;
-							type="B_Slingload_01_Cargo_F";
-							atlOffset=-0.0014038086;
-						};
-						class Item22
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9039.0605,78.88662,7391.7144};
-								angles[]={6.2432065,0.69827026,0.01624975};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2169;
-							type="B_Slingload_01_Cargo_F";
-						};
-						class Item23
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9033.5674,76.884537,7360.8667};
-								angles[]={0,5.0614548,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2147;
-							type="Land_WW2_Mil_Barracks";
-							atlOffset=0.088638306;
-						};
-						class Item24
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9044.7695,76.916786,7356.7949};
-								angles[]={0,5.0614548,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2154;
-							type="Land_WW2_Mil_Barracks";
-							atlOffset=-0.084228516;
-						};
-						class Item25
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9056.751,77.303673,7389.8213};
-								angles[]={0,1.9198622,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2159;
-							type="Land_WW2_Mil_Barracks";
-							atlOffset=-0.32774353;
-						};
-						class Item26
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9069.8301,77.23481,7366.3145};
-								angles[]={0,1.9183807,0};
-							};
-							side="Empty";
-							flags=1;
-							class Attributes
-							{
-							};
-							id=2119;
-							type="Land_WW2_Mil_Barracks_L";
-							atlOffset=0.70852661;
-						};
-						class Item27
-						{
-							dataType="Logic";
-							class PositionInfo
-							{
-								position[]={9047.7715,78.193291,7375.3159};
-								angles[]={0,5.0632334,0};
-							};
-							areaSize[]={28.151608,0,38.834869};
-							areaIsRectangle=1;
-							flags=1;
-							id=2118;
-							type="ModuleHideTerrainObjects_F";
-							atlOffset=1.3343353;
-							class CustomAttributes
-							{
-								class Attribute0
-								{
-									property="#filter";
-									expression="_this setVariable [""#filter"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"SCALAR"
-												};
-											};
-											value=15;
-										};
-									};
-								};
-								class Attribute1
-								{
-									property="#hideLocally";
-									expression="_this setVariable [""#hideLocally"",_value]";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"BOOL"
-												};
-											};
-											value=0;
-										};
-									};
-								};
-								nAttributes=2;
-							};
-						};
-						class Item28
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9038.8047,79.805779,7393.6514};
-								angles[]={0,2.2958548,0};
-							};
-							side="Empty";
-							flags=5;
-							class Attributes
-							{
-							};
-							id=2126;
-							type="Land_Setka_Car";
-						};
-						class Item29
-						{
-							dataType="Logic";
-							class PositionInfo
-							{
-								position[]={9014.1631,76.483971,7389.125};
-								angles[]={6.2407103,0.4513928,0.083555371};
-							};
-							areaSize[]={79.410995,0,38.401363};
-							areaIsRectangle=1;
-							flags=1;
-							id=2176;
-							type="Vindicta_LocationSector";
-							class CustomAttributes
-							{
-								class Attribute0
-								{
-									property="Vindicta_LocationSector_CivPresUnitCount";
-									expression="_this setVariable ['CivPresUnitCount',_value,true];";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"SCALAR"
-												};
-											};
-											value=5;
-										};
-									};
-								};
-								class Attribute1
-								{
-									property="Vindicta_LocationSector_side";
-									expression="_this setVariable ['Side',_value,true];";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"STRING"
-												};
-											};
-											value="east";
-										};
-									};
-								};
-								class Attribute2
-								{
-									property="Vindicta_LocationSector_type";
-									expression="_this setVariable ['Type',_value,true];";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"STRING"
-												};
-											};
-											value="outpost";
-										};
-									};
-								};
-								class Attribute3
-								{
-									property="Vindicta_LocationSector_CapacityInfantry";
-									expression="_this setVariable ['CapacityInfantry',_value,true];";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"SCALAR"
-												};
-											};
-											value=5;
-										};
-									};
-								};
-								class Attribute4
-								{
-									property="Vindicta_LocationSector";
-									expression="_this setVariable ['Units',_value,true];";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"STRING"
-												};
-											};
-											value="1";
-										};
-									};
-								};
-								class Attribute5
-								{
-									property="Vindicta_LocationSector_name";
-									expression="_this setVariable ['Name',_value,true];";
-									class Value
-									{
-										class data
-										{
-											class type
-											{
-												type[]=
-												{
-													"STRING"
-												};
-											};
-											value="Roadside FOB";
-										};
-									};
-								};
-								nAttributes=6;
-							};
-						};
-						class Item30
-						{
-							dataType="Marker";
-							position[]={8959.8799,74.765053,7405.0532};
-							name="allowedarea_0";
-							markerType="RECTANGLE";
-							type="rectangle";
-							colorName="ColorCIV";
-							a=11.70131;
-							b=4.398509;
-							angle=23.279156;
-							id=521;
-						};
-						class Item31
-						{
-							dataType="Marker";
-							position[]={8947.7227,74.878288,7420.002};
-							name="allowedarea_3";
-							markerType="RECTANGLE";
-							type="rectangle";
-							colorName="ColorCIV";
-							a=40.543625;
-							b=6.3591833;
-							angle=115.56551;
-							id=2182;
-						};
-						class Item32
-						{
-							dataType="Marker";
-							position[]={8981.167,74.795258,7396.835};
-							name="allowedarea_4";
-							markerType="RECTANGLE";
-							type="rectangle";
-							colorName="ColorCIV";
-							a=11.70131;
-							b=4.398509;
-							angle=19.066277;
-							id=2183;
-						};
-						class Item33
-						{
-							dataType="Marker";
-							position[]={9003.1191,75.70536,7389.7715};
-							name="allowedarea_5";
-							markerType="RECTANGLE";
-							type="rectangle";
-							colorName="ColorCIV";
-							a=11.70131;
-							b=4.398509;
-							angle=17.534832;
-							id=2184;
-						};
-						class Item34
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9063.666,77.709557,7364.6196};
-								angles[]={6.2569423,3.5001235,0.010000871};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2212;
-							type="B_Slingload_01_Cargo_F";
-							atlOffset=-0.00094604492;
-						};
-						class Item35
-						{
-							dataType="Object";
-							class PositionInfo
-							{
-								position[]={9061.1416,77.710464,7365.5625};
-								angles[]={6.2569423,3.490525,0.010000871};
-							};
-							side="Empty";
-							flags=4;
-							class Attributes
-							{
-							};
-							id=2213;
-							type="B_Slingload_01_Cargo_F";
-							atlOffset=0.00045776367;
-						};
-					};
 					id=2116;
-					atlOffset=-0.59651947;
+					atlOffset=-49.130001;
 				};
 				class Item2
 				{
@@ -6470,6 +7021,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2188;
 							type="Land_WW2_Setka_Dor";
@@ -6486,6 +7038,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2189;
 							type="Land_WW2_Setka_Dor";
@@ -6502,6 +7055,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2190;
 							type="Land_WW2_Setka_Dor";
@@ -6518,6 +7072,7 @@ class Mission
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2201;
 							type="Land_WW2_Setka_Dor";
@@ -6534,6 +7089,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2195;
 							type="land_wx_guardtower_02";
@@ -6551,6 +7107,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2196;
 							type="land_wx_guardtower_02";
@@ -6567,6 +7124,7 @@ class Mission
 							flags=4;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2205;
 							type="land_wx_guardtower_02";
@@ -6734,13 +7292,14 @@ class Mission
 							dataType="Object";
 							class PositionInfo
 							{
-								position[]={9431.7148,23.402626,12657.341};
-								angles[]={0,3.0899572,0};
+								position[]={9431.7148,23.402672,12657.34};
+								angles[]={0,3.0899658,0};
 							};
 							side="Empty";
 							flags=5;
 							class Attributes
 							{
+								dynamicSimulation=1;
 							};
 							id=2187;
 							type="Land_WW2_Setka_Dor";
@@ -6914,32 +7473,530 @@ class Mission
 					id=2186;
 					atlOffset=-0.082681656;
 				};
+				class Item3
+				{
+					dataType="Layer";
+					name="Outpost - Camp Ross";
+					class Entities
+					{
+						items=23;
+						class Item0
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9815.0371,12.277754,1538.5481};
+								angles[]={0,2.8863792,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2311;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9808.0254,11.817198,1526.103};
+								angles[]={0,1.2827153,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2312;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9849.2842,11.146113,1521.5786};
+								angles[]={0,4.25317,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2313;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9843.6162,10.732014,1509.1195};
+								angles[]={0,6.0404902,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2314;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9842.166,11.534941,1528.7709};
+								angles[]={0,3.6249218,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2322;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item5
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9825.917,12.13565,1537.7701};
+								angles[]={0,3.6067104,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2323;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item6
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9827.0947,10.529539,1519.2828};
+								angles[]={6.2457032,0,6.270689};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2307;
+							type="Land_Campfire";
+							atlOffset=3.7193298e-005;
+						};
+						class Item7
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9810.4287,12.513078,1514.0016};
+								angles[]={6.2494483,5.1138573,6.2457032};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2319;
+							type="B_Truck_01_transport_F";
+							atlOffset=-0.0010061264;
+						};
+						class Item8
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9832.9795,11.702136,1502.6985};
+								angles[]={6.278182,4.8255124,6.2569423};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2321;
+							type="B_Truck_01_transport_F";
+							atlOffset=-0.0012359619;
+						};
+						class Item9
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9815.3047,12.49421,1535.8596};
+								angles[]={6.2394638,1.2297069,6.2731848};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2315;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-1.2397766e-005;
+						};
+						class Item10
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9843.1064,11.151056,1511.1757};
+								angles[]={6.2506957,1.2408545,6.2719336};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2316;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-4.9591064e-005;
+						};
+						class Item11
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9826.5596,11.824015,1523.3193};
+								angles[]={6.2432065,1.3525939,6.2706842};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2317;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=7.6293945e-006;
+						};
+						class Item12
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9838.4102,11.518905,1519.3772};
+								angles[]={6.2444563,2.0022306,6.270689};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2318;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=4.7683716e-006;
+						};
+						class Item13
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9832.0469,12.64258,1529.118};
+								angles[]={0,3.6078224,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2279;
+							type="Land_I44_Object_Tent_Us_Large";
+							atlOffset=2;
+						};
+						class Item14
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9823.8174,11.820578,1531};
+								angles[]={0,0.45169118,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2297;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1.000001;
+						};
+						class Item15
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9819.7627,11.953392,1532.995};
+								angles[]={0,0.45169118,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2298;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1.000001;
+						};
+						class Item16
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9816.0078,11.669995,1525.1639};
+								angles[]={0,3.5805776,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2299;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1;
+						};
+						class Item17
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9842.2432,11.234514,1522.347};
+								angles[]={0,0.45169118,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2302;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1;
+						};
+						class Item18
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9838.1885,11.364917,1524.342};
+								angles[]={0,0.45169118,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2303;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1;
+						};
+						class Item19
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9838.5107,10.967312,1514.547};
+								angles[]={0,3.5805776,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2305;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1;
+						};
+						class Item20
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9813.3047,11.94984,1531.266};
+								angles[]={0,5.1487212,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2309;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1;
+						};
+						class Item21
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9845.3584,10.955646,1516.282};
+								angles[]={0,2.0071287,0};
+							};
+							side="Empty";
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2310;
+							type="Land_I44_Object_Tent_Us_Small";
+							atlOffset=1;
+						};
+						class Item22
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={9822.5918,10.020543,1510.743};
+								angles[]={6.2457128,0.41568506,0.0087440992};
+							};
+							areaSize[]={66.527,0,41.067001};
+							areaIsRectangle=1;
+							flags=1;
+							id=2326;
+							type="Vindicta_LocationSector";
+							atlOffset=9.5367432e-007;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="outpost";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Campsite Ross";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+					};
+					id=2325;
+					atlOffset=0.092102051;
+				};
 			};
 			id=2103;
-			atlOffset=-20.54184;
+			atlOffset=-43.722984;
 		};
 		class Item7
-		{
-			dataType="Marker";
-			position[]={9895.0791,8.4362926,1472.0358};
-			name="marker_35";
-			text="Outpost";
-			type="LIB_mil_circle";
-			colorName="ColorGUER";
-			id=2262;
-		};
-		class Item8
-		{
-			dataType="Marker";
-			position[]={13960.925,14.097,5564.7422};
-			name="marker_36";
-			text="Outpost";
-			type="LIB_mil_circle";
-			colorName="ColorGUER";
-			id=2263;
-			atlOffset=-0.00045490265;
-		};
-		class Item9
 		{
 			dataType="Marker";
 			position[]={6436.1426,50.732845,4953.0938};
@@ -6949,27 +8006,7 @@ class Mission
 			colorName="ColorGUER";
 			id=2264;
 		};
-		class Item10
-		{
-			dataType="Marker";
-			position[]={4208.791,59.02,7969.6489};
-			name="marker_39";
-			text="Airfield";
-			type="LIB_mil_circle";
-			colorName="ColorGUER";
-			id=2266;
-		};
-		class Item11
-		{
-			dataType="Marker";
-			position[]={3714.5408,26.687519,2800.9336};
-			name="marker_40";
-			text="Airfield";
-			type="LIB_mil_circle";
-			colorName="ColorGUER";
-			id=2268;
-		};
-		class Item12
+		class Item8
 		{
 			dataType="Marker";
 			position[]={1029.8705,63.974785,5607.8262};
@@ -6980,7 +8017,7 @@ class Mission
 			id=2269;
 			atlOffset=-0.00049209595;
 		};
-		class Item13
+		class Item9
 		{
 			dataType="Marker";
 			position[]={6973.2603,90.775665,11347.01};
@@ -6990,6 +8027,1449 @@ class Mission
 			colorName="ColorGUER";
 			id=2271;
 			atlOffset=-0.00048828125;
+		};
+		class Item10
+		{
+			dataType="Layer";
+			name="Bases";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Layer";
+					name="Base - F.O.B. Delta";
+					class Entities
+					{
+						items=42;
+						class Item0
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9020.6885,77.654068,7371.9404};
+								angles[]={0,1.9198622,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2130;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.45378876;
+						};
+						class Item1
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9017.4551,77.14946,7362.9092};
+								angles[]={0,1.9198622,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2150;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.47584534;
+						};
+						class Item2
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9031.958,78.607719,7402.7993};
+								angles[]={0,1.9198622,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2151;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=-0.074256897;
+						};
+						class Item3
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9028.7246,78.419518,7393.7681};
+								angles[]={0,1.9198622,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2152;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.094009399;
+						};
+						class Item4
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9021.0674,77.064529,7357.1987};
+								angles[]={0,0.34906584,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2153;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.45823669;
+						};
+						class Item5
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9038.0254,78.75087,7404.6416};
+								angles[]={0,3.4906585,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2155;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item6
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9047.0215,78.433502,7401.2329};
+								angles[]={0,3.4906585,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2160;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item7
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9070.9287,77.332878,7351.124};
+								angles[]={0,5.0620413,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2161;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item8
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9064.8633,77.346642,7349.2891};
+								angles[]={0,0.34964368,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2162;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item9
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9080.5771,76.826309,7375.4194};
+								angles[]={0,5.0613194,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2166;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item10
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9076.9639,77.016068,7381.1211};
+								angles[]={0,3.4907486,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2167;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item11
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9024.6406,78.242813,7399.7778};
+								angles[]={0,3.4906585,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2174;
+							type="Land_WW2_Setka_Dor";
+						};
+						class Item12
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9013.9619,77.235611,7370.0073};
+								angles[]={0,0.34906584,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2175;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.45828247;
+						};
+						class Item13
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9033.2832,78.925156,7376.7539};
+								angles[]={6.2344737,5.0609617,0.031239824};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2170;
+							type="B_Truck_01_transport_F";
+							atlOffset=-0.00022125244;
+						};
+						class Item14
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9035.7783,79.272507,7382.46};
+								angles[]={6.2382159,5.0609617,0.027492445};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2171;
+							type="B_Truck_01_transport_F";
+						};
+						class Item15
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9020.9941,79.186584,7395.4878};
+								angles[]={6.2694354,4.6262841,0.059927464};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2172;
+							type="B_Truck_01_transport_F";
+						};
+						class Item16
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9013.5488,78.188278,7375.9482};
+								angles[]={6.2519455,5.5613341,0.061173465};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2173;
+							type="B_Truck_01_transport_F";
+							atlOffset=4.5776367e-005;
+						};
+						class Item17
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9037.0117,78.893684,7393.4644};
+								angles[]={6.2619405,0.70786881,0.016246082};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2168;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-0.0014038086;
+						};
+						class Item18
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9039.0605,78.88662,7391.7144};
+								angles[]={6.2432065,0.69827026,0.01624975};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2169;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item19
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9063.666,77.709557,7364.6196};
+								angles[]={6.2569423,3.5001235,0.010000871};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2212;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=-0.00094604492;
+						};
+						class Item20
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9061.1416,77.710464,7365.5625};
+								angles[]={6.2569423,3.490525,0.010000871};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2213;
+							type="B_Slingload_01_Cargo_F";
+							atlOffset=0.00045776367;
+						};
+						class Item21
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9033.5674,76.884537,7360.8667};
+								angles[]={0,5.0614548,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2147;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=0.088638306;
+						};
+						class Item22
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9044.7695,76.916786,7356.7949};
+								angles[]={0,5.0614548,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2154;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=-0.084228516;
+						};
+						class Item23
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9056.751,77.303673,7389.8213};
+								angles[]={0,1.9198622,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2159;
+							type="Land_WW2_Mil_Barracks";
+							atlOffset=-0.32774353;
+						};
+						class Item24
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9069.8301,77.23481,7366.3145};
+								angles[]={0,1.9183807,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2119;
+							type="Land_WW2_Mil_Barracks_L";
+							atlOffset=0.70852661;
+						};
+						class Item25
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={9047.7715,78.193291,7375.3159};
+								angles[]={0,5.0632334,0};
+							};
+							areaSize[]={28.151608,0,38.834869};
+							areaIsRectangle=1;
+							flags=1;
+							id=2118;
+							type="ModuleHideTerrainObjects_F";
+							atlOffset=1.3343353;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+						class Item26
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={9014.1631,76.483971,7389.125};
+								angles[]={6.2407041,0.45139453,0.083548911};
+							};
+							areaSize[]={79.411003,0,38.401001};
+							areaIsRectangle=1;
+							flags=1;
+							id=2176;
+							type="Vindicta_LocationSector";
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="Vindicta_LocationSector_CivPresUnitCount";
+									expression="_this setVariable ['CivPresUnitCount',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="Vindicta_LocationSector_side";
+									expression="_this setVariable ['Side',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="east";
+										};
+									};
+								};
+								class Attribute2
+								{
+									property="Vindicta_LocationSector_type";
+									expression="_this setVariable ['Type',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="base";
+										};
+									};
+								};
+								class Attribute3
+								{
+									property="Vindicta_LocationSector_CapacityInfantry";
+									expression="_this setVariable ['CapacityInfantry',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=5;
+										};
+									};
+								};
+								class Attribute4
+								{
+									property="Vindicta_LocationSector";
+									expression="_this setVariable ['Units',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="1";
+										};
+									};
+								};
+								class Attribute5
+								{
+									property="Vindicta_LocationSector_name";
+									expression="_this setVariable ['Name',_value,true];";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"STRING"
+												};
+											};
+											value="Roadside FOB";
+										};
+									};
+								};
+								nAttributes=6;
+							};
+						};
+						class Item27
+						{
+							dataType="Marker";
+							position[]={8959.8799,74.765053,7405.0532};
+							name="allowedarea_0";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=11.70131;
+							b=4.398509;
+							angle=23.279156;
+							id=521;
+						};
+						class Item28
+						{
+							dataType="Marker";
+							position[]={8947.7227,74.878288,7420.002};
+							name="allowedarea_3";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=40.543625;
+							b=6.3591833;
+							angle=115.56551;
+							id=2182;
+						};
+						class Item29
+						{
+							dataType="Marker";
+							position[]={8981.167,74.795258,7396.835};
+							name="allowedarea_4";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=11.70131;
+							b=4.398509;
+							angle=19.066277;
+							id=2183;
+						};
+						class Item30
+						{
+							dataType="Marker";
+							position[]={9003.1191,75.70536,7389.7715};
+							name="allowedarea_5";
+							markerType="RECTANGLE";
+							type="rectangle";
+							colorName="ColorCIV";
+							a=11.70131;
+							b=4.398509;
+							angle=17.534832;
+							id=2184;
+						};
+						class Item31
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9038.8047,79.805779,7393.6514};
+								angles[]={0,2.2958548,0};
+							};
+							side="Empty";
+							flags=5;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2126;
+							type="Land_Setka_Car";
+						};
+						class Item32
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9068.7441,79.421219,7350.2261};
+								angles[]={0.0075049158,1.9204381,0};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2340;
+							type="land_wx_guardtower_02";
+							atlOffset=-0.0050048828;
+						};
+						class Item33
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9080.0508,79.160812,7377.9902};
+								angles[]={6.283185,1.9197019,0.062408347};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2341;
+							type="land_wx_guardtower_02";
+							atlOffset=0.24909973;
+						};
+						class Item34
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9034.1436,80.816055,7403.6978};
+								angles[]={6.255693,5.0614548,0.0099949092};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2342;
+							type="land_wx_guardtower_02";
+							atlOffset=7.6293945e-006;
+						};
+						class Item35
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9017.9775,78.697479,7360.3389};
+								angles[]={6.2382159,5.0614548,0.052451372};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2343;
+							type="land_wx_guardtower_02";
+							atlOffset=0.025489807;
+						};
+						class Item36
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9000.9629,76.671783,7374.5957};
+								angles[]={0,0.34906584,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2344;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.45822906;
+						};
+						class Item37
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={8988.3086,76.147133,7378.9692};
+								angles[]={0,0.34906584,0};
+							};
+							side="Empty";
+							flags=1;
+							class Attributes
+							{
+								dynamicSimulation=1;
+							};
+							id=2345;
+							type="Land_WW2_Setka_Dor";
+							atlOffset=0.45824432;
+						};
+						class Item38
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9001.5313,77.605171,7379.7271};
+								angles[]={6.2531958,5.5613341,0.054944519};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2346;
+							type="B_Truck_01_transport_F";
+						};
+						class Item39
+						{
+							dataType="Logic";
+							class PositionInfo
+							{
+								position[]={8999.2148,76.644859,7381.5298};
+								angles[]={0,5.0632334,0};
+							};
+							areaSize[]={6.7009273,0,24.654629};
+							areaIsRectangle=1;
+							flags=1;
+							id=2347;
+							type="ModuleHideTerrainObjects_F";
+							atlOffset=1.3342972;
+							class CustomAttributes
+							{
+								class Attribute0
+								{
+									property="#filter";
+									expression="_this setVariable [""#filter"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"SCALAR"
+												};
+											};
+											value=15;
+										};
+									};
+								};
+								class Attribute1
+								{
+									property="#hideLocally";
+									expression="_this setVariable [""#hideLocally"",_value]";
+									class Value
+									{
+										class data
+										{
+											class type
+											{
+												type[]=
+												{
+													"BOOL"
+												};
+											};
+											value=0;
+										};
+									};
+								};
+								nAttributes=2;
+							};
+						};
+						class Item40
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={9004.9072,78.276993,7398.3765};
+								angles[]={6.2694397,4.6262841,0.041225832};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2348;
+							type="B_Truck_01_transport_F";
+						};
+						class Item41
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={8990.1582,77.216545,7384.0811};
+								angles[]={6.268187,5.4849892,0.03872931};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2349;
+							type="B_Truck_01_transport_F";
+						};
+					};
+					id=2335;
+					atlOffset=0.18430328;
+				};
+			};
+			id=2334;
+			atlOffset=0.18430328;
+		};
+		class Item11
+		{
+			dataType="Layer";
+			name="City - Sachalin";
+			class Entities
+			{
+				items=2;
+				class Item0
+				{
+					dataType="Logic";
+					class PositionInfo
+					{
+						position[]={1876.342,58.129597,3918.7219};
+						angles[]={0,0.27829275,0};
+					};
+					areaSize[]={233.912,0,281.57199};
+					areaIsRectangle=1;
+					flags=1;
+					id=2404;
+					type="Vindicta_LocationSector";
+					atlOffset=0.60305405;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="Vindicta_LocationSector_CivPresUnitCount";
+							expression="_this setVariable ['CivPresUnitCount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=5;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="Vindicta_LocationSector_side";
+							expression="_this setVariable ['Side',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="east";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="Vindicta_LocationSector_type";
+							expression="_this setVariable ['Type',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="city";
+								};
+							};
+						};
+						class Attribute3
+						{
+							property="Vindicta_LocationSector_CapacityInfantry";
+							expression="_this setVariable ['CapacityInfantry',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=5;
+								};
+							};
+						};
+						class Attribute4
+						{
+							property="Vindicta_LocationSector";
+							expression="_this setVariable ['Units',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="1";
+								};
+							};
+						};
+						class Attribute5
+						{
+							property="Vindicta_LocationSector_name";
+							expression="_this setVariable ['Name',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Sachalin";
+								};
+							};
+						};
+						nAttributes=6;
+					};
+				};
+				class Item1
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={1872.9734,57.499268,4002.2615};
+						angles[]={0,0.11915309,0};
+					};
+					side="Empty";
+					flags=5;
+					class Attributes
+					{
+						dynamicSimulation=1;
+					};
+					id=2405;
+					type="Land_WW2_Admin";
+				};
+			};
+			id=2403;
+			atlOffset=14.770226;
+		};
+		class Item12
+		{
+			dataType="Layer";
+			name="City - Sieczkow";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Logic";
+					class PositionInfo
+					{
+						position[]={832.44397,49.288536,3993.728};
+						angles[]={0.0046076691,0.59634405,0.12341223};
+					};
+					areaSize[]={117.888,0,280.47501};
+					areaIsRectangle=1;
+					flags=1;
+					id=2407;
+					type="Vindicta_LocationSector";
+					atlOffset=3.4679985;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="Vindicta_LocationSector_CivPresUnitCount";
+							expression="_this setVariable ['CivPresUnitCount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=5;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="Vindicta_LocationSector_side";
+							expression="_this setVariable ['Side',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="east";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="Vindicta_LocationSector_type";
+							expression="_this setVariable ['Type',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="city";
+								};
+							};
+						};
+						class Attribute3
+						{
+							property="Vindicta_LocationSector_CapacityInfantry";
+							expression="_this setVariable ['CapacityInfantry',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=5;
+								};
+							};
+						};
+						class Attribute4
+						{
+							property="Vindicta_LocationSector";
+							expression="_this setVariable ['Units',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="1";
+								};
+							};
+						};
+						class Attribute5
+						{
+							property="Vindicta_LocationSector_name";
+							expression="_this setVariable ['Name',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Sieczkow";
+								};
+							};
+						};
+						nAttributes=6;
+					};
+				};
+			};
+			id=2406;
+			atlOffset=3.4679985;
+		};
+		class Item13
+		{
+			dataType="Layer";
+			name="City - Zapusty";
+			class Entities
+			{
+				items=2;
+				class Item0
+				{
+					dataType="Logic";
+					class PositionInfo
+					{
+						position[]={2806.2329,63.940964,4405.5981};
+						angles[]={0,0.17181021,0};
+					};
+					areaSize[]={244.896,0,135.315};
+					areaIsRectangle=1;
+					flags=1;
+					id=2408;
+					type="Vindicta_LocationSector";
+					atlOffset=3.4819946;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="Vindicta_LocationSector_CivPresUnitCount";
+							expression="_this setVariable ['CivPresUnitCount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=5;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="Vindicta_LocationSector_side";
+							expression="_this setVariable ['Side',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="east";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="Vindicta_LocationSector_type";
+							expression="_this setVariable ['Type',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="city";
+								};
+							};
+						};
+						class Attribute3
+						{
+							property="Vindicta_LocationSector_CapacityInfantry";
+							expression="_this setVariable ['CapacityInfantry',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=5;
+								};
+							};
+						};
+						class Attribute4
+						{
+							property="Vindicta_LocationSector";
+							expression="_this setVariable ['Units',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="1";
+								};
+							};
+						};
+						class Attribute5
+						{
+							property="Vindicta_LocationSector_name";
+							expression="_this setVariable ['Name',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Zapusty";
+								};
+							};
+						};
+						nAttributes=6;
+					};
+				};
+				class Item1
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2899.5315,64.457573,4411.7246};
+						angles[]={6.248199,4.1198936,0.010000871};
+					};
+					side="Empty";
+					class Attributes
+					{
+						dynamicSimulation=1;
+					};
+					id=2411;
+					type="Land_WW2_Admin2";
+					atlOffset=0.31189728;
+				};
+			};
+			id=2409;
+			atlOffset=1.0357094;
+		};
+		class Item14
+		{
+			dataType="Marker";
+			position[]={969.87787,28.31226,1573.3074};
+			name="marker_40";
+			text="Outpost";
+			type="LIB_mil_circle";
+			colorName="ColorGUER";
+			id=2412;
+		};
+		class Item15
+		{
+			dataType="Marker";
+			position[]={3672.6653,59.739502,6846.4014};
+			name="marker_42";
+			text="Outpost";
+			type="LIB_mil_circle";
+			colorName="ColorGUER";
+			id=2413;
+			atlOffset=-8.5755081;
+		};
+		class Item16
+		{
+			dataType="Marker";
+			position[]={2623.989,46.011684,12520.163};
+			name="marker_43";
+			text="Base";
+			type="LIB_mil_circle";
+			colorName="ColorGUER";
+			id=2414;
+		};
+		class Item17
+		{
+			dataType="Marker";
+			position[]={8572.8018,70.220512,15345.898};
+			name="marker_39";
+			text="Outpost";
+			type="LIB_mil_circle";
+			colorName="ColorGUER";
+			id=2423;
+		};
+		class Item18
+		{
+			dataType="Marker";
+			position[]={3041.9214,53.531101,8885.2383};
+			name="marker_44";
+			text="Outpost";
+			type="LIB_mil_circle";
+			colorName="ColorGUER";
+			id=2424;
+			atlOffset=-15.251095;
 		};
 	};
 };
