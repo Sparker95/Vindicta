@@ -212,7 +212,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		// Source object where build resources will be deleted from, player or vehicle he's looking at
 		pr _hBuildResSrc = if (_playerBuildRes >= _buildResCost) then {player} else {_cursorObject};
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
-		pr _args = [clientOwner, getPosWorld player, _locType, _locName, _hBuildResSrc];
+		pr _args = [clientOwner, getPosWorld player, _locType, _locName, _hBuildResSrc, _buildResCost];
 		CALLM2(_AI, "postMethodAsync", "clientCreateLocation", _args);
 
 		CALLM1(_dialogObj, "setHintText", "Creating new location ...");
