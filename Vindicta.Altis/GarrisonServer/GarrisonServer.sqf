@@ -201,22 +201,25 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		gMessageLoopMain
 	} ENDMETHOD;
 
-	// Player's requests
+	/*
+		Method: buildFromGarrison
 
-	// This runs in the thread
+		Called from client BuildUI.
+
+		Description: Builds an object from the garrison. This runs in the thread.
+
+	*/
 	METHOD("buildFromGarrison") {
 		OOP_INFO_1("BUILD FROM GARRISON: %1", _this);
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"),
-				P_STRING("_catCfgClassNameStr"), P_STRING("_objCfgClassNameStr"),
-				P_POSITION("_pos"), P_POSITION("_dir"), P_BOOL("_checkGarrisonBuildRes")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_STRING("_catCfgClassNameStr"), 
+				P_STRING("_objCfgClassNameStr"), P_POSITION("_vecDir"), P_POSITION("_pos"), P_BOOL("_checkGarrisonBuildRes")];
 		
 		// Sanity checks
 		if (_catCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Category config class name is empty. _this: %1", _this); };
-		if (_objCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Object class name is empty. _this: %1", _this);};
-
+		if (_objCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Object class name is empty. _this: %1", _this); };
 		// Bail if the garrison isn't registered any more
 		if (!(_gar in T_GETV("objects"))) exitWith {
-			"We can't build here any more" remoteExecCall ["systemChat", _clientOwner];
+			"We can't build here any more." remoteExecCall ["systemChat", _clientOwner];
 		};
 
 		pr _buildRes = CALLM1(_gar, "getBuildResources", true); // Force update
@@ -227,7 +230,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		if (_className == "") exitWith { // Bail if data is incorrect
 			OOP_ERROR_1("BuildFromGarrison: class name is empty. _this: %1", _this);
 		};
-		pr _cost = getNumber (_objClass >> "buildResource");
+		pr _cost = getNumber (_objClass >> "buildResource");		
 		pr _catID = getNumber (_objClass >> "templateCatID");
 		pr _subcatID = getNumber (_objClass >> "templateSubcatID");
 		pr _isRadio = [false, true] select (getNumber (_objClass >> "isRadio"));
@@ -244,15 +247,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Create a unit or just a plain object
 		pr _hO = createVehicle [_className, _pos, [], 0, "CAN_COLLIDE"];
-		pr _surfaceVectorUp = surfaceNormal _pos;
+		_hO setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
 
-		// Remove exec it so that it updates instantly on all computers
-		//[_hO, _pos] remoteExec ["setPos"];
-		//[_hO, _dir] remoteExec ["setDir"];
-		//[_hO, _surfaceVectorUp] remoteExec ["setVectorUp"];
-		
-		_hO setPos _pos;
-		_hO setVectorDirAndUp [_dir, _surfaceVectorUp];
+		pr _groundPos = [_pos select 0, _pos select 1, 0];
+		pr _surfaceVectorUp = surfaceNormal _groundPos;
+		_hO setVectorDirAndUp [_vecDir, _surfaceVectorUp];
 
 		if (_catID != -1) then {
 			pr _args = [[], _catID, _subcatID, -1, "", _hO];
@@ -291,6 +290,77 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _text = format ["Object %1 was build successfully!", _objName];
 		_text remoteExecCall ["systemChat", _clientOwner];
 	} ENDMETHOD;
+
+	/*
+		Method: moveObjectFromGarrison
+
+		Called from client BuildUI.
+
+		Description: Moves an object from the garrison, recreates it if it's a static object. 
+		First deletes the old object then uses createVehicle to create an identical copy at the new position.
+		Should only do so on static objects, not arsenals or other PhysX objects.
+		
+		Reason: 
+		https://community.bistudio.com/wiki/setPos
+		> "This command has local effect, but some simulation types do synchronise their changes over the network whilst others do not. 
+		> The only known object types that currently, don't synchronise their positions over the net, are statics (simulation = "house")"
+
+	*/
+	METHOD("moveObjectFromGarrison") {
+		OOP_INFO_1("moveObjectFromGarrison: %1", _this);
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_OBJECT("_object"), P_POSITION("_vecDir"), P_POSITION("_pos")];
+
+		// Sanity checks
+		if (isNull _object) exitWith { OOP_ERROR_0("moveObjectFromGarrison: Object to be moved is objNull!"); };
+
+		pr _groundPos = [_pos select 0, _pos select 1, 0];
+		pr _surfaceVectorUp = surfaceNormal _groundPos;
+
+		// check if it's an arsenal box 
+		pr _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_object]);
+		pr _isLimitedArsenal = CALLM0(_unit, "limitedArsenalEnabled");
+		if (isNil "_isLimitedArsenal") then { _isLimitedArsenal = false; };
+
+		// if it's an arsenal only move it
+		if (_isLimitedArsenal) exitWith {
+			OOP_INFO_0("moveObjectFromGarrison: Moving an arsenal object.");
+
+			_adjustPos = [_pos select 0, _pos select 1, 100]; // TODO: do this in BuildUI
+			_object setVehiclePosition [_adjustPos, [], 0, "CAN_COLLIDE"];
+			_object setVectorDirAndUp [_vecDir, _surfaceVectorUp];	
+			_object hideObjectGlobal false;
+		};
+
+		OOP_INFO_1("moveObjectFromGarrison: Deleting and recreating object: %1", _object);
+
+		pr _classNameNewObj = (typeOf _object); // save it for later
+
+		// delete old object at previous position
+		deleteVehicle _object;
+
+		// create the new object at new position selected by player
+		pr _newObj = createVehicle [_classNameNewObj, _pos, [], 0, "CAN_COLLIDE"];
+		_newObj setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
+		_newObj setVectorDirAndUp [_vecDir, _surfaceVectorUp];
+
+		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
+
+		// Add the built object to the location
+		pr _loc = CALLM0(_gar, "getLocation");
+		if (!IS_NULL_OBJECT(_loc)) then {
+			// Add this object to location, if it's not a Unit object but a basic object
+			CALLM1(_loc, "addObject", _newObj);
+
+			// Player might have added an object which affects location's player respawn capabilities,
+			// so we must update it
+			pr _gmdata = CALLM0(_loc, "getGameModeData");
+			if (!IS_NULL_OBJECT(_gmdata)) then {
+				CALLM0(_gmdata, "updatePlayerRespawn");
+			};
+		};
+
+	} ENDMETHOD;
+
 
 	// Recruits a unit at this location from one of nearby cities
 	METHOD("recruitUnitAtLocation") {
