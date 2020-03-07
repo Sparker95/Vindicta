@@ -247,7 +247,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Create a unit or just a plain object
 		pr _hO = createVehicle [_className, _pos, [], 0, "CAN_COLLIDE"];
-		_hO setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
+		//_hO setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
 
 		pr _groundPos = [_pos select 0, _pos select 1, 0];
 		pr _surfaceVectorUp = surfaceNormal _groundPos;
@@ -316,6 +316,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _groundPos = [_pos select 0, _pos select 1, 0];
 		pr _surfaceVectorUp = surfaceNormal _groundPos;
 
+		// TODO add category template ID check. Right now it's only arsenal though
 		// check if it's an arsenal box 
 		pr _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_object]);
 		pr _isLimitedArsenal = CALLM0(_unit, "limitedArsenalEnabled");
@@ -325,8 +326,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		if (_isLimitedArsenal) exitWith {
 			OOP_INFO_0("moveObjectFromGarrison: Moving an arsenal object.");
 
-			_adjustPos = [_pos select 0, _pos select 1, 100]; // TODO: do this in BuildUI
-			_object setVehiclePosition [_adjustPos, [], 0, "CAN_COLLIDE"];
+			// drop arsenal from some height, safeguard against ground collision that destroys it
+			pr _adjustedPos = [_pos select 0, _pos select 1, ((_pos select 2) + 0.3)];
+			_object setPos _adjustedPos;
 			_object setVectorDirAndUp [_vecDir, _surfaceVectorUp];	
 			_object hideObjectGlobal false;
 		};
@@ -340,7 +342,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// create the new object at new position selected by player
 		pr _newObj = createVehicle [_classNameNewObj, _pos, [], 0, "CAN_COLLIDE"];
-		_newObj setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
+		//_newObj setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
 		_newObj setVectorDirAndUp [_vecDir, _surfaceVectorUp];
 
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
