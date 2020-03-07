@@ -599,6 +599,22 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _cityPos = CALLM0(_city, "getPos");
 		private _cityRadius = (300 max GETV(_city, "boundingRadius")) min 700;
 		private _cityCivCap = CALLM0(_city, "getCapacityCiv");
+		private _oldState = _state;
+
+		// If the location is spawned and there are twice as many friendly as enemy units then it is liberated, otherwise it is suppressed
+		private _friendlyCount = 0;
+		{ _friendlyCount = _friendlyCount + CALLM0(_x, "countConsciousInfantryUnits") } forEach CALLM1(_city, "getGarrisonsRecursive", FRIENDLY_SIDE);
+
+		private _enemyCount = 0;
+		{ _enemyCount = _enemyCount + CALLM0(_x, "countConsciousInfantryUnits") } forEach CALLM1(_city, "getGarrisonsRecursive", ENEMY_SIDE);
+
+		if(_friendlyCount > 0 && _friendlyCount >= _enemyCount * 2) then { 
+			_state = CITY_STATE_LIBERATED;
+		} else {
+			if(_state == CITY_STATE_LIBERATED && _enemyCount > 4) then {
+				_state = CITY_STATE_SUPPRESSED;
+			};
+		};
 
 		// If City is stable or agitated then instability is a factor
 		if(_state in [CITY_STATE_STABLE, CITY_STATE_AGITATED]) then {
@@ -619,18 +635,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {
-			// If the location is spawned and there are twice as many friendly as enemy units then it is liberated, otherwise it is suppressed
-			if(CALLM(_city, "isSpawned", [])) then {
-				private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {(_x distance _cityPos) < _cityRadius * 1.5});
-				private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {(_x distance _cityPos) < _cityRadius * 1.5});
-				_state = if(_friendlyCount >= _enemyCount * 2) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
-			} else {
-				// If there is an enemy garrison occupying the city then it is suppressed
-				_state = if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) == 0) then { CITY_STATE_LIBERATED } else { CITY_STATE_SUPPRESSED };
-			};
-			
 			// Instability is only 0 or 1 for liberated/suppressed cities
-			_instability = if(_state == CITY_STATE_LIBERATED) then { 1 } else { 0 };
+			_instability = if(_state in [CITY_STATE_LIBERATED, CITY_STATE_IN_REVOLT]) then { 1 } else { 0 };
 
 			// Make sure amount of activity is appropriate for a city that is liberated
 			if(_state == CITY_STATE_LIBERATED) then {
@@ -647,6 +653,15 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		T_SETV_PUBLIC("instability", _instability);
 		T_SETV_PUBLIC("state", _state);
+
+		// Send player notifications for changes
+		if(_oldState != _state) then {
+			// Notify players of what happened
+			// private _stateDesc = gCityStateData#_state#0;
+			private _stateMsg = CALLM0(_city, "getDisplayName");
+			private _args = ["LOCATION STATE CHANGED", _stateMsg, ""];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_ALL, NO_JIP);
+		};
 
 		// Add passive recruits
 		private _ratePerHour = T_CALLM1("getRecruitmentRate", _city);
