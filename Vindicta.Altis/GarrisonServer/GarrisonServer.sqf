@@ -308,7 +308,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	*/
 	METHOD("moveObjectFromGarrison") {
 		OOP_INFO_1("moveObjectFromGarrison: %1", _this);
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_OBJECT("_object"), P_POSITION("_vecDir"), P_POSITION("_pos")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar"), P_OBJECT("_object"), P_POSITION("_vecDir"), P_POSITION("_pos")];
 
 		// Sanity checks
 		if (isNull _object) exitWith { OOP_ERROR_0("moveObjectFromGarrison: Object to be moved is objNull!"); };

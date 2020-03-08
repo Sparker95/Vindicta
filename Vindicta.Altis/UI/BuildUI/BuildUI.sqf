@@ -1176,7 +1176,7 @@ CLASS("BuildUI", "")
 				deleteVehicle _object;
 			} else {	
 				// We are moving an existing object
-				pr _args = [clientOwner, _gar, _object, _vecDir, _currPos];
+				pr _args = [_gar, _object, _vecDir, _currPos];
 
 				// Send the request to server
 				CALLM2(gGarrisonServer, "postMethodAsync", "moveObjectFromGarrison", _args);
