@@ -1283,7 +1283,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 
 		// Remove all weapons
-		removeAllWeapons this;
+		removeAllWeapons _hO;
 
 		// Remove all items from vest
 		pr _vest = vest _hO;
