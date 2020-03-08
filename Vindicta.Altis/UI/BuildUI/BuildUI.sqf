@@ -500,7 +500,7 @@ CLASS("BuildUI", "")
 								
 								if (cursorobject == _objectToDelete) then {
 									systemChat format["Object %1 was demolished.", (typeof(_objectToDelete))];
-									deleteVehicle _objectToDelete;
+									REMOTE_EXEC_CALL_STATIC_METHOD("MessageLoopMainManager", "KillUnit", [_objectToDelete], ON_SERVER, NO_JIP);
 								};
 							},
 							[], {}];

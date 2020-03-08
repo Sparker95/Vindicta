@@ -7,7 +7,7 @@
 #ifndef RELEASE_BUILD
 //#define __SMALL_MAP
 #endif
-
+FIX_LINE_NUMBERS()
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
 
@@ -64,6 +64,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Faster spawning when we are testing
 		T_SETV("spawningInterval", 120);
 		#endif
+		FIX_LINE_NUMBERS()
 		T_SETV("lastSpawn", TIME_NOW);
 
 		T_SETV("messageLoopMain", NULL_OBJECT);
@@ -162,6 +163,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_CALLM("initMissionEventHandlers", []);
 			T_CALLM("startCommanders", []);
 			#endif
+			FIX_LINE_NUMBERS()
 			T_CALLM("populateLocations", []);
 
 			T_CALLM("initServerOnly", []);
@@ -297,6 +299,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					};
 				};
 			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
+
+			CALLM0(_loc, "initBuildProgress");
 		} forEach GET_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
 
@@ -392,7 +396,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Start a periodic check which will restart message loops if needed
 		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
 #endif
-
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	METHOD("_checkMessageLoops") {
@@ -438,6 +442,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
 			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
 #endif
+FIX_LINE_NUMBERS()
 		} else {
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
@@ -446,6 +451,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Send msg to game manager to perform emergency saving
 			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
 #endif
+FIX_LINE_NUMBERS()
 		};
 	} ENDMETHOD;
 
@@ -460,7 +466,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		_text = _text + ". Restart the mission after saving is over, send the .RPT to devs";
 
 		// Broadcast notification
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], 0, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], ON_CLIENTS, NO_JIP);
 
 		// Broadcast it to system chat too
 		["CRITICAL MISSION ERROR:"] remoteExec ["systemChat"];
@@ -472,7 +478,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Do it once in a while
 		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
 #endif
-
+FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	METHOD("_initMissionEventHandlers") {
@@ -503,6 +509,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			false;
 		}];
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
@@ -543,6 +550,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("postInitAll") {
@@ -781,12 +789,35 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive _co}															// Object must be alive
 		};
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Add unit to group"], // title // pic: arrow pointing down
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_singleplayer_ca.paa' />  %1", "Take unit"], // title // pic: arrow pointing down and single man
 						{
 							isNil {
 								private _co = [7] call pr0_fnc_coneTarget;
 								if(!isNull _co) then {
 									private _args = [player, [_co]];
+									// Steal the unit to players group
+									REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "addUnitsToPlayerGroup", _args, ON_SERVER, NO_JIP);
+								};
+							}
+						},
+						0, // Arguments
+						0.1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_groupUnitCond", //condition
+						5, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		// Action to add units group to player group
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_multiplayer_ca.paa' />  %1", "Take group"], // title // pic: arrow pointing down and three men
+						{
+							isNil {
+								private _co = [7] call pr0_fnc_coneTarget;
+								if(!isNull _co) then {
+									private _args = [player, units group _co];
 									// Steal the unit to players group
 									REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "addUnitsToPlayerGroup", _args, ON_SERVER, NO_JIP);
 								};
@@ -1100,6 +1131,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_locSectorPos params ["_posX", "_posY"];
 			if (_posX > 20000 && _posY > 16000) then {
 			#endif
+			FIX_LINE_NUMBERS()
 
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
@@ -1211,6 +1243,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#ifdef __SMALL_MAP
 			};
 			#endif
+			FIX_LINE_NUMBERS()
 		} forEach (entities "Vindicta_LocationSector");
 
 		// Process locations for roadblocks
@@ -1272,6 +1305,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_mrk setMarkerAlpha 1;
 			_mrk setMarkerText "<Future roadblock>";
 			#endif;
+			FIX_LINE_NUMBERS()
 		} forEach _roadblockPositionsFinal;
 
 	} ENDMETHOD;
@@ -1342,7 +1376,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			while {_i < _cCargoBoxes} do {
 				private _subcatid = selectRandom [T_CARGO_box_small, T_CARGO_box_medium];
 				private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG _subcatid ARG -1 ARG ""]);
-				CALLM1(_newUnit, "setBuildResources", 160);
+				CALLM1(_newUnit, "setBuildResources", 50);
 				//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
 				if (CALL_METHOD(_newUnit, "isValid", [])) then {
 					if(canSuspend) then {
@@ -1458,6 +1492,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_i = _i + 1;
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Unarmed MRAPs
 		_i = 0;
@@ -1478,6 +1513,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_i = _i + 1;
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// APCs, IFVs, tanks, MRAPs
 		#ifdef ADD_ARMOR
@@ -1494,6 +1530,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		} forEach _vehGroupSpec;
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Static weapons
 		if (_cHMGGMG > 0) then {
@@ -1519,7 +1556,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		_i = 0;
 		while {_cCargoBoxes > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
-			CALLM1(_newUnit, "setBuildResources", 300);
+			CALLM1(_newUnit, "setBuildResources", 80);
 			//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				if(canSuspend) then {
@@ -1579,6 +1616,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// Returns the side of player faction
@@ -1958,9 +1996,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Group message loop manager
 		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
-		// Special garrisons
-		T_CALLM1("_loadSpecialGarrisons", _storage);
-
 		// Load locations
 		{
 			CRITICAL_SECTION {
@@ -1969,6 +2004,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM1(_storage, "load", _loc);
 			};
 		} forEach T_GETV("locations");
+
+		// Special garrisons
+		T_CALLM1("_loadSpecialGarrisons", _storage);
 
 		// Load commanders
 		{

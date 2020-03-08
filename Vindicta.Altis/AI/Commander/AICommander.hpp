@@ -97,9 +97,6 @@
 #define SPLIT_VALIDATE_CREW				13
 #define SPLIT_VALIDATE_CREW_EXT			14
 
-#ifndef RELEASE_BUILD
-#define DEBUG_CMDRAI
-#endif
 #ifdef _SQF_VM
 #undef DEBUG_CMDRAI
 #endif
@@ -119,11 +116,11 @@
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.
 // See Templates\initEfficiency.sqf to understand what these mean:
 //									 0  1  2  3  4  5  6  7  8  9  10 11 12 13
-#define EFF_MIN_EFF					[6, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 0, 6]
-#define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 12,0, 0, 0, 12]
+#define EFF_MIN_EFF					[6, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-#define EFF_FOOT_PATROL_EFF			[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_MOUNTED_PATROL_EFF		[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_FOOT_PATROL_EFF			[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_MOUNTED_PATROL_EFF		[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 // Frequency of reinforcements, etc
 
@@ -133,6 +130,7 @@
 // Max amount of simultaneous actions
 #define CMDR_MAX_TAKE_OUTPOST_ACTIONS 3
 #define CMDR_MAX_REINFORCE_ACTIONS 3
+#define CMDR_MAX_SUPPLY_ACTIONS 3
 #define CMDR_MAX_OFFICER_ASSIGNMENT_ACTIONS 3
 //#define CMDR_MAX_ATTACK_ACTIONS 100 QRFs are unlimited
 #define CMDR_MAX_PATROL_ACTIONS 6

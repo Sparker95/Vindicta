@@ -31,6 +31,7 @@ jobs:
     - name: Validate SQF with SQF-VM
       run: |
         cd Vindicta.Altis
+        New-Item .\config\user_local_config.hpp -ItemType File
         ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
 
   build:

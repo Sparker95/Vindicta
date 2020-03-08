@@ -34,11 +34,11 @@ CLASS("ActionStateTransition", "Storable")
 
 	// If more than one Action Transition is available then 
 	// priority is used to decide which one to perform.
-	VARIABLE("priority");
+	VARIABLE_ATTR("priority", [ATTR_SAVE]);
 	// State(s) this transition is valid from
-	VARIABLE("fromStates");
+	VARIABLE_ATTR("fromStates", [ATTR_SAVE]);
 	// CmdrAction to which this AST belongs
-	VARIABLE("action");
+	VARIABLE_ATTR("action", [ATTR_SAVE]);
 
 	/*
 	Method: new
@@ -197,19 +197,19 @@ CLASS("ActionStateTransition", "Storable")
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 	} ENDMETHOD;
 
-	// - - - - - STORAGE - - - - - -
+	// // - - - - - STORAGE - - - - - -
 
-	// Save all varaibles
-	/* override */ METHOD("serializeForStorage") {
-		params [P_THISOBJECT];
-		SERIALIZE_ALL(_thisObject);
+	// SAVEBREAK >>>
+	// We don't need this after next save break at all
+	/* virtual */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
+		if(_version >= 15) then {
+			DESERIALIZE_SAVE_VER(_thisObject, _serial, _version)
+		} else {
+			DESERIALIZE_ALL(_thisObject, _serial)
+		}
 	} ENDMETHOD;
-
-	/* override */ METHOD("deserializeFromStorage") {
-		params [P_THISOBJECT, P_ARRAY("_serial")];
-		DESERIALIZE_ALL(_thisObject, _serial);
-		true
-	} ENDMETHOD;
+	// <<< SAVEBREAK
 
 ENDCLASS;
 

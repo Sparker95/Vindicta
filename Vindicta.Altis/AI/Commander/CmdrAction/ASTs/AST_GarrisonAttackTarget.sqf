@@ -7,18 +7,18 @@ Order a garrison to attack a target.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
-	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("garrDeadState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("timeOutState", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("garrDeadState", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("timeOutState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Inputs
-	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("moveRadiusVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("moveRadiusVar", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// If garrison is set to clear area
-	VARIABLE_ATTR("startDate", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("clearing", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("startDate", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("clearing", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/*
 	Method: new

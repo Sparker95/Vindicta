@@ -25,6 +25,8 @@ Author: Sparker 28.07.2018
 #define UPDATE_DEBUG_MARKER
 #endif
 
+FIX_LINE_NUMBERS()
+
 #define pr private
 
 CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
@@ -239,6 +241,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		#else
 		private _no = [];
 		#endif
+		FIX_LINE_NUMBERS()
 
 		private _object = objNull;
 		private _type = "";
@@ -396,74 +399,138 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		private _objects = T_GETV("objects");
 		private _buildables = [];
+		private _sortableArray = [];
 #ifndef _SQF_VM
+		private _nearbyObjects = [];
 		{
-			_object = _x;
+			_nearbyObjects pushBackUnique _x;
+		} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
+
+		{
+			private _object = _x;
 			private _objectName = str _object;
 			private _modelName = _objectName select [(_objectName find ": ") + 2];
 			if(!(_object in _objects) && {T_CALLM1("isInBorder", _object)} && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
 			{
-				_buildables pushBackUnique _object;
+				private _pos = getPosATL _object;
+				private _zPos = 0 max _pos#2;
+				// Alias height at 1/3 m
+				_zPos = (floor (_zPos * 3)) / 3;
+				// Volume is our second critera, we build smaller things first
+				(boundingBox _object) params ["_bbMin", "_bbMax"];
+				private _vol = (_bbMax#0 - _bbMin#0) * (_bbMax#1 - _bbMin#1) * (_bbMax#2 - _bbMin#2);
+				// Make a definitive sorting hash so we don't get non unstable sorting behavior
+				private _posHash = (_pos#0 mod 5 + _pos#1 mod 5);
+				// Sort key + index (we need to do this as we can't sort an array with actual objects in it)
+				_sortableArray pushBack [_zPos, _vol, _posHash, _modelName, count _buildables];
+				// Object
+				_buildables pushBack _object;
 			};
-		} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
-		// Randomize
-		_buildables = _buildables call BIS_fnc_arrayShuffle;
+		} foreach _nearbyObjects;
 #endif
-		// Sort objects by height above ground (to nearest 20cm) so we can build from the bottom up
-		private _objectHeights = _buildables apply { 
-			private _zHeight = 0 max (getPosATL _x)#2;
-			// alias height at 1/3 m
-			[(floor (_zHeight * 3)) / 3, _x]
-		};
-		_objectHeights sort ASCENDING;
-		private _sortedObjects = _objectHeights apply { _x#1 };
-		T_SETV("buildableObjects", _sortedObjects);
+		FIX_LINE_NUMBERS();
 
-		OOP_INFO_2("Buildables for %1: %2", T_GETV("name"), _sortedObjects);
+		// Sort objects by height above ground (to nearest 20cm) so we can build from the bottom up
+		_sortableArray sort ASCENDING;
+		private _sortedBuildables = _sortableArray apply { _buildables#(_x#4) };
+		T_SETV("buildableObjects", _sortedBuildables);
+
+		OOP_INFO_2("Buildables for %1: %2", T_GETV("name"), _sortedBuildables);
+	} ENDMETHOD;
+
+	METHOD("isEnemy") {
+		params [P_THISOBJECT];
+		private _enemySide = CALLM0(gGameMode, "getEnemySide");
+		(count T_CALLM1("getGarrisons", _enemySide)) > 0
+	} ENDMETHOD;
+	
+	METHOD("isPlayer") {
+		params [P_THISOBJECT];
+		private _playerSide = CALLM0(gGameMode, "getPlayerSide");
+		(count T_CALLM1("getGarrisons", _playerSide)) > 0
+	} ENDMETHOD;
+
+	// https://www.desmos.com/calculator/2drp0pktyo
+	#define OFFICER_RATE(officers) (1 + log (2 * (officers) + 1))
+	// https://www.desmos.com/calculator/2drp0pktyo
+	// 0 men = inf hrs, 10 men = 18 hrs, 20 = 12 hrs, 100 = 7 hrs
+	#define BUILD_TIME(men) (5 + 1 / log ((1 + (men)) / 50 + 1))
+	#define BUILD_RATE(men, hours) ((hours) / BUILD_TIME(men))
+
+	#define ALIASED_VALUE(value, aliasing) (floor ((value) / (aliasing)))
+
+	// Initialize build progress from garrisons that are present, call on campaign creation
+	METHOD("initBuildProgress") {
+		params [P_THISOBJECT];
+		if !(T_GETV("type") in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) exitWith {};
+		if(T_CALLM0("isEnemy")) then {
+			#ifdef DEBUG_BUILDING
+			// Start from 0 when testing.
+			private _buildProgress = 0;
+			#else
+			private _scale = switch(T_GETV("type")) do {
+				case LOCATION_TYPE_AIRPORT: { 0.5 };
+				case LOCATION_TYPE_BASE:	{ 0.25 };
+				case LOCATION_TYPE_OUTPOST: { 0.125 };
+			};
+			private _buildProgress = 0 max (_scale * random[0.5, 1, 1.5]) min 1;
+			#endif
+			T_SETV_PUBLIC("buildProgress", _buildProgress);
+		} else {
+			T_SETV_PUBLIC("buildProgress", 0);
+		};
 		T_CALLM0("updateBuildProgress");
 	} ENDMETHOD;
 
 	// Build all buildables in the location
 	METHOD("updateBuildProgress") {
-		params [P_THISOBJECT];
-
+		params [P_THISOBJECT, P_NUMBER("_dt")];
 		if !(T_GETV("type") in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) exitWith {};
 
 		private _buildables = T_GETV("buildableObjects");
 		private _buildProgress = T_GETV("buildProgress");
 
-		// https://www.desmos.com/calculator/2drp0pktyo
-		#define OFFICER_RATE(officers) (1 + log (2 * officers + 1))
+		if(_dt > 0) then {
+			if(T_CALLM0("isEnemy")) then {
+				private _enemySide = CALLM0(gGameMode, "getEnemySide");
+				// Determine if enemy is building this location
+				private _enemyUnits = 0;
+				{
+					_enemyUnits = _enemyUnits + CALLM0(_x, "countInfantryUnits") * OFFICER_RATE(CALLM0(_x, "countOfficers"));
+				} forEach T_CALLM1("getGarrisons", _enemySide);
+				_buildProgress = 0 max (_buildProgress + BUILD_RATE(_enemyUnits, _dt / 3600)) min 1;
+			} else {
+				private _playerSide = CALLM0(gGameMode, "getPlayerSide");
+				private _oldBuildProgress = T_GETV("buildProgress");
+				private _friendlyUnits = 0;
+				{
+					_friendlyUnits = _friendlyUnits + CALLM0(_x, "countInfantryUnits");
+				} forEach T_CALLM1("getGarrisons", _playerSide);
 
-		// Determine if enemy is building this location
-		private _enemyUnits = 0;
-		{
-			_enemyUnits = _enemyUnits + CALLM0(_x, "countInfantryUnits") * OFFICER_RATE(CALLM0(_x, "countOfficers"));
-		} forEach T_CALLM1("getGarrisons", independent);
+				// 20 friendly units garrisoned will stop decay
+				_buildProgress = 0 max (_buildProgress - BUILD_RATE(0 max (20 - _friendlyUnits), _dt / 3600)) min 1;
 
-		// https://www.desmos.com/calculator/2drp0pktyo
-		// 0 men = inf hrs, 10 men = 18 hrs, 20 = 12 hrs, 100 = 7 hrs
-		#define BUILD_TIME(men) (5 + 1 / log (men / 50 + 1))
-		#define BUILD_RATE(men, hours) (hours / BUILD_TIME(men))
+				if(T_CALLM0("isPlayer")) then {
+					// If progress has degraded by a 5% chunk
+					if(ALIASED_VALUE(_oldBuildProgress * 100, 5) < ALIASED_VALUE(_buildProgress * 100, 5)) then {
+						// Notify players of what happened
+						private _args = ["LOCATION DETERIORATED", format["Some buildings at %1 have been removed", T_GETV("name")], "Garrison fighters to maintain locations"];
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
+					};
+				};
+			};
 
-		if(_enemyUnits == 0) then {
-			private _friendlyUnits = 0;
-			{
-				_friendlyUnits = _friendlyUnits + CALLM0(_x, "countInfantryUnits");
-			} forEach T_CALLM1("getGarrisons", west);
-			// 20 friendly units garrisoned will stop decay
-			_buildProgress = 0 max (_buildProgress - BUILD_RATE(0 max (20 - _friendlyUnits), 0.25)) min 1;
-		} else {
-			_buildProgress = 0 max (_buildProgress + BUILD_RATE(_enemyUnits, 0.25)) min 1;
+			OOP_INFO_3("UpdateBuildProgress: %1 %2 %3", T_GETV("name"), _buildProgress, _buildables);
+			T_SETV_PUBLIC("buildProgress", _buildProgress);
 		};
 
-		OOP_INFO_3("UpdateBuildProgress: %1 %2 %3", T_GETV("name"), _buildProgress, _buildables);
+		private _pos = T_GETV("pos");
 
-		T_SETV_PUBLIC("buildProgress", _buildProgress);
-
-		// Only update the actual building of no garrisons are spawned here
-		if(count _buildables > 0 && {(T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND}) then {
-			OOP_INFO_2("UpdateBuildProgress: updaing buildable states %1 %2", T_GETV("name"), _buildables);
+		// Only update the actual building if no garrisons are spawned here, and no players nearby
+		if(count _buildables > 0 
+			&& {(T_CALLM0("getGarrisons") findIf {CALLM0(_x, "isSpawned")}) == NOT_FOUND}
+			&& {(allPlayers findIf {getPos _x distance _pos < 1000}) == NOT_FOUND}) then {
+			OOP_INFO_2("UpdateBuildProgress: updating buildable states %1 %2", T_GETV("name"), _buildables);
 			{	
 				private _hideObj = ((_forEachIndex + 1) / count _buildables) > _buildProgress;
 				if((isObjectHidden _x) isEqualTo (!_hideObj)) then
@@ -516,6 +583,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	} ENDMETHOD;
 	#endif
+	FIX_LINE_NUMBERS()
 	
 	// |                            D E L E T E                             |
 	/*
@@ -540,6 +608,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		deleteMarker _thisObject;
 		deleteMarker _thisObject + "_label";
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 
@@ -1425,9 +1494,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// Private, thread-unsafe
 	STATIC_METHOD("_processLocationsNearPos") {
 		params [P_THISCLASS, P_POSITION("_pos")];
-		pr _locs = CALLSM2("Location", "nearLocations", _pos, 1500) select { // todo arbitrary number for now
-			(GETV(_x, "type") in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK])
-		};
+		pr _locs = CALLSM2("Location", "nearLocations", _pos, 2000);
+		//  select { // todo arbitrary number for now
+		// 	(GETV(_x, "type") in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK])
+		// };
 
 		{
 			CALLM0(_x, "process");
@@ -1579,7 +1649,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Convert our objects to an array
-		pr _savedObjects = ( T_GETV("objects") + T_GETV("buildingsOpen") ) apply {
+		pr _savedObjects = (T_GETV("objects") + T_GETV("buildingsOpen")) apply {
 			private _obj = _x;
 			private _tags = SAVED_OBJECT_TAGS apply { [_x, _obj getVariable [_x, nil]] } select { !isNil { _x#1 } };
 			[
@@ -1649,29 +1719,30 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
+		// Find existing objects before we place constructed ones
+		T_CALLM0("findAllObjects");
+
 		// Rebuild the objects which have been constructed here
 		{ // forEach T_GETV("savedObjects");
 			_x params ["_type", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
 			// Check if there is such an object here already
 			pr _objs = nearestObjects [_posWorld, [_type], 0.01, true];
-			pr _hO = objNull;
-			if (count _objs == 0) then {
-				_hO = _type createVehicle [0, 0, 0];
+			pr _hO = if (count _objs == 0) then {
+				pr _hO = _type createVehicle [0, 0, 0];
 				_hO setPosWorld _posWorld;
 				_hO setVectorDirAndUp [_vDir, _vUp];
 				_hO enableDynamicSimulation true;
+				_hO
 			} else {
-				_hO = _objs#0;
+				_objs#0
 			};
 			if(!isNil {_tags}) then {
 				{
-					_hO setVariable _x;
+					_hO setVariable (_x + [true]);
 				} forEach _tags;
 			};
 			T_CALLM1("addObject", _hO);
 		} forEach T_GETV("savedObjects");
-
-		T_CALLM0("findAllObjects");
 
 		T_SETV("savedObjects", []);
 
@@ -1712,7 +1783,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// T_CALLM0("findBuildables");
 
-		// Restore timer
+		// Restore timer -- don't panic: processing won't start until the processing threads are unlocked at the 
+		// very end of loading process.
 		T_CALLM0("initTimer");
 
 		true
@@ -1721,10 +1793,17 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	STATIC_METHOD("postLoad") {
 		params [P_THISCLASS];
 
-		// Refresh spawnability
 		{
-			CALLM0(_x, "updatePlayerRespawn");
-		} forEach (GETSV("Location", "all") apply { CALLM0(_x, "getGameModeData") } select { !IS_NULL_OBJECT(_x) });
+			private _loc = _x;
+			private _gmData = CALLM0(_x, "getGameModeData");
+			if(!IS_NULL_OBJECT(_gmData)) then {
+				// Refresh spawnability
+				CALLM0(_gmData, "updatePlayerRespawn");			
+			};
+			// Update build progress
+			CALLM0(_loc, "updateBuildProgress");
+		} forEach GETSV("Location", "all");
+		
 	} ENDMETHOD;
 	
 

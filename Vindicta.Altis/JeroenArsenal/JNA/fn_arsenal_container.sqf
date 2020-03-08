@@ -105,9 +105,9 @@ switch _mode do {
 		jnva_loadout = (_object_selected call jn_fnc_arsenal_cargoToArray);
 		jnva_loadout_mass = ["getMass"] call jn_fnc_arsenal_container;
 
-		if(_object_selected in allPlayers || isPlayer _object_selected) exitWith {
-			diag_log format["PLAYERINVBUG: CustomInit _this:%1, _object_selected:%2", _this, _object_selected];
-			private _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _object_selected];
+		if(_object_selected in allPlayers) exitWith {
+			[format["PLAYERINVBUG: CustomInit _this:%1, _object_selected:%2", _this, _object_selected]] remoteExecCall ["diag_log", 0, false];
+			private _msg = format["%1 just avoided the inventory clear bug (CustomInit), please send your .rpt to the developers so we can fix it!", name _object_selected];
 			[_msg] remoteExecCall ["hint", 0, false];
 		};
 

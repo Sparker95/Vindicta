@@ -149,8 +149,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 						T_PRVAR(gar);
 						pr _garPos = CALLM0(_gar, "getPos");
 						T_PRVAR(pos);
-						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos]+[_pos]+[_pos distance _garPos]);
-						// TODO: maybe we want to do something else here?
+						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos ARG _pos ARG _pos distance2D _garPos]);
+						// We assume failure is due to no road between the locations
+						// TODO: Return specific problem from VirtualRoute
 						_state = ACTION_STATE_COMPLETED;
 					};
 				};
@@ -209,7 +210,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					breakTo "s0";
 				};
 				
-				// Succede if all groups have completed the goal
+				// Succeed if all groups have completed the goal
 				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 					OOP_INFO_0("All groups have arrived");
 					

@@ -13,7 +13,7 @@ Parent: <TakeOrJoinCmdrAction>
 #define pr private
 
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
-	VARIABLE("tgtLocId");
+	VARIABLE_ATTR("tgtLocId", [ATTR_SAVE]);
 
 	/*
 	Constructor: new
@@ -32,11 +32,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION ARG _tgtLocId]);
-
-#ifdef DEBUG_CMDRAI
-		T_SETV("debugColor", "ColorBlue");
-		T_SETV("debugSymbol", "mil_flag")
-#endif
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("updateIntel") {
@@ -273,6 +268,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+REGISTER_DEBUG_MARKER_STYLE("TakeLocationCmdrAction", "ColorBlue", "mil_flag");
 
 #ifdef _SQF_VM
 

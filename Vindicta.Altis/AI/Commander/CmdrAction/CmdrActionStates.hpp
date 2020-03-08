@@ -73,6 +73,14 @@
 // When there are no more waypoints in a route
 #define CMDR_ACTION_STATE_FINISHED_WAYPOINTS				(CMDR_ACTION_STATE_CUSTOM+14)
 
+// Once a split garrison is prepared
+#define CMDR_ACTION_STATE_PREPARED							(CMDR_ACTION_STATE_CUSTOM+15)
+
+// Just before a garrison will merge with a target
+#define CMDR_ACTION_STATE_PREMERGE							(CMDR_ACTION_STATE_CUSTOM+16)
+// When a garrison should merge with the target
+#define CMDR_ACTION_STATE_MERGE								(CMDR_ACTION_STATE_CUSTOM+17)
+
 // ActionStateTransition priority values. Potential ASTs are sorted by the priority levels in 
 // ascending order and the first valid one is used. You can use any value for priority
 // these just define some reasonable defaults.
@@ -122,3 +130,10 @@
 #define TARGET_TYPE_CLUSTER  3
 #define NULL_TARGET []
 #define IS_NULL_TARGET(target) (target isEqualTo [])
+
+// Supply types for SupplyCmdrAction
+#define ACTION_SUPPLY_TYPE_BUILDING 0
+#define ACTION_SUPPLY_TYPE_AMMO 1
+#define ACTION_SUPPLY_TYPE_EXPLOSIVES 2
+#define ACTION_SUPPLY_TYPE_MEDICAL 3
+#define ACTION_SUPPLY_TYPE_MISC 4

@@ -1355,6 +1355,11 @@ CLASS(CLASS_NAME, "")
 							case "reinforce garrison" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_REINFORCE")); };
 							case "patrol" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_PATROL")); };
 							case "assign new officer" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_OFFICER")); };
+							case "building supplies" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_BUILDING")); };
+							case "ammunition" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_AMMO")); };
+							case "explosives" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_EXPLOSIVES")); };
+							case "medical" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MEDICAL")); };
+							case "miscellaneous" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MISC")); };
 							default { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_DEFAULT")); };
 						};
 					};
@@ -2265,7 +2270,7 @@ CLASS(CLASS_NAME, "")
 
 			// Bail if game mode is not initialized
 			if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
-				T_CALLM1("respawnPanelSetText", "You can not respawn because game mode is not initialized yet.");
+				T_CALLM1("respawnPanelSetText", "You can not respawn because the game mode is not initialized yet.");
 				_ctrlButton ctrlEnable false;
 			};
 

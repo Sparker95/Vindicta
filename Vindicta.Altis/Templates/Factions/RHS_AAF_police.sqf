@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_AAF_police"];
-_array set [T_DESCRIPTION, "Custom Police units. Uses RHS and AAF2017 assets. This faction was built specifically for this mission."];
-_array set [T_DISPLAY_NAME, "RHS AAF Police (custom)"];
+_array set [T_DESCRIPTION, "Uses RHS and AAF2017 mods."];
+_array set [T_DISPLAY_NAME, "RHS AAF Police Custom"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [
 								"FGN_AAF_Troops",	// AAF 2017

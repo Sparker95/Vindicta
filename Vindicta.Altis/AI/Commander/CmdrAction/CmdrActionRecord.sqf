@@ -114,6 +114,13 @@ CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
 	} ENDMETHOD;
 ENDCLASS;
 
+// Done
+CLASS("SupplyCmdrActionRecord", "DirectedCmdrActionRecord")
+	STATIC_METHOD("getText") {
+		"SUPPLY"
+	} ENDMETHOD;
+ENDCLASS;
+
 /*
 // NYI
 CLASS("ReconCmdrActionRecord", "DirectedCmdrActionRecord")

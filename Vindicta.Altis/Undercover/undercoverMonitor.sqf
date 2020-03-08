@@ -66,6 +66,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("eventHandlers");												// Array with inventory EH IDs
 	VARIABLE("eventHandlersCBA");
 	VARIABLE("untieActionID");
+	VARIABLE("debugOverride"); 												// override make player captive for debug
 
 	// ------------ N E W ------------
 
@@ -105,6 +106,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("eventHandlers", []);
 		T_SETV("eventHandlersCBA", []);
 		T_SETV("untieActionID", -1);
+		T_SETV("debugOverride", false);
 
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
@@ -273,6 +275,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				//OOP_INFO_1("undercoverMonitor START state: %1", _state);
 
 				pr _unit = T_GETV("unit");
+				if (T_GETV("debugOverride")) exitWith { _unit setCaptive true; };
 
 				pr _suspicionArr = [[0, "default"]];			
 				pr _hintKeys = [];									// UI keys for displaying hints
@@ -292,9 +295,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				if !(isNull _nearestEnemy) then { 
 					_distance = (position _nearestEnemy) distance (position _unit); 
 
-					if (behaviour _nearestEnemy == "COMBAT" && _distance < 30) then {
-						CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.3);
-					};
+					// suspicion for being close to hostile enemy, behavior is too unpredictable
+					//if (behaviour _nearestEnemy == "COMBAT" && _distance < 30) then {
+					//	CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.3);
+					//};
 				};
 
 				// check if unit is in vehicle
@@ -320,6 +324,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							T_SETV("stateChanged", false);
 						}; // do once when state changed
 
+
 						if (!(currentWeapon _unit in g_UM_civWeapons) && currentWeapon _unit != "" && !(_bInVeh)) exitWith { 
 							_suspicionArr pushBack [1, "On foot & weapon"]; _hintKeys pushback HK_WEAPON; 
 						};
@@ -342,8 +347,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		if (_loc != "") then { 	
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
-                				_hintKeys pushback HK_ALLOWEDAREA;
-               					 OOP_INFO_0("In allowed area");
+                				//_hintKeys pushback HK_ALLOWEDAREA;
+               					OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1

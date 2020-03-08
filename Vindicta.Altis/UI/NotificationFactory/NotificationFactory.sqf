@@ -70,8 +70,30 @@ CLASS("NotificationFactory", "")
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 
-	// System notification
+	// Resource notification
 	STATIC_METHOD("createResourceNotification") {
+		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
+
+		private _sound = "defaultNotification";
+		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infoNews_ca.paa";
+		private _duration = 5;
+		private _args = [_picture, [_category, RESOURCE_COLORS], _text, _hint, _duration, _sound];
+		CALLSM("Notification", "createNotification", _args);
+	} ENDMETHOD;
+
+	// Player location notification
+	STATIC_METHOD("createLocationNotification") {
+		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
+
+		private _sound = "defaultNotification";
+		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infoNews_ca.paa";
+		private _duration = 5;
+		private _args = [_picture, [_category, RESOURCE_COLORS], _text, _hint, _duration, _sound];
+		CALLSM("Notification", "createNotification", _args);
+	} ENDMETHOD;
+
+	// Player garrison notification
+	STATIC_METHOD("createGarrisonNotification") {
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "defaultNotification";
