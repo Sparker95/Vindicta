@@ -85,6 +85,15 @@ location_b_capacity =
 		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
 		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
 		8
+	],
+	// WW2
+	[
+		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L"],
+		10
+	],
+	[
+		["Land_I44_Object_Tent_Us_Small"],
+		2
 	]
 ];
 
@@ -127,6 +136,15 @@ location_bp_cargo_medium =
 	[
 		["Land_PoliceStation_01_F"],
 		[[2.60131,61.8427,1.29491], [7.02257,323.042,0.777817], [4.66018,296.356,0.788269], [7.448,319.591,4.42163], [8.1648,252.885,4.26756]]
+	],
+	//WW2 Staszow
+	[
+		["Land_WW2_Admin"],
+		[[2.64597,143.778,0.32269], [3.85001,153.389,0.32269], [5.09535,16.3686,0.32269], [3.9212,24.0332,0.32269]]
+	],
+	[
+		["Land_WW2_Admin2"],
+		[[4.82119,44.2476,0.233089], [4.11613,54.6484,0.233089], [4.62721,-40.6715,0.233089], [5.48119,-33.2937,0.233089], [4.23542,-133.858,0.233089], [5.042,-142.623,0.233089], [4.92659,-226.911,0.233089], [4.27249,-237.533,0.233089]]
 	]
 ];
 
@@ -161,7 +179,12 @@ location_bt_police =
 
 	//Livonia
 	"Land_PoliceStation_01_F",
-	"Land_House_2B04_F"
+	"Land_House_2B04_F",
+
+	// WW2 Staszo
+	"Land_WW2_Admin",
+	"Land_WW2_Admin2"
+	
 ];
 
 location_decorations_police =
@@ -198,7 +221,17 @@ location_decorations_police =
 	[
 		["Land_u_House_Small_01_V1_F","Land_i_House_Small_01_V3_F","Land_i_House_Small_01_V1_F","Land_i_House_Small_01_V2_F"],
 		[[[-1.12695,-4.81641,1.56931],[[0.012478,0.999922,0],[0,0,1]]],[[1.53125,5.28711,1.06545],[[-0.01174,-0.999931,0],[0,0,1]]]]
+	],
+	//WW2 Staszow
+	[
+		["Land_WW2_Admin"],
+		[[[-3.85253,1.72632,1.65646],[[1,-4.37114e-008,0],[0,0,1]]]]	
+	],
+	[
+		["Land_WW2_Admin2"],
+		[[[2.28076,6.48145,1.68778],[[-8.74228e-008,-1,0],[0,0,1]]]]	
 	]
+
 ];
 
 // Buildings which add radio functionality to the location
@@ -209,7 +242,10 @@ location_bt_radio =
 	"Land_TTowerSmall_2_F",		// Verticall array of small dipoles
 	"Land_TTowerBig_1_F",		// A-like transmitter tower
 	"Land_TTowerBig_2_F",		// Tall I-like transmitter tower
-	"Land_Communication_F"		// Tall tower with antennas on top, often found at military outposts
+	"Land_Communication_F",		// Tall tower with antennas on top, often found at military outposts
+	
+	// WW2
+	"Land_wx_radiomast" 		// WW2 radio mast.
 ];
 
 // Objects which heal units
