@@ -201,6 +201,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "update sensors");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
@@ -1782,7 +1783,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateLocation") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName"), P_OBJECT("_hBuildResSrc")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
 		// Nullify vertical component, we use position ATL for locations anyway
 		pr _pos = +_posWorld;
@@ -1810,10 +1811,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Remove build resources from player or vehicle
 		if (_hBuildResSrc isKindOf "man") then {
 			// Remove resources from player
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG 100], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		} else {
 			// Remove resources from vehicle
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG 100], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		};
 
 		// Create a little composition at this place

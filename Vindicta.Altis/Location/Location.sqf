@@ -541,7 +541,14 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 	} ENDMETHOD;
-
+	
+	METHOD("debugAddBuildProgress") {
+		params [P_THISOBJECT, P_NUMBER("_amount")];
+		private _buildProgress = T_GETV("buildProgress");
+		_buildProgress = 0 max (_buildProgress + _amount) min 1;
+		T_SETV_PUBLIC("buildProgress", _buildProgress);
+	} ENDMETHOD;
+	
 	#ifdef DEBUG_LOCATION_MARKERS
 	METHOD("updateMarker") {
 		params [P_THISOBJECT];
