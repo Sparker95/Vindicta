@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tAAF"];
-_array set [T_DESCRIPTION, "Vanilla AAF."];
+_array set [T_DESCRIPTION, "Vanilla Altis Armed Forces."];
 _array set [T_DISPLAY_NAME, "Arma 3 - AAF"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
