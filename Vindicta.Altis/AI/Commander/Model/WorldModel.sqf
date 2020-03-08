@@ -204,10 +204,10 @@ CLASS("WorldModel", "Storable")
 			CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
 		};
 
-#ifdef DEBUG_CMDRAI
-		CALLM(_threatGrid, "plot", [20 ARG false ARG "SolidFull" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
-		CALLM(_activityGrid, "plot", [20 ARG false ARG "DiagGrid" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
-		CALLM(_damageGrid, "plot", [50 ARG false ARG "SolidFull" ARG ["ColorGreen" ARG "ColorGrey" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
+#ifdef DEBUG_WORLD_MODEL
+		CALLM(_threatGrid, "plot", [20 ARG false ARG "Horizontal" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
+		CALLM(_activityGrid, "plot", [20 ARG false ARG "Vertical" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
+		CALLM(_damageGrid, "plot", [50 ARG false ARG "FDiagonal" ARG ["ColorGreen" ARG "ColorRed" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
 #endif
 
 		// Update location desireability
@@ -248,7 +248,7 @@ CLASS("WorldModel", "Storable")
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			T_PRVAR(damageGrid);
 			//_damage = CALLM(_damageGrid, "getMaxValueCircle", [_pos ARG _radius]); // Takes too long
-			_damage = CALLM2(_damageGrid, "getMaxValueSquareNumber", _pos, _radius);
+			_damage = CALLM2(_damageGrid, "getValueSquareSum", _pos, _radius);
 		};
 		_damage
 	} ENDMETHOD;

@@ -237,7 +237,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
-		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtClusterPos ARG 2000]);
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtClusterPos ARG 500]);
 		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
@@ -376,7 +376,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
 		private _tgtPos = GETV(_tgtLoc, "pos");
-		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtPos ARG 2000]);
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtPos ARG 500]);
 		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
