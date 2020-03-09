@@ -205,9 +205,9 @@ CLASS("WorldModel", "Storable")
 		};
 
 #ifdef DEBUG_WORLD_MODEL
-		//CALLM(_threatGrid, "plot", [20 ARG false ARG "Horizontal" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
-		//CALLM(_activityGrid, "plot", [20 ARG false ARG "Vertical" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
-		CALLM(_damageGrid, "plot", [50 ARG false ARG "FDiagonal" ARG ["ColorGreen" ARG "ColorRed" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
+		CALLM(_threatGrid, "plot", [20 ARG false ARG "Horizontal" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
+		CALLM(_activityGrid, "plot", [20 ARG false ARG "Vertical" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
+		CALLM(_damageGrid, "plot", [20 ARG false ARG "FDiagonal" ARG ["ColorGreen" ARG "ColorRed" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
 #endif
 
 		// Update location desireability
