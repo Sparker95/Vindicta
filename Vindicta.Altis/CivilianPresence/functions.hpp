@@ -6,6 +6,7 @@ class CivPresence {
 		class spawn {};
 		class despawn {};
 		class createUnit {};
+		class addAction {};
 		class isUnitCreatedByCP {};
 
 		class dialogue {postinit = 1;};

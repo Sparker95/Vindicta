@@ -22,7 +22,7 @@ params ["_unit"];
 
 	{ 	// Code completed
 		params ["_target", "_caller", "_actionId", "_arguments"];
-		[_target,player, "release_finished"] call  pr0_fnc_dialogue_create;
+		[player,_target, "release_finished"] call  pr0_fnc_dialogue_create;
 
 		// Unarrest him
 		[_target, false] remoteExecCall ["CivPresence_fnc_arrestUnit", 2, false];

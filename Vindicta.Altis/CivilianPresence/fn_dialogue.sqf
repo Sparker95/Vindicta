@@ -40,15 +40,46 @@ private _array = [
 		[
 			[TYPE_QUESTION,"What do you need?",2],
 			[TYPE_ANSWER,"Enemy activity [locations]","info_militaryBases"],
-			[TYPE_ANSWER,"agitate","agitate"],
+			[TYPE_ANSWER,"Agitate","agitate"],
+			[TYPE_ANSWER,"About the town","info_town"],
 			[TYPE_ANSWER,"Never mind","intro_question_neverMind"]
 
 		];
 	}],
+	["info_town",{
+		[
+			[TYPE_QUESTION,"What do you like to know about it?",2],
+			[TYPE_ANSWER,"Police","info_police"],
+			[TYPE_ANSWER,"Fuel station","info_fuelstation"],
+			[TYPE_ANSWER,"Never mind","intro_question_neverMind"]
+		]
+	}],
+	["info_fuelstation",{
+		private _return = [];
+		private _fuelstations = nearestTerrainObjects [getpos player, ["FUELSTATION"], 500];
+		if(count _fuelstations == 0)then{
+			_return pushBack [TYPE_SENTENCE, "There is no fuelstation in this area",2];
+		}else{
+			private _texts = ["There is one %2meter to the %1", "An other one is to the %1, about %2 meter", "and one more %2meter %1 of here"];
+			{
+				private _fuelstation = _x;
+				private _dir = (player getRelDir _fuelstation) call pr0_fnc_dialogue_common_bearingToID;
+				private _dis = round (player distance _fuelstation);
+				private _text = format [_texts#_forEachIndex, _dir,_dis]; 
+				_return pushBack [TYPE_SENTENCE,_text,2];
+			}forEach _fuelstations;
+		};
+		_return append [
+			[TYPE_SENTENCE, "Thank you",1],
+			[TYPE_JUMP_TO, "#end"]
+		];
+		_return; 
+	}],
 	["intro_question_neverMind",{
 		[
 			[TYPE_SENTENCE, "Never mind",1],
-			[TYPE_SENTENCE, "Oke, bye",2]
+			[TYPE_SENTENCE, "Oke, bye",2],
+			[TYPE_JUMP_TO, "#end"]
 		]
 	}],
 	["info_militaryBases",{
@@ -115,7 +146,7 @@ private _array = [
 
 				private _posString = if (_type == LOCATION_TYPE_POLICE_STATION) then {
 					private _locCities = CALLSM1("Location", "getLocationsAtPos", _locPos) select {
-						CALLM0(_x, "getType") == LOCATION_TYPE_CITY
+						CALLM0(_loc, "getType") == LOCATION_TYPE_CITY
 					};
 					if (count _locCities > 0) then {
 						format ["at %1", CALLM0(_locCities select 0, "getName")];
@@ -129,10 +160,12 @@ private _array = [
 				private _text = format ["%1 %2 %3, %4", _intro, _typeString, _posString, _distanceString];
 
 				//this code runs when sentence is spoken
-				private _arg = [_distance, _type];
+				private _arg = [_distance, _type, _loc];
 				private _script = {
-					_this#3 params ["_distance","_type"];
+					_this#3 params ["_distance","_type","_loc"];
 					__BOOST_SUSP;
+
+					
 
 					// reveal the location to player's side
 					private _updateLevel = -666;
@@ -155,7 +188,7 @@ private _array = [
 
 					if (_updateLevel != -666) then {
 						private _commander = CALLSM1("AICommander", "getAICommander", playerSide);
-						CALLM2(_commander, "postMethodAsync", "updateLocationData", [_x ARG _updateLevel ARG sideUnknown ARG false ARG false ARG _accuracyRadius]);
+						CALLM2(_commander, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false ARG false ARG _accuracyRadius]);
 					};
 				};
 
@@ -225,11 +258,12 @@ private _array = [
 		};
 
 		_return append [
-			[TYPE_SENTENCE,"Oke, good!",2],
+			[TYPE_SENTENCE,"Oke, good!",1],
+			[TYPE_SENTENCE,"Bye!",1],
 			[TYPE_JUMP_TO,"#end"]
 		];
 		
-
+		_return;
 	}],
 
 
@@ -251,7 +285,8 @@ private _array = [
 				"Oh My God!",
 				"I am not ready to die!",
 				"Someone, help me!"
-			],1]
+			],1],
+			[TYPE_JUMP_TO,"#end"]
 		]
 	}],
 
