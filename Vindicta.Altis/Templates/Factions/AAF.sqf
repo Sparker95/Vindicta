@@ -67,15 +67,18 @@ _veh set [T_VEH_DEFAULT, ["I_G_Offroad_01_F"]];
 
 _veh set [T_VEH_car_unarmed, ["I_G_Offroad_01_F"]];
 _veh set [T_VEH_car_armed, ["I_G_Offroad_01_armed_F"]];
+
 _veh set [T_VEH_MRAP_unarmed, ["I_MRAP_03_F"]];
 _veh set [T_VEH_MRAP_HMG, ["I_MRAP_03_hmg_F"]];
 _veh set [T_VEH_MRAP_GMG, ["I_MRAP_03_gmg_F"]];
+
 _veh set [T_VEH_IFV, ["I_APC_tracked_03_cannon_F", "I_LT_01_AT_F", "I_LT_01_cannon_F"]];
 _veh set [T_VEH_APC, ["I_APC_Wheeled_03_cannon_F"]];
 _veh set [T_VEH_MBT, ["I_MBT_03_cannon_F"]];
 _veh set [T_VEH_MRLS, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPA, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPAA, ["I_LT_01_AA_F"]];
+
 _veh set [T_VEH_stat_HMG_high, ["I_HMG_01_high_F"]];
 _veh set [T_VEH_stat_GMG_high, ["I_GMG_01_high_F"]];
 _veh set [T_VEH_stat_HMG_low, ["I_HMG_01_F"]];
@@ -84,24 +87,30 @@ _veh set [T_VEH_stat_AA, ["I_static_AA_F"]];
 _veh set [T_VEH_stat_AT, ["I_static_AT_F"]];
 _veh set [T_VEH_stat_mortar_light, ["I_Mortar_01_F"]];
 //_veh set [T_VEH_stat_mortar_heavy, ["I_Mortar_01_F"]];
+
 _veh set [T_VEH_heli_light, ["I_Heli_light_03_unarmed_F"]];
 _veh set [T_VEH_heli_heavy, ["I_Heli_Transport_02_F"]];
 _veh set [T_VEH_heli_cargo, ["I_Heli_Transport_02_F"]];
 _veh set [T_VEH_heli_attack, ["I_Heli_light_03_dynamicLoadout_F"]];
+
 _veh set [T_VEH_plane_attack, ["I_Plane_Fighter_03_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_fighter , ["I_Plane_Fighter_04_F"]];
 //_veh set [T_VEH_plane_cargo, [""]];
 //_veh set [T_VEH_plane_unarmed , [""]];
 //_veh set [T_VEH_plane_VTOL, [""]];
+
 _veh set [T_VEH_boat_unarmed, ["I_Boat_Transport_01_F"]];
 _veh set [T_VEH_boat_armed, ["I_Boat_Armed_01_minigun_F"]];
+
 _veh set [T_VEH_personal, ["I_Quadbike_01_F"]];
+
 _veh set [T_VEH_truck_inf, ["I_Truck_02_covered_F", "I_Truck_02_transport_F"]];
 _veh set [T_VEH_truck_cargo, ["I_Truck_02_transport_F"]];
 _veh set [T_VEH_truck_ammo, ["I_Truck_02_ammo_F"]];
 _veh set [T_VEH_truck_repair, ["I_Truck_02_box_F"]];
 _veh set [T_VEH_truck_medical , ["I_Truck_02_medical_F"]];
 _veh set [T_VEH_truck_fuel, ["I_Truck_02_fuel_F"]];
+
 _veh set [T_VEH_submarine, ["I_SDV_01_F"]];
 
 
@@ -116,10 +125,10 @@ _drone set [T_DRONE_plane_attack, ["I_UAV_02_dynamicLoadout_F"]];
 //_drone set [T_DRONE_plane_unarmed, ["I_UAV_02_dynamicLoadout_F"]];
 //_drone set [T_DRONE_heli_attack, ["I_UAV_02_dynamicLoadout_F"]];
 _drone set [T_DRONE_quadcopter, ["I_UAV_01_F"]];
-//_drone set [T_DRONE_designator, [""]];
+//_drone set [T_DRONE_designator, ["I_UAV_02_dynamicLoadout_F"]];
 _drone set [T_DRONE_stat_HMG_low, ["I_HMG_01_A_F"]];
 _drone set [T_DRONE_stat_GMG_low, ["I_GMG_01_A_F"]];
-//_drone set [T_DRONE_stat_AA, [""]];
+//_drone set [T_DRONE_stat_AA, ["I_UAV_02_dynamicLoadout_F"]];
 
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
