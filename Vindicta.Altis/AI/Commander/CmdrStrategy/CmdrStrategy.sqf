@@ -7,7 +7,7 @@
 #define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
 
 // https://www.desmos.com/calculator/yxhaqijv19
-#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.1 * (1 - sqrt(0.9 * (campaignProgress))) * (rawDamage)) - 0.1)
+#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.2 * (1 - sqrt(0.9 * (campaignProgress))) * (rawDamage)) - 0.1)
 
 /*
 Class: AI.CmdrAI.CmdrStrategy.CmdrStrategy
@@ -164,7 +164,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_POSITION("_locPos"), P_DYNAMIC("_locType"), P_SIDE("_side")];
 
 		// Same as for taking locations
-		private _rawActivity = CALLM(_worldNow, "getActivity", [_locPos ARG 3500]);
+		private _rawActivity = CALLM(_worldNow, "getActivity", [_locPos ARG 2000]);
 		//OOP_DEBUG_1(" WorldNow activity: %1", _rawActivity);
 		private _activityMult = __ACTIVITY_FUNCTION(_rawActivity);
 
@@ -237,7 +237,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
-		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtClusterPos ARG 500]);
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtClusterPos ARG 1000]);
 		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
@@ -376,7 +376,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
 		private _tgtPos = GETV(_tgtLoc, "pos");
-		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtPos ARG 500]);
+		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtPos ARG 1000]);
 		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)

@@ -321,7 +321,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		// TODO: what is the correct to combine these scores?
 		// Should we try to get them all from 0 to 1?
 		// Maybe we want R*(iP + jS + kC)?
-		_scorePriority * _scoreResource * _scoreStrategy * _scoreCompleteness
+		CLAMP_POSITIVE(_scorePriority) * CLAMP_POSITIVE(_scoreResource) * CLAMP_POSITIVE(_scoreStrategy) * CLAMP_POSITIVE(_scoreCompleteness)
 	} ENDMETHOD;
 
 	/*
