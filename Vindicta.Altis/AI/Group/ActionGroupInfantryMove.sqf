@@ -19,7 +19,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		T_SETV("pos", POS_TO_ATL(_pos));
+		T_SETV("pos", ZERO_HEIGHT(_pos));
 		
 	} ENDMETHOD;
 
