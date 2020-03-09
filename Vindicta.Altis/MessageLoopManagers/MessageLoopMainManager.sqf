@@ -31,7 +31,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		// Is this object an instance of Unit class?
 		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
-		if (_unit != "" && IS_OOP_OBJECT(_unit)) then {
+		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
 
 			OOP_INFO_2("EH_killed: %1 %2", _unit, GETV(_unit, "data") );
 
@@ -40,9 +40,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			// Post a message to the garrison of the unit
 			pr _data = GETV(_unit, "data");
 			pr _garrison = _data select UNIT_DATA_ID_GARRISON;
-			if (_garrison != "") then {	// Sanity check	
+			if (!IS_NULL_OBJECT(_garrison)) then {	// Sanity check	
 				CALLM1(_garrison, "handleUnitKilled", _unit);
-				
+
 				// Notify game mode that a unit was destroyed
 				pr _catID = CALLM0(_unit, "getCategory");
 				pr _subcatID = CALLM0(_unit, "getSubcategory");
@@ -52,14 +52,14 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 				// Send stimulus to garrison's casualties sensor
 				pr _garAI = CALLM0(_garrison, "getAI");
-				if (_garAI != "") then {
-					if (!isNull _killer) then { // If there is an existing killer
-						pr _stim = STIMULUS_NEW();
-						STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
-						pr _value = [_unit, _killer];
-						STIMULUS_SET_VALUE(_stim, _value);
-						CALLM1(_garAI, "handleStimulus", _stim);
-					};
+				if (!IS_NULL_OBJECT(_garAI)) then {
+					//if (!isNull _killer) then { // If there is an existing killer. No we don't care if there is a killer?
+					pr _stim = STIMULUS_NEW();
+					STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
+					pr _value = [_unit, _killer];
+					STIMULUS_SET_VALUE(_stim, _value);
+					CALLM1(_garAI, "handleStimulus", _stim);
+					//};
 				};
 			} else {
 				OOP_ERROR_2("EH_killed: Unit is not attached to a garrison: %1, %2", _unit, _data);

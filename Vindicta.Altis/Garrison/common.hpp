@@ -10,6 +10,8 @@
 #include "..\MessageTypes.hpp"
 #include "..\AI\Garrison\garrisonWorldStateProperties.hpp"
 #include "..\AI\Garrison\AIGarrison.hpp"
+#include "..\AI\Stimulus\Stimulus.hpp"
+#include "..\AI\stimulusTypes.hpp"
 #include "..\Templates\Efficiency.hpp"
 #include "..\Message\Message.hpp"
 #include "..\defineCommon.inc"

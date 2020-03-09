@@ -52,13 +52,13 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 		// Add the data about destroyed unit to the array, which will be sent to commander on next update
 		pr _value = STIMULUS_GET_VALUE(_stimulus);
 		_value params ["_unit", "_hOKiller"];
-		if (!isNull _hOKiller) then {
+		//if (!isNull _hOKiller) then {
 			pr _mainData = CALLM0(_unit, "getMainData");
 			_mainData params ["_catID", "_subcatID"];
 			pr _pos = CALLM0(_unit, "getPos");
 			pr _destroyedUnits = T_GETV("destroyedUnits");
 			_destroyedUnits pushBack [_catID, _subcatID, _hOKiller, _pos];
-		};
+		//};
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
