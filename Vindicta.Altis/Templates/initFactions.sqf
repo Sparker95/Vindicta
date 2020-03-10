@@ -3,7 +3,7 @@
 // This variable is necessary for other factions to initialize!
 ["Templates\Factions\default.sqf", T_FACTION_None]					call t_fnc_initializeTemplateFromFile;
 
-// !! Factions will be listed in UI in the same order as here !! 
+// !! Factions will be listed in UI in the same order as here !!
 
 // Military factions
 ["Templates\Factions\AAF.sqf", T_FACTION_Military]					call t_fnc_initializeTemplateFromFile;
@@ -19,6 +19,8 @@
 ["Templates\Factions\CUP_TKA.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_Heer.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_UK.sqf", T_FACTION_Military]				call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_BWMOD_BW_Fleck.sqf", T_FACTION_Military]			call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf", T_FACTION_Military]			call t_fnc_initializeTemplateFromFile;
 
 // Other factions
 ["Templates\Factions\CIVILIAN.sqf", T_FACTION_Civ]					call t_fnc_initializeTemplateFromFile;
