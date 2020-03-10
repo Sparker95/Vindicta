@@ -42,7 +42,7 @@
         "sourceFolder": "Vindicta.Tembelan",
         "missionName": "Vindicta",
         "missionNameBase": "Vindicta",
-        "map": "Malden",
+        "map": "Tembelan",
         "configFiles": [
             "configs/release/global_config.hpp",
             "configs/majorVersion.hpp",
