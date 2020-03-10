@@ -13,9 +13,9 @@ class TAB_GMINIT : MUI_GROUP_ABS
 		{
 			IDC = -1; 
 			x = 0.020; 
-			y = 0.338; 
+			y = 0.414; 
 			w = 0.659; 
-			h = 0.038; 
+			h = 0.038;
 			text = "CHOSEN FACTIONS:";
 		};
 
@@ -24,9 +24,9 @@ class TAB_GMINIT : MUI_GROUP_ABS
 		{
 			IDC = -1; 
 			x = 0.020; 
-			y = 0.386; 
+			y = 0.462; 
 			w = 0.659; 
-			h = 0.375;
+			h = 0.299;
 		};
 
 		// listbox for game settings
@@ -34,9 +34,9 @@ class TAB_GMINIT : MUI_GROUP_ABS
 		{
 			IDC = -1; 
 			x = 0.020; 
-			y = 0.389; 
+			y = 0.462; 
 			w = 0.659; 
-			h = 0.37; 
+			h = 0.299;
 			columns[] = {0, 1};	// One column 
 		};
 
@@ -79,9 +79,9 @@ class TAB_GMINIT : MUI_GROUP_ABS
 		{
 			idc = -1;
 			x = 0.020; 
-			y = 0.269; 
+			y = 0.313; 
 			w = 0.266; 
-			h = 0.038; 
+			h = 0.038;  
 			text = "INITIAL ENEMY %:";
 		};
 
@@ -115,11 +115,21 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			text = "POLICE FACTION:";
 		};
 
+		class STATIC_ENEMY_CIV_FACTION : MUI_DESCRIPTION_ABS 
+		{
+			idc = -1;
+			x = 0.020; 
+			y = 0.269; 
+			w = 0.266; 
+			h = 0.038;  
+			text = "CIVILIAN FACTION:";
+		};
+
 		class TAB_GMINIT_EDIT_ENEMY_PERCENTAGE : MUI_EDIT_ABS 
 		{
 			idc = -1;
 			x = 0.308; 
-			y = 0.269; 
+			y = 0.313; 
 			w = 0.371; 
 			h = 0.038; 
 			text = "100";
@@ -185,6 +195,16 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.225; 
 			w = 0.371; 
 			h = 0.038;
+			text = "STANDARD";
+		};
+
+		class TAB_GMINIT_COMBO_CIV_FACTION : MUI_COMBOBOX_ABS 
+		{
+			idc = -1;
+			x = 0.308; 
+			y = 0.269; 
+			w = 0.371; 
+			h = 0.038; 
 			text = "STANDARD";
 		};
 
