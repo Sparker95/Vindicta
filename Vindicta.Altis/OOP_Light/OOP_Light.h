@@ -1169,4 +1169,22 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define NULL_OBJECT ""
 #define OOP_OBJECT_TYPE ""
 
-#define POS_TO_ATL(pos) ([(pos) select 0, (pos) select 1, 0])
+// ----------------------------------------------------------------------
+// |                               M A T H                              |
+// ----------------------------------------------------------------------
+
+// Zero the height component of a vector
+#define ZERO_HEIGHT(pos) ([(pos) select 0, (pos) select 1, 0])
+
+// Clamp val_ between min_ and max_
+#define CLAMP(val_, min_, max_) ((min_) max (val_) min (max_))
+// Return greater of two numbers
+#define MAXIMUM(a_, b_) ((a_) max (b_))
+// Return lesser of two numbers
+#define MINIMUM(a_, b_) ((a_) min (b_))
+// Clamp val_ between 0 and 1
+#define SATURATE(val_) CLAMP(val_, 0, 1)
+// Clamp val_ between 0 and +inf
+#define CLAMP_POSITIVE(val_) MAXIMUM(val_, 0)
+// Clamp val_ between 0 and -inf
+#define CLAMP_NEGATIVE(val_) MINIMUM(val_, 0)

@@ -117,15 +117,6 @@ pr0_fnc_toggleMarkers = {
 	} ] remoteExec ["call", 2];
 }] call pr0_fnc_addDebugMenuItem;
 
-["Dump", "All locations", {
-	[[], {
-		// {
-		// 	_x call OOP_dumpAsJson;
-		// } forEach CALLSM0("Location", "getAll");
-		CALLSM0("Location", "getAll") call OOP_dumpAsJson;
-	} ] remoteExec ["call", 2];
-}] call pr0_fnc_addDebugMenuItem;
-
 ["Add", "New group", {
 	private _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 	CALLM2(_AI, "postMethodAsync", "debugCreateGarrison", [getpos player]);
@@ -136,6 +127,20 @@ pr0_fnc_toggleMarkers = {
 	if (!IS_NULL_OBJECT(_loc)) then {
 		private _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		CALLM2(_AI, "postMethodAsync", "debugAddGroupToLocation", [_loc]);
+	};
+}] call pr0_fnc_addDebugMenuItem;
+
+["Construction", "+25% construction", {
+	private _loc = CALLSM1("Location", "getLocationAtPos", getpos player);
+	if (!IS_NULL_OBJECT(_loc)) then {
+		CALLM2(_loc, "postMethodAsync", "debugAddBuildProgress", [0.25]);
+	};
+}] call pr0_fnc_addDebugMenuItem;
+
+["Construction", "-25% construction", {
+	private _loc = CALLSM1("Location", "getLocationAtPos", getpos player);
+	if (!IS_NULL_OBJECT(_loc)) then {
+		CALLM2(_loc, "postMethodAsync", "debugAddBuildProgress", [-0.25]);
 	};
 }] call pr0_fnc_addDebugMenuItem;
 

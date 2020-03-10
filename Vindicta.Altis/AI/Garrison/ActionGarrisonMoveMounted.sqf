@@ -95,8 +95,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _route = CALLM0(_vr, "getAIWaypoints");
 			
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
-			if (count _vehGroups > 1) then {
-				OOP_ERROR_0("More than one vehicle group in the garrison!");
+			if (count _vehGroups > 1) exitWith {
+				OOP_WARNING_0("More than one vehicle group in the garrison!");
+				ACTION_STATE_FAILED
 			};
 			
 			{

@@ -42,6 +42,7 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 	}] call CBA_fnc_addEventHandler;
 };
 #endif
+FIX_LINE_NUMBERS()
 
 CLASS(UNIT_CLASS_NAME, "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -1283,7 +1284,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 
 		// Remove all weapons
-		removeAllWeapons this;
+		removeAllWeapons _hO;
 
 		// Remove all items from vest
 		pr _vest = vest _hO;
