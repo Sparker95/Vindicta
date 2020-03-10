@@ -462,7 +462,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// Initialize build progress from garrisons that are present, call on campaign creation
 	METHOD("initBuildProgress") {
 		params [P_THISOBJECT];
-		if !(T_GETV("type") in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) exitWith {};
+		if !(T_GETV("type") in LOCATIONS_BUILD_PROGRESS) exitWith {};
 		if(T_CALLM0("isEnemy")) then {
 			#ifdef DEBUG_BUILDING
 			// Start from 0 when testing.
@@ -485,7 +485,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// Build all buildables in the location
 	METHOD("updateBuildProgress") {
 		params [P_THISOBJECT, P_NUMBER("_dt")];
-		if !(T_GETV("type") in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) exitWith {};
+		if !(T_GETV("type") in LOCATIONS_BUILD_PROGRESS) exitWith {};
 
 		private _buildables = T_GETV("buildableObjects");
 		private _buildProgress = T_GETV("buildProgress");
