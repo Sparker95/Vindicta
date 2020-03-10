@@ -1,64 +1,89 @@
 /*
-NATO templates for ARMA III
+███╗   ██╗ █████╗ ████████╗ ██████╗ 
+████╗  ██║██╔══██╗╚══██╔══╝██╔═══██╗
+██╔██╗ ██║███████║   ██║   ██║   ██║
+██║╚██╗██║██╔══██║   ██║   ██║   ██║
+██║ ╚████║██║  ██║   ██║   ╚██████╔╝
+╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ 
+http://patorjk.com/software/taag/#p=testall&v=3&f=Big%20Money-nw&t=NATO                              
+                         
+Vindicta Faction Template. Use this template as the basis for your template.
+
+Updated: March 2020 by Marvis
+
 */
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
+_array set [T_SIZE-1, nil];									
 
-// Name, description, faction, addons, etc
-_array set [T_NAME, "tNATO"];
-_array set [T_DESCRIPTION, "Vanilla NATO."];
-_array set [T_DISPLAY_NAME, "Arma 3 NATO"];
-_array set [T_FACTION, T_FACTION_military];
-_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
+_array set [T_NAME, "tNATO"]; // 							Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "Vanilla NATO."]; // 			Template display description
+_array set [T_DISPLAY_NAME, "Arma 3 NATO"]; // 				Template display name
+_array set [T_FACTION, T_FACTION_military]; // 				Faction type: police, T_FACTION_military, T_FACTION_Police
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 	Addons required to play this template
 
-//==== Infantry ====
+/* 
+	Infantry unit classes.
+
+	Setting a new classname: 
+	_inf set [T_INF_TL, ["CLASSNAME IN QUOTES"]];
+
+	Example: 
+	_inf set [T_INF_TL, ["B_Soldier_TL_F"]]; // 					= 2 Team leader
+
+	1. 	DO NOT MODIFY the rest of the line. 
+	2. 	Classname must not be empty ([]) or "". 
+	3. 	If you comment out a class the default.sqf template classname will be used.
+	4.	Do not comment out classes here.
+
+	5. 	You can set identical units if a specific unit is not available.
+		You can then edit the name of that unit further down in this template.	
+*/
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["B_Soldier_F"]];					//Default infantry if nothing is found
+_inf set [T_INF_DEFAULT,  ["B_Soldier_F"]]; //						= 0 Default if nothing found
 
-_inf set [T_INF_default, ["B_Soldier_F"]];
-_inf set [T_INF_SL, ["B_Soldier_SL_F"]];
-_inf set [T_INF_TL, ["B_Soldier_TL_F"]];
-_inf set [T_INF_officer, ["B_officer_F"]];
-_inf set [T_INF_GL, ["B_Soldier_GL_F"]];
-_inf set [T_INF_rifleman, ["B_Soldier_F"]];
-_inf set [T_INF_marksman, ["B_soldier_M_F"]];
-_inf set [T_INF_sniper, ["B_Sharpshooter_F"]];
-_inf set [T_INF_spotter, ["B_Soldier_lite_F"]];
-_inf set [T_INF_exp, ["B_soldier_exp_F"]];
-_inf set [T_INF_ammo, ["B_Soldier_A_F"]];
-_inf set [T_INF_LAT, ["B_soldier_LAT2_F"]];
-_inf set [T_INF_AT, ["B_soldier_LAT_F"]];
-_inf set [T_INF_AA, ["B_soldier_AA_F"]];
-_inf set [T_INF_LMG, ["B_soldier_AR_F"]];
-_inf set [T_INF_HMG, ["B_HeavyGunner_F"]];
-_inf set [T_INF_medic, ["B_medic_F"]];
-_inf set [T_INF_engineer, ["B_engineer_F"]];
-_inf set [T_INF_crew, ["B_crew_F"]];
-_inf set [T_INF_crew_heli, ["B_helicrew_F"]];
-_inf set [T_INF_pilot, ["B_Fighter_Pilot_F"]];
-_inf set [T_INF_pilot_heli, ["B_Helipilot_F"]];
-_inf set [T_INF_survivor, ["B_Survivor_F"]];
-_inf set [T_INF_unarmed, ["B_Soldier_unarmed_F"]];
+_inf set [T_INF_SL, ["B_Soldier_SL_F"]]; //							= 1 Squad leader
+_inf set [T_INF_TL, ["B_Soldier_TL_F"]]; //							= 2 Team leader
+_inf set [T_INF_officer, ["B_officer_F"]]; //						= 3 Officer
+_inf set [T_INF_GL, ["B_Soldier_GL_F"]]; //							= 4 GL soldier
+_inf set [T_INF_rifleman, ["B_Soldier_F"]]; //						= 5 Basic rifleman
+_inf set [T_INF_marksman, ["B_soldier_M_F"]]; //					= 6 Marksman
+_inf set [T_INF_sniper, ["B_Sharpshooter_F"]]; //					= 7 Sniper
+_inf set [T_INF_spotter, ["B_Soldier_lite_F"]]; //					= 8 Spotter
+_inf set [T_INF_exp, ["B_soldier_exp_F"]]; //						= 9 Demo specialist
+_inf set [T_INF_ammo, ["B_Soldier_A_F"]]; //						= 10 Ammo bearer
+_inf set [T_INF_LAT, ["B_soldier_LAT2_F"]]; //						= 11 Light AT
+_inf set [T_INF_AT, ["B_soldier_LAT_F"]]; //						= 12 AT
+_inf set [T_INF_AA, ["B_soldier_AA_F"]]; //							= 13 Anti-Air
+_inf set [T_INF_LMG, ["B_soldier_AR_F"]]; //						= 14 Light machinegunner
+_inf set [T_INF_HMG, ["B_HeavyGunner_F"]]; //						= 15 Heavy machinegunner
+_inf set [T_INF_medic, ["B_medic_F"]]; //							= 16 Combat Medic
+_inf set [T_INF_engineer, ["B_engineer_F"]]; //						= 17 Engineer
+_inf set [T_INF_crew, ["B_crew_F"]]; //								= 18 Crewman
+_inf set [T_INF_crew_heli, ["B_helicrew_F"]]; //					= 19 Helicopter crew
+_inf set [T_INF_pilot, ["B_Fighter_Pilot_F"]]; //					= 20 Plane pilot
+_inf set [T_INF_pilot_heli, ["B_Helipilot_F"]]; //					= 21 Helicopter pilot
+_inf set [T_INF_survivor, ["B_Survivor_F"]]; //						= 22 Survivor
+_inf set [T_INF_unarmed, ["B_Soldier_unarmed_F"]]; //				= 23 Unarmed man
 
-//Recon
-_inf set [T_INF_recon_TL, ["B_recon_TL_F"]];
-_inf set [T_INF_recon_rifleman, ["B_recon_F"]];
-_inf set [T_INF_recon_medic, ["B_recon_medic_F"]];
-_inf set [T_INF_recon_exp, ["B_recon_exp_F"]];
-_inf set [T_INF_recon_LAT, ["B_recon_LAT_F"]];
-_inf set [T_INF_recon_marksman, ["B_recon_M_F"]];
-_inf set [T_INF_recon_JTAC, ["B_recon_JTAC_F"]];
+/* Recon unit classes */
+_inf set [T_INF_recon_TL, ["B_recon_TL_F"]]; //						= 24 Recon team leader
+_inf set [T_INF_recon_rifleman, ["B_recon_F"]]; //					= 25 Recon scout
+_inf set [T_INF_recon_medic, ["B_recon_medic_F"]]; //				= 26 Recon medic
+_inf set [T_INF_recon_exp, ["B_recon_exp_F"]]; //					= 27 Recon demo specialist
+_inf set [T_INF_recon_LAT, ["B_recon_LAT_F"]]; //					= 28 Recon light AT
+_inf set [T_INF_recon_marksman, ["B_recon_M_F"]]; //				= 29 Recon marksman
+_inf set [T_INF_recon_JTAC, ["B_recon_JTAC_F"]]; //					= 30 Recon JTAC
 
-//Divers
-_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];
-_inf set [T_INF_diver_rifleman, ["B_diver_F"]];
-_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
+/* Diver unit classes */
+_inf set [T_INF_diver_TL, ["B_diver_TL_F"]]; //						= 31 Diver team leader
+_inf set [T_INF_diver_rifleman, ["B_diver_F"]]; //					= 32 Diver rifleman
+_inf set [T_INF_diver_exp, ["B_diver_exp_F"]]; //					= 33 Diver explosive specialist
 
-//==== Vehicles ====
 
+/* Vehicle classes */
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["B_MRAP_01_F"]];
@@ -68,8 +93,8 @@ _veh set [T_VEH_car_armed, ["B_MRAP_01_hmg_F"]];
 _veh set [T_VEH_MRAP_unarmed, ["B_MRAP_01_F"]];
 _veh set [T_VEH_MRAP_HMG, ["B_MRAP_01_hmg_F"]];
 _veh set [T_VEH_MRAP_GMG, ["B_MRAP_01_gmg_F"]];
-_veh set [T_VEH_IFV, ["B_APC_Wheeled_01_cannon_F"]]; //Marshal IFV
-_veh set [T_VEH_APC, ["B_APC_Tracked_01_rcws_F"]]; //Panther
+_veh set [T_VEH_IFV, ["B_APC_Wheeled_01_cannon_F"]]; 
+_veh set [T_VEH_APC, ["B_APC_Tracked_01_rcws_F"]]; 
 _veh set [T_VEH_MBT, ["B_MBT_01_cannon_F", "B_MBT_01_TUSK_F"]];
 _veh set [T_VEH_MRLS, ["B_MBT_01_mlrs_F"]];
 _veh set [T_VEH_SPA, ["B_MBT_01_arty_F"]];
@@ -103,7 +128,7 @@ _veh set [T_VEH_truck_fuel, ["B_Truck_01_fuel_F"]];
 _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 
-//==== Drones ====
+/* Drone classes */
 _drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["B_UAV_01_F"]];
