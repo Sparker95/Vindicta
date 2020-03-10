@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("dou",["Class"],[["DoubleKeyHashmap",,[[,,,,0,"File:DoubleKeyHashmap/DoubleKeyHashmap.sqf:DoubleKeyHashmap","SQFClass:DoubleKeyHashmap"]]]]);

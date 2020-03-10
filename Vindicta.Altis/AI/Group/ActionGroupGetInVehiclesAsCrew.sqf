@@ -41,12 +41,23 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		// Assign units to vehicles
 		pr _units = CALLM0(_group, "getUnits") - _unitsIgnore;
 		pr _vehicles = (_units select {CALLM0(_x, "isVehicle")}) - _unitsIgnore; // _unitsIgnore can also contain vehicles
+
+		if(count _vehicles == 0) exitWith {
+			OOP_WARNING_2("Group %1 does not contain any vehicles (units = %2), so ActionGroupGetInVehiclesAsCrew makes no sense", _group, _units);
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+
 		// Array with standard crew for each vehicle
 		pr _vehiclesStdCrew = _vehicles apply {
 			[CALLM0(_x, "getClassName")] call misc_fnc_getFullCrew;
 		};
 		pr _crew = _units select {CALLM0(_x, "isInfantry")};
-		
+
+		if(count _crew == 0) then {
+			OOP_WARNING_2("Group %1 does not contain any crew units (units = %2), so ActionGroupGetInVehiclesAsCrew can't be done", _group, _units);
+		};
+
 		// Delete previous goals of units to get into vehicles
 		{
 			pr _crewAI = CALLM0(_x, "getAI");
@@ -111,10 +122,16 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		T_SETV("driversAI", _driversAI);
 		T_SETV("turretsAI", _turretsAI);
 		
+		pr _state = if(count _driversAI == 0 && count _turretsAI == 0) then {
+			// If no drivers or turrets are required then we succeeded immediately
+			ACTION_STATE_COMPLETED
+		} else {
+			ACTION_STATE_ACTIVE
+		};
 		
 		// Return ACTIVE state
-		T_SETV("state", ACTION_STATE_ACTIVE);
-		ACTION_STATE_ACTIVE
+		T_SETV("state", _state);
+		_state
 		
 	} ENDMETHOD;
 	
@@ -134,9 +151,11 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 			pr _AI = T_GETV("AI");
 			pr _group = GETV(_AI, "agent");
 			pr _groupUnits = CALLM0(_group, "getInfantryUnits");
-			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
-			//pr _ws = GETV(_AI, "worldState");
-			//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
+
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")
+				|| !CALLSM3("AI_GOAP", "anyAgentHasExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
+				//pr _ws = GETV(_AI, "worldState");
+				//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
 				OOP_INFO_0("Action COMPLETED");
 				
 				// Update sensors
@@ -146,9 +165,14 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 				T_SETV("state", ACTION_STATE_COMPLETED);
 				ACTION_STATE_COMPLETED
 			} else {
-				OOP_INFO_0("Action is active. Not all crew is in their vehicles...");	
-			
-				ACTION_STATE_ACTIVE
+				// Fail this action if any unit has failed
+				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
+					OOP_INFO_0("Crew mount action is failed. Some crew could not mount...");	
+					ACTION_STATE_FAILED
+				} else {
+					OOP_INFO_0("Crew mount action is active. Not all crew is in their vehicles...");	
+					ACTION_STATE_ACTIVE
+				};
 			};
 			
 		} else {

@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Misc/fn_arrestUnit.sqf",{906:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Immobilize a unit and set a global variable to mark them as a prisoner.</div></div>"});

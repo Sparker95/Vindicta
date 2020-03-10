@@ -185,6 +185,9 @@
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
+			</Key>	
+			<Key ID="STR_UM_HINT_COMPROMISEDVIC">
+				<Original>COMPROMISED VEHICLE</Original>
 			</Key>																
 		</Container>	
 	</Package>
@@ -193,44 +196,118 @@
 <Project name="ClientMapUI">
 	<Package name="ClientMapUI">
 		<Container name="Hints">
-			<Key ID="STR_CMUI_DEFAULT">
-				<Original>Move your cursor over a button to learn more.</Original>
+			<Key ID="STR_CMUI_DEFAULT"> 
+				<Original>There is no context hint available for this control.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON1">
-				<Original>Fast travel to any location. Select fast travel then click on a location on the map.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_LISTBOX">
+				<Original>This list displays all known intel. Click on a row to display only that piece of intel on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON1_DISABLED">
-				<Original></Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_ACTIVE">
+				<Original>Press to toggle the display of active intel drawn on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON2">
-				<Original>Create a camp at your current location.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_INACTIVE">
+				<Original>Press to toggle the display of planned, inactive intel drawn on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON2_DISABLED">
-				<Original>Cannot create a camp within 500m of any existing location.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_INTEL_ENDED">
+				<Original>Press to toggle the display of old, ended intel drawn on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON3">
-				<Original>Opens the mission menu. Closes the map.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_NOTIF">
+				<Original>Press to remove red alert icons on locations.</Original>
 			</Key>
-			<Key ID="STR_CMUI_BUTTON3_DISABLED">
-				<Original>Cannot open the mission menu right now.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_INTELP">
+				<Original>Press to toggle the display of the intel panel. Useful if you want to see the entire map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_TAB1">
-				<Original>View collected intel about the world or a selected camp, outpost or base.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_LOC">
+				<Original>Press to toggle our custom locations being shown on your map. That includes outposts and cities.</Original>
 			</Key>
-			<Key ID="STR_CMUI_TAB2">
-				<Original>View units and groups at this location and give orders to this garrison.</Original>
+			<Key ID="STR_LOCALIZE_CMUI_BUTTON_PLAYERS">
+				<Original>Press to toggle players being shown on your map.</Original>
 			</Key>
-			<Key ID="STR_CMUI_TAB3">
-				<Original>View settings and stuff. Don't really know.</Original>
+			<Key ID="STR_LOCALIZE_MUI_BUTTON_DUMMY">
+				<Original>Press to toggle this setting on or off.</Original>
 			</Key>
-			<Key ID="STR_CMUI_MORE">
-				<Original>Create a camp at your current location.</Original>
+	
+			<Key ID="STR_CMUI_SORTINGBTN_SIDE">
+				<Original>Sort intel list by faction side. WEST for BLUFOR, EAST for OPFOR, and IND for Independent.</Original>
 			</Key>
+			<Key ID="STR_CMUI_SORTINGBTN_STATUS">
+				<Original>Sort intel list by current status of the intel items.</Original>
+			</Key>
+			<Key ID="STR_CMUI_SORTINGBTN_TYPE">
+				<Original>Sort intel list by type.</Original>
+			</Key>
+			<Key ID="STR_CMUI_SORTINGBTN_TIME">
+				<Original>Sort intel list by most recent or oldest intel.</Original>
+			</Key>
+
+			<Key ID="STR_CMUI_INTEL_TOOLTIP">
+				<Original>Double click to center on attack. Use Shift + LMB or Ctrl + LMB to multiselect items.</Original>
+			</Key>
+			
 		</Container>
 		<Container name="IntelTxt">
 			<Key ID="STR_CMUI_INTEL_DEFAULT">
 				<Original>No description available.</Original>
 			</Key>
+			<Key ID="STR_CMUI_INTEL_MULTISELECT">
+				<Original>Select a single intel item to view a detailed description.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_ATTACK">
+				<Original>The enemy commander has detected activity in this area and is dispatching an attack. Hold your ground and defeat enough attacks to stop the enemy from sending more.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_RB">
+				<Original>The enemy commander is constructing a roadblock at this location.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_REINFORCE">
+				<Original>Enemy troops are being sent to this location to reinforce it.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_OFFICER">
+				<Original>A commanding officer is being sent to this location. If he arrives, he will take command and enable attacks from his destination. Intercept him or kill him at his destination – your choice.</Original>
+			</Key>
+			
+			<Key ID="STR_CMUI_INTEL_CONV_BUILDING">
+				<Original>The enemy is resupplying a location with building resources. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some building resources.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_CONV_AMMO">
+				<Original>The enemy is resupplying a location with ammunition. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some ammunition.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_CONV_MISC">
+				<Original>The enemy is resupplying a location with unknown items. Intercept the transport, or attack the location they are headed to once they have arrived.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_CONV_MEDICAL">
+				<Original>The enemy is resupplying a location with medical items. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some medical supplies.</Original>
+			</Key>
+			<Key ID="STR_CMUI_INTEL_CONV_EXPLOSIVES">
+				<Original>The enemy is transporting a cache of explosives. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some explosives. Be careful not to blow it up!</Original>
+			</Key>
+
+		</Container>
+	</Package>
+</Project>
+
+
+<Project name="DialogBase">
+	<Package name="InGameMenuUI">
+		<Container name="TAB_SAVE">
+			<Key ID="STR_NEWSAVE_DISABLED">
+				<Original>You have reached the savegame limit of 5 savegames. Delete savegames to continue.</Original>
+			</Key>
+			<Key ID="STR_NEWSAVE_ENABLED">
+				<Original>Create a new save game.</Original>
+			</Key>
+		</Container>
+
+		<Container name="TAB_INIT">
+			<Key ID="STR_INIT_ERROR1">
+				<Original>ERROR: Faction file contains errors. Check your .RPT file for more info.</Original>
+			</Key>
+			<Key ID="STR_INIT_ERROR2">
+				<Original>ERROR: Missing addon:</Original>
+			</Key>
+			<Key ID="STR_INIT_TOOLTIPHOVER">
+				<Original>Hover to show description.</Original>
+			</Key>
+			
 		</Container>
 	</Package>
 </Project>

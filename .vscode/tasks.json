@@ -4,6 +4,61 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "DEV SETUP",
+            "type": "process",
+            "command": "devsetup.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT ALTIS",
+            "type": "process",
+            "command": "edit_altis.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT MALDEN",
+            "type": "process",
+            "command": "edit_malden.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT ENOCH",
+            "type": "process",
+            "command": "edit_enoch.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT SAVE",
+            "type": "process",
+            "command": "edit_save.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "Compile with SQF-VM",
             "type": "process",
             "command": "../tools/SQF-VM/sqfvm.exe",
@@ -392,6 +447,50 @@
                     ]
                 }
             ]
+        },
+        {
+            "label": "Build All",
+            "command": "powershell",
+            "args":  [   
+                "-ExecutionPolicy",
+                "Unrestricted",
+                "-NoProfile",
+                "-File",
+                "${workspaceRoot}/Vindicta-Addon/tools/buildv2.ps1"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/Vindicta-Addon"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean All",
+            "command": "powershell",
+            "args":  [   
+                "-ExecutionPolicy",
+                "Unrestricted",
+                "-NoProfile",
+                "-File",
+                "${workspaceRoot}/Vindicta-Addon/tools/cleanv2.ps1"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/Vindicta-Addon"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
         },
         {
             "label": "Build PBOs",

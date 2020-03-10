@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("res",["Function"],[["resolveTarget",,[["AI.AICommander",,,,0,"File:AI/Commander/AICommander.sqf:AI.AICommander.resolveTarget","SQFClass:AI.AICommander:resolveTarget"]]]]);

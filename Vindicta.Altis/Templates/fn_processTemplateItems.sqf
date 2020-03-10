@@ -5,10 +5,17 @@ Author: Sparker 30 september 2019
 
 #define pr private
 
+// #define DEBUG_TEMPLATES
+#ifdef DEBUG_TEMPLATES
+#define LOG_TEMPLATE diag_log format
+#else
+#define LOG_TEMPLATE pr __nul =
+#endif
+
 params ["_t", ["_returnString", false]];
 
 pr _catID = T_INF;
-pr _catSize = T_INF_SIZE;
+pr _catSize = 23; //T_INF_SIZE; // Quick fix to disable recon items from appearing in the weapon pool
 pr _classDefault = _t#_catID#0#0;
 pr _subCatID = T_INF_DEFAULT + 1; // We don't want to process the default loadout/unit!
 pr _group = createGroup WEST;
@@ -55,9 +62,9 @@ while {_subCatID < _catSize} do {
 			pr _isLoadout = [_classOrLoadout] call t_fnc_isLoadout;
 			
 			if (_isLoadout) then {
-				diag_log format ["LOADOUT: %1", _classOrLoadout];
+				LOG_TEMPLATE ["LOADOUT: %1", _classOrLoadout];
 			} else {
-				diag_log format ["CLASS:   %1", _classOrLoadout];
+				LOG_TEMPLATE ["CLASS:   %1", _classOrLoadout];
 			};
 
 			// Create a unit from which we will read data
@@ -76,7 +83,7 @@ while {_subCatID < _catSize} do {
 
 			
 			pr _unitMags = magazines _hO;
-			diag_log format			["  Unit mags: %1", _unitMags];
+			LOG_TEMPLATE			["  Unit mags: %1", _unitMags];
 
 			/*
 			// Grabs mags for all muzzles
@@ -95,20 +102,20 @@ _usableMagazines
 			pr _weap = primaryWeapon _hO;
 			if (_weap != "") then {
 				_weap = _weap call bis_fnc_baseWeapon;
-				diag_log format 	["  Weapon:			%1", _weap];
+				LOG_TEMPLATE 	["  Weapon:			%1", _weap];
 				if (! (_weap in _primaryWeapons)) then {
 					pr _items = primaryWeaponItems _hO;
 					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
-					diag_log format	["  Weapon mags:	%1", _mags];
+					LOG_TEMPLATE	["  Weapon mags:	%1", _mags];
 					pr _magsIntersect = _mags arrayIntersect _unitMags;
-					diag_log format	["  Mags intersect:	%1", _magsIntersect];
+					LOG_TEMPLATE	["  Mags intersect:	%1", _magsIntersect];
 					_primaryWeapons pushBack _weap;
 					if (count _magsIntersect == 0) then {
 						_primaryWeaponMagazines pushBack _mags;				// Some configs are incomplete and point at base magazine item, just grab all magazines available in config then
-						diag_log format ["   Add to array: %1", _mags];
+						LOG_TEMPLATE ["   Add to array: %1", _mags];
 					} else {
 						_primaryWeaponMagazines pushBack _magsIntersect;	// We need mags compatible with unit's weapon, but only those which are compatible with the weapon
-						diag_log format ["   Add to array: %1", _magsIntersect];
+						LOG_TEMPLATE ["   Add to array: %1", _magsIntersect];
 					};
 					
 					{ if (_x != "") then {_primaryWeaponItems pushBackUnique _x} } forEach _items;
@@ -188,29 +195,29 @@ pr _riflemanWeapons = _loadoutWeapons#T_INF_rifleman#0;
 (_loadoutWeapons#T_INF_medic#0) append _riflemanWeapons;
 (_loadoutWeapons#T_INF_engineer#0) append _riflemanWeapons;
 
-diag_log format ["Primary weapons:", _primaryWeapons];
-diag_log format ["  %1", _primaryWeapons];
-diag_log format ["  %1", _primaryWeaponMagazines];
-diag_log format ["  %1", _primaryWeaponItems];
+LOG_TEMPLATE ["Primary weapons:", _primaryWeapons];
+LOG_TEMPLATE ["  %1", _primaryWeapons];
+LOG_TEMPLATE ["  %1", _primaryWeaponMagazines];
+LOG_TEMPLATE ["  %1", _primaryWeaponItems];
 
-diag_log format ["Secondary weapons:", _secondaryWeapons];
-diag_log format ["  %1", _secondaryWeapons];
-diag_log format ["  %1", _secondaryWeaponMagazines];
-diag_log format ["  %1", _secondaryWeaponItems];
+LOG_TEMPLATE ["Secondary weapons:", _secondaryWeapons];
+LOG_TEMPLATE ["  %1", _secondaryWeapons];
+LOG_TEMPLATE ["  %1", _secondaryWeaponMagazines];
+LOG_TEMPLATE ["  %1", _secondaryWeaponItems];
 
-diag_log format ["Handgun weapons:", _handgunWeapons];
-diag_log format ["  %1", _handgunWeapons];
-diag_log format ["  %1", _handgunWeaponMagazines];
-diag_log format ["  %1", _handgunWeaponItems];
+LOG_TEMPLATE ["Handgun weapons:", _handgunWeapons];
+LOG_TEMPLATE ["  %1", _handgunWeapons];
+LOG_TEMPLATE ["  %1", _handgunWeaponMagazines];
+LOG_TEMPLATE ["  %1", _handgunWeaponItems];
 
-diag_log format ["Items:"];
-diag_log format ["  %1", _items];
+LOG_TEMPLATE ["Items:"];
+LOG_TEMPLATE ["  %1", _items];
 
-diag_log format ["Vests:"];
-diag_log format ["  %1", _vests];
+LOG_TEMPLATE ["Vests:"];
+LOG_TEMPLATE ["  %1", _vests];
 
-diag_log format ["Backpacks:"];
-diag_log format ["  %1", _backpacks];
+LOG_TEMPLATE ["Backpacks:"];
+LOG_TEMPLATE ["  %1", _backpacks];
 
 
 // Export to string

@@ -1,0 +1,133 @@
+name: Publish to Workshop
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Validate Config
+      run: python3 tools/SQF-validate/config_style_checker.py
+
+    - name: Check for BOM
+      uses: arma-actions/bom-check@master
+      with:
+        path: 'Vindicta.Altis'
+
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Validate SQF with SQF-VM
+      run: |
+        cd Vindicta.Altis
+        New-Item .\config\user_local_config.hpp -ItemType File
+        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
+
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    needs: [validate, test]
+    steps:
+    - uses: actions/checkout@master
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Get Release Info
+      run: |
+        $latest_release = (Invoke-WebRequest https://api.github.com/repos/${{ github.repository }}/releases | ConvertFrom-Json).Get(0)
+        $major, $minor = $latest_release.tag_name.replace('v','').split('.')
+        Set-Content -Path .\configs\majorVersion.hpp -Value $major -Force -NoNewline
+        Set-Content -Path .\configs\minorVersion.hpp -Value $minor -Force -NoNewline
+        $uploadurl = $latest_release.upload_url
+        $changelog = $latest_release.body
+        Set-Content -Path .\_uploadurl -Value $uploadurl -Force -NoNewline
+        Set-Content -Path .\_changelog -Value $changelog -Force -NoNewline
+
+    - name: Build
+      run: |
+        cd Vindicta-Addon
+        .\tools\buildv2.ps1 ${{ github.run_number }}
+        
+    - uses: actions/upload-artifact@v1
+      with:
+        name: build
+        path: Vindicta-Addon/release
+          
+    - uses: actions/upload-artifact@v1
+      with:
+        name: _uploadurl
+        path: _uploadurl
+          
+    - uses: actions/upload-artifact@v1
+      with:
+        name: _changelog
+        path: _changelog
+
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build]
+    steps:
+    - name: Download build
+      uses: actions/download-artifact@v1
+      with:
+        name: build
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: _uploadurl
+        path: .
+        
+    - uses: actions/download-artifact@v1
+      with:
+        name: _changelog
+        path: .
+
+    - id: release_info
+      run: |
+        ls
+        echo "::set-output name=upload_url::$(cat _uploadurl)"
+        changelog=`cat _changelog`
+        echo $changelog
+        changelog="${changelog//'%'/'%25'}"
+        changelog="${changelog//$'\n'/'%0A'}"
+        changelog="${changelog//$'\r'/'%0D'}" 
+        echo "::set-output name=changelog::$changelog"
+
+    - name: Publish to Steam Workshop
+      uses: arma-actions/workshop-upload@v1
+      with:
+        appId: '107410'      # default
+        itemId: '1964186045' # Vindicta (Alpha) https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+        contentPath: 'build/@vindicta'
+        changelog: "${{ steps.release_info.outputs.changelog }}"
+      env:
+        STEAM_USERNAME: ${{ secrets.SECRET_0 }}
+        STEAM_PASSWORD: ${{ secrets.SECRET_1 }}
+
+    - name: Prepare for Release
+      run: |
+        cd build
+        zip -r vindicta.zip @vindicta
+        ls
+
+    - name: Publish to GitHub Release
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release_info.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./build/vindicta.zip
+        asset_name: vindicta.zip
+        asset_content_type: application/zip

@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:UI/DialogBase/DialogOneTabButtons.sqf","DialogOneTabButtons.sqf");NDSummary.OnSummaryLoaded("File:UI/DialogBase/DialogOneTabButtons.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[959,0,0,"DialogSingleTabWithButtons","DialogSingleTabWithButtons"]]);

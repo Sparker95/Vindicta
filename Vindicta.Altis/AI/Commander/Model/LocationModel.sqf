@@ -117,15 +117,15 @@ CLASS("LocationModel", "ModelBase")
 
 
 		// Sync intel about enemy efficiency here
-		OOP_INFO_1("SYNC AICommander: %1", _AICommander);
+		//OOP_INFO_1("SYNC AICommander: %1", _AICommander);
 		if (!IS_NULL_OBJECT(_AICommander)) then {
 			pr _intel = CALLM1(_AICommander, "getIntelAboutLocation", _actual);
-			OOP_INFO_1("  Intel: %1", _intel);
+			//OOP_INFO_1("  Intel: %1", _intel);
 			if (IS_NULL_OBJECT(_intel)) then {
 				T_SETV("efficiency", +T_EFF_null);
 			} else {
 				pr _intelEff = GETV(_intel, "efficiency");
-				OOP_INFO_1("  Intel eff: %1", _intelEff);
+				//OOP_INFO_1("  Intel eff: %1", _intelEff);
 				T_SETV("efficiency", +_intelEff);
 			};
 		};

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("uni",["Class","Variable","Function"],[["Unit",,[[,,,,0,"File:Unit/Unit.sqf:Unit","SQFClass:Unit"]]],["unitData",,[["Intel.IntelLocation",,,,1,"File:Intel/Intel.sqf:Intel.IntelLocation.unitData","SQFClass:Intel.IntelLocation:unitData"]]],["unitHasInventoryItem",,[[,,,,2,"File:Intel/UnitIntel.sqf:unitHasInventoryItem"]]]]);

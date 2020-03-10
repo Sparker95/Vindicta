@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:Action.ActionUnitShootLegTarget","ActionUnitShootLegTarget");NDSummary.OnSummaryLoaded("SQFClass:Action.ActionUnitShootLegTarget",[["SQF","SQF"]],[["Classes","Class"]],[[378,0,0,"<span class=\"Qualifier\">Action.</span>&#8203;ActionUnitShootLegTarget"]]);

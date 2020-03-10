@@ -74,12 +74,11 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 				
 				pr _hO = GETV(_thisObject, "hO");
 				if ([_hO] call misc_fnc_isVehicleFlipped) then {
-			
 					pr _counter = T_GETV("counter");
 					if (_counter > 1) then {
 						// Too many attempts already
 						_hO setVectorUp [0, 0, 1];
-						_hO setPosWorld ((getPosWorld _hO) vectorAdd [0, 0, 2]);
+						_hO setVehiclePosition [ZERO_HEIGHT(getPos _hO), [], 10, "NONE"];
 					} else {
 						pr _torque = T_GETV("torque");
 						OOP_INFO_1("torque: %1", _torque);

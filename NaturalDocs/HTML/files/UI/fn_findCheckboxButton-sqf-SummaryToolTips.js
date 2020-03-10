@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:UI/fn_findCheckboxButton.sqf",{1007:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Finds a button for the specified checkbox static control.</div></div>"});

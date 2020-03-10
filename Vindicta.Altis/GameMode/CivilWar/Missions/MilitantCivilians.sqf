@@ -151,7 +151,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			OOP_INFO_MSG("Spawning %1 civilians in %2 to do some damage", [_deficit ARG _city]);
 
 			// Create some civilians that can do some damage!
-			private _pos = CALLM0(_city, "getPos");
+			private _pos = ZERO_HEIGHT(CALLM0(_city, "getPos"));
 			private _radius = GETV(_city, "boundingRadius");
 
 			/// Use the civ types specified in the presence module

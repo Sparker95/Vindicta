@@ -1,0 +1,1 @@
+NDContentPage.OnToolTipsLoaded({54:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Base class for AI_GOAP.&nbsp; It can manage world facts and sensors. Process method is empty.&nbsp; Author: Sparker 03.03.2019</div></div>"});

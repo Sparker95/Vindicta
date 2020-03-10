@@ -134,53 +134,53 @@ CLASS("GarrisonSplitDialog", "")
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: CANCEL BUTTON CLICK");
-			CALLM0(_thisObject, "onButtonClose");
+			T_CALLM0("onButtonClose");
 		}];
 		(_display displayCtrl IDC_GSPLIT_BUTTON_CLOSE) ctrlAddEventHandler ["ButtonClick", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: CLOSE BUTTON CLICK");
-			CALLM0(_thisObject, "onButtonClose");
+			T_CALLM0("onButtonClose");
 		}];
 		// Split button
 		(_display displayCtrl IDC_GSPLIT_BUTTON_SPLIT) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: SPLIT BUTTON CLICK");
-			CALLM0(_thisObject, "onButtonSplit");
+			T_CALLM0("onButtonSplit");
 		}];
 		// Move left/right
 		(_display displayCtrl IDC_GSPLIT_BUTTON_MOVE_LEFT) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: MOVE LEFT BUTTON CLICK");
-			CALLM0(_thisObject, "onButtonMoveLeft");
+			T_CALLM0("onButtonMoveLeft");
 		}];
 		(_display displayCtrl IDC_GSPLIT_BUTTON_MOVE_RIGHT) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: MOVE RIGHT BUTTON CLICK");
-			CALLM0(_thisObject, "onButtonMoveRight");
+			T_CALLM0("onButtonMoveRight");
 		}];
 		// Move all left/right
 		(_display displayCtrl IDC_GSPLIT_BUTTON_MOVE_LEFT_ALL) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: MOVE LEFT ALL BUTTON CLICK");
-			CALLM0(_thisObject, "onButtonMoveLeftAll");
+			T_CALLM0("onButtonMoveLeftAll");
 		}];
 		(_display displayCtrl IDC_GSPLIT_BUTTON_MOVE_RIGHT_ALL) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: MOVE RIGHT ALL BUTTON CLICK");
-			CALLM0(_thisObject, "onButtonMoveRightAll");
+			T_CALLM0("onButtonMoveRightAll");
 		}];
 		// Listbox
 		(_display displayCtrl IDC_GSPLIT_LB_LEFT) ctrlAddEventHandler ["LBDblClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: LEFT LB DOUBLE CLICK");
-			CALLM0(_thisObject, "onButtonMoveRight");
+			T_CALLM0("onButtonMoveRight");
 			T_SETV("dblClickedLeft", true);
 		}];
 		(_display displayCtrl IDC_GSPLIT_LB_RIGHT) ctrlAddEventHandler ["LBDblClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: RIGHT LB DOUBLE CLICK");
-			CALLM0(_thisObject, "onButtonMoveLeft");
+			T_CALLM0("onButtonMoveLeft");
 			T_SETV("dblClickedRight", true);
 		}];
 		(_display displayCtrl IDC_GSPLIT_LB_LEFT) ctrlAddEventHandler ["LBSelChanged", {
@@ -217,19 +217,19 @@ CLASS("GarrisonSplitDialog", "")
 		// Listbox buttons
 		(_display displayCtrl IDC_GSPLIT_LB_LEFT_LEFT) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
-			CALLM0(_thisObject, "onButtonMoveLeft");
+			T_CALLM0("onButtonMoveLeft");
 		}];
 		(_display displayCtrl IDC_GSPLIT_LB_LEFT_RIGHT) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
-			CALLM0(_thisObject, "onButtonMoveRight");
+			T_CALLM0("onButtonMoveRight");
 		}];
 		(_display displayCtrl IDC_GSPLIT_LB_RIGHT_LEFT) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
-			CALLM0(_thisObject, "onButtonMoveLeft");
+			T_CALLM0("onButtonMoveLeft");
 		}];
 		(_display displayCtrl IDC_GSPLIT_LB_RIGHT_RIGHT) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
-			CALLM0(_thisObject, "onButtonMoveRight");
+			T_CALLM0("onButtonMoveRight");
 		}];
 
 		T_CALLM1("updateListboxAndText", 0);
@@ -342,7 +342,8 @@ CLASS("GarrisonSplitDialog", "")
 		CALLM2(_AI, "postMethodAsync", "splitGarrisonFromComposition", _args);
 		T_CALLM1("setHintText", "Waiting for server to respond...");
 		T_SETV("state", 1);
-
+		// Close now
+		T_CALLM0("onButtonClose");
 	} ENDMETHOD;
 
 	// = = = = = = = = = Other methods = = = = = = = = = = 
@@ -605,11 +606,11 @@ CLASS("GarrisonSplitDialog", "")
 			switch (_responseCode) do {
 			// Garrison is destroyed
 			case 11: {
-				systemChat "Error: garrison is destroyed";
+				systemChat "Error: Garrison is destroyed.";
 			};
 			case 22: {
 				// It's a success
-				systemChat "Garrison was split successfully";
+				systemChat "Garrison was split successfully.";
 			};
 		};
 		};
@@ -620,11 +621,11 @@ CLASS("GarrisonSplitDialog", "")
 		switch (_responseCode) do {
 			// Garrison is destroyed
 			case 11: {
-				T_CALLM1("setHintText", "Error: garrison is destroyed");
+				T_CALLM1("setHintText", "Error: Garrison is destroyed.");
 			};
 			case 22: {
 				// It's a success
-				T_CALLM1("setHintText", "Garrison was split successfully");
+				T_CALLM1("setHintText", "Garrison was split successfully.");
 				systemChat "Garrison was split successfully";
 				//CALLSM0("GarrisonSplitDialog", "deleteInstance"); no let's rather not auto-close it, because we might have opened another dialog already
 			};

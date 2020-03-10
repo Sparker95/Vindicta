@@ -12,7 +12,7 @@ Author: Sparker 12.07.2018
 
 #define pr private
 
-#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject])
+#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]); DUMP_CALLSTACK
 
 #define MESSAGE_LOOP gMessageLoopMain
 
@@ -25,6 +25,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
 	/* save */	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
 	/* save */	VARIABLE_ATTR("side", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	// SAVEBREAK units doesn't need to be saved any more
 	/* save */	VARIABLE_ATTR("units", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
 				VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
@@ -57,9 +58,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	// It is set by various functions changing state of this garrison
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
-				VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
+				VARIABLE_ATTR("outdated", 	[ATTR_PRIVATE]);
 				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
-
+	/* save */	VARIABLE_ATTR("savedUnits",	[ATTR_PRIVATE ARG ATTR_SAVE_VER(11)]);
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -719,7 +720,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			_return
 		};
 
-		_return = GET_VAR(_thisObject, "faction");
+		_return = T_GETV("faction");
 		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
@@ -743,7 +744,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			sideUnknown
 		};
 
-		private _return = GET_VAR(_thisObject, "side");
+		private _return = T_GETV("side");
 		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
@@ -765,7 +766,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			//__MUTEX_UNLOCK;
 			NULL_OBJECT
 		};
-		private _return = GET_VAR(_thisObject, "location");
+		private _return = T_GETV("location");
 		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
@@ -788,7 +789,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			//__MUTEX_UNLOCK;
 			[]
 		};
-		pr _return = +GET_VAR(_thisObject, "groups");
+		pr _return = +T_GETV("groups");
 		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
@@ -914,7 +915,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
-
 	/*
 	Method: getBuildResources
 
@@ -923,12 +923,13 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getBuildResources") {
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
-		pr _buildRes = 0;
+		private _buildRes = T_GETV("buildResources");
+
 		//__MUTEX_LOCK;
 		if (_buildRes == -1 || _forceUpdate) then {
 			T_CALLM0("updateBuildResources");
+			_buildRes = T_GETV("buildResources");
 		};
-		_buildRes = T_GETV("buildResources");
 		//__MUTEX_UNLOCK;
 
 		_buildRes
@@ -939,8 +940,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("_getBuildResources") {
 		params [P_THISOBJECT];
 
-		pr _return = 0;
-		pr _units = T_GETV("units");
+		private _return = 0;
+		private _units = T_GETV("units");
 		{
 			_return = _return + CALLM0(_x, "getBuildResources");
 		} forEach _units;
@@ -953,7 +954,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("updateBuildResources") {
 		params [P_THISOBJECT];
 
-		_buildRes = T_CALLM0("_getBuildResources");
+		private _buildRes = T_CALLM0("_getBuildResources");
 		T_SETV("buildResources", _buildRes);
 
 		OOP_INFO_1("UPDATE BUILD RESOURCES: %1", _buildRes);
@@ -969,12 +970,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (_value <= 0) exitWith {};
 		
 		// Find units which can have build resources
-		pr _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+		private _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
 
 		// Bail if there are no units which can have build resources
 		if (count _units == 0) exitWith {};
 
-		pr _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
+		private _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
 		{
 			CALLM1(_x, "addBuildResources", _valuePerUnit);
 		} forEach _units;
@@ -1019,6 +1020,27 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_CALLM0("updateBuildResources");
 	} ENDMETHOD;
 
+	METHOD("assignCargo") {
+		params [P_THISOBJECT, P_ARRAY("_cargo")];
+		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
+		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+
+		{
+			private _unit = _x;
+			CALLM1(_unit, "addToInventory", _cargo);
+		} forEach _cargoVehicles;
+	} ENDMETHOD;
+
+	METHOD("clearCargo") {
+		params [P_THISOBJECT];
+		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
+		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+
+		{
+			private _unit = _x;
+			CALLM0(_unit, "clearInventory");
+		} forEach _cargoVehicles;
+	} ENDMETHOD;
 	// 						G E T   A I
 	/*
 	Method: getAI
@@ -1247,12 +1269,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("addUnit") {
+	/* async */ METHOD("addUnit") {
 		params[P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 
-		// Assert that the unit is valid
-		if (!CALLM0(_unit, "isValid")) exitWith {
+		// Assert that the unit is valid (this function is called via message queue and as such the unit can become invalid)
+		if (!IS_OOP_OBJECT(_unit) || {!CALLM0(_unit, "isValid")}) exitWith {
 			OOP_ERROR_1("Attempt to add an invalid unit: %1", _unit);
 		};
 
@@ -1269,26 +1291,26 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		// Check if the unit is already in a garrison
-		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
+		private _unitGarrison = CALLM0(_unit, "getGarrison");
 		OOP_INFO_1("  unit's garrison: %1", _unitGarrison);
-		if(_unitGarrison != "") then {
+		if(_unitGarrison != NULL_OBJECT) then {
 			// Remove unit from its previous garrison
 			CALLM1(_unitGarrison, "removeUnit", _unit);
 
 			/*
 			diag_log format ["[Garrison::addUnit] Error: can't add a unit which is already in a garrison, garrison: %1, unit: %2: %3",
-				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
+				T_GETV("name"), _unit, CALLM0(_unit, "getData")];
 				*/
 		};
 
 		// Check if the unit is in a group
-		private _unitGroup = CALL_METHOD(_unit, "getGroup", []);
-		if (_unitGroup != "") then {
+		private _unitGroup = CALLM0(_unit, "getGroup");
+		if (_unitGroup != NULL_OBJECT) then {
 			diag_log format ["[Garrison::addUnit] Warning: adding a unit assigned to a group, garrison : %1, unit: %2: %3",
-				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
+				T_GETV("name"), _unit, CALLM0(_unit, "getData")];
 		};
 
-		private _units = GET_VAR(_thisObject, "units");
+		private _units = T_GETV("units");
 		_units pushBackUnique _unit;
 
 		// Spawn or despawn the unit if needed
@@ -1296,13 +1318,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
 			if (!_unitIsSpawned) then {
 				pr _loc = T_GETV("location");
-				if (_loc == "") then {
-					pr _pos = CALLM0(_thisObject, "getPos");
+				if (_loc == NULL_OBJECT) then {
+					pr _pos = T_CALLM0("getPos");
 					pr _className = CALLM0(_unit, "getClassName");
-					pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _pos);
+					pr _posAndDir = CALLSM3("Location", "findSafePos", _pos, _className, 400);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
 				} else {
-					pr _unitData = CALL_METHOD(_unit, "getMainData", []);
+					pr _unitData = CALLM0(_unit, "getMainData");
 					pr _group = CALLM0(_unit, "getGroup");
 					pr _groupType = if (_group != "") then {
 						CALLM0(_group, "getType")
@@ -1310,8 +1332,8 @@ CLASS("Garrison", "MessageReceiverEx");
 						GROUP_TYPE_IDLE
 					};
 					pr _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
-					pr _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-					CALL_METHOD(_unit, "spawn", _posAndDir);
+					pr _posAndDir = CALLM(_loc, "getSpawnPos", _args);
+					CALLM(_unit, "spawn", _posAndDir);
 				};
 			};
 		} else {
@@ -1333,7 +1355,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Add to the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
-		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+		T_CALLM3("increaseCounters", _catID, _subcatID, _className);
  
 		// Move all cargo of this unit too!
 		pr _unitAI = CALLM0(_unit, "getAI");
@@ -1353,6 +1375,97 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
+	Method: assignUnits
+	Same as assignUnits, but removes units from thier existing group.
+
+	Parameters: _units
+
+	_units - array of <Unit> object
+
+	Returns: nil
+	*/
+	METHOD("assignUnits") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		// Remove the units from thier group
+		{
+			private _unit = _x;
+			pr _unitGroup = CALLM0(_unit, "getGroup");
+			if (_unitGroup != NULL_OBJECT) then {
+				CALLM1(_unitGroup, "removeUnit", _unit);
+			};
+		} forEach _units;
+
+		// Move the units into the players garrison
+		T_CALLM1("addUnits", _units);
+	} ENDMETHOD;
+
+	/*
+	Method: takeUnits
+	Same as takeUnits, but creates new groups for the units where required
+
+	Parameters: _units
+
+	_units - array of <Unit> object
+
+	Returns: nil
+	*/
+	METHOD("takeUnits") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_units")];
+		
+		private _inf = _units select { CALLM0(_x, "getCategory") == T_INF };
+		private _vehiclesStaticsAndDrones = _units select { CALLM0(_x, "getCategory") in [T_VEH, T_DRONE] };
+		private _cargo = _units select { CALLM0(_x, "getCategory") == T_CARGO };
+
+		private _statics = _vehiclesStaticsAndDrones select { CALLM0(_x, "getSubcategory") in T_VEH_static };
+		private _vehiclesAndDrones = _vehiclesStaticsAndDrones - _statics;
+
+		// Reorganize the infantry units we are moving
+		if (count _inf > 0) then {
+			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+			pr _newInfGroups = [_newGroup];
+			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
+			// forEach _inf;
+			{
+				// Create a new inf group if the current one is 'full'
+				if (count CALLM0(_newGroup, "getUnits") > 6) then {
+					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+					_newInfGroups pushBack _newGroup;
+					CALLM1(_garSrc, "addGroup", _newGroup);
+				};
+
+				// Add the unit to the group
+				CALLM1(_newGroup, "addUnit", _x);
+			} forEach _inf;
+
+			// Move all the infantry groups
+			{
+				T_CALLM1("addGroup", _x);
+			} forEach _newInfGroups;
+		};
+
+		// Move all the vehicle units into one group
+		// Vehicles need to be moved within a group too
+		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		if (count _vehiclesAndDrones > 0) then {
+			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]);
+			CALLM1(_garSrc, "addGroup", _newVehGroup);
+			{
+				CALLM1(_newVehGroup, "addUnit", _x);
+			} forEach _vehiclesAndDrones;
+
+			// Move the veh group
+			T_CALLM1("addGroup", _newVehGroup);
+		};
+
+		// TODO: static groups?
+		// We will keep cargo and statics not in groups for now
+		T_CALLM1("assignUnits", _cargo + _statics);
+
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
+	} ENDMETHOD;
+
+	/*
 	Method: addUnits
 	Same as addUnit, but for an array of units.
 
@@ -1362,7 +1475,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-
 	METHOD("addUnits") {
 		params[P_THISOBJECT, P_ARRAY("_units")];
 		__MUTEX_LOCK;
@@ -1422,10 +1534,14 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("removeUnit") {
+	/* async */ METHOD("removeUnit") {
 		params[P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
-		
+		// Assert that the unit is valid (this function is called via message queue and as such the unit can become invalid)
+		if (!IS_OOP_OBJECT(_unit) || {!CALLM0(_unit, "isValid")}) exitWith {
+			OOP_ERROR_1("Attempt to add an invalid unit: %1", _unit);
+		};
+
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -1440,11 +1556,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Notify AI of the garrison about unit removal
 		pr _AI = T_GETV("AI");
-		if (_AI != "") then {
+		if (_AI != NULL_OBJECT) then {
 			CALLM1(_AI, "handleUnitsRemoved", [_unit]);
 		};
 		
-		private _units = GET_VAR(_thisObject, "units");
+		private _units = T_GETV("units");
 		_units deleteAt (_units find _unit);
 
 		// Set the garrison of this unit
@@ -1461,7 +1577,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Remove all cargo of this unit too!
 		pr _unitAI = CALLM0(_unit, "getAI");
-		if (_unitAI != "") then {
+		if (_unitAI != NULL_OBJECT) then {
 			pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
 			{
 				T_CALLM1("removeUnit", _x);
@@ -1488,10 +1604,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("addGroup") {
+	/* async */ METHOD("addGroup") {
 		params[P_THISOBJECT, P_OOP_OBJECT("_group")];
 		ASSERT_OBJECT_CLASS(_group, "Group");
-
+		if (!IS_OOP_OBJECT(_group)) exitWith {
+			OOP_ERROR_1("Attempt to add a non-existant group: %1", _group);
+		};
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -1513,7 +1631,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Add this group and its units to this garrison
 		private _groupUnits = CALL_METHOD(_group, "getUnits", []);
-		private _units = GET_VAR(_thisObject, "units");
+		private _units = T_GETV("units");
 		{
 			// Add to units array
 			_units pushBackUnique _x;
@@ -1535,7 +1653,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
 			CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
 		} forEach _groupUnits;
-		private _groups = GET_VAR(_thisObject, "groups");
+		private _groups = T_GETV("groups");
 		_groups pushBackUnique _group;
 		CALL_METHOD(_group, "setGarrison", [_thisObject]);
 
@@ -1610,7 +1728,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Remove this group and all its units from this garrison
 		pr _groupUnits = CALL_METHOD(_group, "getUnits", []);
-		pr _units = GET_VAR(_thisObject, "units");
+		pr _units = T_GETV("units");
 		{
 			_units deleteAt (_units find _x);
 
@@ -1632,7 +1750,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
 				
 		} forEach _groupUnits;
-		pr _groups = GET_VAR(_thisObject, "groups");
+		pr _groups = T_GETV("groups");
 		_groups deleteAt (_groups find _group);
 		
 		// If garrison is spawned, notify the AI object. updateComposition must be called after the group and its units are already removed from the garrison.
@@ -1796,6 +1914,23 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			T_CALLM1("captureUnit", _x);
 		} forEach _srcUnits;
+
+		// Notify players of what happened
+		private _loc = CALLM0(_garrison, "getLocation");
+		private _garrDesc = if(!IS_NULL_OBJECT(_loc)) then {
+			format["at %1", CALLM0(_loc, "getDisplayName")]
+		} else {
+			private _pos = CALLM0(_garrison, "getPos");
+			format["at %1", mapGridPosition _pos]
+		};
+		private _action = if(count _srcUnits > 0) then {
+			"captured"
+		} else {
+			"destroyed"
+		};
+
+		private _args = ["GARRISON CAPTURED", format["Garrison %1 was %2 by enemy", _garrDesc, _action], "Garrisons must contain infantry"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createGarrisonNotification", _args, ON_CLIENTS, NO_JIP);
 
 		// Destroy the source garrison
 		if (_destroy) then {
@@ -1975,10 +2110,11 @@ CLASS("Garrison", "MessageReceiverEx");
 			[_catID, _subcatID, _classID]
 		};
 
-		// Find units for each category
-		pr _unitsFound = [[], [], []];
-		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones"];
+		//// Find units for each category
+		//pr _unitsFound = [[], [], []];
+		//_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones"];
 		// forEach [T_INF, T_VEH, T_DRONE];
+		private _unitsFound = [];
 		{
 			pr _catID = _x;
 			// forEach _comp#_catID;
@@ -1992,7 +2128,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					pr _index = _unitsSrcData find [_catID, _subcatID, _classID];
 					if (_index != -1) then {
 						// There is a match
-						(_unitsFound#_catID) pushBack (_unitsSrc#_index); // Move to the array with found units
+						_unitsFound pushBack (_unitsSrc#_index); // Move to the array with found units
 						_unitsSrc deleteAt _index;
 						_unitsSrcData deleteAt _index;
 					} else {
@@ -2001,49 +2137,50 @@ CLASS("Garrison", "MessageReceiverEx");
 					};
 				} forEach _classes;
 			} forEach _comp#_catID;
-		} forEach [T_INF, T_VEH, T_DRONE];
+		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 
-		// Reorganize the infantry units we are moving
-		if (count _unitsFoundInf > 0) then {
-			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
-			pr _newInfGroups = [_newGroup];
-			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
-			// forEach _unitsFoundInf;
-			{
-				// Create a new inf group if the current one is 'full'
-				if (count CALLM0(_newGroup, "getUnits") > 6) then {
-					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
-					_newInfGroups pushBack _newGroup;
-					CALLM1(_garSrc, "addGroup", _newGroup);
-				};
+		T_CALLM2("takeUnits", _garSrc, _unitsFound);
+		// // Reorganize the infantry units we are moving
+		// if (count _unitsFoundInf > 0) then {
+		// 	_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+		// 	pr _newInfGroups = [_newGroup];
+		// 	CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
+		// 	// forEach _unitsFoundInf;
+		// 	{
+		// 		// Create a new inf group if the current one is 'full'
+		// 		if (count CALLM0(_newGroup, "getUnits") > 6) then {
+		// 			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+		// 			_newInfGroups pushBack _newGroup;
+		// 			CALLM1(_garSrc, "addGroup", _newGroup);
+		// 		};
 
-				// Add the unit to the group
-				CALLM1(_newGroup, "addUnit", _x);
-			} forEach _unitsFoundInf;
+		// 		// Add the unit to the group
+		// 		CALLM1(_newGroup, "addUnit", _x);
+		// 	} forEach _unitsFoundInf;
 
-			// Move all the infantry groups
-			{
-				CALLM1(_thisObject, "addGroup", _x);
-			} forEach _newInfGroups;
-		};
+		// 	// Move all the infantry groups
+		// 	{
+		// 		CALLM1(_thisObject, "addGroup", _x);
+		// 	} forEach _newInfGroups;
+		// };
 
-		// Move all the vehicle units into one group
-		// Vehicles need to be moved within a group too
-		pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
-		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
-		if (count _vehiclesAndDrones > 0) then {
-			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
-			CALLM1(_garSrc, "addGroup", _newVehGroup);
-			{
-				CALLM1(_newVehGroup, "addUnit", _x);
-			} forEach _vehiclesAndDrones;
+		// // Move all the vehicle units into one group
+		// // Vehicles need to be moved within a group too
+		// pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
+		// OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		// if (count _vehiclesAndDrones > 0) then {
+		// 	pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
+		// 	CALLM1(_garSrc, "addGroup", _newVehGroup);
+		// 	{
+		// 		CALLM1(_newVehGroup, "addUnit", _x);
+		// 	} forEach _vehiclesAndDrones;
 
-			// Move the veh group
-			CALLM1(_thisObject, "addGroup", _newVehGroup);
-		};
+		// 	// Move the veh group
+		// 	CALLM1(_thisObject, "addGroup", _newVehGroup);
+		// };
 
-		// Delete empty groups in the src garrison
-		CALLM0(_garSrc, "deleteEmptyGroups");
+		// // Delete empty groups in the src garrison
+		// CALLM0(_garSrc, "deleteEmptyGroups");
 
 		__MUTEX_UNLOCK;
 
@@ -2092,14 +2229,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones", "_unitsFoundCargo"];
 		// forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 		{
-			pr _catID = _x;
+			private _catID = _x;
 			// forEach _comp#_catID;
 			{
-				pr _nUnitsNeeded = _x;
-				pr _subcatID = _foreachindex;
+				private _nUnitsNeeded = _x;
+				private _subcatID = _foreachindex;
 				while {_nUnitsNeeded > 0} do {
-					pr _index = _unitsSrc findIf {
-						CALLM0(_x, "getSubcategory") == _subCatID;
+					private _index = _unitsSrc findIf {
+						private _mainData = CALLM0(_x, "getMainData");
+						(_mainData#0 == _catID) && {_mainData#1 == _subCatID}
 					};
 
 					if (_index == -1) exitWith { OOP_ERROR_0("addUnitsFromCompositionNumbers Failed to find a unit?!") }; // WTF it should not happen, we have just verified that
@@ -2108,7 +2246,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					_unitsSrc deleteAt _index;
 					_nUnitsNeeded = _nUnitsNeeded - 1;
 				};
-			} forEach _comp#_catID;
+			} forEach (_comp#_catID);
 		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 
 		// Reorganize the infantry units we are moving
@@ -2173,6 +2311,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			//__MUTEX_UNLOCK;
+			[]
 		};
 
 		pr _units = T_GETV("units");
@@ -2229,11 +2368,13 @@ CLASS("Garrison", "MessageReceiverEx");
 				};
 			};
 			
-			// Also move ungrouped vehicles
+			// Also move ungrouped vehicles, or those in non-vehicle groups
 			pr _vehicleUnits = CALLM0(_thisObject, "getVehicleUnits");
 			{
 				pr _vehGroup = CALLM0(_x, "getGroup");
-				if (_vehGroup == "") then {
+				if (_vehGroup != _destGroup 
+					&& {IS_NULL_OBJECT(_vehGroup) 
+						|| {!(CALLM0(_vehGroup, "getType") in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC])}}) then {
 					CALLM1(_destGroup, "addUnit", _x);
 				};
 			} forEach _vehicleUnits;
@@ -2251,7 +2392,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					// Temporarily stop the AI object of the group because it can perform vehicle assignments in the other thread
 					// Event handlers when units are destroyed are disposed from this thread anyway
 					pr _groupAI = CALLM0(_group, "getAI");
-					if (_groupAI != "") then {
+					if (!IS_NULL_OBJECT(_groupAI)) then {
 						CALLM2(_groupAI, "postMethodSync", "stop",  []);
 					};
 					
@@ -2268,7 +2409,7 @@ CLASS("Garrison", "MessageReceiverEx");
 						CALLM1(_thisObject, "addGroup", _newGroup);
 						
 						// Get crew of this vehicle
-						if (_vehAI != "") then {
+						if (!IS_NULL_OBJECT(_vehAI)) then {
 							pr _vehCrew = CALLM3(_vehAI, "getAssignedUnits", true, true, false) select {
 								// We only need units in this vehicle that are also in this group
 								CALLM0(_x, "getGroup") == _group
@@ -2284,7 +2425,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					};
 					
 					// Start up the AI object again
-					if (_groupAI != "") then {
+					if (!IS_NULL_OBJECT(_groupAI)) then {
 						CALLM2(_groupAI, "postMethodSync", "start",  []);
 					};
 				};
@@ -2345,7 +2486,41 @@ CLASS("Garrison", "MessageReceiverEx");
 		[_compNumbers, _catID, _subcatID, 1] call comp_fnc_addValue;
 
 		__MUTEX_UNLOCK;
-	} ENDMETHOD;	
+	} ENDMETHOD;
+
+	/*
+	Method: _recalculateCounters
+	Recalculates efficiency vector and other counters from scratch,
+	used during loading.
+	
+	Private use!
+	
+	Returns: nil
+	*/
+	METHOD("_recalculateCounters") {
+		params [P_THISOBJECT];
+		T_SETV("effTotal", +T_EFF_null);
+		T_SETV("effMobile", +T_EFF_null);
+		T_SETV("countInf", 0);
+		T_SETV("countVeh", 0);
+		T_SETV("countDrone", 0);
+		T_SETV("countCargo", 0);
+
+		pr _comp = [];
+		{
+			pr _tempArray = [];
+			_tempArray resize _x;
+			_comp pushBack (_tempArray apply {[]});
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
+		T_SETV("compositionClassNames", _comp);
+		T_SETV("compositionNumbers", +T_comp_null);
+
+		{
+			// Add to the efficiency vector
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			T_CALLM3("increaseCounters", _catID, _subcatID, _className);
+		} forEach T_GETV("units");
+	} ENDMETHOD;
 	
 	/*
 	Method: subEfficiency
@@ -2564,6 +2739,38 @@ CLASS("Garrison", "MessageReceiverEx");
 			__MUTEX_UNLOCK;
 		};
 
+		// If its a player leading an AI group with no other players in it then release the group back to the AI commander
+		if(CALLM0(_unit, "isPlayer")) then {
+			private _unitHandle = CALLM0(_unit, "getObjectHandle");
+			private _group = group _unitHandle;
+			// If there are no other players in the group then release the AI units back to the AI commander
+			if((units _group findIf { _x != _unitHandle && _x in allPlayers }) == NOT_FOUND) then {
+				// Remove player from the group
+				[_unitHandle] joinSilent grpNull;
+
+				// // Move units to a new garrison
+				// // Make a new garrison
+				// private _actual = _thisObject;
+				// private _side = T_CALLM0("getSide");
+				// private _faction = T_CALLM0("getFaction");
+				// private _templateName = T_CALLM0("getTemplateName");
+				// private _newGarr = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
+				// private _pos = T_CALLM0("getPos");
+				// CALLM2(_newGarr, "postMethodAsync", "setPos", [_pos]);
+				// // Add the units to the garrison in a new group
+				// private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+				// CALLM1(_newGarr, "addGroup", _newGroup); // Add the new group to the src garrison first
+				// {
+				// 	CALLM1(_newGroup, "addUnit", _x);
+				// } forEach (units _group apply { 
+				// 	CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]) 
+				// } select {
+				// 	!IS_NULL_OBJECT(_x)
+				// });
+				// CALLM0(_newGarr, "activate");
+			};
+		};
+
 		// Call handleUnitKilled of the group of this unit
 		pr _group = CALLM0(_unit, "getGroup");
 		if (_group != "") then {
@@ -2609,29 +2816,164 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		__MUTEX_LOCK;
+
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
+		// Get the inf handle, we only auto detach vics (which is all this function does) by player action
+		private _infHandle = CALLM0(_unitInf, "getObjectHandle");
+		if(isNull _infHandle or {!isPlayer _infHandle}) exitWith {
+			__MUTEX_UNLOCK;
+		};
+
 		// Get garrison of the unit that entered the vehicle
-		pr _garDest = CALLM0(_unitInf, "getGarrison");
-		if (_garDest == "") then {
+		private _garDest = CALLM0(_unitInf, "getGarrison");
+		if (_garDest == NULL_OBJECT) then {
+			// Shouldn't be possible...
 			_garDest = gGarrisonAmbient;
-			OOP_ERROR_2("handleGetInVehicle: infantry unit has no garrison: %1, %2", _unitInf, CALLM0(_unitInf, "getData"));
 		};
 
 		// Check garrison of the unit that entered this vehicle
 		if (_garDest != _thisObject) then {
 			// Remove the vehicle from its group
-			pr _vehGroup = CALLM0(_unitVeh, "getGroup");
-			if (_vehGroup != "") then {
+			private _vehGroup = CALLM0(_unitVeh, "getGroup");
+			if (_vehGroup != NULL_OBJECT) then {
 				CALLM1(_vehGroup, "removeUnit", _unitVeh);
 			};
 
 			// Move the vehicle into the other garrison
 			CALLM1(_garDest, "addUnit", _unitVeh);
+
+			private _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
+
+			private _location = T_CALLM0("getLocation");
+			private _msg = if(_location != NULL_OBJECT) then {
+				format["%1 was automatically detached from garrison at %2", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"), CALLM0(_location, "getDisplayName")]
+			} else {
+				format["%1 was automatically detached from garrison", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")]
+			};
+
+			private _ourSide = T_CALLM0("getSide");
+
+			// Notify nearby players of what happened
+			private _nearbyClients = allPlayers select {side group _x == _ourSide && (_x distance _vicHandle) < 100} apply { owner _x };
+			private _args = ["VEHICLE DETACHED", _msg, "It will be no longer be saved here"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
+			OOP_INFO_0(_msg);
+
+			private _newSide = CALLM0(_garDest, "getSide");
+			if(_newSide != _ourSide) then {
+				// Send stimulus to garrison's casualties sensor if we are losing the vehicle to another side
+				// We consider it destruction of the vehicle
+				private _garAI = T_CALLM0("getAI");
+				if (!IS_NULL_OBJECT(_garAI)) then {
+					private _stim = STIMULUS_NEW();
+					STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
+					private _value = [_unitVeh, _infHandle];
+					STIMULUS_SET_VALUE(_stim, _value);
+					CALLM2(_garAI, "postAsync", "handleStimulus", [_stim]);
+				};
+			};
+		};
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
+	/*
+	Method: handleGetOutVehicle
+	Called when someone leaves a vehicle that belongs to this garrison.
+
+	Must be called inside the garrison thread through postMethodAsync, not inside event handler.
+
+	Parameters: _unitVeh, _unitInf
+
+	_unitVeh - the vehicle
+	_unitInf - the unit that left the vehicle
+
+	Returns: nil
+	*/
+	METHOD("handleGetOutVehicle") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_unitVeh"), P_OOP_OBJECT("_unitInf")];
+		ASSERT_OBJECT_CLASS(_unitVeh, "Unit");
+		ASSERT_OBJECT_CLASS(_unitInf, "Unit");
+
+		OOP_INFO_2("HANDLE UNIT GET OUT VEHICLE: %1, %2", _unitVeh, _unitInf);
+
+		ASSERT_THREAD(_thisObject);
+
+		__MUTEX_LOCK;
+
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+		};
+
+		// Get the inf handle, we only auto attach vics (which is all this function does) by player action
+		pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
+		if(isNull _infHandle or {!isPlayer _infHandle}) exitWith {
+			__MUTEX_UNLOCK;
+		};
+
+		// If the unit is the last one to leave the vehicle then we might
+		// assign the vehicle to the nearest locations garrison, if we are 
+		// at a location
+		pr _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
+		if(isNull _vicHandle) exitWith {
+			__MUTEX_UNLOCK; 
+			pr _data = CALLM0(_unitVeh, "getData");
+			OOP_ERROR_2("handleGetOutVehicle: vehicle unit doesn't have valid arma handle: %1, %2", _unitVeh, _data);
+		};
+
+		// Players remain in the vehicle so we don't change the owner
+		if ({ isPlayer _x } count (crew _vicHandle) != 0) exitWith { __MUTEX_UNLOCK; };
+
+		private _infSide = side group _infHandle;
+
+		// Find nearest appropriate garrison
+		// Use the side of the inf unit not the garrison, as the garrison isn't necessarily the same side as the unit
+		pr _ourLocs = CALLSM1("Location", "getLocationsAtPos", getPos _vicHandle) apply {
+			[getPos _vicHandle distance CALLM0(_x, "getPos"), _x, CALLM1(_x, "getGarrisons", _infSide)]
+		} select {
+			// garrisons exist
+			count (_x#2) > 0
+		};
+
+		// No friendly location found
+		if(count _ourLocs == 0) exitWith { 
+			__MUTEX_UNLOCK;
+		};
+
+		// Get closest one
+		_ourLocs sort ASCENDING;
+		_ourLocs#0 params ["_dist", "_nearestLocation", "_ourGarrisons"];
+
+		// Get garrison of the location
+		pr _garDest = _ourGarrisons#0;
+
+		// This can't really happen if _thisObject is always the ambient garrison, but may as well check
+		if (_garDest != _thisObject) then {
+			// Remove the vehicle from its group
+			pr _vehGroup = CALLM0(_unitVeh, "getGroup");
+			if (_vehGroup != NULL_OBJECT) then {
+				CALLM1(_vehGroup, "removeUnit", _unitVeh);
+			};
+
+			// Move the vehicle into the other garrison
+			CALLM1(_garDest, "addUnit", _unitVeh);
+
+			// Find nearest appropriate garrison
+			// Notify nearby players of what happened if its on player side
+			pr _nearbyClients = allPlayers select {side group _x == _infSide && (_x distance _vicHandle) < 100} apply { owner _x };
+
+			private _args = ["VEHICLE ATTACHED", format["%1 was automatically attached to garrison at %2", 
+				getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"),
+				CALLM0(_nearestLocation, "getDisplayName")
+			], "It will be saved here"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
+			OOP_INFO_0(_msg);
 		};
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -2649,7 +2991,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-
 	METHOD("handleCargoLoaded") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_unitCargo"), P_OOP_OBJECT("_unitVeh")];
 
@@ -2734,6 +3075,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
+			[]
 		};
 
 		pr _return = [];
@@ -2768,7 +3110,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		// findUnits will do asserts and locks for us
 		pr _units = CALLM1(_thisObject, "findUnits", _query);
-		count _units	
+		count _units
 	} ENDMETHOD;
 
 	/*
@@ -2782,6 +3124,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_GETV("countInf")
 	} ENDMETHOD;
 
+	/*
+	Method: countConsciousInfantryUnits
+	Returns the amount of conscious infantry units
+
+	Returns: Number
+	*/
+	METHOD("countConsciousInfantryUnits") {
+		params [P_THISOBJECT];
+		{CALLM0(_x, "isConscious")} count T_CALLM0("getInfantryUnits")
+	} ENDMETHOD;
+	
 	/*
 	Method: countOfficers
 	Returns the amount of officers
@@ -2897,14 +3250,14 @@ CLASS("Garrison", "MessageReceiverEx");
 	// Updates spawn state of garrisons close to the provided position
 	// Public, thread-safe
 	STATIC_METHOD("updateSpawnStateOfGarrisonsNearPos") {
-		params ["_thisClass", ["_pos", [], [[]]]];
+		params [P_THISCLASS, P_POSITION("_pos")];
 		pr _args = ["Garrison", "_updateSpawnStateOfGarrisonsNearPos", [_pos]];
 		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
 	} ENDMETHOD;
 
 	// Private, thread-unsafe
 	STATIC_METHOD("_updateSpawnStateOfGarrisonsNearPos") {
-		params ["_thisClass", ["_pos", [], [[]]]];
+		params [P_THISCLASS, P_POSITION("_pos")];
 
 		pr _gars = GETSV("Garrison", "all");
 		pr _garsToCheck = _gars select {
@@ -2922,21 +3275,190 @@ CLASS("Garrison", "MessageReceiverEx");
 		} forEach _garsToCheck;
 	} ENDMETHOD;
 
+	STATIC_METHOD("updatePlayerGroup") {
+		params [P_THISCLASS, P_OBJECT("_player")];
+		pr _args = ["Garrison", "_updatePlayerGroup", [_player]];
+		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
+	} ENDMETHOD;
+
+	STATIC_METHOD("_updatePlayerGroup") {
+		params [P_THISCLASS, P_OBJECT("_player")];
+
+		// Check that all non player units are in the player garrison, move them if not
+		// Make player group leader if leader is an AI
+
+		// Get the units OOP objects
+		private _nonPlayerUnits = (units group _player) select { !(_x in allPlayers) };
+
+		// Work out what garrison we are moving these units to
+		private _playerGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", side group _player);
+
+		// Get units that need reassigning to player garrison
+		private _unitsNeedReassigning = _nonPlayerUnits apply {
+			[CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x]), _x]
+		} select {
+			!IS_NULL_OBJECT(_x select 0) && {CALLM0(_x select 0, "getGarrison") != _playerGarrison}
+		} apply {
+			// Get the object handle back
+			_x select 1
+		};
+
+		if(count _unitsNeedReassigning > 0) then {
+			CALLSM2("Garrison", "_addUnitsToPlayerGroup", _player, _unitsNeedReassigning);
+		};
+
+		// Disable all this for now, player can make them selves leader
+		// // Make sure the group leader is a player
+		// if !(leader group _player in allPlayers) then {
+
+		// 	// remove and re-add AI to the group so players are first
+		// 	private _units = (units group _player) select { !(_x in allPlayers) };
+		// 	private _dummyGroup = createGroup (side group _player);
+		// 	_units joinSilent _dummyGroup;
+		// 	_units joinSilent group _player;
+		// 	group _player selectLeader _player;
+
+		// 	// private _players = [_player] + (_units - [_player]) select { _x in allPlayers };
+		// 	// private _reorderedUnits = _players + (_units - _players);
+		// 	// _reorderedUnits joinSilent _newGroup;
+		// };
+
+	} ENDMETHOD;
+	
+	STATIC_METHOD("addUnitsToPlayerGroup") {
+		params [P_THISCLASS, P_OBJECT("_player"), P_ARRAY("_unitHandles")];
+		diag_log format["addUnitsToPlayerGroup %1", _this];
+		pr _args = ["Garrison", "_addUnitsToPlayerGroup", [_player, _unitHandles]];
+		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
+	} ENDMETHOD;
+
+	STATIC_METHOD("_addUnitsToPlayerGroup") {
+		params [P_THISCLASS, P_OBJECT("_player"), P_ARRAY("_unitHandles")];
+		diag_log format["_addUnitsToPlayerGroup %1", _this];
+		// Updates spawn state of garrisons close to the provided position
+		OOP_INFO_2("Adding units %1 to group of player %2", _unitHandles, name _player);
+
+		// Work out what garrison we are moving these units to
+		private _tgtGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", side group _player);
+		private _tgtUnits = GETV(_tgtGarrison, "units");
+
+		if(isNull _player || {!alive _player}) exitWith {
+			OOP_WARNING_1("Can't add units, player is null or dead: %1", _player);
+		};
+
+		// Some sanity checks on the handles
+		_unitHandles = _unitHandles select {
+			!isNull _x 
+			// Only units on real player side
+			&& {side group _x isEqualTo side group _player}
+		};
+
+		// Get the units OOP objects
+		private _units = _unitHandles apply {
+			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
+		} select {
+			!IS_NULL_OBJECT(_x) && {!(CALLM0(_x, "getGarrison") isEqualTo _tgtGarrison)} 
+		};
+
+		if(count _units == 0) exitWith {
+			OOP_WARNING_2("Can't add units, no valid units to add, player: %1, unit handles: %2", _player, _unitHandles);
+		};
+
+		// Assign the units to the players garrison
+		CALLM1(_tgtGarrison, "assignUnits", _units);
+
+		pr _nearbyClients = allPlayers select { side group _x == side group _player && (_x distance _player) < 100 } apply { owner _x };
+		private _msg = format ["%1 units assigned to %2", count _units, name _player];
+		private _args = ["UNITS ASSIGNED", _msg, "They are now under direct control"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
+
+		// HACK: somewhat of a hack as we aren't making OOP groups, however the player garrisons do not 
+		// have any AI so they won't interfere with this
+		_unitHandles join _player;
+	} ENDMETHOD;
+
+
+	// STATIC_METHOD("makeGarrisonFromUnits") {
+	// 	params [P_THISCLASS, P_ARRAY("_unitHandles"), P_SIDE("_side")];
+	// 	pr _args = ["Garrison", "_makeGarrisonFromUnits", [_unitHandles, _side]];
+	// 	CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
+	// } ENDMETHOD;
+
+	METHOD("makeGarrisonFromUnits") {
+		params [P_THISOBJECT, P_ARRAY("_unitHandles")];
+
+		if(count _unitHandles == 0) exitWith {
+			OOP_WARNING_0("makeGarrisonFromUnits: No unit handles specified");
+		};
+
+		private _ourUnits = T_GETV("units");
+
+		// Get the units OOP objects
+		private _unitObjects = _unitHandles apply {
+			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
+		} select {
+			!IS_NULL_OBJECT(_x) && {_x in _ourUnits}
+		};
+
+		if(count _unitObjects == 0) exitWith {
+			OOP_WARNING_1("makeGarrisonFromUnits: No unit objects found for unit handles %1 in our garrison", _unitHandles);
+		};
+
+		private _side = T_GETV("side");
+		private _faction = T_CALLM0("getFaction");
+		private _templateName = T_CALLM0("getTemplateName");
+
+		OOP_INFO_2("Adding units %1 to commander for side %2", _unitHandles, _side);
+
+		// Make a new garrison
+		private _newGarrison = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
+		private _pos = position (_unitHandles#0);
+		CALLM1(_newGarrison, "setPos", _pos);
+
+		// Create some infantry group
+		private _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+
+		// Add group to ourselves first so we can move it after we populated it
+		T_CALLM1("addGroup", _group);
+
+		// Populate the new group
+		{
+			CALLM1(_group, "addUnit", _x);
+		} forEach _unitObjects;
+
+		// Add group to new garrison
+		CALLM1(_newGarrison, "addGroup", _group);
+
+		// Register it at the commander (do it after adding the units so the sync is correct)
+		CALLM(_newGarrison, "activate", []);
+
+		// Delete our empty groups
+		T_CALLM0("deleteEmptyGroups");
+
+		private _msg = format ["%1 units formed new garrison at %2", count _unitObjects, mapGridPosition _pos];
+		private _args = ["GARRISON FORMED", _msg, "They are now available for map control"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
+	} ENDMETHOD;	
+
 	METHOD("getTemplateName") {
 		params [P_THISOBJECT];
 		T_GETV("templateName")
 	} ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -
-
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
-		// Save all units
+		// Save all units (except players)
+		pr _savedUnits = T_GETV("units") select {
+			// Don't save players
+			!CALLM0(_x, "isPlayer")
+		};
+		T_SETV("savedUnits", _savedUnits);
 		{
 			private _unit = _x;
 			CALLM1(_storage, "save", _unit);
-		} forEach T_GETV("units");
+		} forEach _savedUnits;
 
 		// Save our groups
 		{
@@ -2965,11 +3487,20 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Load all our units
 		// We don't care that groups will try to restore them as well
 		// Storage class will not load same object twice anyway
+		private _savedUnits = if(GETV(_storage, "version") >= 11) then {
+			T_GETV("savedUnits")
+		} else {
+			T_GETV("units")
+		};
+
 		{
 			private _unit = _x;
 			//diag_log format ["Loading unit: %1", _unit];
 			CALLM1(_storage, "load", _unit);
-		} forEach T_GETV("units");
+		} forEach _savedUnits;
+
+		T_SETV("units", _savedUnits);
+		T_SETV("savedUnits", []);
 
 		// Load groups
 		{
@@ -2991,21 +3522,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("outdated", true);
 		T_SETV("regAtServer", false);
 
-		// Restore composition class names
-		// Since we convert class names to numbers...
-		pr _comp = [];
-		{
-			pr _tempArray = [];
-			_tempArray resize _x;
-			_comp pushBack (_tempArray apply {[]});
-		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
-		{
-			pr _className = CALLM0(_x, "getClassName");
-			pr _catID = CALLM0(_x, "getCategory");
-			pr _subCatID = CALLM0(_x, "getSubcategory");
-			(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
-		} forEach T_GETV("units");
-		T_SETV("compositionClassNames", _comp);
+		// SAVEBREAK -- we can remove these from the save entirely now, cached data shouldn't be saved anyway, it leads to fragility.
+		// Recalculate all the counters, efficiency, classnames etc.
+		T_CALLM0("_recalculateCounters");
 
 		// Load AI object
 		pr _AI = T_GETV("AI");
@@ -3015,6 +3534,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
 		};
 
+
 		// Register at garrison server if active
 		if (T_GETV("active")) then {
 			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
@@ -3022,6 +3542,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Push to 'all' static variable
 		GETSV("Garrison", "all") pushBack _thisObject;
+
+		// Delete out empty groups
+		T_CALLM0("deleteEmptyGroups");
+
+		// Recalculate build resources
+		T_CALLM0("updateBuildResources");
 
 		true
 	} ENDMETHOD;

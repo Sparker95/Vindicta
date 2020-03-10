@@ -24,5 +24,31 @@
             "configs/buildVersion.hpp",
             "configs/briefingName.hpp"
         ]
+    },
+    {
+        "sourceFolder": "Vindicta.Altis",
+        "missionName": "Vindicta",
+        "missionNameBase": "Vindicta",
+        "map": "Malden",
+        "configFiles": [
+            "configs/release/global_config.hpp",
+            "configs/majorVersion.hpp",
+            "configs/minorVersion.hpp",
+            "configs/buildVersion.hpp",
+            "configs/briefingName.hpp"
+        ]
+    },
+    {
+        "sourceFolder": "Vindicta.Tembelan",
+        "missionName": "Vindicta",
+        "missionNameBase": "Vindicta",
+        "map": "Tembelan",
+        "configFiles": [
+            "configs/release/global_config.hpp",
+            "configs/majorVersion.hpp",
+            "configs/minorVersion.hpp",
+            "configs/buildVersion.hpp",
+            "configs/briefingName.hpp"
+        ]
     }
 ]

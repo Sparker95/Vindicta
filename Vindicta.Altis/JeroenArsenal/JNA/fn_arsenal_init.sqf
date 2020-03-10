@@ -1,4 +1,5 @@
 #include "defineCommon.inc"
+
 /*
 	Author: Jeroen Notenbomer
 
@@ -248,7 +249,16 @@ if(hasInterface)then{
 					[_object_selected,_object] call jn_fnc_arsenal_arsenalToArsenal;
 				} else {
 					[_object_selected,_object] call jn_fnc_arsenal_cargoToArsenal;
+
+					// create hint about empty crates
+					if !(isNil "g_BuildUI_garbageObjects") then {
+						if ((typeof _object_selected) in g_BuildUI_garbageObjects) then {
+							pr _args = ["EMPTY CRATES", "Empty crates can be demolished in the build menu.", "Make sure to check the tutorial."];
+    						CALLSM("NotificationFactory", "createHint", _args);
+						};
+					};
 				};
+
 			};
 			pr _conditionActive = {
 				params ["_object"];
@@ -274,6 +284,7 @@ if(hasInterface)then{
 				"arsenal_hint" cutFadeOut 0;
 			};
 			[_script,_conditionActive,_conditionColor,_object, true, 10, _removeScript] call jn_fnc_common_addActionSelect;
+
 		},
         [],
         6,
@@ -305,6 +316,8 @@ if(hasInterface)then{
                 };
 
             };
+
+			diag_log format["JNC arsenalOpened: %1", _this];
         }] call BIS_fnc_addScriptedEventHandler;
 
     	//add close event
@@ -322,6 +335,13 @@ if(hasInterface)then{
                 [clientOwner, UINamespace getVariable "jn_object"] remoteExecCall ["jn_fnc_arsenal_requestClose",2];
 				UINamespace setVariable ["jn_type",""];
             };
+
+			//remove missing item message
+			titleText["", "PLAIN"];
+			//remove hint message
+			"arsenal_usage_hint" cutFadeOut 0;
+
+			diag_log format["JNC arsenalClosed: %1", _this];
         }] call BIS_fnc_addScriptedEventHandler;
     };
 };

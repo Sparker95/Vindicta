@@ -49,7 +49,6 @@
 			"**/SteamPreviewCache": true,
 			"**/mpStat*.*": true,
 			"**/squads": true,
-			"**/*.sqm*": true,
 			"**/~*": true
 		},
 		"todo-tree.showTagsFromOpenFilesOnly": false,
@@ -64,6 +63,7 @@
 		"sqf.enableCBA": true,
 		"sqf.enableACE3": true,
 		"sqflint.ignoredVariables": [
+			"ade_dumpCallstack",
 			"_input0",
 			"_thisArgs",
 			"_thisId",
@@ -79,6 +79,9 @@
 			"OOP_clone",
 			"OOP_assign_default",
 			"OOP_assign",
+			"_oop_methodList",
+			"_oop_newMethodList",
+			"_oop_classNameStr",
 			"T_EFF_null",
 			"OOP_assert_class",
 			"T_SIZE",
@@ -198,6 +201,12 @@
 			"T_GROUP_inf_sniper_team", 
 			"T_GROUP_inf_officer",
 			"T_PL_tracked_wheeled", 
+			"T_CARGO",
+			"T_INV",
+			"T_INV_primary",
+			"T_INV_secondary",
+			"T_INV_handgun",
+			"t_fnc_getTemplate",
 			"T_PL_HMG_GMG_high",
 			"T_PL_HMG_GMG_low",
 			"T_PL_helicopters",
@@ -274,7 +283,36 @@
 			"spawnGroup2",
 			"gGameMode",
 			"Dialog_fnc_hud_createSentence",
-			"gLUAP"
+			"gLUAP",
+			"T_comp_null",
+			"T_comp_ground_or_infantry_mask",
+			"T_comp_infantry_mask",
+			"T_comp_static_or_cargo_mask",
+			"T_comp_ground_or_infantry_mask",
+			"T_EFF_soft",
+			"T_EFF_medium",
+			"T_EFF_armor",
+			"T_EFF_air",
+			"T_EFF_aSoft",
+			"T_EFF_aMedium",
+			"T_EFF_aArmor",
+			"T_EFF_aAir",
+			"T_EFF_reqTransport",
+			"T_EFF_transport",
+			"T_EFF_ground",
+			"T_EFF_water",
+			"T_EFF_reqCrew",
+			"T_EFF_crew",
+			"T_EFF_constraintsPayload",
+			"T_EFF_constraintsTransport",
+			"eff_fnc_validateAttack",
+			"eff_fnc_validateCrew",
+			"OOP_serialize",
+			"OOP_serialize_attr",
+			"OOP_serialize_save",
+			"OOP_deserialize",
+			"OOP_deserialize_attr",
+			"OOP_deserialize_save"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"
@@ -287,6 +325,8 @@
 			"opacity": 40,
 			"iconColour": "white"
 		},
-		"todo-tree.tree.showTagsFromOpenFilesOnly": false
+		"todo-tree.tree.showTagsFromOpenFilesOnly": false,
+		"sqf-debugger.verbose": true,
+		"sqf-debugger.logging": true
 	}
 }

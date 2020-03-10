@@ -9,31 +9,25 @@ CLASS("Phase2CmdrStrategy", "CmdrStrategy")
 	METHOD("new") {
 		params [P_THISOBJECT];
 
-		T_SETV("takeLocOutpostPriority", 0);
-		T_SETV("takeLocBasePriority", 0);
-		// leave default T_SETV("takeLocAirportPriority", 6);				// We want them very much since we bring reinforcements through them
-		// leave default T_SETV("takeLocDynamicEnemyPriority", 4);			// Big priority for everything created by players or enemies dynamicly
-		T_SETV("takeLocRoadBlockPriority", 0);
-		T_SETV("takeLocCityPriority", 0);					// 
+		T_SETV("takeLocOutpostPriority", 			1);		// Low priority to take outposts in general
+		T_SETV("takeLocOutpostCoeff", 				1);
 
-		// We don't want to capture anything if there is activity in the area
-		T_SETV("takeLocOutpostCoeff", 0);	//
-		T_SETV("takeLocBaseCoeff", 0);		//
-		T_SETV("takeLocRoadBlockCoeff", 0);	//
-		T_SETV("takeLocCityCoeff", 0);		//
+		T_SETV("takeLocBasePriority", 				2);
+		T_SETV("takeLocBaseCoeff", 					1);
+
+		T_SETV("takeLocAirportPriority", 			6);		// We want them very much since we bring reinforcements through them
+		T_SETV("takeLocAirportCoeff", 				10);	// Activity will make cmdr even more keen to take airports
+
+		T_SETV("takeLocDynamicEnemyPriority", 		4);		// Big priority for everything created by players or enemies dynamicly
+
+		T_SETV("takeLocRoadBlockPriority", 			2);		// Need to clear roadblocks always
+		T_SETV("takeLocRoadBlockCoeff", 			2);
+
+		T_SETV("takeLocCityPriority", 				-0.1);	// Take cities with even low activity
+		T_SETV("takeLocCityCoeff", 					1);		// Allow cities with activity to be taken
+
+		T_SETV("constructLocRoadblockPriority", 	-2);	// Construct roadblocks when enemy activity in the area is highish (the coeff is applied to activity before the priority)
+		T_SETV("constructLocRoadblockCoeff", 		5);		// Construct roadblocks with highish priority when required
+
 	} ENDMETHOD;
-
-	/* virtual */ METHOD("getTakeLocationScore") {
-	params [P_THISOBJECT,
-			P_OOP_OBJECT("_action"), 
-			P_ARRAY("_defaultScore"),
-			P_OOP_OBJECT("_worldNow"),
-			P_OOP_OBJECT("_worldFuture"),
-			P_OOP_OBJECT("_srcGarr"),
-			P_OOP_OBJECT("_tgtLoc"),
-			P_ARRAY("_detachEff")];
-		// Take no locations!
-		APPLY_SCORE_STRATEGY(_defaultScore, 0)
-	} ENDMETHOD;
-
 ENDCLASS;

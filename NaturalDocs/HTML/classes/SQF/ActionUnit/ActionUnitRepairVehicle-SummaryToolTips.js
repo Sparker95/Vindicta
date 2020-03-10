@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:ActionUnit.ActionUnitRepairVehicle",{392:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a unit play the repair animation and repair a target vehicle. Doesn\'t make the unit move anywhere.</div></div>"});

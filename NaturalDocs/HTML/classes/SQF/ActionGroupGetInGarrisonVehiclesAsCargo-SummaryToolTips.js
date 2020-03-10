@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:ActionGroupGetInGarrisonVehiclesAsCargo",{330:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">All members of this group will mount all vehicles in this garrison as cargo.</div></div>"});

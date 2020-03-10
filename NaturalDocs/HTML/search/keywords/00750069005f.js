@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("ui_",["Function"],[["ui_fnc_createControlsFromConfig",,[[,,,,0,"File:UI/fn_createControlsFromConfig.sqf:ui_fnc_createControlsFromConfig"]]],["ui_fnc_findCheckboxButton",,[[,,,,0,"File:UI/fn_findCheckboxButton.sqf:ui_fnc_findCheckboxButton"]]],["ui_fnc_findControl",,[[,,,,0,"File:UI/fn_findControl.sqf:ui_fnc_findControl"]]]]);

@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:LocationVisibilityMonitor",{442:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Periodycally checks which locations player can see</div></div>"});

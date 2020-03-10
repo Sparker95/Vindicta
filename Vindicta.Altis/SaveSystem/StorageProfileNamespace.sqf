@@ -83,12 +83,17 @@ CLASS(__CLASS_NAME, "Storage")
 
 			// Read all variables
 			pr _allVariablesStr = T_CALLM1("_loadString", __VAR_ALL_VARIABLES);
-			#ifndef _SQF_VM
-			pr _allVariables = parseSimpleArray _allVariablesStr;
-			#else
-			pr _allVariables = call compile _allVariablesStr;
-			#endif
-			T_SETV("allVariables", _allVariables);
+			if(! isNil "_allVariablesStr") then {
+				#ifndef _SQF_VM
+				pr _allVariables = parseSimpleArray _allVariablesStr;
+				#else
+				pr _allVariables = call compile _allVariablesStr;
+				#endif
+				T_SETV("allVariables", _allVariables);
+			} else {
+				OOP_ERROR_1("Couldn't load variables for %1", _recordName);
+				T_SETV("allVariables", []);
+			};
 		} else {
 			// Add to the record table
 			pr _recordTable = T_CALLM0("_loadRecordTable");

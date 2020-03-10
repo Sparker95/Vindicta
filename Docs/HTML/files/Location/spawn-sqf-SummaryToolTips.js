@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Location/spawn.sqf",{605:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Spawns Location.</div></div>"});

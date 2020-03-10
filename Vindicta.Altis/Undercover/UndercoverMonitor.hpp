@@ -1,19 +1,18 @@
-/*
-	This file contains a number of global variables for the undercoverMonitor, as well as values for suspiciousness.
-*/
-
+// This file contains a number of global variables for the undercoverMonitor, as well as values for suspiciousness.
 
 // Name of the 'exposed' variable that we set on unit
 #define UNDERCOVER_EXPOSED "bExposed"
 #define UNDERCOVER_WANTED "bWanted"
 #define UNDERCOVER_SUSPICIOUS "bSuspicious"
 #define UNDERCOVER_TARGET "bArrestTarget" // true if unit is currently being arrested/target of an arrest
+#define UNDERCOVER_VIC_COMPROMISED "__b_VicCompromised" // sets current time + TIME_VIC_COMPROMISED on vehicle to compromise the vehicle
 
 // Macro for getting the 'exposed' value of a unit (object handle)
 #define UNDERCOVER_IS_UNIT_EXPOSED(unit) unit getVariable [UNDERCOVER_EXPOSED, false]
 #define UNDERCOVER_IS_UNIT_WANTED(unit) unit getVariable [UNDERCOVER_WANTED, false]
 #define UNDERCOVER_IS_UNIT_SUSPICIOUS(unit) unit getVariable [UNDERCOVER_SUSPICIOUS, false]
 #define UNDERCOVER_IS_TARGET(unit) unit getVariable [UNDERCOVER_TARGET, false]
+#define UNDERCOVER_GET_VIC_COMPROMISED(obj) obj getVariable [UNDERCOVER_VIC_COMPROMISED, -1]
 
 // suspicion values for various actions
 #define SUSPICIOUS 0.5								// Suspiciousness at which unit passes "suspicious" threshold
@@ -54,6 +53,7 @@
 #define TIME_HOSTILITY 3							// Time in seconds player unit is overt after a hostile action
 #define TIME_BOOST 6								// Time suspiciousness increases from "boostSuspicion" method last	
 #define TIME_UNSEEN_WANTED_EXIT -1200				// Time in seconds it takes for player unit to be unseen before going from WANTED state back to UNDERCOVER state
+#define TIME_VIC_COMPROMISED 600					// amount of time vehicles remain compromised
 #define WANTED_CIRCLE_RADIUS 800					// Diameter of wanted state marker. Player must be half this value from the marker to leave WANTED state.
 
 /* 
@@ -69,12 +69,13 @@
 #define HINT_DISPTIME 8								// amount of time each hint is displayed
 
 // Hint keys for which hint should be displayed. Higher value = higher relevance. Keys with higher relevance display first
+#define HK_COMPROMISED_VIC 121
 #define HK_COMPROMISED 120
 #define HK_ARRESTED 110
+#define HK_SURRENDER 109
 #define HK_INCAPACITATED 105
 #define HK_MORPHINE 102
 #define HK_ILLEGAL 101
-#define HK_SURRENDER 100
 #define HK_HOSTILITY 95
 #define HK_CLOSINGIN 90
 #define HK_WEAPON 80

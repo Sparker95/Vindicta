@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:UI/NotificationFactory/NotificationFactory.sqf",{1001:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Has methods specialized for customization of our typical notification types</div></div>"});

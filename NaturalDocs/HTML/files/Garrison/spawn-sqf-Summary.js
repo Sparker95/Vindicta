@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Garrison/spawn.sqf","spawn.sqf");NDSummary.OnSummaryLoaded("File:Garrison/spawn.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[477,0,0,"Garrison","Garrison"],[478,0,2,"Functions","Garrison.Functions"],[479,0,1,"spawn","Garrison.spawn"]]);

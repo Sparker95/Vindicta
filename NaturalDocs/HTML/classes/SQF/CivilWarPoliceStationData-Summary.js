@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:CivilWarPoliceStationData","CivilWarPoliceStationData");NDSummary.OnSummaryLoaded("SQFClass:CivilWarPoliceStationData",[["SQF","SQF"]],[["Classes","Class"]],[[468,0,0,"CivilWarPoliceStationData"]]);

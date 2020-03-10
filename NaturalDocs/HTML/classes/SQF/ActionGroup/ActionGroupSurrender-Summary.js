@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:ActionGroup.ActionGroupSurrender","ActionGroupSurrender");NDSummary.OnSummaryLoaded("SQFClass:ActionGroup.ActionGroupSurrender",[["SQF","SQF"]],[["Classes","Class"]],[[322,0,0,"<span class=\"Qualifier\">ActionGroup.</span>&#8203;ActionGroupSurrender"]]);

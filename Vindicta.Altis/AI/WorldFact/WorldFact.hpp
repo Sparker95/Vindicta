@@ -1,9 +1,9 @@
-/*
-Struct: WorldFact
-File: AI\WorldFact\WorldFact.hpp
-World Fact is a record about the world by some AI agent.
-Used inside <AI> class.
-*/
+// /*
+// Struct: WorldFact
+// File: AI\WorldFact\WorldFact.hpp
+// World Fact is a record about the world by some AI agent.
+// Used inside <AI> class.
+// */
 
 // Field: TYPE
 #define WF_ID_TYPE					0
@@ -40,20 +40,20 @@ Used inside <AI> class.
 #define WF_GET_TYPE(_wf) _wf select WF_ID_TYPE
 #define WF_GET_VALUE(_wf) _wf select WF_ID_VALUE
 #define WF_GET_SOURCE(_wf) _wf select WF_ID_SOURCE
-// todo finish it
-/*
-#define WF_GET_XXX(_wf) _wf select WF_ID_XXX
-#define WF_GET_XXX(_wf) _wf select WF_ID_XXX
-#define WF_GET_XXX(_wf) _wf select WF_ID_XXX
-#define WF_GET_XXX(_wf) _wf select WF_ID_XXX
-#define WF_GET_XXX(_wf) _wf select WF_ID_XXX
-*/
+// // todo finish it
+// /*
+// #define WF_GET_XXX(_wf) _wf select WF_ID_XXX
+// #define WF_GET_XXX(_wf) _wf select WF_ID_XXX
+// #define WF_GET_XXX(_wf) _wf select WF_ID_XXX
+// #define WF_GET_XXX(_wf) _wf select WF_ID_XXX
+// #define WF_GET_XXX(_wf) _wf select WF_ID_XXX
+// */
 
-// Macros for setting values
+// // Macros for setting values
 
 
-/*
-wf_fnc_setXXX = {
-	params [["_fact", [], [[]]], ["_XXX", 0, [WF_XXX_DEFAULT]] ];
-	_fact set [WF_ID_XXX, _XXX];
-};*/
+// /*
+// wf_fnc_setXXX = {
+// 	params [["_fact", [], [[]]], ["_XXX", 0, [WF_XXX_DEFAULT]] ];
+// 	_fact set [WF_ID_XXX, _XXX];
+// };*/

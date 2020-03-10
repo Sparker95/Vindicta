@@ -27,7 +27,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
 		pr _AI = T_GETV("AI");
-		pr _targetClusters = GETV(_AI, "targetClusters");
+		//pr _targetClusters = GETV(_AI, "targetClusters");
 		pr _worldModel = GETV(_AI, "worldModel");
 		
 		// Try to match killers of all destroyed units to clusters
@@ -38,13 +38,13 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 		
 		{ // for each casualties
 			_x params ["_catID", "_subcatID", "_hOKiller", "_pos"];
-			if (!isNull _hOKiller) then {
+			//if (!isNull _hOKiller) then { Don't care who killed them, they dead
 
 				// Code which searches target clusters and tracks damage caused by each cluster
 				// Currently we don't need damage tracking so it's disabled
 				
-				pr _unitKiller = GET_UNIT_FROM_OBJECT_HANDLE(_hOKiller);
-				OOP_INFO_1("Unit killer: %1", _unitKiller);
+				//pr _unitKiller = GET_UNIT_FROM_OBJECT_HANDLE(_hOKiller);
+				//OOP_INFO_1("Unit killer: %1", _unitKiller);
 				pr _eff = T_efficiency select _catID select _subcatID;
 				/*
 				private _killerFound = false;
@@ -67,7 +67,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 				*/
 
 				CALLM2(_worldModel, "addDamage", _pos, _eff);
-			};
+			//};
 		} forEach _value;
 	} ENDMETHOD;
 	

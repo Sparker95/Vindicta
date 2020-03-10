@@ -19,6 +19,8 @@ Template of an Action class
 */
 
 #define pr private
+#define MIN_ARREST_DIST 2 // minimum distance for arrest animation and method call
+#define MAX_CHASE_TIME 45 
 
 CLASS("ActionUnitArrest", "Action")
 	
@@ -52,7 +54,7 @@ CLASS("ActionUnitArrest", "Action")
 		_captor lockWP false;
 		_captor setSpeedMode "NORMAL";
 
-		OOP_INFO_0("ActionUnitArrest: ACTIVATE");
+		//OOP_INFO_0("ActionUnitArrest: ACTIVATE");
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 
@@ -72,13 +74,13 @@ CLASS("ActionUnitArrest", "Action")
 		pr _target = T_GETV("target");
 
 		if (!(alive _captor) || (behaviour _captor == "COMBAT")) then {
-			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
+			//OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 2);
 		};
 
 		if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) then {
-			OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested."); 
+			//OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested."); 
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 3);
 		};
@@ -88,43 +90,25 @@ CLASS("ActionUnitArrest", "Action")
 
 			// CATCH UP
 			case 0: {
-				OOP_DEBUG_1("CATCH UP %1", getPos _captor distance2D getPos _target);
-
-				if (
-					getPos _captor distance2D getPos _target < 6 && 
-					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
-					random 4 <= 2
-				) then {
-					/*
-					// Must rework it :/
-					[[_target], {
-						params ["_target"];
-						if (!hasInterface) exitWith {};
-
-						OOP_DEBUG_0("uncon");
-						_target playMoveNow "unconsciousfacedown"; // face plant
-						sleep 2;
-						_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
-
-					}] remoteExec ["spawn", _target, false];
-					*/
-
-					CALLSM1("ActionUnitArrest", "performArrest", _target);
-
-					_target setVariable ["timeArrested", time+10];
-
-					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
-					
-					T_SETV("stateMachine", 1);
-					breakTo "switch";
-				};
+				OOP_DEBUG_1("ActionUnitArrest: CATCH UP, Distance: %1", ((getPos _captor) distance (getPos _target)));
 
 				if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) exitWith {
 					T_SETV("state", ACTION_STATE_COMPLETED);
 					ACTION_STATE_COMPLETED
 				};
 
+				if (
+					getPos _captor distance getPos _target < MIN_ARREST_DIST && 
+					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
+					random 4 <= 2
+				) then {
+					CALLSM1("ActionUnitArrest", "performArrest", _target);				
+					T_SETV("stateMachine", 1);
+					breakTo "switch";
+				};
+
 				if (T_GETV("stateChanged")) then {
+
 					T_SETV("stateChanged", false);
 					T_SETV("stateTimer", time);
 					
@@ -145,19 +129,22 @@ CLASS("ActionUnitArrest", "Action")
 							_isMoving = !(_pos_arrest distance getpos _target < 0.1);
 							_target setVariable ["isMoving", _isMoving];
 							
-							pr _return = !_isMoving && {_pos distance getpos _captor < 1.5};
+							pr _return = !_isMoving && {_pos distance getpos _captor < MIN_ARREST_DIST};
 							_return
 						};
 					};
 					terminate T_GETV("spawnHandle");
 					T_SETV("spawnHandle", _handle);
-				} else {
-					// been following for 30 secs
-					if (time - T_GETV("stateTimer") > 30) then {
-						T_SETV("stateMachine", 2);
 
+				} else {
+
+					// been following for X secs
+					if (time - T_GETV("stateTimer") > MAX_CHASE_TIME) then {
+						T_SETV("stateMachine", 2);
 						breakTo "switch";
+
 					} else {
+
 						// mitigate the msg flood
 						if (random 10 < 1) then {
 							if (time > T_GETV("screamTime") && (_target getVariable ["isMoving", false])) then {
@@ -167,9 +154,18 @@ CLASS("ActionUnitArrest", "Action")
 								pr _sentence = "Hey you, stop here.";
 								if (selectRandom [true,false]) then { 
 									_captor say "stop";
+									_sentence = selectRandom [
+									"STOP! Get on the fucking ground!",
+									"STOP! Get down on the ground!",
+									"DO NOT MOVE! Get down on the ground!"
+									]; 
 								} else {
 									_captor say "halt";
-									_sentence = "halt!"; 
+									_sentence = selectRandom [
+									"HALT! Get on the fucking ground!",
+									"HALT! Get down on the ground!",
+									"DO NOT MOVE! Get down on the ground!"
+									]; 
 								};
 								
 								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
@@ -177,7 +173,7 @@ CLASS("ActionUnitArrest", "Action")
 							};
 						};
 					};
-				};
+				}; // end state changed
 				
 				if (scriptDone T_GETV("spawnHandle")) then {
 					T_SETV("stateChanged", true);
@@ -185,9 +181,12 @@ CLASS("ActionUnitArrest", "Action")
 				};
 			}; // end CATCH UP
 
-			// SEARCH AND ARREST
+			/*
+				MOVE TO AND ARREST
+				AI unit is now close and closing the gap to perform the actual arrest.
+			*/
 			case 1: {
-				OOP_INFO_0("ActionUnitArrest: Searching/Arresting target.");
+				//OOP_INFO_0("ActionUnitArrest: Searching/Arresting target.");
 
 				if (T_GETV("stateChanged")) then {
 					T_SETV("stateChanged", false);
@@ -204,7 +203,7 @@ CLASS("ActionUnitArrest", "Action")
 							_pos_search = getpos _target;
 
 							// play animation if close enough, finishing the script
-							if (getPos _captor distance getPos _target < 1) then {
+							if (getPos _captor distance getPos _target < MIN_ARREST_DIST) then {
 								pr _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
 									if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
@@ -224,17 +223,18 @@ CLASS("ActionUnitArrest", "Action")
 
 								_captor playMove _animation;
 								_animationDone = true;
-
-								// WTF why do we have waitUntil here @Sen ?? :O
-								waitUntil {animationState _captor == _animation};
-								waitUntil {animationState _captor != _animation};
 								
-								CALLSM1("ActionUnitArrest", "performArrest", _target);
+								// only perform arrest if unit IS actually close enough, prevent magic hands
+								if (getPos _captor distance getPos _target < MIN_ARREST_DIST) then {
+									CALLSM1("ActionUnitArrest", "performArrest", _target);
+								} else {
+									CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);
+								};
 							};
-
+							sleep 1;
 							_animationDone
-						};
-					};
+						}; // end waitUntil
+					}; // end spawn script
 						
 					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
 					// arrest player by sending a message to unit's undercoverMonitor				
@@ -254,18 +254,20 @@ CLASS("ActionUnitArrest", "Action")
 
 					breakTo "switch";
 				};
-			}; // end SEARCH AND ARREST
+			}; // end MOVE TO AND ARREST
 
 			// FAILED
 			case 2: {
-				OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP.");
+				//OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP. Player will be made overt.");
+
+				CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);	
 
 				_state = ACTION_STATE_FAILED;
 			};
 			
 			// COMPLETED SUCCESSFULLY
 			case 3: {
-				OOP_INFO_0("ActionUnitArrest: COMPLETED.");
+				//OOP_INFO_0("ActionUnitArrest: COMPLETED.");
 
 				_state = ACTION_STATE_COMPLETED;
 			};
@@ -276,7 +278,10 @@ CLASS("ActionUnitArrest", "Action")
 		_state
 	} ENDMETHOD;
 
-	// Performs the actual arrest of target
+	/*
+		Performs the actual arrest of targeted civilian or player.
+		
+	*/
 	STATIC_METHOD("performArrest") {
 		params [P_THISCLASS, P_OBJECT("_target")];
 
@@ -297,8 +302,34 @@ CLASS("ActionUnitArrest", "Action")
 			};
 		
 			_target setVariable ["timeArrested", time+10];
-
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
+		};
+	} ENDMETHOD;
+
+	/*
+		Called only for PLAYER. Player is presumed to have purposely evaded arrest.
+		Makes player (target) go overt in Undercover. Makes unit doing the arrest (captor) go into combat.
+	*/
+	STATIC_METHOD("killArrestTarget") {
+		params [P_THISCLASS, P_OBJECT("_target"), P_OBJECT("_captor")];
+		if (isPlayer _target) then {
+			pr _sentence = selectRandom [
+				"NEVER SHOULD HAVE COME HERE!",
+				"YOU ASKED FOR IT!",
+				"HE'S GOT A GUN!",
+				"DO NOT MOVE!",
+				"HOSTILE!",
+				"SHOTS FIRED!",
+				"OPEN FIRE!"
+			]; 
+
+			[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+
+			pr _args = [_target, 3.0];
+			REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
+
+			_captor setBehaviour "COMBAT";
+			_captor doWatch _target;
 		};
 	} ENDMETHOD;
 	

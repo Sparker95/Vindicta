@@ -22,7 +22,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("EH_Killed") {
-		params ["_thisObject", "_objectHandle", "_killer", "_instigator", "_useEffects"];
+		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_killer"), P_OBJECT("_instigator"), P_BOOL("_useEffects")];
 
 		ASSERT_THREAD(_thisObject);
 
@@ -31,7 +31,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		// Is this object an instance of Unit class?
 		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
-		if (_unit != "" && IS_OOP_OBJECT(_unit)) then {
+		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
 
 			OOP_INFO_2("EH_killed: %1 %2", _unit, GETV(_unit, "data") );
 
@@ -40,9 +40,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			// Post a message to the garrison of the unit
 			pr _data = GETV(_unit, "data");
 			pr _garrison = _data select UNIT_DATA_ID_GARRISON;
-			if (_garrison != "") then {	// Sanity check	
+			if (!IS_NULL_OBJECT(_garrison)) then {	// Sanity check	
 				CALLM1(_garrison, "handleUnitKilled", _unit);
-				
+
 				// Notify game mode that a unit was destroyed
 				pr _catID = CALLM0(_unit, "getCategory");
 				pr _subcatID = CALLM0(_unit, "getSubcategory");
@@ -52,20 +52,29 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 				// Send stimulus to garrison's casualties sensor
 				pr _garAI = CALLM0(_garrison, "getAI");
-				if (_garAI != "") then {
-					if (!isNull _killer) then { // If there is an existing killer
-						pr _stim = STIMULUS_NEW();
-						STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
-						pr _value = [_unit, _killer];
-						STIMULUS_SET_VALUE(_stim, _value);
-						CALLM1(_garAI, "handleStimulus", _stim);
-					};
+				if (!IS_NULL_OBJECT(_garAI)) then {
+					//if (!isNull _killer) then { // If there is an existing killer. No we don't care if there is a killer?
+					pr _stim = STIMULUS_NEW();
+					STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
+					pr _value = [_unit, _killer];
+					STIMULUS_SET_VALUE(_stim, _value);
+					CALLM1(_garAI, "handleStimulus", _stim);
+					//};
 				};
 			} else {
 				OOP_ERROR_2("EH_killed: Unit is not attached to a garrison: %1, %2", _unit, _data);
 			};
 		} else {
 			OOP_WARNING_1("EH_killed: Unit of object %1 is unknown", _objectHandle);
+		};
+	} ENDMETHOD;
+	
+	STATIC_METHOD("KillUnit") {
+		params [P_THISCLASS, P_OBJECT("_objectHandle")];
+		// Is this object an instance of Unit class?
+		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
+		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
+			DELETE(_unit);
 		};
 	} ENDMETHOD;
 	
@@ -81,7 +90,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("EH_GetIn") {
-		params ["_thisObject", "_vehicle", "_role", "_unit", "_turret"];
+		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetIn: %1", _this);
 
@@ -111,6 +120,57 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	} ENDMETHOD;
 
+	/*
+	Method: EH_GetOut
+	It is called when someone gets out of a vehicle.
+	It is called in the main thread, so it's perfectly synchronized with everything.
+
+	Parameters: "_vehicle", "_role", "_unit", "_turret"
+
+	Parameters are same as https://community.bistudio.com/wiki/Arma_3:_Event_Handlers#GetOut
+
+	Returns: nil
+	*/
+	METHOD("EH_GetOut") {
+		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
+
+		OOP_INFO_1("EH_GetOut: %1", _this);
+
+		ASSERT_THREAD(_thisObject);
+
+		// This is an async message, either vehicle or unit could have been deleted by now... this is a bit of a problem.
+		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the asynchronous part of the handler.
+		if(isNull _unit) exitWith {
+			OOP_WARNING_1("EH_GetOut: unit handle is null (%1)", _this);
+		};
+
+		if(isNull _vehicle) exitWith {
+			OOP_WARNING_1("EH_GetOut: vehicle handle is null (%1)", _this);
+		};
+
+		// Is this object an instance of Unit class?
+		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
+
+		OOP_INFO_4("EH_GetOut: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
+
+		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
+			OOP_ERROR_0("EH_GetOut: vehicle doesn't have a Unit object!");
+		};
+
+		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
+			OOP_ERROR_0("EH_GetOut: unit doesn't have a Unit object!");
+		};
+
+		pr _data = GETV(_unitVeh, "data");
+		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+		if (_garrison != "") then {	// Sanity check
+			CALLM2(_garrison, "handleGetOutVehicle", _unitVeh, _unitInf);
+		} else {
+			OOP_ERROR_2("EH_GetOut: vehicle is not attached to a garrison: %1, %2", _unitVeh, _data);
+		};
+
+	} ENDMETHOD;
 	METHOD("EH_aceCargoLoaded") {
 		params [P_THISOBJECT, "_item", "_vehicle"];
 

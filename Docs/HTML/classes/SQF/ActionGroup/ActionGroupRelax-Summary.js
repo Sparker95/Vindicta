@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:ActionGroup.ActionGroupRelax","ActionGroupRelax");NDSummary.OnSummaryLoaded("SQFClass:ActionGroup.ActionGroupRelax",[["SQF","SQF"]],[["Classes","Class"]],[[263,0,0,"<span class=\"Qualifier\">ActionGroup.</span>&#8203;ActionGroupRelax"]]);

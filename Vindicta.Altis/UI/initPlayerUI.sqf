@@ -32,7 +32,7 @@ g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register
 CALLSM0("PlayerListUI", "new");
 gClientMapUI = NEW("ClientMapUI", []);
 gInGameUI = NEW("InGameUI", []);
-gBuildUI = NEW("BuildUI", []);
+g_BuildUI = NEW("BuildUI", []);
 
 // In Game Menu event handler
 (finddisplay 46) displayAddEventHandler ["KeyDown", {
@@ -57,4 +57,28 @@ gBuildUI = NEW("BuildUI", []);
 // Update player markers
 [true] call ui_fnc_enablePlayerMarkers;
 
+// Close previous menu
+if (!(isNil "gInGameMenu")) then {
+	if (IS_OOP_OBJECT(gInGameMenu)) then {
+		DELETE(gInGameMenu);
+	};
+};
+
+// Open menu immediately if game mode is not initialized
+private _gameModeInitialized = if(isNil "gGameManager") then {
+	false
+} else {
+	CALLM0(gGameManager, "isGameModeInitialized");
+};
+
+if (!_gameModeInitialized && {call misc_fnc_isAdminLocal}) then {
+	gInGameMenu = NEW("InGameMenu", []);
+};
+
 gPlayerUIInitialized = true;
+
+// Enable the respawn panel the first time
+CALLM1(gClientMapUI, "respawnPanelEnable", true);
+
+// Center map
+mapAnimAdd [1, 0.1, [worldSize / 2, worldSize / 2, 0]];

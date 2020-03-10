@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Phase1CmdrStrategy",{380:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Strategy for commander to use during phase 1 gameplay.&nbsp; Entirely passive behaviour, no actions of any kind are taken.</div></div>"});

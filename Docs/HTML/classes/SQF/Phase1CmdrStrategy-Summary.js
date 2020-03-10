@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Phase1CmdrStrategy","Phase1CmdrStrategy");NDSummary.OnSummaryLoaded("SQFClass:Phase1CmdrStrategy",[["SQF","SQF"]],[["Classes","Class"]],[[380,0,0,"Phase1CmdrStrategy"]]);

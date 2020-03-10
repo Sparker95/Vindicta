@@ -95,12 +95,12 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		// Add waypoints starting from closest one
 		for "_i" from _closestPosIndex to ((count _wpPositions) - 1) do {
 			pr _x = _wpPositions#_i;
-			pr _wp = _hG addWaypoint [_x, 0];
+			pr _wp = _hG addWaypoint [ZERO_HEIGHT(_x), 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointFormation "COLUMN";
 			_wp setWaypointBehaviour "SAFE";
 			_wp setWaypointCombatMode "GREEN";
-			_wp setWaypointCompletionRadius 20;
+			_wp setWaypointCompletionRadius 100;
 			_waypoints pushBack _wp;
 		};
 

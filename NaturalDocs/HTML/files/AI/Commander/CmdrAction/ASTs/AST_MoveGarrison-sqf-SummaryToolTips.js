@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Commander/CmdrAction/ASTs/AST_MoveGarrison.sqf",{134:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Order a garrison to move to a target within a certain radius.</div></div>",136:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Create an AST to give a move to target order to a garrison.</div></div>"});

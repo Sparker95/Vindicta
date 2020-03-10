@@ -32,8 +32,10 @@ MsgRcvr_fnc_setMsgDone = {
 	pr _rqArrayElement = g_rqArray select _msgID; // g_rqArray was defined in messageReceiver.sqf
 	// Make sure the proper receiver marks this message
 	if ((_rqArrayElement select 2) == _dest) then {
-		_rqArrayElement set [0, 1]; // Set the flag that the message has been processed
-		_rqArrayElement set [1, _result];
+		CRITICAL_SECTION {
+			_rqArrayElement set [1, _result];	// Set result first
+			_rqArrayElement set [0, 1]; 		// Set the flag that the message has been processed
+		};
 		//diag_log format [" --- Message receiver has acknowledged message: %1,  msgID: %2", _dest, _msgID];
 	} else {
 		diag_log format ["[MessageReceiver] Error: message was acknowledged by wrong receiver. %1 was acknowledged by %2", _rqArrayElement, _dest];
@@ -151,7 +153,7 @@ CLASS("MessageReceiver", "Storable")
 			if (_returnMsgID) then {
 				// Generate a new msgID
 				pr _msgID = 0;
-				CRITICAL_SECTION_START
+				CRITICAL_SECTION {
 					_msgID = g_rqArray find 0;
 					if (_msgID == -1) then {
 						_msgID = g_rqArray pushback [0, 0, _thisObject]; // When message has been handled, the result will be stored here, 0 will be replaced with 1
@@ -165,7 +167,7 @@ CLASS("MessageReceiver", "Storable")
 
 					// Post the message to the thread, give it the message ID so that it marks the message as processed
 					CALLM1(_messageLoop, "postMessage", _msg);
-				CRITICAL_SECTION_END
+				};
 
 				//Return message ID value
 				_msgID
@@ -183,14 +185,14 @@ CLASS("MessageReceiver", "Storable")
 			if (_returnMsgID) then {
 				// Generate a new message ID
 				pr _msgID = 0;
-				CRITICAL_SECTION_START
+				CRITICAL_SECTION {
 					_msgID = g_rqArray find 0;
 					if (_msgID == -1) then {
 						_msgID = g_rqArray pushback [0, 0, _thisObject]; // When message has been handled, the result will be stored here, 0 will be replaced with 1
 					} else {
 						g_rqArray set [_msgID, [0, 0, _thisObject]];
 					};
-				CRITICAL_SECTION_END
+				};
 
 				// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
 				_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
@@ -304,6 +306,17 @@ CLASS("MessageReceiver", "Storable")
 					OOP_ERROR_1("    Current line: %1", _currentLine);
 				} forEach diag_activeSQFScripts;
 				DUMP_CALLSTACK;
+				
+				// Format text
+				private _text = format["Server is under heavy load! %1 message queue overloaded.", _thisObject];
+
+				// Broadcast notification
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
+
+				// Broadcast it to system chat too
+				["SERVER WARNING:"] remoteExec ["systemChat"];
+				[_text] remoteExec ["systemChat"];
+
 				// Reset warning timer
 				_timeStartedWaiting = time;
 			};

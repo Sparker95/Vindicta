@@ -22,10 +22,10 @@ CLASS("Storable", "")
 
 	// Returns an array, does not have to be a deep copy
 	// Must return nil on failure
-	// By default it serializes variables with ATTR_SAVE attribute
+	// By default it serializes variables with the ATTR_SAVE or ATTR_SAVE_VER attribute
 	/* virtual */ METHOD("serializeForStorage") {
 		params [P_THISOBJECT];
-		SERIALIZE_ATTR(_thisObject, ATTR_SAVE);
+		SERIALIZE_SAVE(_thisObject);
 	} ENDMETHOD;
 
 	// Must return true on success
@@ -40,7 +40,7 @@ CLASS("Storable", "")
 
 	// These methods must return true on success
 	/* virtual */ METHOD("preDeserialize") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage"), P_NUMBER("_version")];
 
 		// Call method of all base classes
 		//CALL_CLASS_METHOD(... , _thisObject, "preDeserialize", [_storage]);
@@ -49,15 +49,14 @@ CLASS("Storable", "")
 	} ENDMETHOD;
 
 	// Must deserialize from an array into this object
-	// By default it deserializes variables with ATTR_SAVE attribute
+	// By default it deserializes variables with the ATTR_SAVE or ATTR_SAVE_VER attribute
 	/* virtual */ METHOD("deserializeFromStorage") {
-		params [P_THISOBJECT, P_ARRAY("_serial")];
-		DESERIALIZE_ATTR(_thisObject, _serial, ATTR_SAVE);
-		true
+		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
+		DESERIALIZE_SAVE_VER(_thisObject, _serial, _version)
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("postDeserialize") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage"), P_NUMBER("_version")];
 
 		// Call method of all base classes
 		//CALL_CLASS_METHOD(... , _thisObject, "postDeserialize", [_storage]);

@@ -13,11 +13,6 @@
 */
 
 g_UM_civUniforms = [
-	"U_BG_Guerilla2_1",
-    "U_BG_Guerilla2_2",
-    "U_BG_Guerilla2_3",
-    "U_BG_Guerilla3_1",
-    "U_BG_Guerilla3_2",
     "U_C_Commoner_shorts",
     "U_C_ConstructionCoverall_Black_F",
     "U_C_ConstructionCoverall_Blue_F",
@@ -70,21 +65,10 @@ g_UM_civUniforms = [
     "U_I_C_Soldier_Bandit_3_F",
     "U_I_C_Soldier_Bandit_4_F",
     "U_I_C_Soldier_Bandit_5_F",
-    "U_IG_Guerilla2_1",
-    "U_IG_Guerilla2_2",
-    "U_IG_Guerilla2_3",
-    "U_IG_Guerilla3_1",
-    "U_IG_Guerilla3_2",
     "U_Marshal",
-    "U_OG_Guerilla2_1",
-    "U_OG_Guerilla2_2",
-    "U_OG_Guerilla2_3",
-    "U_OG_Guerilla3_1",
-    "U_OG_Guerilla3_2",
     "U_C_HunterBody_grn",
     "U_OrestesBody",
     "U_Rangemaster",
-    "U_BG_leader",
 
     // CONTACT DLC 
     "U_I_L_Uniform_01_tshirt_black_F",
@@ -266,7 +250,7 @@ g_UM_ghillies = [
 
 /* 
 ----------------------------------------------------------------------------------------------
-	CIVILIAN ITEMS
+	ITEMS
 ----------------------------------------------------------------------------------------------
 */
 
@@ -288,6 +272,7 @@ g_UM_civWeapons = [
     "Laserdesignator",
     "Laserdesignator_02",
     "Laserdesignator_03",
+    "ACE_Flashlight_Maglite_ML300L",
     ""
 ];
 

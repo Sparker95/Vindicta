@@ -11,25 +11,20 @@ Parent: <CmdrAction>
 */
 CLASS("AttackCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
-	VARIABLE("srcGarrId");
+	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	// Target (see CmdrAITarget.sqf), an AST_VAR wrapper
-	VARIABLE("targetVar");
+	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);
 	// Efficency of the detachment, an AST_VAR wrapper
-	VARIABLE("detachmentEffVar");
+	VARIABLE_ATTR("detachmentEffVar", [ATTR_SAVE]);
 	// Composition of the detachment, an AST_VAR wrapper
-	VARIABLE("detachmentCompVar");
+	VARIABLE_ATTR("detachmentCompVar", [ATTR_SAVE]);
 	// Garrison ID of the detachment performing the attack, an AST_VAR wrapper
-	VARIABLE("detachedGarrIdVar");
+	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_SAVE]);
 	// Start date for the attack action, an AST_VAR wrapper
-	VARIABLE("startDateVar");
+	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
 
 	// Target to RTB to after the attack, an AST_VAR wrapper
-	VARIABLE("rtbTargetVar");
-
-#ifdef DEBUG_CMDRAI
-	VARIABLE("debugColor");
-	VARIABLE("debugSymbol");
-#endif
+	VARIABLE_ATTR("rtbTargetVar", [ATTR_SAVE]);
 
 	/*
 	Constructor: new
@@ -251,8 +246,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
-		T_PRVAR(debugColor);
-		T_PRVAR(debugSymbol);
+		GET_DEBUG_MARKER_STYLE(_thisObject) params ["_debugColor", "_debugSymbol"];
 
 		[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 

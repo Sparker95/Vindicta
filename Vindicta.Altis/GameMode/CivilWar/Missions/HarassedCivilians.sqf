@@ -132,7 +132,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 
 			OOP_INFO_MSG("Spawning %1 civilians in %2 to be harassed", [_deficit ARG _city]);
 
-			private _pos = CALLM0(_city, "getPos");
+			private _pos = ZERO_HEIGHT(CALLM0(_city, "getPos"));
 			private _radius = GETV(_city, "boundingRadius");
 
 			// Use the civ types specified in the presence module

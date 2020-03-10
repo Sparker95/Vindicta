@@ -130,7 +130,7 @@ CLASS("GarrisonRecord", "")
 					// Print an error? CmdrActionRecord already prints an error
 				} else {
 					pr _color = "colorRed"; // [T_GETV("side"), true] call BIS_fnc_sideColor;
-					[_posStart, _posEnd, _color, 10, _mrkLine] call misc_fnc_mapDrawLineLocal;
+					[_posStart, _posEnd, _color, 8, _mrkLine] call misc_fnc_mapDrawLineLocal;
 					_mrkLine setMarkerBrushLocal "SolidFull";
 					_mrkLine setMarkerAlphaLocal 1.0;
 
@@ -149,7 +149,7 @@ CLASS("GarrisonRecord", "")
 			};
 
 			// Set text of the garrison marker
-			CALLM1(T_GETV("mapMarker"), "setText", format ["<%1>" ARG _actionText]);
+			CALLM1(T_GETV("mapMarker"), "setText", format ["%1" ARG _actionText]);
 		};
 	} ENDMETHOD;
 

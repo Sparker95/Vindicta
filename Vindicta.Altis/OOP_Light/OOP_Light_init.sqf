@@ -1030,9 +1030,37 @@ OOP_serialize_attr = { // todo implement namespace
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	if (!_serializeAllVariables) then {
 		_memList = _memList select {
-			//_x params ["_varName", "_attributes"];
-			_attr in (_x#1)
+			_x params ["_varName", "_attributes"];
+			_attributes findIf {
+				(_x isEqualType 0 && {_x == _attr}) ||
+				{_x isEqualType [] && {_x#0 == _attr}}
+			} != NOT_FOUND
 		};
+	};
+
+	private _array = [];
+	_array pushBack _classNameStr;
+	_array pushBack _objNameStr;
+
+	{
+		_x params ["_varName"];
+		_array append [GETV(_objNameStr, _varName)];
+	} forEach _memList;
+
+	_array
+};
+
+OOP_serialize_save = {
+	params ["_objNameStr"];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
+		_x params ["_varName", "_attributes"];
+		(_attributes findIf {
+			(_x isEqualTo ATTR_SAVE) ||
+			{_x isEqualType [] && {_x#0 == ATTR_SAVE}}
+		}) != NOT_FOUND
 	};
 
 	private _array = [];
@@ -1103,6 +1131,64 @@ OOP_deserialize_attr = {
 		};
 		_iVarName = _iVarName + 1;
 	};
+};
+
+// OOP_deserialize specialized for versioned save loading
+OOP_deserialize_save = {
+	params ["_objNameStr", "_array", ["_version", 666]];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+
+	#ifdef OOP_ASSERT
+	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith { false };
+	#endif
+
+	// Select member variables we expect to find in this save version
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
+		_x params ["_varName", "_attributes"];
+		(_attributes findIf {
+			(_x isEqualType 0 && {_x == ATTR_SAVE}) ||
+			// Version save loading
+			{_x isEqualType [] && {_x#0 == ATTR_SAVE && _x#1 <= _version}}
+		}) != NOT_FOUND
+	};
+
+	// Default value
+	// {
+	// 	_x params ["_varName", "_attributes"];
+	// 	if ((_attributes findIf {
+	// 		(_x isEqualType 0 && {_x == ATTR_SAVE}) ||
+	// 		// Version save loading
+	// 		{_x isEqualType [] && {_x#0 == ATTR_SAVE && _x#1 <= _saveVersion}}
+	// 	}) != NOT_FOUND) then {
+	// 		_memList pushBack _x;
+	// 	} else {
+	// 		private _defaultIdx = _attributes findIf {_x isEqualType [] && {_x#0 == ATTR_DEFAULT_KEY}};
+	// 		if(_defaultIdx != NOT_FOUND) then {
+	// 			private _defaultVal = _attributes#_defaultIdx#1;
+	// 			FORCE_SET_MEM(_objNameStr, _varName, _defaultVal);
+	// 		};
+	// 	};
+	// } foreach GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+
+	if((count _array - 2) != count _memList) exitWith {
+		
+		OOP_ERROR_2("Saved object is invalid, saved array %1 doesn't match expected member list %2", _array, _memList);
+		diag_log _array;
+		diag_log _memList;
+		false
+	};
+	private _iVarName = 0;
+	for "_i" from 2 to ((count _array) - 1) do {
+		private _value = _array#_i;
+		(_memList#(_i - 2)) params ["_varName"];
+		if(!(isNil "_value")) then {
+			FORCE_SET_MEM(_objNameStr, _varName, _value);
+		} else {
+			FORCE_SET_MEM(_objNameStr, _varName, nil);
+		};
+	};
+	true
 };
 
 OOP_deref_var = { // todo implement namespace
@@ -1461,7 +1547,7 @@ ENDCLASS;
 CLASS("serAttrTest", "")
 	VARIABLE_ATTR("var_0", [ATTR_SERIALIZABLE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("var_1", [ATTR_SERIALIZABLE]);
-	VARIABLE_ATTR("var_2", [ATTR_SAVE]);
+	VARIABLE_ATTR("var_2", [ATTR_SAVE_VER(1)]);
 ENDCLASS;
 
 ["OOP Serialize by attribute", {
@@ -1471,7 +1557,7 @@ ENDCLASS;
 	SETV(_obj, "var_1", 1);
 	SETV(_obj, "var_2", 2);
 	
-	private _objSerial = SERIALIZE_ATTR(_obj, ATTR_SAVE);
+	private _objSerial = SERIALIZE_SAVE(_obj);
 
 	//diag_log format ["Serialized obj: %1", _objSerial];
 
@@ -1479,7 +1565,7 @@ ENDCLASS;
 	SETV(_obj, "var_1", 5);
 	SETV(_obj, "var_2", 6);
 
-	DESERIALIZE_ATTR(_obj, _objSerial, ATTR_SAVE);
+	DESERIALIZE_SAVE_VER(_obj, _objSerial, 1);
 
 	["test var 0", GETV(_obj, "var_0") == 0] call test_Assert;
 	["test var 1", GETV(_obj, "var_1") == 5] call test_Assert;

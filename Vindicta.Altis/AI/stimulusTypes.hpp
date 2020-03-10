@@ -1,7 +1,7 @@
-/*
-Enum: STIMULUS_TYPE
-File: AI\stimulusTypes.hpp
-*/
+// /*
+// Enum: STIMULUS_TYPE
+// File: AI\stimulusTypes.hpp
+// */
 
 // Not a stimulus (used when the sensor can't be stimulated)
 //#define STIMULUS_TYPE_NONE	0

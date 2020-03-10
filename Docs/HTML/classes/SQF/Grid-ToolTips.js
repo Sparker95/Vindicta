@@ -1,1 +1,0 @@
-NDContentPage.OnToolTipsLoaded({400:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">2D array of numbers (like a black and white image).&nbsp; Each grid occupies whole map and starts at [0, 0].</div></div>"});
