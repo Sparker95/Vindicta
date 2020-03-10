@@ -13,7 +13,7 @@ if exist editing.Altis (copy /Y Vindicta.Altis\mission.sqm mission.Altis.sqm & d
 if exist editing.Enoch (copy /Y Vindicta.Altis\mission.sqm mission.Enoch.sqm & del editing.Enoch)
 if exist editing.Malden (copy /Y Vindicta.Altis\mission.sqm mission.Malden.sqm & del editing.Malden)
 if exist editing.Staszow (copy /Y Vindicta.Altis\mission.sqm mission.Staszow.sqm & del editing.Staszow)
-if exist editing.vt7 (copy /Y Vindicta.Altis\mission.sqm mission.vt7.sqm & del editing.vt7)
+if exist editing.Beketov (copy /Y Vindicta.Altis\mission.sqm mission.Beketov.sqm & del editing.Beketov)
 goto :edit
 
 :clean
@@ -21,7 +21,7 @@ if exist editing.Altis del editing.Altis
 if exist editing.Enoch del editing.Enoch
 if exist editing.Malden del editing.Malden
 if exist editing.Staszow del editing.Staszow
-if exist editing.vt7 del editing.vt7
+if exist editing.Beketov del editing.Beketov
 
 :edit
 copy /Y mission.%1.sqm Vindicta.%1\mission.sqm

@@ -4,4 +4,4 @@ if exist editing.Altis (copy /Y Vindicta.Altis\mission.sqm mission.Altis.sqm & d
 if exist editing.Enoch (copy /Y Vindicta.Enoch\mission.sqm mission.Enoch.sqm & del editing.Enoch)
 if exist editing.Malden (copy /Y Vindicta.Malden\mission.sqm mission.Malden.sqm & del editing.Malden)
 if exist editing.Staszow (copy /Y Vindicta.Staszow\mission.sqm mission.Staszow.sqm & del editing.Staszow)
-if exist editing.vt7 (copy /Y Vindicta.vt7\mission.sqm mission.vt7.sqm & del editing.vt7)
+if exist editing.Beketov (copy /Y Vindicta.Beketov\mission.sqm mission.Beketov.sqm & del editing.Beketov)

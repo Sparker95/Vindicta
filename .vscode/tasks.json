@@ -59,9 +59,9 @@
             "problemMatcher": []
         },
         {
-            "label": "EDIT VT7",
+            "label": "EDIT BEKETOV",
             "type": "process",
-            "command": "edit_vt7.bat",
+            "command": "edit_beketov.bat",
             "args": [],
             "options": {
                 "cwd": "${workspaceRoot}"

@@ -86,15 +86,16 @@ location_b_capacity =
 		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
 		8
 	],
-	// WW2
+	// WW2 & CUP
 	[
-		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L"],
+		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L","Land_Mil_Barracks_L","Land_Mil_Barracks_no_interior_CUP"],
 		10
 	],
 	[
 		["Land_I44_Object_Tent_Us_Small"],
 		2
 	]
+	
 ];
 
 // Positions for cargo boxes
@@ -145,6 +146,11 @@ location_bp_cargo_medium =
 	[
 		["Land_WW2_Admin2"],
 		[[4.82119,44.2476,0.233089], [4.11613,54.6484,0.233089], [4.62721,-40.6715,0.233089], [5.48119,-33.2937,0.233089], [4.23542,-133.858,0.233089], [5.042,-142.623,0.233089], [4.92659,-226.911,0.233089], [4.27249,-237.533,0.233089]]
+	],
+	// Beketov
+	[
+		["Land_HouseV2_02_Interier"],
+		[[4.21436,76.2874,0.973242], [6.86528,57.0615,0.973242], [6.2304,306.133,0.973242], [7.66948,288.97,0.973242]]
 	]
 ];
 
@@ -183,8 +189,10 @@ location_bt_police =
 
 	// WW2 Staszo
 	"Land_WW2_Admin",
-	"Land_WW2_Admin2"
+	"Land_WW2_Admin2",
 	
+	// Beketov - CUP
+	"Land_HouseV2_02_Interier"	
 ];
 
 location_decorations_police =
@@ -230,8 +238,12 @@ location_decorations_police =
 	[
 		["Land_WW2_Admin2"],
 		[[[2.28076,6.48145,1.68778],[[-8.74228e-008,-1,0],[0,0,1]]]]	
+	],
+	// Beketov
+	[
+		["Land_HouseV2_02_Interier"],
+		[[[0.00195313,-8.37939,-2.86904],[[0,1,0],[0,0,1]]],[[-0.0200195,8.30127,-2.89629],[[-8.74228e-008,-1,0],[0,0,1]]]]
 	]
-
 ];
 
 // Buildings which add radio functionality to the location
