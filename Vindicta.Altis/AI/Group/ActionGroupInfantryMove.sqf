@@ -86,8 +86,9 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 				_state = ACTION_STATE_COMPLETED
 			} else {
 				private _waypoints = waypoints _hG;
-				if(count _waypoints == 0) then {
-					_state = ACTION_STATE_FAILED;
+				// Groups have minimum 1 waypoint, just reactivate if waypoint is gone
+				if(count _waypoints <= 1) then {
+					_state = ACTION_STATE_INACTIVE;
 				};
 			}
 		};
