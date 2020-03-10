@@ -7,13 +7,12 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_LIB_UK_Helmet_Mk2_Camo"];
-this addHeadgear _RandomHeadgear;
-_RandomGoggles = selectRandom ["G_LIB_Binoculars"];
-this addGoggles _RandomGoggles;
+this addHeadgear "H_LIB_UK_Helmet_Mk2_Camo";
+this addGoggles "G_LIB_Binoculars";
 this forceAddUniform "U_LIB_UK_P37";
 this addVest "V_LIB_UK_P37_Rifleman";
-this addBackpack "B_LIB_UK_HSack_Cape", "B_LIB_UK_HSack", "B_LIB_UK_HSack_Tea";
+_RandomBackpack = selectRandom ["B_LIB_UK_HSack_Cape", "B_LIB_UK_HSack", "B_LIB_UK_HSack_Tea"];
+this addBackpack _RandomBackpack;
 
 this addWeapon "LIB_LeeEnfield_No1";
 this addPrimaryWeaponItem "LIB_10Rnd_770x56";
