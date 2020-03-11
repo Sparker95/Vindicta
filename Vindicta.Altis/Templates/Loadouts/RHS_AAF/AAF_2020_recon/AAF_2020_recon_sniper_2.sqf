@@ -26,6 +26,7 @@ this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "optic_NVS";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_mk3a2";};
 this addItemToVest "I_IR_Grenade";
 for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_20Rnd_SCAR_762x51_m80a1_epr";};
