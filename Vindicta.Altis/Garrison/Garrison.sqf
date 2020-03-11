@@ -2824,13 +2824,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Get the inf handle, we only auto detach vics (which is all this function does) by player action
-		pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
+		private _infHandle = CALLM0(_unitInf, "getObjectHandle");
 		if(isNull _infHandle or {!isPlayer _infHandle}) exitWith {
 			__MUTEX_UNLOCK;
 		};
 
 		// Get garrison of the unit that entered the vehicle
-		pr _garDest = CALLM0(_unitInf, "getGarrison");
+		private _garDest = CALLM0(_unitInf, "getGarrison");
 		if (_garDest == NULL_OBJECT) then {
 			// Shouldn't be possible...
 			_garDest = gGarrisonAmbient;
@@ -2839,7 +2839,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Check garrison of the unit that entered this vehicle
 		if (_garDest != _thisObject) then {
 			// Remove the vehicle from its group
-			pr _vehGroup = CALLM0(_unitVeh, "getGroup");
+			private _vehGroup = CALLM0(_unitVeh, "getGroup");
 			if (_vehGroup != NULL_OBJECT) then {
 				CALLM1(_vehGroup, "removeUnit", _unitVeh);
 			};
@@ -2847,10 +2847,10 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Move the vehicle into the other garrison
 			CALLM1(_garDest, "addUnit", _unitVeh);
 
-			pr _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
+			private _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
 
-			pr _location = T_CALLM0("getLocation");
-			pr _msg = if(_location != NULL_OBJECT) then {
+			private _location = T_CALLM0("getLocation");
+			private _msg = if(_location != NULL_OBJECT) then {
 				format["%1 was automatically detached from garrison at %2", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"), CALLM0(_location, "getDisplayName")]
 			} else {
 				format["%1 was automatically detached from garrison", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")]
@@ -2859,10 +2859,24 @@ CLASS("Garrison", "MessageReceiverEx");
 			private _ourSide = T_CALLM0("getSide");
 
 			// Notify nearby players of what happened
-			pr _nearbyClients = allPlayers select {side group _x == _ourSide && (_x distance _vicHandle) < 100} apply { owner _x };
+			private _nearbyClients = allPlayers select {side group _x == _ourSide && (_x distance _vicHandle) < 100} apply { owner _x };
 			private _args = ["VEHICLE DETACHED", _msg, "It will be no longer be saved here"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
 			OOP_INFO_0(_msg);
+
+			private _newSide = CALLM0(_garDest, "getSide");
+			if(_newSide != _ourSide) then {
+				// Send stimulus to garrison's casualties sensor if we are losing the vehicle to another side
+				// We consider it destruction of the vehicle
+				private _garAI = T_CALLM0("getAI");
+				if (!IS_NULL_OBJECT(_garAI)) then {
+					private _stim = STIMULUS_NEW();
+					STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
+					private _value = [_unitVeh, _infHandle];
+					STIMULUS_SET_VALUE(_stim, _value);
+					CALLM2(_garAI, "postAsync", "handleStimulus", [_stim]);
+				};
+			};
 		};
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
