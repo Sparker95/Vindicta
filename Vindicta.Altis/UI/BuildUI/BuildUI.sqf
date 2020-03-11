@@ -1120,15 +1120,18 @@ CLASS("BuildUI", "")
 		{
 			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
 			detach _ghostObject;
-			private _currPos = getPos _ghostObject;
+
+			pr _currPos = getPos _ghostObject;
+			pr _vecDir = vectorDir _ghostObject;
+			pr _pos = [_currPos select 0, _currPos select 1, 0];
+			pr _surfaceVectorUp = surfaceNormal _pos;
+			pr _gar = CALLM0(gPlayerMonitor, "getCurrentGarrison");
 
 			// If it is a new object then we must create a server version.
 			if (_object getVariable ["build_ui_newObject", false]) then {
 				// We are creating a new object
 				// Ask server to do that
 
-				pr _pos = [_currPos select 0, _currPos select 1, 0];
-				pr _vecDir = vectorDir _ghostObject;
 				// These are template catID and subcatID of the object, not catID of the build menu
 				pr _currentCatID = T_GETV("currentCatID");
 				pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
@@ -1140,7 +1143,6 @@ CLASS("BuildUI", "")
 				pr _buildRes = getNumber (_objClass >> "buildResource");
 				pr _catID = getNumber (_objClass >> "templateCatID");
 				pr _subcatID = getNumber (_objClass >> "templateSubcatID");
-				pr _gar = CALLM0(gPlayerMonitor, "getCurrentGarrison");
 
 				if (T_GETV("resourceSource") == __RESOURCE_SOURCE_INVENTORY) then {
 					// Check player's resources
@@ -1148,13 +1150,13 @@ CLASS("BuildUI", "")
 					if (_playerBuildRes >= _buildRes) then {
 						CALLSM2("Unit", "removeInfantryBuildResources", player, _buildRes);
 						_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
-						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _vecDir, false];
+						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, false];
 						// Send the request to server
 						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 					} else {
 						// God mode
 						if(!isDamageAllowed player) then {
-							pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _vecDir, false];
+							pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, false];
 							// Send the request to server
 							CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 						} else {
@@ -1165,19 +1167,19 @@ CLASS("BuildUI", "")
 					
 				} else {
 					// We are building from the location garrison's resources
-					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _vecDir, true];
+					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, true];
 
 					// Send the request to server
 					CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 				};
 
 				deleteVehicle _object;
-			} else {
-				// We are just moving an already existing object
-				_object setDir (getDir _ghostObject);
-				_object setPos [_currPos select 0, _currPos select 1, 0];
-				// _object enableSimulationGlobal true;
-				_object hideObject false;
+			} else {	
+				// We are moving an existing object
+				pr _args = [_gar, _object, _vecDir, _currPos];
+
+				// Send the request to server
+				CALLM2(gGarrisonServer, "postMethodAsync", "moveObjectFromGarrison", _args);
 			};
 
 			deleteVehicle _ghostObject;

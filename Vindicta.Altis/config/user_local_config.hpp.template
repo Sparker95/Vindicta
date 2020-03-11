@@ -35,14 +35,20 @@
 // Show commander debug marker on map with current commander activity (at bottom left)
 //#define DEBUG_COMMANDER
 
+// Show world model debug info
+//#define DEBUG_WORLD_MODEL
+
 // External reinforcement will run every commander process cycle
 //#define REINFORCEMENT_TESTING
 
 // Disables planning for cmdr ai
 //#define CMDR_AI_NO_PLAN
 
-// Debug construction system
+// Debug construction system (update build progress every location.process tick)
 //#define DEBUG_BUILDING
+
+// Debug unit allocator (will log all iteration results)
+//#define UNIT_ALLOCATOR_DEBUG
 
 // Enable Profiling
 //#define OOP_PROFILE

@@ -201,6 +201,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "update sensors");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
@@ -1825,7 +1826,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Create the location
 		pr _args = [_pos, T_GETV("side")]; // Our side is creating this location
 		pr _loc = NEW_PUBLIC("Location", _args);
-		CALLM2(_loc, "setBorder", "circle", 50);
+		CALLM2(_loc, "setBorder", "circle", 100);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
 		CALLM2(_loc, "processObjectsInArea", "House", true);

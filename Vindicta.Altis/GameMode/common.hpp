@@ -1,9 +1,3 @@
-#define OOP_DEBUG
-#define OOP_INFO
-#define OOP_ERROR
-#define OOP_WARNING
-#define OOP_ASSERT
-
 #define OFSTREAM_FILE "GameMode.rpt"
 
 #include "..\OOP_Light\OOP_Light.h"

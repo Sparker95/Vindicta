@@ -19,7 +19,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		T_SETV("pos", POS_TO_ATL(_pos));
+		T_SETV("pos", ZERO_HEIGHT(_pos));
 		
 	} ENDMETHOD;
 
@@ -86,8 +86,9 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 				_state = ACTION_STATE_COMPLETED
 			} else {
 				private _waypoints = waypoints _hG;
-				if(count _waypoints == 0) then {
-					_state = ACTION_STATE_FAILED;
+				// Groups have minimum 1 waypoint, just reactivate if waypoint is gone
+				if(count _waypoints <= 1) then {
+					_state = ACTION_STATE_INACTIVE;
 				};
 			}
 		};
