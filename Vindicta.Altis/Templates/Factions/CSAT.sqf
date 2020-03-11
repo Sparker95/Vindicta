@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil]; //Make an array having the size equal to the number 
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tCSAT"];
-_array set [T_DESCRIPTION, "Vanilla CSAT."];
+_array set [T_DESCRIPTION, "Vanilla Canton Protocol Strategic Alliance Treaty."];
 _array set [T_DISPLAY_NAME, "Arma 3 CSAT"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
@@ -22,19 +22,19 @@ _inf set [T_INF_SL, ["O_Soldier_SL_F"]];
 _inf set [T_INF_TL, ["O_Soldier_TL_F"]];
 _inf set [T_INF_officer, ["O_officer_F"]];
 _inf set [T_INF_GL, ["O_Soldier_GL_F"]];
-_inf set [T_INF_rifleman, ["O_Soldier_F"]];
-_inf set [T_INF_marksman, ["O_soldier_M_F"]];
+_inf set [T_INF_rifleman, ["O_Soldier_F", "O_Soldier_lite_F"]];
+_inf set [T_INF_marksman, ["O_soldier_M_F", "O_Sharpshooter_F"]];
 _inf set [T_INF_sniper, ["O_ghillie_ard_F"]];
 _inf set [T_INF_spotter, ["O_spotter_F"]];
-_inf set [T_INF_exp, ["O_soldier_exp_F"]];
+_inf set [T_INF_exp, ["O_soldier_exp_F", "O_soldier_mine_F"]];
 _inf set [T_INF_ammo, ["O_Soldier_A_F"]];
 _inf set [T_INF_LAT, ["O_Soldier_LAT_F"]];
-_inf set [T_INF_AT, ["O_Soldier_HAT_F"]];
+_inf set [T_INF_AT, ["O_Soldier_HAT_F", "O_Soldier_AT_F"]];
 _inf set [T_INF_AA, ["O_Soldier_AA_F"]];
 _inf set [T_INF_LMG, ["O_Soldier_AR_F"]];
 _inf set [T_INF_HMG, ["O_HeavyGunner_F"]];
 _inf set [T_INF_medic, ["O_medic_F"]];
-_inf set [T_INF_engineer, ["O_engineer_F"]];
+_inf set [T_INF_engineer, ["O_engineer_F", "O_soldier_repair_F"]];
 _inf set [T_INF_crew, ["O_crew_F"]];
 _inf set [T_INF_crew_heli, ["O_helicrew_F"]];
 _inf set [T_INF_pilot, ["O_Pilot_F"]];
@@ -48,7 +48,7 @@ _inf set [T_INF_recon_rifleman, ["O_recon_F"]];
 _inf set [T_INF_recon_medic, ["O_recon_medic_F"]];
 _inf set [T_INF_recon_exp, ["O_recon_exp_F"]];
 _inf set [T_INF_recon_LAT, ["O_recon_LAT_F"]];
-_inf set [T_INF_recon_marksman, ["O_recon_M_F"]];
+_inf set [T_INF_recon_marksman, ["O_recon_M_F", "O_Pathfinder_F"]];
 _inf set [T_INF_recon_JTAC, ["O_recon_JTAC_F"]];
 
 //Divers
@@ -64,15 +64,18 @@ _veh set [T_VEH_DEFAULT, ["O_MRAP_02_F"]];
 
 _veh set [T_VEH_car_unarmed, ["O_LSV_02_unarmed_F"]];
 _veh set [T_VEH_car_armed, ["O_LSV_02_armed_F", "O_LSV_02_AT_F"]];
+
 _veh set [T_VEH_MRAP_unarmed, ["O_MRAP_02_F"]];
 _veh set [T_VEH_MRAP_HMG, ["O_MRAP_02_hmg_F"]];
 _veh set [T_VEH_MRAP_GMG, ["O_MRAP_02_gmg_F"]];
+
 _veh set [T_VEH_IFV, ["O_APC_Tracked_02_cannon_F"]];
 _veh set [T_VEH_APC, ["O_APC_Wheeled_02_rcws_v2_F"]];
 _veh set [T_VEH_MBT, ["O_MBT_04_cannon_F", "O_MBT_04_command_F", "O_MBT_02_cannon_F"]];
 _veh set [T_VEH_MRLS, ["O_MBT_02_arty_F"]];
 _veh set [T_VEH_SPA, ["O_MBT_02_arty_F"]];
 _veh set [T_VEH_SPAA, ["O_APC_Tracked_02_AA_F"]];
+
 _veh set [T_VEH_stat_HMG_high, ["O_HMG_01_high_F"]];
 _veh set [T_VEH_stat_GMG_high, ["O_GMG_01_high_F"]];
 _veh set [T_VEH_stat_HMG_low, ["O_HMG_01_F"]];
@@ -81,24 +84,30 @@ _veh set [T_VEH_stat_AA, ["O_static_AA_F"]];
 _veh set [T_VEH_stat_AT, ["O_static_AT_F"]];
 _veh set [T_VEH_stat_mortar_light, ["O_Mortar_01_F"]];
 //_veh set [T_VEH_stat_mortar_heavy, ["O_Mortar_01_F"]];
-_veh set [T_VEH_heli_light, ["O_Heli_Light_02_dynamicLoadout_F"]];
+
+_veh set [T_VEH_heli_light, ["O_Heli_Light_02_unarmed_F"]];
 _veh set [T_VEH_heli_heavy, ["O_Heli_Transport_04_covered_F", "O_Heli_Transport_04_bench_F"]];
 _veh set [T_VEH_heli_cargo, ["O_Heli_Transport_04_box_F"]];
-_veh set [T_VEH_heli_attack, ["O_Heli_Attack_02_dynamicLoadout_F"]];
+_veh set [T_VEH_heli_attack, ["O_Heli_Light_02_dynamicLoadout_F", "O_Heli_Attack_02_dynamicLoadout_F"]];
+
 _veh set [T_VEH_plane_attack, ["O_Plane_CAS_02_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_fighter , ["O_Plane_Fighter_02_F"]];
 _veh set [T_VEH_plane_cargo, ["O_T_VTOL_02_infantry_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_unarmed , ["O_T_VTOL_02_infantry_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_VTOL, ["O_T_VTOL_02_infantry_dynamicLoadout_F"]];
+
 _veh set [T_VEH_boat_unarmed, ["O_Boat_Transport_01_F"]];
 _veh set [T_VEH_boat_armed, ["O_Boat_Armed_01_hmg_F"]];
+
 _veh set [T_VEH_personal, ["O_Quadbike_01_F"]];
+
 _veh set [T_VEH_truck_inf, ["O_Truck_03_transport_F", "O_Truck_03_covered_F", "O_Truck_02_transport_F", "O_Truck_02_covered_F"]];
-_veh set [T_VEH_truck_cargo, ["O_Truck_03_transport_F"]];
+_veh set [T_VEH_truck_cargo, ["O_Truck_03_transport_F", "O_Truck_02_transport_F"]];
 _veh set [T_VEH_truck_ammo, ["O_Truck_03_ammo_F", "O_Truck_02_Ammo_F"]];
 _veh set [T_VEH_truck_repair, ["O_Truck_03_repair_F", "O_Truck_02_box_F"]];
 _veh set [T_VEH_truck_medical , ["O_Truck_03_medical_F", "O_Truck_02_medical_F"]];
 _veh set [T_VEH_truck_fuel, ["O_Truck_03_fuel_F", "O_Truck_02_fuel_F"]];
+
 _veh set [T_VEH_submarine, ["O_SDV_01_F"]];
 
 

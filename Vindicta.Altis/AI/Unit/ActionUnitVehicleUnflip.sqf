@@ -78,7 +78,7 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 					if (_counter > 1) then {
 						// Too many attempts already
 						_hO setVectorUp [0, 0, 1];
-						_hO setVehiclePosition [POS_TO_ATL(getPos _hO), [], 10, "NONE"];
+						_hO setVehiclePosition [ZERO_HEIGHT(getPos _hO), [], 10, "NONE"];
 					} else {
 						pr _torque = T_GETV("torque");
 						OOP_INFO_1("torque: %1", _torque);

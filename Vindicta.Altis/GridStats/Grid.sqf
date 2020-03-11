@@ -456,6 +456,32 @@ CLASS("Grid", "Storable");
 		};
 	} ENDMETHOD;
 
+	// Gets sum value at square area centered at _pos as having full width of 2*_halfSize
+	METHOD("getValueSquareSum") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfSize")];
+		
+		_pos params ["_x", "_y"];
+
+		pr _array = T_GETV("gridArray");
+		pr _cellSize = T_GETV("cellSize");
+
+		pr _xID = floor(_x / _cellSize);
+		pr _yID = floor(_y / _cellSize);
+		pr _nCells = round (_halfSize/_cellSize);	// Nubmer of cells to capture on each side
+		pr _xIDStart = (_xID - _nCells) max 0;
+		pr _yIDStart = (_yID - _nCells) max 0;
+		pr _nCellsSelect = 1 + 2 * _nCells;
+
+		pr _sum = 0;
+		{
+			pr _col = _x;
+			{
+				_sum = _sum + _x;
+			} forEach (_col select [_yIDStart, _nCellsSelect]);
+			//pr _max = selectMax (_col select [_yIDStart, _nCellsSelect]);
+		} forEach (_array select [_xIDStart, _nCellsSelect]);
+		_sum
+	} ENDMETHOD;
 	// - - - - - Image processing - - - -
 
 	METHOD("apply") {

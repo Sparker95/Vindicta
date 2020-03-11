@@ -42,6 +42,7 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 	}] call CBA_fnc_addEventHandler;
 };
 #endif
+FIX_LINE_NUMBERS()
 
 CLASS(UNIT_CLASS_NAME, "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -988,23 +989,57 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
 					// Array with item class name, count
 					pr _ACREclassNames = [
-						["ACRE_SEM52SL",2],
-						["ACRE_SEM70",4],
-						["ACRE_PRC77",1],
-						["ACRE_PRC343",6],
-						["ACRE_PRC152",3],
-						["ACRE_PRC148",3],
-						["ACRE_PRC117F",1],
-						["ACRE_VHF30108SPIKE",1],
-						["ACRE_VHF30108",3],
-						["ACRE_VHF30108MAST",1]
-					];
+										["ACRE_SEM52SL",2], // medium-range radio, similar to the 148 and 152
+										["ACRE_SEM70",4], // Long-range radio, is NOT a backpack, but needs to be put in a backpack.
+										["ACRE_PRC77",1], // Vietnam-era radio, needs to be put in a backpack.
+										["ACRE_PRC343",6], // Shortest-range infantry radio. (400m-900m range, depending on terrain)
+										["ACRE_PRC152",3], //medium-range radio, 3-5km
+										["ACRE_PRC148",3], //medium-range radio, 3-5km
+										["ACRE_PRC117F",1], //Long range radio, is NOT a backpack, but needs to be put in a backpack. 10-20km
+										["ACRE_VHF30108SPIKE",1], // antenna for radio signal extension, with a spike to put it higher in the air.
+										["ACRE_VHF30108",3], // Just the antenna
+										["ACRE_VHF30108MAST",1] // Antenna with a mast.
+									];
 					{
 						if(random 10 < 7) then {
 							_x params ["_itemName", "_itemCount"];
 							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
 						};
 					} forEach _ACREclassNames;
+				};
+
+				// Add TFAR Radios (0.9.12)
+				if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
+					// Array with item class name, count
+					pr _TFARclassNames = [
+										//["tf_fadak",2], //"Belongs" to Opfor
+										//["tf_pnr1000a",1], //"Belongs" to Opfor
+										//["tf_anprc154",2], //"Belongs" to INDEP
+										//["tf_anprc148jem",2] //"Belongs" to INDEP
+										["tf_rf7800str",4], //"Belongs" to BluFor
+										["tf_anprc152",2] //"Belongs" to BluFor
+									];
+					{
+						_x params ["_itemName", "_itemCount"];
+						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+					} forEach _TFARclassNames;
+				};
+
+				// Add TFAR Radios (BETA)
+				if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
+					// Array with item class name, count
+					pr _TFARBetaclassNames = [
+										//["TFAR_fadak",2], //"Belongs" to Opfor
+										//["TFAR_pnr1000a",1], //"Belongs" to Opfor
+										//["TFAR_anprc154",2], //"Belongs" to INDEP
+										//["TFAR_anprc148jem",2] //"Belongs" to INDEP
+										["TFAR_rf7800str",4], //"Belongs" to BluFor
+										["TFAR_anprc152",2] //"Belongs" to BluFor
+									];
+					{
+						_x params ["_itemName", "_itemCount"];
+						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+					} forEach _TFARBetaclassNames;
 				};
 
 				// Add special items to cargo containers
@@ -1117,6 +1152,61 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			for "_i" from 0 to _nVests do {
 				_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
 			};
+
+			// Add TFAR (0.9.12) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
+			if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
+				// Array with backpack class name
+				pr _nTFARbackpack = [
+					["tf_rt1523g"], //"Belongs" to BluFor
+					["tf_rt1523g_big"], //"Belongs" to BluFor
+					["tf_rt1523g_black"], //"Belongs" to BluFor
+					["tf_rt1523g_fabric"], //"Belongs" to BluFor
+					["tf_rt1523g_green"], //"Belongs" to BluFor
+					["tf_rt1523g_rhs"], //"Belongs" to BluFor
+					["tf_rt1523g_sage"], //"Belongs" to BluFor	
+					["tf_rt1523g_big_rhs"], //"Belongs" to BluFor
+					["tf_anarc210"], //"Belongs" to BluFor
+					["tf_anprc152"] //"Belongs" to BluFor
+					//["tf_anprc155"], //"Belongs" to INDEP
+					//["tf_anprc155_coyote"], //"Belongs" to INDEP
+					//["tf_anarc164"], //"Belongs" to INDEP
+					//["tf_mr3000"], //"Belongs" to OPFOR
+					//["tf_mr3000_multicam"], //"Belongs" to OPFOR
+					//["tf_mr3000_rhs"], //"Belongs" to OPFOR
+					//["tf_mr6000l"] //"Belongs" to OPFOR
+				];
+				for "_i" from 0 to _nVests do {
+					_hO addBackpackCargoGlobal [selectRandom _nTFARbackpack, 1];
+				};
+			};
+
+			// Add TFAR (BETA) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
+			if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
+				// Array with backpack class name
+				pr _TFARBETAbackpack = [
+					["TFAR_rt1523g"], //"Belongs" to BluFor
+					["TFAR_rt1523g_big"], //"Belongs" to BluFor
+					["TFAR_rt1523g_black"], //"Belongs" to BluFor
+					["TFAR_rt1523g_fabric"], //"Belongs" to BluFor
+					["TFAR_rt1523g_green"], //"Belongs" to BluFor
+					["TFAR_rt1523g_rhs"], //"Belongs" to BluFor
+					["TFAR_rt1523g_sage"], //"Belongs" to BluFor	
+					["TFAR_rt1523g_big_rhs"], //"Belongs" to BluFor
+					["TFAR_anarc210"], //"Belongs" to BluFor
+					["TFAR_anprc152"] //"Belongs" to BluFor
+					//["TFAR_anprc155"], //"Belongs" to INDEP
+					//["TFAR_anprc155_coyote"], //"Belongs" to INDEP
+					//["TFAR_anarc164"], //"Belongs" to INDEP
+					//["TFAR_mr3000"], //"Belongs" to OPFOR
+					//["TFAR_mr3000_multicam"], //"Belongs" to OPFOR
+					//["TFAR_mr3000_rhs"], //"Belongs" to OPFOR
+					//["TFAR_mr6000l"] //"Belongs" to OPFOR
+				];
+				for "_i" from 0 to _nVests do {
+					_hO addBackpackCargoGlobal [selectRandom _TFARBETAbackpack, 1];
+				};
+			};
+
 		} else {
 			if (random 100 <= 5) then {
 				_hO addItemToUniform "vin_pills";
@@ -1283,7 +1373,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 
 		// Remove all weapons
-		removeAllWeapons this;
+		removeAllWeapons _hO;
 
 		// Remove all items from vest
 		pr _vest = vest _hO;

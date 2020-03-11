@@ -87,7 +87,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		private _closestWPID = 0;
 		private _minDist = 666666;
 		while {_i < _count} do {
-			private _wayPointPos = POS_TO_ATL(_waypoints select _index);
+			private _wayPointPos = ZERO_HEIGHT(_waypoints select _index);
 			pr _wp = _hG addWaypoint [_wayPointPos, 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointBehaviour "SAFE"; //"AWARE"; //"SAFE";
@@ -115,7 +115,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		
 		// Add cycle waypoint
 		if (count _waypoints > 1) then {
-			pr _wp = _hG addWaypoint [POS_TO_ATL(_waypoints select _indexStart), 0]; //Cycle the waypoints
+			pr _wp = _hG addWaypoint [ZERO_HEIGHT(_waypoints select _indexStart), 0]; //Cycle the waypoints
 			_wp setWaypointType "CYCLE";
 			_wp setWaypointBehaviour "SAFE";
 			_wp setWaypointSpeed "LIMITED";
