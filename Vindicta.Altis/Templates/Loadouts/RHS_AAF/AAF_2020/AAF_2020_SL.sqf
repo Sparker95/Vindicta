@@ -37,6 +37,7 @@ this addItemToBackpack "rhs_mag_nspd";
 this addItemToBackpack "rhs_mag_nspn_green";
 this addItemToBackpack "rhs_mag_nspn_red";
 this addItemToBackpack "rhs_mag_nspn_yellow";
+this addItemToBackpack "rhs_acc_1pn93_1";
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
