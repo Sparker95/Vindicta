@@ -13,10 +13,12 @@ _array set [T_DISPLAY_NAME, "RHS-BW-Niarms Fleck Custom"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 							"rhsusf_c_troops",	// RHSUSAF
-							"bwa3_common"				//BWmod
-							//Niarms AllinOne will not work with this detection
-
-]];
+							"bwa3_common",				//BWmod
+							"hlcweapons_G36",			//Niarms G36
+							"hlcweapons_MG3s",		//Niarms MG3
+							"niarms_416",					//Niarms HK416
+							"hlcweapons_mp5"			//Niarms MP5
+							]];
 
 //==== Infantry ====
 _inf = [];
@@ -53,7 +55,7 @@ _inf set [T_INF_recon_rifleman, ["BW_Fleck_Niarms_Recon_Rifleman"]];
 _inf set [T_INF_recon_medic, ["BW_Fleck_Niarms_recon_medic"]];
 _inf set [T_INF_recon_exp, ["BW_Fleck_Niarms_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["BW_Fleck_Niarms_recon_LAT"]];
-_inf set [T_INF_recon_LMG, ["BW_Fleck_Niarms_Recon_LMG"]];
+//_inf set [T_INF_recon_LMG, ["BW_Fleck_Niarms_Recon_LMG"]];
 _inf set [T_INF_recon_marksman, ["BW_Fleck_Niarms_recon_sniper"]];
 _inf set [T_INF_recon_JTAC, ["BW_Fleck_Niarms_recon_JTAC"]];
 
@@ -77,7 +79,7 @@ _veh set [T_VEH_MRAP_HMG, ["rhsusf_CGRCAT1A2_M2_usmc_wd", "rhsusf_m1240a1_m2_usm
 _veh set [T_VEH_MRAP_GMG, ["rhsusf_m1240a1_mk19_usmc_wd", "rhsusf_CGRCAT1A2_Mk19_usmc_wd", "rhsusf_M1232_MC_MK19_usmc_wd", "rhsusf_m1025_w_s_Mk19"]];
 
 _veh set [T_VEH_IFV, ["BWA3_Puma_Fleck", "RHS_M2A2_wd", "RHS_M2A2_BUSKI_WD"]];
-_veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_wd","rhsusf_m113_usarmy_M240","rhsusf_m113_usarmy","rhsusf_m113_usarmy_MK19"]];
+_veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_wd","rhsusf_m113_usarmy_M240","rhsusf_m113_usarmy","rhsusf_m113_usarmy_MK19","rhsusf_M1117_W"]];
 _veh set [T_VEH_MBT, ["BWA3_Leopard2_Fleck"]];
 
 _veh set [T_VEH_MRLS, ["rhsusf_M142_usarmy_WD"]];
@@ -108,7 +110,7 @@ _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F
 _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 _veh set [T_VEH_personal, ["rhsusf_mrzr4_w"]];
 
-_veh set [T_VEH_truck_inf, ["rhsusf_M1078A1P2_WD_fmtv_usarmy", "rhsusf_M1078A1P2_B_WD_fmtv_usarmy", "rhsusf_M1078A1P2_B_M2_WD_fmtv_usarmy", "rhsusf_M1083A1P2_WD_fmtv_usarmy", "rhsusf_M1083A1P2_B_WD_fmtv_usarmy", "rhsusf_M1083A1P2_B_M2_WD_fmtv_usarmy"]];
+_veh set [T_VEH_truck_inf, ["rhsusf_M1083A1P2_WD_fmtv_usarmy", "rhsusf_M1078A1P2_WD_fmtv_usarmy", "rhsusf_M1078A1P2_B_WD_fmtv_usarmy", "rhsusf_M1083A1P2_B_M2_WD_fmtv_usarmy", "rhsusf_M1083A1P2_B_M2_WD_fmtv_usarmy"]];
 _veh set [T_VEH_truck_cargo, ["rhsusf_M977A4_usarmy_wd", "rhsusf_M977A4_BKIT_M2_usarmy_wd", "rhsusf_M977A4_BKIT_usarmy_wd",
 "rhsusf_M1083A1P2_WD_flatbed_fmtv_usarmy", "rhsusf_M1083A1P2_B_WD_flatbed_fmtv_usarmy", "rhsusf_M1083A1P2_B_M2_WD_flatbed_fmtv_usarmy",
 "rhsusf_M1084A1P2_WD_fmtv_usarmy", "rhsusf_M1084A1P2_B_WD_fmtv_usarmy", "rhsusf_M1084A1P2_B_M2_WD_fmtv_usarmy",
