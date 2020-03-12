@@ -18,6 +18,7 @@ _array set [T_REQUIRED_ADDONS, [
 							"hlcweapons_MG3s",		//Niarms MG3
 							"niarms_416",					//Niarms HK416
 							"hlcweapons_mp5"			//Niarms MP5
+							"hlcweapons_core"			//HLC Core
 							]];
 
 //==== Infantry ====
