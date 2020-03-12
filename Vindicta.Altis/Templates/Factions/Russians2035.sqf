@@ -8,7 +8,7 @@ _array set [T_DESCRIPTION, "Russian Armed Forces from 2035."];
 _array set [T_DISPLAY_NAME, "RAF2035"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
-	""		// 2035: Russian Armed Forces
+	"min_rf_units_c"		// 2035: Russian Armed Forces
 ]];
 
 //==== Infantry ====
