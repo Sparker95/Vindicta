@@ -10,6 +10,7 @@ _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhs_c_troops",		// RHSAFRF
 	"rhsusf_c_troops"	// RHSUSAF
+	"uk3cb_baf_units_mtp"
 ]];
 
 //==== Infantry ====
