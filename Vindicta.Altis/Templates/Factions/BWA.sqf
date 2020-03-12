@@ -10,7 +10,7 @@ _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 "bwa3_units",
 "bwa3_comp_ace",
-"bw_additional_camo",
+"TBW_Insignia",
 "HAFM_EC635",
 "sfp_bo105",
 "gm_demo"
