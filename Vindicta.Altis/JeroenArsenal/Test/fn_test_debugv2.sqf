@@ -1,4 +1,6 @@
 
+if(isnil "CBA_fnc_waitUntilAndExecute")exitWith{};
+
 fnc_debugv2_overwrite = {
 	_display = findDisplay 49;
 	
@@ -273,10 +275,6 @@ fnc_debugv2_overwrite = {
 		
 		((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText _name;
 	}];
-	
-	
-
-
 };
 
 
