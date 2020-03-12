@@ -285,7 +285,6 @@ if (hasInterface) then {
 
 		(findDisplay 46) displayAddEventHandler ["KeyDown", {
 			params ["_display", "_key", "_shift", "_ctrl", "_alt"];
-			aa = random 11;
 			if(_key == 1)then{
 
 				[
