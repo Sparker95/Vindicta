@@ -21,6 +21,7 @@ this addPrimaryWeaponItem "rhs_acc_perst1ik";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm_polymer";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "rhs_acc_1pn93_1";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_zarya2";};
 this addItemToUniform "rhssaf_mag_br_m84";
 this addItemToUniform "rhssaf_mag_br_m75";
