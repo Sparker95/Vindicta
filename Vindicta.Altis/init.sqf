@@ -18,3 +18,5 @@ if (isServer) then {
         };  
     };   
 };
+
+if (isServer) then {isServerDedicated = isDedicated; publicVariable "isServerDedicated"};

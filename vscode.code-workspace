@@ -319,11 +319,19 @@
 			"pr0_fnc_dialogue_registerDataSet",
 			"pr0_fnc_dialogue_deleteHUD",
 			"pr0_fnc_dialogue_deleteSentence",
+			"pr0_fnc_dialogue_deleteQuestion",
 			"pr0_fnc_dialogue_setDataSets",
 			"pr0_fnc_dialogue_updateSentence",
 			"pr0_fnc_dialogue_common_bearingToID",
 			"pr0_fnc_dialogue_common_unitSideColor",
-			"pr0_fnc_dialogue_createSimple"
+			"pr0_fnc_dialogue_createSimple",
+			"pr0_fnc_dialogue_mainLoop",
+			"pr0_fnc_dialogue_mainLoop_sentence",
+			"pr0_fnc_dialogue_mainLoop_question",
+			"pr0_fnc_dialogue_mainLoop_question_return",
+			"pr0_fnc_dialogue_mainLoop_error",
+			"pr0_fnc_dialogue_mainLoop_end",
+			"pr0_fnc_dialogue_mainLoop_checkConditions"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"

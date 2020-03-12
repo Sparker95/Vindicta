@@ -37,7 +37,7 @@ if(player isEqualTo _speaker)then{
 
 	if(_type == TYPE_SENTENCE)then{
 		_ctrl_sentence ctrlSetStructuredText  _structedText;
-	}else{ //question!
+	}else{ //question
 	
 		//there might already be a question on the screen. We dont want to have two answers with the same number.
 		//previous open question has 3 answers 1,2,3. When we create a new question we want to number the answers 4,5,...
@@ -49,19 +49,23 @@ if(player isEqualTo _speaker)then{
 			_answer_nr = _answer_nr + count (_x getVariable ["_answers",[]])
 		}forEach _ctrl_questions;
 
-		
 		//add answers to structured text		
 		{
 			private _answer = _x;
+			_answer set [INDEX_ANSWER_NR,_answer_nr];
 			_structedText = composeText [
 				_structedText,
 				lineBreak,
 				" - ",
-				str (_forEachIndex + _answer_nr),
+				str _answer_nr,
 				": ",
 				_answer#INDEX_ANSWER_TEXT
 			];
+			_answer_nr = _answer_nr + 1;
 		}forEach _answers;
+		
+		//store answer numbers
+		_ctrl_sentence getVariable ["_answers",_answers];
 
 		_ctrl_sentence ctrlSetStructuredText _structedText;
 		_ctrl_sentence setVariable ["_size_y",(count _answers + 1) * FLOAT_TEXT_HIGHT];

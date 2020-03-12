@@ -170,30 +170,34 @@ if(count _ctrl_sentences >
 };
 
 //lip sycn
-private _timer = _speaker getvariable ["pr0_dialogue_lip_timer",0];
-private _timer_new = (count _sentence / 12) + time;
-if(_timer_new >_timer)then{
-	_speaker setvariable ["pr0_dialogue_lip_timer",_timer_new];
-	private _script = _speaker getvariable ["pr0_dialogue_lip_script",scriptnull];
-	terminate _script;//close old
-	_script = [_speaker] spawn {
-		params["_speaker"];
-		_speaker setRandomLip true;
-		waitUntil{
-			sleep 0.3;
-			( time > _speaker getvariable ["pr0_dialogue_lip_timer",0]);
-		};
-		_speaker setRandomLip false;
-		_speaker doWatch objnull;
-	};
-	_speaker setvariable ["pr0_dialogue_lip_script",_script];
+private _timer = _speaker getvariable ["pr0_dialogue_lip_timer", 0];
+private _time_speach = FLOAT_SPEACH_TIME(_sentence);
+if(_time_speach+time >_timer)then{
+	_speaker setvariable ["pr0_dialogue_lip_timer",_time_speach + time];
 };
 
+//check if waitUntil is still running
+if(_timer == 0)then{
+	_speaker setRandomLip true;
+	[
+		{
+			params ["_speaker"];
+			private _timer = _speaker getvariable ["pr0_dialogue_lip_timer",-1];
+			_timer<time;
+		},
+		{
+			params ["_speaker"];
+			_speaker setvariable ["pr0_dialogue_lip_timer",nil];
+			_speaker setRandomLip false;
+		},
+		[_speaker],
+		10,//single sentence should not take longer than 10 secs
+		{
+			params ["_speaker"];
+			_speaker setvariable ["pr0_dialogue_lip_timer",nil];
+			_speaker setRandomLip false;
+		}
+	] call CBA_fnc_waitUntilAndExecute;
+};
 
 _ctrl_sentence;
-
-
-
-
-
-

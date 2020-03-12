@@ -12,17 +12,16 @@
 params [["_unit",objNull,[objNull]]];
 
 
-private _color = "#ff9900";
+private _index = [blufor, opfor, civilian] find side _unit;
 
-if(side _unit isEqualTo sideEmpty)then{
-	_color = UNKOWN_COLOR
+private _color = if(_index == -1)then{
+	UNKOWN_COLOR;
 }else{
 	//if player doesnt know about the unit he doesnt know what side he is on
 	if(player knowsAbout _unit == 4)then{
-		private _index = [blufor, opfor, civilian] find side _unit;
-		_color = [BLUEFOR_COLOR, OPFOR_COLOR,CIVILIAN_COLOR] select _index;
+		[BLUEFOR_COLOR, OPFOR_COLOR,CIVILIAN_COLOR] select _index;
 	}else{
-		_color = ERROR_COLOR;
+		UNKOWN_COLOR;
 	};
 };
 

@@ -9,7 +9,7 @@ pr0_fnc_StartFreeingCivilian = {
 		CALLSM("UndercoverMonitor", "onUnitCompromised", [_this]);
 	}] remoteExec ["call", 0];
 
-	[player, "Let me free you brother!"] call pr0_fnc_dialogue_createSimple;
+	[player, "Let me free you brother!",0.5] call pr0_fnc_dialogue_createSimple;
 };
 
 // Callback for the end of the free civilian action

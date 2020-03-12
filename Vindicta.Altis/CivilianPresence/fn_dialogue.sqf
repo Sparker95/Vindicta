@@ -7,6 +7,7 @@
 private _array = [
 
 	["intro_hello",{
+		params ["_player","_civ"];
 		private _return = [
 			[TYPE_SENTENCE,[
 				"Hey, can I talk to you for a moment?",
@@ -16,6 +17,22 @@ private _array = [
 				"Hey, I'd like to talk to you."
 			],1]
 		];
+
+		private _state = _civ call CivPresence_fnc_getUnitState;
+		if(_state isEqualTo "panic")exitWith{
+			_return append [
+				[TYPE_SENTENCE,["No time, I'm being followed", "To dangers to talk now","Someone is after me!"],2],
+				[TYPE_SENTENCE,["Oke then...", "Pussy!","I will ask someone else then","Bye"]],
+				[TYPE_JUMP_TO, "#end"]
+			];
+			_return;
+		};
+		if(_state isEqualType "arrested")exitWith{
+			_return pushBack [TYPE_JUMP_TO, "help_untied_question"];
+			_return;
+		};
+
+
 		if(random 1000 < 2)then{
 			_return pushBack [TYPE_SENTENCE,[
 				"I am nothing but a simulation on some computer.",
@@ -34,6 +51,20 @@ private _array = [
 		
 		_return;
 	}],
+	["help_untied_question",{
+		[
+			[TYPE_QUESTION,"Yes, but get me out of this handcuffs first",2],
+			[TYPE_ANSWER,"First tell me what I want to know!","intro_question"],
+			[TYPE_ANSWER,"Let me see how i can get you out","help_untied_helping"],
+			[TYPE_ANSWER,"Sorry its to dangerous","#end"]
+		]
+	}],
+	["help_untied_helping",{
+		[
+			[TYPE_SENTENCE,"Thank you so much!",2],
+			[TYPE_JUMP_TO,"#end"]
+		]
+	}],
 
 	["intro_question",{
 		params["_player","_civ"];
@@ -48,14 +79,15 @@ private _array = [
 	}],
 	["info_town",{
 		[
-			[TYPE_QUESTION,"What do you like to know about it?",2],
+			[TYPE_SENTENCE,"Can you give me some information about the town?",1],
+			[TYPE_QUESTION,"What do you like to know about this town?",2],
 			[TYPE_ANSWER,"Police","info_police"],
 			[TYPE_ANSWER,"Fuel station","info_fuelstation"],
 			[TYPE_ANSWER,"Never mind","intro_question_neverMind"]
 		]
 	}],
 	["info_fuelstation",{
-		private _return = [];
+		private _return = [[TYPE_SENTENCE, "Where can i find a fuelstation",1]];
 		private _fuelstations = nearestTerrainObjects [getpos player, ["FUELSTATION"], 500];
 		if(count _fuelstations == 0)then{
 			_return pushBack [TYPE_SENTENCE, "There is no fuelstation in this area",2];

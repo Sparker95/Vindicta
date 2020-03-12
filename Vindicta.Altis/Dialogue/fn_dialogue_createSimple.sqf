@@ -17,11 +17,15 @@
 
 params [
 	["_unit",objNull,[objNull]],
-	["_sentence","",[""]],
+	["_sentence","",["",[]]],
 	["_loudness",1,[0]]
 ];
 
 if(!alive _unit || {_unit getVariable ["ace_isunconscious",false]})exitWith{};
+
+if(_sentence isEqualType [])then{
+	_sentence = selectRandom _sentence;
+};
 
 {
 	if(_x distance _unit < (FLOAT_MAX_LISTENING_DISTANCE *_loudness) )then{

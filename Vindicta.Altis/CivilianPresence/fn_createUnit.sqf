@@ -65,16 +65,7 @@ _unit execFSM "CivilianPresence\FSM\behavior_2.fsm";
 _unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, true, true]; // Set a variable on the created unit
 
 // Add 'untie' action to unit
-private _JIPID = if (isNil "gCPUntieID") then { 0 } else {gCPUntieID};
-private _JIPString = format ["CP_untie_%1", _JIPID];
-_unit setVariable ["CP_untieJIPID", _JIPString];
-[_unit] remoteExecCall ["CivPresence_fnc_addUntieActionLocal", 0, _JIPString];
-_unit addEventHandler ["Deleted", {
-	params ["_entity"];
-	private _jipstring = _entity getVariable ["CP_untieJIPID", ""];
-	if (_jipstring != "") then { remoteExecCall ["", _jipstring]; };
-}];
-gCPUntieID = _JIPID + 1;
+[_unit] remoteExecCall ["CivPresence_fnc_addUntieActionLocal", [0,-2] select isDedicated, _unit];
 
 //JIP set to _unit so this function gets removed from JIP list if unit is removed
 [_unit] remoteExecCall ["CivPresence_fnc_addAction",[0,-2] select isDedicated, _unit]; 
