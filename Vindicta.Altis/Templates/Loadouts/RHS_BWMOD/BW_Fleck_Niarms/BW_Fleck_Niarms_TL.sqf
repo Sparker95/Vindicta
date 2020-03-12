@@ -26,6 +26,7 @@ this addHandgunItem "BWA3_15Rnd_9x19_P8";
 this addWeapon "BWA3_Vector";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "rhsusf_ANPVS_14";
 for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
 for "_i" from 1 to 2 do {this addItemToUniform "BWA3_15Rnd_9x19_P8";};
 for "_i" from 1 to 5 do {this addItemToVest "hlc_30rnd_556x45_EPR_G36";};

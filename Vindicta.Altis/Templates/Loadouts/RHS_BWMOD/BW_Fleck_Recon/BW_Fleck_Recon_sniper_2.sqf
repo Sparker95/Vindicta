@@ -25,7 +25,7 @@ this addHandgunItem "BWA3_15Rnd_9x19_P8";
 this addWeapon "BWA3_Vector";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_mk3a2";};
+for "_i" from 1 to 2 do {this addItemToUniform "ACE_M84";};
 this addItemToVest "I_IR_Grenade";
 for "_i" from 1 to 6 do {this addItemToVest "BWA3_20Rnd_762x51_G28_AP";};
 for "_i" from 1 to 2 do {this addItemToVest "BWA3_15Rnd_9x19_P8";};

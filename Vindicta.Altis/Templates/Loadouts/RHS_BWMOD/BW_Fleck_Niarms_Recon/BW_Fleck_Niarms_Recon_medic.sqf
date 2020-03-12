@@ -28,7 +28,7 @@ this addHandgunItem "BWA3_15Rnd_9x19_P8";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "BWA3_15Rnd_9x19_P8";};
 for "_i" from 1 to 2 do {this addItemToVest "BWA3_DM25";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk3a2";};
+for "_i" from 1 to 2 do {this addItemToVest "ACE_M84";};
 this addItemToVest "I_IR_Grenade";
 for "_i" from 1 to 6 do {this addItemToVest "hlc_30rnd_556x45_MDim_PMAG";};
 this addItemToBackpack "Medikit";

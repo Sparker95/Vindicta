@@ -24,11 +24,10 @@ this addHandgunItem "BWA3_acc_LLM01_irlaser";
 this addHandgunItem "BWA3_15Rnd_9x19_P8";
 this addWeapon "BWA3_Vector";
 
-comment "Add items to containers";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "BWA3_15Rnd_9x19_P8";};
 for "_i" from 1 to 6 do {this addItemToVest "BWA3_10Rnd_86x70_G29";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk3a2";};
+for "_i" from 1 to 2 do {this addItemToVest "ACE_M84";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

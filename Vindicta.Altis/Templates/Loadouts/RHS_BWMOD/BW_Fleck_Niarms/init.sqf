@@ -17,6 +17,8 @@ ADD_LOADOUT("BW_Fleck_Niarms_marksman",		"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Nia
 ADD_LOADOUT("BW_Fleck_Niarms_medic",		"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_medic.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_MG",			"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_MG.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_MG_2",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_MG_2.sqf")
+ADD_LOADOUT("BW_Fleck_Niarms_MG_3",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_MG_3.sqf")
+ADD_LOADOUT("BW_Fleck_Niarms_MG_4",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_MG_4.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_officer",		"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_officer.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_pilot",		"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_pilot.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_rifleman",		"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_rifleman.sqf")
