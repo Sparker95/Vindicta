@@ -450,14 +450,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		(count T_CALLM1("getGarrisons", _playerSide)) > 0
 	} ENDMETHOD;
 
-	// https://www.desmos.com/calculator/2drp0pktyo
-	#define OFFICER_RATE(officers) (1 + log (2 * (officers) + 1))
-	// https://www.desmos.com/calculator/2drp0pktyo
-	// 0 men = inf hrs, 10 men = 18 hrs, 20 = 12 hrs, 100 = 7 hrs
-	#define BUILD_TIME(men) (5 + 1 / log ((1 + (men)) / 50 + 1))
-	#define BUILD_RATE(men, hours) ((hours) / BUILD_TIME(men))
-
-	#define ALIASED_VALUE(value, aliasing) (floor ((value) / (aliasing)))
 
 	// Initialize build progress from garrisons that are present, call on campaign creation
 	METHOD("initBuildProgress") {
@@ -481,6 +473,15 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 		T_CALLM0("updateBuildProgress");
 	} ENDMETHOD;
+	
+	// https://www.desmos.com/calculator/2drp0pktyo
+	#define OFFICER_RATE(officers) (1 + log (2 * (officers) + 1))
+	// https://www.desmos.com/calculator/2drp0pktyo
+	// 0 men = inf hrs, 10 men = 18 hrs, 20 = 12 hrs, 100 = 7 hrs
+	#define BUILD_TIME(men) (5 + 1 / log (1 + (men) / 50))
+	#define BUILD_RATE(men, hours) ((hours) / BUILD_TIME(men))
+
+	#define ALIASED_VALUE(value, aliasing) (floor ((value) / (aliasing)))
 
 	// Build all buildables in the location
 	METHOD("updateBuildProgress") {
@@ -494,11 +495,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			if(T_CALLM0("isEnemy")) then {
 				private _enemySide = CALLM0(gGameMode, "getEnemySide");
 				// Determine if enemy is building this location
-				private _enemyUnits = 0;
+				private _manPower = 0;
 				{
-					_enemyUnits = _enemyUnits + CALLM0(_x, "countInfantryUnits") * OFFICER_RATE(CALLM0(_x, "countOfficers"));
+					_manPower = _manPower + CALLM0(_x, "countInfantryUnits") * OFFICER_RATE(CALLM0(_x, "countOfficers"));
 				} forEach T_CALLM1("getGarrisons", _enemySide);
-				_buildProgress = 0 max (_buildProgress + BUILD_RATE(_enemyUnits, _dt / 3600)) min 1;
+				private _buildRate = if(_manPower > 0) then { BUILD_RATE(_manPower, _dt / 3600) } else { 0 };
+				_buildProgress = SATURATE(_buildProgress + _buildRate);
 			} else {
 				private _playerSide = CALLM0(gGameMode, "getPlayerSide");
 				private _oldBuildProgress = T_GETV("buildProgress");
@@ -508,8 +510,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				} forEach T_CALLM1("getGarrisons", _playerSide);
 
 				// 20 friendly units garrisoned will stop decay
-				_buildProgress = 0 max (_buildProgress - BUILD_RATE(0 max (20 - _friendlyUnits), _dt / 3600)) min 1;
-
+				private _manpowerDeficit = CLAMP_POSITIVE(20 - _friendlyUnits);
+				private _decay = if(_manpowerDeficit > 0) then { BUILD_RATE(_manpowerDeficit, _dt / 3600) } else { 0 };
+				_buildProgress = SATURATE(_buildProgress - _decay);
 				if(T_CALLM0("isPlayer")) then {
 					// If progress has degraded by a 5% chunk
 					if(ALIASED_VALUE(_oldBuildProgress * 100, 5) < ALIASED_VALUE(_buildProgress * 100, 5)) then {

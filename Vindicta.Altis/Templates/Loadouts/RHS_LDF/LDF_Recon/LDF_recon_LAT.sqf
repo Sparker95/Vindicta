@@ -19,7 +19,6 @@ this addWeapon "rhs_weap_aks74un";
 this addPrimaryWeaponItem "rhs_acc_pbs4";
 this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N22_plum_AK";
 this addWeapon "rhs_weap_rpg7";
-this addSecondaryWeaponItem "rhs_acc_pgo7v3";
 this addSecondaryWeaponItem "rhs_rpg7_TBG7V_mag";
 
 this addItemToUniform "FirstAidKit";
