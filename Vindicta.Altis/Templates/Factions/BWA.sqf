@@ -7,7 +7,12 @@ _array set [T_NAME, "tBWA3"];
 _array set [T_DESCRIPTION, "BundesWehr. German forces, no voices sadly."];
 _array set [T_DISPLAY_NAME, "BundesWehr"];
 _array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, [	
+_array set [T_REQUIRED_ADDONS, [
+"bwa3_units"
+"bw_additional_camo"
+"HAFM_EC635"
+"sfp_bo105"
+"gm_demo"
 ]];
 
 //==== Infantry ====
