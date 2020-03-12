@@ -63,7 +63,7 @@ _inf set [T_INF_recon_JTAC, ["RHS_AAF_2010_recon_JTAC"]];
 
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["FGN_AAF_M1025_unarmed"]];
 

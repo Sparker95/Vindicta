@@ -93,7 +93,7 @@ T_NAMES set [T_VEH, _veh];
 
 /* Drone descriptions */
 _drone = [];
-_drone set [T_DRONE_default,	"Default drone"]; //				= 0 Default if nothing found
+_drone set [T_DRONE_default, "Default drone"]; //					= 0 Default if nothing found
 _drone set [T_DRONE_UGV_unarmed, "Unarmed UGV"]; //					= 1 Any unarmed Unmanned Ground Vehicle
 _drone set [T_DRONE_UGV_armed, "Armed UGV"]; // 					= 2 Armed Unmanned Ground Vehicle
 _drone set [T_DRONE_plane_attack, "Armed UAV"]; // 					= 3 Attack drone plane, Unmanned Aerial Vehicle
