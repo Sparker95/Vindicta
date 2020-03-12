@@ -13,6 +13,8 @@ _array set [T_DISPLAY_NAME, "Default"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
 
+//==== API ====
+
 
 //==== Infantry ====
 _inf = [];
