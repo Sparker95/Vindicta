@@ -264,16 +264,18 @@ _arsenal set[T_ARSENAL_headgear, [
 _inf = [];
 _inf resize T_INF_SIZE;
 _inf = _inf apply { [] };
-_inf set [T_INF_DEFAULT, ["I_L_Looter_SG_F"]];
-_inf set [T_INF_unarmed, [
-    "WW2_CIVILIAN_1" //,
-    // "WW2_CIVILIAN_2",
-    // "WW2_CIVILIAN_3",
-    // "WW2_CIVILIAN_4",
-    // "WW2_CIVILIAN_5"
+_inf set [T_INF_DEFAULT, [
+    "WW2_PLAYER_1"
 ]];
-_inf set [T_INF_exp, ["WW2_CIVILIAN_Saboteur_1"]];
-_inf set [T_INF_survivor, ["WW2_CIVILIAN_Militant_1"]];
+_inf set [T_INF_unarmed, [
+    "WW2_CIVILIAN_1"
+]];
+_inf set [T_INF_exp, [
+    "WW2_CIVILIAN_Saboteur_1"
+]];
+_inf set [T_INF_survivor, [
+    "WW2_CIVILIAN_Militant_1"
+]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);

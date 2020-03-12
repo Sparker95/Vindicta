@@ -264,16 +264,18 @@ _arsenal set[T_ARSENAL_headgear, [
 _inf = [];
 _inf resize T_INF_SIZE;
 _inf = _inf apply { [] };
-_inf set [T_INF_DEFAULT, ["I_L_Looter_SG_F"]];
-_inf set [T_INF_unarmed, [
-    "Arma3_CIVILIAN_1" //,
-    // "Arma3_CIVILIAN_2",
-    // "Arma3_CIVILIAN_3",
-    // "Arma3_CIVILIAN_4",
-    // "Arma3_CIVILIAN_5"
+_inf set [T_INF_DEFAULT, [
+    "Arma3_PLAYER_1"
 ]];
-_inf set [T_INF_exp, ["Arma3_CIVILIAN_Saboteur_1"]];
-_inf set [T_INF_survivor, ["Arma3_CIVILIAN_Militant_1"]];
+_inf set [T_INF_unarmed, [
+    "Arma3_CIVILIAN_1"
+]];
+_inf set [T_INF_exp, [
+    "Arma3_CIVILIAN_Saboteur_1"
+]];
+_inf set [T_INF_survivor, [
+    "Arma3_CIVILIAN_Militant_1"
+]];
 
 
 // ==== Vehicles ====

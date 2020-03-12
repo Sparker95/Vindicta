@@ -1,4 +1,3 @@
-
 removeAllWeapons this;
 removeAllItems this;
 removeAllAssignedItems this;
