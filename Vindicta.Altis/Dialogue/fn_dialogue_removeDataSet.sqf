@@ -4,5 +4,8 @@ params[
 ];
 
 private _dataSets = _unit getVariable ["dialogue_dataSet_ids",[]];
+private _count = count _dataSets;
 _dataSets = _dataSets - [_dataSet];
-[_unit, "dialogue_dataSet_ids", _dataSets] call CBA_fnc_setVarNet;
+if(count _dataSets < _count)then{
+	_unit setVariable ["dialogue_dataSet_ids",_dataSets,true];
+};

@@ -4,6 +4,7 @@ params [
 	["_unused",nil,[nil]]//incase someone writes [_unit,"list1","list2"] instead of [_unit,["list1","list2"]]
 ];
 
-if(_dataSets isEqualType "")then{_dataSets = [_dataSets]};
-
-[_unit, "dialogue_dataSet_ids", _dataSets] call CBA_fnc_setVarNet;
+if(_dataSets isEqualTo "")then{_dataSets = [_dataSets]};
+if!(_unit getVariable ["dialogue_dataSet_ids",[]] isEqualTo _dataSets)then{
+	_unit setVariable ["dialogue_dataSet_ids", _dataSets];
+};
