@@ -1,24 +1,19 @@
-class CivPresence {
-	
-	class Framework {
-		file = "civilianPresence";
-		class init {};
-		class spawn {};
-		class despawn {};
-		class createUnit {};
-		class addAction {};
-		class isUnitCreatedByCP {};
+class cp {
+	file = "civilianPresence";
+	class cp_init {};
+	class cp_spawn {};
+	class cp_despawn {};
+	class cp_createUnit {};
+	class cp_isUnitCreatedByCP {};
 
-		class dialogue {postinit = 1;};
-		class talkToServer {};
+	class cp_dialogue {postinit = 1;};
+	class cp_talkToServer {};
 
-		class aimAtCivilian {};
-		class aimAtCivilianServer {};
-		class initUnitDialogVariables {};
-		class getUnitState {};
+	class cp_aimAtCivilian {};
+	class cp_aimAtCivilianServer {};
+	class cp_initUnitDialogVariables {};
+	class cp_getUnitState {};
 
-
-		class arrestUnit {};
-		class addUntieActionLocal {};
-	};
+	class cp_arrestUnit {};
+	class cp_createUnit_initLocal {};
 };

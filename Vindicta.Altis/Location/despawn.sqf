@@ -28,7 +28,7 @@ if (!_spawned) exitWith {
 T_SETV("spawned", false);
 
 //despawn civilians
-T_GETV("cpModule") call CivPresence_fnc_despawn; 
+T_GETV("cpModule") call pr0_fnc_cp_despawn; 
 
 // Reset counters
 private _stAll = GET_VAR(_thisObject, "spawnPosTypes");

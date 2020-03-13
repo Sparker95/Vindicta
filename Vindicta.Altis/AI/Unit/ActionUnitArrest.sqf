@@ -286,8 +286,8 @@ CLASS("ActionUnitArrest", "Action")
 		params [P_THISCLASS, P_OBJECT("_target")];
 
 		// If it's a civilian presence target...
-		if ([_target] call CivPresence_fnc_isUnitCreatedByCP) then {
-			[_target, true] call CivPresence_fnc_arrestUnit;
+		if ([_target] call pr0_fnc_cp_isUnitCreatedByCP) then {
+			[_target, true] call pr0_fnc_cp_arrestUnit;
 		} else {
 			// Otherwise it's a player
 			_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up

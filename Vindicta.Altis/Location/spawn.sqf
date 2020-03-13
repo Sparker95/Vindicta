@@ -30,7 +30,7 @@ T_SETV("spawned", true);
 
 
 //spawn civilians
-T_GETV("cpModule") call CivPresence_fnc_spawn;
+T_GETV("cpModule") call pr0_fnc_cp_spawn;
 
 //force immediate spawn update of the garrison
 {

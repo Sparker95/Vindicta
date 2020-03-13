@@ -18,7 +18,7 @@ private _array = [
 			],1]
 		];
 
-		private _state = _civ call CivPresence_fnc_getUnitState;
+		private _state = _civ call pr0_fnc_cp_getUnitState;
 		if(_state isEqualTo "panic")exitWith{
 			_return append [
 				[TYPE_SENTENCE,["No time, I'm being followed", "To dangers to talk now","Someone is after me!"],2],
@@ -95,7 +95,7 @@ private _array = [
 			private _texts = ["There is one %2meter to the %1", "An other one is to the %1, about %2 meter", "and one more %2meter %1 of here"];
 			{
 				private _fuelstation = _x;
-				private _dir = (player getRelDir _fuelstation) call pr0_fnc_dialogue_common_bearingToID;
+				private _dir = (player getRelDir _fuelstation) call pr0_fnc_common_bearingToID;
 				private _dis = round (player distance _fuelstation);
 				private _text = format [_texts#_forEachIndex, _dir,_dis]; 
 				_return pushBack [TYPE_SENTENCE,_text,2];
@@ -152,7 +152,7 @@ private _array = [
 
 				// Strings
 				private _typeString = CALLSM1("Location", "getTypeString", _type);
-				private _bearingString = _bearing call pr0_fnc_dialogue_common_bearingToID;
+				private _bearingString = _bearing call pr0_fnc_common_bearingToID;
 				private _distanceString = if(_distance < 400) then {
 					selectRandom ["quite close.", "within 400 meters.", "right over here.", "five-minute walk from here."]
 				} else {

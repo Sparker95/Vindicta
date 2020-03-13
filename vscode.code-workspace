@@ -277,7 +277,7 @@
 			"test_AddTest",
 			"test_Assert",
 			"gMessageLoopMain",
-			"CivPresence_fnc_spawn",
+			"pr0_fnc_cp_spawn",
 			"BIS_DeathBlur",
 			"zeus1",
 			"spawnGroup1",

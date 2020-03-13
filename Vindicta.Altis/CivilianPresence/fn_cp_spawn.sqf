@@ -37,7 +37,7 @@ _module spawn{
 			if (_active) then{
 				//spawn in units when module is active and total number is not reached.
 				if (count _units < _maxUnits) then{
-					private _unit = _module call CivPresence_fnc_createUnit;
+					private _unit = _module call pr0_fnc_cp_createUnit;
 					if (!isNull _unit) then {_units pushBack _unit};
 				};
 			}else{

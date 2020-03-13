@@ -120,7 +120,7 @@ if!(_speaker isequalto player)then{
 			_breaks = _breaks + "<br/>";
 		};
 
-		private _color_unit = _speaker call pr0_fnc_dialogue_common_unitSideColor;
+		private _color_unit = _speaker call pr0_fnc_dialogue_unitSideColor;
 		_ctrl_icon ctrlSetStructuredText parseText format [
 			"<t font='RobotoCondensed' align = 'center' size = '1'><t color = '#FFFFFF'>"+
 			"<img image='%2'/><t color = '%1' shadow = '2'>%3<t size = '1'>%4</t>",

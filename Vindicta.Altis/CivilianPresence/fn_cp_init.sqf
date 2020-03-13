@@ -18,7 +18,7 @@ _border params ["_pos0", "_a", "_b", "_rotation", "_isRectangle"]; // Format is 
 //check if it is a circle
 private _isCircle = !_isRectangle;
 
-private _unitTypes = missionNameSpace getVariable "CivPresence_unitTypes";
+private _unitTypes = missionNameSpace getVariable "pr0_cp_unitTypes";
 
 //we only need to do this ones
 if(isnil "_unitTypes")then{
@@ -40,7 +40,7 @@ if(isnil "_unitTypes")then{
 	if !(_worldName in ["Stratis","Altis","Malden","Tanoa"]) then {_worldName = "Other"};
 	_unitTypes = getArray (configfile >> "CfgVehicles" >> "ModuleCivilianPresence_F" >> "UnitTypes" >> _worldName);
 
-	missionNameSpace setVariable ["CivPresence_unitTypes",_unitTypes];
+	missionNameSpace setVariable ["pr0_cp_unitTypes",_unitTypes];
 };
 
 //BIS_fnc_moduleCivilianPresence code needs to have a module so we create one
@@ -158,7 +158,7 @@ _module setVariable ["#modulesSafeSpots",_waypoints];
 _module setVariable ["#modulesUnit",_spawnPoints];
 
 if(count _waypoints == 0||count _spawnPoints ==0)then{
-	diag_log format ["ERROR [CivPresence_fnc_init] module doesnt have spawn or waypoints pos:%1",_pos];
+	diag_log format ["ERROR [pr0_fnc_cp_init] module doesnt have spawn or waypoints pos:%1",_pos];
 	_module call CBA_fnc_deleteNamespace;
 	_module = objNull;
 };

@@ -55,7 +55,7 @@ else
 _unit setVariable ["#core",_module];
 
 // Initialize variables
-[_unit] call CivPresence_fnc_initUnitDialogVariables;
+[_unit] call pr0_fnc_cp_createUnit_init;
 
 _unit setBehaviour "CARELESS";
 //_unit spawn (_module getVariable ["#onCreated",{}]); // onCreated is not set anywhere?
@@ -64,10 +64,12 @@ _unit execFSM "CivilianPresence\FSM\behavior_2.fsm";
 // Set special variable on unit
 _unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, true, true]; // Set a variable on the created unit
 
-// Add 'untie' action to unit
-[_unit] remoteExecCall ["CivPresence_fnc_addUntieActionLocal", [0,-2] select isDedicated, _unit];
-
-//JIP set to _unit so this function gets removed from JIP list if unit is removed
-[_unit] remoteExecCall ["CivPresence_fnc_addAction",[0,-2] select isDedicated, _unit]; 
+// Run client side code (addactions and stuff)
+[
+	"pr0_fnc_cp_createUnit_initLocal",
+	[_unit],
+	-2,
+	_unit
+] call pr0_fnc_common_remoteExecCall;
 
 _unit
