@@ -1551,8 +1551,12 @@ FIX_LINE_NUMBERS()
 			
 			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH_STATIC]);
 			while {_cHMGGMG > 0} do {
-				private _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high];
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG selectrandom _variants ARG -1 ARG _staticGroup]);
+				private _variants = [T_VEH_stat_HMG_high];
+				// use GMG only if it's defined
+				private _tGMG = (_template select T_VEH) select T_VEH_stat_GMG_high;
+				if !(isNil "_tGMG") then { _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]; }; 
+
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG selectRandom _variants ARG -1 ARG _staticGroup]);
 				CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
 				_cHMGGMG = _cHMGGMG - 1;
 			};

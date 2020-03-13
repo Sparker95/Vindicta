@@ -7,28 +7,22 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 // Name, description, faction, addons, etc
-_array set [T_NAME, "tDefault"];
-_array set [T_DESCRIPTION, "Default template."];
-_array set [T_DISPLAY_NAME, "Default"];
-_array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
+_array set [T_NAME, "tDefault"]; // 							Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "Default template."]; // 			Template display description
+_array set [T_DISPLAY_NAME, "Default"]; // 						Template display name
+_array set [T_FACTION, T_FACTION_Military]; // 					Faction type: police, T_FACTION_military, T_FACTION_Police
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 		Addons required to play this template
 
-//==== API ====
+/* API */
 
 
-//==== Infantry ====
+/* Infantry unit classes */
 _inf = [];
 _inf resize T_INF_SIZE; 								//Make an array full of same class name
 _inf = _inf apply {["B_Soldier_F"]};
 
 
-//Recon
-
-//Divers
-
-
-//==== Vehicles ====
-
+/* Vehicle classes */
 _veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["B_MRAP_01_F"]];
@@ -73,7 +67,7 @@ _veh set [T_VEH_truck_fuel, ["B_Truck_01_fuel_F"]];
 _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 
-//==== Drones ====
+/* Drone classes */
 _drone = [];
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["B_UAV_01_F"]];
@@ -89,7 +83,7 @@ _drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
 _drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
 //_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
 
-//==== Cargo ====
+/* Cargo classes */
 _cargo = [];
 
 // Note that we have increased their capacity through the addon, other boxes are going to have reduced capacity
@@ -98,7 +92,7 @@ _cargo set [T_CARGO_box_small,	["Box_Syndicate_Ammo_F"]];
 _cargo set [T_CARGO_box_medium,	["I_supplyCrate_F"]];
 _cargo set [T_CARGO_box_big,	["B_CargoNet_01_ammo_F"]];
 
-//==== Groups ====
+/* Group templates */
 _group = [];
 _group set [T_GROUP_SIZE-1, nil];
 _group set [T_GROUP_DEFAULT, [[[T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_rifleman], [T_INF, T_INF_GL]]]];
@@ -118,7 +112,7 @@ _group set [T_GROUP_inf_recon_sentry,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_r
 _group set [T_GROUP_inf_recon_squad,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_medic], [T_INF, T_INF_recon_LAT],  [T_INF, T_INF_recon_JTAC], [T_INF, T_INF_recon_exp]]]];
 _group set [T_GROUP_inf_recon_team,		[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_LAT], [T_INF, T_INF_recon_exp], [T_INF, T_INF_recon_medic]]]];
 
-//==== Set arrays ====
+/* Set arrays */
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
@@ -126,4 +120,4 @@ _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 
 
-_array // End template
+_array /* END OF TEMPLATE */
