@@ -49,10 +49,8 @@ private _gunsAndAmmo = [
 	// longs
 	["hgun_PDW2000_F", 						"30Rnd_9x21_Mag", 			false],	0.1,
 	["sgun_HunterShotgun_01_F", 			"2Rnd_12Gauge_Pellets",		false],	0.1,
-	["sgun_HunterShotgun_01_sawedoff_F", 	"2Rnd_12Gauge_Pellets", 	false],	0.1,
-	["srifle_DMR_06_hunter_F", 				"10Rnd_Mk14_762x51_Mag", 	false],	0.1,
-	["arifle_AKM_F", 						"30rnd_762x39_mag_f", 		false],	0.05,
-	["arifle_AKS_F", 						"30rnd_545x39_mag_f", 		false],	0.05
+	["sgun_HunterShotgun_01_sawedoff_F", 	"2Rnd_12Gauge_Pellets", 	false], 0.1,
+	["srifle_DMR_06_hunter_F", 				"10Rnd_Mk14_762x51_Mag", 	false], 0.1
 ];
 
 this forceAddUniform selectRandom _uniforms;

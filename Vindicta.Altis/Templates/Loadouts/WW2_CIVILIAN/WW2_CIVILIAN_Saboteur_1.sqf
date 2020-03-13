@@ -35,7 +35,8 @@ this forceAddUniform selectRandom [
 	"U_GELIB_FRA_Citizen02",
 	"U_GELIB_FRA_Citizen03",
 	"U_GELIB_FRA_Citizen04",
-	"U_LIB_CIV_Rocker_1"
+	"U_GELIB_FRA_Citizen01",
+	"U_GELIB_FRA_Citizen01"
 ];
 
 if(random 10 > 5) then { this linkItem "ItemWatch" };
