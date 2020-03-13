@@ -63,8 +63,8 @@ if(_isPistol) then {
 	this addHandgunItem "acc_flashlight_pistol";
 	this addHandgunItem _ammo;
 } else {
-	this addWeaponItem "acc_flashlight";
-	this addWeaponItem _ammo;
+	this addWeaponItem [_gun, "acc_flashlight"];
+	this addWeaponItem [_gun, _ammo];
 };
 
 for "_i" from 1 to 5 do { this addItemToUniform _ammo };
