@@ -35,7 +35,7 @@ if(_listener in Allplayers)then{
 	_namespace setVariable ["_question_event_id",_question_event_id];
 
 	//create question for client
-	[_question_event_id,_speaker,_text,_loudness,_answers] remoteExecCall ["pr0_fnc_dialogue_createQuestion",_listener];
+	[clientOwner,_question_event_id,_speaker,_text,_loudness,_answers] remoteExecCall ["pr0_fnc_dialogue_createQuestion",_listener];
 	
 	//incase player disconnects or something breaks
 	[{
@@ -43,7 +43,7 @@ if(_listener in Allplayers)then{
 		if!(isnull _namespace)then{
 			private _new_question_event_id = _namespace getVariable ["_question_event_id",_question_event_id];
 			if(_question_event_id == _new_question_event_id)then{
-				[STRING_QUESTION_RETURN_EVENT, [_question_event_id,TYPE_EVENT_OUT_OF_TIME-666]] call CBA_fnc_serverEvent;
+				[STRING_QUESTION_RETURN_EVENT, [_question_event_id,TYPE_EVENT_OUT_OF_TIME-666]] call CBA_fnc_localEvent;
 			};
 		};
 	}, [_namespace,_question_event_id], FLOAT_MAX_WAIT_FOR_ANSWER+5] call CBA_fnc_waitAndExecute;

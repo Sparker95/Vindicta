@@ -28,7 +28,7 @@ if(_endCondition != -1)exitWith{
 	[_namespace,_endCondition] call pr0_fnc_dialogue_mainLoop_end;
 }; 
 
-diag_log str ["sentence", _sentences];
+
 
 private _sentence = _sentences#0;
 _sentences deleteAt 0;
@@ -55,6 +55,8 @@ if(_silence)then{
 	//show sentence to everone who is nearby
 	[_speaker,_text,_loudness] call pr0_fnc_dialogue_createSimple;
 };
+
+diag_log str ["sentence", _text];
 
 //call next sentence if any are left
 if(count _sentences>0)exitWith{

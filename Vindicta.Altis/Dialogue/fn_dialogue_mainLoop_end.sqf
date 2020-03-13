@@ -15,14 +15,14 @@ private _question_event_id = _namespace getVariable ["_question_event_id",-1];
 if(_event_type!=-1)then{
 	//every event is unexpected so we also run the end unexpected event.
 	{
-		(_events#_x) params ["_script","_arg"];
+		(_events#_x) params [["_script",{},[{}]],["_arg",[]]];
 		[_unit_1, _unit_2, _conversation_args, _arg] call _script;
 	}forEach [_event_type,TYPE_EVENT_UNEXPECTED_END];
 };
 
 //run all scripts then where defined as end_script
 {
-	_x params ["_script","_arg"];
+	_x params [["_script",{},[{}]],["_arg",[]]];
 	[_unit_1, _unit_2, _conversation_args,_arg] call _script; //execute end code
 }forEach _end_scripts;
 

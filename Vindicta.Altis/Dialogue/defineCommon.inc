@@ -7,7 +7,7 @@
 //general settings
 #define FLOAT_MAX_LISTENING_DISTANCE 20.0           // how far you can hear the conversation
 #define FLOAT_MAX_LEAVING_DISTANCE 10.0             // cancel conversation if you go further then this
-#define FLOAT_MAX_LEAVING_DISTANCE_QUESTION 5.0    // cancel question if you go further then this
+#define FLOAT_MAX_LEAVING_DISTANCE_QUESTION 6.0    // cancel question if you go further then this
 #define FLOAT_MAX_WAIT_FOR_ANSWER 7.0               // cancel question if you wait longer then this 
 #define FLOAT_TIME_INCREASE_SENTENCE_LIMIT 5.0     // If player is talking the dialogue gets bigger for this amount of time
 #define FLOAT_SPEACH_TIME(SENTENCE) (count (SENTENCE) / 40.0 + 0.7)

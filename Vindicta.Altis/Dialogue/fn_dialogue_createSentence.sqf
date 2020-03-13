@@ -20,6 +20,8 @@ params[["_speaker",objnull,[objnull]],["_sentence","",[""]],["_loudness",1,[0]],
 
 if(!hasinterface)exitWith{};
 
+if(_sentence isEqualTo "")then{_sentence = "NO_STRING_GIVEN"};
+
 disableSerialization;
 
 private _display = findDisplay 46;
@@ -28,7 +30,7 @@ private _hud = call pr0_fnc_dialogue_createHUD;
 
 
 //fade if player is further away
-private _fade = ((_speaker distance player) / FLOAT_MAX_LISTENING_DISTANCE * _loudness)*0.9;
+private _fade = ((_speaker distance player) / FLOAT_MAX_LISTENING_DISTANCE / _loudness)*0.9;
 
 
 /*remove random letters if far away

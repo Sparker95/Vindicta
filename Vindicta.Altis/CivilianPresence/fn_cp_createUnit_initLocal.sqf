@@ -38,7 +38,7 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 	true, //hideOnUse
 	"", //shortcut
 	"", //condition
-	7, //radius
+	4.5, //radius
 	false, //unconscious
 	"", //selection
 	""

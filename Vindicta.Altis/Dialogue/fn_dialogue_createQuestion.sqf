@@ -1,7 +1,7 @@
 #include "defineCommon.inc"
 
 
-params [["_question_event_id",-1,[0]],["_speaker",objNull,[objNull]],["_text","",[""]],["_loudness",1,[0]],["_answers",[],[[]]]];
+params [["_owner",0,[0]],["_question_event_id",-1,[0]],["_speaker",objNull,[objNull]],["_text","",[""]],["_loudness",1,[0]],["_answers",[],[[]]]];
 
 disableSerialization;
 private _display = findDisplay 46;
@@ -9,6 +9,7 @@ private _display = findDisplay 46;
 //Create sentence with answers for player
 private _ctrl_question = [_speaker,_text,_loudness,_answers] call pr0_fnc_dialogue_createSentence;
 
+_ctrl_question setVariable ["_owner",_owner];
 _ctrl_question setVariable ["_question_event_id",_question_event_id];
 
 //add question to list
@@ -43,7 +44,9 @@ if(isNil "_keyDownEvent")then{
 
 						//inform server about answer
 						private _question_event_id = _ctrl_question getVariable ["_question_event_id",-1];
-						[STRING_QUESTION_RETURN_EVENT, [_question_event_id, _answer_index]] call CBA_fnc_serverEvent;
+						private _owner = _ctrl_question getVariable ["_owner", 2];
+						
+						[STRING_QUESTION_RETURN_EVENT, [_question_event_id, _answer_index], _owner] call CBA_fnc_ownerEvent;
 
 						//remove answers from question 
 						_ctrl_question call pr0_fnc_dialogue_deleteQuestion;
@@ -65,7 +68,7 @@ if(isNil "_keyDownEvent")then{
 //create check condition in case player walks away or someone gets killed
 [
 	{
-		params ["_speaker","_ctrl_question","_question_event_id"];
+		params ["_speaker","_ctrl_question","_question_event_id","_owner"];
 		
 		private _event_index = 	if(
 			(!alive player || {player getVariable ["ace_isunconscious",false]}) ||
@@ -73,26 +76,26 @@ if(isNil "_keyDownEvent")then{
 		)then{
 			TYPE_EVENT_DEATH;
 		}else{
-			if(player distance _speaker > FLOAT_MAX_LEAVINg_DISTANCE_QUESTION)exitWith{
+			if(player distance _speaker > FLOAT_MAX_LEAVING_DISTANCE_QUESTION)exitWith{
 				TYPE_EVENT_WALKED_AWAY
 			};
 			-1;
 		};
-
+		
 		if(_event_index == -1)exitWith{false;};
 
 		//inform server
-		[STRING_QUESTION_RETURN_EVENT, [_question_event_id,_event_index-666]] call CBA_fnc_serverEvent;// event and answer can be 0
+		[STRING_QUESTION_RETURN_EVENT, [_question_event_id,_event_index-666],_owner] call CBA_fnc_ownerEvent;// event and answer can be 0
 
 		//remove answers from question 
 		[_ctrl_question] call pr0_fnc_dialogue_deleteQuestion;
 		true;
 	},//condition
 	{},//code that runs when condition is met
-	[_speaker,_ctrl_question,_question_event_id],//args
+	[_speaker,_ctrl_question,_question_event_id,_owner],//args
 	FLOAT_MAX_WAIT_FOR_ANSWER,//time out
 	{
-		params ["_speaker","_ctrl_question","_question_event_id"];
+		params ["_speaker","_ctrl_question","_question_event_id","_owner"];
 
 
 		//check if question was already removed
@@ -100,7 +103,7 @@ if(isNil "_keyDownEvent")then{
 		if(count _answers == 0)exitWith{};
 
 		//inform server
-		[STRING_QUESTION_RETURN_EVENT, [_question_event_id,TYPE_EVENT_OUT_OF_TIME-666]] call CBA_fnc_serverEvent;// event and answer can be 0
+		[STRING_QUESTION_RETURN_EVENT, [_question_event_id,TYPE_EVENT_OUT_OF_TIME-666],_owner] call CBA_fnc_ownerEvent;// event and answer can be 0
 
 		//remove answers from question 
 		[_ctrl_question] call pr0_fnc_dialogue_deleteQuestion;
