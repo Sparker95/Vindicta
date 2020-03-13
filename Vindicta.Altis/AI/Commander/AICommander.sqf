@@ -1503,8 +1503,8 @@ CLASS("AICommander", "AI")
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 
 		// Try to spawn more units at the selected locations
-		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
-		pr _t = [_templateName] call t_fnc_getTemplate;
+		pr _t = CALLM2(gGameMode, "getTemplate", _side, "military");
+		//[_templateName] call t_fnc_getTemplate;
 
 		CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_rifle_squad);
 		CALLM1(_gar, "addGroup", _group);
@@ -1534,8 +1534,7 @@ CLASS("AICommander", "AI")
 		// Create some infantry group
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 		// Try to spawn more units at the selected locations
-		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
-		pr _t = [_templateName] call t_fnc_getTemplate;
+		pr _t = CALLM2(gGameMode, "getTemplate", _side, "military");
 
 		CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_rifle_squad);
 		CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
@@ -2682,8 +2681,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			]
 		};
 
-		private _templateName = CALLM2(gGameMode, "getTemplateName", T_GETV("side"), "military");
-		private _t = [_templateName] call t_fnc_getTemplate;
+		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
 
 		// Try to spawn more units at the selected locations
 		if (_infMoreRequired > 0) then {
