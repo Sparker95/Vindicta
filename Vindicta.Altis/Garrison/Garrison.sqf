@@ -3227,8 +3227,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG _type]);
 		// Create units from template
-		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "");
-		pr _template = [_templateName] call t_fnc_getTemplate;
+		private _template = CALLM2(gGameMode, "getTemplate", _side, "");
 		private _count = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [_template ARG _subcatID]);
 		T_CALLM("addGroup", [_newGroup]);
 		[_newGroup, _count]
@@ -3238,8 +3237,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
-		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "");
-		pr _template = [_templateName] call t_fnc_getTemplate;
+		private _template = CALLM2(gGameMode, "getTemplate", _side, "");
 		private _newUnit = NEW("Unit", [_template ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
 		// Create crew for the vehicle
 		CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
@@ -3443,6 +3441,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getTemplateName") {
 		params [P_THISOBJECT];
 		T_GETV("templateName")
+	} ENDMETHOD;
+
+	METHOD("getTemplate") {
+		params [P_THISOBJECT];
+		[T_GETV("templateName")] call t_fnc_getTemplate
 	} ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -

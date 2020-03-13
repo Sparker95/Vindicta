@@ -13,6 +13,8 @@ _array set [T_DISPLAY_NAME, "Default"]; // 						Template display name
 _array set [T_FACTION, T_FACTION_Military]; // 					Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 		Addons required to play this template
 
+//==== API ====
+
 
 /* Infantry unit classes */
 _inf = [];

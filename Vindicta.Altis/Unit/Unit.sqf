@@ -95,12 +95,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// If a random class was requested to be added
 		private _class = "";
 		if (isNull _hO) then {
-			if(_classID == -1) then {
-				private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
-				_class = _classData select 0;
-			} else {
-				_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
-			};
+			//if(_classID == -1) then {
+			//	private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
+			//	_class = _classData select 0;
+			//} else {
+			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
+			//};
 		} else {
 			_class = typeOf _hO;
 		};
@@ -2206,13 +2206,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (_enabled) then {
 			pr _arsenalArray = call jn_fnc_arsenal_getEmptyArray; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
 			
+			// Lets apply our civ settings from selected faction template
+			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _allArsenalItems = [];
+			{
+				_allArsenalItems = _allArsenalItems + _x;
+			} forEach (_civTemplate#T_ARSENAL);
 			// Init default unlimited items in the arsenal
 			// Add uniforms and other things
 			{
 				pr _className = _x;
 				pr _index = [_className] call jn_fnc_arsenal_itemType;
 				(_arsenalArray#_index) pushBack [_className, -1];
-			} forEach (g_ArsenalLoadout_Headgear + g_ArsenalLoadout_Uniforms + g_ArsenalLoadout_Facewear + g_ArsenalLoadout_Backpacks + g_ArsenalLoadout_Items);
+			} forEach _allArsenalItems;
 
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {

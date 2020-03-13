@@ -45,6 +45,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE_ATTR("tNameMilInd", [ATTR_SAVE]);
 	VARIABLE_ATTR("tNameMilEast", [ATTR_SAVE]);
 	VARIABLE_ATTR("tNamePolice", [ATTR_SAVE]);
+	VARIABLE_ATTR("tNameCivilian", [ATTR_SAVE_VER(16)]);
 
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
@@ -53,8 +54,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE_VER(11)]);
 
 	METHOD("new") {
-		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
-								P_NUMBER("_enemyForcePercent")];
+		params [P_THISOBJECT, P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"), P_STRING("_tNameCivilian"), P_NUMBER("_enemyForcePercent")];
 		T_SETV("name", "unnamed");
 		T_SETV("spawningEnabled", false);
 
@@ -82,6 +82,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("tNameMilInd", "tAAF");
 		T_SETV("tNameMilEast", "tCSAT");
 		T_SETV("tNamePolice", "tPOLICE");
+		T_SETV("tNameCivilian", "tCivilian");
 
 		// Apply values from arguments
 		T_SETV("enemyForceMultiplier", 1);
@@ -91,6 +92,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if (_tNamePolice != "") then {
 			T_SETV("tNamePolice", _tNamePolice);
 		};
+		if (_tNameCivilian != "") then {
+			T_SETV("tNameCivilian", _tNameCivilian);
+		};
+		
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
 
 		T_SETV("locations", []);
@@ -564,7 +569,7 @@ FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// Returns template name for given side and faction
-	/* protected virtual */ METHOD("getTemplateName") {
+	/* public virtual */ METHOD("getTemplateName") {
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
@@ -575,13 +580,20 @@ FIX_LINE_NUMBERS()
 					case WEST:			{ T_GETV("tNameMilWest") };
 					case EAST:			{ T_GETV("tNameMilEast") };
 					case INDEPENDENT:	{ T_GETV("tNameMilInd") }; //{"tRHS_AAF_2020"}; // { "tAAF" };
-					case CIVILIAN:		{ "tCIVILIAN" };
+					case CIVILIAN:		{ T_GETV("tNameCivilian") };
 					default				{ "tDEFAULT" };
 				}
 			};
 		};
 	} ENDMETHOD;
 
+	// Returns template for given side and faction
+	/* public virtual */METHOD("getTemplate") {
+		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
+		private _templateName = T_CALLM2("getTemplateName", _side, _faction);
+		[_templateName] call t_fnc_getTemplate
+	} ENDMETHOD;
+	
 	/* protected virtual */ METHOD("initGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
@@ -1641,8 +1653,7 @@ FIX_LINE_NUMBERS()
 		{
 			private _loc = _x;
 			private _side = GETV(_loc, "side");
-			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "");
-			private _template = [_templateName] call t_fnc_getTemplate;
+			private _template = CALLM2(gGameMode, "getTemplate", _side, "");
 
 			private _targetCInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
 
@@ -1924,6 +1935,9 @@ FIX_LINE_NUMBERS()
 		};
 		if(isNil{T_GETV("savedSpecialGarrisons")}) then {
 			T_SETV("savedSpecialGarrisons", []);
+		};
+		if(isNil{T_GETV("tNameCivilian")}) then {
+			T_SETV("tNameCivilian", "tCivilian");
 		};
 
 		// Create timer service
