@@ -1,8 +1,9 @@
 /*
 ----------------------------------------------------------------------------------------------
-    ARRAYS OF DEFAULT INFINITE ARSENAL EQUIPMENT 
+    ARRAYS OF DEFAULT INFINITE ARSENAL EQUIPMENT
 ----------------------------------------------------------------------------------------------
 */
+
 
 g_ArsenalLoadout_Uniforms = [
 	"U_BG_Guerilla2_1",
@@ -84,8 +85,9 @@ g_ArsenalLoadout_Uniforms = [
     "U_OrestesBody",
     "U_Rangemaster",
     "U_BG_leader",
+		"U_BG_Guerilla1_2_F",
 
-    // CONTACT DLC 
+    // CONTACT DLC
     "U_I_L_Uniform_01_tshirt_black_F",
     "U_I_L_Uniform_01_tshirt_olive_F",
     "U_I_L_Uniform_01_tshirt_skull_F",
@@ -95,7 +97,18 @@ g_ArsenalLoadout_Uniforms = [
     "U_C_Uniform_Scientist_01_formal_F",
     "U_C_Uniform_Scientist_02_formal_F",
     "U_O_R_Gorka_01_black_F",
-    "U_C_E_LooterJacket_01_F"
+    "U_C_E_LooterJacket_01_F",
+
+
+		// RHS UNIFORMS
+		if (isClass (configfile >> "CfgPatches" >> "rhsgref_uniform_flecktarn")) then {
+		"rhsgref_uniform_flecktarn",
+		"rhsgref_uniform_woodland_olive",
+		};
+
+
+
+
 ];
 
 
