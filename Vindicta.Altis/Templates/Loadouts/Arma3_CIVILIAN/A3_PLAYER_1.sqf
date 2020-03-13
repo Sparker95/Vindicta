@@ -45,7 +45,9 @@ if(isDLCAvailable 395180) then {
 	_gunsAndAmmo = _gunsAndAmmo + [
 		// pistols
 		["hgun_Pistol_01_F", 	"10Rnd_9x21_Mag", 		true],	0.7,
-		["hgun_P07_khk_F", 		"16Rnd_9x21_Mag", 		true],	0.7
+		["hgun_P07_khk_F", 		"16Rnd_9x21_Mag", 		true],	0.7,
+		["arifle_AKM_F", 		"30rnd_762x39_mag_f", 	false],	0.01,
+		["arifle_AKS_F", 		"30rnd_545x39_mag_f", 	false],	0.01
 	];
 };
 
