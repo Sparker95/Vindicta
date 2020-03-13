@@ -4,6 +4,26 @@
 
 #define __BOOST_SUSP {CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.2 + (random 0.1))}
 
+#define DEFAULT_EVENTS \
+	[TYPE_ON_OUT_OF_TIME, {\
+		params ["_player","_civ"];\
+		[_civ, [\
+			"I dont have time for this",\
+			"Im leaving",\
+			"I have better things to do"\
+		], 1] call pr0_fnc_dialogue_createSimple;\
+	}],\
+	[TYPE_ON_WALKED_AWAY, {\
+		params ["_player","_civ"];\
+		[_civ, [\
+			"I thought we where talking",\
+			"We where having a chat!",\
+			"You are strange",\
+			"Yes, walk away when you are asking something"\
+		], 1] call pr0_fnc_dialogue_createSimple;\
+	}]\
+
+
 private _array = [
 
 	["intro_hello",{
@@ -17,21 +37,6 @@ private _array = [
 				"Hey, I'd like to talk to you."
 			],1]
 		];
-
-		private _state = _civ call pr0_fnc_cp_getUnitState;
-		if(_state isEqualTo "panic")exitWith{
-			_return append [
-				[TYPE_SENTENCE,["No time, I'm being followed", "To dangers to talk now","Someone is after me!"],2],
-				[TYPE_SENTENCE,["Oke then...", "Pussy!","I will ask someone else then","Bye"]],
-				[TYPE_JUMP_TO, "#end"]
-			];
-			_return;
-		};
-		if(_state isEqualTo "arrested")exitWith{
-			_return pushBack [TYPE_JUMP_TO, "help_untied_question"];
-			_return;
-		};
-
 
 		if(random 1000 < 2)then{
 			_return pushBack [TYPE_SENTENCE,[
@@ -51,21 +56,25 @@ private _array = [
 		
 		_return;
 	}],
-	["help_untied_question",{
+	["no_time_for_this",{
 		[
-			[TYPE_QUESTION,"Yes, but get me out of this handcuffs first",2],
-			[TYPE_ANSWER,"First tell me what I want to know!","intro_question"],
-			[TYPE_ANSWER,"Let me see how i can get you out","help_untied_helping"],
-			[TYPE_ANSWER,"Sorry its to dangerous","#end"]
-		]
+			[TYPE_SENTENCE,"I dont have time for this",2],
+			[TYPE_JUMP_TO, "#end"]
+		];
 	}],
-	["help_untied_helping",{
+	["bye",{
 		[
-			[TYPE_SENTENCE,"Thank you so much!",2],
-			[TYPE_JUMP_TO,"#end"]
-		]
+			[TYPE_SENTENCE,"Bye",1],
+			[TYPE_SENTENCE,["Have a nice day","bye","See you around"],2],
+			[TYPE_JUMP_TO, "#end"]
+		];
 	}],
-
+	["thought_we_had_a_chat",{
+		[
+			[TYPE_SENTENCE,["I dont have time for this","I have better things to do"],2],
+			[TYPE_JUMP_TO, "#end"]
+		];
+	}],
 	["intro_question",{
 		params["_player","_civ"];
 		[
@@ -73,8 +82,8 @@ private _array = [
 			[TYPE_ANSWER,"Enemy activity [locations]","info_militaryBases"],
 			[TYPE_ANSWER,"Agitate","agitate"],
 			[TYPE_ANSWER,"About the town","info_town"],
-			[TYPE_ANSWER,"Never mind","intro_question_neverMind"]
-
+			[TYPE_ANSWER,"Never mind","intro_question_neverMind"],
+			DEFAULT_EVENTS
 		];
 	}],
 	["info_town",{
@@ -83,7 +92,8 @@ private _array = [
 			[TYPE_QUESTION,"What do you like to know about this town?",2],
 			[TYPE_ANSWER,"Police","info_police"],
 			[TYPE_ANSWER,"Fuel station","info_fuelstation"],
-			[TYPE_ANSWER,"Never mind","intro_question_neverMind"]
+			[TYPE_ANSWER,"Never mind","intro_question_neverMind"],
+			DEFAULT_EVENTS
 		]
 	}],
 	["info_fuelstation",{
@@ -349,4 +359,40 @@ private _array = [
 ];
 
 ["civilian", _array] call pr0_fnc_dialogue_registerDataSet;
+
+
+
+
+private _array2 = [
+
+	["intro_hello",TYPE_INHERIT,{
+		[
+			[TYPE_JUMP_TO,"help_untied_question"]
+		];
+	}],
+	["bye",TYPE_OVERWRITE,{
+		[
+			[TYPE_SENTENCE,"Bye",2],
+			[TYPE_SENTENCE,"Please help me!",2],
+			[TYPE_JUMP_TO,"#end"]
+		];
+	}],
+	["help_untied_question",{
+		[
+			[TYPE_QUESTION,"Yes, but get me out of this handcuffs first",2],
+			[TYPE_ANSWER,"First tell me what I want to know!","intro_question"],
+			[TYPE_ANSWER,"Let me see how i can get you out","help_untied_helping"],
+			[TYPE_ANSWER,"Sorry its to dangerous","#end"]
+		]
+	}],
+	["help_untied_helping",{
+		[
+			[TYPE_SENTENCE,"Let me see if i can help you somehow"],
+			[TYPE_SENTENCE,"Thank you so much!",2],
+			[TYPE_JUMP_TO,"#end"]
+		]
+	}]
+];
+
+["arrested", _array2] call pr0_fnc_dialogue_registerDataSet;
  

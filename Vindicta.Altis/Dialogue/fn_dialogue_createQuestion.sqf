@@ -66,7 +66,19 @@ if(isNil "_keyDownEvent")then{
 [
 	{
 		params ["_speaker","_ctrl_question","_question_event_id"];
-		private _event_index = [_speaker,player] call pr0_fnc_dialogue_mainLoop_checkConditions;
+		
+		private _event_index = 	if(
+			(!alive player || {player getVariable ["ace_isunconscious",false]}) ||
+			{!alive _speaker || {_speaker getVariable ["ace_isunconscious",false]}} //alive returns false on objNull
+		)then{
+			TYPE_EVENT_DEATH;
+		}else{
+			if(player distance _speaker > FLOAT_MAX_LEAVINg_DISTANCE_QUESTION)exitWith{
+				TYPE_EVENT_WALKED_AWAY
+			};
+			-1;
+		};
+
 		if(_event_index == -1)exitWith{false;};
 
 		//inform server

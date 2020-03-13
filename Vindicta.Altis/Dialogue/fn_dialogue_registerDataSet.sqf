@@ -2,7 +2,6 @@
 
 //most run locally
 
-
 params[["_id","",[""]],["_array",[],[[]]]];
 _id = toLower _id;
 
@@ -16,6 +15,9 @@ private _found = false;
 	};
 }forEach _cur;
 
-if(!_found)then{_cur pushBack _this;};
+if(!_found)then{
+	_cur pushBack [_id,_array];
+	missionNamespace setVariable ["dialogue_dataSets", _cur];
+};
 
-missionNamespace setVariable ["dialogue_dataSets", _cur];
+

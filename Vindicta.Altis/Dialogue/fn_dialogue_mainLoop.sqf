@@ -1,7 +1,10 @@
 #include "defineCommon.inc"
 
 
-params ["_namespace"];
+params ["_namespace","_jump_to_new",["_event_node",false]];
+
+//used when a node is called by an event.
+_namespace setVariable ["_event_node",_event_node];
 
 private _dataSets = _namespace getVariable ["_dataSets",[]];
 private _unit_1 = _namespace getVariable ["_unit_1",objNull];
@@ -9,11 +12,12 @@ private _unit_2 = _namespace getVariable ["_unit_2",objNull];
 private _conversation_args = _namespace getVariable ["_conversation_args",[]];
 private _events = _namespace getVariable ["_events",[]];
 
+//this array countains the new node_id, and the script and args from the previouse answer/jump_to action
+_jump_to_new params [["_node_id","",[""]],["_previous_script",{},[{}]],["_previous_arg",[]]];
 
-//call jump_to script if any was given
-(_events#TYPE_EVENT_JUMP_TO#INDEX_EVENT_ARGS) call (_events#TYPE_EVENT_JUMP_TO#INDEX_EVENT_SCRIPT);
+//run code from previouse node
+_previous_arg call _previous_script;
 
-private _node_id = _events#TYPE_EVENT_JUMP_TO#INDEX_EVENT_JUMP;
 diag_log str ["main",_node_id];
 if(_node_id isEqualTo "#end")exitWith{
 	_namespace call pr0_fnc_dialogue_mainLoop_end;
@@ -76,7 +80,9 @@ private _overwrite_found = 0;
 private _sentences = [];
 private _question = [];
 private _answers = [];
-private _events = [];	{_events set [_x, ["#end",{},[]]];}forEach EVENT_TYPES;
+private _answer_ai = ["#end",{},[]];
+private _jump_to = ["#end",{},[]];
+private _events = [];	{_events set [_x, [{},[]]];}forEach EVENT_TYPES;
 
 //loop the nodes
 for "_i" from _overwrite_found to count _noded_arrays -1 do{
@@ -103,7 +109,7 @@ for "_i" from _overwrite_found to count _noded_arrays -1 do{
 					["_int_speaker",0,[0]],
 					["_loudness",1,[0]],
 					["_script",{},[{}]],
-					["_args",[],[]]
+					["_args",[]]
 				];
 				
 
@@ -120,10 +126,7 @@ for "_i" from _overwrite_found to count _noded_arrays -1 do{
 				if(_type in [TYPE_SENTENCE_SILENECE,TYPE_SENTENCE])then{
 					_sentences pushBack [_text,_silence,_speaker,_listener,_loudness,_script,_args];
 				}else{
-					
-					if(_listener in allPlayers)then{
-						_question = [_text,_silence,_speaker,_listener,_loudness,_script,_args];
-					};
+					_question = [_text,_silence,_speaker,_listener,_loudness,_script,_args];
 				};
 				
 			};
@@ -132,7 +135,7 @@ for "_i" from _overwrite_found to count _noded_arrays -1 do{
 					["_text","",[""]],
 					["_jump","",["",[]]],
 					["_script",{},[{}]],
-					["_args",[],[]]
+					["_args",[]]
 				];
 				_answers pushBack [_jump,_script,_args,_text];//same structure as event
 			};
@@ -145,26 +148,44 @@ for "_i" from _overwrite_found to count _noded_arrays -1 do{
 					if(_jump isEqualto _jump_i)then{_answers deleteAt _i}
 				};
 			};
-			case TYPE_JUMP_TO;
-			case TYPE_ANSWER_AI;
+			case TYPE_JUMP_TO: {
+				_x params [
+					["_jump","",["",[]]],
+					["_script",{},[{}]],
+					["_args",[]]
+				];
+				_jump_to = [_jump,_script,_args];
+			};
+			case TYPE_ANSWER_AI: {
+				_x params [
+					["_jump","",["",[]]],
+					["_script",{},[{}]],
+					["_args",[]]
+				];
+				_answer_ai = [_jump,_script,_args];
+			};
 			case TYPE_ON_WALKED_AWAY;
 			case TYPE_ON_OUT_OF_TIME;
 			case TYPE_ON_DEATH;
 			case TYPE_ON_UNEXPECTED_END: {
 				_x params [
-					["_jump","",[""]],
 					["_script",{},[{}]],
-					["_args",[],[]]
+					["_args",[]]
 				];
-				private _event_type = switch _type do {
-					case TYPE_JUMP_TO: {TYPE_EVENT_JUMP_TO};
-					case TYPE_ANSWER_AI: {TYPE_EVENT_ANSWER_AI};
-					case TYPE_ON_WALKED_AWAY: {TYPE_EVENT_WALKED_AWAY};
-					case TYPE_ON_OUT_OF_TIME: {TYPE_EVENT_OUT_OF_TIME};
-					case TYPE_ON_DEATH: {TYPE_EVENT_DEATH};
-					case TYPE_ON_UNEXPECTED_END: {TYPE_EVENT_UNEXPECTED_END};
-				};
-				_events set [_event_type,[_jump,_script,_args]];
+				
+				private _event_type = [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,
+									TYPE_EVENT_DEATH,TYPE_EVENT_UNEXPECTED_END] #
+									([TYPE_ON_WALKED_AWAY,TYPE_ON_OUT_OF_TIME,
+									TYPE_ON_DEATH,TYPE_ON_UNEXPECTED_END] find _type);
+
+				_events set [_event_type,[_script,_args]];
+			};
+			case TYPE_ON_END: {
+				_x params [
+					["_script",{},[{}]],
+					["_args",[]]
+				];
+				_events pushBack [_script,_args];
 			};
 			default {
 				[_namespace,"undefined type"] call pr0_fnc_dialogue_mainLoop_error;
@@ -177,6 +198,8 @@ for "_i" from _overwrite_found to count _noded_arrays -1 do{
 _namespace setVariable ["_sentences",_sentences];
 _namespace setVariable ["_question",_question];
 _namespace setVariable ["_answers",_answers];
+_namespace setVariable ["_answer_ai",_answer_ai];
+_namespace setVariable ["_jump_to",_jump_to];
 _namespace setVariable ["_events",_events];
 _namespace setVariable ["_node_id",_node_id];//used only for error message
 
@@ -189,5 +212,5 @@ if(count _question > 0)exitWith{
 };
 
 //node without sentence or question was given
-_namespace call pr0_fnc_dialogue_mainLoop;
+[_namespace,TYPE_EVENT_ERROR] call pr0_fnc_dialogue_mainLoop_end;
 

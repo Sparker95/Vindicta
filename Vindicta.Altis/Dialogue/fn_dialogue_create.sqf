@@ -44,21 +44,15 @@ private _dataSets = [];
 
 }forEach _dataSet_ids_unit;
 
-private _events = [];
-_events set [TYPE_EVENT_JUMP_TO,[_node_id,{},[]]];
-
-private _end_scripts = [];
-_end_scripts pushBack _end_script;
 private _namespace = call CBA_fnc_createNamespace;
 _namespace setVariable ["_dataSets",_dataSets];
 _namespace setVariable ["_unit_1",_unit_1];
 _namespace setVariable ["_unit_2",_unit_2];
-_namespace setVariable ["_end_scripts",_end_scripts];
-_namespace setVariable ["_events",_events];
+_namespace setVariable ["_end_scripts",[[_end_script]]];
 _namespace setVariable ["_conversation_args",_conversation_args];
 
 private _namespaces = missionNamespace getVariable ["dialog_nameSpaces",[]];
 _namespaces pushBack _namespace;
 missionNamespace setVariable ["dialog_nameSpaces",_namespaces];
 
-_namespace call pr0_fnc_dialogue_mainLoop;
+[_namespace,[_node_id,{},[]]] call pr0_fnc_dialogue_mainLoop;

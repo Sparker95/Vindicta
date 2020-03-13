@@ -1,8 +1,8 @@
-if!(params [
+params [
 	["_unit", objNull,[objNull]],
 	["_dataSets",[],[[],""]],
-	["_unused",nil[nil]]//incase someone writes [_unit,"list1","list2"] instead of [_unit,["list1","list2"]]
-])exitWith{};
+	["_unused",nil,[nil]]//incase someone writes [_unit,"list1","list2"] instead of [_unit,["list1","list2"]]
+];
 
 if(_dataSets isEqualType "")then{_dataSets = [_dataSets]};
 

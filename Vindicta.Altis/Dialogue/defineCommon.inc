@@ -6,8 +6,8 @@
 
 //general settings
 #define FLOAT_MAX_LISTENING_DISTANCE 20.0           // how far you can hear the conversation
-#define FLOAT_MAX_LEAVING_DISTANCE 8.0             // cancel conversation if you go further then this
-#define FLOAT_MAX_LEAVING_QUESTION_DISTANCE 5.0    // cancel question if you go further then this
+#define FLOAT_MAX_LEAVING_DISTANCE 10.0             // cancel conversation if you go further then this
+#define FLOAT_MAX_LEAVING_DISTANCE_QUESTION 5.0    // cancel question if you go further then this
 #define FLOAT_MAX_WAIT_FOR_ANSWER 7.0               // cancel question if you wait longer then this 
 #define FLOAT_TIME_INCREASE_SENTENCE_LIMIT 5.0     // If player is talking the dialogue gets bigger for this amount of time
 
@@ -46,6 +46,8 @@
 #define TYPE_ON_END 21
 #define TYPE_ON_UNEXPECTED_END 22
 
+#define INHERIT_TYPES [TYPE_ANSWER_AI,TYPE_JUMP_TO,TYPE_ON_WALKED_AWAY,TYPE_ON_OUT_OF_TIME,TYPE_ON_DEATH,TYPE_ON_UNEXPECTED_END]
+
 
 #define SENTENCE_TYPES [TYPE_SENTENCE_SILENECE,TYPE_QUESTION_SILENECE,TYPE_ANSWER_SILENECE]
 
@@ -55,11 +57,9 @@
 #define TYPE_EVENT_OUT_OF_TIME 1                    // when waiting to long
 #define TYPE_EVENT_DEATH 2                         // when unit gets killed or unconciuos
 #define TYPE_EVENT_UNEXPECTED_END 3                 // when conversation ends without reaching #end (same as the other events combined)
-#define TYPE_EVENT_ANSWER_AI 5
-#define TYPE_EVENT_JUMP_TO 6
-#define EVENT_TYPES [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH,TYPE_EVENT_UNEXPECTED_END,TYPE_EVENT_JUMP_TO,TYPE_EVENT_ANSWER_AI]
+#define TYPE_EVENT_ERROR 4
+#define EVENT_TYPES [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH,TYPE_EVENT_ERROR,TYPE_EVENT_UNEXPECTED_END]
 
-#define INHERIT_TYPES ([TYPE_JUMP_TO,TYPE_ANSWER,TYPE_REMOVE_ANSWER] + EVENT_TYPES)
 
 
 #define INDEX_SENTENCE_TEXT 0
@@ -75,8 +75,3 @@
 #define INDEX_ANSWER_ARGS 2
 #define INDEX_ANSWER_TEXT 3
 #define INDEX_ANSWER_NR 4
-
-#define INDEX_EVENT_JUMP 0
-#define INDEX_EVENT_SCRIPT 1
-#define INDEX_EVENT_ARGS 2
-

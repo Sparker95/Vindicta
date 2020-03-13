@@ -50,7 +50,9 @@ if(_listener in Allplayers)then{
 
 }else{
 	//question asked to a AI
-	_new_node_array = _events#TYPE_EVENT_ANSWER_AI#INDEX_EVENT_JUMP;
-	
+	private _answer_ai = _namespace getVariable "_answer_ai";
+
+	//continue to next node
+	[_namespace,_answer_ai] call pr0_fnc_dialogue_mainLoop;
 };
 
