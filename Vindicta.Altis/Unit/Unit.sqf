@@ -30,13 +30,13 @@ Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCar
 // Add CBA ACE event handler for loading cargo
 #ifndef _SQF_VM
 if (isNil "Unit_aceCargoLoaded_EH" && isServer) then { // Only server needs this event
-	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded", 
+	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded",
 	{
 		_this call Unit_fnc_EH_aceCargoLoaded;
 	}] call CBA_fnc_addEventHandler;
 };
 if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs this event
-	Unit_aceCargoUnloaded_EH = ["ace_cargoUnloaded", 
+	Unit_aceCargoUnloaded_EH = ["ace_cargoUnloaded",
 	{
 		_this call Unit_fnc_EH_aceCargoUnloaded;
 	}] call CBA_fnc_addEventHandler;
@@ -293,9 +293,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 					CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className)
 				} else {
-					false 
+					false
 				};
-				
+
 				if (_prevPosSafe) then {
 					_pos = _posATLPrev;
 				} else {
@@ -332,7 +332,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						};
 						//diag_log format ["---- Received group of side: %1", side _groupHandle];
 						_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
-						
+
 						// Set loadout if requited
 						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
 						if (_loadout != NULL_OBJECT) then {
@@ -345,7 +345,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						};
 						[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 						_objectHandle allowFleeing 0;
-						
+
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						//_objectHandle disableAI "PATH";
@@ -384,7 +384,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					case T_VEH: {
 
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
-						
+
 						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
 						pr _special = "CAN_COLLIDE";
 						/*
@@ -418,7 +418,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 								OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
 								_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
 							} else {
-								
+
 							};
 						};
 
@@ -432,7 +432,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 					case T_CARGO: {
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
-						
+
 						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
 						pr _special = "CAN_COLLIDE";
 						/*
@@ -466,7 +466,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 								OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
 								_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
 							} else {
-								
+
 							};
 						};
 
@@ -475,7 +475,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						// Initialize limited arsenal
 						T_CALLM0("limitedArsenalOnSpawn");
 
-						//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
+						//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?
 						// Give intel to this unit
 						//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
 					};
@@ -511,7 +511,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 				};
-						
+
 				// Give intel to this unit
 				switch (_catID) do {
 					case T_INF: {
@@ -568,7 +568,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true]; // Global variable!
 			pr _cat = _data select UNIT_DATA_ID_CAT;
 			pr _subcat = _data select UNIT_DATA_ID_SUBCAT;
-			
+
 			// Variable with the efficiency vector of this unit
 			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, (T_efficiency select _cat select _subcat)];
 			// That's all really
@@ -592,7 +592,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (!isNull _hO) then {
 			// Variable with a reference to Unit object
 			_hO setVariable [UNIT_VAR_NAME_STR, nil];
-			
+
 			// Variable with the efficiency vector of this unit
 			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
 		};
@@ -621,7 +621,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			//pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
-		
+
 		// HandleDamage for infantry
 		/* // Disabled for now, let's see if it changed anything
 		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
@@ -646,13 +646,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	METHOD("initObjectDynamicSimulation") {
 		params [P_THISOBJECT];
-		
+
 		pr _data = T_GETV("data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 
 		pr _cat = _data select UNIT_DATA_ID_CAT;
 		switch (_cat) do {
-			case T_INF: {	
+			case T_INF: {
 				_hO triggerDynamicSimulation true;
 				_hO enableDynamicSimulation false;
 			};
@@ -779,7 +779,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		CALLSM2("Unit", "_addToRealInventory", _hO, _inventory);
 	} ENDMETHOD;
-	
+
 	/* private */ STATIC_METHOD("_addToRealInventory") {
 		params [P_THISCLASS, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 		//weapons
@@ -989,12 +989,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
 					// Array with item class name, count
 					pr _ACREclassNames = [
-										["ACRE_SEM52SL",2], // medium-range radio, similar to the 148 and 152
-										["ACRE_SEM70",4], // Long-range radio, is NOT a backpack, but needs to be put in a backpack.
-										["ACRE_PRC77",1], // Vietnam-era radio, needs to be put in a backpack.
+								//	["ACRE_SEM52SL",2], // medium-range radio, similar to the 148 and 152
+								//	["ACRE_SEM70",4], // Long-range radio, is NOT a backpack, but needs to be put in a backpack.
+								//	["ACRE_PRC77",1], // Vietnam-era radio, needs to be put in a backpack.
 										["ACRE_PRC343",6], // Shortest-range infantry radio. (400m-900m range, depending on terrain)
 										["ACRE_PRC152",3], //medium-range radio, 3-5km
-										["ACRE_PRC148",3], //medium-range radio, 3-5km
+								//	["ACRE_PRC148",3], //medium-range radio, 3-5km
 										["ACRE_PRC117F",1], //Long range radio, is NOT a backpack, but needs to be put in a backpack. 10-20km
 										["ACRE_VHF30108SPIKE",1], // antenna for radio signal extension, with a spike to put it higher in the air.
 										["ACRE_VHF30108",3], // Just the antenna
@@ -1126,10 +1126,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					};
 
 					// Add ADV medical items
-					// Defibrilator
-					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [0, 3, 6]];
-					};
 					// Splint
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
 						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [0, 5, 10]];
@@ -1163,7 +1159,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					["tf_rt1523g_fabric"], //"Belongs" to BluFor
 					["tf_rt1523g_green"], //"Belongs" to BluFor
 					["tf_rt1523g_rhs"], //"Belongs" to BluFor
-					["tf_rt1523g_sage"], //"Belongs" to BluFor	
+					["tf_rt1523g_sage"], //"Belongs" to BluFor
 					["tf_rt1523g_big_rhs"], //"Belongs" to BluFor
 					["tf_anarc210"], //"Belongs" to BluFor
 					["tf_anprc152"] //"Belongs" to BluFor
@@ -1190,7 +1186,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					["TFAR_rt1523g_fabric"], //"Belongs" to BluFor
 					["TFAR_rt1523g_green"], //"Belongs" to BluFor
 					["TFAR_rt1523g_rhs"], //"Belongs" to BluFor
-					["TFAR_rt1523g_sage"], //"Belongs" to BluFor	
+					["TFAR_rt1523g_sage"], //"Belongs" to BluFor
 					["TFAR_rt1523g_big_rhs"], //"Belongs" to BluFor
 					["TFAR_anarc210"], //"Belongs" to BluFor
 					["TFAR_anprc152"] //"Belongs" to BluFor
@@ -1380,7 +1376,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
 		removeVest _hO;
 		_hO addVest _vest;
-			
+
 		// Add main gun
 		pr _primary = _weapons#UNIT_WEAPONS_ID_PRIMARY;
 		if (_primary != "") then {
@@ -1434,11 +1430,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Force select primary weapon
 		// https://community.bistudio.com/wiki/selectWeapon  notes by MaestrO.fr and Dr_Eyeball
 		if ( (primaryWeapon _hO) != "") then
-		{			
+		{
 			pr _type = primaryWeapon _hO;
 			// check for multiple muzzles (eg: GL)
 			pr _muzzles = getArray(configFile >> "cfgWeapons" >> _type >> "muzzles");
-			
+
 			if (count _muzzles > 1) then {
 				_hO selectWeapon (_muzzles select 0);
 			} else {
@@ -1550,7 +1546,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		private _data = GET_VAR(_thisObject, "data");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
 	} ENDMETHOD;
-	
+
 	//                    G E T   E F F I C I E N C Y
 	/*
 	Method: getEfficiency
@@ -1703,10 +1699,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
-	
+
 	STATIC_METHOD("getRequiredCrew") {
 		params ["_thisClass", ["_units", [], [[]]]];
-		
+
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
 		pr _nCargo = 0;
@@ -1721,15 +1717,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} forEach _units;
 		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
-	
+
 	/*
 	Function: (static)getCargoInfantryCapacity
 	Returns how many units can be loaded as cargo by all the vehicles from _units
-	
+
 	Parameters: _units
-	
+
 	_units - array of <Unit> objects
-	
+
 	Returns: Number
 	*/
 	STATIC_METHOD("getCargoInfantryCapacity") {
@@ -1737,7 +1733,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
 	} ENDMETHOD;
-	
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1865,7 +1861,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		private _data = GET_VAR(_thisObject, "data");
 		_data select UNIT_DATA_ID_CAT == T_CARGO
 	} ENDMETHOD;
-	
+
 	//                         I S   S T A T I C
 	/*
 	Method: isStatic
@@ -1915,7 +1911,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_data select UNIT_DATA_ID_BUILD_RESOURCE
 		};
 		_return
-		
+
 	} ENDMETHOD;
 
 	METHOD("addBuildResources") {
@@ -1979,7 +1975,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_dataList = _hO getVariable "jna_dataList";
 			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
 			pr _nItemsInArsenal = ["vin_build_res_0", _dataList#_index] call jn_fnc_arsenal_itemCount;
-			
+
 			// Make the exact needed amount of items in the inventory
 			pr _nItemsToAdd = _nItemsNeeded;
 			if (_nItemsInArsenal > 0) then { // If such items are already in the arsenal
@@ -2205,7 +2201,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		if (_enabled) then {
 			pr _arsenalArray = call jn_fnc_arsenal_getEmptyArray; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
-			
+
 			// Lets apply our civ settings from selected faction template
 			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
 			private _allArsenalItems = [];
@@ -2380,7 +2376,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		diag_log _data;
 
-		_data 
+		_data
 	} ENDMETHOD;
 
 	/* override */ METHOD("deserializeFromStorage") {
@@ -2389,7 +2385,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		_serial set [UNIT_DATA_ID_AI, ""];
-		// SAVEBREAK DELETE >>> 
+		// SAVEBREAK DELETE >>>
 		if(count _serial < UNIT_DATA_SIZE) then {
 			_serial set[UNIT_DATA_ID_INVENTORY, []];
 		};
