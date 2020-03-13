@@ -247,8 +247,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// Call the base class method
 		pr _restored = CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay ARG _restoreData ARG _restorePosition]);
 		if(!_restored) then {
-			// Always spawn with a random civi kit and pistol.
-			_newUnit call fnc_selectPlayerSpawnLoadout;
+			// Select random player gear
+			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _templateClass = [_civTemplate, T_INF, T_INF_DEFAULT, -1] call t_fnc_select;
+			if ([_templateClass] call t_fnc_isLoadout) then {
+				[_newUnit, _templateClass] call t_fnc_setUnitLoadout;
+			} else {
+				OOP_ERROR_0("Only loadouts are valid for Civilian T_INF_DEFAULT faction templates (not classes)");
+			};
 			// Holster pistol
 			_newUnit action ["SWITCHWEAPON", player, player, -1];
 		};

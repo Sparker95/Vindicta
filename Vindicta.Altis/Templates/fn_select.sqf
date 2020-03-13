@@ -38,7 +38,11 @@ else
 			if (_classID != -1) then {
 				_class = _subcat select _classID;
 			} else {
-				_class = selectRandom _subcat;
+				if(count _subcat > 1 && {_subcat#1 isEqualType 0}) then {
+					_class = selectRandomWeighted _subcat;
+				} else {
+					_class = selectRandom _subcat;
+				}
 			};
 			if(isNil "_class") then
 			{

@@ -21,7 +21,6 @@ call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
 call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
 call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
 call compile preprocessFileLineNumbers "Templates\initComposition.sqf";
-call compile preprocessFileLineNumbers "Templates\initPlayerSpawnTemplates.sqf";
 call compile preprocessFileLineNumbers "Templates\initLoadouts.sqf";
 call compile preprocessFileLineNumbers "Templates\combatTips.sqf";
 

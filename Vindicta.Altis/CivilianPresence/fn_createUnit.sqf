@@ -76,5 +76,13 @@ _unit addEventHandler ["Deleted", {
 }];
 gCPUntieID = _JIPID + 1;
 
+// Finally lets apply our civ settings from selected faction template
+private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+private _templateClass = [_civTemplate, T_INF, T_INF_unarmed, -1] call t_fnc_select;
+if ([_templateClass] call t_fnc_isLoadout) then {
+	[_unit, _templateClass] call t_fnc_setUnitLoadout;
+} else {
+	// Only load out is allowed!
+};
 
 _unit

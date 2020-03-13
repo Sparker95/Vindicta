@@ -62,7 +62,7 @@ if (true) exitWith {_errorCount}; // Return no errors with SQF VM, since we can'
 				diag_log format ["validateTemplate: error: class or loadout %1 was not resolved", _classOrLoadout];
 				_errorCount = _errorCount + 1;
 			};
-		} forEach (_classArray);
+		} forEach (_classArray select { _x isEqualType "" }); // Weighted arrays contain numbers as well, so we ignore them
 	} forEach (_t#_catID);
 } forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE]];
 
