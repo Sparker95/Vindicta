@@ -1,7 +1,7 @@
-#include "defineCommon.inc"
+
+if(isnil "CBA_fnc_waitUntilAndExecute")exitWith{};
 
 fnc_debugv2_overwrite = {
-	//waitUntil {!isNull findDisplay 49}; // no please don't waitUntil in unscheduled, by now display 49 already exists
 	_display = findDisplay 49;
 	
 	_ctrl_debug = _display displayCtrl 13184; 
@@ -243,7 +243,21 @@ fnc_debugv2_overwrite = {
 	
 	_posY = _posY +_spacingY + _spacingY;
 	_ctrl = _display ctrlCreate ["RscButtonMenu", -1,_ctrl_debug];
-	_ctrl ctrlSetPosition [_posXFINAL,_posY,_posX-_posXFINAL- _spacingY,_button_hieght];
+	_ctrl ctrlSetPosition [_posXFINAL,_posY,(_posX-_posXFINAL- _spacingY*2)/2,_button_hieght];
+
+	_ctrl ctrlCommit 0;
+	_ctrl ctrlSetText "-- cursorObject config file --";
+	_ctrl ctrlAddEventHandler ["ButtonClick", {
+		0 spawn {
+			profileNamespace setVariable ["bis_fnc_configviewer_selected", typeOf cursorObject];
+			profileNamespace setVariable ["bis_fnc_configviewer_path", ["configfile","CfgVehicles",typeOf cursorObject]];
+			[] call BIS_fnc_configViewer;
+		};
+	}];
+
+
+	_ctrl = _display ctrlCreate ["RscButtonMenu", -1,_ctrl_debug];
+	_ctrl ctrlSetPosition [_posXFINAL + (_posX-_posXFINAL- _spacingY*2)/2+_spacingY,_posY,(_posX-_posXFINAL- _spacingY*2)/2,_button_hieght];
 
 	_ctrl ctrlCommit 0;
 	_ctrl ctrlSetText "-- Undo last save --";
@@ -261,7 +275,6 @@ fnc_debugv2_overwrite = {
 		
 		((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText _name;
 	}];
-	
 };
 
 
@@ -272,12 +285,14 @@ if (hasInterface) then {
 
 		(findDisplay 46) displayAddEventHandler ["KeyDown", {
 			params ["_display", "_key", "_shift", "_ctrl", "_alt"];
-			
 			if(_key == 1)then{
-				0 spawn {
-					waitUntil {!isNull (findDisplay 49)};
-					isNil {call fnc_debugv2_overwrite;}; // Wrap it into isNil to make it do the job in one frame
-				};
+
+				[
+					{!isnull(findDisplay 49)},
+					{
+						call fnc_debugv2_overwrite;
+					}
+				] call CBA_fnc_waitUntilAndExecute;
 			};
 		}];
 

@@ -25,8 +25,8 @@ this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "rhssaf_zrak_rd7j";
 
-comment "Add items to containers";
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "optic_NVS";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
 for "_i" from 1 to 6 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
 for "_i" from 1 to 4 do {this addItemToVest "rhsusf_5Rnd_762x51_m993_Mag";};

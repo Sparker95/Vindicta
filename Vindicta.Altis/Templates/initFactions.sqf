@@ -32,11 +32,11 @@
 ["Templates\Factions\GUERRILLA.sqf", 			T_FACTION_Guer		]	call t_fnc_initializeTemplateFromFile;
 
 // Police factions
-["Templates\Factions\POLICE.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_AAF_police.sqf", 		T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_LDF_ranger.sqf", 		T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_APD.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_LDF_NATO_police.sqf", 	T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_Heer_police.sqf", 		T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_UK_police.sqf", 		T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\POLICE.sqf", T_FACTION_Police]					call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_AAF_police.sqf", T_FACTION_Police]			call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_LDF_ranger.sqf", T_FACTION_Police]			call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_APD.sqf", T_FACTION_Police]				call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_LDF_NATO_police.sqf", T_FACTION_Police]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\WW2_Heer_police.sqf", T_FACTION_Police]		call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\WW2_UK_police.sqf", T_FACTION_Police]			call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GSG9.sqf", T_FACTION_Police]					call t_fnc_initializeTemplateFromFile;
