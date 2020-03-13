@@ -24,7 +24,7 @@ private _color = if(_index == -1)then{
 		UNKOWN_COLOR;
 	};
 };
-
+diag_log str ["color",_unit,_color];
 _color;
 
 

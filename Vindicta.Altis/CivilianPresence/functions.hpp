@@ -4,6 +4,8 @@ class cp {
 	class cp_spawn {};
 	class cp_despawn {};
 	class cp_createUnit {};
+	class cp_createUnit_init {};
+	class cp_createUnit_initLocal {};
 	class cp_isUnitCreatedByCP {};
 
 	class cp_dialogue {postinit = 1;};
@@ -11,9 +13,7 @@ class cp {
 
 	class cp_aimAtCivilian {};
 	class cp_aimAtCivilianServer {};
-	class cp_initUnitDialogVariables {};
 	class cp_getUnitState {};
 
 	class cp_arrestUnit {};
-	class cp_createUnit_initLocal {};
 };

@@ -1,8 +1,3 @@
-class dialogue_common {
-	file = "Dialogue\Common";
-	class dialogue_common_bearingToID {};
-	class dialogue_common_unitSideColor {};
-};
 
 class dialogue {
 	file = "Dialogue";
@@ -29,6 +24,8 @@ class dialogue {
 
 	class dialogue_createHUD {};
 	class dialogue_deleteHUD {postinit = 1;};//remove old hud
+
+	class dialogue_unitSideColor {};
 };
 
 class dialogue_example {

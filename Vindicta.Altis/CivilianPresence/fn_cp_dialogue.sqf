@@ -27,7 +27,7 @@ private _array = [
 			];
 			_return;
 		};
-		if(_state isEqualType "arrested")exitWith{
+		if(_state isEqualTo "arrested")exitWith{
 			_return pushBack [TYPE_JUMP_TO, "help_untied_question"];
 			_return;
 		};

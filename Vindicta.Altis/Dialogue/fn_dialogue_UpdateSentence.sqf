@@ -29,7 +29,7 @@ if(player isEqualTo _speaker)then{
 		"<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence
 	];
 }else{
-	private _color_unit = [_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_common_unitSideColor;
+	private _color_unit = [_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_unitSideColor;
 	private _structedText =  parseText format [
 		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1' shadow = '2'>%2:</t> <t color = '#ffffff'>%3",
 		_color_unit,["Unknown",name _speaker]select (player knowsAbout _speaker == 4),_sentence
