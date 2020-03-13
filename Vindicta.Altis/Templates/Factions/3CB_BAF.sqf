@@ -5,7 +5,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 // Name, description, faction, addons, etc
 _array set [T_NAME, "t3CB_BAF"];
 _array set [T_DESCRIPTION, "British Armed Forces. Uses 3CB's BAF pack and RHS."];
-_array set [T_DISPLAY_NAME, "3CB - BAF"];
+_array set [T_DISPLAY_NAME, "3CB BAF"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhs_c_troops",		// RHSAFRF

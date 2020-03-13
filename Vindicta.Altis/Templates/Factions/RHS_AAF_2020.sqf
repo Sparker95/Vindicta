@@ -5,9 +5,8 @@
 ██╔══██║██╔══██║██╔══╝  ██╔═══╝ ████╔╝██║██╔═══╝ ████╔╝██║
 ██║  ██║██║  ██║██║     ███████╗╚██████╔╝███████╗╚██████╔╝
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝ ╚═════╝ ╚══════╝ ╚═════╝ 
-http://patorjk.com/software/taag/#p=testall&v=3&f=Big%20Money-nw&t=NATO                              
+http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=AAF2020                              
                          
-Vindicta Faction Template. Use this template as the basis for your template.
 Updated: March 2020 by Marvis
 */
 
