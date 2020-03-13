@@ -1,14 +1,9 @@
-params [
+if!(params [
 	["_unit", objNull,[objNull]],
 	["_dataSets",[],[[],""]],
-	["_unused","",[""]]//incase someone writes [_unit,"list1","list2"] instead of [_unit,["list1","list2"]]
-];
-
-if!(_unused isEqualTo "")then{
-	diag_log "ERROR CALLED WITH TO MANY ARGUMENTS";
-};
+	["_unused",nil[nil]]//incase someone writes [_unit,"list1","list2"] instead of [_unit,["list1","list2"]]
+])exitWith{};
 
 if(_dataSets isEqualType "")then{_dataSets = [_dataSets]};
 
-_unit setVariable ["dialogue_dataSet_ids",_dataSets,true];
-
+[_unit, "dialogue_dataSet_ids", _dataSets] call CBA_fnc_setVarNet;
