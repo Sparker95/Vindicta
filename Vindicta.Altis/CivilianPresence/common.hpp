@@ -1,3 +1,4 @@
+#include "..\OOP_Light\OOP_Light.h"
 #include "..\Undercover\UndercoverMonitor.hpp"
 #include "..\Location\Location.hpp"
 #include "..\AI\Commander\AICommander.hpp"

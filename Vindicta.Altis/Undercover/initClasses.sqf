@@ -1,5 +1,4 @@
 call compile preprocessFileLineNumbers "Templates\Undercover\CivObjects.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\ArsenalLoadout.sqf";
 fnc_getVisibleSurface = compile preprocessfilelinenumbers "Undercover\fn_getVisibleSurface.sqf";
 fnc_UM_testCompromise = compile preprocessfilelinenumbers "Undercover\fn_UM_testCompromise.sqf";
 fnc_UM_setState = compile preprocessfilelinenumbers "Undercover\fn_UM_setState.sqf";

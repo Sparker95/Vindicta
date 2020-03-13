@@ -29,5 +29,7 @@ t_fnc_isLoadout = compile preprocessFileLineNumbers "Templates\fn_isLoadout.sqf"
 
 t_fnc_processTemplateItems = compile preprocessFileLineNumbers "Templates\fn_processTemplateItems.sqf";
 
+t_fnc_callAPIOptional = compile preprocessFileLineNumbers "Templates\fn_callAPIOptional.sqf";
+
 call compile preprocessFileLineNumbers "Templates\EfficiencyFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\CompositionFunctions.sqf";
