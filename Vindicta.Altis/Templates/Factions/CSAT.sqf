@@ -27,7 +27,7 @@ _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT,  ["O_Soldier_F"]]; // = 0 Default if nothing found
 
 _inf set [T_INF_SL, ["O_Soldier_SL_F"]]; // = 1
-_inf set [T_INF_TL, ["B_Soldier_TL_F"]]; // = 2
+_inf set [T_INF_TL, ["O_Soldier_TL_F"]]; // = 2
 _inf set [T_INF_officer, ["O_officer_F"]]; // = 3
 _inf set [T_INF_GL, ["O_Soldier_GL_F"]]; // = 4
 _inf set [T_INF_rifleman, ["O_Soldier_F", "O_Soldier_lite_F"]]; // = 5
