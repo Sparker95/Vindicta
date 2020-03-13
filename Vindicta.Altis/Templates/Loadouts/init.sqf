@@ -38,3 +38,9 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Police\
 //WW2_UK
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK_Recon\init.sqf";
+//BWMOD
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Recon\init.sqf";
+//BWMOD with Niarms
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms_Recon\init.sqf";
