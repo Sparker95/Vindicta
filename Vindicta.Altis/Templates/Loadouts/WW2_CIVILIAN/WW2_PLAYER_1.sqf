@@ -56,9 +56,8 @@ private _gunsAndAmmo = [
 	["LIB_WaltherPPK",		"fow_8rnd_9x19",		true],	0.8,
 	["LIB_M1895",			"lib_7rnd_762x38",		true],	0.6,
 	["LIB_Webley_mk6",		"lib_6rnd_455",			true],	0.6,
-	["LIB_Welrod_mk1",		"lib_6rnd_9x19_welrod",	true],	0.2,
 	["fow_w_webley",		"fow_6rnd_455",			true],	0.6,
-	["fow_w_welrod_mkii",	"fow_8rnd_765x17",		true],	0.1,
+	["fow_w_welrod_mkii",	"fow_8rnd_765x17",			true],	0.3,
 	["fow_w_p35",			"fow_8rnd_9x19",		true],	0.7,
 	// long
 	["LIB_K98",					"fow_5rnd_792x57",			true],	0.1,
