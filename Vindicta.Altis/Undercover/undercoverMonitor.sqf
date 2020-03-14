@@ -29,10 +29,7 @@ Authors: Marvis, Sparker
 */
 
 // array of animations that force you undercover (ace surrender, ...)
-g_UM_undercoverAnims = [
-	"ace_amovpercmstpssurwnondnon",
-	"AmovPercMstpSnonWnonDnon_Ease"
-];
+
 
 // ------------ U N D E R C O V E R  M O N I T O R  C L A S S ------------
 
@@ -67,6 +64,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("eventHandlersCBA");
 	VARIABLE("untieActionID");
 	VARIABLE("debugOverride"); 												// override make player captive for debug
+	VARIABLE("undercoverAnims");											// undercover animations
 
 	// ------------ N E W ------------
 
@@ -107,6 +105,12 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("eventHandlersCBA", []);
 		T_SETV("untieActionID", -1);
 		T_SETV("debugOverride", false);
+
+		pr _undercoverAnims = [
+			"ace_amovpercmstpssurwnondnon",
+			"AmovPercMstpSnonWnonDnon_Ease"
+		];
+		T_SETV("undercoverAnims", _undercoverAnims);
 
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
@@ -294,11 +298,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _distance = -1;
 				if !(isNull _nearestEnemy) then { 
 					_distance = (position _nearestEnemy) distance (position _unit); 
-
-					// suspicion for being close to hostile enemy, behavior is too unpredictable
-					//if (behaviour _nearestEnemy == "COMBAT" && _distance < 30) then {
-					//	CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.3);
-					//};
 				};
 
 				// check if unit is in vehicle
@@ -324,8 +323,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							T_SETV("stateChanged", false);
 						}; // do once when state changed
 
-
-						if (!(currentWeapon _unit in g_UM_civWeapons) && currentWeapon _unit != "" && !(_bInVeh)) exitWith { 
+						if (
+						!(currentWeapon _unit in g_UM_civWeapons) 
+						|| currentWeapon _unit != "" 
+						|| primaryWeapon _unit != "" 
+						&& !(_bInVeh)) exitWith { 
 							_suspicionArr pushBack [1, "On foot & weapon"]; _hintKeys pushback HK_WEAPON; 
 						};
 
@@ -369,12 +371,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							case false: {
 								_unit setVariable [UNDERCOVER_EXPOSED, true, true];	
 
-								if (animationState _unit in g_UM_undercoverAnims) exitWith { _suspicionArr pushBack [-1, "Surrender"]; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
-
-								// suspiciousness for specific animations
-								//if (animationState _unit == "acts_carfixingwheel") then {
-									//_suspicionArr pushBack [0.6, "Removing wheel from enemy vehicle?"]; _hintKeys pushback HK_ILLEGAL;
-								//};
+								if (animationState _unit in (T_GETV("undercoverAnims"))) exitWith { _suspicionArr pushBack [-1, "Surrender"]; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
 								
 								// disallow player using morphine on enemies 
 								if (animationState _unit == "ainvpknlmstpsnonwnondnon_medic1" || animationState _unit == "ainvppnemstpslaywnondnon_medicother" || animationState _unit == "ainvpknlmstpslaywnondnon_medicother") exitWith {
@@ -454,7 +451,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								#endif
 
 								pr _vicCompromised = UNDERCOVER_GET_VIC_COMPROMISED(vehicle _unit);
-								if (_vicCompromised != -1) then {
+								if (_vicCompromised != -1) exitWith {
 									if (time <= _vicCompromised) then {
 										_suspicionArr pushBack [1, "Compromised vehicle"];
 										_hintKeys pushback HK_COMPROMISED_VIC;
@@ -645,8 +642,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 				}; // end FSM
 
-				//OOP_INFO_1("hintKeys: %1", _hintKeys);
-
+				OOP_INFO_1("hintKeys: %1", _hintKeys);
 				
 				// set captive status of unit
 				pr _args = [_suspicionArr, _state];
