@@ -74,10 +74,10 @@ _array set [T_API, _api];
 // ==== Undercover ====
 _uc = [];
 _uc resize T_UC_SIZE;
-_uc set[T_UC_uniforms, _civUniforms];
-_uc set[T_UC_facewear, _civFacewear];
-_uc set[T_UC_headgear, _civHeadgear];
-_uc set[T_UC_civVehs, _civVehiclesOnlyNames];
+_uc set[T_UC_uniforms, +_civUniforms];
+_uc set[T_UC_facewear, +_civFacewear];
+_uc set[T_UC_headgear, +_civHeadgear];
+_uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
 _array set [T_UC, _uc];
 
 // ==== Arsenal ====
@@ -103,9 +103,9 @@ _arsenal set[T_ARSENAL_backpacks, [
 	"B_LIB_SOV_RA_Rucksack32_Vide",
 	"B_LIB_SOV_RA_Rucksack41_Vide"
 ]];
-_arsenal set[T_ARSENAL_uniforms, _civUniforms];
-_arsenal set[T_ARSENAL_facewear, _civFacewear];
-_arsenal set[T_ARSENAL_headgear, _civHeadgear];
+_arsenal set[T_ARSENAL_uniforms, +_civUniforms];
+_arsenal set[T_ARSENAL_facewear, +_civFacewear];
+_arsenal set[T_ARSENAL_headgear, +_civHeadgear];
 _array set [T_ARSENAL, _arsenal];
 
 // ==== Infantry ====
