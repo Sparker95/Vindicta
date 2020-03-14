@@ -184,7 +184,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
 			T_CALLM0("_initMissionEventHandlers");
 
-			missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -219,14 +218,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			//#endif
 
 			T_CALLM("initClientOnly", []);
-
-			CALLSM0("undercoverMonitor", "staticInit");
 		};
 		T_CALLM("postInitAll", []);
 		
 		PROFILE_SCOPE_START(GameModeEnd);
 	} ENDMETHOD;
-
+	
 	// Called regularly in its own thread to update gameplay
 	// states, mechanics etc. implemented by the Game Mode.
 	/* private */ METHOD("process") {
@@ -397,10 +394,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
 
-#ifndef _SQF_VM
+		#ifndef _SQF_VM
 		// Start a periodic check which will restart message loops if needed
 		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
-#endif
+		#endif
 		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
@@ -443,20 +440,20 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
 
 		if (!_recovery) then {
-#ifndef _SQF_VM
+			#ifndef _SQF_VM
 			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
 			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
-#endif
-FIX_LINE_NUMBERS()
+			#endif
+			FIX_LINE_NUMBERS()
 		} else {
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
 
-#ifdef RELEASE_BUILD
+			#ifdef RELEASE_BUILD
 			// Send msg to game manager to perform emergency saving
 			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
-#endif
-FIX_LINE_NUMBERS()
+			#endif
+			FIX_LINE_NUMBERS()
 		};
 	} ENDMETHOD;
 
@@ -479,11 +476,11 @@ FIX_LINE_NUMBERS()
 
 		// todo: send emails, deploy pigeons
 
-#ifndef _SQF_VM
+		#ifndef _SQF_VM
 		// Do it once in a while
 		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
-#endif
-FIX_LINE_NUMBERS()
+		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	METHOD("_initMissionEventHandlers") {
@@ -535,6 +532,7 @@ FIX_LINE_NUMBERS()
 	/* protected virtual */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
 
+		T_CALLM0("postLoadServerOnly");
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("initClientOrHCOnly") {
@@ -556,11 +554,23 @@ FIX_LINE_NUMBERS()
 		};
 		#endif
 		FIX_LINE_NUMBERS()
+
+		CALLSM0("undercoverMonitor", "staticInit");
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("postInitAll") {
 		params [P_THISOBJECT];
 
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("postLoadServerOnly") {
+		params [P_THISOBJECT];
+
+		// Add undercover items from Civ faction
+		private _civTemplate = T_CALLM1("getTemplate", civilian);
+		_civTemplate call t_fnc_addUndercoverItems;
+
+		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("getLocationOwner") {
@@ -1551,8 +1561,12 @@ FIX_LINE_NUMBERS()
 			
 			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH_STATIC]);
 			while {_cHMGGMG > 0} do {
-				private _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high];
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG selectrandom _variants ARG -1 ARG _staticGroup]);
+				private _variants = [T_VEH_stat_HMG_high];
+				// use GMG only if it's defined
+				private _tGMG = (_template select T_VEH) select T_VEH_stat_GMG_high;
+				if !(isNil "_tGMG") then { _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]; }; 
+
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG selectRandom _variants ARG -1 ARG _staticGroup]);
 				CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
 				_cHMGGMG = _cHMGGMG - 1;
 			};
@@ -2083,6 +2097,9 @@ FIX_LINE_NUMBERS()
 		//CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
 		// CALLSM0("Location", "deleteEditorObjects");
 
+		// Perform post load init
+		T_CALLM0("postLoadServerOnly");
+
 		// Unlock all message loops
 		{
 			private _msgLoop = T_GETV(_x);
@@ -2100,6 +2117,8 @@ FIX_LINE_NUMBERS()
 		{
 			T_CALLM1("syncPlayerInfo", _x);
 		} forEach allPlayers;
+
+		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];

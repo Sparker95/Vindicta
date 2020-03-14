@@ -18,7 +18,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["rhsusf_army_ocp_rifleman_m4"]];
+_inf set [T_INF_default, ["rhsusf_army_ocp_rifleman_m4"]];
 
 _inf set [T_INF_SL, ["rhsusf_army_ocp_squadleader"]];
 _inf set [T_INF_TL, ["rhsusf_army_ocp_teamleader"]];

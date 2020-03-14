@@ -70,8 +70,13 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 				if ((_t select T_FACTION) == T_FACTION_Military) then {	// Ignore non-military factions
 					pr _lbData = _tName;
 					pr _text = _t select T_DISPLAY_NAME;
-					_cbEnemyFaction lbAdd _text;
+					pr _indexCB = _cbEnemyFaction lbAdd _text;
 					_cbEnemyFaction lbSetData [_counter, _lbData];
+
+					// set text color for factions with missing addons
+					if (count (_t#T_MISSING_ADDONS) > 0) then {
+						_cbEnemyFaction lbSetColor [_indexCB, MUIC_COLOR_BTN_RED];
+					};
 				};
 				_counter = _counter + 1;
 			};
@@ -86,9 +91,14 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			if (_t#T_FACTION == T_FACTION_Police) then {
 				pr _text = _t select T_DISPLAY_NAME;
 				pr _lbData = _tName;
-				_cbPoliceFaction lbAdd _text;						// Set text from template name
-				_cbPoliceFaction lbSetData [_counter, _lbData];// Set data - template internal name
+				pr _indexCB = _cbPoliceFaction lbAdd _text;			// Set text from template name
+				_cbPoliceFaction lbSetData [_counter, _lbData];		// Set data - template internal name
 				_counter = _counter + 1;
+
+				// set text color for factions with missing addons
+				if (count (_t#T_MISSING_ADDONS) > 0) then {
+					_cbPoliceFaction lbSetColor [_indexCB, MUIC_COLOR_BTN_RED];
+				};
 			};
 		} forEach (call t_fnc_getAllTemplateNames);
 		_cbPoliceFaction lbSetCurSel 0;
@@ -101,9 +111,14 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			if (_t#T_FACTION == T_FACTION_Civ) then {
 				pr _text = _t select T_DISPLAY_NAME;
 				pr _lbData = _tName;
-				_cbCivilianFaction lbAdd _text;						// Set text from template name
-				_cbCivilianFaction lbSetData [_counter, _lbData];// Set data - template internal name
+				pr _indexCB = _cbCivilianFaction lbAdd _text; 		// Set text from template name
+				_cbCivilianFaction lbSetData [_counter, _lbData]; 	// Set data - template internal name
 				_counter = _counter + 1;
+
+				// set text color for factions with missing addons
+				if (count (_t#T_MISSING_ADDONS) > 0) then {
+					_cbCivilianFaction lbSetColor [_indexCB, MUIC_COLOR_BTN_RED];
+				};
 			};
 		} forEach (call t_fnc_getAllTemplateNames);
 		_cbCivilianFaction lbSetCurSel 0;

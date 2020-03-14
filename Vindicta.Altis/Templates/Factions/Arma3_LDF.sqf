@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tLDF"];
-_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces. Made by MatrikSky"];
+_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces. Made by MatrikSky."];
 _array set [T_DISPLAY_NAME, "Arma 3 LDF"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
@@ -16,7 +16,7 @@ _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["I_E_Soldier_F"]];							//Default infantry if nothing is found
+_inf set [T_INF_default,  ["I_E_Soldier_F"]];							//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["I_E_Soldier_SL_F"]];
 _inf set [T_INF_TL, ["I_E_Soldier_TL_F", "I_E_RadioOperator_F"]];

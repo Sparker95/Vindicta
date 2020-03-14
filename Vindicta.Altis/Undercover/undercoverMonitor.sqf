@@ -20,6 +20,7 @@
 #ifndef RELEASE_BUILD
 //#define DEBUG_UNDERCOVER_MONITOR
 #endif
+FIX_LINE_NUMBERS()
 
 /*
 undercoverMonitor: Changes this object's unit's captive status dynamically based on equipment, behavior, location, and so on.
@@ -29,10 +30,7 @@ Authors: Marvis, Sparker
 */
 
 // array of animations that force you undercover (ace surrender, ...)
-g_UM_undercoverAnims = [
-	"ace_amovpercmstpssurwnondnon",
-	"AmovPercMstpSnonWnonDnon_Ease"
-];
+
 
 // ------------ U N D E R C O V E R  M O N I T O R  C L A S S ------------
 
@@ -67,6 +65,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("eventHandlersCBA");
 	VARIABLE("untieActionID");
 	VARIABLE("debugOverride"); 												// override make player captive for debug
+	VARIABLE("undercoverAnims");											// undercover animations
 
 	// ------------ N E W ------------
 
@@ -108,6 +107,12 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("untieActionID", -1);
 		T_SETV("debugOverride", false);
 
+		pr _undercoverAnims = [
+			"ace_amovpercmstpssurwnondnon",
+			"AmovPercMstpSnonWnonDnon_Ease"
+		];
+		T_SETV("undercoverAnims", _undercoverAnims);
+
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
 		_unit setVariable [UNDERCOVER_WANTED, false, true];					// GLOBAL: if true player unit is hostile and "setCaptive false"
@@ -122,6 +127,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		g_rscLayerUndercoverDebug = ["rscLayerUndercoverDebug"] call BIS_fnc_rscLayer;
 		g_rscLayerUndercoverDebug cutRsc ["UndercoverUIDebug", "PLAIN", -1, false];
 		#endif
+		FIX_LINE_NUMBERS()
 
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
@@ -179,10 +185,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
+				// Only give boost if we are accessing military containers/vehicles
 				pr _type = typeOf _container;
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
-				// Only give boost if we are accessing military containers/vehicles
-				if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
+				if (!(_type in g_UM_civVehs) && (_type isKindOf "ThingX" || _sideNum in [0, 1, 2])) then {
 					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
@@ -195,10 +201,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
+				// Only give boost if we are accessing military containers/vehicles
 				pr _type = typeOf _container;
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
-				// Only give boost if we are accessing military containers/vehicles
-				if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
+				if (!(_type in g_UM_civVehs) && (_type isKindOf "ThingX" || _sideNum in [0, 1, 2])) then {
 					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
@@ -212,18 +218,19 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			params ["_unit", "_newLoadout"];
 			pr _uM = _unit getVariable ["undercoverMonitor", ""];
 			if (_uM != "") then { CALLM0(_uM, "calcGearSuspicion"); };
-    	}] call CBA_fnc_addPlayerEventHandler;
+		}] call CBA_fnc_addPlayerEventHandler;
 		T_GETV("eventHandlersCBA") pushBack ["loadout", _ID];
 
 		// Holsters weapon when leaving a vehicle, if your only weapon is a pistol
 		_ID = ["vehicle", {  
-     	params ["_vehicle", "_role", "_unit", "_turret"];
+			params ["_vehicle", "_role", "_unit", "_turret"];
 			if (primaryWeapon player == "" && secondaryWeapon player == "") then {
 				player action ["SwitchWeapon", player, player, 299];	
 			};	
-     	}] call CBA_fnc_addPlayerEventHandler;
+		}] call CBA_fnc_addPlayerEventHandler;
 		T_GETV("eventHandlersCBA") pushBack ["vehicle", _ID];
 #endif
+		FIX_LINE_NUMBERS()
 
 	} ENDMETHOD;
 
@@ -294,11 +301,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _distance = -1;
 				if !(isNull _nearestEnemy) then { 
 					_distance = (position _nearestEnemy) distance (position _unit); 
-
-					// suspicion for being close to hostile enemy, behavior is too unpredictable
-					//if (behaviour _nearestEnemy == "COMBAT" && _distance < 30) then {
-					//	CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.3);
-					//};
 				};
 
 				// check if unit is in vehicle
@@ -324,8 +326,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							T_SETV("stateChanged", false);
 						}; // do once when state changed
 
-
-						if (!(currentWeapon _unit in g_UM_civWeapons) && currentWeapon _unit != "" && !(_bInVeh)) exitWith { 
+						if (
+						!(currentWeapon _unit in g_UM_civWeapons) 
+						|| currentWeapon _unit != "" 
+						|| primaryWeapon _unit != "" 
+						&& !(_bInVeh)) exitWith { 
 							_suspicionArr pushBack [1, "On foot & weapon"]; _hintKeys pushback HK_WEAPON; 
 						};
 
@@ -369,12 +374,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							case false: {
 								_unit setVariable [UNDERCOVER_EXPOSED, true, true];	
 
-								if (animationState _unit in g_UM_undercoverAnims) exitWith { _suspicionArr pushBack [-1, "Surrender"]; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
-
-								// suspiciousness for specific animations
-								//if (animationState _unit == "acts_carfixingwheel") then {
-									//_suspicionArr pushBack [0.6, "Removing wheel from enemy vehicle?"]; _hintKeys pushback HK_ILLEGAL;
-								//};
+								if (animationState _unit in (T_GETV("undercoverAnims"))) exitWith { _suspicionArr pushBack [-1, "Surrender"]; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
 								
 								// disallow player using morphine on enemies 
 								if (animationState _unit == "ainvpknlmstpsnonwnondnon_medic1" || animationState _unit == "ainvppnemstpslaywnondnon_medicother" || animationState _unit == "ainvpknlmstpslaywnondnon_medicother") exitWith {
@@ -405,7 +405,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								if (T_GETV("inventoryOpen")) then {
 									pr _cont = T_GETV("inventoryContainer");
 
-									pr _type = typeOf _cont;
 									/* // https://community.bistudio.com/wiki/CfgVehicles_Config_Reference#side
 									#define NO_SIDE -1
 									#define EAST 0			// (Russian)
@@ -419,8 +418,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 									*/
 									// When player opens his own inv, the container is a "GroundWeaponHolder" which has side 3 (civilian)
 									// "ThingX" type corresponds to supply crates
+									pr _type = typeOf _cont;
 									pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
-									if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
+									if (!(_type in g_UM_civVehs) && (_type isKindOf "ThingX" || _sideNum in [0, 1, 2])) then {
 										_suspInv = SUSP_INV_MIL;
 									} else {
 										_suspInv = SUSP_INV_CIV;
@@ -442,19 +442,20 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								pr _suspGearVeh = T_GETV("suspGearVeh");
 								pr _bodyExposure = T_CALLM("getBodyExposure", [_unit]);		// get how visible unit is
 
-								if !(gettext (configfile >> "CfgVehicles" >> (typeOf vehicle _unit) >> "faction") == "CIV_F") exitWith {
+								if !((typeOf vehicle _unit) in g_UM_civVehs) exitWith {
 									_suspicionArr pushBack [1, "Military vehicle"];
 									_hintKeys pushback HK_MILVEH;
 								}; // if in military vehicle
-								
+
 								#ifdef DEBUG_UNDERCOVER_MONITOR 
 									_unit setVariable ["distance", _distance];
 									_unit setVariable ["bodyExposure", _bodyExposure];
 									OOP_INFO_0("Distance and bodyExposure set to player");
 								#endif
+								FIX_LINE_NUMBERS()
 
 								pr _vicCompromised = UNDERCOVER_GET_VIC_COMPROMISED(vehicle _unit);
-								if (_vicCompromised != -1) then {
+								if (_vicCompromised != -1) exitWith {
 									if (time <= _vicCompromised) then {
 										_suspicionArr pushBack [1, "Compromised vehicle"];
 										_hintKeys pushback HK_COMPROMISED_VIC;
@@ -515,6 +516,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								"markerWanted" setMarkerSizeLocal [WANTED_CIRCLE_RADIUS/2, WANTED_CIRCLE_RADIUS/2];
 								"markerWanted" setMarkerShapeLocal "ELLIPSE";
 							#endif
+							FIX_LINE_NUMBERS()
 						}; 
 
 						_suspicionArr pushBack [1, "WANTED STATE"];
@@ -645,8 +647,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 				}; // end FSM
 
-				//OOP_INFO_1("hintKeys: %1", _hintKeys);
-
+				OOP_INFO_1("hintKeys: %1", _hintKeys);
 				
 				// set captive status of unit
 				pr _args = [_suspicionArr, _state];
@@ -677,6 +678,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				_args = [_unit, _suspicion, _hintKeys];
 				CALL_STATIC_METHOD("UndercoverUI", "drawUI", _args); // draw UI
 				#endif
+				FIX_LINE_NUMBERS()
 
 				// update debug UI
 				#ifdef DEBUG_UNDERCOVER_MONITOR
@@ -685,6 +687,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				[_unit] call fnc_UIUndercoverDebug;
 				g_rscLayerUndercover cutRsc ["Default", "PLAIN", -1, false];
 				#endif
+				FIX_LINE_NUMBERS()
 
 			}; // end SMON_MESSAGE_PROCESS
 
@@ -849,6 +852,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		_unit setVariable ["suspicionArr", _suspicionArr];
 		_unit setVariable ["suspicion", _suspicion];
 		#endif
+		FIX_LINE_NUMBERS()
 		
 	} ENDMETHOD;
 
@@ -948,11 +952,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 #ifndef _SQF_VM
 		["ace_throwableThrown", { 
-   			params ["_unit", "_activeThrowable"]; 
+			params ["_unit", "_activeThrowable"]; 
 			CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 3.0);
-    	}] call CBA_fnc_addEventHandler;
+		}] call CBA_fnc_addEventHandler;
 #endif
-
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 ENDCLASS;

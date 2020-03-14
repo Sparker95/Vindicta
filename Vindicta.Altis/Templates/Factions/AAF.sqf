@@ -16,7 +16,7 @@ _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["I_soldier_F"]];							//Default infantry if nothing is found
+_inf set [T_INF_default,  ["I_soldier_F"]];							//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["I_Soldier_SL_F"]];
 _inf set [T_INF_TL, ["I_Soldier_TL_F"]];

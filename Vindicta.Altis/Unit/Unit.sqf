@@ -140,7 +140,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
-			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
+			//_hO enableWeaponDisassembly false; // Disable weapon disassmbly
 			T_CALLM0("initObjectVariables");
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
@@ -422,7 +422,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							};
 						};
 
-						_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
+						//_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						CALLM1(_thisObject, "createAI", "AIUnitVehicle");
@@ -474,6 +474,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						// Initialize limited arsenal
 						T_CALLM0("limitedArsenalOnSpawn");
+						
+						// I'll tell you what else: make it draggable so we can get it out of buildings!
+						[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
 
 						//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
 						// Give intel to this unit
@@ -511,7 +514,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 				};
-						
+
 				// Give intel to this unit
 				switch (_catID) do {
 					case T_INF: {
@@ -623,7 +626,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 		
 		// HandleDamage for infantry
-		/* // Disabled for now, let's see if it changed anything
+		// Disabled for now, let's see if it changed anything
 		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
 		if ((_data select UNIT_DATA_ID_CAT == T_INF) &&	// Only to infantry
 			{owner _hO in [0, clientOwner]} &&			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
@@ -635,7 +638,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
-		*/
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
@@ -911,74 +913,106 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			// Otherwise fill the ammo box with stuff from the template
 			pr _gar = _data select UNIT_DATA_ID_GARRISON;
 			if (_gar == NULL_OBJECT) exitWith {
-
 			};
-			pr _tName = CALLM0(_gar, "getTemplateName");
-			if (_tName == "") exitWith {
-
-			};
-
-			pr _nInf = CALLM0(_gar, "countInfantryUnits");
-			pr _nVeh = CALLM0(_gar, "countVehicleUnits");
-			pr _nCargo = CALLM0(_gar, "countCargoUnits");
-
+			pr _t = CALLM0(_gar, "getTemplate");
 			// Add stuff to cargo from the template
-			pr _t = [_tName] call t_fnc_getTemplate;
 			pr _tInv = _t#T_INV;
 
-			// Some number which scales the amount of items in this box
-			pr _nGuns = 1 * _nInf / ((_nVeh + _nCargo) max 1);
+			pr _side = CALLM0(_data#UNIT_DATA_ID_GARRISON, "getSide");
+			if(_side == CIVILIAN) then {
+				// Small chance for weapons and magazines
+				private _inv = [];
+				if(random 5 < 1) then {
+					private _inv = [];
+					if(count (_tInv#T_INV_primary) > 0) then {
+						_inv append [T_INV_primary, 0.2];
+					};
+					if(count (_tInv#T_INV_secondary) > 0) then {
+						_inv append [T_INV_secondary, 0.1];
+					};
+					if(count (_tInv#T_INV_handgun) > 0) then {
+						_inv append [T_INV_handgun, 1];
+					};
+					
+					private _subCatId = selectRandomWeighted _inv;
+					pr _weaponsAndMags = _tInv#_subcatID;
+					pr _weaponAndMag = selectRandom _weaponsAndMags;
+					_weaponAndMag params ["_weaponClassName", "_magazines"];
+					_hO addItemCargoGlobal [_weaponClassName, round (1 + random 1) ];
+					if (count _magazines > 0) then {
+						_hO addMagazineCargoGlobal [selectRandom _magazines, ceil random[2, 4, 6]];
+					};
+				};
+				// Some items
+				if(count (_tInv#T_INV_items) > 0) then {
+					for "_i" from 0 to ceil random[-2, 3, 8] do {
+						_hO addItemCargoGlobal [selectRandom (_tInv#T_INV_items), 1];
+					};
+				};
+				// Add backpack
+				if(count (_tInv#T_INV_backpacks) > 0 && random 3 < 1) then {
+					_hO addBackpackCargoGlobal [selectRandom (_tInv#T_INV_backpacks), 1];
+				};
+				if(random 5 < 1) then {
+					_hO addItemCargoGlobal ["ItemMap", 1];
+				};
+				if(random 10 < 1) then {
+					_hO addItemCargoGlobal ["ItemCompass", 1];
+				};
+				if (random 20 < 1) then {
+					_hO addItemCargoGlobal ["vin_pills", 20];
+				};
+			} else {
+				pr _nInf = CALLM0(_gar, "countInfantryUnits");
+				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
+				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
-			// Modifier for cargo boxes
-			if (_catID == T_CARGO) then {
-				_nGuns = _nGuns * 3;
-			};
+				// Some number which scales the amount of items in this box
+				pr _nGuns = 1 * _nInf / ((_nVeh + _nCargo) max 1);
 
-			// Add weapons and magazines
-			pr _arr = [[T_INV_primary, _nGuns, 10], [T_INV_secondary, 0.4*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
-			{
-				_x params ["_subcatID", "_n", "_nMagsPerGun"];
-				if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
+				// Modifier for cargo boxes
+				if (_catID == T_CARGO) then {
+					_nGuns = _nGuns * 3;
+				};
 
-					// Randomize _n
-					_n = round (random [0.2*_n, _n, 1.8*_n]);
+				// Add weapons and magazines
+				pr _arr = [[T_INV_primary, _nGuns, 10], [T_INV_secondary, 0.4*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
+				{
+					_x params ["_subcatID", "_n", "_nMagsPerGun"];
+					if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
 
-					for "_i" from 0 to (_n-1) do {
-						pr _weaponsAndMags = _tInv#_subcatID;
-						pr _weaponAndMag = selectRandom _weaponsAndMags;
-						_weaponAndMag params ["_weaponClassName", "_magazines"];
-						_hO addItemCargoGlobal [_weaponClassName, round (1 + random 1) ];
-						if (count _magazines > 0) then {
-							_hO addMagazineCargoGlobal [selectRandom _magazines, _nMagsPerGun];
+						// Randomize _n
+						_n = round (random [0.2*_n, _n, 1.8*_n]);
+
+						for "_i" from 0 to (_n-1) do {
+							pr _weaponsAndMags = _tInv#_subcatID;
+							pr _weaponAndMag = selectRandom _weaponsAndMags;
+							_weaponAndMag params ["_weaponClassName", "_magazines"];
+							_hO addItemCargoGlobal [_weaponClassName, round (1 + random 1) ];
+							if (count _magazines > 0) then {
+								_hO addMagazineCargoGlobal [selectRandom _magazines, _nMagsPerGun];
+							};
 						};
 					};
-				};
-			} forEach _arr;
+				} forEach _arr;
 
-			// Add items
-			pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],
-						[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.3*_nGuns]]; // [_subcatID, num. attempts]
-			{
-				_x params ["_subcatID", "_n"];
+				// Add items
+				pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],
+							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.3*_nGuns]]; // [_subcatID, num. attempts]
+				{
+					_x params ["_subcatID", "_n"];
 
-				if (count (_tInv#_subcatID) > 0) then { // If there are any items in this subcategory
+					if (count (_tInv#_subcatID) > 0) then { // If there are any items in this subcategory
 
-					// Randomize _n
-					_n = round (random [0.2*_n, _n, 1.8*_n]);
-					pr _items = _tInv#_subcatID;
-					for "_i" from 0 to (_n-1) do {
-						_hO addItemCargoGlobal [selectRandom _items, round (1 + random 1)];
+						// Randomize _n
+						_n = round (random [0.2*_n, _n, 1.8*_n]);
+						pr _items = _tInv#_subcatID;
+						for "_i" from 0 to (_n-1) do {
+							_hO addItemCargoGlobal [selectRandom _items, round (1 + random 1)];
+						};
 					};
-				};
-			} forEach _arr;
+				} forEach _arr;
 
-			_hO addItemCargoGlobal ["FirstAidKit", 2 + round (random 5)];
-			_hO addItemCargoGlobal ["ItemGPS", 0 + round (random 5)];
-			_hO addItemCargoGlobal ["ToolKit", random [0, 3, 6]];
-			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)]; // Backpacks
-
-			// Customize non-civilian containers
-			if (CALLM0(_data#UNIT_DATA_ID_GARRISON, "getSide") != CIVILIAN) then {
 				// Add some maps and radios for non-civilian units
 				{
 					_hO addItemCargoGlobal [_x, 4 + ( ceil random 10)];
@@ -1124,89 +1158,76 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							};
 						} forEach _classNames;
 					};
-
-					// Add ADV medical items
-					// Defibrilator
-					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [0, 3, 6]];
-					};
-					// Splint
-					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
-						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [0, 5, 10]];
-					};
-
-					// What else?
 				};
-			};
 
-			// Add vests
-			pr _nVests = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
-			pr _vests = _tInv#T_INV_vests;
-			for "_i" from 0 to _nVests do {
-				_hO addItemCargoGlobal [selectRandom _vests, 1];
-			};
-
-			// Add backpacks
-			pr _nBackpacks = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
-			pr _backpacks = _tInv#T_INV_backpacks;
-			for "_i" from 0 to _nVests do {
-				_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
-			};
-
-			// Add TFAR (0.9.12) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
-			if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
-				// Array with backpack class name
-				pr _nTFARbackpack = [
-					["tf_rt1523g"], //"Belongs" to BluFor
-					["tf_rt1523g_big"], //"Belongs" to BluFor
-					["tf_rt1523g_black"], //"Belongs" to BluFor
-					["tf_rt1523g_fabric"], //"Belongs" to BluFor
-					["tf_rt1523g_green"], //"Belongs" to BluFor
-					["tf_rt1523g_rhs"], //"Belongs" to BluFor
-					["tf_rt1523g_sage"], //"Belongs" to BluFor	
-					["tf_rt1523g_big_rhs"], //"Belongs" to BluFor
-					["tf_anarc210"], //"Belongs" to BluFor
-					["tf_anprc152"] //"Belongs" to BluFor
-					//["tf_anprc155"], //"Belongs" to INDEP
-					//["tf_anprc155_coyote"], //"Belongs" to INDEP
-					//["tf_anarc164"], //"Belongs" to INDEP
-					//["tf_mr3000"], //"Belongs" to OPFOR
-					//["tf_mr3000_multicam"], //"Belongs" to OPFOR
-					//["tf_mr3000_rhs"], //"Belongs" to OPFOR
-					//["tf_mr6000l"] //"Belongs" to OPFOR
-				];
+				// Add vests
+				pr _nVests = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
-					_hO addBackpackCargoGlobal [selectRandom _nTFARbackpack, 1];
+					_hO addItemCargoGlobal [selectRandom _vests, 1];
+				};
+
+				// Add backpacks
+				pr _nBackpacks = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+				pr _backpacks = _tInv#T_INV_backpacks;
+				for "_i" from 0 to _nBackpacks do {
+					_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
+				};
+
+				// Add TFAR (0.9.12) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
+				if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
+					// Array with backpack class name
+					pr _nTFARbackpack = [
+						["tf_rt1523g"], //"Belongs" to BluFor
+						["tf_rt1523g_big"], //"Belongs" to BluFor
+						["tf_rt1523g_black"], //"Belongs" to BluFor
+						["tf_rt1523g_fabric"], //"Belongs" to BluFor
+						["tf_rt1523g_green"], //"Belongs" to BluFor
+						["tf_rt1523g_rhs"], //"Belongs" to BluFor
+						["tf_rt1523g_sage"], //"Belongs" to BluFor	
+						["tf_rt1523g_big_rhs"], //"Belongs" to BluFor
+						["tf_anarc210"], //"Belongs" to BluFor
+						["tf_anprc152"] //"Belongs" to BluFor
+						//["tf_anprc155"], //"Belongs" to INDEP
+						//["tf_anprc155_coyote"], //"Belongs" to INDEP
+						//["tf_anarc164"], //"Belongs" to INDEP
+						//["tf_mr3000"], //"Belongs" to OPFOR
+						//["tf_mr3000_multicam"], //"Belongs" to OPFOR
+						//["tf_mr3000_rhs"], //"Belongs" to OPFOR
+						//["tf_mr6000l"] //"Belongs" to OPFOR
+					];
+					for "_i" from 0 to _nVests do {
+						_hO addBackpackCargoGlobal [selectRandom _nTFARbackpack, 1];
+					};
+				};
+
+				// Add TFAR (BETA) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
+				if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
+					// Array with backpack class name
+					pr _TFARBETAbackpack = [
+						["TFAR_rt1523g"], //"Belongs" to BluFor
+						["TFAR_rt1523g_big"], //"Belongs" to BluFor
+						["TFAR_rt1523g_black"], //"Belongs" to BluFor
+						["TFAR_rt1523g_fabric"], //"Belongs" to BluFor
+						["TFAR_rt1523g_green"], //"Belongs" to BluFor
+						["TFAR_rt1523g_rhs"], //"Belongs" to BluFor
+						["TFAR_rt1523g_sage"], //"Belongs" to BluFor	
+						["TFAR_rt1523g_big_rhs"], //"Belongs" to BluFor
+						["TFAR_anarc210"], //"Belongs" to BluFor
+						["TFAR_anprc152"] //"Belongs" to BluFor
+						//["TFAR_anprc155"], //"Belongs" to INDEP
+						//["TFAR_anprc155_coyote"], //"Belongs" to INDEP
+						//["TFAR_anarc164"], //"Belongs" to INDEP
+						//["TFAR_mr3000"], //"Belongs" to OPFOR
+						//["TFAR_mr3000_multicam"], //"Belongs" to OPFOR
+						//["TFAR_mr3000_rhs"], //"Belongs" to OPFOR
+						//["TFAR_mr6000l"] //"Belongs" to OPFOR
+					];
+					for "_i" from 0 to _nVests do {
+						_hO addBackpackCargoGlobal [selectRandom _TFARBETAbackpack, 1];
+					};
 				};
 			};
-
-			// Add TFAR (BETA) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
-			if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
-				// Array with backpack class name
-				pr _TFARBETAbackpack = [
-					["TFAR_rt1523g"], //"Belongs" to BluFor
-					["TFAR_rt1523g_big"], //"Belongs" to BluFor
-					["TFAR_rt1523g_black"], //"Belongs" to BluFor
-					["TFAR_rt1523g_fabric"], //"Belongs" to BluFor
-					["TFAR_rt1523g_green"], //"Belongs" to BluFor
-					["TFAR_rt1523g_rhs"], //"Belongs" to BluFor
-					["TFAR_rt1523g_sage"], //"Belongs" to BluFor	
-					["TFAR_rt1523g_big_rhs"], //"Belongs" to BluFor
-					["TFAR_anarc210"], //"Belongs" to BluFor
-					["TFAR_anprc152"] //"Belongs" to BluFor
-					//["TFAR_anprc155"], //"Belongs" to INDEP
-					//["TFAR_anprc155_coyote"], //"Belongs" to INDEP
-					//["TFAR_anarc164"], //"Belongs" to INDEP
-					//["TFAR_mr3000"], //"Belongs" to OPFOR
-					//["TFAR_mr3000_multicam"], //"Belongs" to OPFOR
-					//["TFAR_mr3000_rhs"], //"Belongs" to OPFOR
-					//["TFAR_mr6000l"] //"Belongs" to OPFOR
-				];
-				for "_i" from 0 to _nVests do {
-					_hO addBackpackCargoGlobal [selectRandom _TFARBETAbackpack, 1];
-				};
-			};
-
 		} else {
 			if (random 100 <= 5) then {
 				_hO addItemToUniform "vin_pills";
