@@ -532,8 +532,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* protected virtual */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
 
-		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
-
 		T_CALLM0("postLoadServerOnly");
 	} ENDMETHOD;
 
@@ -571,6 +569,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Add undercover items from Civ faction
 		private _civTemplate = T_CALLM1("getTemplate", civilian);
 		_civTemplate call t_fnc_addUndercoverItems;
+
+		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("getLocationOwner") {
