@@ -1339,7 +1339,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD_FILE("build", "Location\build.sqf");
 
 	/*
-	Method: setBorder
+	Method: isBuilt
 	Getter for isBuilt
 	*/
 	METHOD("isBuilt") { params [P_THISOBJECT]; T_GETV("isBuilt") } ENDMETHOD ;
