@@ -227,7 +227,6 @@
 ["Mil_Barracks_L.p3d","Land_Mil_Barracks_L"],
 //Global Mobilization
 ["gm_sandbags_01_round_01","land_gm_sandbags_01_round_01"],
-["gm_sandbags_01_wall_01","land_gm_sandbags_01_wall_01"],
-["gm_gc_tent_5x5m.p3d","gm_gc_tent_5x5m"]
+["gm_sandbags_01_wall_01","land_gm_sandbags_01_wall_01"]
 
 ]

@@ -28,7 +28,7 @@ this addBackpack "gm_ge_army_backpack_80_oli";
 for "_i" from 1 to 5 do {this addItemToVest "FirstAidKit";};
 
 //	==== Weapons ====
-this addWeapon "gm_g3a3_oli";
+this addWeapon "gm_g3a3_blk";
 this addPrimaryWeaponItem "gm_20Rnd_762x51mm_AP_DM151_g3_blk";
 
 this addWeapon "gm_pm_blk";

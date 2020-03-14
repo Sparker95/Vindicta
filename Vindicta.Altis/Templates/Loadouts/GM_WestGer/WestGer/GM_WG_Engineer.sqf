@@ -28,7 +28,7 @@ for "_i" from 1 to 2 do {this addItemToBackpack "Toolkit";};
 this addItemToBackpack "ACE_EntrenchingTool";
 
 //	==== Weapons ====
-this addWeapon "gm_g3a3_oli";
+this addWeapon "gm_g3a3_blk";
 this addPrimaryWeaponItem "gm_20Rnd_762x51mm_AP_DM151_g3_blk";
 
 //	==== Misc Items ====

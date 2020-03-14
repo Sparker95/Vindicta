@@ -8,7 +8,7 @@ removeHeadgear this;
 removeGoggles this;
 
 //	==== Head Gear ====
-this addHeadgear "gm_ge_headgear_hat_80_oli";
+this addHeadgear "gm_ge_headgear_beret_red_opcom";
 
 //	==== Uniform ====
 this forceAddUniform "gm_ge_army_uniform_soldier_80_oli";

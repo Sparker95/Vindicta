@@ -165,6 +165,11 @@ location_bp_cargo_medium =
 	[
 		["Land_HouseV2_02_Interier"],
 		[[4.21436,76.2874,0.973242], [6.86528,57.0615,0.973242], [6.2304,306.133,0.973242], [7.66948,288.97,0.973242]]
+	],
+	// Global Mobilization
+	[
+		["land_gm_euro_house_07_e",	"land_gm_euro_house_07_w",	"land_gm_euro_house_07_d"],
+		[[1.80399,83.2539,0.326653,0.000132318], [2.01474,48.7239,0.336693,359.999], [2.47671,257.29,0.261368,359.999], [2.50627,292.908,0.280899,0.000150937]]
 	]
 ];
 
@@ -206,7 +211,12 @@ location_bt_police =
 	"Land_WW2_Admin2",
 	
 	// Beketov - CUP
-	"Land_HouseV2_02_Interier"	
+	"Land_HouseV2_02_Interier",
+
+	// Global Mobilization
+	"land_gm_euro_house_07_e",
+	"land_gm_euro_house_07_w",
+	"land_gm_euro_house_07_d"
 ];
 
 location_decorations_police =
@@ -257,6 +267,11 @@ location_decorations_police =
 	[
 		["Land_HouseV2_02_Interier"],
 		[[[0.00195313,-8.37939,-2.86904],[[0,1,0],[0,0,1]]],[[-0.0200195,8.30127,-2.89629],[[-8.74228e-008,-1,0],[0,0,1]]]]
+	],
+	// Global Mobilization
+	[
+		["land_gm_euro_house_07_e",	"land_gm_euro_house_07_w",	"land_gm_euro_house_07_d"],
+		[[[-1.23242,-3.00391,1.62851],[[0,1,0],[0,0,1]]]]
 	]
 ];
 

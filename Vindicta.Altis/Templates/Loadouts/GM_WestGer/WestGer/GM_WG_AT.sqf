@@ -28,7 +28,7 @@ this addBackpack "gm_ge_army_backpack_80_pzf44_oli";
 for "_i" from 1 to 2 do {this addItemToVest "gm_1Rnd_44x537mm_heat_dm32_pzf44_2";};
 
 //	==== Weapons ====
-this addWeapon "gm_g3a3_oli";
+this addWeapon "gm_g3a3_blk";
 this addPrimaryWeaponItem "gm_20Rnd_762x51mm_AP_DM151_g3_blk";
 
 this addWeapon "gm_pzf84_oli";

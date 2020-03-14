@@ -25,7 +25,7 @@ for "_i" from 1 to 3 do {this addItemToVest "gm_smokeshell_wht_dm25";};
 //	==== Backpack ====
 
 //	==== Weapons ====
-this AddWeapon "gm_c7a1_oli";
+this AddWeapon "gm_c7a1_blk";
 this addPrimaryWeaponItem "gm_30Rnd_556x45mm_B_M855_stanag_gry";
 this addPrimaryWeaponItem "gm_c79a1_oli";
 
