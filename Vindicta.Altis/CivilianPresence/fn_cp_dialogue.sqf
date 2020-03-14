@@ -2,6 +2,16 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Dialogue\defineCommon.inc"
 
+
+/* _civ variables local 
+dialog_aimed_at 		// true when player scared civ ones
+
+
+
+
+*/
+
+
 #define __BOOST_SUSP {CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.2 + (random 0.1))}
 
 #define DEFAULT_EVENTS \
@@ -28,6 +38,7 @@ private _array = [
 
 	["intro_hello",{
 		params ["_player","_civ"];
+
 		private _return = [
 			[TYPE_SENTENCE,[
 				"Hey, can I talk to you for a moment?",
@@ -37,6 +48,11 @@ private _array = [
 				"Hey, I'd like to talk to you."
 			],1]
 		];
+
+		if(_civ getVariable ["dialog_aimed_at",false])exitWith{
+			_return pushBack [TYPE_SENTENCE,"Your that guy with a gun!",2,__BOOST_SUSP];
+		};
+		
 
 		if(random 1000 < 2)then{
 			_return pushBack [TYPE_SENTENCE,[
@@ -98,7 +114,7 @@ private _array = [
 	}],
 	["info_fuelstation",{
 		private _return = [[TYPE_SENTENCE, "Where can i find a fuelstation",1]];
-		private _fuelstations = nearestTerrainObjects [getpos player, ["FUELSTATION"], 500];
+		private _fuelstations = nearestTerrainObjects [getpos player, ["FUELSTATION"], 800];
 		if(count _fuelstations == 0)then{
 			_return pushBack [TYPE_SENTENCE, "There is no fuelstation in this area",2];
 		}else{
