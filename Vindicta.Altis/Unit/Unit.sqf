@@ -474,6 +474,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						// Initialize limited arsenal
 						T_CALLM0("limitedArsenalOnSpawn");
+						
+						// I'll tell you what else: make it draggable so we can get it out of buildings!
+						[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
 
 						//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
 						// Give intel to this unit
@@ -1123,18 +1126,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							};
 						} forEach _classNames;
 					};
-
-					// Add ADV medical items
-					// Defibrilator
-					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [0, 3, 6]];
-					};
-					// Splint
-					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
-						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [0, 5, 10]];
-					};
-
-					// What else?
 				};
 			};
 

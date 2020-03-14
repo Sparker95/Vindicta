@@ -184,7 +184,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
 			T_CALLM0("_initMissionEventHandlers");
 
-			missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -534,6 +533,8 @@ FIX_LINE_NUMBERS()
 
 	/* protected virtual */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
+
+		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 
 	} ENDMETHOD;
 
@@ -2100,6 +2101,8 @@ FIX_LINE_NUMBERS()
 		{
 			T_CALLM1("syncPlayerInfo", _x);
 		} forEach allPlayers;
+
+		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];
