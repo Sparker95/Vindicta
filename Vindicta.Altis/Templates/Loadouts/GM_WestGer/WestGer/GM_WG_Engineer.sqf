@@ -24,7 +24,7 @@ for "_i" from 1 to 2 do {this addItemToVest "gm_smokeshell_wht_dm25";};
 
 //	==== Backpack ====
 this addBackpack "gm_ge_army_backpack_80_oli";
-for "_i" from 1 to 2 do {this addItemToBackpack "Toolkit";};
+for "_i" from 1 to 2 do {this addItemToBackpack "gm_repairkit_01";};
 this addItemToBackpack "ACE_EntrenchingTool";
 
 //	==== Weapons ====

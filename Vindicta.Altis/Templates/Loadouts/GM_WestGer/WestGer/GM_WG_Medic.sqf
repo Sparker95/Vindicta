@@ -25,7 +25,8 @@ for "_i" from 1 to 2 do {this addItemToVest "gm_smokeshell_grn_dm21";};
 
 //	==== Backpack ====
 this addBackpack "gm_ge_army_backpack_80_oli";
-for "_i" from 1 to 5 do {this addItemToVest "FirstAidKit";};
+for "_i" from 1 to 4 do {this addItemToVest "FirstAidKit";};
+for "_i" from 1 to 2 do {this addItemToVest "gm_ge_army_medkit_80";};
 
 //	==== Weapons ====
 this addWeapon "gm_g3a3_blk";
