@@ -29,7 +29,7 @@ _array set [T_REQUIRED_ADDONS, [
 /* Infantry unit classes */
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["FGN_AAF_Inf_Rifleman"]]; // = 0 Default if nothing found
+_inf set [T_INF_default, ["FGN_AAF_Inf_Rifleman"]];
 
 _inf set [T_INF_SL, ["RHS_AAF_2020_SL"]]; // = 1
 _inf set [T_INF_TL, ["RHS_AAF_2020_TL"]]; // = 2

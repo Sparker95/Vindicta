@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["FGN_AAF_InfRes_Rifleman"]];
+_inf set [T_INF_default, ["FGN_AAF_InfRes_Rifleman"]];
 
 _inf set [T_INF_SL, ["RHS_AAF_2010_SL","RHS_AAF_2010_SL_2"]];
 _inf set [T_INF_TL, ["RHS_AAF_2010_TL"]];

@@ -16,7 +16,7 @@ _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["B_G_Soldier_F"]];					//Default infantry if nothing is found
+_inf set [T_INF_default,  ["B_G_Soldier_F"]];					//Default infantry if nothing is found
 // TODO lots of stuff is replaced with rifleman class
 // In fact we don't need proper loadouts for them, because guerrillas takes weapons from arsenal
 _inf set [T_INF_default, ["B_G_Soldier_F"]];
