@@ -140,7 +140,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
-			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
+			//_hO enableWeaponDisassembly false; // Disable weapon disassmbly
 			T_CALLM0("initObjectVariables");
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
@@ -422,7 +422,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							};
 						};
 
-						_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
+						//_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						CALLM1(_thisObject, "createAI", "AIUnitVehicle");
@@ -474,6 +474,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						// Initialize limited arsenal
 						T_CALLM0("limitedArsenalOnSpawn");
+						
+						// I'll tell you what else: make it draggable so we can get it out of buildings!
+						[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
 
 						//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
 						// Give intel to this unit
@@ -623,7 +626,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 		
 		// HandleDamage for infantry
-		/* // Disabled for now, let's see if it changed anything
+		// Disabled for now, let's see if it changed anything
 		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
 		if ((_data select UNIT_DATA_ID_CAT == T_INF) &&	// Only to infantry
 			{owner _hO in [0, clientOwner]} &&			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
@@ -635,7 +638,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
-		*/
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
@@ -1124,18 +1126,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							};
 						} forEach _classNames;
 					};
-
-					// Add ADV medical items
-					// Defibrilator
-					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [0, 3, 6]];
-					};
-					// Splint
-					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
-						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [0, 5, 10]];
-					};
-
-					// What else?
 				};
 			};
 
