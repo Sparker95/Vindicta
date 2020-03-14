@@ -88,6 +88,7 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Civilian\init.sqf
 call compile preprocessFileLineNumbers "Templates\Loadouts\GM_WestGer\WestGer\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\GM_WestGer\WestGer_Police\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\GM_WestGer\WestGer_Recon\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\GM_CIVILIAN\init.sqf";
 //BWMOD
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Recon\init.sqf";
