@@ -12,7 +12,7 @@ _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons",
 //==== Infantry ====
 _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["SG_sturmtrooper_rifleman"]];					//Default infantry if nothing is found
+_inf set [T_INF_default, ["SG_sturmtrooper_rifleman"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman_3", "WW2_Heer_police_rifleman_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
 _inf set [T_INF_TL, ["WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman_3", "WW2_Heer_police_rifleman_4", "SG_sturmtrooper_unterofficer", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_medic"]];
@@ -42,7 +42,7 @@ _inf set [T_INF_spotter, [""]];
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt"]];
-_veh set [T_VEH_car_unarmed, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
+_veh set [T_VEH_car_unarmed, ["ifa3_gaz55_ger", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
 
 
 //==== Drones ====

@@ -12,13 +12,13 @@ _array set [T_DESCRIPTION, "German GSG9"];
 _array set [T_DISPLAY_NAME, "GSG9"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [
-     "GSG9Uniform"
+     "Gsg9_Uniforms"
 ]];
 
 //==== Infantry ====
 _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["Assault_Polizei_Officer"]];					//Default infantry if nothing is found
+_inf set [T_INF_default, ["Assault_Polizei_Officer"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["Assault_Polizei_Officer", "Medic_Polizei_Officer", "Specialist_Polizei_Officer", "Support_Polizei_Officer", "Assault_Polizei_Officer_regular", "Medic_Polizei_Officer_regular", "Specialist_Polizei_Officer_regular"]];
 _inf set [T_INF_TL, ["Assault_Polizei_Officer", "Medic_Polizei_Officer", "Specialist_Polizei_Officer", "Support_Polizei_Officer", "Assault_Polizei_Officer_regular", "Medic_Polizei_Officer_regular", "Specialist_Polizei_Officer_regular"]];

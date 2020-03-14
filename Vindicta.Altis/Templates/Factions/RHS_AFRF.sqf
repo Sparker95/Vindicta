@@ -19,7 +19,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["rhs_msv_emr_rifleman"]];
+_inf set [T_INF_default, ["rhs_msv_emr_rifleman"]];
 
 _inf set [T_INF_SL, ["rhs_msv_emr_sergeant"]];
 _inf set [T_INF_TL, ["rhs_msv_emr_efreitor", "rhs_msv_emr_junior_sergeant"]];
