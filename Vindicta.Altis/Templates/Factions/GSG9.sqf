@@ -12,7 +12,7 @@ _array set [T_DESCRIPTION, "German GSG9"];
 _array set [T_DISPLAY_NAME, "GSG9"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [
-     "GSG9Uniform"
+     "Gsg9_Uniforms"
 ]];
 
 //==== Infantry ====
