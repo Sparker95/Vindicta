@@ -43,7 +43,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		pr _vehicles = (_units select {CALLM0(_x, "isVehicle")}) - _unitsIgnore; // _unitsIgnore can also contain vehicles
 
 		if(count _vehicles == 0) exitWith {
-			OOP_ERROR_2("Group %1 does not contain any vehicles (units = %2), so ActionGroupGetInVehiclesAsCrew makes no sense", _group, _units);
+			OOP_WARNING_2("Group %1 does not contain any vehicles (units = %2), so ActionGroupGetInVehiclesAsCrew makes no sense", _group, _units);
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};

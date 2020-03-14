@@ -97,11 +97,14 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 							// Return stimulus
 							_target
 						} else {
-							TARGET_NEW(format ["unknown %1", _hO], 2.0, _pos, _dateNumber, +(T_efficiency#T_INF#T_INF_rifleman));
+							TARGET_NEW(format ["unknown %1", _hO], 2.0, _pos, _dateNumber, +(T_efficiency#T_INF#T_INF_rifleman))
 						};
 					};
 				};
 				_ret
+			} select {
+				// Filter out the invalid sources
+				!isNil {_x} && {_x isEqualType []}
 			};
 
 			// Send targets to target sensor

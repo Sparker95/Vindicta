@@ -20,6 +20,7 @@ CLASS("ActionGroupInfantryClearArea", "ActionGroup")
 
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
+		_pos = ZERO_HEIGHT(_pos);
 		T_SETV("pos", _pos);
 		T_SETV("radius", _radius);
 		T_SETV("inCombat", false);

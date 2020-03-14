@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tCUP_TKA"];
-_array set [T_DESCRIPTION, "Takistani Army. uses CUP."];
-_array set [T_DISPLAY_NAME, "CUP Takistani"];
+_array set [T_DESCRIPTION, "Takistani Army. uses CUP. Made by MacTheGoon"];
+_array set [T_DISPLAY_NAME, "CUP Takistani Army"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"CUP_Creatures_Military_Taki",	// CUP Units
@@ -23,7 +23,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["CUP_O_TK_Soldier_Backpack"]];
+_inf set [T_INF_default, ["CUP_O_TK_Soldier_Backpack"]];
 
 _inf set [T_INF_SL, ["CUP_O_TK_Soldier_SL"]];
 _inf set [T_INF_TL, ["CUP_O_TK_Soldier_SL"]];

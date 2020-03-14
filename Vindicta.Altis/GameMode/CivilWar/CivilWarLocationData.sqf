@@ -62,12 +62,12 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			if(_newOwner == FRIENDLY_SIDE) then {
 				// Notify players of what happened
 				private _args = ["LOCATION CLAIMED", format["%1 was claimed", CALLM0(_loc, "getDisplayName")], "Garrison some fighters to hold it"];
-				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, 0, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
 			} else {
 				if(_oldOwner == FRIENDLY_SIDE) then {
 					// Notify players of what happened
 					private _args = ["LOCATION LOST", format["%1 was lost", CALLM0(_loc, "getDisplayName")], "Send some fighters to retake it"];
-					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, 0, false);
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
 				};
 			};
 		};
@@ -101,14 +101,17 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			params [P_THISOBJECT];
 			// By default get the amount of recruits we can recruit at this place
 			pr _loc = T_GETV("location");
-			pr _buildProgress = GETV(_loc, "buildProgress");
-			pr _pos = CALLM0(_loc, "getPos");
-			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
-			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
-			_return = [
-				["AVAILABLE RECRUITS", str _nRecruits],
-				["BUILD PROGRESS", format["%1%2", _buildProgress * 100, "%"]]
-			];
+			pr _type = CALLM0(_loc, "getType");
+			if(_type in LOCATIONS_RECRUIT) then {
+				pr _pos = CALLM0(_loc, "getPos");
+				pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
+				pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+				_return = _return + [["AVAILABLE RECRUITS", str _nRecruits]];
+			};
+			if(_type in LOCATIONS_BUILD_PROGRESS) then {
+				pr _buildProgress = GETV(_loc, "buildProgress");
+				_return = _return + [["BUILD PROGRESS", format["%1%2", _buildProgress * 100, "%"]]];
+			};
 		};
 		_return
 	} ENDMETHOD;

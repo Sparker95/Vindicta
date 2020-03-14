@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["FGN_AAF_InfRes_Rifleman"]];
+_inf set [T_INF_default, ["FGN_AAF_InfRes_Rifleman"]];
 
 _inf set [T_INF_SL, ["RHS_AAF_2010_SL","RHS_AAF_2010_SL_2"]];
 _inf set [T_INF_TL, ["RHS_AAF_2010_TL"]];
@@ -33,7 +33,7 @@ _inf set [T_INF_sniper, ["RHS_AAF_2010_sniper","RHS_AAF_2010_sniper_2"]];
 _inf set [T_INF_spotter, ["RHS_AAF_2010_spotter"]];
 _inf set [T_INF_exp, ["RHS_AAF_2010_explosives"]];
 _inf set [T_INF_ammo, ["RHS_AAF_2010_AT_2","RHS_AAF_2010_MG_2"]];
-_inf set [T_INF_LAT, ["RHS_AAF_2010_LAT"]];
+_inf set [T_INF_LAT, ["RHS_AAF_2010_LAT", "RHS_AAF_2010_AT_3"]];
 _inf set [T_INF_AT, ["RHS_AAF_2010_AT","RHS_AAF_2010_AT_3"]];
 _inf set [T_INF_AA, ["RHS_AAF_2010_AA"]];
 _inf set [T_INF_LMG, ["RHS_AAF_2010_LMG"]];
@@ -63,7 +63,7 @@ _inf set [T_INF_recon_JTAC, ["RHS_AAF_2010_recon_JTAC"]];
 
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["FGN_AAF_M1025_unarmed"]];
 

@@ -95,8 +95,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _route = CALLM0(_vr, "getAIWaypoints");
 			
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
-			if (count _vehGroups > 1) then {
-				OOP_ERROR_0("More than one vehicle group in the garrison!");
+			if (count _vehGroups > 1) exitWith {
+				OOP_WARNING_0("More than one vehicle group in the garrison!");
+				ACTION_STATE_FAILED
 			};
 			
 			{
@@ -159,8 +160,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 						T_PRVAR(gar);
 						pr _garPos = CALLM0(_gar, "getPos");
 						T_PRVAR(pos);
-						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos]+[_pos]+[_pos distance _garPos]);
-						_state = ACTION_STATE_FAILED;
+						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos ARG _pos ARG _pos distance2D _garPos]);
+						// We assume failure is due to no road between the locations
+						// TODO: Return specific problem from VirtualRoute
+						_state = ACTION_STATE_COMPLETED;
 					};
 				};
 			};

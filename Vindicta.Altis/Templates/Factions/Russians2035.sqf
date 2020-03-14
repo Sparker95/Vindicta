@@ -14,7 +14,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["min_rf_soldier"]];
+_inf set [T_INF_default, ["min_rf_soldier"]];
 
 _inf set [T_INF_SL, ["min_rf_soldier_SL"]];
 _inf set [T_INF_TL, ["min_rf_soldier_TL"]];

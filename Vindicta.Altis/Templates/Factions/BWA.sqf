@@ -19,7 +19,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["BWA3_Rifleman_Fleck"]];
+_inf set [T_INF_default, ["BWA3_Rifleman_Fleck"]];
 
 _inf set [T_INF_SL, ["BWA3_SL_Fleck"]];
 _inf set [T_INF_TL, ["BWA3_TL_Fleck"]];

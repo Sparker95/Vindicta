@@ -2,143 +2,9 @@
 Civilian template for ARMA III
 */
 
-// //==== Infantry ====
-_inf = [];
-_inf resize T_INF_SIZE;
- _inf set [T_INF_DEFAULT, ["I_L_Looter_SG_F"]];				//Default infantry if nothing is found
-for "_i" from 1 to (T_INF_SIZE-1) do {
-    _inf set [_i, []];
-};
-// _inf set [T_INF_SL, ["B_Captain_Dwarden_F"]];
-// _inf set [T_INF_TL, ["B_Captain_Dwarden_F"]];
-// _inf set [T_INF_officer, ["B_GEN_Commander_F"]];
-// _inf set [T_INF_GL, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_rifleman, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_marksman, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_sniper, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_spotter, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_exp, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_ammo, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_LAT, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_AT, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_AA, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_LMG, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_HMG, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_medic, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_engineer, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_crew, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_crew_heli, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_pilot, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_pilot_heli, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_survivor, ["B_GEN_Soldier_F"]];
-// _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
-
-//==== Vehicles ====
-_veh = +(tDefault select T_VEH);
-_veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_default, [
-    "C_Hatchback_01_sport_F",
-    "C_Hatchback_01_F",
-    "C_Truck_02_box_F",
-    "C_Truck_02_fuel_F",
-    "C_Offroad_02_unarmed_F",
-    "C_Van_01_fuel_F",
-    "C_Truck_02_transport_F",
-    "C_Truck_02_covered_F",
-    "C_Offroad_01_F",
-    "C_Offroad_01_repair_F",
-    "C_Quadbike_01_F",
-    "C_SUV_01_F",
-    "C_Van_01_transport_F",
-    "C_Van_02_medevac_F",
-    "C_Van_02_vehicle_F",
-    "C_Van_02_service_F",
-    "C_Van_02_transport_F"
-]];
-_vehWeights = [];
-_vehWeights set [T_VEH_SIZE-1, nil];
-_vehWeights set [T_VEH_default, [
-    5, /* "C_Hatchback_01_sport_F" */
-    20, /* "C_Hatchback_01_F" */
-    3, /* "C_Truck_02_box_F" */
-    0.1, /* "C_Truck_02_fuel_F" */
-    10, /* "C_Offroad_02_unarmed_F" */
-    0.1, /* "C_Van_01_fuel_F" */
-    3, /* "C_Truck_02_transport_F" */
-    3, /* "C_Truck_02_covered_F" */
-    5, /* "C_Offroad_01_F" */
-    0.1, /* "C_Offroad_01_repair_F" */
-    1, /* "C_Quadbike_01_F" */
-    3, /* "C_SUV_01_F" */
-    1, /* "C_Van_01_transport_F" */
-    1, /* "C_Van_02_medevac_F" */
-    1, /* "C_Van_02_vehicle_F" */
-    1, /* "C_Van_02_service_F" */
-    1 /* "C_Van_02_transport_F" */
-]];
-// _veh set [T_VEH_car_unarmed, ["B_MRAP_01_F"]];
-// _veh set [T_VEH_car_armed, ["B_MRAP_01_hmg_F"]];
-// _veh set [T_VEH_MRAP_unarmed, ["B_MRAP_01_F"]];
-// _veh set [T_VEH_MRAP_HMG, ["B_MRAP_01_hmg_F"]];
-// _veh set [T_VEH_MRAP_GMG, ["B_MRAP_01_gmg_F"]];
-// _veh set [T_VEH_IFV, ["B_APC_Wheeled_01_cannon_F"]]; //Marshal IFV
-// _veh set [T_VEH_APC, ["B_APC_Tracked_01_rcws_F"]]; //Panther
-// _veh set [T_VEH_MBT, ["B_MBT_01_cannon_F", "B_MBT_01_TUSK_F"]];
-// _veh set [T_VEH_MRLS, ["B_MBT_01_mlrs_F"]];
-// _veh set [T_VEH_SPA, ["B_MBT_01_arty_F"]];
-// _veh set [T_VEH_SPAA, ["B_APC_Tracked_01_AA_F"]];
-// _veh set [T_VEH_stat_HMG_high, ["B_HMG_01_high_F"]];
-// _veh set [T_VEH_stat_GMG_high, ["B_GMG_01_high_F"]];
-// _veh set [T_VEH_stat_HMG_low, ["B_HMG_01_F"]];
-// _veh set [T_VEH_stat_GMG_low, ["B_GMG_01_F"]];
-// _veh set [T_VEH_stat_AA, ["B_static_AA_F"]];
-// _veh set [T_VEH_stat_AT, ["B_static_AT_F"]];
-// _veh set [T_VEH_stat_mortar_light, ["B_Mortar_01_F"]];
-// //_veh set [T_VEH_stat_mortar_heavy, ["B_Mortar_01_F"]];
-// _veh set [T_VEH_heli_light, ["B_Heli_Light_01_F"]];
-// _veh set [T_VEH_heli_heavy, ["B_Heli_Transport_01_F"]];
-// _veh set [T_VEH_heli_cargo, ["B_Heli_Transport_03_unarmed_F"]];
-// _veh set [T_VEH_heli_attack, ["B_Heli_Attack_01_dynamicLoadout_F"]];
-// _veh set [T_VEH_plane_attack, ["B_Plane_CAS_01_dynamicLoadout_F"]];
-// _veh set [T_VEH_plane_fighter , ["B_Plane_Fighter_01_F"]];
-// //_veh set [T_VEH_plane_cargo, [" "]];
-// //_veh set [T_VEH_plane_unarmed , [" "]];
-// //_veh set [T_VEH_plane_VTOL, [" "]];
-// _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F"]];
-// _veh set [T_VEH_boat_armed, ["B_Boat_Armed_01_minigun_F"]];
-// _veh set [T_VEH_personal, ["B_GEN_Offroad_01_gen_F"]];
-// _veh set [T_VEH_truck_inf, ["B_GEN_Van_02_transport_F"]];
-// _veh set [T_VEH_truck_cargo, ["B_GEN_Van_02_vehicle_F"]];
-// _veh set [T_VEH_truck_ammo, ["B_Truck_01_ammo_F"]];
-// _veh set [T_VEH_truck_repair, ["B_Truck_01_Repair_F"]];
-// _veh set [T_VEH_truck_medical , ["B_Truck_01_medical_F"]];
-// _veh set [T_VEH_truck_fuel, ["B_Truck_01_fuel_F"]];
-// _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
-
-
-// //==== Drones ====
-// +(tDefault select T_DRONE);
-// _drone set [T_DRONE_SIZE-1, nil];
-// _drone set [T_DRONE_DEFAULT, ["O_UAV_01_F"]];
-
-// _drone set [T_DRONE_UGV_unarmed, ["O_UGV_01_F"]];
-// _drone set [T_DRONE_UGV_armed, ["O_UGV_01_rcws_F"]];
-// _drone set [T_DRONE_plane_attack, ["O_UAV_02_dynamicLoadout_F"]];
-// //_drone set [T_DRONE_plane_unarmed, ["O_UAV_02_dynamicLoadout_F"]];
-// //_drone set [T_DRONE_heli_attack, ["O_T_UAV_04_CAS_F"]];
-// _drone set [T_DRONE_quadcopter, ["O_UAV_01_F"]];
-// _drone set [T_DRONE_designator, ["O_Static_Designator_02_F"]];
-// _drone set [T_DRONE_stat_HMG_low, ["O_HMG_01_A_F"]];
-// _drone set [T_DRONE_stat_GMG_low, ["O_GMG_01_A_F"]];
-// //_drone set [T_DRONE_stat_AA, ["O_SAM_System_04_F"]];
-
-//==== Cargo ====
-_cargo = +(tDefault select T_CARGO);
-
-//==== Set arrays ====
 _array = [];
 
-_array set [T_SIZE*2-1, nil]; //Make an array having the size equal to the number of categories first
+_array set [T_SIZE-1, nil]; //Make an array having the size equal to the number of categories first
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tCivilian"];
@@ -147,11 +13,302 @@ _array set [T_DISPLAY_NAME, "Arma 3 Altis Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
 
+// ==== Arsenal ====
+_arsenal = [];
+_arsenal resize T_ARSENAL_SIZE;
+_arsenal set[T_ARSENAL_primary, []];
+_arsenal set[T_ARSENAL_primary_items, []];
+_arsenal set[T_ARSENAL_secondary, []];
+_arsenal set[T_ARSENAL_secondary_items, []];
+_arsenal set[T_ARSENAL_handgun, []];
+_arsenal set[T_ARSENAL_handgun_items, []];
+_arsenal set[T_ARSENAL_ammo, []];
+_arsenal set[T_ARSENAL_items, [
+    "ACE_Flashlight_Maglite_ML300L",
+    "ACE_HandFlare_White"
+]];
+_arsenal set[T_ARSENAL_vests, []];
+_arsenal set[T_ARSENAL_backpacks, [
+    "ACE_TacticalLadder_Pack",
+    "B_Messenger_Black_F",
+    "B_Messenger_Coyote_F",
+    "B_Messenger_Olive_F"
+]];
+_arsenal set[T_ARSENAL_uniforms, [
+    "U_BG_Guerilla2_1",
+    "U_BG_Guerilla2_2",
+    "U_BG_Guerilla2_3",
+    "U_BG_Guerilla3_1",
+    "U_BG_Guerilla3_2",
+    "U_C_Commoner_shorts",
+    "U_C_ConstructionCoverall_Black_F",
+    "U_C_ConstructionCoverall_Blue_F",
+    "U_C_ConstructionCoverall_Red_F",
+    "U_C_ConstructionCoverall_Vrana_F",
+    "U_C_Driver_1",
+    "U_C_Driver_1_black",
+    "U_C_Driver_1_blue",
+    "U_C_Driver_1_green",
+    "U_C_Driver_1_orange",
+    "U_C_Driver_1_red",
+    "U_C_Driver_1_white",
+    "U_C_Driver_1_yellow",
+    "U_C_Driver_2",
+    "U_C_Driver_3",
+    "U_C_Driver_4",
+    "U_C_IDAP_Man_cargo_F",
+    "U_C_IDAP_Man_casual_F",
+    "U_C_IDAP_Man_Jeans_F",
+    "U_C_IDAP_Man_shorts_F",
+    "U_C_IDAP_Man_Tee_F",
+    "U_C_IDAP_Man_TeeShorts_F",
+    "U_C_Journalist",
+    "U_C_Man_casual_1_F",
+    "U_C_Man_casual_2_F",
+    "U_C_Man_casual_3_F",
+    "U_C_Man_casual_4_F",
+    "U_C_Man_casual_5_F",
+    "U_C_Man_casual_6_F",
+    "U_C_man_sport_1_F",
+    "U_C_man_sport_2_F",
+    "U_C_man_sport_3_F",
+    "U_C_Mechanic_01_F",
+    "U_C_Paramedic_01_F",
+    "U_C_Poloshirt_blue",
+    "U_C_Poloshirt_burgundy",
+    "U_C_Poloshirt_redwhite",
+    "U_C_Poloshirt_salmon",
+    "U_C_Poloshirt_stripped",
+    "U_C_Poloshirt_tricolour",
+    "U_C_Poor_1",
+    "U_C_Poor_2",
+    "U_C_Scientist",
+    "U_C_TeeSurfer_shorts_1",
+    "U_C_TeeSurfer_shorts_2",
+    "U_C_WorkerCoveralls",
+    "U_Competitor",
+    "U_I_C_Soldier_Bandit_1_F",
+    "U_I_C_Soldier_Bandit_2_F",
+    "U_I_C_Soldier_Bandit_3_F",
+    "U_I_C_Soldier_Bandit_4_F",
+    "U_I_C_Soldier_Bandit_5_F",
+    "U_IG_Guerilla2_1",
+    "U_IG_Guerilla2_2",
+    "U_IG_Guerilla2_3",
+    "U_IG_Guerilla3_1",
+    "U_IG_Guerilla3_2",
+    "U_BG_Guerrilla_6_1",
+    "U_I_C_Soldier_Para_4_F",
+    "U_I_L_Uniform_01_camo_F",
+    "U_I_L_Uniform_01_deserter_F",
+    "U_I_G_resistanceLeader_F",
+    "U_BG_Guerilla1_1",
+    "U_I_C_Soldier_Para_3_F",
+    "U_Marshal",
+    "U_OG_Guerilla2_1",
+    "U_OG_Guerilla2_2",
+    "U_OG_Guerilla2_3",
+    "U_OG_Guerilla3_1",
+    "U_OG_Guerilla3_2",
+    "U_C_HunterBody_grn",
+    "U_OrestesBody",
+    "U_Rangemaster",
+    "U_BG_leader",
+
+    // CONTACT DLC 
+    "U_I_L_Uniform_01_tshirt_black_F",
+    "U_I_L_Uniform_01_tshirt_olive_F",
+    "U_I_L_Uniform_01_tshirt_skull_F",
+    "U_I_L_Uniform_01_tshirt_sport_F",
+    "U_C_Uniform_Scientist_01_F",
+    "U_C_Uniform_Scientist_02_F",
+    "U_C_Uniform_Scientist_01_formal_F",
+    "U_C_Uniform_Scientist_02_formal_F",
+    "U_O_R_Gorka_01_black_F",
+    "U_C_E_LooterJacket_01_F"
+]];
+_arsenal set[T_ARSENAL_facewear, [
+    //"G_Aviator", mwuhahaha
+    "G_Balaclava_blk",
+    "G_Balaclava_oli",
+    "G_Bandanna_beast",
+    "G_Bandanna_blk",
+    "G_Bandanna_khk",
+    "G_Bandanna_oli",
+    "G_Bandanna_tan",
+    "G_AirPurifyingRespirator_01_F",
+    "G_RegulatorMask_F",
+    "G_Combat",
+    "G_Combat_Goggles_tna_F",
+    "G_EyeProtectors_Earpiece_F",
+    "G_EyeProtectors_F",
+    "G_Lady_Blue",
+    "G_Lady_Dark",
+    "G_Lady_Mirror",
+    "G_Lady_Red",
+    "G_Lowprofile",
+    "G_Respirator_blue_F",
+    "G_Respirator_white_F",
+    "G_Respirator_yellow_F",
+    "G_Shades_Black",
+    "G_Shades_Blue",
+    "G_Shades_Green",
+    "G_Shades_Red",
+    "G_Spectacles",
+    "G_Spectacles_Tinted",
+    "G_Sport_Blackred",
+    "G_Sport_BlackWhite",
+    "G_Sport_Blackyellow",
+    "G_Sport_Checkered",
+    "G_Sport_Greenblack",
+    "G_Sport_Red",
+    "G_Squares",
+    "G_Squares_Tinted",
+    "G_Tactical_Black",
+    "G_Tactical_Clear"
+]];
+_arsenal set[T_ARSENAL_headgear, [
+    "H_Shemag_olive",
+    "H_ShemagOpen_tan",
+    "H_ShemagOpen_khk",
+    "H_Hat_Tinfoil_F",
+    "H_Bandanna_blu",
+    "H_Bandanna_camo",
+    "H_Bandanna_cbr",
+    "H_Bandanna_gry",
+    "H_Bandanna_khk",
+    "H_Bandanna_khk_hs",
+    "H_Bandanna_mcamo",
+    "H_Bandanna_sand",
+    "H_Bandanna_sgg",
+    "H_Bandanna_surfer",
+    "H_Bandanna_surfer_blk",
+    "H_Bandanna_surfer_grn",
+    "H_Watchcap_blk",
+    "H_Watchcap_cbr",
+    "H_Watchcap_camo",
+    "H_Watchcap_khk",
+    "H_Booniehat_dirty",
+    "H_Booniehat_grn",
+    "H_Booniehat_khk_hs",
+    "H_Booniehat_oli",
+    "H_Booniehat_tan",
+    "H_Cap_Black_IDAP_F",
+    "H_Cap_blk",
+    "H_Cap_blk_CMMG",
+    "H_Cap_blk_ION",
+    "H_Cap_blk_Syndikat_F",
+    "H_Cap_blu",
+    "H_Cap_grn",
+    "H_Cap_grn_BI",
+    "H_Cap_grn_Syndikat_F",
+    "H_Cap_khaki_specops_UK",
+    "H_Cap_oli",
+    "H_Cap_oli_Syndikat_F",
+    "H_Cap_Orange_IDAP_F",
+    "H_Cap_press",
+    "H_Cap_red",
+    "H_Cap_surfer",
+    "H_Cap_tan",
+    "H_Cap_tan_Syndikat_F",
+    "H_Cap_usblack",
+    "H_Cap_White_IDAP_F",
+    "H_Construction_basic_black_F",
+    "H_Construction_basic_orange_F",
+    "H_Construction_basic_red_F",
+    "H_Construction_basic_vrana_F",
+    "H_Construction_basic_white_F",
+    "H_Construction_basic_yellow_F",
+    "H_Construction_earprot_black_F",
+    "H_Construction_earprot_orange_F",
+    "H_Construction_earprot_red_F",
+    "H_Construction_earprot_vrana_F",
+    "H_Construction_earprot_white_F",
+    "H_Construction_earprot_yellow_F",
+    "H_Construction_headset_black_F",
+    "H_Construction_headset_orange_F",
+    "H_Construction_headset_red_F",
+    "H_Construction_headset_vrana_F",
+    "H_Construction_headset_white_F",
+    "H_Construction_headset_yellow_F",
+    "H_EarProtectors_black_F",
+    "H_EarProtectors_orange_F",
+    "H_EarProtectors_red_F",
+    "H_EarProtectors_white_F",
+    "H_EarProtectors_yellow_F",
+    "H_HeadBandage_bloody_F",
+    "H_HeadBandage_clean_F",
+    "H_HeadBandage_stained_F",
+    "H_HeadSet_black_F",
+    "H_HeadSet_orange_F",
+    "H_HeadSet_red_F",
+    "H_HeadSet_white_F",
+    "H_HeadSet_yellow_F",
+    "H_Helmet_Skate",
+    "H_RacingHelmet_1_black_F",
+    "H_RacingHelmet_1_blue_F",
+    "H_RacingHelmet_1_F",
+    "H_RacingHelmet_1_green_F",
+    "H_RacingHelmet_1_orange_F",
+    "H_RacingHelmet_1_red_F",
+    "H_RacingHelmet_1_white_F",
+    "H_RacingHelmet_1_yellow_F",
+    "H_RacingHelmet_2_F",
+    "H_RacingHelmet_3_F",
+    "H_RacingHelmet_4_F",
+    "H_StrawHat",
+    "H_StrawHat_dark"
+]];
+
+// ==== Infantry ====
+_inf = [];
+_inf resize T_INF_SIZE;
+_inf = _inf apply { [] };
+_inf set [T_INF_default, ["I_L_Looter_SG_F"]];
+_inf set [T_INF_rifleman, [
+    "Arma3_PLAYER_1"
+]];
+_inf set [T_INF_unarmed, [
+    "Arma3_CIVILIAN_1"
+]];
+_inf set [T_INF_exp, [
+    "Arma3_CIVILIAN_Saboteur_1"
+]];
+_inf set [T_INF_survivor, [
+    "Arma3_CIVILIAN_Militant_1"
+]];
+
+// ==== Vehicles ====
+_veh = +(tDefault select T_VEH);
+_veh resize T_VEH_SIZE;
+_veh set [T_VEH_default, [
+    "C_Hatchback_01_sport_F",   5,
+    "C_Hatchback_01_F",         20,
+    "C_Truck_02_box_F",         3,
+    "C_Truck_02_fuel_F",        0,
+    "C_Offroad_02_unarmed_F",   10,
+    "C_Van_01_fuel_F",          0,
+    "C_Truck_02_transport_F",   3,
+    "C_Truck_02_covered_F",     3,
+    "C_Offroad_01_F",           5,
+    "C_Offroad_01_repair_F",    0,
+    "C_Quadbike_01_F",          1,
+    "C_SUV_01_F",               3,
+    "C_Van_01_transport_F",     1,
+    "C_Van_02_medevac_F",       1,
+    "C_Van_02_vehicle_F",       1,
+    "C_Van_02_service_F",       1,
+    "C_Van_02_transport_F",     1
+]];
+
+//==== Cargo ====
+_cargo = +(tDefault select T_CARGO);
+
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, []];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, []];
-_array set [T_VEH+T_WEIGHTS_OFFSET, _vehWeights];
+_array set [T_ARSENAL, _arsenal];
 
 _array

@@ -151,7 +151,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			OOP_INFO_MSG("Spawning %1 civilians in %2 to do some damage", [_deficit ARG _city]);
 
 			// Create some civilians that can do some damage!
-			private _pos = CALLM0(_city, "getPos");
+			private _pos = ZERO_HEIGHT(CALLM0(_city, "getPos"));
 			private _radius = GETV(_city, "boundingRadius");
 
 			/// Use the civ types specified in the presence module
@@ -162,15 +162,18 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
 				private _tmpGroup = createGroup civilian;
 				private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
+				// Lets apply our civ settings from selected faction template
+				private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+				private _templateClass = [_civTemplate, T_INF, T_INF_survivor, -1] call t_fnc_select;
+				if ([_templateClass] call t_fnc_isLoadout) then {
+					[_civie, _templateClass] call t_fnc_setUnitLoadout;
+				} else {
+					OOP_ERROR_0("Only loadouts are valid for Civilian T_INF_survivor faction templates (not classes)");
+				};
 				private _grp = createGroup [FRIENDLY_SIDE, true];
 				[_civie] joinSilent _grp;
 				deleteGroup _tmpGroup;
 				_activeCivs pushBack _civie;
-
-				for "_j" from 1 to 5 do {_civie addItemToUniform "16Rnd_9x21_Mag";};
-				_civie addHeadgear "H_Bandanna_khk";
-				comment "Add weapons";
-				_civie addWeapon "hgun_P07_F";
 
 				// Add action to recruit them to your squad
 				[

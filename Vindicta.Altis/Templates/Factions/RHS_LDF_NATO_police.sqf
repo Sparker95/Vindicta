@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LDF_NATO_police"];
-_array set [T_DESCRIPTION, "NATO aligned LDF Police. Uses RHS. By MatrikSky."];
+_array set [T_DESCRIPTION, "NATO aligned LDF Police. Uses RHS. Made by Straker27"];
 _array set [T_DISPLAY_NAME, "RHS LDF NATO Police"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [
@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
+_inf set [T_INF_default, ["I_soldier_F"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_officer, ["RHS_LDF_NATO_police_TL_SMG","RHS_LDF_NATO_police_TL_rifle","RHS_LDF_NATO_police_TL_shotgun","RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];
 _inf set [T_INF_rifleman, ["RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];

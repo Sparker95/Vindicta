@@ -61,7 +61,7 @@ CLASS("SensorGroupHealth", "SensorGroup")
 			pr _hO = CALLM0(_x, "getObjectHandle");
 			pr _infGroup = group _hO;
 			if (! (_infGroup isEqualTo _hG)) then {
-				OOP_ERROR_4("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3, unit is alive: %4", _x, _infGroup, _hG, alive _hO);
+				OOP_WARNING_MSG("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3, unit is alive: %4", [_x ARG _infGroup ARG _hG ARG alive _hO]);
 
 				// Force the unit to join the proper group
 				[_hO] joinSilent _hG;
@@ -79,7 +79,7 @@ CLASS("SensorGroupHealth", "SensorGroup")
 			pr _hProperLeader = if (_properLeaderUnit != "") then { CALLM0(_properLeaderUnit, "getObjectHandle") } else {objNull};
 			if (_actualLeaderUnit != _properLeaderUnit) then {
 				if (alive _hActualLeader && _properLeaderUnit != "") then {
-					OOP_ERROR_6("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5, %6", _group, _hActualLeader, _actualLeaderUnit, _hProperLeader, _properLeaderUnit, alive _hProperLeader);
+					OOP_WARNING_MSG("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5, %6", [_group ARG _hActualLeader ARG _actualLeaderUnit ARG _hProperLeader ARG _properLeaderUnit ARG alive _hProperLeader]);
 				};
 				if (_properLeaderUnit != "") then { CALLM1(_group, "setLeader", _properLeaderUnit); };
 			};

@@ -257,7 +257,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		if (CALLM0(_storage, "isOpen")) then {
 			// Send notification to everyone
 			pr _text = "Game state save is in progress...";
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 			diag_log format ["[GameManager] Saving game mode: %1", gGameMode];
 			CALLM1(_storage, "save", gGameMode);
@@ -281,7 +281,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 			// Send notification to everyone
 			pr _text = "Game state has been saved!";
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 			_success = true;
 		} else {
 			OOP_ERROR_1("Cant open storage record: %1", _recordNameFinal);
@@ -359,7 +359,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						// Send notification to everyone
 						pr _text = "Game load is in progress...";
-						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
 						CRITICAL_SECTION {
@@ -380,7 +380,7 @@ CLASS("GameManager", "MessageReceiverEx")
 						// Execute everywhere but not on server
 						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], ON_ALL, "GameManager_initGameModeClient");
 
-						// Make sure to initialize client UI stuff if we are running combined client/server
+						// Make sure to initialize client UI stuff if we are running combined client/server or single player
 						if(HAS_INTERFACE) then {
 							CALLM0(gGameMode, "initClientOnly");
 						};
@@ -390,7 +390,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						// Send notification to everyone
 						pr _text = "Game has been loaded. You should respawn now.";
-						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						diag_log "[GameManager] Finished loading the game mode object";
 					} else {
@@ -536,7 +536,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Send notifications...
 		pr _text = "Game is being initialized. It can take up to several minutes.";
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 		uisleep 0.05; // Let it send the messages
 
@@ -558,7 +558,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Send notifications...
 		pr _text = "Game mode initialization is complete. You should respawn now.";
-		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 		// Set flag
 		T_SETV("gameModeInitialized", true);

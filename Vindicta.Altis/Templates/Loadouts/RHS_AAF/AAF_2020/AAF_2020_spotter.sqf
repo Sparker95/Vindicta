@@ -27,6 +27,7 @@ this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "rhs_pdu4";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "optic_NVS";
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
 this addItemToVest "rhs_grenade_mki_mag";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
@@ -38,4 +39,3 @@ this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";
-

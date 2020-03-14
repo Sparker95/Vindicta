@@ -34,13 +34,13 @@ _validateArray = {
 };
 
 // Some categories are validates strict (nils will cause total failure)
-private _categoriesToValidateStrict = [T_GROUP, T_NAME];
+private _categoriesToValidateStrict = [T_NAME];
 {
 	_errorCount = _errorCount + ( [[_t select _x], [_x], true] call _validateArray);
 } forEach _categoriesToValidateStrict;
 
-// Other categories are validated non-strict, nils will result in a warning
-private _categoriesToValidateEasy = [T_INF, T_VEH, T_DRONE];
+// Other categories are validated non-strict, nils will result in a warning if that subcat is required
+private _categoriesToValidateEasy = [T_GROUP, T_INF, T_VEH, T_DRONE];
 {
 	_errorCount = _errorCount + ( [[_t select _x], [_x], false] call _validateArray);
 } forEach _categoriesToValidateEasy;
@@ -62,7 +62,7 @@ if (true) exitWith {_errorCount}; // Return no errors with SQF VM, since we can'
 				diag_log format ["validateTemplate: error: class or loadout %1 was not resolved", _classOrLoadout];
 				_errorCount = _errorCount + 1;
 			};
-		} forEach (_classArray);
+		} forEach (_classArray select { _x isEqualType "" }); // Weighted arrays contain numbers as well, so we ignore them
 	} forEach (_t#_catID);
 } forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE]];
 

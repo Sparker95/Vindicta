@@ -14,8 +14,8 @@ TAG_MAX_SPEED_KMH
 
 // Needed vehicle separation in meters
 #define SEPARATION 18
-#define SPEED_MAX 60
-#define SPEED_MIN 8
+#define SPEED_MAX 40
+#define SPEED_MIN 5
 
 #ifndef RELEASE_BUILD
 #define DEBUG_FORMATION
@@ -65,7 +65,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _AI = T_GETV("AI");
 		pr _pos = T_GETV("pos");
 		pr _group = GETV(T_GETV("AI"), "agent");
-		pr _allVehicles = (CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")};
+		pr _allVehicleUnits = CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")};
+		pr _allVehicles = _allVehicleUnits apply {CALLM0(_x, "getObjectHandle")};
 		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
 		
 		// Regroup units by distance
@@ -91,7 +92,15 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		_hG setBehaviour "SAFE";
 		_hG setFormation "COLUMNG";
 		_hG setCombatMode "GREEN"; // Hold fire, defend only
-		
+
+		// Turn on sirens if we have them
+		{
+			pr _gar = CALLM0(_x, "getGarrison");
+			pr _t = CALLM0(_gar, "getTemplate");
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			[_t, T_API, T_API_fnc_VEH_siren, [_hO, true]] call t_fnc_callAPIOptional;
+		} forEach _allVehicleUnits;
+
 		// Give a waypoint to move
 		/*
 		pr _wp = _hG addWaypoint [_pos, 0];

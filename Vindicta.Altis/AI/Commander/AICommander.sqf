@@ -201,6 +201,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "update sensors");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
@@ -823,21 +824,21 @@ CLASS("AICommander", "AI")
 					if (_radioKey in T_GETV("enemyRadioKeys")) then {
 						"We have this cryptokey already..." remoteExecCall ["systemChat", _clientOwner];
 					} else {
-						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createRadioCryptokey", [_radioKey], _clientOwner, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createRadioCryptokey", [_radioKey], _clientOwner, NO_JIP);
 
 						// Copy stuff into player's notes
 						pr _text = format [_endl + "%1 Found enemy radio cryptokey: %2" + _endl, date call misc_fnc_dateToISO8601, _radioKey];
-						REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabNotes", "staticAppendText", [_text], _clientOwner, false);
+						REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabNotes", "staticAppendText", [_text], _clientOwner, NO_JIP);
 					};
 				};
 
 				// Send data to tablet
 				pr _text = format [_endl + "  Radio cryptokey: %1" + _endl, _radioKey];
-				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, NO_JIP);
 			} else {
 				// Send data to tablet
 				pr _text = _endl + "  Radio cryptokey: only in military tablets" + _endl;
-				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, NO_JIP);
 			};
 		};
 
@@ -1502,8 +1503,8 @@ CLASS("AICommander", "AI")
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 
 		// Try to spawn more units at the selected locations
-		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
-		pr _t = [_templateName] call t_fnc_getTemplate;
+		pr _t = CALLM2(gGameMode, "getTemplate", _side, "military");
+		//[_templateName] call t_fnc_getTemplate;
 
 		CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_rifle_squad);
 		CALLM1(_gar, "addGroup", _group);
@@ -1533,8 +1534,7 @@ CLASS("AICommander", "AI")
 		// Create some infantry group
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 		// Try to spawn more units at the selected locations
-		pr _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
-		pr _t = [_templateName] call t_fnc_getTemplate;
+		pr _t = CALLM2(gGameMode, "getTemplate", _side, "military");
 
 		CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_rifle_squad);
 		CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
@@ -1630,7 +1630,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	// Call it through postMethodAsync !
 	METHOD("clientCreateMoveAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
@@ -1638,7 +1638,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateReinforceAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
@@ -1646,7 +1646,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateAttackAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
@@ -1655,15 +1655,28 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	// Thread unsafe, private
 	METHOD("_clientCreateGarrisonAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
 
 		OOP_INFO_1("CLIENT CREATE GARRISON ACTION: %1", _this);
 
+		// First split us off a new garrison if the specified one is at a location, we never want to abandon a location entirely
+		// like this
+		private _loc = CALLM0(_garRef, "getLocation");
+		private _finalGar = if(!IS_NULL_OBJECT(_loc)) then {
+			T_CALLM1("splitGarrisonFromLocation", _garRef)
+		} else {
+			_garRef
+		};
+
+		if(IS_NULL_OBJECT(_finalGar)) exitWith {
+			OOP_ERROR_1("_clientCreateGarrisonAction: Could not split any usable garrison from location of %1", _garRef);
+		};
+
 		// Get the garrison model associated with this _garRef
 		T_PRVAR(worldModel);
-		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _finalGar);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
-			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
+			OOP_ERROR_1("_clientCreateGarrisonAction: No model of garrison %1", _finalGar);
 		};
 
 		// Resolve the destination position
@@ -1705,6 +1718,35 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
 	} ENDMETHOD;
 
+	// Gets called if player moves a garrison attached to a location to instead create
+	// a new garrison split from the location, taking only non static vehicles and inf
+	METHOD("splitGarrisonFromLocation") {
+		PARAMS[P_THISOBJECT, P_STRING("_garSrcRef")];
+
+		ASSERT_THREAD(_thisObject);
+
+		// Create a new garrison
+		pr _pos = CALLM0(_garSrcRef, "getPos");
+		pr _faction = CALLM(_garSrcRef, "getFaction", []);
+
+		// Get all the units except statics and cargo
+		private _combatUnits = (CALLM0(_garSrcRef, "getUnits") select { !CALLM0(_x, "isStatic") && {!CALLM0(_x, "isCargo")} });
+
+		// Take the units
+		if(count _combatUnits > 0) then {
+			pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
+			pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
+			CALLM2(_newGarr, "postMethodSync", "takeUnits", [_garSrcRef ARG _combatUnits]);
+			// Activate the new garrison
+			// it will register itself here as well
+			CALLM0(_newGarr, "activate");
+			// Return the new garrison
+			_newGarr
+		} else {
+			// Failed
+			NULL_OBJECT
+		}
+	} ENDMETHOD;
 
 	// Gets called remotely from player's 'split garrison' dialog
 	METHOD("splitGarrisonFromComposition") {
@@ -1740,7 +1782,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateLocation") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName"), P_OBJECT("_hBuildResSrc")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
 		// Nullify vertical component, we use position ATL for locations anyway
 		pr _pos = +_posWorld;
@@ -1768,10 +1810,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Remove build resources from player or vehicle
 		if (_hBuildResSrc isKindOf "man") then {
 			// Remove resources from player
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG 100], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		} else {
 			// Remove resources from vehicle
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG 100], _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		};
 
 		// Create a little composition at this place
@@ -1783,7 +1825,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Create the location
 		pr _args = [_pos, T_GETV("side")]; // Our side is creating this location
 		pr _loc = NEW_PUBLIC("Location", _args);
-		CALLM2(_loc, "setBorder", "circle", 50);
+		CALLM2(_loc, "setBorder", "circle", 100);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
 		CALLM2(_loc, "processObjectsInArea", "House", true);
@@ -1829,15 +1871,29 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		});
 		CALLM0(gMessageLoopMain, "unlock");
 
-		// Bail if this place is still occupied by enemy
+		// Bail if this place is still occupied by too many enemy
 		if (_enemies > 4) exitWith {
 			pr _args = ["We can't capture this place because too many enemies still remain alive in the area!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
-		// Kick out the enemy garrisons
+		// Create new empty garrison for the location
+		pr _pos = CALLM0(_loc, "getPos");
+		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+
+		// Kick out the enemy garrisons (and claim their empty vehicles and cargo)
 		{
-			CALLM2(_x, "postMethodAsync", "setLocation", [NULL_OBJECT]);
+			private _enemyGar = _x;
+			// Get all the empty vehicles and cargo
+			private _spoils = (CALLM1(_enemyGar, "findUnits", [[T_VEH ARG -1] ARG [T_CARGO ARG -1]]) select {
+				// (isEmpty returns true for non vehicles always)
+				CALLM0(_x, "isEmpty")
+			});
+			// Take the spoils
+			if(count _spoils > 0) then {
+				CALLM2(_gar, "takeUnits", _enemyGar, _spoils);
+			};
+			CALLM2(_enemyGar, "postMethodAsync", "setLocation", [NULL_OBJECT]);
 		} forEach _enemyGarrisons;
 
 		// Remove build resources from player or vehicle
@@ -1849,9 +1905,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		};
 
-		// Create the garrison
-		pr _pos = CALLM0(_loc, "getPos");
-		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
 		CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 		// Need to do this *after* assigning a location as we don't want it to get destroyed
 		CALLM2(_gar, "postMethodAsync", "activate", []);
@@ -2628,8 +2681,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			]
 		};
 
-		private _templateName = CALLM2(gGameMode, "getTemplateName", T_GETV("side"), "military");
-		private _t = [_templateName] call t_fnc_getTemplate;
+		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
 
 		// Try to spawn more units at the selected locations
 		if (_infMoreRequired > 0) then {
@@ -2687,20 +2739,31 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			};
 		} forEach _reinfInfo;
 
-		// Spawn in more supply trucks
-		{
+		private _fn_spawnNUnits = {
+			params ["_cat", "_subcat", "_desired", "_t", "_unitDebugName"];
 			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
-			private _nSupplyTrucksRequired = 2 - CALLM1(_garrison, "countUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
+			private _nRequired = _desired - CALLM1(_garrison, "countUnits", [[_cat ARG _subcat]]);
 
-			OOP_INFO_2("  Adding %1 supply trucks at %2", _nSupplyTrucksRequired, _name);
-			while { _nSupplyTrucksRequired > 0 } do {
-				private _args = [_t, T_VEH, T_VEH_truck_ammo, -1];
+			OOP_INFO_3("  Adding %1 %2 at %3", _nRequired, _unitDebugName, _name);
+			while { _nRequired > 0 } do {
+				private _args = [_t, _cat, _subcat, -1];
 				private _vehUnit = NEW("Unit", _args);
 
 				CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
-				_nSupplyTrucksRequired = _nSupplyTrucksRequired - 1;
+				_nRequired = _nRequired - 1;
 			};
+		};
+
+		// Spawn in more supply trucks
+		{
+			[T_VEH, T_VEH_truck_ammo, 2, _t, "supply trucks"] call _fn_spawnNUnits;
 		} forEach _reinfInfo;
+
+		// Spawn in more inf trucks
+		{
+			[T_VEH, T_VEH_truck_inf, 3, _t, "inf trucks"] call _fn_spawnNUnits;
+		} forEach _reinfInfo;
+
 		// Spawn in more vehicles
 
 		// Construct a pool of vehicles we could add and shuffle them up then add some of them
@@ -2770,11 +2833,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				};
 
 				// Decrease the counter
-				private _roomLeft = _targetLoc#3 - 1;
+				private _roomLeft = _vicSpace - 1;
 				if(_roomLeft <= 0) then {
 					_vicReinfLocations = _vicReinfLocations - [_targetLoc];
 				} else {
-					_targetLoc set [3, _roomLeft];
+					_targetLoc set [4, _roomLeft];
 				};
 			};
 

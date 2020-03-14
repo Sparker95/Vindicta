@@ -208,7 +208,9 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		// the Cmdr AI.
 
 		// Check for changes in players group
-		if !((units group player) isEqualTo T_GETV("playerGroupUnits")) then {
+		private _currPlayerGroupUnits = units group player;
+		private _oldPlayerGroupUnits = T_GETV("playerGroupUnits");
+		if (count (_oldPlayerGroupUnits arrayIntersect _currPlayerGroupUnits) != count _oldPlayerGroupUnits) then {
 			T_SETV("playerGroupUnits", units group player);
 			REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "updatePlayerGroup", [player], ON_SERVER, NO_JIP);
 		};
@@ -311,6 +313,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			};
 		} forEach _intelReminders;
 
+
 		/*
 			Hotfix for crappy night time experience, until we can skip night.
 
@@ -334,7 +337,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			7h min: 50
 
 			To complete this, we would have to take moonphases into consideration.
-		*/
+
 
 		// index is the hour, value is the aperture min value
 		pr _apertureTable = [
@@ -391,6 +394,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			//systemChat "Resetting aperture values.";
 			setApertureNew [-1]; // reset
 		};
+		*/
 	} ENDMETHOD;
 
 	METHOD("getCurrentLocations") {
