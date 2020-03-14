@@ -172,3 +172,12 @@
 #else
 #define OOP_DEBUG_MSG_REAL_ONLY(world, fmt, args)
 #endif
+
+// Activity function common between different methods
+// Maps activity at area to a priority multiplier
+// https://www.desmos.com/calculator/sjoagy4rro
+// This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
+#define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
+
+// https://www.desmos.com/calculator/yxhaqijv19
+#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.2 * (1 - sqrt(0.9 * (campaignProgress))) * (rawDamage)) - 0.1)
