@@ -23,4 +23,7 @@ _killer = if (isNull _killer) then {
 
 _this set [1, _killer];
 
+// make it possible to ace interact with the unit again
+[objNull, _unit] call ace_common_fnc_claim;
+
 CALLM2(gMessageLoopMainManager, "postMethodAsync", "EH_Killed", _this);
