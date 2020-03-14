@@ -14,28 +14,29 @@ dialog_aimed_at 		// true when player scared civ ones
 
 #define __BOOST_SUSP {CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.2 + (random 0.1))}
 
-#define DEFAULT_EVENTS \
-	[TYPE_ON_OUT_OF_TIME, {\
-		params ["_player","_civ"];\
-		[_civ, [\
-			"I dont have time for this",\
-			"Im leaving",\
-			"I have better things to do"\
-		], 1] call pr0_fnc_dialogue_createSimple;\
-	}],\
-	[TYPE_ON_WALKED_AWAY, {\
-		params ["_player","_civ"];\
-		[_civ, [\
-			"I thought we where talking",\
-			"We where having a chat!",\
-			"You are strange",\
-			"Yes, walk away when you are asking something"\
-		], 1] call pr0_fnc_dialogue_createSimple;\
-	}]\
 
 
 private _array = [
+	//define default events
+	[TYPE_ON_OUT_OF_TIME, {
+		params ["_player","_civ"];
+		[_civ, [
+			"I dont have time for this",
+			"I have better things to do"
+		], 1] call pr0_fnc_dialogue_createSimple;
+	}],
 
+	[TYPE_ON_WALKED_AWAY, {
+		params ["_player","_civ"];
+		[_civ, [
+			"I thought we where talking",
+			"We where having a chat!",
+			"You are strange",
+			"Yes, walk away when you are asking something"
+		], 1] call pr0_fnc_dialogue_createSimple;
+	}],
+
+	//define nodes
 	["intro_hello",{
 		params ["_player","_civ"];
 
@@ -72,22 +73,10 @@ private _array = [
 		
 		_return;
 	}],
-	["no_time_for_this",{
-		[
-			[TYPE_SENTENCE,"I dont have time for this",2],
-			[TYPE_JUMP_TO, "#end"]
-		];
-	}],
-	["bye",{
+	["end_bye",{
 		[
 			[TYPE_SENTENCE,"Bye",1],
 			[TYPE_SENTENCE,["Have a nice day","bye","See you around"],2],
-			[TYPE_JUMP_TO, "#end"]
-		];
-	}],
-	["thought_we_had_a_chat",{
-		[
-			[TYPE_SENTENCE,["I dont have time for this","I have better things to do"],2],
 			[TYPE_JUMP_TO, "#end"]
 		];
 	}],
@@ -98,8 +87,7 @@ private _array = [
 			[TYPE_ANSWER,"Enemy activity [locations]","info_militaryBases"],
 			[TYPE_ANSWER,"Agitate","agitate"],
 			[TYPE_ANSWER,"About the town","info_town"],
-			[TYPE_ANSWER,"Never mind","intro_question_neverMind"],
-			DEFAULT_EVENTS
+			[TYPE_ANSWER,"Never mind","intro_question_neverMind"]
 		];
 	}],
 	["info_town",{
@@ -108,8 +96,7 @@ private _array = [
 			[TYPE_QUESTION,"What do you like to know about this town?",2],
 			[TYPE_ANSWER,"Police","info_police"],
 			[TYPE_ANSWER,"Fuel station","info_fuelstation"],
-			[TYPE_ANSWER,"Never mind","intro_question_neverMind"],
-			DEFAULT_EVENTS
+			[TYPE_ANSWER,"Never mind","intro_question_neverMind"]
 		]
 	}],
 	["info_fuelstation",{

@@ -1,13 +1,13 @@
 params[
 	["_unit", objNull,[objNull]],
-	["_dataSet","",[""]]
+	["_dialogueSet","",[""]]
 ];
 
-private _dataSets = _unit getVariable ["dialogue_dataSet_ids",[]];
-private _count = count _dataSets;
-_dataSets pushBackUnique _dataSet;
-if(count _dataSets > _count)then{
-	_unit setVariable ["dialogue_dataSet_ids",_dataSets,true];
+private _dialogueSets = _unit getVariable ["_dialogueSet",[]];
+private _count = count _dialogueSets;
+_dialogueSets pushBackUnique _dialogueSet;
+if(count _dialogueSets > _count)then{
+	_unit setVariable ["_dialogueSet",_dialogueSets,true];
 };
 
 

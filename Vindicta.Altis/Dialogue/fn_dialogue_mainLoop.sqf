@@ -6,11 +6,12 @@ params ["_namespace","_jump_to_new",["_event_node",false]];
 //used when a node is called by an event.
 _namespace setVariable ["_event_node",_event_node];
 
-private _dataSets = _namespace getVariable ["_dataSets",[]];
+private _dialogueSets = _namespace getVariable ["_dialogueSets",[]];
 private _unit_1 = _namespace getVariable ["_unit_1",objNull];
 private _unit_2 = _namespace getVariable ["_unit_2",objNull];
 private _conversation_args = _namespace getVariable ["_conversation_args",[]];
-private _events = _namespace getVariable ["_events",[]];
+private _default_events = _namespace getVariable ["_default_events",[]];
+private _end_scripts = _namespace getVariable ["_end_scripts",[]];
 
 //this array countains the new node_id, and the script and args from the previouse answer/jump_to action
 _jump_to_new params [["_node_id","",[""]],["_previous_script",{},[{}]],["_previous_arg",[]]];
@@ -31,33 +32,45 @@ if(_node_id isEqualTo "")exitWith{
 //				Find all nodes with same id					|
 //-----------------------------------------------------------
 
-
-
-//find all nodes with given node_id
-private _noded_arrays = [];
+//find all nodes with given node_id. This can be more then one when multiple dialogue arrays have been given
+private _node_arrays = [];
 {	
-	private _dataSet = _x;
+	private _dialogueSet = _x;
 	{
+		_x params [["_node_id_x",""]];
+		
+		scopeName "_dialogueSet";
 
-		_x params [["_node_id_x","",[""]],["_node_type",TYPE_CREATE,[TYPE_CREATE,{}]],["_script",{},[{}]]];
+		//check if this is a node or a default event.
+		//if its an event we are not intressed and skip it
+		if(_node_id_x isEqualType "")then{
+			_x params ["",["_node_type",TYPE_CREATE,[TYPE_CREATE,{}]],["_script",{},[{}]]];
 
-		if (tolower _node_id_x isEqualTo tolower _node_id)exitWith{
-
+			//no node type was given so the script is on the node type position.
+			//lets move it end set default node type
 			if(_node_type isEqualType {})then{
 				_script = _node_type;
 				_node_type = TYPE_CREATE;
 			};
 
-			private _node_array = [_unit_1, _unit_2, _conversation_args] call _script;
-			if(isNil "_node_array" || {!(_node_array isEqualType [])})exitWith{
-				[_namespace,"node didnt return array"] call pr0_fnc_dialogue_mainLoop_error;
+			if (tolower _node_id_x isEqualTo tolower _node_id)exitWith{
+				
+				private _action_array = [_unit_1, _unit_2, _conversation_args] call _script;
+				
+				if(isNil "_action_array" || {!(_action_array isEqualType [])})then{
+					[_namespace,"node didnt return array"] call pr0_fnc_dialogue_mainLoop_error;
+				}else{
+					_node_arrays pushBack [_node_type, _action_array];
+				};
+				
+				// we found the node in this data set, so we can move to the next one
+				breakOut "_dialogueSet";
 			};
-			_noded_arrays pushBack [_node_type, _node_array];
 		};
-	}forEach _dataSet;
-}forEach _dataSets;
+	}forEach _dialogueSet;
+}forEach _dialogueSets;
 
-if(count _noded_arrays == 0)exitWith{
+if(count _node_arrays == 0)exitWith{
 	[_namespace,"node is empty"] call pr0_fnc_dialogue_mainLoop_error;
 };
 
@@ -71,7 +84,7 @@ private _overwrite_found = 0;
 		};
 		_overwrite_found = _forEachIndex;
 	};
-}forEach _noded_arrays;
+}forEach _node_arrays;
 
 //-----------------------------------------------------------
 //				Format conversation into arrays				|
@@ -82,11 +95,11 @@ private _question = [];
 private _answers = [];
 private _answer_ai = ["#end",{},[]];
 private _jump_to = ["#end",{},[]];
-private _events = [];	{_events set [_x, [{},[]]];}forEach EVENT_TYPES;
+private _events = +_default_events;//we dont want to overwrite the default events
 
 //loop the nodes
-for "_i" from _overwrite_found to count _noded_arrays -1 do{
-	(_noded_arrays#_i) params ["_node_type","_node_array"];
+for "_i" from _overwrite_found to count _node_arrays -1 do{
+	(_node_arrays#_i) params ["_node_type","_action_array"];
 	
 	//loop the node and fill the arrays defined above
 	{
@@ -185,13 +198,13 @@ for "_i" from _overwrite_found to count _noded_arrays -1 do{
 					["_script",{},[{}]],
 					["_args",[]]
 				];
-				_events pushBack [_script,_args];
+				_end_scripts pushBack [_script,_args];
 			};
 			default {
 				[_namespace,"undefined type"] call pr0_fnc_dialogue_mainLoop_error;
 			};
 		};
-	}forEach _node_array;
+	}forEach _action_array;
 
 }; 
 

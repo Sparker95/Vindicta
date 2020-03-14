@@ -5,7 +5,7 @@
 params[["_id","",[""]],["_array",[],[[]]]];
 _id = toLower _id;
 
-private _cur = missionNamespace getVariable ["dialogue_dataSets", []];
+private _cur = missionNamespace getVariable ["dialogue_dialogueSets", []];
 private _found = false;
 {
 	if(_x#0 isEqualTo _id)exitWith{
@@ -17,7 +17,7 @@ private _found = false;
 
 if(!_found)then{
 	_cur pushBack [_id,_array];
-	missionNamespace setVariable ["dialogue_dataSets", _cur];
+	missionNamespace setVariable ["dialogue_dialogueSets", _cur];
 };
 
 

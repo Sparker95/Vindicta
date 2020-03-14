@@ -30,26 +30,42 @@ if(isnull _unit_2)then {_unit_2 = _unit_1};
 if(isNull _unit_1)exitWith{};
 
 //search for dateSets that are going to be used
-private _dataSets_registered = missionNamespace getVariable ["dialogue_dataSets",[]];
-private _dataSet_ids_unit = _unit_2 getVariable ["dialogue_dataSet_ids",[]];
-private _dataSets = [];
+private _dialogueSets_registered = missionNamespace getVariable ["dialogue_dialogueSets",[]];
+private _dialogueSet_ids_unit = _unit_2 getVariable ["_dialogueSet",[]];
+private _dialogueSets = [];
 {
-	_X params [["_dataSet_id_unit","",[""]]];
+	_X params [["_dialogueSet_id_unit","",[""]]];
 	{
-		_x params ["_dataSet_id_registered","_dataSet_array"];
-		if(tolower _dataSet_id_unit isEqualto tolower _dataSet_id_registered)exitWith{
-			_dataSets pushBack _dataSet_array;
+		_x params ["_dialogueSet_id_registered","_dialogueSet_array"];
+		if(tolower _dialogueSet_id_unit isEqualto tolower _dialogueSet_id_registered)exitWith{
+			_dialogueSets pushBack _dialogueSet_array;
 		};
-	}forEach _dataSets_registered;
+	}forEach _dialogueSets_registered;
 
-}forEach _dataSet_ids_unit;
+}forEach _dialogueSet_ids_unit;
+
+//find all default events in datasets
+private _default_events = []; {_default_events set [_x, [{},[]]];}forEach EVENT_TYPES;
+{
+	private _dialogueSet = _x;
+	{
+		_x params [["_event",-1]];
+		private _index  = DEFAULT_EVENT_TYPES find _event;
+		if(_index != -1)then{
+			_x params ["",["_script",{},[{}]],["_arg",[]]];
+			_default_events set [_index, [_script,_arg]];
+		};
+	}forEach _dialogueSet;
+}forEach _dialogueSets;
+
 
 private _namespace = call CBA_fnc_createNamespace;
-_namespace setVariable ["_dataSets",_dataSets];
+_namespace setVariable ["_dialogueSets",_dialogueSets];
 _namespace setVariable ["_unit_1",_unit_1];
 _namespace setVariable ["_unit_2",_unit_2];
 _namespace setVariable ["_end_scripts",[[_end_script]]];
 _namespace setVariable ["_conversation_args",_conversation_args];
+_namespace setVariable ["_default_events",_default_events];
 
 private _namespaces = missionNamespace getVariable ["dialog_nameSpaces",[]];
 _namespaces pushBack _namespace;

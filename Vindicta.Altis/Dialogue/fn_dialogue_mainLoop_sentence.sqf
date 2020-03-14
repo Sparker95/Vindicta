@@ -28,11 +28,9 @@ if(_endCondition != -1)exitWith{
 	[_namespace,_endCondition] call pr0_fnc_dialogue_mainLoop_end;
 }; 
 
-
-
+//get current sentence and remove it from the list
 private _sentence = _sentences#0;
 _sentences deleteAt 0;
-_namespace setVariable ["_sentences",_sentences];
 
 //run optional code if it was given
 [_unit_1,_unit_2,_conversation_args,(_sentence#INDEX_SENTENCE_ARGS)] call (_sentence#INDEX_SENTENCE_SCRIPT);
