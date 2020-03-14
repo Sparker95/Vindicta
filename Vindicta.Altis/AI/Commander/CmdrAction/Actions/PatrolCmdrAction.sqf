@@ -34,7 +34,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 	Create a CmdrAI action to send a detachment from a garrison to patrol a specified 
 	route.
-	
+
 	Parameters:
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
 		_routeTargets - Array of <CmdrAITarget>, an array of patrol waypoints as targets.
@@ -80,6 +80,11 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 	} ENDMETHOD;
 
+	METHOD("getRouteTargets") {
+		params [P_THISOBJECT];
+		T_GET_AST_VAR("routeTargetsVar")
+	} ENDMETHOD;
+	
 	/* protected override */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
@@ -378,15 +383,17 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// so we can decide if transport is required or not. We could use the total route length or 
 		// some other metric instead here if we wanted.
 		private _maxDistance = 0;
+		private _maxActivityMultiplier = 0; 
 		private _lastPos = _srcGarrPos;
 		{
 			_maxDistance = _maxDistance max (_lastPos distance _x);
 			_lastPos = _x;
+			_maxActivityMultiplier = _maxActivityMultiplier max CALLM1(_worldNow, "calcActivityMultiplier", _x);
 		} forEach ( _routeTargetPositions + [_srcGarrPos]);
 
 		// Will we need transport?
 		pr _needTransport = false;
-		if (_maxDistance > 2000) then {
+		if (_maxDistance > 1000) then {
 			_needTransport = true;
 		};
 
@@ -396,9 +403,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			_needTransport = true;
 			_enemyEff = EFF_MOUNTED_PATROL_EFF;
 		};
-		// Scale efficiency by activity in area
-		private _scaleFactor = CALLM1(_worldNow, "calcActivityMultiplier", _srcGarrPos);
-		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _scaleFactor);
+
+		// Scale efficiency by max activity in route
+		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _maxActivityMultiplier);
 
 		// Bail if the garrison clearly can not destroy the (potential) enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {

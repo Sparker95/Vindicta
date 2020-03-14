@@ -283,20 +283,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			{
 				if (!IS_NULL_OBJECT(_x)) then {
 					private _sideCommander = GETV(_x, "side");
-					if (_sideCommander != _playerSide) then { // Enemies are smart
-						if (CALLM0(_loc, "isBuilt")) then {
+					// If it's player side, let it only know about cities
+					if (_type == LOCATION_TYPE_CITY) then {
+						OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+					} else {
+						if (_sideCommander != _playerSide && {CALLM0(_loc, "isBuilt")}) then { // Enemies are smart
 							// This part determines commander's knowledge about enemy locations at game init
 							// Only relevant for One AI vs Another AI Commander game mode I think
 							//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
 							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
 							private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
 							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
-						};
-					} else {
-						// If it's player side, let it only know about cities
-						if (_type == LOCATION_TYPE_CITY) then {
-							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
-							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
 						};
 					};
 				};
@@ -2055,6 +2053,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Refresh locations
 		CALLSM0("Location", "postLoad");
+
+		// SAVEBREAK >>>
+		// Bug in saves before 17 means enemy cmdr didn't know about cities, so reveal them all now
+		if(GETV(_storage, "version") < 17) then {
+			{
+				private _cmdr = _x;
+				{
+					CALLM2(_cmdr, "postMethodAsync", "updateLocationData", [_x ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == LOCATION_TYPE_CITY });
+			} forEach [T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
+		};
+		// <<< SAVEBREAK
 
 		// Cleanup dirty garrisons etc.
 		
