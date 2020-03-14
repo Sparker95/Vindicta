@@ -23,15 +23,12 @@
 ["Templates\Factions\3CB_BAF.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\Russians2035.sqf", 		T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\BWA.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_BAF.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\Russians2035.sqf", 		T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\BWA.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GM_WestGer.sqf", 			T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 
 // Other factions
 ["Templates\Factions\CIVILIAN.sqf", 			T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_CIVILIAN.sqf", 		T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-//["Templates\Factions\GM_CIVILIAN.sqf", 			T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
+//["Templates\Factions\GM_CIVILIAN.sqf", 		T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GUERRILLA.sqf", 			T_FACTION_Guer		]	call t_fnc_initializeTemplateFromFile;
 
 // Police factions
@@ -42,6 +39,5 @@
 ["Templates\Factions\RHS_APD.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_Heer_police.sqf", 		T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_UK_police.sqf", 		T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GSG9.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GSG9.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GM_WestGer_Police.sqf", 	T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;

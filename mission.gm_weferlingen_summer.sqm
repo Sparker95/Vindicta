@@ -8,7 +8,7 @@ class EditorData
 	toggles=585;
 	class ItemIDProvider
 	{
-		nextID=2488;
+		nextID=2490;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=709;
+		nextID=756;
 	};
 	class Camera
 	{
-		pos[]={5679.2959,142.86266,14149.243};
-		dir[]={-0.7924087,-0.5360806,0.29112628};
-		up[]={-0.50320554,0.84415632,0.18487394};
-		aside[]={0.34486333,6.0415186e-007,0.93867469};
+		pos[]={3560.8242,121.66048,16031.249};
+		dir[]={0.62703055,-0.6264593,0.46302646};
+		up[]={0.50395244,0.77945185,0.37214029};
+		aside[]={0.59403861,-4.7149661e-007,-0.80444694};
 	};
 };
 binarizationWanted=0;
@@ -10307,7 +10307,7 @@ class Mission
 					name="Emmerstedt Train Station";
 					class Entities
 					{
-						items=28;
+						items=30;
 						class Item0
 						{
 							dataType="Object";
@@ -11026,9 +11026,39 @@ class Mission
 							id=2353;
 							type="B_Truck_01_transport_F";
 						};
+						class Item28
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={6833.4575,130.80202,2224.9229};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2488;
+							type="B_Slingload_01_Cargo_F";
+						};
+						class Item29
+						{
+							dataType="Object";
+							class PositionInfo
+							{
+								position[]={6833.4409,130.80202,2231.365};
+							};
+							side="Empty";
+							flags=4;
+							class Attributes
+							{
+							};
+							id=2489;
+							type="B_Slingload_01_Cargo_F";
+						};
 					};
 					id=2303;
-					atlOffset=-0.0033416748;
+					atlOffset=0.75665283;
 				};
 				class Item3
 				{
@@ -11718,7 +11748,7 @@ class Mission
 				};
 			};
 			id=1971;
-			atlOffset=-7.2190323;
+			atlOffset=-7.17733;
 		};
 	};
 };
