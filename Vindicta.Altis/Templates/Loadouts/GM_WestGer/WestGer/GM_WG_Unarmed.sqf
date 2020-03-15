@@ -11,19 +11,15 @@ removeGoggles this;
 this addHeadgear "gm_ge_headgear_m62_net";
 
 //	==== Uniform ====
-this forceAddUniform "gm_ge_army_uniform_soldier_80_ols";
+this forceAddUniform "gm_ge_army_uniform_soldier_80_ols"; 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "gm_ge_facewear_m65";
-this addItemToUniform "gm_ge_headgear_beret_grn_infantry";
+this addItemToUniform "gm_ge_headgear_hat_80_oli";
 
 //	==== Vest ====
 this addVest "gm_ge_army_vest_80_rifleman";
 
-//	==== Backpack ====
-
-//	==== Weapons ====
-
 //	==== Misc Items ====
-this linkItem "ItemMap";
-this linkItem "gm_ge_army_conat2";
-this linkItem "gm_watch_kosei_80";
+this linkItem "ItemMap"; 			// Map
+this linkItem "gm_watch_kosei_80"; 	// Watch
+this linkItem "gm_ge_army_conat2"; 	// Compass

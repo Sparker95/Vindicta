@@ -26,13 +26,13 @@ _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT,  ["gm_ge_army_rifleman_g3a3_80_ols"]]; 	// = 0 Default if nothing found
 
 _inf set [T_INF_SL, ["GM_WG_SL"]]; // = 1
-_inf set [T_INF_TL, ["GM_WG_SL"]]; // = 2
-_inf set [T_INF_officer, ["GM_WG_ArmyOfficer"]]; // = 3
-_inf set [T_INF_GL, ["GM_WG_Rifleman"]]; // = 4
+_inf set [T_INF_TL, ["GM_WG_TL"]]; // = 2
+_inf set [T_INF_officer, ["GM_WG_Officer"]]; // = 3
+_inf set [T_INF_GL, ["GM_WG_GL"]]; // = 4
 _inf set [T_INF_rifleman, ["GM_WG_Rifleman"]]; // = 5
 _inf set [T_INF_marksman, ["GM_WG_Marksman"]]; // = 6
-_inf set [T_INF_sniper, ["GM_WG_Marksman"]]; // = 7
-_inf set [T_INF_spotter, ["GM_WG_Rifleman"]]; // = 8
+_inf set [T_INF_sniper, ["GM_WG_Sniper"]]; // = 7
+_inf set [T_INF_spotter, ["GM_WG_Spotter"]]; // = 8
 _inf set [T_INF_exp, ["GM_WG_Demolition"]]; // = 9
 _inf set [T_INF_ammo, ["GM_WG_AmmoBearer"]]; // = 10
 _inf set [T_INF_LAT, ["GM_WG_LAT"]]; // = 11
