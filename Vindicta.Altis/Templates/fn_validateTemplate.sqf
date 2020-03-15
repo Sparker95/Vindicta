@@ -34,13 +34,13 @@ _validateArray = {
 };
 
 // Some categories are validates strict (nils will cause total failure)
-private _categoriesToValidateStrict = [T_GROUP, T_NAME];
+private _categoriesToValidateStrict = [T_NAME];
 {
 	_errorCount = _errorCount + ( [[_t select _x], [_x], true] call _validateArray);
 } forEach _categoriesToValidateStrict;
 
-// Other categories are validated non-strict, nils will result in a warning
-private _categoriesToValidateEasy = [T_INF, T_VEH, T_DRONE];
+// Other categories are validated non-strict, nils will result in a warning if that subcat is required
+private _categoriesToValidateEasy = [T_GROUP, T_INF, T_VEH, T_DRONE];
 {
 	_errorCount = _errorCount + ( [[_t select _x], [_x], false] call _validateArray);
 } forEach _categoriesToValidateEasy;

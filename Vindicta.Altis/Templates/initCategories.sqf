@@ -15,7 +15,7 @@ Author: Sparker 08.2017
 */
 
 // Declare a faction template category
-#define T_DECLARE_CATEGORY(category, index, size) category = index; category##_SIZE = size; T_metadata set [index, [ #category , []]];
+#define T_DECLARE_CATEGORY(category, index, size) category = index; category##_SIZE = size; T_metadata set [index, [#category, []]]; (T_metadata select index) pushBack
 // Declare an optional faction template entry
 #define T_DECLARE_ENTRY_OPT(category, id, index) id = index; (T_metadata select category select 1) set [index, [#id, []] ];
 // Declare a required faction template entry, see below for examples
@@ -34,32 +34,32 @@ Author: Sparker 08.2017
 T_metadata = [];
 
 // Faction classes
-T_FACTION_None = -1;
-T_FACTION_Civ = 0;
-T_FACTION_Guer = 1;
-T_FACTION_Military = 2;
-T_FACTION_Police = 3;
-
+T_FACTION_None 		= -1;
+T_FACTION_Civ 		=  0;
+T_FACTION_Guer 		=  1;
+T_FACTION_Military 	=  2;
+T_FACTION_Police 	=  3;
 
 // Categories
-T_DECLARE_CATEGORY(T_INF, 0, 34);
-T_DECLARE_CATEGORY(T_VEH, 1, 39);
-T_DECLARE_CATEGORY(T_DRONE, 2, 11);
-T_DECLARE_CATEGORY(T_CARGO, 3, 4);
-T_DECLARE_CATEGORY(T_GROUP, 4, 14);
-T_NAME = 5;								// Template name(internal)
-T_INV = 6;								// All inventory items sorted by categories. Initialized by server.
-T_LOADOUT_WEAPONS = 7;					// Unit loadout weapons. Initialized by server.
-T_FACTION = 8;							// Faction
-T_REQUIRED_ADDONS = 9;					// Addons which must be loaded on the server. It checks cfgPatches for these addons.
-T_MISSING_ADDONS = 10;					// Missing addons on the server. Initialized by server.
-T_DESCRIPTION = 11;						// A string with description to be shown in UI.
-T_VALID = 12;							// Bool. Initialized by server.
-T_DISPLAY_NAME = 13;					// Name to be shown in UI
-T_DECLARE_CATEGORY(T_API, 14, 2);
-T_DECLARE_CATEGORY(T_ARSENAL, 15, 13);	// Only applicable to T_FACTION_Civ
+T_DECLARE_CATEGORY(T_INF, 		0, 	34)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
+T_DECLARE_CATEGORY(T_VEH, 		1, 	39)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
+T_DECLARE_CATEGORY(T_DRONE, 	2, 	11)		[				T_FACTION_Guer, T_FACTION_Military					];
+T_DECLARE_CATEGORY(T_CARGO, 	3, 	 4)		[				T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
+T_DECLARE_CATEGORY(T_GROUP, 	4, 	14)		[				T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
+T_NAME 						  = 5;			// Template name (internal)
+T_INV 						  = 6;			// All inventory items sorted by categories. Initialized by server.
+T_LOADOUT_WEAPONS 			  = 7;			// Unit loadout weapons. Initialized by server.
+T_FACTION 					  = 8;			// Faction
+T_REQUIRED_ADDONS 			  = 9;			// Addons which must be loaded on the server. It checks cfgPatches for these addons.
+T_MISSING_ADDONS 			  = 10;			// Missing addons on the server. Initialized by server.
+T_DESCRIPTION 				  = 11;			// A string with description to be shown in UI.
+T_VALID 					  = 12;			// Bool. Initialized by server.
+T_DISPLAY_NAME 				  = 13;			// Name to be shown in UI
+T_DECLARE_CATEGORY(T_API, 		14,  2)		[];
+T_DECLARE_CATEGORY(T_ARSENAL, 	15, 13)		[];	// T_FACTION_Civ ONLY
+T_DECLARE_CATEGORY(T_UC, 		16, 10)		[];	// T_FACTION_Civ ONLY -- Undercover equipment and vehicle categories
 
-T_SIZE = 16; //Number of categories in template
+T_SIZE = 17; //Number of categories in template
 T_metadata resize T_SIZE;
 
 // = = = = = = = = = = = = A P I = = = = = = = = = = = = =
@@ -83,6 +83,19 @@ T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_uniforms,		10);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_facewear,		11);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_headgear,		12);
 
+// = = = = = = = = = U N D E R C O V E R = = = = = = = = =
+
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_uniforms,				 0);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_headgear,				 1);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_vests,					 2);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_facewear,				 3);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_backpacks,				 4);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_ghillies,				 5);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_items,					 6);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_weapons,					 7);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_suspweapons,				 8);
+T_DECLARE_ENTRY_OPT(T_UC, T_UC_civVehs,					 9);
+
 // = = = = = = = = = = I N F A N T R Y = = = = = = = = = = 
  
 //Main infantry
@@ -96,7 +109,7 @@ T_DECLARE_ENTRY_REQ(T_INF, T_INF_rifleman, 				 5)		[T_FACTION_Guer, T_FACTION_M
 T_DECLARE_ENTRY_REQ(T_INF, T_INF_marksman, 				 6)		[T_FACTION_Guer, T_FACTION_Military]; //Marksman
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_sniper, 				 7);	//Sniper
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_spotter, 				 8);	//Spotter
-T_DECLARE_ENTRY_OPT(T_INF, T_INF_exp, 					 9);	//Demo specialist
+T_DECLARE_ENTRY_REQ(T_INF, T_INF_exp, 					 9)		[T_FACTION_Civ]; //Demo specialist
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_ammo, 					10);	//Ammo bearer
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_LAT, 					11);	//Light AT
 T_DECLARE_ENTRY_REQ(T_INF, T_INF_AT, 					12)		[T_FACTION_Guer, T_FACTION_Military]; //AT
@@ -109,8 +122,8 @@ T_DECLARE_ENTRY_REQ(T_INF, T_INF_crew, 					18)		[T_FACTION_Guer, T_FACTION_Mili
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_crew_heli, 			19);	//Helicopter crew
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_pilot, 				20);	//Plane pilot
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_pilot_heli, 			21);	//Helicopter pilot
-T_DECLARE_ENTRY_OPT(T_INF, T_INF_survivor, 				22);	//Survivor
-T_DECLARE_ENTRY_OPT(T_INF, T_INF_unarmed, 				23);	//Unarmed man
+T_DECLARE_ENTRY_REQ(T_INF, T_INF_survivor, 				22)		[T_FACTION_Civ]; //Survivor
+T_DECLARE_ENTRY_REQ(T_INF, T_INF_unarmed, 				23)		[T_FACTION_Civ]; //Unarmed man
 
 //Recon
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_recon_TL, 				24);	//Recon team leader
@@ -133,10 +146,9 @@ T_DECLARE_ENTRY_OPT(T_INF, T_INF_diver_exp,				33);	//Diver explosive specialist
 
 //Vehicles
 
-
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_default,				 0)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
 //Ground vehicles
-T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_car_unarmed,			 1)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police]; //Car like Prowler or UAZ
+T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_car_unarmed,			 1)		[T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police]; //Car like Prowler or UAZ
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_car_armed,				 2);
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_MRAP_unarmed,			 3)		[T_FACTION_Guer, T_FACTION_Military]; //MRAP
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_MRAP_HMG,				 4)		[T_FACTION_Guer, T_FACTION_Military];
@@ -224,14 +236,9 @@ T_VEH_ground_combat =
 	T_VEH_MBT
 ];
 
-
-
-
 // = = = = = = = = = = D R O N E S = = = = = = = = = = 
 
 //Drones
-T_DECLARE_CATEGORY(T_DRONE, 2, 11);// ID 2, size 11 
-
 T_DECLARE_ENTRY_OPT(T_DRONE, T_DRONE_default,			 0); //A vacuum cleaner robot
 T_DECLARE_ENTRY_OPT(T_DRONE, T_DRONE_UGV_unarmed,		 1);
 T_DECLARE_ENTRY_OPT(T_DRONE, T_DRONE_UGV_armed,			 2);
@@ -244,28 +251,16 @@ T_DECLARE_ENTRY_OPT(T_DRONE, T_DRONE_stat_HMG_low,		 8);
 T_DECLARE_ENTRY_OPT(T_DRONE, T_DRONE_stat_GMG_low,		 9);
 T_DECLARE_ENTRY_OPT(T_DRONE, T_DRONE_stat_AA,			10);
 
-
-
-
 // = = = = = = = = = = C A R G O = = = = = = = = = = 
 
-//Cargo
-
-
-T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_default,			 0)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
-T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_small,			 1)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
-T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_medium,		 2)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
-T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_big,			 3)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
-
-
-
+T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_default,			 0)		[T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
+T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_small,			 1)		[T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
+T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_medium,		 2)		[T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
+T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_big,			 3)		[T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
 
 // = = = = = = = = = = G R O U P S = = = = = = = = = = 
 
-//Groups
-
-
-T_DECLARE_ENTRY_REQ(T_GROUP, T_GROUP_default,			 0)	[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police]; //Default group if group is not specified
+T_DECLARE_ENTRY_REQ(T_GROUP, T_GROUP_default,			 0)		[T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police]; //Default group if group is not specified
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_AA_team,		 1);
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_AT_team,		 2);
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_rifle_squad,	 3);
@@ -280,12 +275,9 @@ T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_sentry,		11);
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_sniper_team,	12);
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_officer,		13);
 
-
-
-
 // = = = = = = = = = = P L A C E M E N T = = = = = = = = = = 
 
-//Subcategories sorted by their PLacement type
+//Subcategories sorted by their Placement type
 T_PL_tracked_wheeled = //Tracked and wheeled vehicles
 [
 	[T_VEH, T_VEH_car_unarmed],
@@ -423,14 +415,7 @@ T_static = [
 	[T_DRONE, T_DRONE_stat_AA]
 ];
 
-
-
-// = = = = = = = = = = T E M P L A T E   N A M E = = = = = = = = = = 
-
-
-
 // = = = = = = = = = = I N V E N T O R Y = = = = = = = = = = 
-
 
 // Subcategories
 T_INV_primary			= 0;	// Array of [_weapon, _magazines]
@@ -442,16 +427,3 @@ T_INV_handgun_items		= 5;
 T_INV_items				= 6;	// Array of item class names
 T_INV_vests				= 7;
 T_INV_backpacks			= 8;
-
-// = = = = = = = = = = L O A D O U T   W E A P O N S = = = = = = = = = =
-// Unit loadout weapons
-// Array
-// Each element is: [_primaryWeapons, _secondaryWeapons]
-// Each element's ID corresponds to infantry unit subcategory ID
-
-
-// = = = = = = = = = T E M P L A T E   F A C T I O N  = = = = = = = = = 
-
-
-
-// = = = = = = = = = REQUIRED ADDONS  = = = = = = = = = 

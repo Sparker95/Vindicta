@@ -13,7 +13,7 @@ _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons",
 //==== Infantry ====
 _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["LIB_UK_Rifleman"]];					//Default infantry if nothing is found
+_inf set [T_INF_default, ["LIB_UK_Rifleman"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["LIB_UK_Officer", "LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Rifleman", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman_4", "LIB_UK_Medic"]];
 _inf set [T_INF_TL, ["LIB_UK_Officer", "LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Rifleman", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman_4", "LIB_UK_Medic"]];

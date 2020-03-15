@@ -218,14 +218,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			//#endif
 
 			T_CALLM("initClientOnly", []);
-
-			CALLSM0("undercoverMonitor", "staticInit");
 		};
 		T_CALLM("postInitAll", []);
 		
 		PROFILE_SCOPE_START(GameModeEnd);
 	} ENDMETHOD;
-
+	
 	// Called regularly in its own thread to update gameplay
 	// states, mechanics etc. implemented by the Game Mode.
 	/* private */ METHOD("process") {
@@ -285,20 +283,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			{
 				if (!IS_NULL_OBJECT(_x)) then {
 					private _sideCommander = GETV(_x, "side");
-					if (_sideCommander != _playerSide) then { // Enemies are smart
-						if (CALLM0(_loc, "isBuilt")) then {
+					// If it's player side, let it only know about cities
+					if (_type == LOCATION_TYPE_CITY) then {
+						OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+					} else {
+						if (_sideCommander != _playerSide && {CALLM0(_loc, "isBuilt")}) then { // Enemies are smart
 							// This part determines commander's knowledge about enemy locations at game init
 							// Only relevant for One AI vs Another AI Commander game mode I think
 							//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
 							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
 							private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
 							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
-						};
-					} else {
-						// If it's player side, let it only know about cities
-						if (_type == LOCATION_TYPE_CITY) then {
-							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
-							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
 						};
 					};
 				};
@@ -396,10 +392,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
 
-#ifndef _SQF_VM
+		#ifndef _SQF_VM
 		// Start a periodic check which will restart message loops if needed
 		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
-#endif
+		#endif
 		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
@@ -442,20 +438,20 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
 
 		if (!_recovery) then {
-#ifndef _SQF_VM
+			#ifndef _SQF_VM
 			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
 			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
-#endif
-FIX_LINE_NUMBERS()
+			#endif
+			FIX_LINE_NUMBERS()
 		} else {
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
 
-#ifdef RELEASE_BUILD
+			#ifdef RELEASE_BUILD
 			// Send msg to game manager to perform emergency saving
 			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
-#endif
-FIX_LINE_NUMBERS()
+			#endif
+			FIX_LINE_NUMBERS()
 		};
 	} ENDMETHOD;
 
@@ -478,11 +474,11 @@ FIX_LINE_NUMBERS()
 
 		// todo: send emails, deploy pigeons
 
-#ifndef _SQF_VM
+		#ifndef _SQF_VM
 		// Do it once in a while
 		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
-#endif
-FIX_LINE_NUMBERS()
+		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	METHOD("_initMissionEventHandlers") {
@@ -534,8 +530,7 @@ FIX_LINE_NUMBERS()
 	/* protected virtual */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
 
-		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
-
+		T_CALLM0("postLoadServerOnly");
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("initClientOrHCOnly") {
@@ -557,11 +552,23 @@ FIX_LINE_NUMBERS()
 		};
 		#endif
 		FIX_LINE_NUMBERS()
+
+		CALLSM0("undercoverMonitor", "staticInit");
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("postInitAll") {
 		params [P_THISOBJECT];
 
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("postLoadServerOnly") {
+		params [P_THISOBJECT];
+
+		// Add undercover items from Civ faction
+		private _civTemplate = T_CALLM1("getTemplate", civilian);
+		_civTemplate call t_fnc_addUndercoverItems;
+
+		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("getLocationOwner") {
@@ -2047,6 +2054,18 @@ FIX_LINE_NUMBERS()
 		// Refresh locations
 		CALLSM0("Location", "postLoad");
 
+		// SAVEBREAK >>>
+		// Bug in saves before 17 means enemy cmdr didn't know about cities, so reveal them all now
+		if(GETV(_storage, "version") < 17) then {
+			{
+				private _cmdr = _x;
+				{
+					CALLM2(_cmdr, "postMethodAsync", "updateLocationData", [_x ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == LOCATION_TYPE_CITY });
+			} forEach [T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
+		};
+		// <<< SAVEBREAK
+
 		// Cleanup dirty garrisons etc.
 		
 		// Cleanup broken garrisons
@@ -2087,6 +2106,9 @@ FIX_LINE_NUMBERS()
 		// Delete editor's special objects, after all initialization is complete
 		//CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
 		// CALLSM0("Location", "deleteEditorObjects");
+
+		// Perform post load init
+		T_CALLM0("postLoadServerOnly");
 
 		// Unlock all message loops
 		{

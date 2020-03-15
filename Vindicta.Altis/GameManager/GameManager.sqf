@@ -380,7 +380,7 @@ CLASS("GameManager", "MessageReceiverEx")
 						// Execute everywhere but not on server
 						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], ON_ALL, "GameManager_initGameModeClient");
 
-						// Make sure to initialize client UI stuff if we are running combined client/server
+						// Make sure to initialize client UI stuff if we are running combined client/server or single player
 						if(HAS_INTERFACE) then {
 							CALLM0(gGameMode, "initClientOnly");
 						};

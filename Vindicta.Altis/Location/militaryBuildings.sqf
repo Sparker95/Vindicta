@@ -212,5 +212,21 @@
 ["wired_fence_4md_f.p3d","Land_Wired_Fence_4mD_F"],
 ["wired_fence_8m_f.p3d","Land_Wired_Fence_8m_F"],
 ["wired_fence_8md_f.p3d","Land_Wired_Fence_8mD_F"],
-["wpnsbox_large_f.p3d","ACE_Box_Chemlights"]
+["wpnsbox_large_f.p3d","ACE_Box_Chemlights"],
+// WW2 Staszow
+["WW2_Setka_car.p3d","Land_Setka_Car"],
+["WW2_Setka_dor.p3d","Land_WW2_Setka_Dor"],
+["wx_guardtower_02.p3d","land_wx_guardtower_02"],
+["wx_radiomast.p3d","Land_wx_radiomast"],
+["WW2_Mil_Barracks.p3d","Land_WW2_Mil_Barracks"],
+["WW2_Mil_Barracks_L.p3d","Land_WW2_Mil_Barracks_L"],
+["I44_Object_Tent_Us_Small.p3d","Land_I44_Object_Tent_Us_Small"],
+["I44_Object_Tent_Us_Large.p3d","Land_I44_Object_Tent_Us_Large"],
+// Beketov - CUP
+["Mil_Barracks_no_interior_CUP.p3d","Land_Mil_Barracks_no_interior_CUP"],
+["Mil_Barracks_L.p3d","Land_Mil_Barracks_L"],
+//Global Mobilization
+["gm_sandbags_01_round_01","land_gm_sandbags_01_round_01"],
+["gm_sandbags_01_wall_01","land_gm_sandbags_01_wall_01"]
+
 ]
