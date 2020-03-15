@@ -17,7 +17,7 @@ params ["_t", ["_returnString", false]];
 pr _catID = T_INF;
 pr _catSize = 23; //T_INF_SIZE; // Quick fix to disable recon items from appearing in the weapon pool
 pr _classDefault = _t#_catID#0#0;
-pr _subCatID = T_INF_DEFAULT + 1; // We don't want to process the default loadout/unit!
+pr _subCatID = T_INF_default + 1; // We don't want to process the default loadout/unit!
 pr _group = createGroup WEST;
 
 // Weapons and magazines for corresponding weapons
@@ -81,7 +81,6 @@ while {_subCatID < _catSize} do {
 				[_hO, _classOrLoadout] call t_fnc_setUnitLoadout;
 			};
 
-			
 			pr _unitMags = magazines _hO;
 			LOG_TEMPLATE			["  Unit mags: %1", _unitMags];
 

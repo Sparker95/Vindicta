@@ -25,7 +25,7 @@ _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 	Addons required to play
 /* Infantry unit classes */
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["B_Soldier_F"]]; // = 0 Default if nothing found
+_inf set [T_INF_default,  ["B_Soldier_F"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["B_Soldier_SL_F"]]; // = 1
 _inf set [T_INF_TL, ["B_Soldier_TL_F"]]; // = 2

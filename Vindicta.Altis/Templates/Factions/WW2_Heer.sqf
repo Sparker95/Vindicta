@@ -12,7 +12,7 @@ _array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons",
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["LIB_GER_unequip"]];
+_inf set [T_INF_default, ["LIB_GER_unequip"]];
 
 _inf set [T_INF_SL, ["LIB_GER_unterofficer", "LIB_GER_gun_unterofficer", "LIB_GER_scout_unterofficer"]];
 _inf set [T_INF_TL, ["LIB_GER_radioman", "LIB_GER_smgunner", "LIB_GER_scout_smgunner", "LNRD_Luftwaffe_smgunner"]];

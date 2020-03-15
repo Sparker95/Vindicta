@@ -253,6 +253,13 @@ CLASS("WorldModel", "Storable")
 		_damage
 	} ENDMETHOD;
 
+	METHOD("getDamageScore") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius")];
+		private _rawDamage = T_CALLM("getDamage", [_pos ARG _radius]);
+		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		__DAMAGE_FUNCTION(_rawDamage, _campaignProgress)
+	} ENDMETHOD;
+
 	METHOD("addActivity") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
 		T_PRVAR(rawActivityGrid);

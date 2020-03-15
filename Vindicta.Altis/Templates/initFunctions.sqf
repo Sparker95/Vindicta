@@ -31,5 +31,7 @@ t_fnc_processTemplateItems = compile preprocessFileLineNumbers "Templates\fn_pro
 
 t_fnc_callAPIOptional = compile preprocessFileLineNumbers "Templates\fn_callAPIOptional.sqf";
 
+t_fnc_addUndercoverItems = compile preprocessFileLineNumbers "Templates\fn_addUndercoverItems.sqf";
+
 call compile preprocessFileLineNumbers "Templates\EfficiencyFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\CompositionFunctions.sqf";

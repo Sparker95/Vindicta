@@ -4,12 +4,13 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tBWA3"];
-_array set [T_DESCRIPTION, "Bundeswehr. German forces, no voices sadly."];
-_array set [T_DISPLAY_NAME, "Bundeswehr"];
+_array set [T_DESCRIPTION, "BundesWehr from the year 2020. German forces, no voices sadly."];
+_array set [T_DISPLAY_NAME, "BundesWehr2020"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 "bwa3_units",
-"bw_additional_camo",
+"bwa3_comp_ace",
+"TBW_Insignia",
 "HAFM_EC635",
 "sfp_bo105",
 "gm_demo"
@@ -18,7 +19,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["BWA3_Rifleman_Fleck"]];
+_inf set [T_INF_default, ["BWA3_Rifleman_Fleck"]];
 
 _inf set [T_INF_SL, ["BWA3_SL_Fleck"]];
 _inf set [T_INF_TL, ["BWA3_TL_Fleck"]];

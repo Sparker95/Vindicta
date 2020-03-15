@@ -93,7 +93,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				SETV(_loc, "gameModeData", _data);
 			};
 		};
-		
+
 		PUBLIC_VAR(_loc, "gameModeData");
 
 		// Update respawn rules
@@ -139,6 +139,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
 
+		// Call base
+		CALL_CLASS_METHOD("GameModeBase", _thisObject, "initServerOnly", []);
+	
 		// Select the cities we will consider for civil war activities
 		private _activeCities = GET_STATIC_VAR("Location", "all") select { 
 			// If it is a city with a police station
@@ -249,11 +252,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		if(!_restored) then {
 			// Select random player gear
 			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
-			private _templateClass = [_civTemplate, T_INF, T_INF_DEFAULT, -1] call t_fnc_select;
+			private _templateClass = [_civTemplate, T_INF, T_INF_rifleman, -1] call t_fnc_select;
 			if ([_templateClass] call t_fnc_isLoadout) then {
 				[_newUnit, _templateClass] call t_fnc_setUnitLoadout;
 			} else {
-				OOP_ERROR_0("Only loadouts are valid for Civilian T_INF_DEFAULT faction templates (not classes)");
+				OOP_ERROR_0("Only loadouts are valid for Civilian T_INF_rifleman faction templates (not classes)");
 			};
 			// Holster pistol
 			_newUnit action ["SWITCHWEAPON", player, player, -1];
