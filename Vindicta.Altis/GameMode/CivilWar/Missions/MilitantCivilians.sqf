@@ -1,6 +1,6 @@
 #include "..\common.hpp"
 
-//#define MILITANT_CIVILIANS_TESTING
+#define LOOTING_RANGE 250
 
 // Called on client
 pr0_fnc_CivilianJoinPlayer = {
@@ -83,13 +83,210 @@ pr0_fnc_CivilianJoinPlayer = {
 	};
 };
 
+pr0_fnc_generateRandomPath = {
+	params ["_pos", "_radius", "_grp"];
+
+	// Add some random waypoints
+	for "_j" from 0 to 5 do {
+		private _wp = _grp addWaypoint [_pos, _radius];
+		_wp setWaypointCompletionRadius 20;
+		_wp setWaypointType "MOVE";
+		_wp setWaypointBehaviour "STEALTH";
+		if(_j == 0) then { _grp setCurrentWaypoint _wp; }
+	};
+
+	// Create a cycle waypoint
+	private _wpCycle = _grp addWaypoint [waypointPosition [_grp, 0], 0];
+	_wpCycle setWaypointType "CYCLE";
+};
+
+#define BUSY_TAG "vin_militant_busy"
+#define USAGE_TAG "vin_militant_use"
+
+// TODO: generalize this BS inventory stuff
+// pr0_fnc_findSource = {
+// 	params ["_pos", "_range", "_predFn", "_tag"];
+// 	// All inventories
+// 	private _obj = (nearestObjects [_this, ["WeaponHolderSimulated", "GroundWeaponHolder", "WeaponHolder"], _range]) + (allDead select {_x distance _pos < _range}) apply {
+// 		[_x distance _pos, _x]
+// 	};
+// 	_obj sort ASCENDING;
+// 	_obj = _obj apply {
+// 		private _src = _x#1;
+// 		private _gear = _src call _predFn;
+// 		[_src, _gear]
+// 	} select {
+// 		// Not all already allocated
+// 		count (_x#1) > _x#0 getVariable [USAGE_TAG + _tag, 0]
+// 	}
+// };
+
+pr0_fnc_selectPrimaryWeapon = {
+	if ( (primaryWeapon _this) != "") then
+	{
+		private _type = primaryWeapon _this;
+		// check for multiple muzzles (eg: GL)
+		private _muzzles = getArray(configFile >> "cfgWeapons" >> _type >> "muzzles");
+		if (count _muzzles > 1) then
+		{
+			_this selectWeapon (_muzzles select 0);
+		}
+		else
+		{
+			_this selectWeapon _type;
+		};
+	};
+};
+
+pr0_fnc_militantFindWeapon = {
+	private _sourcesWithWeapons = (nearestObjects [_this, ["WeaponHolderSimulated", "GroundWeaponHolder", "WeaponHolder"], LOOTING_RANGE]) apply {
+		private _src = _x;
+		private _primaryWeapons = weaponCargo _src select {
+			getNumber( configFile >> "CfgWeapons" >> _x >> "type" ) == 1 // primary weapon type
+		};
+		[_src, _primaryWeapons]
+	} select {
+		// Not all already allocated
+		count (_x#1) > _x#0 getVariable [USAGE_TAG, 0]
+	};
+
+	if(count _sourcesWithWeapons > 0) then {
+		_sourcesWithWeapons#0 params ["_src", "_primaryWeapons"];
+		systemChat format ["%1: rearming at %2", name _this, mapGridPosition _src];
+		_this setVariable [BUSY_TAG, true];
+		_src setVariable [USAGE_TAG, (_src getVariable [USAGE_TAG, 0]) + 1];
+
+		[_this, _src] spawn {
+			params ["_civ", "_src"];
+			private _timeout = time + 60;
+			_civ doMove position _src;
+			waitUntil {
+				sleep 1;
+				isNull _civ || {!alive _civ} || {isNull _src} || {_civ distance _src <= 3} || {time > _timeout}
+			};
+			if(!isNull _civ && alive _civ && !isNull _src && _civ distance _src <= 3) then {
+				private _primaryWeapons = weaponCargo _src apply {
+					[_x, getNumber( configFile >> "CfgWeapons" >> _x >> "type" )]
+				} select {
+					_x#1 == 1 // primary weapon type
+				} apply {
+					_x#0
+				};
+				if(count _primaryWeapons > 0) then {
+					private _newWeapon = _primaryWeapons#0;
+					_civ action ["TakeWeapon", _src, _newWeapon];
+					sleep 3;
+					_civ action ["rearm", _src];
+					sleep 3;
+					_civ call pr0_fnc_selectPrimaryWeapon;
+					sleep 3;
+					systemChat format ["%1: rearmed with a %2!", name _civ, getText (configfile >> "cfgweapons" >> _newWeapon >> "displayName")];
+				};
+			};
+			if(!isNull _civ) then {
+				_civ setVariable [BUSY_TAG, false];
+				group _civ setBehaviour "COMBAT";
+			};
+			if(!isNull _src) then {
+				_src setVariable [USAGE_TAG, (_src getVariable [USAGE_TAG, 0]) - 1];
+			};
+		};
+		true
+	} else {
+		false
+	}
+};
+
+pr0_fnc_militantFindVest = {
+	private _obj = allDead select {
+		_x distance _this < LOOTING_RANGE && {vest _x != ""} && {!(_x getVariable [USAGE_TAG + "vest", false])}
+	} apply {
+		[_x distance _this, _x]
+	};
+	_obj sort ASCENDING;
+	private _sourcesWithVests = _obj apply {
+		_x#1
+	};
+
+	if(count _sourcesWithVests > 0) then {
+		private _src = _sourcesWithVests#0;
+		systemChat format ["%1: taking vest from %2", name _this, mapGridPosition _src];
+		_this setVariable [BUSY_TAG, true];
+		_src setVariable [USAGE_TAG + "vest", true];
+
+		[_this, _src] spawn {
+			params ["_civ", "_src"];
+			private _timeout = time + 60;
+			_civ doMove position _src;
+			waitUntil {
+				sleep 1;
+				isNull _civ || {!alive _civ} || {isNull _src} || {_civ distance _src <= 3} || {time > _timeout}
+			};
+			if(!isNull _civ && alive _civ && !isNull _src && _civ distance _src <= 3) then {
+				private _vest = vest _src;
+				if(_vest != "") then {
+					private _srcItems = vestItems _src;
+					_civ addVest _vest;
+					{_civ addItemToVest _x} forEach _srcItems;
+					_civ action ["rearm", _src];
+					removeVest _src;
+					systemChat format ["%1: took a %2 vest!", name _civ, getText (configfile >> "cfgweapons" >> _vest >> "displayName")];
+				};
+				private _headgear = headgear _src;
+				if(_headgear != "") then {
+					_civ addHeadgear _headgear;
+					removeHeadgear _src;
+					systemChat format ["%1: took a %2 helmet!", name _civ, getText (configfile >> "cfgweapons" >> _headgear >> "displayName")];
+				};
+			};
+			if(!isNull _civ) then {
+				_civ setVariable [BUSY_TAG, false];
+				group _civ setBehaviour "COMBAT";
+			};
+			if(!isNull _src) then {
+				_src setVariable [USAGE_TAG + "vest", false];
+			};
+		};
+		true
+	} else {
+		false
+	}
+};
+
+pr0_fnc_findLeader = {
+	params ["_civ", "_allCivs"];
+	if(units group _civ findIf { _x in allPlayers } != NOT_FOUND) exitWith {
+		// Already in a player group
+		false
+	};
+	if(count units group _civ >= 3) exitWith {
+		// Group is big enough
+		false
+	};
+	// Find groups
+	private _groups = [];
+	{ _groups pushBackUnique group _x; } forEach _allCivs;
+	_groups = _groups apply {
+		[count units _x, _x]
+	} select {
+		_x#0 <= 3 // small groups only
+	};
+	_groups sort DESCENDING;
+	private _bestGroup = _groups#0#1;
+	if(_bestGroup isEqualTo group _civ && {count units _bestGroup > 1}) exitWith {
+		// Already in the best group
+		false
+	};
+	systemChat format ["%1: joining a group led by %2", name _civ, name leader _bestGroup];
+	[_civ] joinSilent _bestGroup;
+	true
+};
+
 /*
 Class: MilitantCiviliansAmbientMission
 This mission spawns a number of civilians with various weapons who will fight with the police.
 */
 CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
-	// Max number of militants that can be active at one time.
-	VARIABLE("maxActive");
 	// The active militants.
 	VARIABLE("activeCivs");
 
@@ -98,16 +295,6 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		T_SETV("activeCivs", []);
-
-		private _radius = GETV(_city, "boundingRadius");
-
-#ifdef MILITANT_CIVILIANS_TESTING
-		private _maxActive = 15;
-#else
-		// Number of active militants relates to city size
-		private _maxActive = 1 + ((2 * ln(0.01 * _radius + 1)) min 5);
-#endif
-		T_SETV("maxActive", _maxActive);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -132,11 +319,53 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
-		// Check for finished actions
+		// Check for dead civs
 		T_PRVAR(activeCivs);
 		{
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
+
+		private _pos = ZERO_HEIGHT(CALLM0(_city, "getPos"));
+		private _radius = GETV(_city, "boundingRadius");
+
+		private _cityData = GETV(_city, "gameModeData");
+		private _instability = GETV(_cityData, "instability");
+
+		// Alive civs can do some things
+		{
+
+			private _civ = _x;
+
+			switch true do {
+				// Look for a primary weapon once instab is getting higher
+				case (_instability > 0.35
+					&& {primaryWeapon _civ == ""}
+					&& {_civ call pr0_fnc_militantFindWeapon}): {
+					// continue
+				};
+
+				// Look for a vest and helmet
+				case (_instability > 0.5 
+					&& {vest _civ == ""}
+					&& {_civ call pr0_fnc_militantFindVest}): {
+					// continue
+				};
+
+				// Find a leader
+				case (_instability > 0.65
+					&& {[_civ, _activeCivs] call pr0_fnc_findLeader}): {
+					// continue
+				};
+
+				// Run around randomly when not busy with other things
+				case (count waypoints group _civ == 1): {
+					[_pos, _radius, group _civ] call pr0_fnc_generateRandomPath;
+				};
+			};
+
+			// other stuff they could do can go here
+		} forEach (_activeCivs select { !(_x getVariable [BUSY_TAG, false]) });
+
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("spawnNew") {
@@ -145,7 +374,19 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 
 		// Add new actions if required
 		T_PRVAR(activeCivs);
-		T_PRVAR(maxActive);
+
+		private _radius = GETV(_city, "boundingRadius");
+		private _cityData = GETV(_city, "gameModeData");
+		private _instability = GETV(_cityData, "instability");
+
+#ifdef MILITANT_CIVILIANS_TESTING
+		private _maxActive = 10;
+#else
+		// Number of active militants relates to city size and instability
+		private _maxActive = 0.3 * (3 + 2 * _instability) * (0.004 * _radius) ^ 2;
+		// 1 + ((2 * ln(0.01 * _radius + 1)) min 5);
+#endif
+
 		private _deficit = _maxActive - (count _activeCivs);
 		if(_deficit > 0) then {
 			OOP_INFO_MSG("Spawning %1 civilians in %2 to do some damage", [_deficit ARG _city]);
@@ -175,24 +416,31 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				deleteGroup _tmpGroup;
 				_activeCivs pushBack _civie;
 
+				// Set unit skill
+				_civie setSkill ["aimingAccuracy", 0.3];
+				_civie setSkill ["aimingShake", 0.3];
+				_civie setSkill ["aimingSpeed", 0.4];
+				_civie setSkill ["commanding", 0.2];
+				_civie setSkill ["courage", 1];
+				//_civie setSkill ["endurance", 0.8];
+				_civie setSkill ["general", 0.5];
+				_civie setSkill ["reloadSpeed", 0.5];
+				_civie setSkill ["spotDistance", 0.6];
+				_civie setSkill ["spotTime", 0.3];
+
+				_grp allowFleeing 0; // brave?
+				_grp setFormation "FILE";
+				_civie disableAI "AUTOCOMBAT";
+				_grp setBehaviour "COMBAT";
+
+				[_pos, _radius, _grp] call pr0_fnc_generateRandomPath;
+
 				// Add action to recruit them to your squad
 				[
 					_civie, 
 					["Join me brother!", pr0_fnc_CivilianJoinPlayer, [], 1.5, false, true, "", "true", 10]
 				] remoteExec ["addAction", 0, _civie];
 
-				// Add some random waypoints
-				for "_j" from 0 to 5 do {
-					private _wp = _grp addWaypoint [_pos, _radius];
-					_wp setWaypointCompletionRadius 20;
-					_wp setWaypointType "MOVE";
-					_wp setWaypointBehaviour "STEALTH";
-					if(_j == 0) then { _grp setCurrentWaypoint _wp; }
-				};
-
-				// Create a cycle waypoint
-				private _wpCycle = _grp addWaypoint [waypointPosition [_grp, 0], 0];
-				_wpCycle setWaypointType "CYCLE";
 			};
 		};
 	} ENDMETHOD;
