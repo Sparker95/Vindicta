@@ -14,7 +14,7 @@ _array = [];
 _array set [T_SIZE-1, nil];									
 
 _array set [T_NAME, "tGM_WestGer_Police"]; // 							Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Western Germany police, cold war.."]; // 			Template display description
+_array set [T_DESCRIPTION, "Cold war era, western Germany police."]; // 			Template display description
 _array set [T_DISPLAY_NAME, "GM Western Germany Police"]; // 				Template display name
 _array set [T_FACTION, T_FACTION_Police]; // 				Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["gm_core"]]; // 	Addons required to play this template
@@ -24,7 +24,10 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT,  ["gm_ge_pol_patrol_80_blk"]]; // = 0 Default if nothing found
 
-_inf set [T_INF_officer, ["GM_WG_PatrolOfficer"]]; // = 3
+_inf set [T_INF_SL, ["GM_WG_PoliceOfficer"]];
+_inf set [T_INF_TL, ["GM_WG_PoliceOfficer"]];
+_inf set [T_INF_officer, ["GM_WG_PatrolOfficer"]];
+
 
 /* Vehicle classes */
 _veh = +(tDefault select T_VEH);
@@ -41,9 +44,6 @@ _cargo = +(tDefault select T_CARGO);
 
 /* Group templates */
 _group = +(tDefault select T_GROUP);
-
-/* Unit descriptions */
-(T_NAMES select T_INF) set [T_INF_officer, "Patrol Officer"];	
 
 /* Vehicle descriptions */
 (T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Police Car"];

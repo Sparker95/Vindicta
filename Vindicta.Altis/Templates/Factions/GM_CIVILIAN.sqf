@@ -11,13 +11,9 @@ _civUniforms = [
 	"gm_ge_dbp_uniform_suit_80_blu"
 ];
 
-_civFacewear = [
-	"G_Squares"
-];
+_civFacewear = [];
 
-_civHeadgear = [
-	"gm_ge_dbp_headgear_cap_80_blu"
-];
+_civHeadgear = [];
 
 _civVehicles = [
 	"gm_ge_dbp_bicycle_01_ylw",	8, // Bicycle
@@ -38,7 +34,7 @@ _array resize T_SIZE; //Make an array having the size equal to the number of cat
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tGM_Civilian"];
-_array set [T_DESCRIPTION, "Cold War 80s Civilians"];
+_array set [T_DESCRIPTION, "Cold war era, civilians."];
 _array set [T_DISPLAY_NAME, "GM Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
 _array set [T_REQUIRED_ADDONS, ["gm_core"]];
@@ -71,13 +67,23 @@ _arsenal set[T_ARSENAL_handgun, [
 _arsenal set[T_ARSENAL_handgun_items, []];
 _arsenal set[T_ARSENAL_ammo, []];
 _arsenal set[T_ARSENAL_items, []];
-_arsenal set[T_ARSENAL_vests, []];
+_arsenal set[T_ARSENAL_vests, [
+	"gm_gc_bgs_vest_80_border_str"
+]];
 _arsenal set[T_ARSENAL_backpacks, [
 	"ACE_TacticalLadder_Pack",
 	"gm_ge_backpack_satchel_80_blk",
 	"gm_ge_backpack_satchel_80_san"
 ]];
-_arsenal set[T_ARSENAL_uniforms, +_civUniforms];
+_arsenal set[T_ARSENAL_uniforms, [
+	"gm_gc_civ_uniform_man_01_80_blk",
+	"gm_gc_civ_uniform_man_01_80_blu",
+	"gm_gc_civ_uniform_man_02_80_brn",
+	"gm_ge_civ_uniform_blouse_80_gry",
+	"gm_pl_army_uniform_soldier_rolled_80_moro",
+	"gm_pl_army_uniform_soldier_autumn_80_moro",
+	"gm_pl_army_uniform_soldier_80_moro"
+]];
 _arsenal set[T_ARSENAL_facewear, +_civFacewear];
 _arsenal set[T_ARSENAL_headgear, +_civHeadgear];
 _array set [T_ARSENAL, _arsenal];

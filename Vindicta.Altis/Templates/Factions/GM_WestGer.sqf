@@ -14,7 +14,7 @@ _array = [];
 _array set [T_SIZE-1, nil];									
 
 _array set [T_NAME, "tGM_WestGer"]; 							// Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Cold War era western germany."]; 	// Template display description
+_array set [T_DESCRIPTION, "Cold war era, western Germany."]; 	// Template display description
 _array set [T_DISPLAY_NAME, "GM West Germany"]; 				// Template display name
 _array set [T_FACTION, T_FACTION_military]; 					// Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["gm_core"]]; 					// Addons required to play this template

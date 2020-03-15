@@ -16,8 +16,6 @@ private _uniforms = [
 	"gm_ge_civ_uniform_blouse_80_gry"
 ];
 
-if(random 10 > 5) then { this linkItem "ItemWatch" };
-
 private _gunsAndAmmo = [
 	// pistols
 	["gm_pm_blk", 		"gm_8Rnd_9x18mm_B_pst_pm_blk",					true],	0.9,
