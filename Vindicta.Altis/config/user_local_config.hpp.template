@@ -47,6 +47,9 @@
 // Debug construction system (update build progress every location.process tick)
 //#define DEBUG_BUILDING
 
+// Debug Civilian militants
+//#define MILITANT_CIVILIANS_TESTING
+
 // Debug unit allocator (will log all iteration results)
 //#define UNIT_ALLOCATOR_DEBUG
 
