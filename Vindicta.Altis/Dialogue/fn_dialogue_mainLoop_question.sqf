@@ -2,7 +2,7 @@
 
 
 params["_namespace"];
-	
+
 private _unit_1 = _namespace getVariable ["_unit_1",objNull];
 private _unit_2 = _namespace getVariable ["_unit_2",objNull];
 private _events = _namespace getVariable ["_events",""];
@@ -52,7 +52,11 @@ if(_listener in Allplayers)then{
 	//question asked to a AI
 	private _answer_ai = _namespace getVariable "_answer_ai";
 
+	//answer have been said now we need to wait for the next thing to happen
+	private _delay=  FLOAT_SPEACH_TIME(_answer_ai#INDEX_SENTENCE_TEXT) + 0.5;
+
 	//continue to next node
-	[_namespace,_answer_ai] call pr0_fnc_dialogue_mainLoop;
+	[pr0_fnc_dialogue_mainLoop, [_namespace,_answer_ai], _delay] call CBA_fnc_waitAndExecute;
+
 };
 

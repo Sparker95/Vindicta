@@ -1,10 +1,9 @@
 #include "defineCommon.inc"
 
 
-params ["_namespace","_jump_to_new",["_event_node",false]];
+params ["_namespace","_jump_to_new"];
 
-//used when a node is called by an event.
-_namespace setVariable ["_event_node",_event_node];
+scopeName "mainloop";
 
 private _dialogueSets = _namespace getVariable ["_dialogueSets",[]];
 private _unit_1 = _namespace getVariable ["_unit_1",objNull];
@@ -13,8 +12,12 @@ private _conversation_args = _namespace getVariable ["_conversation_args",[]];
 private _default_events = _namespace getVariable ["_default_events",[]];
 private _end_scripts = _namespace getVariable ["_end_scripts",[]];
 
+
 //this array countains the new node_id, and the script and args from the previouse answer/jump_to action
 _jump_to_new params [["_node_id","",[""]],["_previous_script",{},[{}]],["_previous_arg",[]]];
+
+//used only for error message
+_namespace setVariable ["_node_id",_node_id];
 
 //run code from previouse node
 _previous_arg call _previous_script;
@@ -56,9 +59,10 @@ private _node_arrays = [];
 			if (tolower _node_id_x isEqualTo tolower _node_id)exitWith{
 				
 				private _action_array = [_unit_1, _unit_2, _conversation_args] call _script;
-				
+
 				if(isNil "_action_array" || {!(_action_array isEqualType [])})then{
 					[_namespace,"node didnt return array"] call pr0_fnc_dialogue_mainLoop_error;
+					breakOut "main";
 				}else{
 					_node_arrays pushBack [_node_type, _action_array];
 				};
@@ -71,7 +75,8 @@ private _node_arrays = [];
 }forEach _dialogueSets;
 
 if(count _node_arrays == 0)exitWith{
-	[_namespace,"node is empty"] call pr0_fnc_dialogue_mainLoop_error;
+	[_namespace,"node(s) is/are empty"] call pr0_fnc_dialogue_mainLoop_error;
+	breakOut "main";
 };
 
 //we can skip if it if it will be overwriten
@@ -81,6 +86,7 @@ private _overwrite_found = 0;
 	if(_node_type in [TYPE_OVERWRITE,TYPE_CREATE])then{
 		if(_node_type == TYPE_OVERWRITE && _forEachIndex == 0)then{
 			[_namespace,"node type is TYPE_OVERWRITE but nothing was overwriten"] call pr0_fnc_dialogue_mainLoop_error;
+			breakOut "main";
 		};
 		_overwrite_found = _forEachIndex;
 	};
@@ -96,6 +102,7 @@ private _answers = [];
 private _answer_ai = ["#end",{},[]];
 private _jump_to = ["#end",{},[]];
 private _events = +_default_events;//we dont want to overwrite the default events
+private _end_scripts_new = [];
 
 //loop the nodes
 for "_i" from _overwrite_found to count _node_arrays -1 do{
@@ -108,10 +115,11 @@ for "_i" from _overwrite_found to count _node_arrays -1 do{
 
 		if(_node_type == TYPE_INHERIT && !(_type in INHERIT_TYPES))exitWith{
 			[_namespace, format["inheritence not supported for node_type: %1" ,_node_type]] call pr0_fnc_dialogue_mainLoop_error;
+			breakOut "main";
 		};
 
-		private _silence = _type == TYPE_SENTENCE_SILENECE;
-
+		private _silence = _type in SILENCE_TYPES;
+		//diag_log str [_node_type, _type, _x];
 		switch (_type) do {
 			case TYPE_SENTENCE;
 			case TYPE_SENTENCE_SILENECE;
@@ -128,6 +136,7 @@ for "_i" from _overwrite_found to count _node_arrays -1 do{
 
 				if!(_int_speaker in [1,2])exitWith{
 					[_namespace,"wrong speaker nr given"] call pr0_fnc_dialogue_mainLoop_error;
+					breakOut "main";
 				};
 
 				private _speaker = [_unit_1, _unit_2] select (_int_speaker-1);
@@ -198,31 +207,51 @@ for "_i" from _overwrite_found to count _node_arrays -1 do{
 					["_script",{},[{}]],
 					["_args",[]]
 				];
-				_end_scripts pushBack [_script,_args];
+				if!(_script isEqualTo {})then{
+					_end_scripts_new pushBack [_script,_args];
+				};
+				
+			};
+			case TYPE_ON_END_OVERWRITE: {
+				if!(_node_type isEqualto TYPE_INHERIT)then{
+					[_namespace,"TYPE_ON_END_OVERWRITE found but node_type != TYPE_INHERIT"] call pr0_fnc_dialogue_mainLoop_error;
+					breakOut "main";
+				};
+
+				_x params [
+					["_script",{},[{}]],
+					["_args",[]]
+				];
+				_end_scripts_new = [[_script,_args]];//reset array and add new found end_script
 			};
 			default {
 				[_namespace,"undefined type"] call pr0_fnc_dialogue_mainLoop_error;
+				breakOut "main";
 			};
 		};
 	}forEach _action_array;
 
 }; 
 
+
+//add new endscript to list
+if(count _end_scripts_new != 0)then{_end_scripts append _end_scripts_new;};
+
+//overwrite old variables
 _namespace setVariable ["_sentences",_sentences];
 _namespace setVariable ["_question",_question];
 _namespace setVariable ["_answers",_answers];
 _namespace setVariable ["_answer_ai",_answer_ai];
 _namespace setVariable ["_jump_to",_jump_to];
 _namespace setVariable ["_events",_events];
-_namespace setVariable ["_node_id",_node_id];//used only for error message
 
-if(count _sentences > 0)exitWith{
-	_namespace call pr0_fnc_dialogue_mainLoop_sentence;
-};
 
-if(count _question > 0)exitWith{
-	_namespace call pr0_fnc_dialogue_mainLoop_question;
-};
+//we need to do this after because we need an updated _namespace
+if(count _sentences > 0)exitWith{_namespace call pr0_fnc_dialogue_mainLoop_sentence;};
+
+//If node contains both sentence and question sentence will be called first.
+//Afterwards pr0_fnc_dialogue_mainLoop_sentence calls pr0_fnc_dialogue_mainLoop_question
+if(count _question > 0)exitWith{_namespace call pr0_fnc_dialogue_mainLoop_question;};
 
 //node without sentence or question was given
 [_namespace,TYPE_EVENT_ERROR] call pr0_fnc_dialogue_mainLoop_end;

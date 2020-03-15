@@ -320,7 +320,6 @@
 			"pr0_fnc_dialogue_deleteHUD",
 			"pr0_fnc_dialogue_deleteSentence",
 			"pr0_fnc_dialogue_deleteQuestion",
-			"pr0_fnc_dialogue_setDataSets",
 			"pr0_fnc_dialogue_updateSentence",
 			"pr0_fnc_dialogue_unitSideColor",
 			"pr0_fnc_dialogue_createSimple",

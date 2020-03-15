@@ -33,5 +33,3 @@ _namespace call CBA_fnc_deleteNamespace;
 private _namespaces = missionNamespace getVariable ["dialog_nameSpaces",[]];
 _namespaces = _namespaces - [locationNull];//namespace was delete so its null
 missionNamespace setVariable ["dialog_nameSpaces",_namespaces];
-
-

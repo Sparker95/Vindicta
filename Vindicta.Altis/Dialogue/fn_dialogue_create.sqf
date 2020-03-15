@@ -8,7 +8,8 @@
 
 	Input:
 		_unit_1:
-		_unit_2(optional): 
+		_unit_2(optional):
+		_dialogueSet_ids: String or Array, set of dialogues that will be used
 		_node_id: The id of the conversation you want to start
 		_script(optional): Code that needs to run at the end of the conversation
 		_args(optional): arguments that will be feed to all scripts 
@@ -19,6 +20,7 @@
 params[
 	["_unit_1",objNull,[objNull]],
 	["_unit_2",objNull,[objNull]],//optional
+	["_dialogueSet_ids","",["",[]]],
 	["_node_id","",[""]],
 	["_end_script",{},[{}]],//optional
 	["_conversation_args",[],[]]//optional
@@ -26,12 +28,13 @@ params[
 
 diag_log str ["create", _node_id];
 
-if(isnull _unit_2)then {_unit_2 = _unit_1};
 if(isNull _unit_1)exitWith{};
+if(isnull _unit_2)then {_unit_2 = _unit_1};
+
+if(_dialogueSet_ids isEqualType "")then{_dialogueSet_ids = [_dialogueSet_ids]};
 
 //search for dateSets that are going to be used
 private _dialogueSets_registered = missionNamespace getVariable ["dialogue_dialogueSets",[]];
-private _dialogueSet_ids_unit = _unit_2 getVariable ["_dialogueSet",[]];
 private _dialogueSets = [];
 {
 	_X params [["_dialogueSet_id_unit","",[""]]];
@@ -42,7 +45,7 @@ private _dialogueSets = [];
 		};
 	}forEach _dialogueSets_registered;
 
-}forEach _dialogueSet_ids_unit;
+}forEach _dialogueSet_ids;
 
 //find all default events in datasets
 private _default_events = []; {_default_events set [_x, [{},[]]];}forEach EVENT_TYPES;
@@ -58,7 +61,6 @@ private _default_events = []; {_default_events set [_x, [{},[]]];}forEach EVENT_
 	}forEach _dialogueSet;
 }forEach _dialogueSets;
 
-
 private _namespace = call CBA_fnc_createNamespace;
 _namespace setVariable ["_dialogueSets",_dialogueSets];
 _namespace setVariable ["_unit_1",_unit_1];
@@ -66,6 +68,7 @@ _namespace setVariable ["_unit_2",_unit_2];
 _namespace setVariable ["_end_scripts",[[_end_script]]];
 _namespace setVariable ["_conversation_args",_conversation_args];
 _namespace setVariable ["_default_events",_default_events];
+_namespace setVariable ["_events",_default_events];//temp until mainloop overwrite
 
 private _namespaces = missionNamespace getVariable ["dialog_nameSpaces",[]];
 _namespaces pushBack _namespace;

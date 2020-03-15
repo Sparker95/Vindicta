@@ -5,10 +5,6 @@
 
 params [["_unit",objNull,[objNull]]];
 
-//add dialogue
-[_unit, ["civilian"]] call pr0_fnc_dialogue_setDataSets;
-
-
 //prevent the rest from running on headless clients
 if(!hasInterface)exitWith{};
 
@@ -18,26 +14,43 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 		params ["_target", "_caller"];
 		
 		private _state = _target call pr0_fnc_cp_getUnitState;
-		private _end_script = {};
 
-		//stop unit from moving if he is not in panic
-		if!(_state isEqualTo "panic")then{
-			[_target, _caller, true] call pr0_fnc_cp_talkToServer;
-			_end_script = {
-				params ["_caller","_target"];
-				[_target, _caller, false] call pr0_fnc_cp_talkToServer;
+		if(_state isEqualTo "panic")exitWith{
+			if(_target getVariable ["dialog_aimed_at",false])then{
+				[_target, "Get away from me!", 1] call pr0_fnc_dialogue_createSimple;
+			}else{
+				[_target, "can't talk right now", 1] call pr0_fnc_dialogue_createSimple;
 			};
 		};
+
+		private _end_script = {};
+		private _dialogues = ["civilian"];
+		if(_state isEqualTo "arrested")then{
+			_dialogues pushBack "arrested";
+		};
+
+		//stop unit from moving if he is not in panic
+		[_target, _caller, true] call pr0_fnc_cp_talkToServer;
+
+		//lock dialogue from running a second time
+		_target setVariable ["talkingTo",true];
 		
-		[_caller,_target,"intro_hello",_end_script] call pr0_fnc_dialogue_create;
+		//disable stop moving after dialoge is over
+		_end_script = {
+			params ["_caller","_target"];
+			[_target, _caller, false] call pr0_fnc_cp_talkToServer;
+			_target setVariable ["talkingTo",false];
+		};
+
+		[_caller,_target,_dialogues, "intro_hello",_end_script] call pr0_fnc_dialogue_create;
 
 	}, // Script
 	0, // Arguments
 	9000, // Priority
 	true, // ShowWindow
-	true, //hideOnUse
+	false, //hideOnUse
 	"", //shortcut
-	"", //condition
+	"!(_target getVariable ['talkingTo',false])", //condition
 	4.5, //radius
 	false, //unconscious
 	"", //selection
@@ -57,7 +70,13 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 	"(_this distance _target < 2) && (alive _target) && (([_target] call pr0_fnc_cp_getUnitState) == 'arrested')",
 	{
 		params ["_target", "_caller", "_actionId", "_arguments"];
-		[player,_target, "release_start"] call  pr0_fnc_dialogue_create;
+		[_target, [
+			"Let me free you",
+			"Let me help you",
+			"I will untie you while the police are not watching",
+			"Run away after I release you",
+			"Tell your friends that rebels helped you today!"
+		]] call  pr0_fnc_dialogue_createSimple;
 	}, // Code start
 	
 	{
@@ -67,7 +86,11 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 
 	{ 	// Code completed
 		params ["_target", "_caller", "_actionId", "_arguments"];
-		[player,_target, "release_finished"] call  pr0_fnc_dialogue_create;
+		[_target, [
+			"Thanks man!",
+			"Thank you!",
+			"I will never forget that you helped me!"
+		]] call  pr0_fnc_dialogue_createSimple;
 
 		// Unarrest him
 		[_target, false] remoteExecCall ["pr0_fnc_cp_arrestUnit", 2, false];

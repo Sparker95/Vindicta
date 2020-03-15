@@ -3,7 +3,6 @@
 
 params["_namespace"];
 
-
 private _unit_1 = _namespace getVariable "_unit_1";
 private _unit_2 = _namespace getVariable "_unit_2";
 private _events = _namespace getVariable "_events";
@@ -54,22 +53,21 @@ if(_silence)then{
 	[_speaker,_text,_loudness] call pr0_fnc_dialogue_createSimple;
 };
 
-diag_log str ["sentence", _text];
+//sentence have been said now we need to wait for the next thing to happen
+private _delay=  FLOAT_SPEACH_TIME(_sentence#INDEX_SENTENCE_TEXT) + 0.5;
 
 //call next sentence if any are left
 if(count _sentences>0)exitWith{
-	private _delay=  FLOAT_SPEACH_TIME(_sentence#INDEX_SENTENCE_TEXT) + 0.5;
 	[pr0_fnc_dialogue_mainLoop_sentence, _namespace, _delay] call CBA_fnc_waitAndExecute;
 };
 
 //check if there is a question
 private _question = _namespace getVariable "_question";
 if(count _question>0)exitWith{
-	private _delay = FLOAT_SPEACH_TIME(_question#INDEX_SENTENCE_TEXT) + 0.5;
 	[pr0_fnc_dialogue_mainLoop_question, _namespace, _delay] call CBA_fnc_waitAndExecute;
 };
 
 //continue to next node
 private _jump_to = _namespace getVariable "_jump_to";
-[_namespace,_jump_to] call pr0_fnc_dialogue_mainLoop;
+[pr0_fnc_dialogue_mainLoop, [_namespace,_jump_to], _delay] call CBA_fnc_waitAndExecute;
 

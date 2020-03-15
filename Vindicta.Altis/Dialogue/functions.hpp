@@ -4,9 +4,6 @@ class dialogue {
 	class dialogue_create {};
 	class dialogue_createSimple {};
 
-	class dialogue_setDataSets {};
-	class dialogue_addDataSet {};
-	class dialogue_removeDataSet {};
 	class dialogue_registerDataSet {};
 	
 	class dialogue_mainLoop {};

@@ -51,7 +51,12 @@ private _array = [
 		];
 
 		if(_civ getVariable ["dialog_aimed_at",false])exitWith{
-			_return pushBack [TYPE_SENTENCE,"Your that guy with a gun!",2,__BOOST_SUSP];
+			_return append [
+				[TYPE_SENTENCE,"Your that guy who pointed a gun at me!",2,1,__BOOST_SUSP],
+				[TYPE_SENTENCE,"I have better things to do than talking to you",2,1, __BOOST_SUSP],
+				[TYPE_JUMP_TO,"#end"]
+			];
+			_return;
 		};
 		
 
@@ -309,54 +314,6 @@ private _array = [
 		];
 		
 		_return;
-	}],
-
-
-	["dont_shoot_me",{
-		[
-			[TYPE_SENTENCE,[
-				"Don't shoot! Please!",
-				"Please, don't shoot!",
-				"Fuck this shit!",
-				"Put the gun away!",
-				"I surrender!",
-				"I am not armed!",
-				"Don't kill me! I have a family!",
-				"What do you want??",
-				"Leave me alone! Please!",
-				"I'm not the guy you are looking for!",
-				"Please, put the weapon away!",
-				"I have no weapon!",
-				"Oh My God!",
-				"I am not ready to die!",
-				"Someone, help me!"
-			],1],
-			[TYPE_JUMP_TO,"#end"]
-		]
-	}],
-
-
-	["release_start",{
-		[
-			[TYPE_SENTENCE,[
-				"Let me free you",
-				"Let me help you",
-				"I will untie you while the police are not watching",
-				"Run away after I release you",
-				"Tell your friends that rebels helped you today!"
-			],1],
-			[TYPE_JUMP_TO,"#end"]
-		]
-	}],
-	["release_finished",{
-		[
-			[TYPE_SENTENCE,[
-				"Thanks man!",
-				"Thank you!",
-				"I will never forget that you helped me!"
-			],1],
-			[TYPE_JUMP_TO,"#end"]
-		]
 	}]
 
 ];
@@ -367,6 +324,14 @@ private _array = [
 
 
 private _array2 = [
+	[TYPE_ON_OUT_OF_TIME, {}],
+	[TYPE_ON_WALKED_AWAY, {
+		params ["_player","_civ"];
+		[_civ, [
+			"don't leave me here",
+			"Yes, walk away"
+		], 1] call pr0_fnc_dialogue_createSimple;
+	}],
 
 	["intro_hello",TYPE_INHERIT,{
 		[

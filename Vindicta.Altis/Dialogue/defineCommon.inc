@@ -1,5 +1,46 @@
 #include "..\defineCommon.inc"
 
+
+
+//---------------------------------
+//      Converstion types
+//---------------------------------
+
+#define TYPE_CREATE 0
+#define TYPE_OVERWRITE 1
+#define TYPE_INHERIT 2
+
+//---------------------------------
+//      Node types
+//---------------------------------
+
+#define TYPE_SENTENCE 10
+#define TYPE_SENTENCE_SILENECE 11
+
+#define TYPE_QUESTION 20
+#define TYPE_QUESTION_SILENECE 21
+#define TYPE_ANSWER 22
+#define TYPE_ANSWER_SILENECE 23
+#define TYPE_ANSWER_AI 24
+#define TYPE_REMOVE_ANSWER 25
+
+#define TYPE_JUMP_TO 30
+
+//---------------------------------
+//      Event types
+//---------------------------------
+
+#define TYPE_ON_WALKED_AWAY 40
+#define TYPE_ON_OUT_OF_TIME 41
+#define TYPE_ON_DEATH 42
+#define TYPE_ON_END 43
+#define TYPE_ON_UNEXPECTED_END 44
+
+
+//---------------------------------
+//      settings
+//---------------------------------
+
 #define STRING_ICON_UP_ARROW "\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa"
 
 #define STRING_QUESTION_RETURN_EVENT "dialogue_question_return"
@@ -22,35 +63,16 @@
 #define INT_SENTENCE_LIMIT 3
 #define INT_SENTENCE_LIMIT_PLAYER_INVOLVED 6
 
-//Converstion types
-#define TYPE_CREATE 0
-#define TYPE_OVERWRITE 1
-#define TYPE_INHERIT 2
 
-//Node types
-#define TYPE_SENTENCE 10
-#define TYPE_SENTENCE_SILENECE 11
-
-#define TYPE_QUESTION 12
-#define TYPE_QUESTION_SILENECE 13
-#define TYPE_ANSWER 14
-#define TYPE_ANSWER_AI 15
-#define TYPE_REMOVE_ANSWER 16
-
-#define TYPE_JUMP_TO 17
-
-#define TYPE_ON_WALKED_AWAY 18
-#define TYPE_ON_OUT_OF_TIME 19
-#define TYPE_ON_DEATH 20
-#define TYPE_ON_END 21
-#define TYPE_ON_UNEXPECTED_END 22
+//used only internaly
 
 #define DEFAULT_EVENT_TYPES [TYPE_ON_WALKED_AWAY,TYPE_ON_OUT_OF_TIME,TYPE_ON_DEATH,TYPE_ON_UNEXPECTED_END]
 
-#define INHERIT_TYPES [TYPE_ANSWER_AI,TYPE_JUMP_TO,TYPE_ON_WALKED_AWAY,TYPE_ON_OUT_OF_TIME,TYPE_ON_DEATH,TYPE_ON_UNEXPECTED_END]
+#define TYPE_ON_END_OVERWRITE 30
+#define INHERIT_TYPES [TYPE_ANSWER_AI,TYPE_JUMP_TO,TYPE_ON_WALKED_AWAY,TYPE_ON_OUT_OF_TIME,TYPE_ON_DEATH,TYPE_ON_UNEXPECTED_END,TYPE_ON_END_OVERWRITE]
 
 
-#define SENTENCE_TYPES [TYPE_SENTENCE_SILENECE,TYPE_QUESTION_SILENECE,TYPE_ANSWER_SILENECE]
+#define SILENCE_TYPES [TYPE_SENTENCE_SILENECE,TYPE_QUESTION_SILENECE,TYPE_ANSWER_SILENECE]
 
 
 //events used internaly
@@ -59,9 +81,7 @@
 #define TYPE_EVENT_DEATH 2                         // when unit gets killed or unconciuos
 #define TYPE_EVENT_UNEXPECTED_END 3                 // when conversation ends without reaching #end (same as the other events combined)
 #define TYPE_EVENT_ERROR 4
-#define EVENT_TYPES [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH,TYPE_EVENT_ERROR,TYPE_EVENT_UNEXPECTED_END]
-
-
+#define EVENT_TYPES [TYPE_EVENT_WALKED_AWAY,TYPE_EVENT_OUT_OF_TIME,TYPE_EVENT_DEATH,TYPE_EVENT_UNEXPECTED_END,TYPE_EVENT_ERROR]
 
 #define INDEX_SENTENCE_TEXT 0
 #define INDEX_SENTENCE_SILENCE 1
