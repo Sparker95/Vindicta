@@ -15,7 +15,7 @@ pr0_fnc_CivilianJoinPlayer = {
 			params ["_target", "_actionId"];
 			_target removeAction _actionId;
 		}] remoteExec ["call"];
-		
+
 		// Do the unit actions on the server
 		[[_target, _caller], { 
 			params ["_target", "_caller"];
@@ -186,6 +186,7 @@ pr0_fnc_militantFindWeapon = {
 			if(!isNull _civ) then {
 				_civ setVariable [BUSY_TAG, false];
 				group _civ setBehaviour "COMBAT";
+				[_civ] doFollow leader group _civ;
 			};
 			if(!isNull _src) then {
 				_src setVariable [USAGE_TAG, (_src getVariable [USAGE_TAG, 0]) - 1];
@@ -242,6 +243,7 @@ pr0_fnc_militantFindVest = {
 			if(!isNull _civ) then {
 				_civ setVariable [BUSY_TAG, false];
 				group _civ setBehaviour "COMBAT";
+				[_civ] doFollow leader group _civ;
 			};
 			if(!isNull _src) then {
 				_src setVariable [USAGE_TAG + "vest", false];
@@ -259,7 +261,8 @@ pr0_fnc_findLeader = {
 		// Already in a player group
 		false
 	};
-	if(count units group _civ >= 3) exitWith {
+	private _civGroupSize = count units group _civ;
+	if(_civGroupSize >= 3) exitWith {
 		// Group is big enough
 		false
 	};
@@ -269,17 +272,98 @@ pr0_fnc_findLeader = {
 	_groups = _groups apply {
 		[count units _x, _x]
 	} select {
-		_x#0 <= 3 // small groups only
+		_x#0 > _civGroupSize && _x#0 < 3 // bigger groups only
 	};
 	_groups sort DESCENDING;
-	private _bestGroup = _groups#0#1;
-	if(_bestGroup isEqualTo group _civ && {count units _bestGroup > 1}) exitWith {
-		// Already in the best group
+	if(count _groups == 0) exitWith {
+		// No groups
 		false
 	};
+
+	private _bestGroup = _groups#0#1;
 	systemChat format ["%1: joining a group led by %2", name _civ, name leader _bestGroup];
 	[_civ] joinSilent _bestGroup;
 	true
+};
+
+pr0_fnc_givePlayerIntel = {
+	params ["_civ", "_newIntel"];
+
+	if(count _newIntel == 0) exitWith {
+		false
+	};
+
+	private _players = allPlayers select {
+		_x distance _civ < 100 && !(_x getVariable [USAGE_TAG + "intel", false])
+	} apply {
+		[_x distance _civ, _x]
+	};
+
+	_players sort ASCENDING;
+	_players = _players apply { _x#1 };
+
+	if(count _players > 0) then {
+		private _tgt = _players#0;
+		private _intel = selectRandom _newIntel;
+
+		systemChat format ["%1: giving intel %2 to %3", name _civ, CALLM0(_intel, "getShortName"), name _tgt];
+		_civ setVariable [BUSY_TAG, true];
+
+		[_civ, _tgt, _intel] spawn {
+			params ["_civ", "_tgt", "_intel"];
+			private _timeout = time + 60;
+			waitUntil {
+				_civ doMove position _tgt;
+				sleep 5;
+				isNull _civ || {!alive _civ} || {isNull _tgt} || {!alive _tgt} || {_civ distance _tgt <= 3} || {time > _timeout}
+			};
+			if(!isNull _civ && {alive _civ} && {!isNull _tgt} && {alive _tgt} && {_civ distance _tgt <= 3}) then {
+				doStop _civ;
+				_civ lookAt _tgt;
+
+				[_civ, selectRandom [
+					"I must tell you something!",
+					"There was news while you were away.",
+					"Sometimes I hear things...",
+					"They are planing something!",
+					"Please, you must know something..."
+				], _tgt]  remoteExec ["Dialog_fnc_hud_createSentence", _tgt, false];
+				sleep 2;
+
+				[_civ, format [ selectRandom [
+					"I overheard mention of %1 in the area.",
+					"There may be %1 near here!",
+					"%1 is planned by the enemy.",
+					"The enemy is planning %1!"
+				], CALLM0(_intel, "getShortName")], _tgt]  remoteExec ["Dialog_fnc_hud_createSentence", _tgt, false];
+				sleep 2;
+
+				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
+				sleep 2;
+
+				[_civ, selectRandom [
+					"I must leave now.",
+					"I must be going, they are looking for us!",
+					"Its best not to be seen together.",
+					"I will keep my ears open.",
+					"Come back later, I might know more..."
+				], _tgt]  remoteExec ["Dialog_fnc_hud_createSentence", _tgt, false];
+
+				_civ lookAt _tgt;
+				_civ action ["Salute", _civ];
+
+				sleep 4;
+
+				[_civ] doFollow leader group _civ;
+			};
+			if(!isNull _civ) then {
+				_civ setVariable [BUSY_TAG, false];
+			};
+		};
+		true
+	} else {
+		false
+	}
 };
 
 /*
@@ -289,12 +373,18 @@ This mission spawns a number of civilians with various weapons who will fight wi
 CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	// The active militants.
 	VARIABLE("activeCivs");
+	VARIABLE("nextInformant");
+	VARIABLE("nextIntelUpdate");
+	VARIABLE("newIntel");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		T_SETV("activeCivs", []);
+		T_SETV("nextInformant", TIME_NOW);
+		T_SETV("nextIntelUpdate", TIME_NOW);
+		T_SETV("newIntel", []);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -331,9 +421,23 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		private _cityData = GETV(_city, "gameModeData");
 		private _instability = GETV(_cityData, "instability");
 
+		// Refresh intel if stale
+		if(TIME_NOW > T_GETV("nextIntelUpdate")) then
+		{
+			T_SETV("nextIntelUpdate", TIME_NOW + 120);
+			// Lets find out if we have some intel for the player that they don't have already
+			private _civGarr = CALLM1(_city, "getGarrisons", civilian) select 0;
+			if(!isNil "_civGarr") then {
+				private _playerSide = CALLM0(gGameMode, "getPlayerSide");
+				private _AI = CALLM0(_civGarr, "getAI");
+				private _allIntel = CALLM0(_AI, "getAllGeneralIntel");
+				private _newIntel = CALLSM2("AICommander", "filterOutKnownIntel", _allIntel, _playerSide);
+				T_SETV("newIntel", _newIntel);
+			};
+		};
+
 		// Alive civs can do some things
 		{
-
 			private _civ = _x;
 
 			switch true do {
@@ -355,6 +459,12 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				case (_instability > 0.65
 					&& {[_civ, _activeCivs] call pr0_fnc_findLeader}): {
 					// continue
+				};
+
+				case (TIME_NOW > T_GETV("nextInformant") && {[_civ, T_GETV("newIntel")] call pr0_fnc_givePlayerIntel}): {
+					// continue
+					private _nextInformant = TIME_NOW + random [150, 300, 450];
+					T_SETV("nextInformant", _nextInformant);
 				};
 
 				// Run around randomly when not busy with other things
