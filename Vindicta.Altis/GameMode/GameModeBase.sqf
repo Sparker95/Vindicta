@@ -417,6 +417,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
 					OOP_ERROR_0("");
 
+					#ifdef RELEASE_BUILD
 					// Make a recursive dump of the last processed object
 					private _lastObject = GETV(_msgLoop, "lastObject");
 					if (IS_NULL_OBJECT(_lastObject)) then {
@@ -430,7 +431,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
 						};
 					};
-
+					#endif
 					_recovery = true;
 				};
 			};

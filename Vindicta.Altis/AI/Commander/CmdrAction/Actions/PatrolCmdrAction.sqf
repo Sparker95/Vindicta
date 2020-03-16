@@ -299,11 +299,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 					CALLM2(_detachedGarr, "addKnownFriendlyLocationsActual", _x, 2000);
 				};
 			} forEach GETV(_intelClone, "waypoints");
-
-			// Reveal it to player side
-			if (random 100 < 70) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
-			};
 		} else {
 			CALLM(_intelClone, "updateInDb", []);
 
