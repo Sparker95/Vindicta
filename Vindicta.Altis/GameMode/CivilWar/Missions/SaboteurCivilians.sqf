@@ -37,6 +37,17 @@ Saboteur_fnc_initSaboteur =
 	_this addItemToBackpack "IEDLandSmall_Remote_Mag";
 	_this addItemToBackpack "IEDUrbanSmall_Remote_Mag";
 	_this allowFleeing 0; // brave?
+	// Set unit skill
+	_this setSkill ["aimingAccuracy", 0.3];
+	_this setSkill ["aimingShake", 0.3];
+	_this setSkill ["aimingSpeed", 0.4];
+	_this setSkill ["commanding", 0.2];
+	_this setSkill ["courage", 1];
+	//_this setSkill ["endurance", 0.8];
+	_this setSkill ["general", 0.5];
+	_this setSkill ["reloadSpeed", 0.5];
+	_this setSkill ["spotDistance", 0.6];
+	_this setSkill ["spotTime", 0.3];
 };
 
 // Creates a set of waypoints for our saboteur

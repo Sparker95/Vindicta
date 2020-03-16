@@ -66,7 +66,7 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["I_E_Offroad_01_F"]];
 
 _veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F", "I_E_Offroad_01_comms_F", "I_E_Offroad_01_covered_F"]];
-_veh set [T_VEH_car_armed, ["I_E_Offroad_01_F", "I_E_Offroad_01_comms_F", "I_E_Offroad_01_covered_F"]];
+_veh set [T_VEH_car_armed, ["I_G_Offroad_01_armed_F"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["B_T_MRAP_01_F"]];
 _veh set [T_VEH_MRAP_HMG, ["B_T_MRAP_01_hmg_F"]];

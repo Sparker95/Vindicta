@@ -18,21 +18,14 @@ this addItemToUniform "gm_ge_headgear_hat_80_oli";
 
 //	==== Vest ====
 this addVest "gm_ge_army_vest_80_rifleman";
-for "_i" from 1 to 3 do {this addItemToVest "gm_smokeshell_wht_dm25";};
+for "_i" from 1 to 2 do {this addItemToVest "gm_smokeshell_wht_dm25";};
 
 //	==== Backpack ====
 
 //	==== Weapons ====
-private _gunAndOptic = [
-	["gm_g3a3_oli", "gm_feroz24_blk"], 0.5,
-	["gm_g3a3_blk", "gm_feroz24_blk"], 0.5,
-	["gm_g3a3_grn", "gm_feroz24_blk"], 0.5,
-	["gm_g3a3_des", "gm_feroz24_des"], 0.1
-];
 
-(selectRandomWeighted _gunAndOptic) params ["_gun", "_optic"];
-this addWeapon _gun;
-this addPrimaryWeaponItem _optic;
+this addWeapon "gm_svd_wud";
+this addPrimaryWeaponItem "gm_pso1_gry";
 this addPrimaryWeaponItem "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";
 for "_i" from 1 to 6 do {this addItemToVest "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";}; 
 

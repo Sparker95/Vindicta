@@ -157,11 +157,6 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtGarr, "pos")]);
 
-			// Reveal it to player side
-			if (random 100 < 80) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
-			};
-
 			// Reveal some friendly locations near the destination to the garrison performing the task
 			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {

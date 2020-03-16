@@ -12,10 +12,10 @@ Updated: March 2020 by Marvis
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									
+_array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tCSAT"]; // 														Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Default Canton Protocol Strategic Alliance Treaty."]; // 	Template display description
+_array set [T_DESCRIPTION, "Vanilla Canton Protocol Strategic Alliance Treaty."]; // 	Template display description
 _array set [T_DISPLAY_NAME, "Arma 3 CSAT"]; // 											Template display name
 _array set [T_FACTION, T_FACTION_military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 								Addons required to play this template
@@ -216,8 +216,8 @@ _group = +(tDefault select T_GROUP);
 //(T_NAMES select T_VEH) set [T_VEH_SPAA, "Self-Propelled Anti-Aircraft"]; //		= 11 Self-Propelled Anti-Aircraft system
 //(T_NAMES select T_VEH) set [T_VEH_stat_HMG_high, "Static HMG"]; //				= 12 Static tripod Heavy Machine Gun (elevated)
 //(T_NAMES select T_VEH) set [T_VEH_stat_GMG_high, "Static GMG"]; // 				= 13 Static tripod Grenade Machine Gun (elevated)
-//(T_NAMES select T_VEH) set [T_VEH_stat_HMG_low, "Static HMG"]; //						= 14 Static tripod Heavy Machine Gun
-//(T_NAMES select T_VEH) set [T_VEH_stat_GMG_low, "Static GMG"]; //						= 15 Static tripod Grenade Machine Gun
+//(T_NAMES select T_VEH) set [T_VEH_stat_HMG_low, "Static HMG"]; //					= 14 Static tripod Heavy Machine Gun
+//(T_NAMES select T_VEH) set [T_VEH_stat_GMG_low, "Static GMG"]; //					= 15 Static tripod Grenade Machine Gun
 //(T_NAMES select T_VEH) set [T_VEH_stat_AA, "Static AA"]; //						= 16 Static AA, can be a gun or guided-missile launcher
 //(T_NAMES select T_VEH) set [T_VEH_stat_AT, "Static AT"]; //						= 17 Static AT, e.g. a gun or ATGM
 //(T_NAMES select T_VEH) set [T_VEH_stat_mortar_light, "Static Mortar"]; // 		= 18 Light mortar

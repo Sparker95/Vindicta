@@ -15,7 +15,7 @@ private _uniforms = [
 	"U_C_Poloshirt_redwhite",
 	"U_C_Poloshirt_salmon",
 	"U_C_Poloshirt_stripped",
-	"U_C_Poloshirt_tricolor",
+	"U_C_Poloshirt_tricolour",
 	"U_Marshal",
 	"U_I_C_Soldier_Bandit_5_F",
 	"U_I_C_Soldier_Bandit_3_F",
