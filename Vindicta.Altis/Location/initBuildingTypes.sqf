@@ -97,8 +97,8 @@ location_b_capacity =
 	],
 	// WW2 & CUP
 	[
-		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L","Land_Mil_Barracks_L","Land_Mil_Barracks_no_interior_CUP"],
-		10
+		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L","Land_Mil_Barracks_L","Land_Mil_Barracks"],
+		12
 	],
 	[
 		["Land_I44_Object_Tent_Us_Small"],
@@ -163,7 +163,7 @@ location_bp_cargo_medium =
 	],
 	// Beketov
 	[
-		["Land_HouseV2_02_Interier"],
+		["Land_HouseV2_02_Interier", "Land_HouseV2_02_Interier_dam"],
 		[[4.21436,76.2874,0.973242], [6.86528,57.0615,0.973242], [6.2304,306.133,0.973242], [7.66948,288.97,0.973242]]
 	],
 	// Global Mobilization
@@ -212,6 +212,7 @@ location_bt_police =
 	
 	// Beketov - CUP
 	"Land_HouseV2_02_Interier",
+	"Land_HouseV2_02_Interier_dam",
 
 	// Global Mobilization
 	"land_gm_euro_house_07_e",
@@ -265,7 +266,7 @@ location_decorations_police =
 	],
 	// Beketov
 	[
-		["Land_HouseV2_02_Interier"],
+		["Land_HouseV2_02_Interier", "Land_HouseV2_02_Interier_dam"],
 		[[[0.00195313,-8.37939,-2.86904],[[0,1,0],[0,0,1]]],[[-0.0200195,8.30127,-2.89629],[[-8.74228e-008,-1,0],[0,0,1]]]]
 	],
 	// Global Mobilization

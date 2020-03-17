@@ -20,10 +20,11 @@ private _uniforms = [
 this forceAddUniform selectRandom _uniforms;
 this addItemToUniform "ACE_Flashlight_Maglite_ML300L";
 
-// ==== Backpack ====
+/* ==== Backpack ====
 if (random 10 < 3) then {
 	this addBackpack "gm_ge_backpack_satchel_80_blk";
 };
+*/
 
 //	==== Weapons ====
 private _gunsAndAmmo = [
