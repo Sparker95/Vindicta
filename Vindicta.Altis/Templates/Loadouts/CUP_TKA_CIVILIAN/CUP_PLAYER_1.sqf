@@ -90,7 +90,7 @@ private _jacketVest = selectRandom[
 ];
 this addVest selectRandom [_waistVest, _wlightVest, _jacketVest];
 
-// ==== Backpack ====
+/* ==== Backpack ====
 if (random 10 < 2) then {
 	private _backpacks = [
 		"CUP_B_IDF_Backpack",
@@ -98,6 +98,7 @@ if (random 10 < 2) then {
 	];
 	this addBackpack selectRandom _backpacks;
 };
+*/
 
 //	==== Weapons ====
 private _gunsAndAmmo = [

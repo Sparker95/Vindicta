@@ -8,7 +8,7 @@ _array set [T_NAME, "tCUP_RUS_CIVILIAN"];
 _array set [T_DESCRIPTION, "Russian civilians from CUP."];
 _array set [T_DISPLAY_NAME, "CUP RUS Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
-_array set [T_REQUIRED_ADDONS, ["CUP_Creatures_People_Civil_Russia"]];
+_array set [T_REQUIRED_ADDONS, ["CUP_Creatures_People_Civil_Russia", "CUP_WheeledVehicles_S1203"]];
 
 _civHeadgear = [
 	"CUP_H_FR_BandanaGreen",

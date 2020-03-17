@@ -43,7 +43,7 @@ private _uniforms = [
 this forceAddUniform selectRandom _uniforms;
 this addItemToUniform "ACE_Flashlight_Maglite_ML300L";
 
-// ==== Backpack ====
+/* ==== Backpack ====
 if (random 10 < 2) then {
 	private _backpacks = [
 		"CUP_B_HikingPack_Civ",
@@ -52,6 +52,7 @@ if (random 10 < 2) then {
 	];
 	this addBackpack selectRandom _backpacks;
 };
+*/
 
 //	==== Weapons ====
 private _gunsAndAmmo = [
