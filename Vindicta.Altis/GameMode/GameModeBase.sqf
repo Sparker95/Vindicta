@@ -417,6 +417,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
 					OOP_ERROR_0("");
 
+					#ifdef RELEASE_BUILD
 					// Make a recursive dump of the last processed object
 					private _lastObject = GETV(_msgLoop, "lastObject");
 					if (IS_NULL_OBJECT(_lastObject)) then {
@@ -430,7 +431,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
 						};
 					};
-
+					#endif
 					_recovery = true;
 				};
 			};
@@ -650,20 +651,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Create a suspiciousness monitor for player
 		NEW("UndercoverMonitor", [_newUnit]);
-
-		pr0_fnc_coneTarget = {
-			params ["_range"];
-			private _tgts = (nearestObjects [position player, ["Man"], _range]) apply { 
-				[_x, vectorNormalized (position player vectorFromTo position _x) vectorCos getCameraViewDirection player]
-			} select { 
-				_x#1 > 0.9
-			};
-			if(count _tgts > 0) then {
-				_tgts#0#0
-			} else {
-				objNull
-			}
-		};
 
 		// Create scroll menu to talk to civilians
 		pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/

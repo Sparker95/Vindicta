@@ -98,7 +98,7 @@ CLASS("TacticalTablet", "")
 		};
 
 		// Delete onEachFrame handler
-    	removeMissionEventHandler ["EachFrame", T_GETV("onEachFrameHandlerID")];
+		removeMissionEventHandler ["EachFrame", T_GETV("onEachFrameHandlerID")];
 
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
 

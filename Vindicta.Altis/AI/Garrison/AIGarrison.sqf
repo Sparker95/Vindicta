@@ -537,6 +537,12 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
 	} ENDMETHOD;
 
+	METHOD("getAllGeneralIntel") {
+		params [P_THISOBJECT];
+		+T_GETV("intelGeneral")
+	} ENDMETHOD;
+	
+
 	METHOD("setPersonalIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 

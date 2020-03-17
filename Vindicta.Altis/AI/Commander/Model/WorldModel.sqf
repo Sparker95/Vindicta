@@ -273,7 +273,7 @@ CLASS("WorldModel", "Storable")
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			T_PRVAR(activityGrid);
 			//_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]); // Takes too long
-			_activity = CALLM2(_activityGrid, "getMaxValueSquareNumber", _pos, _radius);
+			_activity = CALLM2(_activityGrid, "getValueSquareSum", _pos, _radius);
 		};
 		_activity
 	} ENDMETHOD;

@@ -205,6 +205,37 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	} ENDMETHOD;
 
 	/*
+	Method: (protected) addIntelAtLocationForSide
+	Add the intel object of this action to the garrison of the specified side at a location.
+	
+	Parameters:
+		_location - <Model.LocationModel>, the location whose _side garrison the intel should be assigned to.
+		_side - <side>, the side of the garrisons to assign the intel to
+	*/
+	/*protected */ METHOD("addIntelAtLocationForSide") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location"), P_SIDE("_side")];
+		ASSERT_OBJECT_CLASS(_location, "LocationModel");
+		if(CALLM(_location, "isActual", [])) then {
+			T_PRVAR(intelClone);
+
+			// Bail if null
+			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
+				private _intel = CALLM0(_intelClone, "getDbEntry");
+				private _locationActual = GETV(_location, "actual");
+				{
+					// It will make sure itself that it doesn't add duplicates of intel
+					private _AI = CALLM0(_x, "getAI");
+					CALLM2(_AI, "postMethodAsync", "addGeneralIntel", [_intel]);
+					//CALLM2(_AI, "postMethodAsync", "setIntelThis", [_intel]);
+				} forEach CALLM1(_locationActual, "getGarrisons", _side);
+				// TODO: implement this Sparker. 
+				// 	NOTES: Make Garrison.addIntel add the intel to the occupied location as well.
+				// 	NOTES: Make Garrison.addIntel only add if it isn't already there because this will happen often.
+			};
+		};
+	} ENDMETHOD;
+
+	/*
 	Method: (protected) setPersonalGarrisonIntel
 	*/
 	METHOD("setPersonalGarrisonIntel") {
@@ -258,6 +289,13 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 			*/
 			T_CALLM1("addGeneralGarrisonIntel", _garrison); // Note that we give general intel to this garrison, not personal
 		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
+
+		// Add intel for civilian informants in cities
+		{
+			T_CALLM2("addIntelAtLocationForSide", _x, civilian);
+		} forEach (CALLM(_world, "getNearestLocations", [_pos ARG _radius ARG [LOCATION_TYPE_CITY]]) apply {
+			_x#1
+		});
 
 		// Make enemies intercept this intel
 		T_PRVAR(intelClone);

@@ -662,13 +662,20 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 
 	// Thread safe
+	// Remove all intel from _items that is known to _side, returning only that which is unknown
+	STATIC_METHOD("filterOutKnownIntel") {
+		params [P_THISCLASS, P_ARRAY("_items"), P_SIDE("_side")];
+		pr _ai = CALLSM1("AICommander", "getAICommander", _side);
+		pr _intelDb = GETV(_ai, "intelDB");
+		_items select {
+			!CALLM1(_intelDb, "isIntelAddedFromSource", _x)
+		}
+	} ENDMETHOD;
+
+	// Thread safe
 	// Call it from a non-player-commander thread to reveal intel to the AICommander of player side
 	STATIC_METHOD("revealIntelToPlayerSide") {
 		params ["_thisClass", ["_item", "", [""]]];
-
-		if (true) exitWith {
-			OOP_WARNING_0("revealIntelToPlayerSide is currently disabled!");
-		};
 
 		// Make a clone of this intel item in our thread
 		pr _itemClone = CLONE(_item);
