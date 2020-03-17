@@ -4,7 +4,7 @@ Civilian template for ARMA III
 _array = [];
 _array resize T_SIZE; 
 
-_array set [T_NAME, "tCUP_CIVILIAN_TKA"];
+_array set [T_NAME, "tCUP_TKA_CIVILIAN"];
 _array set [T_DESCRIPTION, "Takistani civilians from CUP."];
 _array set [T_DISPLAY_NAME, "CUP TKA Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
@@ -88,22 +88,24 @@ _civBackpacks = [
 ];
 
 _civVehicles = 	[
-	"CUP_C_LR_Transport_CTK",
-	"CUP_C_Ikarus_TKC",
-	"CUP_C_TT650_CIV",
-	"CUP_C_S1203_CIV",
-	"CUP_C_SUV_TK",
-	"CUP_C_Volha_Blue_TKCIV",
-	"CUP_C_Volha_Gray_TKCIV",
-	"CUP_C_Volha_Limo_TKCIV",
-	"CUP_C_Lada_GreenTK_CIV",
-	"CUP_C_Lada_TK2_CIV",
-	"CUP_C_UAZ_Unarmed_TK_CIV",
-	"CUP_C_UAZ_Open_TK_CIV",
-	"CUP_C_V3S_Open_TKC",
-	"CUP_C_V3S_Covered_TKC",
-	"CUP_C_Ural_Civ_01"
+	"CUP_C_Volha_Blue_TKCIV",	0.9,
+	"CUP_C_Volha_Gray_TKCIV",	0.9,
+	"CUP_C_Volha_Limo_TKCIV",	0.9,
+	"CUP_C_Lada_GreenTK_CIV",	0.9,
+	"CUP_C_Lada_TK2_CIV",		0.9,
+	"CUP_C_UAZ_Unarmed_TK_CIV",	0.9,
+	"CUP_C_UAZ_Open_TK_CIV",	0.9,
+	"CUP_C_TT650_CIV",			0.9,
+	"CUP_C_LR_Transport_CTK",	0.7,
+	"CUP_C_S1203_CIV",			0.7,
+	"CUP_C_SUV_TK",				0.7,
+	"CUP_C_Ikarus_TKC",			0.6,
+	"CUP_C_Ural_Civ_01",		0.6,
+	"CUP_C_V3S_Open_TKC",		0.6,
+	"CUP_C_V3S_Covered_TKC",	0.6
 ];
+
+_civVehiclesOnlyNames = _civVehicles select { _x isEqualType "" };
 
 //==== API ====
 _api = [];
@@ -117,9 +119,9 @@ _uc resize T_UC_SIZE;
 _uc set[T_UC_headgear, +_civHeadgear];
 _uc set[T_UC_facewear, +_civFacewear];
 _uc set[T_UC_uniforms, +_civUniforms];
-_uc set[T_UC_vests, +_civUniforms];
+_uc set[T_UC_vests, +_civVests];
 _uc set[T_UC_backpacks, +_civBackpacks];
-_uc set[T_UC_civVehs, +_civVehicles];
+_uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
 _array set [T_UC, _uc];
 
 // ==== Arsenal ====
@@ -165,37 +167,9 @@ _inf set [T_INF_survivor, [
 _array set [T_INF, _inf];
 
 //==== Vehicles ====
-private _vehValha = selectRandom[
-	"CUP_C_Volha_Blue_TKCIV",
-	"CUP_C_Volha_Gray_TKCIV",
-	"CUP_C_Volha_Limo_TKCIV"
-];
-private _vehLada = selectRandom[
-	"CUP_C_Lada_GreenTK_CIV",
-	"CUP_C_Lada_TK2_CIV"
-];
-private _vehUAZ = selectRandom[
-	"CUP_C_UAZ_Unarmed_TK_CIV",
-	"CUP_C_UAZ_Open_TK_CIV"
-];
-private _vehTruck = selectRandom[
-	"CUP_C_V3S_Open_TKC",
-	"CUP_C_V3S_Covered_TKC",
-	"CUP_C_Ural_Civ_01"
-];
 _veh = [];
 _veh resize T_VEH_SIZE;
-_veh set [T_VEH_default, [
-	_vehValha, 					8,
-	_vehLada, 					8,
-	_vehUAZ,					5,
-	_vehTruck,   				5,
-	"CUP_C_LR_Transport_CTK",	4,
-	"CUP_C_Ikarus_TKC",			4,
-	"CUP_C_TT650_CIV",			4,
-	"CUP_C_S1203_CIV",			3,
-	"CUP_C_SUV_TK",				2
-]];
+_veh set [T_VEH_default, _civVehicles];
 _array set [T_VEH, _veh];
 
 // Return final array

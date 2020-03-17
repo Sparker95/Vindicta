@@ -10,14 +10,6 @@ removeGoggles this;
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
 // ==== Headgear ====
-private _lungeHeadGear = selectRandom[
-	"CUP_H_TKI_Lungee_Open_01",
-	"CUP_H_TKI_Lungee_Open_02",
-	"CUP_H_TKI_Lungee_Open_03",
-	"CUP_H_TKI_Lungee_Open_04",
-	"CUP_H_TKI_Lungee_Open_05",
-	"CUP_H_TKI_Lungee_Open_06"
-];
 private _lungeHeadGearFront = selectRandom[
 	"CUP_H_TKI_Lungee_Open_01",
 	"CUP_H_TKI_Lungee_01",
@@ -27,29 +19,8 @@ private _lungeHeadGearFront = selectRandom[
 	"CUP_H_TKI_Lungee_05",
 	"CUP_H_TKI_Lungee_06"
 ];
-private _pakolHeadGear = selectRandom[
-	"CUP_H_TKI_Pakol_2_03",
-	"CUP_H_TKI_Pakol_2_02",
-	"CUP_H_TKI_Pakol_2_01",
-	"CUP_H_TKI_Pakol_1_06",
-	"CUP_H_TKI_Pakol_1_05",
-	"CUP_H_TKI_Pakol_1_04",
-	"CUP_H_TKI_Pakol_1_03",
-	"CUP_H_TKI_Pakol_2_06",
-	"CUP_H_TKI_Pakol_2_05",
-	"CUP_H_TKI_Pakol_2_04",
-	"CUP_H_TKI_Pakol_1_01"
-];
-private _capHeadGearFront = selectRandom[
-	"CUP_H_TKI_SkullCap_06",
-	"CUP_H_TKI_SkullCap_05",
-	"CUP_H_TKI_SkullCap_04",
-	"CUP_H_TKI_SkullCap_03",
-	"CUP_H_TKI_SkullCap_02",
-	"CUP_H_TKI_SkullCap_01"
-];
 
-this addHeadgear selectRandom [_lungeHeadGear, _lungeHeadGearFront,_pakolHeadGear,_capHeadGearFront];
+this addHeadgear _lungeHeadGearFront;
 
 // ==== Uniform =====
 private _jeansUniform = selectRandom[

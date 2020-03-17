@@ -24,11 +24,13 @@ private _uniforms = [
 	"CUP_U_O_CHDKZ_Lopotev"
 ];
 
+// ==== Uniform ====
+this forceAddUniform selectRandom _uniforms;
+
 // ==== Vest ====
 if (random 10 < 4) then {
 	this addVest "CUP_V_I_Guerilla_Jacket";
 };
-
 
 //	==== Weapons ====
 private _gunsAndAmmo = [

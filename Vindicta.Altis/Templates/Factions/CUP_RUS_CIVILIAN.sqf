@@ -64,24 +64,25 @@ _civBackpacks = [
 ];
 
 _civVehicles = [
-	"CUP_C_Skoda_Blue_CIV",
-	"CUP_C_Skoda_Green_CIV",
-	"CUP_C_Skoda_Red_CIV", 
-	"CUP_C_Skoda_White_CIV",
-	"CUP_C_S1203_Militia_CIV",
-	"CUP_C_Golf4_red_Civ",
-	"CUP_C_Lada_White_CIV",
-	"CUP_C_Lada_Red_CIV",
-	"CUP_C_Datsun_Covered",
-	"CUP_C_Datsun_Plain",	
-	"CUP_C_Datsun_Tubeframe",
-	"CUP_C_Tractor_CIV",
-	"CUP_C_TT650_CIV",
-	"CUP_C_SUV_CIV",
-	"CUP_C_Ikarus_Chernarus",
-	"CUP_C_Ural_Open_Civ_03",
-	"CUP_C_Ural_Civ_03"
+	"CUP_C_Skoda_Blue_CIV",		0.9,
+	"CUP_C_Skoda_Green_CIV",	0.9,
+	"CUP_C_Skoda_Red_CIV", 		0.9,
+	"CUP_C_Skoda_White_CIV",	0.9,
+	"CUP_C_Golf4_red_Civ",		0.9,
+	"CUP_C_TT650_CIV",			0.9,
+	"CUP_C_Lada_White_CIV",		0.9,
+	"CUP_C_Lada_Red_CIV",		0.9,
+	"CUP_C_Datsun_Covered",		0.8,
+	"CUP_C_Datsun_Plain",		0.8,
+	"CUP_C_Datsun_Tubeframe",	0.8,
+	"CUP_C_SUV_CIV",			0.8,
+	"CUP_C_Ikarus_Chernarus",	0.6,
+	"CUP_C_Ural_Open_Civ_03",	0.6,
+	"CUP_C_Ural_Civ_03",		0.6,
+	"CUP_C_Tractor_CIV",		0.4
 ];
+
+_civVehiclesOnlyNames = _civVehicles select { _x isEqualType "" };
 
 //==== API ====
 _api = [];
@@ -96,7 +97,7 @@ _uc set[T_UC_headgear, +_civHeadgear];
 _uc set[T_UC_facewear, +_civFacewear];
 _uc set[T_UC_uniforms, +_civUniforms];
 _uc set[T_UC_backpacks, +_civBackpacks];
-_uc set[T_UC_civVehs, +_civVehicles];
+_uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
 _array set [T_UC, _uc];
 
 // ==== Arsenal ====
@@ -146,37 +147,9 @@ _inf set [T_INF_survivor, [
 _array set [T_INF, _inf];
 
 //==== Vehicles ====
-private _vehSkoda = selectRandom[
-	"CUP_C_Skoda_Blue_CIV",
-	"CUP_C_Skoda_Green_CIV",
-	"CUP_C_Skoda_Red_CIV",
-	"CUP_C_Skoda_White_CIV"
-];
-private _vehLada = selectRandom[
-	"CUP_C_Lada_White_CIV",
-	"CUP_C_Lada_Red_CIV"
-];
-private _vehDatsun = selectRandom[
-	"CUP_C_Datsun_Covered",
-	"CUP_C_Datsun_Plain",
-	"CUP_C_Datsun_Tubeframe"
-];
-private _vehUral = selectRandom[
-	"CUP_C_Ural_Open_Civ_03",
-	"CUP_C_Ural_Civ_03"
-];
 _veh = [];
 _veh resize T_VEH_SIZE;
-_veh set [T_VEH_default, [
-	_vehSkoda, 					6,
-	_vehLada, 					6,
-	_vehDatsun,					4,
-	_vehUral,   				4,
-	"CUP_C_Ikarus_Chernarus",	3,
-	"CUP_C_TT650_CIV",			4,
-	"CUP_C_Tractor_CIV",		2,
-	"CUP_C_SUV_CIV",			2
-]];
+_veh set [T_VEH_default, _civVehicles];
 _array set [T_VEH, _veh];
 
 // Return final array

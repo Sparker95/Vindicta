@@ -70,6 +70,7 @@ private _partugUniform = selectRandom[
 ];
 
 this forceAddUniform selectRandom [_jeansUniform, _partugUniform];
+this addItemToUniform "ACE_Flashlight_Maglite_ML300L";
 
 // ==== Vest ====
 private _waistVest = selectRandom[
