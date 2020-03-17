@@ -10,7 +10,7 @@ removeGoggles this;
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
 // ==== Headgear ====
-private _lungeHeadGearFront = selectRandom[
+private _lungeHeadGearFront = [
 	"CUP_H_TKI_Lungee_Open_01",
 	"CUP_H_TKI_Lungee_01",
 	"CUP_H_TKI_Lungee_02",
@@ -20,7 +20,7 @@ private _lungeHeadGearFront = selectRandom[
 	"CUP_H_TKI_Lungee_06"
 ];
 
-this addHeadgear _lungeHeadGearFront;
+this addHeadgear selectRandom _lungeHeadGearFront;
 
 // ==== Uniform =====
 private _jeansUniform = selectRandom[
@@ -43,13 +43,13 @@ private _partugUniform = selectRandom[
 this forceAddUniform selectRandom [_jeansUniform, _partugUniform];
 
 // ==== Vest ====
-private _jacketVest = selectRandom[
+private _jacketVest = [
 	"CUP_V_OI_TKI_Jacket1_05",
 	"CUP_V_OI_TKI_Jacket1_06",
 	"CUP_V_OI_TKI_Jacket1_04"
 ];
 
-this addVest _jacketVest;
+this addVest selectRandom _jacketVest;
 
 //	==== Weapons ====
 private _gunsAndAmmo = [
@@ -57,8 +57,8 @@ private _gunsAndAmmo = [
 	["CUP_hgun_PMM",				"CUP_12Rnd_9x18_PMM_M", 		true],	0.9,
 	["CUP_hgun_SA61", 				"CUP_10Rnd_B_765x17_Ball_M", 	true],	0.6,	
 	// rifle
-	["CUP_SKS_rail",				"CUP_10Rnd_762x39_SKS_M", 		false], 0.1,
-	["CUP_arifle_AKS", 				"CUP_30Rnd_762x39_AK47_M",		false], 0.2
+	["CUP_SKS_rail",				"CUP_10Rnd_762x39_SKS_M", 		false], 0.3,
+	["CUP_arifle_AKS", 				"CUP_30Rnd_762x39_AK47_M",		false], 0.1
 ];
 
 (selectRandomWeighted _gunsAndAmmo) params ["_gun", "_ammo", "_isPistol"];

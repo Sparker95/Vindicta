@@ -10,7 +10,16 @@ _array set [T_DISPLAY_NAME, "CUP RUS Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
 _array set [T_REQUIRED_ADDONS, ["CUP_Creatures_People_Civil_Russia"]];
 
-_civHeadgear = [];
+_civHeadgear = [
+	"CUP_H_FR_BandanaGreen",
+	"CUP_H_FR_BandanaWdl",
+	"CUP_H_PMC_Beanie_Black",
+	"CUP_H_SLA_BeanieGreen",
+	"CUP_H_PMC_Beanie_Khaki",
+	"CUP_H_C_Beanie_02",
+	"CUP_H_C_Beanie_04",
+	"CUP_H_NAPA_Fedora"
+];
 
 _civFacewear = [];
 

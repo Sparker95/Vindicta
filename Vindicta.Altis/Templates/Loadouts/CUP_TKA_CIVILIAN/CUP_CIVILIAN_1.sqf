@@ -49,6 +49,7 @@ private _capHeadGearFront = selectRandom[
 	"CUP_H_TKI_SkullCap_02",
 	"CUP_H_TKI_SkullCap_01"
 ];
+
 this addHeadgear selectRandom [_lungeHeadGear, _lungeHeadGearFront,_pakolHeadGear,_capHeadGearFront];
 
 //==== Facegear ====

@@ -91,12 +91,11 @@ private _jacketVest = selectRandom[
 this addVest selectRandom [_waistVest, _wlightVest, _jacketVest];
 
 // ==== Backpack ====
-private _backpacks = [
-	"CUP_B_IDF_Backpack",
-	"CUP_B_SLA_Medicbag"
-];
-
 if (random 10 < 2) then {
+	private _backpacks = [
+		"CUP_B_IDF_Backpack",
+		"CUP_B_SLA_Medicbag"
+	];
 	this addBackpack selectRandom _backpacks;
 };
 
@@ -106,7 +105,7 @@ private _gunsAndAmmo = [
 	["CUP_hgun_PMM",				"CUP_12Rnd_9x18_PMM_M", 		true],	0.9,
 	["CUP_hgun_SA61", 				"CUP_10Rnd_B_765x17_Ball_M", 	true],	0.6,	
 	// rifle
-	["CUP_SKS_rail",				"CUP_10Rnd_762x39_SKS_M", 		false], 0.1,
+	["CUP_SKS_rail",				"CUP_10Rnd_762x39_SKS_M", 		false], 0.2,
 	["CUP_arifle_AKS", 				"CUP_30Rnd_762x39_AK47_M",		false], 0.05
 ];
 

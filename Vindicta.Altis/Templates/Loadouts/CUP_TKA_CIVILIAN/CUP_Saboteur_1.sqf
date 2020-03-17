@@ -10,7 +10,7 @@ removeGoggles this;
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
 // ==== Headgear ====
-private _lungeHeadGearFront = selectRandom[
+private _lungeHeadGearFront = [
 	"CUP_H_TKI_Lungee_Open_01",
 	"CUP_H_TKI_Lungee_01",
 	"CUP_H_TKI_Lungee_02",
@@ -20,7 +20,7 @@ private _lungeHeadGearFront = selectRandom[
 	"CUP_H_TKI_Lungee_06"
 ];
 
-this addHeadgear _lungeHeadGearFront;
+this addHeadgear selectRandom _lungeHeadGearFront;
 
 // ==== Uniform =====
 private _jeansUniform = selectRandom[
@@ -40,7 +40,7 @@ private _partugUniform = selectRandom[
 	"CUP_O_TKI_Khet_Partug_08"
 ];
 
-this forceAddUniform selectRandom [_jeansUniform, _partugUniform];
+this forceAddUniform selectRandom[_jeansUniform, _partugUniform];
 
 // ==== Vest ====
 private _waistVest = selectRandom[

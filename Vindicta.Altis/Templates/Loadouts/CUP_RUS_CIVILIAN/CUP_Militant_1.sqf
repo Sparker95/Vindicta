@@ -9,6 +9,20 @@ removeGoggles this;
 
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
+// ==== Headgear ====
+private _headgear = [
+	"CUP_H_FR_BandanaGreen",
+	"CUP_H_FR_BandanaWdl",
+	"CUP_H_PMC_Beanie_Black",
+	"CUP_H_SLA_BeanieGreen",
+	"CUP_H_PMC_Beanie_Khaki",
+	"CUP_H_C_Beanie_02",
+	"CUP_H_C_Beanie_04"
+];
+
+this addHeadgear selectRandom _headgear;
+
+// ==== Uniform ====
 private _uniforms = [
 	"CUP_U_C_Worker_01",
 	"CUP_U_C_Woodlander_01",
@@ -24,7 +38,6 @@ private _uniforms = [
 	"CUP_U_O_CHDKZ_Lopotev"
 ];
 
-// ==== Uniform ====
 this forceAddUniform selectRandom _uniforms;
 
 // ==== Vest ====
@@ -38,7 +51,7 @@ private _gunsAndAmmo = [
 	["CUP_hgun_Makarov",			"CUP_8Rnd_9x18_Makarov_M", 	true],	0.9,
 	["CUP_hgun_PB6P9", 				"CUP_8Rnd_9x18_Makarov_M", 	true],	0.9,	
 	// rifle
-	["CUP_srifle_Remington700",		"CUP_6Rnd_762x51_R700", 	false], 0.1,
+	["CUP_srifle_Remington700",		"CUP_6Rnd_762x51_R700", 	false], 0.3,
 	["CUP_srifle_CZ550_rail", 			"CUP_5x_22_LR_17_HMR_M",	false], 0.05
 ];
 

@@ -9,6 +9,22 @@ removeGoggles this;
 
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
+// ==== Headgear ====
+if (random 10 < 4) then {
+	private _headgear = [
+		"CUP_H_FR_BandanaGreen",
+		"CUP_H_FR_BandanaWdl",
+		"CUP_H_PMC_Beanie_Black",
+		"CUP_H_SLA_BeanieGreen",
+		"CUP_H_PMC_Beanie_Khaki",
+		"CUP_H_C_Beanie_02",
+		"CUP_H_C_Beanie_04"
+	];
+
+	this addHeadgear selectRandom _headgear;
+};
+
+//	==== Uniform ====
 private _uniforms = [
 	"CUP_U_C_Worker_01",
 	"CUP_U_C_Woodlander_01",
@@ -24,18 +40,16 @@ private _uniforms = [
 	"CUP_U_O_CHDKZ_Lopotev"
 ];
 
-private _backpacks = [
-	"CUP_B_HikingPack_Civ",
-	"CUP_B_CivPack_WDL",
-	"CUP_B_IDF_Backpack"
-];
-
-//	==== Uniform ====
 this forceAddUniform selectRandom _uniforms;
 this addItemToUniform "ACE_Flashlight_Maglite_ML300L";
 
 // ==== Backpack ====
 if (random 10 < 2) then {
+	private _backpacks = [
+		"CUP_B_HikingPack_Civ",
+		"CUP_B_CivPack_WDL",
+		"CUP_B_IDF_Backpack"
+	];
 	this addBackpack selectRandom _backpacks;
 };
 

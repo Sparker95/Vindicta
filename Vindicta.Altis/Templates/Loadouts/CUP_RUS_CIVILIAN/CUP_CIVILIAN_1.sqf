@@ -9,6 +9,22 @@ removeGoggles this;
 
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
+// ==== Headgear ====
+if (random 10 < 3) then {
+	private _headgear = [
+		"CUP_H_FR_BandanaGreen",
+		"CUP_H_FR_BandanaWdl",
+		"CUP_H_PMC_Beanie_Black",
+		"CUP_H_SLA_BeanieGreen",
+		"CUP_H_PMC_Beanie_Khaki",
+		"CUP_H_C_Beanie_02",
+		"CUP_H_C_Beanie_04"
+	];
+
+	this addHeadgear selectRandom _headgear;
+};
+
+// ==== Uniform ====
 private _citizenUniform = selectRandom[
 	"CUP_U_C_Citizen_01",
 	"CUP_U_C_Citizen_02",
