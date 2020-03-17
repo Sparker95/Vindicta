@@ -95,4 +95,6 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Re
 //BWMOD with Niarms
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms_Recon\init.sqf";
-
+// CUP
+call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_RUS_CIVILIAN\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_TKA_CIVILIAN\init.sqf";
