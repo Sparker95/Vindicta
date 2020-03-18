@@ -233,6 +233,7 @@ class CMUI_INTEL_BTNGRP : MUI_GROUP
 };
 
 // description box, larger background
+
 class CMUI_INTEL_DESCRIPTION_BG : MUI_BG_BLACKSOLID 
 {
 	IDC = -1; 
@@ -245,30 +246,32 @@ class CMUI_INTEL_DESCRIPTION_BG : MUI_BG_BLACKSOLID
 };
 
 // description box, frame with headline
-class CMUI_INTEL_DESCRIPTION_FRAME : MUI_ST_FRAME 
+class CMUI_INTEL_DESCRIPTION_FRAME : MUI_GROUP 
 {
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.766; 
 	y = safeZoneY + safeZoneH * 0.488; 
 	w = safeZoneW * 0.220; 
 	h = safeZoneH * 0.170; 
-	text = "Information"; 
+	//text = "Information";
+	class Controls 
+	{
+		// this is where the actual description text goes
+		class CMUI_INTEL_DESCRIPTION : MUI_STRUCT_TXT // MUI_BG_TRANSPARENT_MULTILINE_LEFT 
+		{
+			IDC = -1; 
+			x = 0; 
+			y = 0; 
+			w = safeZoneW * 0.208; 
+			h = 1; 
+			colorBackground[] = MUIC_TRANSPARENT;
+			text = "<t color='#222222' font='EtelkaMonospacePro' align='left'>Select a single intel item to view a detailed description.</t>";
+			sizeEx = safeZoneH*0.016;
+			style = ST_MULTI;
+		};
+	} 
 };
 
-// this is where the actual description text goes
-class CMUI_INTEL_DESCRIPTION : MUI_BG_TRANSPARENT_MULTILINE_LEFT 
-{
-	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.773; 
-	y = safeZoneY + safeZoneH * 0.513; 
-	w = safeZoneW * 0.208; 
-	h = safeZoneH * 0.134; 
-	colorBackground[] = MUIC_TRANSPARENT;
-	text = "Select a single intel item to view a detailed description.";
-	font = "EtelkaMonospacePro";
-	sizeEx = safeZoneH*0.016;
-	style = ST_MULTI;
-};
 
 
 /*

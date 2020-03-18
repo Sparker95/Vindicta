@@ -151,10 +151,19 @@ pr0_fnc_doMoveTimeout = {
 	private _timeout = time + 60;
 	systemChat format ["%1 moving to %2", name _unit, mapGridPosition _tgt];
 	_unit stop false;
-	_unit doMove position _tgt;
+	private _lastTgtPos = position _tgt;
+	_unit doMove _lastTgtPos;
 	private _ledByPlayer = leader _unit in allPlayers;
+	private _nextRetarget = time + 5;
 	waitUntil {
 		sleep 1;
+
+		if(_lastTgtPos distance _tgt > 0 && time > _nextRetarget) then {
+			_lastTgtPos = position _tgt;
+			_unit doMove _lastTgtPos;
+			_nextRetarget = time + 5;
+		};
+
 		if(isNull _unit || {!alive _unit}) exitWith {
 			systemChat format ["%1 failed to move to %2: %1 died", name _unit, mapGridPosition _tgt];
 			true
@@ -238,7 +247,7 @@ pr0_fnc_militantFindWeapon = {
 
 pr0_fnc_militantFindVest = {
 	private _lootRange = if(leader _this in allPlayers) then { 25 } else { LOOTING_RANGE };
-	private _vestHP = if(vest _this == "") then { 0 } else { getNumber (configfile >> "CfgWeapons" >> vest _this >> "ItemInfo" >> "HitpointsProtectionInfo" >> "Chest" >> "armor") };
+	private _vestHP = if(vest _this == "") then { -1 } else { getNumber (configfile >> "CfgWeapons" >> vest _this >> "ItemInfo" >> "HitpointsProtectionInfo" >> "Chest" >> "armor") };
 	private _obj = allDead select {
 		_x distance _this < _lootRange 
 		&& {vest _x != ""}
@@ -494,11 +503,15 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 					// continue
 				};
 
-				case (TIME_NOW > T_GETV("nextInformant") 
+				case (TIME_NOW >= T_GETV("nextInformant") 
 					&& !_ledByPlayer
 					&& {[_civ, T_GETV("newIntel")] call pr0_fnc_givePlayerIntel}): {
 					// continue
+					#ifdef MILITANT_CIVILIANS_TESTING
+					private _nextInformant = TIME_NOW + 30;
+					#else
 					private _nextInformant = TIME_NOW + random [150, 300, 450];
+					#endif
 					T_SETV("nextInformant", _nextInformant);
 				};
 

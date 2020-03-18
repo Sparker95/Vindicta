@@ -90,9 +90,9 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
 		private _perpareArgs = [
-				[CMDR_ACTION_STATE_SPLIT],				// Do this after splitting
-				CMDR_ACTION_STATE_PREPARED,				// If preperation was successful
-				CMDR_ACTION_STATE_TARGET_DEAD,			// If prep failed then we will abort and rtb
+				[CMDR_ACTION_STATE_SPLIT],			// Do this after splitting
+				CMDR_ACTION_STATE_PREPARED,			// If preperation was successful
+				CMDR_ACTION_STATE_TARGET_DEAD,		// If prep failed then we will abort and rtb
 				_srcGarrIdVar,
 				_splitGarrIdVar,
 				_targetVar
