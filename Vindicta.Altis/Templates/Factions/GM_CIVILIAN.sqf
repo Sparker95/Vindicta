@@ -6,6 +6,8 @@ _civHeadgear = [];
 
 _civHeadgear = [];
 
+_civFacewear = [];
+
 _civUniforms = [
 	"gm_gc_civ_uniform_man_01_80_blk",
 	"gm_gc_civ_uniform_man_01_80_blu",

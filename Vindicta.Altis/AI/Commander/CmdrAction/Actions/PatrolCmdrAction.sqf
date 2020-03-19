@@ -239,6 +239,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		{
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionPatrol", []);
+
 			T_PRVAR(routeTargets);
 			private _routeTargetPositions = _routeTargets apply { [_world, _x] call Target_fnc_GetPos };
 			private _locations = _routeTargets select { 

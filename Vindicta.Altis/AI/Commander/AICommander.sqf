@@ -2241,7 +2241,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		// Limit amount of concurrent actions
 		T_PRVAR(activeActions);
-		pr _count = {GET_OBJECT_CLASS(_x) == "SupplyCmdrAction"} count _activeActions;
+		pr _count = {GET_OBJECT_CLASS(_x) == "SupplyConvoyCmdrAction"} count _activeActions;
 		if (_count >= CMDR_MAX_SUPPLY_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
@@ -2280,12 +2280,15 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		private _actions = [];
+		private _allCities = CALLM1(_worldNow, "getLocations", [LOCATION_TYPE_CITY]);
 		{
 			private _srcId = GETV(_x, "id");
 			private _srcFac = GETV(_x, "faction");
+			private _srcPos = GETV(_x, "pos");
 			{
 				private _tgtId = GETV(_x, "id");
 				private _tgtFac = GETV(_x, "faction");
+				private _tgtPos = GETV(_x, "pos");
 				if(_srcId != _tgtId and {_srcFac == _tgtFac}) then {
 					private _type = selectRandomWeighted [
 						ACTION_SUPPLY_TYPE_BUILDING,	10,
@@ -2296,8 +2299,32 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					];
 					private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 					private _amount = 0 max random [_progress * 0.5, _progress, _progress * 1.5] min 1;
-					private _params = [_srcId, _tgtId, _type, _amount];
-					_actions pushBack (NEW("SupplyCmdrAction", _params));
+					// Find intermediate city targets
+					// How many do we want?
+					private _routeLen = _srcPos distance2D _tgtPos;
+					private _desiredWaypoints = CLAMP(_routeLen / 1200, 1, 4);
+					// Sum of distance of all cities from src -> city and city -> tgt, giving a rough value for "on routeness"
+					private _cityDistSum = _allCities apply {
+						private _pos = GETV(_x, "pos");
+						private _srcDist = _srcPos distance2D _pos;
+						private _tgtDist = _tgtPos distance2D _pos;
+						// Randomize the items so we don't get the same route every time
+						[_srcDist + _tgtDist + random (_routeLen / 3), _srcDist, _x]
+					};
+					// Sort by summed distance
+					_cityDistSum sort ASCENDING;
+					private _cityDistSrc = (_cityDistSum select [0, _desiredWaypoints]) apply { 
+						// Remove the sum distance leaving just the dist from src
+						[_x#1, _x#2] 
+					};
+					// Sort by distance from source
+					_cityDistSrc sort ASCENDING;
+					// Make targets array
+					private _waypoints = _cityDistSrc apply {
+						[TARGET_TYPE_LOCATION, GETV(_x#1, "id")]
+					};
+					private _params = [_srcId, _tgtId, _waypoints, _type, _amount];
+					_actions pushBack (NEW("SupplyConvoyCmdrAction", _params));
 				};
 			} forEach _tgtGarrisons;
 		} forEach _srcGarrisons;

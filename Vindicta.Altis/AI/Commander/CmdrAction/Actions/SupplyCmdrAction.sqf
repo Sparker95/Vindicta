@@ -27,6 +27,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	// Amount - abstract value representing "how much" of the stuff to supply from 0-1.
 	VARIABLE_ATTR("amount", [ATTR_SAVE]);
 	VARIABLE_ATTR("cargo", [ATTR_SAVE_VER(16)]);
+
 	// Array of UI names for the types of supplies
 	STATIC_VARIABLE("SupplyNames");
 
