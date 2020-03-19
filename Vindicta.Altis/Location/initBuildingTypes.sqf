@@ -101,8 +101,8 @@ location_b_capacity =
 		12
 	],
 	[
-		["Land_I44_Object_Tent_Us_Small"],
-		2
+		["Land_Mil_Barracks_L","Land_Mil_Barracks"],
+		12
 	],
 	// Global Mobilization
 	[
