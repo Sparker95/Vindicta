@@ -1912,7 +1912,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		};
 
-		CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
+		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+
 		// Need to do this *after* assigning a location as we don't want it to get destroyed
 		CALLM2(_gar, "postMethodAsync", "activate", []);
 
