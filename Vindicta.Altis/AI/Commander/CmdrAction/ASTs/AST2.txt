@@ -1,0 +1,31 @@
+
+// New AST system can look like this instead:
+
+		private _split 			=-NEW("AST_SplitGarrison", 				[_thisObject ARG _srcGarrIdVar ARG _detachmentCompVar ARG _detachmentEffVar ARG _splitGarrIdVar]);
+		private _assignAction 	= NEW("AST_AssignActionToGarrison", 	[_thisObject ARG _splitGarrIdVar]);
+		private _assignCargo 	= NEW("AST_AssignCargo", 				[_thisObject ARG _splitGarrIdVar ARG T_GETV("cargo")]);
+		private _nextDepartTime = NEW("AST_ArrayPopFront", 				[_thisObject ARG _scheduleVar ARG _departVar]);
+		private _wait 			= NEW("AST_WaitGarrison", 				[_thisObject ARG _departVar ARG _splitGarrIdVar]);	
+		private _nextWaypoint 	= NEW("AST_ArrayPopFront", 				[_thisObject ARG _routeTargetsVar ARG _targetVar]);
+		private _move 			= NEW("AST_MoveGarrison", 				[_thisObject ARG _splitGarrIdVar ARG _targetVar ARG T_CALLM1("createVariable", 100)]);
+		private _unloadCargo 	= NEW("AST_ClearCargo", 				[_thisObject ARG _splitGarrIdVar])
+		private _selectRTB 		= NEW("AST_SelectFallbackTarget", 		[_thisObject ARG _srcGarrIdVar ARG _splitGarrIdVar ARG _targetVar]);
+		private _rtbMove 		= NEW("AST_MoveGarrison", 				[_thisObject ARG _splitGarrIdVar ARG _targetVar ARG T_CALLM1("createVariable", 200)]);
+		private _clearCargo 	= NEW("AST_ClearCargo", 				[_thisObject ARG _splitGarrIdVar]);
+		private _merge 			= NEW("AST_MergeOrJoinTarget", 			[_thisObject ARG _splitGarrIdVar ARG _targetVar]);
+
+		CALLM1(_split, 			"onSuccess", 		_assignAction);
+		CALLM1(_assignAction, 	"onSuccess", 		_assignCargo);
+		CALLM1(_assignCargo, 	"onSuccess", 		_nextDepartTime);
+		CALLM1(_nextDepartTime, "onSuccess", 		_wait);
+		CALLM1(_nextDepartTime, "onDone", 			_unloadCargo);
+		CALLM1(_wait, 			"onSuccess", 		_nextWaypoint);
+		CALLM1(_nextWaypoint, 	"onNext", 			_move);
+		CALLM1(_move, 			"onDone", 			_nextDepartTime);
+		CALLM1(_nextWaypoint, 	"onDone", 			_unloadCargo);
+		CALLM1(_unloadCargo, 	"onDone", 			_selectRTB);
+		CALLM1(_selectRTB, 		"onDone", 			_rtbMove);
+		CALLM1(_rtbMove, 		"onInvalidTarget", 	_selectRTB);
+		CALLM1(_rtbMove, 		"onDone", 			_clearCargo);
+		CALLM1(_clearCargo, 	"onDone", 			_merge);
+		CALLM1(_merge, 			"onInvalidTarget", 	_selectRTB);
