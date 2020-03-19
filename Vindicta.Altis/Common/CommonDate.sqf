@@ -9,7 +9,11 @@ pr0_fnc_getTMinutesDiff = {
 		_numberDiff = -_numberDiff;
 		_futureEvent = false;
 	};
+	#ifndef _SQF_VM
 	private _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+	#else
+	private _dateDiff = [0,0,0,0,0];
+	#endif
 	_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
 	_month = _month - 1; // Because month counting starts with 1
 	_d = _d - 1; // Because day counting starts with 1
@@ -44,6 +48,10 @@ pr0_fnc_addMinutesToDate = {
 	params ["_date", "_minutes"];
 	private _newDate = +_date;
 	_newDate set [4, _newDate#4 + _minutes];
+	#ifndef _SQF_VM
 	private _n = dateToNumber _newDate;
 	numberToDate[_newDate#0, _n]
+	#else
+	[0,0,0,0,0]
+	#endif
 };

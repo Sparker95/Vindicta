@@ -267,6 +267,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		private _timeToStart = if(_startDate isEqualTo []) then {
 			" (unknown)"
 		} else {
+			#ifndef _SQF_VM
 			private _numDiff = (dateToNumber _startDate - dateToNumber DATE_NOW);
 			if(_numDiff > 0) then {
 				private _dateDiff = numberToDate [0, _numDiff];
@@ -276,6 +277,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			} else {
 				" (started)"
 			}
+			#else
+			""
+			#endif
 		};
 
 		private _targetName = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetLabel;
