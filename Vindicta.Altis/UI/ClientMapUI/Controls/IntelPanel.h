@@ -269,7 +269,7 @@ class CMUI_INTEL_DESCRIPTION_FRAME : MUI_GROUP
 			sizeEx = safeZoneH*0.016;
 			style = ST_MULTI;
 		};
-	} 
+	};
 };
 
 
