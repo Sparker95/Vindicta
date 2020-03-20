@@ -12,7 +12,7 @@ _array = [];
 _array set [T_SIZE-1, nil];									
 
 _array set [T_NAME, "tCUP_RUS_POLICE"]; // 							Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Russian police forces from CUP."]; // 			Template display description
+_array set [T_DESCRIPTION, "Generic local Russian police from CUP."]; // 			Template display description
 _array set [T_DISPLAY_NAME, "CUP Russian Police"]; // 				Template display name
 _array set [T_FACTION, T_FACTION_Police]; // 				Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["CUP_Creatures_People_Civil_Russia","CUP_Vehicles_Core"]]; // 	Addons required to play this template
@@ -22,9 +22,9 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT,  ["CUP_C_R_Policeman_02"]]; // = 0 Default if nothing found
 
-_inf set [T_INF_SL, ["CUP_C_R_Policeman_02"]];
-_inf set [T_INF_TL, ["CUP_C_R_Policeman_02"]];
-_inf set [T_INF_officer, ["CUP_C_R_Policeman_02"]];
+_inf set [T_INF_SL, ["CUP_RUS_PoliceOfficer"]];
+_inf set [T_INF_TL, ["CUP_RUS_PoliceOfficer"]];
+_inf set [T_INF_officer, ["CUP_RUS_PoliceOfficer"]];
 
 
 /* Vehicle classes */
@@ -44,7 +44,7 @@ _cargo = +(tDefault select T_CARGO);
 _group = +(tDefault select T_GROUP);
 
 /* Vehicle descriptions */
-/*(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Police Car"];*/
+/*(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Police S1203"];*/
 
 /* Set arrays */
 _array set [T_INF, _inf];
