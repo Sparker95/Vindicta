@@ -10,14 +10,14 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-_RandomHeadgear = selectRandom ["fow_h_ger_feldmutze_ss", "H_LIB_GER_Helmetnet_WSS1024T1", "H_LIB_GER_Helmetns_WSS1024T1", "H_LIB_GER_Helmet_WSS1024T1", "H_LIB_GER_Helmetnet_WSS1024T2", "H_LIB_GER_Helmetns_WSS1024T2", "H_LIB_GER_Helmet_WSS1024T2", "H_LIB_GER_Helmetnet_WSSgd", "H_LIB_GER_Helmetns_WSSgd", "H_LIB_GER_Helmetnet_WSSgdT1", "H_LIB_GER_Helmetns_WSSgdT1", "H_LIB_GER_Helmet_WSSgdT1", "H_LIB_GER_Helmetnet_WSSgdT2", "H_LIB_GER_Helmetns_WSSgdT2", "H_LIB_GER_Helmet_WSSgdT2", "H_LIB_GER_Helmet_WSSgd"];
-this addHeadgear _RandomHeadgear;
+this addHeadgear "H_LIB_GER_FSJ_M44_Helmet_Medic";
 /*Uniform*/
-_RandomUniform = selectRandom ["U_LIB_ST_Soldier_E44", "U_LIB_ST_MGunner_E44"];
+_RandomUniform = selectRandom ["U_LIB_FSJ_Soldier", "U_LIB_FSJ_Soldier_camo"];
 this forceAddUniform _RandomUniform;
 /*Vest*/
 this addVest "V_LIB_GER_VestKar98";
 /*Backpack*/
+this addBackpack "B_LIB_GER_MedicBackpack_Empty";
 
 /*Weapon*/
 _RandomWeapon = selectRandom ["LIB_K98", "LIB_K98_Late", "LIB_G3340"];
@@ -33,10 +33,12 @@ for "_i" from 1 to 5 do {this addItemToVest "LIB_5Rnd_792x57";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Shg24";};
 this addItemToVest "LIB_Shg24x7";
 this addItemToVest "LIB_NB39";
+this addItemToBackpack "Medikit";
+for "_i" from 1 to 3 do {this addItemToBackpack "FirstAidKit";};
 
 /*Items*/
 this linkItem "ItemMap";
 this linkItem "LIB_GER_ItemCompass_deg";
 this linkItem "LIB_GER_ItemWatch";
 
-[this,"Default","male05ger"] call BIS_fnc_setIdentity;
+[this,"Default","male02ger"] call BIS_fnc_setIdentity;

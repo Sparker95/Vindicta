@@ -10,14 +10,15 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-_RandomHeadgear = selectRandom ["fow_h_ger_feldmutze_ss", "H_LIB_GER_Helmetnet_WSS1024T1", "H_LIB_GER_Helmetns_WSS1024T1", "H_LIB_GER_Helmet_WSS1024T1", "H_LIB_GER_Helmetnet_WSS1024T2", "H_LIB_GER_Helmetns_WSS1024T2", "H_LIB_GER_Helmet_WSS1024T2", "H_LIB_GER_Helmetnet_WSSgd", "H_LIB_GER_Helmetns_WSSgd", "H_LIB_GER_Helmetnet_WSSgdT1", "H_LIB_GER_Helmetns_WSSgdT1", "H_LIB_GER_Helmet_WSSgdT1", "H_LIB_GER_Helmetnet_WSSgdT2", "H_LIB_GER_Helmetns_WSSgdT2", "H_LIB_GER_Helmet_WSSgdT2", "H_LIB_GER_Helmet_WSSgd"];
+_RandomHeadgear = selectRandom ["H_LIB_GER_FSJ_M38_Helmet", "H_LIB_GER_FSJ_M38_Helmet_Cover", "H_LIB_GER_FSJ_M38_Helmet_os", "H_LIB_GER_FSJ_M44_Helmet", "H_LIB_GER_FSJ_M44_Helmet_os", "H_LIB_GER_FSJ_M44_HelmetCamo1", "H_LIB_GER_FSJ_M44_HelmetCamo2", "H_LIB_GER_FSJ_M44_HelmetUtility"];
 this addHeadgear _RandomHeadgear;
 /*Uniform*/
-_RandomUniform = selectRandom ["U_LIB_ST_Soldier_E44", "U_LIB_ST_MGunner_E44"];
+_RandomUniform = selectRandom ["U_LIB_FSJ_Soldier", "U_LIB_FSJ_Soldier_camo"];
 this forceAddUniform _RandomUniform;
 /*Vest*/
 this addVest "V_LIB_GER_VestKar98";
 /*Backpack*/
+this addBackpack "B_LIB_GER_Radio_ACRE2";
 
 /*Weapon*/
 _RandomWeapon = selectRandom ["LIB_K98", "LIB_K98_Late", "LIB_G3340"];

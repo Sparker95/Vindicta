@@ -10,10 +10,10 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-_RandomHeadgear = selectRandom ["H_LIB_GER_Helmet", "H_LIB_GER_Helmet_ns", "H_LIB_GER_Helmet_os", "H_LIB_GER_Helmet_net", "H_LIB_GER_HelmetUtility", "H_LIB_GER_Helmet_Glasses", "H_LIB_GER_Cap"];
+_RandomHeadgear = selectRandom ["H_LIB_GER_FSJ_M38_Helmet", "H_LIB_GER_FSJ_M38_Helmet_Cover", "H_LIB_GER_FSJ_M38_Helmet_os", "H_LIB_GER_FSJ_M44_Helmet", "H_LIB_GER_FSJ_M44_Helmet_os", "H_LIB_GER_FSJ_M44_HelmetCamo1", "H_LIB_GER_FSJ_M44_HelmetCamo2", "H_LIB_GER_FSJ_M44_HelmetUtility"];
 this addHeadgear _RandomHeadgear;
 /*Uniform*/
-_RandomUniform = selectRandom ["U_LIB_GER_Pionier", "U_LIB_GER_Gefreiter"];
+_RandomUniform = selectRandom ["U_LIB_FSJ_Soldier", "U_LIB_FSJ_Soldier_camo"];
 this forceAddUniform _RandomUniform;
 /*Vest*/
 this addVest "V_LIB_GER_PioneerVest";

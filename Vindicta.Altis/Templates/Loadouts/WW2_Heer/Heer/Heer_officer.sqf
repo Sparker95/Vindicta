@@ -10,29 +10,28 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-_RandomHeadgear = selectRandom ["H_LIB_GER_FSJ_M38_Helmet", "H_LIB_GER_FSJ_M38_Helmet_Cover", "H_LIB_GER_FSJ_M38_Helmet_os", "H_LIB_GER_FSJ_M44_Helmet", "H_LIB_GER_FSJ_M44_Helmet_os", "H_LIB_GER_FSJ_M44_HelmetCamo1", "H_LIB_GER_FSJ_M44_HelmetCamo2", "H_LIB_GER_FSJ_M44_HelmetUtility"];
+_RandomHeadgear = selectRandom ["H_LIB_GER_OfficerCap", "H_LIB_GER_TankOfficerCap", "H_LIB_GER_TankOfficerCap2"];
 this addHeadgear _RandomHeadgear;
 /*Uniform*/
-_RandomUniform = selectRandom ["U_LIB_FSJ_Soldier", "U_LIB_FSJ_Soldier_camo"];
+_RandomUniform = selectRandom ["U_LIB_GER_Hauptmann", "U_LIB_GER_Leutnant", "U_LIB_GER_Oberleutnant", "U_LIB_GER_Oberst"];
 this forceAddUniform _RandomUniform;
 /*Vest*/
-this addVest "V_LIB_GER_VestUnterofficer";
+_RandomVest = selectRandom ["V_LIB_GER_FieldOfficer", "V_LIB_GER_FieldOfficer", "V_LIB_GER_OfficerBelt", "V_LIB_GER_PrivateBelt"];
+this addVest _RandomVest;
 /*Backpack*/
 
 /*Weapon*/
 _RandomWeapon = selectRandom ["LIB_MP38", "LIB_MP40"];
 this addWeapon _RandomWeapon;
-this addWeapon "LIB_P38";
+this addWeapon "LIB_M1896";
 /*WeaponItem*/
 this addPrimaryWeaponItem "LIB_32Rnd_9x19";
-this addHandgunItem "LIB_8Rnd_9x19";
-
+this addHandgunItem "LIB_10Rnd_9x19_M1896";
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToVest "LIB_32Rnd_9x19";};
-for "_i" from 1 to 3 do {this addItemToVest "LIB_8Rnd_9x19";};
+for "_i" from 1 to 3 do {this addItemToVest "LIB_10Rnd_9x19_M1896";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Shg24";};
-this addItemToVest "LIB_Shg24x7";
 this addItemToVest "LIB_NB39";
 
 /*Items*/
