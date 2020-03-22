@@ -95,22 +95,133 @@ _cargo set [T_CARGO_box_big,	["B_CargoNet_01_ammo_F"]];
 /* Group templates */
 _group = [];
 _group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, [[[T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_rifleman], [T_INF, T_INF_GL]]]];
+_group set [T_GROUP_DEFAULT, [
+	[
+		T_INF_TL,
+		T_INF_LMG,
+		T_INF_rifleman,
+		T_INF_GL
+	] apply { [T_INF, _x] }
+]];
 
-_group set [T_GROUP_inf_sentry,			[[[T_INF, T_INF_TL], [T_INF, T_INF_rifleman]]]];
-_group set [T_GROUP_inf_fire_team,		[[[T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_rifleman], [T_INF, T_INF_GL]]]];
-_group set [T_GROUP_inf_AA_team,		[[[T_INF, T_INF_TL], [T_INF, T_INF_AA], [T_INF, T_INF_AA], [T_INF, T_INF_ammo]]]];
-_group set [T_GROUP_inf_AT_team,		[[[T_INF, T_INF_TL], [T_INF, T_INF_AT], [T_INF, T_INF_AT], [T_INF, T_INF_ammo]]]];
-_group set [T_GROUP_inf_rifle_squad,	[[[T_INF, T_INF_SL], 	[T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_GL], [T_INF, T_INF_LAT], 			[T_INF, T_INF_TL], [T_INF, T_INF_GL], [T_INF, T_INF_marksman], [T_INF, T_INF_medic]]]];
-_group set [T_GROUP_inf_assault_squad,	[[[T_INF, T_INF_SL], 	[T_INF, T_INF_exp], [T_INF, T_INF_exp], [T_INF, T_INF_GL], [T_INF, T_INF_LMG], 			[T_INF, T_INF_GL], [T_INF, T_INF_LMG],[T_INF, T_INF_engineer], [T_INF, T_INF_engineer]]]];
-_group set [T_GROUP_inf_weapons_squad,	[[[T_INF, T_INF_SL], 	[T_INF, T_INF_HMG], [T_INF, T_INF_ammo], [T_INF, T_INF_HMG], [T_INF, T_INF_ammo],		[T_INF, T_INF_TL], [T_INF, T_INF_AT], [T_INF, T_INF_ammo], [T_INF, T_INF_LAT]]]];
-_group set [T_GROUP_inf_sniper_team,	[[[T_INF, T_INF_sniper], [T_INF, T_INF_spotter]]]];
-_group set [T_GROUP_inf_officer,		[[[T_INF, T_INF_officer], [T_INF, T_INF_rifleman], [T_INF, T_INF_rifleman]]]];
+_group set [T_GROUP_inf_sentry, [
+	[
+		T_INF_TL,
+		T_INF_rifleman
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_fire_team, [
+	[
+		T_INF_TL,
+		T_INF_LMG,
+		T_INF_rifleman,
+		T_INF_GL
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_AA_team, [
+	[
+		T_INF_TL,
+		T_INF_AA,
+		T_INF_AA,
+		T_INF_ammo
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_AT_team, [
+	[
+		T_INF_TL,
+		T_INF_AT,
+		T_INF_AT,
+		T_INF_ammo
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_rifle_squad, [
+	[
+		T_INF_SL,
+		T_INF_TL,
+		T_INF_LMG,
+		T_INF_GL,
+		T_INF_LAT,
+		T_INF_TL,
+		T_INF_GL,
+		T_INF_marksman,
+		T_INF_medic
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_assault_squad, [
+	[
+		T_INF_SL,
+		T_INF_exp,
+		T_INF_exp,
+		T_INF_GL,
+		T_INF_LMG,
+		T_INF_GL,
+		T_INF_LMG,
+		T_INF_engineer,
+		T_INF_engineer
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_weapons_squad, [
+	[
+		T_INF_SL,
+		T_INF_HMG,
+		T_INF_ammo,
+		T_INF_HMG,
+		T_INF_ammo,
+		T_INF_TL,
+		T_INF_AT,
+		T_INF_ammo,
+		T_INF_LAT
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_sniper_team, [
+	[
+		T_INF_sniper,
+		T_INF_spotter
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_officer, [
+	[
+		T_INF_officer,
+		T_INF_rifleman,
+		T_INF_rifleman
+	] apply { [T_INF, _x] }
+]];
 
-_group set [T_GROUP_inf_recon_patrol,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_LAT]]]];
-_group set [T_GROUP_inf_recon_sentry,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_LAT] ]]];
-_group set [T_GROUP_inf_recon_squad,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_medic], [T_INF, T_INF_recon_LAT],  [T_INF, T_INF_recon_JTAC], [T_INF, T_INF_recon_exp]]]];
-_group set [T_GROUP_inf_recon_team,		[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_LAT], [T_INF, T_INF_recon_exp], [T_INF, T_INF_recon_medic]]]];
+_group set [T_GROUP_inf_recon_patrol, [
+	[
+		T_INF_recon_TL,
+		T_INF_recon_rifleman,
+		T_INF_recon_marksman,
+		T_INF_recon_LAT
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_recon_sentry, [
+	[
+		T_INF_recon_TL,
+		T_INF_recon_LAT 
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_recon_squad, [
+	[
+		T_INF_recon_TL,
+		T_INF_recon_rifleman,
+		T_INF_recon_marksman,
+		T_INF_recon_medic,
+		T_INF_recon_LAT,
+		T_INF_recon_JTAC,
+		T_INF_recon_exp
+	] apply { [T_INF, _x] }
+]];
+_group set [T_GROUP_inf_recon_team, [
+	[
+		T_INF_recon_TL,
+		T_INF_recon_rifleman,
+		T_INF_recon_marksman,
+		T_INF_recon_LAT,
+		T_INF_recon_exp,
+		T_INF_recon_medic
+	] apply { [T_INF, _x] }
+]];
 
 /* Set arrays */
 _array set [T_INF, _inf];
