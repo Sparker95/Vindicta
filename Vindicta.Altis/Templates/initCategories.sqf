@@ -236,6 +236,14 @@ T_VEH_ground_combat =
 	T_VEH_MBT
 ];
 
+// Ground vehicles considered armored
+T_VEH_armor =
+[
+	T_VEH_IFV,
+	T_VEH_APC,
+	T_VEH_MBT
+];
+
 // = = = = = = = = = = D R O N E S = = = = = = = = = = 
 
 //Drones
