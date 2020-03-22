@@ -5,13 +5,7 @@ Garrison moves on available vehicles
 
 #define pr private
 
-#ifndef RELEASE_BUILD
-#define DEBUG_ROUTE
-#endif
-
-#define THIS_ACTION_NAME "ActionGarrisonMoveMounted"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 
 	VARIABLE("pos"); // The destination position
 	VARIABLE("radius"); // Completion radius
@@ -19,7 +13,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	// ------------ N E W ------------
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		// Unpack position
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -36,8 +30,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 		
 		// Unpack radius
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
-		if (isNil "_radius") then {
+		pr _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, -1);
+		if (_radius == -1) then {
 			_radius = CALLSM1("GoalGarrisonMove", "getLocationMoveRadius", _loc);
 			T_SETV("radius", _radius);
 		} else {
@@ -46,12 +40,12 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Create a VirtualRoute in advance
 		// We will use it both when spawned and despawned
-		CALLM0(_thisObject, "createVirtualRoute");
+		T_CALLM0("createVirtualRoute");
 		
 	} ENDMETHOD;
 
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		// Delete the virtual route object
 		pr _vr = T_GETV("virtualRoute");
@@ -63,7 +57,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ACTIVATE");
 
@@ -129,7 +123,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			} forEach _infGroups;
 
 			// Set state
-			SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+			T_SETV("state", ACTION_STATE_ACTIVE);
 			
 			// Return ACTIVE state
 			ACTION_STATE_ACTIVE
@@ -139,7 +133,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) then {
@@ -184,11 +178,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 			T_SETV("state", _state);
 			_state
+
 		} else {
 
-
 			// Fail if not everyone is in vehicles
-			pr _everyoneIsMounted = CALLM0(_thisObject, "isEveryoneInVehicle");
+			pr _everyoneIsMounted = T_CALLM0("isEveryoneInVehicle");
 			OOP_INFO_1("Everyone is in vehicles: %1", _everyoneIsMounted);
 			if (! _everyoneIsMounted) exitWith {
 				OOP_INFO_0("ACTION FAILED because not everyone is in vehicles");
@@ -196,7 +190,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				ACTION_STATE_FAILED
 			};
 			
-			pr _state = CALLM0(_thisObject, "activateIfInactive");
+			pr _state = T_CALLM0("activateIfInactive");
 			
 			scopeName "s0";
 			
@@ -248,7 +242,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// Returns true if everyone is in vehicles
 	METHOD("isEveryoneInVehicle") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		pr _AI = T_GETV("AI");
 		pr _ws = GETV(_AI, "worldState");
 		
@@ -260,7 +254,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _gar = T_GETV("gar");
 
@@ -291,14 +285,14 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	} ENDMETHOD;
 
 	METHOD("onGarrisonSpawned") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
 	
 	METHOD("onGarrisonDespawned") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
@@ -306,7 +300,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	// Creates a new VirtualRoute object, deletes the old one
 	METHOD("createVirtualRoute") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
 
@@ -331,7 +325,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	} ENDMETHOD;
 
 	METHOD("spawn") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
 
@@ -399,25 +393,25 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Handle units/groups added/removed
 
 	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, ["_groups", [], [[]]]];
 		
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 
 	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, ["_groups", [], [[]]]];
 		
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, ["_units", [], [[]]]];
 		
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, ["_units", [], [[]]]];
 		
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;

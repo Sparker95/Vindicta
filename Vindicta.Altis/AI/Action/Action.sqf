@@ -383,8 +383,8 @@ CLASS("Action", "MessageReceiver")
 	Returns: Number
 	*/
 	STATIC_METHOD("getCost") {
-		//params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		//params [ P_THISCLASS, ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		params [ P_THISCLASS, ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
 		//if (isNil "_cost") then {
@@ -414,7 +414,7 @@ CLASS("Action", "MessageReceiver")
 	Returns: <WorldState>
 	*/
 	STATIC_METHOD("getPreconditions") {
-		params [ ["_thisClass", "", [""]], ["_goalParameters", [], [[]]], ["_actionParameters", [], [[]]]];
+		params [ P_THISCLASS, ["_goalParameters", [], [[]]], ["_actionParameters", [], [[]]]];
 		
 		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
 		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
@@ -437,7 +437,7 @@ CLASS("Action", "MessageReceiver")
 	Returns: Number
 	*/
 	STATIC_METHOD("getPrecedence") {
-		params [ ["_thisClass", "", [""]] ];
+		params [ P_THISCLASS ];
 		
 		pr _precedence = GET_STATIC_VAR(_thisClass, "precedence");
 		
@@ -463,17 +463,31 @@ CLASS("Action", "MessageReceiver")
 	Returns: anything
 	*/
 	STATIC_METHOD("getParameterValue") {
-		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]], ["_showError", true]];
-		pr _index = _parameters findif {_x select 0 == _tag};
-		if (_index == -1) then {
-			if (_showError) then {
-				OOP_INFO_3("[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters);
-			};
+		params [ P_THISCLASS, P_ARRAY("_parameters"), ["_tag", "", ["", 0]], P_DYNAMIC("_default")];
+		private _index = _parameters findif { _x select 0 == _tag };
+		private _val = if(_index == -1) then { _default } else { (_parameters#_index)#1 };
+		_val = if(isNil "_val") then { _default } else { _val };
+		if (isNil "_val") then {
+			OOP_INFO_3("[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters);
 			nil
 		} else {
-			(_parameters select _index) select 1
-		};
+			_val
+		}
 	} ENDMETHOD;
+	
+	// Merge _additional parameters into _base parameters, leaving any existing values unchanged
+	STATIC_METHOD("mergeParameterValues") {
+		params [P_THISCLASS, P_ARRAY("_base"), P_ARRAY("_additional")];
+		{
+			_x params ["_tag", "_value"];
+			private _idx = _base findIf { _x select 0 == _tag };
+			if(_idx == -1) then {
+				// Append new value
+				_base pushBack _x;
+			};
+		} forEach _additional;
+	} ENDMETHOD;
+	
 
 
 

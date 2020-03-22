@@ -16,7 +16,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 	VARIABLE("pos");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", ZERO_HEIGHT(_pos));
@@ -25,11 +25,11 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		private _pos = T_GETV("pos");
 
 	 	// Set behaviour
-		private _hG = GETV(_thisObject, "hG");
+		private _hG = T_GETV("hG");
 		_hG setBehaviour "AWARE";
 		{_x doFollow (leader _hG)} forEach (units _hG);
 		_hG setFormation "DIAMOND";
@@ -67,7 +67,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		CALLM0(_thisObject, "failIfEmpty");
 
@@ -75,9 +75,9 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// check if one of the group is near _pos
-			private _hG = GETV(_thisObject, "hG");
+			private _hG = T_GETV("hG");
 			private _leader = leader _hG;
-			private _destination = GETV(_thisObject, "pos");
+			private _destination = T_GETV("pos");
 			// Leader is closer than 20 meters from destination, all units are less than 50m to the leader
 			private _isGroupNearPos = ((_leader distance2D _destination) < 20) && ((units _hG) findIf { (_x distance2D _leader) > 50} == -1);
 
@@ -99,7 +99,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Delete given goals
 		pr _AI = T_GETV("AI");

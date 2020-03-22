@@ -113,87 +113,97 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	_unit - <Unit> to add
 
-	Returns: nil
+	Returns: bool - true if the unit was moved
 	*/
 	METHOD("addUnit") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+		T_CALLM1("addUnits", [_unit]) > 0
+	} ENDMETHOD;
 
-		OOP_INFO_1("ADD UNIT: %1", _unit);
+	// |                           A D D   U N I T S
+	/*
+	Method: addUnits
+	Adds array of existing <Unit> to this group. Also use it when you want to move units between groups.
 
-		// Make sure a valid unit is added
-		if (!CALLM0(_unit, "isValid")) exitWith {
-			OOP_ERROR_1("Attempt to add invalid unit: %1", _unit);
+	Parameters: _units
+
+	_units - Array of <Unit> to add
+
+	Returns: number of units added
+	*/
+	METHOD("addUnits") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		OOP_INFO_1("ADD UNITS: %1", _units);
+
+		private _unitsToMove = _units select {
+			// Valid units only
+			CALLM0(_x, "isValid")
+		} apply {
+			// Get the unit group as we need it a couple of times
+			[
+				_x,
+				CALLM0(_x, "getGroup")
+			]
+		} select {
+			// Only move units not already in this group
+			_x#1 != _thisObject
 		};
 
-		private _data = GET_VAR(_thisObject, "data");
-
-		pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
-		pr _groupIsSpawned = CALLM0(_thisObject, "isSpawned");
-
-		/* Can't really remember why it was here
-		if (_unitIsSpawned && !_groupIsSpawned || !_unitIsSpawned && _groupIsSpawned) exitWith {
-			OOP_ERROR_4("Group %1 is spawned: %2, unit %3 is spawned: %4", _thisObject, _groupIsSpawned, _unit, _unitIsSpawned);
-		};
-		*/
-
-		// Get unit's group
-		pr _unitGroup = CALLM0(_unit, "getGroup");
-
-		if(_unitGroup == _thisObject) exitWith {
-			// Already in this group, this can happen quite easily
+		if(count _unitsToMove == 0) exitWith {
+			// No units to move
+			0
 		};
 
-		// Remove the unit from its previous group
-		if (_unitGroup != NULL_OBJECT) then {
-			//if (CALLM0(_unitGroup, "getOwner") == clientOwner) then {
-				CALLM1(_unitGroup, "removeUnit", _unit);
-			//} else {
-			//	CALLM3(_unitGroup, "postMethodAsync", "removeUnit", [_unit], false);
-				//CALLM1(_unitGroup, "waitUntilMessageDone", _msgID);
-			//};
-		};
-
-		// Add unit to the new group
+		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList pushBackUnique _unit;
-		CALLM1(_unit, "setGroup", _thisObject);
+
+		{// forEach _unitsToMove;
+			_x params ["_unit", "_unitGroup"];
+			// Remove the unit from its previous group
+			if (_unitGroup != NULL_OBJECT) then {
+				//if (CALLM0(_unitGroup, "getOwner") == clientOwner) then {
+					CALLM1(_unitGroup, "removeUnit", _unit);
+				//} else {
+				//	CALLM3(_unitGroup, "postMethodAsync", "removeUnit", [_unit], false);
+					//CALLM1(_unitGroup, "waitUntilMessageDone", _msgID);
+				//};
+			};
+			// Add unit to the new group
+			_unitList pushBackUnique _unit;
+			CALLM1(_unit, "setGroup", _thisObject);
+		} forEach _unitsToMove;
 
 		// Associate the unit with the garrison of this group
 		// todo
 
 		// Handle spawn states
 		if (CALLM0(_thisObject, "isSpawned")) then {
-
 			// Make the unit join the actual group
-			pr _newGroupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-
-			// Create group handle if it doesn't exist yet
-			if (isNull _newGroupHandle) then {
-				_newGroupHandle = createGroup [_data select GROUP_DATA_ID_SIDE, false]; //side, delete when empty
-				_newGroupHandle allowFleeing 0; // Never flee
-				_data set [GROUP_DATA_ID_GROUP_HANDLE, _newGroupHandle];
-			};
-
-			pr _unitObjectHandle = CALLM0(_unit, "getObjectHandle");
-
-			[_unitObjectHandle] join _newGroupHandle;
+			pr _groupHandle = T_CALLM0("_createGroupHandle");
+			private _unitHandles = _unitsToMove apply { CALLM0(_x select 0, "getObjectHandle") };
+			_unitHandles join _groupHandle;
 
 			// If the target group is spawned, notify its AI object
-			pr _AI = _data select GROUP_DATA_ID_AI;
-			if (_AI != "") then {
-				CALLM2(_AI, "postMethodSync", "handleUnitsAdded", [[_unit]]);
+			private _AI = _data select GROUP_DATA_ID_AI;
+			if (_AI != NULL_OBJECT) then {
+				CALLM2(_AI, "postMethodSync", "handleUnitsAdded", [_unitsToMove]);
 			};
 		};
 
 		// Select leader if needed
-		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		private _leader = _data select GROUP_DATA_ID_LEADER;
 		if (_leader == "") then {
-			if (CALLM0(_unit, "isInfantry")) then {
+			private _infIdx = _unitsToMove findIf { CALLM0(_x select 0, "isInfantry") };
+			if (_infIdx != NOT_FOUND) then {
+				private _newLeader = _unitsToMove#_infIdx#0;
 				// We have no leader yet and this seems to be the first infantry unit in the group
 				// So he will be our leader from now!
-				CALLM1(_thisObject, "setLeader", _unit);
+				CALLM1(_thisObject, "setLeader", _newLeader);
 			};
 		};
+
+		count _unitsToMove
 	} ENDMETHOD;
 
 	/*
@@ -273,8 +283,49 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 	} ENDMETHOD;
 
+	// Create new group handle if it doesn't exist
+	/* private */ METHOD("_createGroupHandle") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+		pr _groupHandle = _data#GROUP_DATA_ID_GROUP_HANDLE;
+		// Create group handle if it doesn't exist yet
+		if (isNull _groupHandle) then {
+			_groupHandle = createGroup [_data#GROUP_DATA_ID_SIDE, false]; //side, delete when empty
+			_groupHandle allowFleeing 0; // Never flee
+			_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+		};
+		_groupHandle
+	} ENDMETHOD;
 
+	/* public */ METHOD("rectifyGroupHandle") {
+		params [P_THISOBJECT];
 
+		pr _data = T_GETV("data");
+		if(!(_data#GROUP_DATA_ID_SPAWNED)) exitWith {
+			// not spawned so no group handle
+		};
+		pr _units = _data#GROUP_DATA_ID_UNITS;
+		if(count _units == 0) exitWith {
+			// no units so no group handle
+		};
+		// First try and use the existing group handle if there is one, it might have 
+		// waypoints on it that we want to keep
+		pr _groupHandle = _data#GROUP_DATA_ID_GROUP_HANDLE;
+		if(isNull _groupHandle) then {
+			// Try and use leaders group handle instead
+			pr _leader = _data#GROUP_DATA_ID_LEADER;
+			if(_leader == NULL_OBJECT) then {
+				_leader = T_CALLM0("_selectNextLeader");
+			};
+			pr _leaderHandle = CALLM0(_leader, "getObjectHandle");
+			_groupHandle = group _leaderHandle;
+			_groupHandle allowFleeing 0;
+			_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+		};
+		// Reform other units back to the group
+		pr _otherUnitHandles = (_units apply {CALLM0(_x, "getObjectHandle")});
+		_otherUnits joinSilent (_otherUnitHandles - units _groupHandle);
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                          G E T T I N G   M E M B E R   V A L U E S
@@ -394,25 +445,38 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		_data select GROUP_DATA_ID_LEADER
 	} ENDMETHOD;
 
+	METHOD("getPos") {
+		params [P_THISOBJECT];
+		if(T_CALLM0("isSpawned")) then {
+			private _leader = T_CALLM0("getLeader");
+			CALLM0(_leader, "getPos")
+		} else {
+			private _garrison = T_CALLM0("getGarrison");
+			CALLM0(_garrison, "getPos")
+		}
+	} ENDMETHOD;
+	
 	/*
 	Method: setLeader
 	Sets the leader of this group to a specified Unit. The Unit must belong to this group.
 	*/
 	METHOD("setLeader") {
 		params ["_thisObject", ["_unit", "", [""]]];
-		pr _data = T_GETV("data");
-		pr _units = _data select GROUP_DATA_ID_UNITS;
-		pr _leader = _data select GROUP_DATA_ID_LEADER;
-		pr _isSpawned = _data select GROUP_DATA_ID_SPAWNED;
 
-		if (_unit in _units) then {
-			if (_isSpawned) then {
-				pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		pr _data = T_GETV("data");
+
+		if(_data#GROUP_DATA_ID_LEADER == _unit) exitWith {
+			// Already set
+		};
+
+		if (_unit in _data#GROUP_DATA_ID_UNITS) then {
+			if (_data#GROUP_DATA_ID_SPAWNED) then {
 				pr _hO = CALLM0(_unit, "getObjectHandle");
 				if (isNull _hO) then {
 					OOP_ERROR_1("Unit %1 is null object!", _unit);
 					CALLM0(_thisObject, "_selectNextLeader"); // Select a random leader
 				} else {
+					pr _hG = _data#GROUP_DATA_ID_GROUP_HANDLE;
 					_hG selectLeader _hO;
 					_data set [GROUP_DATA_ID_LEADER, _unit];
 				};
@@ -425,16 +489,16 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	} ENDMETHOD;
 
 	// Selects the next leader when the current one is removed or whatever
-	// If there is no more infantry, it sets leader to "" (no leader)
+	// If there is no more infantry, it sets leader to NULL_OBJECT (no leader)
 	METHOD("_selectNextLeader") {
 		params ["_thisObject"];
 
 		pr _data = T_GETV("data");
 		pr _infUnits = T_CALLM0("getInfantryUnits");
-		pr _leader = _data select GROUP_DATA_ID_LEADER;
 		if (count _infUnits == 0) then {
 			// There is no leader in this group any more
-			_data set [GROUP_DATA_ID_LEADER, ""];
+			_data set [GROUP_DATA_ID_LEADER, NULL_OBJECT];
+			NULL_OBJECT
 		} else {
 			pr _leader = _infUnits select 0;
 
@@ -450,8 +514,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			} else {
 				_data set [GROUP_DATA_ID_LEADER, _leader];
 			};
-		};
-		
+			_leader
+		}
 	} ENDMETHOD;
 
 	// All the units in the group have just been spawned so we must select the right leader
@@ -654,14 +718,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
-			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-			
-			if (isNull _groupHandle) then {
-				private _side = _data select GROUP_DATA_ID_SIDE;
-				_groupHandle = createGroup [_side, false]; //side, delete when empty
-				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
-			};
-			
+			pr _groupHandle = T_CALLM0("_createGroupHandle");
+
 			_groupHandle setBehaviour "SAFE";
 			
 			{
@@ -708,14 +766,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
-			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-			
-			if (isNull _groupHandle) then {
-				private _side = _data select GROUP_DATA_ID_SIDE;
-				_groupHandle = createGroup [_side, false]; //side, delete when empty
-				//_groupHandle enableDynamicSimulation true;
-				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
-			};
+			pr _groupHandle = T_CALLM0("_createGroupHandle");
 			
 			_groupHandle setBehaviour "SAFE";
 			
@@ -800,14 +851,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
-			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-			
-			if (isNull _groupHandle) then {
-				private _side = _data select GROUP_DATA_ID_SIDE;
-				_groupHandle = createGroup [_side, false]; //side, delete when empty
-				//_groupHandle enableDynamicSimulation true;
-				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
-			};
+			pr _groupHandle = T_CALLM0("_createGroupHandle");
 			
 			_groupHandle setBehaviour "SAFE";
 			
@@ -901,7 +945,6 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	/*
 	Method: sort
 	Makes passed units rejoin this group in specified order. Useful for reorganizing formation for convoys.
-	!!!WARNING!!! If you pass an array with all units in the group, then group handle will be changed!
 
 	Parameters: _unitsSorted
 
@@ -914,63 +957,36 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		params ["_thisObject", ["_unitsSorted", [], [[]]]];
 
 		pr _data = T_GETV("data");
-		if (! (_data select GROUP_DATA_ID_SPAWNED)) exitWith {
-			OOP_ERROR_0("sortByVehicleOrder: group is not spawned!");
+
+		if (!(_data#GROUP_DATA_ID_SPAWNED)) exitWith {
+			OOP_ERROR_0("sort: group is not spawned!");
 		};
 
-		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		pr _hG = T_CALLM0("_createGroupHandle");
 
-		// Bail if the group has only one unit
-		if (count (units _hG) < 2) exitWith {};
+		if (count (units _hG) < 2) exitWith {
+			// Bail if the group has only one unit
+		};
 
 		OOP_INFO_1("Group handle: %1", _hG);
-		_hG deleteGroupWhenEmpty false;
 
 		// Create a temporary group
-		pr _side = _data select GROUP_DATA_ID_SIDE;
-		pr _tempGroupHandle = createGroup _side;
+		pr _side = _data#GROUP_DATA_ID_SIDE;
+		pr _tempGroupHandle = createGroup (_data#GROUP_DATA_ID_SIDE);
 
 		// Make all passed units join the new temporary group
-		{
-			pr _hO = CALLM0(_x, "getObjectHandle");
-			[_hO] joinSilent _tempGroupHandle;
-			[_hO] joinSilent _hG;
-		} forEach _unitsSorted;
+		pr _newLeader = _unitsSorted#0;
+		pr _allButLeader = (_unitsSorted - [_newLeader]) apply { CALLM0(_x, "getObjectHandle") };
 
-		/*
-		pr _objectHandles = _unitsSorted apply {
-			CALLM0(_x, "getObjectHandle")
-		};
-		_objectHandles joinSilent _tempGroupHandle;
-		*/
+		// Join everyone else to the other group, leaving only the leader behind
+		_allButLeader joinSilent _tempGroupHandle;
 
-		//OOP_INFO_1("Group handle: %1", _hG);
-
-		// Restore the old group if it's null now after everyone has left it
-		if (isNull _hG) then {
-			_hG = createGroup [_side, false]; //side, delete when empty
-			//_groupHandle enableDynamicSimulation true;
-			_hG allowFleeing 0;
-			_data set [GROUP_DATA_ID_GROUP_HANDLE, _hG];
-		};
-
-		//OOP_INFO_1("Group handle: %1", _hG);
-
-		// Make all passed units rejoin the group
-		/*
-		pr _hPrev = objNull;
-		{
-			[_x] joinSilent _hG;
-			//if (!isNull _hPrev) then {
-			//	_x doFollow _hPrev;
-			//};
-			_hPrev = _x;
-		} forEach _objectHandles;
-		*/
-
-		//OOP_INFO_1("Group handle: %1", _hG);
+		// Rejoin in correct order
+		_allButLeader joinSilent _hG;
 
 		deleteGroup _tempGroupHandle;
+
+		T_CALLM1("setLeader", _newLeader);
 	} ENDMETHOD;
 
 

@@ -33,8 +33,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 		
 		// Unpack radius
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
-		if (isNil "_radius") then {
+		pr _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, -1);
+		if (_radius == -1) then {
 			// todo Try to figure out completion radius from location
 			//pr _radius = CALLM0(_loc, "getBoundingRadius"); // there is no such function
 			// Just use 100 meters for now

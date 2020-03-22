@@ -5,25 +5,34 @@ Class: ActionGroup
 Group action.
 */
 
-#define pr private
-
 #define THIS_ACTION_NAME "MyAction"
 
 CLASS("ActionGroup", "Action")
 
-	
 	VARIABLE("hG");
 	VARIABLE("group");
+	VARIABLE("behaviour");
+	VARIABLE("combatMode");
+	VARIABLE("formation");
+	VARIABLE("speedMode");
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		ASSERT_OBJECT_CLASS(_AI, "AIGroup");
 		
-		pr _agent = GETV(_AI, "agent");
+		private _agent = GETV(_AI, "agent");
 		T_SETV("group", _agent);
-		pr _hG = CALLM0(_agent, "getGroupHandle"); // Group handle
-		SETV(_thisObject, "hG", _hG);
+		private _hG = CALLM0(_agent, "getGroupHandle"); // Group handle
+		T_SETV("hG", _hG);
+		private _behaviour = CALLSM3("Action", "getParameterValue", _parameters, TAG_BEHAVIOUR, "");
+		T_SETV("behaviour", _behaviour);
+		private _combatMode = CALLSM3("Action", "getParameterValue", _parameters, TAG_COMBAT_MODE, "");
+		T_SETV("combatMode", _combatMode);
+		private _formation = CALLSM3("Action", "getParameterValue", _parameters, TAG_FORMATION, "");
+		T_SETV("formation", _formation);
+		private _speedMode = CALLSM3("Action", "getParameterValue", _parameters, TAG_SPEED_MODE, "");
+		T_SETV("speedMode", _speedMode);
 	} ENDMETHOD;
 	
 	/*
@@ -33,7 +42,7 @@ CLASS("ActionGroup", "Action")
 	Returns: action state
 	*/
 	METHOD("failIfEmpty") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		if (CALLM0(T_GETV("group"), "isEmpty")) then {
 			T_SETV("state", ACTION_STATE_FAILED);
 			OOP_INFO_0("Action failed: group is empty");
@@ -50,7 +59,7 @@ CLASS("ActionGroup", "Action")
 	Returns: action state
 	*/
 	METHOD("failIfNoInfantry") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		if ((count CALLM0(T_GETV("group"), "getInfantryUnits")) == 0) then {
 			T_SETV("state", ACTION_STATE_FAILED);
@@ -76,7 +85,7 @@ CLASS("ActionGroup", "Action")
 	*/
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 	} ENDMETHOD;
 	
@@ -95,8 +104,36 @@ CLASS("ActionGroup", "Action")
 	*/
 	
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 	} ENDMETHOD;
 	
+	METHOD("applyGroupBehaviour") {
+		params [P_THISOBJECT, ["_defaultFormation", "WEDGE"], ["_defaultBehaviour", "AWARE"], ["_defaultCombatMode", "YELLOW"], ["_defaultSpeedMode", "NORMAL"]];
+		private _hG = T_GETV("hG");
+		private _formation = T_GETV("formation");
+		_hG setFormation ([_formation, _defaultFormation] select (_formation isEqualTo ""));
+		private _behaviour = T_GETV("behaviour");
+		_hG setBehaviour ([_behaviour, _defaultBehaviour] select (_behaviour isEqualTo ""));
+		private _combatMode = T_GETV("combatMode");
+		_hG setCombatMode ([_combatMode, _defaultCombatMode] select (_combatMode isEqualTo ""));
+		private _speedMode = T_GETV("speedMode");
+		_hG setSpeedMode ([_speedMode, _defaultCombatMode] select (_speedMode isEqualTo ""));
+	} ENDMETHOD;
+	
+	METHOD("clearWaypoints") {
+		params [P_THISOBJECT];
+
+		private _hG = T_GETV("hG");
+		while { count waypoints _hG > 0 } do {
+			deleteWaypoint ((waypoints _hG)#0);
+		};
+	} ENDMETHOD;
+			
+	METHOD("regroup") {
+		params [P_THISOBJECT];
+
+		private _hG = T_GETV("hG");
+		{ _x doFollow leader _hG } forEach units _hG;
+	} ENDMETHOD;
 ENDCLASS;

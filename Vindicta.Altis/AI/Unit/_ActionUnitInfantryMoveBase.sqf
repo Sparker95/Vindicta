@@ -22,10 +22,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 		
 		T_SETV("tolerance", 1.0); // Default tolerance value
 
-		pr _teleport = CALLSM2("Action", "getParameterValue", _parameters, "teleport");
-		if (isNil "_teleport") then {
-			_teleport = false;
-		};
+		pr _teleport = CALLSM3("Action", "getParameterValue", _parameters, "teleport", false);
 		T_SETV("teleport", _teleport);
 		
 	} ENDMETHOD;

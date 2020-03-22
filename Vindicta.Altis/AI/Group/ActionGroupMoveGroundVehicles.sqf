@@ -14,7 +14,7 @@ TAG_MAX_SPEED_KMH
 
 // Needed vehicle separation in meters
 #define SEPARATION 18
-#define SPEED_MAX 40
+#define SPEED_MAX 50
 #define SPEED_MIN 5
 
 #ifndef RELEASE_BUILD
@@ -22,7 +22,7 @@ TAG_MAX_SPEED_KMH
 #endif
 
 CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
-	
+
 	VARIABLE("pos");
 	VARIABLE("radius"); // Completion radius
 	VARIABLE("speedLimit"); // The current speed limit
@@ -31,7 +31,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	VARIABLE("route"); // Optional route to use, or just give one waypoint if no route was given
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
@@ -39,17 +39,11 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
 		T_SETV("radius", _radius);
 
-		pr _maxSpeedKmh = CALLSM2("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH);
-		if (isNil "_maxSpeedKmh") then {
-			_maxSpeedKmh = SPEED_MAX;
-		};
+		pr _maxSpeedKmh = CALLSM3("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH, SPEED_MAX);
 		T_SETV("maxSpeed", _maxSpeedKmh);
 
 		// Route can be optionally passed or not
-		pr _route = CALLSM2("Action", "getParameterValue", _parameters, TAG_ROUTE);
-		if (isNil "_route") then {
-			_route = [];
-		};
+		pr _route = CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
 		T_SETV("route", _route);
 
 		T_SETV("time", time);
@@ -59,7 +53,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _hG = T_GETV("hG");
 		pr _AI = T_GETV("AI");
@@ -89,9 +83,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
 		// Set group behaviour
-		_hG setBehaviour "SAFE";
-		_hG setFormation "COLUMNG";
-		_hG setCombatMode "GREEN"; // Hold fire, defend only
+		T_CALLM0("applyGroupBehaviour");
 
 		// Turn on sirens if we have them
 		{
@@ -161,7 +153,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	
 	// Logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		CALLM0(_thisObject, "failIfNoInfantry");
 		
@@ -224,7 +216,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	
 	//Gets the maximum separation between vehicles in convoy
 	METHOD("getMaxSeparation") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		pr _group = GETV(T_GETV("AI"), "agent");
 		pr _allVehicles = (CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")};
@@ -251,13 +243,13 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete given goals
 		pr _hG = T_GETV("hG");

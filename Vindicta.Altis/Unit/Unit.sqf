@@ -135,7 +135,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Add this unit to a group
 		if(_group != "") then {
-			CALL_METHOD(_group, "addUnit", [_thisObject]);
+			CALLM1(_group, "addUnit", _thisObject);
 		};
 
 		// Initialize variables, event handlers and other things

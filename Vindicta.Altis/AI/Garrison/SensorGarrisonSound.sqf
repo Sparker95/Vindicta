@@ -182,11 +182,8 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		// Return true only if garrison is NOT in combat state
 		// If in combat it makes no sense for us to hear gunshots any more
 		// If not in combat, and sensor gets overstimulated, garrison will switch to combat mode
-		pr _garAI = T_GETV("AI");
-		pr _ws = GETV(_garAI, "worldState");
-		pr _inCombat = [_ws, WSP_GAR_AWARE_OF_ENEMY] call ws_getPropertyValue;
-		
-		!_inCombat
+		pr _AI = T_GETV("AI");
+		!CALLM0(_AI, "isAlerted")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

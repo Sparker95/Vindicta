@@ -20,7 +20,6 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, "onlyCombat", false);
-		if (isNil "_onlyCombat") then {_onlyCombat = false;};
 		T_SETV("onlyCombat", _onlyCombat);
 		
 		T_SETV("driversAI", []);

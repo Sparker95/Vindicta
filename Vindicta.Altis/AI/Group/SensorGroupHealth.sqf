@@ -24,22 +24,22 @@ CLASS("SensorGroupHealth", "SensorGroup")
 	
 	/* virtual */ METHOD("update") {
 		params [["_thisObject", "", [""]]];
-		
+
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		pr _ws = GETV(_AI, "worldState");
-		
+
 		// Check if vehicles need unflipping
 		pr _vehicles = (
 			(CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")}
 		);
 		pr _allTouchingGround = (_vehicles findIf {[_x] call misc_fnc_isVehicleFlipped}) == -1;
 		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, _allTouchingGround] call ws_setPropertyValue;
-		
+
 		// Check if vehicles need repairs
 		pr _allRepaired = (_vehicles findIf {! (canMove _x)}) == -1;
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, _allRepaired] call ws_setPropertyValue;
-		
+
 		// Check if there are any null objects
 		pr _units = CALLM0(_group, "getUnits");
 		{
@@ -50,24 +50,31 @@ CLASS("SensorGroupHealth", "SensorGroup")
 
 		// Check if all infantry units are in vehicles
 		pr _infantryUnits = CALLM0(_group, "getInfantryUnits");
-		pr _infantry = _infantryUnits apply {CALLM0(_x, "getObjectHandle")};
-		pr _allInfMounted = (_infantry findIf {(vehicle _x) == _x}) == -1;
+		pr _infantryHandles = _infantryUnits apply {CALLM0(_x, "getObjectHandle")};
+		pr _allInfMounted = (_infantryHandles findIf {(vehicle _x) == _x}) == -1;
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
-		
+
 		// Check if all infantry units are in proper group
 		// Sometimes units get ungrouped when entering vehicles >_< WTF this shit is so annoying, BIS why do you make broken things everywhere
 		pr _hG = CALLM0(_group, "getGroupHandle");
-		{
-			pr _hO = CALLM0(_x, "getObjectHandle");
-			pr _infGroup = group _hO;
-			if (! (_infGroup isEqualTo _hG)) then {
-				OOP_WARNING_MSG("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3, unit is alive: %4", [_x ARG _infGroup ARG _hG ARG alive _hO]);
+		// There are inf but group handle is null or some inf are in the wrong group.
+		if(count _infantryHandles != 0 && {isNull _hG || {(_infantryHandles findIf { group _x != _hG }) != NOT_FOUND}}) then {
+			OOP_WARNING_1("%1 group handle is null or some units are not in the correct group", _group);
+			// This will assign all units to the leaders group
+			CALLM0(_group, "rectifyGroupHandle");
+		};
 
-				// Force the unit to join the proper group
-				[_hO] joinSilent _hG;
-				[_hO] joinSilent _hG;
-			};
-		} forEach _infantryUnits;
+		// {
+		// 	pr _hO = CALLM0(_x, "getObjectHandle");
+		// 	pr _infGroup = group _hO;
+		// 	if (! (_infGroup isEqualTo _hG)) then {
+		// 		OOP_WARNING_MSG("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3, unit is alive: %4", [_x ARG _infGroup ARG _hG ARG alive _hO]);
+
+		// 		// Force the unit to join the proper group
+		// 		[_hO] joinSilent _hG;
+		// 		[_hO] joinSilent _hG;
+		// 	};
+		// } forEach _infantryUnits;
 
 		// Check if the group leader is the proper unit
 		// ... just to be sure
@@ -84,7 +91,7 @@ CLASS("SensorGroupHealth", "SensorGroup")
 				if (_properLeaderUnit != "") then { CALLM1(_group, "setLeader", _properLeaderUnit); };
 			};
 		};
-		
+
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

@@ -8,14 +8,6 @@ Class: AI.AIGarrison
 
 #define pr private
 
-#ifndef RELEASE_BUILD
-#define DEBUG_GOAL_MARKERS
-#endif
-
-#ifdef _SQF_VM
-#undef DEBUG_GOAL_MARKERS
-#endif
-
 #define MRK_GOAL	"_goal"
 #define MRK_ARROW	"_arrow"
 
@@ -51,6 +43,8 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// Radio key, string, used for player to intercept intel
 	/* save */	VARIABLE_ATTR("radioKey", [ATTR_SAVE]);
+
+	VARIABLE("alertness");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -116,6 +110,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_initDebugMarkers");
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Register at stimulus manager
 		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
@@ -129,6 +124,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		deleteMarker (_thisObject + MRK_GOAL);
 		deleteMarker (_thisObject + MRK_ARROW);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Unregister from stimulus manager
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
@@ -155,7 +151,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		_mrk setMarkerType "n_unknown";
 		_mrk setMarkerColor _color;
 		_mrk setMarkerAlpha 1;
-		_mrk setMarkerText "new...";
+		_mrk setMarkerText "garrison...";
 		// Arrow marker (todo)
 		
 		// Arrow marker
@@ -195,7 +191,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	} ENDMETHOD;
 	
 	METHOD("process") {
-		params ["_thisObject", ["_accelerate", false]];
+		params [P_THISOBJECT, P_BOOL("_accelerate")];
 		
 		pr _gar = T_GETV("agent");
 
@@ -213,6 +209,7 @@ CLASS("AIGarrison", "AI_GOAP")
 			#ifdef DEBUG_GOAL_MARKERS
 			CALLM0(_thisObject, "_updateDebugMarkers");
 			#endif
+			FIX_LINE_NUMBERS()
 		} else {
 			// Update only the garrisonIsObserved sensor, because vehicles and cargo boxes can still be observed
 			pr _sensor = T_GETV("sensorObserved");
@@ -276,15 +273,17 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _mrk = _thisObject + MRK_ARROW;
 		pr _goalParameters = T_GETV("currentGoalParameters");
 		// See if location or position is passed
-		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_G_POS, false);
-		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, false);
-		if (isNil "_pPos" && isNil "_pLoc") then {
+		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_G_POS, 0);
+		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, 0);
+		if (_pPos isEqualTo 0 && _pLoc isEqualTo 0) then {
 			_mrk setMarkerAlpha 0; // Hide the marker
 		} else {
 			_mrk setMarkerAlpha 0.5; // Show the marker
 			pr _posDest = [0, 0, 0];
-			if (!isNil "_pPos") then {	_posDest = _pPos;	};
-			if (!isNil "_pLoc") then {
+			if (!(_pPos isEqualTo 0)) then {
+				_posDest = _pPos;
+			};
+			if (!(_pLoc isEqualTo 0)) then {
 				if (_pLoc isEqualType "") then {
 					_posDest = CALLM0(_pLoc, "getPos");
 				} else {
@@ -299,6 +298,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	} ENDMETHOD;
 	#endif
+	FIX_LINE_NUMBERS()
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
@@ -442,13 +442,14 @@ CLASS("AIGarrison", "AI_GOAP")
 			T_CALLM1("addKnownFriendlyLocation", _loc);
 		};
 
-		// Update our radio key
 		T_CALLM0("updateRadioKey");
+		T_SETV("alertness", nil);
 
 		// Update the debug markers
 		#ifdef DEBUG_GOAL_MARKERS
 		CALLM0(_thisObject, "_updateDebugMarkers");
 		#endif
+		FIX_LINE_NUMBERS()
 
 	} ENDMETHOD;
 
@@ -483,7 +484,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		GETV(T_GETV("agent"), "spawned")
 	} ENDMETHOD;
 
-	// Sets the position, because it is stored in the world state
+	// Sets the position
 	METHOD("setPos") {
 		params ["_thisObject", "_pos"];
 		
@@ -493,14 +494,15 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Update our radio key, if someone has forced a position change on us
 		T_CALLM0("updateRadioKey");
+		T_SETV("alertness", nil);
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
 	} ENDMETHOD;
 
-	// Sets the position, because it is stored in the world state
+	// Gets the position
 	METHOD("getPos") {
-		params ["_thisObject", "_pos"];
+		params ["_thisObject"];
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_POSITION] call ws_getPropertyValue;
 	} ENDMETHOD;
@@ -604,6 +606,35 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 	} ENDMETHOD;
 
+	METHOD("getAlertness") {
+		params [P_THISOBJECT];
+		private _alertness = T_GETV("alertness");
+		if(isNil "_alertness") then {
+			pr _side = CALLM0(T_GETV("agent"), "getSide"); // Garrison's side
+			pr _AICommander = CALLSM1("AICommander", "getAICommander", _side);
+			_alertness = if (!IS_NULL_OBJECT(_AICommander)) then {
+				private _pos = T_CALLM0("getPos");
+				// Pretty arbitrary...
+				// TODO: vary by difficulty level perhaps? Maybe general activity multiplier setting would be better though
+				CLAMP(CALLM2(_AICommander, "getActivity", _pos, 2500) * 0.1, 0, 1)
+			} else {
+				0
+			};
+			T_SETV("alertness", _alertness);	
+		};
+		_alertness
+	} ENDMETHOD;
+
+	METHOD("isAlerted") {
+		params [P_THISOBJECT];
+		[ T_GETV("worldState"), WSP_GAR_AWARE_OF_ENEMY, true ] call ws_propertyExistsAndEquals
+	} ENDMETHOD;
+
+	METHOD("isVigilant") {
+		params [P_THISOBJECT];
+		T_CALLM0("isAlerted") || { T_CALLM0("getAlertness") > 0.1 }
+	} ENDMETHOD;
+
 	// Returns a serialized UnitIntelData object
 	// Typically we are going to assign the returned value to personal inventory
 	METHOD("getUnitIntelDataSerial") {
@@ -649,6 +680,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_initDebugMarkers");
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Register at stimulus manager
 		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);

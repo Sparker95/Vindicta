@@ -77,13 +77,11 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	
 	METHOD("doComplexCheck") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
-		
+
 		// Return true only if garrison is in combat state
-		pr _garAI = T_GETV("AI");
-		pr _ws = GETV(_garAI, "worldState");
-		pr _ret = [_ws, WSP_GAR_AWARE_OF_ENEMY] call ws_getPropertyValue;
-		
-		_ret
+		pr _AI = T_GETV("AI");
+
+		CALLM0(_AI, "isAlerted")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

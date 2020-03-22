@@ -30,10 +30,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		T_SETV("pos", _pos);
 		
 		// Route can be optionally passed or not
-		pr _route = CALLSM2("Action", "getParameterValue", _parameters, TAG_ROUTE);
-		if (isNil "_route") then {
-			_route = [];
-		};
+		pr _route = CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
 		T_SETV("route", _route);
 
 		T_SETV("readdwp", false);

@@ -6,39 +6,35 @@ This action tries to find drivers and turret operators for vehicles in all vehic
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonRebalanceVehicleGroups"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS("ActionGarrisonRebalanceVehicleGroups", "ActionGarrison")
 
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ACTIVATE");
 		
-		// Give waypoint to the vehicle group
 		pr _gar = T_GETV("gar");
 		pr _AI = T_GETV("AI");
 		
+		// ===== Ensure all vehicles are manned first =====
 		// Create a pool of units we can use to fill vehicle slots
 		pr _freeUnits = [];
-		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
-		pr _freeGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
+		pr _freeGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
 		{
 			_freeUnits append CALLM0(_x, "getUnits");
 		} forEach _freeGroups;
-		
-		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+		pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
 		
 		// We can also take units from vehicle turrets if we really need it
-		{
+		{// forEach _vehGroups;
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
 			pr _infUnits = CALLM0(_x, "getInfantryUnits");
@@ -50,7 +46,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		OOP_INFO_2("Vehicle groups: %1, free units: %2", _vehGroups, _freeUnits);
 		
 		// Try to add drivers and turret operators to all groups
-		{ // foreach _vehGroups
+		{// foreach _vehGroups
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
 			pr _nInf = count CALLM0(_x, "getInfantryUnits");
@@ -97,7 +93,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} forEach _vehGroups;
 		
 		// Try to add turret operators to all groups
-		{ // foreach _vehGroups
+		{// foreach _vehGroups
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
 			pr _nInf = count CALLM0(_group, "getInfantryUnits");
@@ -116,7 +112,66 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Delete empty groups
 		CALLM0(_gar, "deleteEmptyGroups");
-		
+
+		#define DESIRED_GROUP_SIZE 6
+		// ===== Now rebalance remaining inf into effective squads =====
+		pr _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]) apply {
+			[
+				CALLM0(_x, "getUnits"),
+				_x
+			]
+		};
+		pr _tooBig = _infGroups select { count (_x#0) > DESIRED_GROUP_SIZE };
+		pr _tooSmall = _infGroups select { count (_x#0) < DESIRED_GROUP_SIZE };
+		pr _side = CALLM0(_gar, "getSide");
+
+		// Take parts of groups that are too big and join them to smaller (or new empty) groups
+		{// forEach _tooBig;
+			_x params ["_srcUnits", "_srcGrp"];
+			pr _spareUnits = _srcUnits select [6, count _srcUnits];
+			while { count _spareUnits > 0 } do {
+				if(count _tooSmall == 0) then {
+					// create a new group
+					pr _args = [
+						_side,
+						selectRandom [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]
+					];
+					pr _newGroup = NEW("Group", _args);
+					CALLM0(_newGroup, "spawnAtLocation");
+					CALLM1(_gar, "addGroup", _newGroup);
+					_tooSmall pushBack [[], _newGroup];
+				};
+				(_tooSmall#0) params ["_tgtUnits", "_tgtGrp"];
+				pr _numToAssign = (count _spareUnits) min (DESIRED_GROUP_SIZE - count _tgtUnits);
+				pr _unitsToAssign = _spareUnits select [0, _numToAssign];
+				_spareUnits = _spareUnits select [_numToAssign, count _spareUnits];
+				CALLM1(_tgtGrp, "addUnits", _unitsToAssign);
+				_tgtUnits append _unitsToAssign;
+				if(count _tgtUnits >= DESIRED_GROUP_SIZE ) then {
+					_tooSmall deleteAt 0;
+				};
+			};
+		} forEach _tooBig;
+
+		// Take groups that are too small and merge them
+		while { count _tooSmall > 1 } do {
+			_tooSmall#0 params ["_srcUnits", "_srcGrp"];
+			while { count _srcUnits > 0 && { count _tooSmall > 1 } } do {
+				(_tooSmall#1) params ["_tgtUnits", "_tgtGrp"];
+				pr _numToAssign = (count _srcUnits) min (DESIRED_GROUP_SIZE - count _tgtUnits);
+				pr _unitsToAssign = _srcUnits select [0, _numToAssign];
+				_srcUnits = _srcUnits select [_numToAssign, count _srcUnits];
+				CALLM1(_tgtGrp, "addUnits", _unitsToAssign);
+				_tgtUnits append _unitsToAssign;
+				if(count _tgtUnits >= DESIRED_GROUP_SIZE ) then {
+					_tooSmall deleteAt 1;
+				};
+			};
+		};
+
+		// Delete empty groups once more
+		CALLM0(_gar, "deleteEmptyGroups");
+
 		// Call the health sensor again so that it can update the world state properties
 		CALLM0(GETV(_AI, "sensorState"), "update");
 		
@@ -126,9 +181,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		if ([_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, true] call ws_propertyExistsAndEquals) then {
 			_state = ACTION_STATE_COMPLETED;
 		};
-				
+
 		// Set state
-		SETV(_thisObject, "state", _state);
+		T_SETV("state", _state);
 		
 		// Return ACTIVE state
 		_state		
@@ -136,7 +191,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
@@ -147,7 +202,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 	} ENDMETHOD;
 

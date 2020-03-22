@@ -18,7 +18,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
-		pr _hBuilding = CALLSM3("Action", "getParameterValue", _parameters, "building", false);
+		pr _hBuilding = CALLSM2("Action", "getParameterValue", _parameters, "building");
 		if (isNil "_hBuilding") exitWith {
 			OOP_ERROR_0("Building handle was not provided");
 			T_SETV("hBuilding", objNull);

@@ -9,6 +9,9 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
+#define MRK_GOAL	"_goal"
+#define MRK_ARROW	"_arrow"
+
 CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
@@ -45,8 +48,115 @@ CLASS("AIGroup", "AI_GOAP")
 		
 		// Set process interval
 		CALLM1(_thisObject, "setProcessInterval", 3);
+
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_initDebugMarkers");
+		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
-	
+
+	#ifdef DEBUG_GOAL_MARKERS
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		deleteMarker (_thisObject + MRK_GOAL);
+		deleteMarker (_thisObject + MRK_ARROW);
+	} ENDMETHOD;
+
+	METHOD("_initDebugMarkers") {
+		params [P_THISOBJECT];
+
+		pr _agent = T_GETV("agent");
+
+		// Position
+		pr _pos = [0, 0, 0];
+
+		// Main marker
+		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
+		pr _name = _thisObject + MRK_GOAL;
+		pr _mrk = createmarker [_name, _pos];
+		_mrk setMarkerType "o_inf";
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 1;
+		_mrk setMarkerText "group...";
+		// Arrow marker (todo)
+		
+		// Arrow marker
+		pr _name = _thisObject + MRK_ARROW;
+		pr _mrk = createMarker [_name, [0, 0, 0]];
+		_mrk setMarkerShape "RECTANGLE";
+		_mrk setMarkerBrush "SolidFull";
+		_mrk setMarkerSize [10, 10];
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 0.5;
+	} ENDMETHOD;
+
+	METHOD("_updateDebugMarkers") {
+		params ["_thisObject"];
+
+		pr _grp = T_GETV("agent");
+
+		
+		if(!CALLM0(_grp, "isSpawned")) exitWith {
+			(_thisObject + MRK_GOAL) setMarkerAlpha 0;
+			(_thisObject + MRK_ARROW) setMarkerAlpha 0;
+		};
+		// Set pos
+		pr _pos = CALLM0(_grp, "getPos");
+		if(isNil "_pos") exitWith {
+			(_thisObject + MRK_GOAL) setMarkerAlpha 0;
+			(_thisObject + MRK_ARROW) setMarkerAlpha 0;
+		};
+
+		// Update the markers
+		pr _mrk = _thisObject + MRK_GOAL;
+		// Set text
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			_action = CALLM0(_action, "getFrontSubaction");
+		};
+		pr _text = format ["%1\i:%2\v:%3\%4\%5", _grp, count CALLM0(_grp, "getInfantryUnits"), count CALLM0(_grp, "getVehicleUnits"), T_GETV("currentGoal"), _action];
+		_mrk setMarkerText _text;
+
+		_mrk setMarkerPos (_pos vectorAdd [5, 5, 5]);
+		_mrk setMarkerAlpha 0.75;
+
+		// Update arrow marker
+		pr _mrk = _thisObject + MRK_ARROW;
+		pr _goalParameters = T_GETV("currentGoalParameters");
+		// See if location or position is passed
+		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_POS, 0);
+		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, 0);
+		if (_pPos isEqualTo 0 && _pLoc isEqualTo 0) then {
+			_mrk setMarkerAlpha 0; // Hide the marker
+		} else {
+			_mrk setMarkerAlpha 0.5; // Show the marker
+			pr _posDest = [0, 0, 0];
+			if (!(_pPos isEqualTo 0)) then {
+				_posDest = _pPos;
+			};
+			if (!(_pLoc isEqualTo 0)) then {
+				if (_pLoc isEqualType "") then {
+					_posDest = CALLM0(_pLoc, "getPos");
+				} else {
+					_posDest = _pLoc;
+				};
+			};
+			pr _mrkPos = (_posDest vectorAdd _pos) vectorMultiply 0.5;
+			_mrk setMarkerPos _mrkPos;
+			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 5];
+			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
+		};
+
+	} ENDMETHOD;
+
+	METHOD("process") {
+		params [P_THISOBJECT];
+		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+		CALLM0(_thisObject, "_updateDebugMarkers");
+	} ENDMETHOD;
+	#endif
+	FIX_LINE_NUMBERS()
+
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The group AI resides in its own thread

@@ -17,18 +17,18 @@ CLASS("ActionGroupVehicleClearArea", "ActionGroup")
 	
 	// ------------ N E W ------------
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
 		T_SETV("pos", _pos);
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
 		T_SETV("radius", _radius);
 
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT];		
 		
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");		
@@ -41,21 +41,20 @@ CLASS("ActionGroupVehicleClearArea", "ActionGroup")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfEmpty");
-		
-		CALLM0(_thisObject, "activateIfInactive");
-		
+		T_CALLM0("failIfEmpty");
+		T_CALLM0("activateIfInactive");
+
 		// This action is terminal because it's never over right now
-		
+
 		// Return the current state
 		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 	} ENDMETHOD;
 

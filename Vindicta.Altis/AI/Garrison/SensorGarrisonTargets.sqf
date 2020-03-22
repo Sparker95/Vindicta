@@ -118,7 +118,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		
 		// Check if we can see any of the assigned targets
 		pr _assignedTargetsRadius = GETV(_AI, "assignedTargetsRadius");
-		if (_assignedTargetsRadius != 0 && (count _knownTargets) > 0) then {
+		if (_assignedTargetsRadius != 0 /*&& (count _knownTargets) > 0*/) then {
 			/*
 			pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");
 			pr _targetsInRadius = _knownTargets select {

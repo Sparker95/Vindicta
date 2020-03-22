@@ -23,9 +23,8 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 		pr _ws = GETV(_AI, "worldState");
 		pr _notAllCanMove = [_ws, WSP_GAR_ALL_VEHICLES_CAN_MOVE, false] call ws_propertyExistsAndEquals;
 		pr _brokenAndHaveEngineer = ([_ws, WSP_GAR_ALL_VEHICLES_REPAIRED, false] call ws_propertyExistsAndEquals ) && ([_ws, WSP_GAR_ENGINEER_AVAILABLE, true] call ws_propertyExistsAndEquals);
-		if ( (_notAllCanMove || _brokenAndHaveEngineer)) then {
-			pr _notInCombat = [_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_propertyExistsAndEquals;
-			if (_notInCombat) then {			
+		if (_notAllCanMove || _brokenAndHaveEngineer) then {
+			if (!CALLM0(_AI, "isAlerted")) then {
 				// Return relevance
 				GETSV("GoalGarrisonRepairAllVehicles", "relevance")
 			} else {

@@ -1,25 +1,17 @@
 #include "common.hpp"
 
-/*
-All crew of vehicles mounts assigned vehicles.
-*/
-
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonDefendPassive"
+CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 
-CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
-
-	// ------------ N E W ------------
-	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
 		T_SETV("buildingsAttack", []);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ACTIVATE");
 
@@ -69,7 +61,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					};
 					
 					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupRegroup", 0, [["combatMode", "RED"]], _AI];
+						_args = ["GoalGroupRegroup", 0, [[TAG_COMBAT_MODE, "RED"]], _AI];
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
@@ -96,7 +88,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
@@ -114,7 +106,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
