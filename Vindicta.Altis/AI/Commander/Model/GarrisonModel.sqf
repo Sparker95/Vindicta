@@ -8,6 +8,17 @@
 #define _DELETE_PROFILE_SCOPE
 #endif
 
+#ifdef UNIT_ALLOCATOR_DEBUG
+#define LOG_ALLOCATOR(fmt) diag_log format (fmt)
+#define LOG_ALLOCATOR_COMP(msg, comp) [(comp), (msg)] call comp_fnc_print
+#define LOG_ALLOCATOR_META(msg, cat, subcat) diag_log format [(msg)] + ([[(cat), 0, (subcat)]] call t_fnc_getMetadata)
+#else
+#define LOG_ALLOCATOR(fmt)
+#define LOG_ALLOCATOR_COMP(msg, comp)
+#define LOG_ALLOCATOR_META(msg, cat, subcat)
+#endif
+FIX_LINE_NUMBERS()
+
 // GarrisonModel_getThread = {
 // 	params ["_garrisonModel"];
 // 	// Can't use normal accessor because it would cause an infinite loop!
@@ -81,6 +92,7 @@ CLASS("GarrisonModel", "ModelBase")
 			#ifdef OOP_DEBUG
 			OOP_DEBUG_MSG("GarrisonModel for %1 created in %2", [_actual ARG _world]);
 			#endif
+			FIX_LINE_NUMBERS()
 		};
 		// Add self to world
 		CALLM(_world, "addGarrison", [_thisObject]);
@@ -105,6 +117,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _msg = format ["%1 id (%2) out of sync with sim copy %3 id (%4)", _thisObject, T_GETV("id"), _copy, GETV(_copy, "id")];
 		ASSERT_MSG(_idsEqual, _msg);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		//	"Id of the GarrisonModel copy is out of sync with the original. This indicates the world garrison list isn't being copied correctly?");
 		//SETV(_copy, "id", T_GETV("id"));
@@ -397,6 +410,7 @@ CLASS("GarrisonModel", "ModelBase")
 		#else
 		private _newGarr = NEW("GarrisonModel", [_world ARG _newGarrActual]);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		//// Detach from the location
 		//CALLM(_newGarrActual, "postMethodAsync", ["setLocation" ARG [""]]);
@@ -595,18 +609,14 @@ CLASS("GarrisonModel", "ModelBase")
 				P_ARRAY("_compTransportBlacklistMask"), // Blacklist mask for transport or []
 				P_ARRAY("_requiredComp")				// Any specifically required composition or []
 		];
-		#ifdef UNIT_ALLOCATOR_DEBUG
-		diag_log format["allocateUnits: %1", _this];
-		#endif
+		LOG_ALLOCATOR(["allocateUnits: %1" ARG _this]);
 
 		// Perform lookup in hash map
 		pr _hashMap = GETSV("GarrisonModel", "allocatorCache");
 		pr _hashMapKey = str _this;	// 200us and more
 		pr _hashmapValue = _hashMap getVariable _hashMapKey;
 		if (!isNil "_hashmapValue") exitWith {
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log format["_hashmapValue: %1", str _hashmapValue];
-			#endif
+			LOG_ALLOCATOR(["_hashmapValue: %1" ARG str _hashmapValue]);
 			SETSV("GarrisonModel", "allocatorCacheNHit", GETSV("GarrisonModel", "allocatorCacheNHit") + 1);	// Increase hit counter
 			_hashmapValue	
 		};
@@ -639,25 +649,17 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Apply masks if they are provided...
 		if (count _compPayloadWhitelistMask > 0) then {
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log format["_compPayloadWhitelistMask: %1", str _compPayloadWhitelistMask];
-			diag_log format["_compPayload before: %1", str _compPayload];
-			#endif
+			LOG_ALLOCATOR(["_compPayloadWhitelistMask: %1" ARG str _compPayloadWhitelistMask]);
+			LOG_ALLOCATOR(["_compPayload before: %1" ARG str _compPayload]);
 			[_compPayload, _compPayloadWhitelistMask] call comp_fnc_applyWhitelistMask;
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log format["_compPayload after: %1", str _compPayload];
-			#endif
+			LOG_ALLOCATOR(["_compPayload after: %1" ARG str _compPayload]);
 		};
 
 		if (count _compPayloadBlacklistMask > 0) then {
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log format["_compPayloadBlacklistMask: %1", str _compPayloadBlacklistMask];
-			diag_log format["_compPayload before: %1", str _compPayload];
-			#endif
+			LOG_ALLOCATOR(["_compPayloadBlacklistMask: %1" ARG str _compPayloadBlacklistMask]);
+			LOG_ALLOCATOR(["_compPayload before: %1" ARG str _compPayload]);
 			[_compPayload, _compPayloadBlacklistMask] call comp_fnc_applyBlacklistMask;
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log format["_compPayload after: %1", str _compPayload];
-			#endif
+			LOG_ALLOCATOR(["_compPayload after: %1" ARG str _compPayload]);
 		};
 
 		// Exclude special inf from allocation unless they are in the requiredComp
@@ -675,13 +677,10 @@ CLASS("GarrisonModel", "ModelBase")
 		// Exclude special inf from allocation unless they are in the requiredComp
 		[_compTransport, T_PL_inf_special] call comp_fnc_applyBlacklist;
 
-		#ifdef UNIT_ALLOCATOR_DEBUG
-		diag_log "- - - - - -";
-		[_compPayload, "Payload composition after masks:"] call comp_fnc_print;
-
-		diag_log "- - - - - -";
-		[_compTransport, "Transport composition after masks:"] call comp_fnc_print;
-		#endif
+		LOG_ALLOCATOR(["- - - - - -"]);
+		LOG_ALLOCATOR_COMP("Payload composition after masks:", _compPayload);
+		LOG_ALLOCATOR(["- - - - - -"]);
+		LOG_ALLOCATOR_COMP("Transport composition after masks:", _compTransport);
 
 		// Initialize variables
 		pr _allocated = false;
@@ -698,10 +697,7 @@ CLASS("GarrisonModel", "ModelBase")
 			// Do we have enough of this type available?
 			pr _avail = _compRemaining#_catID#_subcatID;
 			if(_avail < _required) exitWith {
-				#ifdef UNIT_ALLOCATOR_DEBUG
-				([[_catID, 0, _subcatID]] call t_fnc_getMetadata) params ["_catName", "_entryName", "_required"];
-				diag_log format ["  Failed to satisfy comp requirement %1 %2 %3", _catName, _entryName, _required];
-				#endif
+				LOG_ALLOCATOR_META("  Failed to satisfy comp requirement %1 %2 %3", _catID, _subcatID);
 				// If we fail to satisfy composition requirements then we can fail immediately
 				// Still complete the function to set the cache value for later though
 				_failedToAllocate = true;
@@ -725,18 +721,14 @@ CLASS("GarrisonModel", "ModelBase")
 
 			_CREATE_PROFILE_SCOPE("ALLOCATE UNITS - iteration");
 
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log "";
-			diag_log format ["Iteration: %1", _nIteration];
-			#endif
+			LOG_ALLOCATOR([""]);
+			LOG_ALLOCATOR(["Iteration: %1" ARG _nIteration]);
 
 			// Get allocated efficiency
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			[_compAllocated, "  Allocated composition:"] call comp_fnc_print;
-			diag_log format ["  Allocated eff: %1", _effAllocated];
-			diag_log format ["  Remaining eff: %1", _effRemaining];
-			diag_log format ["  External  eff: %1", _effExt];
-			#endif
+			LOG_ALLOCATOR_COMP("Allocated composition:", _compAllocated);
+			LOG_ALLOCATOR(["  Allocated eff: %1" ARG _effAllocated]);
+			LOG_ALLOCATOR(["  Remaining eff: %1" ARG _effRemaining]);
+			LOG_ALLOCATOR(["  External  eff: %1" ARG _effExt]);
 
 			// Validate against provided constrain functions
 			pr _unsatisfied = []; // Array of unsatisfied criteria
@@ -747,15 +739,11 @@ CLASS("GarrisonModel", "ModelBase")
 				if (count _newConstraints > 0) exitWith {}; // Bail on occurance of first unsatisfied constraint
 			};
 
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log format ["  Unsatisfied constraints: %1", _unsatisfied];
-			#endif
+			LOG_ALLOCATOR(["  Unsatisfied constraints: %1" ARG _unsatisfied]);
 
 			// If there are no unsatisfied constraints, break the loop
 			if ((count _unsatisfied) == 0) then {
-				#ifdef UNIT_ALLOCATOR_DEBUG
-				diag_log "  Allocated enough units!";
-				#endif
+				LOG_ALLOCATOR(["  Allocated enough units!"]);
 				_allocated = true;
 			} else {
 				pr _constraint = _unsatisfied#0#0;
@@ -764,9 +752,7 @@ CLASS("GarrisonModel", "ModelBase")
 				// Select the array with units sorted by their capability to satisfy constraint
 				pr _constraintTransport = _constraint in T_EFF_constraintsTransport;	// True if we are satisfying a transport constraint
 
-				#ifdef UNIT_ALLOCATOR_DEBUG
-				diag_log format ["  Trying to satisfy constraint: %1", _constraint];
-				#endif
+				LOG_ALLOCATOR(["  Trying to satisfy constraints: %1" ARG _constraint]);
 				// Try to find a unit to satisfy this constraint
 				pr _potentialUnits = if (_constraintTransport) then {
 					_CREATE_PROFILE_SCOPE("Select units");
@@ -780,9 +766,7 @@ CLASS("GarrisonModel", "ModelBase")
 					};
 				};
 
-				#ifdef UNIT_ALLOCATOR_DEBUG
-				diag_log format ["  Potential units: %1", _potentialUnits];
-				#endif
+				LOG_ALLOCATOR(["  Potential units: %1" ARG _potentialUnits]);
 
 				pr _found = false;
 				pr _count = count _potentialUnits;
@@ -807,9 +791,7 @@ CLASS("GarrisonModel", "ModelBase")
 						} else {
 							_ID = floor (random _count);
 						};
-						#ifdef UNIT_ALLOCATOR_DEBUG
-						diag_log format ["  Generated random ID: %1", _ID];
-						#endif
+						LOG_ALLOCATOR(["  Generated random ID: %1" ARG _ID]);
 					};
 
 					_CREATE_PROFILE_SCOPE("_end of iteration");
@@ -824,17 +806,13 @@ CLASS("GarrisonModel", "ModelBase")
 					[_compRemaining, _catID, _subcatID, -1] call comp_fnc_addValue;
 					[_compAllocated, _catID, _subcatID, 1] call comp_fnc_addValue;
 
-					#ifdef UNIT_ALLOCATOR_DEBUG
-					diag_log format ["  Allocated unit: %1", T_NAMES#_catID#_subcatID];
-					#endif
+					LOG_ALLOCATOR(["  Allocated unit: %1" ARG (T_NAMES select _catID select _subcatID)]);
 
 					_found = true;
 					//_nextRandomID = _nextRandomID + 1;
 				} else {
 					// Can't find any more units!
-					#ifdef UNIT_ALLOCATOR_DEBUG
-					diag_log "  Failed to find a unit!";
-					#endif
+					LOG_ALLOCATOR(["  Failed to find a unit!"]);
 				};
 				
 				// If we've looked through all the units and couldn't find one to help us safisfy this constraint, raise a failedToAllocate flag
@@ -842,23 +820,16 @@ CLASS("GarrisonModel", "ModelBase")
 				_nIteration = _nIteration + 1;
 			};
 		};
-
-		#ifdef UNIT_ALLOCATOR_DEBUG
-		diag_log format ["Allocation finished. Iterations: %1, Allocated: %2, failed: %3", _nIteration, _allocated, _failedToAllocate];
-		#endif
+		LOG_ALLOCATOR(["Allocation finished. Iterations: %1, Allocated: %2, failed: %3" ARG _nIteration ARG _allocated ARG _failedToAllocate]);
 
 		pr _result = if (!_allocated || _failedToAllocate) then {
 			// Could not allocate units!
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log "";
-			diag_log "  Failed to allocate units!";
-			#endif
+			LOG_ALLOCATOR([""]);
+			LOG_ALLOCATOR(["  Failed to allocate units!"]);
 			[]
 		} else {
-			#ifdef UNIT_ALLOCATOR_DEBUG
-			diag_log "";
-			[_compAllocated, "  Allocated successfully:"] call comp_fnc_print;
-			#endif
+			LOG_ALLOCATOR([""]);
+			LOG_ALLOCATOR_COMP("  Allocated successfully:", _compAllocated);
 			[_compAllocated, _effAllocated, _compRemaining, _effRemaining]
 		};
 

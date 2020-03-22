@@ -73,11 +73,13 @@
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #define OOP_ASSERT
 #define OOP_ASSERT_ACCESS
-//#undef OOP_DEBUG
+#undef OOP_DEBUG
 #undef OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
 #undef OOP_PROFILE
+#undef UNIT_ALLOCATOR_DEBUG
+#undef DEBUG_GOAL_MARKERS
 
 #define TIME_NOW 0
 #define DATE_NOW [0,0,0,0,0]

@@ -79,7 +79,7 @@ CLASS("VirtualRoute", "")
 		};
 
 #ifdef DEBUG_FAST_VIRTUALROUTE
-		pr _fast_speedFn = { 300 * 0.277778 };
+		pr _fast_speedFn = { 120 * 0.277778 };
 		T_SETV("speedFn", _fast_speedFn);
 #else
 		if(_speedFn isEqualType "") then {

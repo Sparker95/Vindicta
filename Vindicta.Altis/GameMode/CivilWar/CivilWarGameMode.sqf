@@ -507,7 +507,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected virtual */ METHOD("getCampaignProgress") {
 		params [P_THISOBJECT];
+		#ifdef DEBUG_END_GAME
+		0.9
+		#else
 		T_GETV("campaignProgress");
+		#endif
 	} ENDMETHOD;
 
 	/* public virtual override*/ METHOD("getPlayerSide") {
