@@ -17,7 +17,7 @@ this addVest _RandomVest;
 this addBackpack "BWA3_Kitbag_Fleck";
 
 this addWeapon "BWA3_G27_tan";
-this addPrimaryWeaponItem "BWA3_optic_EOTech552_tan";
+this addPrimaryWeaponItem "rhsusf_acc_eotech_552_d";
 this addPrimaryWeaponItem "BWA3_acc_VarioRay_irlaser_black";
 this addPrimaryWeaponItem "BWA3_20Rnd_762x51_G28";
 

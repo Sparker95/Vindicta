@@ -17,7 +17,7 @@ this addVest _RandomVest;
 this addBackpack "BWA3_Kitbag_Fleck_Medic";
 
 this addWeapon "hlc_rifle_416D10";
-this addPrimaryWeaponItem "BWA3_optic_EOTech552";
+this addPrimaryWeaponItem "rhsusf_acc_eotech_552";
 this addPrimaryWeaponItem "BWA3_acc_VarioRay_irlaser";
 this addPrimaryWeaponItem "hlc_30rnd_556x45_EPR";
 

@@ -37,7 +37,7 @@ _inf set [T_INF_spotter, ["BW_Fleck_Niarms_spotter"]];
 _inf set [T_INF_exp, ["BW_Fleck_Niarms_explosives"]];
 _inf set [T_INF_ammo, ["BW_Fleck_Niarms_AT_2","BW_Fleck_Niarms_MG_2","BW_Fleck_Niarms_MG_4"]];
 _inf set [T_INF_LAT, ["BW_Fleck_Niarms_AT"]];
-_inf set [T_INF_AT, ["BW_Fleck_Niarms_AT","BW_Fleck_Niarms_AT_3"]];
+_inf set [T_INF_AT, ["BW_Fleck_Niarms_AT","BW_Fleck_Niarms_AT_3","BW_Fleck_Niarms_AS","BW_Fleck_Niarms_AS_2"]];							//AS for Anti Structure
 _inf set [T_INF_AA, ["BW_Fleck_Niarms_AA"]];
 _inf set [T_INF_LMG, ["BW_Fleck_Niarms_LMG"]];
 _inf set [T_INF_HMG, ["BW_Fleck_Niarms_MG","BW_Fleck_Niarms_MG_3"]];

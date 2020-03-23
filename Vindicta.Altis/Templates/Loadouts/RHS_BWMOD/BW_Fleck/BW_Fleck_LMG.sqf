@@ -18,7 +18,7 @@ this addBackpack "BWA3_Kitbag_Fleck";
 
 this addWeapon "BWA3_MG4";
 this addPrimaryWeaponItem "BWA3_acc_VarioRay_irlaser_black";
-this addPrimaryWeaponItem "BWA3_optic_EOTech";
+this addPrimaryWeaponItem "rhsusf_acc_eotech_552";
 this addPrimaryWeaponItem "BWA3_200Rnd_556x45_Tracer";
 
 this addItemToUniform "FirstAidKit";
