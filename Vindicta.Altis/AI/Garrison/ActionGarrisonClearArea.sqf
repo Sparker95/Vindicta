@@ -44,7 +44,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		pr _gar = GETV(_AI, "agent");
 
 		// Split vehicle groups
-		CALLM0(_gar, "splitVehicleGroups");
+		CALLM0(_gar, "rebalanceGroups");
 
 		// Determine group size and type
 		pr _groups = CALLM0(_gar, "getGroups") apply {
@@ -64,6 +64,12 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 			]
 		};
 		_infGroups sort DESCENDING;
+		// Inf groups big enough to be useful
+		pr _mainInfGroups = _infGroups select {
+			(_x#0) > 5
+		} apply {
+			_x#1
+		};
 		_infGroups = _infGroups apply {
 			_x#1
 		};
@@ -96,10 +102,21 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		//	inf groups to cover vehicles
 		//	inf groups to sweep
 		_fn_takeOne = {
-			params["_prefer", "_fallback", "_target"];
-			private _arr = [_prefer, _fallback] select (count _prefer == 0);
+			params["_prefer", "_fallback", "_target", "_validChoices"];
+
+			private _arr = [
+				_prefer arrayIntersect _validChoices,
+				_fallback arrayIntersect _validChoices
+			] select (count (_prefer arrayIntersect _validChoices) == 0);
+
 			if(count _arr > 0) then {
-				_target pushBack (_arr deleteAt 0);
+				private _one = _arr#0;
+				_target pushBack _one;
+				_prefer deleteAt (_prefer find _one);
+				_fallback deleteAt (_fallback find _one);
+				_one
+			} else {
+				NULL_OBJECT
 			};
 		};
 
@@ -110,7 +127,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		pr _overwatch = [];
 
 		// // inf/veh group to sweep
-		[_infGroups, _vehGroups, _sweep] call _fn_takeOne;
+		[_infGroups, _vehGroups, _sweep, _mainInfGroups + _vehGroups] call _fn_takeOne;
 		// // inf/veh group to overwatch
 		//[_vehGroups, _infGroups, _overwatch] call _fn_takeOne;
 
@@ -142,11 +159,13 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 		private _commonTags = [
 			[TAG_POS, _pos],
-			[TAG_OVERWATCH_ELEVATION, 10],
-			[TAG_BEHAVIOUR, "COMBAT"],
+			[TAG_OVERWATCH_ELEVATION, 20],
+			[TAG_BEHAVIOUR, "AWARE"],
 			[TAG_COMBAT_MODE, "RED"]
 		];
 
+		private _dDir = 360 / count _overwatch;
+		private _dir = random 360;
 		{// foreach _overwatch
 			pr _groupAI = CALLM0(_x, "getAI");
 			pr _args = if(_x in _vehGroupsOrig) then {
@@ -156,7 +175,8 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 					[
 						[TAG_OVERWATCH_GRADIENT, 0.4],
 						[TAG_OVERWATCH_DISTANCE_MIN, MAXIMUM(300, _radius)],
-						[TAG_OVERWATCH_DISTANCE_MAX, MAXIMUM(300, _radius) + 500]
+						[TAG_OVERWATCH_DISTANCE_MAX, MAXIMUM(300, _radius) + 500],
+						[TAG_OVERWATCH_DIRECTION, _dir]
 					] + _commonTags,
 					_AI
 				]
@@ -167,11 +187,13 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 					[
 						[TAG_OVERWATCH_GRADIENT, 50],
 						[TAG_OVERWATCH_DISTANCE_MIN, MAXIMUM(300, _radius)],
-						[TAG_OVERWATCH_DISTANCE_MAX, MAXIMUM(300, _radius) + 500]
+						[TAG_OVERWATCH_DISTANCE_MAX, MAXIMUM(300, _radius) + 500],
+						[TAG_OVERWATCH_DIRECTION, _dir]
 					] + _commonTags,
 					_AI
 				]
 			};
+			_dir = _dir + _dDir;
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _overwatch;
 

@@ -35,8 +35,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
-		
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
+
+		pr _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 20);
 		T_SETV("radius", _radius);
 
 		pr _maxSpeedKmh = CALLSM3("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH, SPEED_MAX);
@@ -57,7 +57,6 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		
 		pr _hG = T_GETV("hG");
 		pr _AI = T_GETV("AI");
-		pr _pos = T_GETV("pos");
 		pr _group = GETV(T_GETV("AI"), "agent");
 		pr _allVehicleUnits = CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")};
 		pr _allVehicles = _allVehicleUnits apply {CALLM0(_x, "getObjectHandle")};
@@ -79,10 +78,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			CALLM2(_group, "postMethodAsync", "sort", [_distAndUnits apply {_x select 1}]); // Post message to sort the group
 		};
 		
-		// Delete all previous waypoints
-		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
-		
-		// Set group behaviour
+		T_CALLM0("clearWaypoints");
 		T_CALLM0("applyGroupBehaviour");
 
 		// Turn on sirens if we have them
@@ -117,21 +113,17 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _leader = CALLM0(_group, "getLeader");
 		if (_leader != "") then {
 			if (CALLM0(_leader, "isAlive")) then {
-				pr _groupUnits = CALLM0(_group, "getUnits");
 				{
-					if (CALLM0(_x, "isInfantry") && (_x != _leader)) then {
-						pr _unitAI = CALLM0(_x, "getAI");
-						if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
-							// Add goal
-							CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
-						};
+					pr _unitAI = CALLM0(_x, "getAI");
+					if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
+						// Add goal
+						CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
 					};
-				} forEach _groupUnits;
+				} forEach (CALLM0(_group, "getInfantryUnits") - [_leader]);
 				
 				// Lead vehicle gets a special goal
 				pr _leaderAI = CALLM0(_leader, "getAI");
-				pr _route = T_GETV("route");
-				pr _parameters = [[TAG_POS, _pos], [TAG_ROUTE, _route]];
+				pr _parameters = [[TAG_POS, T_GETV("pos")], [TAG_MOVE_RADIUS, T_GETV("radius")], [TAG_ROUTE, T_GETV("route")]];
 				CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
 
 				// Return ACTIVE state
@@ -172,7 +164,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			#ifdef DEBUG_FORMATION
 			OOP_DEBUG_MSG(">>> Current separation: %1", [_sCur]);
 			#endif
-			if(_sCur > 3*SEPARATION) then
+			if(_sCur > 3 * SEPARATION) then
 			{
 				//We are driving too fast!
 				pr _speedLimit = T_GETV("speedLimit");
@@ -190,7 +182,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			{
 				//We are driving too slow!
 				pr _speedLimit = T_GETV("speedLimit");
-				if(_speedLimit < SPEED_MAX) then
+				if(_speedLimit < T_GETV("maxSpeed")) then
 				{
 					_speedLimit = (_speedLimit + _dt*4) min T_GETV("maxSpeed");
 					T_SETV("speedLimit", _speedLimit);
@@ -200,8 +192,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 					#endif
 				};
 			};
-			
-			
+
 			// Check if enough vehicles have arrived
 			// For now just check if leader is there
 			pr _radius = T_GETV("radius");
@@ -219,16 +210,19 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		params [P_THISOBJECT];
 
 		pr _group = GETV(T_GETV("AI"), "agent");
-		pr _allVehicles = (CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")};
+		pr _allVehicles = CALLM0(_group, "getVehicleUnits") apply {CALLM0(_x, "getObjectHandle")};
+		if(count _allVehicles <= 1) exitWith {
+			0
+		};
+
 		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
 		
 		//diag_log format ["All vehicles: %1", _allVehicles];
 		//diag_log format ["Lead vehicle: %1", _vehLead];
 		private _vehArraySort = _allVehicles apply {[_x distance _vehLead, _x]};
 
-
 		//diag_log format ["Unsorted array: %1", _vehArraySort];
-		_vehArraySort sort true; //Ascending
+		_vehArraySort sort ASCENDING;
 		//diag_log format ["Sorted array: %1", _vehArraySort];
 		//Get the max separation
 		private _dMax = 0;

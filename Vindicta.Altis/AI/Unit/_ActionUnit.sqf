@@ -20,4 +20,21 @@ CLASS("ActionUnit", "Action")
 		SETV(_thisObject, "hO", _oh);
 	} ENDMETHOD;
 
+	METHOD("clearWaypoints") {
+		params [P_THISOBJECT];
+		private _hO = T_GETV("hO");
+		private _hG = group _hO;
+		while { count waypoints _hG > 0 } do {
+			deleteWaypoint ((waypoints _hG)#0);
+		};
+		//_hG addWaypoint [position leader _hG, 0];
+		//doStop _hO;
+	} ENDMETHOD;
+			
+	METHOD("regroup") {
+		params [P_THISOBJECT];
+
+		private _hG = group T_GETV("hO");
+		{ _x stop false; _x doFollow leader _hG; } forEach units _hG;
+	} ENDMETHOD;
 ENDCLASS;

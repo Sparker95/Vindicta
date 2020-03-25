@@ -8,6 +8,9 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
+#define MRK_GOAL	"_goal"
+#define MRK_ARROW	"_arrow"
+
 CLASS("AIUnitInfantry", "AI_GOAP")
 
 	// Object handle of the unit
@@ -25,6 +28,10 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	// Indicates that this AI is new and was created recently
 	// This flag aids acceleration of actions that were given to AI when it was just spawned
 	VARIABLE("new");
+
+	#ifdef DEBUG_GOAL_MARKERS
+	VARIABLE("markersEnabled");
+	#endif
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -53,6 +60,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		// Set "new" flag
 		T_SETV("new", true);
 
+		#ifdef DEBUG_GOAL_MARKERS
+		T_SETV("markersEnabled", false);
+		#endif
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
 	
@@ -63,8 +73,140 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		
 		// Unassign this unit from its assigned vehicle
 		CALLM0(_thisObject, "unassignVehicle");
+
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_disableDebugMarkers");
+		#endif
 	} ENDMETHOD;
-	
+
+	#ifdef DEBUG_GOAL_MARKERS
+	METHOD("_enableDebugMarkers") {
+		params [P_THISOBJECT];
+
+		if(T_GETV("markersEnabled")) exitWith {
+			// already enabled
+		};
+
+		pr _agent = T_GETV("agent");
+
+		// Position
+		pr _pos = [0, 0, 0];
+
+		pr _garr = CALLM0(_agent, "getGarrison");
+
+		// Main marker
+		pr _color = [CALLM0(_garr, "getSide"), true] call BIS_fnc_sideColor;
+		pr _name = _thisObject + MRK_GOAL;
+		pr _mrk = createmarker [_name, _pos];
+		_mrk setMarkerType "mil_dot";
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 0;
+		_mrk setMarkerText "group...";
+		// Arrow marker (todo)
+		
+		// Arrow marker
+		pr _name = _thisObject + MRK_ARROW;
+		pr _mrk = createMarker [_name, [0, 0, 0]];
+		_mrk setMarkerShape "RECTANGLE";
+		_mrk setMarkerBrush "SolidFull";
+		_mrk setMarkerSize [10, 10];
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 0;
+
+		T_SETV("markersEnabled", true);
+	} ENDMETHOD;
+
+	METHOD("_disableDebugMarkers") {
+		params [P_THISOBJECT];
+		
+		if(!T_GETV("markersEnabled")) exitWith {
+			// already disabled
+		};
+
+		deleteMarker (_thisObject + MRK_GOAL);
+		deleteMarker (_thisObject + MRK_ARROW);
+
+		T_SETV("markersEnabled", false);
+	} ENDMETHOD;
+
+	METHOD("_updateDebugMarkers") {
+		params ["_thisObject"];
+
+		pr _unit = T_GETV("agent");
+		pr _grp = CALLM0(_unit, "getGroup");
+		pr _grpAI = CALLM0(_grp, "getAI");
+		pr _enabled = GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled");
+		pr _wasEnabled = T_GETV("markersEnabled");
+		if(!_wasEnabled && _enabled) then {
+			T_CALLM0("_enableDebugMarkers");
+		};
+		if(!_enabled) exitWith {
+			if(_wasEnabled) then {
+				T_CALLM0("_disableDebugMarkers");
+			};
+		};
+
+		// Set pos
+		pr _hO = T_GETV("hO");
+		if(isNull _hO) exitWith {
+			// unit invalid
+		};
+
+		pr _pos = position _hO;
+		(_thisObject + MRK_GOAL) setMarkerAlpha 0;
+		(_thisObject + MRK_ARROW) setMarkerAlpha 0;
+
+		// Update the markers
+		pr _mrk = _thisObject + MRK_GOAL;
+		// Set text
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			_action = CALLM0(_action, "getFrontSubaction");
+		};
+		pr _text = format ["%1\%2\%3", _unit, T_GETV("currentGoal"), _action];
+		_mrk setMarkerText _text;
+
+		_mrk setMarkerPos _pos;
+		_mrk setMarkerAlpha 0.75;
+
+		// Update arrow marker
+		pr _mrk = _thisObject + MRK_ARROW;
+		pr _goalParameters = T_GETV("currentGoalParameters");
+		// See if location or position is passed
+		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_POS, 0);
+		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, 0);
+		if (_pPos isEqualTo 0 && _pLoc isEqualTo 0) then {
+			_mrk setMarkerAlpha 0; // Hide the marker
+		} else {
+			_mrk setMarkerAlpha 0.5; // Show the marker
+			pr _posDest = [0, 0, 0];
+			if (!(_pPos isEqualTo 0)) then {
+				_posDest = +_pPos;
+			};
+			if (!(_pLoc isEqualTo 0)) then {
+				if (_pLoc isEqualType "") then {
+					_posDest = +CALLM0(_pLoc, "getPos");
+				} else {
+					_posDest = +_pLoc;
+				};
+			};
+			if(count _posDest == 2) then { _posDest pushBack 0 };
+			pr _mrkPos = (_posDest vectorAdd _pos) vectorMultiply 0.5;
+			_mrk setMarkerPos _mrkPos;
+			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 5];
+			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
+		};
+
+	} ENDMETHOD;
+
+	METHOD("process") {
+		params [P_THISOBJECT];
+		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+		T_CALLM0("_updateDebugMarkers");
+	} ENDMETHOD;
+	#endif
+	FIX_LINE_NUMBERS()
+
 	/*
 	Method: unassignVehicle
 	Unassigns unit from the vehicle it was assigned to

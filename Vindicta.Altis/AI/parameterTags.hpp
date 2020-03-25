@@ -25,6 +25,7 @@
 
 #define TAG_OVERWATCH_DISTANCE_MIN "g_overwatchDistanceMin"
 #define TAG_OVERWATCH_DISTANCE_MAX "g_overwatchDistanceMax"
+#define TAG_OVERWATCH_DIRECTION "g_overwatchDirection"
 #define TAG_OVERWATCH_ELEVATION "g_overwatchElevation"
 #define TAG_OVERWATCH_GRADIENT "g_overwatchGradient"
 

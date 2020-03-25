@@ -514,20 +514,20 @@ CLASS("AI_GOAP", "AI")
 		params [P_THISOBJECT, ["_goalClassName", "", [""]], ["_goalSource", ""]];
 
 		pr _return = -1;
-		CRITICAL_SECTION_START
-		// [_goalClassName, _bias, _parameters, _source, action state];
-		pr _goalsExternal = T_GETV("goalsExternal");
-		pr _index = if (_goalSource == "") then {
-			_goalsExternal findIf {(_x select 0) == _goalClassName}
-		} else {
-			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+		CRITICAL_SECTION {
+			// [_goalClassName, _bias, _parameters, _source, action state];
+			pr _goalsExternal = T_GETV("goalsExternal");
+			pr _index = if (_goalSource == "") then {
+				_goalsExternal findIf {(_x select 0) == _goalClassName}
+			} else {
+				_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+			};
+			if (_index != -1) then {
+				_return = _goalsExternal select _index select 4;
+			} else {
+				//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+			};
 		};
-		if (_index != -1) then {
-			_return = _goalsExternal select _index select 4;
-		} else {
-			//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
-		};
-		CRITICAL_SECTION_END
 		
 		_return
 	} ENDMETHOD;
@@ -547,18 +547,18 @@ CLASS("AI_GOAP", "AI")
 		params [P_THISOBJECT, ["_goalClassName", "", [""]], ["_goalSource", ""]];
 
 		pr _return = false;
-		CRITICAL_SECTION_START
-		// [_goalClassName, _bias, _parameters, _source, action state];
-		pr _goalsExternal = T_GETV("goalsExternal");
-		pr _index = if (_goalSource == "") then {
-			_goalsExternal findIf {(_x select 0) == _goalClassName}
-		} else {
-			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+		CRITICAL_SECTION {
+			// [_goalClassName, _bias, _parameters, _source, action state];
+			pr _goalsExternal = T_GETV("goalsExternal");
+			pr _index = if (_goalSource == "") then {
+				_goalsExternal findIf {(_x select 0) == _goalClassName}
+			} else {
+				_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+			};
+			if (_index != -1) then {
+				_return = true
+			};
 		};
-		if (_index != -1) then {
-			_return = true
-		};
-		CRITICAL_SECTION_END
 		
 		_return
 	} ENDMETHOD;
@@ -601,20 +601,21 @@ CLASS("AI_GOAP", "AI")
 		params [P_THISOBJECT, ["_goalClassName", "", [""]], ["_goalSource", ""]];
 
 		pr _return = [];
-		CRITICAL_SECTION_START
-		// [_goalClassName, _bias, _parameters, _source, action state];
-		pr _goalsExternal = T_GETV("goalsExternal");
-		pr _index = if (_goalSource == "") then {
-			_goalsExternal findIf {(_x select 0) == _goalClassName}
-		} else {
-			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+
+		CRITICAL_SECTION {
+			// [_goalClassName, _bias, _parameters, _source, action state];
+			pr _goalsExternal = T_GETV("goalsExternal");
+			pr _index = if (_goalSource == "") then {
+				_goalsExternal findIf {(_x select 0) == _goalClassName}
+			} else {
+				_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+			};
+			if (_index != -1) then {
+				_return = _goalsExternal select _index select 2;
+			//} else {
+				//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+			};
 		};
-		if (_index != -1) then {
-			_return = _goalsExternal select _index select 2;
-		//} else {
-			//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
-		};
-		CRITICAL_SECTION_END
 		
 		_return
 	} ENDMETHOD;
@@ -638,7 +639,8 @@ CLASS("AI_GOAP", "AI")
 		pr _completedCount = ({
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
-			pr _completed = (_actionState == ACTION_STATE_COMPLETED);
+			// Either actions completed or goal didn't exist
+			pr _completed = (_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1);
 			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed ); // || (_actionState == -1));
 			_completed  // || (_actionState == -1)
 		} count _agents);

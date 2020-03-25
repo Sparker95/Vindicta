@@ -84,19 +84,19 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 			if (_nInf != _nDrivers + _nTurrets) then { _correctNumberOfCrew = false };
 			if (!_haveTurretsNonStatic && !_haveDriversNonStatic && !_correctNumberOfCrew) exitWith {}; // Terminate the loop if we already know that this group is unbalanced
 		} forEach _vehGroupsNonStatic;
-		
+
 		[_worldState, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, _haveDriversNonStatic] call ws_setPropertyValue;
 		[_worldState, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, _haveTurretsStatic && _haveTurretsNonStatic] call ws_setPropertyValue;
-		
-		pr _unbalancedGroups = _infGroups apply {
-			count CALLM0(_x, "getInfantryUnits")
-		} select {
-			// Weird inf group sizes
-			// _x < 2 && count _infGroups > 1 || 
-			_x > 12
-		};
-		[_worldState, WSP_GAR_VEHICLE_GROUPS_BALANCED, _correctNumberOfCrew && count _unbalancedGroups == 0] call ws_setPropertyValue;
-		
+
+		// pr _unbalancedGroups = _infGroups apply {
+		// 	count CALLM0(_x, "getInfantryUnits")
+		// } select {
+		// 	// Weird inf group sizes
+		// 	// _x < 2 && count _infGroups > 1 || 
+		// 	_x > 12
+		// };
+		// [_worldState, WSP_GAR_VEHICLE_GROUPS_BALANCED, _correctNumberOfCrew && count _unbalancedGroups == 0] call ws_setPropertyValue;
+
 		// Check if there are enough humans to operate all the vehicles
 		pr _vehUnits = CALLM0(_gar, "getVehicleUnits");
 		CALLSM("Unit", "getRequiredCrew", [_vehUnits]) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];

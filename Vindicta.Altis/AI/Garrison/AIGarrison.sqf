@@ -46,6 +46,10 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	VARIABLE("alertness");
 
+	#ifdef DEBUG_GOAL_MARKERS
+	VARIABLE("groupMarkersEnabled");
+	#endif
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
@@ -123,15 +127,19 @@ CLASS("AIGarrison", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		deleteMarker (_thisObject + MRK_GOAL);
 		deleteMarker (_thisObject + MRK_ARROW);
+		[_thisObject, "onMapSingleClick"] call BIS_fnc_removeStackedEventHandler;
 		#endif
 		FIX_LINE_NUMBERS()
 
 		// Unregister from stimulus manager
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	} ENDMETHOD;
-	
+
+	#ifdef DEBUG_GOAL_MARKERS
 	METHOD("_initDebugMarkers") {
 		params [P_THISOBJECT];
+
+		T_SETV("groupMarkersEnabled", false);
 
 		pr _agent = T_GETV("agent");
 
@@ -153,7 +161,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		_mrk setMarkerAlpha 1;
 		_mrk setMarkerText "garrison...";
 		// Arrow marker (todo)
-		
+
 		// Arrow marker
 		pr _name = _thisObject + MRK_ARROW;
 		pr _mrk = createMarker [_name, [0, 0, 0]];
@@ -162,7 +170,73 @@ CLASS("AIGarrison", "AI_GOAP")
 		_mrk setMarkerSize [10, 10];
 		_mrk setMarkerColor _color;
 		_mrk setMarkerAlpha 0.5;
+
+		[_thisObject, "onMapSingleClick", {
+			params ["_units", "_pos", "_alt", "_shift", "_tag", "_thisObject"];
+			if(_shift && {_tag isEqualTo "AIGarrisonMarker"} 
+				&& {count markerPos (_thisObject + MRK_GOAL) >= 2} 
+				&& {markerPos (_thisObject + MRK_GOAL) distance2D _pos < 20}
+			) then {
+				pr _un = GETV(_thisObject, "groupMarkersEnabled");
+				SETV(_thisObject, "groupMarkersEnabled", !_un);
+				true
+			} else {
+				false
+			}
+		}, ["AIGarrisonMarker", _thisObject]] call BIS_fnc_addStackedEventHandler;
 	} ENDMETHOD;
+
+	METHOD("_updateDebugMarkers") {
+		params ["_thisObject"];
+
+		pr _gar = T_GETV("agent");
+
+		// Update the markers
+		pr _mrk = _thisObject + MRK_GOAL;
+		
+		// Set text
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			_action = CALLM0(_action, "getFrontSubaction");
+		};
+		pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
+		_mrk setMarkerText _text;
+		
+		// Set pos
+		pr _pos = CALLM0(_gar, "getPos");
+		_mrk setMarkerPos (_pos vectorAdd [20, 20, 0]);
+		
+		// Update arrow marker
+		pr _mrk = _thisObject + MRK_ARROW;
+		pr _goalParameters = T_GETV("currentGoalParameters");
+		// See if location or position is passed
+		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_G_POS, 0);
+		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, 0);
+		if (_pPos isEqualTo 0 && _pLoc isEqualTo 0) then {
+			_mrk setMarkerAlpha 0; // Hide the marker
+		} else {
+			_mrk setMarkerAlpha 0.5; // Show the marker
+			pr _posDest = [0, 0, 0];
+			if (!(_pPos isEqualTo 0)) then {
+				_posDest = +_pPos;
+			};
+			if (!(_pLoc isEqualTo 0)) then {
+				if (_pLoc isEqualType "") then {
+					_posDest = +CALLM0(_pLoc, "getPos");
+				} else {
+					_posDest = +_pLoc;
+				};
+			};
+			if(count _posDest == 2) then { _posDest pushBack 0 };
+			pr _mrkPos = (_posDest vectorAdd _pos) vectorMultiply 0.5;
+			_mrk setMarkerPos _mrkPos;
+			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 10];
+			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
+		};
+
+	} ENDMETHOD;
+	#endif
+	FIX_LINE_NUMBERS()
 
 	METHOD("_initSensors") {
 		params [P_THISOBJECT];
@@ -247,58 +321,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
 		
 	} ENDMETHOD;
-	
-	#ifdef DEBUG_GOAL_MARKERS
-	METHOD("_updateDebugMarkers") {
-		params ["_thisObject"];
-
-		pr _gar = T_GETV("agent");
-
-		// Update the markers
-		pr _mrk = _thisObject + MRK_GOAL;
-		
-		// Set text
-		pr _action = T_GETV("currentAction");
-		if (_action != "") then {
-			_action = CALLM0(_action, "getFrontSubaction");
-		};
-		pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
-		_mrk setMarkerText _text;
-		
-		// Set pos
-		pr _pos = CALLM0(_gar, "getPos");
-		_mrk setMarkerPos (_pos vectorAdd [20, 20, 0]);
-		
-		// Update arrow marker
-		pr _mrk = _thisObject + MRK_ARROW;
-		pr _goalParameters = T_GETV("currentGoalParameters");
-		// See if location or position is passed
-		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_G_POS, 0);
-		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, 0);
-		if (_pPos isEqualTo 0 && _pLoc isEqualTo 0) then {
-			_mrk setMarkerAlpha 0; // Hide the marker
-		} else {
-			_mrk setMarkerAlpha 0.5; // Show the marker
-			pr _posDest = [0, 0, 0];
-			if (!(_pPos isEqualTo 0)) then {
-				_posDest = _pPos;
-			};
-			if (!(_pLoc isEqualTo 0)) then {
-				if (_pLoc isEqualType "") then {
-					_posDest = CALLM0(_pLoc, "getPos");
-				} else {
-					_posDest = _pLoc;
-				};
-			};
-			pr _mrkPos = (_posDest vectorAdd _pos) vectorMultiply 0.5;
-			_mrk setMarkerPos _mrkPos;
-			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 10];
-			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
-		};
-
-	} ENDMETHOD;
-	#endif
-	FIX_LINE_NUMBERS()
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P

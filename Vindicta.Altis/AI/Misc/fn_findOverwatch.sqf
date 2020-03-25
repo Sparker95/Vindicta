@@ -1,6 +1,7 @@
 private["_setHeight","_targetPos","_refObj","_maxrange","_minrange","_minheight","_centerPos","_selectedPositions","_result","_attempts","_scan","_checkPos","_height","_dis","_terrainBlocked"];
 
 //Initialize
+_space = 		7;
 _setHeight = 	1;
 _targetPos = 	_this param [0, objNull];
 _targetPos = 	[_targetPos select 0,_targetPos select 1, ((_targetPos select 2) + _setHeight)];
@@ -10,6 +11,7 @@ _minrange = 	_this param [2, 100];
 _minheight = 	_this param [3, 50];
 _centerPos = 	_this param [4, _targetPos];
 _maxGrad = 		_this param [5, 0];
+_blacklist = 		_this param [6, []];
 _selectedPositions = [];
 _result = 		[];
 _attempts = 	0;
@@ -17,7 +19,7 @@ _scan = 		true;
 _result = _targetPos;
 
 while {_scan} do {
-	_checkPos = [_centerPos,0,_maxrange,3,0,_maxGrad,0,[],[]] call BIS_Fnc_findSafePos;
+	_checkPos = [_centerPos,0,_maxrange,_space,0,_maxGrad,0,_blacklist,[]] call BIS_Fnc_findSafePos;
 	_height = (_refObj worldtomodel _checkPos) select 2;
 	_dis = _checkPos distance _targetPos;
 	if ((_height > _minheight) and (_dis > _minrange)) then {
@@ -58,7 +60,7 @@ if (count _selectedPositions > 0) then {
 	_scan = 		true;
 	_attempts = 0;
 	while {_scan} do {
-		_checkPos = [_centerPos,0,_maxrange,3,0,_maxGrad,0,[],[]] call BIS_Fnc_findSafePos;
+		_checkPos = [_centerPos,0,_maxrange,_space,0,_maxGrad,0,_blacklist,[]] call BIS_Fnc_findSafePos;
 		_dis = _checkPos distance _targetPos;
 		if (_dis > _minrange) then {
 			_terrainBlocked = terrainIntersect [_targetPos,_checkPos];

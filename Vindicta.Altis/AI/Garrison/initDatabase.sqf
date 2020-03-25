@@ -88,7 +88,6 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 											[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
 											[WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS,	true],
-											[WSP_GAR_VEHICLE_GROUPS_BALANCED, true],
 											[WSP_GAR_HAS_VEHICLES, true],
 											[WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS, true]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_POSITION,	TAG_POS,	true],
@@ -98,7 +97,6 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // Move combined to position
 ["ActionGarrisonMoveCombined", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 											[WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS,	true],
-											[WSP_GAR_VEHICLE_GROUPS_BALANCED, true],
 											[WSP_GAR_HAS_VEHICLES, true],
 											[WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS, false]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveCombined", _s,		[	[WSP_GAR_POSITION,	TAG_POS,	true],
@@ -119,7 +117,6 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // Move mounted cargo
 ["ActionGarrisonMoveMountedCargo", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 												[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
-												[WSP_GAR_VEHICLE_GROUPS_BALANCED,true],
 												[WSP_GAR_HAS_CARGO,				true]]] 		call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveMountedCargo", _s,		[	[WSP_GAR_POSITION,	TAG_POS,	true],
 												[WSP_GAR_CARGO_POSITION,	TAG_POS,	true],
@@ -127,7 +124,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 
 // Move dismounted
-["ActionGarrisonMoveDismounted", _s,	[ [WSP_GAR_VEHICLE_GROUPS_BALANCED, true] ]] call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonMoveDismounted", _s,	[ ]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_POSITION,	TAG_POS,	true]]]			call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 
 // Load cargo
@@ -141,7 +138,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonUnloadCurrentCargo", _s,	[	[WSP_GAR_HAS_CARGO,	false]]]	call AI_misc_fnc_setActionEffects;
 
 // Defend
-["ActionGarrisonDefend", _s,	[[WSP_GAR_VEHICLE_GROUPS_BALANCED, true]]]	call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonDefend", _s,	[ ]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonDefend", _s,	[	[WSP_GAR_AWARE_OF_ENEMY,	false]]]	call AI_misc_fnc_setActionEffects;
 
 // Merging and splitting vehicle groups
@@ -154,12 +151,12 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 												[WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, true] ]] call AI_misc_fnc_setActionEffects;
 
 // Clear Area
-["ActionGarrisonClearArea", _s,		[ [WSP_GAR_VEHICLE_GROUPS_BALANCED, true] ]]		call AI_misc_fnc_setActionPreconditions; // These are procedural, just must set them anyway
+["ActionGarrisonClearArea", _s,		[ ]]		call AI_misc_fnc_setActionPreconditions; // These are procedural, just must set them anyway
 ["ActionGarrisonClearArea", _s,		[	[WSP_GAR_CLEARING_AREA,	TAG_POS, true]]]	call AI_misc_fnc_setActionEffects;
 ["ActionGarrisonClearArea", 			[TAG_CLEAR_RADIUS, TAG_DURATION_SECONDS]] call AI_misc_fnc_setActionParametersFromGoal;
 
 // Join Location
-["ActionGarrisonJoinLocation", _s, [ [WSP_GAR_VEHICLE_GROUPS_BALANCED, true] ]] call AI_misc_fnc_setActionPreconditions; // These are procedural
+["ActionGarrisonJoinLocation", _s, [ ]] call AI_misc_fnc_setActionPreconditions; // These are procedural
 ["ActionGarrisonJoinLocation", _s, [ [WSP_GAR_LOCATION, TAG_LOCATION, true] ]] call AI_misc_fnc_setActionEffects;
 
 // ---- Action costs ----

@@ -22,7 +22,7 @@ CLASS("GoalGroupClearArea", "Goal")
 		// Infantry group will "clear area" by running around looking for enemies
 		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
 			pr _args = [_AI, _parameters];
-			pr _action = NEW("ActionGroupInfantryClearArea", _args);
+			pr _action = NEW("ActionGroupClearArea", _args);
 			_action
 		} else {
 			pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -35,9 +35,14 @@ CLASS("GoalGroupClearArea", "Goal")
 			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", _actionGetInArgs);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
 
+			// Start clear area from center, so move there first
 			pr _actionMoveArgs = [_AI, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, 75]] ];
 			pr _actionMove = NEW("ActionGroupMoveGroundVehicles", _actionMoveArgs);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
+
+			pr _actionClearArgs = [_AI, _parameters];
+			pr _actionClear = NEW("ActionGroupClearArea", _actionClearArgs);
+			CALLM1(_actionSerial, "addSubactionToBack", _actionClear);
 
 			_actionSerial
 		};

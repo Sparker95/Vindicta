@@ -17,8 +17,13 @@ CLASS("AIGroup", "AI_GOAP")
 	VARIABLE("sensorHealth");
 	VARIABLE("suspTarget");	// "suspicious" players collected by SensorGroupTargets
 
+	#ifdef DEBUG_GOAL_MARKERS
+	VARIABLE("markersEnabled");
+	VARIABLE("unitMarkersEnabled");
+	#endif
+
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Group");
 		
@@ -50,7 +55,8 @@ CLASS("AIGroup", "AI_GOAP")
 		CALLM1(_thisObject, "setProcessInterval", 3);
 
 		#ifdef DEBUG_GOAL_MARKERS
-		T_CALLM0("_initDebugMarkers");
+		T_SETV("markersEnabled", false);
+		T_SETV("unitMarkersEnabled", false);
 		#endif
 		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
@@ -58,12 +64,15 @@ CLASS("AIGroup", "AI_GOAP")
 	#ifdef DEBUG_GOAL_MARKERS
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		deleteMarker (_thisObject + MRK_GOAL);
-		deleteMarker (_thisObject + MRK_ARROW);
+		T_CALLM0("_disableDebugMarkers");
 	} ENDMETHOD;
 
-	METHOD("_initDebugMarkers") {
+	METHOD("_enableDebugMarkers") {
 		params [P_THISOBJECT];
+
+		if(T_GETV("markersEnabled")) exitWith {
+			// already enabled
+		};
 
 		pr _agent = T_GETV("agent");
 
@@ -76,7 +85,7 @@ CLASS("AIGroup", "AI_GOAP")
 		pr _mrk = createmarker [_name, _pos];
 		_mrk setMarkerType "o_inf";
 		_mrk setMarkerColor _color;
-		_mrk setMarkerAlpha 1;
+		_mrk setMarkerAlpha 0;
 		_mrk setMarkerText "group...";
 		// Arrow marker (todo)
 		
@@ -87,19 +96,69 @@ CLASS("AIGroup", "AI_GOAP")
 		_mrk setMarkerBrush "SolidFull";
 		_mrk setMarkerSize [10, 10];
 		_mrk setMarkerColor _color;
-		_mrk setMarkerAlpha 0.5;
+		_mrk setMarkerAlpha 0;
+
+		[_thisObject, "onMapSingleClick", {
+			params ["_units", "_pos", "_alt", "_shift", "_tag", "_thisObject"];
+			if(_shift && {_tag isEqualTo "AIGroupMarker"} 
+				&& {count markerPos (_thisObject + MRK_GOAL) >= 2} 
+				&& {markerPos (_thisObject + MRK_GOAL) distance2D _pos < 20}
+			) then {
+				pr _un = GETV(_thisObject, "unitMarkersEnabled");
+				SETV(_thisObject, "unitMarkersEnabled", !_un);
+				true
+			} else {
+				false
+			}
+		}, ["AIGroupMarker", _thisObject]] call BIS_fnc_addStackedEventHandler;
+
+		T_SETV("markersEnabled", true);
+	} ENDMETHOD;
+
+	METHOD("_disableDebugMarkers") {
+		params [P_THISOBJECT];
+		
+		if(!T_GETV("markersEnabled")) exitWith {
+			// already disabled
+		};
+
+		deleteMarker (_thisObject + MRK_GOAL);
+		deleteMarker (_thisObject + MRK_ARROW);
+		[_thisObject, "onMapSingleClick"] call BIS_fnc_removeStackedEventHandler;
+
+		T_SETV("markersEnabled", false);
 	} ENDMETHOD;
 
 	METHOD("_updateDebugMarkers") {
 		params ["_thisObject"];
 
 		pr _grp = T_GETV("agent");
+		pr _gar = CALLM0(_grp, "getGarrison");
+		if(_gar == NULL_OBJECT) exitWith {
+			(_thisObject + MRK_GOAL) setMarkerAlpha 0;
+			(_thisObject + MRK_ARROW) setMarkerAlpha 0;
+		};
+		pr _garAI = CALLM0(_gar, "getAI");
+		if(isNil "_garAI") exitWith {
+			(_thisObject + MRK_GOAL) setMarkerAlpha 0;
+			(_thisObject + MRK_ARROW) setMarkerAlpha 0;
+		};
+		pr _enabled = GETV(_garAI, "groupMarkersEnabled");
+		pr _wasEnabled = T_GETV("markersEnabled");
+		if(!_wasEnabled && _enabled) then {
+			T_CALLM0("_enableDebugMarkers");
+		};
+		if(!_enabled) exitWith {
+			if(_wasEnabled) then {
+				T_CALLM0("_disableDebugMarkers");
+			};
+		};
 
-		
 		if(!CALLM0(_grp, "isSpawned")) exitWith {
 			(_thisObject + MRK_GOAL) setMarkerAlpha 0;
 			(_thisObject + MRK_ARROW) setMarkerAlpha 0;
 		};
+
 		// Set pos
 		pr _pos = CALLM0(_grp, "getPos");
 		if(isNil "_pos") exitWith {
@@ -132,15 +191,16 @@ CLASS("AIGroup", "AI_GOAP")
 			_mrk setMarkerAlpha 0.5; // Show the marker
 			pr _posDest = [0, 0, 0];
 			if (!(_pPos isEqualTo 0)) then {
-				_posDest = _pPos;
+				_posDest = +_pPos;
 			};
 			if (!(_pLoc isEqualTo 0)) then {
 				if (_pLoc isEqualType "") then {
-					_posDest = CALLM0(_pLoc, "getPos");
+					_posDest = +CALLM0(_pLoc, "getPos");
 				} else {
-					_posDest = _pLoc;
+					_posDest = +_pLoc;
 				};
 			};
+			if(count _posDest == 2) then { _posDest pushBack 0 };
 			pr _mrkPos = (_posDest vectorAdd _pos) vectorMultiply 0.5;
 			_mrk setMarkerPos _mrkPos;
 			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 5];
@@ -152,7 +212,7 @@ CLASS("AIGroup", "AI_GOAP")
 	METHOD("process") {
 		params [P_THISOBJECT];
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
-		CALLM0(_thisObject, "_updateDebugMarkers");
+		T_CALLM0("_updateDebugMarkers");
 	} ENDMETHOD;
 	#endif
 	FIX_LINE_NUMBERS()
