@@ -36,47 +36,64 @@ pr0_fnc_CivilianJoinPlayer = {
 
 			sleep 2;
 
-			[_target, selectRandom [
-				"I will follow you! Onward!",
-				"Lead the way!",
-				"Together we will be stronger!",
-				"Okay",
-				"What are we waiting for?"
-				], _caller] call Dialog_fnc_hud_createSentence;
+			if(alive _target) then {
+				[_target, selectRandom [
+					"I will follow you! Onward!",
+					"Lead the way!",
+					"Together we will be stronger!",
+					"Okay",
+					"What are we waiting for?"
+					], _caller] call Dialog_fnc_hud_createSentence;
 
-			// Join on server
-			[[_target, _caller, clientOwner], {
-				params ["_target", "_caller", "_clientOwner"];
+				// Join on server
+				[[_target, _caller, clientOwner], {
+					params ["_target", "_caller", "_clientOwner"];
 
-				if (random 1 > 0.5) then {
-					// Do the unit actions on the server
-					_target lookAt _caller;
-					_target action ["Salute", _target];
-					sleep 2;
-				};
+					if (random 1 > 0.5) then {
+						// Do the unit actions on the server
+						_target lookAt _caller;
+						_target action ["Salute", _target];
+						sleep 2;
+					};
 
-				private _otherUnits = units group _caller - [_caller];
-				[_target] join group _caller;
+					private _otherUnits = units group _caller - [_caller];
+					[_target] join group _caller;
 
-				{
-					sleep random [0, 0.5, 1];
-					[[_x, _target], {
-						params ["_unit", "_target"];
-						_unit lookAt _target;
-						[_unit, selectRandom [
-							"Welcome brother!",
-							"Another for the cause!",
-							"Hi",
-							"...",
-							"Do you have any spare bullets?",
-							"Hi neighbour!"
-						], _target] call Dialog_fnc_hud_createSentence;
-					}] remoteExec ["call", _clientOwner];
-				} foreach _otherUnits;
+					{
+						sleep random [0, 0.5, 1];
+						[[_x, _target], {
+							params ["_unit", "_target"];
+							_unit lookAt _target;
+							[_unit, selectRandom [
+								"Welcome brother!",
+								"Another for the cause!",
+								"Hi",
+								"...",
+								"Do you have any spare bullets?",
+								"Hi neighbour!"
+							], _target] call Dialog_fnc_hud_createSentence;
+						}] remoteExec ["call", _clientOwner];
+					} foreach _otherUnits;
 
-				// _target stop false;
-			}] remoteExec ["spawn", 2];
-
+					// _target stop false;
+				}] remoteExec ["spawn", 2];
+			} else {
+				[_target, selectRandom [
+					"(...)",
+					"(bleeds)",
+					"(maybe they are sleeping?)",
+					"(looks so peaceful)",
+					"(NNNNNNNOOOOOOOOOOOOOOOOOOO!!!!!!)",
+					"(he's dead Jim!)",
+					"(refuses the call)",
+					"(has other problems)",
+					"(doesn't appear to be listening)",
+					"(has already given everything)",
+					"(will be missed)",
+					"(ashes to ashes)",
+					"(looks pale)"
+					], _caller] call Dialog_fnc_hud_createSentence;
+			};
 		};
 	} else {
 		[_target, "You are too many already, we must be inconspicuous!", _caller] call Dialog_fnc_hud_createSentence;
