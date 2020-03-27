@@ -73,7 +73,7 @@ _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
 
 _veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
-//_veh set [T_VEH_stat_GMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
+_veh set [T_VEH_stat_GMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_HMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_GMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_AA, ["sab_static_aa", "sab_small_static_2xaa", "sab_small_static_aa"]];
