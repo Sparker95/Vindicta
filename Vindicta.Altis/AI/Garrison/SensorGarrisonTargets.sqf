@@ -115,10 +115,13 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			STIMULUS_SET_VALUE(_stim, +_knownTargets);
 			CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
 		};
-		
+
 		// Check if we can see any of the assigned targets
 		pr _assignedTargetsRadius = GETV(_AI, "assignedTargetsRadius");
-		if (_assignedTargetsRadius != 0 /*&& (count _knownTargets) > 0*/) then {
+		// pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");
+		if (count _knownTargets > 0 || 
+			{_assignedTargetsRadius != 0 && { GETV(_AI, "assignedTargetsPos") distance2D CALLM0(_AI, "getPos") < _assignedTargetsRadius + 1000 }}
+		/*&& (count _knownTargets) > 0*/) then {
 			/*
 			pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");
 			pr _targetsInRadius = _knownTargets select {

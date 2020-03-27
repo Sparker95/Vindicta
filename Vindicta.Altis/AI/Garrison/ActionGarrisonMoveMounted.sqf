@@ -76,9 +76,12 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 				ACTION_STATE_INACTIVE
 			};
 		} else {
-		
-			// Give waypoint to the vehicle group
+
+			// Merge groups ready for convoy
 			pr _gar = T_GETV("gar");
+			//CALLM0(_gar, "mergeVehicleGroups");
+
+			// Give waypoint to the vehicle group
 			pr _AI = T_GETV("AI");
 			pr _pos = T_GETV("pos");
 			pr _radius = T_GETV("radius");
@@ -88,7 +91,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 			CALLM1(_vr, "setPos", _garPos); // Update the virtual route with the proper garrison position
 			pr _route = CALLM0(_vr, "getAIWaypoints");
 			
-			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+			pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
 			if (count _vehGroups > 1) exitWith {
 				OOP_WARNING_0("More than one vehicle group in the garrison!");
 				ACTION_STATE_FAILED
@@ -97,11 +100,13 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 			{
 				pr _group = _x;
 				pr _groupAI = CALLM0(_x, "getAI");
-				
 				// Add new goal to move
-				pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius], [TAG_ROUTE, _route]], _AI];
+				pr _args = ["GoalGroupMoveGroundVehicles", 0, [
+					[TAG_POS, _pos],
+					[TAG_MOVE_RADIUS, _radius],
+					[TAG_ROUTE, _route]
+				], _AI];
 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
-				
 			} forEach _vehGroups;
 			
 			// Reset current location of this garrison
@@ -112,8 +117,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 			
 			// Give goals to infantry groups
-			pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
-			pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
+			pr _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
 			{
 				pr _group = _x;
 				pr _groupAI = CALLM0(_x, "getAI");
@@ -189,13 +193,10 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 				T_SETV("state", ACTION_STATE_FAILED);
 				ACTION_STATE_FAILED
 			};
-			
+
 			pr _state = T_CALLM0("activateIfInactive");
-			
-			scopeName "s0";
-			
+
 			if (_state == ACTION_STATE_ACTIVE) then {
-			
 				pr _gar = T_GETV("gar");
 				pr _AI = T_GETV("AI");
 
@@ -209,28 +210,26 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 					_pos = getPos _hO;
 				};
 				CALLM1(_AI, "setPos", _pos);
-			
-				pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
-				pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
-				
-				// Fail if any group has failed
-				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
-					_state = ACTION_STATE_FAILED;
-					breakTo "s0";
-				};
-				
-				// Succede if all groups have completed the goal
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
-					OOP_INFO_0("All groups have arrived");
-					
-					// Set pos world state property
-					// todo fix this, implement AIGarrison.setVehiclesPos function
-					//pr _ws = GETV(_AI, "worldState");
-					//[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-					//[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
-					
-					_state = ACTION_STATE_COMPLETED;
-					breakTo "s0";
+				pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
+
+				switch true do {
+					// Fail if any group has failed
+					case CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles"): {
+						_state = ACTION_STATE_FAILED;
+					};
+					// Succeed if all groups have completed the goal
+					case CALLSM2("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _vehGroups, "GoalGroupMoveGroundVehicles"): {
+						// Set pos world state property
+						// todo fix this, implement AIGarrison.setVehiclesPos function
+						//pr _ws = GETV(_AI, "worldState");
+						//[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+						//[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
+						_state = ACTION_STATE_COMPLETED;
+					};
+					// Fail if any groups don't have the external goal
+					case (!CALLSM2("AI_GOAP", "allAgentsHaveExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles")): {
+						_state = ACTION_STATE_FAILED;
+					};
 				};
 			};
 			

@@ -75,7 +75,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				// Did we need to mount or dismount?
 				pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInGarrisonVehiclesAsCargo"] select T_GETV("mount");
 
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _infGroups, _goalClassName, "")) then {
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _infGroups, _goalClassName, "")) then {
 					//Update sensors affected by this action
 					CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
 					

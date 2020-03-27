@@ -14,10 +14,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	VARIABLE("time");
 
 	// ------------ N E W ------------
-	
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
-		
+
 		// Unpack position
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		if (_pos isEqualType []) then {
@@ -36,22 +36,22 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		T_SETV("time", -1);
 		
 	} ENDMETHOD;
-	
+
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];		
-		
+
 		pr _gar = T_GETV("gar");
 		pr _pos = T_GETV("pos");
 		pr _AI = T_GETV("AI");
-		
+
 		// Give goals to groups
 		pr _args = ["GoalGroupInfantryMove", 0, [[TAG_POS, _pos]], _AI];
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach CALLM0(_gar, "getGroups");
-		
+
 		// Reset current location of this garrison
 		CALLM0(_gar, "detachFromLocation");
 		pr _ws = GETV(_AI, "worldState");
@@ -61,16 +61,16 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
-		
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-		
+
 	} ENDMETHOD;
 	
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		
+
 		pr _gar = T_GETV("gar");
 		pr _AI = T_GETV("AI");
 
@@ -121,11 +121,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				};
 
 				pr _groups = CALLM0(_gar, "getGroups");
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _groups, "GoalGroupInfantryMove", _AI)) then {
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _groups, "GoalGroupInfantryMove", _AI)) then {
 					_state = ACTION_STATE_COMPLETED;
 				};
 			};
-			
+
 			// Return the current state
 			T_SETV("state", _state);
 			_state
@@ -135,13 +135,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
-		
+
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
 		// Delete goals given to groups
-		
+
 		// Delete goals from groups
 		pr _args = ["GoalGroupInfantryMove", ""];
 		{
@@ -158,10 +158,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
-	
+
 	METHOD("onGarrisonDespawned") {
 		params ["_thisObject"];
-		
+
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
@@ -170,25 +170,25 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	METHOD("handleGroupsAdded") {
 		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-		
+
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 
 	METHOD("handleGroupsRemoved") {
 		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-		
+
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		
+
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsAdded") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		
+
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 

@@ -19,10 +19,18 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 		T_CALLM0("regroup");
 		T_CALLM0("applyGroupBehaviour");
 
+
 		private _pos = T_GETV("pos");
 		private _hG = T_GETV("hG");
+
+		// if(terrainIntersect [_pos vectorAdd [0, 0, 1], position leader _hG vectorAdd [0, 0, 1]]) then {
+		// 	// Failed, can't see the target position
+		// } else {
+		// }
+
 		// Just all watch it for now, later we can have something more smarterrer
 		units _hG commandWatch _pos;
+
 
 		// {
 		// 	switch true do {
@@ -54,7 +62,10 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [P_THISOBJECT];
-		
+		private _hG = T_GETV("hG");
+
+		// All stop watching position
+		units _hG commandWatch objNull;
 	} ENDMETHOD;
 
 ENDCLASS;

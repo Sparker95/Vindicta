@@ -25,8 +25,6 @@
 
 #define WSP_GAR_ALL_VEHICLES_HAVE_CREW_ASSIGNED			8
 
-
-
 // Engineer available
 #define WSP_GAR_ENGINEER_AVAILABLE						9
 

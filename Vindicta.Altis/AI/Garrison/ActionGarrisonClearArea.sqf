@@ -32,9 +32,9 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT];
-		
+
 		OOP_INFO_0("ACTIVATE");
-		
+
 
 		//pr _pos = T_GETV("pos");
 		T_PRVAR(AI);
@@ -43,7 +43,10 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 		pr _gar = GETV(_AI, "agent");
 
-		// Split vehicle groups
+		// Split to one group per vehicle
+		// CALLM0(_gar, "splitVehicleGroups");
+
+		// Rebalance groups, ensure all the vehicle groups have drivers, balance the infantry groups
 		CALLM0(_gar, "rebalanceGroups");
 
 		// Determine group size and type
@@ -174,8 +177,8 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 					0, 
 					[
 						[TAG_OVERWATCH_GRADIENT, 0.4],
-						[TAG_OVERWATCH_DISTANCE_MIN, MAXIMUM(300, _radius)],
-						[TAG_OVERWATCH_DISTANCE_MAX, MAXIMUM(300, _radius) + 500],
+						[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
+						[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
 						[TAG_OVERWATCH_DIRECTION, _dir]
 					] + _commonTags,
 					_AI
@@ -186,8 +189,8 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 					0, 
 					[
 						[TAG_OVERWATCH_GRADIENT, 50],
-						[TAG_OVERWATCH_DISTANCE_MIN, MAXIMUM(300, _radius)],
-						[TAG_OVERWATCH_DISTANCE_MAX, MAXIMUM(300, _radius) + 500],
+						[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
+						[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
 						[TAG_OVERWATCH_DIRECTION, _dir]
 					] + _commonTags,
 					_AI

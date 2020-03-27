@@ -113,7 +113,7 @@ CLASS("AI_GOAP", "AI")
 		if (count agent.getSubagents > 0)
 			{ _x.AI.process(); } forEach subagents;
 		*/
-		
+
 		// Update all sensors
 		T_CALLM1("updateSensors", _accelerate);
 
@@ -150,9 +150,6 @@ CLASS("AI_GOAP", "AI")
 				// Delete the current action if we had it
 				T_CALLM0("deleteCurrentAction");
 				
-				T_SETV("currentGoal", _goalClassName);
-				T_SETV("currentGoalSource", _goalSource);
-				T_SETV("currentGoalParameters", _goalParameters);
 				//T_SETV("currentGoalState", _goalActionState);
 				OOP_INFO_4("PROCESS: NEW GOAL: %1, parameters: %2, source: %3, state: %4",
 					_goalClassName, _goalParameters, _goalSource, _goalActionState);
@@ -162,7 +159,7 @@ CLASS("AI_GOAP", "AI")
 				pr _args = [_thisObject, _goalParameters];
 				pr _newAction = CALL_STATIC_METHOD(_goalClassName, "createPredefinedAction", _args);
 				
-				if (_newAction == "") then {
+				if (_newAction == NULL_OBJECT) then {
 					// Predefined action was not supplied, so we must run the planner
 					
 					// Get desired world state
@@ -183,15 +180,21 @@ CLASS("AI_GOAP", "AI")
 						_newAction = T_CALLM("createActionsFromPlan", [_actionPlan]);
 						// Set a new action from the plan
 						T_CALLM1("setCurrentAction", _newAction);
+						T_SETV("currentGoal", _goalClassName);
+						T_SETV("currentGoalSource", _goalSource);
+						T_SETV("currentGoalParameters", _goalParameters);
 					} else {
 						// Terminate the current action (if it exists)
-						T_CALLM0("deleteCurrentAction");
+						//T_CALLM0("deleteCurrentAction");
 						pr _wsCurr = T_GETV("worldState");
 						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", _wsCurr, _wsGoal);
 					};
 				} else {
 					// Set a new action from the predefined action
 					T_CALLM1("setCurrentAction", _newAction);
+					T_SETV("currentGoal", _goalClassName);
+					T_SETV("currentGoalSource", _goalSource);
+					T_SETV("currentGoalParameters", _goalParameters);
 				};
 				
 			};
@@ -260,7 +263,7 @@ CLASS("AI_GOAP", "AI")
 				
 				case ACTION_STATE_FAILED : {
 					// Probably we should replan our goal at the next iteration
-					T_SETV("currentGoal", "");
+					T_CALLM0("deleteCurrentAction");;
 					T_SETV("currentGoal", "");
 					T_SETV("currentGoalSource", "");
 					T_SETV("currentGoalParameters", []);
@@ -268,7 +271,7 @@ CLASS("AI_GOAP", "AI")
 
 				case ACTION_STATE_REPLAN : {
 					// Probably we should replan our goal at the next iteration
-					T_SETV("currentGoal", "");
+					T_CALLM0("deleteCurrentAction");;
 					T_SETV("currentGoal", "");
 					T_SETV("currentGoalSource", "");
 					T_SETV("currentGoalParameters", []);
@@ -576,13 +579,32 @@ CLASS("AI_GOAP", "AI")
 	Returns: Bool
 	*/	
 	STATIC_METHOD("anyAgentHasExternalGoal") {
-		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [P_THISCLASS, ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
 		(_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
 			CALLM2(_AI, "hasExternalGoal", _goalClassName, _goalSource)
 		}) != -1
 	} ENDMETHOD;
-
+	
+	/*
+	Method: (static)allAgentsHaveExternalGoal
+	Returns true if all agents have the specified external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/	
+	STATIC_METHOD("allAgentsHaveExternalGoal") {
+		params [P_THISCLASS, P_ARRAY("_agents"), P_STRING("_goalClassName"), ["_goalSource", ""]];
+		(_agents findIf {
+			pr _AI = CALLM0(_x, "getAI");
+			!CALLM2(_AI, "hasExternalGoal", _goalClassName, _goalSource)
+		}) == -1
+	} ENDMETHOD;
 	// --------------------------------------------------------------------------------
 	// |                G E T   E X T E R N A L   G O A L   P A R A M E T E R S
 	// --------------------------------------------------------------------------------
@@ -633,7 +655,7 @@ CLASS("AI_GOAP", "AI")
 	Returns: Bool
 	*/
 	STATIC_METHOD("allAgentsCompletedExternalGoal") {
-		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [P_THISCLASS, P_ARRAY("_agents"), P_STRING("_goalClassName"), ["_goalSource", ""]];
 		OOP_INFO_2("allAgentsCompletedExternalGoal: %1, Source: %2", _goalClassName, _goalSource);
 
 		pr _completedCount = ({
@@ -641,8 +663,35 @@ CLASS("AI_GOAP", "AI")
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
 			// Either actions completed or goal didn't exist
 			pr _completed = (_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1);
-			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed ); // || (_actionState == -1));
-			_completed  // || (_actionState == -1)
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed );
+			_completed
+		} count _agents);
+
+		_completedCount == (count _agents)
+	} ENDMETHOD;
+	
+	/*
+	Method: (static)allAgentsHaveAndCompletedExternalGoal
+	Returns true if all provided AI objects have completed an external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/
+	STATIC_METHOD("allAgentsCompletedExternalGoalRequired") {
+		params [P_THISCLASS, P_ARRAY("_agents"), P_STRING("_goalClassName"), ["_goalSource", ""]];
+		OOP_INFO_2("allAgentsCompletedExternalGoal: %1, Source: %2", _goalClassName, _goalSource);
+
+		pr _completedCount = ({
+			pr _AI = CALLM0(_x, "getAI");
+			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			pr _completed = (_actionState == ACTION_STATE_COMPLETED);
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed );
+			_completed
 		} count _agents);
 
 		_completedCount == (count _agents)
@@ -661,7 +710,7 @@ CLASS("AI_GOAP", "AI")
 	Returns: Bool
 	*/	
 	STATIC_METHOD("anyAgentFailedExternalGoal") {
-		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [P_THISCLASS, ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
 		(_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
@@ -793,7 +842,7 @@ CLASS("AI_GOAP", "AI")
 	FIX_LINE_NUMBERS()
 	
 	STATIC_METHOD("planActions") {
-		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
+		pr _paramsGood = params [ P_THISCLASS, ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
 		
 		if (!_paramsGood) then {
 			DUMP_CALLSTACK;
@@ -832,7 +881,7 @@ CLASS("AI_GOAP", "AI")
 		pr _foundPath = false;
 		pr _path = []; // Return value of the algorithm
 		pr _count = 0; // A safety counter, in case it freezes.
-		while {count _openSet > 0 && _count < 50} do {
+		while {count _openSet > 0 && _count < 500} do {
 			
 			// ----------------------------------------------------------------------------
 			// Set current node to the node in open set with lowest f value
@@ -1093,7 +1142,7 @@ CLASS("AI_GOAP", "AI")
 		
 
 		// Sort the plan by precedence
-		_path sort true; // Ascending
+		//_path sort true; // Ascending
 		
 		#ifdef ASTAR_DEBUG
 			OOP_INFO_1("[AI:AStar] Info: Generated plan: %1", _path);
@@ -1106,7 +1155,7 @@ CLASS("AI_GOAP", "AI")
 	
 	// Converts an A* node to string for debug purposes
 	STATIC_METHOD("AStarNodeToString") {
-		params [ ["_thisClass", "", [""]], ["_node", [], [[]]]];
+		params [ P_THISCLASS, ["_node", [], [[]]]];
 		
 		// Next field might be a node or a special number indicating that next node doesn't exist (i.e. for a goal node)
 		

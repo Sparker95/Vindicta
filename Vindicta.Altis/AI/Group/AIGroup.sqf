@@ -49,6 +49,7 @@ CLASS("AIGroup", "AI_GOAP")
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
 		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, true] call ws_setPropertyValue;
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GROUP_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
 		SETV(_thisObject, "worldState", _ws);
 		
 		// Set process interval

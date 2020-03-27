@@ -1,20 +1,19 @@
 #include "common.hpp"
 
 /*
-Merges vehicle group(s)
-We need to merge vehicle groups into one group (before convoy move).
-This action also moves ungrouped vehicles into the common vehicle group.
+Splits vehicle group(s)
+We need to split vehicle groups (after convoy move).
 */
 
 #define pr private
 
-CLASS("ActionGarrisonMergeVehicleGroups", "ActionGarrison")
+CLASS("ActionGarrisonSplitVehicleGroups", "ActionGarrison")
 
 	METHOD("activate") {
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
-		CALLM0(_gar, "mergeVehicleGroups");
+		CALLM0(_gar, "splitVehicleGroups");
 
 		// We set the state explicitly as it can be indeterminate based 
 		// just on measurement. i.e. if there is only one vehicle how can 
@@ -24,7 +23,7 @@ CLASS("ActionGarrisonMergeVehicleGroups", "ActionGarrison")
 		// cannot be merged).
 		pr _AI = T_GETV("AI");
 		pr _ws = GETV(_AI, "worldState");
-		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, true] call ws_setPropertyValue;
+		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;
 
 		T_SETV("state", ACTION_STATE_COMPLETED);
 
@@ -34,6 +33,7 @@ CLASS("ActionGarrisonMergeVehicleGroups", "ActionGarrison")
 
 	METHOD("process") {
 		params [P_THISOBJECT];
+
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		_state
 	} ENDMETHOD;

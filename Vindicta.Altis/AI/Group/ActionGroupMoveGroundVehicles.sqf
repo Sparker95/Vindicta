@@ -79,7 +79,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		};
 		
 		T_CALLM0("clearWaypoints");
-		T_CALLM0("applyGroupBehaviour");
+		T_CALLM4("applyGroupBehaviour", "COLUMN", "CARELESS", "YELLOW", "NORMAL");
 
 		// Turn on sirens if we have them
 		{
@@ -109,24 +109,22 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		// Set time last called
 		T_SETV("time", time);
 
-		// Give goals to all drivers except the lead driver
 		pr _leader = CALLM0(_group, "getLeader");
-		if (_leader != "") then {
+		if (_leader != NULL_OBJECT) then {
 			if (CALLM0(_leader, "isAlive")) then {
+				// Add follow goals for units other than the leader
 				{
 					pr _unitAI = CALLM0(_x, "getAI");
 					if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
-						// Add goal
 						CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
 					};
 				} forEach (CALLM0(_group, "getInfantryUnits") - [_leader]);
 				
-				// Lead vehicle gets a special goal
+				// Add move goal to leader
 				pr _leaderAI = CALLM0(_leader, "getAI");
 				pr _parameters = [[TAG_POS, T_GETV("pos")], [TAG_MOVE_RADIUS, T_GETV("radius")], [TAG_ROUTE, T_GETV("route")]];
 				CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
 
-				// Return ACTIVE state
 				T_SETV("state", ACTION_STATE_ACTIVE);
 				ACTION_STATE_ACTIVE
 			} else {
@@ -135,7 +133,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 				ACTION_STATE_FAILED
 			};
 		} else {
-			// leader is "", wtf
+			// leader is NULL_OBJECT, wtf
 			OOP_ERROR_1("Group has no leader: %1", _group);
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
@@ -197,7 +195,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			// For now just check if leader is there
 			pr _radius = T_GETV("radius");
 			if (( (vehicle leader _hG) distance _pos ) < _radius) then {
-				OOP_INFO_0("Arrived at destionation");
+				OOP_INFO_0("Arrived at destination");
 				_state = ACTION_STATE_COMPLETED
 			};
 		};
@@ -245,21 +243,19 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	METHOD("terminate") {
 		params [P_THISOBJECT];
 		
-		// Delete given goals
-		pr _hG = T_GETV("hG");
-		pr _AI = T_GETV("AI");
-		pr _pos = T_GETV("pos");
-		pr _group = GETV(T_GETV("AI"), "agent");
-		
-		// Stop the group
 		// Delete waypoints
-		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
+		T_CALLM0("clearWaypoints");
+
+		pr _hG = T_GETV("hG");
+
 		// Add a move waypoint at the current position of the leader
 		pr _wp = _hG addWaypoint [getPos leader _hG, 0];
 		_wp setWaypointType "MOVE";
 		_hG setCurrentWaypoint _wp;
 		doStop (leader _hG);
 		
+		pr _AI = T_GETV("AI");
+		pr _group = GETV(_AI, "agent");
 		// Delete given goals
 		pr _groupUnits = CALLM0(_group, "getUnits");
 		{

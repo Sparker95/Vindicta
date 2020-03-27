@@ -50,9 +50,18 @@ CLASS("SensorGroupHealth", "SensorGroup")
 
 		// Check if all infantry units are in vehicles
 		pr _infantryUnits = CALLM0(_group, "getInfantryUnits");
-		pr _infantryHandles = _infantryUnits apply {CALLM0(_x, "getObjectHandle")};
-		pr _allInfMounted = (_infantryHandles findIf {(vehicle _x) == _x}) == -1;
+		pr _infantryHandles = _infantryUnits apply { CALLM0(_x, "getObjectHandle") };
+		pr _allInfMounted = (_infantryHandles findIf { vehicle _x == _x }) == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
+
+		pr _infantryAI = _infantryUnits apply{ CALLM0(_x, "getAI") };
+		pr _allCrewHandles = _infantryAI select { 
+			CALLM0(_x, "getAssignedVehicleRole") in ["DRIVER", "TURRET"]
+		} apply {
+			GETV(_x, "hO")
+		};
+		pr _allCrewMounted = (_allCrewHandles findIf { vehicle _x == _x }) == NOT_FOUND;
+		[_ws, WSP_GROUP_ALL_CREW_MOUNTED, _allCrewMounted] call ws_setPropertyValue;
 
 		// Check if all infantry units are in proper group
 		// Sometimes units get ungrouped when entering vehicles >_< WTF this shit is so annoying, BIS why do you make broken things everywhere

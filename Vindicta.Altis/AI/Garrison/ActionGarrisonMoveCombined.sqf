@@ -211,7 +211,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				};
 				
 				// Succeed if all groups have completed the goal
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 					OOP_INFO_0("All groups have arrived");
 					
 					// Set pos world state property

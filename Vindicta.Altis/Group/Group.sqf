@@ -324,7 +324,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 		// Reform other units back to the group
 		pr _otherUnitHandles = (_units apply {CALLM0(_x, "getObjectHandle")});
-		_otherUnits joinSilent (_otherUnitHandles - units _groupHandle);
+		(_otherUnitHandles - units _groupHandle) joinSilent _groupHandle;
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -447,13 +447,18 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	METHOD("getPos") {
 		params [P_THISOBJECT];
-		if(T_CALLM0("isSpawned")) then {
-			private _leader = T_CALLM0("getLeader");
-			CALLM0(_leader, "getPos")
-		} else {
+		if(!T_CALLM0("isSpawned")) exitWith {
 			private _garrison = T_CALLM0("getGarrison");
 			CALLM0(_garrison, "getPos")
-		}
+		};
+
+		private _leader = T_CALLM0("getLeader");
+		if(_leader != NULL_OBJECT) exitWith {
+			CALLM0(_leader, "getPos")
+		};
+
+		private _garrison = T_CALLM0("getGarrison");
+		CALLM0(_garrison, "getPos")
 	} ENDMETHOD;
 	
 	/*

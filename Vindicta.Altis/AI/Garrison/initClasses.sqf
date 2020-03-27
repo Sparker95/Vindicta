@@ -9,6 +9,7 @@ call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonJoinGarrison.s
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonJoinLocation.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonLoadCargo.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMergeVehicleGroups.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonSplitVehicleGroups.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountCrew.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountCrewInfantry.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountInfantry.sqf";

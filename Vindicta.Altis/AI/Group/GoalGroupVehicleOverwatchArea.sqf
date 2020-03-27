@@ -46,7 +46,7 @@ CLASS("GoalGroupVehicleOverwatchArea", "Goal")
 		// Move to target
 		private _actionMoveParams = [
 			[TAG_POS, _overwatchPos],
-			[TAG_MOVE_RADIUS, 5]
+			[TAG_MOVE_RADIUS, 15]
 		];
 		CALLSM2("Action", "mergeParameterValues", _actionMoveParams, _parameters);
 		private _actionMove = NEW("ActionGroupMoveGroundVehicles", [_AI ARG _actionMoveParams]);

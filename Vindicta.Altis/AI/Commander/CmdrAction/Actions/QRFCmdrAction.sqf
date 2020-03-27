@@ -121,7 +121,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
 
 		#ifdef DEBUG_BIG_QRF
-		private _enemyEff = [20, 6, 6, 0,20, 6, 6, 0, 0, 0, 0, 0, 0, 0];
+		private _enemyEff = +T_EFF_null;
+		_enemyEff set[T_EFF_soft, 30];
+		_enemyEff set[T_EFF_reqTransport, 30];
+		_enemyEff set[T_EFF_medium, 6];
+		_enemyEff set[T_EFF_armor, 6];
 		#else
 		private _enemyEff = +GETV(_tgtCluster, "efficiency");
 		// Scale enemy efficiency

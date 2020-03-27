@@ -50,7 +50,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
@@ -108,7 +108,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	} ENDMETHOD;
 	
 	METHOD("addWaypoints") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		pr _hO = T_GETV("hO");
 		pr _pos = T_GETV("pos");
@@ -171,7 +171,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		pr _hO = T_GETV("hO");
 		
@@ -179,6 +179,11 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
+
+		private _hG = group _hO;
+
+		// Make sure we are always targetting the first waypoint (waypoints can get added)
+		_hG setCurrentWaypoint ((waypoints _hG)#0);
 
 		pr _state = T_CALLM0("activateIfInactive");
 		pr _AI = T_GETV("AI");
@@ -238,6 +243,8 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 						};
 						pr _wp = _hG addWaypoint [_wppos, 4, 0, "kickintheass"];
 						_wp setWaypointCompletionRadius 10;
+						_hG setCurrentWaypoint ((waypoints _hG)#0);
+
 						//OOP_WARNING_0("Moving the leader vehicle to the nearest road...");
 						// do move to the nearest road piece we didn't visit yet
 						T_CALLM0("regroup");
@@ -322,7 +329,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	
 	// logic to run when the goal is about to be terminated
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Delete waypoints
 		T_CALLM0("clearWaypoints");

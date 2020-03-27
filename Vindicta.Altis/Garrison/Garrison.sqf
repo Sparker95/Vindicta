@@ -2343,7 +2343,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Find all vehicle groups
 		pr _vehGroups = T_CALLM1("findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
 		pr _destGroup = _vehGroups select 0;
-		
+
 		// If there are no vehicle groups, create one right now
 		if (isNil "_destGroup") then {
 			pr _args = [T_CALLM0("getSide"), GROUP_TYPE_VEH_NON_STATIC];
@@ -2361,7 +2361,7 @@ CLASS("Garrison", "MessageReceiverEx");
 				DELETE(_group);
 			};
 		};
-		
+
 		// Also move ungrouped vehicles, or those in non-vehicle groups
 		pr _vehicleUnits = T_CALLM0("getVehicleUnits");
 		{
@@ -2461,9 +2461,6 @@ CLASS("Garrison", "MessageReceiverEx");
 	// All vehicle groups will be assigned crew, remaining inf will be split into regular groups.
 	METHOD("rebalanceGroups") {
 		params [P_THISOBJECT];
-		
-		// First ensure vehicle groups are split
-		T_CALLM0("splitVehicleGroups");
 		
 		// ===== Ensure all vehicles are manned first =====
 		// Create a pool of units we can use to fill vehicle slots
@@ -2860,6 +2857,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		"ActionGarrisonRepairAllVehicles",
 		"ActionGarrisonUnloadCurrentCargo",
 		"ActionGarrisonMergeVehicleGroups",
+		"ActionGarrisonSplitVehicleGroups",
 		"ActionGarrisonRebalanceVehicleGroups",
 		"ActionGarrisonClearArea",
 		"ActionGarrisonJoinLocation"]
