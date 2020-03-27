@@ -15,29 +15,32 @@ this addHeadgear _RandomHeadgear;
 /*Uniform*/
 this forceAddUniform "fow_u_uk_bd40_commando_01_private";
 /*Vest*/
-_RandomVest = selectRandom ["V_LIB_UK_P37_Rifleman_Blanco", "V_LIB_UK_P37_Gasmask_Blanco"];
-this addVest _RandomVest;
+this addVest "V_LIB_UK_P37_Sten";
 /*Backpack*/
-_RandomBackpack = selectRandom ["B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_Cape", "B_LIB_UK_HSack_Blanco_Tea", "fow_b_uk_p37_blanco", ""];
+_RandomBackpack = selectRandom ["fow_b_uk_bergenpack","B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_Cape", "B_LIB_UK_HSack_Blanco_Tea", "fow_b_uk_p37_blanco"];
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-_RandomWeapon = selectRandom ["LIB_M1A1_Carbine", "LIB_M1_Carbine"];
-this addWeapon _RandomWeapon;
+this addWeapon "LIB_Sten_Mk5";
 /*WeaponItem*/
-this addPrimaryWeaponItem "LIB_15Rnd_762x33";
+this addPrimaryWeaponItem "lib_32rnd_9x19_sten";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 4 do {this addItemToVest "LIB_15Rnd_762x33";};
+for "_i" from 1 to 4 do {this addItemToVest "lib_32rnd_9x19_sten";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_MillsBomb";};
 this addItemToVest "LIB_US_M18";
 this addItemToVest "LIB_No77";
 this addItemToVest "fow_e_mk2";
+this addItemToBackpack "LIB_US_M1A1_ATMINE_mag";
+this addItemToBackpack "LIB_US_TNT_4pound_mag";
+this addItemToBackpack "LIB_Ladung_Big_MINE_mag";
+this addItemToBackpack "LIB_Ladung_Small_MINE_mag";
+this addItemToBackpack "LIB_US_M3_MINE_mag";
 
 /*Items*/
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 
-[this,"Default","male04engb"] call BIS_fnc_setIdentity;
+[this,"Default","male03engb"] call BIS_fnc_setIdentity;

@@ -12,6 +12,9 @@ removeGoggles this;
 /*Helmet*/
 _RandomHeadgear = selectRandom ["H_LIB_GER_Helmet", "H_LIB_GER_Helmet_ns", "H_LIB_GER_Helmet_os", "H_LIB_GER_Helmet_net", "H_LIB_GER_HelmetUtility", "H_LIB_GER_Helmet_Glasses", "H_LIB_GER_Cap"];
 this addHeadgear _RandomHeadgear;
+/*Gogles*/
+_RandomGoggles = selectRandom ["G_LIB_Binoculars", ""];
+this addGoggles _RandomGoggles;
 /*Uniform*/
 _RandomUniform = selectRandom ["U_LIB_GER_Unterofficer", "U_LIB_GER_Unterofficer_HBT"];
 this forceAddUniform _RandomUniform;
@@ -32,7 +35,7 @@ this addHandgunItem "LIB_8Rnd_9x19_P08";
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToVest "LIB_32Rnd_9x19";};
-for "_i" from 1 to 3 do {this addItemToVest "LIB_8Rnd_9x19_P08";};
+for "_i" from 1 to 2 do {this addItemToVest "LIB_8Rnd_9x19_P08";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Shg24";};
 this addItemToVest "LIB_Shg24x7";
 this addItemToVest "LIB_NB39";

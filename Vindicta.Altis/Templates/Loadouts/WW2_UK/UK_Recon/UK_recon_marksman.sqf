@@ -12,6 +12,9 @@ removeGoggles this;
 /*Helmet*/
 _RandomHeadgear = selectRandom ["H_LIB_UK_Beret_Commando", "H_LIB_UK_Helmet_Mk2_Camo", "H_LIB_UK_Helmet_Mk2_FAK_Camo", "H_LIB_UK_Helmet_Mk3_Camo"];
 this addHeadgear _RandomHeadgear;
+/*Gogles*/
+_RandomGoggles = selectRandom ["G_LIB_Binoculars", ""];
+this addGoggles _RandomGoggles;
 /*Uniform*/
 this forceAddUniform "fow_u_uk_bd40_commando_01_private";
 /*Vest*/
@@ -22,14 +25,16 @@ _RandomBackpack = selectRandom ["B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-_RandomWeapon = selectRandom ["LIB_M1A1_Carbine", "LIB_M1_Carbine"];
-this addWeapon _RandomWeapon;
+this addWeapon "LIB_LeeEnfield_No4_Scoped";
+this addWeapon "fow_w_welrod_mkii";
 /*WeaponItem*/
-this addPrimaryWeaponItem "LIB_15Rnd_762x33";
+this addPrimaryWeaponItem "LIB_10Rnd_770x56";
+this addHandgunItem "fow_8rnd_765x17";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 4 do {this addItemToVest "LIB_15Rnd_762x33";};
+for "_i" from 1 to 6 do {this addItemToVest "LIB_10Rnd_770x56";};
+for "_i" from 1 to 2 do {this addItemToVest "fow_8rnd_765x17";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_MillsBomb";};
 this addItemToVest "LIB_US_M18";
 this addItemToVest "LIB_No77";
@@ -39,5 +44,6 @@ this addItemToVest "fow_e_mk2";
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
+this linkItem "LIB_Binocular_UK";
 
-[this,"Default","male04engb"] call BIS_fnc_setIdentity;
+[this,"Default","male05engb"] call BIS_fnc_setIdentity;

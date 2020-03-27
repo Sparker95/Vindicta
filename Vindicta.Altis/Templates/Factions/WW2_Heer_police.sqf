@@ -14,9 +14,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_default, ["SG_sturmtrooper_rifleman"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_medic"]];
-_inf set [T_INF_TL, ["WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_medic"]];
-_inf set [T_INF_officer, ["WW2_Heer_police_officer"]];
+_inf set [T_INF_SL, ["WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2"]];
+_inf set [T_INF_TL, ["WW2_Heer_police_medic", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2"]];
+_inf set [T_INF_officer, ["WW2_Heer_police_officer", "WW2_Heer_police_medic", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2", "WW2_Heer_police_rifleman", "WW2_Heer_police_rifleman_2"]];
 /*
 _inf set [T_INF_GL, [""]];
 _inf set [T_INF_rifleman, [""]];

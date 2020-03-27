@@ -17,18 +17,20 @@ this forceAddUniform "U_LIB_UK_P37";
 /*Vest*/
 this addVest "V_LIB_UK_P37_Sten";
 /*Backpack*/
-_RandomBackpack = selectRandom ["B_LIB_UK_HSack", "B_LIB_UK_HSack_Cape", "B_LIB_UK_HSack_Tea", "fow_b_uk_p37", ""];
-this addBackpack _RandomBackpack;
+this addBackpack "fow_b_uk_piat";
 
 /*Weapon*/
 this addWeapon "LIB_M3_GreaseGun";
+this addWeapon "LIB_PIAT";
 /*WeaponItem*/
 this addPrimaryWeaponItem "LIB_30Rnd_45ACP";
+this addSecondaryWeaponItem "LIB_1Rnd_89m_PIAT";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToVest "LIB_30Rnd_45ACP";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_MillsBomb";};
+for "_i" from 1 to 3 do {this addItemToBackpack "LIB_1Rnd_89m_PIAT";};
 this addItemToVest "LIB_US_M18";
 this addItemToVest "fow_e_mk2";
 

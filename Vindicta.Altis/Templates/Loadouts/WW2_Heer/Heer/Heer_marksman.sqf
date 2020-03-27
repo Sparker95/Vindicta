@@ -33,6 +33,7 @@ this addPrimaryWeaponItem "LIB_8Rnd_9x19_P08";
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 5 do {this addItemToVest "LIB_5Rnd_792x57";};
+for "_i" from 1 to 2 do {this addItemToVest "LIB_8Rnd_9x19_P08";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Shg24";};
 this addItemToVest "LIB_Shg24x7";
 this addItemToVest "LIB_NB39";

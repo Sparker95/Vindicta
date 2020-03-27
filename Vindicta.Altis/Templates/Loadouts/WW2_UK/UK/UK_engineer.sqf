@@ -17,20 +17,25 @@ this forceAddUniform "U_LIB_UK_P37";
 /*Vest*/
 this addVest "V_LIB_UK_P37_Sten";
 /*Backpack*/
-_RandomBackpack = selectRandom ["B_LIB_UK_HSack", "B_LIB_UK_HSack_Cape", "B_LIB_UK_HSack_Tea", "fow_b_uk_p37", ""];
+_RandomBackpack = selectRandom ["fow_b_uk_bergenpack", "fow_b_uk_bergenpack", "fow_b_uk_bergenpack", "B_LIB_UK_HSack", "B_LIB_UK_HSack_Cape", "B_LIB_UK_HSack_Tea", "fow_b_uk_p37"];
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-this addWeapon "LIB_M3_GreaseGun";
+_RandomWeapon = selectRandom ["LIB_Sten_Mk2", "LIB_Sten_Mk2", "LIB_Sten_Mk2", "LIB_Sten_Mk2", "LIB_Sten_Mk5"];
+this addWeapon _RandomWeapon;
 /*WeaponItem*/
-this addPrimaryWeaponItem "LIB_30Rnd_45ACP";
+this addPrimaryWeaponItem "lib_32rnd_9x19_sten";
+_RandomAtta = selectRandom ["LIB_ACC_No4_Mk2_Bayo", ""];
+this addPrimaryWeaponItem _RandomAtta;
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "LIB_30Rnd_45ACP";};
+this addItemToBackpack "LIB_ToolKit";
+for "_i" from 1 to 3 do {this addItemToVest "lib_32rnd_9x19_sten";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_MillsBomb";};
 this addItemToVest "LIB_US_M18";
 this addItemToVest "fow_e_mk2";
+this addItemToBackpack "ToolKit";
 
 /*Items*/
 this linkItem "ItemMap";

@@ -32,9 +32,9 @@ this addPrimaryWeaponItem _RandomAtta;
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 5 do {this addItemToVest "LIB_5Rnd_792x57";};
-for "_i" from 3 to 5 do {this addItemToBackpack "LIB_10Rnd_792x57";};
-for "_i" from 10 to 20 do {this addItemToBackpack "LIB_5Rnd_792x57";};
-for "_i" from 5 to 10 do {this addItemToBackpack "LIB_32Rnd_9x19";};
+for "_i" from 1 to 5 do {this addItemToBackpack "LIB_10Rnd_792x57";};
+for "_i" from 1 to 13 do {this addItemToBackpack "LIB_5Rnd_792x57";};
+for "_i" from 1 to 8 do {this addItemToBackpack "LIB_32Rnd_9x19";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Shg24";};
 this addItemToVest "LIB_Shg24x7";
 this addItemToVest "LIB_NB39";

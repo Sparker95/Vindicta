@@ -14,24 +14,24 @@ _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_default, ["LIB_UK_Rifleman"]];
 
-_inf set [T_INF_SL, ["LIB_UK_Sergeant"]];
-_inf set [T_INF_TL, ["WW2_UK_radioman", "LIB_UK_Corporal"]];
-_inf set [T_INF_officer, ["LIB_UK_Officer"]];
-_inf set [T_INF_GL, ["LIB_UK_Grenadier"]];
-_inf set [T_INF_rifleman, ["LIB_UK_Rifleman", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman_4"]];
-_inf set [T_INF_marksman, ["LIB_UK_Sniper"]];
-_inf set [T_INF_sniper, ["LIB_UK_Sniper"]];
+_inf set [T_INF_SL, ["WW2_UK_SL"]];
+_inf set [T_INF_TL, ["WW2_UK_TL"]];
+_inf set [T_INF_officer, ["WW2_UK_officer"]];
+_inf set [T_INF_GL, ["WW2_UK_GL"]];
+_inf set [T_INF_rifleman, ["WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3"]];
+_inf set [T_INF_marksman, ["WW2_UK_marksman"]];
+_inf set [T_INF_sniper, ["WW2_UK_sniper"]];
 _inf set [T_INF_spotter, ["WW2_UK_spotter"]];
 _inf set [T_INF_exp, ["WW2_UK_explosives"]];
 _inf set [T_INF_ammo, ["WW2_UK_ammo"]];
-_inf set [T_INF_LAT, ["LIB_UK_AT_Soldier"]];
-_inf set [T_INF_AT, ["LIB_UK_AT_Soldier"]];
-_inf set [T_INF_LMG, ["LIB_UK_LanceCorporal", "WW2_UK_LMG"]];
-_inf set [T_INF_HMG, ["WW2_UK_HMG", "WW2_UK_HMG_2"]];
-_inf set [T_INF_medic, ["LIB_UK_Medic"]];
-_inf set [T_INF_engineer, ["LIB_UK_Engineer"]];
-_inf set [T_INF_crew, ["LIB_UK_Tank_Commander", "LIB_UK_Tank_Crew"]];
-_inf set [T_INF_pilot, ["LIB_US_Pilot"]];
+_inf set [T_INF_LAT, ["WW2_UK_LAT", "WW2_UK_LAT_2", "WW2_UK_LAT_3", "WW2_UK_LAT_4"]];
+_inf set [T_INF_AT, ["WW2_UK_AT", "WW2_UK_AT_2"]];
+_inf set [T_INF_LMG, ["WW2_UK_LMG"]];
+_inf set [T_INF_HMG, ["WW2_UK_HMG"]];
+_inf set [T_INF_medic, ["WW2_UK_medic"]];
+_inf set [T_INF_engineer, ["WW2_UK_engineer"]];
+_inf set [T_INF_crew, ["WW2_UK_crew"]];
+_inf set [T_INF_pilot, ["WW2_UK_pilot"]];
 _inf set [T_INF_survivor, ["WW2_UK_unarmed"]];
 _inf set [T_INF_unarmed, ["WW2_UK_unarmed"]];
 /*_inf set [T_INF_crew_heli, [""]];
@@ -40,14 +40,13 @@ _inf set [T_INF_pilot_heli, [""]];
 */
 
 /* Recon unit classes */
-_inf set [T_INF_recon_TL, ["LIB_UK_Para_Officer", "LIB_UK_Para_Sergeant", "LIB_UK_Para_Corporal"]];
-_inf set [T_INF_recon_rifleman, ["WW2_UK_recon_rifleman", "WW2_UK_recon_rifleman_2", "WW2_UK_recon_rifleman_3", "WW2_UK_recon_rifleman_4", "WW2_UK_recon_rifleman_5", "WW2_UK_recon_rifleman_6", "LIB_UK_Para_Rifleman", "LIB_UK_Para_Grenadier", "LIB_UK_Para_LanceCorporal", "WW2_UK_recon_LMG"]];
-_inf set [T_INF_recon_medic, ["LIB_UK_Para_Medic"]];
-_inf set [T_INF_recon_exp, ["LIB_UK_Para_Engineer"]];
-_inf set [T_INF_recon_LAT, ["LIB_UK_Para_AT_Soldier"]];
-//_inf set [T_INF_recon_LMG, ["LIB_UK_Para_LanceCorporal", "WW2_UK_recon_LMG"]]; // There is no T_INF_recon_LMG right now
-_inf set [T_INF_recon_marksman, ["LIB_UK_Para_Sniper"]];
-_inf set [T_INF_recon_JTAC, ["WW2_UK_recon_JTAC", "LIB_UK_Para_Radioman"]];
+_inf set [T_INF_recon_TL, ["WW2_UK_recon_TL"]];
+_inf set [T_INF_recon_rifleman, ["WW2_UK_recon_rifleman", "WW2_UK_recon_rifleman_2", "WW2_UK_recon_rifleman", "WW2_UK_recon_rifleman_2", "WW2_UK_recon_rifleman_3", "WW2_UK_recon_rifleman_4", "WW2_UK_recon_rifleman_5","WW2_UK_recon_rifleman", "WW2_UK_recon_rifleman_2", "WW2_UK_recon_rifleman_3", "WW2_UK_recon_rifleman_4", "WW2_UK_recon_rifleman_5", "WW2_UK_recon_rifleman_6", "WW2_UK_recon_rifleman_7"]];
+_inf set [T_INF_recon_medic, ["WW2_UK_recon_medic"]];
+_inf set [T_INF_recon_exp, ["WW2_UK_recon_explosives"]];
+_inf set [T_INF_recon_LAT, ["WW2_UK_recon_AT"]];
+_inf set [T_INF_recon_marksman, ["WW2_UK_recon_marksman"]];
+_inf set [T_INF_recon_JTAC, ["WW2_UK_recon_JTAC"]];
 
 /* Diver unit classes */
 //_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];

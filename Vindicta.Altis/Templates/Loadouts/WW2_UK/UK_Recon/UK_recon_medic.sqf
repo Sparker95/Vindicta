@@ -10,15 +10,15 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-_RandomHeadgear = selectRandom ["H_LIB_UK_Helmet_Mk2", "H_LIB_UK_Helmet_Mk2_Bowed", "H_LIB_UK_Helmet_Mk2_FAK", "H_LIB_UK_Helmet_Mk2_Net", "H_LIB_UK_Helmet_Mk2", "H_LIB_UK_Helmet_Mk2_Bowed", "H_LIB_UK_Helmet_Mk2_FAK", "H_LIB_UK_Helmet_Mk2_Net", "H_LIB_UK_Helmet_Mk2", "H_LIB_UK_Helmet_Mk2_Bowed", "H_LIB_UK_Helmet_Mk2_FAK", "H_LIB_UK_Helmet_Mk2_Net", "H_LIB_UK_Helmet_Mk2", "H_LIB_UK_Helmet_Mk2_Bowed", "H_LIB_UK_Helmet_Mk2_FAK", "H_LIB_UK_Helmet_Mk2_Net", "H_LIB_UK_Helmet_Mk3", "H_LIB_UK_Helmet_Mk3_Net", "fow_h_uk_jungle_hat_01", "fow_h_uk_jungle_hat_02", "fow_h_uk_jungle_hat_03", "fow_h_uk_woolen_hat", "fow_h_uk_woolen_hat02"];
+_RandomHeadgear = selectRandom ["H_LIB_UK_Beret_Commando", "H_LIB_UK_Helmet_Mk2_Camo", "H_LIB_UK_Helmet_Mk2_FAK_Camo", "H_LIB_UK_Helmet_Mk3_Camo"];
 this addHeadgear _RandomHeadgear;
 /*Uniform*/
-this forceAddUniform "U_LIB_UK_P37";
+this forceAddUniform "fow_u_uk_bd40_commando_01_private";
 /*Vest*/
-_RandomVest = selectRandom ["V_LIB_UK_P37_Rifleman", "V_LIB_UK_P37_Gasmask"];
+_RandomVest = selectRandom ["V_LIB_UK_P37_Rifleman_Blanco", "V_LIB_UK_P37_Gasmask_Blanco"];
 this addVest _RandomVest;
 /*Backpack*/
-_RandomBackpack = selectRandom ["B_LIB_UK_HSack", "B_LIB_UK_HSack_Cape", "B_LIB_UK_HSack_Tea", "fow_b_uk_p37", ""];
+_RandomBackpack = selectRandom ["B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_Cape", "B_LIB_UK_HSack_Blanco_Tea", "fow_b_uk_p37_blanco", ""];
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
@@ -34,11 +34,14 @@ this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "LIB_10Rnd_770x56";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_MillsBomb";};
 this addItemToVest "LIB_US_M18";
+this addItemToVest "LIB_No77";
 this addItemToVest "fow_e_mk2";
+this addItemToBackpack "Medikit";
+for "_i" from 1 to 3 do {this addItemToBackpack "FirstAidKit";};
 
 /*Items*/
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 
-[this,"Default","male01engb"] call BIS_fnc_setIdentity;
+[this,"Default","male04engb"] call BIS_fnc_setIdentity;

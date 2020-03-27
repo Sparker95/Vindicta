@@ -22,7 +22,7 @@ _RandomBackpack = selectRandom ["B_LIB_GER_A_frame", "B_LIB_GER_A_frame_kit", "B
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-_RandomWeapon = selectRandom ["LIB_K98", "LIB_K98_Late", "LIB_G3340"];
+_RandomWeapon = selectRandom ["LIB_K98", "LIB_K98", "LIB_K98_Late", "LIB_G3340"];
 this addWeapon _RandomWeapon;
 /*WeaponItem*/
 this addPrimaryWeaponItem "LIB_5Rnd_792x57";

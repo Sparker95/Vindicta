@@ -22,14 +22,13 @@ _RandomBackpack = selectRandom ["B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-_RandomWeapon = selectRandom ["LIB_M1A1_Carbine", "LIB_M1_Carbine"];
-this addWeapon _RandomWeapon;
+this addWeapon "fow_w_M1912";
 /*WeaponItem*/
-this addPrimaryWeaponItem "LIB_15Rnd_762x33";
+this addPrimaryWeaponItem "fow_6Rnd_12G_Pellets";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 4 do {this addItemToVest "LIB_15Rnd_762x33";};
+for "_i" from 1 to 4 do {this addItemToVest "fow_6Rnd_12G_Pellets";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_MillsBomb";};
 this addItemToVest "LIB_US_M18";
 this addItemToVest "LIB_No77";
@@ -40,4 +39,4 @@ this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 
-[this,"Default","male04engb"] call BIS_fnc_setIdentity;
+[this,"Default","male02engb"] call BIS_fnc_setIdentity;
