@@ -69,7 +69,6 @@ this forceAddUniform selectRandom [
 	"U_LIB_CIV_Citizen_7",
 	"U_LIB_CIV_Citizen_8",
 	"U_LIB_CIV_Doctor",
-	"U_LIB_CIV_Priest",
 	"U_LIB_CIV_Rocker_1",
 	"U_LIB_CIV_Schoolteacher",
 	"U_LIB_CIV_Schoolteacher_2",
