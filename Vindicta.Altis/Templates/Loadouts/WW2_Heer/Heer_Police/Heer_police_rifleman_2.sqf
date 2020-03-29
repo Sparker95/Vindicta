@@ -18,6 +18,8 @@ this forceAddUniform _RandomUniform;
 /*Vest*/
 this addVest "V_LIB_GER_VestMP40";
 /*Backpack*/
+_RandomBackpack = selectRandom ["B_LIB_GER_A_frame", "B_LIB_GER_A_frame_kit", "B_LIB_GER_A_frame_zeltbahn", ""];
+this addBackpack _RandomBackpack;
 
 /*Weapon*/
 _RandomWeapon = selectRandom ["LIB_MP38", "LIB_MP40"];
