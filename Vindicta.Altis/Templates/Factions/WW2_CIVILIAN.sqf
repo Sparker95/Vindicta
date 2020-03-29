@@ -34,7 +34,6 @@ _civUniforms = [
 	"U_LIB_CIV_Functionary_2",
 	"U_LIB_CIV_Functionary_3",
 	"U_LIB_CIV_Functionary_4",
-	"U_GELIB_FRA_CitizenFF01",
 	//French Resistance
 	"U_GELIB_FRA_MGunner_gvnpFF13",
 	"U_GELIB_FRA_MGunner_gvmpFF14",
@@ -42,12 +41,14 @@ _civUniforms = [
 	"U_GELIB_FRA_SoldierFF_gvmpFF16",
 	"U_GELIB_FRA_ScoutFF_Camo31vgpFF17",
 	//Polish Resistance
-	"U_LIB_WP_Soldier_camo_2",
-	"U_LIB_WP_Soldier_camo_3",
-	"U_LIB_WP_Soldier_camo_1",
+	"U_LIB_POL_Oficer_bvbpKpnWPPK",
+	"U_LIB_POL_Soldier_camo_15vbpbcbcSantM1911",
+	"U_LIB_POL_Soldier_camo_00vmpbcbcSzM9130",
 	"U_LIB_POL_rifleman_bcvbpSzM9130",
 	"U_LIB_POL_soldier_bcvmpbcSzt3Mp40",
-	"U_LIB_POL_rifleman_bfvnpSzK98"
+	"U_LIB_POL_rifleman_bfvnpSzK98",
+	"U_LIB_POL_rifleman_gvbpbcSz2SmLE",
+	"U_LIB_POL_soldier_nvmprcStSz3RKMwz28"
 ];
 
 _civFacewear = [
@@ -142,11 +143,10 @@ _arsenal set[T_ARSENAL_primary_items, []];
 _arsenal set[T_ARSENAL_secondary, []];
 _arsenal set[T_ARSENAL_secondary_items, []];
 _arsenal set[T_ARSENAL_handgun, [
-	"KA_TL_122_flashlight"
+	"KA_TL_122_flashlight",
+	"KA_knife"
 ]];
-_arsenal set[T_ARSENAL_handgun_items, [
-	"KA_knife_blade"
-]];
+_arsenal set[T_ARSENAL_handgun_items, []];
 _arsenal set[T_ARSENAL_ammo, [
 	"ka_knife_blade"
 ]];
