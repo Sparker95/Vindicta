@@ -28,12 +28,14 @@ this addWeapon _RandomWeapon;
 this addPrimaryWeaponItem "LIB_5Rnd_792x57";
 this addPrimaryWeaponItem "optic_zf41";
 this addPrimaryWeaponItem "LIB_ACC_GW_SB_Empty";
-this addSecondaryWeaponItem "LIB_1Rnd_Faustpatrone";
+this addSecondaryWeaponItem "LIB_1Rnd_G_PZGR_30";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 5 do {this addItemToVest "LIB_5Rnd_792x57";};
-for "_i" from 1 to 3 do {this addItemToVest "LIB_1Rnd_Faustpatrone";};
+for "_i" from 1 to 2 do {this addItemToVest "LIB_1Rnd_G_PZGR_30";};
+this addItemToBackpack "LIB_1Rnd_G_PZGR_40";
+this addItemToBackpack "LIB_1Rnd_G_SPRGR_30";
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Shg24";};
 this addItemToVest "LIB_Shg24x7";
 this addItemToVest "LIB_NB39";
