@@ -124,3 +124,9 @@ if(_isPistol) then {
 };
 
 for "_i" from 1 to 5 do { this addItemToUniform _ammo };
+
+[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+
+this linkItem "ItemMap";
+this linkItem "LIB_GER_ItemCompass";
+this linkItem "LIB_GER_ItemWatch";
