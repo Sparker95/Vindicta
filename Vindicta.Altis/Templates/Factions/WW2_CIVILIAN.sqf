@@ -3,6 +3,8 @@ Civilian template for ARMA III
 */
 
 _civUniforms = [
+	"U_LIB_CIV_Assistant",
+	"U_LIB_CIV_Assistant_2",
 	"U_LIB_CIV_Citizen_1",
 	"U_LIB_CIV_Citizen_2",
 	"U_LIB_CIV_Citizen_3",
@@ -11,39 +13,91 @@ _civUniforms = [
 	"U_LIB_CIV_Citizen_6",
 	"U_LIB_CIV_Citizen_7",
 	"U_LIB_CIV_Citizen_8",
+	"U_LIB_CIV_Doctor",
+	"U_LIB_CIV_Priest",
+	"U_LIB_CIV_Rocker_1",
+	"U_LIB_CIV_Schoolteacher",
+	"U_LIB_CIV_Schoolteacher_2",
+	"U_LIB_CIV_Villager_1",
+	"U_LIB_CIV_Villager_2",
+	"U_LIB_CIV_Villager_3",
+	"U_LIB_CIV_Villager_4",
+	"U_LIB_CIV_Woodlander_1",
+	"U_LIB_CIV_Woodlander_2",
+	"U_LIB_CIV_Woodlander_3",
+	"U_LIB_CIV_Woodlander_4",
+	"U_LIB_CIV_Worker_1",
+	"U_LIB_CIV_Worker_2",
+	"U_LIB_CIV_Worker_3",
+	"U_LIB_CIV_Worker_4",
 	"U_LIB_CIV_Functionary_1",
 	"U_LIB_CIV_Functionary_2",
 	"U_LIB_CIV_Functionary_3",
 	"U_LIB_CIV_Functionary_4",
 	"U_GELIB_FRA_CitizenFF01",
-	"U_GELIB_FRA_CitizenFF02",
-	"U_GELIB_FRA_CitizenFF03",
-	"U_GELIB_FRA_CitizenFF04",
-	"U_GELIB_FRA_WoodlanderFF01",
-	"U_GELIB_FRA_WoodlanderFF04",
-	"U_GELIB_FRA_AssistantFF",
-	"U_GELIB_FRA_FunctionaryFF01",
-	"U_GELIB_FRA_FunctionaryFF02",
-	"U_GELIB_FRA_VillagerFF01",
-	"U_GELIB_FRA_VillagerFF02",
-	"U_GELIB_FRA_Citizen01",
-	"U_GELIB_FRA_Citizen02",
-	"U_GELIB_FRA_Citizen03",
-	"U_GELIB_FRA_Citizen04",
-	"U_GELIB_FRA_Citizen01",
-	"U_GELIB_FRA_Citizen01"
+	//French Resistance
+	"U_GELIB_FRA_MGunner_gvnpFF13",
+	"U_GELIB_FRA_MGunner_gvmpFF14",
+	"U_GELIB_FRA_SoldierFF_gvmpFF15",
+	"U_GELIB_FRA_SoldierFF_gvmpFF16",
+	"U_GELIB_FRA_ScoutFF_Camo31vgpFF17",
+	//Polish Resistance
+	"U_LIB_WP_Soldier_camo_2",
+	"U_LIB_WP_Soldier_camo_3",
+	"U_LIB_WP_Soldier_camo_1",
+	"U_LIB_POL_rifleman_bcvbpSzM9130",
+	"U_LIB_POL_soldier_bcvmpbcSzt3Mp40",
+	"U_LIB_POL_rifleman_bfvnpSzK98"
 ];
 
 _civFacewear = [
 	//"G_Aviator", mwuhahaha
-	"G_Balaclava_blk",
-	"G_Balaclava_oli",
-	"G_Squares"
+	"G_GEHeadBandage_Bloody",
+	"G_GEHeadBandage_Clean",
+	"G_GEHeadBandage_Stained",
+	"G_LIB_Dienst_Brille",
+	"G_LIB_Dienst_Brille2",
+	"G_LIB_Dust_Goggles",
+	"G_LIB_GER_Gloves4",
+	"G_LIB_GER_Gloves2",
+	"G_LIB_GER_Gloves1",
+	"G_LIB_GER_Gloves3",
+	"G_LIB_Mohawk",
+	"G_LIB_Scarf2_B",
+	"G_LIB_Scarf2_G",
+	"G_LIB_Scarf_B",
+	"G_LIB_Scarf_G",
+	"G_LIB_Watch2",
+	"G_LIB_Watch1",
+	"G_geBI_Bandanna_khk",
+	"G_geBI_Bandanna_blk",
+	"G_geBI_Bandanna_oli",
+	"G_GEMedicVest_00",
+	"G_LIB_Binoculars",
+	"G_Blindfold_01_black_F",
+	"G_Blindfold_01_white_F"
 ];
 
 _civHeadgear = [
+	"H_Hat_blue",
+	"H_Hat_brown",
+	"H_Hat_checker",
+	"H_Hat_grey",
+	"H_Hat_tan",
 	"H_StrawHat",
-	"H_StrawHat_dark"
+	"H_StrawHat_dark",
+	"H_LIB_CIV_Villager_Cap_1",
+	"H_LIB_CIV_Villager_Cap_2",
+	"H_LIB_CIV_Villager_Cap_3",
+	"H_LIB_CIV_Villager_Cap_4",
+	"H_LIB_CIV_Worker_Cap_1",
+	"H_LIB_CIV_Worker_Cap_2",
+	"H_LIB_CIV_Worker_Cap_3",
+	"H_LIB_CIV_Worker_Cap_4",
+	"GEH_Beret_blue",
+	"GEH_Beret_blk",
+	"H_Hat_Safari_olive_F",
+	"H_Hat_Safari_sand_F"
 ];
 
 _civVehicles = [
@@ -93,15 +147,21 @@ _arsenal set[T_ARSENAL_handgun, [
 _arsenal set[T_ARSENAL_handgun_items, [
 	"KA_knife_blade"
 ]];
-_arsenal set[T_ARSENAL_ammo, []];
+_arsenal set[T_ARSENAL_ammo, [
+	"ka_knife_blade"
+]];
 _arsenal set[T_ARSENAL_items, []];
 _arsenal set[T_ARSENAL_vests, []];
 _arsenal set[T_ARSENAL_backpacks, [
-	"B_LIB_SOV_RA_Rucksack_Vide",
-	"B_LIB_SOV_RA_Rucksack21_Vide",
-	"B_LIB_SOV_RA_Rucksack22_Vide",
-	"B_LIB_SOV_RA_Rucksack32_Vide",
-	"B_LIB_SOV_RA_Rucksack41_Vide"
+	"GEB_FieldPack_cbr",
+	"GEB_FieldPack_khk",
+	"GEB_FieldPack_blk",
+	"B_LIB_SOV_RA_MedicalBag_Empty",
+	"B_LIB_SOV_RA_MGAmmoBag_Empty",
+	"B_LIB_SOV_RA_Rucksack",
+	"B_LIB_SOV_RA_Rucksack_Green",
+	"B_LIB_SOV_RA_Rucksack2",
+	"B_LIB_SOV_RA_Rucksack2_Green"
 ]];
 _arsenal set[T_ARSENAL_uniforms, +_civUniforms];
 _arsenal set[T_ARSENAL_facewear, +_civFacewear];
