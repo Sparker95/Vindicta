@@ -22,7 +22,8 @@ this addVest "V_LIB_GER_VestMP40";
 /*Weapon*/
 _RandomWeapon = selectRandom ["LIB_MP38", "LIB_MP40"];
 this addWeapon _RandomWeapon;
-this addWeapon "LIB_PzFaust_30m";
+_RandomWeapon2 = selectRandom ["LIB_PzFaust_30m", "fow_w_pzfaust_100", "LIB_PzFaust_60m", "LIB_Faustpatrone"];
+this addWeapon _RandomWeapon2;
 /*WeaponItem*/
 this addPrimaryWeaponItem "LIB_32Rnd_9x19";
 

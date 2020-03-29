@@ -15,7 +15,8 @@ this addHeadgear "H_LIB_GER_Cap";
 _RandomGoggles = selectRandom ["G_LIB_Binoculars", ""];
 this addGoggles _RandomGoggles;
 /*Uniform*/
-this forceAddUniform "U_LIB_GER_Oberschutze";
+_RandomUniform = selectRandom ["U_LIB_GER_Oberschutze", "U_LIB_GER_Oberschutze", "U_LIB_GER_Oberschutze", "U_LIB_GER_Oberschutze", "U_LIB_GER_Soldier3"];
+this forceAddUniform _RandomUniform;
 /*Vest*/
 this addVest "V_LIB_GER_VestUnterofficer";
 /*Backpack*/

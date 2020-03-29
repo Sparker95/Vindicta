@@ -24,7 +24,8 @@ this addBackpack _RandomBackpack;
 /*Weapon*/
 _RandomWeapon = selectRandom ["LIB_LeeEnfield_No4", "LIB_LeeEnfield_No1"];
 this addWeapon _RandomWeapon;
-this addWeapon "LIB_PzFaust_30m";
+_RandomWeapon2 = selectRandom ["LIB_PzFaust_30m", "fow_w_pzfaust_100", "LIB_PzFaust_60m", "LIB_Faustpatrone"];
+this addWeapon _RandomWeapon2;
 /*WeaponItem*/
 this addPrimaryWeaponItem "LIB_10Rnd_770x56";
 _RandomAtta = selectRandom ["LIB_ACC_No4_Mk2_Bayo", ""];
