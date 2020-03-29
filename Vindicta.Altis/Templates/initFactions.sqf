@@ -50,3 +50,4 @@
 ["Templates\Factions\GSG9.sqf", 				T_FACTION_Police	]		call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GM_WestGer_Police.sqf", 	T_FACTION_Police	]		call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CUP_RUS_Police.sqf", 		T_FACTION_Police	]		call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\GEXP_Police.sqf", 			T_FACTION_Police	]		call t_fnc_initializeTemplateFromFile;
