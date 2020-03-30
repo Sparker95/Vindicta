@@ -2844,7 +2844,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	METHOD("getPossibleActions") {
 		["ActionGarrisonDefend",
-		"ActionGarrisonLoadCargo",
+		//"ActionGarrisonLoadCargo",
 		"ActionGarrisonMountCrew",
 		"ActionGarrisonMountInfantry",
 		"ActionGarrisonMountCrewInfantry",
@@ -2853,10 +2853,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		//"ActionGarrisonMoveMountedToLocation",
 		"ActionGarrisonMoveCombined",
 		"ActionGarrisonMoveMounted",
-		"ActionGarrisonMoveMountedCargo",
+		//"ActionGarrisonMoveMountedCargo",
 		"ActionGarrisonRelax",
 		"ActionGarrisonRepairAllVehicles",
-		"ActionGarrisonUnloadCurrentCargo",
+		//"ActionGarrisonUnloadCurrentCargo",
 		"ActionGarrisonMergeVehicleGroups",
 		"ActionGarrisonSplitVehicleGroups",
 		"ActionGarrisonRebalanceVehicleGroups",

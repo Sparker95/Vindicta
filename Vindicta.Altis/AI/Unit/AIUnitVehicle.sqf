@@ -206,7 +206,19 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 			_assignedTurrets select _index select 0
 		};
 	} ENDMETHOD;
-	
+
+	/*
+	Method: getAssignedTurrets
+	Returns Array of <Unit> assigned to all turrets.
+	Returns: Array of <Unit>
+	*/
+	METHOD("getAssignedTurrets") {
+		params [["_thisObject", "", [""]]];
+		pr _assignedTurrets = T_GETV("assignedTurrets");
+		// Turret array is not initialized, therefore no turrets were assigned
+		if (isNil "_assignedTurrets") exitWith {[]};
+		_assignedTurrets
+	} ENDMETHOD;
 	/*
 	Method: getAssignedCargo
 	Returns <Unit> assigned to specified cargo index or "" if noone is assigned.
@@ -250,7 +262,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		pr _ret = [];
 		if (_returnDriver) then {
 			pr _driver = T_GETV("assignedDriver");
-			if (!isNil "_driver") then { _ret pushBack _driver};
+			if (!isNil "_driver") then { _ret pushBack _driver };
 		};
 		
 		if (_returnTurrets) then {

@@ -83,12 +83,12 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: nil
 	*/
-	
+
 	METHOD("handleUnitsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 	} ENDMETHOD;
-	
+
 	/*
 	Method: handleUnitsAdded
 	Handles what happened when units get added to its group while the group has some action operational.
@@ -102,12 +102,12 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: nil
 	*/
-	
+
 	METHOD("handleUnitsAdded") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 	} ENDMETHOD;
-	
+
 	METHOD("applyGroupBehaviour") {
 		params [P_THISOBJECT, ["_defaultFormation", "WEDGE"], ["_defaultBehaviour", "AWARE"], ["_defaultCombatMode", "YELLOW"], ["_defaultSpeedMode", "NORMAL"]];
 		private _hG = T_GETV("hG");
@@ -120,20 +120,17 @@ CLASS("ActionGroup", "Action")
 		private _speedMode = T_GETV("speedMode");
 		_hG setSpeedMode ([_speedMode, _defaultCombatMode] select (_speedMode isEqualTo ""));
 	} ENDMETHOD;
-	
+
 	METHOD("clearWaypoints") {
 		params [P_THISOBJECT];
-
 		private _hG = T_GETV("hG");
-		while { count waypoints _hG > 0 } do {
-			deleteWaypoint ((waypoints _hG)#0);
-		};
+		CALLSM1("Action", "_clearWaypoints", _hG);
 	} ENDMETHOD;
-			
+
 	METHOD("regroup") {
 		params [P_THISOBJECT];
-
 		private _hG = T_GETV("hG");
-		{ _x doFollow leader _hG } forEach units _hG;
+		CALLSM1("Action", "_regroup", _hG);
 	} ENDMETHOD;
+
 ENDCLASS;

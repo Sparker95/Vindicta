@@ -32,5 +32,13 @@
 #define GROUP_TYPE_PATROL			3
 #define GROUP_TYPE_BUILDING_SENTRY	4
 
+gDebugGroupTypeNames = [
+	"IDLE",
+	"VEH_STATIC",
+	"VEH_NON_STATIC",
+	"PATROL",
+	"BUILDING_SENTRY"
+];
+
 // Array with all group types
 #define GROUP_TYPE_ALL [0, 1, 2, 3, 4]

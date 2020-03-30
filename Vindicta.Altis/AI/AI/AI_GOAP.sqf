@@ -135,7 +135,7 @@ CLASS("AI_GOAP", "AI")
 			//pr _currentGoalSource = T_GETV("currentGoalSource");
 			pr _currentGoalParameters = T_GETV( "currentGoalParameters");
 			//pr _currentGoalActionState = T_GETV("currentGoalState");
-			pr _currentAction = T_GETV("currentAction");
+			//pr _currentAction = T_GETV("currentAction");
 			if (	_currentGoal == _goalClassName &&
 					//_currentGoalSource == _goalSource &&
 					_currentGoalParameters isEqualTo _goalParameters
@@ -211,13 +211,13 @@ CLASS("AI_GOAP", "AI")
 				T_SETV("currentGoalParameters", []);
 				//T_SETV("currentGoalState", -1); // -1 means there is no goal
 			};
-			
+
 			// Delete the current action if we had it
 			T_CALLM0("deleteCurrentAction");
-			
+
 			//diag_log format ["  most relevant goal: %1", _goalClassName];
 		};
-		
+
 		// Process the current action if we have it
 		pr _currentAction = T_GETV("currentAction");
 		if (_currentAction != "") then {
@@ -229,10 +229,10 @@ CLASS("AI_GOAP", "AI")
 			} else {
 				OOP_INFO_3("CURRENT ACTION: %1, subaction: %2, state: %3", _currentAction, _subaction, _actionState);
 			};
-			
+
 			// Set goal state			
 			//T_SETV("currentGoalState", _actionState);
-			
+
 			// If it's an external goal, set its action state in the external goal array
 			pr _goalSource = T_GETV("currentGoalSource");
 			if (_goalSource != _thisObject) then {
@@ -246,7 +246,7 @@ CLASS("AI_GOAP", "AI")
 					OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
 				};
 			};
-			
+
 			switch (_actionState) do {
 				case ACTION_STATE_COMPLETED : {
 					// Mark the current goal as completed
@@ -260,10 +260,10 @@ CLASS("AI_GOAP", "AI")
 					T_SETV("currentGoalSource", "");
 					T_SETV("currentGoalParameters", []);
 				};
-				
+
 				case ACTION_STATE_FAILED : {
 					// Probably we should replan our goal at the next iteration
-					T_CALLM0("deleteCurrentAction");;
+					T_CALLM0("deleteCurrentAction");
 					T_SETV("currentGoal", "");
 					T_SETV("currentGoalSource", "");
 					T_SETV("currentGoalParameters", []);
@@ -271,7 +271,7 @@ CLASS("AI_GOAP", "AI")
 
 				case ACTION_STATE_REPLAN : {
 					// Probably we should replan our goal at the next iteration
-					T_CALLM0("deleteCurrentAction");;
+					T_CALLM0("deleteCurrentAction");
 					T_SETV("currentGoal", "");
 					T_SETV("currentGoalSource", "");
 					T_SETV("currentGoalParameters", []);

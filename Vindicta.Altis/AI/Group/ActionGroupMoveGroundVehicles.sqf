@@ -57,7 +57,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		
 		pr _hG = T_GETV("hG");
 		pr _AI = T_GETV("AI");
-		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _group = GETV(_AI, "agent");
 		pr _allVehicleUnits = CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")};
 		pr _allVehicles = _allVehicleUnits apply {CALLM0(_x, "getObjectHandle")};
 		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
@@ -198,8 +198,24 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 				OOP_INFO_0("Arrived at destination");
 				_state = ACTION_STATE_COMPLETED
 			};
+
+			pr _group = GETV(T_GETV("AI"), "agent");
+			pr _leader = CALLM0(_group, "getLeader");
+			if (_leader != NULL_OBJECT) then {
+				if (CALLM0(_leader, "isAlive")) then {
+					pr _units = CALLM0(_group, "getUnits");
+					// If any units failed their goals
+					if(CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitFollowLeaderVehicle") || 
+						CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitMoveLeaderVehicle")) then {
+						_state = ACTION_STATE_FAILED;
+					};
+				} else {
+					// Fail if leader is not alive
+					_state = ACTION_STATE_FAILED;
+				};
+			} 
 		};
-		
+		T_SETV("state", _state);
 		_state
 	} ENDMETHOD;
 	

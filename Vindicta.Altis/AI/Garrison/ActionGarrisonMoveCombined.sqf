@@ -178,8 +178,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 			pr _state = CALLM0(_thisObject, "activateIfInactive");
 			
-			scopeName "s0";
-			
 			if (_state == ACTION_STATE_ACTIVE) then {
 			
 				pr _gar = T_GETV("gar");
@@ -200,28 +198,25 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
 				pr _infGroups = CALLM(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
 				
-				// Fail if any group has failed
-				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
-					_state = ACTION_STATE_FAILED;
-					breakTo "s0";
-				};
-				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _infGroups, "GoalGroupInfantryFollowGroundVehicles", "")) then {
-					_state = ACTION_STATE_FAILED;
-					breakTo "s0";
-				};
-				
-				// Succeed if all groups have completed the goal
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
-					OOP_INFO_0("All groups have arrived");
-					
-					// Set pos world state property
-					// todo fix this, implement AIGarrison.setVehiclesPos function
-					//pr _ws = GETV(_AI, "worldState");
-					//[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-					//[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
-					
-					_state = ACTION_STATE_COMPLETED;
-					breakTo "s0";
+				_state = switch true do {
+					// Fail if any group has failed
+					case (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")): {
+						ACTION_STATE_FAILED
+					};
+					case (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _infGroups, "GoalGroupInfantryFollowGroundVehicles", "")): {
+						ACTION_STATE_FAILED
+					};
+					// Succeed if all groups have completed the goal
+					case (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _vehGroups, "GoalGroupMoveGroundVehicles", "")): {
+						OOP_INFO_0("All groups have arrived");
+						
+						// Set pos world state property
+						// todo fix this, implement AIGarrison.setVehiclesPos function
+						//pr _ws = GETV(_AI, "worldState");
+						//[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+						//[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
+						ACTION_STATE_COMPLETED
+					};
 				};
 			};
 			

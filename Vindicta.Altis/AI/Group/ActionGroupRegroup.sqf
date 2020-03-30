@@ -23,36 +23,27 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT];
-		
+
 		// Set behaviour
-		//private _hG = GETV(_thisObject, "hG");
-		//_hG setBehaviour "AWARE";
-		//_hG setSpeedMode "NORMAL";
-		//{_x doFollow (leader _hG)} forEach (units _hG);
 		T_CALLM0("applyGroupBehaviour");
 		T_CALLM0("regroup");
 
-		// Set state
-		T_SETV("state", ACTION_STATE_ACTIVE);
-		
 		// Add goals to units
 		private _AI = T_GETV("AI");
 		private _group = GETV(_AI, "agent");
 		private _inf = CALLM0(_group, "getInfantryUnits");
+
 		{
 			private _unitAI = CALLM0(_x, "getAI");
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
 		} forEach _inf;
-		
-		// Set group combat mode
-		//private _hG = T_GETV("hG");
-		//private _combatMode = T_GETV("combatMode");
-		//_hG setCombatMode _combatMode;
-		//OOP_INFO_1("Setting combat mode: %1", _combatMode);
+
+		// Set state
+		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-		
+
 	} ENDMETHOD;
 	
 	// logic to run each update-step
@@ -60,13 +51,23 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");
-		
-		T_CALLM0("activateIfInactive");
-		
-		// This action is terminal because it's never over right now
-		
-		// Return the current state
-		ACTION_STATE_ACTIVE
+
+		private _AI = T_GETV("AI");
+		private _group = GETV(_AI, "agent");
+		private _inf = CALLM0(_group, "getInfantryUnits");
+
+		switch true do {
+			case (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _inf, "GoalUnitInfantryRegroup", _AI)): {
+				ACTION_STATE_FAILED;
+			};
+			case (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _inf, "GoalUnitInfantryRegroup", _AI)): {
+				ACTION_STATE_COMPLETED;
+			};
+			default {
+				T_CALLM0("activateIfInactive")
+			};
+		};
+
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied

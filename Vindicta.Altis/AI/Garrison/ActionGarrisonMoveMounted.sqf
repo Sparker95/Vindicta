@@ -11,7 +11,6 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 	VARIABLE("radius"); // Completion radius
 	VARIABLE("virtualRoute"); // VirtualRoute object
 
-	// ------------ N E W ------------
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
@@ -49,7 +48,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 
 		// Delete the virtual route object
 		pr _vr = T_GETV("virtualRoute");
-		if (_vr != "") then {
+		if (_vr != NULL_OBJECT) then {
 			DELETE(_vr);
 		};
 
@@ -58,7 +57,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT];
-		
+
 		OOP_INFO_0("ACTIVATE");
 
 		// Check if virtual route is ready
@@ -79,7 +78,9 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 
 			// Merge groups ready for convoy
 			pr _gar = T_GETV("gar");
-			//CALLM0(_gar, "mergeVehicleGroups");
+
+			// CALLM0(_gar, "mergeVehicleGroups");
+			// CALLM0(_gar, "rebalanceGroups");
 
 			// Give waypoint to the vehicle group
 			pr _AI = T_GETV("AI");
@@ -90,13 +91,13 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 			pr _garPos = CALLM0(_AI, "getPos");
 			CALLM1(_vr, "setPos", _garPos); // Update the virtual route with the proper garrison position
 			pr _route = CALLM0(_vr, "getAIWaypoints");
-			
+
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
 			if (count _vehGroups > 1) exitWith {
 				OOP_WARNING_0("More than one vehicle group in the garrison!");
 				ACTION_STATE_FAILED
 			};
-			
+
 			{
 				pr _group = _x;
 				pr _groupAI = CALLM0(_x, "getAI");
@@ -106,16 +107,16 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 					[TAG_MOVE_RADIUS, _radius],
 					[TAG_ROUTE, _route]
 				], _AI];
-				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
+				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 			} forEach _vehGroups;
-			
+
 			// Reset current location of this garrison
 			CALLM0(_gar, "detachFromLocation");
 			pr _ws = GETV(_AI, "worldState");
 			[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
 			pr _pos = CALLM0(_gar, "getPos");
 			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-			
+
 			// Give goals to infantry groups
 			pr _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
 			{
@@ -128,7 +129,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 
 			// Set state
 			T_SETV("state", ACTION_STATE_ACTIVE);
-			
+
 			// Return ACTIVE state
 			ACTION_STATE_ACTIVE
 		};
@@ -202,14 +203,13 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 
 				// Update position of this garrison object
 				pr _units = CALLM0(_gar, "getUnits");
-				pr _pos = T_GETV("pos");
 				pr _index = _units findIf {CALLM0(_x, "isAlive")};
 				if (_index != -1) then {
 					pr _unit = _units select _index;
 					pr _hO = CALLM0(_unit, "getObjectHandle");
-					_pos = getPos _hO;
+					pr _garPos = getPos _hO;
+					CALLM1(_AI, "setPos", _garPos);
 				};
-				CALLM1(_AI, "setPos", _pos);
 				pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
 
 				switch true do {
@@ -226,10 +226,12 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 						//[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
 						_state = ACTION_STATE_COMPLETED;
 					};
-					// Fail if any groups don't have the external goal
-					case (!CALLSM2("AI_GOAP", "allAgentsHaveExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles")): {
-						_state = ACTION_STATE_FAILED;
-					};
+					// // Fail if any groups don't have the external goal
+					// This shouldn't be possible, and we can't guarantee that goals are assigned yet, because
+					// it is done asynchronously to the GroupAI thread.
+					// case (!CALLSM2("AI_GOAP", "allAgentsHaveExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles")): {
+					// 	_state = ACTION_STATE_FAILED;
+					// };
 				};
 			};
 			
@@ -295,13 +297,23 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
+
+		// Update the virtual route position to reflect the garrisons real position
+		// (this is only accurate to the nearest waypoint)
+		pr _vr = T_GETV("virtualRoute");
+		pr _garPos = CALLM0(T_GETV("gar"), "getPos");
+		CALLM1(_vr, "setPos", _garPos);
 	} ENDMETHOD;
 
 	// Creates a new VirtualRoute object, deletes the old one
 	METHOD("createVirtualRoute") {
 		params [P_THISOBJECT];
 
-		private _gar = T_GETV("gar");
+		// Delete it if it exists already
+		private _vr = T_GETV("virtualRoute");
+		if(!isNil "_vr" && {_vr != NULL_OBJECT}) then {
+			DELETE(_vr);
+		};
 
 		// Create a new virtual route
 		private _gar = T_GETV("gar");
@@ -330,7 +342,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 
 		// Spawn vehicle groups on the road according to convoy positions
 		pr _vr = T_GETV("virtualRoute");
-		if (_vr == "" || !GETV(_vr, "calculated")) exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
+		if (_vr == NULL_OBJECT || !GETV(_vr, "calculated")) exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
 
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
@@ -389,8 +401,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 		true
 	} ENDMETHOD;
 
-		// Handle units/groups added/removed
-
+	// Handle units/groups added/removed
 	METHOD("handleGroupsAdded") {
 		params [P_THISOBJECT, ["_groups", [], [[]]]];
 		

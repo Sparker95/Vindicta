@@ -6,9 +6,7 @@ Garrison moves on available vehicles
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonMoveMountedCargo"
-
-CLASS(THIS_ACTION_NAME, "Action")
+CLASS("ActionGarrisonMoveMountedCargo", "Action")
 
 	VARIABLE("AI");
 	

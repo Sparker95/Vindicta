@@ -163,7 +163,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		if (_action != "") then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
-		pr _text = format ["%1\%2\%3", _unit, T_GETV("currentGoal"), _action];
+		pr _text = format ["%1\%2\%3\%4(%5)", _unit, _thisObject, T_GETV("currentGoal"), _action, gDebugActionStateText select GETV(_action, "state")];
 		_mrk setMarkerText _text;
 
 		_mrk setMarkerPos _pos;
@@ -201,6 +201,11 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 
 	METHOD("process") {
 		params [P_THISOBJECT];
+
+		if(T_GETV("markersEnabled")) then {
+			pr _unused = "";
+		};
+
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
 		T_CALLM0("_updateDebugMarkers");
 	} ENDMETHOD;

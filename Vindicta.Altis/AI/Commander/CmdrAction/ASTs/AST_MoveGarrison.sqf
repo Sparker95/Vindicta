@@ -45,7 +45,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 			P_AST_VAR("_targetVar"),
 			P_AST_VAR("_radiusVar")
 		];
-		
+
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
 		T_SETV("failGarrisonDead", _failGarrisonDead);

@@ -30,7 +30,7 @@ CLASS("GoalGarrisonMove", "Goal")
 		pr _border = CALLM0(_loc, "getBorder"); // [center, a, b, angle, isRectangle, c]
 		pr _minSize = (_border#1) min (_border#2);
 
-		(_minSize min 160) max 400 // Clamp it within some reasonable range
+		CLAMP(_minSize * 0.5, 50, 250) // Clamp it within some reasonable range
 	} ENDMETHOD;
 
 ENDCLASS;

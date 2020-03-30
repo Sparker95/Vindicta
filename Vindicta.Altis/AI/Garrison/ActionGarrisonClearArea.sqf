@@ -47,6 +47,9 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// CALLM0(_gar, "splitVehicleGroups");
 
 		// Rebalance groups, ensure all the vehicle groups have drivers, balance the infantry groups
+		// We do this explictly and not as an action precondition because we will be unbalancing the groups
+		// when we assign inf protection squads to vehicle groups
+		// TODO: add group protect action so we can use separate inf groups
 		CALLM0(_gar, "rebalanceGroups");
 
 		// Determine group size and type
@@ -86,12 +89,15 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 			private _totalEff = 0;
 			{
 				private _eff = CALLM0(_x, "getEfficiency");
-				_totalEff = _totalEff + _eff#T_EFF_soft + _eff#T_EFF_medium * 4 + _eff#T_EFF_armor * 8;
+				_totalEff = _totalEff + _eff#T_EFF_aSoft + _eff#T_EFF_aMedium * 4 + _eff#T_EFF_aArmor * 8;
 			} forEach _vics;
 			[
 				_totalEff,
 				_grp
 			]
+		} select {
+			// Only want combat capable vehicle groups for duties
+			_x#0 > 0
 		};
 		_vehGroups sort ASCENDING;
 		_vehGroups = _vehGroups apply {
@@ -160,45 +166,47 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// Clean up
 		CALLM0(_gar, "deleteEmptyGroups");
 
-		private _commonTags = [
-			[TAG_POS, _pos],
-			[TAG_OVERWATCH_ELEVATION, 20],
-			[TAG_BEHAVIOUR, "AWARE"],
-			[TAG_COMBAT_MODE, "RED"]
-		];
 
-		private _dDir = 360 / count _overwatch;
-		private _dir = random 360;
-		{// foreach _overwatch
-			pr _groupAI = CALLM0(_x, "getAI");
-			pr _args = if(_x in _vehGroupsOrig) then {
-				[
-					"GoalGroupVehicleOverwatchArea", 
-					0, 
+		if(count _overwatch > 0) then {
+			private _commonTags = [
+				[TAG_POS, _pos],
+				[TAG_OVERWATCH_ELEVATION, 20],
+				[TAG_BEHAVIOUR, "STEALTH"],
+				[TAG_COMBAT_MODE, "RED"]
+			];
+			private _dDir = 360 / count _overwatch;
+			private _dir = random 360;
+			{// foreach _overwatch
+				pr _groupAI = CALLM0(_x, "getAI");
+				pr _args = if(_x in _vehGroupsOrig) then {
 					[
-						[TAG_OVERWATCH_GRADIENT, 0.4],
-						[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
-						[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
-						[TAG_OVERWATCH_DIRECTION, _dir]
-					] + _commonTags,
-					_AI
-				]
-			} else {
-				[
-					"GoalGroupInfantryOverwatchArea", 
-					0, 
+						"GoalGroupVehicleOverwatchArea", 
+						0, 
+						[
+							[TAG_OVERWATCH_GRADIENT, 0.4],
+							[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
+							[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
+							[TAG_OVERWATCH_DIRECTION, _dir]
+						] + _commonTags,
+						_AI
+					]
+				} else {
 					[
-						[TAG_OVERWATCH_GRADIENT, 50],
-						[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
-						[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
-						[TAG_OVERWATCH_DIRECTION, _dir]
-					] + _commonTags,
-					_AI
-				]
-			};
-			_dir = _dir + _dDir;
-			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
-		} forEach _overwatch;
+						"GoalGroupInfantryOverwatchArea", 
+						0, 
+						[
+							[TAG_OVERWATCH_GRADIENT, 50],
+							[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
+							[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
+							[TAG_OVERWATCH_DIRECTION, _dir]
+						] + _commonTags,
+						_AI
+					]
+				};
+				_dir = _dir + _dDir;
+				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+			} forEach _overwatch;
+		};
 
 		{// foreach _sweep
 			pr _groupAI = CALLM0(_x, "getAI");

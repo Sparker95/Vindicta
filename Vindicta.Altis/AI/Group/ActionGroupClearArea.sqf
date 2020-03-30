@@ -146,7 +146,10 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [P_THISOBJECT];
-		
+
+		// Clear the generated waypoints
+		CALLM0("clearWaypoints");
+
 		// Delete given goals
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");

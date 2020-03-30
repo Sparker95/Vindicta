@@ -193,13 +193,16 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Update the markers
 		pr _mrk = _thisObject + MRK_GOAL;
-		
+
 		// Set text
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
-		pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
+
+		pr _text = format ["%1\%2\i%3v%4\%5\%6(%7)", _gar, _thisObject, CALLM0(_gar, "countInfantryUnits"), CALLM0(_gar, "countVehicleUnits"), T_GETV("currentGoal"), _action, gDebugActionStateText select GETV(_action, "state")];
+
+		// pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
 		_mrk setMarkerText _text;
 		
 		// Set pos
@@ -268,6 +271,13 @@ CLASS("AIGarrison", "AI_GOAP")
 		params [P_THISOBJECT, P_BOOL("_accelerate")];
 		
 		pr _gar = T_GETV("agent");
+
+#ifdef DEBUG_GOAL_MARKERS
+		if(T_GETV("groupMarkersEnabled")) then {
+			pr _unused = "";
+		};
+#endif
+		FIX_LINE_NUMBERS()
 
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);

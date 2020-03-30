@@ -120,7 +120,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		pr _assignedTargetsRadius = GETV(_AI, "assignedTargetsRadius");
 		// pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");
 		if (count _knownTargets > 0 || 
-			{_assignedTargetsRadius != 0 && { GETV(_AI, "assignedTargetsPos") distance2D CALLM0(_AI, "getPos") < _assignedTargetsRadius + 1000 }}
+			{_assignedTargetsRadius != 0 && 
+			{ GETV(_AI, "assignedTargetsPos") distance2D CALLM0(_AI, "getPos") < MAXIMUM(750, _assignedTargetsRadius + 500) } }
 		/*&& (count _knownTargets) > 0*/) then {
 			/*
 			pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");

@@ -564,5 +564,28 @@ CLASS("Action", "MessageReceiver")
 		
 		nil
 	} ENDMETHOD;
+
+	// Helper functions
+	STATIC_METHOD("_clearWaypoints") {
+		params [P_THISCLASS, P_GROUP("_hG")];
+		// Add a dummy waypoint as deleting all waypoints results in a dummy one being created later which messes
+		// with waypoint ordering
+		if(isNull _hG) exitWith {
+			// No group
+		};
+		private _pos = position leader _hG;
+		private _wp = _hG addWaypoint [_pos, 0];
+		_wp setWaypointType "MOVE";
+		while { count waypoints _hG > 1 } do {
+			deleteWaypoint ((waypoints _hG)#0);
+		};
+	} ENDMETHOD;
 	
+	STATIC_METHOD("_regroup") {
+		params [P_THISCLASS, P_GROUP("_hG")];
+		if(isNull _hG) exitWith {
+			// No group
+		};
+		{ _x stop false; _x doFollow leader _hG; } forEach units _hG;
+	} ENDMETHOD;
 ENDCLASS;

@@ -50,6 +50,8 @@ CLASS("AIGroup", "AI_GOAP")
 		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, true] call ws_setPropertyValue;
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GROUP_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+		// [_ws, WSP_GROUP_DRIVERS_ASSIGNED, false] call ws_setPropertyValue;
+		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, false] call ws_setPropertyValue;
 		SETV(_thisObject, "worldState", _ws);
 		
 		// Set process interval
@@ -174,7 +176,8 @@ CLASS("AIGroup", "AI_GOAP")
 		if (_action != "") then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
-		pr _text = format ["%1\i:%2\v:%3\%4\%5", _grp, count CALLM0(_grp, "getInfantryUnits"), count CALLM0(_grp, "getVehicleUnits"), T_GETV("currentGoal"), _action];
+		pr _grpType = CALLM0(_grp, "getType");
+		pr _text = format ["%1\%2\%3\i%4v%5\%6\%7(%8)", _grp, _thisObject,  gDebugGroupTypeNames#_grpType, count CALLM0(_grp, "getInfantryUnits"), count CALLM0(_grp, "getVehicleUnits"), T_GETV("currentGoal"), _action, gDebugActionStateText select GETV(_action, "state")];
 		_mrk setMarkerText _text;
 
 		_mrk setMarkerPos (_pos vectorAdd [5, 5, 5]);
@@ -212,6 +215,12 @@ CLASS("AIGroup", "AI_GOAP")
 
 	METHOD("process") {
 		params [P_THISOBJECT];
+
+		if(T_GETV("unitMarkersEnabled")) then {
+			pr _unused = "";
+		};
+
+		FIX_LINE_NUMBERS()
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
 		T_CALLM0("_updateDebugMarkers");
 	} ENDMETHOD;

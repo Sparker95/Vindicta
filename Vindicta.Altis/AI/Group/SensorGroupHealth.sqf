@@ -30,14 +30,13 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		pr _ws = GETV(_AI, "worldState");
 
 		// Check if vehicles need unflipping
-		pr _vehicles = (
-			(CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")}
-		);
-		pr _allTouchingGround = (_vehicles findIf {[_x] call misc_fnc_isVehicleFlipped}) == -1;
+		pr _vehicleUnits = CALLM0(_group, "getVehicleUnits");
+		pr _vehicleHandles = _vehicleUnits apply { CALLM0(_x, "getObjectHandle") };
+		pr _allTouchingGround = (_vehicleHandles findIf {[_x] call misc_fnc_isVehicleFlipped}) == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, _allTouchingGround] call ws_setPropertyValue;
 
 		// Check if vehicles need repairs
-		pr _allRepaired = (_vehicles findIf {! (canMove _x)}) == -1;
+		pr _allRepaired = (_vehicleHandles findIf {! (canMove _x)}) == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, _allRepaired] call ws_setPropertyValue;
 
 		// Check if there are any null objects
@@ -54,14 +53,40 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		pr _allInfMounted = (_infantryHandles findIf { vehicle _x == _x }) == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 
-		pr _infantryAI = _infantryUnits apply{ CALLM0(_x, "getAI") };
-		pr _allCrewHandles = _infantryAI select { 
-			CALLM0(_x, "getAssignedVehicleRole") in ["DRIVER", "TURRET"]
-		} apply {
-			GETV(_x, "hO")
+
+		//pr _allCrewMounted = (_allCrewHandles findIf { vehicle _x == _x }) == NOT_FOUND;
+		CALLM0(_group, "getRequiredCrew") params ["_reqDrivers", "_reqTurrets"];
+
+		pr _allCrewMounted = if(_reqDrivers > 0 || _reqTurrets > 0) then {
+			pr _infantryAI = _infantryUnits apply { CALLM0(_x, "getAI") };
+			pr _allMountedDrivers = _infantryAI select { 
+				CALLM0(_x, "getAssignedVehicleRole") isEqualTo "DRIVER"
+			} apply {
+				GETV(_x, "hO")
+			} select {
+				vehicle _x != _x && {driver vehicle _x == _x}
+			};
+
+			pr _allTurretOperators = _infantryAI select { 
+				CALLM0(_x, "getAssignedVehicleRole") isEqualTo "TURRET"
+			} apply {
+				GETV(_x, "hO")
+			} select {
+				vehicle _x != _x // && {_x in (fullCrew [vehicle _x, "Turret", false] apply { _x#0 })} This doesn't work for some reason, we will just assume if they are mounted they are in the correct seat...
+			};
+			pr _infCount = count _infantryUnits;
+			// All possible driving positions are filled
+			pr _driversMounted = MINIMUM(_infCount, _reqDrivers) == count _allMountedDrivers;
+			// All possible turret positions are filled
+			pr _turretOperatorsMounted = MINIMUM(_infCount - _reqDrivers, _reqTurrets) == count _allTurretOperators;
+			_driversMounted && _turretOperatorsMounted
+		} else {
+			true
 		};
-		pr _allCrewMounted = (_allCrewHandles findIf { vehicle _x == _x }) == NOT_FOUND;
+
 		[_ws, WSP_GROUP_ALL_CREW_MOUNTED, _allCrewMounted] call ws_setPropertyValue;
+		// [_ws, WSP_GROUP_DRIVERS_ASSIGNED, _driversAssigned] call ws_setPropertyValue;
+		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, _turretsAssigned] call ws_setPropertyValue;
 
 		// Check if all infantry units are in proper group
 		// Sometimes units get ungrouped when entering vehicles >_< WTF this shit is so annoying, BIS why do you make broken things everywhere
