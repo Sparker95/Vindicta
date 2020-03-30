@@ -190,6 +190,7 @@
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
+#define P_GROUP(paramNameStr) [paramNameStr, grpNull, [grpNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
 #define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
