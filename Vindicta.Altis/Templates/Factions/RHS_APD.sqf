@@ -22,9 +22,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_default, ["APD_2"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["RHS_POLICE_1", "RHS_POLICE_2", "RHS_POLICE_3", "RHS_POLICE_4", "RHS_POLICE_5", "RHS_POLICE_6", "RHS_POLICE_7", "RHS_POLICE_8", "RHS_POLICE_9", "RHS_POLICE_10"]];
-_inf set [T_INF_TL, ["RHS_POLICE_1", "RHS_POLICE_2", "RHS_POLICE_3", "RHS_POLICE_4", "RHS_POLICE_5", "RHS_POLICE_6", "RHS_POLICE_7", "RHS_POLICE_8", "RHS_POLICE_9", "RHS_POLICE_10"]];
-_inf set [T_INF_officer, ["RHS_POLICE_1", "RHS_POLICE_2", "RHS_POLICE_3", "RHS_POLICE_4", "RHS_POLICE_5", "RHS_POLICE_6", "RHS_POLICE_7", "RHS_POLICE_8", "RHS_POLICE_9", "RHS_POLICE_10"]];
+_inf set [T_INF_SL, ["RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police_4", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10"]];
+_inf set [T_INF_TL, ["RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police_4", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10"]];
+_inf set [T_INF_officer, ["RHS_police_officer", "RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police_4", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10"]];
 /*
 _inf set [T_INF_GL, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_rifleman, ["B_GEN_Soldier_F"]];
