@@ -98,7 +98,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			T_SETV("eventId", _eventId);
 		};
 
-		T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
+		T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD * 3);
 		T_SETV("roadsToTry", []);
 		T_SETV("stuckCounter", 0);
 
@@ -159,21 +159,27 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			T_SETV("remainingRoute", _remainingRoute)
 		};
 
-		if(count _remainingRoute > 0) then {
-			if(_existingWPIdx != NOT_FOUND) then {
-				pr _currWP = (_existingWPs#_existingWPIdx);
-				if(_hO distance getWPPos _currWP < MOVE_WP_DIST) then {
-					pr _nextPos = _remainingRoute deleteAt 0;
-					(_existingWPs#_existingWPIdx) setWPPos ZERO_HEIGHT(_nextPos);
+		if(_existingWPIdx != NOT_FOUND) then {
+			pr _currWP = (_existingWPs#_existingWPIdx);
+			if(_hO distance getWPPos _currWP < MOVE_WP_DIST) then {
+				pr _nextPos = if(count _remainingRoute > 0) then {
+				 	_remainingRoute deleteAt 0
+				} else {
+					T_GETV("pos")
 				};
-			} else {
-				pr _nextPos = _remainingRoute deleteAt 0;
-				pr _wp = _hG addWaypoint [ZERO_HEIGHT(_nextPos), 0];
-				_wp setWaypointType "MOVE";
-				_wp setWaypointCompletionRadius 0;
-				_wp setWaypointName MOVE_WP_NAME;
-				_hG setCurrentWaypoint _wp;
+				(_existingWPs#_existingWPIdx) setWPPos ZERO_HEIGHT(_nextPos);
 			};
+		} else {
+			pr _nextPos = if(count _remainingRoute > 0) then {
+				_remainingRoute deleteAt 0
+			} else {
+				T_GETV("pos")
+			};
+			pr _wp = _hG addWaypoint [ZERO_HEIGHT(_nextPos), 0];
+			_wp setWaypointType "MOVE";
+			_wp setWaypointCompletionRadius 0;
+			_wp setWaypointName MOVE_WP_NAME;
+			_hG setCurrentWaypoint _wp;
 		};
 
 		// Give waypoints to move
@@ -397,7 +403,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			};
 		} else {
 			// Reset the timer
-			T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
+			T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD * 3);
 			T_SETV("stuckCounter", 0);
 			T_SETV("roadsToTry", []);
 		};
