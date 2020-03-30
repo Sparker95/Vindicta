@@ -9,11 +9,11 @@ The whole group regroups and gets some waypoints to clear the area
 
 
 CLASS("ActionGroupClearArea", "ActionGroup")
-	
+
 	VARIABLE("pos");
 	VARIABLE("radius");
 	VARIABLE("inCombat");
-	
+
 	// ------------ N E W ------------
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
@@ -109,17 +109,17 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		ACTION_STATE_ACTIVE
 
 	} ENDMETHOD;
-	
+
 	// logic to run each update-step
 	METHOD("process") {
 		params [P_THISOBJECT];
-		
+
 		T_CALLM0("failIfEmpty");
-		
+
 		T_CALLM0("activateIfInactive");
-		
+
 		// This action is terminal because it's never over right now
-		
+
 		// Delete all waypoints when we know about some enemies
 		T_PRVAR(hG);
 		if ((behaviour (leader _hG)) == "COMBAT") then {
@@ -138,7 +138,6 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		};
 		//ACTION_STATE_ACTIVE
 
-
 		// Return the current state
 		T_GETV("state")
 	} ENDMETHOD;
@@ -148,7 +147,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		params [P_THISOBJECT];
 
 		// Clear the generated waypoints
-		CALLM0("clearWaypoints");
+		T_CALLM0("clearWaypoints");
 
 		// Delete given goals
 		pr _AI = T_GETV("AI");
@@ -158,7 +157,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
 		} forEach _inf;
-		
+
 	} ENDMETHOD;
 
 ENDCLASS;
