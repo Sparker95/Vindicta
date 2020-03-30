@@ -193,14 +193,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		// Select leader if needed
 		private _leader = _data select GROUP_DATA_ID_LEADER;
-		if (_leader == "") then {
-			private _infIdx = _unitsToMove findIf { CALLM0(_x select 0, "isInfantry") };
-			if (_infIdx != NOT_FOUND) then {
-				private _newLeader = _unitsToMove#_infIdx#0;
-				// We have no leader yet and this seems to be the first infantry unit in the group
-				// So he will be our leader from now!
-				CALLM1(_thisObject, "setLeader", _newLeader);
-			};
+		if (_leader == NULL_OBJECT) then {
+			T_CALLM0("_selectNextLeader");
 		};
 
 		count _unitsToMove
@@ -279,7 +273,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		// Select a new leader if the removed unit is the current leader
 		if ((_data select GROUP_DATA_ID_LEADER) == _unit) then {
-			CALLM0(_thisObject, "_selectNextLeader");
+			T_CALLM0("_selectNextLeader");
 		};
 	} ENDMETHOD;
 
@@ -466,7 +460,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Sets the leader of this group to a specified Unit. The Unit must belong to this group.
 	*/
 	METHOD("setLeader") {
-		params ["_thisObject", ["_unit", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		pr _data = T_GETV("data");
 
@@ -474,29 +468,33 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Already set
 		};
 
-		if (_unit in _data#GROUP_DATA_ID_UNITS) then {
-			if (_data#GROUP_DATA_ID_SPAWNED) then {
-				pr _hO = CALLM0(_unit, "getObjectHandle");
-				if (isNull _hO) then {
-					OOP_ERROR_1("Unit %1 is null object!", _unit);
-					CALLM0(_thisObject, "_selectNextLeader"); // Select a random leader
-				} else {
-					pr _hG = _data#GROUP_DATA_ID_GROUP_HANDLE;
-					_hG selectLeader _hO;
-					_data set [GROUP_DATA_ID_LEADER, _unit];
-				};
+		if(!(_unit in _data#GROUP_DATA_ID_UNITS)) exitWith {
+			OOP_ERROR_2("Unit %1 cannot lead group %2 as it doesn't belong to it", _unit, _thisObject);
+		};
+
+		if(!CALLM0(_unit, "isInfantry")) exitWith {
+			OOP_ERROR_2("Unit %1 cannot lead group %2 as it isn't infantry", _unit, _thisObject);
+		};
+		
+		if (_data#GROUP_DATA_ID_SPAWNED) then {
+			pr _hO = CALLM0(_unit, "getObjectHandle");
+			if (isNull _hO) then {
+				OOP_ERROR_1("Unit %1 is null object!", _unit);
+				T_CALLM0("_selectNextLeader"); // Select a new leader
 			} else {
+				pr _hG = _data#GROUP_DATA_ID_GROUP_HANDLE;
+				_hG selectLeader _hO;
 				_data set [GROUP_DATA_ID_LEADER, _unit];
 			};
 		} else {
-			OOP_ERROR_2("Unit %1 does not belong to group %2", _unit, _thisObject);
+			_data set [GROUP_DATA_ID_LEADER, _unit];
 		};
 	} ENDMETHOD;
 
 	// Selects the next leader when the current one is removed or whatever
 	// If there is no more infantry, it sets leader to NULL_OBJECT (no leader)
 	METHOD("_selectNextLeader") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
 		pr _infUnits = T_CALLM0("getInfantryUnits");
@@ -505,10 +503,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			_data set [GROUP_DATA_ID_LEADER, NULL_OBJECT];
 			NULL_OBJECT
 		} else {
-			pr _leader = _infUnits select 0;
+			pr _leader = _infUnits#0;
 
-			if (_data select GROUP_DATA_ID_SPAWNED) then {
-				pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			if (_data#GROUP_DATA_ID_SPAWNED) then {
+				pr _hG = _data#GROUP_DATA_ID_GROUP_HANDLE;
 				pr _hO = CALLM0(_leader, "getObjectHandle");
 				if (isNull _hO) then {
 					OOP_ERROR_1("Unit %1 is null object!", _leader);
@@ -525,11 +523,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	// All the units in the group have just been spawned so we must select the right leader
 	METHOD("_selectLeaderOnSpawn") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
 		pr _leader = _data select GROUP_DATA_ID_LEADER;
-		if (_leader == "") exitWith {};
+		if (_leader == NULL_OBJECT) exitWith {};
 		pr _hO = CALLM0(_leader, "getObjectHandle");
 		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
 		_hG selectLeader _hO;

@@ -371,11 +371,8 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
 
 				// Make leader the first human in the group
-				pr _units = CALLM0(_x, "getUnits");
-				pr _index = _units findIf {CALLM0(_x, "isInfantry")};
-				if (_index != -1) then {
-					CALLM1(_x, "setLeader", _units select _index);
-				};
+				CALLM0(_x, "_selectNextLeader");
+
 				_currentIndex = _currentIndex + _nVehThisGroup;
 			} else {
 				pr _posAndDirThisGroup = _posAndDir select [0, 1];
