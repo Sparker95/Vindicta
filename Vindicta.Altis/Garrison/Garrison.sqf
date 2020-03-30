@@ -2487,11 +2487,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		{// foreach _vehGroups
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
-			pr _nInf = count CALLM0(_x, "getInfantryUnits");
+			pr _infUnits = CALLM0(_x, "getInfantryUnits");
+			//pr _nInf = count _infUnits;
 			
 			OOP_INFO_3("Analyzing vehicle group: %1, required drivers: %2, required turret operators: %3", _group, _nDrivers, _nTurrets);
 			
-			pr _nMoreUnitsRequired = _nDrivers + _nTurrets - _nInf;
+			pr _nMoreUnitsRequired = _nDrivers + _nTurrets - count _infUnits;
 			if (_nMoreUnitsRequired > 0) then {
 				while {_nMoreUnitsRequired > 0 && (count _freeUnits > 0)} do {
 					CALLM1(_group, "addUnit", _freeUnits deleteAt 0);
@@ -2511,9 +2512,9 @@ CLASS("Garrison", "MessageReceiverEx");
 					};
 					
 					// Move the units
-					pr _groupUnits = CALLM0(_group, "getUnits");
-					while {_nMoreUnitsRequired < 0} do {
-						CALLM1(_receivingGroup, "addUnit", _groupUnits select ((count _groupUnits) - 1));
+					//pr _groupUnits = CALLM0(_group, "getUnits");
+					while { _nMoreUnitsRequired < 0 && {count _infUnits > 0} } do {
+						CALLM1(_receivingGroup, "addUnit", _infUnits deleteAt 0);
 						_nMoreUnitsRequired = _nMoreUnitsRequired + 1;
 					};
 				};
