@@ -375,20 +375,20 @@ CLASS("Storage", "")
 
 					T_PRVAR(version);
 					if (!CALLM2(_refLoaded, "preDeserialize", _thisObject, _version)) exitWith {	// Predeserialize
-						OOP_ERROR_1("preDeserialize failed for %1", _refLoaded);
-						OOP_ERROR_1("  value: %1", _serial);
+						OOP_WARNING_1("preDeserialize failed for %1", _refLoaded);
+						OOP_WARNING_1("  value: %1", _serial);
 						NULL_OBJECT
 					};
 
 					if (!CALLM2(_refLoaded, "deserializeFromStorage", _serial, _version)) exitWith {			// Deserialize
-						OOP_ERROR_1("deserialize failed for %1", _refLoaded);
-						OOP_ERROR_1("  value: %1", _serial);
+						OOP_WARNING_1("deserialize failed for %1", _refLoaded);
+						OOP_WARNING_1("  value: %1", _serial);
 						NULL_OBJECT
 					};
 
 					if(!CALLM2(_refLoaded, "postDeserialize", _thisObject, _version)) exitWith {	// PostDeserialize
-						OOP_ERROR_1("postDeserialize failed for %1", _refLoaded);
-						OOP_ERROR_1("  value: %1", _serial);
+						OOP_WARNING_1("postDeserialize failed for %1", _refLoaded);
+						OOP_WARNING_1("  value: %1", _serial);
 						NULL_OBJECT
 					};
 

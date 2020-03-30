@@ -877,7 +877,7 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 
 		// Variable might be not initialized
 		if (isNil {T_GETV("shownOnMap")}) exitWith {
-			OOP_ERROR_0("showOnMap: shownOnMap is nil!");
+			OOP_WARNING_0("showOnMap: shownOnMap is nil!");
 		};
 
 		if (_show) then {
