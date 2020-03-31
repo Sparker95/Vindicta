@@ -29,7 +29,7 @@ _array set [T_REQUIRED_ADDONS, [
 		"ifa3_comp_fow", 
 		"ifa3_comp_fow_ace_settings", 
 		"sab_compat_ace"
-		]]; // 																				Addons required to play this template
+		]]; // 																			Addons required to play this template
 
 /* Infantry unit classes */
 _inf = +(tDefault select T_INF);
