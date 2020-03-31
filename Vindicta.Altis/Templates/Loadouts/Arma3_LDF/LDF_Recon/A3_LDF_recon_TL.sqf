@@ -46,3 +46,5 @@ this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "NVGogglesB_blk_F";
 this linkItem "Rangefinder";
+
+[this,"EAF_5thRegiment"] call BIS_fnc_setUnitInsignia;
