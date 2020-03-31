@@ -1,26 +1,25 @@
-/*
- ██████╗██╗██╗   ██╗██╗██╗     ██╗ █████╗ ███╗   ██╗
-██╔════╝██║██║   ██║██║██║     ██║██╔══██╗████╗  ██║
-██║     ██║██║   ██║██║██║     ██║███████║██╔██╗ ██║
-██║     ██║╚██╗ ██╔╝██║██║     ██║██╔══██║██║╚██╗██║
-╚██████╗██║ ╚████╔╝ ██║███████╗██║██║  ██║██║ ╚████║
- ╚═════╝╚═╝  ╚═══╝  ╚═╝╚══════╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
- http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=Civilian
 
- Updated: March 2020 by Marvis
-*/
+// ██████╗██╗██╗   ██╗██╗██╗     ██╗ █████╗ ███╗   ██╗
+//██╔════╝██║██║   ██║██║██║     ██║██╔══██╗████╗  ██║
+//██║     ██║██║   ██║██║██║     ██║███████║██╔██╗ ██║
+//██║     ██║╚██╗ ██╔╝██║██║     ██║██╔══██║██║╚██╗██║
+//╚██████╗██║ ╚████╔╝ ██║███████╗██║██║  ██║██║ ╚████║
+// ╚═════╝╚═╝  ╚═══╝  ╚═╝╚══════╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
+//http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=Civilian
+
+//Updated: March 2020 by Marvis
 
 _array = [];
 
 _array set [T_SIZE-1, nil]; //Make an array having the size equal to the number of categories first
 
-_array set [T_NAME, "tCivilian"]; // 						        Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla Altis civilians."]; // 			Template display description
-_array set [T_DISPLAY_NAME, "Arma 3 Altis Civilians"]; // 			Template display name
-_array set [T_FACTION, T_FACTION_Civ]; // 						    Faction type
-_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 			Addons required to play this template
+_array set [T_NAME, "tCivilian"];                           //Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "Vanilla Altis civilians."];     //Template display description
+_array set [T_DISPLAY_NAME, "Arma 3 Altis Civilians"];      //Template display name
+_array set [T_FACTION, T_FACTION_Civ];                      //Faction type
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];        //Addons required to play this template
 
-/* Arsenal */
+//==== Arsenal ====
 _arsenal = [];
 _arsenal resize T_ARSENAL_SIZE;
 _arsenal set[T_ARSENAL_primary, []];
@@ -267,7 +266,7 @@ _arsenal set[T_ARSENAL_headgear, [
     "H_StrawHat_dark"
 ]];
 
-/* Infantry unit classes */
+//==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
 _inf = _inf apply { [] };
@@ -285,7 +284,7 @@ _inf set [T_INF_survivor, [
     "Arma3_CIVILIAN_Militant_1"
 ]];
 
-/* Vehicle classes */
+//==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, [
@@ -308,9 +307,10 @@ _veh set [T_VEH_default, [
     "C_Van_02_transport_F",     1
 ]];
 
-/* Cargo */
+//==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
 
+//==== Arrays ====
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, []];
@@ -318,4 +318,4 @@ _array set [T_CARGO, _cargo];
 _array set [T_GROUP, []];
 _array set [T_ARSENAL, _arsenal];
 
-_array /* END OF TEMPLATE */
+_array

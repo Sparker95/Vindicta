@@ -1,14 +1,14 @@
-/*
- ██████╗██╗██╗   ██╗██╗██╗     ██╗ █████╗ ███╗   ██╗
-██╔════╝██║██║   ██║██║██║     ██║██╔══██╗████╗  ██║
-██║     ██║██║   ██║██║██║     ██║███████║██╔██╗ ██║
-██║     ██║╚██╗ ██╔╝██║██║     ██║██╔══██║██║╚██╗██║
-╚██████╗██║ ╚████╔╝ ██║███████╗██║██║  ██║██║ ╚████║
- ╚═════╝╚═╝  ╚═══╝  ╚═╝╚══════╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
- http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=Civilian
 
- Updated: March 2020 by Marvis
-*/
+// ██████╗██╗██╗   ██╗██╗██╗     ██╗ █████╗ ███╗   ██╗
+//██╔════╝██║██║   ██║██║██║     ██║██╔══██╗████╗  ██║
+//██║     ██║██║   ██║██║██║     ██║███████║██╔██╗ ██║
+//██║     ██║╚██╗ ██╔╝██║██║     ██║██╔══██║██║╚██╗██║
+//╚██████╗██║ ╚████╔╝ ██║███████╗██║██║  ██║██║ ╚████║
+// ╚═════╝╚═╝  ╚═══╝  ╚═╝╚══════╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
+// http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=Civilian
+//
+//Updated: March 2020 by Marvis
+
 
 _civUniforms = [
 	"U_LIB_CIV_Assistant",
@@ -121,10 +121,10 @@ _array = [];
 
 _array resize T_SIZE; //Make an array having the size equal to the number of categories first
 
-_array set [T_NAME, "tWW2_Civilian"]; // 						Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "WW2 40s Civilians"]; // 			Template display description
-_array set [T_DISPLAY_NAME, "WW2 Civilians"]; // 				Template display name
-_array set [T_FACTION, T_FACTION_Civ]; // 						Faction type
+_array set [T_NAME, "tWW2_Civilian"]; 				//Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "WW2 40s Civilians"]; 	//Template display description
+_array set [T_DISPLAY_NAME, "WW2 Civilians"]; 		//Template display name
+_array set [T_FACTION, T_FACTION_Civ]; 				//Faction type
 _array set [T_REQUIRED_ADDONS, [
 		"A3_Characters_F", 
 		"ww2_assets_c_characters_core_c", 
@@ -137,15 +137,15 @@ _array set [T_REQUIRED_ADDONS, [
 		"ifa3_comp_fow", 
 		"ifa3_comp_fow_ace_settings", 
 		"sab_compat_ace"
-		]]; // 													Addons required to play this template
+		]]; 										//Addons required to play this template
 
-/* API */
+//==== API ====
 _api = [];
 _api resize T_API_SIZE;
 _api set [T_API_fnc_init, {}];
 _array set [T_API, _api];
 
-/* Undercover */
+//==== Undercover ====
 _uc = [];
 _uc resize T_UC_SIZE;
 _uc set[T_UC_uniforms, +_civUniforms];
@@ -154,7 +154,7 @@ _uc set[T_UC_headgear, +_civHeadgear];
 _uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
 _array set [T_UC, _uc];
 
-/* Arsenal */
+//==== Arsenal ====
 _arsenal = [];
 _arsenal resize T_ARSENAL_SIZE;
 _arsenal set[T_ARSENAL_primary, []];
@@ -187,7 +187,7 @@ _arsenal set[T_ARSENAL_facewear, +_civFacewear];
 _arsenal set[T_ARSENAL_headgear, +_civHeadgear];
 _array set [T_ARSENAL, _arsenal];
 
-/* Infantry unit classes */
+//==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_default, ["I_L_Looter_SG_F"]];
@@ -205,10 +205,10 @@ _inf set [T_INF_survivor, [
 ]];
 _array set [T_INF, _inf];
 
-/* Vehicle classes */
+//==== Vehicles ====
 _veh = [];
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, _civVehicles];
 _array set [T_VEH, _veh];
 
-_array /* END OF TEMPLATE */
+_array
