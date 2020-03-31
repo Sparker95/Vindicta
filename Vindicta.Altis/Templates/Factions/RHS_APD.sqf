@@ -1,23 +1,30 @@
 /*
-POLICE templates for ARMA III
+ █████╗ ██████╗ ██████╗ 
+██╔══██╗██╔══██╗██╔══██╗
+███████║██████╔╝██║  ██║
+██╔══██║██╔═══╝ ██║  ██║
+██║  ██║██║     ██████╔╝
+╚═╝  ╚═╝╚═╝     ╚═════╝ 
+http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=APD
+
+Updated: March 2020 by Marvis
 */
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
+_array set [T_SIZE-1, nil];
 
-// Name, description, faction, addons, etc
-_array set [T_NAME, "tRHS_APD"];
-_array set [T_DESCRIPTION, "Altis Police Department. Uses RHS. Made by MatrikSky"];
-_array set [T_DISPLAY_NAME, "RHS APD (USAF)"];
-_array set [T_FACTION, T_FACTION_Police];
+_array set [T_NAME, "tRHS_APD"]; // 															Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "Altis Police Department. Uses RHS. Made by MatrikSky"]; // 			Template display description
+_array set [T_DISPLAY_NAME, "RHS APD (USAF)"]; // 												Template display name
+_array set [T_FACTION, T_FACTION_Police]; // 													Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
-	"rhsusf_c_troops",			// RHSUSAF
+	"rhsusf_c_troops",			//RHSUSAF
 	"demian2435_police_mod",	//Demian2535 Police Mod
 	"Altis_PD"					//APD Uniforms
-]];
+]]; // 																							Addons required to play this template
 
-//==== Infantry ====
+/* Infantry unit classes */
 _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_default, ["APD_2"]];					//Default infantry if nothing is found
@@ -25,62 +32,28 @@ _inf set [T_INF_default, ["APD_2"]];					//Default infantry if nothing is found
 _inf set [T_INF_SL, ["RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police_4", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10"]];
 _inf set [T_INF_TL, ["RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police_4", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10"]];
 _inf set [T_INF_officer, ["RHS_police_officer", "RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police_4", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10"]];
-/*
-_inf set [T_INF_GL, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_rifleman, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_marksman, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_sniper, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_spotter, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_exp, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_ammo, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_LAT, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_AT, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_AA, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_LMG, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_HMG, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_medic, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_engineer, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_crew, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_crew_heli, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_pilot, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_pilot_heli, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_survivor, ["B_GEN_Soldier_F"]];
-_inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
-*/
 
-//==== Vehicles ====
+/* Vehicle classes */
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_DEFAULT, ["demian2435_police_car"]];
 _veh set [T_VEH_car_unarmed, ["demian2435_police_car", "demian2435_police_Hatchback", "demian2435_police_offroad"]];
 
-//==== Drones ====
+/* Drone classes */
 _drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
-//_drone set [T_DRONE_DEFAULT, ["O_UAV_01_F"]];
 
-//_drone set [T_DRONE_UGV_unarmed, ["O_UGV_01_F"]];
-//_drone set [T_DRONE_UGV_armed, ["O_UGV_01_rcws_F"]];
-//_drone set [T_DRONE_plane_attack, ["O_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_plane_unarmed, ["O_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_heli_attack, ["O_T_UAV_04_CAS_F"]];
-//_drone set [T_DRONE_quadcopter, ["O_UAV_01_F"]];
-//_drone set [T_DRONE_designator, ["O_Static_Designator_02_F"]];
-//_drone set [T_DRONE_stat_HMG_low, ["O_HMG_01_A_F"]];
-//_drone set [T_DRONE_stat_GMG_low, ["O_GMG_01_A_F"]];
-//_drone set [T_DRONE_stat_AA, ["O_SAM_System_04_F"]];
-
-//==== Cargo ====
+/* Cargo classes */
 _cargo = +(tDefault select T_CARGO);
 
-//==== Groups ====
+/* Group templates */
 _group = +(tDefault select T_GROUP);
 
 
-//==== Set arrays ====
+/* Set arrays */
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 
-_array
+_array /* END OF TEMPLATE */

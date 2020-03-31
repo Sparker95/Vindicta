@@ -1,13 +1,35 @@
+/*
+██╗   ██╗██╗  ██╗
+██║   ██║██║ ██╔╝
+██║   ██║█████╔╝ 
+██║   ██║██╔═██╗ 
+╚██████╔╝██║  ██╗
+ ╚═════╝ ╚═╝  ╚═╝
+http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=UK
+
+Updated: March 2020 by Marvis
+*/
+
 _array = [];
 
-_array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
+_array set [T_SIZE-1, nil];
 
-// Name, description, faction, addons, etc
-_array set [T_NAME, "tWW2_UK"];
-_array set [T_DESCRIPTION, "WW2 UK units. 1939-1945. Made by MatrikSky"];
-_array set [T_DISPLAY_NAME, "WW2 UK"];
-_array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, ["ww2_assets_c_characters_core_c", "lib_weapons", "geistl_main", "fow_weapons", "sab_boat_c", "ifa3_comp_ace_main", "geistl_fow_main", "ifa3_comp_fow", "ifa3_comp_fow_ace_settings", "sab_compat_ace"]];
+_array set [T_NAME, "tWW2_UK"]; // 														Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "WW2 UK units. 1939-1945. Made by MatrikSky"]; // 			Template display description
+_array set [T_DISPLAY_NAME, "WW2 UK"]; // 												Template display name
+_array set [T_FACTION, T_FACTION_Military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
+_array set [T_REQUIRED_ADDONS, [
+		"ww2_assets_c_characters_core_c", 
+		"lib_weapons", 
+		"geistl_main", 
+		"fow_weapons", 
+		"sab_boat_c", 
+		"ifa3_comp_ace_main", 
+		"geistl_fow_main", 
+		"ifa3_comp_fow", 
+		"ifa3_comp_fow_ace_settings", 
+		"sab_compat_ace"
+		]]; // 																				Addons required to play this template
 
 /* Infantry unit classes */
 _inf = +(tDefault select T_INF);
