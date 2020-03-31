@@ -133,6 +133,9 @@ _cargo set [T_CARGO_box_medium,	["LIB_BasicWeaponsBox_UK", "LIB_BasicAmmunitionB
 _cargo set [T_CARGO_box_big,	["LIB_WeaponsBox_Big_SU"]];
 
 /* Group templates */
+_group = [];
+_group set [T_GROUP_SIZE-1, nil];
+
 _group set [T_GROUP_DEFAULT, [
 	[
 		T_INF_TL,
