@@ -8,7 +8,7 @@ _array set [T_NAME, "tCUP_TKA_CIVILIAN"];
 _array set [T_DESCRIPTION, "Takistani civilians from CUP."];
 _array set [T_DISPLAY_NAME, "CUP TKA Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
-_array set [T_REQUIRED_ADDONS, ["CUP_Creatures_People_Civil_Russia","CUP_WheeledVehicles_S1203"]];
+_array set [T_REQUIRED_ADDONS, ["CUP_Creatures_People_Civil_Takistan","CUP_Vehicles_Core"]];
 
 _civHeadgear = 	[
 	//Lungee (No front)

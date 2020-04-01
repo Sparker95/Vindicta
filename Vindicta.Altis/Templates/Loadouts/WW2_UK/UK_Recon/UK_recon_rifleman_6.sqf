@@ -1,3 +1,5 @@
+comment "Exported from Arsenal by MatrikSky";
+
 removeAllWeapons this;
 removeAllItems this;
 removeAllAssignedItems this;
@@ -7,24 +9,34 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["H_LIB_UK_Para_Helmet_Mk2_Camo", "H_LIB_UK_Para_Helmet_Mk2"];
+/*Helmet*/
+_RandomHeadgear = selectRandom ["H_LIB_UK_Beret_Commando", "H_LIB_UK_Helmet_Mk2_Camo", "H_LIB_UK_Helmet_Mk2_FAK_Camo", "H_LIB_UK_Helmet_Mk3_Camo"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "U_LIB_UK_DenisonSmock";
-this addVest "V_LIB_UK_P37_Rifleman_Blanco";
-_RandomBackpack = selectRandom ["B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_Cape", "B_LIB_UK_HSack_Blanco_Tea"];
+/*Uniform*/
+this forceAddUniform "fow_u_uk_bd40_commando_01_private";
+/*Vest*/
+_RandomVest = selectRandom ["V_LIB_UK_P37_Rifleman_Blanco", "V_LIB_UK_P37_Gasmask_Blanco"];
+this addVest _RandomVest;
+/*Backpack*/
+_RandomBackpack = selectRandom ["B_LIB_UK_HSack_Blanco", "B_LIB_UK_HSack_Blanco_Cape", "B_LIB_UK_HSack_Blanco_Tea", "fow_b_uk_p37_blanco", ""];
 this addBackpack _RandomBackpack;
 
-this addWeapon "LIB_M1A1_Thompson";
-this addPrimaryWeaponItem "LIB_30Rnd_45ACP";
-this addWeapon "fow_w_welrod_mkii";
-this addHandgunItem "fow_8Rnd_765x17";
+/*Weapon*/
+this addWeapon "fow_w_ithaca37";
+/*WeaponItem*/
+this addPrimaryWeaponItem "fow_5Rnd_12G_Pellets";
 
-
+/*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 4 do {this addItemToVest "LIB_30Rnd_45ACP";};
-for "_i" from 1 to 2 do {this addItemToVest "fow_8Rnd_765x17";};
+for "_i" from 1 to 5 do {this addItemToVest "fow_5Rnd_12G_Pellets";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_MillsBomb";};
+this addItemToVest "LIB_US_M18";
+this addItemToVest "LIB_No77";
+this addItemToVest "fow_e_mk2";
 
+/*Items*/
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
+
+[this,"Default","male03engb"] call BIS_fnc_setIdentity;

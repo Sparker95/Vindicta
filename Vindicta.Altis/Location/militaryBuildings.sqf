@@ -220,11 +220,6 @@
 	["wx_radiomast.p3d","Land_wx_radiomast"],
 	["WW2_Mil_Barracks.p3d","Land_WW2_Mil_Barracks"],
 	["WW2_Mil_Barracks_L.p3d","Land_WW2_Mil_Barracks_L"],
-	["I44_Object_Tent_Us_Small.p3d","Land_I44_Object_Tent_Us_Small"],
-	["I44_Object_Tent_Us_Large.p3d","Land_I44_Object_Tent_Us_Large"],
-	// Beketov/CUP
-	["Mil_Barracks.p3d","Land_Mil_Barracks"],
-	["Mil_Barracks_L.p3d","Land_Mil_Barracks_L"],
 	//Global Mobilization
 	["gm_sandbags_01_round_01","land_gm_sandbags_01_round_01"],
 	["gm_sandbags_01_wall_01","land_gm_sandbags_01_wall_01"]
