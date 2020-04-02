@@ -11,7 +11,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
 
@@ -22,16 +22,19 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
 		_buildings = _buildings apply {[abs ((boundingBoxReal _x) select 1 select 2), _x]};
 		_buildings sort false;
-		pr _groups = +CALLM0(_gar, "getGroups");
+		pr _groups = CALLM0(_gar, "getGroups");
 		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
 
+		pr _commonParams = [[TAG_INSTANT, _instant]];
 		// Order to some groups to occupy buildings
 		// This is obviously ignored if the garrison is not at a location
 		pr _i = 0;
 		while {(count _groupsInf > 0) && (count _buildings > 0)} do {
 			pr _group = _groupsInf#0;
 			pr _groupAI = CALLM0(_group, "getAI");
-			pr _goalParameters = [["building", _buildings#0#1]];
+			pr _goalParameters = [
+				["building", _buildings#0#1]
+			] + _commonParams;
 			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 
@@ -49,23 +52,23 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 				pr _args = [];
 				switch (_type) do {
 					case GROUP_TYPE_IDLE: {
-						_args = ["GoalGroupRegroup", 0, [], _AI];
+						_args = ["GoalGroupRegroup", 0, _commonParams, _AI];
 					};
 					
 					case GROUP_TYPE_VEH_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
+						_args = ["GoalGroupGetInVehiclesAsCrew", 0, _commonParams, _AI];
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
+						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]; // Occupy only combat vehicles
 					};
 					
 					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupRegroup", 0, [[TAG_COMBAT_MODE, "RED"]], _AI];
+						_args = ["GoalGroupRegroup", 0, [[TAG_COMBAT_MODE, "RED"]] + _commonParams, _AI];
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupRegroup", 0, [], _AI];
+						_args = ["GoalGroupRegroup", 0, _commonParams, _AI];
 					};
 				};
 				
@@ -79,7 +82,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -94,7 +97,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 
 		if (_state == ACTION_STATE_ACTIVE) then {
 			T_CALLM0("attackEnemyBuildings"); // It will try to give goals to free groups to attack nearby enemy buildings
@@ -104,28 +107,28 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		_state
 	} ENDMETHOD;
 	
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [P_THISOBJECT];
+	// // logic to run when the action is satisfied
+	// METHOD("terminate") {
+	// 	params [P_THISOBJECT];
 		
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
+	// 	// Bail if not spawned
+	// 	pr _gar = T_GETV("gar");
+	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
 
-		// Remove assigned goals
-		pr _gar = GETV(T_GETV("AI"), "agent");
-		pr _loc = CALLM0(_gar, "getLocation");
-		pr _groups = CALLM0(_gar, "getGroups");
-		pr _AI = T_GETV("AI");
-		{ // foreach _groups
-			//pr _type = CALLM0(_x, "getType");
-			pr _groupAI = CALLM0(_x, "getAI");			
-			if (_groupAI != "") then {
-				pr _args = ["", _AI]; // Just clear all given goals so far
-				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-			};
-		} forEach _groups;
+	// 	// Remove assigned goals
+	// 	pr _gar = GETV(T_GETV("AI"), "agent");
+	// 	pr _loc = CALLM0(_gar, "getLocation");
+	// 	pr _groups = CALLM0(_gar, "getGroups");
+	// 	pr _AI = T_GETV("AI");
+	// 	{ // foreach _groups
+	// 		//pr _type = CALLM0(_x, "getType");
+	// 		pr _groupAI = CALLM0(_x, "getAI");
+	// 		if (_groupAI != "") then {
+	// 			pr _args = ["", _AI]; // Just clear all given goals so far
+	// 			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
+	// 		};
+	// 	} forEach _groups;
 		
-	} ENDMETHOD; 
+	// } ENDMETHOD;
 
 ENDCLASS;

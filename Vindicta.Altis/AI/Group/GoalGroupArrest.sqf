@@ -10,14 +10,14 @@ Author: Marvis 09.05.2019
 CLASS("GoalGroupArrest", "Goal")
 
 	STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		//OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
 
 		pr _relevance = 0;
 		pr _suspTarget = GETV(_AI, "suspTarget");
 		pr _group = GETV(_AI, "agent");
-		pr _groupType = CALLM(_group, "getType", []);		
+		pr _groupType = CALLM(_group, "getType", []);
 		if(!(_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL])) exitWith { 0 };
 
 		pr _hG = CALLM0(_group, "getGroupHandle");
@@ -37,7 +37,7 @@ CLASS("GoalGroupArrest", "Goal")
 	} ENDMETHOD;
 
 	STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		//OOP_INFO_0("GoalGroupArrest: Creating predefined action.");
 

@@ -13,7 +13,7 @@ Sensor for a group to check its health properties.
 CLASS("SensorGroupHealth", "SensorGroup")
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
 	} ENDMETHOD;
 
 
@@ -23,7 +23,7 @@ CLASS("SensorGroupHealth", "SensorGroup")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");

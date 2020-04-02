@@ -29,10 +29,11 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	VARIABLE("maxSpeed"); // The maximum speed in this action, can be received as parameter
 	VARIABLE("time");
 	VARIABLE("route"); // Optional route to use, or just give one waypoint if no route was given
-	
+	VARIABLE("ready"); // Activation tasks complete
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		
+
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 
@@ -49,116 +50,154 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		T_SETV("time", time);
 		
 		T_SETV("speedLimit", SPEED_MIN);
+
+		T_SETV("ready", false);
 	} ENDMETHOD;
-	
+
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [P_THISOBJECT];
-		
-		pr _hG = T_GETV("hG");
+		params [P_THISOBJECT, P_BOOL("_instant")];
+
+		T_SETV("ready", false);
+
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
-		pr _allVehicleUnits = CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")};
-		pr _allVehicles = _allVehicleUnits apply {CALLM0(_x, "getObjectHandle")};
-		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
-		
-		// Regroup units by distance
-		pr _leader = CALLM0(_group, "getLeader");
-		if (_leader == "") exitWith {
-			OOP_ERROR_1("Group has no leader: %1", _group);
+		pr _vehicles = CALLM0(_group, "getVehicleUnits");
+
+		if(count _vehicles == 0) exitWith {
+			// Fail if not any vehicles, we should be using inf move action instead
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
-		if (count _allVehicles > 1) then {
-			pr _distAndUnits = (CALLM0(_group, "getUnits") - [_leader]) apply {
-				pr _hO = CALLM0(_x, "getObjectHandle");
-				[_hO distance _vehLead, _x];
-			};
-			_distAndUnits sort true; // Ascending
-			CALLM2(_group, "postMethodAsync", "sort", [_distAndUnits apply {_x select 1}]); // Post message to sort the group
+
+		pr _vehLead = _vehicles#0;
+		pr _vehLeadAI = CALLM0(_vehLead, "getAI");
+		pr _leadDriver = CALLM0(_vehLeadAI, "getAssignedDriver");
+
+		if(_leadDriver == NULL_OBJECT || { !CALLM0(_leadDriver, "isAlive") }) exitWith {
+			// Fail if lead vehicle doesn't have a driver or the driver is dead
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
 		};
 		
-		T_CALLM0("clearWaypoints");
-		T_CALLM4("applyGroupBehaviour", "COLUMN", "CARELESS", "YELLOW", "NORMAL");
-
 		// Turn on sirens if we have them
 		{
 			pr _gar = CALLM0(_x, "getGarrison");
 			pr _t = CALLM0(_gar, "getTemplate");
 			pr _hO = CALLM0(_x, "getObjectHandle");
 			[_t, T_API, T_API_fnc_VEH_siren, [_hO, true]] call t_fnc_callAPIOptional;
-		} forEach _allVehicleUnits;
+		} forEach _vehicles;
 
-		// Give a waypoint to move
-		/*
-		pr _wp = _hG addWaypoint [_pos, 0];
-		_wp setWaypointType "MOVE";
-		_wp setWaypointFormation "COLUMN";
-		_wp setWaypointBehaviour "SAFE";
-		_wp setWaypointCombatMode "GREEN";
-		_hG setCurrentWaypoint _wp;
-		*/
 		{
-			private _vehHandle = _x;
-			_vehHandle limitSpeed 666666; //Set the speed of all vehicles to unlimited
-			_vehHandle setConvoySeparation SEPARATION;
-			//_vehHandle forceFollowRoad true;
-		} forEach _allVehicles;
-		(vehicle (leader _hG)) limitSpeed T_GETV("speedLimit");
-		
+			// Set the speed of all vehicles to unlimited
+			_x limitSpeed 666666;
+			_x setConvoySeparation SEPARATION;
+			//_x forceFollowRoad true;
+		} forEach (_vehicles apply {CALLM0(_x, "getObjectHandle")});
+
+		pr _hG = T_GETV("hG");
+
+		pr _vehLeadHandle = CALLM0(_vehLead, "getObjectHandle");
+		_vehLeadHandle limitSpeed T_GETV("speedLimit");
+
 		// Set time last called
 		T_SETV("time", time);
 
-		pr _leader = CALLM0(_group, "getLeader");
-		if (_leader != NULL_OBJECT) then {
-			if (CALLM0(_leader, "isAlive")) then {
-				// Add follow goals for units other than the leader
-				{
-					pr _unitAI = CALLM0(_x, "getAI");
-					if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
-						CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
-					};
-				} forEach (CALLM0(_group, "getInfantryUnits") - [_leader]);
-				
-				// Add move goal to leader
-				pr _leaderAI = CALLM0(_leader, "getAI");
-				pr _parameters = [[TAG_POS, T_GETV("pos")], [TAG_MOVE_RADIUS, T_GETV("radius")], [TAG_ROUTE, T_GETV("route")]];
-				CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
+		//CALLM1(_group, "setLeader", _leadDriver);
+		//pr _leader = CALLM0(_group, "getLeader");
+		//pr _vehLeadHandle = vehicle (leader (CALLM0(_group, "getGroupHandle")));
+		
+		// Make sure driver of lead vehicle is leader
+		//pr _driver = driver _vehLeadHandle;
 
-				T_SETV("state", ACTION_STATE_ACTIVE);
-				ACTION_STATE_ACTIVE
-			} else {
-				// Fail if leader is not alive
-				T_SETV("state", ACTION_STATE_FAILED);
-				ACTION_STATE_FAILED
+		// // Regroup units by distance
+		// pr _leader = CALLM0(_group, "getLeader");
+		// if (_leader == "") exitWith {
+		// 	OOP_ERROR_1("Group has no leader: %1", _group);
+		// 	T_SETV("state", ACTION_STATE_FAILED);
+		// 	ACTION_STATE_FAILED
+		// };
+
+		// We apply sorting to the group, then set group goals in the callback
+		pr _continuation = ["completeActivation", [_instant], _thisObject];
+		if (count _vehicles > 1) then {
+			pr _vehLeadPos = CALLM0(_vehLead, "getPos");
+			// Sort infantry units by distance to the lead vehicle
+			pr _distAndUnits = (CALLM0(_group, "getInfantryUnits") - [_leadDriver]) apply {
+				[CALLM0(_x, "getPos") distance _vehLeadPos, _x];
 			};
+			_distAndUnits sort ASCENDING;
+			pr _sortedUnits = [_leadDriver] + (_distAndUnits apply { _x#1 });
+			// Apply the sorting, this will also assign the _leadDriver as the group leader
+			CALLM3(_group, "postMethodAsync", "sort", [_sortedUnits], _continuation);
 		} else {
-			// leader is NULL_OBJECT, wtf
-			OOP_ERROR_1("Group has no leader: %1", _group);
-			T_SETV("state", ACTION_STATE_FAILED);
-			ACTION_STATE_FAILED
+			CALLM3(_group, "postMethodAsync", "setLeader", [_leadDriver], _continuation);
 		};
 
+		T_SETV("state", ACTION_STATE_ACTIVE);
+		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
-	
+
+	METHOD("completeActivation") {
+		params [P_THISOBJECT, P_BOOL("_instant")];
+		
+		T_CALLM0("clearWaypoints");
+		T_CALLM4("applyGroupBehaviour", "COLUMN", "CARELESS", "YELLOW", "NORMAL");
+
+		pr _AI = T_GETV("AI");
+		pr _group = GETV(_AI, "agent");
+		pr _leadDriver = CALLM0(_group, "getLeader");
+
+		// Add follow goals for units other than the leader
+		pr _otherDrivers = (CALLM0(_group, "getInfantryUnits") - [_leadDriver]) apply {
+			CALLM0(_x, "getAI")
+		} select {
+			CALLM0(_x, "getAssignedVehicleRole") == "DRIVER"
+		};
+
+		{
+			CALLM4(_x, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [[TAG_INSTANT ARG _instant]], _AI);
+		} forEach _otherDrivers;
+
+		// Add move goal to leader
+		pr _leaderAI = CALLM0(_leadDriver, "getAI");
+		pr _parameters = [
+			[TAG_POS, T_GETV("pos")],
+			[TAG_MOVE_RADIUS, T_GETV("radius")],
+			[TAG_ROUTE, T_GETV("route")],
+			[TAG_INSTANT, _instant]
+		];
+		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
+
+		T_SETV("ready", true);
+	} ENDMETHOD;
+
 	// Logic to run each update-step
 	METHOD("process") {
 		params [P_THISOBJECT];
-		
-		CALLM0(_thisObject, "failIfNoInfantry");
-		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
 
-		if (_state == ACTION_STATE_ACTIVE) then {
+		T_CALLM0("failIfNoInfantry");
+
+		pr _state = T_CALLM0("activateIfInactive");
+
+		if (T_GETV("ready") && _state == ACTION_STATE_ACTIVE) then {
+			pr _group = GETV(T_GETV("AI"), "agent");
+			pr _leader = CALLM0(_group, "getLeader");
+			if (_leader == NULL_OBJECT || { !CALLM0(_leader, "isAlive") }) exitWith {
+				// Fail if lead vehicle doesn't have a driver or the driver is dead
+				T_SETV("state", ACTION_STATE_FAILED);
+				ACTION_STATE_FAILED
+			};
+
 			pr _hG = T_GETV("hG"); // Group handle
 			pr _pos = T_GETV("pos");
 			pr _radius = T_GETV("radius");
-			
+
 			pr _dt = time - T_GETV("time") + 0.001;
 			T_SETV("time", time);
-			
+
 			//Check the separation of the convoy
-			private _sCur = CALLM0(_thisObject, "getMaxSeparation"); //The current maximum separation between vehicles
+			private _sCur = T_CALLM0("getMaxSeparation"); //The current maximum separation between vehicles
 			#ifdef DEBUG_FORMATION
 			OOP_DEBUG_MSG(">>> Current separation: %1", [_sCur]);
 			#endif
@@ -199,21 +238,13 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 				_state = ACTION_STATE_COMPLETED
 			};
 
-			pr _group = GETV(T_GETV("AI"), "agent");
-			pr _leader = CALLM0(_group, "getLeader");
-			if (_leader != NULL_OBJECT) then {
-				if (CALLM0(_leader, "isAlive")) then {
-					pr _units = CALLM0(_group, "getUnits");
-					// If any units failed their goals
-					if(CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitFollowLeaderVehicle") || 
-						CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitMoveLeaderVehicle")) then {
-						_state = ACTION_STATE_FAILED;
-					};
-				} else {
-					// Fail if leader is not alive
-					_state = ACTION_STATE_FAILED;
-				};
-			} 
+			pr _units = CALLM0(_group, "getUnits");
+
+			// If any units failed their goals
+			if(CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitFollowLeaderVehicle") || 
+				CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitMoveLeaderVehicle")) then {
+				_state = ACTION_STATE_FAILED;
+			};
 		};
 		T_SETV("state", _state);
 		_state
@@ -254,22 +285,23 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 	} ENDMETHOD;
-	
+
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [P_THISOBJECT];
-		
+
 		// Delete waypoints
 		T_CALLM0("clearWaypoints");
 
 		pr _hG = T_GETV("hG");
+		if(!isNull _hG && !isNull leader _hG) then {
+			// Add a move waypoint at the current position of the leader
+			pr _wp = _hG addWaypoint [getPos leader _hG, 0];
+			_wp setWaypointType "MOVE";
+			_hG setCurrentWaypoint _wp;
+			doStop (leader _hG);
+		};
 
-		// Add a move waypoint at the current position of the leader
-		pr _wp = _hG addWaypoint [getPos leader _hG, 0];
-		_wp setWaypointType "MOVE";
-		_hG setCurrentWaypoint _wp;
-		doStop (leader _hG);
-		
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		// Delete given goals

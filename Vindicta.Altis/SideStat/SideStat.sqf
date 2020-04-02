@@ -24,7 +24,7 @@ CLASS("SideStat", "");
 	Returns: nil
 	*/
 	METHOD("new") {
-		params ["_thisObject", "_side", "_humanResources"];
+		params [P_THISOBJECT, "_side", "_humanResources"];
 		T_SETV("side", _side);
 		T_SETV("humanResources", _humanResources);
 	} ENDMETHOD;
@@ -34,7 +34,7 @@ CLASS("SideStat", "");
 	Returns: integer - humanResources
 	*/
 	METHOD("getHumanResources") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		T_GETV("humanResources");
 	} ENDMETHOD;
 	
@@ -45,7 +45,7 @@ CLASS("SideStat", "");
 	Returns: nil
 	*/
 	METHOD("incrementHumanResourcesBy") {
-		params ["_thisObject", "_valueToInc"];
+		params [P_THISOBJECT, "_valueToInc"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR + _valueToInc;
 
@@ -59,7 +59,7 @@ CLASS("SideStat", "");
 	Returns: nil
 	*/
 	METHOD("decrementHumanResourcesBy") {
-		params ["_thisObject", "_valueToDec"];
+		params [P_THISOBJECT, "_valueToDec"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR - _valueToDec;
 

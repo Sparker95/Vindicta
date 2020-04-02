@@ -69,17 +69,12 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 											[WSP_GAR_ALL_VEHICLES_CAN_MOVE,	true]]] call AI_misc_fnc_setActionEffects;
 
 // Mount crew
-["ActionGarrisonMountCrew",	_s,			[	[WSP_GAR_VEHICLE_GROUPS_MERGED, true]]] call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonMountCrew",	_s,			[	[WSP_GAR_VEHICLE_GROUPS_BALANCED, true]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMountCrew",	_s,			[	[WSP_GAR_ALL_CREW_MOUNTED,		TAG_MOUNT, true]]] call AI_misc_fnc_setActionEffects;
 
 // Mount infantry
-["ActionGarrisonMountInfantry",	_s,		[]] call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonMountInfantry",	_s,		[	[WSP_GAR_VEHICLE_GROUPS_BALANCED, true]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMountInfantry",	_s,		[	[WSP_GAR_ALL_INFANTRY_MOUNTED,	TAG_MOUNT, true]]] call AI_misc_fnc_setActionEffects;
-
-// Mount crew and infantry
-["ActionGarrisonMountCrewInfantry",	_s,	[	[WSP_GAR_VEHICLE_GROUPS_MERGED, true] ]] call AI_misc_fnc_setActionPreconditions;
-["ActionGarrisonMountCrewInfantry",	_s,	[	[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
-											[WSP_GAR_ALL_CREW_MOUNTED,		true]]] call AI_misc_fnc_setActionEffects;
 
 // Move mounted to position
 ["ActionGarrisonMoveMounted", _s,		[	
@@ -173,12 +168,11 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 #define C 1.0
 ["ActionGarrisonMountCrew",					C*0.4	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMountInfantry",				C*0.6	]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonMountCrewInfantry",			C*0.7	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMounted",				C*2.0	]	call AI_misc_fnc_setActionCost;
-//["ActionGarrisonMoveMountedCargo",			C*3.0	]	call AI_misc_fnc_setActionCost;
+//["ActionGarrisonMoveMountedCargo",		C*3.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveCombined",				C*4.5	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveDismounted",			C*7.0	]	call AI_misc_fnc_setActionCost;
-//["ActionGarrisonLoadCargo",					C*2.0	] 	call AI_misc_fnc_setActionCost;
+//["ActionGarrisonLoadCargo",				C*2.0	] 	call AI_misc_fnc_setActionCost;
 //["ActionGarrisonUnloadCurrentCargo", 		C*0.3	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonDefend", 					C*1.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMergeVehicleGroups", 		C*0.0	]	call AI_misc_fnc_setActionCost;
@@ -189,21 +183,25 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonJoinLocation", 				C*0.1	]	call AI_misc_fnc_setActionCost;
 
 // ---- Action precedence ----
-["ActionGarrisonMergeVehicleGroups", 		1]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonSplitVehicleGroups", 		1]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonRepairAllVehicles", 		1]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonRebalanceVehicleGroups", 	2]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonMountCrew",					5]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonMountInfantry",				6]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonMountCrewInfantry",			6]	call AI_misc_fnc_setActionPrecedence;
-//["ActionGarrisonLoadCargo",					10] call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonMoveMounted",				20]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonMoveCombined",				20]	call AI_misc_fnc_setActionPrecedence;
-//["ActionGarrisonMoveMountedCargo",			20]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonMoveDismounted",			20]	call AI_misc_fnc_setActionPrecedence;
-//["ActionGarrisonUnloadCurrentCargo", 		30]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonDefend", 					20]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonClearArea", 				40]	call AI_misc_fnc_setActionPrecedence;
-["ActionGarrisonJoinLocation", 				43] call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonMergeVehicleGroups", 		1		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonSplitVehicleGroups", 		1		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonRepairAllVehicles", 		1		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonRebalanceVehicleGroups", 	2		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonMountCrew",					5		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonMountInfantry",				6		]	call AI_misc_fnc_setActionPrecedence;
+//["ActionGarrisonLoadCargo",				10		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonMoveMounted",				20		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonMoveCombined",				20		]	call AI_misc_fnc_setActionPrecedence;
+//["ActionGarrisonMoveMountedCargo",		20		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonMoveDismounted",			20		]	call AI_misc_fnc_setActionPrecedence;
+//["ActionGarrisonUnloadCurrentCargo", 		30		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonDefend", 					20		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonClearArea", 				40		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonJoinLocation", 				43		]	call AI_misc_fnc_setActionPrecedence;
 
+// ---- Action non-instant ----
+["ActionGarrisonMoveMounted"						]	call AI_misc_fnc_setActionNonInstant;
+["ActionGarrisonMoveCombined"						]	call AI_misc_fnc_setActionNonInstant;
+//["ActionGarrisonMoveMountedCargo"					]	call AI_misc_fnc_setActionNonInstant;
+["ActionGarrisonMoveDismounted"						]	call AI_misc_fnc_setActionNonInstant;
 #endif

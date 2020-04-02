@@ -56,7 +56,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
 
@@ -98,6 +98,8 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 				ACTION_STATE_FAILED
 			};
 
+			// No instant move for this action we we track unspawned progress already, and groups should be formed up and 
+			// mounted already before it is called.
 			{
 				pr _group = _x;
 				pr _groupAI = CALLM0(_x, "getAI");
@@ -253,56 +255,61 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 		_return
 	} ENDMETHOD;
 	
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [P_THISOBJECT];
+	// // logic to run when the action is satisfied
+	// METHOD("terminate") {
+	// 	params [P_THISOBJECT];
 		
-		pr _gar = T_GETV("gar");
+	// 	pr _gar = T_GETV("gar");
 
-		// Bail if not spawned
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+	// 	// Bail if not spawned
+	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
-		// Terminate given goals
-		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
-		{
-			pr _group = _x;
-			pr _groupAI = CALLM0(_x, "getAI");
-			// Delete other goals like this first
-			pr _args = ["GoalGroupMoveGroundVehicles", ""];
-			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);			
-		} forEach _vehGroups;
+	// 	// Terminate given goals
+	// 	pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+	// 	{
+	// 		pr _group = _x;
+	// 		pr _groupAI = CALLM0(_x, "getAI");
+	// 		// Delete other goals like this first
+	// 		pr _args = ["GoalGroupMoveGroundVehicles", ""];
+	// 		CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);			
+	// 	} forEach _vehGroups;
 
-		// Terminate infantry group goals
-		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
-		pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
-		{
-			pr _group = _x;
-			pr _groupAI = CALLM0(_x, "getAI");
-			// Add new goal to stay in vehicles
-			pr _args = ["GoalGroupStayInVehicles", ""];
-			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);		
-		} forEach _infGroups;
+	// 	// Terminate infantry group goals
+	// 	pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
+	// 	pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
+	// 	{
+	// 		pr _group = _x;
+	// 		pr _groupAI = CALLM0(_x, "getAI");
+	// 		// Add new goal to stay in vehicles
+	// 		pr _args = ["GoalGroupStayInVehicles", ""];
+	// 		CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);		
+	// 	} forEach _infGroups;
 		
-	} ENDMETHOD;
+	// } ENDMETHOD;
 
-	METHOD("onGarrisonSpawned") {
-		params [P_THISOBJECT];
+	// METHOD("onGarrisonSpawned") {
+	// 	params [P_THISOBJECT];
 
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
+	// 	// Reset action state so that it reactivates
+	// 	T_SETV("state", ACTION_STATE_INACTIVE);
+	// } ENDMETHOD;
 	
 	METHOD("onGarrisonDespawned") {
 		params [P_THISOBJECT];
 
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
+		// Create a new VirtualRoute since old one might be invalid
+		T_CALLM0("createVirtualRoute");
 
-		// Update the virtual route position to reflect the garrisons real position
-		// (this is only accurate to the nearest waypoint)
-		pr _vr = T_GETV("virtualRoute");
-		pr _garPos = CALLM0(T_GETV("gar"), "getPos");
-		CALLM1(_vr, "setPos", _garPos);
+		T_CALLCM0("ActionGarrison", "onGarrisonDespawned");
+
+		// // Reset action state so that it reactivates
+		// T_SETV("state", ACTION_STATE_INACTIVE);
+
+		// // Update the virtual route position to reflect the garrisons real position
+		// // (this is only accurate to the nearest waypoint)
+		// pr _vr = T_GETV("virtualRoute");
+		// pr _garPos = CALLM0(T_GETV("gar"), "getPos");
+		// CALLM1(_vr, "setPos", _garPos);
 	} ENDMETHOD;
 
 	// Creates a new VirtualRoute object, deletes the old one
@@ -398,29 +405,29 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrison")
 		true
 	} ENDMETHOD;
 
-	// Handle units/groups added/removed
-	METHOD("handleGroupsAdded") {
-		params [P_THISOBJECT, ["_groups", [], [[]]]];
+	// // Handle units/groups added/removed
+	// METHOD("handleGroupsAdded") {
+	// 	params [P_THISOBJECT, P_ARRAY("_groups")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 
-	METHOD("handleGroupsRemoved") {
-		params [P_THISOBJECT, ["_groups", [], [[]]]];
+	// METHOD("handleGroupsRemoved") {
+	// 	params [P_THISOBJECT, P_ARRAY("_groups")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 	
-	METHOD("handleUnitsRemoved") {
-		params [P_THISOBJECT, ["_units", [], [[]]]];
+	// METHOD("handleUnitsRemoved") {
+	// 	params [P_THISOBJECT, P_ARRAY("_units")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 	
-	METHOD("handleUnitsAdded") {
-		params [P_THISOBJECT, ["_units", [], [[]]]];
+	// METHOD("handleUnitsAdded") {
+	// 	params [P_THISOBJECT, P_ARRAY("_units")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 
 ENDCLASS;

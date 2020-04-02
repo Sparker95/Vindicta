@@ -9,7 +9,7 @@ CLASS("GoalGarrisonClearArea", "Goal")
 
 	// Gets called when an external goal of this class is added to AI
 	STATIC_METHOD("onGoalAdded") {
-		params ["_thisClass", ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		// Set variables in AI object so that garrison can identify targets associated with this goal
 		// [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _moveRadius], [TAG_CLEAR_RADIUS, _clearRadius], [TAG_DURATION_SECONDS, _timeOutSeconds]];
@@ -21,7 +21,7 @@ CLASS("GoalGarrisonClearArea", "Goal")
 
 	// Gets called when an external goal of this class is removed from an AI
 	STATIC_METHOD("onGoalDeleted") {
-		params ["_thisClass", ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		SETV(_AI, "assignedTargetsPos", [0 ARG 0 ARG 0]);
 		SETV(_AI, "assignedTargetsRadius", 0);

@@ -8,13 +8,6 @@ This action tries to find drivers and turret operators for vehicles in all vehic
 
 CLASS("ActionGarrisonRebalanceVehicleGroups", "ActionGarrison")
 
-	// ------------ N E W ------------
-	
-	METHOD("new") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		
-	} ENDMETHOD;
-	
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT];
@@ -42,23 +35,6 @@ CLASS("ActionGarrisonRebalanceVehicleGroups", "ActionGarrison")
 		
 		// Return ACTIVE state
 		_state
-	} ENDMETHOD;
-	
-	// logic to run each update-step
-	METHOD("process") {
-		params [P_THISOBJECT];
-		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		
-		// Return the current state
-		T_SETV("state", _state);
-		_state
-	} ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [P_THISOBJECT];
-		
 	} ENDMETHOD;
 
 ENDCLASS;

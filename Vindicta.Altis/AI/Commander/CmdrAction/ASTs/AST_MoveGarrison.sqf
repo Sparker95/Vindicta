@@ -200,7 +200,7 @@ AST_MoveGarrison_test_fn = {
 		[CALLM1(_action, "createVariable", _target)]+
 		[CALLM1(_action, "createVariable", 200)]
 	);
-	CALLM(_thisObject, "apply", [_world])
+	T_CALLM("apply", [_world])
 };
 
 #define TARGET_POS [1, 2, 3]

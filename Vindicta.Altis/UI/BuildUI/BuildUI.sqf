@@ -231,7 +231,7 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT, P_NUMBER("_source")];
 		pr _thisObject = g_BuildUI;
 		if (isNil "_thisObject") exitWith {};
-		CALLM1(_thisObject, "openUI", _source);
+		T_CALLM1("openUI", _source);
 	} ENDMETHOD;
 
 	METHOD("UIFrameUpdate") {
@@ -668,7 +668,7 @@ CLASS("BuildUI", "")
 			};
 		} forEach _UIarray; 
 
-		SETV(_thisObject, "UICatTexts", _return);
+		T_SETV("UICatTexts", _return);
 
 	} ENDMETHOD;
 

@@ -29,16 +29,24 @@ g_rqArray = [0];
 // Parameters: [msgID, result]
 MsgRcvr_fnc_setMsgDone = {
 	params ["_msgID", ["_result", 0], "_dest"];
-	pr _rqArrayElement = g_rqArray select _msgID; // g_rqArray was defined in messageReceiver.sqf
-	// Make sure the proper receiver marks this message
-	if ((_rqArrayElement select 2) == _dest) then {
-		CRITICAL_SECTION {
-			_rqArrayElement set [1, _result];	// Set result first
-			_rqArrayElement set [0, 1]; 		// Set the flag that the message has been processed
+	if(_msgID != MESSAGE_ID_NOT_REQUESTED) then {
+		pr _rqArrayElement = g_rqArray select _msgID; // g_rqArray was defined in messageReceiver.sqf
+		// Make sure the proper receiver marks this message
+		if (_rqArrayElement#2 == _dest) then {
+			CRITICAL_SECTION {
+				_rqArrayElement set [1, _result];	// Set result first
+				_rqArrayElement set [0, 1]; 		// Set the flag that the message has been processed
+			};
+			if(count _rqArrayElement > 3) then {
+				_rqArrayElement#3 params ["_methodNameOrCode", "_params", "_messageReceiver"];
+				if(IS_OOP_OBJECT(_messageReceiver)) then {
+					CALLM2(_messageReceiver, "postMethodAsync", _methodNameOrCode, _params + [_result]);
+				};
+			};
+			//diag_log format [" --- Message receiver has acknowledged message: %1,  msgID: %2", _dest, _msgID];
+		} else {
+			diag_log format ["[MessageReceiver] Error: message was acknowledged by wrong receiver. %1 was acknowledged by %2", _rqArrayElement, _dest];
 		};
-		//diag_log format [" --- Message receiver has acknowledged message: %1,  msgID: %2", _dest, _msgID];
-	} else {
-		diag_log format ["[MessageReceiver] Error: message was acknowledged by wrong receiver. %1 was acknowledged by %2", _rqArrayElement, _dest];
 	};
 };
 
@@ -51,11 +59,11 @@ CLASS("MessageReceiver", "Storable")
 	Sets initial ownership of the object
 	*/
 	METHOD("new") {
-		params [ ["_thisObject", "", [""]] ];
+		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_INC("MessageReceiver");
 		
-		SETV(_thisObject, "owner", CLIENT_OWNER);
+		T_SETV("owner", CLIENT_OWNER);
 		if (IS_PUBLIC(_thisObject)) then {
 			PUBLIC_VAR(_thisObject, "owner");
 		};
@@ -68,13 +76,13 @@ CLASS("MessageReceiver", "Storable")
 	Warning: should be called by the thread(<MessageLoop>) which owns this object
 	*/
 	METHOD("delete") {
-		params [ ["_thisObject", "", [""]] ];
+		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_DEC("MessageReceiver");
 		
 		CRITICAL_SECTION {
-			private _msgLoop = CALLM(_thisObject, "getMessageLoop", []);
-			//diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];
+			private _msgLoop = T_CALLM("getMessageLoop", []);
+			//diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, T_CALLM0("getMessageLoop")];
 			// Delete all remaining messages directed to this object to make sure they will not be handled after the object is deleted
 			CALLM(_msgLoop, "deleteReceiverMessages", [_thisObject]);
 
@@ -114,7 +122,7 @@ CLASS("MessageReceiver", "Storable")
 	---
 	*/
 	METHOD("handleMessage") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		// Please leave your message ...
 		diag_log format ["[MessageReceiver] handleMessage: %1", _msg];
 		false // message not handled
@@ -129,7 +137,14 @@ CLASS("MessageReceiver", "Storable")
 	Parameters: _msg, _returnMsgID
 
 	_msg - the <Message> to send to this object.
-	_returnMsgID - Optional, Bool, default is false. If true, the framework generates a valid message ID which can be passed to waitUntilMessageDone or messageDone functions.
+	_returnMsgIDOrContinuation - Optional
+		Either:
+			_returnMsgID - Bool, default is false. If true, the framework generates a valid message ID which can be passed to waitUntilMessageDone or messageDone functions.
+		Or:
+			_continuation - Array like [nameOrCode, params, object], defines a callback function
+				nameOrCode - String or Code, the method to call in this thread once the message is processed
+				params - Array of parameters to pass to _conNameOrCode
+				messageReceiver - MessageReceiver instance to callback on
 
 	Warning: _returnMsgID=true allocates resources that are deallocated by waitUntilMessageDone or messageDone.
 	If you don't need to wait for the message processing completion, set _returnMsgID to false.
@@ -137,28 +152,32 @@ CLASS("MessageReceiver", "Storable")
 	Returns: Number, message ID if _returnMsgID is true, MESSAGE_ID_INVALID otherwise.
 	*/
 	METHOD("postMessage") {
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]], ["_returnMsgID", false] ];
+		params [P_THISOBJECT, P_ARRAY("_msg"), ["_returnMsgIDOrContinuation", false, [false, []]]];
 
 		OOP_INFO_1("postMessage: %1", _msg);
 
 		// Check owner of this object
-		pr _owner = GETV(_thisObject, "owner");
+		pr _owner = T_GETV("owner");
 		// Is the message directed to an object on the same machine?
 		if (_owner == CLIENT_OWNER) then {
-			pr _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
+			pr _messageLoop = T_CALLM0("getMessageLoop");
 			if (_messageLoop == "") exitWith { diag_log format ["[MessageReceiver:postMessage] Error: %1 is not assigned to a message loop", _thisObject];};
 			_msg set [MESSAGE_ID_DESTINATION, _thisObject]; //In case message sender forgot to set the destination
 
 			// Do we need to return the msgID?
-			if (_returnMsgID) then {
+			if (!(_returnMsgIDOrContinuation isEqualTo false)) then {
 				// Generate a new msgID
 				pr _msgID = 0;
 				CRITICAL_SECTION {
 					_msgID = g_rqArray find 0;
+					private _msgRec = [0, 0, _thisObject];
+					if(_returnMsgIDOrContinuation isEqualType []) then {
+						_msgRec pushBack _returnMsgIDOrContinuation;
+					};
 					if (_msgID == -1) then {
-						_msgID = g_rqArray pushback [0, 0, _thisObject]; // When message has been handled, the result will be stored here, 0 will be replaced with 1
+						_msgID = g_rqArray pushback _msgRec; // When message has been handled, the result will be stored here, 0 will be replaced with 1
 					} else {
-						g_rqArray set [_msgID, [0, 0, _thisObject]];
+						g_rqArray set [_msgID, _msgRec];
 					};
 					// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
 					_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
@@ -173,7 +192,7 @@ CLASS("MessageReceiver", "Storable")
 				_msgID
 			} else {
 				// Only post the message, messageLoop will decide if it needs to set the messageDone flag and on which machine
-				pr _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
+				pr _messageLoop = T_CALLM0("getMessageLoop");
 				CALLM1(_messageLoop, "postMessage", _msg);
 
 				// Return a special value in case it gets used by waitUntilMessageDone or messageDone by mistake
@@ -261,7 +280,7 @@ CLASS("MessageReceiver", "Storable")
 	Returns: whatever was returned by handleMessage of the messageReceiver that was processing the message
 	*/
 	METHOD("waitUntilMessageDone") {
-		params [ ["_thisObject", "", [""]], ["_msgID", 0, [0]] ];
+		params [P_THISOBJECT, P_NUMBER("_msgID") ];
 
 		// Bail if provided a negative number
 		if (_msgID < 0) exitWith {
@@ -361,10 +380,10 @@ CLASS("MessageReceiver", "Storable")
 	// Don't override this in inherited classes!
 	// Returns true/falls depending on success
 	/* private */ METHOD("setOwner") {
-		params [ ["_thisObject", "", [""]], ["_newOwner", 0, [0]] ];
+		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 
 		// Bail if this machine doesn't own this object
-		pr _owner = GETV(_thisObject, "owner");
+		pr _owner = T_GETV("owner");
 		if (_owner != CLIENT_OWNER) exitWith {
 			diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: object is owned not by this machine. This machine owner ID:%4.",
 				_thisObject, _owner, _newOwner, CLIENT_OWNER];
@@ -391,7 +410,7 @@ CLASS("MessageReceiver", "Storable")
 		// Ask the other machine to take ownership
 
 		// Serialize data of this object
-		pr _serData = CALLM(_thisObject, "serialize", []);
+		pr _serData = T_CALLM("serialize", []);
 		pr _parent = OBJECT_PARENT_CLASS_STR(_thisObject); // Get the class this object belongs to
 		// Generate a unique ID for this message
 		pr _uniqueID = g_ownerRqNextID;
@@ -422,7 +441,7 @@ CLASS("MessageReceiver", "Storable")
 
 		// The other machine has successfully accepted the new object
 		// Now transfer ownership of underlying objects, if they exist
-		if (! (CALLM1(_thisObject, "transferOwnership", _newOwner))) exitWith {
+		if (! (T_CALLM1("transferOwnership", _newOwner))) exitWith {
 			// Failed to lose ownership
 			// Probably failed to transfer other objects
 
@@ -431,13 +450,13 @@ CLASS("MessageReceiver", "Storable")
 			[[_thisObject, CLIENT_OWNER], {SETV(_this select 0, "owner", _this select 1);}] remoteExecCall ["call", _newOwner, false];
 
 			// Take the object back
-			SETV(_thisObject, "owner", CLIENT_OWNER);
+			T_SETV("owner", CLIENT_OWNER);
 
 			// Return failure
 			false
 		};
 
-		SETV(_thisObject, "owner", _newOwner);
+		T_SETV("owner", _newOwner);
 
 		// I can't believe we have accomplished this
 		diag_log format ["[MessageReceiver:setOwner] Success: changed owner of %1 to %2", _thisObject, _newOwner];
@@ -456,7 +475,7 @@ CLASS("MessageReceiver", "Storable")
 	Returns: nil
 	*/
 	/* private */ STATIC_METHOD("receiveOwnership") {
-		params [ ["_objNameStr", "", [""]], ["_objParent", "", [""]], ["_uniqueID", 0, [0]], ["_serialData", 0]];
+		params [ ["_objNameStr", "", [""]], ["_objParent", "", [""]], P_NUMBER("_uniqueID"), ["_serialData", 0]];
 
 		diag_log format ["Receive ownership was called: %1", _this];
 
@@ -488,7 +507,7 @@ CLASS("MessageReceiver", "Storable")
 	Returns: anything you need which can be sent over network.
 	*/
 	/* virtual */ METHOD("serialize") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		diag_log format ["[MessageReceiver:serialize] Error: method serialize is not implemented for %1!", _thisObject];
 
 		// Return serialized data in any format
@@ -504,7 +523,7 @@ CLASS("MessageReceiver", "Storable")
 	Returns: nil
 	*/
 	/* virtual */ METHOD("deserialize") {
-		params [["_thisObject", "", [""]], "_serialData"];
+		params [P_THISOBJECT, "_serialData"];
 		diag_log format ["[MessageReceiver:serialize] Error: method deserialize is not implemented for %1!", _thisObject];
 	} ENDMETHOD;
 
@@ -523,7 +542,7 @@ CLASS("MessageReceiver", "Storable")
 	Returns: Bool
 	*/
 	/* virtual */ METHOD("transferOwnership") {
-		params [ ["_thisObject", "", [""]], ["_newOwner", 0, [0]] ];
+		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 		diag_log format ["[MessageReceiver:transferOwnership] Error: method transferOwnership is not implemented for %1!", _thisObject];
 		false
 	} ENDMETHOD;
@@ -536,7 +555,7 @@ CLASS("MessageReceiver", "Storable")
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Must broadcast public variables
-		SETV(_thisObject, "owner", CLIENT_OWNER); // Now we own this obviously
+		T_SETV("owner", CLIENT_OWNER); // Now we own this obviously
 		if (IS_PUBLIC(_thisObject)) then {
 			PUBLIC_VAR(_thisObject, "owner");
 		};

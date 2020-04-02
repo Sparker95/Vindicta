@@ -18,7 +18,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, "vehicle");
 		T_SETV("veh", _veh);
@@ -26,14 +26,8 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT];
 		
-		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false); // Dont reset the flag
-		};
-
 		pr _hO = T_GETV("hO");
 		pr _veh = T_GETV("veh");
 		pr _hVeh = CALLM0(_veh, "getObjectHandle");
@@ -43,7 +37,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		T_SETV("timeActivated", time);
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -51,9 +45,9 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// Makethe actual repair affects lag behind the animation
@@ -63,7 +57,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 				// Check if the unit is not an actual engineer
 				if (!(_hO getUnitTrait "engineer")) then {
 					[CALLM0(_veh, "getObjectHandle")] call AI_misc_fnc_repairWithoutEngineer; // Will do partial repairs of vehicle
-				};	
+				};
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};
@@ -75,7 +69,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	// logic to run when the action is satisfied
 	/*
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 	*/
 	

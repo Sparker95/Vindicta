@@ -13,12 +13,12 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	VARIABLE("destroyedUnits");
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		T_SETV("destroyedUnits", []);
 	} ENDMETHOD;
 
 	METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
@@ -47,7 +47,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Add the data about destroyed unit to the array, which will be sent to commander on next update
 		pr _value = STIMULUS_GET_VALUE(_stimulus);
@@ -76,7 +76,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 
 		// Return true only if garrison is in combat state
 		pr _AI = T_GETV("AI");
@@ -91,7 +91,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		//params [ ["_thisObject", "", [""]]];
+		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
 	} ENDMETHOD;
 

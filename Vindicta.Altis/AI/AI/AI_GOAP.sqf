@@ -5,6 +5,7 @@
 #define PROFILER_COUNTERS_ENABLE
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
+#include "..\parameterTags.hpp"
 #include "..\..\CriticalSection\CriticalSection.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\Action\Action.hpp"
@@ -89,7 +90,7 @@ CLASS("AI_GOAP", "AI")
 	// ----------------------------------------------------------------------
 	
 	METHOD("process") {
-		params [P_THISOBJECT, ["_accelerate", false]];
+		params [P_THISOBJECT, P_BOOL("_accelerate")];
 		
 		//OOP_INFO_0("PROCESS");
 		
@@ -121,7 +122,7 @@ CLASS("AI_GOAP", "AI")
 		
 		// Update all world facts (delete old facts)
 		T_CALLM0("updateWorldFacts");
-		
+
 		//Calculate most relevant goal
 		pr _goalNewArray = T_CALLM0("getMostRelevantGoal");
 		
@@ -156,9 +157,13 @@ CLASS("AI_GOAP", "AI")
 				
 				// Make a new Action Plan
 				// First check if the goal assumes a predefined plan
-				pr _args = [_thisObject, _goalParameters];
-				pr _newAction = CALL_STATIC_METHOD(_goalClassName, "createPredefinedAction", _args);
-				
+				pr _actionParameters = +_goalParameters;
+				if(_accelerate) then {
+					_actionParameters pushBack [TAG_INSTANT, true];
+				};
+
+				pr _newAction = CALLSM2(_goalClassName, "createPredefinedAction", _thisObject, _actionParameters);
+
 				if (_newAction == NULL_OBJECT) then {
 					// Predefined action was not supplied, so we must run the planner
 					
@@ -177,7 +182,7 @@ CLASS("AI_GOAP", "AI")
 					// Did the planner succeed?
 					if (_foundPlan) then {
 						// Unpack the plan
-						_newAction = T_CALLM("createActionsFromPlan", [_actionPlan]);
+						_newAction = T_CALLM2("createActionsFromPlan", _actionPlan, _accelerate);
 						// Set a new action from the plan
 						T_CALLM1("setCurrentAction", _newAction);
 						T_SETV("currentGoal", _goalClassName);
@@ -201,13 +206,13 @@ CLASS("AI_GOAP", "AI")
 		} else {
 			// We don't pursue a goal any more
 			OOP_INFO_0("PROCESS: NO GOAL");
-			
+
 			// End the previous goal if we had it
 			pr _currentGoal = T_GETV("currentGoal");
-			if (_currentGoal != "") then {
+			if (_currentGoal != NULL_OBJECT) then {
 				OOP_INFO_1("PROCESS: ENDING CURRENT GOAL: %1", _currentGoal);
-				T_SETV("currentGoal", "");
-				T_SETV("currentGoalSource", "");
+				T_SETV("currentGoal", NULL_OBJECT);
+				T_SETV("currentGoalSource", NULL_OBJECT);
 				T_SETV("currentGoalParameters", []);
 				//T_SETV("currentGoalState", -1); // -1 means there is no goal
 			};
@@ -220,8 +225,17 @@ CLASS("AI_GOAP", "AI")
 
 		// Process the current action if we have it
 		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != "") then {
-			pr _actionState = CALLM(_currentAction, "process", []);
+		if (_currentAction != NULL_OBJECT) then {
+
+			// Make sure we perform the current action instantly if accelerated behavoir is on
+			if(_accelerate) then {
+				SETV(_currentAction, "instant", true);
+			};
+
+			pr _actionState = CALLM0(_currentAction, "process");
+
+			// Always clear the instant flag after processing
+			SETV(_currentAction, "instant", false);
 			
 			pr _subaction = CALLM0(_currentAction, "getFrontSubaction");
 			if (_subaction == _currentAction) then { // If it's not a composite action
@@ -243,7 +257,8 @@ CLASS("AI_GOAP", "AI")
 					pr _arrayElement = _goalsExternal select _index;
 					_arrayElement set [4, _actionState];
 				} else {
-					OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
+					// Can happen as goals are removed asynchronously so might not exist
+					//OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
 				};
 			};
 
@@ -252,28 +267,28 @@ CLASS("AI_GOAP", "AI")
 					// Mark the current goal as completed
 					//pr _currentGoal = T_GETV("currentGoal");
 					//pr _currentGoalParameters = T_GETV("currentGoalParameters");
-					//CALLM2(_thisObject, "deleteExternalGoal", _currentGoal, _currentGoalParameters); 
+					//T_CALLM2("deleteExternalGoal", _currentGoal, _currentGoalParameters);
 					
 					// Delete the current action
 					T_CALLM0("deleteCurrentAction");
-					T_SETV("currentGoal", "");
-					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoal", NULL_OBJECT);
+					T_SETV("currentGoalSource", NULL_OBJECT);
 					T_SETV("currentGoalParameters", []);
 				};
 
 				case ACTION_STATE_FAILED : {
 					// Probably we should replan our goal at the next iteration
 					T_CALLM0("deleteCurrentAction");
-					T_SETV("currentGoal", "");
-					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoal", NULL_OBJECT);
+					T_SETV("currentGoalSource", NULL_OBJECT);
 					T_SETV("currentGoalParameters", []);
 				};
 
 				case ACTION_STATE_REPLAN : {
 					// Probably we should replan our goal at the next iteration
 					T_CALLM0("deleteCurrentAction");
-					T_SETV("currentGoal", "");
-					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoal", NULL_OBJECT);
+					T_SETV("currentGoalSource", NULL_OBJECT);
 					T_SETV("currentGoalParameters", []);
 				};
 			};
@@ -283,12 +298,12 @@ CLASS("AI_GOAP", "AI")
 		pr _subagents = CALLM(_agent, "getSubagents", []);
 		{
 			pr _agentAI = CALLM(_x, "getAI", []);
-			if (_agentAI != "") then {
+			if (_agentAI != NULL_OBJECT) then {
 				CALLM(_agentAI, "process", []);
 			};
 		} forEach _subagents;
 				
-	} ENDMETHOD;	
+	} ENDMETHOD;
 	
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- G O A L S -----------------------------------------------
@@ -382,7 +397,7 @@ CLASS("AI_GOAP", "AI")
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [P_THISOBJECT, ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true], ["_callProcess", true]];
+		params [P_THISOBJECT, ["_goalClassName", "", [""]], P_NUMBER("_bias"), P_ARRAY("_parameters"), ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true], ["_callProcess", true]];
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
@@ -579,7 +594,7 @@ CLASS("AI_GOAP", "AI")
 	Returns: Bool
 	*/	
 	STATIC_METHOD("anyAgentHasExternalGoal") {
-		params [P_THISCLASS, ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [P_THISCLASS, P_ARRAY("_agents"), ["_goalClassName", "", [""]], ["_goalSource", ""]];
 		(_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
 			CALLM2(_AI, "hasExternalGoal", _goalClassName, _goalSource)
@@ -710,7 +725,7 @@ CLASS("AI_GOAP", "AI")
 	Returns: Bool
 	*/	
 	STATIC_METHOD("anyAgentFailedExternalGoal") {
-		params [P_THISCLASS, ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [P_THISCLASS, P_ARRAY("_agents"), ["_goalClassName", "", [""]], ["_goalSource", ""]];
 		(_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
@@ -780,7 +795,7 @@ CLASS("AI_GOAP", "AI")
 	// ----------------------------------------------------------------------
 	// Creates actions from plan generated by the planActions method	
 	METHOD("createActionsFromPlan") {
-		params [P_THISOBJECT, ["_plan", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_plan"), P_BOOL("_instant")];
 		if (count _plan == 1) then {
 		
 			// If there is only one action in the plan, just create this action
@@ -797,7 +812,13 @@ CLASS("AI_GOAP", "AI")
 
 			{ // foreach _plan
 				_x params ["_actionPrecedence", "_actionClassName", "_actionParameters"];
-				
+				if(_instant) then {
+					if(CALLSM0(_actionClassName, "isNonInstant")) then {
+						_instant = false;
+					} else {
+						_actionParameters = _actionParameters + [[TAG_INSTANT, true]];
+					};
+				};
 				// Create an action
 				pr _args = [_thisObject, _actionParameters];
 				pr _action = NEW(_actionClassName, _args);
@@ -842,7 +863,7 @@ CLASS("AI_GOAP", "AI")
 	FIX_LINE_NUMBERS()
 	
 	STATIC_METHOD("planActions") {
-		pr _paramsGood = params [ P_THISCLASS, ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
+		pr _paramsGood = params [P_THISCLASS, P_ARRAY("_currentWS"), P_ARRAY("_goalWS"), P_ARRAY("_possibleActions"), P_ARRAY("_goalParameters"), ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
 		
 		if (!_paramsGood) then {
 			DUMP_CALLSTACK;
@@ -1155,7 +1176,7 @@ CLASS("AI_GOAP", "AI")
 	
 	// Converts an A* node to string for debug purposes
 	STATIC_METHOD("AStarNodeToString") {
-		params [ P_THISCLASS, ["_node", [], [[]]]];
+		params [P_THISCLASS, P_ARRAY("_node")];
 		
 		// Next field might be a node or a special number indicating that next node doesn't exist (i.e. for a goal node)
 		

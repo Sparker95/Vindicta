@@ -113,7 +113,7 @@ CLASS("VirtualRoute", "")
 
 		// Function that calculates the route
 		pr _calcRoute = {
-			params ["_thisObject"];
+			params [P_THISOBJECT];
 
 			T_PRVAR(from);
 			T_PRVAR(destination);
@@ -216,7 +216,7 @@ CLASS("VirtualRoute", "")
 	Start moving during process calls.
 	*/
 	METHOD("start") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		T_SETV("stopped", false);
 		T_SETV("last_t", time);
@@ -227,7 +227,7 @@ CLASS("VirtualRoute", "")
 	Stop moving during process calls.
 	*/
 	METHOD("stop") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		T_SETV("stopped", true);
 		T_SETV("last_t", time);
@@ -238,7 +238,7 @@ CLASS("VirtualRoute", "")
 	Update position, moving along route. Only moves if started.
 	*/
 	METHOD("process") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		T_PRVAR(failed);
 		T_PRVAR(stopped);
@@ -391,7 +391,7 @@ CLASS("VirtualRoute", "")
 			["_waypointColor", "ColorBlack"]
 		];
 		
-		CALLM0(_thisObject, "clearDebugDraw");
+		T_CALLM0("clearDebugDraw");
 
 		T_PRVAR(route);
 
@@ -422,7 +422,7 @@ CLASS("VirtualRoute", "")
 	Clear debug markers for this route.
 	*/
 	METHOD("clearDebugDraw") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		["gps_route_" + _thisObject] call gps_test_fn_clear_markers;
 		["gps_waypoint_" + _thisObject] call gps_test_fn_clear_markers;
 	} ENDMETHOD;
@@ -441,7 +441,7 @@ CLASS("VirtualRoute", "")
 	Returns: current position
 	*/
 	METHOD("getPos") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		T_GETV("pos")
 	} ENDMETHOD;
 
@@ -450,7 +450,7 @@ CLASS("VirtualRoute", "")
 	Returns: nothing
 	*/
 	METHOD("setPos") {
-		params ["_thisObject", ["_pos", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_pos") ];
 
 		if (T_GETV("calculated")) then {
 			// Find the nearest pos in the route and its index
@@ -495,7 +495,7 @@ CLASS("VirtualRoute", "")
 	Returns: array of waypoints for AI navigation, taking account the current position
 	*/
 	METHOD("getAIWaypoints") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		T_GETV("waypoints")
 	} ENDMETHOD;
 

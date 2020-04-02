@@ -1,4 +1,5 @@
 #include "WorldStateProperty.hpp"
+#include "..\..\OOP_Light\OOP_Light.h"
 
 #define pr private
 #define WS_ID_WSP	0
@@ -26,7 +27,7 @@ _c -
 Returns: new WorldState object
 */
 ws_new = {
-	params [["_size", 0, [0]]];
+	params [P_NUMBER("_size")];
 	pr _array_WSP = [];
 	
 	// Array with WorldStateProperties
@@ -60,7 +61,7 @@ _ws - world state
 Returns: Number
 */
 ws_getSize = {
-	params [["_WS", [], [[]]]];
+	params [P_ARRAY("_WS")];
 	count (_WS select 0)
 };
 
@@ -76,7 +77,7 @@ _key - Number, ID of world state property
 Returns: Number
 */
 ws_getPropertyValue = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]]];
+	params [P_ARRAY("_WS"), P_NUMBER("_key")];
 	_WS select WS_ID_WSP select _key
 };
 
@@ -93,7 +94,7 @@ _value - value
 Returns: Bool
 */
 ws_propertyExistsAndEquals = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_value", 0, WSP_TYPES]];
+	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_value", 0, WSP_TYPES]];
 	pr _prop = _WS select WS_ID_WSP select _key;
 	pr _propTypes = _WS select WS_ID_WSPT; // property exists
 	// Check both property existance and value
@@ -118,7 +119,7 @@ _value - value
 Returns: nil
 */
 ws_setPropertyValue = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_value", 0, WSP_TYPES]];
+	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_value", 0, WSP_TYPES]];
 	pr _properties = _WS select WS_ID_WSP;
 	_properties set [_key, _value];
 	
@@ -136,7 +137,7 @@ ws_setPropertyValue = {
 
 // Must be used for actions to specify that the property of world state depends on input parameter with _id
 ws_setPropertyActionParameterTag = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_tag", "ERROR_NO_TAG"]];
+	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_tag", "ERROR_NO_TAG"]];
 	pr _properties = _WS select WS_ID_WSP;
 	_properties set [_key, _tag];
 	
@@ -146,7 +147,7 @@ ws_setPropertyActionParameterTag = {
 
 // Must be used for goals to specify that the property of world state depends on input parameter with _id
 ws_setPropertyGoalParameterTag = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_tag", "ERROR_NO_TAG"]];
+	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_tag", "ERROR_NO_TAG"]];
 	pr _properties = _WS select WS_ID_WSP;
 	_properties set [_key, _tag];
 	
@@ -166,7 +167,7 @@ _key - Number, ID of world state property
 Returns: nil
 */
 ws_clearProperty = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]]];
+	params [P_ARRAY("_WS"), P_NUMBER("_key")];
 	pr _propTypes = _WS select WS_ID_WSPT;
 	pr _props = _WS select WS_ID_WSP;
 	_props set [_key, 0];
@@ -185,7 +186,7 @@ Returns: String
 */
 // Returns a string in human readable form for debug purposes
 ws_toString = {
-	params [["_WS", [], [[]]]];
+	params [P_ARRAY("_WS")];
 	pr _properties = _WS select WS_ID_WSP;
 	pr _propTypes = _WS select WS_ID_WSPT;
 	pr _strOut = "[";
@@ -222,7 +223,7 @@ Return value: [_connected, _parameterID, _parameterValue]
 _connected - bool
 */
 ws_isActionSuitable = {
-	params [["_preconditions", [], [[]]], ["_effects", [], [[]]], ["_wsGoal", [], [[]]] ];
+	params [P_ARRAY("_preconditions"), P_ARRAY("_effects"), P_ARRAY("_wsGoal") ];
 	
 	// Unpack the arrays
 	pr _effectsProps = _effects select WS_ID_WSP;
@@ -292,7 +293,7 @@ Returns number of unsatisfied properties between world state A and B
 */
 
 ws_getNumUnsatisfiedProps = {
-	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
+	params [P_ARRAY("_wsA"), P_ARRAY("_wsB") ];
 	
 	pr _num = 0;
 	
@@ -329,7 +330,7 @@ Method: ws_substract
 Modifies the original _wsA array, returns nothing
 */
 ws_substract = {
-	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
+	params [P_ARRAY("_wsA"), P_ARRAY("_wsB") ];
 	
 	// Unpack the arrays
 	pr _AProps = _wsA select WS_ID_WSP;
@@ -354,7 +355,7 @@ Adds _wsB to _wsA, modifying _wsA
 By adding B to A, we override properties in A which exist in B by values from B.
 */
 ws_add = {
-	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
+	params [P_ARRAY("_wsA"), P_ARRAY("_wsB") ];
 	
 	// Unpack the arrays
 	pr _AProps = _wsA select WS_ID_WSP;
@@ -378,7 +379,7 @@ Method: ws_applyParametersToGoalEffects
 Applies goal parameters to the world state
 */
 ws_applyParametersToGoalEffects = {
-	params [["_effects", [], [[]]], ["_parameters", [], [[]]] ];
+	params [P_ARRAY("_effects"), P_ARRAY("_parameters")];
 	
 	if ((count _parameters) == 0) exitWith { false };
 	
@@ -417,7 +418,7 @@ This function fills parameters of action from effects
 Returns true if parameters were successfully applied
 */
 ws_applyEffectsToParameters = {
-	params [["_effects", [], [[]]], ["_actionParameters", [], [[]]], ["_desiredWS", [], [[]]]];
+	params [P_ARRAY("_effects"), P_ARRAY("_actionParameters"), P_ARRAY("_desiredWS")];
 	
 	// Unpack the arrays
 	pr _effectsProps = _effects select WS_ID_WSP;

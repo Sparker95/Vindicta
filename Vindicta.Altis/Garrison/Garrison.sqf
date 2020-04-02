@@ -131,7 +131,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Create AI object
 		// Create an AI brain of this garrison and start it
 		pr _AI = NEW("AIGarrison", [_thisObject]);
-		SETV(_thisObject, "AI", _AI);
+		T_SETV("AI", _AI);
 
 		// Create a timer to call process method
 		T_CALLM0("initTimer");
@@ -273,7 +273,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Despawn if spawned
 		if(T_GETV("spawned")) then {
 			__MUTEX_UNLOCK;
-			CALLM(_thisObject, "despawn", []);
+			T_CALLM("despawn", []);
 			__MUTEX_LOCK;
 		};
 
@@ -1174,7 +1174,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		if (_types isEqualType 0) then {_types = [_types]};
 
-		pr _groups = GETV(_thisObject, "groups");
+		pr _groups = T_GETV("groups");
 		pr _return = [];
 		{
 			if (CALLM0(_x, "getType") in _types) then {
@@ -1331,7 +1331,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					} else {
 						GROUP_TYPE_IDLE
 					};
-					pr _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
+					pr _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), ["_className", "", [""]], ["_groupType", "", [""]]
 					pr _posAndDir = CALLM(_loc, "getSpawnPos", _args);
 					CALLM(_unit, "spawn", _posAndDir);
 				};
@@ -1573,7 +1573,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Substract from the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
-		CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
+		T_CALLM3("decreaseCounters", _catID, _subcatID, _className);
 
 		// Remove all cargo of this unit too!
 		pr _unitAI = CALLM0(_unit, "getAI");
@@ -1645,13 +1645,13 @@ CLASS("Garrison", "MessageReceiverEx");
 
 					// Add to the efficiency vector
 					CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
-					CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+					T_CALLM3("increaseCounters", _catID, _subcatID, _className);
 				} forEach _unitCargo;
 			};
 
 			// Add to the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
-			CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+			T_CALLM3("increaseCounters", _catID, _subcatID, _className);
 		} forEach _groupUnits;
 		private _groups = T_GETV("groups");
 		_groups pushBackUnique _group;
@@ -1741,13 +1741,13 @@ CLASS("Garrison", "MessageReceiverEx");
 
 					// Remove from the efficiency vector
 					CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
-					CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
+					T_CALLM3("decreaseCounters", _catID, _subcatID, _className);
 				} forEach _unitCargo;
 			};
 			
 			// Substract from the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
-			CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
+			T_CALLM3("decreaseCounters", _catID, _subcatID, _className);
 				
 		} forEach _groupUnits;
 		pr _groups = T_GETV("groups");
@@ -2847,7 +2847,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		//"ActionGarrisonLoadCargo",
 		"ActionGarrisonMountCrew",
 		"ActionGarrisonMountInfantry",
-		"ActionGarrisonMountCrewInfantry",
 		"ActionGarrisonMoveDismounted",
 		//"ActionGarrisonMoveMountedToPosition",
 		//"ActionGarrisonMoveMountedToLocation",
@@ -3256,7 +3255,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		pr _return = [];
-		pr _units = GETV(_thisObject, "units");
+		pr _units = T_GETV("units");
 		{ // for each _query
 			_x params ["_catID", "_subcatID"];
 			{ // for each _units
@@ -3643,7 +3642,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Save our groups
 		{
 			pr _group = _x;
-			diag_log format ["Saving group: %1", _group];
+			//diag_log format ["Saving group: %1", _group];
 			CALLM1(_storage, "save", _group);
 		} forEach T_GETV("groups");
 

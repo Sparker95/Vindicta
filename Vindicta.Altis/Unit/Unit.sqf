@@ -63,7 +63,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull], ["_weapons", []]];
+		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), ["_group", "", [""]], ["_hO", objNull], ["_weapons", []]];
 
 		OOP_INFO_0("NEW UNIT");
 
@@ -165,7 +165,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		//Despawn this unit if it was spawned
 		if (T_CALLM0("isSpawned")) then {
-			CALLM(_thisObject, "despawn", []);
+			T_CALLM("despawn", []);
 		};
 
 		// Remove the unit from its group
@@ -191,7 +191,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// detach the Arma unit handle from this object if it is spawned
 		// Despawn this unit if it was spawned
 		if (T_CALLM0("isSpawned")) then {
-			CALLM1(_thisObject, "despawn", true);
+			T_CALLM1("despawn", true);
 		};
 	} ENDMETHOD;
 
@@ -239,7 +239,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Create an AI object of the unit
 		// Don't start the brain, because its process method will be called by
 		// its group's AI brain
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		pr _AI = NEW(_AIClassName, [_thisObject]);
 		_data set [UNIT_DATA_ID_AI, _AI];
 
@@ -351,7 +351,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						//_objectHandle disableAI "PATH";
 						//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 
-						pr _AI = CALLM1(_thisObject, "createAI", "AIUnitInfantry");
+						pr _AI = T_CALLM1("createAI", "AIUnitInfantry");
 
 						pr _groupType = CALLM0(_group, "getType");
 
@@ -410,7 +410,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						}];
 
 						[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
-							params ["_thisObject", "_objectHandle", "_group", "_spawnCheckEv", "_data"];
+							params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
 							sleep 2;
 							_objectHandle allowDamage true;
 							// If it survived spawning
@@ -425,7 +425,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						//_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
-						CALLM1(_thisObject, "createAI", "AIUnitVehicle");
+						T_CALLM1("createAI", "AIUnitVehicle");
 					};
 					case T_DRONE: {
 					};
@@ -458,7 +458,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						}];
 
 						[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
-							params ["_thisObject", "_objectHandle", "_group", "_spawnCheckEv", "_data"];
+							params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
 							sleep 2;
 							_objectHandle allowDamage true;
 							// If it survived spawning
@@ -478,7 +478,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						// I'll tell you what else: make it draggable so we can get it out of buildings!
 						[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
 
-						//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
+						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?			
 						// Give intel to this unit
 						//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
 					};
@@ -1345,7 +1345,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		OOP_INFO_1("SET GARRISON: %1", _garrison);
 
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GARRISON, _garrison];
 	} ENDMETHOD;
 
@@ -1364,7 +1364,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("setGroup") {
 		params [P_THISOBJECT, ["_group", "", [""]] ];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GROUP, _group];
 	} ENDMETHOD;
 
@@ -1374,7 +1374,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("applyInfantryWeapons") {
 		params [P_THISOBJECT];
-		pr _data = GET_VAR(_thisObject, "data");
+		pr _data = T_GETV("data");
 
 		// Bail if unit does not have special weapons
 		pr _weapons = _data select UNIT_DATA_ID_WEAPONS;
@@ -1484,7 +1484,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getGarrison") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 
 		// If unit is in a group, get the garrison of its group
 		pr _group = _data select UNIT_DATA_ID_GROUP;
@@ -1505,7 +1505,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getObjectHandle") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_OBJECT_HANDLE
 	} ENDMETHOD;
 
@@ -1517,7 +1517,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getClassName") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_CLASS_NAME
 	} ENDMETHOD;
 
@@ -1527,7 +1527,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isPlayer") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		!(isNull _hO) && {_hO in allPlayers}
 	} ENDMETHOD;
@@ -1542,7 +1542,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	// Returns the group of this unit
 	METHOD("getGroup") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_GROUP
 	} ENDMETHOD;
 
@@ -1555,7 +1555,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getAI") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_AI
 	} ENDMETHOD;
 
@@ -1568,7 +1568,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getMainData") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
 	} ENDMETHOD;
 	
@@ -1581,7 +1581,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getEfficiency") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		T_efficiency select (_data select UNIT_DATA_ID_CAT) select (_data select UNIT_DATA_ID_SUBCAT)
 	} ENDMETHOD;
 
@@ -1595,7 +1595,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getData") {
 		params [P_THISOBJECT];
-		GET_VAR(_thisObject, "data")
+		T_GETV("data")
 	} ENDMETHOD;
 
 
@@ -1608,7 +1608,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getPos") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		getPos _oh
 	} ENDMETHOD;
@@ -1621,7 +1621,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getDespawnLocation") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_LOCATION
 	} ENDMETHOD;
 
@@ -1699,7 +1699,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: <Unit> or ""
 	*/
 	STATIC_METHOD("getUnitFromObjectHandle") {
-		params [ ["_thisClass", "", [""]], ["_objectHandle", objNull, [objNull]] ];
+		params [P_THISCLASS, ["_objectHandle", objNull, [objNull]] ];
 		GET_UNIT_FROM_OBJECT_HANDLE(_objectHandle);
 	} ENDMETHOD;
 
@@ -1726,7 +1726,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	
 	STATIC_METHOD("getRequiredCrew") {
-		params ["_thisClass", ["_units", [], [[]]]];
+		params ["_thisClass", P_ARRAY("_units")];
 		
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
@@ -1754,7 +1754,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: Number
 	*/
 	STATIC_METHOD("getCargoInfantryCapacity") {
-		params ["_thisClass", ["_units", [], [[]]]];
+		params ["_thisClass", P_ARRAY("_units")];
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
 	} ENDMETHOD;
@@ -1773,7 +1773,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("getBehaviour") {
 		params [P_THISOBJECT];
-		private _data = GETV(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		behaviour _object
 	} ENDMETHOD;
@@ -1788,7 +1788,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isAlive") {
 		params [P_THISOBJECT];
-		private _data = GETV(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (_object isEqualTo objNull) then {
 			// Unit is despawned
@@ -1807,7 +1807,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isConscious") {
 		params [P_THISOBJECT];
-		private _data = GETV(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (_object isEqualTo objNull) then {
 			// Unit is despawned
@@ -1831,6 +1831,25 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_return
 	} ENDMETHOD;
 
+	METHOD("isDamaged") {
+		params [P_THISOBJECT];
+		if(T_CALLM0("isSpawned")) then {
+			pr _oh = T_CALLM0("getObjectHandle");
+			damage _oh > 0.61 || { !T_CALLM0("isStatic") && { !canMove _oh || { [_oh] call AI_misc_fnc_isAnyWheelDamaged } } }
+		} else {
+			false
+		}
+	} ENDMETHOD;
+
+	METHOD("canMove") {
+		params [P_THISOBJECT];
+		if(T_CALLM0("isSpawned")) then {
+			pr _oh = T_CALLM0("getObjectHandle");
+			T_CALLM0("isStatic") || { canMove _oh && fuel _oh >= 0.01 }
+		} else {
+			true
+		}
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |               I S   I N F A N T R Y   /   V E H I C L E   /   D R O N E
@@ -1845,7 +1864,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isInfantry") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_CAT == T_INF
 	} ENDMETHOD;
 
@@ -1858,7 +1877,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isVehicle") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_CAT == T_VEH
 	} ENDMETHOD;
 
@@ -1871,7 +1890,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isDrone") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_CAT == T_DRONE
 	} ENDMETHOD;
 
@@ -1883,7 +1902,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isCargo") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_CAT == T_CARGO
 	} ENDMETHOD;
 	
@@ -1896,7 +1915,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isStatic") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
 	} ENDMETHOD;
 
@@ -1905,12 +1924,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	METHOD("setBuildResources") {
-		params [P_THISOBJECT, ["_value", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if we can't carry any build resources
 		if (!T_CALLM0("canHaveBuildResources")) exitWith {};
 
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_BUILD_RESOURCE, _value];
 		if (T_CALLM0("isSpawned")) then {
 			T_CALLM1("_setBuildResourcesSpawned", _value);
@@ -1924,7 +1943,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		//OOP_INFO_0("GET BUILD RESOURCES");
 
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 
 		if (_data#UNIT_DATA_ID_CAT == T_INF) exitWith { 0 };
 
@@ -1940,7 +1959,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	} ENDMETHOD;
 
 	METHOD("addBuildResources") {
-		params [P_THISOBJECT, ["_value", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if a negative number is specified
 		if(_value < 0) exitWith {};
@@ -1953,7 +1972,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	} ENDMETHOD;
 
 	METHOD("removeBuildResources") {
-		params [P_THISOBJECT, ["_value", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if a negative number is specified
 		if (_value < 0) exitWith {};
@@ -1965,9 +1984,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	} ENDMETHOD;
 
 	METHOD("_setBuildResourcesSpawned") {
-		params [P_THISOBJECT, ["_value", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_value")];
 
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {0};
 
@@ -2025,7 +2044,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		//OOP_INFO_0("_getBuildResourcesSpawned");
 
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {
 			OOP_ERROR_0("getBuildResourcesSpawned: object handle is null");
@@ -2166,13 +2185,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 
 	METHOD("createDefaultCrew") {
-		params [ P_THISOBJECT, ["_template", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_template") ];
 
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 
 		// Check if the unit is in a group
 		private _group = _data select UNIT_DATA_ID_GROUP;
-		if (_group == "") exitWith { diag_log format ["[Unit::createDefaultCrew] Error: cannot create crew for a unit which has no group: %1", CALL_METHOD(_thisObject, "getData", [])] };
+		if (_group == "") exitWith { diag_log format ["[Unit::createDefaultCrew] Error: cannot create crew for a unit which has no group: %1", T_CALLM("getData", [])] };
 
 		private _className = _data select UNIT_DATA_ID_CLASS_NAME;
 		private _catID = _data select UNIT_DATA_ID_CAT;
@@ -2183,7 +2202,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			private _unitCatID = _x select 0; // Unit's category
 			private _unitSubcatID = _x select 1; // Unit's subcategory
 			private _unitClassID = _x select 2;
-			private _args = [_template, _unitCatID, _unitSubcatID, _unitClassID, _group]; // ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
+			private _args = [_template, _unitCatID, _unitSubcatID, _unitClassID, _group]; // P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), ["_group", "", [""]]
 			private _newUnit = NEW("Unit", _args);
 		} forEach _crewData;
 	} ENDMETHOD;
@@ -2197,7 +2216,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isEmpty") {
 		params [P_THISOBJECT];
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		(count fullCrew _oh) == 0
 	} ENDMETHOD;
@@ -2399,7 +2418,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_data set [UNIT_DATA_ID_MUTEX, 0];
 		_data set [UNIT_DATA_ID_AI, 0];
 
-		diag_log _data;
+		//diag_log _data;
 
 		_data 
 	} ENDMETHOD;

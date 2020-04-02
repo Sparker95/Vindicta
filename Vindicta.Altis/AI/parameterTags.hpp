@@ -16,6 +16,10 @@
 
 #define TAG_MOVE_RADIUS "g_moveRadius"
 
+// Action should be performed instantly where appropriate
+// Used when garrisons spawn so they can immediately apply group and unit state for their current action
+#define TAG_INSTANT "g_instant"
+
 #define TAG_BEHAVIOUR "g_behaviour"
 #define TAG_COMBAT_MODE "g_combatMode"
 #define TAG_FORMATION "g_formation"

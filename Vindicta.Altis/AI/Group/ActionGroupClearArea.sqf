@@ -33,7 +33,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
@@ -42,7 +42,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		pr _isInf = _groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
 
 		pr _pos = T_GETV("pos");
-		pr _radius = T_GETV("radius");		
+		pr _radius = T_GETV("radius");
 		pr _isUrban = (CALLSM2("Location", "nearLocations", _pos, _radius) findIf {
 			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
 		}) != NOT_FOUND;
@@ -60,25 +60,11 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 
-		// Add goals to units
-		pr _inf = CALLM0(_group, "getInfantryUnits");
-
-		if(_isInf) then {
-			{
-				pr _unitAI = CALLM0(_x, "getAI");
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
-			} forEach _inf;
-		} else {
-			// Order get in vehicles
-			(_inf apply { CALLM0(_x, "getObjectHandle") }) orderGetIn true;
-		};
-
 		// Give some waypoints
 		// Delete previous waypoints
 		T_CALLM0("clearWaypoints");
 
 		T_PRVAR(hG);
-
 		private _wp0 = _hG addWaypoint [_pos, _radius];
 		_wp0 setWaypointCompletionRadius 20;
 		_wp0 setWaypointType "SAD";
@@ -104,6 +90,23 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		pr _wpCycle = _hG addWaypoint [waypointPosition _wp0, 0];
 		_wpCycle setWaypointType "CYCLE";
 
+		// Add goals to units
+		pr _inf = CALLM0(_group, "getInfantryUnits");
+
+		if(_isInf) then {
+			{
+				pr _unitAI = CALLM0(_x, "getAI");
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
+			} forEach _inf;
+		} else {
+			// Order get in vehicles
+			(_inf apply { CALLM0(_x, "getObjectHandle") }) orderGetIn true;
+		};
+
+		if(_instant) then {
+			T_CALLM1("teleport", waypointPosition _wp0);
+		};
+
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
@@ -121,21 +124,32 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		// This action is terminal because it's never over right now
 
 		// Delete all waypoints when we know about some enemies
-		T_PRVAR(hG);
-		if ((behaviour (leader _hG)) == "COMBAT") then {
-			if (!T_GETV("inCombat")) then {
-				// Delete waypoints once, let them chose what to do on their own
-				T_CALLM0("clearWaypoints");
-				OOP_INFO_0("Deleted waypoints");
-				T_SETV("inCombat", true);
-			};
-		} else {
-			if (T_GETV("inCombat") || count waypoints _hG <= 1) then {
-				T_SETV("inCombat", false);
-				// Force reactivation
-				T_SETV("state", ACTION_STATE_INACTIVE);
-			};
+		private _hG = T_GETV("hG");
+
+		if (count waypoints _hG <= 1) then {
+			// Force reactivation
+			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
+
+		// This doesn't really improve behavior...
+		// if (behaviour leader _hG == "COMBAT") then {
+		// 	if (!T_GETV("inCombat")) then {
+		// 		// Delete waypoints once, let them chose what to do on their own
+		// 		T_CALLM0("clearWaypoints");
+		// 		OOP_INFO_0("Deleted waypoints");
+		// 		T_SETV("inCombat", true);
+		// 	};
+		// 	private _enemySides = [east, west, independent] select { !([side _hG, _x] call BIS_fnc_sideIsFriendly) };
+		// 	private _enemies = leader _hG targetsQuery [objNull, sideUnknown, "", position leader _hG, 0/*TARGET_AGE_TO_REVEAL*/] select {
+		// 		_x#2 in _enemySides
+		// 	};
+		// } else {
+		// 	if (T_GETV("inCombat") || count waypoints _hG <= 1) then {
+		// 		T_SETV("inCombat", false);
+		// 		// Force reactivation
+		// 		T_SETV("state", ACTION_STATE_INACTIVE);
+		// 	};
+		// };
 		//ACTION_STATE_ACTIVE
 
 		// Return the current state

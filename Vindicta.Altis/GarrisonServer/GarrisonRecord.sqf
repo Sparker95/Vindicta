@@ -193,7 +193,7 @@ CLASS("GarrisonRecord", "")
 	METHOD("_updateLinkedRecords") {
 		params [P_THISOBJECT];
 
-		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", GETV(_thisObject, "garRef"));
+		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", T_GETV("garRef"));
 		{
 			CALLM0(_x, "_updateMapMarker");
 			CALLM0(_x, "_updateActionMapMarkers");

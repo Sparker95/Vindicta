@@ -46,12 +46,14 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	VARIABLE("alertness");
 
+	VARIABLE("wasSpawned");
+
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("groupMarkersEnabled");
 	#endif
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
+		params [P_THISOBJECT, ["_agent", "", [""]]];
 		
 		ASSERT_GLOBAL_OBJECT(gStimulusManagerGarrison);
 
@@ -87,11 +89,11 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("lastBusyTime", time-AI_GARRISON_IDLE_TIME_THRESHOLD-1); // Garrison should be able to switch to relax instantly after its creation
 		
 		// Update composition
-		CALLM0(_thisObject, "updateComposition");
+		T_CALLM0("updateComposition");
 		
 		// Set process interval
 		// Makes no sense any more since it's processed in thread's process categories
-		//CALLM1(_thisObject, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
+		//T_CALLM1("setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
 		
 		// Commander action record serial
 		T_SETV("cmdrActionRecordSerial", []);
@@ -122,7 +124,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	} ENDMETHOD;
 	
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		#ifdef DEBUG_GOAL_MARKERS
 		deleteMarker (_thisObject + MRK_GOAL);
@@ -177,8 +179,8 @@ CLASS("AIGarrison", "AI_GOAP")
 				&& {count markerPos (_thisObject + MRK_GOAL) >= 2} 
 				&& {markerPos (_thisObject + MRK_GOAL) distance2D _pos < 20}
 			) then {
-				pr _un = GETV(_thisObject, "groupMarkersEnabled");
-				SETV(_thisObject, "groupMarkersEnabled", !_un);
+				pr _un = T_GETV("groupMarkersEnabled");
+				T_SETV("groupMarkersEnabled", !_un);
 				true
 			} else {
 				false
@@ -187,7 +189,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	} ENDMETHOD;
 
 	METHOD("_updateDebugMarkers") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("agent");
 
@@ -245,26 +247,26 @@ CLASS("AIGarrison", "AI_GOAP")
 		params [P_THISOBJECT];
 
 		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorHealth]);
+		T_CALLM("addSensor", [_sensorHealth]);
 		T_SETV("sensorHealth", _sensorHealth); // Keep reference to this sensor in case we want to update it
 		
 		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorTargets]);
+		T_CALLM("addSensor", [_sensorTargets]);
 		T_SETV("sensorTargets", _sensorTargets);
 		
 		pr _sensorCasualties = NEW("SensorGarrisonCasualties", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		T_CALLM("addSensor", [_sensorCasualties]);
 		
 		pr _sensorState = NEW("SensorGarrisonState", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorState);
+		T_CALLM1("addSensor", _sensorState);
 		T_SETV("sensorState", _sensorState);
 		
 		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorObserved);
+		T_CALLM1("addSensor", _sensorObserved);
 		T_SETV("sensorObserved", _sensorObserved);
 
 		pr _sensorSound = NEW("SensorGarrisonSound", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorSound);
+		T_CALLM1("addSensor", _sensorSound);
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -280,18 +282,18 @@ CLASS("AIGarrison", "AI_GOAP")
 		FIX_LINE_NUMBERS()
 
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
-		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
+		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", T_CALLM0("isSpawned"), _accelerate);
 		if (CALLM0(_gar, "countInfantryUnits") > 0) then {
 			CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
 
 			// Update the "busy" timer
 			pr _currentGoal = T_GETV("currentGoal");
-			if (_currentGoal != "" && _currentGoal != "GoalGarrisonRelax") then { // Do we have anything to do?
+			if (_currentGoal != NULL_OBJECT && _currentGoal != "GoalGarrisonRelax") then { // Do we have anything to do?
 				T_SETV("lastBusyTime", time);
 			};
 
 			#ifdef DEBUG_GOAL_MARKERS
-			CALLM0(_thisObject, "_updateDebugMarkers");
+			T_CALLM0("_updateDebugMarkers");
 			#endif
 			FIX_LINE_NUMBERS()
 		} else {
@@ -311,7 +313,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Check if we can capture other garrisons attached to this place
 		pr _loc = CALLM0(_gar, "getLocation");
 		if (!IS_NULL_OBJECT(_loc)) then {										// Copture something only if we are at location
-			pr _side = CALLM0(_gar, "getSide");									
+			pr _side = CALLM0(_gar, "getSide");
 			if ((CALLM0(_gar, "countInfantryUnits") > 0) ||						// We must have some infantry ...
 				{ _side in CALLM0(_loc, "getPlayerSides") } ) then {			// ... or some friendly players at this location
 				pr _otherGars = CALLM0(_loc, "getGarrisons"); 					// Get all garrisons of any sides
@@ -352,7 +354,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
@@ -376,7 +378,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		// Delete goals that have been given by this object
 		{
@@ -414,7 +416,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		// Delete goals given by this object
 		{
@@ -446,7 +448,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		// Notify the current action
 		pr _action = T_GETV("currentAction");
@@ -458,7 +460,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	
 	METHOD("handleLocationChanged") {
-		params ["_thisObject", ["_loc", "", [""]]];
+		params [P_THISOBJECT, ["_loc", "", [""]]];
 
 		// Set location world state property
 		pr _ws = T_GETV("worldState");
@@ -479,7 +481,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Update the debug markers
 		#ifdef DEBUG_GOAL_MARKERS
-		CALLM0(_thisObject, "_updateDebugMarkers");
+		T_CALLM0("_updateDebugMarkers");
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -488,10 +490,10 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Updates world state properties related to composition of the garrison
 	// Here we have checks that must be run only when new units/groups are added or removed
 	METHOD("updateComposition") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		pr _gar = T_GETV("agent");
-		pr _worldState = T_GETV("worldState");		
+		pr _worldState = T_GETV("worldState");
 		
 		// Find medics
 		pr _medics = [_gar, [[T_INF, T_INF_medic], [T_INF, T_INF_recon_medic]]] call GETM(_gar, "findUnits");
@@ -511,14 +513,14 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// Returns spawned state of attached garrison
 	METHOD("isSpawned") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		//CALLM0(T_GETV("agent"), "isSpawned")
 		GETV(T_GETV("agent"), "spawned")
 	} ENDMETHOD;
 
 	// Sets the position
 	METHOD("setPos") {
-		params ["_thisObject", "_pos"];
+		params [P_THISOBJECT, "_pos"];
 		
 		OOP_INFO_1("SET POS AI: %1", _pos);
 		pr _ws = T_GETV("worldState");
@@ -534,7 +536,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// Gets the position
 	METHOD("getPos") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_POSITION] call ws_getPropertyValue;
 	} ENDMETHOD;
@@ -542,7 +544,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Not used right now
 	/*
 	METHOD("onGarrisonSpawned") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 	} ENDMETHOD;
 
@@ -652,7 +654,7 @@ CLASS("AIGarrison", "AI_GOAP")
 			} else {
 				0
 			};
-			T_SETV("alertness", _alertness);	
+			T_SETV("alertness", _alertness);
 		};
 		_alertness
 	} ENDMETHOD;

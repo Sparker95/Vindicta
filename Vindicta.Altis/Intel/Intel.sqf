@@ -65,7 +65,7 @@ CLASS("Intel", "Storable")
 	Constructor. Takes no arguments.
 	*/
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("NEW");
 	} ENDMETHOD;
@@ -336,7 +336,7 @@ CLASS("IntelLocation", "Intel")
 		//[_intel] call oop_dumpAllVariables;
 
 
-		pr _mapMarker = GETV(_thisObject, "mapMarker"); // Get map marker from this object, not from source object, because source object doesn't have a marker connected to it
+		pr _mapMarker = T_GETV("mapMarker"); // Get map marker from this object, not from source object, because source object doesn't have a marker connected to it
 		pr _type = GETV(_intel, "type");
 		pr _pos = GETV(_intel, "pos");
 		pr _side = GETV(_intel, "side");
@@ -614,7 +614,7 @@ CLASS("IntelCommanderAction", "Intel")
 				CALLSM("ClientMapUI", "drawRoute", _args);
 				T_SETV("shownOnMap", true);
 			};
-			// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+			// params ["_thisClass", P_ARRAY("_posArray"), "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 		
 
 		} else {
@@ -749,7 +749,7 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 							_labels
 							];
 				CALLSM("ClientMapUI", "drawRoute", _args);
-				// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+				// params ["_thisClass", P_ARRAY("_posArray"), "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 				T_SETV("shownOnMap", true);
 			};
 		} else {
@@ -890,7 +890,7 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 							[T_GETV("side"), true] call BIS_fnc_sideColor
 							];
 				CALLSM("ClientMapUI", "drawRoute", _args);
-				// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+				// params ["_thisClass", P_ARRAY("_posArray"), "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 				T_SETV("shownOnMap", true);
 			};
 		} else {
@@ -994,8 +994,8 @@ CLASS("IntelCluster", "Intel")
 
 		// Create notification
 		// Get center position from border positions
-		pr _pos1 = GETV(_thisObject, "pos1");
-		pr _pos2 = GETV(_thisObject, "pos2");
+		pr _pos1 = T_GETV("pos1");
+		pr _pos2 = T_GETV("pos2");
 		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
 		CALLSM1("NotificationFactory", "createSpottedTargets", _pos);
 	} ENDMETHOD;

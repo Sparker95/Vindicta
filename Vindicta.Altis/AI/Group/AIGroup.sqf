@@ -38,10 +38,10 @@ CLASS("AIGroup", "AI_GOAP")
 		
 		// Initialize sensors
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorTargets]);
+		T_CALLM("addSensor", [_sensorTargets]);
 		
 		pr _sensorHealth = NEW("SensorGroupHealth", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorHealth]);
+		T_CALLM("addSensor", [_sensorHealth]);
 		T_SETV("sensorHealth", _sensorHealth);
 		
 		// Initialize the world state
@@ -52,10 +52,10 @@ CLASS("AIGroup", "AI_GOAP")
 		[_ws, WSP_GROUP_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
 		// [_ws, WSP_GROUP_DRIVERS_ASSIGNED, false] call ws_setPropertyValue;
 		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, false] call ws_setPropertyValue;
-		SETV(_thisObject, "worldState", _ws);
+		T_SETV("worldState", _ws);
 		
 		// Set process interval
-		CALLM1(_thisObject, "setProcessInterval", 3);
+		T_CALLM1("setProcessInterval", 3);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
@@ -107,8 +107,8 @@ CLASS("AIGroup", "AI_GOAP")
 				&& {count markerPos (_thisObject + MRK_GOAL) >= 2} 
 				&& {markerPos (_thisObject + MRK_GOAL) distance2D _pos < 20}
 			) then {
-				pr _un = GETV(_thisObject, "unitMarkersEnabled");
-				SETV(_thisObject, "unitMarkersEnabled", !_un);
+				pr _un = T_GETV("unitMarkersEnabled");
+				T_SETV("unitMarkersEnabled", !_un);
 				true
 			} else {
 				false
@@ -133,7 +133,7 @@ CLASS("AIGroup", "AI_GOAP")
 	} ENDMETHOD;
 
 	METHOD("_updateDebugMarkers") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		pr _grp = T_GETV("agent");
 		pr _gar = CALLM0(_grp, "getGarrison");
@@ -220,7 +220,6 @@ CLASS("AIGroup", "AI_GOAP")
 			pr _unused = "";
 		};
 
-		FIX_LINE_NUMBERS()
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
 		T_CALLM0("_updateDebugMarkers");
 	} ENDMETHOD;
@@ -250,7 +249,7 @@ CLASS("AIGroup", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		OOP_INFO_1("handleUnitsRemoved: %1", _units);
 		
@@ -285,7 +284,7 @@ CLASS("AIGroup", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		OOP_INFO_1("handleUnitsAdded: %1", _units);
 		

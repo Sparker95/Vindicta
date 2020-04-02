@@ -25,11 +25,13 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	VARIABLE("startSpawnedTime");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _a = GETV(_AI, "agent");
 		pr _oh = CALLM0(_a, "getObjectHandle");
 		pr _count = _oh ammo primaryWeapon _oh;
+
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
 
 		T_SETV("isHandleSpawned", 0);
 		T_SETV("spawnHandle", scriptNull);
@@ -39,7 +41,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	} ENDMETHOD;
 
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _oh = T_GETV("objectHandle");
 		pr _target = T_GETV("target");
@@ -55,9 +57,9 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 
 		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};

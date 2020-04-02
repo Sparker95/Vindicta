@@ -515,13 +515,13 @@ if(isNil { GETSV("SupplyCmdrAction", "SupplyNames")}) then {
 	private _thisObject = NEW("SupplyCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id") ARG ACTION_SUPPLY_TYPE_BUILDING ARG 0.2]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 
-	diag_log format ["Reinforce final score: %1", _finalScore];
+	//diag_log format ["Reinforce final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	CALLM(_thisObject, "applyToSim", [_world]);
+	T_CALLM("applyToSim", [_world]);
 	true
 	// ["Object exists", !(isNil "_class")] call test_Assert;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;

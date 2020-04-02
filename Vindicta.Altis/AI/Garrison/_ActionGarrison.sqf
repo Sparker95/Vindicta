@@ -10,14 +10,19 @@ Garrison action.
 CLASS("ActionGarrison", "Action")
 
 	VARIABLE("gar");
-	
+	VARIABLE("reactivateOnSpawn");
+	VARIABLE("replanOnCompositionChange");
+
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI") ];
+
 		ASSERT_OBJECT_CLASS(_AI, "AIGarrison");
-		
+
 		pr _gar = GETV(_AI, "agent");
-		SETV(_thisObject, "gar", _gar);
+
+		T_SETV("gar", _gar);
+		T_SETV("reactivateOnSpawn", true);
+		T_SETV("replanOnCompositionChange", true);
 	} ENDMETHOD;
 
 	/*
@@ -26,8 +31,8 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Bool. Return true if you have handled spawning here. If you return false, Garrison.spawn will perform spawning on its own.
 	*/
-	METHOD("spawn") {
-		params ["_thisObject"];
+	/* protected virtual */ METHOD("spawn") {
+		params [P_THISOBJECT];
 		false
 	} ENDMETHOD;
 
@@ -37,8 +42,13 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Nothing.
 	*/
-	METHOD("onGarrisonSpawned") {
-		params ["_thisObject"];
+	/* protected virtual */ METHOD("onGarrisonSpawned") {
+		params [P_THISOBJECT];
+
+		// Reactivate by default
+		if(T_GETV("reactivateOnSpawn")) then {
+			T_SETV("state", ACTION_STATE_INACTIVE);
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -47,8 +57,51 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Nothing.
 	*/
-	METHOD("onGarrisonDespawned") {
-		params ["_thisObject"];
+	/* protected virtual */ METHOD("onGarrisonDespawned") {
+		params [P_THISOBJECT];
+
+		// Reactivate by default
+		if(T_GETV("reactivateOnSpawn")) then {
+			T_SETV("state", ACTION_STATE_INACTIVE);
+		};
+	} ENDMETHOD;
+
+	
+	// Handle units/groups added/removed
+	METHOD("handleGroupsAdded") {
+		params [P_THISOBJECT, P_ARRAY("_groups")];
+
+		// Replan by default
+		if(T_GETV("replanOnCompositionChange")) then {
+			T_SETV("state", ACTION_STATE_REPLAN);
+		};
+	} ENDMETHOD;
+
+	METHOD("handleGroupsRemoved") {
+		params [P_THISOBJECT, P_ARRAY("_groups")];
+
+		// Replan by default
+		if(T_GETV("replanOnCompositionChange")) then {
+			T_SETV("state", ACTION_STATE_REPLAN);
+		};
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsRemoved") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		// Replan by default
+		if(T_GETV("replanOnCompositionChange")) then {
+			T_SETV("state", ACTION_STATE_REPLAN);
+		};
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsAdded") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		// Replan by default
+		if(T_GETV("replanOnCompositionChange")) then {
+			T_SETV("state", ACTION_STATE_REPLAN);
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

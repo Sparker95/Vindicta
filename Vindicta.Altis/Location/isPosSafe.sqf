@@ -1,3 +1,5 @@
+#include "..\OOP_Light\OOP_Light.h"
+
 // Class: Location
 /*
 Method: (static)isPosSafe
@@ -17,7 +19,7 @@ Author: Sparker 29.07.2018
 
 //#define DEBUG
 
-params [ ["_thisClass", "", [""]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_className", "", [""]] ];
+params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_dir"), ["_className", "", [""]] ];
 
 // Bail if Z is below surface, as it happens with positions of bridges
 #ifdef DEBUG

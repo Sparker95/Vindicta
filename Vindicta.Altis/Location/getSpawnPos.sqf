@@ -18,7 +18,7 @@ Return value: Array in format [[x, y, z], direction]
 Author: Sparker 29.07.2018
 */
 
-params [["_thisObject", "", [""]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
+params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), ["_className", "", [""]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
 
 //First try to find it in building spawn positions
 private _stAll = T_GETV("spawnPosTypes");

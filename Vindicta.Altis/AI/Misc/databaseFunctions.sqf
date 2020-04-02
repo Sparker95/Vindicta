@@ -11,17 +11,17 @@ These functions help initialize various properties of goals and actions from a s
 #define pr private
 
 AI_misc_fnc_setGoalIntrinsicRelevance = {
-	params [["_goalClass", "", [""]], ["_relevance", 0, [0]]];
+	params [P_STRING("_goalClass"), P_NUMBER("_relevance")];
 	SET_STATIC_VAR(_goalClass, "relevance", _relevance);
 };
 
 AI_misc_fnc_setGoalPredefinedAction = {
-	params [["_goalClass", "", [""]], ["_actionClass", "", [""]]];
+	params [P_STRING("_goalClass"), P_STRING("_actionClass")];
 	SET_STATIC_VAR(_goalClass, "predefinedAction", _actionClass);
 };
 
 AI_misc_fnc_setGoalEffects = {
-	params [["_goalClass", "", [""]], ["_size", 0, [0]], ["_effectsArray", [], [[]]]];
+	params [P_STRING("_goalClass"), P_NUMBER("_size"), P_ARRAY("_effectsArray")];
 	
 	// Create a new world state
 	pr _ws = [_size] call ws_new;
@@ -45,7 +45,7 @@ AI_misc_fnc_setGoalEffects = {
 };
 
 AI_misc_fnc_setActionEffects = {
-	params [["_actionClass", "", [""]], ["_size", 0, [0]], ["_effectsArray", [], [[]]]];
+	params [P_STRING("_actionClass"), P_NUMBER("_size"), P_ARRAY("_effectsArray")];
 
 	// Create a new world state
 	pr _ws = [_size] call ws_new;
@@ -69,7 +69,7 @@ AI_misc_fnc_setActionEffects = {
 };
 
 AI_misc_fnc_setActionPreconditions = {
-	params [["_actionClass", "", [""]], ["_size", 0, [0]], ["_preconditionsArray", [], [[]]]];
+	params [P_STRING("_actionClass"), P_NUMBER("_size"), P_ARRAY("_preconditionsArray")];
 	
 	// Create a new world state
 	pr _ws = [_size] call ws_new;
@@ -93,7 +93,7 @@ AI_misc_fnc_setActionPreconditions = {
 };
 
 AI_misc_fnc_setActionParametersFromGoal = {
-	params [["_actionClass", "", [""]], ["_goalParameterTagsArray", [], [[]]]];
+	params [P_STRING("_actionClass"), P_ARRAY("_goalParameterTagsArray")];
 	pr _parameters = [];
 	{
 		_parameters pushBack [_x, nil];
@@ -102,19 +102,24 @@ AI_misc_fnc_setActionParametersFromGoal = {
 };
 
 AI_misc_fnc_setActionPrecedence = {
-	params [["_actionClass", "", [""]], ["_precedence", 0, [0]] ];
+	params [P_STRING("_actionClass"), P_NUMBER("_precedence") ];
 	SET_STATIC_VAR(_actionClass, "precedence", _precedence);
 };
 
+AI_misc_fnc_setActionNonInstant = {
+	params [P_STRING("_actionClass")];
+	SET_STATIC_VAR(_actionClass, "nonInstant", true);
+};
+
 AI_misc_fnc_setActionCost = {
-	params [["_actionClass", "", [""]], ["_cost", 0, [0]]];
+	params [P_STRING("_actionClass"), P_NUMBER("_cost")];
 	
 	// Set the static variable
 	SET_STATIC_VAR(_actionClass, "cost", _cost);
 };
 
 AI_misc_fnc_setActionCostAndPrecedence = {
-	params [["_actionClass", "", [""]], ["_cost", 0, [0]], ["_precedence", 0, [0]]];
+	params [P_STRING("_actionClass"), P_NUMBER("_cost"), P_NUMBER("_precedence")];
 	
 	// Set the static variable
 	SET_STATIC_VAR(_actionClass, "cost", _cost);

@@ -31,15 +31,4 @@ CLASS("ActionGarrisonSplitVehicleGroups", "ActionGarrison")
 
 	} ENDMETHOD;
 
-	METHOD("process") {
-		params [P_THISOBJECT];
-
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		_state
-	} ENDMETHOD;
-
-	METHOD("terminate") {
-		params [P_THISOBJECT];
-	} ENDMETHOD;
-
 ENDCLASS;

@@ -28,6 +28,7 @@ call compile preprocessFileLineNumbers "AI\Group\GoalGroupGetInVehiclesAsCrew.sq
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupInfantryFollowGroundVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupInfantryMove.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupInfantryOverwatchArea.sqf";
+call compile preprocessFileLineNumbers "AI\Group\GoalGroupMove.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupMoveGroundVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupNothing.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupOccupySentryPositions.sqf";

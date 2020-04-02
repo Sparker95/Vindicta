@@ -42,7 +42,7 @@ g_UM_Hints = [
 CLASS(CLASS_NAME, "")
 	
 	STATIC_METHOD("drawUI") {
-		params [["_thisObject", "", [""]], ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];
+		params [P_THISOBJECT, ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];
 
 			pr _textUI = "";
 			pr _bSuspicious = UNDERCOVER_IS_UNIT_SUSPICIOUS(_unit);

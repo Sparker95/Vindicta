@@ -70,7 +70,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	// ------------ N E W ------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_unit", objNull, [objNull]]];
+		params [P_THISOBJECT, ["_unit", objNull, [objNull]]];
 
 		T_SETV("unit", _unit);
 		_unit setVariable ["undercoverMonitor", _thisObject];
@@ -119,7 +119,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)													
 
 
-		CALLM0(_thisObject, "calcGearSuspicion");							// evaluate suspicion of unit's equipment
+		T_CALLM0("calcGearSuspicion");							// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
 
 		// show debug UI
@@ -238,7 +238,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	// ------------ D E L E T E ------------
 
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		// Delete the timer
 		pr _timer = T_GETV("timer");
 		DELETE(_timer);
@@ -271,7 +271,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	// ------------ H A N D L E  M E S S A G E ------------
 
 	METHOD("handleMessage") {
-		params [["_thisObject", "", [""]] , ["_msg", [], [[] ]]];
+		params [P_THISOBJECT , ["_msg", [], [[] ]]];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 
 		switch (_msgType) do {
@@ -820,7 +820,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 	*/
 	METHOD("calcCaptive") {
-		params [["_thisObject", "", [""]], ["_suspicionArr", [], [[0, ""]]], ["_state", sUNDERCOVER]];
+		params [P_THISOBJECT, ["_suspicionArr", [], [[0, ""]]], ["_state", sUNDERCOVER]];
 		pr _unit = T_GETV("unit");
 		
 		pr _suspicion = 0;
@@ -864,7 +864,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		Parameters: 0: _state 			- (Integer) new state for UM
 	*/
 	METHOD("setState") {
-		params [["_thisObject", "", [""]], ["_state", 0]];
+		params [P_THISOBJECT, ["_state", 0]];
 
 		T_SETV("state", _state);
 		T_SETV("stateChanged", true);
@@ -880,7 +880,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		Calculates the suspiciousness of the units equipment on foot and in vehicles, and stores it in two variables for this object.
 	*/
 	METHOD("calcGearSuspicion") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		pr _unit = T_GETV("unit");
 
 		pr _suspGear = 0;
@@ -912,7 +912,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		Returns: Number between 0.0 and 1.0.
 	*/
 	METHOD("getBodyExposure") {
-		params ["_thisObject", ["_unit", objNull, [objNull]]];
+		params [P_THISOBJECT, ["_unit", objNull, [objNull]]];
 
 		pr _bodyExposure = T_GETV("bodyExposure");
 		pr _eyePosOldVeh = T_GETV("eyePosOldVeh");

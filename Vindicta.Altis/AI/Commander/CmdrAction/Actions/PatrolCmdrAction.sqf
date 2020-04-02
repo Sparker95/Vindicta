@@ -598,15 +598,15 @@ REGISTER_DEBUG_MARKER_STYLE("PatrolCmdrAction", "ColorYellow", "mil_pickup");
 	pr _thisObject = NEW("PatrolCmdrAction", [GETV(_garrison, "id") ARG _targets]);
 
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
+	T_CALLM("updateScore", [_world ARG _future]);
 
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	private _finalScore = T_CALLM("getFinalScore", []);
 	diag_log format ["Patrol final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	// Apply to sim
-	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
-	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
+	private _nowSimState = T_CALLM("applyToSim", [_world]);
+	private _futureSimState = T_CALLM("applyToSim", [_future]);
 
 }] call test_addTest;
 

@@ -22,7 +22,7 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// Set behaviour
 		T_CALLM0("applyGroupBehaviour");
@@ -35,7 +35,7 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 
 		{
 			private _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
 		} forEach _inf;
 
 		// Set state

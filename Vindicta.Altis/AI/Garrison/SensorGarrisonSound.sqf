@@ -32,14 +32,14 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	VARIABLE("soundSources");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		T_SETV("stimulation", 0);
 		T_SETV("timePrevUpdate", time);
 		T_SETV("soundSources", []);
 	} ENDMETHOD;
 
 	METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
@@ -126,7 +126,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("HANDLE STIMULUS: %1", _stimulus);
 
@@ -170,7 +170,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Bail if not spawned
 		// todo later despawned garrisons can also receive this stimulus, so that when they are spawned, they are already alert for instance
@@ -193,7 +193,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		//params [ ["_thisObject", "", [""]]];
+		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
 	} ENDMETHOD;
 

@@ -33,10 +33,11 @@ CLASS("ActionUnitArrest", "Action")
 	VARIABLE("screamTime");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _a = GETV(_AI, "agent");
 		pr _captor = CALLM(_a, "getObjectHandle", []);
 		T_SETV("objectHandle", _captor);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
 		T_SETV("target", _target);
 		
 		//FSM
@@ -48,9 +49,9 @@ CLASS("ActionUnitArrest", "Action")
 	} ENDMETHOD;
 	
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		pr _captor = T_GETV("objectHandle");		
+		pr _captor = T_GETV("objectHandle");
 		_captor lockWP false;
 		_captor setSpeedMode "NORMAL";
 
@@ -63,9 +64,9 @@ CLASS("ActionUnitArrest", "Action")
 	} ENDMETHOD;
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		CALLM(_thisObject, "activateIfInactive", []);
+		T_CALLM("activateIfInactive", []);
 		
 		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
@@ -74,13 +75,13 @@ CLASS("ActionUnitArrest", "Action")
 		pr _target = T_GETV("target");
 
 		if (!(alive _captor) || (behaviour _captor == "COMBAT")) then {
-			//OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
+			//OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat.");
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 2);
 		};
 
 		if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) then {
-			//OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested."); 
+			//OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested.");
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 3);
 		};
@@ -102,7 +103,7 @@ CLASS("ActionUnitArrest", "Action")
 					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
 					random 4 <= 2
 				) then {
-					CALLSM1("ActionUnitArrest", "performArrest", _target);				
+					CALLSM1("ActionUnitArrest", "performArrest", _target);
 					T_SETV("stateMachine", 1);
 					breakTo "switch";
 				};
@@ -158,14 +159,14 @@ CLASS("ActionUnitArrest", "Action")
 									"STOP! Get on the fucking ground!",
 									"STOP! Get down on the ground!",
 									"DO NOT MOVE! Get down on the ground!"
-									]; 
+									];
 								} else {
 									_captor say "halt";
 									_sentence = selectRandom [
 									"HALT! Get on the fucking ground!",
 									"HALT! Get down on the ground!",
 									"DO NOT MOVE! Get down on the ground!"
-									]; 
+									];
 								};
 								
 								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
@@ -260,7 +261,7 @@ CLASS("ActionUnitArrest", "Action")
 			case 2: {
 				//OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP. Player will be made overt.");
 
-				CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);	
+				CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);
 
 				_state = ACTION_STATE_FAILED;
 			};
@@ -321,7 +322,7 @@ CLASS("ActionUnitArrest", "Action")
 				"HOSTILE!",
 				"SHOTS FIRED!",
 				"OPEN FIRE!"
-			]; 
+			];
 
 			[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
 
@@ -335,7 +336,7 @@ CLASS("ActionUnitArrest", "Action")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		terminate T_GETV("spawnHandle");
 		pr _captor = T_GETV("objectHandle");

@@ -19,12 +19,8 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	VARIABLE("assignedCargo"); // Array of [unit, cargo index]
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
 
-	// Indicates that this AI is new and was created recently
-	// This flag aids acceleration of actions that were given to AI when it was just spawned
-	VARIABLE("new");
-
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
+		params [P_THISOBJECT, ["_agent", "", [""]]];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Unit");
 		
@@ -33,21 +29,18 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		
 		// Initialize sensors
 		
-		//SETV(_thisObject, "worldState", _ws);
+		//T_SETV("worldState", _ws);
 
 		T_SETV("cargo", []);
-
-		// Set "new" flag
-		T_SETV("new", true);
 	} ENDMETHOD;
 	
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		
 		// Unassign all units assigned to this vehicle
 		pr _units = [];
-		pr _driver = GETV(_thisObject, "assignedDriver");
+		pr _driver = T_GETV("assignedDriver");
 		if (!isNil "_driver") then {
 			pr _AI = CALLM0(_driver, "getAI");
 			if (! isNil "_AI") then { // Sanity checks
@@ -57,7 +50,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 			};			
 		};
 		
-		pr _cargo = GETV(_thisObject, "assignedCargo");
+		pr _cargo = T_GETV("assignedCargo");
 		if (!isNil "_cargo") then {
 			{
 				pr _AI = CALLM0(_x select 0, "getAI");
@@ -69,7 +62,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 			} forEach _cargo;
 		};
 		
-		pr _turrets = GETV(_thisObject, "assignedTurrets");
+		pr _turrets = T_GETV("assignedTurrets");
 		if (!isNil "_turrets") then {
 			{
 				pr _AI = CALLM0(_x select 0, "getAI");
@@ -119,31 +112,31 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("unassignUnit") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		params [P_THISOBJECT, ["_unit", "", [""]]];
 		
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 		
 		OOP_INFO_1("Unassigning unit: %1", _unit);
 		
 		// Unassign driver
-		pr _driver = GETV(_thisObject, "assignedDriver");
+		pr _driver = T_GETV("assignedDriver");
 		if (!isNil "_driver") then {
 			if (_driver == _unit) then {
 				OOP_INFO_0("unassigned driver");
-				SETV(_thisObject, "assignedDriver", nil);
+				T_SETV("assignedDriver", nil);
 			};
 		};
 		
 		// Unassign gunner
 		/*
-		pr _gunner = GETV(_thisObject, "assignedGunner");
+		pr _gunner = T_GETV("assignedGunner");
 		if (!isNil "_gunner") then {
-			if (_gunner == _unit) then { SETV(_thisObject, "assignedDriver", nil);};
+			if (_gunner == _unit) then { T_SETV("assignedDriver", nil);};
 		};
 		*/
 		
 		// Unassign cargo
-		pr _cargo = GETV(_thisObject, "assignedCargo");
+		pr _cargo = T_GETV("assignedCargo");
 		if (!isNil "_cargo") then {
 			pr _cargoThisUnit = _cargo select {_x select 0 == _unit};
 			{
@@ -153,7 +146,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		};
 		
 		// Unassign turrets
-		pr _turrets = GETV(_thisObject, "assignedTurrets");
+		pr _turrets = T_GETV("assignedTurrets");
 		if (!isNil "_turrets") then {
 			pr _turretsThisUnit = _turrets select {_x select 0 == _unit};
 			{
@@ -171,7 +164,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns: <Unit> or ""
 	*/
 	METHOD("getAssignedDriver") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _driver = T_GETV("assignedDriver");
 		
@@ -193,7 +186,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns: <Unit> or ""
 	*/
 	METHOD("getAssignedTurret") {
-		params [["_thisObject", "", [""]], ["_turretPath", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_turretPath") ];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		
 		// Turret array is not initialized, therefore no turrets were assigned
@@ -213,7 +206,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns: Array of <Unit>
 	*/
 	METHOD("getAssignedTurrets") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		// Turret array is not initialized, therefore no turrets were assigned
 		if (isNil "_assignedTurrets") exitWith {[]};
@@ -230,7 +223,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns: <Unit> or ""
 	*/	
 	METHOD("getAssignedCargo") {
-		params [["_thisObject", "", [""]], ["_cargoIndex", 0, [0]] ];
+		params [P_THISOBJECT, P_NUMBER("_cargoIndex") ];
 		pr _assignedCargo = T_GETV("assignedCargo");
 		
 		// Cargo array is not initialized, therefore no turrets were assigned
@@ -257,7 +250,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns: Array of <Unit>s
 	*/
 	METHOD("getAssignedUnits") {
-		params [["_thisObject", "", [""]], ["_returnDriver", true], ["_returnTurrets", true], ["_returnCargo", true] ];
+		params [P_THISOBJECT, ["_returnDriver", true], ["_returnTurrets", true], ["_returnCargo", true] ];
 		
 		pr _ret = [];
 		if (_returnDriver) then {

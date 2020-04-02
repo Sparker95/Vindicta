@@ -40,7 +40,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
+		params [P_THISOBJECT, ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
 		
 		PROFILER_COUNTER_INC(GROUP_CLASS_NAME);
 		
@@ -53,7 +53,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		_data set [GROUP_DATA_ID_SIDE, _side];
 		_data set [GROUP_DATA_ID_TYPE, _groupType];
 		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
-		SET_VAR(_thisObject, "data", _data);
+		T_SETV("data", _data);
 	} ENDMETHOD;
 
 
@@ -62,7 +62,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Method: delete
 	*/
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_DEC(GROUP_CLASS_NAME);
 		
@@ -78,8 +78,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		// Despawn if spawned
-		if (CALLM0(_thisObject, "isSpawned")) then {
-			CALLM0(_thisObject, "despawn");
+		if (T_CALLM0("isSpawned")) then {
+			T_CALLM0("despawn");
 		};
 
 		// Report an error if we are deleting a group with units in it
@@ -135,7 +135,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		OOP_INFO_1("ADD UNITS: %1", _units);
-
+		
 		private _unitsToMove = _units select {
 			// Valid units only
 			CALLM0(_x, "isValid")
@@ -178,7 +178,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// todo
 
 		// Handle spawn states
-		if (CALLM0(_thisObject, "isSpawned")) then {
+		if (T_CALLM0("isSpawned")) then {
 			// Make the unit join the actual group
 			pr _groupHandle = T_CALLM0("_createGroupHandle");
 			private _unitHandles = _unitsToMove apply { CALLM0(_x select 0, "getObjectHandle") };
@@ -213,7 +213,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 
 	METHOD("addGroup") {
-		params [["_thisObject", "", [""]], ["_group", "", [""]], ["_delete", false]];
+		params [P_THISOBJECT, ["_group", "", [""]], ["_delete", false]];
 
 		OOP_INFO_1("ADD GROUP: %1", _group);
 
@@ -222,7 +222,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		// Add all units to this group
 		{
-			CALLM1(_thisObject, "addUnit", _x);
+			T_CALLM1("addUnit", _x);
 		} forEach _units;
 
 		// Delete the other group if needed
@@ -247,15 +247,15 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("removeUnit") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		params [P_THISOBJECT, ["_unit", "", [""]]];
 
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
 
 		// Notify group AI of this unit
-		if (CALLM0(_thisObject, "isSpawned")) then {
+		if (T_CALLM0("isSpawned")) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != "") then {
 				CALLM3(_AI, "postMethodSync", "handleUnitsRemoved", [[_unit]], true);
@@ -279,14 +279,17 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	// Create new group handle if it doesn't exist
 	/* private */ METHOD("_createGroupHandle") {
-		params [P_THISOBJECT];
-		pr _data = T_GETV("data");
-		pr _groupHandle = _data#GROUP_DATA_ID_GROUP_HANDLE;
-		// Create group handle if it doesn't exist yet
-		if (isNull _groupHandle) then {
-			_groupHandle = createGroup [_data#GROUP_DATA_ID_SIDE, false]; //side, delete when empty
-			_groupHandle allowFleeing 0; // Never flee
-			_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+		pr _groupHandle = grpNull;
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			pr _data = T_GETV("data");
+			_groupHandle = _data#GROUP_DATA_ID_GROUP_HANDLE;
+			// Create group handle if it doesn't exist yet
+			if (isNull _groupHandle) then {
+				_groupHandle = createGroup [_data#GROUP_DATA_ID_SIDE, false]; //side, delete when empty
+				_groupHandle allowFleeing 0; // Never flee
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+			};
 		};
 		_groupHandle
 	} ENDMETHOD;
@@ -335,8 +338,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Array of units.
 	*/
 	METHOD("getUnits") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		private _return = +_unitList;
 		_return
@@ -350,10 +353,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Array of units.
 	*/
 	METHOD("getInfantryUnits") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList select {CALLM0(_x, "isInfantry")}
+		_unitList select { CALLM0(_x, "isInfantry") }
 	} ENDMETHOD;
 
 	// |                         G E T   V E H I C L E   U N I T S
@@ -364,10 +367,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Array of units.
 	*/
 	METHOD("getVehicleUnits") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList select {CALLM0(_x, "isVehicle")}
+		_unitList select { CALLM0(_x, "isVehicle") }
 	} ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
@@ -378,8 +381,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Array of units.
 	*/
 	METHOD("getDroneUnits") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList select {CALLM0(_x, "isDrone")}
 	} ENDMETHOD;
@@ -393,8 +396,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Number, group type. See <GROUP_TYPE>,
 	*/
 	METHOD("getType") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_TYPE
 	} ENDMETHOD;
 
@@ -406,8 +409,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Side
 	*/
 	METHOD("getSide") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_SIDE
 	} ENDMETHOD;
 
@@ -420,8 +423,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: group handle.
 	*/
 	METHOD("getGroupHandle") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_GROUP_HANDLE
 	} ENDMETHOD;
 
@@ -434,8 +437,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: <Unit> object
 	*/
 	METHOD("getLeader") {
-		params ["_thisObject"];
-		pr _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
 		_data select GROUP_DATA_ID_LEADER
 	} ENDMETHOD;
 
@@ -549,8 +552,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("setGarrison") {
-		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT, ["_garrison", "", [""]] ];
+		private _data = T_GETV("data");
 		_data set [GROUP_DATA_ID_GARRISON, _garrison];
 
 		// Set the garrison of all units in this group
@@ -566,8 +569,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: String, <Garrison>
 	*/
 	METHOD("getGarrison") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_GARRISON
 	} ENDMETHOD;
 
@@ -580,9 +583,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: String, <AIGroup>
 	*/
 	METHOD("getAI") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		_data select GROUP_DATA_ID_AI
 	} ENDMETHOD;
 
@@ -594,9 +597,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Bool
 	*/
 	METHOD("isSpawned") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		_data select GROUP_DATA_ID_SPAWNED
 	} ENDMETHOD;
 	
@@ -608,9 +611,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Bool
 	*/
 	METHOD("isEmpty") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		count (_data select GROUP_DATA_ID_UNITS) == 0
 	} ENDMETHOD;
 
@@ -630,11 +633,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("handleUnitRemoved") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		params [P_THISOBJECT, ["_unit", "", [""]]];
 
 		diag_log format ["[Group::handleUnitRemoved] Info: %1", _unit];
 
-		CALLM1(_thisObject, "removeUnit", _unit);
+		T_CALLM1("removeUnit", _unit);
 	} ENDMETHOD;
 
 
@@ -646,7 +649,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("handleUnitDespawned") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]] ];
+		params [P_THISOBJECT, ["_unit", "", [""]] ];
 	} ENDMETHOD;
 
 
@@ -659,7 +662,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("handleUnitSpawned") {
-		params [["_thisObject", "", [""]], "_unit"];
+		params [P_THISOBJECT, "_unit"];
 	} ENDMETHOD;
 
 
@@ -683,15 +686,15 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("createAI") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 
 		// Create an AI for this group if it has any units
 		//if (count _groupUnits > 0) then {
 			pr _AI = NEW("AIGroup", [_thisObject]);
-			pr _data = GETV(_thisObject, "data");
+			pr _data = T_GETV("data");
 			_data set [GROUP_DATA_ID_AI, _AI];
 			CALLM1(_AI, "start", "AIGroupLow"); // Kick start it
 		//};
@@ -713,11 +716,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("spawnAtLocation") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
+		params [P_THISOBJECT, ["_loc", "", [""]]];
 
 		OOP_INFO_1("SPAWN AT LOCATION: %1", _loc);
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
@@ -728,16 +731,16 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			{
 				private _unit = _x;
 				private _unitData = CALL_METHOD(_unit, "getMainData", []);
-				private _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
+				private _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), ["_className", "", [""]], ["_groupType", "", [""]]
 				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 				CALL_METHOD(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
 
 			// Select leader
-			CALLM0(_thisObject, "_selectLeaderOnSpawn");
+			T_CALLM0("_selectLeaderOnSpawn");
 
 			// Create an AI for this group
-			CALLM0(_thisObject, "createAI");
+			T_CALLM0("createAI");
 
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
@@ -761,11 +764,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("spawnVehiclesOnRoad") {
-		params ["_thisObject", ["_posAndDir", [], [[]]], ["_startPos", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_posAndDir"), P_ARRAY("_startPos")];
 
 		OOP_INFO_2("SPAWN VEHICLES ON ROAD: _posAndDir: %1, _startPos: %2", _posAndDir, _startPos);
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
@@ -774,7 +777,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			_groupHandle setBehaviour "SAFE";
 			
 			// Handle vehicles first
-			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
+			pr _vehUnits = T_CALLM0("getVehicleUnits");
 			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
 			if ((count _vehUnits > count _posAndDir) || !(_startPos isEqualTo [])) then {
 				if (count _vehUnits > count _posAndDir) then {
@@ -804,7 +807,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			};
 
 			// Handle infantry
-			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+			pr _infUnits = T_CALLM0("getInfantryUnits");
 			// Get position around which infantry will be spawning
 			pr _infSpawnPos = if !(_startPos isEqualTo []) then {
 				_startPos
@@ -821,10 +824,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// todo Handle drones??
 
 			// Select leader
-			CALLM0(_thisObject, "_selectLeaderOnSpawn");
+			T_CALLM0("_selectLeaderOnSpawn");
 
 			// Create an AI for this group
-			CALLM0(_thisObject, "createAI");
+			T_CALLM0("createAI");
 
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
@@ -846,11 +849,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("spawnAtPos") {
-		params ["_thisObject", ["_pos", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		OOP_INFO_1("SPAWN AT POS: %1", _pos);
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
@@ -859,7 +862,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			_groupHandle setBehaviour "SAFE";
 			
 			// Handle vehicles first
-			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
+			pr _vehUnits = T_CALLM0("getVehicleUnits");
 			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
 			{
 				pr _className = CALLM0(_x, "getClassName");
@@ -868,7 +871,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			} forEach _vehUnits;
 
 			// Handle infantry
-			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+			pr _infUnits = T_CALLM0("getInfantryUnits");
 			// Get position around which infantry will be spawning
 			pr _infSpawnPos = _pos;
 			{
@@ -881,10 +884,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// todo Handle drones??
 			
 			// Select leader
-			CALLM0(_thisObject, "_selectLeaderOnSpawn");
+			T_CALLM0("_selectLeaderOnSpawn");
 
 			// Create an AI for this group
-			CALLM0(_thisObject, "createAI");
+			T_CALLM0("createAI");
 
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
@@ -903,11 +906,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("despawn") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("DESPAWN");
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		if ((_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != "") then {
@@ -957,7 +960,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 
 	METHOD("sort") {
-		params ["_thisObject", ["_unitsSorted", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_unitsSorted")];
 
 		pr _data = T_GETV("data");
 
@@ -973,13 +976,19 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		OOP_INFO_1("Group handle: %1", _hG);
 
-		// Create a temporary group
-		pr _side = _data#GROUP_DATA_ID_SIDE;
-		pr _tempGroupHandle = createGroup (_data#GROUP_DATA_ID_SIDE);
+		pr _infantryUnitsOnly = _unitsSorted select { CALLM0(_x, "isInfantry") };
+		if(count _infantryUnitsOnly <= 1) exitWith {
+			OOP_INFO_0("sort: no sorting necessary, less than 2 infantry units provided");
+		};
 
+		// We sort by removing all units except the leader from the group, then readding them
 		// Make all passed units join the new temporary group
-		pr _newLeader = _unitsSorted#0;
-		pr _allButLeader = (_unitsSorted - [_newLeader]) apply { CALLM0(_x, "getObjectHandle") };
+		pr _newLeader = _infantryUnitsOnly deleteAt 0;
+
+		pr _allButLeader = _infantryUnitsOnly apply { CALLM0(_x, "getObjectHandle") };
+
+		// Create a temporary group
+		pr _tempGroupHandle = createGroup (_data#GROUP_DATA_ID_SIDE);
 
 		// Join everyone else to the other group, leaving only the leader behind
 		_allButLeader joinSilent _tempGroupHandle;
@@ -1013,10 +1022,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: array of units.
 	*/
 	METHOD("getSubagents") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Get all units
-		private _data = GET_VAR(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 
 		// Return only units which actually have an AI object (soldiers and drones)
@@ -1072,11 +1081,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 	// Must return a single value which can be deserialized to restore value of an object
 	METHOD("serialize") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		diag_log "[Group:serialize] was called!";
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
 		//pr _mutex = _data select GROUP_DATA_ID_MUTEX;
 		//MUTEX_LOCK(_mutex);
@@ -1104,13 +1113,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 	// Takes the output of deserialize and restores values of an object
 	METHOD("deserialize") {
-		params [["_thisObject", "", [""]], "_serialData"];
+		params [P_THISOBJECT, "_serialData"];
 
 		diag_log "[Group:deserialize] was called!";
 
 		// Unpack the array
 		_serialData params ["_unitsSerialized", "_data"];
-		SETV(_thisObject, "data", _data);
+		T_SETV("data", _data);
 		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
 
 		// Unpack all the units
@@ -1130,7 +1139,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		// Create a new AI for this group
 		if ((_data select GROUP_DATA_ID_AI) != "") then {
-			CALLM0(_thisObject, "createAI");
+			T_CALLM0("createAI");
 		};
 
 	} ENDMETHOD;
@@ -1140,11 +1149,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	See <MessageReceiver.transferOwnership>
 	*/
 	METHOD("transferOwnership") {
-		params [ ["_thisObject", "", [""]], ["_newOwner", 0, [0]] ];
+		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 
 		diag_log "[Group:transferOwnership] was called!";
 
-		pr _data = GETV(_thisObject, "data");
+		pr _data = T_GETV("data");
 
 		// Delete the AI of this group
 		// todo transfer the AI instead, or just transfer the goals and most important data?
@@ -1153,7 +1162,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE); // if you ever look at it again, redo it!! with posting msg to group thread manager
 			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
 			//if (_msgID < 0) then {diag_log format ["--- Got wrong msg ID %1 %2 %3", _msgID, __FILE__, __LINE__];};
-			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+			T_CALLM("waitUntilMessageDone", [_msgID]);
 		};
 
 		// Delete AI of all the units
@@ -1165,7 +1174,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				pr _msg = MESSAGE_NEW_SHORT(_unitAI, AI_MESSAGE_DELETE); // if you ever look at it again, redo it!! with posting msg to group thread manager
 				pr _msgID = CALLM2(_unitAI, "postMessage", _msg, true);
 				//diag_log format ["--- Got msg ID %1 %2 %3 while deleting Unit's AI", _msgID, __FILE__, __LINE__];
-				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+				T_CALLM("waitUntilMessageDone", [_msgID]);
 			};
 		} forEach _units;
 
@@ -1204,7 +1213,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: Number, amount of created units.
 	*/
 	METHOD("createUnitsFromTemplate") {
-		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_subcatID", 0, [0]]];
+		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_subcatID")];
 		private _groupData = [_template, _subcatID, -1] call t_fnc_selectGroup;
 
 		// Create every unit and add it to this group
@@ -1212,7 +1221,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			private _catID = _x select 0;
 			private _subcatID = _x select 1;
 			private _classID = _x select 2;
-			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
+			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), ["_group", "", [""]]
 			NEW("Unit", _args);
 		} forEach _groupData;
 
@@ -1227,7 +1236,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 
 	METHOD("getRequiredCrew") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		pr _units = T_GETV("data") select GROUP_DATA_ID_UNITS;
 
@@ -1260,7 +1269,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _data = T_GETV("data");
 		{
 			pr _unit = _x;
-			diag_log format ["Saving unit: %1", _unit];
+			//diag_log format ["Saving unit: %1", _unit];
 			CALLM1(_storage, "save", _x);
 		} forEach (_data#GROUP_DATA_ID_UNITS);
 

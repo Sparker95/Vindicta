@@ -43,6 +43,7 @@ CLASS("ActionGroup", "Action")
 	*/
 	METHOD("failIfEmpty") {
 		params [P_THISOBJECT];
+
 		if (CALLM0(T_GETV("group"), "isEmpty")) then {
 			T_SETV("state", ACTION_STATE_FAILED);
 			OOP_INFO_0("Action failed: group is empty");
@@ -110,6 +111,7 @@ CLASS("ActionGroup", "Action")
 
 	METHOD("applyGroupBehaviour") {
 		params [P_THISOBJECT, ["_defaultFormation", "WEDGE"], ["_defaultBehaviour", "AWARE"], ["_defaultCombatMode", "YELLOW"], ["_defaultSpeedMode", "NORMAL"]];
+
 		private _hG = T_GETV("hG");
 		private _formation = T_GETV("formation");
 		_hG setFormation ([_formation, _defaultFormation] select (_formation isEqualTo ""));
@@ -123,14 +125,37 @@ CLASS("ActionGroup", "Action")
 
 	METHOD("clearWaypoints") {
 		params [P_THISOBJECT];
+
 		private _hG = T_GETV("hG");
 		CALLSM1("Action", "_clearWaypoints", _hG);
 	} ENDMETHOD;
 
 	METHOD("regroup") {
 		params [P_THISOBJECT];
+
 		private _hG = T_GETV("hG");
 		CALLSM1("Action", "_regroup", _hG);
+	} ENDMETHOD;
+
+	// // We override this to toggle off the "new" flag in the AIGroup
+	// /* protected override */ METHOD("activateIfInactive") {
+	// 	params [P_THISOBJECT];
+	// 	private _state = T_GETV("state");
+	// 	if (_state == ACTION_STATE_INACTIVE) then {
+	// 		private _AI = T_GETV("AI");
+	// 		private _new = GETV(_AI, "new");
+	// 		_state = T_CALLM1("activate", _new);
+	// 		SETV(_AI, "new", false);
+	// 	};
+	// 	_state
+	// } ENDMETHOD;
+
+	METHOD("teleport") {
+		params [P_THISOBJECT, P_POSITION("_pos")];
+
+		private _group = T_GETV("group");
+		private _units = CALLM0(_group, "getUnits");
+		CALLSM2("Action", "_teleport", _units, _pos);
 	} ENDMETHOD;
 
 ENDCLASS;

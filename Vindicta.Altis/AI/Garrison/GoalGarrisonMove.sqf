@@ -15,7 +15,7 @@ CLASS("GoalGarrisonMove", "Goal")
 	
 	/*
 	STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Return relevance
 		GOAL_RELEVANCE_GARRISON_MOVE

@@ -25,7 +25,7 @@ CLASS("GoalUnitScareAway", "Goal")
 	// Inherited classes must implement this
 	
 	STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 			
 		// We want to scare away a unit if there is one near by
 		pr _query = WF_NEW();
@@ -48,7 +48,7 @@ CLASS("GoalUnitScareAway", "Goal")
 	// Otherwise it must return ""
 	
 	STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		diag_log "createPredefinedAction";
 		
@@ -60,7 +60,7 @@ CLASS("GoalUnitScareAway", "Goal")
 		if (!isNil "_wf") then {
 			_target = WF_GET_SOURCE(_wf);
 		};
-		pr _args = [_AI, _target];
+		pr _args = [_AI, [["target", _target]]];
 		pr _action = NEW("ActionUnitScareAway", _args);
 		
 		diag_log format ["[GoalWarningshot:createPredefinedAction] AI: %1, created action to warningShot to: %2", _AI, _target];

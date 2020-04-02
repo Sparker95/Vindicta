@@ -442,7 +442,13 @@
 #define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
 
 // Call an overidden method from the overriding method.
-#define T_CALLCM(classNameStr, methodNameStr, extraParams) ([_thisObject]+extraParams call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM (classNameStr, methodNameStr, extraParams) 	([_thisObject]+extraParams 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM0(classNameStr, methodNameStr) 					([_thisObject] 					call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM1(classNameStr, methodNameStr, a) 				([_thisObject, a] 				call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM2(classNameStr, methodNameStr, a, b) 			([_thisObject, a, b] 			call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM3(classNameStr, methodNameStr, a, b, c) 		([_thisObject, a, b, c] 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM4(classNameStr, methodNameStr, a, b, c, d) 		([_thisObject, a, b, c, d] 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM5(classNameStr, methodNameStr, a, b, c, d, e) 	([_thisObject, a, b, c, d, e] 	call GET_METHOD(classNameStr, methodNameStr))
 
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
 #define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
@@ -494,12 +500,12 @@
 #ifdef OOP_ASSERT
 #define VARIABLE_ATTR(varNameStr, attributes) \
 	if(!((varNameStr) in [OOP_PARENT_STR, OOP_PUBLIC_STR]) && (_oop_memList findIf { (_x select 0) isEqualTo (varNameStr) } != NOT_FOUND)) then { \
-		OOP_ERROR_2("Class %1 is hiding variable %2 in parent", _oop_classNameStr, varNameStr); \
+		OOP_ERROR_2("Class %1 is hiding variable '%2' in parent", _oop_classNameStr, varNameStr); \
 	}; \
 	_oop_memList pushBackUnique [varNameStr, attributes]
 #define STATIC_VARIABLE_ATTR(varNameStr, attributes) \
 	if(_oop_staticMemList findIf { (_x select 0) isEqualTo (varNameStr) } != NOT_FOUND) then { \
-		OOP_ERROR_2("Class %1 is hiding static variable %2 in parent", _oop_classNameStr, varNameStr); \
+		OOP_ERROR_2("Class %1 is hiding static variable '%2' in parent", _oop_classNameStr, varNameStr); \
 	}; \
 	_oop_staticMemList pushBackUnique [varNameStr, attributes]
 #else
@@ -758,7 +764,6 @@
 
 #define CLASS(classNameStr, baseClassNames) \
 call { \
-diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNames]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
 private _oop_memList = []; \

@@ -16,7 +16,7 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 	// Inherited classes must implement this
 	
 	STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Check world state properties
 		// Return high desireability if we need repairs and an engineer is available

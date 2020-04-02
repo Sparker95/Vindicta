@@ -25,20 +25,15 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		private _pos = T_GETV("pos");
 
-	 	// Set behaviour
+
+		T_CALLM2("applyGroupBehaviour", "DIAMOND", "AWARE");
+		T_CALLM0("clearWaypoints");
+		T_CALLM0("regroup");
+
 		private _hG = T_GETV("hG");
-		_hG setBehaviour "AWARE";
-		{_x doFollow (leader _hG)} forEach (units _hG);
-		_hG setFormation "DIAMOND";
-
-		// Delete all waypoints
-		while {(count (waypoints _hG)) > 0} do {
-			deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
-		};
-
 		// Add a move waypoint
 		private _wp = _hG addWaypoint [_pos, -1, 0];
 		_wp setWaypointType "MOVE";
@@ -54,7 +49,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 		pr _inf = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
 		} forEach _inf;
 
 		// Set state
@@ -69,9 +64,9 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 	METHOD("process") {
 		params [P_THISOBJECT];
 
-		CALLM0(_thisObject, "failIfEmpty");
+		T_CALLM0("failIfEmpty");
 
-		private _state = CALLM0(_thisObject, "activateIfInactive");
+		private _state = T_CALLM0("activateIfInactive");
 
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// check if one of the group is near _pos

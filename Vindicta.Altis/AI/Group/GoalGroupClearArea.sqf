@@ -21,27 +21,32 @@ CLASS("GoalGroupClearArea", "Goal")
 
 		// Infantry group will "clear area" by running around looking for enemies
 		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
-			pr _args = [_AI, _parameters];
-			pr _action = NEW("ActionGroupClearArea", _args);
+			pr _action = NEW("ActionGroupClearArea", [_AI ARG _parameters]);
 			_action
 		} else {
 			pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-			pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
+			// pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
 
 			pr _actionSerial = NEW("ActionCompositeSerial", [_AI]);
 
 			// Create action to get in vehicles
-			pr _actionGetInArgs = [_AI, [["onlyCombat", true]] ]; // Only combat vehicle operators must stay in vehicles
-			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", _actionGetInArgs);
+			private _getInParams = [
+				["onlyCombat", true] // Only combat vehicle operators must stay in vehicles
+			];
+			CALLSM2("Action", "mergeParameterValues", _getInParams, _parameters);
+			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
 
 			// Start clear area from center, so move there first
-			pr _actionMoveArgs = [_AI, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, 75]] ];
-			pr _actionMove = NEW("ActionGroupMoveGroundVehicles", _actionMoveArgs);
+			pr _moveParams = [
+				[TAG_POS, _pos],
+				[TAG_MOVE_RADIUS, 75]
+			];
+			CALLSM2("Action", "mergeParameterValues", _moveParams, _parameters);
+			pr _actionMove = NEW("ActionGroupMoveGroundVehicles", [_AI ARG _moveParams]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
 
-			pr _actionClearArgs = [_AI, _parameters];
-			pr _actionClear = NEW("ActionGroupClearArea", _actionClearArgs);
+			pr _actionClear = NEW("ActionGroupClearArea", [_AI ARG _parameters]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionClear);
 
 			_actionSerial

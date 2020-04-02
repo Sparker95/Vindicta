@@ -51,12 +51,15 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [P_THISOBJECT];
-		
+		params [P_THISOBJECT, P_BOOL("_instant")];
+
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
+		if(_instant) exitWith {
+			pr _pos = T_GETV("pos");
+			T_CALLM1("teleportGroup", _pos);
+			T_SETV("state", ACTION_STATE_COMPLETED);
+			ACTION_STATE_COMPLETED
 		};
 
 		T_SETV("pathingFailing", false);
@@ -93,6 +96,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 						_mrk setMarkerText str _forEachIndex;
 					} forEach (_this#1);
 					#endif
+					FIX_LINE_NUMBERS()
 				};
 			}, _thisObject] call CBA_fnc_addBISEventHandler;
 			T_SETV("eventId", _eventId);
@@ -167,8 +171,9 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 				} else {
 					T_GETV("pos")
 				};
-				(_existingWPs#_existingWPIdx) setWPPos ZERO_HEIGHT(_nextPos);
+				_currWP setWPPos ZERO_HEIGHT(_nextPos);
 			};
+			_hG setCurrentWaypoint _currWP;
 		} else {
 			pr _nextPos = if(count _remainingRoute > 0) then {
 				_remainingRoute deleteAt 0
@@ -241,8 +246,22 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			ACTION_STATE_COMPLETED
 		};
 
+		private _hVeh = vehicle _hO;
+
 		// Driver dismounted so we failed
-		if(vehicle _hO == _hO) exitWith {
+		if(_hVeh == _hO) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+
+		// This action isn't valid on non leader
+		if(leader _hO != _hO) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+
+		// This action only works on driver of vehicle
+		if(driver _hVeh != _hO) exitWith {
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
@@ -255,12 +274,19 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		//_hG setCurrentWaypoint ((waypoints _hG)#0);
 
 		pr _state = T_CALLM0("activateIfInactive");
+
+		if(_state in [ACTION_STATE_COMPLETED, ACTION_STATE_FAILED]) exitWith {
+			T_SETV("state", _state);
+			_state
+		};
+
 		pr _AI = T_GETV("AI");
 
 		T_CALLM0("nextWaypoint");
 
 		// Not moving
-		if (T_GETV("lastPos") distance2D _hO < 0.1) then {
+		pr _lastPos = T_GETV("lastPos");
+		if (!(_lastPos isEqualTo []) && {_lastPos distance2D _hO < 0.1}) then {
 			pr _stuckTimer = T_GETV("stuckTimer");
 
 			OOP_WARNING_1("Leader vehicle is probably stuck: %1", _stuckTimer);
@@ -281,14 +307,14 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 				// give it a bump
 				private _pushdir = 0;
 				// vehicle is stuck
-				if ((lineintersectssurfaces [_hO modeltoworldworld [0,0,0.2], _hO modeltoworldworld [0,8,0.2], _hO]) isEqualTo []) then {
+				if ((lineintersectssurfaces [_hVeh modeltoworldworld [0,0,0.2], _hVeh modeltoworldworld [0,8,0.2], _hVeh]) isEqualTo []) then {
 					//push it forwards a little
 					_pushdir = 5;
 				} else {
 					// if there's something in front, push backwards, not forwards
 					_pushdir = -5;
 				};
-				_hO setVelocityModelSpace [0, _pushdir, 0];
+				_hVeh setVelocityModelSpace [0, _pushdir, 0];
 
 				// pr _hG = group _hO;
 				// pr _nextWp = (waypoints _hG)#0;
@@ -371,8 +397,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 					case (_stuckCounter < 10): {
 						// Let's try to teleport you somewhere >_<
 						OOP_WARNING_0("Teleporting the leader vehicle!");
-						pr _hVeh = vehicle _hO;
-						pr _defaultPos = getPos _hVeh;
+						pr _defaultPos = position _hVeh;
 						pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
 						_hVeh setPos _newPos;
 						//T_CALLM0("regroup");
@@ -405,7 +430,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			// Reset the timer
 			T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD * 3);
 			T_SETV("stuckCounter", 0);
-			T_SETV("roadsToTry", []);
+			//T_SETV("roadsToTry", []);
 		};
 
 		T_SETV("lastPos", position _hO);
@@ -429,6 +454,6 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		if(!isNil "_eventId") then {
 			_hO removeEventHandler["PathCalculated", _eventId];
 		};
-	} ENDMETHOD; 
+	} ENDMETHOD;
 
 ENDCLASS;

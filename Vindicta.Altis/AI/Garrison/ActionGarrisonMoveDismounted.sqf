@@ -16,7 +16,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	// ------------ N E W ------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		// Unpack position
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -39,7 +39,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _gar = T_GETV("gar");
 		pr _pos = T_GETV("pos");
@@ -60,7 +60,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -69,7 +69,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
 		pr _AI = T_GETV("AI");
@@ -107,7 +107,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			T_SETV("state", _state);
 			_state
 		} else {
-			pr _state = CALLM0(_thisObject, "activateIfInactive");
+			pr _state = T_CALLM0("activateIfInactive");
 		
 			if (_state == ACTION_STATE_ACTIVE) then {
 				// Update position
@@ -132,64 +132,22 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 	} ENDMETHOD;
 
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+	// // logic to run when the action is satisfied
+	// METHOD("terminate") {
+	// 	params [P_THISOBJECT];
 
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+	// 	// Bail if not spawned
+	// 	pr _gar = T_GETV("gar");
+	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
-		// Delete goals given to groups
+	// 	// Delete goals given to groups
 
-		// Delete goals from groups
-		pr _args = ["GoalGroupInfantryMove", ""];
-		{
-			pr _groupAI = CALLM0(_x, "getAI");
-			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-		} forEach CALLM0(_gar, "getGroups");
+	// 	// Delete goals from groups
+	// 	pr _args = ["GoalGroupInfantryMove", ""];
+	// 	{
+	// 		pr _groupAI = CALLM0(_x, "getAI");
+	// 		CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
+	// 	} forEach CALLM0(_gar, "getGroups");
 		
-	} ENDMETHOD;
-	
-
-	METHOD("onGarrisonSpawned") {
-		params ["_thisObject"];
-
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
-
-	METHOD("onGarrisonDespawned") {
-		params ["_thisObject"];
-
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
-
-		// Handle units/groups added/removed
-
-	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
-
-	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
-	
-	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
-	
-	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
-
+	// } ENDMETHOD;
 ENDCLASS;

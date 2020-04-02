@@ -19,7 +19,6 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 		T_CALLM0("regroup");
 		T_CALLM0("applyGroupBehaviour");
 
-
 		private _pos = T_GETV("pos");
 		private _hG = T_GETV("hG");
 
@@ -30,7 +29,6 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 
 		// Just all watch it for now, later we can have something more smarterrer
 		units _hG commandWatch _pos;
-
 
 		// {
 		// 	switch true do {
@@ -54,7 +52,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	METHOD("process") {
 		params [P_THISOBJECT];
 		
-		private _state = CALLM0(_thisObject, "activateIfInactive");
+		private _state = T_CALLM0("activateIfInactive");
 
 		_state
 	} ENDMETHOD;

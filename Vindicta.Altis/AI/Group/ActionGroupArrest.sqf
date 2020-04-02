@@ -19,7 +19,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	
 	// ------------ N E W ------------
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
 		//OOP_INFO_1("ActionGroupArrest: Target: %1", _target);
@@ -30,13 +30,13 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		//OOP_INFO_0("ActionGroupArrest: Activated.");
 		pr _target = T_GETV("target");
 		//OOP_INFO_1("ActionGroupArrest: Activated: Target: %1", _target);
 
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		// Set behaviour
 		pr _hG = T_GETV("hG");
@@ -78,11 +78,11 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		//OOP_INFO_0("ActionGroupArrest: Processing.");
 
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _group = T_GETV("group");
@@ -113,18 +113,18 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 	// Handle unit being killed/removed from group during action
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_FAILED);
 	} ENDMETHOD;
 
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		//OOP_INFO_0("ActionGroupArrest: Terminating.");
 		

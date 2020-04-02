@@ -48,6 +48,6 @@
 
 // /*
 // wf_fnc_setXXX = {
-// 	params [["_fact", [], [[]]], ["_XXX", 0, [WF_XXX_DEFAULT]] ];
+// 	params [P_ARRAY("_fact"), ["_XXX", 0, [WF_XXX_DEFAULT]] ];
 // 	_fact set [WF_ID_XXX, _XXX];
 // };*/

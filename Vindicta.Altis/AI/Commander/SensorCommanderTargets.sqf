@@ -36,7 +36,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	#endif
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		T_SETV("newTargets", []);
 		T_SETV("deletedTargets", []);
@@ -55,7 +55,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _AI = T_GETV("AI");
 		pr _deletedTargets = T_GETV("deletedTargets");
@@ -70,7 +70,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		pr _targetClusters = GETV(_AI, "targetClusters");
 		
 		// Delete old and destroyed targets
-		pr _AI = GETV(_thisObject, "AI");
+		pr _AI = T_GETV("AI");
 		if (count _knownTargets > 0) then {
 			pr _dateNumber = dateToNumber date;
 			pr _dateNumberThreshold = dateToNumber [date#0,1,1,0,TARGET_MAX_AGE_MINUTES];
@@ -312,7 +312,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			
 			// Update map markers
 			#ifdef DEBUG_CLUSTERS
-				CALLM1(_thisObject, "drawCluster", _newTC);				
+				T_CALLM1("drawCluster", _newTC);				
 			#endif
 		} forEach _newTargetClusters;
 		
@@ -337,7 +337,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	} ENDMETHOD;
 	
 	METHOD("drawCluster") {
-		params ["_thisObject", "_tc"];
+		params [P_THISOBJECT, "_tc"];
 		
 		pr _AI = T_GETV("AI");
 		pr _c = _tc select TARGET_CLUSTER_ID_CLUSTER;
@@ -416,7 +416,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		#ifdef DEBUG_TARGETS
 		OOP_INFO_1("Received targets: %1", STIMULUS_GET_VALUE(_stimulus));
@@ -424,7 +424,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		
 		// Filter spotted enemies
 		pr _sourceGarrison = STIMULUS_GET_SOURCE(_stimulus);
-		pr _AI = GETV(_thisObject, "AI");
+		pr _AI = T_GETV("AI");
 		pr _knownTargets = GETV(_AI, "targets");
 		//pr _newTargets = T_GETV("newTargets");
 		{ // forEach (STIMULUS_GET_VALUE(_stimulus));

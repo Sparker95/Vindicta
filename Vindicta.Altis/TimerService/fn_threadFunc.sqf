@@ -12,7 +12,7 @@ Parameters: _timerService
 Access: Internal use.
 */
 
-params [["_thisObject", "", [""]]];
+params [P_THISOBJECT];
 
 scriptName "Timer Service";
 
@@ -21,10 +21,10 @@ diag_log format ["[TimerService::threadFunc] Disabled due to SQFvm mode"];
 #else
 diag_log format ["[TimerService::threadFunc] Info: thread started"];
 
-private _mutex = GET_VAR(_thisObject, "mutex");
-private _timers = GET_VAR(_thisObject, "timers");
+private _mutex = T_GETV("mutex");
+private _timers = T_GETV("timers");
 while {true} do {
-	private _res = GET_VAR(_thisObject, "resolution");
+	private _res = T_GETV("resolution");
 	//diag_log format ["[TimerService::threadFunc] Info: sleeping for %1 seconds", _res];
 	uisleep _res;
 	// Lock the mutex

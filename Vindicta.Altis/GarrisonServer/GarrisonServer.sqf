@@ -51,7 +51,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _processInterval = 1;
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
-		SETV(_thisObject, "timer", _timer);
+		T_SETV("timer", _timer);
 
 		if (!isNil {GETSV("GarrisonServer", "instance")}) then {
 			OOP_ERROR_1("Multiple instances of GarrisonServer are not allowed! %1", _thisObject);
@@ -422,7 +422,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Create a unit
 		pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
-		// ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
+		// P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), ["_group", "", [""]], ["_hO", objNull]];
 		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _weapons];
 		pr _unit = NEW("Unit", _args);
 

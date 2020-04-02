@@ -34,7 +34,7 @@ CLASS("PersonalInventory", "")
 		T_SETV("data", []);
 
 		{
-			CALLM2(_thisObject, "_addInventoryClass", _x, INTEL_INVENTORY_CLASSES_COPY_AMOUNT);
+			T_CALLM2("_addInventoryClass", _x, INTEL_INVENTORY_CLASSES_COPY_AMOUNT);
 		} forEach INTEL_INVENTORY_ALL_CLASSES;
 	} ENDMETHOD;
 

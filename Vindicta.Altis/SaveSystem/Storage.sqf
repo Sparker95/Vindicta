@@ -362,7 +362,7 @@ CLASS("Storage", "")
 						} else {
 							_refLoaded = NEW(_className, []);
 						};
-						diag_log format ["Created new object: %1", _refLoaded];
+						//diag_log format ["Created new object: %1", _refLoaded];
 					} else {
 						// Recreate object with the same ref
 						if (_isPublic) then {									// Reconstruct object parent class

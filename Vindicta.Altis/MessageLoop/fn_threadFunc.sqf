@@ -46,14 +46,14 @@ private _execTimeFilteredArray = [];
 #endif
 
 
-params [ P_THISOBJECT ];
+params [P_THISOBJECT];
 
-private _msgQueue = GET_VAR(_thisObject, "msgQueue");
-private _mutex = GET_VAR(_thisObject, "mutex");
-private _processCategories = GET_VAR(_thisObject, "processCategories");
-private _fractionsRequired = GET_VAR(_thisObject, "updateFrequencyFractions");
-private _sleepInterval = GET_VAR(_thisObject, "sleepInterval");
-//private _objects = GET_VAR(_thisObject, "objects");
+private _msgQueue = T_GETV("msgQueue");
+private _mutex = T_GETV("mutex");
+private _processCategories = T_GETV("processCategories");
+private _fractionsRequired = T_GETV("updateFrequencyFractions");
+private _sleepInterval = T_GETV("sleepInterval");
+//private _objects = T_GETV("objects");
 
 
 #ifdef _SQF_VM // Don't want to run this in VM testing mode
@@ -120,13 +120,13 @@ while {true} do {
 
 
 
-			pr _msgID = _msg select MESSAGE_ID_SOURCE_ID;
+			private _msgID = _msg#MESSAGE_ID_SOURCE_ID;
 			//Get destination object
-			private _dest = _msg select MESSAGE_ID_DESTINATION;
+			private _dest = _msg#MESSAGE_ID_DESTINATION;
 			//Call handleMessage
 			if(IS_OOP_OBJECT(_dest)) then {
 				#ifdef PROFILE_MESSAGE_JSON
-				pr _objectClass = GET_OBJECT_CLASS(_dest);
+				private _objectClass = GET_OBJECT_CLASS(_dest);
 				private _profileTimeStart = diag_tickTime;
 				#endif
 
@@ -134,15 +134,14 @@ while {true} do {
 				// If it crashes now, we will read this value, and make a memory dump
 				T_SETV("lastObject", _dest);
 
-				pr _result = CALL_METHOD(_dest, "handleMessage", [_msg]);
+				private _result = if(IS_OOP_OBJECT(_dest)) then { CALL_METHOD(_dest, "handleMessage", [_msg]) } else { 0 };
 
 				// Reset last handled object
 				T_SETV("lastObject", NULL_OBJECT);
 
 				#ifdef PROFILE_MESSAGE_JSON
 				private _profileTime = diag_tickTime - _profileTimeStart;
-				pr _dest = _msg#MESSAGE_ID_DESTINATION;
-				pr _type = _msg#MESSAGE_ID_TYPE;
+				private _type = _msg#MESSAGE_ID_TYPE;
 				private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4, ""data"": %5} }", _name, _type, _objectClass, _profileTime, str (_msg#MESSAGE_ID_DATA)];
 				OOP_DEBUG_MSG(_str, []);
 				#endif
@@ -151,7 +150,7 @@ while {true} do {
 				// Were we asked to mark the message as processed?
 				if (_msgID != MESSAGE_ID_NOT_REQUESTED) then {
 					// Did the message originate from this machine?
-					pr _msgSourceOwner = _msg select MESSAGE_ID_SOURCE_OWNER;
+					private _msgSourceOwner = _msg#MESSAGE_ID_SOURCE_OWNER;
 					if (_msgSourceOwner == clientOwner) then {
 						// Mark this message processed on this machine
 						[_msgID, _result, _dest] call MsgRcvr_fnc_setMsgDone;

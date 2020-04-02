@@ -87,7 +87,7 @@ CLASS(CLASS_NAME, "")
 
 	// initialize UI event handlers
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Markers under cursor
 		T_SETV("markersUnderCursor", []);
@@ -255,7 +255,7 @@ CLASS(CLASS_NAME, "")
 		// Just a macro to give event handlers to buttons cause I'm LZ AF
 		#define __GAR_ACTION_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garActionLBOnButtonClick", buttonStr); \
+				T_CALLM1("garActionLBOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");				// This text is not displayed
@@ -273,7 +273,7 @@ CLASS(CLASS_NAME, "")
 		// Another lazy macro to give event handlers to buttons
 		#define __GAR_SELECT_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garSelMenuOnButtonClick", buttonStr); \
+				T_CALLM1("garSelMenuOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_SPLIT, "split");
@@ -294,7 +294,7 @@ CLASS(CLASS_NAME, "")
 		// Give actions to buttons
 		#define __LOC_SELECT_BUTTON_CLICK_EH(className, buttonStr) T_CALLM1("findControl", className) ctrlAddEventHandler ["ButtonClick", { \
 			_thisObject = gClientMapUI; \
-			CALLM1(_thisObject, "locSelMenuOnButtonClick", buttonStr); \
+			T_CALLM1("locSelMenuOnButtonClick", buttonStr); \
 		}]
 
 		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_RECRUIT", "recruit");

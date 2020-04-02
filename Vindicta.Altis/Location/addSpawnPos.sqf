@@ -14,7 +14,7 @@ _dir - direction
 _building - the building this pos. is attached to or objNull if it's not dependant on any building
 */
 
-params [["_thisObject", "", [""]], ["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+params [P_THISOBJECT, P_ARRAY("_unitTypes"), P_ARRAY("_groupTypes"), P_ARRAY("_pos"), P_NUMBER("_dir"), ["_building", objNull, [objNull]] ];
 
 private _spawnPosTypes = T_GETV("spawnPosTypes"); //All spawn positions of this location
 

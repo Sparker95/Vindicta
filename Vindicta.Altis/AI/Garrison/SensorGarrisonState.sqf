@@ -29,7 +29,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
 		pr _gar = T_GETV("gar");
@@ -184,7 +184,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		pr _gar = T_GETV("gar");
 		// If garrison is not spawned, run the check less often
 		if (CALLM0(_gar, "isSpawned")) then {

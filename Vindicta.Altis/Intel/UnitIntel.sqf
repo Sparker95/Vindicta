@@ -324,7 +324,7 @@ CLASS("UnitIntel", "")
 
 	// Called on player's computer when he picks up the intel item
 	STATIC_METHOD("inspectIntel") {
-		params ["_thisObject", ["_fullClassName", "", [""]] ];
+		params [P_THISOBJECT, ["_fullClassName", "", [""]] ];
 
 		// Get base class name and ID of this intel item
 		pr _classAndID = CALLSM1("PersonalInventory", "getBaseClassAndID", _fullClassName);

@@ -31,7 +31,7 @@ T_SETV("spawned", false);
 T_GETV("cpModule") call CivPresence_fnc_despawn; 
 
 // Reset counters
-private _stAll = GET_VAR(_thisObject, "spawnPosTypes");
+private _stAll = T_GETV("spawnPosTypes");
 {
 	_x set [LOCATION_SPT_ID_COUNTER, 0];
 } forEach _stAll;

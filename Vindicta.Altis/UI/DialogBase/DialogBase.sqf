@@ -85,7 +85,7 @@ CLASS("DialogBase", "")
 				params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 				pr _thisObject = _displayorcontrol getVariable __CTRL_THISOBJECT_VAR;
 				pr _methodName = _displayorcontrol getVariable "__methodName";
-				CALLM(_thisObject, _methodName, _this);
+				T_CALLM(_methodName, _this);
 			}];
 		} forEach	[
 						[IDC_DIALOG_BASE_BUTTON_CLOSE, "onButtonClose"]
@@ -347,7 +347,7 @@ CLASS("DialogBase", "")
 			pr _thisObject = _displayorcontrol getVariable __CTRL_THISOBJECT_VAR;
 			pr _tabid = _displayorcontrol getVariable "__tabID";
 			OOP_INFO_1("EH: TAB BUTTON CLICK: %1", _tabid);
-			CALLM1(_thisObject, "onButtonTab", _tabid);
+			T_CALLM1("onButtonTab", _tabid);
 		}];
 
 		// Return tab ID

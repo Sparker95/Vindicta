@@ -14,7 +14,7 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 	VARIABLE("waypointUpdateTime");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		T_SETV("waypointUpdateTime", time);
 
@@ -22,18 +22,11 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 
-	 	// Set behaviour
-		private _hG = GETV(_thisObject, "hG");
-		_hG setBehaviour "AWARE";
-		{_x doFollow (leader _hG)} forEach (units _hG);
-		_hG setFormation "COLUMN";
-
-		// Delete all waypoints
-		while {(count (waypoints _hG)) > 0} do {
-			deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
-		};
+		T_CALLM2("applyGroupBehaviour", "COLUMN", "AWARE");
+		T_CALLM0("clearWaypoints");
+		T_CALLM0("regroup");
 		
 		// Give goals to units to regroup
 		pr _AI = T_GETV("AI");
@@ -41,7 +34,7 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 		pr _inf = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
 		} forEach _inf;
 
 		T_SETV("waypointUpdateTime", time);
@@ -56,11 +49,11 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		CALLM0(_thisObject, "failIfNoInfantry");
+		T_CALLM0("failIfNoInfantry");
 
-		private _state = CALLM0(_thisObject, "activateIfInactive");
+		private _state = T_CALLM0("activateIfInactive");
 
 		scopeName "pro";
 
@@ -93,14 +86,11 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 					pr _hG = T_GETV("hG");
 					if (((leader _hG) distance _hOVeh) > 30) then {
 						// Delete all old waypoints and add a new one
-						while {(count (waypoints _hG)) > 0} do {
-							deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
-						};
+						T_CALLM0("clearWaypoints");
 
 						// Find pos to the left of the last vehicle to make them stay on the left side of the road
 						// Infantry loves to move on the left side for some reason
 						pr _pos = _hOVeh getPos [9, (getDir _hOVeh) - 90];
-
 						private _wp = _hG addWaypoint [_pos, 4, 0];
 						_wp setWaypointType "MOVE";
 						_wp setWaypointFormation "COLUMN";
@@ -120,7 +110,7 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Delete given goals
 		pr _AI = T_GETV("AI");

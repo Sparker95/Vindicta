@@ -13,15 +13,13 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	VARIABLE("freeVehicles");
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		T_SETV("freeVehicles", []); 
+		T_SETV("freeVehicles", []);
 	} ENDMETHOD;
 	
-	// logic to run when the goal is activated
-	// _unitsIgnore - units to ignore in assignment. For instance if this unit was destroyed.
 	METHOD("activate") {
-		params [["_thisObject", "", [""]], ["_unitsIgnore", []]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(T_GETV("AI"), "agent");
@@ -52,15 +50,18 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
-		
 
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitGetInVehicle", ""); // Delete any other goals like this first
 			
-			pr _args = [["vehicle", selectRandom _unitsVeh /*_unitsVeh select 0*/], ["vehicleRole", "CARGO"], ["turretPath", []]];
+			pr _args = [
+				["vehicle", selectRandom _unitsVeh],
+				["vehicleRole", "CARGO"],
+				[TAG_INSTANT, _instant]
+			];
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);
-		} forEach _unitsInf;		
+		} forEach _unitsInf;
 		
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -70,11 +71,11 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	
 	// Logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfNoInfantry");
+		T_CALLM0("failIfNoInfantry");
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _group = GETV(T_GETV("AI"), "agent");
@@ -92,7 +93,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 					};
 					
 					case ACTION_STATE_COMPLETED: {
-						_nGoalsCompleted = _nGoalsCompleted + 1;				
+						_nGoalsCompleted = _nGoalsCompleted + 1;
 					};
 					
 					case ACTION_STATE_FAILED: {
@@ -113,7 +114,10 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 							OOP_INFO_1("Added goal to get into another vehicle: %1", _vehToGetIn);
 							
 							// Add a new goal to this unit
-							pr _args = [["vehicle", _vehToGetIn], ["vehicleRole", "CARGO"], ["turretPath", []]];
+							pr _args = [
+								["vehicle", _vehToGetIn],
+								["vehicleRole", "CARGO"]
+							];
 							CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);
 							//ade_dumpCallstack;
 						};
@@ -138,13 +142,13 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_units") ];
 		OOP_INFO_1("Units removed: %1", _units);
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(T_GETV("AI"), "agent");
@@ -166,6 +170,6 @@ ENDCLASS;
 _unit = cursorObject; 
 _goalClassName = "GoalGroupGetInVehiclesAsCrew"; 
 _parameters = []; 
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf"; 
+call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 [_unit, _goalClassName, _parameters] call AI_misc_fnc_addGroupGoal;
 */

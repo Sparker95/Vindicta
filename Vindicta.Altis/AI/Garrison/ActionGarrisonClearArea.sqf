@@ -9,12 +9,14 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	VARIABLE("radius");
 	VARIABLE("lastCombatDateNumber");
 	VARIABLE("durationMinutes");
+	VARIABLE("regroupPos");
+	VARIABLE("sweepDone");
+	VARIABLE("overwatchGroups");
+	VARIABLE("sweepGroups");
 
-	// ------------ N E W ------------
-	
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		
+
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 
@@ -26,22 +28,31 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		T_SETV("durationMinutes", _durationMinutes);
 
 		T_SETV("lastCombatDateNumber", dateToNumber date);
-		
+		T_SETV("sweepDone", false);
+		T_SETV("regroupPos", []);
+		T_SETV("overwatchGroups", []);
+		T_SETV("sweepGroups", []);
+
 	} ENDMETHOD;
-	
+
 	// logic to run when the goal is activated
-	METHOD("activate") {
-		params [P_THISOBJECT];
+	/* protected virtual */ METHOD("activate") {
+		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
 
-
 		//pr _pos = T_GETV("pos");
-		T_PRVAR(AI);
-		T_PRVAR(pos);
-		T_PRVAR(radius);
+		pr _AI = T_GETV("AI");
+		pr _pos = T_GETV("pos");
+		pr _radius = T_GETV("radius");
 
 		pr _gar = GETV(_AI, "agent");
+
+		// Find regroup position in the open, a safeish distance from the target
+		pr _regroupPos = T_GETV("regroupPos");
+		if(_regroupPos isEqualTo []) then {
+			_regroupPos append ([_pos, _radius, _radius + 300, 20, 0, 0.3, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos);
+		};
 
 		// Split to one group per vehicle
 		// CALLM0(_gar, "splitVehicleGroups");
@@ -166,13 +177,13 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// Clean up
 		CALLM0(_gar, "deleteEmptyGroups");
 
-
 		if(count _overwatch > 0) then {
 			private _commonTags = [
 				[TAG_POS, _pos],
 				[TAG_OVERWATCH_ELEVATION, 20],
 				[TAG_BEHAVIOUR, "STEALTH"],
-				[TAG_COMBAT_MODE, "RED"]
+				[TAG_COMBAT_MODE, "RED"],
+				[TAG_INSTANT, _instant]
 			];
 			private _dDir = 360 / count _overwatch;
 			private _dir = random 360;
@@ -216,13 +227,18 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 				[
 					[TAG_POS, _pos],
 					[TAG_CLEAR_RADIUS, _radius],
-					[TAG_BEHAVIOUR, "COMBAT"],
-					[TAG_COMBAT_MODE, "RED"]
+					[TAG_BEHAVIOUR, "AWARE"],
+					[TAG_COMBAT_MODE, "RED"],
+					[TAG_SPEED_MODE, "LIMITED"],
+					[TAG_INSTANT, _instant]
 				],
 				_AI
 			];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _sweep;
+
+		T_SETV("sweepGroups", _sweep);
+		T_SETV("overwatchGroups", _overwatch);
 
 		// Set last combat date
 		T_SETV("lastCombatDateNumber", dateToNumber date);
@@ -232,13 +248,13 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-		
+
 	} ENDMETHOD;
-	
+
 	// logic to run each update-step
-	METHOD("process") {
+	/* public virtual */ METHOD("process") {
 		params [P_THISOBJECT];
-		
+
 		pr _gar = T_GETV("gar");
 
 		// Succeed after timeout if not spawned.
@@ -267,7 +283,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 			_state
 		};
 
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _AI = T_GETV("AI");
 			
@@ -277,13 +293,56 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 			
 			if (_awareOfEnemy) then {
 				T_SETV("lastCombatDateNumber", dateToNumber date); // Reset the timer
+				T_SETV("sweepDone", false);
+				pr _sweepGroups = T_GETV("sweepGroups");
 
-				T_CALLM0("attackEnemyBuildings"); // Attack buildings occupied by enemies
+				// Top priority goal. 
+				T_CALLM1("attackEnemyBuildings", _sweepGroups); // Attack buildings occupied by enemies
 			} else {
 				pr _lastCombatDateNumber = T_GETV("lastCombatDateNumber");
 				pr _dateNumberThreshold = dateToNumber [date#0,1,1,0, T_GETV("durationMinutes")];
 				if (( (dateToNumber date) - _lastCombatDateNumber) > _dateNumberThreshold ) then {
-					_state = ACTION_STATE_COMPLETED;
+					pr _sweepDone = T_GETV("sweepDone");
+					pr _regroupPos = T_GETV("regroupPos");
+					// Regroup
+					pr _groups = CALLM0(_gar, "getGroups");
+					if(_sweepDone) then {
+						switch true do {
+							// Fail if any group has failed
+							case (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _groups, "GoalGroupMove", _AI)): {
+								_state = ACTION_STATE_FAILED
+							};
+							// Succeed if all groups have completed the goal
+							case (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _groups, "GoalGroupMove", _AI)): {
+								_state = ACTION_STATE_COMPLETED
+							};
+						};
+						// pr _maxDist = 0;
+						// {
+						// 	_maxDist = _maxDist max (_regroupPos distance2D CALLM0(_x, "getPos"));
+						// } forEach _groups;
+						// if(_maxDist < 100) then {
+						// 	_state = ACTION_STATE_COMPLETED;
+						// };
+						// if()
+					} else {
+						T_CALLM0("clearGroupGoals");
+						{
+							pr _group = _x;
+							pr _groupAI = CALLM0(_x, "getAI");
+							// Add new goal to move to rally point
+							pr _args = ["GoalGroupMove",  0, [
+								[TAG_POS, _regroupPos],
+								[TAG_BEHAVIOUR, "AWARE"],
+								[TAG_COMBAT_MODE, "RED"],
+								[TAG_SPEED_MODE, "NORMAL"],
+								[TAG_MOVE_RADIUS, 100]
+							], _AI];
+							CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+						} forEach _groups;
+
+						T_SETV("sweepDone", true);
+					};
 				} else {
 					pr _timeLeft = numberToDate [date#0, _lastCombatDateNumber + _dateNumberThreshold - (dateToNumber date)];
 					OOP_INFO_1("Clearing area, time left: %1", _timeLeft);
@@ -295,41 +354,59 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		T_SETV("state", _state);
 		_state
 	} ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [P_THISOBJECT];
-		
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
-		pr _AI = T_GETV("AI");
-		pr _gar = T_GETV("gar");
-		
-		// Remove assigned goals
-		pr _groups = CALLM0(_gar, "getGroups");
-		{ // foreach _groups
-			pr _groupAI = CALLM0(_x, "getAI");
-			pr _args = ["",_AI];
-			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-		} forEach _groups;
-		
-	} ENDMETHOD; 
-	
-	METHOD("onGarrisonSpawned") {
-		params [P_THISOBJECT];
+	// // logic to run when the action is satisfied
+	// /* protected virtual */ METHOD("terminate") {
+	// 	params [P_THISOBJECT];
 
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
+	// 	// Bail if not spawned
+	// 	pr _gar = T_GETV("gar");
+	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+	// 	// Remove all assigned goals
+	// 	T_CALLM0("clearGroupGoals");
+	// } ENDMETHOD;
+	
+	// /* protected virtual */ METHOD("onGarrisonSpawned") {
+	// 	params [P_THISOBJECT];
+
+	// 	// Reset action state so that it reactivates
+	// 	T_SETV("state", ACTION_STATE_INACTIVE);
+	// } ENDMETHOD;
+
+	// METHOD("_assignSweepGoals") {
+	// 	params [P_THISOBJECT];
+
+	// 	pr _AI = T_GETV("AI");
+	// 	pr _pos = T_GETV("pos");
+	// 	pr _radius = T_GETV("radius");
+
+	// 	private _sweepGroups = T_GETV("sweepGroups");
+
+	// 	{// foreach _sweep
+	// 		pr _groupAI = CALLM0(_x, "getAI");
+	// 		pr _args = [
+	// 			"GoalGroupClearArea",
+	// 			0,
+	// 			[
+	// 				[TAG_POS, _pos],
+	// 				[TAG_CLEAR_RADIUS, _radius],
+	// 				[TAG_BEHAVIOUR, "COMBAT"],
+	// 				[TAG_COMBAT_MODE, "RED"]
+	// 			],
+	// 			_AI
+	// 		];
+	// 		CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+	// 	} forEach _sweepGroups;
+	// } ENDMETHOD;
+	
 	
 	// procedural preconditions
 	// POS world state property comes from action parameters
 	/*
 	// Don't have these preconditions any more, they are supplied by goal instead
 	STATIC_METHOD("getPreconditions") {
-		params [ ["_thisClass", "", [""]], ["_goalParameters", [], [[]]], ["_actionParameters", [], [[]]]];
+		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _actionParameters, TAG_POS);
 		pr _ws = [WSP_GAR_COUNT] call ws_new;
