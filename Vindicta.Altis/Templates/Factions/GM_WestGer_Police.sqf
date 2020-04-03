@@ -46,7 +46,7 @@ _cargo = +(tDefault select T_CARGO);
 _group = +(tDefault select T_GROUP);
 
 /* Vehicle descriptions */
-(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Police Car"];
+/*(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Police Car"];*/
 
 /* Set arrays */
 _array set [T_INF, _inf];
