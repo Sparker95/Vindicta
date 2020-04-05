@@ -79,6 +79,10 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_APD\Police\init.s
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Recon\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Police\init.sqf";
+//WW2_Sov
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Sov\Red_Army\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Sov\Red_Army_Recon\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Sov\Red_Army_Police\init.sqf";
 //WW2_UK
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK_Recon\init.sqf";
