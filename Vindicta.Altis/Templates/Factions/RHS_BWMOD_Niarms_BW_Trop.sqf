@@ -84,7 +84,7 @@ _veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_d","rhsusf_m113d_usarmy_M240","rh
 _veh set [T_VEH_MBT, ["BWA3_Leopard2_Tropen"]];
 
 _veh set [T_VEH_MRLS, ["rhsusf_M142_usarmy_d"]];
-_veh set [T_VEH_SPA, ["rhsusf_m109_usarmy"]];
+_veh set [T_VEH_SPA, ["rhsusf_m109d_usarmy"]];
 _veh set [T_VEH_SPAA, ["RHS_M6"]];
 
 _veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_d"]];
