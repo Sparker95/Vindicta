@@ -49,6 +49,8 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 			private _subactionFront = _subactions select 0;
 			_state = CALLM0(_subactionFront, "process");
 
+			CALLM1(_subactionFront, "setInstant", false);
+
 			OOP_INFO_2("Processed subaction: %1, state: %2", _subactionFront, _state);
 
 			// Terminate and delete a completed action

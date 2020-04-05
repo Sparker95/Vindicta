@@ -56,7 +56,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 
 		pr _state = if(_instant) then {
 			moveOut T_GETV("hO");
-			ACTION_STATE_COMPLETE
+			ACTION_STATE_COMPLETED
 		} else {
 			ACTION_STATE_ACTIVE
 		};

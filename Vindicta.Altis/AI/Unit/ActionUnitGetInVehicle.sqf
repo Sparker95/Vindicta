@@ -190,7 +190,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		switch (_vehRole) do {	
 			case "DRIVER": {
 				pr _driver = driver _hVeh;
-				if ((alive _driver) && !(_driver isEqualTo _hO)) then {
+				if (!isNull _driver && { alive _driver && !(_driver isEqualTo _hO) }) then {
 					// Return
 					true
 				} else {
@@ -212,9 +212,9 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			*/
 			case "TURRET" : {
 				pr _turretPath = T_GETV("turretPath");
-				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x select 3 isEqualTo _turretPath};
-				pr _turretOperator = _turretSeat select 0 select 0;
-				if ((alive _turretOperator) && !(_turretOperator isEqualTo _hO)) then {
+				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x#3 isEqualTo _turretPath};
+				pr _turretOperator = _turretSeat#0#0;
+				if (!isNil "_turretOperator" && { alive _turretOperator && !(_turretOperator isEqualTo _hO) }) then {
 					// Return
 					true
 				} else {
@@ -233,9 +233,9 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				pr _chosenCargoSeat = T_GETV("chosenCargoSeat");
 				if (_chosenCargoSeat isEqualType 0) then { // If it's a cargo index
 					pr _cargoIndex = _chosenCargoSeat;
-					pr _cargoSeat = (fullCrew [_hVeh, "cargo", true]) select {_x select 2 isEqualTo _cargoIndex};
-					pr _cargoOperator = _cargoSeat select 0 select 0;
-					if ((alive _cargoOperator) && !(_cargoOperator isEqualTo _hO)) then {
+					pr _cargoSeat = (fullCrew [_hVeh, "cargo", true]) select {_x#2 isEqualTo _cargoIndex};
+					pr _cargoOperator = _cargoSeat#0#0;
+					if (!isNil "_cargoOperator" && { alive _cargoOperator && !(_cargoOperator isEqualTo _hO) }) then {
 						// Return
 						true
 					} else {
@@ -244,9 +244,9 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					};
 				} else { // If it's an FFV turret path
 					pr _turretPath = _chosenCargoSeat;
-					pr _turretSeat = (fullCrew [_hVeh, "Turret", true]) select {_x select 3 isEqualTo _turretPath};
-					pr _turretOperator = _turretSeat select 0 select 0;
-					if ((alive _turretOperator) && !(_turretOperator isEqualTo _hO)) then {
+					pr _turretSeat = (fullCrew [_hVeh, "Turret", true]) select {_x#3 isEqualTo _turretPath};
+					pr _turretOperator = _turretSeat#0#0;
+					if (!isNil "_turretOperator" && {alive _turretOperator && !(_turretOperator isEqualTo _hO)}) then {
 						// Return
 						true
 					} else {

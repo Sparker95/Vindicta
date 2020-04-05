@@ -123,9 +123,12 @@ CLASS("Action", "MessageReceiverEx")
 		params [P_THISOBJECT];
 		CALLM0(T_GETV("AI"), "getMessageLoop");
 	} ENDMETHOD;
-	
-	
-	
+
+	/* protected virtual */ METHOD("setInstant") {
+		params [P_THISOBJECT, P_BOOL("_instant")];
+		T_SETV("instant", _instant);
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                   S E T   A U T O N O M O U S                      |
 	// ----------------------------------------------------------------------

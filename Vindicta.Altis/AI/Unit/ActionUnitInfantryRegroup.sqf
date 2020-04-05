@@ -31,8 +31,8 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 			if (_hO isEqualTo leader _hG) then {
 				pr _wps = waypoints _hG;
 				if (count _wps > 0) then {
-					pr _wp0 = _wps#0;
-					pr _pos0 = waypointPosition _wp0;
+					pr _wp0 = currentWaypoint _hG; //  _wps#0;
+					pr _pos0 = waypointPosition (_wps#_wp0);
 
 					if (!(_pos0 isEqualTo [0, 0, 0])) then {
 						{

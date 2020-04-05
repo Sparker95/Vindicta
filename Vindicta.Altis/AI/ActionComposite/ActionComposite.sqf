@@ -35,6 +35,20 @@ CLASS("ActionComposite", "Action")
 		T_CALLM0("deleteAllSubactions");
 	} ENDMETHOD;
 	
+	/* protected override */ METHOD("setInstant") {
+		params [P_THISOBJECT, P_BOOL("_instant")];
+
+		T_CALLCM1("Action", "setInstant", _instant);
+
+		// Only set subactions instant when true. Only processed actions should have instant toggled off again (this should be done in the overriden process function)
+		if(_instant) then {
+			{
+				CALLM1(_x, "setInstant", _instant);
+			} forEach T_CALLM0("getSubactions");
+		};
+	} ENDMETHOD;
+
+
 	/*
 	Method: getFrontSubaction
 	Returns the first action in the subactions array, or "" if the array is empty.

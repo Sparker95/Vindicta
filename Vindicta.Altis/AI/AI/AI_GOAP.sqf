@@ -284,13 +284,12 @@ CLASS("AI_GOAP", "AI")
 
 			// Make sure we perform the current action instantly if accelerated behavoir is on
 			if(_spawning) then {
-				SETV(_currentAction, "instant", true);
+				CALLM1(_currentAction, "setInstant", true);
 			};
 
 			pr _actionState = CALLM0(_currentAction, "process");
 
-			// Always clear the instant flag after processing
-			SETV(_currentAction, "instant", false);
+			CALLM1(_currentAction, "setInstant", false);
 
 			pr _subaction = CALLM0(_currentAction, "getFrontSubaction");
 			if (_subaction == _currentAction) then { // If it's not a composite action
