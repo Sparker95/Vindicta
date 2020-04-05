@@ -22,7 +22,7 @@ private _gunAndAmmo = [
 
 (selectRandomWeighted _gunAndAmmo) params ["_gun", "_ammo"];
 this addWeapon _gun;
-this addHandgunItem _ammo;
+this addPrimaryWeaponItem _ammo;
 for "_i" from 1 to 2 do {this addItemToUniform _ammo;};
 
 //	==== Misc Items ====

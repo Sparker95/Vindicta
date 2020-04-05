@@ -25,7 +25,7 @@ private _gunAndAmmo = [
 
 (selectRandomWeighted _gunAndAmmo) params ["_gun", "_ammo"];
 this addWeapon _gun;
-this addHandgunItem _ammo;
+this addPrimaryWeaponItem _ammo;
 for "_i" from 1 to 2 do {this addItemToVest _ammo;};
 
 this addWeapon "gm_p1_blk";

@@ -91,7 +91,7 @@ _group = +(tDefault select T_GROUP);
 
 
 /* Vehicle descriptions */
-(T_NAMES select T_VEH) set [T_VEH_car_armed, "Armed Iltis"]; //						= 2 Car with any kind of mounted weapon
+/*(T_NAMES select T_VEH) set [T_VEH_car_armed, "Armed Iltis"]; //						= 2 Car with any kind of mounted weapon
 (T_NAMES select T_VEH) set [T_VEH_MRAP_unarmed, "Unarmed Iltis"]; //				= 3 MRAP
 (T_NAMES select T_VEH) set [T_VEH_MRAP_HMG, "HMG Flatbed"]; //						= 4 MRAP with a mounted HMG gun
 (T_NAMES select T_VEH) set [T_VEH_MRAP_GMG, "LAT Iltis"]; //						= 5 MRAP with a mounted GMG gun
@@ -101,7 +101,7 @@ _group = +(tDefault select T_GROUP);
 (T_NAMES select T_VEH) set [T_VEH_truck_ammo, "Ammo KAT1"]; //					= 34 Ammo truck
 (T_NAMES select T_VEH) set [T_VEH_truck_repair, "Repair KAT1"]; //				= 35 Repair truck
 (T_NAMES select T_VEH) set [T_VEH_truck_medical, "Medical KAT1"]; // 			= 36 Medical truck
-(T_NAMES select T_VEH) set [T_VEH_truck_fuel, "Fuel KAT1"]; //					= 37 Fuel truck
+(T_NAMES select T_VEH) set [T_VEH_truck_fuel, "Fuel KAT1"]; //					= 37 Fuel truck*/
 
 /* Set arrays */
 _array set [T_INF, _inf];
