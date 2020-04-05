@@ -71,8 +71,8 @@ _veh set [T_VEH_car_unarmed, [ "BWA3_Eagle_Tropen", "rhsusf_m1025_d", "rhsusf_m9
 _veh set [T_VEH_car_armed, ["BWA3_Eagle_FLW100_Tropen","rhsusf_m1025_d_m2"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhsusf_M1232_usarmy_d", "rhsusf_CGRCAT1A2_usmc_d", "rhsusf_m1240a1_usmc_d", "rhsusf_M1220_usarmy_d"]];
-_veh set [T_VEH_MRAP_HMG, ["rhsusf_CGRCAT1A2_M2_usmc_d", "rhsusf_m1240a1_m2_usmc_d", "rhsusf_m1240a1_m240_usmc_d","rhsusf_M1220_M2_usarmy_d","rhsusf_M1220_MK19_usarmy_d"]];
-_veh set [T_VEH_MRAP_GMG, ["rhsusf_m1240a1_mk19_usmc_d", "rhsusf_CGRCAT1A2_Mk19_usmc_d", "rhsusf_M1232_MC_MK19_usmc_d", "rhsusf_m1025_d_s_Mk19"]];
+_veh set [T_VEH_MRAP_HMG, ["rhsusf_CGRCAT1A2_M2_usmc_d", "rhsusf_m1240a1_m2_usmc_d", "rhsusf_m1240a1_m240_usmc_d","rhsusf_M1220_M2_usarmy_d"]];
+_veh set [T_VEH_MRAP_GMG, ["rhsusf_m1240a1_mk19_usmc_d", "rhsusf_CGRCAT1A2_Mk19_usmc_d", "rhsusf_M1232_MK19_usarmy_d", "rhsusf_m1025_d_s_Mk19","rhsusf_M1220_MK19_usarmy_d"]];
 
 _veh set [T_VEH_IFV, ["BWA3_Puma_Tropen", "RHS_M2A2", "RHS_M2A2_BUSKI"]];
 _veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_d","rhsusf_m113d_usarmy_M240","rhsusf_m113d_usarmy","rhsusf_m113d_usarmy_MK19","rhsusf_M1117_d"]];
