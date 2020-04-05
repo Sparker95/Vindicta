@@ -88,7 +88,7 @@ _veh set [T_VEH_MRAP_GMG, ["ifa3_Ba10_wm", "LIB_ger_M3_Scout_IFL"]];
 
 _veh set [T_VEH_IFV, ["LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
 _veh set [T_VEH_APC, ["LIB_GER_M3_Halftrack", "LIB_SdKfz_7", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
-_veh set [T_VEH_MBT, ["pz2f", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_t34_76_ger", "ifa3_StuH_42", "LIB_ger_M4A3_Sherman", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "LIB_PzKpfwV", "LIB_PzKpfwVI_B", "LIB_PzKpfwVI_B_tarn51c", "LIB_PzKpfwVI_B_tarn51d", "LIB_PzKpfwVI_E", "LIB_PzKpfwVI_E_2", "LIB_PzKpfwVI_E_tarn51c", "LIB_PzKpfwVI_E_tarn51d", "LIB_PzKpfwVI_E_tarn52c", "LIB_PzKpfwVI_E_tarn52d", "LIB_PzKpfwVI_E_1"]];
+_veh set [T_VEH_MBT, [ "LIB_ger_M4A3_Sherman", "ifa3_t34_76_ger", "LIB_PzKpfwV", "LIB_PzKpfwVI_B", "LIB_PzKpfwVI_B_tarn51c", "LIB_PzKpfwVI_B_tarn51d", "LIB_PzKpfwVI_E", "LIB_PzKpfwVI_E_2", "LIB_PzKpfwVI_E_tarn51c", "LIB_PzKpfwVI_E_tarn51d", "LIB_PzKpfwVI_E_tarn52c", "LIB_PzKpfwVI_E_tarn52d", "LIB_PzKpfwVI_E_1", "pz2f", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_StuH_42", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_StuH_42", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_StuH_42", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d"]];
 _veh set [T_VEH_MRLS, ["LIB_Nebelwerfer41", "LIB_Nebelwerfer41_Camo", "LIB_Nebelwerfer41_Gelbbraun"]];
 _veh set [T_VEH_SPA, ["LIB_SdKfz124"]];
 _veh set [T_VEH_SPAA, ["LIB_FlakPanzerIV_Wirbelwind", "LIB_SdKfz_7_AA"]];
@@ -153,32 +153,19 @@ _cargo set [T_CARGO_box_medium,	["LIB_BasicWeaponsBox_GER"]];
 _cargo set [T_CARGO_box_big,	["LIB_WeaponsBox_Big_GER"]];
 
 //==== Groups ====
-_group = [];
+_group = +(tDefault select T_GROUP);
 
 _group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, 				[[[T_INF, T_INF_TL], 		[T_INF, T_INF_LMG], [T_INF, T_INF_rifleman], [T_INF, T_INF_GL]]]];
 
-//_group set [T_GROUP_inf_sentry,				[[[T_INF, T_INF_rifleman], 		[T_INF, T_INF_rifleman]]]];
-//_group set [T_GROUP_inf_fire_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_LMG], 			[T_INF, T_INF_rifleman], 		[T_INF, T_INF_GL]]]];
 _group set [T_GROUP_inf_AA_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_AT], 				[T_INF, T_INF_AT], 				[T_INF, T_INF_ammo]]]];
-//_group set [T_GROUP_inf_AT_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_AT], 				[T_INF, T_INF_AT], 				[T_INF, T_INF_ammo]]]];
-//_group set [T_GROUP_inf_rifle_squad,		[[[T_INF, T_INF_SL], 		[T_INF, T_INF_rifleman], 		[T_INF, T_INF_LMG], 			[T_INF, T_INF_GL], 				[T_INF, T_INF_LAT], 		[T_INF, T_INF_TL], 			[T_INF, T_INF_rifleman], 			[T_INF, T_INF_marksman], 		[T_INF, T_INF_medic]]]];
-//_group set [T_GROUP_inf_assault_squad,		[[[T_INF, T_INF_SL], 		[T_INF, T_INF_exp], 			[T_INF, T_INF_marksman], 		[T_INF, T_INF_GL], 				[T_INF, T_INF_LMG], 		[T_INF, T_INF_TL], 			[T_INF, T_INF_rifleman],			[T_INF, T_INF_engineer], 		[T_INF, T_INF_medic]]]];
-//_group set [T_GROUP_inf_weapons_squad,		[[[T_INF, T_INF_SL], 		[T_INF, T_INF_HMG], 			[T_INF, T_INF_ammo], 			[T_INF, T_INF_LMG], 			[T_INF, T_INF_rifleman],	[T_INF, T_INF_TL], 			[T_INF, T_INF_AT], 					[T_INF, T_INF_LAT], 			[T_INF, T_INF_medic]]]];
-//_group set [T_GROUP_inf_sniper_team,		[[[T_INF, T_INF_sniper], 	[T_INF, T_INF_spotter]]]];
-//_group set [T_GROUP_inf_officer,			[[[T_INF, T_INF_officer], 	[T_INF, T_INF_TL], 				[T_INF, T_INF_rifleman], 		[T_INF, T_INF_rifleman]]]];
-
-//_group set [T_GROUP_inf_recon_patrol,		[[[T_INF, T_INF_recon_TL], 			[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_LAT], 	[T_INF, T_INF_recon_medic]]]];
-//_group set [T_GROUP_inf_recon_sentry,		[[[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_rifleman]]]];
-//_group set [T_GROUP_inf_recon_squad,		[[[T_INF, T_INF_recon_TL], 			[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_marksman], 	[T_INF, T_INF_recon_exp], 	[T_INF, T_INF_recon_LAT],  	[T_INF, T_INF_recon_JTAC], 	[T_INF, T_INF_recon_medic]]]];
-//_group set [T_GROUP_inf_recon_team,			[[[T_INF, T_INF_recon_TL], 			[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_marksman], 	[T_INF, T_INF_recon_LAT], 		[T_INF, T_INF_recon_exp], 	[T_INF, T_INF_recon_medic]]]];
 
 //==== Vehicle Description ==== (Broken waiting for fix)
 //(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Unarmed Car"]; //					= 1 Car like a Prowler or UAZ
 //(T_NAMES select T_VEH) set [T_VEH_car_armed, "Armed Car"]; //						= 2 Car with any kind of mounted weapon
 //(T_NAMES select T_VEH) set [T_VEH_MRAP_unarmed, "Unarmed Scout Car"]; //			= 3 MRAP
 //(T_NAMES select T_VEH) set [T_VEH_MRAP_HMG, "Armed Scout Car"]; //				= 4 MRAP with a mounted HMG gun
-//(T_NAMES select T_VEH) set [T_VEH_MRAP_GMG, "Havy Armed Car"]; //					= 5 MRAP with a mounted GMG gun
+//(T_NAMES select T_VEH) set [T_VEH_MRAP_GMG, "Heavy Armed Car"]; //					= 5 MRAP with a mounted GMG gun
+//(T_NAMES select T_VEH) set [T_VEH_MBT, "Light-Medium-Heavy Tank"]; //					= 8 Main Battle Tank
 
 //==== Arrays ====
 _array set [T_INF, _inf];
