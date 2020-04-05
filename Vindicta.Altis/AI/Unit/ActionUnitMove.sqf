@@ -164,6 +164,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 					T_GETV("pos")
 				};
 				_currWP setWPPos ZERO_HEIGHT(_nextPos);
+				T_CALLM0("regroup");
 			};
 			if(!(_currWP isEqualTo currentWaypoint _hG)) then {
 				_hG setCurrentWaypoint _currWP;
@@ -182,6 +183,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 			_wp setWaypointCompletionRadius 0;
 			_wp setWaypointName MOVE_WP_NAME;
 			_hG setCurrentWaypoint _wp;
+			T_CALLM0("regroup");
 		};
 	} ENDMETHOD;
 
@@ -236,19 +238,15 @@ CLASS("ActionUnitMove", "ActionUnit")
 					T_SETV("pathingFailedCounter", 0);
 				};
 
-				// Give it a bump if its a vehicle
-				if(_isInVehicle) then {
-					T_CALLM1("bumpVehicle", _hVeh);
-				};
-
 				switch true do {
 					case (_stuckCounter < 3): {
 						T_CALLM0("regroup");
+						_hO doMove getWPPos (waypoints group _hO select currentWaypoint group _hO);
 						T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
 					};
 					case (_stuckCounter < 5): {
 						T_CALLM0("clearWaypoints");
-						T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD * 3);
+						T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
 					};
 					case (_stuckCounter < 10): {
 						// Let's try to teleport you somewhere >_<

@@ -162,10 +162,11 @@ CLASS("ActionGroup", "Action")
 	// } ENDMETHOD;
 
 	/* protected */ METHOD("teleport") {
-		params [P_THISOBJECT, P_POSITION("_pos")];
+		params [P_THISOBJECT, P_POSITION("_pos"), ["_units", 0, [0, []]]];
 
-		private _group = T_GETV("group");
-		private _units = CALLM0(_group, "getUnits");
+		if(_units isEqualTo 0) then {
+			_units = CALLM0(T_GETV("group"), "getUnits");
+		};
 		CALLSM2("Action", "_teleport", _units, _pos);
 	} ENDMETHOD;
 

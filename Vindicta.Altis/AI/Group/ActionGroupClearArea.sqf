@@ -69,7 +69,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 			_wp setWaypointCompletionRadius 20;
 			_wp setWaypointType "SAD";
 		};
-		_hG setCurrentWaypoint _wp0;
+		_hG setCurrentWaypoint [_hG, 0];
 
 		if(_isUrban || !_isInf) then {
 			// Try and move all waypoints on to nearby roads

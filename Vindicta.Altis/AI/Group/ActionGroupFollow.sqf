@@ -19,8 +19,18 @@ CLASS("ActionGroupFollow", "ActionGroup")
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
-		T_CALLM2("applyGroupBehaviour", "COLUMN", "AWARE");
+		private _group = T_GETV("group");
+
 		T_CALLM0("clearWaypoints");
+
+		if(count CALLM0(_group, "getVehicleUnits") > 0) then {
+			T_CALLM4("applyGroupBehaviour", "COLUMN", "CARELESS", "YELLOW", "NORMAL");
+		} else {
+			T_CALLM4("applyGroupBehaviour", "STAG COLUMN", "AWARE", "YELLOW", "NORMAL");
+		};
+
+		// T_CALLM2("applyGroupBehaviour", "COLUMN", "AWARE");
+
 		T_CALLM0("regroup");
 
 		T_SETV("nextWaypointUpdateTime", TIME_NOW + WAYPOINT_UPDATE_INTERVAL);
@@ -44,7 +54,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 			private _hGroupToFollow = T_GETV("hGroupToFollow");
 			private _hG = T_GETV("hG");
 
-			if (leader _hG distance _hGroupToFollow > 30) then {
+			if (leader _hG distance leader _hGroupToFollow > 30) then {
 				// Delete all old waypoints and add a new one
 				T_CALLM0("clearWaypoints");
 

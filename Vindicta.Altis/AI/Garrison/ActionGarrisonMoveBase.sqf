@@ -40,7 +40,6 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		T_SETV("leadGroup", NULL_OBJECT);
 		T_SETV("followGroups", []);
 
-
 		// Create a VirtualRoute in advance
 		// We will use it both when spawned and despawned
 		T_CALLM0("createVirtualRoute");
@@ -78,7 +77,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		};
 		private _infGroupsSortable = _infGroups apply { [ count CALLM0(_x, "getInfantryUnits"), _x ] };
 		_infGroupsSortable sort DESCENDING;
-		_infGroups = _infGroups apply { _x#1 };
+		_infGroups = _infGroupsSortable apply { _x#1 };
 
 		private _leadFollowGroups = if(count _vehGroups > 0) then {
 			[_vehGroups#0, _infGroups]
@@ -316,6 +315,8 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		// Count all vehicles in garrison
 		private _nVeh = count CALLM0(_gar, "getVehicleUnits");
+		// We only provide custom spawning for vehicles
+		if(_nVeh == 0) exitWith {false};
 		private _posAndDir = if(!GETV(_vr, "calculated") || GETV(_vr, "failed")) then {
 			private _vals = [];
 			private _garPos = CALLM0(_gar, "getPos");
@@ -328,7 +329,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		};
 
 		// Bail if we have failed to get positions
-		if ((count _posAndDir) != _nVeh) exitWith {false};
+		if (count _posAndDir != _nVeh) exitWith {false};
 
 		// Iterate through all groups
 		private _currentIndex = 0;

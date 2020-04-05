@@ -297,7 +297,7 @@ Saboteur_fnc_playerSelectsTarget = {
 
 		// Open player map so you can click where the bomber should go
 		openMap true;
-		"bomber_map_text" cutText ["<t size='3'>Shift Click to select a target.<br/>Close the map to confirm the selection.<br/>Alt Click to clear the target.</t>", "PLAIN DOWN", -1, true, true];
+		"bomber_map_text" cutText ["<t size='3'>Shift Click to select a target for the bomber.<br/>Close the map to confirm the selection.<br/>Alt Click to clear the target.</t>", "PLAIN DOWN", -1, true, true];
 		gBomberTarget = [];
 		onMapSingleClick {
 			if (_shift) then {

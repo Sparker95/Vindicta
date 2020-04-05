@@ -131,14 +131,13 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _AI = T_GETV("AI");
 		private _group = GETV(_AI, "agent");
 
-		private _formation = if(count CALLM0(_group, "getVehicleUnits") > 0) then {
-			"COLUMN"
-		} else {
-			"STAG COLUMN"
-		};
-
 		T_CALLM0("clearWaypoints");
-		T_CALLM4("applyGroupBehaviour", _formation, "CARELESS", "YELLOW", "NORMAL");
+
+		if(count CALLM0(_group, "getVehicleUnits") > 0) then {
+			T_CALLM4("applyGroupBehaviour", "COLUMN", "CARELESS", "YELLOW", "NORMAL");
+		} else {
+			T_CALLM4("applyGroupBehaviour", "STAG COLUMN", "AWARE", "YELLOW", "NORMAL");
+		};
 
 		private _leader = CALLM0(_group, "getLeader");
 

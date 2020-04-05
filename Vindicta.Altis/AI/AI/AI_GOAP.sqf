@@ -304,15 +304,18 @@ CLASS("AI_GOAP", "AI")
 			// If it's an external goal, set its action state in the external goal array
 			pr _goalSource = T_GETV("currentGoalSource");
 			if (_goalSource != _thisObject) then {
-				pr _goalsExternal = T_GETV("goalsExternal");
 				pr _goalClassName = T_GETV("currentGoal");
-				pr _index = _goalsExternal findIf {(_goalClassName == (_x select 0)) && (_goalSource == (_x select 3))};
-				if (_index != -1) then {
-					pr _arrayElement = _goalsExternal select _index;
-					_arrayElement set [4, _actionState];
-				} else {
-					// Can happen as goals are removed asynchronously so might not exist
-					//OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
+				pr _goalsExternal = T_GETV("goalsExternal");
+
+				// goalsExternal can be modified from other threads so use a critical section here
+				CRITICAL_SECTION {
+					pr _index = _goalsExternal findIf { _goalClassName == _x#0 && _goalSource == _x#3 };
+					if (_index != -1) then {
+						pr _arrayElement = _goalsExternal#_index;
+						_arrayElement set [4, _actionState];
+					} else {
+						//OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
+					};
 				};
 			};
 

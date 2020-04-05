@@ -113,7 +113,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 
 		if(_instant) then {
 			// Teleport to a random patrol waypoint
-			T_CALLM1("teleport", getWPPos _activeWP);
+			T_CALLM2("teleport", getWPPos _activeWP, _units);
 		};
 
 		_hG setCurrentWaypoint _activeWP;

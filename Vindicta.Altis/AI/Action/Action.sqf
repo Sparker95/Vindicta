@@ -604,12 +604,21 @@ CLASS("Action", "MessageReceiverEx")
 		if(isNull _hG) exitWith {
 			// No group
 		};
-		private _pos = position leader _hG;
-		private _wp = _hG addWaypoint [_pos, 0];
-		_wp setWaypointType "MOVE";
-		while { count waypoints _hG > 1 } do {
-			deleteWaypoint ((waypoints _hG)#0);
+		//private _pos = position leader _hG;
+		while { count waypoints _hG > 0 } do {
+			deleteWaypoint [_hG, 0];
 		};
+		// private _wp = [_hG, 0];
+		// _hG setCurrentWaypoint _wp;
+		// _wp setWPPos _pos;
+		// _wp setWaypointCompletionRadius 30;
+		// _wp setWaypointType "MOVE";
+		// _wp setWaypointFormation "NO CHANGE";
+		// _wp setWaypointCombatMode "NO CHANGE";
+		// _wp setWaypointBehaviour "UNCHANGED";
+		// _wp setWaypointSpeed "UNCHANGED";
+		// _wp setWaypointScript  "";
+
 	} ENDMETHOD;
 	
 	STATIC_METHOD("_regroup") {
@@ -622,7 +631,7 @@ CLASS("Action", "MessageReceiverEx")
 
 	STATIC_METHOD("_teleport") {
 		params [P_THISCLASS, P_ARRAY("_units"), P_POSITION("_pos")];
-
+		
 		{
 			private _unit = _x;
 			private _hO = CALLM0(_unit, "getObjectHandle");
@@ -630,16 +639,62 @@ CLASS("Action", "MessageReceiverEx")
 				// Can't teleport without a handle
 			};
 
+			if(_hO distance2D _pos < 25) exitWith {
+				// Don't teleport if we are already almost there, its too risky
+			};
+
 			switch true do {
 				// dismounted inf
 				case (CALLM0(_unit, "isInfantry") && vehicle _hO == _hO): {
 					private _tgtPos = [_pos, 0, 25, 0, 0, 2, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
-					_hO setPos _tgtPos;
+					_hO setVehiclePosition  [_tgtPos, [], 5];
+					//_hO setPos _tgtPos;
 				};
 				// vehicle
 				case (CALLM0(_unit, "isVehicle")): {
+					// Blacklist nearby vehicles
 					private _tgtPos = [_pos, 0, 25, 7, 0, 0.5, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
-					_hO setPos _tgtPos;
+					// _hO allowDamage false;
+					// _hO hideObjectGlobal true;
+					// _hO setVariable ["vin_allow_damage_at", TIME_NOW + 5];
+
+					// private _epeHandle = [_hO, "EpeContactStart", {
+					// 	params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
+					// 	_thisArgs params ["_pos"];
+					// 	if(_force > 10) then {
+					// 		// Spawned unsafely, so try again
+					// 		_object2 allowDamage false;
+					// 		CRITICAL_SECTION {
+					// 			if(_object2 getVariable ["vin_allow_damage_at", 0] == 0) then {
+					// 				_object2 spawn {
+					// 					waitUntil {
+					// 						sleep 1;
+					// 						TIME_NOW > _this getVariable ["vin_allow_damage_at", 0]
+					// 					};
+					// 					sleep 5; 
+					// 					_this allowDamage true;
+					// 					_this setVariable ["vin_allow_damage_at", nil];
+					// 				};
+					// 			};
+					// 			_object2 setVariable ["vin_allow_damage_at", TIME_NOW + 5];
+					// 		};
+					// 		private _tgtPos = [_pos, 0, 25, 7, 0, 0.5, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
+					// 		_object1 setVehiclePosition  [_tgtPos, [], 5];
+					// 	};
+					// }, [_pos]] call CBA_fnc_addBISEventHandler;
+
+					// [_hO, _epeHandle] spawn {
+					// 	params ["_hO", "_epeHandle"];
+					// 	waitUntil {
+					// 		sleep 1;
+					// 		TIME_NOW > _hO getVariable ["vin_allow_damage_at", 0]
+					// 	};
+					// 	_hO allowDamage true; 
+					// 	_hO hideObjectGlobal false;
+					// 	_hO setVariable ["vin_allow_damage_at", nil];
+					// 	_hO removeEventHandler ["EpeContactStart", _epeHandle];
+					// };
+					// _hO setVehiclePosition  [_tgtPos, [], 5];
 				};
 			};
 		} forEach _units;
