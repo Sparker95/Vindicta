@@ -18,6 +18,8 @@ Author: Sparker
 10.06.2018
 */
 
+#define SHOW_DELAY 10
+
 #define pr private
 
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
@@ -63,7 +65,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), ["_group", "", [""]], ["_hO", objNull], ["_weapons", []]];
+		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull], ["_weapons", []]];
 
 		OOP_INFO_0("NEW UNIT");
 
@@ -234,7 +236,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: Created <AI> object
 	*/
 	METHOD("createAI") {
-		params [P_THISOBJECT, ["_AIClassName", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_AIClassName")];
 
 		// Create an AI object of the unit
 		// Don't start the brain, because its process method will be called by
@@ -332,16 +334,27 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						};
 						//diag_log format ["---- Received group of side: %1", side _groupHandle];
 						_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
-						
-						// Set loadout if requited
-						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
-						if (_loadout != NULL_OBJECT) then {
-							[_objectHandle, _loadout] call t_fnc_setUnitLoadout;
-						};
 
 						if (isNull _objectHandle) then {
 							OOP_ERROR_1("Created infantry unit is Null. Unit data: %1", _data);
 							_objectHandle = _groupHandle createUnit ["I_Protagonist_VR_F", _pos, [], 10, "FORM"];
+						};
+
+						// Delay showing the object (this will hopefully allow it to get teleported into position etc.)
+						_objectHandle allowDamage false;
+						_objectHandle hideObjectGlobal true;
+						_objectHandle stop true;
+						_objectHandle spawn {
+							sleep SHOW_DELAY;
+							_this allowDamage true;
+							_this hideObjectGlobal false;
+							_this stop false;
+						};
+
+						// Set loadout if requited
+						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
+						if (_loadout != NULL_OBJECT) then {
+							[_objectHandle, _loadout] call t_fnc_setUnitLoadout;
 						};
 						[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 						_objectHandle allowFleeing 0;
@@ -377,7 +390,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						// Set unit insignia
 						// todo find a better way to handle this?
-						if ( (side _groupHandle) == CALLM0(gGameMode, "getPlayerSide")) then {
+						if (side _groupHandle == CALLM0(gGameMode, "getPlayerSide")) then {
 							[_objectHandle, "Vindicta"] call BIS_fnc_setUnitInsignia;
 						};
 					};
@@ -401,26 +414,33 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						};
 
 						_objectHandle allowDamage false;
-						private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
-							params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
-							OOP_INFO_MSG("Vehicle %1 failed spawn check, collided with %2 force %3!", [_object1 ARG _object2 ARG _force]);
-							// if(_force > 100) then {
-							// 	deleteVehicle _object1;
-							// };
-						}];
-
-						[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
-							params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
-							sleep 2;
-							_objectHandle allowDamage true;
-							// If it survived spawning
-							if (alive _objectHandle) then {
-								OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
-								_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
-							} else {
-								
-							};
+						_objectHandle hideObjectGlobal true;
+						_objectHandle spawn {
+							sleep SHOW_DELAY;
+							_this allowDamage true;
+							_this hideObjectGlobal false;
 						};
+
+						// This is not currently doing anything.
+						// private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
+						// 	params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
+						// 	OOP_INFO_MSG("Vehicle %1 failed spawn check, collided with %2 force %3!", [_object1 ARG _object2 ARG _force]);
+						// 	// if(_force > 100) then {
+						// 	// 	deleteVehicle _object1;
+						// 	// };
+						// }];
+
+						// [_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
+						// 	params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
+						// 	sleep 2;
+						// 	// If it survived spawning
+						// 	if (alive _objectHandle) then {
+						// 		OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
+						// 		_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
+						// 	} else {
+								
+						// 	};
+						// };
 
 						//_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
@@ -449,26 +469,34 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						};
 
 						_objectHandle allowDamage false;
-						private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
-							params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
-							OOP_INFO_MSG("Vehicle %1 failed spawn check, collided with %2 force %3!", [_object1 ARG _object2 ARG _force]);
-							// if(_force > 100) then {
-							// 	deleteVehicle _object1;
-							// };
-						}];
-
-						[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
-							params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
-							sleep 2;
-							_objectHandle allowDamage true;
-							// If it survived spawning
-							if (alive _objectHandle) then {
-								OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
-								_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
-							} else {
-								
-							};
+						_objectHandle hideObjectGlobal true;
+						_objectHandle spawn {
+							sleep SHOW_DELAY;
+							_this allowDamage true;
+							_this hideObjectGlobal false;
 						};
+
+						// _objectHandle allowDamage false;
+						// private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
+						// 	params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
+						// 	OOP_INFO_MSG("Vehicle %1 failed spawn check, collided with %2 force %3!", [_object1 ARG _object2 ARG _force]);
+						// 	// if(_force > 100) then {
+						// 	// 	deleteVehicle _object1;
+						// 	// };
+						// }];
+
+						// [_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
+						// 	params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
+						// 	sleep 2;
+						// 	_objectHandle allowDamage true;
+						// 	// If it survived spawning
+						// 	if (alive _objectHandle) then {
+						// 		OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
+						// 		_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
+						// 	} else {
+								
+						// 	};
+						// };
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
@@ -1341,7 +1369,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: nil
 	*/
 	METHOD("setGarrison") {
-		params [P_THISOBJECT, ["_garrison", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison") ];
 
 		OOP_INFO_1("SET GARRISON: %1", _garrison);
 
@@ -1363,7 +1391,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: nil
 	*/
 	METHOD("setGroup") {
-		params [P_THISOBJECT, ["_group", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_group") ];
 		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GROUP, _group];
 	} ENDMETHOD;
@@ -1699,7 +1727,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: <Unit> or ""
 	*/
 	STATIC_METHOD("getUnitFromObjectHandle") {
-		params [P_THISCLASS, ["_objectHandle", objNull, [objNull]] ];
+		params [P_THISCLASS, P_OBJECT("_objectHandle") ];
 		GET_UNIT_FROM_OBJECT_HANDLE(_objectHandle);
 	} ENDMETHOD;
 
@@ -2202,7 +2230,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			private _unitCatID = _x select 0; // Unit's category
 			private _unitSubcatID = _x select 1; // Unit's subcategory
 			private _unitClassID = _x select 2;
-			private _args = [_template, _unitCatID, _unitSubcatID, _unitClassID, _group]; // P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), ["_group", "", [""]]
+			private _args = [_template, _unitCatID, _unitSubcatID, _unitClassID, _group]; // P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group")
 			private _newUnit = NEW("Unit", _args);
 		} forEach _crewData;
 	} ENDMETHOD;

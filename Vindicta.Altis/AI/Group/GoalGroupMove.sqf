@@ -11,13 +11,12 @@ CLASS("GoalGroupMove", "Goal")
 		// Infantry group will "clear area" by running around looking for enemies
 		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
 			private _args = [_AI, _parameters];
-			private _action = NEW("ActionGroupInfantryMove", _args);
+			private _action = NEW("ActionGroupMove", _args);
 			_action
 		} else {
 			private _actionSerial = NEW("ActionCompositeSerial", [_AI]);
 
 			// Create action to get in vehicles
-			// Start clear area from center, so move there first
 			private _getInParams = [
 				["onlyCombat", true] // Only combat vehicle operators must stay in vehicles
 			];
@@ -26,7 +25,7 @@ CLASS("GoalGroupMove", "Goal")
 			CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
 
 			// Start clear area from center, so move there first
-			private _actionMove = NEW("ActionGroupMoveGroundVehicles", [_AI ARG _parameters]);
+			private _actionMove = NEW("ActionGroupMove", [_AI ARG _parameters]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
 			_actionSerial
 		};

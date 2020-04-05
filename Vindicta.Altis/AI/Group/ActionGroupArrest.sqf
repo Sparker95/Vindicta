@@ -1,8 +1,3 @@
-#define OOP_INFO
-#define OOP_ERROR
-#define OOP_WARNING
-#define OOP_DEBUG
-#define OFSTREAM_FILE "ArrestAction.rpt"
 #include "common.hpp"
 
 /*
@@ -16,15 +11,19 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 	VARIABLE("target");		// player being arrested
 	VARIABLE("unit");		// unit arresting player
+	VARIABLE("unitGoal");
+	VARIABLE("arrestingUnit");
 	
 	// ------------ N E W ------------
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		//OOP_INFO_1("ActionGroupArrest: Target: %1", _target);
 
 		T_SETV("target", _target);
+		T_SETV("unitGoal", "");
+		T_SETV("arrestingUnit", NULL_OBJECT);
 
 	} ENDMETHOD;
 
@@ -39,40 +38,68 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		// Set behaviour
-		pr _hG = T_GETV("hG");
-		_hG setBehaviour "AWARE";
-		_hG setSpeedMode "NORMAL";
-		{_x doFollow (leader _hG)} forEach (units _hG);
+		T_CALLM4("applyGroupBehaviour", "FILE", "AWARE", "RED", "NORMAL");
+		T_CALLM0("clearWaypoints");
+		T_CALLM0("regroup");
 
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
-		pr _groupUnits = CALLM0(_group, "getUnits");
-				
-		// we only want one unit from the group to arrest the target
-		pr _unit = selectRandom _groupUnits;
-		//OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
+		pr _groupUnits = CALLM0(_group, "getInfantryUnits");
 
-		if(isNil "_unit") then {
-			// Return FAILED state
+		if(count _groupUnits == 0) exitWith {
+			// Can't perform arrests with no infantry
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
-		} else {
-			pr _unitAI = CALLM0(_unit, "getAI");
-			pr _parameters = [["target", _target]];
-
-			// randomly try to shoot the leg
-			if (random 10 <= 2) then {
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitShootLegTarget", 0, _parameters, _AI);
-			} else {
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
-			};
-
-			//OOP_INFO_1("ActionGroupArrest: unit performing arrest: %1", _unit);
-
-			// Return ACTIVE state
-			T_SETV("state", ACTION_STATE_ACTIVE);
-			ACTION_STATE_ACTIVE
 		};
+
+		pr _leader = CALLM0(_group, "getLeader");
+		pr _arrestingUnit = objNull;
+		pr _assistingUnits = [];
+		if(count _groupUnits <= 3) then {
+			_arrestingUnit = _leader;
+			_assistingUnits = _groupUnits - [_arrestingUnit];
+		} else {
+			// exclude leader in a large group
+			pr _usableUnits = _groupUnits - [_leader];
+			_arrestingUnit = selectRandom _usableUnits;
+			_usableUnits = _usableUnits - [_arrestingUnit];
+			for "_i" from 0 to 1 do {
+				_assistingUnits pushBack selectRandom (_usableUnits - _assistingUnits);
+			};
+		};
+		pr _remainingUnits = _groupUnits - ([_arrestingUnit] + _assistingUnits);
+
+		//// we only want one unit from the group to arrest the target
+		//pr _unit = selectRandom _groupUnits;
+		//OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
+		T_SETV("arrestingUnit", _arrestingUnit);
+
+		pr _arrestingUnitAI = CALLM0(_arrestingUnit, "getAI");
+		pr _parameters = [[TAG_TARGET, _target]];
+
+		// randomly try to shoot the leg
+		pr _unitGoal = if (random 10 <= 2) then {
+			"GoalUnitShootLegTarget"
+		} else {
+			"GoalUnitArrest"
+		};
+		CALLM4(_arrestingUnitAI, "addExternalGoal", _unitGoal, 0, _parameters, _AI);
+		T_SETV("unitGoal", _unitGoal);
+
+		pr _arrestingUnitHandle = CALLM0(_arrestingUnit, "getObjectHandle");
+		{
+			_x commandFollow _arrestingUnitHandle;
+		} forEach (_assistingUnits apply { CALLM0(_x, "getObjectHandle") });
+
+		{
+			commandStop _x;
+		} forEach (_remainingUnits apply { CALLM0(_x, "getObjectHandle") });
+
+		//OOP_INFO_1("ActionGroupArrest: unit performing arrest: %1", _unit);
+
+		// Return ACTIVE state
+		T_SETV("state", ACTION_STATE_ACTIVE);
+		ACTION_STATE_ACTIVE
 		
 	} ENDMETHOD;
 	
@@ -80,34 +107,27 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	METHOD("process") {
 		params [P_THISOBJECT];
 
-		//OOP_INFO_0("ActionGroupArrest: Processing.");
-
 		pr _state = T_CALLM0("activateIfInactive");
 
 		if (_state == ACTION_STATE_ACTIVE) then {
-			pr _group = T_GETV("group");
-			pr _units = CALLM0(_group, "getUnits");
+			pr _arrestingUnit = T_GETV("arrestingUnit");
 			pr _AI = T_GETV("AI");
-			pr _isOneSuccess = 0;
+			pr _unitGoal = T_GETV("unitGoal");
 
-			{
-				pr _unitAI = CALLM0(_x, "getAI");
-				pr _goalUnitArrestState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitArrest", "");
-				pr _goalUnitShootState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitShootLegTarget", "");
-				if (_goalUnitArrestState == ACTION_STATE_COMPLETED || _goalUnitShootState == ACTION_STATE_COMPLETED) exitWith {
-					_isOneSuccess = 1;
+			switch true do {
+				// Fail if any unit has failed
+				case (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", [_arrestingUnit], _unitGoal, _AI)): {
+					_state = ACTION_STATE_FAILED
 				};
-			} forEach _units;
-
-			if (1 == _isOneSuccess) then {
-				_state = ACTION_STATE_COMPLETED;
-				//OOP_INFO_0("ActionGroupArrest: Completed.");
+				// Succeed if all units have completed the goal
+				case (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", [_arrestingUnit], _unitGoal, _AI)): {
+					_state = ACTION_STATE_COMPLETED
+				};
 			};
 		};
 		
 		// Return the current state
 		T_SETV("state", _state);
-		//OOP_INFO_1("ActionGroupArrest: State: %1", _state);
 		_state
 	} ENDMETHOD;
 
@@ -129,24 +149,15 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		//OOP_INFO_0("ActionGroupArrest: Terminating.");
 		
 		// Delete given goals
-		pr _AI = T_GETV("AI");
-		pr _group = GETV(_AI, "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			pr _currentGoal = GETV(_unitAI, "currentGoal");
+		pr _arrestingUnit = T_GETV("arrestingUnit");
+		if(_arrestingUnit != NULL_OBJECT) then {
+			pr _AI = T_GETV("AI");
+			pr _unitGoal = T_GETV("unitGoal");
+			pr _unitAI = CALLM0(_arrestingUnit, "getAI");
+			CALLM2(_unitAI, "deleteExternalGoal", _unitGoal, _AI);
 
-			// check because if not it creates *massive* thousands of lines type rpt spam
-			if (_currentGoal == "GoalUnitArrest") then {
-				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitArrest", "");
-			};
-
-			if (_currentGoal == "GoalUnitShootLegTarget") then {
-				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitShootLegTarget", "");
-
-			};
-		} forEach _units;
-		
+			T_CALLM0("regroup");
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

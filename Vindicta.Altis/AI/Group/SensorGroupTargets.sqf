@@ -111,9 +111,9 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 									_exposedVehicleCrew pushBack [1, _x, side group _x, "Man", getPos _o, 0];
 								};
 							};
-						} forEach (crew _o);					
+						} forEach (crew _o);
 					};
-				};				
+				};
 			} forEach _currentlyObservedObjects;
 			
 			// Add exposed vehicle crew to the array

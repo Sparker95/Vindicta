@@ -5,9 +5,7 @@ All crew of vehicles mounts assigned vehicles.
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonMountCrew"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	
 	VARIABLE("mount"); // Bool, true for mounting, false for dismounting
 	

@@ -5,8 +5,6 @@ Class: ActionGroup
 Group action.
 */
 
-#define THIS_ACTION_NAME "MyAction"
-
 CLASS("ActionGroup", "Action")
 
 	VARIABLE("hG");
@@ -15,6 +13,7 @@ CLASS("ActionGroup", "Action")
 	VARIABLE("combatMode");
 	VARIABLE("formation");
 	VARIABLE("speedMode");
+	VARIABLE("replanOnCompositionChange");
 	
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
@@ -33,8 +32,16 @@ CLASS("ActionGroup", "Action")
 		T_SETV("formation", _formation);
 		private _speedMode = CALLSM3("Action", "getParameterValue", _parameters, TAG_SPEED_MODE, "");
 		T_SETV("speedMode", _speedMode);
+
+		T_SETV("replanOnCompositionChange", true);
 	} ENDMETHOD;
-	
+
+	/* protected override */ METHOD("terminate") {
+		params [P_THISOBJECT];
+
+		T_CALLM0("clearUnitGoals");
+	} ENDMETHOD;
+
 	/*
 	Method: failIfEmpty
 	Sets this action to failed state if there are no units
@@ -84,10 +91,12 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: nil
 	*/
-
-	METHOD("handleUnitsRemoved") {
+	/* public virtual */ METHOD("handleUnitsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
-		
+		// Replan by default
+		if(T_GETV("replanOnCompositionChange")) then {
+			T_SETV("state", ACTION_STATE_REPLAN);
+		};
 	} ENDMETHOD;
 
 	/*
@@ -103,13 +112,15 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: nil
 	*/
-
-	METHOD("handleUnitsAdded") {
+	/* public virtual */ METHOD("handleUnitsAdded") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
-		
+		// Replan by default
+		if(T_GETV("replanOnCompositionChange")) then {
+			T_SETV("state", ACTION_STATE_REPLAN);
+		};
 	} ENDMETHOD;
 
-	METHOD("applyGroupBehaviour") {
+	/* protected */ METHOD("applyGroupBehaviour") {
 		params [P_THISOBJECT, ["_defaultFormation", "WEDGE"], ["_defaultBehaviour", "AWARE"], ["_defaultCombatMode", "YELLOW"], ["_defaultSpeedMode", "NORMAL"]];
 
 		private _hG = T_GETV("hG");
@@ -123,14 +134,14 @@ CLASS("ActionGroup", "Action")
 		_hG setSpeedMode ([_speedMode, _defaultCombatMode] select (_speedMode isEqualTo ""));
 	} ENDMETHOD;
 
-	METHOD("clearWaypoints") {
+	/* protected */ METHOD("clearWaypoints") {
 		params [P_THISOBJECT];
 
 		private _hG = T_GETV("hG");
 		CALLSM1("Action", "_clearWaypoints", _hG);
 	} ENDMETHOD;
 
-	METHOD("regroup") {
+	/* protected */ METHOD("regroup") {
 		params [P_THISOBJECT];
 
 		private _hG = T_GETV("hG");
@@ -150,12 +161,61 @@ CLASS("ActionGroup", "Action")
 	// 	_state
 	// } ENDMETHOD;
 
-	METHOD("teleport") {
+	/* protected */ METHOD("teleport") {
 		params [P_THISOBJECT, P_POSITION("_pos")];
 
 		private _group = T_GETV("group");
 		private _units = CALLM0(_group, "getUnits");
 		CALLSM2("Action", "_teleport", _units, _pos);
 	} ENDMETHOD;
+
+
+	/* protected */ METHOD("clearUnitGoals") {
+		params [P_THISOBJECT, ["_goals", [""], ["", []]], ["_units", 0, [0, []]]];
+
+		if(_units isEqualTo 0) then {
+			_units = CALLM0(T_GETV("group"), "getInfantryUnits");
+		};
+
+		private _AI = T_GETV("AI");
+		{// foreach _units
+			private _unitAI = CALLM0(_x, "getAI");
+			{
+				CALLM2(_unitAI, "deleteExternalGoal", _x, _AI);
+			} forEach _goals;
+		} forEach _units;
+	} ENDMETHOD;
+
+	METHOD("updateVehicleAssignments") {
+		params [P_THISOBJECT];
+
+		private _group = T_GETV("group");
+		private _inf = CALLM0(_group, "getInfantryUnits");
+
+		// Order crew in vehicles, and inf out
+		private _crew = _inf select { CALLM0(CALLM0(_x, "getAI"), "getAssignedVehicleRole") != "" };
+		private _nonCrew = _inf - _crew;
+
+		private _hCrew = _crew apply { CALLM0(_x, "getObjectHandle") };
+		_hCrew allowGetIn true;
+		_hCrew orderGetIn true;
+
+		private _hNonCrew = _nonCrew apply { CALLM0(_x, "getObjectHandle") };
+
+		_hNonCrew allowGetIn false;
+		_hNonCrew orderGetIn false;
+
+		private _hVeh = CALLM0(_group, "getVehicleUnits") apply { CALLM0(_x, "getObjectHandle") };
+
+		// TODO: do a better job assigning them if there is more than one vehicle...
+		if(count _hVeh > 0) then {
+			{
+				_x assignAsCargo _hVeh#0;
+			} forEach _hNonCrew;
+			// Let them get in the vehicle if they want
+			_hNonCrew allowGetIn true;
+		};
+	} ENDMETHOD;
+	
 
 ENDCLASS;

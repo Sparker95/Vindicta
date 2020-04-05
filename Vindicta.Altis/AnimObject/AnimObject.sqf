@@ -32,7 +32,7 @@ CLASS("AnimObject", "")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_object", objNull, [objNull]]];
+		params [P_THISOBJECT, P_OBJECT("_object")];
 		if (isNil "gMessageLoopGoal") exitWith { diag_log "[AnimObject] Error: global goal message loop doesn't exist!"; };
 		T_SETV("object", _object);
 	} ENDMETHOD;
@@ -105,7 +105,7 @@ CLASS("AnimObject", "")
 	// | _offset, _dir - offset position and direction in MODEL coordinates
 	// ----------------------------------------------------------------------
 	METHOD("getPointData") {
-		params [P_THISOBJECT, ["_unit", "", [""]], P_NUMBER("_pointID")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_NUMBER("_pointID")];
 		private _units = T_GETV("units");
 
 		// Mark the point occupied by this unit

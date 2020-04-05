@@ -101,7 +101,9 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	METHOD("process") {
 		params [P_THISOBJECT];
 		
-		T_CALLM0("failIfNoInfantry");
+		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
+			ACTION_STATE_FAILED
+		};
 
 		// Fail if building is destroyed or null
 		pr _hBuilding = T_GETV("hBuilding");

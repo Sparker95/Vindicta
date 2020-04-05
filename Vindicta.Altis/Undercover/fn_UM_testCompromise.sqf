@@ -25,5 +25,5 @@ if (count crew vehicle _unit > 0) then {
 		if (isPlayer _x && alive _x) then { 
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitCompromised", [_x], _x, false); //classNameStr, methodNameStr, extraParams, targets, JIP	
 		};
-	} forEach crew vehicle _unit;		
+	} forEach crew vehicle _unit;
 };

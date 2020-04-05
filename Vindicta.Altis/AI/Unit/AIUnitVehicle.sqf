@@ -20,7 +20,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_agent", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Unit");
 		
@@ -47,7 +47,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 				if (_AI != "") then {
 					CALLM0(_AI, "unassignVehicle");
 				};
-			};			
+			};
 		};
 		
 		pr _cargo = T_GETV("assignedCargo");
@@ -112,7 +112,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns: nil
 	*/
 	METHOD("unassignUnit") {
-		params [P_THISOBJECT, ["_unit", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 		
@@ -172,7 +172,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 			""
 		} else {
 			_driver
-		};		
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -270,6 +270,25 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		
 		_ret
 	} ENDMETHOD;
+
+	METHOD("getFreeCargoSeats") {
+		params [P_THISOBJECT, P_ARRAY("_ignoreUnits")];
+
+		pr _hVeh = CALLM0(T_GETV("agent"), "getObjectHandle");
+		pr _unitHandles = _ignoreUnits apply { CALLM0(_x, "getObjectHandle") };
+		pr _freeCargoSeats = (fullCrew [_hVeh, "cargo", true]) select {
+			pr _assignedPassenger = T_CALLM1("getAssignedCargo", _x select 2);
+			(!alive (_x#0) || _x#0 in _unitHandles) && (_assignedPassenger == "" || _assignedPassenger in _ignoreUnits)
+		};
+
+		pr _freeFFVSeats = (fullCrew [_hVeh, "Turret", true]) select {
+			pr _assignedTurret = T_CALLM1("getAssignedTurret", _x select 3);
+			(!alive (_x#0) || (_x#0) in _unitHandles) && _x#4 && (_assignedTurret == "" || _assignedTurret in _ignoreUnits)
+		}; // empty and person turret
+
+		_freeCargoSeats + _freeFFVSeats
+	} ENDMETHOD;
+	
 	
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P

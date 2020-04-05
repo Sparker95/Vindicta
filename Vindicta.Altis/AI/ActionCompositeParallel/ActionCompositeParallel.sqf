@@ -120,7 +120,7 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 		{
 			CALLM1(_x select 0, "handleUnitsRemoved", _units);
 		} forEach _subactions;
-	} ENDMETHOD;	
+	} ENDMETHOD;
 
 	/*
 	Method: handleGroupsAdded

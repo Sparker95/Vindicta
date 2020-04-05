@@ -6,9 +6,7 @@ Relax action
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonRelax"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
+CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 	
 	// ------------ N E W ------------
 	/*

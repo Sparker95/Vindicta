@@ -5,9 +5,7 @@ All infantry mounts vehicles as passengers
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonMountInfantry"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 
 	VARIABLE("mount");
 

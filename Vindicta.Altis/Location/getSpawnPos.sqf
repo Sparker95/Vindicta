@@ -18,7 +18,7 @@ Return value: Array in format [[x, y, z], direction]
 Author: Sparker 29.07.2018
 */
 
-params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), ["_className", "", [""]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
+params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
 
 //First try to find it in building spawn positions
 private _stAll = T_GETV("spawnPosTypes");
@@ -48,7 +48,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 			private _building = _posArray select LOCATION_SP_ID_BUILDING;
 			if(isNil "_building" || {isNull _building} || {!isObjectHidden _building}) then {
 				_posReturn = _posArray select LOCATION_SP_ID_POS;
-				_dirReturn = _posArray select LOCATION_SP_ID_DIR;			
+				_dirReturn = _posArray select LOCATION_SP_ID_DIR;
 				_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter
 				_found = true;
 			};

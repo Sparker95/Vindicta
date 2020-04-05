@@ -161,13 +161,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: nil
 	*/
 	METHOD("setName") {
-		params [P_THISOBJECT, ["_name", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_name")];
 		SET_VAR_PUBLIC(_thisObject, "name", _name);
 	} ENDMETHOD;
 
 	METHOD("setCapacityInf") {
 		params [P_THISOBJECT, P_NUMBER("_capacityInf")];
-		T_SETV("capacityInf", _capacityInf);		
+		T_SETV("capacityInf", _capacityInf);
 		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capacityInf);
 	} ENDMETHOD;
 
@@ -371,7 +371,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Increase infantry capacity
 		pr _capnew = T_GETV("capacityInf") + _cap;
-		T_SETV("capacityInf", _capnew);		
+		T_SETV("capacityInf", _capnew);
 		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capnew);
 
 		// Check if it enabled radio functionality for the location
@@ -725,7 +725,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	METHOD("registerGarrison") {
-		params [P_THISOBJECT, ["_gar", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		
 		pr _gars = T_GETV("garrisons");
 		if (! (_gar in _gars)) then {
@@ -757,7 +757,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 	
 	METHOD("unregisterGarrison") {
-		params [P_THISOBJECT, ["_gar", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		
 		pr _gars = T_GETV("garrisons");
 		if (_gar in _gars) then {
@@ -998,10 +998,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			_roadscon sort DESCENDING;
 			if (count _roadscon > 0) then {
 				private _roadcon = _roadscon#0#1;
-				//private _dir = _roadcon getDir _road;				
+				//private _dir = _roadcon getDir _road;
 				private _roadblock_pos = getPosASL _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
 					
-				_roadblockPositions pushBack _roadblock_pos; 
+				_roadblockPositions pushBack _roadblock_pos;
 			};
 
 			_roads_remaining = _roads_remaining select {
@@ -1047,7 +1047,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: nil
 	*/
 	METHOD("setType") {
-		params [P_THISOBJECT, ["_type", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_type")];
 		SET_VAR_PUBLIC(_thisObject, "type", _type);
 
 		// Create a timer object if the type of the location is a city or a roadblock
@@ -1081,7 +1081,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_msg set [MESSAGE_ID_SOURCE, ""];
 		_msg set [MESSAGE_ID_DATA, 0];
 		_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
-		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], P_ARRAY("_message"), ["_timerService", "", [""]]
+		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService")
 		private _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 	} ENDMETHOD;
@@ -1819,7 +1819,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _gmData = CALLM0(_x, "getGameModeData");
 			if(!IS_NULL_OBJECT(_gmData)) then {
 				// Refresh spawnability
-				CALLM0(_gmData, "updatePlayerRespawn");			
+				CALLM0(_gmData, "updatePlayerRespawn");
 			};
 			// Update build progress
 			CALLM0(_loc, "updateBuildProgress");

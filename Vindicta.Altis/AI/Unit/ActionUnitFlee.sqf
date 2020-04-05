@@ -1,11 +1,5 @@
 #include "common.hpp"
 
-/*
-Class: ActionUnit.ActionUnitFlee
-*/
-
-#define pr private
-
 CLASS("ActionUnitFlee", "ActionUnit")
 	
 	METHOD("activate") {

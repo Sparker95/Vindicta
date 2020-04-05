@@ -14,15 +14,13 @@ CLASS("ActionUnitScareAway", "Action")
 	VARIABLE("objectHandle");
 	VARIABLE("step");
 	VARIABLE("warningShotTarget");
-	// ------------ N E W ------------
-	// _target - whom to scare off
 	
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		T_SETV("step",0);
 
-		private _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
+		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		
 		pr _laserT = createVehicle ["LaserTargetW", [0,0,0], [], 0, "NONE"];
 		_laserT attachto [_target, [0, 0, 3]];

@@ -40,7 +40,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_intel", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
 		T_SETV("mouseOver", false);
@@ -247,7 +247,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	// Same as setColor but gets both an array and string
 	METHOD("setColorEx") {
-		params [P_THISOBJECT, P_ARRAY("_colorRGBA"), ["_colorString", "", [""]]];
+		params [P_THISOBJECT, P_ARRAY("_colorRGBA"), P_STRING("_colorString")];
 		T_SETV("color", _colorRGBA);
 
 		// Set color of the associated marker
@@ -264,7 +264,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	// One of location types defined in location.hpp
 	METHOD("setType") {
-		params [P_THISOBJECT, ["_type", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_type")];
 
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 

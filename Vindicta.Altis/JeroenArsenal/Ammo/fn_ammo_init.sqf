@@ -31,7 +31,7 @@ if(isServer)then{
 
 //player
 if(hasInterface)then{
-    diag_log ("Init JNA: player");	
+    diag_log ("Init JNA: player");
 
     if(missionNamespace getVariable ["jn_ammo_first_init",true])then{
 

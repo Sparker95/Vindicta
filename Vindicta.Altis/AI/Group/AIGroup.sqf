@@ -173,11 +173,16 @@ CLASS("AIGroup", "AI_GOAP")
 		pr _mrk = _thisObject + MRK_GOAL;
 		// Set text
 		pr _action = T_GETV("currentAction");
-		if (_action != "") then {
+		if (_action != NULL_OBJECT) then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
+		pr _state = if (_action != NULL_OBJECT) then {
+			format ["(%1)", gDebugActionStateText select GETV(_action, "state")]
+		} else {
+			""
+		};
 		pr _grpType = CALLM0(_grp, "getType");
-		pr _text = format ["%1\%2\%3\i%4v%5\%6\%7(%8)", _grp, _thisObject,  gDebugGroupTypeNames#_grpType, count CALLM0(_grp, "getInfantryUnits"), count CALLM0(_grp, "getVehicleUnits"), T_GETV("currentGoal"), _action, gDebugActionStateText select GETV(_action, "state")];
+		pr _text = format ["%1\%2\%3\i%4v%5\%6\%7%8", _grp, _thisObject,  gDebugGroupTypeNames#_grpType, count CALLM0(_grp, "getInfantryUnits"), count CALLM0(_grp, "getVehicleUnits"), T_GETV("currentGoal"), _action, _state];
 		_mrk setMarkerText _text;
 
 		_mrk setMarkerPos (_pos vectorAdd [5, 5, 5]);

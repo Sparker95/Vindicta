@@ -106,7 +106,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		// Send targets to commander
 		if (count _knownTargets > 0) then {
 			pr _gar = T_GETV("gar");
-			pr _side = CALLM0(_gar, "getSide");		
+			pr _side = CALLM0(_gar, "getSide");
 			pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 			// Create stimulus
 			pr _stim = STIMULUS_NEW();

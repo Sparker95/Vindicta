@@ -1331,7 +1331,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					} else {
 						GROUP_TYPE_IDLE
 					};
-					pr _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), ["_className", "", [""]], ["_groupType", "", [""]]
+					pr _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), P_STRING("_groupType")
 					pr _posAndDir = CALLM(_loc, "getSpawnPos", _args);
 					CALLM(_unit, "spawn", _posAndDir);
 				};
@@ -2610,6 +2610,19 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Delete empty groups once more
 		T_CALLM0("deleteEmptyGroups");
+
+		// Cleanup vehicle assignments for groups if garrison is spawned
+		// This is a hack to stop units from automatically changing vehicles all the time
+		if(T_CALLM0("isSpawned")) then {
+			pr _allVehicles = T_CALLM0("getVehicleUnits") apply { CALLM0(_x, "getObjectHandle") };
+			{
+				pr _groupVehicles = CALLM0(_x, "getVehicleUnits") apply { CALLM0(_x, "getObjectHandle") };
+				pr _groupHandle = CALLM0(_x, "getGroupHandle");
+				{
+					_groupHandle leaveVehicle _x;
+				} forEach (_allVehicles - _groupVehicles); // Don't unassign the groups ones, we don't want all the crew getting kicked out
+			} forEach T_CALLM0("getGroups");
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -2717,7 +2730,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		pr _effSub = T_efficiency select _catID select _subcatID;
 		
-		pr _effTotal = T_GETV("effTotal"); 
+		pr _effTotal = T_GETV("effTotal");
 		_effTotal = EFF_DIFF(_effTotal, _effSub);
 		T_SETV("effTotal", _effTotal);
 		
@@ -3098,7 +3111,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// at a location
 		pr _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
 		if(isNull _vicHandle) exitWith {
-			__MUTEX_UNLOCK; 
+			__MUTEX_UNLOCK;
 			pr _data = CALLM0(_unitVeh, "getData");
 			OOP_ERROR_2("handleGetOutVehicle: vehicle unit doesn't have valid arma handle: %1, %2", _unitVeh, _data);
 		};
@@ -3612,7 +3625,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _msg = format ["%1 units formed new garrison at %2", count _unitObjects, mapGridPosition _pos];
 		private _args = ["GARRISON FORMED", _msg, "They are now available for map control"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
-	} ENDMETHOD;	
+	} ENDMETHOD;
 
 	METHOD("getTemplateName") {
 		params [P_THISOBJECT];

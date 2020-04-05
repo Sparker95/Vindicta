@@ -19,7 +19,7 @@ Author: Sparker 29.07.2018
 
 //#define DEBUG
 
-params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_dir"), ["_className", "", [""]] ];
+params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_dir"), P_STRING("_className") ];
 
 // Bail if Z is below surface, as it happens with positions of bridges
 #ifdef DEBUG

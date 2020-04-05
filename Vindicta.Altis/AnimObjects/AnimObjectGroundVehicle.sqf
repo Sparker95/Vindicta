@@ -11,7 +11,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_object", objNull, [objNull]]];
+		params [P_THISOBJECT, P_OBJECT("_object")];
 
 		private _objectHandle = T_GETV("object");
 		private _width = [_object] call misc_fnc_getVehicleWidth;

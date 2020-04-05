@@ -394,7 +394,7 @@ OOP_assert_static_member_access = {
 
 OOP_assert_get_static_member_access = { 
 	params ["_classNameStr", "_memNameStr", "_file", "_line"];
-	[_classNameStr, _memNameStr, true, _file, _line] call OOP_assert_static_member_access; 
+	[_classNameStr, _memNameStr, true, _file, _line] call OOP_assert_static_member_access;
 };
 OOP_assert_set_static_member_access = { 
 	params ["_classNameStr", "_memNameStr", "_file", "_line"];
@@ -443,7 +443,7 @@ OOP_assert_member_access = {
 
 OOP_assert_get_member_access = {
 	params ["_objNameStr", "_memNameStr", "_file", "_line"];
-	[_objNameStr, _memNameStr, true, _file, _line] call OOP_assert_member_access; 
+	[_objNameStr, _memNameStr, true, _file, _line] call OOP_assert_member_access;
 };
 OOP_assert_set_member_access = { 
 	params ["_objNameStr", "_memNameStr", "_file", "_line"];
@@ -827,7 +827,7 @@ OOP_objectCrashDump = {
 // However remote machine doesn't have to know what class the object belongs to
 // So we must find out object's class on this machine and then run the method
 OOP_callFromRemote = {
-	params[["_object", "", [""]], ["_methodNameStr", "", [""]], ["_params", [], [[]]]];
+	params[P_OOP_OBJECT("_object"), P_STRING("_methodNameStr"), ["_params", [], [[]]]];
 	//diag_log format [" --- OOP_callFromRemote: %1", _this];
 	CALLM(_object, _methodNameStr, _params);
 };
@@ -835,7 +835,7 @@ OOP_callFromRemote = {
 // If assertion is enabled, this gets called on remote machine when we call a static method on it
 // So it will run the standard assertions before calling static method
 OOP_callStaticMethodFromRemote = {
-	params [["_classNameStr", "", [""]], ["_methodNameStr", "", [""]], ["_args", [], [[]]]];
+	params [P_STRING("_classNameStr"), P_STRING("_methodNameStr"), ["_args", [], [[]]]];
 	CALL_STATIC_METHOD(_classNameStr, _methodNameStr, _args);
 };
 
@@ -1458,7 +1458,7 @@ ENDCLASS;
 	["valid default access", { CALLM(_base, "validDefaultAccessTest", []) }] call test_Assert;
 	["valid private access", { CALLM(_base, "validPrivateAccessTest", []) }] call test_Assert;
 	["valid get only access", { CALLM(_base, "validGetOnlyAccessTest", []) }] call test_Assert;
-	["valid static private access", { CALLSM("AttrTestBase1", "validStaticPrivateAccessTest", [_base]) }] call test_Assert;	
+	["valid static private access", { CALLSM("AttrTestBase1", "validStaticPrivateAccessTest", [_base]) }] call test_Assert;
 
 	["valid external get only access", { GETV(_base, "var_get_only"); true }] call test_Assert;
 	["invalid external private access",

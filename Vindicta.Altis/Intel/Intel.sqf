@@ -21,7 +21,7 @@ CLASS("Intel", "Storable")
 
 	/* variable: dateCreated 
 	Date when this intel was created initially in format returned by date command*/
-	VARIABLE_ATTR("dateCreated", [ATTR_SERIALIZABLE]); 
+	VARIABLE_ATTR("dateCreated", [ATTR_SERIALIZABLE]);
 
 	/* variable: dateUpdated 
 	Date when this intel was updated in format returned by date command*/

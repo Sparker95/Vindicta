@@ -5,7 +5,7 @@ Class: Goal.GoalUnitShootLegTarget
 Makes a single unit to move to a specified building position.
 
 Parameters:
-"target" - object handle of the target to shoot
+TAG_TARGET - object handle of the target to shoot
 */
 #define pr private
 

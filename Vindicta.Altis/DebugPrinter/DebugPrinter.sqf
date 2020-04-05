@@ -27,7 +27,7 @@ CLASS("DebugPrinter", "MessageReceiver");
 	Returns: nil
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, ["_name", "", [""]], ["_msgLoop", "", [""] ] ];
+		params [P_THISOBJECT, P_STRING("_name"), ["_msgLoop", "", [""] ] ];
 		T_SETV("name", _name);
 		T_SETV("msgLoop", _msgLoop);
 	} ENDMETHOD;

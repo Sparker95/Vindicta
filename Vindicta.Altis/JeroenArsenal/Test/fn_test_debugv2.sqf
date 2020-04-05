@@ -4,45 +4,45 @@ if(isnil "CBA_fnc_waitUntilAndExecute")exitWith{};
 fnc_debugv2_overwrite = {
 	_display = findDisplay 49;
 	
-	_ctrl_debug = _display displayCtrl 13184; 
+	_ctrl_debug = _display displayCtrl 13184;
 	_pos_debug = ctrlposition _ctrl_debug;// [x, y, w, h] 
 	_pos_debug set [2, 1-safeZoneX- _pos_debug#0-0.03];
-	_ctrl_debug ctrlSetPosition _pos_debug; 
+	_ctrl_debug ctrlSetPosition _pos_debug;
 	_ctrl_debug ctrlCommit 0;
 
 
 	_ctrl_expressionBackground = _display displayCtrl 11885;
 	_pos_expressionBackground = ctrlposition _ctrl_expressionBackground;// [x, y, w, h]
 	_pos_expressionBackground set [2,_pos_debug#2];
-	_ctrl_expressionBackground ctrlSetPosition _pos_expressionBackground; 
+	_ctrl_expressionBackground ctrlSetPosition _pos_expressionBackground;
 	_ctrl_expressionBackground ctrlCommit 0;
 
 	_ctrl_expression = _display displayCtrl 12284;
 	_pos_expression = ctrlposition _ctrl_expression;// [x, y, w, h] 
 	_pos_expression set [2,_pos_debug#2 - (_pos_expression#0 *2)];
-	_ctrl_expression ctrlSetPosition _pos_expression; 
+	_ctrl_expression ctrlSetPosition _pos_expression;
 	_ctrl_expression ctrlCommit 0;
 
 	_ctrl_expressionText = _display displayCtrl 11892;
 	_pos_expressionText = ctrlposition _ctrl_expressionText;// [x, y, w, h] 
 	_pos_expressionText set [2,_pos_expression#2];
-	_ctrl_expressionText ctrlSetPosition _pos_expressionText; 
+	_ctrl_expressionText ctrlSetPosition _pos_expressionText;
 	_ctrl_expressionText ctrlCommit 0;
 
 	_ctrl_expressionOutputBackground = _display displayCtrl 13191;
 	_pos_expressionOutputBackground = ctrlposition _ctrl_expressionOutputBackground;
 	_pos_expressionOutputBackground set [2,_pos_expression#2];
-	_ctrl_expressionOutputBackground ctrlSetPosition _pos_expressionOutputBackground; 
+	_ctrl_expressionOutputBackground ctrlSetPosition _pos_expressionOutputBackground;
 	_ctrl_expressionOutputBackground ctrlCommit 0;
 
 	_ctrl_expressionOutput = _display displayCtrl 13190;
-	_ctrl_expressionOutput ctrlSetPosition _pos_expressionOutputBackground; 
+	_ctrl_expressionOutput ctrlSetPosition _pos_expressionOutputBackground;
 	_ctrl_expressionOutput ctrlCommit 0;
 
-	_ctrl_title = _display displayCtrl 11884; 
+	_ctrl_title = _display displayCtrl 11884;
 	_pos_title = ctrlposition _ctrl_title;
 	_pos_title set [2,_pos_expressionBackground#2];
-	_ctrl_title ctrlSetPosition _pos_title; 
+	_ctrl_title ctrlSetPosition _pos_title;
 	_ctrl_title ctrlCommit 0;
 	_ctrl_title ctrlsettext "Ultra Wide Extended Debug Console With Extra Save Buttens!";
 	
@@ -281,7 +281,7 @@ fnc_debugv2_overwrite = {
 if (hasInterface) then {
 	[] spawn {
 
-		waitUntil {!isNull findDisplay 46}; 
+		waitUntil {!isNull findDisplay 46};
 
 		(findDisplay 46) displayAddEventHandler ["KeyDown", {
 			params ["_display", "_key", "_shift", "_ctrl", "_alt"];

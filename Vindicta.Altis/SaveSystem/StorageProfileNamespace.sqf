@@ -316,7 +316,7 @@ ENDCLASS;
 
 	// Check records
 	pr _allRecords = CALLM0(_obj, "getAllRecords");
-	["No records yet", _allRecords isEqualTo []] call test_Assert; 
+	["No records yet", _allRecords isEqualTo []] call test_Assert;
 
 	// Ensure it doesn't exist
 	pr _recordName = "testRecordName";

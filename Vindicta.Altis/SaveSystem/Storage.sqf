@@ -259,7 +259,7 @@ CLASS("Storage", "")
 					pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
 					pr _isPublicStr = ["0", "1"] select _isPublic;
 					//diag_log format ["%1 is public: %2 %3", _valueOrRef, _isPublic, _isPublicStr];
-					T_CALLM2("saveString", _valueOrRef + "_" + OOP_PARENT_STR, _className);	
+					T_CALLM2("saveString", _valueOrRef + "_" + OOP_PARENT_STR, _className);
 					T_CALLM2("saveString", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublicStr);
 
 					// Add object ref to the map

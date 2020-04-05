@@ -41,4 +41,20 @@ CLASS("ActionUnit", "Action")
 		private _units = CALLM0(_group, "getUnits");
 		CALLSM2("Action", "_teleport", _units, _pos);
 	} ENDMETHOD;
+
+	METHOD("bumpVehicle") {
+		params [P_THISOBJECT, P_OBJECT("_hVeh"), P_NUMBER("_amount")];
+		private _pushdir = 0;
+		if(_amount <= 0) then { _amount = 5; };
+		// unit is stuck
+		if ((lineintersectssurfaces [_hVeh modeltoworldworld [0,0,0.2], _hVeh modeltoworldworld [0,8,0.2], _hVeh]) isEqualTo []) then {
+			//push it forwards a little
+			_pushdir = _amount;
+		} else {
+			// if there's something in front, push backwards, not forwards
+			_pushdir = -_amount;
+		};
+		_hVeh setVelocityModelSpace [0, _pushdir, 0];
+	} ENDMETHOD;
+	
 ENDCLASS;

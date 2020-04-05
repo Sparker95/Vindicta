@@ -120,12 +120,21 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
 
+		// Set up flags for allocation algorithm
+		private _allocationFlags = [
+			  SPLIT_VALIDATE_ATTACK
+			, SPLIT_VALIDATE_CREW
+		];
+
 		#ifdef DEBUG_BIG_QRF
+		// Make sure we allocate a lot of inf
+		_allocationFlags pushBack SPLIT_VALIDATE_CREW_EXT;
+
 		private _enemyEff = +T_EFF_null;
 		_enemyEff set[T_EFF_soft, 30];
-		_enemyEff set[T_EFF_reqTransport, 30];
 		_enemyEff set[T_EFF_medium, 6];
 		_enemyEff set[T_EFF_armor, 6];
+		_enemyEff set[T_EFF_crew, 24];
 		#else
 		private _enemyEff = +GETV(_tgtCluster, "efficiency");
 		// Scale enemy efficiency
@@ -142,8 +151,6 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
-		// Set up flags for allocation algorithm
-		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW]; // Validate attack capability, allocate a min amount of infantry
 		private _needTransport = false;
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?

@@ -43,7 +43,7 @@ CLASS("GoalGroupClearArea", "Goal")
 				[TAG_MOVE_RADIUS, 75]
 			];
 			CALLSM2("Action", "mergeParameterValues", _moveParams, _parameters);
-			pr _actionMove = NEW("ActionGroupMoveGroundVehicles", [_AI ARG _moveParams]);
+			pr _actionMove = NEW("ActionGroupMove", [_AI ARG _moveParams]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
 
 			pr _actionClear = NEW("ActionGroupClearArea", [_AI ARG _parameters]);

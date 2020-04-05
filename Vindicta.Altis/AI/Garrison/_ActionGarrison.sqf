@@ -25,6 +25,34 @@ CLASS("ActionGarrison", "Action")
 		T_SETV("replanOnCompositionChange", true);
 	} ENDMETHOD;
 
+
+	/* protected override */ METHOD("terminate") {
+		params [P_THISOBJECT];
+
+		// If we aren't spawned there shouldn't be any group goals
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		T_CALLM0("clearGroupGoals");
+	} ENDMETHOD;
+
+	/* protected */ METHOD("clearGroupGoals") {
+		params [P_THISOBJECT, ["_goals", [""], [[]]], ["_groups", 0, [0, []]]];
+
+		if(_groups isEqualTo 0) then {
+			_groups = CALLM0(T_GETV("gar"), "getGroups");
+		};
+
+		pr _AI = T_GETV("AI");
+
+		{// foreach _groups
+			pr _groupAI = CALLM0(_x, "getAI");
+			{
+				CALLM2(_groupAI, "deleteExternalGoal", _x, _AI);
+			} forEach _goals;
+		} forEach _groups;
+	} ENDMETHOD;
+
 	/*
 	Method: spawn
 	Gets called from Garrison.spawn. It must perform non-standard spawning of garrison while this action is active.
@@ -68,7 +96,7 @@ CLASS("ActionGarrison", "Action")
 
 	
 	// Handle units/groups added/removed
-	METHOD("handleGroupsAdded") {
+	/* protected virtual */ METHOD("handleGroupsAdded") {
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 
 		// Replan by default
@@ -77,7 +105,7 @@ CLASS("ActionGarrison", "Action")
 		};
 	} ENDMETHOD;
 
-	METHOD("handleGroupsRemoved") {
+	/* protected virtual */ METHOD("handleGroupsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 
 		// Replan by default
@@ -86,7 +114,7 @@ CLASS("ActionGarrison", "Action")
 		};
 	} ENDMETHOD;
 	
-	METHOD("handleUnitsRemoved") {
+	/* protected virtual */ METHOD("handleUnitsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Replan by default
@@ -95,7 +123,7 @@ CLASS("ActionGarrison", "Action")
 		};
 	} ENDMETHOD;
 	
-	METHOD("handleUnitsAdded") {
+	/* protected virtual */ METHOD("handleUnitsAdded") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Replan by default

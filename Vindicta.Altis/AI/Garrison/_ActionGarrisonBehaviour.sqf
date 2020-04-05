@@ -101,32 +101,4 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 
 	} ENDMETHOD;
 
-	METHOD("terminate") {
-		params [P_THISOBJECT];
-
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
-
-		T_CALLM0("clearGroupGoals");
-	} ENDMETHOD;
-
-	METHOD("clearGroupGoals") {
-		params [P_THISOBJECT, ["_goals", [""], [[]]], ["_groups", 0, [0, []]]];
-
-		if(_groups isEqualTo 0) then {
-			_groups = CALLM0(T_GETV("gar"), "getGroups");
-		};
-
-		pr _AI = T_GETV("AI");
-
-		{ // foreach _groups
-			pr _groupAI = CALLM0(_x, "getAI");
-			{
-				CALLM2(_groupAI, "deleteExternalGoal", _x, _AI);
-			} forEach _goals;
-		} forEach _groups;
-	} ENDMETHOD;
-	
-
 ENDCLASS;

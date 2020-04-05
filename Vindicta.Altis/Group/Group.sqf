@@ -213,7 +213,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 
 	METHOD("addGroup") {
-		params [P_THISOBJECT, ["_group", "", [""]], ["_delete", false]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_group"), ["_delete", false]];
 
 		OOP_INFO_1("ADD GROUP: %1", _group);
 
@@ -247,7 +247,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("removeUnit") {
-		params [P_THISOBJECT, ["_unit", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 
@@ -552,7 +552,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("setGarrison") {
-		params [P_THISOBJECT, ["_garrison", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison") ];
 		private _data = T_GETV("data");
 		_data set [GROUP_DATA_ID_GARRISON, _garrison];
 
@@ -633,7 +633,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("handleUnitRemoved") {
-		params [P_THISOBJECT, ["_unit", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		diag_log format ["[Group::handleUnitRemoved] Info: %1", _unit];
 
@@ -649,7 +649,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("handleUnitDespawned") {
-		params [P_THISOBJECT, ["_unit", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit") ];
 	} ENDMETHOD;
 
 
@@ -716,7 +716,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("spawnAtLocation") {
-		params [P_THISOBJECT, ["_loc", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		OOP_INFO_1("SPAWN AT LOCATION: %1", _loc);
 
@@ -731,7 +731,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			{
 				private _unit = _x;
 				private _unitData = CALL_METHOD(_unit, "getMainData", []);
-				private _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), ["_className", "", [""]], ["_groupType", "", [""]]
+				private _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), P_STRING("_groupType")
 				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 				CALL_METHOD(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
@@ -1221,7 +1221,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			private _catID = _x select 0;
 			private _subcatID = _x select 1;
 			private _classID = _x select 2;
-			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), ["_group", "", [""]]
+			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group")
 			NEW("Unit", _args);
 		} forEach _groupData;
 

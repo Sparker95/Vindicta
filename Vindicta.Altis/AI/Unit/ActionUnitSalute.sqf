@@ -28,7 +28,7 @@ CLASS("ActionUnitSalute", "Action")
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		T_SETV("target", _target);
 
 		pr _agent = GETV(_AI, "agent"); // cache the object handle

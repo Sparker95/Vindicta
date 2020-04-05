@@ -63,7 +63,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("planningEnabled");		// Bool, true enables planning
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent"), ["_side", WEST, [WEST]], P_OOP_OBJECT("_msgLoop")];
 		
 		OOP_INFO_1("Initializing Commander for side %1", str(_side));
 		
@@ -167,13 +167,12 @@ CLASS("AICommander", "AI")
 			],
 			// Low priority
 			[
-			"generateAttackActions"
-			// "generateConstructRoadblockActions",
-			// "generatePatrolActions",
-			// "generateReinforceActions",
-			// "generateOfficerAssignmentActions",
-			// "generateTakeOutpostActions",
-			// "generateSupplyActions"
+			"generateConstructRoadblockActions",
+			"generatePatrolActions",
+			"generateReinforceActions",
+			"generateOfficerAssignmentActions",
+			"generateTakeOutpostActions",
+			"generateSupplyActions"
 			]
 		];
 
@@ -411,7 +410,7 @@ CLASS("AICommander", "AI")
 	// !!! _side parameter seems to be not used any more, need to delete it. We obviously update intel for our own side in this method.
 	// !!! _showNotifications also seems to not work any more
 	METHOD("updateLocationData") {
-		params [P_THISOBJECT, ["_loc", "", [""]], ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		// OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 		// OOP_INFO_1("  Location type: %1", CALLM0(_loc, "getType"));
@@ -521,7 +520,7 @@ CLASS("AICommander", "AI")
 
 	// Creates a LocationData array from Location
 	METHOD("createIntelFromLocation") {
-		params ["_thisClass", ["_loc", "", [""]], P_NUMBER("_updateLevel"), P_NUMBER("_accuracyRadius")];
+		params ["_thisClass", P_OOP_OBJECT("_loc"), P_NUMBER("_updateLevel"), P_NUMBER("_accuracyRadius")];
 		
 		CALLM0(gMessageLoopMain, "lock");
 
@@ -676,7 +675,7 @@ CLASS("AICommander", "AI")
 	// Thread safe
 	// Call it from a non-player-commander thread to reveal intel to the AICommander of player side
 	STATIC_METHOD("revealIntelToPlayerSide") {
-		params ["_thisClass", ["_item", "", [""]]];
+		params ["_thisClass", P_OOP_OBJECT("_item")];
 
 		// Make a clone of this intel item in our thread
 		pr _itemClone = CLONE(_item);
@@ -690,7 +689,7 @@ CLASS("AICommander", "AI")
 	// Handles stealing intel item which this commander doesn't own
 	// Temporary function to reveal stuff to players
 	METHOD("stealIntel") {
-		 params [P_THISOBJECT, ["_item", "", [""]], P_OOP_OBJECT("_itemClone")];
+		 params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_OOP_OBJECT("_itemClone")];
 
 		// Bail if object is wrong
 		//if (!IS_OOP_OBJECT(_item)) exitWith { };
@@ -792,7 +791,7 @@ CLASS("AICommander", "AI")
 
 	// Gets called after player has analyzed up an inventory item with intel
 	METHOD("getIntelFromInventoryItem") {
-		params [P_THISOBJECT, ["_baseClass", "", [""]], P_NUMBER("_ID"), P_NUMBER("_clientOwner")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_baseClass"), P_NUMBER("_ID"), P_NUMBER("_clientOwner")];
 
 		private _endl = toString [13,10];
 
@@ -1094,7 +1093,7 @@ CLASS("AICommander", "AI")
 				_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
 			};
 		} forEach _tcsNew;
-	} ENDMETHOD;	
+	} ENDMETHOD;
 
 	/*
 	Method: onTargetClusterMerged
@@ -1663,7 +1662,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	// Thread unsafe, private
 	METHOD("_clientCreateGarrisonAction") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], P_STRING("_actionName")];
 
 		OOP_INFO_1("CLIENT CREATE GARRISON ACTION: %1", _this);
 

@@ -23,7 +23,7 @@
       ["end", _pos2],
       ["color", "ColorRed"],
       ["size", 24]
-   ] call RUBE_mapDrawLine; 
+   ] call RUBE_mapDrawLine;
 
   Returns:
    marker
@@ -52,7 +52,7 @@ _id = "";
      { 
         if ((typeName (_x select 1)) == "STRING") then
         {
-           _id = _x select 1; 
+           _id = _x select 1;
         };
      };
   };

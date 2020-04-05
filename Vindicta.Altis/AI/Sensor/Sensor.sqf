@@ -77,6 +77,6 @@ CLASS("Sensor", "")
 	
 	/* virtual */ METHOD("getStimulusTypes") {
 		[]
-	} ENDMETHOD;	
+	} ENDMETHOD;
 	
 ENDCLASS;

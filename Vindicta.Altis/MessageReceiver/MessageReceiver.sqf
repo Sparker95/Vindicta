@@ -475,7 +475,7 @@ CLASS("MessageReceiver", "Storable")
 	Returns: nil
 	*/
 	/* private */ STATIC_METHOD("receiveOwnership") {
-		params [ ["_objNameStr", "", [""]], ["_objParent", "", [""]], P_NUMBER("_uniqueID"), ["_serialData", 0]];
+		params [ P_STRING("_objNameStr"), P_OOP_OBJECT("_objParent"), P_NUMBER("_uniqueID"), ["_serialData", 0]];
 
 		diag_log format ["Receive ownership was called: %1", _this];
 

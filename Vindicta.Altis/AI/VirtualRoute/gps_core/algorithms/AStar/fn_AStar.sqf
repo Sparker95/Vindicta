@@ -62,7 +62,7 @@ for "_i" from 0 to 1 step 0 do {
 					["color", "ColorBlack"],
 					["size", 5],
 					["id", "astar_" + str _next]
-				] call gps_test_fnc_mapDrawLine; 
+				] call gps_test_fnc_mapDrawLine;
 			};
 
 			[_came_from,RID(_next),_current] call misc_fnc_hashTable_set;
@@ -80,7 +80,7 @@ for "_i" from 0 to 1 step 0 do {
 						["color", "ColorBlack"],
 						["size", 5],
 						["id", "astar_" + str _next]
-					] call gps_test_fnc_mapDrawLine; 
+					] call gps_test_fnc_mapDrawLine;
 				};
 
 				[_came_from,RID(_next),_current] call misc_fnc_hashTable_set;

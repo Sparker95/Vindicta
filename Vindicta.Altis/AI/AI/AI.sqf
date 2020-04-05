@@ -42,7 +42,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_agent", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 
 		OOP_INFO_1("NEW %1", _this);
 

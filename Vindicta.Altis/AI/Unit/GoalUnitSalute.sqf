@@ -53,7 +53,7 @@ CLASS("GoalUnitSalute", "Goal")
 		if (! (isNil "_wf")) then {
 			_target = WF_GET_SOURCE(_wf);
 		};
-		pr _args = [_AI, [["target", _target]]];
+		pr _args = [_AI, [[TAG_TARGET, _target]]];
 		pr _action = NEW("ActionUnitSalute", _args);
 		
 		diag_log format ["[GoalSalute:createPredefinedAction] AI: %1, created action to salute to: %2", _AI, _target];

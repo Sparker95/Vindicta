@@ -212,7 +212,7 @@ pr0_fnc_toggleMarkers = {
 			} else {
 				T_SETV("debugOverride", true);
 			};
-		};	
+		};
 		
 }] call pr0_fnc_addDebugMenuItem;
 

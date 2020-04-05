@@ -15,8 +15,6 @@ Template of an Action class
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
-
 CLASS("MyAction", "Action");
 
 	// ------------ N E W ------------

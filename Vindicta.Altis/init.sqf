@@ -8,13 +8,13 @@
 if (isServer) then {  
     [] spawn { 
         scriptName "Add Curator Objects";
-        sleep 5;  
+        sleep 5;
         while {true} do {  
             {  
-                _x addCuratorEditableObjects [allUnits, true];  
-                _x addCuratorEditableObjects [vehicles, true];  
-                sleep 10;  
-            } forEach allCurators;   
-        };  
-    };   
+                _x addCuratorEditableObjects [allUnits, true];
+                _x addCuratorEditableObjects [vehicles, true];
+                sleep 10;
+            } forEach allCurators;
+        };
+    };
 };

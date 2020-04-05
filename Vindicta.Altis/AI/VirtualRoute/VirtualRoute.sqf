@@ -48,7 +48,7 @@ CLASS("VirtualRoute", "")
 	*/
 	METHOD("new") {
 		params [
-			"_thisObject",
+			P_THISOBJECT,
 			"_from",
 			"_destination",
 			["_recalculateInterval", -1],
@@ -315,7 +315,7 @@ CLASS("VirtualRoute", "")
 	*/
 	METHOD("getConvoyPositions") {
 		params [
-			"_thisObject",
+			P_THISOBJECT,
 			"_number",
 			["_spacing", 20]
 		];
@@ -386,7 +386,7 @@ CLASS("VirtualRoute", "")
 	*/
 	METHOD("debugDraw") {
 		params [
-			"_thisObject",
+			P_THISOBJECT,
 			["_routeColor", "ColorBlack"],
 			["_waypointColor", "ColorBlack"]
 		];
@@ -408,7 +408,7 @@ CLASS("VirtualRoute", "")
 				["color", _routeColor],
 				["size", 8],
 				["id", "gps_route_" + _thisObject + str _start + str _end]
-			] call gps_test_fnc_mapDrawLine; 
+			] call gps_test_fnc_mapDrawLine;
 		};
 
 		 T_PRVAR(waypoints);

@@ -82,7 +82,7 @@ if (!_spawningHandled) then {
 				} else {
 					// Get new spawn position
 					private _unitData = CALL_METHOD(_unit, "getMainData", []);
-					private _args = _unitData + [0]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), ["_className", "", [""]], ["_groupType", "", [""]]
+					private _args = _unitData + [0]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), P_STRING("_groupType")
 					private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
 				};

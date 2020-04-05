@@ -132,7 +132,7 @@ CLASS("PersonalInventory", "")
 
 				// Decrease the counter
 				pr _counter = _data#_index#__ID_COUNTER;
-				(_data#_index) set [__ID_COUNTER, _counter - 1]; 
+				(_data#_index) set [__ID_COUNTER, _counter - 1];
 			} else {
 				OOP_ERROR_1("Base class name %1 not found", _className);
 			};

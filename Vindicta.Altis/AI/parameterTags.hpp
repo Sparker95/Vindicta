@@ -9,11 +9,8 @@
 
 #define TAG_G_POS "g_pos"
 #define TAG_POS "a_pos"
-
 #define TAG_ROUTE "g_route"
-
 #define TAG_LOCATION "g_location"
-
 #define TAG_MOVE_RADIUS "g_moveRadius"
 
 // Action should be performed instantly where appropriate
@@ -34,7 +31,6 @@
 #define TAG_OVERWATCH_GRADIENT "g_overwatchGradient"
 
 #define TAG_CARGO "g_cargo"
-
 #define TAG_CARGO_POS "g_cargoPos"
 
 #define TAG_MERGE "a_merge"
@@ -42,3 +38,5 @@
 #define TAG_DURATION_SECONDS "g_duration"
 
 #define TAG_MAX_SPEED_KMH "g_maxSpeedKmh"
+
+#define TAG_TARGET "g_target"	// General target parameter, usually a unit

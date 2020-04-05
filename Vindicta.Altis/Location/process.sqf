@@ -74,7 +74,7 @@ switch (T_GETV("spawned")) do {
 			} else {
 				T_SETV("hasPlayers", false);
 				T_GETV("hasPlayerSides") resize 0;
-			};			
+			};
 		};
 	}; // case 1
 }; // switch spawn state

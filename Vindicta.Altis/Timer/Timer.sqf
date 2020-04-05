@@ -36,7 +36,7 @@ CLASS("Timer", "");
 	*/
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_messageReceiver", "", [""]], ["_interval", 1, [1]], P_ARRAY("_message"), ["_timerService", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService") ];
 		//diag_log format ["[Timer::New] _this: %1", _this];
 		// Fill the data array
 		private _data = TIMER_DATA_DEFAULT;

@@ -5,8 +5,6 @@ Class: ActionGroup.ActionGroupRegroup
 The whole group regroups around squad leader, units dismount their vehicles.
 */
 
-#define THIS_ACTION_NAME "MyAction"
-
 CLASS("ActionGroupRegroup", "ActionGroup")
 	
 	//VARIABLE("combatMode");

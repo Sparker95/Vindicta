@@ -862,7 +862,7 @@ CLASS("Grid", "Storable");
 	Returns: reference to this grid.
 	*/	
 	METHOD("copyFrom") {
-		params [P_THISOBJECT, ["_grid", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_grid")];
 
 		pr _gridArray = T_GETV("gridArray");
 		pr _gridArray1 = GETV(_grid, "gridArray");

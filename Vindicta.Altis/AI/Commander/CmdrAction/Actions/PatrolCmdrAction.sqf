@@ -379,7 +379,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// so we can decide if transport is required or not. We could use the total route length or 
 		// some other metric instead here if we wanted.
 		private _maxDistance = 0;
-		private _maxActivityMultiplier = 0; 
+		private _maxActivityMultiplier = 0;
 		private _lastPos = _srcGarrPos;
 		{
 			_maxDistance = _maxDistance max (_lastPos distance _x);

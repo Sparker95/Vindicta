@@ -54,16 +54,15 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 		
 		CALLM0(_AI, "unassignVehicle");
 
-		if(_instant) then {
+		pr _state = if(_instant) then {
 			moveOut T_GETV("hO");
+			ACTION_STATE_COMPLETE
+		} else {
+			ACTION_STATE_ACTIVE
 		};
 
-		// Set state
-		T_SETV("state", ACTION_STATE_ACTIVE);
-
-		// Return ACTIVE state
-		RETURN ACTION_STATE_ACTIVE;
-		//};
+		T_SETV("state", _state);
+		_state;
 	} ENDMETHOD;
 	
 	// logic to run each update-step

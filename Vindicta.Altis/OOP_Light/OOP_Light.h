@@ -1001,7 +1001,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 
 // If ofstream addon is globally enabled
 #ifdef OFSTREAM_ENABLE
-#define __OFSTREAM_OUT(fileName, text) ((ofstream_new fileName) ofstream_write(text))
+#define __OFSTREAM_OUT(fileName, text) ((ofstream_new (fileName)) ofstream_write(text))
 #define WRITE_CRITICAL(text) ((ofstream_new "Critical.rpt") ofstream_write(text))
 #else
 
@@ -1013,9 +1013,11 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define _OFSTREAM_FILE OFSTREAM_FILE
 
 #ifdef OFSTREAM_FILE
-#define WRITE_LOG(str) __OFSTREAM_OUT(OFSTREAM_FILE, str)
+#define WRITE_LOG(msg) __OFSTREAM_OUT(OFSTREAM_FILE, msg)
+#define WRITE_LOGF(file, msg) __OFSTREAM_OUT(file,  msg)
 #else
-#define WRITE_LOG(str) diag_log TEXT_ str
+#define WRITE_LOG(msg) diag_log TEXT_ msg
+#define WRITE_LOGF(file, msg) diag_log TEXT_ msg
 #endif
 
 #ifdef OOP_PROFILE
@@ -1112,6 +1114,26 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define OOP_DEBUG_4(str, a, b, c, d)
 #define OOP_DEBUG_5(str, a, b, c, d, e)
 #define OOP_DEBUG_6(str, a, b, c, d, e, f)
+#endif
+
+#ifdef OOP_LOGF
+#define OOP_LOGF_MSG(f, msg, a) private _o_str = format ([msg]+a); WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_0(f, msg) private _o_str = msg; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_1(f, msg, a) private _o_str = format [msg, a]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_2(f, msg, a, b) private _o_str = format [msg, a, b]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_3(f, msg, a, b, c) private _o_str = format [msg, a, b, c]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_4(f, msg, a, b, c, d) private _o_str = format [msg, a, b, c, d]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_5(f, msg, a, b, c, d, e) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_6(f, msg, a, b, c, d, e, f) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
+#else
+#define OOP_LOGF_MSG(f, msg, a)
+#define OOP_LOGF_0(f, msg)
+#define OOP_LOGF_1(f, msg, a)
+#define OOP_LOGF_2(f, msg, a, b)
+#define OOP_LOGF_3(f, msg, a, b, c)
+#define OOP_LOGF_4(f, msg, a, b, c, d)
+#define OOP_LOGF_5(f, msg, a, b, c, d, e)
+#define OOP_LOGF_6(f, msg, a, b, c, d, e, f)
 #endif
 
 // ----------------------------------------------------------------------

@@ -28,7 +28,7 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 
 			[_worldState, WSP_GAR_ALL_HUMANS_HEALED, true] call ws_setPropertyValue;
 			[_worldState, WSP_GAR_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
-			[_worldState, WSP_GAR_ALL_VEHICLES_CAN_MOVE, true] call ws_setPropertyValue;	
+			[_worldState, WSP_GAR_ALL_VEHICLES_CAN_MOVE, true] call ws_setPropertyValue;
 
 		} else {
 			// If spawned
@@ -39,7 +39,7 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 			// Find soldiers and check if they all are allright
 			pr _soldiers = CALLM0(_gar, "getInfantryUnits");
 			
-			pr _allSoldiersHealed = _soldiers findIf { damage CALLM0(_x, "getObjectHandle") > 0.5 } == NOT_FOUND; 
+			pr _allSoldiersHealed = _soldiers findIf { damage CALLM0(_x, "getObjectHandle") > 0.5 } == NOT_FOUND;
 			[_worldState, WSP_GAR_ALL_HUMANS_HEALED, _allSoldiersHealed] call ws_setPropertyValue;
 			
 			// Find vehicles and check if they all are OK
@@ -51,7 +51,7 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 			pr _allVehCanMove = _vehicles findIf { !CALLM0(_x, "canMove") } == NOT_FOUND;
 
 			[_worldState, WSP_GAR_ALL_VEHICLES_REPAIRED, _allVehRepaired] call ws_setPropertyValue;
-			[_worldState, WSP_GAR_ALL_VEHICLES_CAN_MOVE, _allVehCanMove] call ws_setPropertyValue;		
+			[_worldState, WSP_GAR_ALL_VEHICLES_CAN_MOVE, _allVehCanMove] call ws_setPropertyValue;
 			
 			/*pr _str = format ["medics:%1 engineer:%2 allHealed:%3 allVehRepaired:%4 allVehCanMove:%5 vehsHaveDrivers: %6, vehsHaveTurrets: %7, crew mounted: %8, inf mounted: %9",
 				_medicAvailable, _engineerAvailable, _allSoldiersHealed, _allVehRepaired, _allVehCanMove, _haveDriversNonStatic,
@@ -72,6 +72,6 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 
 		pr _gar = T_GETV("gar");
 		[60, 14] select CALLM0(_gar, "isSpawned");
-	} ENDMETHOD;	
+	} ENDMETHOD;
 	
 ENDCLASS;

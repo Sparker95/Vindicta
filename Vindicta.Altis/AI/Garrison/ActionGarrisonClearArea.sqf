@@ -159,6 +159,28 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		{
 			_remainingInf append CALLM0(_x, "getInfantryUnits");
 		} forEach _infGroups;
+		
+		// Can't do it like this as follow groups can't apply instant behavior reliably.
+		// They might be executed instantly before the group they are following is teleported.
+		// private _support = [];
+		// while {count _remainingInf > 0 && count _vehGroupsForInfAssignment > 0} do {
+		// 	private _vehGroup = _vehGroupsForInfAssignment deleteAt 0;
+
+		// 	// Create a group, add it to the garrison
+		// 	private _supportGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+		// 	CALLM0(_supportGroup, "spawnAtLocation");
+		// 	CALLM1(_gar, "addGroup", _supportGroup);
+
+		// 	private _unitsToAdd = _remainingInf select [0, MINIMUM(4, count _remainingInf)];
+		// 	_remainingInf = _remainingInf - _unitsToAdd;
+
+		// 	CALLM1(_supportGroup, "addUnits", _unitsToAdd);
+
+		// 	pr _groupAI = CALLM0(_supportGroup, "getAI");
+		// 	pr _args = ["GoalGroupOverwatchArea", 0, [[TAG_TARGET, CALLM0(_vehGroup, "getGroupHandle")]] + _commonTags, _AI];
+		// 	CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+		// 	_support pushBack [_supportGroup, _vehGroup];
+		// };
 
 		while {count _remainingInf > 0 && count _vehGroupsForInfAssignment > 0} do {
 			private _vehGroup = _vehGroupsForInfAssignment deleteAt 0;
@@ -180,42 +202,21 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		if(count _overwatch > 0) then {
 			private _commonTags = [
 				[TAG_POS, _pos],
+				[TAG_CLEAR_RADIUS, _radius],
 				[TAG_OVERWATCH_ELEVATION, 20],
 				[TAG_BEHAVIOUR, "STEALTH"],
 				[TAG_COMBAT_MODE, "RED"],
-				[TAG_INSTANT, _instant]
+				[TAG_INSTANT, _instant],
+				[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
+				[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250]
 			];
 			private _dDir = 360 / count _overwatch;
 			private _dir = random 360;
 			{// foreach _overwatch
 				pr _groupAI = CALLM0(_x, "getAI");
-				pr _args = if(_x in _vehGroupsOrig) then {
-					[
-						"GoalGroupVehicleOverwatchArea", 
-						0, 
-						[
-							[TAG_OVERWATCH_GRADIENT, 0.4],
-							[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
-							[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
-							[TAG_OVERWATCH_DIRECTION, _dir]
-						] + _commonTags,
-						_AI
-					]
-				} else {
-					[
-						"GoalGroupInfantryOverwatchArea", 
-						0, 
-						[
-							[TAG_OVERWATCH_GRADIENT, 50],
-							[TAG_OVERWATCH_DISTANCE_MIN, CLAMP(_radius, 250, 500)],
-							[TAG_OVERWATCH_DISTANCE_MAX, CLAMP(_radius, 250, 500) + 250],
-							[TAG_OVERWATCH_DIRECTION, _dir]
-						] + _commonTags,
-						_AI
-					]
-				};
-				_dir = _dir + _dDir;
+				pr _args = ["GoalGroupOverwatchArea", 0, [[TAG_OVERWATCH_DIRECTION, _dir]] + _commonTags, _AI];
 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+				_dir = _dir + _dDir;
 			} forEach _overwatch;
 		};
 

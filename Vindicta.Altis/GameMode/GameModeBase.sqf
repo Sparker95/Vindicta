@@ -1549,7 +1549,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _variants = [T_VEH_stat_HMG_high];
 				// use GMG only if it's defined
 				private _tGMG = (_template select T_VEH) select T_VEH_stat_GMG_high;
-				if !(isNil "_tGMG") then { _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]; }; 
+				if !(isNil "_tGMG") then { _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]; };
 
 				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG selectRandom _variants ARG -1 ARG _staticGroup]);
 				CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
@@ -1797,7 +1797,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
-		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 		diag_log format [" SAVING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
@@ -1895,7 +1895,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM0(_msgLoop, "unlock");
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]);
 
-		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 		diag_log format [" FINISHED SAVING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
@@ -1917,7 +1917,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			OOP_ERROR_0("Game mode must be loaded on server only!");
 		};
 
-		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
@@ -2117,7 +2117,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 
-		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 

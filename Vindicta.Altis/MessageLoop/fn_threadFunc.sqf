@@ -187,8 +187,8 @@ while {true} do {
 				0
 			} else {
 				1/(_x#__PC_ID_UPDATE_INTERVAL_AVERAGE * _countObjects) // We want to maintain proportions of update frequencies, so that objects with higher priority are processed more often 
-			};			
-		}; 
+			};
+		};
 
 		// Normalize
 		pr _sum = 0;
@@ -206,7 +206,7 @@ while {true} do {
 		for "_i" from 0 to (_count - 1) do {
 			pr _cat = _processCategories#_i;
 			pr _objects = _cat#__PC_ID_OBJECTS;
-			pr _countObjects = count _objects;		
+			pr _countObjects = count _objects;
 			pr _execTime = 0; // Time spent executing this category this time
 
 			// Do we need to process this category?

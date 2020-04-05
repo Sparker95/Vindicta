@@ -224,67 +224,44 @@ _connected - bool
 */
 ws_isActionSuitable = {
 	params [P_ARRAY("_preconditions"), P_ARRAY("_effects"), P_ARRAY("_wsGoal") ];
-	
+
 	// Unpack the arrays
 	pr _effectsProps = _effects select WS_ID_WSP;
 	pr _effectsPropTypes = _effects select WS_ID_WSPT;
 	pr _goalProps = _wsGoal select WS_ID_WSP;
 	pr _goalPropTypes = _wsGoal select WS_ID_WSPT;
-	
+	pr _preProps = _preconditions select WS_ID_WSP;
+	pr _prePropTypes = _preconditions select WS_ID_WSPT;
+
 	pr _len = count _effectsProps;
-	
+
 	pr _connected = false;
-	
-	// Check all properties
-	for "_i" from 0 to (_len-1) do {
-		scopeName "s";
-		if ((_goalPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {			// If property exists in B AND
-			if ((_effectsPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {		// If property exists in A
-			
+	pr _conflicting = false;
+
+	pr _i = 0;
+	while {!_conflicting && _i < _len} do {
+		// If property exists in goal and effects
+		if (_goalPropTypes#_i != WSP_TYPE_DOES_NOT_EXIST) then {
+			if(_effectsPropTypes#_i != WSP_TYPE_DOES_NOT_EXIST) then {
 				// If property in A is a parameter which can affect a property in B
-				if ((_effectsPropTypes select _i) == WSP_TYPE_ACTION_PARAMETER) then {
-					_connected = true;
-					breakOut "s";
-				};
-				
 				// OR If both properties are equal
-				if ( (_goalProps select _i) isEqualTo (_effectsProps select _i) ) then {
+				if (_effectsPropTypes#_i == WSP_TYPE_ACTION_PARAMETER || {_goalProps#_i isEqualTo _effectsProps#_i}) then {
 					_connected = true;
-				 	breakOut "s";
-				};
-			};
-		};
-	};
-	
-	// Check if preconditions and goal are in conflict
-	// They are in conflict if a property in precondition is different from corresponding  property in goal
-	
-	if (_connected) then {
-	
-		// Unpack it again ...
-		pr _preProps = _preconditions select WS_ID_WSP;
-		pr _prePropTypes = _preconditions select WS_ID_WSPT;
-		
-		for "_i" from 0 to (_len-1) do {
-			scopeName "s";
-			// If action requires some property which also exists in goal
-			if (((_prePropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) && ((_goalPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST)) then {
-				// If both properties are different
-				if (!((_preProps select _i) isEqualTo (_goalProps select _i))) then {
-					// If action doesn't change this property while still requires it
-					if ((_effectsPropTypes select _i) == WSP_TYPE_DOES_NOT_EXIST) then {
-						
-						_connected = false;
-						breakOut "s";
+				} else {
+					if(!(_goalProps#_i isEqualTo _effectsProps#_i)) then {
+						_conflicting = true;
 					};
 				};
+			} else {
+				// Only consider the pre-conditions if the property doesn't exist in the effects (effects cancel preconditions)
+				if(_prePropTypes#_i != WSP_TYPE_DOES_NOT_EXIST && !(_goalProps#_i isEqualTo _preProps#_i)) then {
+					_conflicting = true;
+				};
 			};
 		};
+		_i = _i + 1;
 	};
-	
-	
-	// Return
-	_connected
+	_connected && !_conflicting
 };
 
 /*

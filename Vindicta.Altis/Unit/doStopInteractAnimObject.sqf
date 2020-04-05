@@ -7,7 +7,7 @@
 This is meant for stopping an AnimObject animation. It also lets a unit walk away from its current position.
 */
 
-params [P_THISOBJECT, ["_animationOut", "", [""]], P_NUMBER("_walkDir"), P_NUMBER("_walkDistance")];
+params [P_THISOBJECT, P_STRING("_animationOut"), P_NUMBER("_walkDir"), P_NUMBER("_walkDistance")];
 private _data = T_GETV("data");
 private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 _objectHandle enableAI "ALL";

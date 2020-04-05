@@ -67,7 +67,7 @@ CLASS("GarrisonModel", "ModelBase")
 	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]);
 
 	// Hash map for unit allocation algorithm
-	STATIC_VARIABLE("allocatorCache"); 
+	STATIC_VARIABLE("allocatorCache");
 	STATIC_VARIABLE("allocatorCacheAllKeys");	// Array of all keys
 	STATIC_VARIABLE("allocatorCacheCounter");	// Counter for all keys
 	STATIC_VARIABLE("allocatorCacheNMiss");		// Amount of misses in the cache
@@ -539,7 +539,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_PRVAR(actual);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM(_actual, "getAI", []);
-		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _moveRadius], [TAG_CLEAR_RADIUS, _clearRadius], [TAG_DURATION_SECONDS, _timeOutSeconds]]; 
+		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _moveRadius], [TAG_CLEAR_RADIUS, _clearRadius], [TAG_DURATION_SECONDS, _timeOutSeconds]];
 		CALLM(_AI, "postMethodAsync", ["addExternalGoal" ARG ["GoalGarrisonClearArea" ARG 0 ARG _parameters ARG _thisObject]]);
 
 		OOP_INFO_MSG("%1 clearing area at %2, radius %3, timeout %4 seconds", [LABEL(_thisObject) ARG _pos ARG _clearRadius ARG _timeOutSeconds]);
@@ -709,7 +709,7 @@ CLASS("GarrisonModel", "ModelBase")
 			[_effRemaining, _effToAdd] call eff_fnc_acc_diff;	// Substract with accumulation
 			// Substract from payload and transport, it we are satisfying the constraint for both when 
 			// we satisfy it for either.
-			[_compPayload, _catID, _subcatID, -_required] call comp_fnc_addValue;	
+			[_compPayload, _catID, _subcatID, -_required] call comp_fnc_addValue;
 			[_compTransport, _catID, _subcatID, -_required] call comp_fnc_addValue;
 			// Adjust the running totals.
 			[_compRemaining, _catID, _subcatID, -_required] call comp_fnc_addValue;

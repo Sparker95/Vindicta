@@ -53,7 +53,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	#endif
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_agent", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_GLOBAL_OBJECT(gStimulusManagerGarrison);
 
@@ -198,11 +198,15 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Set text
 		pr _action = T_GETV("currentAction");
-		if (_action != "") then {
+		if (_action != NULL_OBJECT) then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
-
-		pr _text = format ["%1\%2\i%3v%4\%5\%6(%7)", _gar, _thisObject, CALLM0(_gar, "countInfantryUnits"), CALLM0(_gar, "countVehicleUnits"), T_GETV("currentGoal"), _action, gDebugActionStateText select GETV(_action, "state")];
+		pr _state = if (_action != NULL_OBJECT) then {
+			format ["(%1)", gDebugActionStateText select GETV(_action, "state")]
+		} else {
+			""
+		};
+		pr _text = format ["%1\%2\i%3v%4\%5\%6%7", _gar, _thisObject, CALLM0(_gar, "countInfantryUnits"), CALLM0(_gar, "countVehicleUnits"), T_GETV("currentGoal"), _action, _state];
 
 		// pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
 		_mrk setMarkerText _text;
@@ -460,7 +464,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	
 	METHOD("handleLocationChanged") {
-		params [P_THISOBJECT, ["_loc", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		// Set location world state property
 		pr _ws = T_GETV("worldState");

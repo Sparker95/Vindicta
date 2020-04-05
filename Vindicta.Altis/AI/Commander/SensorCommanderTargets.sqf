@@ -312,7 +312,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			
 			// Update map markers
 			#ifdef DEBUG_CLUSTERS
-				T_CALLM1("drawCluster", _newTC);				
+				T_CALLM1("drawCluster", _newTC);
 			#endif
 		} forEach _newTargetClusters;
 		
@@ -352,7 +352,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			default {"ColorCIV"};
 		};
 	
-		pr _clusterMarkers = T_GETV("debug_clusterMarkers");		
+		pr _clusterMarkers = T_GETV("debug_clusterMarkers");
 		// Create marker for the cluster
 		pr _nextMarkerID = T_GETV("debug_nextMarkerID");
 		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
@@ -516,7 +516,7 @@ ENDCLASS;
 						_i = _i + 1;
 					};
 				};
-			}; 
+			};
 		} forEach _deletedTargets;
 		
 		// Correct existing clusters by applying new targets
@@ -536,7 +536,7 @@ ENDCLASS;
 				if (([_cluster, _newCluster] call cluster_fnc_distance) < TARGETS_CLUSTER_DISTANCE_MIN) exitWith {
 					[_cluster, _newCluster] call cluster_fnc_merge;
 					_newClusterMerged = true;
-				};	
+				};
 			} forEach _targetClusters;
 			
 			// If the new target was not merged into existing cluster, create a new one

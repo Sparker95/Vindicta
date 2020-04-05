@@ -213,7 +213,7 @@ class CfgVehicles {
     };
 
     class B_Truck_01_fuel_F: B_Truck_01_mover_F {
-        transportFuel = 0; 
+        transportFuel = 0;
         jn_fuel_cargoCapacity = 10000;
     };
 

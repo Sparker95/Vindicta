@@ -75,7 +75,7 @@ CLASS("TimerService", "")
 	Returns: nil
 	*/
 	METHOD("addTimer") {
-		params [P_THISOBJECT, ["_timer", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		private _timers = T_GETV("timers");
 		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
 		_timers pushBackUnique _timerDereferenced;
@@ -95,7 +95,7 @@ CLASS("TimerService", "")
 	Returns: nil
 	*/
 	METHOD("removeTimer") {
-		params [P_THISOBJECT, ["_timer", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		private _timers = T_GETV("timers");
 		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
 		

@@ -42,7 +42,7 @@ for "_i" from 1 to 2 do {this addItemToVest "gm_1Rnd_44x537mm_heat_dm32_pzf44_2"
 
 this addWeapon "gm_p1_blk";
 this addHandgunItem "gm_8Rnd_9x19mm_B_DM51_p1_blk";
-for "_i" from 1 to 3 do {this addItemToVest "gm_8Rnd_9x19mm_B_DM51_p1_blk";}; 
+for "_i" from 1 to 3 do {this addItemToVest "gm_8Rnd_9x19mm_B_DM51_p1_blk";};
 
 //	==== Misc Items ====
 this linkItem "ItemMap"; 			// Map

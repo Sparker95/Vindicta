@@ -1,8 +1,8 @@
 //Spawn talk loop
 ("VoiceArmaDll" callExtension "@start" );
 
-_handle= missionNameSpace getVariable "speech_loop"; 
-if(!isnil "_handle")then{terminate _handle}; 
+_handle= missionNameSpace getVariable "speech_loop";
+if(!isnil "_handle")then{terminate _handle};
 
 _handle = [] spawn {
 	while{true}do{
@@ -29,8 +29,8 @@ _handle
 
 
 //stop talk loop
-_handle= missionNameSpace getVariable "speech_loop"; 
-if(!isnil "_handle")then{terminate _handle}; 
+_handle= missionNameSpace getVariable "speech_loop";
+if(!isnil "_handle")then{terminate _handle};
 
 
 
@@ -61,8 +61,8 @@ if(!isnil "_handle")then{terminate _handle};
 //start example
 ("VoiceArmaDll" callExtension "@start" );
 
-_handle= missionNameSpace getVariable "speech_loop"; 
-if(!isnil "_handle")then{terminate _handle}; 
+_handle= missionNameSpace getVariable "speech_loop";
+if(!isnil "_handle")then{terminate _handle};
 
 _array = "follow me";
 
@@ -80,11 +80,11 @@ _handle = [] spawn {
 			_text = _t#0;
 			//hint str ["command",_text];
 			if(_text isEqualTo "follow me")exitWith{
-				_actionClassName = "ActionUnitMoveToDanger"; 
-				_parameters = player; 
-				_interval = 1; 
-				call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf"; 
-				_Action = [_unit, _actionClassName, _parameters, _interval] call AI_misc_fnc_forceUnitAction; 
+				_actionClassName = "ActionUnitMoveToDanger";
+				_parameters = player;
+				_interval = 1;
+				call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+				_Action = [_unit, _actionClassName, _parameters, _interval] call AI_misc_fnc_forceUnitAction;
 				_action
 				
 			};

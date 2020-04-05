@@ -68,7 +68,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("setPos") {
-		params [P_THISOBJECT, P_POSITION("_pos")];		
+		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		_mrkName setMarkerPosLocal _pos;
 

@@ -1,12 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\defineCommon.inc"
-#include "..\Stimulus\Stimulus.hpp"
-#include "..\WorldFact\WorldFact.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\worldFactTypes.hpp"
-#include "..\goalRelevance.hpp"
+#include "common.hpp"
 
 /*
 The goal of Warning someone with a shot
@@ -60,7 +52,7 @@ CLASS("GoalUnitScareAway", "Goal")
 		if (!isNil "_wf") then {
 			_target = WF_GET_SOURCE(_wf);
 		};
-		pr _args = [_AI, [["target", _target]]];
+		pr _args = [_AI, [[TAG_TARGET, _target]]];
 		pr _action = NEW("ActionUnitScareAway", _args);
 		
 		diag_log format ["[GoalWarningshot:createPredefinedAction] AI: %1, created action to warningShot to: %2", _AI, _target];

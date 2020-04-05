@@ -7,14 +7,13 @@ The whole group regroups and gets some waypoints to clear the area
 
 #define pr private
 
-
 CLASS("ActionGroupClearArea", "ActionGroup")
 
 	VARIABLE("pos");
 	VARIABLE("radius");
 	VARIABLE("inCombat");
+	VARIABLE("nextLookTime");
 
-	// ------------ N E W ------------
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -29,6 +28,8 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		// Force aware behaviour (overwriting anything that comes in via _parameters)
 		// We and using Armas auto combat to determine when to stop patrolling to engage instead
 		T_SETV("behaviour", "AWARE");
+
+		T_SETV("nextLookTime", TIME_NOW);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -56,14 +57,9 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		// Set behaviour
 		T_CALLM4("applyGroupBehaviour", _formation, "AWARE", "RED", "NORMAL");
 		T_CALLM0("regroup");
-
-		// Set state
-		T_SETV("state", ACTION_STATE_ACTIVE);
-
-		// Give some waypoints
-		// Delete previous waypoints
 		T_CALLM0("clearWaypoints");
 
+		// Give some waypoints
 		T_PRVAR(hG);
 		private _wp0 = _hG addWaypoint [_pos, _radius];
 		_wp0 setWaypointCompletionRadius 20;
@@ -98,14 +94,15 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 				pr _unitAI = CALLM0(_x, "getAI");
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
 			} forEach _inf;
-		} else {
-			// Order get in vehicles
-			(_inf apply { CALLM0(_x, "getObjectHandle") }) orderGetIn true;
 		};
+
+		T_CALLM0("updateVehicleAssignments");
 
 		if(_instant) then {
 			T_CALLM1("teleport", waypointPosition _wp0);
 		};
+
+		T_SETV("nextLookTime", TIME_NOW);
 
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -119,7 +116,50 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		T_CALLM0("failIfEmpty");
 
-		T_CALLM0("activateIfInactive");
+		private _state = T_CALLM0("activateIfInactive");
+
+		if(_state == ACTION_STATE_ACTIVE && {TIME_NOW > T_GETV("nextLookTime")}) then {
+			private _pos = T_GETV("pos");
+			private _radius = T_GETV("radius");
+			private _hG = T_GETV("hG");
+
+			// All units looking around all the time
+
+			// player is near?
+			private _allTargets = [];
+			{
+				_allTargets append (_x targetsQuery [objNull, sideUnknown, "", [], 40]);
+			} forEach units _hG;
+
+			private _targets = _allTargets select {
+				_x#2 != side _hG && {_x#3 in ["Man", "Vehicle"]} 
+			} apply {
+				_x#1
+			};
+			private _playerTargets = _targets arrayIntersect allPlayers;
+			if(count _playerTargets > 0 || {count _targets > 0 && random 5 < 4}) then {
+				private _tgts = if(count _playerTargets > 0) then { _playerTargets } else { _targets };
+				{
+					private _tgt = selectRandom _tgts;
+					_x glanceAt _tgt;
+					_x lookAt _tgt;
+					_x commandWatch _tgt;
+				} foreach units _hG;
+
+				private _nextLookTime = TIME_NOW + random[5, 15, 30];
+				T_SETV("nextLookTime",  _nextLookTime);
+			} else {
+				{
+					private _lookAtPos = position leader _hG getPos [random [15, 30, 50], direction vehicle leader _hG + random [-45, 0, 45]];// +  [[[position leader _hG, _radius]]] call BIS_fnc_randomPos;
+					_x glanceAt _lookAtPos;
+					_x lookAt _lookAtPos;
+					_x commandWatch _lookAtPos;
+				} foreach units _hG;
+
+				private _nextLookTime = TIME_NOW + random[0, 5, 15];
+				T_SETV("nextLookTime",  _nextLookTime);
+			};
+		};
 
 		// This action is terminal because it's never over right now
 
@@ -155,22 +195,13 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		// Return the current state
 		T_GETV("state")
 	} ENDMETHOD;
-	
+
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [P_THISOBJECT];
 
-		// Clear the generated waypoints
 		T_CALLM0("clearWaypoints");
-
-		// Delete given goals
-		pr _AI = T_GETV("AI");
-		pr _group = GETV(_AI, "agent");
-		pr _inf = CALLM0(_group, "getInfantryUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
-		} forEach _inf;
+		T_CALLCM0("ActionGroup", "terminate");
 
 	} ENDMETHOD;
 

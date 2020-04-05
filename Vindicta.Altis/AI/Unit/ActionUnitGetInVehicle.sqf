@@ -143,7 +143,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					// No room for this soldier in the vehicle
 					// Mission failed
 					// We are dooomed!
-					// https://www.youtube.com/watch?v=WD73a1trdJ0
+					// https://www.youtube.com/watch?v=5vSUV1nii5k
 					// Return
 					false
 				} else { // if count free seats == 0
@@ -338,53 +338,45 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
-		
+
 		pr _hO = T_GETV("hO");
 		pr _hVeh = T_GETV("hVeh");
-		
+
 		// Insta-fail if vehicle is destroyed
 		if (!alive _hVeh) exitWith {
 			OOP_INFO_0("Failed to ACTIVATE: vehicle is destroyed");
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
-		
-		/*
-		if ((vehicle _hO isEqualTo _hVeh) && (T_CALLM0("isAtAssignedSeat"))) then {
-			// We are done here
-			T_SETV("state", ACTION_STATE_COMPLETED);
-			ACTION_STATE_COMPLETED
-		} else {
-		*/
-			// Assign vehicle
-			pr _success = T_CALLM0("assignVehicle");
-			if (_success) then {
-				OOP_INFO_0("ACTIVATEd successfully");
 
-				// If we were just spawned, just teleport into the vehicle
-				pr _AI = T_GETV("AI");
-				if (_instant) then {
-					CALLM0(_AI, "moveInAssignedVehicle");
-				};
-				
+		// Assign vehicle
+		pr _success = T_CALLM0("assignVehicle");
+		if (_success) then {
+			OOP_INFO_0("ACTIVATEd successfully");
+			// If we were just spawned, just teleport into the vehicle
+			pr _AI = T_GETV("AI");
+			if (_instant) then {
+				// Execute vehicle assignment
+				CALLM0(_AI, "executeVehicleAssignment");
+				CALLM0(_AI, "moveInAssignedVehicle");
+				T_SETV("state", ACTION_STATE_COMPLETED);
+				ACTION_STATE_COMPLETED
+			} else {
 				// Calculate ETA
 				pr _hO = T_GETV("hO");
 				pr _hVeh = T_GETV("hVeh");
 				pr _ETA = time + ((_hO distance _hVeh)/1.4 + 40);
 				OOP_INFO_1("Set ETA: %1", _ETA);
 				T_SETV("ETA", _ETA);
-				
+
 				T_SETV("state", ACTION_STATE_ACTIVE);
-				// Return ACTIVE state
 				ACTION_STATE_ACTIVE
-			} else {
-				OOP_INFO_0("Failed to ACTIVATE");
-				
-				// Failed to assign vehicle
-				T_SETV("state", ACTION_STATE_FAILED);
-				ACTION_STATE_FAILED
 			};
-		//};
+		} else {
+			OOP_INFO_0("Failed to ACTIVATE");
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
 	} ENDMETHOD;
 	
 	// logic to run each update-step
@@ -417,6 +409,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 							CALLM0(_AI, "moveInAssignedVehicle");
 						} else {
 							// Order get in
+							[_hO] allowGetIn true;
 							[_hO] orderGetIn true;
 						};
 					
@@ -449,6 +442,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					// Execute vehicle assignment
 					CALLM0(_AI, "executeVehicleAssignment");
 					// Order get in
+					[_hO] allowGetIn true;
 					[_hO] orderGetIn true;
 				
 					// Check if the unit is in the required seat
@@ -483,6 +477,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						// Execute vehicle assignment
 						CALLM0(_AI, "executeVehicleAssignment");
 						// Order get in
+						[_hO] allowGetIn true;
 						[_hO] orderGetIn true;
 						
 						// Check ETA

@@ -88,7 +88,7 @@ Saboteur_fnc_createBombWPs = {
 	// 	_range = _range * 2;
 	// };
 	if(count _hidePos == 3) then {
-		_hidePos = _tgtPos vectorAdd [15,15,0]; 
+		_hidePos = _tgtPos vectorAdd [15,15,0];
 	};
 	private _wp = _grp addWaypoint [_hidePos, 0];
 	_wp setWaypointType "MOVE";
@@ -102,7 +102,7 @@ Saboteur_fnc_createBombWPs = {
 	_wp setWaypointType "MOVE";
 	_wp setWaypointBehaviour "STEALTH";
 	_wp setWaypointSpeed "FULL";
-	_wp setWaypointStatements ["this getVariable ['bombed', false]", ""]; 
+	_wp setWaypointStatements ["this getVariable ['bombed', false]", ""];
 
 	// WAYPOINT 4 - run away!
 	// Run far away!
@@ -145,7 +145,7 @@ Saboteur_fnc_createBombWPs = {
 	_trigger setTriggerStatements [
 		_triggerCond,
 		"
-		private _owner = thisTrigger getVariable 'owner'; 
+		private _owner = thisTrigger getVariable 'owner';
 		if(alive _owner) then {
 			systemChat format['%1: Vindicta!', name _owner];
 			_owner action ['TOUCHOFF', _owner];
@@ -639,7 +639,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 				_activeCivs pushBack [_civie, _trigger];
 
 				// "_ied = (nearestObject [thisTrigger, ""IEDLandSmall_Remote_Ammo""]); _ied setDamage 1;"
-				// private _ied = (nearestObject [thisTrigger, 'IEDUrbanSmall_Remote_Ammo']); 
+				// private _ied = (nearestObject [thisTrigger, 'IEDUrbanSmall_Remote_Ammo']);
 				// _ied setDamage 1;
 
 				// for "_j" from 0 to 5 do {

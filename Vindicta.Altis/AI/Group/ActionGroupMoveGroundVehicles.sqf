@@ -14,7 +14,8 @@ TAG_MAX_SPEED_KMH
 
 // Needed vehicle separation in meters
 #define SEPARATION 18
-#define SPEED_MAX 50
+#define DEFAULT_SPEED_MAX 100
+#define URBAN_SPEED_MAX 20
 #define SPEED_MIN 5
 
 #ifndef RELEASE_BUILD
@@ -30,6 +31,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	VARIABLE("time");
 	VARIABLE("route"); // Optional route to use, or just give one waypoint if no route was given
 	VARIABLE("ready"); // Activation tasks complete
+	VARIABLE("leadDriver");
+	VARIABLE("otherDrivers");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
@@ -40,7 +43,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 20);
 		T_SETV("radius", _radius);
 
-		pr _maxSpeedKmh = CALLSM3("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH, SPEED_MAX);
+		pr _maxSpeedKmh = CALLSM3("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH, DEFAULT_SPEED_MAX);
 		T_SETV("maxSpeed", _maxSpeedKmh);
 
 		// Route can be optionally passed or not
@@ -52,6 +55,9 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		T_SETV("speedLimit", SPEED_MIN);
 
 		T_SETV("ready", false);
+
+		T_SETV("leadDriver", NULL_OBJECT);
+		T_SETV("otherDrivers", []);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -98,11 +104,14 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _hG = T_GETV("hG");
 
 		pr _vehLeadHandle = CALLM0(_vehLead, "getObjectHandle");
-		_vehLeadHandle limitSpeed T_GETV("speedLimit");
+		// Start off slowly
+		_vehLeadHandle limitSpeed SPEED_MIN;
 
 		// Set time last called
 		T_SETV("time", time);
 
+		T_SETV("leadDriver", NULL_OBJECT);
+		T_SETV("otherDrivers", []);
 		//CALLM1(_group, "setLeader", _leadDriver);
 		//pr _leader = CALLM0(_group, "getLeader");
 		//pr _vehLeadHandle = vehicle (leader (CALLM0(_group, "getGroupHandle")));
@@ -149,15 +158,17 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _leadDriver = CALLM0(_group, "getLeader");
 
 		// Add follow goals for units other than the leader
-		pr _otherDrivers = (CALLM0(_group, "getInfantryUnits") - [_leadDriver]) apply {
-			CALLM0(_x, "getAI")
+		pr _otherDriversAndAI = (CALLM0(_group, "getInfantryUnits") - [_leadDriver]) apply {
+			[_x, CALLM0(_x, "getAI")]
 		} select {
-			CALLM0(_x, "getAssignedVehicleRole") == "DRIVER"
+			_x params ["_unit", "_AI"];
+			CALLM0(_AI, "getAssignedVehicleRole") == "DRIVER"
 		};
-
+		pr _otherDrivers = _otherDriversAndAI apply { _x#0 };
+		pr _otherDriversAI = _otherDriversAndAI apply { _x#1 };
 		{
-			CALLM4(_x, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [[TAG_INSTANT ARG _instant]], _AI);
-		} forEach _otherDrivers;
+			CALLM4(_x, "addExternalGoal", "GoalUnitFollow", 0, [[TAG_INSTANT ARG _instant]], _AI);
+		} forEach _otherDriversAI;
 
 		// Add move goal to leader
 		pr _leaderAI = CALLM0(_leadDriver, "getAI");
@@ -167,7 +178,10 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			[TAG_ROUTE, T_GETV("route")],
 			[TAG_INSTANT, _instant]
 		];
-		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
+		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMove", 0, _parameters, _AI);
+
+		T_SETV("leadDriver", _leadDriver);
+		T_SETV("otherDrivers", _otherDrivers);
 
 		T_SETV("ready", true);
 	} ENDMETHOD;
@@ -176,74 +190,79 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	METHOD("process") {
 		params [P_THISOBJECT];
 
-		T_CALLM0("failIfNoInfantry");
+		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
+			ACTION_STATE_FAILED
+		};
+
+		pr _hG = T_GETV("hG");
+		pr _pos = T_GETV("pos");
+		pr _radius = T_GETV("radius");
+
+		// Check if enough vehicles have arrived
+		// For now just check if leader is there
+		if (vehicle leader _hG distance _pos < _radius) exitWith {
+			OOP_INFO_0("Arrived at destination");
+			T_SETV("state", ACTION_STATE_COMPLETED);
+			ACTION_STATE_COMPLETED
+		};
 
 		pr _state = T_CALLM0("activateIfInactive");
 
 		if (T_GETV("ready") && _state == ACTION_STATE_ACTIVE) then {
 			pr _group = GETV(T_GETV("AI"), "agent");
-			pr _leader = CALLM0(_group, "getLeader");
+			pr _leader = T_GETV("leadDriver");
+
 			if (_leader == NULL_OBJECT || { !CALLM0(_leader, "isAlive") }) exitWith {
 				// Fail if lead vehicle doesn't have a driver or the driver is dead
-				T_SETV("state", ACTION_STATE_FAILED);
-				ACTION_STATE_FAILED
+				_state = ACTION_STATE_FAILED;
 			};
-
-			pr _hG = T_GETV("hG"); // Group handle
-			pr _pos = T_GETV("pos");
-			pr _radius = T_GETV("radius");
 
 			pr _dt = time - T_GETV("time") + 0.001;
 			T_SETV("time", time);
 
 			//Check the separation of the convoy
 			private _sCur = T_CALLM0("getMaxSeparation"); //The current maximum separation between vehicles
-			#ifdef DEBUG_FORMATION
-			OOP_DEBUG_MSG(">>> Current separation: %1", [_sCur]);
-			#endif
+
+			pr _maxSpeed = T_GETV("maxSpeed"); 
+
+			// Check for driving in a built up area, and slow down a lot if we are
+			pr _leaderPos = CALLM0(_leader, "getPos");
+			pr _urbanArea = count (_leaderPos nearObjects ["House", 100]) > 10;
+			if(_urbanArea) then { 
+				_maxSpeed = MINIMUM(_maxSpeed, URBAN_SPEED_MAX);
+			};
+
+			// Check for speed control based on convoy separation
+			pr _speedLimit = T_GETV("speedLimit");
 			if(_sCur > 3 * SEPARATION) then
 			{
-				//We are driving too fast!
-				pr _speedLimit = T_GETV("speedLimit");
-				if(_speedLimit > SPEED_MIN) then
-				{
-					_speedLimit = (_speedLimit - _dt*2) max SPEED_MIN;
-					T_SETV("speedLimit", _speedLimit);
-					(vehicle (leader _hG)) limitSpeed _speedLimit;
-					#ifdef DEBUG_FORMATION
-					OOP_DEBUG_MSG(">>> Slowing down! New speed: %1", [_speedLimit]);
-					#endif
-				};
+				// We are driving too fast!
+				_speedLimit = (_speedLimit - _dt*2);
 			}
 			else
 			{
-				//We are driving too slow!
-				pr _speedLimit = T_GETV("speedLimit");
-				if(_speedLimit < T_GETV("maxSpeed")) then
-				{
-					_speedLimit = (_speedLimit + _dt*4) min T_GETV("maxSpeed");
-					T_SETV("speedLimit", _speedLimit);
-					(vehicle (leader _hG)) limitSpeed _speedLimit;
-					#ifdef DEBUG_FORMATION
-					OOP_DEBUG_MSG(">>> Accelerating! New speed: %1", [_speedLimit]);
-					#endif
-				};
+				// We are driving too slow?
+				_speedLimit = (_speedLimit + _dt*4);
 			};
 
-			// Check if enough vehicles have arrived
-			// For now just check if leader is there
-			pr _radius = T_GETV("radius");
-			if (( (vehicle leader _hG) distance _pos ) < _radius) then {
-				OOP_INFO_0("Arrived at destination");
-				_state = ACTION_STATE_COMPLETED
-			};
+			_speedLimit = CLAMP(_speedLimit, SPEED_MIN, _maxSpeed);
+			T_SETV("speedLimit", _speedLimit);
 
-			pr _units = CALLM0(_group, "getUnits");
+			vehicle leader _hG limitSpeed _speedLimit;
+
+			pr _otherDrivers = T_GETV("otherDrivers");
+
+			pr _AI = T_GETV("AI");
 
 			// If any units failed their goals
-			if(CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitFollowLeaderVehicle") || 
-				CALLSM2("AI_GOAP", "anyAgentFailedExternalGoal", _units, "GoalUnitMoveLeaderVehicle")) then {
+			if(CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", [_leader], "GoalUnitMove", _AI) ||
+				CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _otherDrivers, "GoalUnitFollow", _AI)) then {
 				_state = ACTION_STATE_FAILED;
+			};
+			if(CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", [_leader], "GoalUnitMove", _AI) &&
+				CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _otherDrivers, "GoalUnitFollow", _AI)) then {
+				// Goals are marked complete but the position check at the top of this function didn't pass, so re-activate and try again
+				_state = ACTION_STATE_INACTIVE;
 			};
 		};
 		T_SETV("state", _state);
@@ -308,8 +327,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _groupUnits = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitFollowLeaderVehicle", _AI);
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitMoveLeaderVehicle", _AI);
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitFollow", _AI);
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitMove", _AI);
 		} forEach _groupUnits;
 		
 	} ENDMETHOD;

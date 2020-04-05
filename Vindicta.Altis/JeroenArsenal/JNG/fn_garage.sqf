@@ -531,7 +531,7 @@ switch _mode do {
 		
 		pr _center = missionnamespace getvariable "JNG_CENTER";
 		pr _indexLeft = _center call jn_fnc_common_vehicle_getVehicleType;
-		pr _ctrlListLeft = _display displayCtrl (IDC_RSCDISPLAYARSENAL_LIST + _indexLeft); 
+		pr _ctrlListLeft = _display displayCtrl (IDC_RSCDISPLAYARSENAL_LIST + _indexLeft);
 
 
 		pr _cursel = lbcursel _ctrlList;
@@ -1022,7 +1022,7 @@ switch _mode do {
 		
 		pr _center = missionnamespace getvariable "JNG_CENTER";
 		pr _indexLeft = _center call jn_fnc_common_vehicle_getVehicleType;
-		pr _ctrlListLeft = _display displayCtrl (IDC_RSCDISPLAYARSENAL_LIST + _indexLeft); 
+		pr _ctrlListLeft = _display displayCtrl (IDC_RSCDISPLAYARSENAL_LIST + _indexLeft);
 		pr _object = UINamespace getVariable "jn_object";
 		
 		pr _repairPoints = _object getVariable ["jng_repairPoints",0];

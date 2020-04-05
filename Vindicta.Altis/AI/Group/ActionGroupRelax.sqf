@@ -6,8 +6,6 @@ Class: ActionGroup.ActionGroupRelax
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
-
 CLASS("ActionGroupRelax", "ActionGroup")
 	
 	// ------------ N E W ------------

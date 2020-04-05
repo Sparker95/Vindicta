@@ -59,7 +59,7 @@ CLASS("MessageLoop", "Storable");
 	Constructor
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]] ];
+		params [P_THISOBJECT, P_STRING("_name"), ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]] ];
 		T_SETV("msgQueue", []);
 		if (_name == "") then {
 			T_SETV("name", _thisObject);
@@ -111,7 +111,7 @@ CLASS("MessageLoop", "Storable");
 	Returns: nil
 	*/
 	METHOD("setName") {
-		params [P_THISOBJECT, ["_name", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_name")];
 		T_SETV("name", _name);
 	} ENDMETHOD;
 
@@ -183,7 +183,7 @@ CLASS("MessageLoop", "Storable");
 	Returns: nil
 	*/
 	METHOD("deleteReceiverMessages") {
-		params [P_THISOBJECT, ["_msgReceiver", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_msgReceiver") ];
 		private _msgQueue = T_GETV("msgQueue");
 
 		//diag_log format ["Deleting message receiver: %1", _msgReceiver];
@@ -205,7 +205,7 @@ CLASS("MessageLoop", "Storable");
 
 	METHOD("addProcessCategory") {
 		CRITICAL_SECTION {
-			params [P_THISOBJECT, ["_tag", "", [""]], ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
+			params [P_THISOBJECT, P_STRING("_tag"), ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
 
 			pr _cat = __PC_NEW(_tag, _priority, _minInterval, _maxInterval);
 			pr _cats = T_GETV("processCategories"); // meow ^.^
@@ -243,7 +243,7 @@ CLASS("MessageLoop", "Storable");
 
 	METHOD("addProcessCategoryObject") {
 		CRITICAL_SECTION {
-			params [P_THISOBJECT, ["_tag", "", [""]], ["_object", "", [""]]];
+			params [P_THISOBJECT, P_STRING("_tag"), P_OOP_OBJECT("_object")];
 
 			// Find category with given tag
 			pr _cats = T_GETV("processCategories");
@@ -262,7 +262,7 @@ CLASS("MessageLoop", "Storable");
 
 	METHOD("deleteProcessCategoryObject") {
 		CRITICAL_SECTION {
-			params [P_THISOBJECT, ["_object", "", [""]]];
+			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
 
 			pr _cats = T_GETV("processCategories");
 			{

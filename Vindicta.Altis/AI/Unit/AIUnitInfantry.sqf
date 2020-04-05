@@ -22,6 +22,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	VARIABLE("assignedCargoIndex");
 	VARIABLE("assignedTurretPath");
 	
+	VARIABLE("mounted");
+
 	// Sentry position
 	VARIABLE("sentryPos");
 
@@ -56,6 +58,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
 		#endif
+
+		T_SETV("mounted", false);
 		//T_SETV("worldState", _ws);
 	} ENDMETHOD;
 	
@@ -156,7 +160,12 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		if (_action != NULL_OBJECT) then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
-		pr _text = format ["%1\%2\%3\%4(%5)", _unit, _thisObject, T_GETV("currentGoal"), _action, gDebugActionStateText select GETV(_action, "state")];
+		pr _state = if (_action != NULL_OBJECT) then {
+			format ["(%1)", gDebugActionStateText select GETV(_action, "state")]
+		} else {
+			""
+		};
+		pr _text = format ["%1\%2\%3\%4%5", _unit, _thisObject, T_GETV("currentGoal"), _action, _state];
 		_mrk setMarkerText _text;
 
 		_mrk setMarkerPos _pos;
@@ -233,9 +242,11 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 			T_SETV("assignedVehicleRole", VEHICLE_ROLE_NONE);
 		};
 		pr _hO = T_GETV("hO");
+		moveOut _hO;
 		unassignVehicle _hO;
-		[_hO] orderGetIn false;
-		_hO action ["getOut", vehicle _hO];
+		[_hO] allowGetIn false;
+		//[_hO] orderGetIn false;
+		//_hO action ["getOut", vehicle _hO];
 	} ENDMETHOD;
 	
 	/*
@@ -271,15 +282,18 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		pr _driver = CALLM0(_vehAI, "getAssignedDriver");
 		pr _unit = T_GETV("agent");
 		if (_driver != NULL_OBJECT && _driver != _unit) then {
-			false
-		} else {
+			CALLM0(CALLM0(_driver, "getAI"), "unassignVehicle");
+			//false
+		};// else {
+		if(_driver != _unit) then {
 			SETV(_vehAI, "assignedDriver", _unit);
 			T_SETV("assignedVehicle", _veh);
 			T_SETV("assignedVehicleRole", VEHICLE_ROLE_DRIVER);
 			T_SETV("assignedCargoIndex", nil);
 			T_SETV("assignedTurretPath", nil);
-			true
 		};
+		true
+		//};
 	} ENDMETHOD;
 	
 	/*
@@ -343,17 +357,20 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		// Check if someone else is already assigned
 		pr _turretOperator = CALLM1(_vehAI, "getAssignedTurret", _turretPath);
 		if (_turretOperator != NULL_OBJECT && _turretOperator != _unit) then {
-			false
-		} else {
+			CALLM0(CALLM0(_turretOperator, "getAI"), "unassignVehicle");
+			//false
+		}; //else {
+		if(_turretOperator != _unit) then {
 			pr _vehTurrets = GETV(_vehAI, "assignedTurrets");
 			if (isNil "_vehTurrets") then { _vehTurrets = []; SETV(_vehAI, "assignedTurrets", _vehTurrets); };
-			_vehTurrets pushBack [_unit, _turretPath];
+			_vehTurrets pushBackUnique [_unit, _turretPath];
 			T_SETV("assignedVehicle", _veh);
 			T_SETV("assignedVehicleRole", VEHICLE_ROLE_TURRET);
 			T_SETV("assignedCargoIndex", nil);
 			T_SETV("assignedTurretPath", _turretPath);
-			true
 		};
+		true
+		//};
 	} ENDMETHOD;
 	
 	/*
@@ -390,26 +407,27 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		// Check if someone else is already assigned
 		pr _cargoPassenger = CALLM1(_vehAI, "getAssignedCargo", _cargoIndex);
 		if (_cargoPassenger != NULL_OBJECT && _cargoPassenger != _unit) then {
-			false
-		} else {
-			pr _vehCargo = GETV(_vehAI, "assignedCargo");
-			if (isNil "_vehCargo") then { _vehCargo = []; SETV(_vehAI, "assignedCargo", _vehCargo); };
-			_vehCargo pushBack [T_GETV("agent"), _cargoIndex];
-			T_SETV("assignedVehicle", _veh);
-			T_SETV("assignedVehicleRole", VEHICLE_ROLE_CARGO);
-			T_SETV("assignedCargoIndex", _cargoIndex);
-			T_SETV("assignedTurretPath", nil);
-			true
+			CALLM0(CALLM0(_cargoPassenger, "getAI"), "unassignVehicle");
+			//false
 		};
+		// else {
+		pr _vehCargo = GETV(_vehAI, "assignedCargo");
+		if (isNil "_vehCargo") then { _vehCargo = []; SETV(_vehAI, "assignedCargo", _vehCargo); };
+		_vehCargo pushBack [T_GETV("agent"), _cargoIndex];
+		T_SETV("assignedVehicle", _veh);
+		T_SETV("assignedVehicleRole", VEHICLE_ROLE_CARGO);
+		T_SETV("assignedCargoIndex", _cargoIndex);
+		T_SETV("assignedTurretPath", nil);
+		true
+		//};
 	} ENDMETHOD;
-	
+
 	/*
 	Method: executeVehicleAssignment
 	Runs ARMA assignAs* commands on this unit.
 	
 	Returns: nil
 	*/
-	
 	METHOD("executeVehicleAssignment") {
 		params [P_THISOBJECT];
 		pr _veh = T_GETV("assignedVehicle");
@@ -455,6 +473,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 			pr _vehRole = T_GETV("assignedVehicleRole");
 			pr _hVeh = CALLM0(_veh, "getObjectHandle");
 			pr _hO = T_GETV("hO"); // Object handle of this unit
+			[_hO] allowGetIn true;
+			[_hO] orderGetIn true;
 			switch (_vehRole) do {
 				case VEHICLE_ROLE_DRIVER: {
 					_hO setPosWorld (getPosWorld _hO);
@@ -538,6 +558,57 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		_veh
 	} ENDMETHOD;
 	
+	METHOD("isAtAssignedSeat") {
+		params [P_THISOBJECT];
+		
+		pr _assignedVehicleRole = T_GETV("assignedVehicleRole");
+		pr _hVeh = CALLM0(T_GETV("assignedVehicle"), "getObjectHandle");
+		pr _hO = T_GETV("hO");
+		
+		switch (_assignedVehicleRole) do {	
+			case VEHICLE_ROLE_DRIVER: {
+				pr _driver = driver _hVeh;
+				_driver isEqualTo _hO
+			};
+			case VEHICLE_ROLE_TURRET : {
+				pr _turretPath = T_GETV("assignedTurretPath");
+				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x#3 isEqualTo _turretPath};
+				pr _turretOperator = _turretSeat#0#0;
+				
+				_turretOperator isEqualTo _hO
+			};
+			case VEHICLE_ROLE_CARGO : {
+				/* FulLCrew output: Array - format:
+				0: <Object>unit
+				1: <String>role
+				2: <Number>cargoIndex (see note in description)
+				3: <Array>turretPath
+				4: <Boolean>personTurret */
+				
+				pr _assignedCargoIndex = T_GETV("assignedCargoIndex");
+				if (_assignedCargoIndex isEqualType 0) then { // If it's a cargo index
+					pr _cargoIndex = _assignedCargoIndex;
+					pr _cargoSeat = (fullCrew [_hVeh, "cargo", true]) select {_x#2 isEqualTo _cargoIndex};
+					pr _cargoOperator = _cargoSeat#0#0;
+					
+					_cargoOperator isEqualTo _hO
+				} else { // If it's an FFV turret path
+					pr _turretPath = _assignedCargoIndex;
+					pr _turretSeat = (fullCrew [_hVeh, "Turret", true]) select {_x#3 isEqualTo _turretPath};
+					pr _turretOperator = _turretSeat#0#0;
+					
+					_turretOperator isEqualTo _hO
+				};
+			}; // case cargo
+			case VEHICLE_ROLE_NONE: {
+				vehicle _hO == _hO
+			};
+			default {
+				false
+			};
+		};
+	} ENDMETHOD;
+
 	/*
 	Method: setSentryPos
 	Sets the sentry position, which may be later retrieved by actions.

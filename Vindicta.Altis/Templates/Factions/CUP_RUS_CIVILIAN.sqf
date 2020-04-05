@@ -2,7 +2,7 @@
 Civilian template for ARMA III
 */
 _array = [];
-_array resize T_SIZE; 
+_array resize T_SIZE;
 
 _array set [T_NAME, "tCUP_RUS_CIVILIAN"];
 _array set [T_DESCRIPTION, "Russian civilians from CUP."];
