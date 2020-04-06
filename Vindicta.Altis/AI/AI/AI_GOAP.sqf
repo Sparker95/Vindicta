@@ -140,7 +140,7 @@ CLASS("AI_GOAP", "AI")
 		
 		pr _agent = T_GETV("agent");
 		
-		#ifdef LOG_GOAP 
+		#ifdef ENABLE_LOG_GOAP 
 		private __prevState = [_thisObject] call pr0_fnc_getLogState;
 		#endif
 
@@ -327,7 +327,7 @@ CLASS("AI_GOAP", "AI")
 			};
 		};
 
-		#ifdef LOG_GOAP 
+		#ifdef ENABLE_LOG_GOAP 
 		private __newState = [_thisObject] call pr0_fnc_getLogState;
 		LOG_GOAP(_thisObject, "", __prevState, __newState);
 		#endif
