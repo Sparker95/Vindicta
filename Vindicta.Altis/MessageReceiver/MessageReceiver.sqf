@@ -156,82 +156,54 @@ CLASS("MessageReceiver", "Storable")
 
 		OOP_INFO_1("postMessage: %1", _msg);
 
-		// Check owner of this object
+		// Check owner of this object exists if we are sending a local message
 		pr _owner = T_GETV("owner");
-		// Is the message directed to an object on the same machine?
-		if (_owner == CLIENT_OWNER) then {
-			pr _messageLoop = T_CALLM0("getMessageLoop");
-			if (_messageLoop == "") exitWith { diag_log format ["[MessageReceiver:postMessage] Error: %1 is not assigned to a message loop", _thisObject];};
-			_msg set [MESSAGE_ID_DESTINATION, _thisObject]; //In case message sender forgot to set the destination
+		if (_owner == CLIENT_OWNER && {T_CALLM0("getMessageLoop") == NULL_OBJECT}) exitWith {
+			diag_log format ["[MessageReceiver:postMessage] Error: %1 is not assigned to a message loop", _thisObject];
+		};
 
-			// Do we need to return the msgID?
-			if (!(_returnMsgIDOrContinuation isEqualTo false)) then {
-				// Generate a new msgID
-				pr _msgID = 0;
-				CRITICAL_SECTION {
-					_msgID = g_rqArray find 0;
-					private _msgRec = [0, 0, _thisObject];
-					if(_returnMsgIDOrContinuation isEqualType []) then {
-						_msgRec pushBack _returnMsgIDOrContinuation;
-					};
-					if (_msgID == -1) then {
-						_msgID = g_rqArray pushback _msgRec; // When message has been handled, the result will be stored here, 0 will be replaced with 1
-					} else {
-						g_rqArray set [_msgID, _msgRec];
-					};
-					// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
-					_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
+		pr _msgID = MESSAGE_ID_INVALID;
 
-					OOP_INFO_1("postMessage: generated msgID: %1", _msgID);
+		// Generate message ID if one is required, or a continuation is being used (continuation mechanism required message ID)
+		if (!(_returnMsgIDOrContinuation isEqualTo false)) then {
+			// Generate a new msgID
+			CRITICAL_SECTION {
+				_msgID = g_rqArray find 0;
 
-					// Post the message to the thread, give it the message ID so that it marks the message as processed
-					CALLM1(_messageLoop, "postMessage", _msg);
+				private _msgRec = [0, 0, _thisObject];
+
+				// Append the continuation if it was specified
+				if(_returnMsgIDOrContinuation isEqualType []) then {
+					_msgRec pushBack _returnMsgIDOrContinuation;
 				};
 
-				//Return message ID value
-				_msgID
-			} else {
-				// Only post the message, messageLoop will decide if it needs to set the messageDone flag and on which machine
-				pr _messageLoop = T_CALLM0("getMessageLoop");
-				CALLM1(_messageLoop, "postMessage", _msg);
-
-				// Return a special value in case it gets used by waitUntilMessageDone or messageDone by mistake
-				MESSAGE_ID_INVALID
-			};
-		} else {
-			// Tell the other machine to handle this message
-			OOP_INFO_0("Sending msg to a remote machine");
-			if (_returnMsgID) then {
-				// Generate a new message ID
-				pr _msgID = 0;
-				CRITICAL_SECTION {
-					_msgID = g_rqArray find 0;
-					if (_msgID == -1) then {
-						_msgID = g_rqArray pushback [0, 0, _thisObject]; // When message has been handled, the result will be stored here, 0 will be replaced with 1
-					} else {
-						g_rqArray set [_msgID, [0, 0, _thisObject]];
-					};
+				if (_msgID == NOT_FOUND) then {
+					_msgID = g_rqArray pushback _msgRec; // When message has been handled, the result will be stored here, 0 will be replaced with 1
+				} else {
+					g_rqArray set [_msgID, _msgRec];
 				};
 
 				// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
 				_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
-
-				// Post the message on the remote machine
-				// Set the _returnMsgID so that it doesn't generate a new message ID on the remote machine and overrides it in the message
-				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", [_msg], _owner);
-
-				// Return the _msgID
-				_msgID
-			} else {
-				// The receiver is on the remote machine and we don't need to return the message ID
-				// Just send the message to the remote machine and exit
-				// Set the _returnMsgID so that it doesn't generate a new message ID on the remote machine and overrides it in the message
-				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", [_msg], _owner);
-
-				// Return a special value in case it gets used by waitUntilMessageDone or messageDone by mistake
-				MESSAGE_ID_INVALID
 			};
 		};
+
+		// Is the message directed to an object on the same machine?
+		if (_owner == CLIENT_OWNER) then {
+			// In case message sender forgot to set the destination
+			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+			pr _messageLoop = T_CALLM0("getMessageLoop");
+			// Post the message to the thread, give it the message ID so that it marks the message as processed
+			CALLM1(_messageLoop, "postMessage", _msg);
+		} else {
+			// Tell the other machine to handle this message
+			OOP_INFO_0("Sending msg to a remote machine");
+			// Post the message on the remote machine
+			// Set the _returnMsgID so that it doesn't generate a new message ID on the remote machine and overrides it in the message
+			REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", [_msg], _owner);
+		};
+
+		_msgID
 	} ENDMETHOD;
 
 	/*
