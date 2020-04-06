@@ -92,9 +92,13 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\GM_CIVILIAN\init.sqf"
 //BWMOD
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Recon\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop_Recon\init.sqf";
 //BWMOD with Niarms
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms_Recon\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop_Niarms\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop_Niarms_Recon\init.sqf";
 // CUP
 call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_RUS_CIVILIAN\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_TKA_CIVILIAN\init.sqf";

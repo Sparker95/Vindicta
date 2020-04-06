@@ -25,7 +25,9 @@
 ["Templates\Factions\BWA.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GM_WestGer.sqf", 			T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_BWMOD_BW_Fleck.sqf", 	T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_BWMOD_BW_Trop.sqf", 	T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf",T_FACTION_Military]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf",T_FACTION_Military]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CUP_AFRF.sqf", 				T_FACTION_Military]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CUP_USMC.sqf", 				T_FACTION_Military]	call t_fnc_initializeTemplateFromFile;
 
