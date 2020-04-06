@@ -19,7 +19,8 @@ CLASS("ActionGarrisonSurrender", "ActionGarrison")
 		{
 			private _groupAI = CALLM0(_x, "getAI");
 			private _params = [[TAG_INSTANT, _instant]];
-			CALLM4(_groupAI, "addExternalGoal", "GoalGroupSurrender", 0, _params, gAICommanderEast);
+			pr _args = ["GoalGroupSurrender", 0, _params, gAICommanderEast, false];
+			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _groups;
 
 		// Set state
