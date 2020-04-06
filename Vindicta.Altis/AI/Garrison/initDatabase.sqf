@@ -98,7 +98,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonMoveCombined", 				[TAG_MOVE_RADIUS]] call AI_misc_fnc_setActionParametersFromGoal;
 
 // Move dismounted
-["ActionGarrisonMoveDismounted", _s,	[ ]] call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_VEHICLE_GROUPS_BALANCED,			true] ]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_POSITION,	TAG_POS,	true]]]	call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveDismounted",			[TAG_MOVE_RADIUS]] call AI_misc_fnc_setActionParametersFromGoal;
 
