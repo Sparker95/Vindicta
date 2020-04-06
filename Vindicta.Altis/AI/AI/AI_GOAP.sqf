@@ -29,7 +29,7 @@ Author: Sparker 07.11.2018
 
 #define pr private
 
-#ifdef LOG_GOAP
+#ifdef ENABLE_LOG_GOAP
 // Will output to .rpt which goals each AI is choosing from
 //#define DEBUG_POSSIBLE_GOALS
 pr0_fnc_logAction = {
