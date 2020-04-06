@@ -151,6 +151,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		// Find non static vehicle groups that don't have enough drivers or turret operators
 		pr _haveTurretOperators = true;
 		pr _haveDrivers = true;
+		pr _groupTypesCorrect = true;
 		//pr _correctNumberOfCrew = true;
 		{
 			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets", "_nCargo"];
@@ -162,6 +163,13 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 			_assignedCrew = _assignedCrew + _nInf;
 			_requiredCrew = _requiredCrew + _nDrivers + _nTurrets;
 
+			pr _type = CALLM0(_x, "getType");
+			_groupTypesCorrect = _groupTypesCorrect && {
+				_type in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC] && { _nDrivers + _nTurrets > 0 } 
+				|| 
+				{ _type in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL] && { _nDrivers + _nTurrets == 0 } }
+			};
+
 			// _unbalancedCrew = _unbalancedCrew || _nInf > _nDrivers + _nTurrets;
 			//if (_nInf != _nDrivers + _nTurrets) then { _correctNumberOfCrew = false };
 			//if (!_haveTurretOperators && !_haveDrivers && !_correctNumberOfCrew) exitWith {}; // Terminate the loop if we already know that this group is unbalanced
@@ -170,10 +178,10 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		[_worldState, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, _haveDrivers] call ws_setPropertyValue;
 		[_worldState, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, _haveTurretOperators] call ws_setPropertyValue;
 
-		// Groups are balanced if we have assigned as much crew as possible, and no more than required
+		// Groups are balanced if we have assigned as much crew as possible, and no more than required, and group types reflect their contents correctly
 		// All other inf should be in separate groups
 		pr _balanced = _assignedCrew == MINIMUM(_requiredCrew, _nInfGarrison);
-		[_worldState, WSP_GAR_VEHICLE_GROUPS_BALANCED, _balanced] call ws_setPropertyValue;
+		[_worldState, WSP_GAR_VEHICLE_GROUPS_BALANCED, _balanced && _groupTypesCorrect] call ws_setPropertyValue;
 
 		//OOP_INFO_3("Infantry amount: %1, all infantry seats: %2, driver seats: %3", _nInfGarrison, _nSeatsAll, _nDriversAll);
 
