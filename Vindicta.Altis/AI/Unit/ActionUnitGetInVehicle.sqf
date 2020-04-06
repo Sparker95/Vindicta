@@ -173,14 +173,14 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	} ENDMETHOD;
 	
 	/*
-	Method: seatIsOccupied
-	Returns true if the chosen cargo seat is occupied by a different unit
+	Method: seatOccupiedByAnother
+	Returns handle to current occupier of the desired seat, if it isn't us
 	
 	Access: private
 	
-	Returns: bool
+	Returns: object handle
 	*/
-	METHOD("seatIsOccupied") {
+	METHOD("seatOccupiedByAnother") {
 		params [P_THISOBJECT];
 		
 		pr _vehRole = T_GETV("vehRole");
@@ -192,10 +192,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				pr _driver = driver _hVeh;
 				if (!isNull _driver && { alive _driver && !(_driver isEqualTo _hO) }) then {
 					// Return
-					true
+					_driver
 				} else {
 					// Return
-					false
+					objNull
 				};
 			};
 			/*
@@ -216,10 +216,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				pr _turretOperator = _turretSeat#0#0;
 				if (!isNil "_turretOperator" && { alive _turretOperator && !(_turretOperator isEqualTo _hO) }) then {
 					// Return
-					true
+					_turretOperator
 				} else {
 					// Return
-					false
+					objNull
 				};
 			};
 			case "CARGO" : {
@@ -237,10 +237,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					pr _cargoOperator = _cargoSeat#0#0;
 					if (!isNil "_cargoOperator" && { alive _cargoOperator && !(_cargoOperator isEqualTo _hO) }) then {
 						// Return
-						true
+						_cargoOperator
 					} else {
 						// Return
-						false
+						objNull
 					};
 				} else { // If it's an FFV turret path
 					pr _turretPath = _chosenCargoSeat;
@@ -248,17 +248,17 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					pr _turretOperator = _turretSeat#0#0;
 					if (!isNil "_turretOperator" && {alive _turretOperator && !(_turretOperator isEqualTo _hO)}) then {
 						// Return
-						true
+						_turretOperator
 					} else {
 						// Return
-						false
+						objNull
 					};
 				};
 			}; // case
 			
 			default {
 				diag_log format ["[ActionUnitGetInVehicle] Error: unknown vehicle role: %1", _vehRole];
-				false
+				objNull
 			};
 		}; // switch
 		
@@ -396,51 +396,57 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			OOP_INFO_2("PROCESS: State is ACTIVE. Assigned vehicle: %1, role: %2", _unitVeh, _vehRole);
 			
 			// Check if the seat is occupied by someone else
-			if (T_CALLM0("seatIsOccupied")) then {
-				OOP_INFO_0("Seat is occupied");
-				if (_vehRole == "CARGO") then {// If it's cargo seat, try to choose a new one
-					pr _success = T_CALLM0("assignVehicle");
-					if (_success) then {
-						OOP_INFO_0("Assigned new seat");
-						// Execute vehicle assignment
-						CALLM0(_AI, "executeVehicleAssignment");
-						// If the unit is already in the new vehicle, move him instantly
-						if (vehicle _hO isEqualTo _hVeh) then {
-							CALLM0(_AI, "moveInAssignedVehicle");
-						} else {
-							// Order get in
-							[_hO] allowGetIn true;
-							[_hO] orderGetIn true;
-						};
+			pr _occupier = T_CALLM0("seatOccupiedByAnother");
+			if (!isNull _occupier) then {
+				// Order them out of the seat
+				unassignVehicle _occupier;
+				[_occupier] allowGetIn false;
+				[_occupier] orderGetIn false;
+
+				// OOP_INFO_0("Seat is occupied");
+				// if (_vehRole == "CARGO") then {// If it's cargo seat, try to choose a new one
+				// 	pr _success = T_CALLM0("assignVehicle");
+				// 	if (_success) then {
+				// 		OOP_INFO_0("Assigned new seat");
+				// 		// Execute vehicle assignment
+				// 		CALLM0(_AI, "executeVehicleAssignment");
+				// 		// If the unit is already in the new vehicle, move him instantly
+				// 		if (vehicle _hO isEqualTo _hVeh) then {
+				// 			CALLM0(_AI, "moveInAssignedVehicle");
+				// 		} else {
+				// 			// Order get in
+				// 			[_hO] allowGetIn true;
+				// 			[_hO] orderGetIn true;
+				// 		};
 					
-						T_SETV("state", ACTION_STATE_ACTIVE);
-						// Return ACTIVE state
-						ACTION_STATE_ACTIVE
-					} else {
-						// Failed to assign vehicle
-						OOP_INFO_0("Failed to assign a new seat");
-						T_SETV("state", ACTION_STATE_FAILED);
-						ACTION_STATE_FAILED
-					};
-				} else {
-					// Can't choose another driver or turret or gunner seat
-					// Action is failed
-					OOP_INFO_0("Failed to assign a new seat");
-					T_SETV("state", ACTION_STATE_FAILED);
-					ACTION_STATE_FAILED
-				};
+				// 		T_SETV("state", ACTION_STATE_ACTIVE);
+				// 		// Return ACTIVE state
+				// 		ACTION_STATE_ACTIVE
+				// 	} else {
+				// 		// Failed to assign vehicle
+				// 		OOP_INFO_0("Failed to assign a new seat");
+				// 		T_SETV("state", ACTION_STATE_FAILED);
+				// 		ACTION_STATE_FAILED
+				// 	};
+				// } else {
+				// 	// Can't choose another driver or turret or gunner seat
+				// 	// Action is failed
+				// 	OOP_INFO_0("Failed to assign a new seat");
+				// 	T_SETV("state", ACTION_STATE_FAILED);
+				// 	ACTION_STATE_FAILED
+				// };
 			} else { // if seat is occupied
-			
+
 				// Assigned seat is not occupied
-				
 				OOP_INFO_0("Assigned seat is FREE");
-				
+
 				// Check if the unit is already in the required vehicle
 				if (vehicle _hO isEqualTo _hVeh) then {
 					OOP_INFO_0("Inside assigned vehicle");
 				
 					// Execute vehicle assignment
 					CALLM0(_AI, "executeVehicleAssignment");
+
 					// Order get in
 					[_hO] allowGetIn true;
 					[_hO] orderGetIn true;
