@@ -136,27 +136,27 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 				};
 			};
 		} forEach _groups;
-		
+
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
-		
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-		
+
 	} ENDMETHOD;
-	
+
 	// logic to run each update-step
 	METHOD("process") {
 		params [P_THISOBJECT];
-		
+
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
 
-		T_CALLM0("activateIfInactive");
-		
-		// Return the current state
-		ACTION_STATE_ACTIVE
+		pr _state = T_CALLM0("activateIfInactive");
+
+		T_SETV("state", _state);
+		_state
 	} ENDMETHOD;
 
 ENDCLASS;
