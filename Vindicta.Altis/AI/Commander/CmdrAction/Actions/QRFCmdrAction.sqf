@@ -111,30 +111,46 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 
 		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
-		private _enemyEff = +GETV(_tgtCluster, "efficiency");
-
 		ASSERT_OBJECT(_tgtCluster);
-		private _tgtClusterPos = GETV(_tgtCluster, "pos");
 
 		// Source or target being dead means action is invalid, return 0 score
 		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
+		private _tgtClusterPos = GETV(_tgtCluster, "pos");
+
+		// Set up flags for allocation algorithm
+		private _allocationFlags = [
+			  SPLIT_VALIDATE_ATTACK
+			, SPLIT_VALIDATE_CREW
+		];
+
+		#ifdef DEBUG_BIG_QRF
+		// Make sure we allocate a lot of inf
+		_allocationFlags pushBack SPLIT_VALIDATE_CREW_EXT;
+
+		private _enemyEff = +T_EFF_null;
+		_enemyEff set[T_EFF_soft, 30];
+		_enemyEff set[T_EFF_medium, 6];
+		_enemyEff set[T_EFF_armor, 6];
+		_enemyEff set[T_EFF_crew, 24];
+		#else
+		private _enemyEff = +GETV(_tgtCluster, "efficiency");
 		// Scale enemy efficiency
 		private _scaleFactor = (CALLM1(_worldNow, "calcActivityMultiplier", _tgtClusterPos)) max 1.3;
 		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _scaleFactor);
 		if ((_enemyEff#T_eff_soft) > 0) then {
 			_enemyEff set [T_EFF_soft, (_enemyEff#T_eff_soft) max 6];	// Set min amount of attack force
 		};
+		#endif
+		FIX_LINE_NUMBERS()
 
 		// Bail if the garrison clearly can not destroy the enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
-		// Set up flags for allocation algorithm
-		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW]; // Validate attack capability, allocate a min amount of infantry
 		private _needTransport = false;
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
@@ -143,6 +159,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		#else
 		pr _dist = _tgtClusterPos distance _srcGarrPos;
 		#endif
+		FIX_LINE_NUMBERS()
+
 		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
 			_needTransport = true;
@@ -185,8 +203,6 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
 		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
 		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
-		
-
 
 		// Save the calculation of the efficiency for use later.
 		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
@@ -194,7 +210,6 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// which are only available now, during scoring/planning).
 		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
 		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
-
 
 		// Take the sum of the attack part of the efficiency vector.
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
@@ -226,6 +241,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			_side, LABEL(_srcGarr), LABEL(_tgtCluster), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 
@@ -331,13 +347,13 @@ REGISTER_DEBUG_MARKER_STYLE("QRFCmdrAction", "ColorRed", "mil_destroy");
 	private _thisObject = NEW("QRFCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetCluster, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 	diag_log format ["QRF action final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
-	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
+	private _nowSimState = T_CALLM("applyToSim", [_world]);
+	private _futureSimState = T_CALLM("applyToSim", [_future]);
 	["Now sim state correct", _nowSimState == CMDR_ACTION_STATE_READY_TO_MOVE] call test_Assert;
 	["Future sim state correct", _futureSimState == CMDR_ACTION_STATE_END] call test_Assert;
 	

@@ -16,7 +16,7 @@ this addVest "V_TacVest_camo";
 
 this addWeapon "hlc_smg_mp5a2_tac";
 this addPrimaryWeaponItem "hlc_30Rnd_9x19_B_MP5";
-this addPrimaryWeaponItem "BWA3_optic_CompM2";
+this addPrimaryWeaponItem "rhsusf_acc_compm4";
 
 
 this addItemToUniform "FirstAidKit";

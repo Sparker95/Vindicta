@@ -16,9 +16,9 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	VARIABLE("timeComplete");
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _hBuilding = CALLSM3("Action", "getParameterValue", _parameters, "building", false);
+		pr _hBuilding = CALLSM2("Action", "getParameterValue", _parameters, "building");
 		if (isNil "_hBuilding") exitWith {
 			OOP_ERROR_0("Building handle was not provided");
 			T_SETV("hBuilding", objNull);
@@ -31,7 +31,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
 
@@ -75,11 +75,15 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 			if (count _buildingPosIDs > 0) then {
 				pr _posID = selectRandom _buildingPosIDs;
 				_buildingPosIDs deleteAt (_buildingPosIDs find _posID);
-				pr _parameters = [["building", _hBuilding], ["posID", _posID]];
+				pr _parameters = [
+					["building", _hBuilding],
+					["posID", _posID],
+					[TAG_INSTANT, _instant]
+				];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMoveBuilding", 0, _parameters, _AI);
 			} else {
 				// Just regroup if all positions are assigned
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
 			};
 		} forEach _units;
 
@@ -95,9 +99,11 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	
 	// Logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfNoInfantry");
+		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
+			ACTION_STATE_FAILED
+		};
 
 		// Fail if building is destroyed or null
 		pr _hBuilding = T_GETV("hBuilding");
@@ -107,7 +113,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 			ACTION_STATE_FAILED
 		};
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 
 		pr _group = T_GETV("group");
 		pr _groupUnits = CALLM0(_group, "getInfantryUnits");
@@ -129,7 +135,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Let them go, we don't care
 	} ENDMETHOD;
 
@@ -141,7 +147,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete external goals
 		pr _group = T_GETV("group");

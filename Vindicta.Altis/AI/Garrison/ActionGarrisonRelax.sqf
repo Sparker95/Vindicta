@@ -6,21 +6,19 @@ Relax action
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonRelax"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
+CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 	
 	// ------------ N E W ------------
 	/*
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _AI);
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI") ];
+		T_SETV("AI", _AI);
 	} ENDMETHOD;
 	*/
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
 		
@@ -52,7 +50,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 			};
 		};
 
-		
 		if (_atPoliceStation) then {
 			// First of all assign groups to guard the police station
 			// If there are more groups, they will be on patrol
@@ -69,11 +66,12 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 			};
 		};
 
+		pr _extraParams = [[TAG_INSTANT, _instant]];
 		// Give orders to some groups to get into building
 		while {(count _groupsInf > _nGroupsPatrolReserve) && (count _buildings > 0)} do {
 			pr _group = _groupsInf#0;
 			pr _groupAI = CALLM0(_group, "getAI");
-			pr _goalParameters = [["building", _buildings#0#1]];
+			pr _goalParameters = [["building", _buildings#0#1]] + _extraParams;
 			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 
@@ -94,13 +92,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					case GROUP_TYPE_IDLE: {
 						// We need at least two patrol groups
 						if (_nPatrolGroups < 2) then {
-							_args = ["GoalGroupPatrol", 0, [], _AI];
+							_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
 							_nPatrolGroups = _nPatrolGroups + 1;
 						} else {
 							if (random 10 < 5) then {
-								_args = ["GoalGroupRelax", 0, [], _AI];
+								_args = ["GoalGroupRelax", 0, _extraParams, _AI];
 							} else {
-								_args = ["GoalGroupPatrol", 0, [], _AI];
+								_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
 								_nPatrolGroups = _nPatrolGroups + 1;
 							};
 						};
@@ -109,27 +107,27 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					case GROUP_TYPE_VEH_STATIC: {
 						if (_atRoadblock) then {
 							// Get into vehicles at roadblocks
-							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
+							_args = ["GoalGroupGetInVehiclesAsCrew", 0, _extraParams, _AI];
 						} else {
-							_args = ["GoalGroupRelax", 0, [], _AI];
+							_args = ["GoalGroupRelax", 0, _extraParams, _AI];
 						};
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
 						if (_atRoadblock) then {
 							// Get into vehicles at roadblocks
-							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
+							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _extraParams, _AI]; // Occupy only combat vehicles
 						} else {
-							_args = ["GoalGroupPatrol", 0, [], _AI]; // They will patrol next to their vehicles
+							_args = ["GoalGroupPatrol", 0, _extraParams, _AI]; // They will patrol next to their vehicles
 						};
 					};
 					
 					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupPatrol", 0, [], _AI];
+						_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
 					};
 
 					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupPatrol", 0, [], _AI];
+						_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
 					};
 				};
 				
@@ -138,92 +136,27 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 				};
 			};
 		} forEach _groups;
-		
+
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
-		
+		T_SETV("state", ACTION_STATE_ACTIVE);
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-		
+
 	} ENDMETHOD;
-	
+
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
-		
+		params [P_THISOBJECT];
+
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
 
-		CALLM0(_thisObject, "activateIfInactive");
-		
-		// Return the current state
-		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
-		
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+		pr _state = T_CALLM0("activateIfInactive");
 
-		// Delete assigned patrol goals
-		pr _AI = GETV(_thisObject, "AI");
-		pr _gar = GETV(_AI, "agent");
-		pr _patrolGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_PATROL);
-		//ade_dumpCallstack;
-		{
-			pr _groupAI = CALLM0(_x, "getAI");
-			if (!isNil "_groupAI") then {
-				if (_groupAI != "") then {
-					pr _args = ["GoalGroupPatrol", ""];
-					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-				};
-			};
-		} forEach _patrolGroups;
-		
-		
-		// Remove assigned goals
-		pr _gar = GETV(T_GETV("AI"), "agent");
-		pr _groups = CALLM0(_gar, "getGroups");
-		{ // foreach _groups
-			pr _type = CALLM0(_x, "getType");
-			pr _groupAI = CALLM0(_x, "getAI");
-			
-			if (_groupAI != "") then {
-				pr _args = [];
-				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", ["goalGroupRelax" ARG ""]);
-				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", ["goalGroupPatrol" ARG ""]);
-				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", ["goalGroupGetInBuilding" ARG ""]);
-			};
-		} forEach _groups;
-		
-	} ENDMETHOD;
-
-
-	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-		
-		T_SETV("state", ACTION_STATE_REPLAN);
-
-		nil
-	} ENDMETHOD;
-
-
-	METHOD("onGarrisonSpawned") {
-		params ["_thisObject"];
-
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
-	
-	METHOD("onGarrisonDespawned") {
-		params ["_thisObject"];
-		
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
+		T_SETV("state", _state);
+		_state
 	} ENDMETHOD;
 
 ENDCLASS;

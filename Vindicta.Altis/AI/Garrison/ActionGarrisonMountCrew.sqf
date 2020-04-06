@@ -5,16 +5,14 @@ All crew of vehicles mounts assigned vehicles.
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonMountCrew"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	
 	VARIABLE("mount"); // Bool, true for mounting, false for dismounting
 	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _mount = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOUNT);
 		T_SETV("mount", _mount);
@@ -22,17 +20,17 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _gar = T_GETV("gar");
 		pr _AI = T_GETV("AI");
 		pr _mount = T_GETV("mount");
 		
-		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+		pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
 		
 		// Do we need to mount or dismount?
 		pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInVehiclesAsCrew"] select T_GETV("mount");
-		pr _args = [_goalClassName, 0, [], _AI];
+		pr _args = [_goalClassName, 0, [[TAG_INSTANT, _instant]], _AI];
 
 		// Give goals to groups
 		{
@@ -42,7 +40,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} forEach _vehGroups;
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -51,46 +49,37 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Check if spawned
 		pr _gar = T_GETV("gar");
+		pr _AI = T_GETV("AI");
 		if (!CALLM0(_gar, "isSpawned")) then {
 			// If not spawned, just set world states instantly
-			pr _AI = T_GETV("AI");
 			pr _ws = GETV(_AI, "worldState");
 			[_ws, WSP_GAR_ALL_CREW_MOUNTED, true] call ws_setPropertyValue;
 
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		} else {
-			pr _state = CALLM0(_thisObject, "activateIfInactive");
-			scopeName "s0";		
+			pr _state = T_CALLM0("activateIfInactive");
+
 			if (_state == ACTION_STATE_ACTIVE) then {
-				pr _gar = T_GETV("gar");
-				pr _AI = T_GETV("AI");
-				pr _mount = T_GETV("mount");
-				pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+				pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
 				
 				// Do we need to mount or dismount?
-
 				pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInVehiclesAsCrew"] select T_GETV("mount");
-
-				// Fail this action if any group has failed
-				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, _goalClassName, _AI)) then {
-					_state = ACTION_STATE_FAILED;
-					breakTo "s0";
-				};
-				
-				// Complete the action when all vehicle groups have mounted
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, _goalClassName, _AI)) then {
-				//pr _ws = GETV(T_GETV("AI"), "worldState");
-				//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
-					// Update sensors affected by this action
-					CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
-					
-					_state = ACTION_STATE_COMPLETED;
-					breakTo "s0";
+				switch true do {
+					// Fail if any group has failed
+					case (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, _goalClassName, _AI)): {
+						_state = ACTION_STATE_FAILED
+					};
+					// Succeed if all groups have completed the goal
+					case (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _vehGroups, _goalClassName, _AI)): {
+						// Update sensors affected by this action
+						CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
+						_state = ACTION_STATE_COMPLETED
+					};
 				};
 			};
 			
@@ -99,58 +88,56 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 	} ENDMETHOD;
 	
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+	// // logic to run when the action is satisfied
+	// METHOD("terminate") {
+	// 	params [P_THISOBJECT];
 		
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+	// 	// Bail if not spawned
+	// 	pr _gar = T_GETV("gar");
+	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
 
-		pr _mount = T_GETV("mount");
-		pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
-		pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
+	// 	pr _mount = T_GETV("mount");
+	// 	pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
+	// 	pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
 
-		// Did we need to mount or dismount?
-		if (_mount) then {
-			{
-				// Delete goal to mount vehicles
-				pr _groupAI = CALLM0(_x, "getAI");
-				pr _args = ["GoalGroupGetInVehiclesAsCrew", ""];
-				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-			} forEach _vehGroups;
-		} else {
-			// NYI
-		};
+	// 	// Did we need to mount or dismount?
+	// 	if (_mount) then {
+	// 		{
+	// 			// Delete goal to mount vehicles
+	// 			pr _groupAI = CALLM0(_x, "getAI");
+	// 			pr _args = ["GoalGroupGetInVehiclesAsCrew", ""];
+	// 			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
+	// 		} forEach _vehGroups;
+	// 	} else {
+	// 		// NYI
+	// 	};
 		
-	} ENDMETHOD;
+	// } ENDMETHOD;
 
-
-	// Handle units/groups added/removed
-
-	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+	// // Handle units/groups added/removed
+	// METHOD("handleGroupsAdded") {
+	// 	params [P_THISOBJECT, P_ARRAY("_groups")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 
-	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+	// METHOD("handleGroupsRemoved") {
+	// 	params [P_THISOBJECT, P_ARRAY("_groups")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 	
-	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+	// METHOD("handleUnitsRemoved") {
+	// 	params [P_THISOBJECT, P_ARRAY("_units")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 	
-	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+	// METHOD("handleUnitsAdded") {
+	// 	params [P_THISOBJECT, P_ARRAY("_units")];
 		
-		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	// 	T_SETV("state", ACTION_STATE_REPLAN);
+	// } ENDMETHOD;
 
 ENDCLASS;

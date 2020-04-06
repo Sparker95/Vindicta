@@ -6,44 +6,39 @@ Garrison moves on available vehicles
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonRepairAllVehicles"
-
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 
 	VARIABLE("repairUnit"); // The unit that will perform repairs on vehicles
 	VARIABLE("fubarcar"); // The broken vehicle, beyond all repair
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
-		T_SETV("repairUnit", "");
-		T_SETV("fubarcar", "");
+		params [P_THISOBJECT];
+
+		T_SETV("repairUnit", NULL_OBJECT);
+		T_SETV("fubarcar", NULL_OBJECT);
 	} ENDMETHOD;
 
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _AI = T_GETV("AI");
 		pr _gar = T_GETV("gar");
 		
 		// Find all broken vehicles
-		pr _vehicles = [_gar, [[T_VEH, -1], [T_DRONE, -1]]] call GETM(_gar, "findUnits");
-		pr _brokenVehicles = _vehicles select {
-		
-			pr _oh = CALLM(_x, "getObjectHandle", []);
-			//diag_log format ["Vehicle: %1, can move: %2", _oh, canMove _oh];
-			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"]; //, "_className"];
-			pr _isStatic = [_catID, _subcatID] in T_static;
-			pr _anyWheelDamaged = if (!_isStatic) then {[_oh] call AI_misc_fnc_isAnyWheelDamaged} else {false};
-			pr _canNotMove = (((!canMove _oh) || _anyWheelDamaged) && !_isStatic);
-			(getDammage _oh > 0.61) || _canNotMove
-		};
-		
+		pr _vehicles = CALLM0(_gar, "getVehicleUnits");
+		pr _brokenVehicles = _vehicles select { CALLM0(_x, "isDamaged") };
+
+		// Magic refueling...
+		{
+			CALLM0(_x, "getObjectHandle") setFuel 1;
+		} forEach _vehicles;
+
 		OOP_INFO_1("Broken vehicles: %1", _brokenVehicles);
-		
+
 		if (count _brokenVehicles == 0) exitWith {
-			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);			
+			T_SETV("state", ACTION_STATE_COMPLETED);
 			// Return ACTIVE state
 			ACTION_STATE_COMPLETED
 		};
@@ -53,7 +48,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _infUnits = CALLM0(_gar, "getInfantryUnits");
 		pr _engineerUnits = _infUnits select {
 			pr _hO = CALLM(_x, "getObjectHandle", []);
-			(_hO getUnitTrait "engineer")
+			_hO getUnitTrait "engineer"
 		};
 		
 		// Send a random guy to perform repairs for now
@@ -81,14 +76,14 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			} forEach _brokenVehicles;
 			*/
 			
-			pr _args = ["GoalUnitRepairVehicle", 0, [["vehicle", _brokenVehicle]], _AI, false];
+			pr _args = ["GoalUnitRepairVehicle", 0, [["vehicle", _brokenVehicle], [TAG_INSTANT, _instant]], _AI, false];
 			CALLM2(_repairUnitAI, "postMethodAsync", "addExternalGoal", _args);
 			
 			T_SETV("state", ACTION_STATE_ACTIVE);
 			ACTION_STATE_ACTIVE
 		} else {
 			// Set state
-			SETV(_thisObject, "state", ACTION_STATE_FAILED);			
+			T_SETV("state", ACTION_STATE_FAILED);
 			// Return ACTIVE state
 			ACTION_STATE_FAILED
 		};
@@ -97,13 +92,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _AI = T_GETV("AI");
@@ -124,7 +119,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
@@ -145,27 +140,27 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 
 	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		{
-			CALLM1(_thisObject, "handleUnitsAdded", CALLM0(_x, "getUnits"));
+			T_CALLM1("handleUnitsAdded", CALLM0(_x, "getUnits"));
 		} forEach _groups;
 		
 		nil
 	} ENDMETHOD;
 
 	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		{
-			CALLM1(_thisObject, "handleUnitsRemoved", CALLM0(_x, "getUnits"));
+			T_CALLM1("handleUnitsRemoved", CALLM0(_x, "getUnits"));
 		} forEach _groups;
 		
 		nil
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 			// Fail if either broken vehicle or repair unit is in the array with removed units
 			if (count ([T_GETV("fubarcar"), T_GETV("repairUnit")] arrayIntersect _units) != 0) then {
@@ -178,7 +173,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	} ENDMETHOD;
 
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 			
 		nil
 	} ENDMETHOD;

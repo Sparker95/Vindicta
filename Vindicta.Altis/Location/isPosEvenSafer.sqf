@@ -1,3 +1,5 @@
+#include "..\OOP_Light\OOP_Light.h"
+
 // Class: Location
 /*
 Method: (static)isPosEvenSafer
@@ -18,7 +20,7 @@ Author: Sparker 29.07.2018
 //#define DEBUG
 
 pr0_fn_getGlobalRectAndSize = {
-	params [["_pos", [], [[]]], ["_dir", 0, [0]], ["_bbox", [], [[]]] ];
+	params [P_ARRAY("_pos"), P_NUMBER("_dir"), P_ARRAY("_bbox") ];
 	
 	private _bx = _bbox select 1 select 0; //width
 	private _by = _bbox select 1 select 1; //length
@@ -36,7 +38,7 @@ pr0_fn_getGlobalRectAndSize = {
 	[_rect, [_bx, _by, _bz]]
 };
 
-params [ ["_thisClass", "", [""]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_className", "", [""]] ];
+params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_dir"), P_STRING("_className") ];
 
 // Bail if Z is below surface, as it happens with positions of bridges
 if (_pos#2 < -0.3) exitWith {

@@ -11,7 +11,7 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT];
 		
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
@@ -24,7 +24,7 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 		} forEach _vehicleUnits;
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -33,11 +33,11 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		T_CALLM0("failIfEmpty");
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		
@@ -62,7 +62,7 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete assigned goals
 		pr _AI = T_GETV("AI");

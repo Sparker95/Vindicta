@@ -12,7 +12,7 @@ Updated: March 2020 by Marvis
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									
+_array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tRHS_AAF_2020"]; // 							Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Altis Armed Forces units. 2020 variant. Uses RHS and AAF2017."]; // 			Template display description

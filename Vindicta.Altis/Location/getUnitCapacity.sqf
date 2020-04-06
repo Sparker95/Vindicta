@@ -18,7 +18,7 @@ Returns: Number
 Author: Sparker 29.07.2018
 */
 
-params [ ["_thisObject", "", [""]], ["_unitTypes", 0, [[], 0]], ["_groupTypes", [], [[]]] ];
+params [P_THISOBJECT, ["_unitTypes", 0, [[], 0]], P_ARRAY("_groupTypes") ];
 
 // Spawn Pos TypeS
 private _spawnPosTypes = T_GETV("spawnPosTypes");

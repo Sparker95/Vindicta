@@ -4,6 +4,8 @@ ADD_LOADOUT("BW_Fleck_Niarms_AA",			"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_A
 ADD_LOADOUT("BW_Fleck_Niarms_AT",			"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_AT.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_AT_2",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_AT_2.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_AT_3",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_AT_3.sqf")
+ADD_LOADOUT("BW_Fleck_Niarms_AS",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_AS.sqf")
+ADD_LOADOUT("BW_Fleck_Niarms_AS_2",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_AS_2.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_crew",			"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_crew.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_engineer",		"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_engineer.sqf")
 ADD_LOADOUT("BW_Fleck_Niarms_explosives",	"RHS_BWMOD\BW_Fleck_Niarms\BW_Fleck_Niarms_explosives.sqf")

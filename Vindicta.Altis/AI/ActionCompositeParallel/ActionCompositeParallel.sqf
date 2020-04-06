@@ -37,9 +37,9 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	*/
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
-		private _state = CALLM(_thisObject, "processSubactions", []);
-		SETV(_thisObject, "state", _state);
+		params [P_THISOBJECT];
+		private _state = T_CALLM("processSubactions", []);
+		T_SETV("state", _state);
 		_state
 	} ENDMETHOD;
 	
@@ -48,13 +48,13 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	// ----------------------------------------------------------------------
 	
 	METHOD("processSubactions") {
-		params [["_thisObject", "", [""]]];
-		private _subactions = GETV(_thisObject, "subactions");
+		params [P_THISOBJECT];
+		private _subactions = T_GETV("subactions");
 		
 		private _subactionsStates = _subactions apply {
-			pr _state = GETV(_x, "state");
+			pr _state = GETV(_x select 0, "state");
 			if (_state == ACTION_STATE_ACTIVE || _state == ACTION_STATE_INACTIVE) then {
-				CALLM(_x, "process", [])
+				CALLM(_x select 0, "process", [])
 			} else {
 				_state
 			};
@@ -87,11 +87,11 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	Returns: nil
 	*/
 	METHOD("terminate") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		pr _subactions = T_GETV("subactions");
 		{
-			CALLM0(_x, "terminate");
+			CALLM0(_x select 0, "terminate");
 		} forEach _subactions;
 		
 	} ENDMETHOD;
@@ -102,10 +102,10 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	*/
 	
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		private _subactions = GETV(_thisObject, "subactions");
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		private _subactions = T_GETV("subactions");
 		{
-			CALLM1(_subactions select 0, "handleUnitsAdded", _units);
+			CALLM1(_x select 0, "handleUnitsAdded", _units);
 		} forEach _subactions;
 	} ENDMETHOD;
 	
@@ -115,12 +115,12 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	*/
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		private _subactions = GETV(_thisObject, "subactions");
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		private _subactions = T_GETV("subactions");
 		{
-			CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
+			CALLM1(_x select 0, "handleUnitsRemoved", _units);
 		} forEach _subactions;
-	} ENDMETHOD;	
+	} ENDMETHOD;
 
 	/*
 	Method: handleGroupsAdded
@@ -133,11 +133,11 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	Returns: nil
 	*/
 	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _subactions = T_GETV("subactions");
 		{
-			CALLM1(_x, "handleGroupsAdded", _groups);
+			CALLM1(_x select 0, "handleGroupsAdded", _groups);
 		} forEach _subactions;
 		
 		nil
@@ -155,11 +155,11 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	Returns: nil
 	*/
 	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _subactions = T_GETV("subactions");
 		{
-			CALLM1(_x, "handleGroupsRemoved", _groups);
+			CALLM1(_x select 0, "handleGroupsRemoved", _groups);
 		} forEach _subactions;
 		
 		nil

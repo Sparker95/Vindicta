@@ -42,7 +42,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 
 		OOP_INFO_1("NEW %1", _this);
 
@@ -51,12 +51,12 @@ CLASS("AI", "MessageReceiverEx")
 		// Make sure the required global objects exist
 		ASSERT_GLOBAL_OBJECT(AI_TIMER_SERVICE);
 
-		SETV(_thisObject, "agent", _agent);
-		SETV(_thisObject, "sensors", []);
-		SETV(_thisObject, "sensorStimulusTypes", []);
-		SETV(_thisObject, "timer", "");
-		SETV(_thisObject, "processInterval", 1);
-		SETV(_thisObject, "worldFacts", []);
+		T_SETV("agent", _agent);
+		T_SETV("sensors", []);
+		T_SETV("sensorStimulusTypes", []);
+		T_SETV("timer", "");
+		T_SETV("processInterval", 1);
+		T_SETV("worldFacts", []);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -64,17 +64,17 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
 
 		PROFILER_COUNTER_DEC("AI");
 
 		// Stop the AI if it is currently running
-		CALLM(_thisObject, "stop", []);
+		T_CALLM("stop", []);
 
 		// Delete all sensors
-		pr _sensors = GETV(_thisObject, "sensors");
+		pr _sensors = T_GETV("sensors");
 		{
 			DELETE(_x);
 		} forEach _sensors;
@@ -86,7 +86,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -95,11 +95,11 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("handleMessageEx") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
 			case AI_MESSAGE_PROCESS: {
-				CALLM(_thisObject, "process", []);
+				T_CALLM("process", []);
 				true
 			};
 
@@ -140,17 +140,17 @@ CLASS("AI", "MessageReceiverEx")
 	Returns: nil
 	*/
 	METHOD("addSensor") {
-		params [["_thisObject", "", [""]], ["_sensor", "ERROR_NO_SENSOR", [""]]];
+		params [P_THISOBJECT, ["_sensor", "ERROR_NO_SENSOR", [""]]];
 
 		ASSERT_OBJECT_CLASS(_sensor, "Sensor");
 
 		// Add the sensor to the sensor list
-		pr _sensors = GETV(_thisObject, "sensors");
+		pr _sensors = T_GETV("sensors");
 		_sensors pushBackUnique _sensor;
 
 		// Check the stimulus types this sensor responds to
 		pr _stimTypesSensor = CALLM(_sensor, "getStimulusTypes", []);
-		pr _stimTypesThis = GETV(_thisObject, "sensorStimulusTypes");
+		pr _stimTypesThis = T_GETV("sensorStimulusTypes");
 		// Add the stimulus types to the stimulus type array
 		{
 			_stimTypesThis pushBackUnique _x;
@@ -163,8 +163,8 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("updateSensors") {
-		params [["_thisObject", "", [""]], ["_forceUpdate", false]];
-		pr _sensors = GETV(_thisObject, "sensors");
+		params [P_THISOBJECT, ["_forceUpdate", false]];
+		pr _sensors = T_GETV("sensors");
 		//OOP_INFO_1("Updating sensors: %1", _sensors);
 		{
 			pr _sensor = _x;
@@ -190,10 +190,10 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		pr _type = _stimulus select STIMULUS_ID_TYPE;
 		if (_type in T_GETV("sensorStimulusTypes")) then {
-			pr _sensors = GETV(_thisObject, "sensors");
+			pr _sensors = T_GETV("sensors");
 			{
 				pr _stimTypes = CALLM(_x, "getStimulusTypes", []);
 				if (_type in _stimTypes) then {
@@ -210,16 +210,16 @@ CLASS("AI", "MessageReceiverEx")
 
 	// Adds a world fact
 	METHOD("addWorldFact") {
-		params [["_thisObject", "", [""]], ["_fact", [], [[]]]];
-		pr _facts = GETV(_thisObject, "worldFacts");
+		params [P_THISOBJECT, P_ARRAY("_fact")];
+		pr _facts = T_GETV("worldFacts");
 		_facts pushBack _fact;
 	} ENDMETHOD;
 
 	// Finds a world fact that matches a query
 	// Returns the found world fact or nil if nothing was found
 	METHOD("findWorldFact") {
-		params [["_thisObject", "", [""]], ["_query", [], [[]]]];
-		pr _facts = GETV(_thisObject, "worldFacts");
+		params [P_THISOBJECT, P_ARRAY("_query")];
+		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
 		pr _c = count _facts;
 		pr _return = nil;
@@ -234,8 +234,8 @@ CLASS("AI", "MessageReceiverEx")
 	// Finds all world facts that match a query
 	// Returns array with facts that satisfy criteria or []
 	METHOD("findWorldFacts") {
-		params [["_thisObject", "", [""]], ["_query", [], [[]]]];
-		pr _facts = GETV(_thisObject, "worldFacts");
+		params [P_THISOBJECT, P_ARRAY("_query")];
+		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
 		pr _c = count _facts;
 		pr _return = [];
@@ -249,8 +249,8 @@ CLASS("AI", "MessageReceiverEx")
 
 	// Deletes all facts that match query
 	METHOD("deleteWorldFacts") {
-		params [["_thisObject", "", [""]], ["_query", [], [[]]]];
-		pr _facts = GETV(_thisObject, "worldFacts");
+		params [P_THISOBJECT, P_ARRAY("_query")];
+		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
 		while {_i < count _facts} do {
 			pr _fact = _facts select _i;
@@ -261,8 +261,8 @@ CLASS("AI", "MessageReceiverEx")
 	// Maintains the array of world facts
 	// Deletes world facts that have exceeded their lifetime
 	METHOD("updateWorldFacts") {
-		params [["_thisObject", "", [""]]];
-		pr _facts = GETV(_thisObject, "worldFacts");
+		params [P_THISOBJECT];
+		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
 		while {_i < count _facts} do {
 			pr _fact = _facts select _i;
@@ -284,25 +284,25 @@ CLASS("AI", "MessageReceiverEx")
 	Starts the AI brain. From now process method will be called periodically.
 	*/
 	METHOD("start") {
-		params [["_thisObject", "", [""]], ["_processCategoryTag", ""]];
+		params [P_THISOBJECT, ["_processCategoryTag", ""]];
 		if (_processCategoryTag != "") then {
-			pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+			pr _msgLoop = T_CALLM0("getMessageLoop");
 			CALLM2(_msgLoop, "addProcessCategoryObject", _processCategoryTag, _thisObject);
 		} else {
-			if (GETV(_thisObject, "timer") == "") then {
+			if (T_GETV("timer") == "") then {
 				// Starts the timer
 				private _msg = MESSAGE_NEW();
 				_msg set [MESSAGE_ID_DESTINATION, _thisObject];
 				_msg set [MESSAGE_ID_SOURCE, ""];
 				_msg set [MESSAGE_ID_DATA, 0];
 				_msg set [MESSAGE_ID_TYPE, AI_MESSAGE_PROCESS];
-				pr _processInterval = GETV(_thisObject, "processInterval");
+				pr _processInterval = T_GETV("processInterval");
 				private _args = [_thisObject, _processInterval, _msg, AI_TIMER_SERVICE]; // message receiver, interval, message, timer service
 				private _timer = NEW("Timer", _args);
-				SETV(_thisObject, "timer", _timer);
+				T_SETV("timer", _timer);
 
 				// Post a message to process immediately to accelerate start up
-				CALLM1(_thisObject, "postMessage", +_msg);
+				T_CALLM1("postMessage", +_msg);
 			};
 		};
 
@@ -318,15 +318,15 @@ CLASS("AI", "MessageReceiverEx")
 	Stops the periodic call of process function.
 	*/
 	METHOD("stop") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete this object from process category 
-		pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
 
-		pr _timer = GETV(_thisObject, "timer");
+		pr _timer = T_GETV("timer");
 		if (_timer != "") then {
-			SETV(_thisObject, "timer", "");
+			T_SETV("timer", "");
 			DELETE(_timer);
 		};
 		nil
@@ -349,11 +349,11 @@ CLASS("AI", "MessageReceiverEx")
 	Returns: nil
 	*/
 	METHOD("setProcessInterval") {
-		params [["_thisObject", "", [""]], ["_interval", 5, [5]]];
-		SETV(_thisObject, "processInterval", _interval);
+		params [P_THISOBJECT, ["_interval", 5, [5]]];
+		T_SETV("processInterval", _interval);
 
 		// If the AI object is already running, also change the interval of the timer which is already started
-		pr _timer = GETV(_thisObject, "timer");
+		pr _timer = T_GETV("timer");
 		if (_timer != "") then {
 			CALLM(_timer, "setInterval", [_interval]);
 		};

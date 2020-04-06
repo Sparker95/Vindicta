@@ -35,9 +35,9 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	VARIABLE("prevMsgID"); // Message ID of the previous receiveTargets message, so that we don't oversaturate the garrison AI thread
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
-		SETV(_thisObject, "comTime", 0);
-		SETV(_thisObject, "prevMsgID", -1); // First message ID is negative as it is always handled
+		params [P_THISOBJECT];
+		T_SETV("comTime", 0);
+		T_SETV("prevMsgID", -1); // First message ID is negative as it is always handled
 	} ENDMETHOD;
 
 
@@ -47,10 +47,10 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Unpack the group handle
-		pr _hG = GETV(_thisObject, "hG");
+		pr _hG = T_GETV("hG");
 		
 		#ifdef DEBUG_SENSOR_GROUP_TARGETS
 		OOP_INFO_1("[SensorGroupTargets::Update] Info: %1", _thisObject);
@@ -111,9 +111,9 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 									_exposedVehicleCrew pushBack [1, _x, side group _x, "Man", getPos _o, 0];
 								};
 							};
-						} forEach (crew _o);					
+						} forEach (crew _o);
 					};
-				};				
+				};
 			} forEach _currentlyObservedObjects;
 			
 			// Add exposed vehicle crew to the array
@@ -129,7 +129,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				4 targetPosition: Array - [x,y] of the target
 				5 targetAge: Number - the actual target age in seconds (can be negative)
 				*/
-				pr _comTime = GETV(_thisObject, "comTime");
+				pr _comTime = T_GETV("comTime");
 				// Relay targets instantly if not attached to location
 				pr _loc = CALLM0(CALLM0(T_GETV("group"), "getGarrison"), "getLocation");
 				if (_comTime > TARGET_TIME_RELAY || _loc == "") then {
@@ -159,14 +159,14 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						#endif
 						// Send targets to garrison AI
 						// this->AI->agent->garrison->AI WTF??
-						pr _AI = GETV(_thisObject, "AI");
+						pr _AI = T_GETV("AI");
 						pr _group = GETV(_AI, "agent");
 						pr _gar = CALLM0(_group, "getGarrison");
 						_garAI = GETV(_gar, "AI");
 						
 						// Create a STIMULUS record
 						pr _stim = STIMULUS_NEW();
-						STIMULUS_SET_SOURCE(_stim, GETV(_thisObject, "group"));
+						STIMULUS_SET_SOURCE(_stim, T_GETV("group"));
 						STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_TARGETS);
 						STIMULUS_SET_VALUE(_stim, _observedTargets);
 						
@@ -188,10 +188,10 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						*/
 						
 						// Only send new data to the garrison if previous data has been processed
-						pr _prevMsgID = GETV(_thisObject, "prevMsgID");
+						pr _prevMsgID = T_GETV("prevMsgID");
 						if (CALLM1(_garAI, "messageDone", _prevMsgID)) then {
 							pr _msgID = CALLM3(_garAI, "postMethodAsync", "handleStimulus", [_stim], true);
-							SETV(_thisObject, "prevMsgID", _msgID);
+							T_SETV("prevMsgID", _msgID);
 							
 							// If there is no location, poke the AIGarrison to do processing ASAP
 							if (_loc == "" || _comTime < 20) then { // Send "process" to AIGarrison only when we have just switched into combat mode
@@ -208,15 +208,15 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				};
 				
 				// Increment combat counter
-				SETV(_thisObject, "comTime", _comTime + UPDATE_INTERVAL);
+				T_SETV("comTime", _comTime + UPDATE_INTERVAL);
 			} else {
 				// Reset combat counter
-				SETV(_thisObject, "comTime", 0);
+				T_SETV("comTime", 0);
 			};
 		#ifdef DEBUG_SENSOR_GROUP_TARGETS
 		} else {
 			OOP_INFO_3("--- Group: %1 is not alive! Group's units: %2, isNull: %3", _hG, units _hG, isNull _hG);
-			pr _AI = GETV(_thisObject, "AI");
+			pr _AI = T_GETV("AI");
 			pr _agent = GETV(_AI, "agent");
 			OOP_INFO_2(" Group data: %1 %2", _agent, GETV(_agent, "data"));
 		#endif
@@ -248,20 +248,20 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		switch (STIMULUS_GET_TYPE(_stimulus)) do {
 			
 			// Receive targets from someone
 			case STIMULUS_TYPE_TARGETS: {
 				#ifdef PRINT_RECEIVED_TARGETS
-					OOP_INFO_3("[SensorGroupTargets::handleStimulus] Info: %1 has received targets from %2: %3", GETV(_thisObject, "group"), STIMULUS_GET_SOURCE(_stimulus), STIMULUS_GET_VALUE(_stimulus));
+					OOP_INFO_3("[SensorGroupTargets::handleStimulus] Info: %1 has received targets from %2: %3", T_GETV("group"), STIMULUS_GET_SOURCE(_stimulus), STIMULUS_GET_VALUE(_stimulus));
 				#endif
 				
 				// Reveal targets to this group
 				// Unpack data
 				pr _data = STIMULUS_GET_VALUE(_stimulus);
-				pr _hG = GETV(_thisObject, "hG");
+				pr _hG = T_GETV("hG");
 				{ // foreach _data
 					// _x is a target structure
 					pr _unit = _x select TARGET_ID_UNIT;
@@ -281,10 +281,10 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				pr _data = STIMULUS_GET_VALUE(_stimulus);
 				
 				#ifdef PRINT_RECEIVED_TARGETS
-					OOP_INFO_2("[SensorGroupTargets::handleStimulus] Info: %1 is forgetting targets: %2", GETV(_thisObject, "group"), _data);
+					OOP_INFO_2("[SensorGroupTargets::handleStimulus] Info: %1 is forgetting targets: %2", T_GETV("group"), _data);
 				#endif
 				
-				pr _hG = GETV(_thisObject, "hG");
+				pr _hG = T_GETV("hG");
 				//pr _thisSide = side _hG;
 				{ // foreach _data
 					CRITICAL_SECTION {

@@ -420,7 +420,7 @@ switch _mode do {
 			(_data select 1) params["_turretMagazine","_turretMagazineDisplayName","_turretMagazineSize","_turretMagazineSizeMax","_turretMagazineCfgSize","_isPylon","_turretPath"];
 			
 			if(_turretMagazineSize != _turretMagazineSizeMax)then{
-				pr _cargo = _objectFrom call jn_fnc_ammo_getCargo;	
+				pr _cargo = _objectFrom call jn_fnc_ammo_getCargo;
 				pr _amount = _turretMagazineCfgSize;
 				if(_amount + _turretMagazineSize>_turretMagazineSizeMax)then{_amount = _turretMagazineSizeMax-_turretMagazineSize};
 				

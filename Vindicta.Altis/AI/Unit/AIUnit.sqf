@@ -11,7 +11,7 @@ Author: Sparker 12.11.2018
 CLASS("AIUnit", "AI_GOAP")
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
@@ -22,12 +22,12 @@ CLASS("AIUnit", "AI_GOAP")
 
 		// Initialize sensors
 		pr _sensorSalute = NEW("SensorUnitSalute", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorSalute]);
+		T_CALLM("addSensor", [_sensorSalute]);
 
 		pr _sensorCivNear = NEW("SensorUnitCivNear", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorCivNear]);
+		T_CALLM("addSensor", [_sensorCivNear]);
 
-		//SETV(_thisObject, "worldState", _ws);
+		//T_SETV("worldState", _ws);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------

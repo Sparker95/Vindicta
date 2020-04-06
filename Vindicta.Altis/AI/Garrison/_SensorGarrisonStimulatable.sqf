@@ -16,9 +16,9 @@ CLASS("SensorGarrisonStimulatable", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
 		pr _g = GETV(_AI, "agent");
-		SETV(_thisObject, "gar", _g);
+		T_SETV("gar", _g);
 	} ENDMETHOD;
 
 ENDCLASS;

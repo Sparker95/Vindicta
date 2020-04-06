@@ -206,9 +206,14 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			CALLM1(_dialogObj, "setHintText", "You must select a location type.");
 		};
 
+		// Disable button before sending message to server to avoid race condition
+		pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_BUTTON_CREATE_LOC");
+		_ctrl ctrlEnable false;
+
 		// Send data to cmdr at the server
 		// Server might run extra checks
 		pr _locType = _ctrlLocType lbData _row;
+
 		// Source object where build resources will be deleted from, player or vehicle he's looking at
 		pr _hBuildResSrc = if (_playerBuildRes >= _buildResCost) then {player} else {_cursorObject};
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
@@ -242,7 +247,6 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM1("setHintText", "We already own this place!");
 		};
 
-
 		// Check if player has enough build resources
 		pr _cursorObject = if ((player distance cursorObject) < 10) then {cursorObject} else {objNull};
 		pr _coBuildRes = CALLSM1("Unit", "getVehicleBuildResources", _cursorObject);
@@ -256,6 +260,10 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM1("setHintText", _text);
 		};
 
+		// Disable button before sending message to server to avoid race condition
+		pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_BUTTON_CREATE_LOC");
+		_ctrl ctrlEnable false;
+
 		// Send data to cmdr at the server
 		// Server might run extra checks
 		// Source object where build resources will be deleted from, player or vehicle he's looking at
@@ -263,11 +271,11 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		pr _args = [clientOwner, _currentLoc, _hBuildResSrc, _buildResCost];
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
-
 	} ENDMETHOD;
 
 	STATIC_METHOD("showServerResponse") {
 		params [P_THISCLASS, P_STRING("_text")];
+
 		// If this tab is already closed, just throw text into system chat
 		if (isNil "gTabCommander") then {
 			systemChat _text;

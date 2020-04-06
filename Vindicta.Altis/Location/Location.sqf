@@ -130,7 +130,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("sideCreated", _createdBySide);
 
 		// Setup basic border
-		CALLM2(_thisObject, "setBorder", "circle", [20]);
+		T_CALLM2("setBorder", "circle", [20]);
 		
 		T_SETV("timer", NULL_OBJECT);
 
@@ -161,18 +161,18 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: nil
 	*/
 	METHOD("setName") {
-		params [P_THISOBJECT, ["_name", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_name")];
 		SET_VAR_PUBLIC(_thisObject, "name", _name);
 	} ENDMETHOD;
 
 	METHOD("setCapacityInf") {
-		params [P_THISOBJECT, ["_capacityInf", 0, [0]]];
-		T_SETV("capacityInf", _capacityInf);		
+		params [P_THISOBJECT, P_NUMBER("_capacityInf")];
+		T_SETV("capacityInf", _capacityInf);
 		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capacityInf);
 	} ENDMETHOD;
 
 	METHOD("setCapacityCiv") {
-		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_capacityCiv")];
 		T_SETV("capacityCiv", _capacityCiv);
 		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY && _capacityCiv > 0)then{
 			private _cpModule = [+T_GETV("pos"),T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
@@ -255,7 +255,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// forEach _no;
 		{
 			_object = _x;
-			if(CALLM1(_thisObject, "isInBorder", _object)) then
+			if(T_CALLM1("isInBorder", _object)) then
 			{
 				_type = typeOf _object;
 
@@ -371,7 +371,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Increase infantry capacity
 		pr _capnew = T_GETV("capacityInf") + _cap;
-		T_SETV("capacityInf", _capnew);		
+		T_SETV("capacityInf", _capnew);
 		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capnew);
 
 		// Check if it enabled radio functionality for the location
@@ -603,7 +603,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT];
 
 		// Remove the timer
-		private _timer = GET_VAR(_thisObject, "timer");
+		private _timer = T_GETV("timer");
 		if (!IS_NULL_OBJECT(_timer)) then {
 			DELETE(_timer);
 			T_SETV("timer", nil);
@@ -649,8 +649,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: Array, position
 	*/
 	METHOD("getPos") {
-		params [ P_THISOBJECT ];
-		GETV(_thisObject, "pos")
+		params [P_THISOBJECT];
+		T_GETV("pos")
 	} ENDMETHOD;
 
 	
@@ -662,7 +662,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: bool
 	*/
 	METHOD("isSpawned") {
-		params [ P_THISOBJECT ];
+		params [P_THISOBJECT];
 		T_GETV("spawned")
 	} ENDMETHOD;
 
@@ -697,7 +697,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: Array of positions
 	*/
 	METHOD("getPatrolWaypoints") {
-		params [ P_THISOBJECT ];
+		params [P_THISOBJECT];
 		if(T_GETV("useParentPatrolWaypoints")) then {
 			private _parent = T_GETV("parent");
 			CALLM0(_parent, "getPatrolWaypoints");
@@ -725,7 +725,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	METHOD("registerGarrison") {
-		params ["_thisObject", ["_gar", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		
 		pr _gars = T_GETV("garrisons");
 		if (! (_gar in _gars)) then {
@@ -757,7 +757,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 	
 	METHOD("unregisterGarrison") {
-		params ["_thisObject", ["_gar", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		
 		pr _gars = T_GETV("garrisons");
 		if (_gar in _gars) then {
@@ -775,7 +775,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	
 	
 	METHOD("getGarrisons") {
-		params ["_thisObject", ["_side", 0]];
+		params [P_THISOBJECT, ["_side", 0]];
 		
 		if (_side isEqualType 0) then {
 			+T_GETV("garrisons")
@@ -785,7 +785,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 	
 	METHOD("hasGarrisons") {
-		params ["_thisObject", ["_side", 0]];
+		params [P_THISOBJECT, ["_side", 0]];
 		
 		if (_side isEqualType 0) then {
 			(count T_GETV("garrisons")) > 0
@@ -795,7 +795,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 	
 	METHOD("getGarrisonsRecursive") {
-		params ["_thisObject", ["_side", 0]];
+		params [P_THISOBJECT, ["_side", 0]];
 		private _myGarrisons = if (_side isEqualType 0) then {
 			+T_GETV("garrisons")
 		} else {
@@ -815,8 +815,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: String
 	*/
 	METHOD("getType") {
-		params [ P_THISOBJECT ];
-		GET_VAR(_thisObject, "type")
+		params [P_THISOBJECT];
+		T_GETV("type")
 	} ENDMETHOD;
 
 	/*
@@ -898,7 +898,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	/*
 	METHOD("getSide") {
-		params [ "_thisObject" ];
+		params [P_THISOBJECT];
 		pr _gar = T_GETV("garrisonMilMain");
 		if (_gar == "") then {
 			CIVILIAN
@@ -915,8 +915,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: Integer
 	*/
 	METHOD("getCapacityInf") {
-		params [ P_THISOBJECT ];
-		GET_VAR(_thisObject, "capacityInf")
+		params [P_THISOBJECT];
+		T_GETV("capacityInf")
 	} ENDMETHOD;
 
 	/*
@@ -926,8 +926,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: Integer
 	*/
 	METHOD("getCapacityCiv") {
-		params [ P_THISOBJECT ];
-		GET_VAR(_thisObject, "capacityCiv")
+		params [P_THISOBJECT];
+		T_GETV("capacityCiv")
 	} ENDMETHOD;
 	
 	/*
@@ -998,10 +998,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			_roadscon sort DESCENDING;
 			if (count _roadscon > 0) then {
 				private _roadcon = _roadscon#0#1;
-				//private _dir = _roadcon getDir _road;				
+				//private _dir = _roadcon getDir _road;
 				private _roadblock_pos = getPosASL _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
 					
-				_roadblockPositions pushBack _roadblock_pos; 
+				_roadblockPositions pushBack _roadblock_pos;
 			};
 
 			_roads_remaining = _roads_remaining select {
@@ -1016,13 +1016,24 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/*
 	Method: getBorder
-	gets border parameters of this location
+	Gets border parameters of this location
 
 	Returns: [center, a, b, angle, isRectangle, c]
 	*/
 	METHOD("getBorder") {
 		params [P_THISOBJECT];
 		T_GETV("border")
+	} ENDMETHOD;
+
+	/*
+	Method: getBoundingRadius
+	Gets the bounding circle radius of this location
+
+	Returns: number
+	*/
+	METHOD("getBoundingRadius") {
+		params [P_THISOBJECT];
+		T_GETV("boundingRadius")
 	} ENDMETHOD;
 
 	/*
@@ -1036,7 +1047,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: nil
 	*/
 	METHOD("setType") {
-		params [P_THISOBJECT, ["_type", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_type")];
 		SET_VAR_PUBLIC(_thisObject, "type", _type);
 
 		// Create a timer object if the type of the location is a city or a roadblock
@@ -1070,9 +1081,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_msg set [MESSAGE_ID_SOURCE, ""];
 		_msg set [MESSAGE_ID_DATA, 0];
 		_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
-		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
+		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService")
 		private _timer = NEW("Timer", _args);
-		SET_VAR(_thisObject, "timer", _timer);
+		T_SETV("timer", _timer);
 	} ENDMETHOD;
 
 	// /*
@@ -1082,10 +1093,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// Returns: <Garrison> or "" if there is no current garrison
 	// */
 	// METHOD("getCurrentGarrison") {
-	// 	params [ P_THISOBJECT ];
+	// 	params [P_THISOBJECT];
 
-	// 	private _garrison = GETV(_thisObject, "garrisonMilAA");
-	// 	if (_garrison == "") then { _garrison = GETV(_thisObject, "garrisonMilMain"); };
+	// 	private _garrison = T_GETV("garrisonMilAA");
+	// 	if (_garrison == "") then { _garrison = T_GETV("garrisonMilMain"); };
 	// 	if (_garrison == "") then { OOP_WARNING_1("No garrison found for location %1", _thisObject); };
 	// 	_garrison
 	// } ENDMETHOD;
@@ -1218,7 +1229,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: Integer
 	*/
 	METHOD("countAvailableUnits") {
-		params [ P_THISOBJECT, P_SIDE("_side") ];
+		params [P_THISOBJECT, P_SIDE("_side") ];
 
 		// TODO: Yeah we need mutex here!
 		private _garrisons = T_CALLM("getGarrisons", [_side]);
@@ -1262,7 +1273,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			};
 			
 			default {
-				diag_log format ["[Location::setBorder] Error: wrong border type: %1, location: %2", _type, GET_VAR(_thisObject, "name")];
+				diag_log format ["[Location::setBorder] Error: wrong border type: %1, location: %2", _type, T_GETV("name")];
 			};
 		};
 
@@ -1428,8 +1439,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT, ["_filter", "House", [""]], ["_addSpecialObjects", false, [false]]];
 
 		// Setup location's spawn positions
-		private _radius = GET_VAR(_thisObject, "boundingRadius");
-		private _locPos = GET_VAR(_thisObject, "pos");
+		private _radius = T_GETV("boundingRadius");
+		private _locPos = T_GETV("pos");
 		private _no = _locPos nearObjects _radius;
 
 		//OOP_INFO_1("PROCESS OBJECTS IN AREA: %1", _this);
@@ -1808,7 +1819,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _gmData = CALLM0(_x, "getGameModeData");
 			if(!IS_NULL_OBJECT(_gmData)) then {
 				// Refresh spawnability
-				CALLM0(_gmData, "updatePlayerRespawn");			
+				CALLM0(_gmData, "updatePlayerRespawn");
 			};
 			// Update build progress
 			CALLM0(_loc, "updateBuildProgress");

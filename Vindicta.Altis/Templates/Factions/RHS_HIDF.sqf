@@ -18,7 +18,7 @@ _array set [T_REQUIRED_ADDONS, [
 
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
-_inf set [T_INF_SIZE-1, nil]; 						
+_inf set [T_INF_SIZE-1, nil];
 _inf set [T_INF_default, ["B_GEN_Commander_F"]];
 
 _inf set [T_INF_SL, ["RHS_HIDF_SL"]];

@@ -27,15 +27,15 @@ CLASS("TimerService", "")
 	It defines the maximum frequency at which your timer can run.
 	*/
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_resolution", 0, [0]]];
-		SET_VAR(_thisObject, "timers", []);
-		SET_VAR(_thisObject, "resolution", _resolution);
+		params [P_THISOBJECT, P_NUMBER("_resolution")];
+		T_SETV("timers", []);
+		T_SETV("resolution", _resolution);
 		private _mutex = MUTEX_NEW();
-		SET_VAR(_thisObject, "mutex", _mutex);
+		T_SETV("mutex", _mutex);
 		
 		// Create a thread for this TimerService
 		private _hThread = [_thisObject] spawn TimerService_fnc_threadFunc;
-		SET_VAR(_thisObject, "scriptHandle", _hThread);
+		T_SETV("scriptHandle", _hThread);
 	} ENDMETHOD;
 	
 
@@ -46,19 +46,19 @@ CLASS("TimerService", "")
 	Warning: must be called in scheduled environment!
 	*/
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		// Wait until we lock the mutex. We don't want to stop the thread while it's doing something.
-		private _mutex = GET_VAR(_thisObject, "mutex");
+		private _mutex = T_GETV("mutex");
 		MUTEX_LOCK(_mutex);
 		// Stop the thread
-		private _scriptHandle = GET_VAR(_thisObject, "_scriptHandle");
+		private _scriptHandle = T_GETV("_scriptHandle");
 		terminate _scriptHandle;
 		MUTEX_UNLOCK(_mutex);
 		
 		// Delete all timers attached to this object
 		{
 			DELETE(_x);
-		} forEach (GET_VAR(_thisObject, "timers"));
+		} forEach (T_GETV("timers"));
 	} ENDMETHOD;
 	
 	// |                         A D D   T I M E R                          |
@@ -75,8 +75,8 @@ CLASS("TimerService", "")
 	Returns: nil
 	*/
 	METHOD("addTimer") {
-		params [["_thisObject", "", [""]], ["_timer", "", [""]]];
-		private _timers = GET_VAR(_thisObject, "timers");
+		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
+		private _timers = T_GETV("timers");
 		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
 		_timers pushBackUnique _timerDereferenced;
 	} ENDMETHOD;
@@ -95,12 +95,12 @@ CLASS("TimerService", "")
 	Returns: nil
 	*/
 	METHOD("removeTimer") {
-		params [["_thisObject", "", [""]], ["_timer", "", [""]]];
-		private _timers = GET_VAR(_thisObject, "timers");
+		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
+		private _timers = T_GETV("timers");
 		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
 		
 		// Lock the mutex. We don't want to manipulate the timer array while it's being accessed by TimerService thread function.
-		private _mutex = GETV(_thisObject, "mutex");
+		private _mutex = T_GETV("mutex");
 		MUTEX_LOCK(_mutex);
 		
 		// Check if the timer exists in the array
@@ -109,7 +109,7 @@ CLASS("TimerService", "")
 		
 		// Such a timer has been found, delete it
 		_timers deleteAt _index;
-		//SETV(_thisObject, "timers", _timers);
+		//T_SETV("timers", _timers);
 		
 		// Unlock the mutex
 		MUTEX_UNLOCK(_mutex);

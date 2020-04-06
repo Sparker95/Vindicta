@@ -2,7 +2,7 @@
 
 params["_vehicle"];
 
-pr _loadoutCfg = _vehicle call JN_fnc_ammo_getLoadoutCfg; 
+pr _loadoutCfg = _vehicle call JN_fnc_ammo_getLoadoutCfg;
 pr _loadoutCurrent = _vehicle call JN_fnc_ammo_getLoadoutCurrent;
 pr _loadoutMissing = [];
 pr _turrets = [];
@@ -24,7 +24,7 @@ pr _turrets = [];
 			}
 			
 		};
-	}forEach (_loadoutCfg select 0);	
+	}forEach (_loadoutCfg select 0);
 }forEach (_loadoutCurrent select 0);
 
 [_turrets, _loadoutMissing]

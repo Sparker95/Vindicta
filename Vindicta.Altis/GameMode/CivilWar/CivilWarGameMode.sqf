@@ -10,6 +10,7 @@ https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/
 #ifndef RELEASE_BUILD
 #define DEBUG_CIVIL_WAR_GAME_MODE
 #endif
+FIX_LINE_NUMBERS()
 
 gCityStateData = [
 	["Stable",     [1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_STABLE */
@@ -317,6 +318,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				#ifndef RELEASE_BUILD
 				systemChat "Moving to phase 1";
 				#endif
+				FIX_LINE_NUMBERS()
 
 				// Scenario just initialized so do setup
 				
@@ -334,6 +336,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 					#ifndef RELEASE_BUILD
 					"MOVING TO PHASE 2" remoteExec ["hint"];
 					#endif
+					FIX_LINE_NUMBERS()
 
 					// Set enemy commander strategy
 					private _strategy = NEW("Phase2CmdrStrategy", []);
@@ -353,6 +356,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 					#ifndef RELEASE_BUILD
 					"MOVING TO PHASE 3" remoteExec ["hint"];
 					#endif
+					FIX_LINE_NUMBERS()
 
 					// Set enemy commander strategy
 					private _strategy = NEW("Phase3CmdrStrategy", []);
@@ -507,7 +511,12 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected virtual */ METHOD("getCampaignProgress") {
 		params [P_THISOBJECT];
+		#ifdef DEBUG_END_GAME
+		0.9
+		#else
 		T_GETV("campaignProgress");
+		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	/* public virtual override*/ METHOD("getPlayerSide") {
@@ -696,6 +705,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		_mrk setMarkerText (format ["%1 (%2)", gCityStateData#_state#0, T_GETV("instability")]);
 		_mrk setMarkerAlpha 1;
 #endif
+		FIX_LINE_NUMBERS()
+
 		// Update police stations (spawning reinforcements etc)
 		private _policeStations = GETV(_city, "children") select { GETV(_x, "type") == LOCATION_TYPE_POLICE_STATION };
 		{
@@ -899,7 +910,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 					CALLM(_newGarrison, "activateOutOfThread", []);
 					private _AI = CALLM(_newGarrison, "getAI", []);
 					// Send the garrison to join the police station location
-					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation], [TAG_MOVE_RADIUS, 30]], _thisObject];
+					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation], [TAG_MOVE_RADIUS, 100]], _thisObject];
 					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
 				};
 			};

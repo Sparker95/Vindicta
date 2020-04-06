@@ -23,17 +23,17 @@ if(T_CALLM("isDestroyed", [])) exitWith {
 	DUMP_CALLSTACK;
 };
 
-private _spawned = GET_VAR(_thisObject, "spawned");
+private _spawned = T_GETV("spawned");
 if (!_spawned) exitWith {
 	OOP_ERROR_0("Already despawned");
 	DUMP_CALLSTACK;
 };
 
 // Reset spawned flag
-SET_VAR(_thisObject, "spawned", false);
+T_SETV("spawned", false);
 
-private _units = GET_VAR(_thisObject, "units");
-private _groups = (GET_VAR(_thisObject, "groups"));
+private _units = T_GETV("units");
+private _groups = (T_GETV("groups"));
 private _groupsCopy = +_groups;
 
 // Stop group AIs, but don't delete them
@@ -98,7 +98,7 @@ if (_action != "") then {
 
 // Change process category if active
 if (T_GETV("active")) then {
-	pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+	pr _msgLoop = T_CALLM0("getMessageLoop");
 	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
 	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonDespawned", _AI);
 };

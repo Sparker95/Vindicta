@@ -82,7 +82,7 @@ if (!_spawningHandled) then {
 				} else {
 					// Get new spawn position
 					private _unitData = CALL_METHOD(_unit, "getMainData", []);
-					private _args = _unitData + [0]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
+					private _args = _unitData + [0]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), P_STRING("_groupType")
 					private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
 				};
@@ -122,4 +122,5 @@ if (T_GETV("active")) then {
 };
 
 // Call AI "process" method to accelerate decision taking
-CALLM1(_AI, "process", true); // Pass the _accelerate=true flag to update sensors sooner
+// Pass the _accelerate flag to update sensors sooner, and allow instant completion of some actions
+CALLM1(_AI, "process", true);

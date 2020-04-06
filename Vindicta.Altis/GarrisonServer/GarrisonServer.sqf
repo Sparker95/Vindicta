@@ -51,7 +51,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _processInterval = 1;
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
-		SETV(_thisObject, "timer", _timer);
+		T_SETV("timer", _timer);
 
 		if (!isNil {GETSV("GarrisonServer", "instance")}) then {
 			OOP_ERROR_1("Multiple instances of GarrisonServer are not allowed! %1", _thisObject);
@@ -230,7 +230,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		if (_className == "") exitWith { // Bail if data is incorrect
 			OOP_ERROR_1("BuildFromGarrison: class name is empty. _this: %1", _this);
 		};
-		pr _cost = getNumber (_objClass >> "buildResource");		
+		pr _cost = getNumber (_objClass >> "buildResource");
 		pr _catID = getNumber (_objClass >> "templateCatID");
 		pr _subcatID = getNumber (_objClass >> "templateSubcatID");
 		pr _isRadio = [false, true] select (getNumber (_objClass >> "isRadio"));
@@ -329,7 +329,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			// drop arsenal from some height, safeguard against ground collision that destroys it
 			pr _adjustedPos = [_pos select 0, _pos select 1, ((_pos select 2) + 0.3)];
 			_object setPos _adjustedPos;
-			_object setVectorDirAndUp [_vecDir, _surfaceVectorUp];	
+			_object setVectorDirAndUp [_vecDir, _surfaceVectorUp];
 			_object hideObjectGlobal false;
 		};
 
@@ -422,7 +422,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Create a unit
 		pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
-		// ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
+		// P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull]];
 		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _weapons];
 		pr _unit = NEW("Unit", _args);
 

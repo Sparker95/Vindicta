@@ -45,7 +45,7 @@ CLASS(CLASS_NAME, "")
 	*/
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		pr _args = [0, 0];
 		T_SETV("pos", _args);
@@ -68,7 +68,7 @@ CLASS(CLASS_NAME, "")
 	} ENDMETHOD;
 
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		// Remove from the all array of the final class
 		pr _thisClass = GET_OBJECT_CLASS(_thisObject);
@@ -101,7 +101,7 @@ CLASS(CLASS_NAME, "")
 	*/
 
 	METHOD("onDraw") {
-		params ["_thisObject", "_control"];
+		params [P_THISOBJECT, "_control"];
 
 		pr _pos = T_GETV("pos");
 
@@ -127,7 +127,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 	METHOD("setPos") {
-		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_pos")];
 		T_SETV("pos", _pos);
 	} ENDMETHOD;
 
@@ -142,7 +142,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 	METHOD("select") {
-		params ["_thisObject", ["_select", true]];
+		params [P_THISOBJECT, ["_select", true]];
 
 		OOP_INFO_1("SELECT: %1", _select);
 
@@ -180,7 +180,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 	METHOD("onMouseEnter") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
 	} ENDMETHOD;
 
@@ -191,7 +191,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 	METHOD("onMouseLeave") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
 	} ENDMETHOD;
 
@@ -207,7 +207,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 	METHOD("onMouseButtonDown") {
-		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 
@@ -223,7 +223,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 	METHOD("onMouseButtonUp") {
-		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 
@@ -238,7 +238,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 	METHOD("onMouseButtonClick") {
-		params ["_thisObject", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 	} ENDMETHOD;
 

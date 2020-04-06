@@ -73,7 +73,7 @@
 				};
 				sleep 0.001;
 			} foreach (backpackItems MEMBER("unit", nil));
-		};		
+		};
 
 		PUBLIC FUNCTION("","clearVest") {
 			DEBUG(#, "OO_INVENTORY::clearVest")
@@ -147,7 +147,7 @@
 				sleep 0.001;
 			} foreach MEMBER("getInventory", nil);
 			MEMBER("clearInventory", nil);
-			_holder;			
+			_holder;
 		};
 
 		PUBLIC FUNCTION("","takeOffVest") {
@@ -315,7 +315,7 @@
 				sleep 0.001;
 			} foreach (uniformItems MEMBER("unit", nil));
 			_array;
-		};		
+		};
 
 		PUBLIC FUNCTION("","getVestItems") {
 			DEBUG(#, "OO_INVENTORY::getVestItems")
@@ -341,7 +341,7 @@
 				sleep 0.001;
 			} foreach (vestItems MEMBER("unit", nil));
 			_array;
-		};		
+		};
 
 		PUBLIC FUNCTION("","getBackPackItems") {
 			DEBUG(#, "OO_INVENTORY::getBackPackItems")

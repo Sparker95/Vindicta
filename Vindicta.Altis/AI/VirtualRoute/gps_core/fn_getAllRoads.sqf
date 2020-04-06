@@ -23,7 +23,7 @@
 // 		[_x,20] call bis_fnc_nearestROad; // damn bridges
 // 	}else{
 // 		_road;
-// 	};	
+// 	};
 // };
 
 [worldSize / 2,worldSize / 2,0] nearRoads worldSize

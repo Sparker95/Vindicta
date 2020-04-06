@@ -783,14 +783,14 @@ if(isNil "gActionDebugMarkerStyle") then {
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 
 	CALLM(_garrison, "setAction", [_thisObject]);
-	["Garrison registered correctly", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
+	["Garrison registered correctly", (T_GETV("garrisons") find _garrison) != NOT_FOUND] call test_Assert;
 	
 	DELETE(_garrison);
-	["Garrison unregistered correctly", (GETV(_thisObject, "garrisons") find _garrison) == NOT_FOUND] call test_Assert;
+	["Garrison unregistered correctly", (T_GETV("garrisons") find _garrison) == NOT_FOUND] call test_Assert;
 
 	_garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	CALLM(_garrison, "setAction", [_thisObject]);
-	["Garrison registered correctly 2", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
+	["Garrison registered correctly 2", (T_GETV("garrisons") find _garrison) != NOT_FOUND] call test_Assert;
 	DELETE(_thisObject);
 	["Action cleared from garrison on delete", CALLM(_garrison, "getAction", []) == NULL_OBJECT] call test_Assert;
 }] call test_AddTest;
@@ -798,13 +798,13 @@ if(isNil "gActionDebugMarkerStyle") then {
 ["CmdrAction.createVariable, pushVariables, popVariables", {
 	private _thisObject = NEW("CmdrAction", []);
 
-	private _var = CALLM(_thisObject, "createVariable", [0]);
-	private _var2 = CALLM(_thisObject, "createVariable", [["test"]]);
+	private _var = T_CALLM("createVariable", [0]);
+	private _var2 = T_CALLM("createVariable", [["test"]]);
 
 	["Var is of correct form", _var isEqualTo 0] call test_Assert;
 	["Var2 is of correct form", _var2 isEqualTo 1] call test_Assert;
 
-	CALLM(_thisObject, "pushVariables", []);
+	T_CALLM("pushVariables", []);
 
 	SET_AST_VAR(_thisObject, _var, 1);
 	SET_AST_VAR(_thisObject, _var2, 2);
@@ -812,7 +812,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 	["Var is changed before popVariables", GET_AST_VAR(_thisObject, _var) == 1] call test_Assert;
 	["Var2 is changed before popVariables", GET_AST_VAR(_thisObject, _var2) == 2] call test_Assert;
 
-	CALLM(_thisObject, "popVariables", []);
+	T_CALLM("popVariables", []);
 
 	//diag_log format [" Get var 0 after pop: %1", GET_AST_VAR(_thisObject, _var)];
 	//diag_log format [" Get var 1 after pop: %1", GET_AST_VAR(_thisObject, _var2)];
@@ -831,7 +831,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 	private _action = NEW("CmdrAction", []);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _thisObject = NEW("CmdrAction", []);
-	private _testVar = CALLM(_thisObject, "createVariable", ["original"]);
+	private _testVar = T_CALLM("createVariable", ["original"]);
 	private _asts = [
 		NEW("AST_KillGarrisonSetVar",
 			[_action] +
@@ -846,11 +846,11 @@ if(isNil "gActionDebugMarkerStyle") then {
 		)
 	];
 
-	SETV(_thisObject, "transitions", _asts);
+	T_SETV("transitions", _asts);
 
-	["Transitions correct", GETV(_thisObject, "transitions") isEqualTo _asts] call test_Assert;
+	["Transitions correct", T_GETV("transitions") isEqualTo _asts] call test_Assert;
 
-	private _finalState = CALLM(_thisObject, "applyToSim", [_world]);
+	private _finalState = T_CALLM("applyToSim", [_world]);
 	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;
 	["applyToSim modified variables internally correctly", _finalState == CMDR_ACTION_STATE_END] call test_Assert;
 	["applyToSim reverted action variables correctly", GET_AST_VAR(_thisObject, _testVar) isEqualTo "original"] call test_Assert;

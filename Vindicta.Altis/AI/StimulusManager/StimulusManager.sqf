@@ -26,10 +26,10 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], P_OOP_OBJECT("_msgLoop")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_msgLoop")];
 	
 		T_SETV("msgLoop", _msgLoop);
-		SETV(_thisObject, "sensingAIs", []);
+		T_SETV("sensingAIs", []);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -37,7 +37,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 	} ENDMETHOD;
 	
@@ -50,7 +50,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 	} ENDMETHOD;
 	
@@ -60,11 +60,11 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("Handle stimulus: %1", _stimulus);
 		
-		pr _AIs = GETV(_thisObject, "sensingAIs");
+		pr _AIs = T_GETV("sensingAIs");
 		pr _type = _stimulus select STIMULUS_ID_TYPE;
 		pr _pos = _stimulus select STIMULUS_ID_POS;
 		pr _sidesInclude = _stimulus select STIMULUS_ID_SIDES_INCLUDE;
@@ -113,14 +113,14 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("addSensingAI") {
-		params [["_thisObject", "", [""]], ["_AI", "ERROR_NO_AI", [""]] ];
-		pr _sensingAIs = GETV(_thisObject, "sensingAIs");
+		params [P_THISOBJECT, ["_AI", "ERROR_NO_AI", [""]] ];
+		pr _sensingAIs = T_GETV("sensingAIs");
 		_SensingAIs pushBackUnique _AI;
 	} ENDMETHOD;
 	
 	METHOD("removeSensingAI") {
-		params [["_thisObject", "", [""]], ["_AI", "ERROR_NO_AI", [""]] ];
-		pr _sensingAIs = GETV(_thisObject, "sensingAIs");
+		params [P_THISOBJECT, ["_AI", "ERROR_NO_AI", [""]] ];
+		pr _sensingAIs = T_GETV("sensingAIs");
 		pr _ID = _sensingAIs find _AI;
 		if (_ID != -1) then {
 			_sensingAIs deleteAt _ID;
@@ -133,7 +133,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleMessageEx") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
 			default {false}; // Message not handled

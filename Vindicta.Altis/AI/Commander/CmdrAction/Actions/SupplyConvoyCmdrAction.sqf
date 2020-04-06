@@ -179,7 +179,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_departVar,							// Date to wait until
 				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
-		_asts pushBack NEW("AST_WaitGarrison", _waitAST_Args);	
+		_asts pushBack NEW("AST_WaitGarrison", _waitAST_Args);
 
 		// Select next waypoint for the patrol assigning it to targetVar
 		private _nextWaypointAST_Args = [
@@ -536,9 +536,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
 		// _delay = 0 max (120 min _delay);
 		private _startDate = [DATE_NOW, _delay] call pr0_fnc_addMinutesToDate;
-		diag_log _startDate;
 		private _routeTargets = T_GETV("routeTargets");
-		diag_log _routeTargets;
 		private _schedule = [];
 		{
 			_schedule pushBack _startDate;
@@ -798,12 +796,12 @@ if(isNil { GETSV("SupplyConvoyCmdrAction", "SupplyNames")}) then {
 	]);
 
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	CALLM(_thisObject, "applyToSim", [_world]);
+	T_CALLM("applyToSim", [_world]);
 	true
 	// ["Object exists", !(isNil "_class")] call test_Assert;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;

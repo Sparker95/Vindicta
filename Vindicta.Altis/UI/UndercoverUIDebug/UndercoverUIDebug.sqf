@@ -51,7 +51,7 @@ if (isNil "_var") then { _var = "Undefined"; };
 
 _var = GETV(_uM, "bCaptive");
 if (isNil "_var") then { 
-	_var = "Undefined"; 
+	_var = "Undefined";
 } else {
 	if (_var) then {
 		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetBackgroundColor [0, 0.819, 0.341, 1];
@@ -77,7 +77,7 @@ if (isNil "_var") then { _var = "Undefined"; };
 pr _uM = _unit getVariable "undercoverMonitor";
 _var = GETV(_uM, "state");
 if (isNil "_var") then { 
-	_var = "Undefined"; 
+	_var = "Undefined";
 } else {
 	switch (_var) do {
 		case 0: { _var = "UNDERCOVER"; };
@@ -93,7 +93,7 @@ if (isNil "_var") then {
 
 _var = _unit getVariable "bExposed";
 if (isNil "_var") then { 
-	_var = "Undefined"; 
+	_var = "Undefined";
 } else {
 	if (_var) then {
 		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T9) ctrlSetBackgroundColor [0, 0.819, 0.341, 1];
@@ -107,7 +107,7 @@ if (isNil "_var") then {
 
 _var = GETV(_uM, "bSeen");
 if (isNil "_var") then { 
-	_var = "Undefined"; 
+	_var = "Undefined";
 } else {
 	if (_var) then {
 		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T10) ctrlSetBackgroundColor [0, 0.819, 0.341, 1];
@@ -121,7 +121,7 @@ if (isNil "_var") then {
 
 _var = _unit getVariable "bSuspicious";
 if (isNil "_var") then { 
-	_var = "Undefined"; 
+	_var = "Undefined";
 } else {
 	if (_var) then {
 		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T11) ctrlSetBackgroundColor [0, 0.819, 0.341, 1];

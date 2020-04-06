@@ -1,4 +1,5 @@
 #include "WorldFact.hpp"
+#include "..\..\OOP_Light\OOP_Light.h"
 
 #define pr private
 
@@ -9,7 +10,7 @@ Author: Sparker 24.11.2018
 */
 
 wf_fnc_matchesQuery = {
-	params [["_fact", [], [[]]], ["_query", [], [[]]] ];
+	params [P_ARRAY("_fact"), P_ARRAY("_query") ];
 	
 	scopeName "s";
 	
@@ -42,7 +43,7 @@ wf_fnc_matchesQuery = {
 
 // Returns true if the fact's lifetime has exceeded the current time
 wf_fnc_hasExpired = {
-	params [["_fact", [], [[]]]];
+	params [P_ARRAY("_fact")];
 	pr _lifetime = _fact select WF_ID_LIFETIME;
 	
 	// Facts with lifetime of 0 live infinitely
@@ -54,36 +55,36 @@ wf_fnc_hasExpired = {
 };
 
 wf_fnc_setType = {
-	params [["_fact", [], [[]]], ["_type", 0, [WF_TYPE_DEFAULT]] ];
+	params [P_ARRAY("_fact"), ["_type", 0, [WF_TYPE_DEFAULT]] ];
 	_fact set [WF_ID_TYPE, _type];
 };
 
 wf_fnc_setValue = {
-	params [["_fact", [], [[]]], ["_value", 0, WF_VALUE_TYPES] ];
+	params [P_ARRAY("_fact"), ["_value", 0, WF_VALUE_TYPES] ];
 	_fact set [WF_ID_VALUE, _value];
 };
 
 wf_fnc_setRelevance = {
-	params [["_fact", [], [[]]], ["_importance", 0, [WF_RELEVANCE_DEFAULT]] ];
+	params [P_ARRAY("_fact"), ["_importance", 0, [WF_RELEVANCE_DEFAULT]] ];
 	_fact set [WF_ID_RELEVANCE, _importance];
 };
 
 wf_fnc_setSource = {
-	params [["_fact", [], [[]]], ["_source", 0, [WF_SOURCE_DEFAULT]] ];
+	params [P_ARRAY("_fact"), ["_source", 0, [WF_SOURCE_DEFAULT]] ];
 	_fact set [WF_ID_SOURCE, _source];
 };
 
 wf_fnc_setPos = {
-	params [["_fact", [], [[]]], ["_POS", 0, [[]]] ];
+	params [P_ARRAY("_fact"), ["_POS", 0, [[]]] ];
 	_fact set [WF_ID_POS, _POS];
 };
 
 wf_fnc_resetLastUpdateTime = {
-	params [["_fact", [], [[]]]];
+	params [P_ARRAY("_fact")];
 	_fact set [WF_ID_LAST_UPDATE_TIME, time];
 };
 
 wf_fnc_setLifetime = {
-	params [["_fact", [], [[]]], ["_lifetime", 0, [0]] ];
+	params [P_ARRAY("_fact"), P_NUMBER("_lifetime") ];
 	_fact set [WF_ID_LIFETIME, _lifetime];
 };

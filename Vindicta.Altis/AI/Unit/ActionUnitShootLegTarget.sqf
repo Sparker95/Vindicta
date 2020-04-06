@@ -1,11 +1,6 @@
-
-#define OOP_INFO
-#define OOP_ERROR
-#define OOP_WARNING
-#define OOP_DEBUG
 #include "common.hpp"
-#define IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD !(alive _target) || (animationState _target == "unconsciousoutprone") || (animationState _target == "unconsciousfacedown") || (animationState _target == "unconsciousfaceup") || (animationState _target == "unconsciousrevivedefault") || (animationState _target == "acts_aidlpsitmstpssurwnondnon_loop") || (animationState _target == "acts_aidlpsitmstpssurwnondnon01")
 
+#define IS_ARRESTED_UNCONSCIOUS_DEAD(target) (!alive (target) || {animationState (target) in ["unconsciousoutprone", "unconsciousfacedown", "unconsciousfaceup", "unconsciousrevivedefault", "acts_aidlpsitmstpssurwnondnon_loop", "acts_aidlpsitmstpssurwnondnon01"]})
 /*
 Class: Action.ActionUnitShootLegTarget
 Makes a single unit shoot near a target like a warning shot with a chance of hitting leg
@@ -25,11 +20,13 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	VARIABLE("startSpawnedTime");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _a = GETV(_AI, "agent");
 		pr _oh = CALLM0(_a, "getObjectHandle");
 		pr _count = _oh ammo primaryWeapon _oh;
+
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 
 		T_SETV("isHandleSpawned", 0);
 		T_SETV("spawnHandle", scriptNull);
@@ -39,7 +36,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	} ENDMETHOD;
 
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		pr _oh = T_GETV("objectHandle");
 		pr _target = T_GETV("target");
@@ -55,9 +52,9 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 
 		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
@@ -75,7 +72,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _posUnit = getPos _oh;
 		pr _posTarget = getPos _target;
 
-		if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) exitWith {
+		if (IS_ARRESTED_UNCONSCIOUS_DEAD(_target)) exitWith {
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -107,7 +104,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 					waitUntil {
 						_oldCount - 1 >= (_oh ammo primaryWeapon _oh) ||
 						(_posUnit distance2D _posTarget) > 100 ||
-						IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD ||
+						IS_ARRESTED_UNCONSCIOUS_DEAD(_target) ||
 						time > (20 + _spawnedTime)
 					};
 

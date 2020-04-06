@@ -16,10 +16,10 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		
 		
-		//pr _AI = GETV(_thisObject, "AI");
+		//pr _AI = T_GETV("AI");
 		//pr _agent = GETV(_AI, "agent");
 		//pr _oh = CALLM(_agent, "getObjectHandle", []);
 		
@@ -39,8 +39,8 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]],["_stimulus",[],[[]] ] ];
-		pr _AI = GETV(_thisObject, "AI");
+		params [P_THISOBJECT,["_stimulus",[],[[]] ] ];
+		pr _AI = T_GETV("AI");
 		pr _value = STIMULUS_GET_VALUE(_stimulus);
 		diag_log "handleStimulus";
 		// Don't create a new fact if there is one already
@@ -51,7 +51,7 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 		if (isNil "_wfFound") then {
 			diag_log format ["[SensorUnitCivNear:handleStimulus] Sensor: %1, created world fact", _thisObject];
 			
-			SETV(_thisObject,"timeAnnoyed",0); //reset timer
+			T_SETV("timeAnnoyed",0); //reset timer
 			
 			// Create a world fact
 			[_wf, 3] call wf_fnc_setLifetime;
@@ -61,7 +61,7 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 			
 		}else{
 			pr _timeAnnoyed = GETV(_thisObject,"timeAnnoyed") + 0.05; //reset timer
-			SETV(_thisObject,"timeAnnoyed",_timeAnnoyed);
+			T_SETV("timeAnnoyed",_timeAnnoyed);
 			
 			//update relevance
 			[_wfFound,_timeAnnoyed +  _value]call wf_fnc_setRelevance;

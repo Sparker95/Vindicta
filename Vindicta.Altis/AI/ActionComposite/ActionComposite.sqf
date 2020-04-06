@@ -19,8 +19,9 @@ CLASS("ActionComposite", "Action")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
-		SETV(_thisObject, "subactions", []);
+		params [P_THISOBJECT];
+
+		T_SETV("subactions", []);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -28,12 +29,26 @@ CLASS("ActionComposite", "Action")
 	// ----------------------------------------------------------------------
 	
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete all subactions
-		CALLM(_thisObject, "deleteAllSubactions", []);
+		T_CALLM0("deleteAllSubactions");
 	} ENDMETHOD;
 	
+	/* protected override */ METHOD("setInstant") {
+		params [P_THISOBJECT, P_BOOL("_instant")];
+
+		T_CALLCM1("Action", "setInstant", _instant);
+
+		// Only set subactions instant when true. Only processed actions should have instant toggled off again (this should be done in the overriden process function)
+		if(_instant) then {
+			{
+				CALLM1(_x, "setInstant", _instant);
+			} forEach T_CALLM0("getSubactions");
+		};
+	} ENDMETHOD;
+
+
 	/*
 	Method: getFrontSubaction
 	Returns the first action in the subactions array, or "" if the array is empty.
@@ -42,10 +57,11 @@ CLASS("ActionComposite", "Action")
 	*/
 	
 	METHOD("getFrontSubaction") {
-		params [ "_thisObject" ];
+		params [P_THISOBJECT];
+
 		private _sa = T_GETV("subactions");
 		if (count _sa == 0) then {
-			""
+			NULL_OBJECT
 		} else {
 			_sa select 0
 		};
@@ -68,11 +84,12 @@ CLASS("ActionComposite", "Action")
 	Returns: nil
 	*/
 	METHOD("addSubactionToFront") {
-		params [["_thisObject", "", [""]], ["_subaction", "", [""]] ];
-		private _subactions = GETV(_thisObject, "subactions");
+		params [P_THISOBJECT, P_OOP_OBJECT("_subaction")];
+
+		private _subactions = T_GETV("subactions");
 		private _newSubactions = [_subaction];
 		_newSubactions append _subactions;
-		SETV(_thisObject, "subactions", _newSubactions);
+		T_SETV("subactions", _newSubactions);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -89,12 +106,12 @@ CLASS("ActionComposite", "Action")
 	Returns: nil
 	*/
 	METHOD("addSubactionToBack") {
-		params [["_thisObject", "", [""]], ["_subaction", "", [""]] ];
-		private _subactions = GETV(_thisObject, "subactions");
+		params [P_THISOBJECT, P_OOP_OBJECT("_subaction")];
+
+		private _subactions = T_GETV("subactions");
 		_subactions pushBack _subaction;
 	} ENDMETHOD;
-	
-	
+
 	// ----------------------------------------------------------------------
 	// |                          G E T   S U B A C T I O N S
 	// ----------------------------------------------------------------------
@@ -105,10 +122,11 @@ CLASS("ActionComposite", "Action")
 	Returns: Array of actions
 	*/
 	METHOD("getSubactions") {
-		params [["_thisObject", "", [""]]];
-		GETV(_thisObject, "subactions")
+		params [P_THISOBJECT];
+
+		T_GETV("subactions")
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                   D E L E T E   A L L   S U B A C T I O N S
 	// ----------------------------------------------------------------------
@@ -119,14 +137,15 @@ CLASS("ActionComposite", "Action")
 	Returns: nil
 	*/
 	METHOD("deleteAllSubactions") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
+
 		// Regardless if the action is serial or parallel, terminate and delete all subactions
-		private _subactions = GETV(_thisObject, "subactions");
+		private _subactions = T_GETV("subactions");
 		{
-			CALLM(_x, "terminate", []);
+			CALLM0(_x, "terminate");
 			DELETE(_x);
 		} forEach _subactions;
-		SETV(_thisObject, "subactions", []);
+		T_SETV("subactions", []);
 	} ENDMETHOD;
 
 ENDCLASS;

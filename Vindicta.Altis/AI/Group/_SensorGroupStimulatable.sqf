@@ -17,11 +17,11 @@ CLASS("SensorGroupStimulatable", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
 		pr _g = GETV(_AI, "agent");
-		SETV(_thisObject, "group", _g);
+		T_SETV("group", _g);
 		pr _gh = CALLM0(_g, "getGroupHandle");
-		SETV(_thisObject, "hG", _gh);
+		T_SETV("hG", _gh);
 	} ENDMETHOD;
 
 ENDCLASS;

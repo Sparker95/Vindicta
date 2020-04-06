@@ -20,34 +20,40 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 
 	// Gives goals to groups to attack enemy buildings
 	METHOD("attackEnemyBuildings") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, ["_groups", 0, [0, []]]];
 
 		pr _AI = T_GETV("AI");
 		pr _gar = T_GETV("gar");
+
+		if(_groups isEqualTo 0) then {
+			_groups = CALLM0(_gar, "getGroups");
+		};
 
 		// Try to attack buildings in which enemies are hiding
 		pr _garPos = CALLM0(_AI, "getPos");
 		pr _buildingsWeAreAttacking = T_GETV("buildingsAttack");
 		pr _buildingsWithTargets = GETV(_AI, "buildingsWithTargets") select {(_garPos distance2D _garPos < 250) && (!(_x in _buildingsWeAreAttacking))}; // Select only buildings reasonably close
 		if (count _buildingsWithTargets > 0) then {
+
 			OOP_INFO_0("Processing buildings with targets...");
-			OOP_INFO_1("  Buildings with targets: %1", _buildingsWithTargets);
+
+			//OOP_INFO_1("  Buildings with targets: %1", _buildingsWithTargets);
 
 			pr _loc = CALLM0(_gar, "getLocation");
 			pr _locBuildings = [];
-			if (_loc != "") then { _locBuildings = CALLM0(_loc, "getOpenBuildings"); };
+			if (_loc != NULL_OBJECT) then { _locBuildings = CALLM0(_loc, "getOpenBuildings"); };
 
 			// Select groups which can be given this goal
 			// They must not be guarding/attempting to enter another building already
 			// They must not be assigned to one of the important buildings at this location
-			pr _freeGroups = CALLM0(_gar, "getGroups") select {
+			pr _freeGroups = _groups select {
 				if ( CALLM0(_x, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL] ) then {
 					pr _groupAI = CALLM0(_x, "getAI");
 					pr _goalState = CALLM2(_groupAI, "getExternalGoalActionState", "GoalGroupGetInBuilding", _AI);
 					OOP_INFO_2("   %1 goal state: %2", _groupAI, _goalState);
 					if (_goalState in [ACTION_STATE_COMPLETED, ACTION_STATE_FAILED, -1]) then { // Goal is either completed, failed, or not given
 						pr _goalParams = CALLM2(_groupAI, "getExternalGoalParameters", "GoalGroupGetInBuilding", _AI);
-					OOP_INFO_2("   %1 goal params: %2", _groupAI, _goalParams);
+						OOP_INFO_2("   %1 goal params: %2", _groupAI, _goalParams);
 						if (count _goalParams > 0) then {
 							!(_goalParams#0#1 in _locBuildings) // The building guarded by this group is not one of the location's buildings
 						} else {
@@ -69,7 +75,8 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 				pr _group = _freeGroups#0;
 				pr _groupAI = CALLM0(_group, "getAI");
 				pr _goalParameters = [["building", _buildingsWithTargets#0]];
-				pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
+				// Bias the goal higher so we ensure it is high priority than move orders etc.
+				pr _args = ["GoalGroupGetInBuilding", 100, _goalParameters, _AI]; // Get in the house!
 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 
 				OOP_INFO_2("  Assigned group %1 to building %2", _group, _buildingsWithTargets#0);
@@ -92,25 +99,6 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 			};
 		};
 
-	} ENDMETHOD;
-
-	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
-		
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
-
-		pr _args = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
-		pr _infGroups = CALLM1(_gar, "findGroupsByType", _args);
-
-		{
-			// Delete goal to mount vehicles
-			pr _groupAI = CALLM0(_x, "getAI");
-			pr _args = ["GoalGroupGetInBuilding", ""];
-			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-		} forEach _infGroups;
-		
 	} ENDMETHOD;
 
 ENDCLASS;

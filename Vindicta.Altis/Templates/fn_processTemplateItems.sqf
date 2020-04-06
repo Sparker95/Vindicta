@@ -87,12 +87,12 @@ while {_subCatID < _catSize} do {
 			/*
 			// Grabs mags for all muzzles
 			                _usableMagazines = [];
-_cfgWeapon = configfile >> "cfgweapons" >> (primaryweapon player); 
+_cfgWeapon = configfile >> "cfgweapons" >> (primaryweapon player);
                 { 
-                    _cfgMuzzle = if (_x == "this") then {_cfgWeapon} else {_cfgWeapon >> _x}; 
+                    _cfgMuzzle = if (_x == "this") then {_cfgWeapon} else {_cfgWeapon >> _x};
                     { 
-                        _usableMagazines pushBackUnique _x; 
-                    } foreach getarray (_cfgMuzzle >> "magazines"); 
+                        _usableMagazines pushBackUnique _x;
+                    } foreach getarray (_cfgMuzzle >> "magazines");
                 } foreach getarray (_cfgWeapon >> "muzzles");
 _usableMagazines
 			*/

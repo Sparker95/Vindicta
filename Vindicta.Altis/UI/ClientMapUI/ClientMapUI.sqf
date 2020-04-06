@@ -87,7 +87,7 @@ CLASS(CLASS_NAME, "")
 
 	// initialize UI event handlers
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Markers under cursor
 		T_SETV("markersUnderCursor", []);
@@ -133,7 +133,7 @@ CLASS(CLASS_NAME, "")
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
 		T_SETV("lastRespawnPos", []);
-		T_SETV("lbSelectionIndices", []);  
+		T_SETV("lbSelectionIndices", []);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -183,7 +183,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
@@ -195,7 +195,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_LIST"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactiveList", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_LIST"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEndedList", _this); }];
@@ -255,7 +255,7 @@ CLASS(CLASS_NAME, "")
 		// Just a macro to give event handlers to buttons cause I'm LZ AF
 		#define __GAR_ACTION_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garActionLBOnButtonClick", buttonStr); \
+				T_CALLM1("garActionLBOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");				// This text is not displayed
@@ -273,7 +273,7 @@ CLASS(CLASS_NAME, "")
 		// Another lazy macro to give event handlers to buttons
 		#define __GAR_SELECT_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garSelMenuOnButtonClick", buttonStr); \
+				T_CALLM1("garSelMenuOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_SPLIT, "split");
@@ -294,7 +294,7 @@ CLASS(CLASS_NAME, "")
 		// Give actions to buttons
 		#define __LOC_SELECT_BUTTON_CLICK_EH(className, buttonStr) T_CALLM1("findControl", className) ctrlAddEventHandler ["ButtonClick", { \
 			_thisObject = gClientMapUI; \
-			CALLM1(_thisObject, "locSelMenuOnButtonClick", buttonStr); \
+			T_CALLM1("locSelMenuOnButtonClick", buttonStr); \
 		}]
 
 		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_RECRUIT", "recruit");
@@ -531,7 +531,7 @@ CLASS(CLASS_NAME, "")
 					_mrk setMarkerColorLocal _color;
 					_mrk setMarkerAlphaLocal 1;
 					_mrk setMarkerTextLocal _text;
-					_markers pushBack _name; 
+					_markers pushBack _name;
 
 				// no need for source marker label, we already see where it starts and ends
 				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_dot", ""], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_dot", "Destination"]];
@@ -559,7 +559,7 @@ CLASS(CLASS_NAME, "")
 					_mrkName setMarkerColorLocal _color;
 					_mrkName setMarkerAlphaLocal 1;
 					_mrkName setMarkerTextLocal _text;
-					_markers pushBack _mrkName; 
+					_markers pushBack _mrkName;
 				};
 			};
 		};
@@ -1221,7 +1221,7 @@ CLASS(CLASS_NAME, "")
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetColumnsPos [0, 0.13, 0.35, 0.76];
-		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 
 		// Read some variables...
 		private _showInactive = T_GETV("showIntelInactiveList");
@@ -2175,11 +2175,11 @@ CLASS(CLASS_NAME, "")
 			// If the action LB is shown, we will be pointing at its position
 			if (T_GETV("garActionLBShown")) then {
 				pr _posEndWorld = T_GETV("garActionPos");
-				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]];
 			} else {
 				pr _posEndScreen = getMousePosition;
 				pr _posEndWorld = _ctrl posScreenToWorld _posEndScreen;
-				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]];
 			};
 		};
 	} ENDMETHOD;

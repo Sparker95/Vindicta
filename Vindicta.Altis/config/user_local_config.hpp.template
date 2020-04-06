@@ -41,6 +41,9 @@
 // External reinforcement will run every commander process cycle
 //#define REINFORCEMENT_TESTING
 
+// QRFs will be big
+//#define DEBUG_BIG_QRF
+
 // Disables planning for cmdr ai
 //#define CMDR_AI_NO_PLAN
 
@@ -50,7 +53,13 @@
 // Debug Civilian militants
 //#define MILITANT_CIVILIANS_TESTING
 
-// Debug unit allocator (will log all iteration results)
+// Set campaign progress to 0.9
+//#define DEBUG_END_GAME
+
+// Show garrison and group AI debug markers
+//#define DEBUG_GOAL_MARKERS
+
+// Write debug logging for the unit allocator
 //#define UNIT_ALLOCATOR_DEBUG
 
 // Enable Profiling

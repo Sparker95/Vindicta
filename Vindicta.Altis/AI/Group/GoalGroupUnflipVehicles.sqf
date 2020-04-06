@@ -15,7 +15,7 @@ CLASS("GoalGroupUnflipVehicles", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 
 	/* virtual */ STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		pr _group = GETV(_AI, "agent");
 		pr _groupType = CALLM0(_group, "getType");

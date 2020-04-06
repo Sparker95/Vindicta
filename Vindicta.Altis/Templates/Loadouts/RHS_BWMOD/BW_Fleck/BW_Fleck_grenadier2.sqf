@@ -17,7 +17,7 @@ this addVest _RandomVest;
 this addBackpack "BWA3_Kitbag_Fleck";
 
 this addWeapon "BWA3_G38_AG40_tan";
-this addPrimaryWeaponItem "BWA3_optic_CompM2_tan";
+this addPrimaryWeaponItem "rhsusf_acc_compm4";
 this addPrimaryWeaponItem "1Rnd_HE_Grenade_shell";
 this addPrimaryWeaponItem "BWA3_30Rnd_556x45_G36";
 
