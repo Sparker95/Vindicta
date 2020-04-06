@@ -127,12 +127,8 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			ACTION_STATE_FAILED
 		};
 
-		if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _followGroups, "GoalGroupMove", _AI)) exitWith {
-			// If goals all agent goals completed then we shouldn't have got this far, as the garrison action
-			// checks its own criteria for completion.
-			// Therefore we reactivate to push out the goals again.
-			// This strategy could be revisited if it doesn't work well (i.e. just rely on the group goals to validate correctness)
-			ACTION_STATE_INACTIVE
+		if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", [_leadGroup], "GoalGroupMove", _AI)) exitWith {
+			ACTION_STATE_COMPLETED
 		};
 
 		ACTION_STATE_ACTIVE
