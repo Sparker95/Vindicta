@@ -58,6 +58,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonSurrender", "ActionGarrisonSurrender"] call AI_misc_fnc_setGoalPredefinedAction;
 
+["GoalGarrisonDefendPassive", "ActionGarrisonDefend"] call AI_misc_fnc_setGoalPredefinedAction;
+
 // ---- Action preconditions and effects ----
 
 // Repair all vehicles

@@ -34,7 +34,7 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 					pr _wp0 = currentWaypoint _hG; //  _wps#0;
 					pr _pos0 = waypointPosition (_wps#_wp0);
 
-					if (!(_pos0 isEqualTo [0, 0, 0])) then {
+					if (!isNil "_pos0" && {!(_pos0 isEqualTo [0, 0, 0])}) then {
 						{
 							_x setPos [_pos0#0 + random 10, _pos0#1 + random 10, 0];
 						} forEach units _hG;

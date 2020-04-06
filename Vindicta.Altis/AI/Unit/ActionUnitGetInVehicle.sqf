@@ -19,13 +19,13 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	VARIABLE("unitVeh");
 	VARIABLE("vehRole");
 	VARIABLE("turretPath");
-	
+
 	// Cargo index or turret path array
 	VARIABLE("chosenCargoSeat");
-	
+
 	// Time when unit is expected to get into vehicle
 	VARIABLE("ETA");
-	
+
 	// ------------ N E W ------------
 	/*
 	Method: new
@@ -61,8 +61,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			T_SETV("turretPath", _turretPath);
 		};
 	} ENDMETHOD;
-	
-	
+
 	/*
 	Method: assignVehicle
 	Description
@@ -171,7 +170,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		}; // switch
 		
 	} ENDMETHOD;
-	
+
 	/*
 	Method: seatOccupiedByAnother
 	Returns handle to current occupier of the desired seat, if it isn't us
@@ -263,8 +262,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		}; // switch
 		
 	} ENDMETHOD;
-	
-	
+
 	/*
 	Method: atAssignedSeat
 	Checks if the unit is currently at the assigned vehicle seat
@@ -333,8 +331,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			};
 		}; // switch
 	} ENDMETHOD;
-	
-	
+
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
@@ -378,23 +375,23 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			ACTION_STATE_FAILED
 		};
 	} ENDMETHOD;
-	
+
 	// logic to run each update-step
 	METHOD("process") {
 		params [P_THISOBJECT];
-		
+
 		pr _AI = T_GETV("AI");
 		pr _state = T_CALLM0("activateIfInactive");
-		
+
 		if (_state == ACTION_STATE_ACTIVE) then {
-			
+
 			pr _hVeh = T_GETV("hVeh");
 			pr _hO = T_GETV("hO");
 			pr _vehRole = T_GETV("vehRole");
 			pr _unitVeh = T_GETV("unitVeh");
-			
+
 			OOP_INFO_2("PROCESS: State is ACTIVE. Assigned vehicle: %1, role: %2", _unitVeh, _vehRole);
-			
+
 			// Check if the seat is occupied by someone else
 			pr _occupier = T_CALLM0("seatOccupiedByAnother");
 			if (!isNull _occupier) then {
@@ -402,41 +399,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				unassignVehicle _occupier;
 				[_occupier] allowGetIn false;
 				[_occupier] orderGetIn false;
-
-				// OOP_INFO_0("Seat is occupied");
-				// if (_vehRole == "CARGO") then {// If it's cargo seat, try to choose a new one
-				// 	pr _success = T_CALLM0("assignVehicle");
-				// 	if (_success) then {
-				// 		OOP_INFO_0("Assigned new seat");
-				// 		// Execute vehicle assignment
-				// 		CALLM0(_AI, "executeVehicleAssignment");
-				// 		// If the unit is already in the new vehicle, move him instantly
-				// 		if (vehicle _hO isEqualTo _hVeh) then {
-				// 			CALLM0(_AI, "moveInAssignedVehicle");
-				// 		} else {
-				// 			// Order get in
-				// 			[_hO] allowGetIn true;
-				// 			[_hO] orderGetIn true;
-				// 		};
-					
-				// 		T_SETV("state", ACTION_STATE_ACTIVE);
-				// 		// Return ACTIVE state
-				// 		ACTION_STATE_ACTIVE
-				// 	} else {
-				// 		// Failed to assign vehicle
-				// 		OOP_INFO_0("Failed to assign a new seat");
-				// 		T_SETV("state", ACTION_STATE_FAILED);
-				// 		ACTION_STATE_FAILED
-				// 	};
-				// } else {
-				// 	// Can't choose another driver or turret or gunner seat
-				// 	// Action is failed
-				// 	OOP_INFO_0("Failed to assign a new seat");
-				// 	T_SETV("state", ACTION_STATE_FAILED);
-				// 	ACTION_STATE_FAILED
-				// };
-			} else { // if seat is occupied
-
+			} else {
 				// Assigned seat is not occupied
 				OOP_INFO_0("Assigned seat is FREE");
 
@@ -461,8 +424,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						};
 						
 						// We're done here
-						T_SETV("state", ACTION_STATE_COMPLETED);
-						ACTION_STATE_COMPLETED
+						_state = ACTION_STATE_COMPLETED
 					} else {
 						OOP_INFO_0("Sitting at wrong seat. Changine seats.");
 						// We're in the right vehicle but at the wrong seat
@@ -470,10 +432,9 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						CALLM0(_AI, "moveInAssignedVehicle");
 						
 						// Wait until we are at proper place anyway
-						ACTION_STATE_ACTIVE
 						
 						// Fuck this shit, sometimes you can't move unit from one seat to another
-						//ACTION_STATE_COMPLETED
+						// _state = ACTION_STATE_COMPLETED
 					};
 				} else {
 					// If the unit is on foot now
@@ -500,29 +461,24 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						OOP_INFO_0("In WRONG vehicle. Getting out.");
 						doGetOut _hO;
 					};
-					
-					T_SETV("state", ACTION_STATE_ACTIVE);
-					ACTION_STATE_ACTIVE
 				};
 			}; // else
-		} else { // state == active
-			T_SETV("state", _state);
-			_state
 		};
+		T_SETV("state", _state);
+		_state
 	} ENDMETHOD;
 	
 	// logic to run when the goal is satisfied
 	METHOD("terminate") {
 		params [P_THISOBJECT];
-		
+
 		// If the action is active, unassign the unit from the vehicle
 		pr _state = T_GETV("state");
 		if (_state == ACTION_STATE_ACTIVE || _state == ACTION_STATE_FAILED) then {
 			pr _AI = T_GETV("AI");
 			CALLM0(_AI, "unassignVehicle");
 		};
-		
-		
+
 	} ENDMETHOD;
 
 ENDCLASS;

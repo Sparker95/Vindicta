@@ -157,21 +157,26 @@ CLASS("ActionUnitMove", "ActionUnit")
 
 		if(_existingWPIdx != NOT_FOUND) then {
 			private _currWP = (_existingWPs#_existingWPIdx);
-			if(_hO distance getWPPos _currWP < MOVE_WP_DIST) then {
-				private _nextPos = if(count _remainingRoute > 0) then {
-				 	_remainingRoute deleteAt 0
-				} else {
-					T_GETV("pos")
-				};
-				_currWP setWPPos ZERO_HEIGHT(_nextPos);
+			private _currWPPos = getWPPos _currWP;
+			private _newWPPos = +_currWPPos;
+			while{ count _remainingRoute > 0 && {_hO distance _newWPPos < MOVE_WP_DIST} } do {
+				_newWPPos = _remainingRoute deleteAt 0;
+				// _currWPPos = if(count _remainingRoute > 0) then {
+				//  	_remainingRoute deleteAt 0
+				// } else {
+				// 	T_GETV("pos")
+				// };
+			};
+			if(!(_currWPPos isEqualTo _newWPPos)) then {
+				_currWP setWPPos ZERO_HEIGHT(_newWPPos);
 				T_CALLM0("regroup");
 			};
 			if(!(_currWP isEqualTo currentWaypoint _hG)) then {
 				_hG setCurrentWaypoint _currWP;
 			};
-			for "_i" from 0 to _existingWPIdx-2 do {
-				deleteWaypoint [_hG, 0];
-			};
+			// for "_i" from 0 to _existingWPIdx-2 do {
+			// 	deleteWaypoint [_hG, 0];
+			// };
 		} else {
 			private _nextPos = if(count _remainingRoute > 0) then {
 				_remainingRoute deleteAt 0
