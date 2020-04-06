@@ -138,7 +138,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
-		pr _allocationFlags = [	SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
+		pr _allocationFlags = [	SPLIT_VALIDATE_ATTACK,
+								SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
 								SPLIT_VALIDATE_CREW_EXT];	// Ensure we provide enough crew to destination
 
 		private _needTransport = false;
@@ -184,7 +185,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		pr _requiredComp = [];
 		if(_sendAnOfficer) then {
 			// Lets send an officer as well!
-			_requiredComp = [[T_INF, T_INF_officer, 1]];
+			_requiredComp = [
+				[T_INF, T_INF_officer, 1]
+			];
 			// Any make sure we have some escort.
 			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
 		};
