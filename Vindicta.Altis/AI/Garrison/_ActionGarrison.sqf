@@ -25,7 +25,6 @@ CLASS("ActionGarrison", "Action")
 		T_SETV("replanOnCompositionChange", true);
 	} ENDMETHOD;
 
-
 	/* protected override */ METHOD("terminate") {
 		params [P_THISOBJECT];
 

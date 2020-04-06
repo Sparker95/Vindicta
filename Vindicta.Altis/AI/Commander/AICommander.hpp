@@ -116,11 +116,12 @@
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.
 // See Templates\initEfficiency.sqf to understand what these mean:
 //									 0  1  2  3  4  5  6  7  8  9  10 11 12 13
-#define EFF_MIN_EFF					[6, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-#define EFF_FOOT_PATROL_EFF			[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_MOUNTED_PATROL_EFF		[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+//									soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
+#define EFF_MIN_EFF					[6,		0,		0,		0,		6,		0,		0,		0,		0,		0,		0,		0,		0,		0]
+#define EFF_GARRISON_MIN_EFF		[12,	0,		0,		0,		12,		0,		0,		0,		0,		0,		0,		0,		0,		0]
+	
+#define EFF_FOOT_PATROL_EFF			[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		0]
+#define EFF_MOUNTED_PATROL_EFF		[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		0]
 
 // Frequency of reinforcements, etc
 
