@@ -17,11 +17,11 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _building = (_parameters select {_x select 0 == "building"}) select 0 select 1;
-		pr _posID = (_parameters select {_x select 0 == "posID"}) select 0 select 1;
-		
+		pr _building = CALLSM2("Action", "getParameterValue", _parameters, "building");
+		pr _posID = CALLSM2("Action", "getParameterValue", _parameters, "posID");
+
 		pr _pos = _building buildingPos _posID;
 		T_SETV("pos", _pos);
 		

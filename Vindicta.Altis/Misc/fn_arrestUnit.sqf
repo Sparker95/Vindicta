@@ -24,5 +24,5 @@ switch (_bool) do {
 
 		systemChat "Freeing unit.";
 
-	};	
+	};
 };

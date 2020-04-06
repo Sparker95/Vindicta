@@ -20,17 +20,20 @@ CLASS("ActionUnitSalute", "Action")
 
 	VARIABLE("target");
 	VARIABLE("activationTime");
-	VARIABLE("objectHandle");	
+	VARIABLE("objectHandle");
 	
 	// ------------ N E W ------------
 	// _target - whom to salute to
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
-		SETV(_thisObject, "target", _target);
-		pr _a = GETV(_AI, "agent"); // cache the object handle
-		pr _oh = CALLM(_a, "getObjectHandle", []);
-		SETV(_thisObject, "objectHandle", _oh);
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		T_SETV("target", _target);
+
+		pr _agent = GETV(_AI, "agent"); // cache the object handle
+		pr _hO = CALLM0(_agent, "getObjectHandle");
+		T_SETV("objectHandle", _hO);
 	} ENDMETHOD;
 	
 	METHOD("delete") {
@@ -38,18 +41,15 @@ CLASS("ActionUnitSalute", "Action")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
 
-		SETV(_thisObject, "activationTime", time);
+		T_SETV("activationTime", time);
 		
-		pr _oh = GETV(_thisObject, "objectHandle");
-		pr _target = GETV(_thisObject, "target");
+		pr _oh = T_GETV("objectHandle");
+		pr _target = T_GETV("target");
 		_oh setDir (_oh getDir _target);
 		_oh disableAI "MOVE";
 		_oh action ["salute", _oh];
@@ -57,7 +57,7 @@ CLASS("ActionUnitSalute", "Action")
 		
 		diag_log "Started saluting!";
 		
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		
 		// Create stimulus for other units
@@ -83,41 +83,41 @@ CLASS("ActionUnitSalute", "Action")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		diag_log "salute process was called!";
 		
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 		
 		// If action is not active now, do nothing
-		pr _state = GETV(_thisObject, "state");
+		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
 		
 		// Action is active
 		
 		// Check if we have been saluting for too long
-		pr _atime = GETV(_thisObject, "activationTime");
+		pr _atime = T_GETV("activationTime");
 		if (time - _atime < 4) exitWith { ACTION_STATE_ACTIVE };
 		
 		// If time has expired, terminate
 		diag_log "salute time expired!";
-		CALLM(_thisObject, "terminate", []);
-		SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
+		T_CALLM("terminate", []);
+		T_SETV("state", ACTION_STATE_COMPLETED);
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 	
 	// logic to run when the goal is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		diag_log "Terminating salute!";
 		
 		
-		pr _oh = GETV(_thisObject, "objectHandle");
+		pr _oh = T_GETV("objectHandle");
 		_oh enableAI "MOVE";
 		
 		// Stop the animations if the action is active
-		pr _state = GETV(_thisObject, "state");
+		pr _state = T_GETV("state");
 		if (_state == ACTION_STATE_ACTIVE) then {
 			_oh switchmove "AmovPercMstpSlowWrflDnon_SaluteOut";
 			//_oh action ["salute", _oh];
@@ -127,14 +127,14 @@ CLASS("ActionUnitSalute", "Action")
 			// Mark the world fact as irrelevant so that we don't salute again
 			pr _query = WF_NEW();
 			[_query, WF_TYPE_UNIT_SALUTED_BY] call wf_fnc_setType;
-			pr _AI = GETV(_thisObject, "AI");
+			pr _AI = T_GETV("AI");
 			pr _wf = CALLM(_AI, "findWorldFact", [_query]);
 			if (! (isNil "_wf")) then {
 				[_wf, 0] call wf_fnc_setRelevance;
 			};
 		};
 		
-		//SETV(_thisObject, "state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD; 
+		//T_SETV("state", ACTION_STATE_INACTIVE);
+	} ENDMETHOD;
 
 ENDCLASS;

@@ -90,8 +90,8 @@ _text ctrlSetPosition [666,0,1,0.05];//spawn it out of site
 _text ctrlCommit 0;
 _text ctrlSetStructuredText _structuredSentence;
 
-private _fadeTime = time + FLOAT_DISPLAYTIME; 
-private _removeTime = _fadeTime + FLOAT_FADE_OUT; 
+private _fadeTime = time + FLOAT_DISPLAYTIME;
+private _removeTime = _fadeTime + FLOAT_FADE_OUT;
 private _ctrl_sets = _display getvariable ["Dialog_text_ctrlSet" ,[]];
 _ctrl_sets pushBack [_icon, _text,_unit,_fadeTime,_removeTime];
 _display setvariable ["Dialog_text_ctrlSet" ,_ctrl_sets];

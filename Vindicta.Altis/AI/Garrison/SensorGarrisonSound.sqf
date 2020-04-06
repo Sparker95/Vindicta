@@ -32,14 +32,14 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	VARIABLE("soundSources");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		T_SETV("stimulation", 0);
 		T_SETV("timePrevUpdate", time);
 		T_SETV("soundSources", []);
 	} ENDMETHOD;
 
 	METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
@@ -126,7 +126,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("HANDLE STIMULUS: %1", _stimulus);
 
@@ -170,7 +170,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Bail if not spawned
 		// todo later despawned garrisons can also receive this stimulus, so that when they are spawned, they are already alert for instance
@@ -182,11 +182,8 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		// Return true only if garrison is NOT in combat state
 		// If in combat it makes no sense for us to hear gunshots any more
 		// If not in combat, and sensor gets overstimulated, garrison will switch to combat mode
-		pr _garAI = T_GETV("AI");
-		pr _ws = GETV(_garAI, "worldState");
-		pr _inCombat = [_ws, WSP_GAR_AWARE_OF_ENEMY] call ws_getPropertyValue;
-		
-		!_inCombat
+		pr _AI = T_GETV("AI");
+		!CALLM0(_AI, "isAlerted")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -196,7 +193,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		//params [ ["_thisObject", "", [""]]];
+		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
 	} ENDMETHOD;
 

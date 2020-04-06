@@ -18,33 +18,18 @@ Author: Sparker 05.08.2018
 
 CLASS("ActionCompositeSerial", "ActionComposite")
 
-	// ----------------------------------------------------------------------
-	// |                            P R O C E S S                           |
-	// ----------------------------------------------------------------------
-	/*
-	Method: process
-	If this composite action is not in failed state, it processes the front
-	action which is not completed byt calling processSubaction method.
-	You can override it to achieve custom behaviour.
-	
-	Returns: Number, current state, one of <ACTION_STATE>
-	*/
-	METHOD("process") {
-		params [["_thisObject", "", [""]]];
-		private _state = GETV(_thisObject, "state");
+	/* public override */ METHOD("process") {
+		params [P_THISOBJECT];
+		private _state = T_GETV("state");
 		if (_state != ACTION_STATE_FAILED) then {
-			_state = CALLM(_thisObject, "processSubactions", []);
+			_state = T_CALLM("processSubactions", []);
 		};
-		SETV(_thisObject, "state", _state);
+		T_SETV("state", _state);
 		
 		// Return state
 		_state
 	} ENDMETHOD;
-	
-	
-	// ----------------------------------------------------------------------
-	// |                    P R O C E S S   S U B G O A L S                 |
-	// ----------------------------------------------------------------------
+
 	/*
 	Method: processSubactions
 	Removes completed subactions from FRONT of the queue, then calls
@@ -52,9 +37,9 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	
 	Returns: Number, current state of the front most action, one of <ACTION_STATE>
 	*/
-	METHOD("processSubactions") {
-		params [["_thisObject", "", [""]]];
-		private _subactions = GETV(_thisObject, "subactions");
+	/* private */ METHOD("processSubactions") {
+		params [P_THISOBJECT];
+		private _subactions = T_GETV("subactions");
 		
 		private _state = ACTION_STATE_COMPLETED;
 		
@@ -63,6 +48,8 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 
 			private _subactionFront = _subactions select 0;
 			_state = CALLM0(_subactionFront, "process");
+
+			CALLM1(_subactionFront, "setInstant", false);
 
 			OOP_INFO_2("Processed subaction: %1, state: %2", _subactionFront, _state);
 
@@ -78,15 +65,9 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		// return
 		_state
 	} ENDMETHOD;
-	
-	/*
-	Method: terminate
-	Calls "terminate" method of the front most action
-	
-	Returns: nil
-	*/
-	METHOD("terminate") {
-		params ["_thisObject"];
+
+	/* protected override */ METHOD("terminate") {
+		params [P_THISOBJECT];
 		pr _subactions = T_GETV("subactions");
 		
 		// If there are still subactions left, terminate the front one
@@ -95,28 +76,16 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 			CALLM0(_a, "terminate");
 		};
 	} ENDMETHOD;
-	
-	// ----------------------------------------------------------------------
-	// |                      H A N D L E   M E S S A G E                   |
-	// ----------------------------------------------------------------------
-	/*
-	Method: handleMessage
-	Forwards the message to frontmost subaction
-	
-	Parameters: _msg
-	
-	_msg - <Message>
-	
-	Returns: Bool, true if message was handled
-	*/
-	METHOD("handleMessage") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+
+	/* public override */ METHOD("handleMessage") {
+		params [P_THISOBJECT, P_ARRAY("_msg") ];
+
 		// Forward the message to base class Action message handler
 		private _msgHandled = CALL_CLASS_METHOD("Action", _thisObject, "handleMessage", [_msg]);
 		// Did the default handler handle the message?
 		if (!_msgHandled) then {
 			// Forward the message to the frond subaction
-			_msgHandled = CALLM(_thisObject, "forwardMessageToFrontSubaction", [_msg]);
+			_msgHandled = T_CALLM("forwardMessageToFrontSubaction", [_msg]);
 		} else {
 			// That was a strange message!
 			_msgHandled = false; // message not handled
@@ -124,9 +93,6 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		_msgHandled // return
 	} ENDMETHOD;
 	
-	// -----------------------------------------------------------------------------------------------
-	//                F O R W A R D   M E S S A G E   T O   F R O N T   S U B G O A L
-	// -----------------------------------------------------------------------------------------------
 	/*
 	Method: forwardMessageToFrontSubaction
 	passes the message to the action at the front of the queue
@@ -137,56 +103,35 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		
 	Returns: Bool, true if message was handled
 	*/
-	METHOD("forwardMessageToFrontSubaction") {
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
-		private _subactions = GETV(_thisObject, "subactions");
+	/* private */ METHOD("forwardMessageToFrontSubaction") {
+		params [P_THISOBJECT, P_ARRAY("_msg") ];
+		private _subactions = T_GETV("subactions");
 		private _subactionFront = _subactions select 0;
 		private _msgHandled = CALLM(_subactionFront, "handleMessage", [_msg]);
 		_msgHandled
 	} ENDMETHOD;
-	
-	
-	
-	/*
-	Method: handleGroupsAdded
-	Calls the same method of the front most action.
-	*/
-	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-		private _subactions = GETV(_thisObject, "subactions");
+
+	/* public override */ METHOD("handleGroupsAdded") {
+		params [P_THISOBJECT, P_ARRAY("_groups")];
+		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleGroupsAdded", _groups);
 	} ENDMETHOD;
 
-
-	/*
-	Method: handleGroupsRemoved
-	Calls the same method of the front most action.
-	*/
-	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-		private _subactions = GETV(_thisObject, "subactions");		
+	/* public override */ METHOD("handleGroupsRemoved") {
+		params [P_THISOBJECT, P_ARRAY("_groups")];
+		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleGroupsRemoved", _groups);
 	} ENDMETHOD;
-	
-	/*
-	Method: handleUnitsAdded
-	Calls the same method of the front most action.
-	*/
-	
-	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		private _subactions = GETV(_thisObject, "subactions");		
+
+	/* public override */ METHOD("handleUnitsAdded") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleUnitsAdded", _units);
 	} ENDMETHOD;
-	
-	/*
-	Method: handleUnitsRemoved
-	Calls the same method of the front most action.
-	*/
-	
-	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		private _subactions = GETV(_thisObject, "subactions");		
+
+	/* public override */ METHOD("handleUnitsRemoved") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
 	} ENDMETHOD;
 	

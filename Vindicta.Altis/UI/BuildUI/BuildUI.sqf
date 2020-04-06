@@ -231,7 +231,7 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT, P_NUMBER("_source")];
 		pr _thisObject = g_BuildUI;
 		if (isNil "_thisObject") exitWith {};
-		CALLM1(_thisObject, "openUI", _source);
+		T_CALLM1("openUI", _source);
 	} ENDMETHOD;
 
 	METHOD("UIFrameUpdate") {
@@ -242,9 +242,9 @@ CLASS("BuildUI", "")
 		pr _tooltipRobotoBold = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedBold'>%2</t>";
 		pr _tooltipRobotoLight = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedLight'> %2</t>";
 		pr _tooltipSeparator = (format[_tooltipRobotoBold, _colorTooltip, "    |    "]);
-		pr _tooltipBuild = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Build/Place"]); 
-		pr _tooltipPickup = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Pick up highlighted object"]); 
-		pr _tooltipBuildItemCat = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Select current object"]); 
+		pr _tooltipBuild = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Build/Place"]);
+		pr _tooltipPickup = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Pick up highlighted object"]);
+		pr _tooltipBuildItemCat = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Select current object"]);
 		pr _tooltipCloseMenu = (format[_tooltipRobotoBold, _colorTooltip, "BACKSPACE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Close menu"]);
 		pr _tooltipCancelPlace = (format[_tooltipRobotoBold, _colorTooltip, "BACKSPACE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Cancel placement"]);
 		pr _tooltipRotate = (format[_tooltipRobotoBold, _colorTooltip, "Q and E:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Rotate object"]);
@@ -375,25 +375,25 @@ CLASS("BuildUI", "")
 			case DIK_UP: { 
 				if !(T_GETV("isMovingObjects")) then {
 					playSound ["clicksoft", false];
-					T_CALLM0("openItems"); true; 
+					T_CALLM0("openItems"); true;
 				};
 			};
 
 			case DIK_DOWN: { 
 				playSound ["clicksoft", false];
-				T_CALLM0("closeItems"); true; 
+				T_CALLM0("closeItems"); true;
 			};
 
 			case DIK_LEFT: { 
 				playSound ["clicksoft", false];
-				T_CALLM1("navLR", -1); 
-				true; 
+				T_CALLM1("navLR", -1);
+				true;
 			};
 
 			case DIK_RIGHT: { 
 				playSound ["clicksoft", false];
 				T_CALLM1("navLR", 1);
-				true; 
+				true;
 			};
 
 			// close build menu
@@ -402,9 +402,9 @@ CLASS("BuildUI", "")
 				if(T_GETV("isMovingObjects")) then {
 					T_CALLM0("cancelMovingObjects");
 				} else {
-					T_CALLM0("closeUI"); 
+					T_CALLM0("closeUI");
 				};
-				true; 
+				true;
 			};
 
 			case DIK_DELETE: { 
@@ -439,7 +439,7 @@ CLASS("BuildUI", "")
 					pr _catClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
 					pr _objClasses = [];
 					{
-						_objClasses pushBack ("true" configClasses _x); 
+						_objClasses pushBack ("true" configClasses _x);
 					} forEach _catClasses;
 
 					pr _buildResCost = 0;
@@ -462,7 +462,7 @@ CLASS("BuildUI", "")
 					// *not the number of construction resource items, using buildResource (defined in CfgMagazines in the addon) to calculate here!*
 					if (_buildResCost > 0) then {
 
-						_refundBuildRes = _buildResCost/2; 
+						_refundBuildRes = _buildResCost/2;
 						if (_refundBuildRes <= 0) then { _refundBuildRes = 0; };
 
 						switch (_refundBuildRes) do {
@@ -483,7 +483,7 @@ CLASS("BuildUI", "")
 								
 								// you can unfortunately drop the object and close the buildUI before pressing either yes or no
 								if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
-								CALLM2(g_BuildUI, "demolishActiveObject", _objectToDelete, _refundBuildRes); 
+								CALLM2(g_BuildUI, "demolishActiveObject", _objectToDelete, _refundBuildRes);
 							},
 							[], {}];
 						NEW("DialogConfirmAction", _args);
@@ -624,16 +624,16 @@ CLASS("BuildUI", "")
 
 		if (_itemCatOpen) then { 
 			pr _currentItemID = T_GETV("currentItemID");
-			T_SETV("previousItemID", _currentItemID); 
-			T_SETV("animStartTime", time); 
-			T_SETV("animCompleteTime", time + 0.2); 
+			T_SETV("previousItemID", _currentItemID);
+			T_SETV("animStartTime", time);
+			T_SETV("animCompleteTime", time + 0.2);
 			// How many items in the currently selected category
 			pr _itemIndexSize = count ( "true" configClasses ( ( "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories") ) select _currentCatID) );
 
 			// Update the index and modulus to make it loop back around in both directions. https://stackoverflow.com/a/24093024
 			pr _newItemID = (_currentItemID + _num + _itemIndexSize) mod _itemIndexSize;
 
-			T_SETV("currentItemID", _newItemID); 
+			T_SETV("currentItemID", _newItemID);
 			T_CALLM("makeItemTexts", [_newItemID]);
 		} else {
 			T_SETV("TimeFadeIn", (time+(0.4)));
@@ -643,7 +643,7 @@ CLASS("BuildUI", "")
 			// Update the index and modulus to make it loop back around in both directions. https://stackoverflow.com/a/24093024
 			pr _newCatID = (_currentCatID + _num + _categoryIndexSize) mod _categoryIndexSize;
 
-			T_SETV("currentCatID", _newCatID); 
+			T_SETV("currentCatID", _newCatID);
 			T_CALLM("makeCatTexts", [_newCatID]);
 		};
 
@@ -655,20 +655,20 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT, "_currentCatID"];
 		OOP_INFO_0("'makeCatTexts' method called");
 
-		pr _UIarray = [_currentCatID-2, _currentCatID-1, _currentCatID, _currentCatID+1, _currentCatID+2]; 
+		pr _UIarray = [_currentCatID-2, _currentCatID-1, _currentCatID, _currentCatID+1, _currentCatID+2];
 		pr _return = [];
 
 		pr _categoryClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
 		pr _numCategories = count _categoryClasses;
 		{ 
 			if ((_x < 0) OR (_x > (_numCategories - 1))) then { 
-				_return pushBack ""; 
+				_return pushBack "";
 			} else {
 				_return pushBack (toUpper ( getText ( (_categoryClasses select _x) >> "displayName") ) );
 			};
-		} forEach _UIarray; 
+		} forEach _UIarray;
 
-		SETV(_thisObject, "UICatTexts", _return);
+		T_SETV("UICatTexts", _return);
 
 	} ENDMETHOD;
 
@@ -682,12 +682,12 @@ CLASS("BuildUI", "")
 		pr _itemCatClass = _categoryClasses select _currentCatID; // Class of current category
 		pr _objClasses = "true" configClasses _itemCatClass; // Array with object classes
 		pr _itemCatIndexSize = (count _objClasses) -1;
-		pr _UIarray = [_ItemID-2, _ItemID-1, _ItemID, _ItemID+1, _ItemID+2]; 
+		pr _UIarray = [_ItemID-2, _ItemID-1, _ItemID, _ItemID+1, _ItemID+2];
 		pr _return = [];
 
 		{ 
 			if ((_x < 0) OR (_x > _itemCatIndexSize)) then { 
-				_return pushBack ""; 
+				_return pushBack "";
 			} else {
 				pr _objClass = _objClasses select _x;
 				pr _objClassName = getText ( _objClass >> "className");
@@ -702,7 +702,7 @@ CLASS("BuildUI", "")
 				pr _str = format ["%1 [%2]", _itemName, _itemCost];
 				_return pushBack _str;
 			};
-		} forEach _UIarray; 
+		} forEach _UIarray;
 
 		T_SETV("UIItemTexts", _return);
 
@@ -824,7 +824,7 @@ CLASS("BuildUI", "")
 			OOP_INFO_1("Creating carousel item %1", _type);
 			pr _offs = _offsets select _i;
 			pr _newObj = _type createVehicleLocal (player modelToWorld _offs);
-			_newObj attachTo [player, _offs]; 
+			_newObj attachTo [player, _offs];
 			_newObj setDir _rotation;
 			_carouselObjects pushBack _newObj;
 		};
@@ -1256,7 +1256,7 @@ CLASS("BuildUI", "")
 				// create ground weapon holder and add build resources
 				pr _groundWeapHolder = "GroundWeaponHolder" createVehicle _posGroundWeapHolder;
 				_groundWeapHolder addMagazineCargoGlobal ["vin_build_res_0", (_refundBuildRes/10)]; // divide by 10 to get no. of items
-			}; 
+			};
 		};
 
 		T_SETV("activeObject", []);

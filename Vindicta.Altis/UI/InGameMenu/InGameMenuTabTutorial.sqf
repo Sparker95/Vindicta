@@ -35,8 +35,8 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 		// populate listnbox with headline names
 		{ 
 			// _forEachIndex + 1: ignore base class
-			pr _objClassName = (configName (("true" configClasses (missionConfigFile >> "TutorialPages")) select (_forEachIndex + 1))); 
-			_listnbox lnbAddRow [(getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "textHeadline"))]; 
+			pr _objClassName = (configName (("true" configClasses (missionConfigFile >> "TutorialPages")) select (_forEachIndex + 1)));
+			_listnbox lnbAddRow [(getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "textHeadline"))];
 		} forEach("configName (inheritsFrom _x) == 'TutBasePage'" configClasses (missionConfigFile >> "TutorialPages"));
 		// We must omit the base class
 
@@ -58,10 +58,10 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 		if (_index <= -1) exitWith {};
 
 		// get values from tutorial pages config
-		pr _objClassName = (configName (("true" configClasses (missionConfigFile >> "TutorialPages")) select (_index + 1))); 
-		pr _headlineText = (getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "textHeadline")); 
+		pr _objClassName = (configName (("true" configClasses (missionConfigFile >> "TutorialPages")) select (_index + 1)));
+		pr _headlineText = (getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "textHeadline"));
 		pr _text = (getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "text"));
-		pr _imagePath = (getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "imagePath")); 
+		pr _imagePath = (getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "imagePath"));
 
 		// set headline and text on control
 		pr _headlineTextCtrl = T_CALLM1("findControl", "TAB_TUT_HEADLINE");
@@ -72,7 +72,7 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 
 		// set image path, uses default image if no image is specified
 		pr _imageCtrl = T_CALLM1("findControl", "TAB_TUT_PICTURE");
-		_imageCtrl ctrlSetText _imagePath; 
+		_imageCtrl ctrlSetText _imagePath;
 
 	} ENDMETHOD;
 

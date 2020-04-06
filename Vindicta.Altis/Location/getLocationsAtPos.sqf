@@ -18,7 +18,7 @@ Author: Sparker 08 June 2019
 
 #define pr private
 
-params [ ["_thisClass", "", [""]], ["_pos", [], [objNull, []]], ["_locations", []]];
+params [P_THISCLASS, ["_pos", [], [objNull, []]], ["_locations", []]];
 
 pr _locsToCheck = if (count _locations > 0) then {_locations} else {GETSV("Location", "all")};
 

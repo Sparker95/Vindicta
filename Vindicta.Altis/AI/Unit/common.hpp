@@ -19,3 +19,4 @@
 #include "..\targetStruct.hpp"
 #include "unitWorldStateProperties.hpp"
 #include "vehicleRoles.hpp"
+#include "..\goalRelevance.hpp"

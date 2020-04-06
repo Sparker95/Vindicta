@@ -15,7 +15,7 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI") ];
 		
 		OOP_INFO_0("NEW");
 		
@@ -31,23 +31,9 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
-		
-		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
+		params [P_THISOBJECT];
 
-		OOP_INFO_0("ACTIVATE");
-		
-		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
-
-		pr _hO = GETV(_thisObject, "hO");
+		pr _hO = T_GETV("hO");
 		
 		pr _state = ACTION_STATE_ACTIVE;
 		if (! ([_hO] call misc_fnc_isVehicleFlipped)) then {
@@ -61,18 +47,18 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("PROCESS");
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 		
 			pr _time = T_GETV("time");
 			if (time - _time > 4) then { // Make sure enough time has passed between process calls
 				
-				pr _hO = GETV(_thisObject, "hO");
+				pr _hO = T_GETV("hO");
 				if ([_hO] call misc_fnc_isVehicleFlipped) then {
 					pr _counter = T_GETV("counter");
 					if (_counter > 1) then {
@@ -97,14 +83,14 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 						// Increase the torque if this one doesn't help
 						T_SETV("torque", -3*_torque);
 					};
-					T_SETV("counter", _counter + 1);	
+					T_SETV("counter", _counter + 1);
 				} else {
 					// We have flipped the vehicle!
 					_state = ACTION_STATE_COMPLETED;
 				};
 				
 				T_SETV("time", time);
-			};			
+			};
 		};
 		
 		T_SETV("state", _state);
@@ -113,7 +99,7 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 	
 	// logic to run when the goal is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
-	} ENDMETHOD; 
+		params [P_THISOBJECT];
+	} ENDMETHOD;
 
 ENDCLASS;

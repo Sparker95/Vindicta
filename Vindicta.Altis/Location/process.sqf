@@ -36,7 +36,7 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin < _dstSpawn) then {
 			OOP_INFO_0("Spawning...");
 
-			CALLM0(_thisObject, "spawn");
+			T_CALLM0("spawn");
 
 			// Set timer interval
 			CALLM1(_timer, "setInterval", 7);
@@ -59,7 +59,7 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin > (_dstSpawn + 100)) then {
 			OOP_INFO_0("Despawning...");
 			
-			CALLM0(_thisObject, "despawn");
+			T_CALLM0("despawn");
 
 			T_SETV("spawned", false);
 			T_SETV("hasPlayers", false);
@@ -74,7 +74,7 @@ switch (T_GETV("spawned")) do {
 			} else {
 				T_SETV("hasPlayers", false);
 				T_GETV("hasPlayerSides") resize 0;
-			};			
+			};
 		};
 	}; // case 1
 }; // switch spawn state

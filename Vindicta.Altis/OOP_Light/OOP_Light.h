@@ -73,11 +73,13 @@
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #define OOP_ASSERT
 #define OOP_ASSERT_ACCESS
-//#undef OOP_DEBUG
+#undef OOP_DEBUG
 #undef OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
 #undef OOP_PROFILE
+#undef UNIT_ALLOCATOR_DEBUG
+#undef DEBUG_GOAL_MARKERS
 
 #define TIME_NOW 0
 #define DATE_NOW [0,0,0,0,0]
@@ -188,6 +190,7 @@
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
+#define P_GROUP(paramNameStr) [paramNameStr, grpNull, [grpNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
 #define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
@@ -439,7 +442,13 @@
 #define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
 
 // Call an overidden method from the overriding method.
-#define T_CALLCM(classNameStr, methodNameStr, extraParams) ([_thisObject]+extraParams call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM (classNameStr, methodNameStr, extraParams) 	([_thisObject]+extraParams 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM0(classNameStr, methodNameStr) 					([_thisObject] 					call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM1(classNameStr, methodNameStr, a) 				([_thisObject, a] 				call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM2(classNameStr, methodNameStr, a, b) 			([_thisObject, a, b] 			call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM3(classNameStr, methodNameStr, a, b, c) 		([_thisObject, a, b, c] 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM4(classNameStr, methodNameStr, a, b, c, d) 		([_thisObject, a, b, c, d] 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM5(classNameStr, methodNameStr, a, b, c, d, e) 	([_thisObject, a, b, c, d, e] 	call GET_METHOD(classNameStr, methodNameStr))
 
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
 #define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
@@ -491,12 +500,12 @@
 #ifdef OOP_ASSERT
 #define VARIABLE_ATTR(varNameStr, attributes) \
 	if(!((varNameStr) in [OOP_PARENT_STR, OOP_PUBLIC_STR]) && (_oop_memList findIf { (_x select 0) isEqualTo (varNameStr) } != NOT_FOUND)) then { \
-		OOP_ERROR_2("Class %1 is hiding variable %2 in parent", _oop_classNameStr, varNameStr); \
+		OOP_ERROR_2("Class %1 is hiding variable '%2' in parent", _oop_classNameStr, varNameStr); \
 	}; \
 	_oop_memList pushBackUnique [varNameStr, attributes]
 #define STATIC_VARIABLE_ATTR(varNameStr, attributes) \
 	if(_oop_staticMemList findIf { (_x select 0) isEqualTo (varNameStr) } != NOT_FOUND) then { \
-		OOP_ERROR_2("Class %1 is hiding static variable %2 in parent", _oop_classNameStr, varNameStr); \
+		OOP_ERROR_2("Class %1 is hiding static variable '%2' in parent", _oop_classNameStr, varNameStr); \
 	}; \
 	_oop_staticMemList pushBackUnique [varNameStr, attributes]
 #else
@@ -755,7 +764,6 @@
 
 #define CLASS(classNameStr, baseClassNames) \
 call { \
-diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNames]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
 private _oop_memList = []; \
@@ -993,7 +1001,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 
 // If ofstream addon is globally enabled
 #ifdef OFSTREAM_ENABLE
-#define __OFSTREAM_OUT(fileName, text) ((ofstream_new fileName) ofstream_write(text))
+#define __OFSTREAM_OUT(fileName, text) ((ofstream_new (fileName)) ofstream_write(text))
 #define WRITE_CRITICAL(text) ((ofstream_new "Critical.rpt") ofstream_write(text))
 #else
 
@@ -1005,9 +1013,11 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define _OFSTREAM_FILE OFSTREAM_FILE
 
 #ifdef OFSTREAM_FILE
-#define WRITE_LOG(str) __OFSTREAM_OUT(OFSTREAM_FILE, str)
+#define WRITE_LOG(msg) __OFSTREAM_OUT(OFSTREAM_FILE, msg)
+#define WRITE_LOGF(file, msg) __OFSTREAM_OUT(file,  msg)
 #else
-#define WRITE_LOG(str) diag_log TEXT_ str
+#define WRITE_LOG(msg) diag_log TEXT_ msg
+#define WRITE_LOGF(file, msg) diag_log TEXT_ msg
 #endif
 
 #ifdef OOP_PROFILE
@@ -1104,6 +1114,26 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define OOP_DEBUG_4(str, a, b, c, d)
 #define OOP_DEBUG_5(str, a, b, c, d, e)
 #define OOP_DEBUG_6(str, a, b, c, d, e, f)
+#endif
+
+#ifdef OOP_LOGF
+#define OOP_LOGF_MSG(f, msg, a) private _o_str = format ([msg]+a); WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_0(f, msg) private _o_str = msg; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_1(f, msg, a) private _o_str = format [msg, a]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_2(f, msg, a, b) private _o_str = format [msg, a, b]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_3(f, msg, a, b, c) private _o_str = format [msg, a, b, c]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_4(f, msg, a, b, c, d) private _o_str = format [msg, a, b, c, d]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_5(f, msg, a, b, c, d, e) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_6(f, msg, a, b, c, d, e, f) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
+#else
+#define OOP_LOGF_MSG(f, msg, a)
+#define OOP_LOGF_0(f, msg)
+#define OOP_LOGF_1(f, msg, a)
+#define OOP_LOGF_2(f, msg, a, b)
+#define OOP_LOGF_3(f, msg, a, b, c)
+#define OOP_LOGF_4(f, msg, a, b, c, d)
+#define OOP_LOGF_5(f, msg, a, b, c, d, e)
+#define OOP_LOGF_6(f, msg, a, b, c, d, e, f)
 #endif
 
 // ----------------------------------------------------------------------

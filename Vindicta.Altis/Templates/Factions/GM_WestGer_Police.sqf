@@ -11,7 +11,7 @@
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									
+_array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tGM_WestGer_Police"]; // 							Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Cold war era, western Germany police."]; // 			Template display description

@@ -19,7 +19,7 @@ _display ctrlCreate ["LoadingScreenGroup", -1];
  if (! isNil "_versionStr") then {
 	private _text = format ["v%1", _versionStr];
 	_ctrl ctrlSetText _text;
- }; 
+ };
  
 
  

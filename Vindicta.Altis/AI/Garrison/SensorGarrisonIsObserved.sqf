@@ -19,7 +19,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 
 	/*
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 	*/
 	
@@ -31,7 +31,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		//diag_log "UPDATE";
 		

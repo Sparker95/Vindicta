@@ -12,31 +12,28 @@ Base action for movement. Has only activate, terminate, process implemented.
 CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	VARIABLE("pos");
-	VARIABLE("ETA");	
+	VARIABLE("ETA");
 	VARIABLE("tolerance"); // completion radius
 	VARIABLE("teleport"); // If true, unit will be teleported if ETA is exceeded
 	
 	// ------------ N E W ------------
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		T_SETV("tolerance", 1.0); // Default tolerance value
 
-		pr _teleport = CALLSM2("Action", "getParameterValue", _parameters, "teleport");
-		if (isNil "_teleport") then {
-			_teleport = false;
-		};
+		pr _teleport = CALLSM3("Action", "getParameterValue", _parameters, "teleport", false);
 		T_SETV("teleport", _teleport);
 		
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
+		if (_instant) then {
 			// Teleport the unit to where it needs to be
 			pr _hO = T_GETV("hO");
 			pr _pos = T_GETV("pos");
@@ -44,9 +41,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			doStop _hO;
 
 			// Set state
-			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
-
-			SETV(_AI, "new", false);
+			T_SETV("state", ACTION_STATE_COMPLETED);
 
 			// Return completed state
 			ACTION_STATE_COMPLETED
@@ -63,7 +58,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			T_SETV("ETA", _ETA);
 			
 			// Set state
-			SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+			T_SETV("state", ACTION_STATE_ACTIVE);
 			
 			// Return ACTIVE state
 			ACTION_STATE_ACTIVE
@@ -73,9 +68,9 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 		
@@ -113,7 +108,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 ENDCLASS;

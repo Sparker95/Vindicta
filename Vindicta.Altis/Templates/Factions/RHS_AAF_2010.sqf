@@ -80,7 +80,7 @@ _veh set [T_VEH_APC, ["rhsusf_m113d_usarmy_supply", "rhsusf_m113d_usarmy", "rhsu
 _veh set [T_VEH_MBT, ["rhs_t72ba_tv", "rhs_t72bb_tv"]];
 _veh set [T_VEH_MRLS, ["FGN_AAF_BM21"]];
 _veh set [T_VEH_SPA, ["rhs_2s1_tv"]];
-_veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]]; 
+_veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]];
 
 _veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
@@ -92,7 +92,7 @@ _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_D"]];
 _veh set [T_VEH_stat_mortar_light, ["RHS_M252_D"]];
 _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_D"]];
 
-_veh set [T_VEH_heli_light, ["rhs_uh1h_hidf", "RHS_MELB_H6M", "RHS_MELB_MH6M"]]; 
+_veh set [T_VEH_heli_light, ["rhs_uh1h_hidf", "RHS_MELB_H6M", "RHS_MELB_MH6M"]];
 _veh set [T_VEH_heli_heavy, ["rhs_uh1h_hidf_gunship", "RHS_MELB_AH6M"]];
 _veh set [T_VEH_heli_cargo, ["rhs_uh1h_hidf_unarmed"]];
 _veh set [T_VEH_heli_attack, ["RHS_Mi24V_vvs", "RHS_Mi24P_vvs"]];

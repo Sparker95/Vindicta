@@ -1,18 +1,6 @@
-#define OOP_INFO
-#define OOP_ERROR
-#define OOP_WARNING
-#define OOP_DEBUG
-#define OFSTREAM_FILE "ArrestAction.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\Action\Action.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\defineCommon.inc"
-#include "..\Stimulus\Stimulus.hpp"
-#include "..\WorldFact\WorldFact.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\worldFactTypes.hpp"
-#define IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD !(alive _target) || (animationState _target == "unconsciousoutprone") || (animationState _target == "unconsciousfacedown") || (animationState _target == "unconsciousfaceup") || (animationState _target == "unconsciousrevivedefault") || (animationState _target == "acts_aidlpsitmstpssurwnondnon_loop") || (animationState _target == "acts_aidlpsitmstpssurwnondnon01")
+#include "common.hpp"
+
+#define IS_ARRESTED_UNCONSCIOUS_DEAD(target) (!alive (target) || {animationState (target) in ["unconsciousoutprone", "unconsciousfacedown", "unconsciousfaceup", "unconsciousrevivedefault", "acts_aidlpsitmstpssurwnondnon_loop", "acts_aidlpsitmstpssurwnondnon01"]})
 
 /*
 Template of an Action class
@@ -33,10 +21,11 @@ CLASS("ActionUnitArrest", "Action")
 	VARIABLE("screamTime");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _a = GETV(_AI, "agent");
 		pr _captor = CALLM(_a, "getObjectHandle", []);
 		T_SETV("objectHandle", _captor);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		T_SETV("target", _target);
 		
 		//FSM
@@ -48,9 +37,9 @@ CLASS("ActionUnitArrest", "Action")
 	} ENDMETHOD;
 	
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		pr _captor = T_GETV("objectHandle");		
+		pr _captor = T_GETV("objectHandle");
 		_captor lockWP false;
 		_captor setSpeedMode "NORMAL";
 
@@ -63,9 +52,9 @@ CLASS("ActionUnitArrest", "Action")
 	} ENDMETHOD;
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		CALLM(_thisObject, "activateIfInactive", []);
+		T_CALLM("activateIfInactive", []);
 		
 		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
@@ -74,13 +63,13 @@ CLASS("ActionUnitArrest", "Action")
 		pr _target = T_GETV("target");
 
 		if (!(alive _captor) || (behaviour _captor == "COMBAT")) then {
-			//OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
+			//OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat.");
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 2);
 		};
 
-		if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) then {
-			//OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested."); 
+		if (IS_ARRESTED_UNCONSCIOUS_DEAD(_target)) then {
+			//OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested.");
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 3);
 		};
@@ -92,17 +81,17 @@ CLASS("ActionUnitArrest", "Action")
 			case 0: {
 				OOP_DEBUG_1("ActionUnitArrest: CATCH UP, Distance: %1", ((getPos _captor) distance (getPos _target)));
 
-				if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) exitWith {
+				if (IS_ARRESTED_UNCONSCIOUS_DEAD(_target)) exitWith {
 					T_SETV("state", ACTION_STATE_COMPLETED);
 					ACTION_STATE_COMPLETED
 				};
 
 				if (
 					getPos _captor distance getPos _target < MIN_ARREST_DIST && 
-					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
+					!IS_ARRESTED_UNCONSCIOUS_DEAD(_target) &&
 					random 4 <= 2
 				) then {
-					CALLSM1("ActionUnitArrest", "performArrest", _target);				
+					CALLSM1("ActionUnitArrest", "performArrest", _target);
 					T_SETV("stateMachine", 1);
 					breakTo "switch";
 				};
@@ -158,14 +147,14 @@ CLASS("ActionUnitArrest", "Action")
 									"STOP! Get on the fucking ground!",
 									"STOP! Get down on the ground!",
 									"DO NOT MOVE! Get down on the ground!"
-									]; 
+									];
 								} else {
 									_captor say "halt";
 									_sentence = selectRandom [
 									"HALT! Get on the fucking ground!",
 									"HALT! Get down on the ground!",
 									"DO NOT MOVE! Get down on the ground!"
-									]; 
+									];
 								};
 								
 								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
@@ -260,7 +249,7 @@ CLASS("ActionUnitArrest", "Action")
 			case 2: {
 				//OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP. Player will be made overt.");
 
-				CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);	
+				CALLSM2("ActionUnitArrest", "killArrestTarget", _target, _captor);
 
 				_state = ACTION_STATE_FAILED;
 			};
@@ -321,7 +310,7 @@ CLASS("ActionUnitArrest", "Action")
 				"HOSTILE!",
 				"SHOTS FIRED!",
 				"OPEN FIRE!"
-			]; 
+			];
 
 			[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
 
@@ -335,7 +324,7 @@ CLASS("ActionUnitArrest", "Action")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		terminate T_GETV("spawnHandle");
 		pr _captor = T_GETV("objectHandle");

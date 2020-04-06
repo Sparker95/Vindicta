@@ -20,7 +20,7 @@ Builds this location depending on its type
 
 #define pr private
 
-params ["_thisObject"];
+params [P_THISOBJECT];
 
 if (T_GETV("isBuilt")) exitWith {};
 

@@ -63,7 +63,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("planningEnabled");		// Bool, true enables planning
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent"), ["_side", WEST, [WEST]], P_OOP_OBJECT("_msgLoop")];
 		
 		OOP_INFO_1("Initializing Commander for side %1", str(_side));
 		
@@ -91,7 +91,7 @@ CLASS("AICommander", "AI")
 		T_SETV("stateStart", 0);
 		[_thisObject, _side] spawn {
 			scriptName "Commander Debug";
-			params ["_thisObject", "_side"];
+			params [P_THISOBJECT, "_side"];
 			private _pos = switch (_side) do {
 				case WEST: { [0, -1000, 0 ] };
 				case EAST: { [0, -1500, 0 ] };
@@ -150,11 +150,11 @@ CLASS("AICommander", "AI")
 		params [P_THISOBJECT];
 
 		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorLocation);
+		T_CALLM1("addSensor", _sensorLocation);
 		pr _sensorTargets = NEW("SensorCommanderTargets", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorTargets);
+		T_CALLM1("addSensor", _sensorTargets);
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		T_CALLM("addSensor", [_sensorCasualties]);
 	} ENDMETHOD;
 
 	METHOD("_initPlanActionGenerators") {
@@ -204,7 +204,7 @@ CLASS("AICommander", "AI")
 		FIX_LINE_NUMBERS()
 
 		// Update sensors
-		CALLM0(_thisObject, "updateSensors");
+		T_CALLM0("updateSensors");
 		
 		// U P D A T E   C L U S T E R S
 		#ifdef DEBUG_COMMANDER
@@ -364,7 +364,7 @@ CLASS("AICommander", "AI")
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			ASSERT_THREAD(_thisObject);
-			GETV(_thisObject, "cmdrStrategy")
+			T_GETV("cmdrStrategy")
 		} else {
 			gCmdrStrategyDefault
 		}
@@ -410,7 +410,7 @@ CLASS("AICommander", "AI")
 	// !!! _side parameter seems to be not used any more, need to delete it. We obviously update intel for our own side in this method.
 	// !!! _showNotifications also seems to not work any more
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		// OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 		// OOP_INFO_1("  Location type: %1", CALLM0(_loc, "getType"));
@@ -520,7 +520,7 @@ CLASS("AICommander", "AI")
 
 	// Creates a LocationData array from Location
 	METHOD("createIntelFromLocation") {
-		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_accuracyRadius", 0, [0]]];
+		params ["_thisClass", P_OOP_OBJECT("_loc"), P_NUMBER("_updateLevel"), P_NUMBER("_accuracyRadius")];
 		
 		CALLM0(gMessageLoopMain, "lock");
 
@@ -613,7 +613,7 @@ CLASS("AICommander", "AI")
 	// It's quite a temporary action for now.
 	// Later we needto redo it.
 	METHOD("getRandomIntelFromEnemy") {
-		params ["_thisObject", ["_clientOwner", 0]];
+		params [P_THISOBJECT, ["_clientOwner", 0]];
 
 		pr _commandersEnemy = [gAICommanderWest, gAICommanderEast, gAICommanderInd] - [_thisObject];
 
@@ -675,7 +675,7 @@ CLASS("AICommander", "AI")
 	// Thread safe
 	// Call it from a non-player-commander thread to reveal intel to the AICommander of player side
 	STATIC_METHOD("revealIntelToPlayerSide") {
-		params ["_thisClass", ["_item", "", [""]]];
+		params ["_thisClass", P_OOP_OBJECT("_item")];
 
 		// Make a clone of this intel item in our thread
 		pr _itemClone = CLONE(_item);
@@ -689,7 +689,7 @@ CLASS("AICommander", "AI")
 	// Handles stealing intel item which this commander doesn't own
 	// Temporary function to reveal stuff to players
 	METHOD("stealIntel") {
-		 params ["_thisObject", ["_item", "", [""]], P_OOP_OBJECT("_itemClone")];
+		 params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_OOP_OBJECT("_itemClone")];
 
 		// Bail if object is wrong
 		//if (!IS_OOP_OBJECT(_item)) exitWith { };
@@ -791,7 +791,7 @@ CLASS("AICommander", "AI")
 
 	// Gets called after player has analyzed up an inventory item with intel
 	METHOD("getIntelFromInventoryItem") {
-		params ["_thisObject", ["_baseClass", "", [""]], ["_ID", 0, [0]], ["_clientOwner", 0, [0]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_baseClass"), P_NUMBER("_ID"), P_NUMBER("_clientOwner")];
 
 		private _endl = toString [13,10];
 
@@ -1013,7 +1013,7 @@ CLASS("AICommander", "AI")
 	
 	// Generates a new target cluster ID
 	METHOD("getNewTargetClusterID") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		pr _nextID = T_GETV("nextClusterID");
 		T_SETV("nextClusterID", _nextID + 1);
 		_nextID
@@ -1029,7 +1029,7 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	METHOD("onTargetClusterCreated") {
-		params ["_thisObject", "_tcNew"];
+		params [P_THISOBJECT, "_tcNew"];
 		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _tcNew#TARGET_CLUSTER_ID_ID);
 
 		// Create intel for the new cluster, add it to intel db
@@ -1057,7 +1057,7 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	METHOD("onTargetClusterSplitted") {
-		params ["_thisObject", "_tcOld", "_tcsNew"];
+		params [P_THISOBJECT, "_tcOld", "_tcsNew"];
 		
 		pr _IDOld = _tcOld select TARGET_CLUSTER_ID_ID;
 		pr _a = _tcsNew apply {[_x select 0, _x select 1 select TARGET_CLUSTER_ID_ID]};
@@ -1093,7 +1093,7 @@ CLASS("AICommander", "AI")
 				_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
 			};
 		} forEach _tcsNew;
-	} ENDMETHOD;	
+	} ENDMETHOD;
 
 	/*
 	Method: onTargetClusterMerged
@@ -1107,7 +1107,7 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	METHOD("onTargetClustersMerged") {
-		params ["_thisObject", "_tcsOld", "_tcNew"];
+		params [P_THISOBJECT, "_tcsOld", "_tcNew"];
 
 		pr _IDnew = _tcNew select TARGET_CLUSTER_ID_ID;
 		pr _IDsOld = []; { _IDsOld pushBack (_x select TARGET_CLUSTER_ID_ID)} forEach _tcsOld;
@@ -1154,7 +1154,7 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	METHOD("onTargetClusterDeleted") {
-		params ["_thisObject", "_tc"];
+		params [P_THISOBJECT, "_tc"];
 		
 		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
 		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
@@ -1201,7 +1201,7 @@ CLASS("AICommander", "AI")
 	Returns: target cluster structure or [] if nothing was found
 	*/
 	METHOD("getTargetCluster") {
-		params ["_thisObject", ["_ID", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_ID")];
 		
 		pr _targetClusters = T_GETV("targetClusters");
 		pr _ret = [];
@@ -1347,7 +1347,7 @@ CLASS("AICommander", "AI")
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			CALLM2(_thisObject, "postMethodAsync", "_registerGarrison", [_gar]);
+			T_CALLM2("postMethodAsync", "_registerGarrison", [_gar]);
 		} else {
 			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
 		};
@@ -1662,7 +1662,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	// Thread unsafe, private
 	METHOD("_clientCreateGarrisonAction") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], P_STRING("_actionName")];
 
 		OOP_INFO_1("CLIENT CREATE GARRISON ACTION: %1", _this);
 
@@ -1912,7 +1912,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG _buildResAmount], _clientOwner, false);
 		};
 
-		CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
+		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+
 		// Need to do this *after* assigning a location as we don't want it to get destroyed
 		CALLM2(_gar, "postMethodAsync", "activate", []);
 
@@ -3370,7 +3371,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_SETV("state", "none");
 		T_SETV("stateStart", 0);
 		[_thisObject, T_GETV("side")] spawn {
-			params ["_thisObject", "_side"];
+			params [P_THISOBJECT, "_side"];
 			private _pos = switch (_side) do {
 				case WEST: { [0, -1000, 0 ] };
 				case EAST: { [0, -1500, 0 ] };

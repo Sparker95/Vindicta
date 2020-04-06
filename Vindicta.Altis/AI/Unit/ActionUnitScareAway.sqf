@@ -14,23 +14,23 @@ CLASS("ActionUnitScareAway", "Action")
 	VARIABLE("objectHandle");
 	VARIABLE("step");
 	VARIABLE("warningShotTarget");
-	// ------------ N E W ------------
-	// _target - whom to scare off
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		SETV(_thisObject,"step",0);
+		T_SETV("step",0);
+
+		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		
 		pr _laserT = createVehicle ["LaserTargetW", [0,0,0], [], 0, "NONE"];
 		_laserT attachto [_target, [0, 0, 3]];
-		SETV(_thisObject,"warningShotTarget",_laserT);
+		T_SETV("warningShotTarget",_laserT);
 		
 		//might want to move this to ActionUnit base class
-		SETV(_thisObject, "target", _target);
+		T_SETV("target", _target);
 		pr _a = GETV(_AI, "agent"); // cache the object handle
 		pr _oh = CALLM(_a, "getObjectHandle", []);
-		SETV(_thisObject, "objectHandle", _oh);
+		T_SETV("objectHandle", _oh);
 
 	} ENDMETHOD;
 	
@@ -39,16 +39,16 @@ CLASS("ActionUnitScareAway", "Action")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		OOP_DEBUG_0("active: Unit is pissed off!");
 		
 		//might what to move this to Action base class
-		SETV(_thisObject, "activationTime", time);
+		T_SETV("activationTime", time);
 		
-		pr _oh = GETV(_thisObject, "objectHandle");
-		pr _AI = GETV(_thisObject, "AI");
-		pr _target = GETV(_thisObject, "target");
+		pr _oh = T_GETV("objectHandle");
+		pr _AI = T_GETV("AI");
+		pr _target = T_GETV("target");
 		
 		group _oh setBehaviour "AWARE";
 		
@@ -63,7 +63,7 @@ CLASS("ActionUnitScareAway", "Action")
 		_oh doTarget _target;
 		group _oh setSpeedMode "LIMITED";
 		//might what to move this to Action base class
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);	
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -72,20 +72,20 @@ CLASS("ActionUnitScareAway", "Action")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		diag_log "scare away process was called!";
 		
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 		
 		// If action is not active now, do nothing
-		pr _state = GETV(_thisObject, "state");
+		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
 		
 		// Action is active
-		pr _oh = GETV(_thisObject, "objectHandle");
-		pr _AI = GETV(_thisObject, "AI");
-		pr _target = GETV(_thisObject, "target");
+		pr _oh = T_GETV("objectHandle");
+		pr _AI = T_GETV("AI");
+		pr _target = T_GETV("target");
 		
 		//get world fact because we need to know how pissed the unit is
 		pr _wf = WF_NEW();
@@ -93,8 +93,8 @@ CLASS("ActionUnitScareAway", "Action")
 		_wf = CALLM(_AI, "findWorldFact", [_wf]);
 		
 		if(isnil "_wf" || {_oh distance _target > 10})exitWith{
-			CALLM(_thisObject, "terminate", []);
-			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
+			T_CALLM("terminate", []);
+			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
 		
@@ -113,10 +113,10 @@ CLASS("ActionUnitScareAway", "Action")
 					_oh reveal _laserT;
 					_oh doTarget _laserT;
 					_oh forceWeaponFire [weaponState _oh select 1, weaponState _oh select 2];
-				};			
+				};
 
 				if(_step > 4)then{_oh doTarget _target; _oh doFire _target};
-				SETV(_thisObject,"step",_step + 1);
+				T_SETV("step",_step + 1);
 				
 			}
 		};//else only aim
@@ -129,7 +129,7 @@ CLASS("ActionUnitScareAway", "Action")
 	
 	// logic to run when the goal is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		diag_log "Terminating scaring civilian!";
 		
@@ -137,10 +137,10 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		
 		// Stop scaring if we are
-		pr _state = GETV(_thisObject, "state");
+		pr _state = T_GETV("state");
 		if (_state == ACTION_STATE_ACTIVE) then {
-			pr _oh = GETV(_thisObject, "objectHandle");
-			pr _target = GETV(_thisObject, "target");
+			pr _oh = T_GETV("objectHandle");
+			pr _target = T_GETV("target");
 			_oh forgetTarget _target;
 			_oh lookAt objNull; // Stop looking at your target
 			_oh doFollow (leader group _oh); // Regroup
@@ -151,6 +151,6 @@ CLASS("ActionUnitScareAway", "Action")
 			deleteVehicle _laserT;
 		};
 		
-	} ENDMETHOD; 
+	} ENDMETHOD;
 
 ENDCLASS;

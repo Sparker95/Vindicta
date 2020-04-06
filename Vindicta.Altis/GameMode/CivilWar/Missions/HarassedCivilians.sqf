@@ -186,5 +186,5 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 				}
 			};
 		};
-	} ENDMETHOD;	
+	} ENDMETHOD;
 ENDCLASS;

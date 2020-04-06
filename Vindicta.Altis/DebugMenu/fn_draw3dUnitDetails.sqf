@@ -152,10 +152,10 @@ if ((_debugDraw3D_Data select DRAW_3D_DEBUG_EH) == -1) then {
 						pr _txtStart = "<t shadow=2>";
 						pr _txtEnd = "</t>";
 
-						pr _currentAction = parseText format[_txtStart + "unitAction: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_UNIT_ACTION)];	
-						pr _currentGoal = parseText format[_txtStart + "unitGoal: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_UNIT_GOAL)];	
-						pr _currentGroupAction = parseText format[_txtStart + "groupAction: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_GROUP_ACTION)];	
-						pr _currentGroupGoal = parseText format[_txtStart + "groupGoal: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_GROUP_GOAL)];		
+						pr _currentAction = parseText format[_txtStart + "unitAction: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_UNIT_ACTION)];
+						pr _currentGoal = parseText format[_txtStart + "unitGoal: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_UNIT_GOAL)];
+						pr _currentGroupAction = parseText format[_txtStart + "groupAction: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_GROUP_ACTION)];
+						pr _currentGroupGoal = parseText format[_txtStart + "groupGoal: %1" + _txtEnd, (_unitData select DRAW_3D_UNITDATA_GROUP_GOAL)];
 						pr _currentTime = parseText format[_txtStart + "Update time: %1" + _txtEnd, time];
 
 						// create structured text _str = _currentAction + _currentGoal + _currentGroupAction + _currentGroupGoal + _currentTime;
@@ -180,7 +180,7 @@ if ((_debugDraw3D_Data select DRAW_3D_DEBUG_EH) == -1) then {
 					pr _control = (finddisplay 46) ctrlCreate ["RscStructuredText", _newIdc];
 
 					// store new control idc 
-					_idcs pushBackUnique _newIdc;									
+					_idcs pushBackUnique _newIdc;
 
 					_control ctrlSetStructuredText _str;
 					//_control ctrlSetFontHeight 0.048;

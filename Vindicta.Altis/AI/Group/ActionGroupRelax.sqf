@@ -6,28 +6,27 @@ Class: ActionGroup.ActionGroupRelax
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
-
 CLASS("ActionGroupRelax", "ActionGroup")
 	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI") ];
 
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
-		
+		params [P_THISOBJECT, P_BOOL("_instant")];
+
 		// Set behaviour
+		T_CALLM2("applyGroupBehaviour", "DIAMOND", "SAFE");
+		T_CALLM0("clearWaypoints");
+		T_CALLM0("regroup");
+
 		pr _AI = T_GETV("AI");
-		pr _hG = GETV(_thisObject, "hG");
-		_hG setBehaviour "SAFE";
-		{_x doFollow (leader _hG)} forEach (units _hG);
-		_hG setFormation "DIAMOND";
-		
+		pr _hG = T_GETV("hG");
+
 		// Find some random position at the location and go there
 		pr _group = GETV(T_GETV("AI"), "agent");
 		pr _type = CALLM0(_group, "getType");
@@ -64,13 +63,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 				_radius = 200 + random 150 ;
 			};
 		};
-		
-		// Delete all waypoints
-		while {(count (waypoints _hG)) > 0} do {
-			deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
-		};
 
-		if (random 10 < 5) then {
+		pr _activeWP = if (random 10 < 5) then {
 			// Give waipoints to the group
 			pr _i = 0;
 			pr _waypoints = []; // Array with waypoint IDs
@@ -97,7 +91,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			_wp setWaypointFormation "WEDGE";
 
 			// Set current waypoint
-			_hG setCurrentWaypoint (_waypoints select 0);
+			//_hG setCurrentWaypoint (_waypoints select 0);
+			_waypoints select 0
 		} else {
 
 			// Add a move waypoint
@@ -105,20 +100,26 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			_wp setWaypointType "MOVE";
 			_wp setWaypointFormation "DIAMOND";
 			_wp setWaypointBehaviour "SAFE";
-			_hG setCurrentWaypoint _wp;
+			//_hG setCurrentWaypoint _wp;
+			_wp
 		};
-
-
 
 		// Give a goal to units
 		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [], _AI);
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [[TAG_INSTANT ARG _instant]], _AI);
 		} forEach _units;
-		
+
+		if(_instant) then {
+			// Teleport to a random patrol waypoint
+			T_CALLM2("teleport", getWPPos _activeWP, _units);
+		};
+
+		_hG setCurrentWaypoint _activeWP;
+
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -127,11 +128,11 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		T_CALLM0("failIfEmpty");
 		
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE
@@ -139,7 +140,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete the goal to dismount vehicles
 		pr _group = GETV(T_GETV("AI"), "agent");

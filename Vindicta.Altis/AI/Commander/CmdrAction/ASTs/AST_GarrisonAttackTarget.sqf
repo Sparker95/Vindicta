@@ -265,7 +265,7 @@ ENDCLASS;
 // 		[T_CALLM1("createVariable", _target)]+
 // 		[T_CALLM1("createVariable", 200)]
 // 	);
-// 	CALLM(_thisObject, "apply", [_world])
+// 	T_CALLM("apply", [_world])
 // };
 
 // #define TARGET_POS [1, 2, 3]

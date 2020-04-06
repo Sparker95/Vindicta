@@ -30,7 +30,7 @@ player addAction ["", {vehicle player action ["CarBack",vehicle player]}, "", 0,
 JN_hideEmptyAction = {
     params ["_target","_caller","_id"];
     ((_this select 4) isEqualTo "");
-}; 
+};
 //ACE is using inGameUISetEventHandler and overwrites it. Need to find a fix for this
 inGameUISetEventHandler ["PrevAction", "_this call JN_hideEmptyAction;"];
 inGameUISetEventHandler ["NextAction", "_this call JN_hideEmptyAction;"];

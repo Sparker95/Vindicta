@@ -11,7 +11,7 @@ player addEventHandler ["InventoryOpened", {
 	
 	_h = _this spawn {
 		params ["_unit", "_container"];
-		disableSerialization; 
+		disableSerialization;
 		waitUntil { !(isNull (findDisplay 602)) };
 		_display = (findDisplay 602);
 		
@@ -101,7 +101,7 @@ player addEventHandler ["InventoryOpened", {
 		}];
 		
 		missionNamespace setVariable ["JN_event_Toolbox_id",_id];
-	}; 
+	};
 }];
 
 player addEventHandler ["InventoryClosed", { 

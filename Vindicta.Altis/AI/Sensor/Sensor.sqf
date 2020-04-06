@@ -31,12 +31,12 @@ CLASS("Sensor", "")
 	_AI - <AI> - derived object this sensor is attached to
 	*/
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
 		
 		PROFILER_COUNTER_INC("Sensor");
 		
-		SETV(_thisObject, "AI", _AI);
-		SETV(_thisObject, "timeNextUpdate", TIME_NOW+0.01); // Update this sensor ASAP, fix for sensors created at game start when TIME_NOW is zero
+		T_SETV("AI", _AI);
+		T_SETV("timeNextUpdate", TIME_NOW+0.01); // Update this sensor ASAP, fix for sensors created at game start when TIME_NOW is zero
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -44,7 +44,7 @@ CLASS("Sensor", "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_DEC("Sensor");
 		
@@ -66,7 +66,7 @@ CLASS("Sensor", "")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		//params [ ["_thisObject", "", [""]]];
+		//params [P_THISOBJECT];
 		0
 	} ENDMETHOD;
 	
@@ -77,6 +77,6 @@ CLASS("Sensor", "")
 	
 	/* virtual */ METHOD("getStimulusTypes") {
 		[]
-	} ENDMETHOD;	
+	} ENDMETHOD;
 	
 ENDCLASS;

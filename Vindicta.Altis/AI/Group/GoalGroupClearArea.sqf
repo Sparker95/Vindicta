@@ -14,33 +14,43 @@ CLASS("GoalGroupClearArea", "Goal")
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
 	STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
-		
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
 		pr _group = GETV(_AI, "agent");
 		pr _groupType = CALLM0(_group, "getType");
-		
-		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) exitWith {
-			pr _args = [_AI, _parameters];
-			pr _action = NEW("ActionGroupInfantryClearArea", _args);
+
+		// Infantry group will "clear area" by running around looking for enemies
+		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
+			pr _action = NEW("ActionGroupClearArea", [_AI ARG _parameters]);
 			_action
+		} else {
+			pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
+			// pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
+
+			pr _actionSerial = NEW("ActionCompositeSerial", [_AI]);
+
+			// Create action to get in vehicles
+			private _getInParams = [
+				["onlyCombat", true] // Only combat vehicle operators must stay in vehicles
+			];
+			CALLSM2("Action", "mergeParameterValues", _getInParams, _parameters);
+			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);
+			CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
+
+			// Start clear area from center, so move there first
+			pr _moveParams = [
+				[TAG_POS, _pos],
+				[TAG_MOVE_RADIUS, 75]
+			];
+			CALLSM2("Action", "mergeParameterValues", _moveParams, _parameters);
+			pr _actionMove = NEW("ActionGroupMove", [_AI ARG _moveParams]);
+			CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
+
+			pr _actionClear = NEW("ActionGroupClearArea", [_AI ARG _parameters]);
+			CALLM1(_actionSerial, "addSubactionToBack", _actionClear);
+
+			_actionSerial
 		};
-		
-		// Now it's one of the vehicle groups
-		pr _actionSerial = NEW("ActionCompositeSerial", [_AI]);
-		pr _args = [_AI, [["onlyCombat", true]] ]; // Only combat vehicle operators must stay in vehicles
-		
-		// Create action to get in vehicles
-		pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", _args);
-		
-		// Create action to move
-		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		pr _args = [_AI, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, 75]] ];
-		pr _actionMove = NEW("ActionGroupMoveGroundVehicles", _args);
-		
-		// Add actions
-		CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
-		CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
-		_actionSerial
 	} ENDMETHOD;
 
 ENDCLASS;

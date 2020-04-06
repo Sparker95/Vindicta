@@ -138,7 +138,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
-		pr _allocationFlags = [	SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
+		pr _allocationFlags = [	SPLIT_VALIDATE_ATTACK,
+								SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
 								SPLIT_VALIDATE_CREW_EXT];	// Ensure we provide enough crew to destination
 
 		private _needTransport = false;
@@ -184,7 +185,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		pr _requiredComp = [];
 		if(_sendAnOfficer) then {
 			// Lets send an officer as well!
-			_requiredComp = [[T_INF, T_INF_officer, 1]];
+			_requiredComp = [
+				[T_INF, T_INF_officer, 1]
+			];
 			// Any make sure we have some escort.
 			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
 		};
@@ -342,13 +345,13 @@ REGISTER_DEBUG_MARKER_STYLE("ReinforceCmdrAction", "ColorWhite", "mil_join");
 	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 
-	diag_log format ["Reinforce final score: %1", _finalScore];
+	//diag_log format ["Reinforce final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	CALLM(_thisObject, "applyToSim", [_world]);
+	T_CALLM("applyToSim", [_world]);
 	true
 	// ["Object exists", !(isNil "_class")] call test_Assert;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;

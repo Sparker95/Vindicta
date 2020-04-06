@@ -165,7 +165,7 @@ AST_MergeOrJoinTarget_test_fn = {
 		[CALLM1(_action, "createVariable", GETV(_garrison, "id"))]+
 		[CALLM1(_action, "createVariable", _target)]
 	);
-	CALLM(_thisObject, "apply", [_world])
+	T_CALLM("apply", [_world])
 };
 
 ["AST_MergeOrJoinTarget.apply(sim, garrison=dead)", {
