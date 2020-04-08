@@ -149,7 +149,7 @@ CLASS("AI", "MessageReceiverEx")
 		_sensors pushBackUnique _sensor;
 
 		// Check the stimulus types this sensor responds to
-		pr _stimTypesSensor = CALLM(_sensor, "getStimulusTypes", []);
+		pr _stimTypesSensor = CALLM0(_sensor, "getStimulusTypes");
 		pr _stimTypesThis = T_GETV("sensorStimulusTypes");
 		// Add the stimulus types to the stimulus type array
 		{
@@ -168,16 +168,16 @@ CLASS("AI", "MessageReceiverEx")
 		//OOP_INFO_1("Updating sensors: %1", _sensors);
 		{
 			pr _sensor = _x;
-			
+
 			// Update the sensor if it's time to update it
-			pr _interval = CALLM(_sensor, "getUpdateInterval", []); // If it returns 0, we never update it
+			pr _interval = CALLM0(_sensor, "getUpdateInterval"); // If it returns 0, we never update it
 			if (_interval > 0) then {
 				pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
 				//OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
 				if ((TIME_NOW > _timeNextUpdate) || _forceUpdate) then {
 					//OOP_INFO_0("  Calling UPDATE!");
 					//OOP_INFO_1("Updating sensor: %1", _sensor);
-					CALLM(_sensor, "update", []);
+					CALLM0(_sensor, "update");
 					SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
 				};
 			};
@@ -195,7 +195,7 @@ CLASS("AI", "MessageReceiverEx")
 		if (_type in T_GETV("sensorStimulusTypes")) then {
 			pr _sensors = T_GETV("sensors");
 			{
-				pr _stimTypes = CALLM(_x, "getStimulusTypes", []);
+				pr _stimTypes = CALLM0(_x, "getStimulusTypes");
 				if (_type in _stimTypes) then {
 					CALLM(_x, "stimulate", [_stimulus]);
 				};

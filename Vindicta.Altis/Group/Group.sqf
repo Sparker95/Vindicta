@@ -40,7 +40,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
+		params [P_THISOBJECT, ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_INF, [GROUP_TYPE_INF]]];
 		
 		PROFILER_COUNTER_INC(GROUP_CLASS_NAME);
 		
@@ -55,7 +55,6 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
 		T_SETV("data", _data);
 	} ENDMETHOD;
-
 
 	// |                            D E L E T E
 	/*
@@ -181,13 +180,14 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (T_CALLM0("isSpawned")) then {
 			// Make the unit join the actual group
 			pr _groupHandle = T_CALLM0("_createGroupHandle");
-			private _unitHandles = _unitsToMove apply { CALLM0(_x select 0, "getObjectHandle") };
+			private _unitsMoved = _unitsToMove apply { _x#0 };
+			private _unitHandles = _unitsMoved apply { CALLM0(_x, "getObjectHandle") };
 			_unitHandles join _groupHandle;
 
 			// If the target group is spawned, notify its AI object
 			private _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != NULL_OBJECT) then {
-				CALLM2(_AI, "postMethodSync", "handleUnitsAdded", [_unitsToMove]);
+				CALLM2(_AI, "postMethodSync", "handleUnitsAdded", [_unitsMoved]);
 			};
 		};
 
@@ -558,7 +558,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		// Set the garrison of all units in this group
 		private _units = _data select GROUP_DATA_ID_UNITS;
-		{ CALL_METHOD(_x, "setGarrison", [_garrison]); } forEach _units;
+		{ CALLM(_x, "setGarrison", [_garrison]); } forEach _units;
 	} ENDMETHOD;
 
 
@@ -730,10 +730,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			
 			{
 				private _unit = _x;
-				private _unitData = CALL_METHOD(_unit, "getMainData", []);
+				private _unitData = CALLM0(_unit, "getMainData");
 				private _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), P_STRING("_groupType")
-				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-				CALL_METHOD(_unit, "spawn", _posAndDir);
+				private _posAndDir = CALLM(_loc, "getSpawnPos", _args);
+				CALLM(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
 
 			// Select leader
@@ -913,17 +913,17 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _data = T_GETV("data");
 		if ((_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
-			if (_AI != "") then {
+			if (_AI != NULL_OBJECT) then {
 				// Switch off their brain
 				// We must safely delete the AI object because it might be currently used in its own thread
 				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
-				_data set [GROUP_DATA_ID_AI, ""];
+				_data set [GROUP_DATA_ID_AI, NULL_OBJECT];
 			};
 
 			// Despawn everything
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			{
-				CALL_METHOD(_x, "despawn", []);
+				CALLM0(_x, "despawn");
 			} forEach _groupUnits;
 
 			// Delete the group handle
@@ -1031,7 +1031,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Return only units which actually have an AI object (soldiers and drones)
 		/*
 		pr _return = _unitList select {
-			CALLM(_x, "isInfantry", [])
+			CALLM0(_x, "isInfantry")
 		};
 		*/
 		//_return
@@ -1307,8 +1307,23 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
-		// Load all units which we own
 		pr _data = T_GETV("data");
+
+		// SAVEBREAK >>> 
+		// Group types are consoldated to only INF, STATIC and VEH now, so remap loaded group types.
+		// We don't bump the version number as it isn't necessary for this change (although it isn't behaviourly backwards compatible it won't crash)
+		pr _newType = [
+		//	New type				//	Old type
+			GROUP_TYPE_INF,			//	GROUP_TYPE_IDLE
+			GROUP_TYPE_STATIC,		//	GROUP_TYPE_VEH_STATIC
+			GROUP_TYPE_VEH,			//	GROUP_TYPE_VEH_NON_STATIC
+			GROUP_TYPE_INF,			//	GROUP_TYPE_PATROL
+			GROUP_TYPE_INF			//	GROUP_TYPE_BUILDING_SENTRY
+		] select (_data#GROUP_DATA_ID_TYPE);
+		_data set [GROUP_DATA_ID_TYPE, _newType];
+		// <<< SAVEBREAK
+
+		// Load all units which we own
 		{
 			pr _unit = _x;
 			CALLM1(_storage, "load", _unit);

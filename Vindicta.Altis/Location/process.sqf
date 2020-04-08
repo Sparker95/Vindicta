@@ -8,7 +8,7 @@ params [P_THISOBJECT];
 ASSERT_THREAD(_thisObject);
 
 //get list of units that can spawn in civilian
-pr _units = CALL_METHOD(gLUAP, "getUnitArray", [CIVILIAN]);
+pr _units = CALLM(gLUAP, "getUnitArray", [CIVILIAN]);
 pr _thisPos = T_CALLM0("getPos");
 pr _dst = _units apply {_x distance _thisPos};
 pr _radius = T_GETV("boundingRadius");

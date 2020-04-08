@@ -31,7 +31,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 		_buildings sort false;
 		pr _AI = T_GETV("AI");
 		pr _groups = +CALLM0(_gar, "getGroups");
-		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
+		pr _groupsInf = _groups select { CALLM0(_x, "getType") == GROUP_TYPE_INF };
 
 		// Order to some groups to occupy buildings
 		pr _i = 0;
@@ -89,7 +89,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 			if (_groupAI != "") then {
 				pr _args = [];
 				switch (_type) do {
-					case GROUP_TYPE_IDLE: {
+					case GROUP_TYPE_INF: {
 						// We need at least two patrol groups
 						if (_nPatrolGroups < 2) then {
 							_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
@@ -104,7 +104,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 						};
 					};
 					
-					case GROUP_TYPE_VEH_STATIC: {
+					case GROUP_TYPE_STATIC: {
 						if (_atRoadblock) then {
 							// Get into vehicles at roadblocks
 							_args = ["GoalGroupGetInVehiclesAsCrew", 0, _extraParams, _AI];
@@ -113,21 +113,13 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 						};
 					};
 					
-					case GROUP_TYPE_VEH_NON_STATIC: {
+					case GROUP_TYPE_VEH: {
 						if (_atRoadblock) then {
 							// Get into vehicles at roadblocks
 							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _extraParams, _AI]; // Occupy only combat vehicles
 						} else {
 							_args = ["GoalGroupPatrol", 0, _extraParams, _AI]; // They will patrol next to their vehicles
 						};
-					};
-					
-					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
-					};
-
-					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
 					};
 				};
 				

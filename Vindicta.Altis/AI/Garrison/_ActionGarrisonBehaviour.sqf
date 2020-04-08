@@ -46,8 +46,8 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 			// Select groups which can be given this goal
 			// They must not be guarding/attempting to enter another building already
 			// They must not be assigned to one of the important buildings at this location
-			pr _freeGroups = _groups select {
-				if ( CALLM0(_x, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL] ) then {
+			pr _freeGroups = CALLM0(_gar, "getGroups") select {
+				if ( CALLM0(_x, "getType") == GROUP_TYPE_INF ) then {
 					pr _groupAI = CALLM0(_x, "getAI");
 					pr _goalState = CALLM2(_groupAI, "getExternalGoalActionState", "GoalGroupGetInBuilding", _AI);
 					OOP_INFO_2("   %1 goal state: %2", _groupAI, _goalState);

@@ -32,7 +32,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		pr _waypoints = [];
 		// Override behaviour for non-static vehicle groups
 		// They must walk around their vehicles
-		if (_type == GROUP_TYPE_VEH_NON_STATIC) then {
+		if (_type == GROUP_TYPE_VEH) then {
 			// Crew of vehicle groups stays around their vehicle
 			pr _vehUnits = CALLM0(_group, "getUnits") select {
 				CALLM0(_x, "isVehicle")

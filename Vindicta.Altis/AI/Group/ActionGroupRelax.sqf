@@ -35,7 +35,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		pr _useDefaultRandomPos = true;
 		pr _pos = [];
 		pr _radius = 10;
-		if (_type == GROUP_TYPE_VEH_NON_STATIC) then {
+		if (_type == GROUP_TYPE_VEH) then {
 			// Crew of vehicle groups stays aroudn their vehicle
 			pr _vehUnits = CALLM0(_group, "getUnits") select {
 				CALLM0(_x, "isVehicle")

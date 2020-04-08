@@ -8,7 +8,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrisonMoveBase")
 		private _AI = T_GETV("AI");
 		private _gar = T_GETV("gar");
 
-		private _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
+		private _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);
 		if (count _vehGroups > 1) exitWith {
 			OOP_WARNING_0("More than one vehicle group in the garrison!");
 			ACTION_STATE_FAILED
@@ -29,7 +29,7 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrisonMoveBase")
 		CALLM0(_gar, "detachFromLocation");
 
 		// Give goals to infantry groups
-		private _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
+		private _infGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_INF);
 		private _args = ["GoalGroupStayInVehicles", 0, [], _AI];
 		{
 			CALLM2(_x, "postMethodAsync", "addExternalGoal", _args);
@@ -38,18 +38,18 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrisonMoveBase")
 		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 
-	/* private override */ METHOD("checkMoveGoals") {
+	/* protected override */ METHOD("checkMoveGoals") {
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
 		private _AI = T_GETV("AI");
 
-		private _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
+		private _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);
 		if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMove", _AI)) exitWith {
 			ACTION_STATE_FAILED
 		};
 
-		private _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
+		private _infGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_INF);
 		if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _infGroups, "GoalGroupStayInVehicles", _AI)) exitWith {
 			ACTION_STATE_FAILED
 		};

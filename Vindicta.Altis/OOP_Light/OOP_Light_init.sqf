@@ -866,7 +866,7 @@ OOP_new = {
 		([_objNameStr] + _extraParams) call GET_METHOD((_oop_parents select _oop_i), "new");
 		_oop_i = _oop_i + 1;
 	};
-	CALL_METHOD(_objNameStr, "new", _extraParams);
+	CALLM(_objNameStr, "new", _extraParams);
 
 	PROFILER_COUNTER_INC(_classNameStr);
 
@@ -900,7 +900,7 @@ OOP_new_public = { // todo implement namespace
 		([_objNameStr] + _extraParams) call GET_METHOD((_oop_parents select _oop_i), "new");
 		_oop_i = _oop_i + 1;
 	};
-	CALL_METHOD(_objNameStr, "new", _extraParams);
+	CALLM(_objNameStr, "new", _extraParams);
 
 	PROFILER_COUNTER_INC(_classNameStr);
 
@@ -929,7 +929,7 @@ OOP_clone = { // todo implement namespace
 
 	FORCE_SET_MEM(_newObjNameStr, OOP_PARENT_STR, _classNameStr);
 	
-	CALL_METHOD(_newObjNameStr, "copy", [_objNameStr]);
+	CALLM(_newObjNameStr, "copy", [_objNameStr]);
 
 	PROFILER_COUNTER_INC(_classNameStr);
 
@@ -1223,7 +1223,7 @@ OOP_delete = {
 	private _oop_i = _oop_parentCount - 1;
 	private _oop_namespace = GET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR);
 
-	CALL_METHOD(_objNameStr, "delete", []);
+	CALLM0(_objNameStr, "delete");
 	while {_oop_i > -1} do {
 		[_objNameStr] call GET_METHOD((_oop_parents select _oop_i), "delete");
 		_oop_i = _oop_i - 1;
@@ -1284,7 +1284,7 @@ CLASS("RefCounted", "")
 	METHOD("ref") {
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
-			T_PRVAR(refCount);
+			private _refCount = T_GETV("refCount");
 			_refCount = _refCount + 1;
 			//OOP_DEBUG_2("%1 refed to %2", _thisObject, _refCount);
 			T_SETV("refCount", _refCount);
@@ -1294,7 +1294,7 @@ CLASS("RefCounted", "")
 	METHOD("unref") {
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
-			T_PRVAR(refCount);
+			private _refCount = T_GETV("refCount");
 			_refCount = _refCount - 1;
 			//OOP_DEBUG_2("%1 unrefed to %2", _thisObject, _refCount);
 			if(_refCount <= 0) then {
@@ -1455,9 +1455,9 @@ ENDCLASS;
 ["OOP variable attributes", {
 	private _base = NEW("AttrTestBase1", []);
 
-	["valid default access", { CALLM(_base, "validDefaultAccessTest", []) }] call test_Assert;
-	["valid private access", { CALLM(_base, "validPrivateAccessTest", []) }] call test_Assert;
-	["valid get only access", { CALLM(_base, "validGetOnlyAccessTest", []) }] call test_Assert;
+	["valid default access", { CALLM0(_base, "validDefaultAccessTest") }] call test_Assert;
+	["valid private access", { CALLM0(_base, "validPrivateAccessTest") }] call test_Assert;
+	["valid get only access", { CALLM0(_base, "validGetOnlyAccessTest") }] call test_Assert;
 	["valid static private access", { CALLSM("AttrTestBase1", "validStaticPrivateAccessTest", [_base]) }] call test_Assert;
 
 	["valid external get only access", { GETV(_base, "var_get_only"); true }] call test_Assert;

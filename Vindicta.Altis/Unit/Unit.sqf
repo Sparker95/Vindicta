@@ -173,13 +173,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
 		if(_group != "") then {
-			CALL_METHOD(_group, "removeUnit", [_thisObject]);
+			CALLM(_group, "removeUnit", [_thisObject]);
 		};
 
 		// Remove this unit from its garrison
 		private _gar = _data select UNIT_DATA_ID_GARRISON;
 		if (_gar != "") then {
-			CALL_METHOD(_gar, "removeUnit", [_thisObject]);
+			CALLM(_gar, "removeUnit", [_thisObject]);
 		};
 
 		//Remove this unit from array with all units
@@ -326,7 +326,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				//Perform object creation
 				switch(_catID) do {
 					case T_INF: {
-						private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
+						private _groupHandle = CALLM0(_group, "getGroupHandle");
 						if (isNull _groupHandle) exitWith {
 							OOP_ERROR_1("Spawn: group handle is null (_data = %1)!", _data);
 							// Mark it as dead?
@@ -340,16 +340,17 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							_objectHandle = _groupHandle createUnit ["I_Protagonist_VR_F", _pos, [], 10, "FORM"];
 						};
 
-						// Delay showing the object (this will hopefully allow it to get teleported into position etc.)
-						_objectHandle allowDamage false;
-						_objectHandle hideObjectGlobal true;
-						_objectHandle stop true;
-						_objectHandle spawn {
-							sleep SHOW_DELAY;
-							_this allowDamage true;
-							_this hideObjectGlobal false;
-							_this stop false;
-						};
+						// Disabling this to keep things simpler (vehicle counterpart had to be disabled due to it potentially introducing more exposions on spawning)
+						// // Delay showing the object (this will hopefully allow it to get teleported into position etc.)
+						// _objectHandle allowDamage false;
+						// _objectHandle hideObjectGlobal true;
+						// _objectHandle stop true;
+						// _objectHandle spawn {
+						// 	sleep SHOW_DELAY;
+						// 	_this allowDamage true;
+						// 	_this hideObjectGlobal false;
+						// 	_this stop false;
+						// };
 
 						// Set loadout if requited
 						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
@@ -468,13 +469,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
 						};
 
-						_objectHandle allowDamage false;
-						_objectHandle hideObjectGlobal true;
-						_objectHandle spawn {
-							sleep SHOW_DELAY;
-							_this allowDamage true;
-							_this hideObjectGlobal false;
-						};
+						// Disabling this as it can cause intersections as other vehicles aren't detected during createVehicle
+						// _objectHandle allowDamage false;
+						// _objectHandle hideObjectGlobal true;
+						// _objectHandle spawn {
+						// 	sleep SHOW_DELAY;
+						// 	_this allowDamage true;
+						// 	_this hideObjectGlobal false;
+						// };
 
 						// _objectHandle allowDamage false;
 						// private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
@@ -716,7 +718,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	/* private */ METHOD("setInventory") {
 		params [P_THISOBJECT, P_ARRAY("_inventory")];
 
-		T_PRVAR(data);
+		private _data = T_GETV("data");
 		private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if(!(isNull _hO)) then {
 			CALLSM2("Unit", "_setRealInventory", _hO, _inventory);
@@ -736,7 +738,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	/* private */ METHOD("addToInventory") {
 		params [P_THISOBJECT, P_ARRAY("_inventory")];
 
-		T_PRVAR(data);
+		private _data = T_GETV("data");
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if(!(isNull _hO)) then {
 			CALLSM2("Unit", "_addToRealInventory", _hO, +_inventory);
@@ -769,7 +771,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	/* private */ METHOD("restoreInventory") {
 		params [P_THISOBJECT];
-		T_PRVAR(data);
+		private _data = T_GETV("data");
 
 		// Bail if not spawned
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
@@ -843,7 +845,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	METHOD("saveInventory") {
 		params [P_THISOBJECT];
-		T_PRVAR(data);
+		private _data = T_GETV("data");
 
 		// Bail if not spawned
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1331,7 +1333,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 
 			//private _group = _data select UNIT_DATA_ID_GROUP;
-			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
+			//if (_group != "") then { CALLM(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
 			OOP_ERROR_0("Already despawned");

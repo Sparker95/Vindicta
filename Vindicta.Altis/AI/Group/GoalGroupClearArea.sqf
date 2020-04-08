@@ -20,7 +20,7 @@ CLASS("GoalGroupClearArea", "Goal")
 		pr _groupType = CALLM0(_group, "getType");
 
 		// Infantry group will "clear area" by running around looking for enemies
-		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
+		if (_groupType == GROUP_TYPE_INF) then {
 			pr _action = NEW("ActionGroupClearArea", [_AI ARG _parameters]);
 			_action
 		} else {

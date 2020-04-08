@@ -26,7 +26,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 		pr _AI = T_GETV("AI");
 		pr _mount = T_GETV("mount");
 		
-		pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
+		pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);
 		
 		// Do we need to mount or dismount?
 		pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInVehiclesAsCrew"] select T_GETV("mount");
@@ -65,7 +65,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 			pr _state = T_CALLM0("activateIfInactive");
 
 			if (_state == ACTION_STATE_ACTIVE) then {
-				pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
+				pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);
 				
 				// Do we need to mount or dismount?
 				pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInVehiclesAsCrew"] select T_GETV("mount");
@@ -87,57 +87,5 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 			_state
 		};
 	} ENDMETHOD;
-	
-	// // logic to run when the action is satisfied
-	// METHOD("terminate") {
-	// 	params [P_THISOBJECT];
-		
-	// 	// Bail if not spawned
-	// 	pr _gar = T_GETV("gar");
-	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {};
-
-
-	// 	pr _mount = T_GETV("mount");
-	// 	pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
-	// 	pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
-
-	// 	// Did we need to mount or dismount?
-	// 	if (_mount) then {
-	// 		{
-	// 			// Delete goal to mount vehicles
-	// 			pr _groupAI = CALLM0(_x, "getAI");
-	// 			pr _args = ["GoalGroupGetInVehiclesAsCrew", ""];
-	// 			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-	// 		} forEach _vehGroups;
-	// 	} else {
-	// 		// NYI
-	// 	};
-		
-	// } ENDMETHOD;
-
-	// // Handle units/groups added/removed
-	// METHOD("handleGroupsAdded") {
-	// 	params [P_THISOBJECT, P_ARRAY("_groups")];
-		
-	// 	T_SETV("state", ACTION_STATE_REPLAN);
-	// } ENDMETHOD;
-
-	// METHOD("handleGroupsRemoved") {
-	// 	params [P_THISOBJECT, P_ARRAY("_groups")];
-		
-	// 	T_SETV("state", ACTION_STATE_REPLAN);
-	// } ENDMETHOD;
-	
-	// METHOD("handleUnitsRemoved") {
-	// 	params [P_THISOBJECT, P_ARRAY("_units")];
-		
-	// 	T_SETV("state", ACTION_STATE_REPLAN);
-	// } ENDMETHOD;
-	
-	// METHOD("handleUnitsAdded") {
-	// 	params [P_THISOBJECT, P_ARRAY("_units")];
-		
-	// 	T_SETV("state", ACTION_STATE_REPLAN);
-	// } ENDMETHOD;
 
 ENDCLASS;

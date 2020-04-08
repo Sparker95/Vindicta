@@ -23,7 +23,7 @@ CLASS("ActionUnitArrest", "Action")
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _a = GETV(_AI, "agent");
-		pr _captor = CALLM(_a, "getObjectHandle", []);
+		pr _captor = CALLM0(_a, "getObjectHandle");
 		T_SETV("objectHandle", _captor);
 		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		T_SETV("target", _target);

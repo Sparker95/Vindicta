@@ -8,6 +8,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	VARIABLE("time");
 	VARIABLE("leadGroup");
 	VARIABLE("followGroups");
+	VARIABLE("maxSpeed");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
@@ -34,6 +35,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		} else {
 			T_SETV("radius", _radius);
 		};
+
+		private _maxSpeed = CALLSM3("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH, 100);
+		T_SETV("maxSpeed", _maxSpeed);
 
 		T_SETV("time", -1);
 
@@ -65,12 +69,12 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _AI = T_GETV("AI");
 		private _gar = T_GETV("gar");
 
-		private _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC ARG GROUP_TYPE_VEH_STATIC]);
+		private _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);
 		if (count _vehGroups > 1) exitWith {
 			OOP_WARNING_0("More than one vehicle group in the garrison!");
 			ACTION_STATE_FAILED
 		};
-		private _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
+		private _infGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_INF);
 		if(count _vehGroups == 0 && count _infGroups == 0) exitWith {
 			OOP_WARNING_0("No groups in the garrison!");
 			ACTION_STATE_FAILED
@@ -91,7 +95,8 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _args = ["GoalGroupMove", 0, [
 			[TAG_POS, _pos],
 			[TAG_MOVE_RADIUS, _radius],
-			[TAG_ROUTE, _route]
+			[TAG_ROUTE, _route],
+			[TAG_MAX_SPEED_KMH, T_GETV("maxSpeed")]
 		], _AI];
 		private _leadGroupAI = CALLM0(_leadGroup, "getAI");
 		CALLM2(_leadGroupAI, "postMethodAsync", "addExternalGoal", _args);
@@ -102,7 +107,8 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _prevGroup = _leadGroup;
 		{
 			private _args = ["GoalGroupFollow", 0, [
-				[TAG_TARGET, CALLM0(_prevGroup, "getGroupHandle")]
+				[TAG_TARGET, CALLM0(_prevGroup, "getGroupHandle")],
+				[TAG_MAX_SPEED_KMH, T_GETV("maxSpeed")]
 			], _AI];
 			private _groupAI = CALLM0(_x, "getAI");
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
@@ -178,8 +184,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _AI = T_GETV("AI");
 		private _garPos = CALLM0(_AI, "getPos");
 
+		private _posDest = T_GETV("pos");
+
 		// Succeed the action if the garrison is close enough to its destination
-		if (_garPos distance2D T_GETV("pos") <= T_GETV("radius")) exitWith {
+		if (_garPos distance2D _posDest <= T_GETV("radius")) exitWith {
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -219,18 +227,21 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 					CALLM0(_vr, "process");
 					CALLM0(_vr, "getPos")
 				} else {
-					
 					// Get a normalized vector heading towards destination
 					private _vectorDir = _garPos vectorFromTo _posDest;
 					private _vectorDist = _garPos distance _posDest;
 					_vectorDir = ZERO_HEIGHT(_vectorDir);
 
-					// Increase position
+					// Increase position (avoiding overshoot)
 					private _dt = TIME_NOW - T_GETV("time");
 					T_SETV("time", TIME_NOW);
 					_garPos vectorAdd (_vectorDir vectorMultiply MINIMUM(_dt*3, _vectorDist))
 				};
 				CALLM1(_AI, "setPos", _newPos);
+
+				if(_vr != NULL_OBJECT && { GETV(_vr, "complete") }) then {
+					_state = ACTION_STATE_COMPLETED;
+				};
 			};
 
 			T_SETV("state", _state);
@@ -283,7 +294,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		// Create a new virtual route
 		private _gar = T_GETV("gar");
 
-		private _side = CALLM(_gar, "getSide", []);
+		private _side = CALLM0(_gar, "getSide");
 		private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		private _threatCostFn = {
@@ -351,13 +362,13 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _garPos = CALLM0(_gar, "getPos");
 		{
 			private _unit = _x;
-			if (CALL_METHOD(_x, "getGroup", []) == "") then {
+			if (CALLM0(_x, "getGroup") == "") then {
 				private _className = CALLM0(_unit, "getClassName");
 
 				private _posAndDir = CALLSM3("Location", "findSafePos", _garPos, _className, 400);
 
 				// After a good place has been found, spawn it
-				CALL_METHOD(_unit, "spawn", _posAndDir);
+				CALLM(_unit, "spawn", _posAndDir);
 			};
 		} forEach _units;
 

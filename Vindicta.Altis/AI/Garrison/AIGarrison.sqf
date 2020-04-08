@@ -66,7 +66,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;
-		[_ws, WSP_GAR_VEHICLE_GROUPS_BALANCED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_GROUPS_BALANCED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_CLEARING_AREA, [0, 0, 0]] call ws_setPropertyValue;
 		[_ws, WSP_GAR_HAS_VEHICLES, false] call ws_setPropertyValue;
 		// Location
@@ -208,7 +208,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 		pr _text = format ["%1\%2\i%3v%4\%5\%6%7", _gar, _thisObject, CALLM0(_gar, "countInfantryUnits"), CALLM0(_gar, "countVehicleUnits"), T_GETV("currentGoal"), _action, _state];
 
-		// pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
+		// pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM0(_gar, "getEfficiencyMobile"), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
 		_mrk setMarkerText _text;
 		
 		// Set pos
@@ -308,8 +308,8 @@ CLASS("AIGarrison", "AI_GOAP")
 			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
 			// If timeNextUpdate is 0, we never update this sensor
 			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate)) then {
-				CALLM(_sensor, "update", []);
-				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
+				CALLM0(_sensor, "update");
+				pr _interval = CALLM0(_sensor, "getUpdateInterval");
 				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
 			};
 		};

@@ -274,7 +274,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		
 		//T_CALLM("updateEndCondition", []); // No need for it right now
 
-		T_PRVAR(lastUpdateTime);
+		private _lastUpdateTime = T_GETV("lastUpdateTime");
 		private _dt = 0 max (TIME_NOW - _lastUpdateTime) min 120; // It can be negative at start??
 		T_SETV("lastUpdateTime", TIME_NOW);
 
@@ -309,7 +309,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	METHOD("updatePhase") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(activeCities);
+		private _activeCities = T_GETV("activeCities");
 
 		pr _prog = T_CALLM0("getCampaignProgress");
 
@@ -431,7 +431,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
-		T_PRVAR(activeCities);
+		private _activeCities = T_GETV("activeCities");
 		if(_location in _activeCities) then {
 			private _cityData = GETV(_location, "gameModeData");
 			CALLM(_cityData, "spawned", [_location]);
@@ -442,7 +442,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("locationDespawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
-		T_PRVAR(activeCities);
+		private _activeCities = T_GETV("activeCities");
 		if(_location in _activeCities) then {
 			private _cityData = GETV(_location, "gameModeData");
 			CALLM(_cityData, "despawned", [_location]);
@@ -582,7 +582,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		OOP_INFO_MSG("Spawning %1", [_city]);
 
-		T_PRVAR(ambientMissions);
+		private _ambientMissions = T_GETV("ambientMissions");
 		private _pos = CALLM0(_city, "getPos");
 		private _radius = GETV(_city, "boundingRadius");
 
@@ -601,7 +601,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		OOP_INFO_MSG("Despawning %1", [_city]);
 
-		T_PRVAR(ambientMissions);
+		private _ambientMissions = T_GETV("ambientMissions");
 		{
 			DELETE(_x);
 		} forEach _ambientMissions;
@@ -611,8 +611,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_NUMBER("_dt")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
-		T_PRVAR(state);
-		T_PRVAR(instability);
+		private _state = T_GETV("state");
+		private _instability = T_GETV("instability");
 
 		private _cityPos = CALLM0(_city, "getPos");
 		private _cityRadius = (300 max GETV(_city, "boundingRadius")) min 700;
@@ -716,7 +716,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		} forEach _policeStations;
 
 		// Update our ambient missions
-		T_PRVAR(ambientMissions);
+		private _ambientMissions = T_GETV("ambientMissions");
 		{
 			CALLM(_x, "update", [_city]);
 		} forEach _ambientMissions;
@@ -733,7 +733,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 			ASSERT_OBJECT_CLASS(_city, "Location");
-			T_PRVAR(instability);
+			private _instability = T_GETV("instability");
 
 			private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
 
@@ -795,7 +795,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _return = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
-			T_PRVAR(mapUIInfo);
+			private _mapUIInfo = T_GETV("mapUIInfo");
 			_return = +_mapUIInfo;
 		};
 		_return
@@ -867,7 +867,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 		params [P_THISOBJECT, P_OOP_OBJECT("_policeStation"), P_NUMBER("_cityState")];
 		ASSERT_OBJECT_CLASS(_policeStation, "Location");
 
-		T_PRVAR(reinfGarrison);
+		private _reinfGarrison = T_GETV("reinfGarrison");
 		// If there is an active reinforcement garrison...
 		if(!IS_NULL_OBJECT(_reinfGarrison)) then {
 			// If reinf garrison arrived or died then we delete it
@@ -880,7 +880,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			// We need some way to reinforce police generally probably?
 			private _garrisons = CALLM1(_policeStation, "getGarrisons", ENEMY_SIDE);
 			// We only want to reinforce police stations still under our control
-			if (  (count _garrisons > 0) and  { CALLM(_garrisons select 0, "countInfantryUnits", []) <= 4 } ) then {
+			if (  (count _garrisons > 0) and  { CALLM0(_garrisons select 0, "countInfantryUnits") <= 4 } ) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				// If we liberated the city then we spawn police on our own side!
 				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
@@ -907,8 +907,8 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 					T_SETV_REF("reinfGarrison", _newGarrison);
 
 					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
-					CALLM(_newGarrison, "activateOutOfThread", []);
-					private _AI = CALLM(_newGarrison, "getAI", []);
+					CALLM0(_newGarrison, "activateOutOfThread");
+					private _AI = CALLM0(_newGarrison, "getAI");
 					// Send the garrison to join the police station location
 					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation], [TAG_MOVE_RADIUS, 100]], _thisObject];
 					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);

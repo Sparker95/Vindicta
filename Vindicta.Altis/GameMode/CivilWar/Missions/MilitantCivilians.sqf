@@ -450,7 +450,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 		{
 			deleteVehicle _x;
 		} forEach _activeCivs;
@@ -469,7 +469,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Check for dead civs
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 		{
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
@@ -553,7 +553,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Add new actions if required
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 
 		private _radius = GETV(_city, "boundingRadius");
 		private _cityData = GETV(_city, "gameModeData");

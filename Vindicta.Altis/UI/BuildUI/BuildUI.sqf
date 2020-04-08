@@ -323,9 +323,9 @@ CLASS("BuildUI", "")
 			T_CALLM0("updateCarouselOffsets");
 		};
 
-		T_PRVAR(lastFrameTime);
-		T_PRVAR(rotation);
-		T_PRVAR(targetRotation);
+		private _lastFrameTime = T_GETV("lastFrameTime");
+		private _rotation = T_GETV("rotation");
+		private _targetRotation = T_GETV("targetRotation");
 
 		pr _rotationVec = [1, _rotation, 0] call CBA_fnc_polar2vect;
 		pr _targetRotationVec = [1, _targetRotation, 0] call CBA_fnc_polar2vect;
@@ -543,7 +543,7 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("Removed display event handler!");
 
 		T_SETV("isMenuOpen", false);
-		T_PRVAR(playerEvents);
+		private _playerEvents = T_GETV("playerEvents");
 
 		player removeEventHandler["Dammaged", _playerEvents select 0];
 		player removeEventHandler["GetInMan", _playerEvents select 1];
@@ -557,7 +557,7 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT];
 		OOP_INFO_0("'handleActionKey' method called");
 
-		T_PRVAR(ItemCatOpen);
+		private _ItemCatOpen = T_GETV("ItemCatOpen");
 		OOP_INFO_1("'handleActionKey' %1", _ItemCatOpen);
 		if (_ItemCatOpen) then {
 			pr _currentClassName = T_CALLM0("currentClassname");
@@ -578,7 +578,7 @@ CLASS("BuildUI", "")
 	METHOD("rotate") {
 		params [P_THISOBJECT, "_amount"];
 		OOP_INFO_1("'rotate' method called _amount = %1", _amount);
-		T_PRVAR(targetRotation);
+		private _targetRotation = T_GETV("targetRotation");
 		T_SETV("targetRotation", _targetRotation + _amount);
 	} ENDMETHOD;
 
@@ -719,12 +719,12 @@ CLASS("BuildUI", "")
 	METHOD("currentClassname") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(ItemCatOpen);
+		private _ItemCatOpen = T_GETV("ItemCatOpen");
 		pr _return = "";
 		OOP_INFO_1("'currentClassname' %1", _ItemCatOpen);
 		if (_ItemCatOpen) then {
-			T_PRVAR(currentCatID);
-			T_PRVAR(currentItemID);
+			private _currentCatID = T_GETV("currentCatID");
+			private _currentItemID = T_GETV("currentItemID");
 			pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
 			pr _objClasses = "true" configClasses _catClass;
 			_return = getText ((_objClasses select _currentItemID) >> "className");
@@ -738,7 +738,7 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT];
 		OOP_INFO_0("'clearCarousel' method called");
 
-		T_PRVAR(carouselObjects);
+		private _carouselObjects = T_GETV("carouselObjects");
 		{
 			detach _x;
 			deleteVehicle _x;
@@ -750,8 +750,8 @@ CLASS("BuildUI", "")
 	METHOD("getCarouselOffsets") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(currentCatID);
-		T_PRVAR(currentItemID);
+		private _currentCatID = T_GETV("currentCatID");
+		private _currentItemID = T_GETV("currentItemID");
 
 		// How many items in the currently selected category
 		pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
@@ -760,9 +760,9 @@ CLASS("BuildUI", "")
 
 		pr _offsets = [];
 
-		T_PRVAR(animStartTime);
-		T_PRVAR(animCompleteTime);
-		T_PRVAR(previousItemID);
+		private _animStartTime = T_GETV("animStartTime");
+		private _animCompleteTime = T_GETV("animCompleteTime");
+		private _previousItemID = T_GETV("previousItemID");
 
 		pr _xtotal = 0;
 		pr _prevx = 0;
@@ -803,10 +803,10 @@ CLASS("BuildUI", "")
 
 		T_CALLM0("clearCarousel");
 
-		T_PRVAR(carouselObjects);
-		T_PRVAR(currentCatID);
-		T_PRVAR(ItemCatOpen);
-		T_PRVAR(rotation);
+		private _carouselObjects = T_GETV("carouselObjects");
+		private _currentCatID = T_GETV("currentCatID");
+		private _ItemCatOpen = T_GETV("ItemCatOpen");
+		private _rotation = T_GETV("rotation");
 
 		// If we aren't looking at items in a category then there is no carousel.
 		// TODO: maybe carousel could have the active selected item in each category.
@@ -833,10 +833,10 @@ CLASS("BuildUI", "")
 	METHOD("updateCarouselOffsets") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(carouselObjects);
-		T_PRVAR(currentCatID);
-		T_PRVAR(ItemCatOpen);
-		T_PRVAR(rotation);
+		private _carouselObjects = T_GETV("carouselObjects");
+		private _currentCatID = T_GETV("currentCatID");
+		private _ItemCatOpen = T_GETV("ItemCatOpen");
+		private _rotation = T_GETV("rotation");
 
 		if (!_ItemCatOpen) exitWith { [] };
 
@@ -891,7 +891,7 @@ CLASS("BuildUI", "")
 
 		if(T_GETV("isMovingObjects")) exitWith {};
 
-		T_PRVAR(activeObject);
+		private _activeObject = T_GETV("activeObject");
 
 		if(count _activeObject == 0 or {cursorObject != (_activeObject select 0)}) then {
 
@@ -997,7 +997,7 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT];
 		OOP_INFO_0("'exitMoveMode' method called");
 
-		T_PRVAR(activeObject);
+		private _activeObject = T_GETV("activeObject");
 		if(count _activeObject > 0) then {
 			CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
 			T_SETV("activeObject", []);
@@ -1009,8 +1009,8 @@ CLASS("BuildUI", "")
 	METHOD("moveObjectsOnEachFrame") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(movingObjectGhosts);
-		T_PRVAR(rotation);
+		private _movingObjectGhosts = T_GETV("movingObjectGhosts");
+		private _rotation = T_GETV("rotation");
 		{
 			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
 			private _relativePos = _ghostObject getVariable "build_ui_relativePos";
@@ -1050,9 +1050,9 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'moveSelectedObjects' method called");
 
 		// Grab the selected objects
-		T_PRVAR(activeObject);
-		T_PRVAR(selectedObjects);
-		T_PRVAR(rotation);
+		private _activeObject = T_GETV("activeObject");
+		private _selectedObjects = T_GETV("selectedObjects");
+		private _rotation = T_GETV("rotation");
 
 		pr _movingObjects = +_selectedObjects;
 		if (count _activeObject > 0) then {
@@ -1112,7 +1112,7 @@ CLASS("BuildUI", "")
 	
 	METHOD("dropHere") {
 		params [P_THISOBJECT];
-		T_PRVAR(movingObjectGhosts);
+		private _movingObjectGhosts = T_GETV("movingObjectGhosts");
 
 		["BuildUIMoveObjectsOnEachFrame", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 
@@ -1196,7 +1196,7 @@ CLASS("BuildUI", "")
 
 		if !(T_GETV("isMovingObjects")) exitWith {};
 
-		T_PRVAR(movingObjectGhosts);
+		private _movingObjectGhosts = T_GETV("movingObjectGhosts");
 
 		["SetHQObjectHeight", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 

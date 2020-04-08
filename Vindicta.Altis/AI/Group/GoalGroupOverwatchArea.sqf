@@ -7,7 +7,7 @@ CLASS("GoalGroupOverwatchArea", "Goal")
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _group = GETV(_AI, "agent");
-		private _isVehicle = CALLM0(_group, "getType") in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
+		private _isVehicle = CALLM0(_group, "getType") in [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC];
 
 		private _gradientDefault = if(_isVehicle) then { 0.4 } else { 0.6 };
 

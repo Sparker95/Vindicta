@@ -57,7 +57,7 @@ private _i = 0;
 while {_i < count _groups} do
 {
 	private _group = _groups select _i;
-	CALLM(_group, "despawn", []);
+	CALLM0(_group, "despawn");
 	
 	pr _units = CALLM0(_group, "getUnits");
 	if (count _units == 0) then {
@@ -71,13 +71,13 @@ while {_i < count _groups} do
 
 // Despawn single units
 private _ungroupedUnits = _units select {
-	CALL_METHOD(_x, "getGroup", []) == ""
+	CALLM0(_x, "getGroup") == ""
 };
 
 OOP_INFO_1("Despawning ungrouped units: %1", _ungroupedUnits);
 {
 	private _unit = _x;
-	CALL_METHOD(_unit, "despawn", []);
+	CALLM0(_unit, "despawn");
 } forEach _ungroupedUnits;
 
 // Call onGarrisonDespawned

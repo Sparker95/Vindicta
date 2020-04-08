@@ -77,7 +77,7 @@ CLASS("TimerService", "")
 	METHOD("addTimer") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		private _timers = T_GETV("timers");
-		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
+		private _timerDereferenced = CALLM0(_timer, "getDataArray");
 		_timers pushBackUnique _timerDereferenced;
 	} ENDMETHOD;
 	
@@ -97,7 +97,7 @@ CLASS("TimerService", "")
 	METHOD("removeTimer") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		private _timers = T_GETV("timers");
-		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
+		private _timerDereferenced = CALLM0(_timer, "getDataArray");
 		
 		// Lock the mutex. We don't want to manipulate the timer array while it's being accessed by TimerService thread function.
 		private _mutex = T_GETV("mutex");

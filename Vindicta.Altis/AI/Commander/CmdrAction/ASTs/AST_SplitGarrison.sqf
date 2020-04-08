@@ -58,7 +58,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-		T_PRVAR(action);
+		private _action = T_GETV("action");
 		private _srcGarrId = T_GET_AST_VAR("srcGarrIdVar");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -181,7 +181,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 	{
 		private _unit = NEW("Unit", Test_unit_args + [_group]);
 		//CALLM(_actual, "addUnit", [_unit]);
-		private _unitEff = CALLM(_unit, "getEfficiency", []);
+		private _unitEff = CALLM0(_unit, "getEfficiency");
 		_eff1 = EFF_ADD(_eff1, _unitEff);
 		[_comp1, T_INF, T_INF_rifleman, 1] call comp_fnc_addValue;
 	};
@@ -223,8 +223,8 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 	["Split garrison is valid", !IS_NULL_OBJECT(_splitGarr)] call test_Assert;
 
 	// Sync the Models
-	CALLM(_garrison, "sync", []);
-	CALLM(_splitGarr, "sync", []);
+	CALLM0(_garrison, "sync");
+	CALLM0(_splitGarr, "sync");
 
 	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
 	["Orig comp", GETV(_garrison, "composition") isEqualTo _compr] call test_Assert;
@@ -269,7 +269,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 // 		params [P_THISOBJECT, P_STRING("_world")];
 // 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-// 		T_PRVAR(action);
+// 		private _action = T_GETV("action");
 // 		private _srcGarrId = GETV(_action, "srcGarrIdVar");
 // 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 // 		ASSERT_OBJECT(_srcGarr);

@@ -38,9 +38,9 @@ pr _garrisonDist = if(_side != CIVILIAN) then {
 			{ !(GETV(_x, "side") in [_side, CIVILIAN]) } && 				// Side is not our side and is not civilian
 			{ (GETV(_x, "countInf") > 0) || (GETV(_x, "countDrone") > 0) }	// There is some infantry or drones
 		} apply {
-			CALLM(_x, "getPos", []) distance _thisPos
+			CALLM0(_x, "getPos") distance _thisPos
 		};
-		//CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM(_x, "getPos", []) distance _thisPos}
+		//CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM0(_x, "getPos") distance _thisPos}
 	} else {
 		[]
 	};
@@ -53,7 +53,7 @@ OOP_INFO_1("  distance to garrisons: %1", _dstMin);
 // Double check unit distances as well
 if(_dstMin >= _dstSpawnMin) then {
 	// TODO we should use BIS getNearest functions here maybe? It might be faster.
-	pr _unitDist = CALL_METHOD(gLUAP, "getUnitArray", [_side]) apply {_x distance _thisPos};
+	pr _unitDist = CALLM(gLUAP, "getUnitArray", [_side]) apply {_x distance _thisPos};
 	_dstMin = if (count _unitDist > 0) then {selectMin _unitDist} else {666666};
 	#ifdef DEBUG
 	OOP_INFO_1("  distance to units: %1", _dstMin);

@@ -45,12 +45,12 @@ CLASS("Timer", "");
 		_data set [TIMER_DATA_ID_MESSAGE, +_message];
 		_data set [TIMER_DATA_ID_MESSAGE_RECEIVER, _messageReceiver];
 		_data set [TIMER_DATA_ID_TIMER_SERVICE, _timerService];
-		private _msgLoop = CALL_METHOD(_messageReceiver, "getMessageLoop", []);
+		private _msgLoop = CALLM0(_messageReceiver, "getMessageLoop");
 		_data set [TIMER_DATA_ID_MESSAGE_LOOP, _msgLoop];
 		T_SETV("data", _data);
 		//diag_log format ["[Timer] Info: %1 data: %2, _msgLoop: %3", _thisObject, _data, _msgLoop];
 		// Add this timer to the timer service
-		CALL_METHOD(_timerService, "addTimer", [_thisObject]);
+		CALLM(_timerService, "addTimer", [_thisObject]);
 	} ENDMETHOD;
 
 
@@ -65,7 +65,7 @@ CLASS("Timer", "");
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _timerService = _data select TIMER_DATA_ID_TIMER_SERVICE;
-		CALL_METHOD(_timerService, "removeTimer", [_thisObject]);
+		CALLM(_timerService, "removeTimer", [_thisObject]);
 	} ENDMETHOD;
 
 

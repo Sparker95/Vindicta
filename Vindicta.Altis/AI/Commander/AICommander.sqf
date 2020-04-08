@@ -215,7 +215,7 @@ CLASS("AICommander", "AI")
 
 		// TODO: we should just respond to new cluster creation explicitly instead?
 		// Register for new clusters		
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		{
 			private _ID = _x select TARGET_CLUSTER_ID_ID;
 			private _cluster = [_thisObject ARG _ID];
@@ -226,7 +226,7 @@ CLASS("AICommander", "AI")
 		} forEach T_GETV("targetClusters");
 
 		// C M D R A I   P L A N N I N G
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "action update");
@@ -264,7 +264,7 @@ CLASS("AICommander", "AI")
 			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
-		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
+		} forEach (T_GETV("garrisons") select { CALLM0(_x, "isEmpty") && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
 
 		// Reassign abandonned AI groups to commander
 		private _side = T_GETV("side");
@@ -494,7 +494,7 @@ CLASS("AICommander", "AI")
 			*/
 
 			// Register with the World Model
-			T_PRVAR(worldModel);
+			private _worldModel = T_GETV("worldModel");
 			CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
 		};
 		
@@ -1042,7 +1042,7 @@ CLASS("AICommander", "AI")
 			_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
 		};
 
-		//T_PRVAR(worldModel);
+		//private _worldModel = T_GETV("worldModel");
 		//NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
 	} ENDMETHOD;
 
@@ -1069,7 +1069,7 @@ CLASS("AICommander", "AI")
 		// Relocate all actions assigned to the old cluster to the new cluster with maximum affinity
 		pr _newClusterID = _tcsNew select 0 select 1 select TARGET_CLUSTER_ID_ID;
 
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		// Retarget in the model
 		CALLM(_worldModel, "retargetClusterByActual", [[_thisObject ARG _IDOld] ARG [_thisObject ARG _newClusterID]]);
 
@@ -1113,7 +1113,7 @@ CLASS("AICommander", "AI")
 		pr _IDsOld = []; { _IDsOld pushBack (_x select TARGET_CLUSTER_ID_ID)} forEach _tcsOld;
 		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _IDnew);
 
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 
 		// Assign all actions from old IDs to new IDs
 		{
@@ -1235,13 +1235,13 @@ CLASS("AICommander", "AI")
 	*/
 	METHOD("getThreat") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "getThreat", [_pos])
 	} ENDMETHOD;
 
 	METHOD("getDamage") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "getDamage", [_pos])
 	} ENDMETHOD;
 
@@ -1249,14 +1249,14 @@ CLASS("AICommander", "AI")
 	METHOD("_addActivity") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
 		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "addActivity", [_pos ARG _activity])
 	} ENDMETHOD;
 
 	METHOD("_addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
 		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "addDamage", [_pos ARG _activity])
 	} ENDMETHOD;
 
@@ -1282,7 +1282,7 @@ CLASS("AICommander", "AI")
 	*/
 	METHOD("getActivity") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "getActivity", [_pos ARG _radius])
 	} ENDMETHOD;
 
@@ -1303,7 +1303,7 @@ CLASS("AICommander", "AI")
 		OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
 		T_GETV("garrisons") pushBack _gar; // I need you for my army!
 		REF(_gar);
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		NEW("GarrisonModel", [_worldModel ARG _gar])
 	} ENDMETHOD;
 
@@ -1319,7 +1319,7 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("registerGarrison") {
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
-		private _side = CALLM(_gar, "getSide", []);
+		private _side = CALLM0(_gar, "getSide");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
@@ -1343,7 +1343,7 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("registerGarrisonOutOfThread") {
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
-		private _side = CALLM(_gar, "getSide", []);
+		private _side = CALLM0(_gar, "getSide");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
@@ -1369,7 +1369,7 @@ CLASS("AICommander", "AI")
 		private _newModel = NULL_OBJECT;
 		OOP_DEBUG_MSG("Registering location %1", [_loc]);
 		//T_GETV("locations") pushBack _loc; // I need you for my army!
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		// Just creating the location model is registering it with CmdrAI
 		NEW("LocationModel", [_worldModel ARG _loc]);
 	} ENDMETHOD;
@@ -1387,7 +1387,7 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("unregisterGarrison") {
 		params [P_THISCLASS, P_OOP_OBJECT("_gar"), ["_destroy", false, [false]]];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
-		private _side = CALLM(_gar, "getSide", []);
+		private _side = CALLM0(_gar, "getSide");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar ARG _destroy]);
@@ -1400,13 +1400,13 @@ CLASS("AICommander", "AI")
 		params [P_THISOBJECT, P_STRING("_gar"), ["_destroy", false, [false]]];
 		ASSERT_THREAD(_thisObject);
 
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		// Check the garrison is registered
 		private _idx = _garrisons find _gar;
 		if(_idx != NOT_FOUND) then {
 			OOP_DEBUG_MSG("Unregistering garrison %1", [_gar]);
 			// Remove from model first
-			T_PRVAR(worldModel);
+			private _worldModel = T_GETV("worldModel");
 			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
 			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
@@ -1435,7 +1435,7 @@ CLASS("AICommander", "AI")
 		private _side = GETV(_intel, "side");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
-		T_PRVAR(intelDB);
+		private _intelDB = T_GETV("intelDB");
 		private _intelClone = CALLM(_intelDB, "addIntelClone", [_intel]);
 		_intelClone
 	} ENDMETHOD;
@@ -1507,7 +1507,7 @@ CLASS("AICommander", "AI")
 		// Create a new garrison and register it
 		pr _gar = NEW("Garrison", [_side ARG _pos]);
 		// Create some infantry group
-		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 
 		// Try to spawn more units at the selected locations
 		pr _t = CALLM2(gGameMode, "getTemplate", _side, "military");
@@ -1539,7 +1539,7 @@ CLASS("AICommander", "AI")
 		};
 
 		// Create some infantry group
-		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 		// Try to spawn more units at the selected locations
 		pr _t = CALLM2(gGameMode, "getTemplate", _side, "military");
 
@@ -1581,7 +1581,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	METHOD("resolveTarget") {
 		params [P_THISOBJECT, P_NUMBER("_targetType"), ["_target", [], [[], ""] ]];
 
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 
 		pr _allResolved = true;
 		pr _targetOut = switch (_targetType) do {
@@ -1680,7 +1680,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		};
 
 		// Get the garrison model associated with this _garRef
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _finalGar);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
 			OOP_ERROR_1("_clientCreateGarrisonAction: No model of garrison %1", _finalGar);
@@ -1715,7 +1715,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
 		// Get the garrison model associated with this _garRef
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
 			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
@@ -1734,7 +1734,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Create a new garrison
 		pr _pos = CALLM0(_garSrcRef, "getPos");
-		pr _faction = CALLM(_garSrcRef, "getFaction", []);
+		pr _faction = CALLM0(_garSrcRef, "getFaction");
 
 		// Get all the units except statics and cargo
 		private _combatUnits = (CALLM0(_garSrcRef, "getUnits") select { !CALLM0(_x, "isStatic") && {!CALLM0(_x, "isCargo")} });
@@ -1762,7 +1762,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		ASSERT_THREAD(_thisObject);
 
 		// Get the garrison model associated with this _garSrcRef
-		T_PRVAR(worldModel);
+		private _worldModel = T_GETV("worldModel");
 		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garSrcRef);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
 			OOP_ERROR_1("splitGarrisonFromComposition: No model of garrison %1", _garSrcRef);
@@ -1772,7 +1772,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Create a new garrison
 		pr _pos = CALLM0(_garSrcRef, "getPos");
-		pr _faction = CALLM(_garSrcRef, "getFaction", []);
+		pr _faction = CALLM0(_garSrcRef, "getFaction");
 		pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
 		pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
 
@@ -1994,8 +1994,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Sync before update
 		CALLM(_world, "sync", [_thisObject]);
 
-		T_PRVAR(side);
-		T_PRVAR(activeActions);
+		private _side = T_GETV("side");
+		private _activeActions = T_GETV("activeActions");
 
 		OOP_DEBUG_MSG("- - - - - U P D A T I N G - - - - -   on %1 active actions", [count _activeActions]);
 
@@ -2010,7 +2010,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			OOP_DEBUG_MSG("Completed action %1, removing", [_x]);
 			_activeActions deleteAt (_activeActions find _x);
 			UNREF(_x);
-		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
+		} forEach (_activeActions select { CALLM0(_x, "isComplete") });
 
 		OOP_DEBUG_MSG("- - - - - U P D A T I N G   D O N E - - - - -", []);
 
@@ -2034,13 +2034,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	*/
 	/* private */ METHOD("generateAttackActions") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
-		T_PRVAR(side);
+		private _side = T_GETV("side");
 
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
 			// TODO: We should be able to redirect for QRFs. Perhaps it 
 			(GETV(_x, "side") == _side) and
-			{ !CALLM(_x, "isBusy", []) } and
+			{ !CALLM0(_x, "isBusy") } and
 			// Need officers for offensive actions
 			{ CALLM0(_x, "countOfficers") >= 1 } and 
 			{
@@ -2051,7 +2051,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Candidates are clusters that are still alive in the future.
-		private _tgtClusters = CALLM(_worldFuture, "getAliveClusters", []);
+		private _tgtClusters = CALLM0(_worldFuture, "getAliveClusters");
 
 		private _actions = [];
 		{
@@ -2085,18 +2085,18 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	*/
 	/* private */ METHOD("generateReinforceActions") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
-		T_PRVAR(side);
+		private _side = T_GETV("side");
 
 		// Limit amount of concurrent actions
-		T_PRVAR(activeActions);
+		private _activeActions = T_GETV("activeActions");
 		pr _count = {GET_OBJECT_CLASS(_x) == "ReinforceCmdrAction"} count _activeActions;
 		if (_count >= CMDR_MAX_REINFORCE_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
 			GETV(_x, "side") == _side and 
-			{ !CALLM(_x, "isBusy", []) } and
+			{ !CALLM0(_x, "isBusy") } and
 			{
 				// Must have at least a minimum strength of twice min efficiency
 				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
@@ -2105,12 +2105,12 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
-		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
+		private _tgtGarrisons = CALLM0(_worldFuture, "getAliveGarrisons") select { 
 			// Must be on our side
 			GETV(_x, "side") == _side and 
 			{
 				// Not involved in another reinforce action
-				private _action = CALLM(_x, "getAction", []);
+				private _action = CALLM0(_x, "getAction");
 				IS_NULL_OBJECT(_action) or { OBJECT_PARENT_CLASS_STR(_action) != "ReinforceCmdrAction" }
 			} and 
 			{
@@ -2162,15 +2162,15 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	*/
 	/* private */ METHOD("generateOfficerAssignmentActions") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
-		T_PRVAR(side);
+		private _side = T_GETV("side");
 
 		// Limit amount of concurrent actions
-		T_PRVAR(activeActions);
+		private _activeActions = T_GETV("activeActions");
 		pr _count = {GET_OBJECT_CLASS(_x) == "ReinforceCmdrAction"} count _activeActions;
 		//if (_count >= CMDR_MAX_REINFORCE_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
 			(GETV(_x, "side") == _side) and 
 			{ !CALLM0(_x, "isBusy") } and
@@ -2187,7 +2187,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
-		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
+		private _tgtGarrisons = CALLM0(_worldFuture, "getAliveGarrisons") select { 
 			// Must be on our side
 			(GETV(_x, "side") == _side) and 
 			// At a fixed outpost location
@@ -2238,15 +2238,15 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	*/
 	/* private */ METHOD("generateSupplyActions") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
-		T_PRVAR(side);
+		private _side = T_GETV("side");
 
 		// Limit amount of concurrent actions
-		T_PRVAR(activeActions);
+		private _activeActions = T_GETV("activeActions");
 		pr _count = {GET_OBJECT_CLASS(_x) == "SupplyConvoyCmdrAction"} count _activeActions;
 		if (_count >= CMDR_MAX_SUPPLY_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
 			(GETV(_x, "side") == _side) and 
 			{ !CALLM0(_x, "isBusy") } and
@@ -2265,7 +2265,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
-		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
+		private _tgtGarrisons = CALLM0(_worldFuture, "getAliveGarrisons") select { 
 			// Must be on our side
 			(GETV(_x, "side") == _side) and 
 			// At a fixed base or outpost location
@@ -2354,26 +2354,26 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	*/
 	/* private */ METHOD("generateTakeOutpostActions") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
-		T_PRVAR(activeActions);
-		T_PRVAR(side);
+		private _activeActions = T_GETV("activeActions");
+		private _side = T_GETV("side");
 
 		// Limit amount of concurrent actions
-		T_PRVAR(activeActions);
+		private _activeActions = T_GETV("activeActions");
 		pr _count = {GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction"} count _activeActions;
 		if (_count >= CMDR_MAX_TAKE_OUTPOST_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			// Must be not already busy 
-			!CALLM(_x, "isBusy", []) and 
+			!CALLM0(_x, "isBusy") and 
 			// Must have an officer for an offensive action
 			{ CALLM0(_x, "countOfficers") >= 1 } and 
 			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) } and 
+			{ !IS_NULL_OBJECT(CALLM0(_x, "getLocation")) } and 
 			// Must not be source of another inprogress take location mission
 			{ 
 				private _potentialSrcGarr = _x;
-				T_PRVAR(activeActions);
+				private _activeActions = T_GETV("activeActions");
 				_activeActions findIf {
 					GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction" and
 					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
@@ -2388,7 +2388,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Take tgt locations from future, so we take into account all in progress actions.
-		private _tgtLocations = CALLM(_worldFuture, "getLocations", []) select { 
+		private _tgtLocations = CALLM0(_worldFuture, "getLocations") select { 
 			// Must not have any of our garrisons already present (or this would be reinforcement action)
 			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
 		};
@@ -2433,8 +2433,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	*/
 	/* private */ METHOD("generatePatrolActions") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
-		T_PRVAR(activeActions);
-		T_PRVAR(side);
+		private _activeActions = T_GETV("activeActions");
+		private _side = T_GETV("side");
 
 		// Already patrolling source garrisons
 		private _garrisonsAlreadyPatrolling = _activeActions select {
@@ -2449,7 +2449,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _potentialSrcGarr = _x;
 
 			// Must be not already busy 
-			!CALLM(_potentialSrcGarr, "isBusy", [])
+			!CALLM0(_potentialSrcGarr, "isBusy")
 			// Must be at a location
 			&& { 
 				private _loc = CALLM0(_potentialSrcGarr, "getLocation");
@@ -2536,7 +2536,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 
 		// Limit amount of concurrent actions
-		T_PRVAR(activeActions);
+		private _activeActions = T_GETV("activeActions");
 		pr _count = {GET_OBJECT_CLASS(_x) == "ConstructLocationCmdrAction"} count _activeActions;
 		//OOP_INFO_1("  Existing patrol actions: %1", _count);
 		if (_count > CMDR_MAX_CONSTRUCT_ACTIONS) exitWith {[]};
@@ -2547,14 +2547,14 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			private _potentialSrcGarr = _x;
 			// Must be not already busy 
-			!CALLM(_potentialSrcGarr, "isBusy", []) and 
+			!CALLM0(_potentialSrcGarr, "isBusy") and 
 			// Must have an officer
 			{ CALLM0(_x, "countOfficers") >= 1 } and 
 			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			{ !IS_NULL_OBJECT(CALLM0(_potentialSrcGarr, "getLocation")) } and 
 			// Must not be source of another mission
 			{ 
-				T_PRVAR(activeActions);
+				private _activeActions = T_GETV("activeActions");
 				_activeActions findIf {
 					GET_OBJECT_CLASS(_x) == "ConstructLocationCmdrAction" and
 					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
@@ -2637,7 +2637,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _side = T_GETV("side");
 		private _model = T_GETV("worldModel");
 		
-		private _reinfLocations = CALLM(_model, "getLocations", []) select {
+		private _reinfLocations = CALLM0(_model, "getLocations") select {
 			private _garModel = CALLM(_x, "getGarrison", [_side]);
 			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT)
 			&& {!IS_NULL_OBJECT(_garModel)}
@@ -2765,7 +2765,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				private _countInfInGroup = count (_t#T_GROUP#_subcatID#0); // Amount of units
 
 				// Create a group
-				private _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+				private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 				CALLM2(_group, "createUnitsFromTemplate", _t, _subcatID);
 				CALLM2(_garrison, "postMethodAsync", "addGroup", [_group]);
 				OOP_INFO_1("   Added group: %1", _group);
@@ -2793,7 +2793,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			OOP_INFO_2("  Adding %1 officers at %2", _nOfficersRequired, _name);
 			while { _nOfficersRequired > 0 } do {
 				// Create an officer group
-				private _group = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+				private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 				CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_officer);
 				CALLM2(_garrison, "postMethodAsync", "addGroup", [_group]);
 				_nOfficersRequired = _nOfficersRequired - 1;
@@ -2879,7 +2879,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				if(_createGroup) then {
 					// Create a group
 					// It's better to add combat vehicles with a group, so that AIs can use them instantly
-					private _group = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
+					private _group = NEW("Group", [_side ARG GROUP_TYPE_VEH]);
 					private _args = [_t, T_VEH, _subcatID, -1, _group];
 					private _vehUnit = NEW("Unit", _args);
 					CALLM1(_group, "addUnit", _vehUnit);
@@ -2924,8 +2924,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	/* private */ METHOD("selectActions") {
 		params [P_THISOBJECT, P_ARRAY("_actionFuncs"), P_NUMBER("_maxNewActions"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
 
-		CALLM(_simWorldNow, "resetScoringCache", []);
-		CALLM(_simWorldFuture, "resetScoringCache", []);
+		CALLM0(_simWorldNow, "resetScoringCache");
+		CALLM0(_simWorldFuture, "resetScoringCache");
 
 		private _newActions = [];
 
@@ -2950,7 +2950,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 			// Sort the actions by their scores
 			private _scoresAndActions = _newActions apply { 
-				private _finalScore = CALLM(_x, "getFinalScore", []);
+				private _finalScore = CALLM0(_x, "getFinalScore");
 				[_finalScore, _x] 
 			};
 
@@ -2962,12 +2962,12 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				OOP_DEBUG_MSG(" %1", [_scoreAndAction]);
 			};
 
-			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
+			// _newActions = [_newActions, [], { CALLM0(_x, "getFinalScore") }, "DECEND"] call BIS_fnc_sortBy;
 
 			// Get the best scoring action
 			(_scoresAndActions select 0) params ["_bestActionScore", "_bestAction"];
 
-			// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
+			// private _bestActionScore = // CALLM0(_bestAction, "getFinalScore");
 			
 			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
 			// TODO: Should we maybe be normalizing scores between 0 and 1?
@@ -2978,7 +2978,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			// Add the best action to our active actions list
 			REF(_bestAction);
 
-			T_PRVAR(activeActions);
+			private _activeActions = T_GETV("activeActions");
 			_activeActions pushBack _bestAction;
 
 			// Remove it from the possible actions list
@@ -3020,9 +3020,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Sync before planning
 		CALLM(_world, "sync", [_thisObject]);
 		// Update grids etc.
-		CALLM(_world, "update", []);
+		CALLM0(_world, "update");
 
-		T_PRVAR(activeActions);
+		private _activeActions = T_GETV("activeActions");
 
 		OOP_DEBUG_MSG("Creating new simworlds from %1", [_world]);
 
@@ -3079,7 +3079,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			UNREF(_action);
 
 			// Delete the action from our array of actions
-			T_PRVAR(activeActions);
+			private _activeActions = T_GETV("activeActions");
 			_activeActions deleteAt (_activeActions find _action);
 		};
 	} ENDMETHOD;

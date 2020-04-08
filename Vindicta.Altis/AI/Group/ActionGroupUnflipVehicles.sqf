@@ -48,7 +48,7 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 			// Action is over when all vehicles are done with their actions
 			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehicleUnits, "GoalUnitVehicleUnflip", _AI)) then {
 				// Force update of flipping sensors
-				T_PRVAR(AI);
+				private _AI = T_GETV("AI");
 				pr _h = GETV(_AI, "sensorHealth");
 				CALLM0(_h, "update");
 				

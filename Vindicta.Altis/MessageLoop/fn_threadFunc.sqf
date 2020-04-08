@@ -134,7 +134,7 @@ while {true} do {
 				// If it crashes now, we will read this value, and make a memory dump
 				T_SETV("lastObject", _dest);
 
-				private _result = if(IS_OOP_OBJECT(_dest)) then { CALL_METHOD(_dest, "handleMessage", [_msg]) } else { 0 };
+				private _result = if(IS_OOP_OBJECT(_dest)) then { CALLM(_dest, "handleMessage", [_msg]) } else { 0 };
 
 				// Reset last handled object
 				T_SETV("lastObject", NULL_OBJECT);

@@ -40,7 +40,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		pr _group = GETV(_AI, "agent");
 
 		pr _groupType = CALLM0(_group, "getType");
-		pr _isInf = _groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
+		pr _isInf = _groupType == GROUP_TYPE_INF;
 
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");
@@ -60,7 +60,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_CALLM0("clearWaypoints");
 
 		// Give some waypoints
-		T_PRVAR(hG);
+		private _hG = T_GETV("hG");
 		private _wp0 = _hG addWaypoint [_pos, _radius];
 		_wp0 setWaypointCompletionRadius 20;
 		_wp0 setWaypointType "SAD";

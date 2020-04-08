@@ -261,7 +261,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				//A truck's position defined the position for tracked and wheeled vehicles
 				if(_type == "B_Truck_01_transport_F") then {
-					private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_NON_STATIC], getPosATL _object, direction _object, objNull];
+					private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
 					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
 					OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
@@ -269,7 +269,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				//A mortar's position defines the position for mortars
 				if(_type == "B_Mortar_01_F") then {
-					private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
+					private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
 					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
 					OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
@@ -277,7 +277,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				//A low HMG defines a position for low HMGs and low GMGs
 				if(_type == "B_HMG_01_F") then {
-					private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
+					private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
 					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
 					OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
@@ -285,7 +285,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				//A high HMG defines a position for high HMGs and high GMGs
 				if(_type == "B_HMG_01_high_F") then {
-					private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_IDLE, GROUP_TYPE_VEH_STATIC], getPosATL _object, direction _object, objNull];
+					private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
 					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
 					OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
@@ -293,7 +293,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				// A cargo container defines a position for cargo boxes
 				if (_type == "B_Slingload_01_Cargo_F") then {
-					private _args = [T_PL_cargo, [GROUP_TYPE_IDLE], getPosATL _object, direction _object, objNull];
+					private _args = [T_PL_cargo, [GROUP_TYPE_INF], getPosATL _object, direction _object, objNull];
 					T_CALLM("addSpawnPos", _args);
 					deleteVehicle _object;
 					OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
@@ -556,10 +556,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("updateMarker") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(type);
+		private _type = T_GETV("type");
 		deleteMarker _thisObject;
 		deleteMarker (_thisObject + "_label");
-		T_PRVAR(pos);
+		private _pos = T_GETV("pos");
 
 		if(count _pos > 0) then {
 
@@ -576,7 +576,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			_mrk setMarkerAlpha 1;
 			_mrk setMarkerText "";
 
-			T_PRVAR(border);
+			private _border = T_GETV("border");
 			if(_border isEqualType []) then {
 				_mrk setMarkerDir _border#2;
 			};
@@ -586,8 +586,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_mrk setMarkerType "Empty";
 				_mrk setMarkerColor "ColorYellow";
 				_mrk setMarkerAlpha 1;
-				T_PRVAR(name);
-				T_PRVAR(type);
+				private _name = T_GETV("name");
+				private _type = T_GETV("type");
 				_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _name, _type];
 			};
 		};
@@ -801,7 +801,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
 		};
-		T_PRVAR(children);
+		private _children = T_GETV("children");
 		{
 			_myGarrisons = _myGarrisons + CALLM(_x, "getGarrisonsRecursive", [_side]);
 		} forEach _children;

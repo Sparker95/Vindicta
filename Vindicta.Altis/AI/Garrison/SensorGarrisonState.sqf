@@ -64,8 +64,8 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		// state itself.
 		pr _isMerged = [_worldState, WSP_GAR_VEHICLE_GROUPS_MERGED] call ws_getPropertyValue;
 		pr _allGroups = CALLM0(_gar, "getGroups");
-		pr _vehNonStaticGroupCount = ({ CALLM0(_x, "getType") == GROUP_TYPE_VEH_NON_STATIC } count _allGroups); //CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC]);
-		pr _infGroups = _allGroups select { CALLM0(_x, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL] }; //CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
+		pr _vehNonStaticGroupCount = ({ CALLM0(_x, "getType") == GROUP_TYPE_VEH } count _allGroups);
+		pr _infGroups = _allGroups select { CALLM0(_x, "getType") == GROUP_TYPE_INF };
 		switch true do {
 			// Obviously if there is more than one group then its not merged any more
 			case (_isMerged && _vehNonStaticGroupCount > 1);
@@ -78,9 +78,6 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 				[_worldState, WSP_GAR_VEHICLE_GROUPS_MERGED, true] call ws_setPropertyValue;
 			};
 		};
-
-		// Check if all crew and infantry are in vehicles
-		//pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_STATIC ARG GROUP_TYPE_VEH_NON_STATIC]);
 
 		// Run checks which only make sense for a spawned garrison
 		if (_isSpawned) then {
@@ -129,24 +126,8 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		};
 
 		// Vehicle-related checks
-
-		// Check if all vehicles have enough crew
-		//pr _vehGroupsStatic = _allGroups select { CALLM0(_x, "getType") == GROUP_TYPE_VEH_STATIC }; //CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
-		//pr _vehGroupsNonStatic = _allGroups select { CALLM0(_x, "getType") == GROUP_TYPE_VEH_NON_STATIC }; //CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
-
 		pr _requiredCrew = 0;
 		pr _assignedCrew = 0;
-		// // Find static vehicle groups that don't have enough infantry to operate all guns
-		// pr _haveTurretsStatic = true;
-		// {
-		// 	CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets", "_nCargo"];
-		// 	pr _nInf = count CALLM0(_x, "getInfantryUnits");
-			
-		// 	_haveTurretsStatic = _haveTurretsStatic && _nTurrets <= _nInf;
-
-		// 	_assignedCrew = _assignedCrew + _nInf;
-		// 	_requiredCrew = _requiredCrew + _nTurrets;
-		// } forEach _vehGroupsStatic;
 
 		// Find non static vehicle groups that don't have enough drivers or turret operators
 		pr _haveTurretOperators = true;
@@ -155,21 +136,21 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		//pr _correctNumberOfCrew = true;
 		{
 			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets", "_nCargo"];
-			pr _nInf = count CALLM0(_x, "getInfantryUnits");
-
-			_haveDrivers = _haveDrivers && _nDrivers <= _nInf;
-			_haveTurretOperators = _haveTurretOperators && _nTurrets <= _nInf - _nDrivers;
-
-			_assignedCrew = _assignedCrew + _nInf;
-			_requiredCrew = _requiredCrew + _nDrivers + _nTurrets;
-
 			pr _type = CALLM0(_x, "getType");
-			_groupTypesCorrect = _groupTypesCorrect && {
-				_type in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC] && { _nDrivers + _nTurrets > 0 } 
-				|| 
-				{ _type in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL] && { _nDrivers + _nTurrets == 0 } }
-			};
 
+			if(_nDrivers + _nTurrets > 0) then {
+				pr _nInf = count CALLM0(_x, "getInfantryUnits");
+
+				_haveDrivers = _haveDrivers && _nDrivers <= _nInf;
+				_haveTurretOperators = _haveTurretOperators && _nTurrets <= _nInf - _nDrivers;
+
+				_assignedCrew = _assignedCrew + _nInf;
+				_requiredCrew = _requiredCrew + _nDrivers + _nTurrets;
+
+				_groupTypesCorrect = _groupTypesCorrect && _type in [GROUP_TYPE_VEH, GROUP_TYPE_STATIC];
+			} else {
+				_groupTypesCorrect = _groupTypesCorrect && _type == GROUP_TYPE_INF;
+			};
 			// _unbalancedCrew = _unbalancedCrew || _nInf > _nDrivers + _nTurrets;
 			//if (_nInf != _nDrivers + _nTurrets) then { _correctNumberOfCrew = false };
 			//if (!_haveTurretOperators && !_haveDrivers && !_correctNumberOfCrew) exitWith {}; // Terminate the loop if we already know that this group is unbalanced
@@ -181,7 +162,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		// Groups are balanced if we have assigned as much crew as possible, and no more than required, and group types reflect their contents correctly
 		// All other inf should be in separate groups
 		pr _balanced = _assignedCrew == MINIMUM(_requiredCrew, _nInfGarrison);
-		[_worldState, WSP_GAR_VEHICLE_GROUPS_BALANCED, _balanced && _groupTypesCorrect] call ws_setPropertyValue;
+		[_worldState, WSP_GAR_GROUPS_BALANCED, _balanced && _groupTypesCorrect] call ws_setPropertyValue;
 
 		//OOP_INFO_3("Infantry amount: %1, all infantry seats: %2, driver seats: %3", _nInfGarrison, _nSeatsAll, _nDriversAll);
 

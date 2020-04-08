@@ -413,12 +413,12 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Create a group or pick an existing one
 		pr _groupToJoin = "";
-		pr _groups = CALLM0(_gar, "getGroups") select {(CALLM0(_x, "getType") == GROUP_TYPE_IDLE) && ((count CALLM0(_x, "getUnits")) < 5)};
+		pr _groups = CALLM0(_gar, "getGroups") select {(CALLM0(_x, "getType") == GROUP_TYPE_INF) && ((count CALLM0(_x, "getUnits")) < 5)};
 		if (count _groups != 0) then {
 			_groupToJoin = _groups#0;
 		};
 
-		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 
 		// Create a unit
 		pr _template = ["tGuerrilla"] call t_fnc_getTemplate;

@@ -18,7 +18,7 @@ Return value: Array in format [[x, y, z], direction]
 Author: Sparker 29.07.2018
 */
 
-params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
+params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), ["_groupType", GROUP_TYPE_INF, [GROUP_TYPE_INF]] ];
 
 //First try to find it in building spawn positions
 private _stAll = T_GETV("spawnPosTypes");
@@ -123,10 +123,6 @@ if(_found) then {//If the spawn position has been found
 	//Provide default spawn position
 	if (_catID == T_INF) then {
 		private _locToUse = _thisObject;
-		// Walk up parents to the one we should use
-		while {_groupType == GROUP_TYPE_PATROL && {GETV(_locToUse, "useParentPatrolWaypoints")}} do {
-			_locToUse = GETV(_locToUse, "parent");
-		};
 		private _radius = (0.5 * (GETV(_locToUse, "boundingRadius"))) min 60;
 		private _locPos = GETV(_locToUse, "pos");
 		_return = [[_locPos#0 - _radius + random (2 * _radius), _locPos#1 - _radius + random (2 * _radius), 0], random 360];

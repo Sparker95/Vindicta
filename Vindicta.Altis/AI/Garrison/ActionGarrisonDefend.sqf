@@ -2,28 +2,58 @@
 
 #define pr private
 
+// Base for defensive actions (active, passive, relax)
+// 
+// Specify group behaviors in derived classes
+//
+// Number of road patrols -- prefers vehicles
+// Number of overwatch groups -- same as clear area action
+// Fraction of idle vs patrol for general inf
+// Fraction of idle vs patrol for general vehicles
+// Inf behavior -- behavior, speed, combat mode, formation
+// Vic behavior -- behavior, speed, combat mode, formation
+// Static group goal
+// Idle group goals -- array of possible goals with weights
+
 CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
+
+	VARIABLE("nRoadPatrols");
+	VARIABLE("nOverwatch");
+	VARIABLE("idleFractionInf");
+	VARIABLE("idleFractionVeh");
+	VARIABLE("infBehavior");
+	VARIABLE("vehBehavior");
+	VARIABLE("staticGroupGoal");
+	VARIABLE("idleGroupGoals");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
-		T_SETV("buildingsAttack", []);
 	} ENDMETHOD;
-	
-	// logic to run when the goal is activated
+
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
 
-		pr _AI = T_GETV("AI");
-		pr _gar = GETV(_AI, "agent");
-		pr _loc = CALLM0(_gar, "getLocation");
-		pr _buildings = if (_loc != "") then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
+		// Give goals to groups
+		private _AI = T_GETV("AI");
+		private _gar = GETV(_AI, "agent");
+
+		CALLM0(_gar, "rebalanceGroups");
+
+		private _loc = CALLM0(_gar, "getLocation");
+		// Buildings into which groups will be ordered to move
+		private _buildings = if (_loc != NULL_OBJECT) then {+
+			CALLM0(_loc, "getOpenBuildings")
+		} else {
+			[]
+		};
+
 		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
-		_buildings = _buildings apply {[abs ((boundingBoxReal _x) select 1 select 2), _x]};
-		_buildings sort false;
+		_buildings = _buildings apply {[abs ((boundingBoxReal _x)#1#2), _x]};
+		_buildings sort DESCENDING;
 		pr _groups = CALLM0(_gar, "getGroups");
-		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
+		pr _groupsInf = _groups select { CALLM0(_x, "getType") == GROUP_TYPE_INF };
 
 		pr _commonParams = [[TAG_INSTANT, _instant]];
 		// Order to some groups to occupy buildings
@@ -42,44 +72,28 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			_groupsInf deleteAt 0;
 			_groups deleteAt (_groups find _group);
 		};
-		
+
 		// Give goals to remaining groups
-		{ // foreach _groups
-			pr _type = CALLM0(_x, "getType");
-			pr _groupAI = CALLM0(_x, "getAI");
+		private _nPatrolGroups = 0;
+		{// foreach _groups
+			private _groupAI = CALLM0(_x, "getAI");
 			
-			if (_groupAI != "") then {
-				pr _args = [];
-				switch (_type) do {
-					case GROUP_TYPE_IDLE: {
-						_args = ["GoalGroupRegroup", 0, _commonParams, _AI];
+			if (_groupAI != NULL_OBJECT) then {
+				private _args = switch (CALLM0(_x, "getType")) do {
+					case GROUP_TYPE_STATIC: {
+						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_COMBAT_MODE, "RED"]] + _commonParams, _AI]
 					};
-					
-					case GROUP_TYPE_VEH_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, _commonParams, _AI];
+					case GROUP_TYPE_VEH: {
+						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_COMBAT_MODE, "RED"], ["onlyCombat", true]] + _commonParams, _AI]
 					};
-					
-					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]; // Occupy only combat vehicles
-					};
-					
-					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupRegroup", 0, [[TAG_COMBAT_MODE, "RED"]] + _commonParams, _AI];
-					};
-					
-					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupRegroup", 0, _commonParams, _AI];
+					//case GROUP_TYPE_INF:
+					default {
+						["GoalGroupRegroup", 0, [[TAG_COMBAT_MODE, "RED"]] + _commonParams, _AI]
 					};
 				};
-				
-				if (count _args > 0) then {
-					CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
-					// Poke group AI to switch mode faster
-					CALLM2(_groupAI, "postMethodAsync", "process", []);
-				};
+				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 			};
 		} forEach _groups;
-		
 		
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);

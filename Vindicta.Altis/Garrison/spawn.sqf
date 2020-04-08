@@ -74,17 +74,17 @@ if (!_spawningHandled) then {
 		// Spawn single units
 		{
 			private _unit = _x;
-			if (CALL_METHOD(_x, "getGroup", []) == NULL_OBJECT) then {
+			if (CALLM0(_x, "getGroup") == NULL_OBJECT) then {
 				private _prevLoc = CALLM0(_x, "getDespawnLocation");
 				if (_prevLoc == _loc && _prevLoc != NULL_OBJECT) then {
 					// Spawn at the previous spawn position
 					CALLM3(_unit, "spawn", [0 ARG 0 ARG 0], 0, true);
 				} else {
 					// Get new spawn position
-					private _unitData = CALL_METHOD(_unit, "getMainData", []);
+					private _unitData = CALLM0(_unit, "getMainData");
 					private _args = _unitData + [0]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), P_STRING("_groupType")
-					private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-					CALL_METHOD(_unit, "spawn", _posAndDir);
+					private _posAndDir = CALLM(_loc, "getSpawnPos", _args);
+					CALLM(_unit, "spawn", _posAndDir);
 				};
 			};
 		} forEach _units;
@@ -99,7 +99,7 @@ if (!_spawningHandled) then {
 		// Spawn single units
 		{
 			CALLM3(_x, "spawn", _garPos, 0, _global);
-		} forEach (_units select { CALL_METHOD(_x, "getGroup", []) == NULL_OBJECT });
+		} forEach (_units select { CALLM0(_x, "getGroup") == NULL_OBJECT });
 	};
 };
 

@@ -122,7 +122,7 @@ CLASS("AI_GOAP", "AI")
 		// Delete the current action
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
-			CALLM(_action, "terminate", []);
+			CALLM0(_action, "terminate");
 			DELETE(_action);
 		};
 		
@@ -143,6 +143,7 @@ CLASS("AI_GOAP", "AI")
 		#ifdef ENABLE_LOG_GOAP 
 		private __prevState = [_thisObject] call pr0_fnc_getLogState;
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// If we are spawning in a garrison then reset its action (the action onSpawn event will have been called already).
 		// This ensures that _instant behavior can be applied cleanly to the garrison in one go.
@@ -331,6 +332,7 @@ CLASS("AI_GOAP", "AI")
 		private __newState = [_thisObject] call pr0_fnc_getLogState;
 		LOG_GOAP(_thisObject, "", __prevState, __newState);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Call process method of subagents
 		{
@@ -831,7 +833,7 @@ CLASS("AI_GOAP", "AI")
 		
 		// Do we currently already have an action?
 		if (_currentAction != "") then {
-			CALLM(_currentAction, "terminate", []);
+			CALLM0(_currentAction, "terminate");
 			DELETE(_currentAction);
 		};
 		
@@ -862,7 +864,7 @@ CLASS("AI_GOAP", "AI")
 			pr _state = GETV(_currentAction, "state");
 			OOP_INFO_2("DELETING CURRENT ACTION: %1, state: %2", _currentAction, _state);
 		
-			CALLM(_currentAction, "terminate", []);
+			CALLM0(_currentAction, "terminate");
 			DELETE(_currentAction);
 			T_SETV("currentAction", "");
 		};
@@ -1046,6 +1048,7 @@ CLASS("AI_GOAP", "AI")
 						OOP_INFO_1("     State :%1", _wsStr);
 						OOP_INFO_1("     Params:%1", _n select ASTAR_NODE_ID_ACTION_PARAMETERS);
 						#endif
+						FIX_LINE_NUMBERS()
 					};
 					
 					if (((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) ||

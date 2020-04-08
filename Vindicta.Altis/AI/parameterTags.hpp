@@ -24,11 +24,11 @@
 
 #define TAG_CLEAR_RADIUS "g_clearRadius"
 
-#define TAG_OVERWATCH_DISTANCE_MIN "g_overwatchDistanceMin"
-#define TAG_OVERWATCH_DISTANCE_MAX "g_overwatchDistanceMax"
-#define TAG_OVERWATCH_DIRECTION "g_overwatchDirection"
-#define TAG_OVERWATCH_ELEVATION "g_overwatchElevation"
-#define TAG_OVERWATCH_GRADIENT "g_overwatchGradient"
+#define TAG_OVERWATCH_DISTANCE_MIN "g_overwatchDistanceMin" // Passed to overwatch action to specify the minimum distance to overwatch from
+#define TAG_OVERWATCH_DISTANCE_MAX "g_overwatchDistanceMax" // Passed to overwatch action to specify the maximum distance to overwatch from
+#define TAG_OVERWATCH_DIRECTION "g_overwatchDirection" // Passed to overwatch action to specify direction to observe the target from
+#define TAG_OVERWATCH_ELEVATION "g_overwatchElevation" // Passed to overwatch action to specify the minimum elevation difference desired
+#define TAG_OVERWATCH_GRADIENT "g_overwatchGradient" // Passed to overwatch action to specify the max gradient desired
 
 #define TAG_CARGO "g_cargo"
 #define TAG_CARGO_POS "g_cargoPos"
@@ -37,6 +37,7 @@
 
 #define TAG_DURATION_SECONDS "g_duration"
 
-#define TAG_MAX_SPEED_KMH "g_maxSpeedKmh"
+#define TAG_MAX_SPEED_KMH "g_maxSpeedKmh" // Passed to move actions to limit the agents average speed
+#define TAG_FOLLOWERS "g_followers" // Passed to move actions to list other agents that are following this agent (so it can wait for them usually)
 
 #define TAG_TARGET "g_target"	// General target parameter, usually a unit

@@ -623,6 +623,16 @@
 #define OOP_TRACE_EXIT_FUNCTION 
 #endif
 
+#ifdef OOP_DEBUG_CLASS_DEF
+#define LOG_CLASS_BEGIN(class, base)	diag_log format ["CLASS %1 : %2", class, base]
+#define LOG_METHOD(method)				diag_log format ["  METHOD %1", method]
+#define LOG_CLASS_END(class)			diag_log format ["ENDCLASS %1", class]
+#else
+#define LOG_METHOD(method)
+#define LOG_CLASS_BEGIN(class, base)
+#define LOG_CLASS_END(class)
+#endif
+
 // -----------------------------------------------------
 // |                   M E T H O D S                   |
 // -----------------------------------------------------
@@ -632,6 +642,7 @@
 // that OOP_PROFILE does.
 #ifdef _OOP_FUNCTION_WRAPPERS
 	#define METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr;  \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
@@ -650,6 +661,7 @@
 		} ]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
@@ -668,6 +680,7 @@
 		}]
 
 	#define STATIC_METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
@@ -680,6 +693,7 @@
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
@@ -698,22 +712,26 @@
 		}]
 #else
 	#define METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 	#define ENDMETHOD ]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
 	#define STATIC_METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
@@ -763,6 +781,7 @@
 //  */
 
 #define CLASS(classNameStr, baseClassNames) \
+LOG_CLASS_BEGIN(class, base); \
 call { \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
@@ -820,6 +839,7 @@ VARIABLE(OOP_PUBLIC_STR);
 //  */
 
 #define ENDCLASS  \
+LOG_CLASS_END(_oop_classNameStr); \
 private _serialVariables = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
 _serialVariables = _serialVariables select { \
 	_x params ["_varName", "_attributes"]; \
@@ -1202,7 +1222,6 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // ----------------------------------------------------------------------
 // |                               M A T H                              |
 // ----------------------------------------------------------------------
-
 // Zero the height component of a vector
 #define ZERO_HEIGHT(pos) ([(pos) select 0, (pos) select 1, 0])
 

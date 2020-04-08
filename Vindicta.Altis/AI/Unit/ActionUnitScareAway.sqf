@@ -29,7 +29,7 @@ CLASS("ActionUnitScareAway", "Action")
 		//might want to move this to ActionUnit base class
 		T_SETV("target", _target);
 		pr _a = GETV(_AI, "agent"); // cache the object handle
-		pr _oh = CALLM(_a, "getObjectHandle", []);
+		pr _oh = CALLM0(_a, "getObjectHandle");
 		T_SETV("objectHandle", _oh);
 
 	} ENDMETHOD;
