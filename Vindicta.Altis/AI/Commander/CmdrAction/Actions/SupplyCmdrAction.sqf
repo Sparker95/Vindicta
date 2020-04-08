@@ -187,9 +187,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Bail if src or dst are dead
-		if(CALLM0(_srcGarr, "isDead", []) or {CALLM(_tgtGarr, "isDead")}) exitWith {
+		if(CALLM0(_srcGarr, "isDead") or {CALLM0(_tgtGarr, "isDead")}) exitWith {
 			OOP_DEBUG_0("Src or dst garrison is dead");
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _side = GETV(_srcGarr, "side");
@@ -237,7 +237,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
 			OOP_DEBUG_MSG("Failed to allocate resources", []);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -250,11 +250,11 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if remaining efficiency is below minimum level for this garrison
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// we must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		T_SET_AST_VAR("detachmentEffVar", _effAllocated);

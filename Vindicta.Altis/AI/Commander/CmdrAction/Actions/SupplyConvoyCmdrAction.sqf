@@ -444,7 +444,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Bail if src or dst are dead
-		if(CALLM0(_srcGarr, "isDead", []) or {CALLM(_tgtGarr, "isDead")}) exitWith {
+		if(CALLM0(_srcGarr, "isDead") or {CALLM0(_tgtGarr, "isDead")}) exitWith {
 			OOP_DEBUG_0("Src or dst garrison is dead");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};

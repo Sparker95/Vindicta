@@ -142,13 +142,13 @@ CLASS("WorldModel", "Storable")
 	METHOD("sync") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
-		{ CALLM0(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons");
+		{ CALLM0(_x, "sync"); } forEach T_CALLM0("getAliveGarrisons");
 
 		// sync existing locations
 		{ CALLM(_x, "sync", [_AICommander]); } forEach T_GETV("locations");
 
 		// sync existing clusters
-		{ CALLM0(_x, "sync", []); } forEach T_CALLM("getAliveClusters");
+		{ CALLM0(_x, "sync"); } forEach T_CALLM0("getAliveClusters");
 
 	} ENDMETHOD;
 

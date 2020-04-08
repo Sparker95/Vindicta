@@ -114,8 +114,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT(_tgtCluster);
 
 		// Source or target being dead means action is invalid, return 0 score
-		if(CALLM0(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead")) exitWith {
-			T_CALLM("setScore", [ZERO_SCORE]);
+		if(CALLM0(_srcGarr, "isDead") or CALLM0(_tgtCluster, "isDead")) exitWith {
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
@@ -148,7 +148,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Bail if the garrison clearly can not destroy the enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _needTransport = false;
@@ -179,7 +179,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
 			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -190,11 +190,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		*/
 
