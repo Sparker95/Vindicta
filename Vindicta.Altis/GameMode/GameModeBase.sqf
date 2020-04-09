@@ -11,6 +11,9 @@ FIX_LINE_NUMBERS()
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
 
+#define ALL_MESSAGE_LOOPS_AND_TIMEOUTS ([["messageLoopGameMode", 10], ["messageLoopCommanderEast", 150], ["messageLoopCommanderWest", 150], ["messageLoopCommanderInd", 150], ["messageLoopMain", 30], ["messageLoopGroupAI", 10]])
+#define ALL_MESSAGE_LOOPS (["messageLoopGameMode", "messageLoopCommanderEast", "messageLoopCommanderWest", "messageLoopCommanderInd", "messageLoopMain", "messageLoopGroupAI"])
+
 // Base class for Game Modes. A Game Mode is a set of customizations to 
 // scenario initialization and ongoing gameplay mechanics.
 CLASS("GameModeBase", "MessageReceiverEx")
@@ -50,8 +53,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
-	VARIABLE_ATTR("playerInfoArray", [ATTR_SAVE_VER(11)]);
+	VARIABLE_ATTR("savedPlayerInfoArray", [ATTR_SAVE_VER(11)]);
 	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE_VER(11)]);
+
+	VARIABLE("playerInfoArray");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"), P_STRING("_tNameCivilian"), P_NUMBER("_enemyForcePercent")];
@@ -1730,18 +1735,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	METHOD("savePlayerInfo") {
 		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_player"), P_STRING("_name")];
-		private _playerInfoArray = T_GETV("playerInfoArray");
+		private _playerInfo = T_CALLM4("_savePlayerInfoTo", T_GETV("playerInfoArray"), _uid, _player, _name);
+		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
+	} ENDMETHOD;
+
+	METHOD("_savePlayerInfoTo") {
+		params [P_THISOBJECT, P_ARRAY("_array"), P_STRING("_uid"), P_OBJECT("_player"), P_STRING("_name")];
 		private _playerInfo = [_uid, _player, _name] call GameMode_fnc_getPlayerInfo;
-		private _existing = _playerInfoArray findIf {
+		private _existing = _array findIf {
 			_x#0 isEqualTo _uid
 		};
 		if(_existing == NOT_FOUND) then {
-			_playerInfoArray pushBack _playerInfo;
+			_array pushBack _playerInfo;
 		} else {
-			_playerInfoArray set [_existing, _playerInfo];
+			_array set [_existing, _playerInfo];
 		};
-		diag_log format["Saving player info for %1: %2", name _player, _playerInfo];
-		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
+		_playerInfo
 	} ENDMETHOD;
 
 	METHOD("syncPlayerInfo") {
@@ -1809,20 +1818,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM1("Unit", "saveStaticVariables", _storage);
 		CALLSM1("MessageReceiver", "saveStaticVariables", _storage);
 
-		// Update player info for alive players
+		// Save player info for alive players
+		// Copy existing player info (will include unspawned players with restore info)
+		private _savedPlayerInfoArray = +T_GETV("playerInfoArray");
 		{
-			T_CALLM3("savePlayerInfo", getPlayerUID _x, _x, name _x);
+			T_CALLM4("_savePlayerInfoTo", _savedPlayerInfoArray, getPlayerUID _x, _x, name _x);
 		} forEach (allPlayers select { alive _x });
+		T_SETV("savedPlayerInfoArray", _savedPlayerInfoArray);
 
 		// Lock all message loops in specific order
-		private _msgLoops = [
-								["messageLoopGameMode", 10],
-								["messageLoopCommanderEast", 150],
-								["messageLoopCommanderWest", 150],
-								["messageLoopCommanderInd", 150],
-								["messageLoopMain", 30],
-								["messageLoopGroupAI", 10]
-							];
 		{
 			_x params ["_loopName", "_timeout"];
 			private _msgLoop = T_GETV(_loopName);
@@ -1834,9 +1838,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				diag_log _text;
 				[_text] remoteExec ["systemChat"];
 			};
-		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
+		} forEach ALL_MESSAGE_LOOPS_AND_TIMEOUTS;
 
-		
+		// We use critical sections below to force Arma to concede more
+		// CPU time to the save operation as it is very slow.
 		// Save message loops
 		{
 			CRITICAL_SECTION {
@@ -1845,7 +1850,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				diag_log format ["Saving thread: %1", _loopName];
 				CALLM1(_storage, "save", _msgLoop);
 			};
-		} forEach _msgLoops;
+		} forEach ALL_MESSAGE_LOOPS;
 
 		// Save commanders
 		// They will also save their garrisons
@@ -1877,21 +1882,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
 
-		private _msgLoops = [
-								"messageLoopGameMode",
-								"messageLoopCommanderEast",
-								"messageLoopCommanderWest",
-								"messageLoopCommanderInd",
-								"messageLoopMain",
-								"messageLoopGroupAI"
-							];
-
 		// Unlock all message loops
 		{
 			private _msgLoop = T_GETV(_x);
 			diag_log format ["Unlocking message loop: %1", _x];
 			CALLM0(_msgLoop, "unlock");
-		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]);
+		} forEach ALL_MESSAGE_LOOPS;
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 		diag_log format [" FINISHED SAVING GAME MODE: %1", _thisObject];
@@ -1923,9 +1919,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		// Set default values if they weren't loaded due to older save version
-		if(isNil{T_GETV("playerInfoArray")}) then {
+		private _savedPlayerInfoArray = T_GETV("savedPlayerInfoArray");
+		if(isNil "_savedPlayerInfoArray") then {
 			T_SETV("playerInfoArray", []);
+		} else {
+			T_SETV("playerInfoArray", _savedPlayerInfoArray);
 		};
+
 		if(isNil{T_GETV("savedSpecialGarrisons")}) then {
 			T_SETV("savedSpecialGarrisons", []);
 		};
