@@ -105,7 +105,7 @@ CLASS("VirtualRoute", "")
 		T_SETV("nextIdx", 0);
 
 		T_SETV("stopped", true);
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 
 		T_SETV("complete", false);
 
@@ -219,7 +219,7 @@ CLASS("VirtualRoute", "")
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", false);
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 	} ENDMETHOD;
 
 	/*
@@ -230,7 +230,7 @@ CLASS("VirtualRoute", "")
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", true);
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 	} ENDMETHOD;
 
 	/*
@@ -248,9 +248,9 @@ CLASS("VirtualRoute", "")
 
 		private _last_t = T_GETV("last_t");
 		// Time since last update
-		pr _dt = time - _last_t;
+		pr _dt = GAME_TIME - _last_t;
 		_dt = _dt min 30; // We want to limit the max amount of distance we can travel, otherwise it will appear that AIs teleport
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 
 		// How far to the next node?
 		private _pos = T_GETV("pos");

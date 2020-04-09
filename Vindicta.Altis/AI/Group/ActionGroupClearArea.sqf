@@ -29,7 +29,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		// We and using Armas auto combat to determine when to stop patrolling to engage instead
 		T_SETV("behaviour", "AWARE");
 
-		T_SETV("nextLookTime", TIME_NOW);
+		T_SETV("nextLookTime", GAME_TIME);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -102,7 +102,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 			T_CALLM1("teleport", waypointPosition _wp0);
 		};
 
-		T_SETV("nextLookTime", TIME_NOW);
+		T_SETV("nextLookTime", GAME_TIME);
 
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -118,7 +118,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		private _state = T_CALLM0("activateIfInactive");
 
-		if(_state == ACTION_STATE_ACTIVE && {TIME_NOW > T_GETV("nextLookTime")}) then {
+		if(_state == ACTION_STATE_ACTIVE && {GAME_TIME > T_GETV("nextLookTime")}) then {
 			private _pos = T_GETV("pos");
 			private _radius = T_GETV("radius");
 			private _hG = T_GETV("hG");
@@ -146,7 +146,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 					_x commandWatch _tgt;
 				} foreach units _hG;
 
-				private _nextLookTime = TIME_NOW + random[5, 15, 30];
+				private _nextLookTime = GAME_TIME + random[5, 15, 30];
 				T_SETV("nextLookTime",  _nextLookTime);
 			} else {
 				{
@@ -156,7 +156,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 					_x commandWatch _lookAtPos;
 				} foreach units _hG;
 
-				private _nextLookTime = TIME_NOW + random[0, 5, 15];
+				private _nextLookTime = GAME_TIME + random[0, 5, 15];
 				T_SETV("nextLookTime",  _nextLookTime);
 			};
 		};

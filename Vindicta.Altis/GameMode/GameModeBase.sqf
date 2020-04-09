@@ -70,7 +70,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("spawningInterval", 120);
 		#endif
 		FIX_LINE_NUMBERS()
-		T_SETV("lastSpawn", TIME_NOW);
+		T_SETV("lastSpawn", GAME_TIME);
 
 		T_SETV("messageLoopMain", NULL_OBJECT);
 		T_SETV("messageLoopGroupAI", NULL_OBJECT);
@@ -1645,8 +1645,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD("doSpawning") {
 		params [P_THISOBJECT];
 
-		if(T_GETV("lastSpawn") + T_GETV("spawningInterval") > TIME_NOW) exitWith {};
-		T_SETV("lastSpawn", TIME_NOW);
+		if(T_GETV("lastSpawn") + T_GETV("spawningInterval") > GAME_TIME) exitWith {};
+		T_SETV("lastSpawn", GAME_TIME);
 
 		{
 			private _loc = _x;
@@ -1845,9 +1845,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Save message loops
 		{
 			CRITICAL_SECTION {
-				_x params ["_loopName", "_timeout"];
-				private _msgLoop = T_GETV(_loopName);
-				diag_log format ["Saving thread: %1", _loopName];
+				private _msgLoop = T_GETV(_x);
+				diag_log format ["Saving thread: %1", _x];
 				CALLM1(_storage, "save", _msgLoop);
 			};
 		} forEach ALL_MESSAGE_LOOPS;
@@ -1943,16 +1942,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM1("MessageReceiver", "loadStaticVariables", _storage);
 
 		// Restore some variables
-		T_SETV("lastSpawn", TIME_NOW);
-
-		private _msgLoops = [
-						"messageLoopGameMode",
-						"messageLoopCommanderEast",
-						"messageLoopCommanderWest",
-						"messageLoopCommanderInd",
-						"messageLoopMain",
-						"messageLoopGroupAI"
-					];
+		T_SETV("lastSpawn", GAME_TIME);
 
 		// Load message loops
 		{
@@ -1962,7 +1952,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM1(_storage, "load", _msgLoop);
 				CALLM0(_msgLoop, "lock"); // We lock the message loops during the game load process
 			};
-		} forEach	_msgLoops;
+		} forEach MESSAGE_LOOPS;
 
 		// Set global variables
 		gMessageLoopMain = T_GETV("messageLoopMain");
@@ -2100,7 +2090,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _msgLoop = T_GETV(_x);
 			diag_log format ["Unlocking message loop: %1", _x];
 			CALLM0(_msgLoop, "unlock");
-		} forEach _msgLoops;
+		} forEach MESSAGE_LOOPS;
 
 		// Start commanders
 		T_CALLM0("startCommanders");

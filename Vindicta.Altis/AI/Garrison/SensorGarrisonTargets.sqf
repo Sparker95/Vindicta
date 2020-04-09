@@ -95,7 +95,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			pr _gar = GETV(_AI, "agent");
 			pr _loc = CALLM0(_gar, "getLocation");
 			// alarm goes for 6 seconds (3 cycles) every 18 seconds
-			if (_loc != NULL_OBJECT && {!CALLM0(_loc, "isAlarmDisabled")} && { ((TIME_NOW / 2) % 5) < 1 }) then {
+			if (_loc != NULL_OBJECT && {!CALLM0(_loc, "isAlarmDisabled")} && { ((GAME_TIME / 2) % 5) < 1 }) then {
 				pr _pos = CALLM0(_loc, "getPos");
 				playSound3D ["A3\Sounds_F\sfx\Alarm_OPFOR.wss", objNull, false, (AGLTOASL _pos) vectorAdd [0, 0, 5], 0.5, 0.8, 800];
 			};

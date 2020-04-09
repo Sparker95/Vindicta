@@ -164,7 +164,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 				[]
 			};
 
-			T_SETV("time", TIME_NOW);
+			T_SETV("time", GAME_TIME);
 
 			T_CALLM0("clearGroupGoals");
 			T_CALLM4("assignMoveGoals", _pos, _radius, _route, _instant)
@@ -233,8 +233,8 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 					_vectorDir = ZERO_HEIGHT(_vectorDir);
 
 					// Increase position (avoiding overshoot)
-					private _dt = TIME_NOW - T_GETV("time");
-					T_SETV("time", TIME_NOW);
+					private _dt = GAME_TIME - T_GETV("time");
+					T_SETV("time", GAME_TIME);
 					_garPos vectorAdd (_vectorDir vectorMultiply MINIMUM(_dt*3, _vectorDist))
 				};
 				CALLM1(_AI, "setPos", _newPos);

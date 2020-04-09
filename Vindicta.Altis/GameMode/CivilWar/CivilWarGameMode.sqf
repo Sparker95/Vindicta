@@ -44,7 +44,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		params [P_THISOBJECT];
 		T_SETV("name", "CivilWar");
 		T_SETV("spawningEnabled", false);
-		T_SETV("lastUpdateTime", TIME_NOW);
+		T_SETV("lastUpdateTime", GAME_TIME);
 		T_SETV("phase", 0);
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
@@ -275,8 +275,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		//T_CALLM("updateEndCondition", []); // No need for it right now
 
 		private _lastUpdateTime = T_GETV("lastUpdateTime");
-		private _dt = 0 max (TIME_NOW - _lastUpdateTime) min 120; // It can be negative at start??
-		T_SETV("lastUpdateTime", TIME_NOW);
+		private _dt = 0 max (GAME_TIME - _lastUpdateTime) min 120; // It can be negative at start??
+		T_SETV("lastUpdateTime", GAME_TIME);
 
 		// Update city stability and state
 		{

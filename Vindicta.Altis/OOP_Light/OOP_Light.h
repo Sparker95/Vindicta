@@ -82,6 +82,8 @@
 #undef DEBUG_GOAL_MARKERS
 
 #define TIME_NOW 0
+#define GAME_TIME 0
+#define PROCESS_TIME 0
 #define DATE_NOW [0,0,0,0,0]
 #define CLIENT_OWNER 0
 #define IS_SERVER true
@@ -103,6 +105,10 @@
 #define VM_LOG_FMT(t, args)
 
 #define TIME_NOW time
+#define GAME_TIME (time - gGameFreezeTime)
+gGameFreezeTime = 0;
+publicVariable "gGameFreezeTime";
+#define PROCESS_TIME time
 #define DATE_NOW date
 #define CLIENT_OWNER clientOwner
 #define IS_SERVER isServer

@@ -79,7 +79,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 
 		if ((_posUnit distance2D _posTarget) < 40 ) then {
 			if (T_GETV("isHandleSpawned") != 1) then {
-				T_SETV("startSpawnedTime", time);
+				T_SETV("startSpawnedTime", GAME_TIME);
 				pr _spawnedTime = T_GETV("startSpawnedTime");
 
 				pr _handle = [_target, _oh, _oldCount, _posUnit, _posTarget, _spawnedTime] spawn {
@@ -105,7 +105,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 						_oldCount - 1 >= (_oh ammo primaryWeapon _oh) ||
 						(_posUnit distance2D _posTarget) > 100 ||
 						IS_ARRESTED_UNCONSCIOUS_DEAD(_target) ||
-						time > (20 + _spawnedTime)
+						GAME_TIME > (20 + _spawnedTime)
 					};
 
 					deleteVehicle _fakeTarget;

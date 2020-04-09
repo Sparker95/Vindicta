@@ -42,7 +42,7 @@ CLASS("ActionUnitFollow", "ActionUnit")
 		};
 
 		T_SETV("expectedDistance", _expectedDistance);
-		T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
+		T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD);
 		T_SETV("lastPos", position _hO);
 		T_SETV("stuckCounter", 0);
 
@@ -73,7 +73,7 @@ CLASS("ActionUnitFollow", "ActionUnit")
 
 		private _state = T_CALLM0("activateIfInactive");
 
-		if (TIME_NOW > T_GETV("stuckTimer")) then {
+		if (GAME_TIME > T_GETV("stuckTimer")) then {
 
 			private _hTarget = T_GETV("hTarget");
 			if(isNull _hTarget) then {
@@ -123,7 +123,7 @@ CLASS("ActionUnitFollow", "ActionUnit")
 
 				T_SETV("stuckCounter", _stuckCounter + 1);
 			};
-			T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
+			T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD);
 		};
 
 		T_SETV("state", _state);

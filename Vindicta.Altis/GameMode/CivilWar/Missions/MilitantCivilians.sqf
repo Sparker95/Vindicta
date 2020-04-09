@@ -165,20 +165,20 @@ pr0_fnc_selectPrimaryWeapon = {
 
 pr0_fnc_doMoveTimeout = {
 	params ["_unit", "_tgt", "_range"];
-	private _timeout = time + 60;
+	private _timeout = GAME_TIME + 60;
 	systemChat format ["%1 moving to %2", name _unit, mapGridPosition _tgt];
 	_unit stop false;
 	private _lastTgtPos = position _tgt;
 	_unit doMove _lastTgtPos;
 	private _ledByPlayer = leader _unit in allPlayers;
-	private _nextRetarget = time + 5;
+	private _nextRetarget = GAME_TIME + 5;
 	waitUntil {
 		sleep 1;
 
-		if(_lastTgtPos distance _tgt > 0 && time > _nextRetarget) then {
+		if(_lastTgtPos distance _tgt > 0 && GAME_TIME > _nextRetarget) then {
 			_lastTgtPos = position _tgt;
 			_unit doMove _lastTgtPos;
-			_nextRetarget = time + 5;
+			_nextRetarget = GAME_TIME + 5;
 		};
 
 		if(isNull _unit || {!alive _unit}) exitWith {
@@ -193,7 +193,7 @@ pr0_fnc_doMoveTimeout = {
 			systemChat format ["%1 moved to %2 successfully", name _unit, mapGridPosition _tgt];
 			true
 		};
-		if(time > _timeout) exitWith {
+		if(GAME_TIME > _timeout) exitWith {
 			systemChat format ["%1 failed to move to %2: timeout", name _unit, mapGridPosition _tgt];
 			true
 		};
@@ -441,8 +441,8 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		T_SETV("activeCivs", []);
-		T_SETV("nextInformant", TIME_NOW);
-		T_SETV("nextIntelUpdate", TIME_NOW);
+		T_SETV("nextInformant", GAME_TIME);
+		T_SETV("nextIntelUpdate", GAME_TIME);
 		T_SETV("newIntel", []);
 	} ENDMETHOD;
 
@@ -481,9 +481,9 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		private _instability = GETV(_cityData, "instability");
 
 		// Refresh intel if stale
-		if(TIME_NOW > T_GETV("nextIntelUpdate")) then
+		if(GAME_TIME > T_GETV("nextIntelUpdate")) then
 		{
-			T_SETV("nextIntelUpdate", TIME_NOW + 120);
+			T_SETV("nextIntelUpdate", GAME_TIME + 120);
 			// Lets find out if we have some intel for the player that they don't have already
 			private _civGarr = CALLM1(_city, "getGarrisons", civilian) select 0;
 			if(!isNil "_civGarr") then {
@@ -520,14 +520,14 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 					// continue
 				};
 
-				case (TIME_NOW >= T_GETV("nextInformant") 
+				case (GAME_TIME >= T_GETV("nextInformant") 
 					&& !_ledByPlayer
 					&& {[_civ, T_GETV("newIntel")] call pr0_fnc_givePlayerIntel}): {
 					// continue
 					#ifdef MILITANT_CIVILIANS_TESTING
-					private _nextInformant = TIME_NOW + 30;
+					private _nextInformant = GAME_TIME + 30;
 					#else
-					private _nextInformant = TIME_NOW + random [150, 300, 450];
+					private _nextInformant = GAME_TIME + random [150, 300, 450];
 					#endif
 					T_SETV("nextInformant", _nextInformant);
 				};

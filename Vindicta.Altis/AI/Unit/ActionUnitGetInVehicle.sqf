@@ -362,7 +362,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				// Calculate ETA
 				pr _hO = T_GETV("hO");
 				pr _hVeh = T_GETV("hVeh");
-				pr _ETA = time + ((_hO distance _hVeh)/1.4 + 40);
+				pr _ETA = GAME_TIME + ((_hO distance _hVeh)/1.4 + 40);
 				OOP_INFO_1("Set ETA: %1", _ETA);
 				T_SETV("ETA", _ETA);
 
@@ -449,8 +449,8 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						
 						// Check ETA
 						pr _ETA = T_GETV("ETA");
-						OOP_INFO_2("Time: %1, ETA: %2", time, _ETA);
-						if(time > _ETA) then {
+						OOP_INFO_2("Time: %1, ETA: %2", GAME_TIME, _ETA);
+						if(GAME_TIME > _ETA) then {
 							// FFS why did you get stuck again??
 							// When are BIS going to repair their fucking AIs stucking in the middle of fucking nowhere?
 							// Let's just teleport you, buddy :/

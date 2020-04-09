@@ -108,7 +108,7 @@ CLASS("AICommander", "AI")
 			_mrk setMarkerAlpha 1;
 			while{true} do {
 				sleep 5;
-				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), TIME_NOW - T_GETV("stateStart")]);
+				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), GAME_TIME - T_GETV("stateStart")]);
 			};
 		};
 		#endif
@@ -199,7 +199,7 @@ CLASS("AICommander", "AI")
 		// U P D A T E   S E N S O R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update sensors");
-		T_SETV("stateStart", TIME_NOW);
+		T_SETV("stateStart", GAME_TIME);
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -209,7 +209,7 @@ CLASS("AICommander", "AI")
 		// U P D A T E   C L U S T E R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update clusters");
-		T_SETV("stateStart", TIME_NOW);
+		T_SETV("stateStart", GAME_TIME);
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -230,7 +230,7 @@ CLASS("AICommander", "AI")
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "action update");
-		T_SETV("stateStart", TIME_NOW);
+		T_SETV("stateStart", GAME_TIME);
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -238,7 +238,7 @@ CLASS("AICommander", "AI")
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "model planning");
-		T_SETV("stateStart", TIME_NOW);
+		T_SETV("stateStart", GAME_TIME);
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -257,7 +257,7 @@ CLASS("AICommander", "AI")
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "cleanup");
-		T_SETV("stateStart", TIME_NOW);
+		T_SETV("stateStart", GAME_TIME);
 		#endif
 		FIX_LINE_NUMBERS()
 		{
@@ -298,7 +298,7 @@ CLASS("AICommander", "AI")
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
-		T_SETV("stateStart", TIME_NOW);
+		T_SETV("stateStart", GAME_TIME);
 		#endif
 		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
@@ -558,7 +558,7 @@ CLASS("AICommander", "AI")
 
 		
 		// Set time
-		//SETV(_value, "", set [CLD_ID_TIME, TIME_NOW];
+		//SETV(_value, "", set [CLD_ID_TIME, GAME_TIME];
 		
 		// Set type
 		if (_updateLevel >= CLD_UPDATE_LEVEL_TYPE) then {
@@ -3388,7 +3388,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_mrk setMarkerAlpha 1;
 			while{true} do {
 				sleep 5;
-				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), TIME_NOW - T_GETV("stateStart")]);
+				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), GAME_TIME - T_GETV("stateStart")]);
 			};
 		};
 		#endif

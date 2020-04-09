@@ -62,7 +62,7 @@ CLASS("WorldModel", "Storable")
 			T_SETV("rawDamageGrid", _rawDamageGrid);
 			T_SETV("damageGrid", _damageGrid);
 
-			T_SETV("lastGridUpdate", TIME_NOW);
+			T_SETV("lastGridUpdate", GAME_TIME);
 			T_SETV("gridMutex", MUTEX_NEW());
 		} else {
 			T_SETV("rawThreatGrid", NULL_OBJECT);
@@ -176,8 +176,8 @@ CLASS("WorldModel", "Storable")
 		#define DAMAGE_FADE_PERIOD (180*60)
 
 		private _lastGridUpdate = T_GETV("lastGridUpdate");
-		private _dt = TIME_NOW - _lastGridUpdate;
-		T_SETV("lastGridUpdate", TIME_NOW);
+		private _dt = GAME_TIME - _lastGridUpdate;
+		T_SETV("lastGridUpdate", GAME_TIME);
 
 		private _threatFade = 2 ^ (-_dt / THREAT_FADE_PERIOD);
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
@@ -874,7 +874,7 @@ CLASS("WorldModel", "Storable")
 
 		// Set up other variables
 		T_SETV("gridMutex", MUTEX_NEW());
-		T_SETV("lastGridUpdate", TIME_NOW);
+		T_SETV("lastGridUpdate", GAME_TIME);
 
 		true
 	} ENDMETHOD;

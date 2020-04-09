@@ -13,7 +13,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 		T_SETV("pos", ZERO_HEIGHT(_pos));
 		private _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS, 100);
 		T_SETV("radius", _radius);
-		T_SETV("nextLookTime", TIME_NOW);
+		T_SETV("nextLookTime", GAME_TIME);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -30,7 +30,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 			vehicle leader _hG setDir (vehicle leader _hG getDir _pos);
 		};
 
-		T_SETV("nextLookTime", TIME_NOW);
+		T_SETV("nextLookTime", GAME_TIME);
 
 		// if(terrainIntersect [_pos vectorAdd [0, 0, 1], position leader _hG vectorAdd [0, 0, 1]]) then {
 		// 	// Failed, can't see the target position
@@ -47,7 +47,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 		params [P_THISOBJECT];
 
 		private _state = T_CALLM0("activateIfInactive");
-		if(_state == ACTION_STATE_ACTIVE && {TIME_NOW > T_GETV("nextLookTime")}) then {
+		if(_state == ACTION_STATE_ACTIVE && {GAME_TIME > T_GETV("nextLookTime")}) then {
 			private _pos = T_GETV("pos");
 			private _radius = T_GETV("radius");
 
@@ -63,7 +63,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 				_x commandWatch _lookAtPos;
 			} foreach units _hG;
 
-			private _nextLookTime = TIME_NOW + random[0, 10, 15];
+			private _nextLookTime = GAME_TIME + random[0, 10, 15];
 			T_SETV("nextLookTime",  _nextLookTime);
 		};
 		_state
