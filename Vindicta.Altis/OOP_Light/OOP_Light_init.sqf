@@ -23,6 +23,11 @@ if(isNil OOP_GVAR_STR(sessionID)) then {
 };
 #endif
 
+if(IS_SERVER) then {
+	gGameFreezeTime = 0;
+	PUBLIC_VARIABLE "gGameFreezeTime";
+};
+
 // Prints an error message with supplied text, file and line number
 OOP_error = {
 	params["_file", "_line", "_text"];

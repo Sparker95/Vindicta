@@ -261,9 +261,9 @@ CLASS("GameManager", "MessageReceiverEx")
 
 			diag_log format ["[GameManager] Saving game mode: %1", gGameMode];
 			CALLM1(_storage, "save", gGameMode);
-			CRITICAL_SECTION {
-				CALLM2(_storage, "save", "gameMode", gGameMode);	// Ref to game mode object
-			};
+			//CRITICAL_SECTION {
+			CALLM2(_storage, "save", "gameMode", gGameMode);	// Ref to game mode object
+			//};
 			
 			diag_log format ["[GameManager] Saving save game header..."];
 			[_header] call OOP_dumpAllVariables;
@@ -362,9 +362,9 @@ CLASS("GameManager", "MessageReceiverEx")
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
-						CRITICAL_SECTION {
-							CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
-						};
+						//CRITICAL_SECTION {
+						CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
+						//};
 						gGameMode = _gameModeRef;
 						gGameModeServer = _gameModeRef;
 						PUBLIC_VARIABLE "gGameModeServer";
@@ -549,9 +549,9 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Run the initialization
 		gGameMode = NEW_PUBLIC(_className, _gameModeParameters);
-		CRITICAL_SECTION {
-			CALLM0(gGameMode, "init");
-		};
+		//CRITICAL_SECTION {
+		CALLM0(gGameMode, "init");
+		//};
 		gGameModeServer = gGameMode;
 		PUBLIC_VARIABLE "gGameModeServer";
 		OOP_INFO_0("Finished initializing game mode");

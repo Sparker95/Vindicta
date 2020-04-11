@@ -34,7 +34,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		
 		_hO action ["repairVehicle", _hVeh];
 		
-		T_SETV("timeActivated", time);
+		T_SETV("timeActivated", GAME_TIME);
 		
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -51,7 +51,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// Makethe actual repair affects lag behind the animation
-			if (time - T_GETV("timeActivated") > 5) then {
+			if (GAME_TIME - T_GETV("timeActivated") > 5) then {
 				pr _hO = T_GETV("hO");
 				pr _veh = T_GETV("veh");
 				// Check if the unit is not an actual engineer

@@ -54,7 +54,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			// Use manhattan distance
 			pr _posStart = ASLTOAGL (getPosASL _hO);
 			pr _dist = (abs ((_pos select 0) - (_posStart select 0)) ) + (abs ((_pos select 1) - (_posStart select 1))) + (abs ((_pos select 2) - (_posStart select 2)));
-			pr _ETA = time + (_dist/1.4 + 40);
+			pr _ETA = GAME_TIME + (_dist/1.4 + 40);
 			T_SETV("ETA", _ETA);
 			
 			// Set state
@@ -88,7 +88,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 				// Check ETA
 				pr _ETA = T_GETV("ETA");
 				// Teleport the unit if ETA is exceeded and teleportation is allowed
-				if ((time > _ETA) && T_GETV("teleport")) then {
+				if ((GAME_TIME > _ETA) && T_GETV("teleport")) then {
 					OOP_WARNING_2("MOVE FAILED for infantry unit: %1, position: %2", _thisObject, _pos);
 				
 					// Should we teleport him or someone will blame AI for cheating??

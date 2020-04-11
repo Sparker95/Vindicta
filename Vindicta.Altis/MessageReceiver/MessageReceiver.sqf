@@ -269,7 +269,7 @@ CLASS("MessageReceiver", "Storable")
 
 		// Wait until a local messageLoop or remote messageLoop marks the message as processed
 		#ifdef WAIT_UNTIL_TIMEOUT_ENABLE
-		private _timeStartedWaiting = time;
+		private _timeStartedWaiting = PROCESS_TIME;
 		#endif
 
 		pr _return = 0;
@@ -278,7 +278,7 @@ CLASS("MessageReceiver", "Storable")
 			OOP_INFO_1("waiting for msgID to be done: %1", _msgID);
 
 			#ifdef WAIT_UNTIL_TIMEOUT_ENABLE
-			if (time - _timeStartedWaiting > WAIT_UNTIL_TIMEOUT) then {
+			if (PROCESS_TIME - _timeStartedWaiting > WAIT_UNTIL_TIMEOUT) then {
 				OOP_ERROR_0("waitUntilMessageDone has exceeded threshold!");
 				if (!isNil "_thisScript") then {
 					OOP_ERROR_1("  This script: %1", _thisScript);
@@ -309,7 +309,7 @@ CLASS("MessageReceiver", "Storable")
 				[_text] remoteExec ["systemChat"];
 
 				// Reset warning timer
-				_timeStartedWaiting = time;
+				_timeStartedWaiting = PROCESS_TIME;
 			};
 			#endif
 
@@ -393,13 +393,13 @@ CLASS("MessageReceiver", "Storable")
 		pr _ackVarName = OWNER_CHANGE_ACK(_uniqueID); // Variable that will be set to 1 when the other machine acks the ownership change
 		missionNamespace setVariable [_ackVarName, nil];
 		[_thisObject, _parent, _uniqueID, _serdata] remoteExecCall [CLASS_METHOD_NAME_STR("MessageReceiver", "receiveOwnership"), _newOwner, false];
-		pr _timeTimeout = time + OWNER_CHANGE_ACK_TIMEOUT;
+		pr _timeTimeout = PROCESS_TIME + OWNER_CHANGE_ACK_TIMEOUT;
 		waitUntil {
-			(! (isNil _ackVarName)) || (time > _timeTimeout)
+			(! (isNil _ackVarName)) || (PROCESS_TIME > _timeTimeout)
 		};
 
 		// Did the ownership change timeout?
-		if (time > _timeTimeout) exitWith {
+		if (PROCESS_TIME > _timeTimeout) exitWith {
 
 			// Try to invalidate the object's owner at the other machine
 			[[_thisObject, CLIENT_OWNER], {SETV(_this select 0, "owner", _this select 1);}] remoteExecCall ["call", _newOwner, false];

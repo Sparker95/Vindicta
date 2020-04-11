@@ -174,11 +174,11 @@ CLASS("AI", "MessageReceiverEx")
 			if (_interval > 0) then {
 				pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
 				//OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
-				if ((TIME_NOW > _timeNextUpdate) || _forceUpdate) then {
+				if ((GAME_TIME > _timeNextUpdate) || _forceUpdate) then {
 					//OOP_INFO_0("  Calling UPDATE!");
 					//OOP_INFO_1("Updating sensor: %1", _sensor);
 					CALLM0(_sensor, "update");
-					SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
+					SETV(_sensor, "timeNextUpdate", GAME_TIME + _interval);
 				};
 			};
 		} forEach _sensors;

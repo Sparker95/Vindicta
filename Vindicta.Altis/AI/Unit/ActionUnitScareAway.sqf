@@ -44,7 +44,7 @@ CLASS("ActionUnitScareAway", "Action")
 		OOP_DEBUG_0("active: Unit is pissed off!");
 		
 		//might what to move this to Action base class
-		T_SETV("activationTime", time);
+		T_SETV("activationTime", GAME_TIME);
 		
 		pr _oh = T_GETV("objectHandle");
 		pr _AI = T_GETV("AI");

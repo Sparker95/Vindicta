@@ -2,7 +2,7 @@
 #define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
 
-// Looks kind of empty since all was moved elsewhere, we need to remove the file probably
+// Most normal init code is handled in GameMode init functions.
 
 // Code which adds all objects to be edited by zeus
 if (isServer) then {  

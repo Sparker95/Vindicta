@@ -594,9 +594,7 @@ CLASS(CLASS_NAME, "")
 		pr _pos = ctrlPosition _ctrl;
 		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, 1];
 		pr _finalText = format["<t size='0.8' font='EtelkaMonospacePro' align='left'>%1</t>", _text];
-		diag_log _finalText;
 		pr _parsedText = parseText _finalText;
-		diag_log _parsedText;
 		_ctrl ctrlSetStructuredText _parsedText;
 		pr _height = ctrlTextHeight _ctrl;
 		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, _height];

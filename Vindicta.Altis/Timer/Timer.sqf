@@ -41,7 +41,7 @@ CLASS("Timer", "");
 		// Fill the data array
 		private _data = TIMER_DATA_DEFAULT;
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
-		_data set [TIMER_DATA_ID_TIME_NEXT, TIME_NOW+_interval];
+		_data set [TIMER_DATA_ID_TIME_NEXT, PROCESS_TIME+_interval];
 		_data set [TIMER_DATA_ID_MESSAGE, +_message];
 		_data set [TIMER_DATA_ID_MESSAGE_RECEIVER, _messageReceiver];
 		_data set [TIMER_DATA_ID_TIMER_SERVICE, _timerService];
@@ -84,7 +84,7 @@ CLASS("Timer", "");
 		params [P_THISOBJECT, ["_interval", 1, [0]]];
 		private _data = T_GETV("data");
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
-		_data set [TIMER_DATA_ID_TIME_NEXT, TIME_NOW+_interval];
+		_data set [TIMER_DATA_ID_TIME_NEXT, PROCESS_TIME+_interval];
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------

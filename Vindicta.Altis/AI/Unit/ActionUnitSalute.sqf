@@ -46,7 +46,7 @@ CLASS("ActionUnitSalute", "Action")
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
 
-		T_SETV("activationTime", time);
+		T_SETV("activationTime", GAME_TIME);
 		
 		pr _oh = T_GETV("objectHandle");
 		pr _target = T_GETV("target");
@@ -97,7 +97,7 @@ CLASS("ActionUnitSalute", "Action")
 		
 		// Check if we have been saluting for too long
 		pr _atime = T_GETV("activationTime");
-		if (time - _atime < 4) exitWith { ACTION_STATE_ACTIVE };
+		if (GAME_TIME - _atime < 4) exitWith { ACTION_STATE_ACTIVE };
 		
 		// If time has expired, terminate
 		diag_log "salute time expired!";

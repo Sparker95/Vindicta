@@ -120,29 +120,5 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		// Return the current state
 		_state
 	} ENDMETHOD;
-	
-	// // logic to run when the action is satisfied
-	// METHOD("terminate") {
-	// 	params [P_THISOBJECT];
-		
-	// 	// Bail if not spawned
-	// 	pr _gar = T_GETV("gar");
-	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
-
-	// 	// Remove assigned goals
-	// 	pr _gar = GETV(T_GETV("AI"), "agent");
-	// 	pr _loc = CALLM0(_gar, "getLocation");
-	// 	pr _groups = CALLM0(_gar, "getGroups");
-	// 	pr _AI = T_GETV("AI");
-	// 	{ // foreach _groups
-	// 		//pr _type = CALLM0(_x, "getType");
-	// 		pr _groupAI = CALLM0(_x, "getAI");
-	// 		if (_groupAI != "") then {
-	// 			pr _args = ["", _AI]; // Just clear all given goals so far
-	// 			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-	// 		};
-	// 	} forEach _groups;
-		
-	// } ENDMETHOD;
 
 ENDCLASS;

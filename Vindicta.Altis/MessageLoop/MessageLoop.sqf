@@ -320,6 +320,11 @@ CLASS("MessageLoop", "Storable");
 		(scriptDone _scriptHandle)
 	} ENDMETHOD;
 
+	METHOD("getLength") {
+		params [P_THISOBJECT];
+		private _msgQueue = T_GETV("msgQueue");
+		count _msgQueue
+	} ENDMETHOD;
 
 	// STORAGE
 

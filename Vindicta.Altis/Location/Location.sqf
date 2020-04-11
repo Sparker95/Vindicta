@@ -4,6 +4,7 @@
 #include "..\Message\Message.hpp"
 #include "Location.hpp"
 #include "..\MessageTypes.hpp"
+#include "..\Group\Group.hpp"
 
 #ifndef RELEASE_BUILD
 #define DEBUG_LOCATION_MARKERS

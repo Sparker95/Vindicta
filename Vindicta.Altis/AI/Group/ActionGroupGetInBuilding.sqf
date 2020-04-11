@@ -49,8 +49,8 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		pr _posStart = ASLTOAGL (getPosASL CALLM0(_leaderUnit, "getObjectHandle"));
 		pr _bpos = ASLTOAGL (getPosASL _hBuilding);
 		pr _dist = (abs ((_bpos select 0) - (_posStart select 0)) ) + (abs ((_bpos select 1) - (_posStart select 1))) + (abs ((_bpos select 2) - (_posStart select 2))); // Manhattan distance
-		pr _ETA = time + (_dist + 60);
-		T_SETV("timeComplete", time + _ETA);
+		pr _ETA = GAME_TIME + (_dist + 60);
+		T_SETV("timeComplete", GAME_TIME + _ETA);
 		
 		// Find all available building positions
 		// Building is guaranteed to be alive and not null by now, it's checked in process
@@ -124,7 +124,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 			};
 
 			// For now we just use timeout which should be enough for most cases
-			if (time > T_GETV("timeComplete")) then {
+			if (GAME_TIME > T_GETV("timeComplete")) then {
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};

@@ -25,7 +25,7 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 		pr _torque = (getMass _hO) * 2;
 		T_SETV("torque", _torque);
 		
-		T_SETV("time", time);
+		T_SETV("time", GAME_TIME);
 		T_SETV("counter", 0);
 	} ENDMETHOD;
 	
@@ -56,7 +56,7 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 		if (_state == ACTION_STATE_ACTIVE) then {
 		
 			pr _time = T_GETV("time");
-			if (time - _time > 4) then { // Make sure enough time has passed between process calls
+			if (GAME_TIME - _time > 4) then { // Make sure enough time has passed between process calls
 				
 				pr _hO = T_GETV("hO");
 				if ([_hO] call misc_fnc_isVehicleFlipped) then {
@@ -89,7 +89,7 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 					_state = ACTION_STATE_COMPLETED;
 				};
 				
-				T_SETV("time", time);
+				T_SETV("time", GAME_TIME);
 			};
 		};
 		

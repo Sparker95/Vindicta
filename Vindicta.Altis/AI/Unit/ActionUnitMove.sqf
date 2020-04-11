@@ -95,7 +95,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 			T_SETV("eventId", _eventId);
 		};
 
-		T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD * 3);
+		T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD * 3);
 		T_SETV("stuckCounter", 0);
 
 		// Delete all previous waypoints
@@ -230,7 +230,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 
 			OOP_WARNING_1("Unit is probably stuck: %1", _stuckTimer);
 
-			if (TIME_NOW > _stuckTimer) then {
+			if (GAME_TIME > _stuckTimer) then {
 				OOP_WARNING_0("Unit is totally stuck now!");
 
 				private _stuckCounter = T_GETV("stuckCounter");
@@ -247,11 +247,11 @@ CLASS("ActionUnitMove", "ActionUnit")
 					case (_stuckCounter < 3): {
 						T_CALLM0("regroup");
 						_hO doMove getWPPos (waypoints group _hO select currentWaypoint group _hO);
-						T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
+						T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD);
 					};
 					case (_stuckCounter < 5): {
 						T_CALLM0("clearWaypoints");
-						T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
+						T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD);
 					};
 					case (_stuckCounter < 10): {
 						// Let's try to teleport you somewhere >_<
@@ -263,7 +263,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 							[_defaultPos, 0, 100, 0, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
 						};
 						_hVeh setPos _newPos;
-						T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD * 3);
+						T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD * 3);
 					};
 					default {
 						// We failed with routing to the first waypoint, lets mark it as bad in our world facts for a while
@@ -275,14 +275,14 @@ CLASS("ActionUnitMove", "ActionUnit")
 							CALLM1(_AI, "addWorldFact", _wf);
 						};
 						_state = ACTION_STATE_FAILED;
-						T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD);
+						T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD);
 					};
 				};
 				T_SETV("stuckCounter", _stuckCounter + 1);
 			};
 		} else {
 			// Reset the timer
-			T_SETV("stuckTimer", TIME_NOW + TIMER_STUCK_THRESHOLD * 3);
+			T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD * 3);
 			T_SETV("stuckCounter", 0);
 		};
 

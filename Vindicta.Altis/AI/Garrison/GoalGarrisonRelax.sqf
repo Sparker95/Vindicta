@@ -9,7 +9,7 @@ CLASS("GoalGarrisonRelax", "Goal")
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// What is the garrison alert level?
-		if (time - GETV(_AI, "lastBusyTime") > AI_GARRISON_IDLE_TIME_THRESHOLD && { !CALLM0(_AI, "isVigilant") }) then { // Have we been idling for too long?
+		if (GAME_TIME - GETV(_AI, "lastBusyTime") > AI_GARRISON_IDLE_TIME_THRESHOLD && { !CALLM0(_AI, "isVigilant") }) then { // Have we been idling for too long?
 			GETSV("GoalGarrisonRelax", "relevance")
 		} else {
 			0

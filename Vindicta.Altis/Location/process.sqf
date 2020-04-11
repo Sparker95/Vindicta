@@ -19,13 +19,13 @@ pr _timer = T_GETV("timer");
 
 // Update build progress every 15 mins or so
 private _lastBuildProgressTime = T_GETV("lastBuildProgressTime");
-private _dt = TIME_NOW - _lastBuildProgressTime;
+private _dt = GAME_TIME - _lastBuildProgressTime;
 #ifdef DEBUG_BUILDING
-T_SETV("lastBuildProgressTime", TIME_NOW);
+T_SETV("lastBuildProgressTime", GAME_TIME);
 T_CALLM1("updateBuildProgress", 15 * 60);
 #else
-if(TIME_NOW - _lastBuildProgressTime > 15 * 60) then {
-	T_SETV("lastBuildProgressTime", TIME_NOW);
+if(GAME_TIME - _lastBuildProgressTime > 15 * 60) then {
+	T_SETV("lastBuildProgressTime", GAME_TIME);
 	T_CALLM1("updateBuildProgress", _dt);
 };
 #endif

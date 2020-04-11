@@ -86,7 +86,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("assignedTargetsPos", [0 ARG 0 ARG 0]);
 		T_SETV("assignedTargetsRadius", 0);
 		T_SETV("awareOfAssignedTargets", false);
-		T_SETV("lastBusyTime", time-AI_GARRISON_IDLE_TIME_THRESHOLD-1); // Garrison should be able to switch to relax instantly after its creation
+		T_SETV("lastBusyTime", GAME_TIME - AI_GARRISON_IDLE_TIME_THRESHOLD-1); // Garrison should be able to switch to relax instantly after its creation
 		
 		// Update composition
 		T_CALLM0("updateComposition");
@@ -293,7 +293,7 @@ CLASS("AIGarrison", "AI_GOAP")
 			// Update the "busy" timer
 			pr _currentGoal = T_GETV("currentGoal");
 			if (_currentGoal != NULL_OBJECT && _currentGoal != "GoalGarrisonRelax") then { // Do we have anything to do?
-				T_SETV("lastBusyTime", time);
+				T_SETV("lastBusyTime", GAME_TIME);
 			};
 
 			#ifdef DEBUG_GOAL_MARKERS
@@ -307,10 +307,10 @@ CLASS("AIGarrison", "AI_GOAP")
 			// Update the sensor if it's time to update it
 			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
 			// If timeNextUpdate is 0, we never update this sensor
-			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate)) then {
+			if ((_timeNextUpdate != 0 && GAME_TIME > _timeNextUpdate)) then {
 				CALLM0(_sensor, "update");
 				pr _interval = CALLM0(_sensor, "getUpdateInterval");
-				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
+				SETV(_sensor, "timeNextUpdate", GAME_TIME + _interval);
 			};
 		};
 
@@ -712,7 +712,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_CALLM0("_initSensors");
 
 		// Restore other variables
-		T_SETV("lastBusyTime", time-AI_GARRISON_IDLE_TIME_THRESHOLD-1);
+		T_SETV("lastBusyTime", GAME_TIME - AI_GARRISON_IDLE_TIME_THRESHOLD-1);
 
 		// Restore debug markers
 		#ifdef DEBUG_GOAL_MARKERS

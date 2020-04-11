@@ -62,28 +62,28 @@ pr0_fnc_initDebugMenu = {
 	["Open", true] call bis_fnc_arsenal;
 }] call pr0_fnc_addDebugMenuItem;
 
-if(isServer) then {
-	gLocationMarkersOn = true;
-	gGarrisonMarkersOn = true;
-};
+// if(isServer) then {
+// 	gLocationMarkersOn = true;
+// 	gGarrisonMarkersOn = true;
+// };
 
-pr0_fnc_toggleMarkers = {
-	params ["_state", "_prefix"];
-	{
-		if(_state) then {
-			_x setMarkerAlpha 1;
-		} else {
-			_x setMarkerAlpha 0;
-		};
-	} foreach ( allMapMarkers select { _x find _prefix == 0 } ) ;
-};
+// pr0_fnc_toggleMarkers = {
+// 	params ["_state", "_prefix"];
+// 	{
+// 		if(_state) then {
+// 			_x setMarkerAlpha 1;
+// 		} else {
+// 			_x setMarkerAlpha 0;
+// 		};
+// 	} foreach ( allMapMarkers select { _x find _prefix == 0 } ) ;
+// };
 
-["Map", "Toggle location markers", {
-	[[], { gLocationMarkersOn = !gLocationMarkersOn; [gLocationMarkersOn, "o_Location_N"] call pr0_fnc_toggleMarkers; } ] remoteExec ["call", 2];
-}] call pr0_fnc_addDebugMenuItem;
-["Map", "Toggle garrison markers", {
-	[[], { gGarrisonMarkersOn = !gGarrisonMarkersOn; [gGarrisonMarkersOn, "o_AIGarrison_N"] call pr0_fnc_toggleMarkers; } ] remoteExec ["call", 2];
-}] call pr0_fnc_addDebugMenuItem;
+// ["Map", "Toggle location markers", {
+// 	[[], { gLocationMarkersOn = !gLocationMarkersOn; [gLocationMarkersOn, "o_Location_N"] call pr0_fnc_toggleMarkers; } ] remoteExec ["call", 2];
+// }] call pr0_fnc_addDebugMenuItem;
+// ["Map", "Toggle garrison markers", {
+// 	[[], { gGarrisonMarkersOn = !gGarrisonMarkersOn; [gGarrisonMarkersOn, "o_AIGarrison_N"] call pr0_fnc_toggleMarkers; } ] remoteExec ["call", 2];
+// }] call pr0_fnc_addDebugMenuItem;
 // ["Map", "Dump garrison from map", {
 // 	onMapSingleClick  {
 // 		[[_pos], {	 
@@ -99,23 +99,23 @@ pr0_fnc_toggleMarkers = {
 	
 // }] call pr0_fnc_addDebugMenuItem;
 
-["Dump", "All garrisons", {
-	[[], {
-		// {
-		// 	_x call OOP_dumpAsJson;
-		// } forEach CALLSM0("Garrison", "getAllNotEmpty");
-		CALLSM0("Garrison", "getAllNotEmpty") call OOP_dumpAsJson;
-	} ] remoteExec ["call", 2];
-}] call pr0_fnc_addDebugMenuItem;
+// ["Dump", "All garrisons", {
+// 	[[], {
+// 		// {
+// 		// 	_x call OOP_dumpAsJson;
+// 		// } forEach CALLSM0("Garrison", "getAllNotEmpty");
+// 		CALLSM0("Garrison", "getAllNotEmpty") call OOP_dumpAsJson;
+// 	} ] remoteExec ["call", 2];
+// }] call pr0_fnc_addDebugMenuItem;
 
-["Dump", "All locations", {
-	[[], {
-		// {
-		// 	_x call OOP_dumpAsJson;
-		// } forEach CALLSM0("Location", "getAll");
-		CALLSM0("Location", "getAll") call OOP_dumpAsJson;
-	} ] remoteExec ["call", 2];
-}] call pr0_fnc_addDebugMenuItem;
+// ["Dump", "All locations", {
+// 	[[], {
+// 		// {
+// 		// 	_x call OOP_dumpAsJson;
+// 		// } forEach CALLSM0("Location", "getAll");
+// 		CALLSM0("Location", "getAll") call OOP_dumpAsJson;
+// 	} ] remoteExec ["call", 2];
+// }] call pr0_fnc_addDebugMenuItem;
 
 ["Add", "New group", {
 	private _AI = CALLSM1("AICommander", "getAICommander", playerSide);

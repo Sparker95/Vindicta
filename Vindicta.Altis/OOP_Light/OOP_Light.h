@@ -82,17 +82,38 @@
 #undef DEBUG_GOAL_MARKERS
 
 #define TIME_NOW 0
+#define GAME_TIME 0
+#define PROCESS_TIME 0
 #define DATE_NOW [0,0,0,0,0]
+#define UI_SLEEP(t)
+#define SET_DATE(d)
+
 #define CLIENT_OWNER 0
 #define IS_SERVER true
+#define IS_DEDICATED true
 #define HAS_INTERFACE true
 #define IS_HEADLESSCLIENT false
-#define PUBLIC_VARIABLE isNil
 #define IS_MULTIPLAYER false
+#define PUBLIC_VARIABLE isNil
+
+#define START_LOADING_SCREEN __null =  
+#define PROGRESS_LOADING_SCREEN __null = 
+#define END_LOADING_SCREEN
 
 #define PROFILE_NAME "Satan"
 #define SCRIPT_NULL objNull
 #define saveProfileNamespace
+
+#define HEADLESS_CLIENTS []
+#define HUMAN_PLAYERS []
+#define PLAYABLE_UNITS []
+#define ALL_VEHICLES []
+
+#define SIMULATION_ENABLED(obj) true
+#define ENABLE_SIMULATION_GLOBAL(obj, state)
+#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
+
+#define 
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -103,17 +124,37 @@
 #define VM_LOG_FMT(t, args)
 
 #define TIME_NOW time
+#define GAME_TIME (time - gGameFreezeTime)
+#define PROCESS_TIME time
 #define DATE_NOW date
+#define UI_SLEEP(t) uisleep (t)
+#define SET_DATE(d) setDate (d)
+
 #define CLIENT_OWNER clientOwner
 #define IS_SERVER isServer
+#define IS_DEDICATED isDedicated
 #define HAS_INTERFACE hasInterface
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
 #define IS_MULTIPLAYER isMultiplayer
 #define PUBLIC_VARIABLE publicVariable
 
-#define PROFILE_NAME profileName
 
+#define START_LOADING_SCREEN startLoadingScreen
+#define PROGRESS_LOADING_SCREEN progressLoadingScreen
+#define END_LOADING_SCREEN endLoadingScreen
+
+#define PROFILE_NAME profileName
 #define SCRIPT_NULL scriptNull
+
+#define HEADLESS_CLIENTS (entities "HeadlessClient_F")
+#define HUMAN_PLAYERS (allPlayers - HEADLESS_CLIENTS)
+#define PLAYABLE_UNITS playableunits
+#define ALL_VEHICLES vehicles
+
+#define SIMULATION_ENABLED(obj) simulationEnabled (obj)
+#define ENABLE_SIMULATION_GLOBAL(obj, state) (obj) enableSimulationGlobal (state);
+#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled) enableDynamicSimulationSystem enabled
+
 #endif
 // ^^^ ARMA ^^^
 
@@ -467,6 +508,13 @@
 #define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExec [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
 #define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
 #endif
+
+#ifdef _SQF_VM
+#define CLEAR_REMOTE_EXEC_JIP(JIP)
+#else
+#define CLEAR_REMOTE_EXEC_JIP(JIP) remoteExec ["", JIP]
+#endif
+
 
 // ----------------------------------------
 // |         A T T R I B U T E S          |
@@ -1198,7 +1246,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // ----------------------------------------------------------------------
 #define ON_ALL 		0
 #define ON_SERVER 	2
-#define ON_CLIENTS	([0, -2] select isDedicated)
+#define ON_CLIENTS	([0, -2] select IS_DEDICATED)
 #define NO_JIP 		false
 #define ALWAYS_JIP	true
 

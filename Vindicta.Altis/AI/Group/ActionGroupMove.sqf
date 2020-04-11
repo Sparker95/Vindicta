@@ -61,7 +61,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _route = CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
 		T_SETV("route", _route);
 
-		T_SETV("time", time);
+		T_SETV("time", GAME_TIME);
 		T_SETV("speedLimit", SPEED_MIN);
 		T_SETV("ready", false);
 		T_SETV("leader", NULL_OBJECT);
@@ -75,7 +75,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 		T_SETV("ready", false);
 
 		// Set time last called
-		T_SETV("time", time);
+		T_SETV("time", GAME_TIME);
 		T_SETV("leader", NULL_OBJECT);
 		T_SETV("followers", []);
 
@@ -240,8 +240,8 @@ CLASS("ActionGroupMove", "ActionGroup")
 					_maxSpeed = MINIMUM(_maxSpeed, URBAN_SPEED_MAX);
 				};
 
-				private _dt = TIME_NOW - T_GETV("time") + 0.001;
-				T_SETV("time", TIME_NOW);
+				private _dt = GAME_TIME - T_GETV("time") + 0.001;
+				T_SETV("time", GAME_TIME);
 
 				// Check for speed control based on vehicle and follow group separation
 				private _speedLimit = T_GETV("speedLimit");

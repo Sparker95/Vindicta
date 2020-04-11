@@ -67,7 +67,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				pr _enemyObject = _x;
 				pr _enemyObservesThisUnit = _thisObjects findIf {
 					(_enemyObject targetKnowledge _x) params ["_knownByGroup", "_knownByUnit", "_lastSeenTime"/*, "_lastEndangeredTime", "_targetSide", "_positionError", "_position"*/];
-					_knownByUnit && (_lastSeenTime - TIME_NOW) < 60
+					_knownByUnit && (_lastSeenTime - GAME_TIME) < 60
 				};
 				_enemyObservesThisUnit != NOT_FOUND
 			};
@@ -77,7 +77,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				OOP_INFO_3("Location %1 is observed by side: %2, unit: %3", _loc, _x, _enemyObjectsSide select _observedBySide);
 				
 				// Report to chat for now
-				//systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, time];
+				//systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, GAME_TIME];
 				
 				// Report to the AICommander of the side that observes this location
 				private _AICommander = CALL_STATIC_METHOD("AICommander", "getAICommander", [_s]);
