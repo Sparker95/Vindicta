@@ -16,6 +16,7 @@ CLASS("TimerService", "")
 	VARIABLE("resolution"); // Time resolution
 	VARIABLE("scriptHandle");
 	VARIABLE("mutex");
+	VARIABLE("suspended");
 	
 	// |                              N E W                                 |
 	/*
@@ -27,7 +28,12 @@ CLASS("TimerService", "")
 	It defines the maximum frequency at which your timer can run.
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, P_NUMBER("_resolution")];
+		params [P_THISOBJECT, P_NUMBER("_resolution"), P_BOOL("_startSuspended")];
+		if(_startSuspended) then {
+			T_SETV("suspended", 1);
+		} else {
+			T_SETV("suspended", 0);
+		};
 		T_SETV("timers", []);
 		T_SETV("resolution", _resolution);
 		private _mutex = MUTEX_NEW();
@@ -113,6 +119,27 @@ CLASS("TimerService", "")
 		
 		// Unlock the mutex
 		MUTEX_UNLOCK(_mutex);
+	} ENDMETHOD;
+
+	METHOD("suspend") {
+		params [P_THISOBJECT];
+		CRITICAL_SECTION {
+			T_SETV("suspended", T_GETV("suspended") + 1);
+		};
+		// Make sure we enter the suspended state before returning by locking the mutex
+		// The suspended value is checked inside the mutex in the timer thread, locking it
+		// ensures that the next check of the suspended value will happen before any further
+		// timer is fired.
+		private _mutex = T_GETV("mutex");
+		MUTEX_LOCK(_mutex);
+		MUTEX_UNLOCK(_mutex);
+	} ENDMETHOD;
+	
+	METHOD("resume") {
+		params [P_THISOBJECT];
+		CRITICAL_SECTION {
+			T_SETV("suspended", T_GETV("suspended") - 1);
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

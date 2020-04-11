@@ -380,6 +380,19 @@ class MUI_ST_FRAME : MUI_BASE
 __MUI_CLASS_ABS(MUI_ST_FRAME);
 
 
+class MUI_PROGRESSBAR : MUI_BASE
+{
+	type = CT_PROGRESS;
+	style = 0;
+	colorBackground[] = {0,0,0,0};
+	colorFrame[] = {0,0,0,1};
+	colorBar[] = MUIC_MISSION;
+	shadow = 2;
+	texture = "#(argb,8,8,3)color(1,1,1,1)";
+};
+__MUI_CLASS_ABS(MUI_PROGRESSBAR);
+
+
 class MUI_EDIT : MUI_BASE
 {
 	type = CT_EDIT;

@@ -64,7 +64,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		_this spawn {
 			params [P_THISOBJECT];
 			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
-			sleep 10;
+			uisleep 10;
 			CALLM1(T_GETV("AICommanderInd"), "enablePlanning", true);
 			CALLM1(T_GETV("AICommanderWest"), "enablePlanning", false);
 			CALLM1(T_GETV("AICommanderEast"), "enablePlanning", false);
@@ -190,7 +190,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Reveal that location to commanders
 			{
 				if (!IS_NULL_OBJECT(_x)) then {
-					OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+					OOP_INFO_1("  revealing to commander: %1", _x);
 					CALLM2(_x, "postMethodAsync", "updateLocationData", [_respawnLoc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
 				};
 			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
@@ -226,9 +226,31 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		["Game Mode", "Update game mode now", {
 			// Call to server to get the info
-			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "update", [], ON_SERVER);
+			//CALLM2(gGameModeServer, "postMethodAsync", "update");
+			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["update"], ON_SERVER)
+			//REMOTE_EXEC_METHOD(gGameModeServer, "postMessageAsync", ["update"], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
+		["Game Mode", "Flush Messages", {
+			// Call to server to get the info
+			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["flushMessageQueues"], ON_SERVER)
+			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
+			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
+		}] call pr0_fnc_addDebugMenuItem;
+
+		["Game Mode", "Suspend", {
+			// Call to server to get the info
+			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["suspend" ARG ["Suspended manually from debug menu"]], ON_SERVER)
+			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
+			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
+		}] call pr0_fnc_addDebugMenuItem;
+
+		["Game Mode", "Resume", {
+			// Call to server to get the info
+			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["resume"], ON_SERVER)
+			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
+			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
+		}] call pr0_fnc_addDebugMenuItem;
 	} ENDMETHOD;
 
 	// Overrides GameModeBase, we want to give the player some starter gear and holster their weapon for them.
@@ -412,7 +434,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			//"You won the game! Congratulations!" remoteExecCall ["systemChat", 0];
 			{
 				"winscreen" cutText ["You won! The enemy have no fight left in them.", "PLAIN", 5];
-				sleep 10;
+				uisleep 10;
 				"winscreen" cutFadeOut 20;
 			} remoteExecCall ["spawn", ON_CLIENTS];
 		};
@@ -420,7 +442,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		if(_campaignProgress > 0.95) then {
 			{
 				"winscreen2" cutText ["You won! The people are all with you!", "PLAIN", 5];
-				sleep 10;
+				uisleep 10;
 				"winscreen2" cutFadeOut 20;
 			} remoteExecCall ["spawn", ON_CLIENTS];
 		};

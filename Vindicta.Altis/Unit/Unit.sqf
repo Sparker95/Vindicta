@@ -346,7 +346,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						// _objectHandle hideObjectGlobal true;
 						// _objectHandle stop true;
 						// _objectHandle spawn {
-						// 	sleep SHOW_DELAY;
+						// 	uisleep SHOW_DELAY;
 						// 	_this allowDamage true;
 						// 	_this hideObjectGlobal false;
 						// 	_this stop false;
@@ -414,13 +414,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
 						};
 
-						_objectHandle allowDamage false;
-						_objectHandle hideObjectGlobal true;
-						_objectHandle spawn {
-							sleep SHOW_DELAY;
-							_this allowDamage true;
-							_this hideObjectGlobal false;
-						};
+						// Disabling this as it can cause intersections as other vehicles aren't detected during createVehicle
+						// _objectHandle allowDamage false;
+						// _objectHandle hideObjectGlobal true;
+						// _objectHandle spawn {
+						// 	uisleep SHOW_DELAY;
+						// 	_this allowDamage true;
+						// 	_this hideObjectGlobal false;
+						// };
 
 						// This is not currently doing anything.
 						// private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
@@ -433,7 +434,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						// [_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
 						// 	params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
-						// 	sleep 2;
+						// 	uisleep 2;
 						// 	// If it survived spawning
 						// 	if (alive _objectHandle) then {
 						// 		OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
@@ -473,7 +474,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						// _objectHandle allowDamage false;
 						// _objectHandle hideObjectGlobal true;
 						// _objectHandle spawn {
-						// 	sleep SHOW_DELAY;
+						// 	uisleep SHOW_DELAY;
 						// 	_this allowDamage true;
 						// 	_this hideObjectGlobal false;
 						// };
@@ -489,7 +490,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						// [_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
 						// 	params [P_THISOBJECT, "_objectHandle", "_group", "_spawnCheckEv", "_data"];
-						// 	sleep 2;
+						// 	uisleep 2;
 						// 	_objectHandle allowDamage true;
 						// 	// If it survived spawning
 						// 	if (alive _objectHandle) then {
