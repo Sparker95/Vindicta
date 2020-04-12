@@ -1755,6 +1755,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("spawned", false);
 		T_SETV_PUBLIC("alarmDisabled", false);
 
+		// Lets try and find a location sector that we can update from, incase it changed
+		private _locSectors = entities "Vindicta_LocationSector";
+		private _foundIdx = _locSectors findIf {
+			(_x getVariable ["Name", ""]) isEqualTo T_GETV("name") && (_x getVariable ["Type", ""]) isEqualTo T_GETV("type")
+		};
+		if(_foundIdx != NOT_FOUND) then {
+			private _locSector = _locSectors#_foundIdx;
+			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
+			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
+			T_CALLM2("setBorder", _locBorderType, _locBorder);
+			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
+			T_CALLM1("setCapacityCiv", _locCapacityCiv);
+		};
+
 		pr _gmData = T_GETV("gameModeData");
 		if (!IS_NULL_OBJECT(_gmData)) then {
 			CALLM1(_storage, "load", _gmData);

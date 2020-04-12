@@ -2275,7 +2275,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderEast = T_GETV("AICommanderEast");
 		PUBLIC_VARIABLE("gAICommanderEast");
 
-
 		// Refresh locations
 		CALLSM3("GameModeBase", "setLoadingProgress", "Updating locations...", 0, 5);
 		CALLSM0("Location", "postLoad");
@@ -2322,7 +2321,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			}
 		};
 
-		// Delete the units
+		// Delete the units in broken garrisons
 		{
 			private _units = _x;
 			{
