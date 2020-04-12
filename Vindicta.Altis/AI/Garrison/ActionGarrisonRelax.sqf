@@ -82,6 +82,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 
 		// Give goals to remaining groups
 		pr _nPatrolGroups = 0;
+		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
 		{ // foreach _groups
 			pr _type = CALLM0(_x, "getType");
 			pr _groupAI = CALLM0(_x, "getAI");
@@ -90,12 +91,12 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 				pr _args = [];
 				switch (_type) do {
 					case GROUP_TYPE_INF: {
-						// We need at least two patrol groups
-						if (_nPatrolGroups < 2) then {
-							_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
+						// We need at least enough patrol groups to cover the defined routes
+						if (_nPatrolGroups < count _routes) then {
+							_args = ["GoalGroupPatrol", 0, _extraParams + [[TAG_ROUTE, _routes#_nPatrolGroups]], _AI];
 							_nPatrolGroups = _nPatrolGroups + 1;
 						} else {
-							if (random 10 < 5) then {
+							if (random 10 < 3) then {
 								_args = ["GoalGroupRelax", 0, _extraParams, _AI];
 							} else {
 								_args = ["GoalGroupPatrol", 0, _extraParams, _AI];

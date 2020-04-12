@@ -7,7 +7,18 @@ Class: ActionGroup.ActionGroupPatrol
 #define pr private
 
 CLASS("ActionGroupPatrol", "ActionGroup")
-	
+
+	VARIABLE("route");
+
+	METHOD("new") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
+		// Route can be optionally passed or not
+		// We add the target position to the end
+		private _route = CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
+		T_SETV("route", _route);
+	} ENDMETHOD;
+
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
@@ -29,7 +40,8 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		pr _useDefaultPatrolWaypoints = true;
 		pr _pos = [];
 		pr _radius = 10;
-		pr _waypoints = [];
+		pr _waypoints = T_GETV("route");
+
 		// Override behaviour for non-static vehicle groups
 		// They must walk around their vehicles
 		if (_type == GROUP_TYPE_VEH) then {
@@ -42,11 +54,9 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 				pr _hO = CALLM0(_vehUnit, "getObjectHandle");
 				_pos = getPos _hO;
 
-				_radius = 10 + random 10;
+				_radius = 20 + random 20;
 				if (! (_pos isEqualTo [0, 0, 0])) then { // Better to be safe here, we don't want to be in the sea
-					//for "_i" from 0 to 3 do {
-						_waypoints pushBack [_pos#0 + random 13 - 6, _pos#1 + random 13 - 6, 0];
-					//};
+					_waypoints pushBack (_pos getPos [10 + random 20, random 360]);
 					_useDefaultPatrolWaypoints = false;
 				};
 			};
@@ -56,7 +66,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		// If at a location, takes waypoints from location border
 		// If in field, adds some circular waypoints
 		// Check if there is a location
-		if (_useDefaultPatrolWaypoints) then {
+		if (count _waypoints == 0 && _useDefaultPatrolWaypoints) then {
 			if (_loc != "") then {
 				_waypoints = CALLM0(_loc, "getPatrolWaypoints");
 			} else {
@@ -70,7 +80,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 			};
 		};
 
-		// Give waipoints to the group
+		// Give waypoints to the group
 		pr _direction = selectRandom [false, true];
 		pr _count = count _waypoints;
 		pr _indexStart = floor (random _count);

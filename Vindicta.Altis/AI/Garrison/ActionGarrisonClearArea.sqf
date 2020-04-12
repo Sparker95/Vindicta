@@ -198,6 +198,12 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 		{// foreach _sweep
 			pr _groupAI = CALLM0(_x, "getAI");
+			// Vehicles move slow, inf move normal speed
+			pr _speedMode = if(CALLM0(_x, "getType") == GROUP_TYPE_VEH) then {
+				"NORMAL"
+			} else {
+				"LIMITED"
+			};
 			pr _args = [
 				"GoalGroupClearArea",
 				0,
@@ -206,7 +212,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 					[TAG_CLEAR_RADIUS, _radius],
 					[TAG_BEHAVIOUR, "AWARE"],
 					[TAG_COMBAT_MODE, "RED"],
-					[TAG_SPEED_MODE, "LIMITED"],
+					[TAG_SPEED_MODE, _speedMode],
 					[TAG_INSTANT, _instant]
 				],
 				_AI

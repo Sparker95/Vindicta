@@ -41,25 +41,26 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */ 	VARIABLE_ATTR("boundingRadius", [ATTR_SAVE]); 			// _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
 	/* save */ 	VARIABLE_ATTR("border", [ATTR_SAVE]); 					// [center, a, b, angle, isRectangle, c]
 	/* save */ 	VARIABLE_ATTR("borderPatrolWaypoints", [ATTR_SAVE]);	// Array for patrol waypoints along the border
+				VARIABLE("patrolRoutes");							// Patrol routes read from map
 	/* save */ 	VARIABLE_ATTR("useParentPatrolWaypoints", [ATTR_SAVE]);	// If true then use the parents patrol waypoints instead
 	/* save */ 	VARIABLE_ATTR("allowedAreas", [ATTR_SAVE]); 			// Array with allowed areas
 	/* save */ 	VARIABLE_ATTR("pos", [ATTR_SAVE]); 						// Position of this location
 	// SAVEBREAK : remove spawnPosTypes
 	/* save */	VARIABLE_ATTR("spawnPosTypes", [ATTR_SAVE]); 			// Array with spawn positions types
-				VARIABLE("spawned"); 									// Is this location spawned or not
-				VARIABLE("timer"); 										// Timer object which generates messages for this location
-				VARIABLE("capacityInf"); 								// Infantry capacity
+				VARIABLE("spawned"); 								// Is this location spawned or not
+				VARIABLE("timer"); 								// Timer object which generates messages for this location
+				VARIABLE("capacityInf"); 							// Infantry capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
-				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
+				VARIABLE("cpModule"); 								// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
 				VARIABLE_ATTR("buildProgress", [ATTR_SAVE_VER(12)]);	// How much of the location is built from 0 to 1
-				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
-				VARIABLE("buildableObjects");							// Objects that will be constructed
+				VARIABLE("lastBuildProgressTime");					// Time build progress was last updated
+				VARIABLE("buildableObjects");						// Objects that will be constructed
 	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]);				// Custom object that the game mode can use to store info about this location
-				VARIABLE("hasPlayers"); 								// Bool, means that there are players at this location, updated at each process call
-				VARIABLE("hasPlayerSides"); 							// Array of sides of players at this location
-				VARIABLE("buildingsOpen"); 								// Handles of buildings which can be entered (have buildingPos)
-				VARIABLE("objects"); 									// Handles of objects which can't be entered and other objects
+				VARIABLE("hasPlayers"); 							// Bool, means that there are players at this location, updated at each process call
+				VARIABLE("hasPlayerSides"); 						// Array of sides of players at this location
+				VARIABLE("buildingsOpen"); 						// Handles of buildings which can be entered (have buildingPos)
+				VARIABLE("objects"); 								// Handles of objects which can't be entered and other objects
 	/* save */	VARIABLE_ATTR("respawnSides", [ATTR_SAVE]); 			// Sides for which player respawn is enabled
 				VARIABLE_ATTR("hasRadio", [ATTR_SAVE]); 				// Bool, means that this location has a radio
 	/* save */	VARIABLE_ATTR("wasOccupied", [ATTR_SAVE]); 				// Bool, false at start but sets to true when garrisons are attached here
@@ -68,9 +69,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// Variables which are set up only for saving process
 	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);				// Array of [className, posWorld, vectorDir, vectorUp] of objects
 
-				VARIABLE("playerRespawnPos");							// Position for player to respawn
-				VARIABLE("alarmDisabled");								// If the player disabled the alarm
-
+				VARIABLE("playerRespawnPos");						// Position for player to respawn
+				VARIABLE("alarmDisabled");							// If the player disabled the alarm
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -95,6 +95,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV_PUBLIC("boundingRadius", 50);
 		T_SETV_PUBLIC("border", 50);
 		T_SETV("borderPatrolWaypoints", []);
+		T_SETV("patrolRoutes", []);
 		T_SETV("useParentPatrolWaypoints", false);
 		T_SETV_PUBLIC("pos", _pos);
 		T_SETV("spawnPosTypes", []);
@@ -260,67 +261,65 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			{
 				_type = typeOf _object;
 
-				//A truck's position defined the position for tracked and wheeled vehicles
-				if(_type == "B_Truck_01_transport_F") then {
-					private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
-					T_CALLM("addSpawnPos", _args);
-					deleteVehicle _object;
-					OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
+				switch _type do {
+					//A truck's position defined the position for tracked and wheeled vehicles
+					case "B_Truck_01_transport_F": {
+						private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
+						T_CALLM("addSpawnPos", _args);
+						deleteVehicle _object;
+						OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
+					};
+					//A mortar's position defines the position for mortars
+					case "B_Mortar_01_F": {
+						private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+						T_CALLM("addSpawnPos", _args);
+						deleteVehicle _object;
+						OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
+					};
+					//A low HMG defines a position for low HMGs and low GMGs
+					case "B_HMG_01_F": {
+						private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+						T_CALLM("addSpawnPos", _args);
+						deleteVehicle _object;
+						OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
+					};
+					//A high HMG defines a position for high HMGs and high GMGs
+					case "B_HMG_01_high_F": {
+						private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+						T_CALLM("addSpawnPos", _args);
+						deleteVehicle _object;
+						OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
+					};
+					// A cargo container defines a position for cargo boxes
+					case "B_Slingload_01_Cargo_F": {
+						private _args = [T_PL_cargo, [GROUP_TYPE_INF], getPosATL _object, direction _object, objNull];
+						T_CALLM("addSpawnPos", _args);
+						deleteVehicle _object;
+						OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
+					};
+					case "Flag_BI_F": {
+						//Probably add support for the flag later
+						// Why do we even need it
+					};
+					case "Sign_Arrow_Large_F": { //Red arrow
+						// Why do we need it
+						deleteVehicle _object;
+					};
+					case "Sign_Arrow_Large_Blue_F": { //Blue arrow
+						// Why do we need it
+						deleteVehicle _object;
+					};
 				};
 
-				//A mortar's position defines the position for mortars
-				if(_type == "B_Mortar_01_F") then {
-					private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-					T_CALLM("addSpawnPos", _args);
-					deleteVehicle _object;
-					OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
-				};
-
-				//A low HMG defines a position for low HMGs and low GMGs
-				if(_type == "B_HMG_01_F") then {
-					private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-					T_CALLM("addSpawnPos", _args);
-					deleteVehicle _object;
-					OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
-				};
-
-				//A high HMG defines a position for high HMGs and high GMGs
-				if(_type == "B_HMG_01_high_F") then {
-					private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-					T_CALLM("addSpawnPos", _args);
-					deleteVehicle _object;
-					OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
-				};
-
-				// A cargo container defines a position for cargo boxes
-				if (_type == "B_Slingload_01_Cargo_F") then {
-					private _args = [T_PL_cargo, [GROUP_TYPE_INF], getPosATL _object, direction _object, objNull];
-					T_CALLM("addSpawnPos", _args);
-					deleteVehicle _object;
-					OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
-				};
-				
 				// Process buildings
 				if (_type isKindOf "House") then {
 					T_CALLM1("addObject", _object);
 					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 				};
-
-				if(_type == "Flag_BI_F") then {
-					//Probably add support for the flag later
-					// Why do we even need it
+				if (_type isKindOf "Man") then {
+					T_CALLM1("addPatrolRoute", _object);
+					OOP_DEBUG_1("findAllObjects for %1: found man", T_GETV("name"));
 				};
-
-				if(_type == "Sign_Arrow_Large_F") then { //Red arrow
-					// Why do we need it
-					deleteVehicle _object;
-				};
-
-				if(_type == "Sign_Arrow_Large_Blue_F") then { //Blue arrow
-					// Why do we need it
-					deleteVehicle _object;
-				};
-
 			};
 		} forEach _no;
 
@@ -387,6 +386,17 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if (_index != -1) then {
 			CALLSM1("Location", "initMedicalObject", _hObject);
 		};
+	} ENDMETHOD;
+
+	/* private */ METHOD("addPatrolRoute") {
+		params [P_THISOBJECT, P_OBJECT("_hObject")];
+		private _waypoints = waypoints group _hObject apply { getWPPos _x };
+
+		private _patrolRoutes = T_GETV("patrolRoutes");
+		_patrolRoutes pushBack _waypoints;
+
+		group _hObject deleteGroupWhenEmpty true;
+		deleteVehicle _hObject;
 	} ENDMETHOD;
 
 	// Add a building in the area that can be built, but starts off hidden (military base structures mostly)
@@ -701,9 +711,25 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT];
 		if(T_GETV("useParentPatrolWaypoints")) then {
 			private _parent = T_GETV("parent");
-			CALLM0(_parent, "getPatrolWaypoints");
+			CALLM0(_parent, "getPatrolWaypoints")
 		} else {
-			T_GETV("borderPatrolWaypoints");
+			// Prefer selecting a random existing route
+			private _patrolRoutes = T_GETV("patrolRoutes");
+			if(count _patrolRoutes == 0) then {
+				T_GETV("borderPatrolWaypoints")
+			} else {
+				selectRandom _patrolRoutes
+			}
+		}
+	} ENDMETHOD;
+
+	METHOD("getPatrolRoutes") {
+		params [P_THISOBJECT];
+		if(T_GETV("useParentPatrolWaypoints")) then {
+			private _parent = T_GETV("parent");
+			CALLM0(_parent, "getPatrolRoutes")
+		} else {
+			T_GETV("patrolRoutes")
 		}
 	} ENDMETHOD;
 
