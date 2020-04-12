@@ -145,7 +145,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("preInitAll", []);
 
 		#ifndef _SQF_VM
-		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["Initializing..."], ON_ALL, "GameModeBase.init");
+		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init", "Initializing..."], ON_ALL, "GameModeBase.init");
 		#endif
 		//CALLSM1("GameModeBase", "startLoadingScreen", "Initializing...");
 		
@@ -243,7 +243,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		
 		#ifndef _SQF_VM
 		CLEAR_REMOTE_EXEC_JIP("GameModeBase.init");
-		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "endLoadingScreen", [], ON_ALL, NO_JIP);
+		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
 		#endif
 
 		PROFILE_SCOPE_START(GameModeEnd);
@@ -1838,13 +1838,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	STATIC_METHOD("startLoadingScreen") {
-		params [P_THISCLASS, P_STRING("_message")];
+		params [P_THISCLASS, P_STRING("_id"), P_STRING("_message")];
 
 		uiNamespace setVariable ["vin_loadingScreenTitle", _message];
 		uiNamespace setVariable ["vin_loadingScreenSubtitle", ''];
 		uiNamespace setVariable ["vin_loadingScreenSubprogress", 0];
 
-		START_LOADING_SCREEN [_message];
+		["vindicta_" + _id, _message] call BIS_fnc_startLoadingScreen;
+		//START_LOADING_SCREEN [_message];
 		private _display = uiNamespace getVariable ["vin_loadingScreen", displayNull];
 		if(!(_display isEqualTo displayNull)) then {
 			(_display displayCtrl 666) ctrlSetText _message;
@@ -1874,11 +1875,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	STATIC_METHOD("endLoadingScreen") {
-		params [P_THISCLASS];
+		params [P_THISCLASS, P_STRING("_id")];
 		uiNamespace setVariable ["vin_loadingScreenTitle", ''];
 		uiNamespace setVariable ["vin_loadingScreenSubtitle", ''];
 		uiNamespace setVariable ["vin_loadingScreenSubprogress", 0];
 		CALLSM0("GameModeBase", "setLoadingProgress");
+		("vindicta_" + _id) call BIS_fnc_endLoadingScreen;
 		END_LOADING_SCREEN;
 	} ENDMETHOD;
 
@@ -1898,7 +1900,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			true
 		};
 
-		CALLSM1("GameModeBase", "startLoadingScreen", _message);
+		CALLSM2("GameModeBase", "startLoadingScreen", "suspend", _message);
 
 		T_SETV("startSuspendTime", time);
 		CALLM0(gTimerServiceMain, "suspend");
@@ -1963,7 +1965,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			CALLM0(gTimerServiceMain, "resume");
 
-			CALLSM0("GameModeBase", "endLoadingScreen");
+			CALLSM1("GameModeBase", "endLoadingScreen", "suspend");
 
 			CHAT_MSG_FMT("Mission resumed after %1 seconds", [_timeSuspended]);
 		};
@@ -2142,7 +2144,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
-		CALLSM1("GameModeBase", "startLoadingScreen", "Loading...");
+		CALLSM2("GameModeBase", "startLoadingScreen", "load", "Loading...");
 	} ENDMETHOD;
 
 	/* override */ METHOD("postDeserialize") {
@@ -2360,7 +2362,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
-		CALLSM0("GameModeBase", "endLoadingScreen");
+		CALLSM1("GameModeBase", "endLoadingScreen", "load");
 
 		true
 	} ENDMETHOD;
