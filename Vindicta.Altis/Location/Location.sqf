@@ -1754,6 +1754,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("timer", NULL_OBJECT);
 		T_SETV("spawned", false);
 		T_SETV_PUBLIC("alarmDisabled", false);
+		T_SETV("patrolRoutes", []);
 
 		// Lets try and find a location sector that we can update from, incase it changed
 		

@@ -18,3 +18,5 @@ if (isServer) then {
         };
     };
 };
+
+CALLM0(gGameManager, "init");

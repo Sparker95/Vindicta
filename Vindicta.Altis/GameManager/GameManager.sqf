@@ -62,8 +62,8 @@ CLASS("GameManager", "MessageReceiverEx")
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
 	} ENDMETHOD;
 
-	// This method is called at preinit
-	METHOD("init") {
+	// This method is called at preinit (see https://community.bistudio.com/wiki/Initialization_Order)
+	METHOD("preInit") {
 		params [P_THISOBJECT];
 
 		// Create various objects not related to a particular mission
@@ -116,7 +116,6 @@ CLASS("GameManager", "MessageReceiverEx")
 				};
 			};
 
-
 			/*
 			// Code to add some dummy intel for UI tests
 				private _serial = ["IntelCommanderActionAttack","o_intelcommanderactionattack_n_0_12",[2035,6,24,12,6],nil,[21281.7,7212.84,0],nil,nil,"o_IntelCommanderActionAttack_N_0_10",playerSide,[17430,13161,0],[21082,7324,0],"o_Garrison_N_0_27",[21281.7,7212.84,0],nil,nil,[2035,6,24,12,8.93733],[0,0,0,0,0,0,0,0],"o_Garrison_N_0_9","Reinforce garrison","o_Garrison_N_0_10",nil,nil];
@@ -125,7 +124,13 @@ CLASS("GameManager", "MessageReceiverEx")
 				CALLM1(gIntelDatabaseClient, "addIntel", _dummyIntel);
 			*/
 		};
+	} ENDMETHOD;
 
+	// This method is called from init.sqf (see https://community.bistudio.com/wiki/Initialization_Order)
+	METHOD("init") {
+		params [P_THISOBJECT];
+
+		// This must be done after modules are initialized at least, preferably as late as possible in init order.
 		if(IS_SERVER) then {
 			T_CALLM0("autoLoad");
 		};
