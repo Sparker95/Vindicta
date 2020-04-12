@@ -383,10 +383,12 @@ __MUI_CLASS_ABS(MUI_ST_FRAME);
 class MUI_PROGRESSBAR : MUI_BASE
 {
 	type = CT_PROGRESS;
+
 	style = 0;
-	colorBackground[] = {0,0,0,0};
-	colorFrame[] = {0,0,0,1};
+	colorBackground[] = MUIC_TRANSPARENT;
+	colorFrame[] = MUIC_BLACK;
 	colorBar[] = MUIC_MISSION;
+	colorText[] = MUIC_LOGO;
 	shadow = 2;
 	texture = "#(argb,8,8,3)color(1,1,1,1)";
 };

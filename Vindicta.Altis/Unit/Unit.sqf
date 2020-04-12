@@ -23,6 +23,7 @@ Author: Sparker
 #define pr private
 
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
+Unit_fnc_EH_Respawn = compile preprocessFileLineNumbers "Unit\EH_Respawn.sqf";
 Unit_fnc_EH_handleDamageInfantry = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantry.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
@@ -87,7 +88,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_valid = true;
 		};
 
-		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);
+		if (!_valid) exitWith { T_SETV("data", []);
 			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
 			DUMP_CALLSTACK
 		};
@@ -129,7 +130,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
 		};
-		SET_MEM(_thisObject, "data", _data);
+		T_SETV("data", _data);
 
 		// Push the new object into the array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
@@ -163,29 +164,34 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		OOP_INFO_0("DELETE UNIT");
 
-		private _data = GET_MEM(_thisObject, "data");
+		private _data = T_GETV("data");
 
 		//Despawn this unit if it was spawned
 		if (T_CALLM0("isSpawned")) then {
-			T_CALLM("despawn", []);
+			T_CALLM0("despawn");
 		};
 
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
 		if(_group != "") then {
-			CALLM(_group, "removeUnit", [_thisObject]);
+			CALLM1(_group, "removeUnit", _thisObject);
 		};
 
 		// Remove this unit from its garrison
 		private _gar = _data select UNIT_DATA_ID_GARRISON;
 		if (_gar != "") then {
-			CALLM(_gar, "removeUnit", [_thisObject]);
+			CALLM1(_gar, "removeUnit", _thisObject);
 		};
 
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
 		_allArray deleteAt (_allArray find _thisObject);
-		SET_MEM(_thisObject, "data", nil);
+
+		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (!isNull _objectHandle) then {
+			T_CALLM0("deinitObjectVariables");
+		};
+		T_SETV("data", nil);
 	} ENDMETHOD;
 
 	METHOD("release") {
@@ -207,7 +213,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	*/
 	METHOD("isValid") {
 		params [P_THISOBJECT];
-		private _data = GET_MEM(_thisObject, "data");
+		private _data = T_GETV("data");
 		pr _return = if (isNil "_data") then {
 			false
 		} else {
@@ -649,13 +655,24 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
 			pr _ehid = [_hO, "Killed", {
 				params ["_unit"];
+				_unit setVariable [UNIT_EH_KILLED_STR, nil];
 				_unit removeEventHandler ["Killed", _thisID];
 				_this call Unit_fnc_EH_Killed;
 			}] call CBA_fnc_addBISEventHandler;
-			//pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
-		
+
+		// Respawned
+		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
+			pr _ehid = [_hO, "Respawn", {
+				params ["_unit"];
+				_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
+				_unit removeEventHandler ["Respawn", _thisID];
+				_this call Unit_fnc_EH_Respawn;
+			}] call CBA_fnc_addBISEventHandler;
+			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
+		};
+
 		// HandleDamage for infantry
 		// Disabled for now, let's see if it changed anything
 		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
@@ -1286,7 +1303,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		OOP_INFO_0("DESPAWN");
 
 		//Unpack data
-		private _data = GET_MEM(_thisObject, "data");
+		private _data = T_GETV("data");
 		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 
 		//Lock the mutex
@@ -1694,6 +1711,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Ungroup this unit
 		_data set [UNIT_DATA_ID_GROUP, ""];
+
+		// Clear the object variables
+		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (!isNull _objectHandle) then {
+			T_CALLM0("deinitObjectVariables");
+		};
 	} ENDMETHOD;
 
 	// Some cargo was loaded into this unit

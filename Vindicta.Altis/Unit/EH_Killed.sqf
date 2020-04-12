@@ -1,4 +1,3 @@
-#define OOP_ERROR
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
@@ -9,8 +8,6 @@
 /*
 Executed in unscheduled when a unit is destroyed.
 */
-
-#define pr private
 
 params ["_unit", "_killer", "_instigator", "_useEffects"];
 

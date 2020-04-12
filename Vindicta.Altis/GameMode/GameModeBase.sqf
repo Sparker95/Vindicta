@@ -1875,6 +1875,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	STATIC_METHOD("endLoadingScreen") {
 		params [P_THISCLASS];
+		uiNamespace setVariable ["vin_loadingScreenTitle", ''];
+		uiNamespace setVariable ["vin_loadingScreenSubtitle", ''];
+		uiNamespace setVariable ["vin_loadingScreenSubprogress", 0];
 		CALLSM0("GameModeBase", "setLoadingProgress");
 		END_LOADING_SCREEN;
 	} ENDMETHOD;
@@ -2027,6 +2030,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// |                             S T O R A G E                             |
 	// -------------------------------------------------------------------------
 
+	STATIC_METHOD("getSpawnedPlayers") {
+		params [P_THISCLASS];
+		
+		HUMAN_PLAYERS select {
+			private _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _x);
+			IS_OOP_OBJECT(_unit)
+		}
+	} ENDMETHOD;
+	
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
@@ -2051,9 +2063,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _savedPlayerInfoArray = +T_GETV("playerInfoArray");
 		{
 			T_CALLM4("_savePlayerInfoTo", _savedPlayerInfoArray, getPlayerUID _x, _x, name _x);
-		} forEach (allPlayers select { alive _x });
-		T_SETV("savedPlayerInfoArray", _savedPlayerInfoArray);
+		} forEach CALLSM0("GameModeBase", "getSpawnedPlayers");
 
+		T_SETV("savedPlayerInfoArray", _savedPlayerInfoArray);
 
 		T_CALLM0("flushMessageQueues");
 

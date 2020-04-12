@@ -1285,3 +1285,10 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define CLAMP_POSITIVE(val_) MAXIMUM(val_, 0)
 // Clamp val_ between 0 and -inf
 #define CLAMP_NEGATIVE(val_) MINIMUM(val_, 0)
+
+
+// ----------------------------------------------------------------------
+// |                       L O C A L I Z A T I O N                      |
+// ----------------------------------------------------------------------
+#define LOCS(scope, id) (localize ("STR_" + scope + "_" + id))
+#define LOC(id) LOCS(LOC_SCOPE, id)

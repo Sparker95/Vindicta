@@ -125,6 +125,10 @@ CLASS("GameManager", "MessageReceiverEx")
 				CALLM1(gIntelDatabaseClient, "addIntel", _dummyIntel);
 			*/
 		};
+
+		if(IS_SERVER) then {
+			T_CALLM0("autoLoad");
+		};
 	} ENDMETHOD;
 
 	// - - - - - Getters for game state - - - - -
@@ -331,6 +335,13 @@ CLASS("GameManager", "MessageReceiverEx")
 		_success
 	} ENDMETHOD;
 
+	pr0_fnc_loadGameMsg = {
+		params ["_header", "_message", "_delay"];
+		diag_log _this;
+		["loading", [format ["<t size='5' color='#FF7733'>%1</t><br/><t size='3' color='#FFFFFF'>%2</t>", _header, _message], "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", _delay] remoteExec ["cutFadeOut", ON_ALL, false];
+	};
+
 	// Loads game, returns true on success
 	METHOD("loadGame") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
@@ -347,13 +358,11 @@ CLASS("GameManager", "MessageReceiverEx")
 			false
 		};
 
-
-		// Start loading screen
-		["loading", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>LOADING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
-		["loading", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
-
 		// Bail if game mode is already initialized (although the button should be disabled, right?)
 		if(CALLM0(gGameManager, "isGameModeInitialized")) exitWith { false };
+
+		// Start loading screen
+		[LOCS("Vindicta_GameManager", "Load_Loading"), _recordName, 20000] call pr0_fnc_loadGameMsg;
 
 		pr _storage = NEW(__STORAGE_CLASS, []);
 
@@ -441,10 +450,12 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		DELETE(_storage);
 
-
 		// End loading screen
-		["loading", ["<t size='4' color='#77FF77'>LOAD COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
-		["loading", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+		if(_success) then {
+			[LOCS("Vindicta_GameManager", "Load_Failed"), _recordName, 10] call pr0_fnc_loadGameMsg;
+		} else {
+			[LOCS("Vindicta_GameManager", "Load_Complete"), _recordName, 10] call pr0_fnc_loadGameMsg;
+		};
 
 		OOP_INFO_0("GAME LOAD ENDED");
 		diag_log "[GameManager] GAME LOAD ENDED";
@@ -463,6 +474,58 @@ CLASS("GameManager", "MessageReceiverEx")
 		DELETE(_storage);
 	} ENDMETHOD;
 
+	pr0_fnc_autoLoadMsg = {
+		diag_log _this;
+		["autoloadwarning", [format ["<t size='4' color='#FF7733'>%1</t><br/><t size='2' color='#FFFFFF'>%2</t>", LOCS("Vindicta_GameManager", "Autoload"), _this], "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["autoloadwarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+	};
+
+	METHOD("autoLoad") {
+		params [P_THISOBJECT];
+		#define LOC_SCOPE "Vindicta_GameManager"
+		if(!vin_autoLoad_enabled) exitWith {
+			LOC("Autoload_Disabled") call pr0_fnc_autoLoadMsg;
+		};
+
+		// Read headers of all records
+		pr _recordNamesAndHeaders = T_CALLM0("readAllSavedGameHeaders");
+
+		if(count _recordNamesAndHeaders == 0) exitWith {
+			LOC("Autoload_NoSaves") call pr0_fnc_autoLoadMsg;
+		};
+
+		// Check all headers for loadability
+		pr _checkResult = T_CALLM1("checkAllHeadersForLoading", _recordNamesAndHeaders);
+
+		pr _dataForLoad = _checkResult apply {
+			_x params ["_recordName", "_header", "_errors"];
+			DELETE(_header);
+			[_recordName, _errors]
+		} select {
+			!(INCOMPATIBLE_WORLD_NAME in _x#1)
+		};
+
+		if(count _dataForLoad == 0) exitWith {
+			LOC("Autoload_NoSavesForMap") call pr0_fnc_autoLoadMsg;
+		};
+
+		reverse _dataForLoad;
+
+		_dataForLoad#0 params ["_recordName", "_errors"];
+
+		if(INCOMPATIBLE_SAVE_VERSION in _errors) exitWith {
+			LOC("Autoload_Version") call pr0_fnc_autoLoadMsg;
+		};
+
+		if(INCOMPATIBLE_FACTION_TEMPLATES in _errors) exitWith {
+			LOC("Autoload_Factions") call pr0_fnc_autoLoadMsg;
+		};
+
+		T_CALLM1("loadGame", _recordName);
+
+		#undef LOC_SCOPE
+	} ENDMETHOD;
+	
 	// FUNCTIONS CALLED BY CLIENT
 
 	// Called by client when he needs to get data on all the saved games
@@ -625,16 +688,19 @@ CLASS("GameManager", "MessageReceiverEx")
 		CALLM2(_instance, "postMethodAsync", "initGameModeClient", [_className]);
 	} ENDMETHOD;
 
-
-	// - - - - - Auto Save - - - - -
+	// - - - - - Settings - - - - -
 	METHOD("initSettings") {
 		params [P_THISOBJECT];
-		["vin_autoSave_enabled", "CHECKBOX", ["Enabled", "Enable/disable auto save system"], ["Vindicta", "Auto Save"], false, true] call CBA_fnc_addSetting;
-		["vin_autoSave_onEmpty", "CHECKBOX", ["On empty", "Will auto save when the last player leaves the server"], ["Vindicta", "Auto Save"], false, true] call CBA_fnc_addSetting;
-		["vin_autoSave_interval", "SLIDER", ["Interval in hours (0 = disabled)", "Auto save will happen on this interval, setting to 0 will disable interval auto save"], ["Vindicta", "Auto Save"], [0, 24, 0, 0], true] call CBA_fnc_addSetting;
-		["vin_autoSave_inCombat", "CHECKBOX", ["In combat", "When enabled will allow autosaving when enemies are within 250m of a player, otherwise it will be delayed by up to 30 minutes after the scheduled time"], ["Vindicta", "Auto Save"], false, true] call CBA_fnc_addSetting;
+		#define LOC_SCOPE "Vindicta_Settings"
+		["vin_autoSave_enabled",	"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_onEmpty",	"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_interval",	"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")], [0, 24, 0, 0],	true] call CBA_fnc_addSetting;
+		["vin_autoSave_inCombat",	"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
+		["vin_autoLoad_enabled",	"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")], false,			true] call CBA_fnc_addSetting;
+		#undef LOC_SCOPE
 	} ENDMETHOD;
 
+	// - - - - - Auto Save - - - - -
 	METHOD("_playersInCombat") {
 		params [P_THISOBJECT];
 
@@ -647,7 +713,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		} != NOT_FOUND;
 	} ENDMETHOD;
 
-	pr0_fnc_autoSaveWarning = {
+	pr0_fnc_autoSaveMsg = {
 		["autosavewarning", [_this, "PLAIN DOWN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["autosavewarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 	};
@@ -674,15 +740,15 @@ CLASS("GameManager", "MessageReceiverEx")
 			switch true do {
 				// 5m warning
 				case (_nextAutoSaveTime - 300 <= TIME_NOW && _nextAutoSaveTime - 300 > _lastAutoSaveCheck): {
-					("<t size='2' color='#FFFF33'>Auto saving in 5 minutes</t>" + _delayMessage) call pr0_fnc_autoSaveWarning;
+					("<t size='2' color='#FFFF33'>Auto saving in 5 minutes</t>" + _delayMessage) call pr0_fnc_autoSaveMsg;
 				};
 				// 30s  warning
 				case (_nextAutoSaveTime - 30 <= TIME_NOW && _nextAutoSaveTime - 30 > _lastAutoSaveCheck): {
-					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t>" + _delayMessage) call pr0_fnc_autoSaveWarning;
+					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t>" + _delayMessage) call pr0_fnc_autoSaveMsg;
 				};
 				// Forced warning
 				case (_playersInCombat && _nextAutoSaveTime + 30 * 60 <= TIME_NOW && _nextAutoSaveTime + 30 * 60 - 30 > _lastAutoSaveCheck): {
-					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t><br/><t size='1' color='#FFFFFF'>(was delayed by 30 minutes due to enemies within 250m of players)</t>" + _delayMessage) call pr0_fnc_autoSaveWarning;
+					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t><br/><t size='1' color='#FFFFFF'>(was delayed by 30 minutes due to enemies within 250m of players)</t>" + _delayMessage) call pr0_fnc_autoSaveMsg;
 				};
 			};
 		};
