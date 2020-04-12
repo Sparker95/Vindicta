@@ -1756,7 +1756,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV_PUBLIC("alarmDisabled", false);
 
 		// Lets try and find a location sector that we can update from, incase it changed
+		
+		#ifndef _SQF_VM
 		private _locSectors = entities "Vindicta_LocationSector";
+		#else
+		private _locSectors = [];
+		#endif
 		private _foundIdx = _locSectors findIf {
 			(_x getVariable ["Name", ""]) isEqualTo T_GETV("name") && (_x getVariable ["Type", ""]) isEqualTo T_GETV("type")
 		};
