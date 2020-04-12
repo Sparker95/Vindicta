@@ -48,7 +48,7 @@ class LoadingScreenGroup : MUI_GROUP
 			y = safeZoneH * 0;
 			w = safeZoneW * 1;
 			h = safeZoneH * 0.09;
-			text = "Loading...";
+			text = "";
 			//style = ST_LEFT + ST_VCENTER;
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorText[] = MUIC_WHITE;
