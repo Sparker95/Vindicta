@@ -16,6 +16,17 @@ It also handles some client requests about saving/loading the game, and initial 
 #define STATE_STARTUP				0
 #define STATE_GAME_MODE_INITIALIZED	1
 
+#ifdef RELEASE_BUILD
+#define DEV_PREFIX ""
+#else
+#define DEV_PREFIX "[DEV]"
+#endif
+FIX_LINE_NUMBERS()
+
+#define SAVE_TYPE_DEFAULT			0
+#define SAVE_TYPE_RECOVERY			1
+#define SAVE_TYPE_AUTO				2
+
 CLASS("GameManager", "MessageReceiverEx")
 
 	VARIABLE("gameModeInitialized");	// State of the game for this machine
@@ -25,6 +36,8 @@ CLASS("GameManager", "MessageReceiverEx")
 	VARIABLE("campaignStartDate");	// In-game date when the campaign was started
 	VARIABLE("templates");			// Array of templates currently used
 	VARIABLE("gameModeClassName");	// 
+	VARIABLE("lastAutoSave");
+	VARIABLE("lastAutoSaveCheck");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -35,12 +48,15 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_SETV("templates", []);
 		T_SETV("campaignStartDate", date);
 		T_SETV("gameModeClassName", "_noname_");
+		T_SETV("lastAutoSave", TIME_NOW);
+		T_SETV("lastAutoSaveCheck", TIME_NOW);
 
 		#ifndef RELEASE_BUILD
 		if(HAS_INTERFACE) then {
 			[] call pr0_fnc_initDebugMenu;
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
@@ -51,6 +67,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		params [P_THISOBJECT];
 
 		// Create various objects not related to a particular mission
+		T_CALLM0("initSettings");
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 		};
@@ -58,7 +75,6 @@ CLASS("GameManager", "MessageReceiverEx")
 		if(IS_SERVER) then {
 			// Initialize player database
 			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
-
 		};
 
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
@@ -198,7 +214,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	METHOD("saveGame") {
-		params [P_THISOBJECT, P_BOOL("_recovery")];
+		params [P_THISOBJECT, P_NUMBER("_type")];
 
 		// Bail if we are not server
 		if (!isServer) exitWith {
@@ -237,19 +253,31 @@ CLASS("GameManager", "MessageReceiverEx")
 				T_GETV("saveID")
 			];
 
-		if (_recovery) then {
-			_recordNameBase = format["[RECOVERY] %1", _recordNameBase];
+		pr _typePrefix = switch _type do {
+			case SAVE_TYPE_DEFAULT: 	{ "" };
+			case SAVE_TYPE_RECOVERY: 	{ "[RECOVERY]" };
+			case SAVE_TYPE_AUTO: 		{ "[AUTO]" };
 		};
-#ifdef RELEASE_BUILD
-		pr _recordNameFinal = _recordNameBase;
-#else
-		pr _recordNameFinal = format["[DEV] %1", _recordNameBase];
-#endif
-		pr _i = 1;
-		while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
-			_recordNameFinal = format ["%1 %2", _recordNameBase, _i];
-			_i = _i + 1;
+
+		pr _recordNameFinal = DEV_PREFIX + _typePrefix + _recordNameBase;
+
+		// We only keep one recovery and auto save for each campaign name, delete any others
+		if(_type in [SAVE_TYPE_RECOVERY, SAVE_TYPE_AUTO]) then {
+			pr _recordsToDelete = CALLM0(_storage, "getAllRecords") select { 
+				tolower _typePrefix in tolower _x && tolower T_GETV("campaignName") in tolower _x
+			};
+			{
+				CALLM1(_storage, "eraseRecord", _x);
+			} forEach _recordsToDelete;
+		} else {
+			// Find a unique name for the save
+			pr _i = 1;
+			while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
+				_recordNameFinal = format ["%1 %2", _recordNameBase, _i];
+				_i = _i + 1;
+			};
 		};
+
 		diag_log format ["[GameManager] Opening record: %1", _recordNameFinal];
 		CALLM1(_storage, "open", _recordNameFinal);
 
@@ -472,7 +500,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	METHOD("serverSaveGameRecovery") {
 		params [P_THISOBJECT];
-		T_CALLM1("saveGame", true);
+		T_CALLM1("saveGame", SAVE_TYPE_RECOVERY);
 	} ENDMETHOD;
 
 	METHOD("clientOverwriteSavedGame") {
@@ -597,6 +625,78 @@ CLASS("GameManager", "MessageReceiverEx")
 		CALLM2(_instance, "postMethodAsync", "initGameModeClient", [_className]);
 	} ENDMETHOD;
 
+
+	// - - - - - Auto Save - - - - -
+	METHOD("initSettings") {
+		params [P_THISOBJECT];
+		["vin_autoSave_enabled", "CHECKBOX", ["Enabled", "Enable/disable auto save system"], ["Vindicta", "Auto Save"], false, true] call CBA_fnc_addSetting;
+		["vin_autoSave_onEmpty", "CHECKBOX", ["On empty", "Will auto save when the last player leaves the server"], ["Vindicta", "Auto Save"], false, true] call CBA_fnc_addSetting;
+		["vin_autoSave_interval", "SLIDER", ["Interval in hours (0 = disabled)", "Auto save will happen on this interval, setting to 0 will disable interval auto save"], ["Vindicta", "Auto Save"], [0, 24, 0, 0], true] call CBA_fnc_addSetting;
+		["vin_autoSave_inCombat", "CHECKBOX", ["In combat", "When enabled will allow autosaving when enemies are within 250m of a player, otherwise it will be delayed by up to 30 minutes after the scheduled time"], ["Vindicta", "Auto Save"], false, true] call CBA_fnc_addSetting;
+	} ENDMETHOD;
+
+	METHOD("_playersInCombat") {
+		params [P_THISOBJECT];
+
+		if(vin_autoSave_inCombat) exitWith { false };
+		private _enemySide = CALLM0(gGameMode, "getEnemySide");
+
+		HUMAN_PLAYERS findIf {
+			// Find nearby enemies
+			(_x nearEntities ["Man", 250] - HUMAN_PLAYERS) findIf { side _x == _enemySide } != NOT_FOUND
+		} != NOT_FOUND;
+	} ENDMETHOD;
+
+	pr0_fnc_autoSaveWarning = {
+		["autosavewarning", [_this, "PLAIN DOWN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["autosavewarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+	};
+
+	METHOD("checkPeriodicAutoSave") {
+		params [P_THISOBJECT];
+
+		if(!vin_autoSave_enabled || vin_autoSave_interval == 0) exitWith { 
+			// disabled
+		};
+
+		private _playersInCombat = T_CALLM0("_playersInCombat");
+		private _nextAutoSaveTime = T_GETV("lastAutoSave") + vin_autoSave_interval * 60 * 60;
+
+		if(_nextAutoSaveTime > TIME_NOW || {_playersInCombat && _nextAutoSaveTime + 30 * 60 > TIME_NOW}) exitWith {
+			// not time yet
+			private _lastAutoSaveCheck = T_GETV("lastAutoSaveCheck");
+			T_SETV("lastAutoSaveCheck", TIME_NOW);
+			private _delayMessage = if(_playersInCombat) then {
+				"<br/><t size='2' color='#FFFFFF'>(delayed due to enemies within 250m of players)</t>"
+			} else {
+				""
+			};
+			switch true do {
+				// 5m warning
+				case (_nextAutoSaveTime - 300 <= TIME_NOW && _nextAutoSaveTime - 300 > _lastAutoSaveCheck): {
+					("<t size='2' color='#FFFF33'>Auto saving in 5 minutes</t>" + _delayMessage) call pr0_fnc_autoSaveWarning;
+				};
+				// 30s  warning
+				case (_nextAutoSaveTime - 30 <= TIME_NOW && _nextAutoSaveTime - 30 > _lastAutoSaveCheck): {
+					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t>" + _delayMessage) call pr0_fnc_autoSaveWarning;
+				};
+				// Forced warning
+				case (_playersInCombat && _nextAutoSaveTime + 30 * 60 <= TIME_NOW && _nextAutoSaveTime + 30 * 60 - 30 > _lastAutoSaveCheck): {
+					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t><br/><t size='1' color='#FFFFFF'>(was delayed by 30 minutes due to enemies within 250m of players)</t>" + _delayMessage) call pr0_fnc_autoSaveWarning;
+				};
+			};
+		};
+
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
+		T_SETV("lastAutoSave", TIME_NOW);
+	} ENDMETHOD;
+
+	METHOD("checkEmptyAutoSave") {
+		params [P_THISOBJECT];
+		if(!vin_autoSave_enabled || !vin_autoSave_onEmpty) exitWith { };
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
+		T_SETV("lastAutoSave", TIME_NOW);
+	} ENDMETHOD;
 
 	// - - - - Misc methods - - - -
 

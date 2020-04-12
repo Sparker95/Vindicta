@@ -259,12 +259,17 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(IS_DEDICATED) then {
 			if(count HUMAN_PLAYERS == 0) then {
 				T_CALLM1("suspend", "Game suspended while no players connected");
+				CALLM0(gGameManager, "checkEmptyAutoSave");
 				waitUntil { count HUMAN_PLAYERS > 0 };
 				T_CALLM0("resume");
 			};
 		};
+		if(IS_SERVER) then {
+			CALLM0(gGameManager, "checkPeriodicAutoSave");
+		};
 		#endif
 		FIX_LINE_NUMBERS()
+
 
 		// Do spawning if it is enabled.
 		if(T_GETV("spawningEnabled")) then {
@@ -1842,8 +1847,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		START_LOADING_SCREEN [_message];
 		private _display = uiNamespace getVariable ["vin_loadingScreen", displayNull];
 		if(!(_display isEqualTo displayNull)) then {
-			(_display displayCtrl 101) ctrlSetText _message;
-			(_display displayCtrl 101) ctrlCommit 0;
+			(_display displayCtrl 666) ctrlSetText _message;
+			(_display displayCtrl 666) ctrlCommit 0;
 		};
 
 		CALLSM0("GameModeBase", "setLoadingProgress");

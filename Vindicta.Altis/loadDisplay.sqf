@@ -26,8 +26,8 @@ if (! isNil "_versionStr") then {
 };
 
 private _title = uiNamespace getVariable ['vin_loadingScreenTitle', ''];
-(_display displayCtrl 101) ctrlSetText _title;
-(_display displayCtrl 101) ctrlCommit 0;
+(_display displayCtrl 666) ctrlSetText _title;
+(_display displayCtrl 666) ctrlCommit 0;
 
 private _subtitle = uiNamespace getVariable ['vin_loadingScreenSubtitle', ''];
 (_display displayCtrl 667) ctrlSetText _subtitle;

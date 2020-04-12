@@ -43,7 +43,7 @@ class LoadingScreenGroup : MUI_GROUP
 		};
 
 		class LS_TitleText : MUI_BASE {
-			IDC = 101;
+			IDC = 666;
 			x = safeZoneW * 0;
 			y = safeZoneH * 0;
 			w = safeZoneW * 1;
