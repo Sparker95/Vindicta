@@ -31,8 +31,8 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_default, ["FGN_AAF_Inf_Rifleman"]];
 
-_inf set [T_INF_SL, ["RHS_AAF_2020_SL"]]; // = 1
-_inf set [T_INF_TL, ["RHS_AAF_2020_TL"]]; // = 2
+_inf set [T_INF_SL, ["RHS_AAF_2020_SL", "RHS_AAF_2020_SL_2"]]; // = 1
+_inf set [T_INF_TL, ["RHS_AAF_2020_TL", "RHS_AAF_2020_TL_2"]]; // = 2
 _inf set [T_INF_officer, ["RHS_AAF_2020_officer"]]; // = 3
 _inf set [T_INF_GL, ["RHS_AAF_2020_grenadier"]]; // = 4
 _inf set [T_INF_rifleman, ["RHS_AAF_2020_rifleman"]]; // = 5

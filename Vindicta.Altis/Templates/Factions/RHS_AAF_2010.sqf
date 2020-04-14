@@ -36,7 +36,7 @@ _inf set [T_INF_ammo, ["RHS_AAF_2010_AT_2","RHS_AAF_2010_MG_2"]];
 _inf set [T_INF_LAT, ["RHS_AAF_2010_LAT", "RHS_AAF_2010_AT_3"]];
 _inf set [T_INF_AT, ["RHS_AAF_2010_AT","RHS_AAF_2010_AT_3"]];
 _inf set [T_INF_AA, ["RHS_AAF_2010_AA"]];
-_inf set [T_INF_LMG, ["RHS_AAF_2010_LMG"]];
+_inf set [T_INF_LMG, ["RHS_AAF_2010_LMG", "RHS_AAF_2010_LMG_2"]];
 _inf set [T_INF_HMG, ["RHS_AAF_2010_MG"]];
 _inf set [T_INF_medic, ["RHS_AAF_2010_medic"]];
 _inf set [T_INF_engineer, ["RHS_AAF_2010_engineer"]];
