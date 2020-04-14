@@ -82,9 +82,9 @@ _veh set [T_VEH_MRLS, ["FGN_AAF_BM21"]];
 _veh set [T_VEH_SPA, ["rhs_2s1_tv"]];
 _veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]];
 
-_veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]];
+_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
-_veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_D"]];
+_veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]];
 _veh set [T_VEH_stat_GMG_low, ["rhsgref_ins_g_SPG9"]];
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]];
 _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_D"]];
