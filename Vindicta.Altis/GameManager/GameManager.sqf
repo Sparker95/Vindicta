@@ -135,7 +135,7 @@ CLASS("GameManager", "MessageReceiverEx")
 			T_CALLM0("autoLoad");
 		};
 	} ENDMETHOD;
-
+	
 	// - - - - - Getters for game state - - - - -
 
 	METHOD("isGameModeInitialized") {
@@ -697,11 +697,17 @@ CLASS("GameManager", "MessageReceiverEx")
 	METHOD("initSettings") {
 		params [P_THISOBJECT];
 		#define LOC_SCOPE "Vindicta_Settings"
-		["vin_autoSave_enabled",	"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
-		["vin_autoSave_onEmpty",	"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
-		["vin_autoSave_interval",	"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")], [0, 24, 0, 0],	true] call CBA_fnc_addSetting;
-		["vin_autoSave_inCombat",	"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
-		["vin_autoLoad_enabled",	"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")], false,			true] call CBA_fnc_addSetting;
+		// Auto load
+		["vin_autoLoad_enabled",		"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")],	false,			true] call CBA_fnc_addSetting;
+		// Auto save
+		["vin_autoSave_enabled",		"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_onEmpty",		"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_interval",		"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")],	[0, 24, 0, 0],	true] call CBA_fnc_addSetting;
+		["vin_autoSave_inCombat",		"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		// Server
+		["vin_server_suspendWhenEmpty",	"CHECKBOX",	[LOC("Server_Suspend"),		LOC("Server_Suspend_Tooltip")],		[LOC("Section"), LOC("Server")],	true,			true] call CBA_fnc_addSetting;
+		// Game
+		["vin_server_gameSpeed",		"SLIDER",	[LOC("Game_Speed"),			LOC("Game_Speed_Tooltip")],			[LOC("Section"), LOC("Game")],		[0.1, 5, 1, 1],	true] call CBA_fnc_addSetting;
 		#undef LOC_SCOPE
 	} ENDMETHOD;
 
