@@ -41,3 +41,4 @@
 #define TAG_FOLLOWERS "g_followers" // Passed to move actions to list other agents that are following this agent (so it can wait for them usually)
 
 #define TAG_TARGET "g_target"	// General target parameter, usually a unit
+#define TAG_ANIM "g_anim"	// Anim to use in GoalUnitAmbientAnim

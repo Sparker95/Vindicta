@@ -50,6 +50,8 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 			};
 		};
 
+		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
+
 		if (_atPoliceStation) then {
 			// First of all assign groups to guard the police station
 			// If there are more groups, they will be on patrol
@@ -62,7 +64,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 			} else {
 				// For non-police stations, we must reserve at least 1...2 groups to perform patrol
 				// Otherwise they all will stay in houses
-				_nGroupsPatrolReserve = (1 + ceil (random 1)); // Reserve some groups for patrol
+				_nGroupsPatrolReserve = MAXIMUM(count _routes, count _groupsInf / 2); // Want enough groups for patrolling the pre-defined routes at least
 			};
 		};
 
@@ -82,13 +84,12 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 
 		// Give goals to remaining groups
 		pr _nPatrolGroups = 0;
-		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
 		{ // foreach _groups
-			pr _type = CALLM0(_x, "getType");
 			pr _groupAI = CALLM0(_x, "getAI");
 			
-			if (_groupAI != "") then {
+			if (_groupAI != NULL_OBJECT) then {
 				pr _args = [];
+				pr _type = CALLM0(_x, "getType");
 				switch (_type) do {
 					case GROUP_TYPE_INF: {
 						// We need at least enough patrol groups to cover the defined routes

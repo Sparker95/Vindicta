@@ -309,6 +309,23 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						// Why do we need it
 						deleteVehicle _object;
 					};
+					case "B_Soldier_F": {
+						T_CALLM1("addPatrolRoute", _object);
+						OOP_DEBUG_1("findAllObjects for %1: found patrol route", T_GETV("name"));
+						deleteVehicle _object;
+					};
+					case "B_soldier_AR_F": {
+						private _anims = (_object getVariable ["enh_ambientanimations_anims", []]) apply { toLower _x };
+						private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
+						if(_ambientAnimIdx != NOT_FOUND) then {
+							private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
+							private _mrk = createVehicle ["Sign_Pointer_Cyan_F", getPos _object, [], 0, "CAN_COLLIDE"];
+							_mrk setDir getDir _object;
+							_mrk setVariable ["vin_defaultAnims", [_anim]];
+						};
+						deleteVehicle _object;
+						OOP_DEBUG_1("findAllObjects for %1: found predefined solider position", T_GETV("name"));
+					};
 				};
 
 				// Process buildings
@@ -316,9 +333,26 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					T_CALLM1("addObject", _object);
 					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 				};
-				if (_type isKindOf "Man") then {
-					T_CALLM1("addPatrolRoute", _object);
-					OOP_DEBUG_1("findAllObjects for %1: found man", T_GETV("name"));
+				// if (_type isKindOf "Man") then {
+				// 	if()
+				// 	T_CALLM1("addPatrolRoute", _object);
+				// 	OOP_DEBUG_1("findAllObjects for %1: found man", T_GETV("name"));
+				// };
+				// Process objects with anim markers
+				private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
+				if(_animMarkersIdx != NOT_FOUND) then {
+					(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
+					{
+						_x params ["_relPos", "_vectorDir", "_vectorUp", "_anims"]; 
+						private _absPos = _object modelToWorldVisual _relPos;
+						private _mrk = createVehicle ["Sign_Pointer_Cyan_F", _absPos, [], 0, "CAN_COLLIDE"];
+						_mrk setVectorDir (_object vectorModelToWorldVisual _vectorDir);
+						_mrk setVariable ["vin_defaultAnims", _anims];
+						// None of these solutions work correctly for some reason:
+						//[_mrk, _object, false] call BIS_fnc_attachToRelative;
+						//_mrk attachTo [_object];
+						//_mrk setVectorDirAndUp [_object vectorModelToWorld _vectorDir, _object vectorModelToWorld _vectorUp];
+					} forEach _animMarkers;
 				};
 			};
 		} forEach _no;
@@ -396,7 +430,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_patrolRoutes pushBack _waypoints;
 
 		group _hObject deleteGroupWhenEmpty true;
-		deleteVehicle _hObject;
 	} ENDMETHOD;
 
 	// Add a building in the area that can be built, but starts off hidden (military base structures mostly)
@@ -1890,8 +1923,14 @@ if (isNil {GETSV("Location", "all")}) then {
 	SET_STATIC_VAR("Location", "all", []);
 };
 
+#ifndef _SQF_VM
+
 // Initialize arrays with building types
 call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";
+// Initialize ambient animation info
+call compile preprocessFileLineNumbers "Location\initAmbientAnim.sqf";
+
+#endif
 
 // Tests
 #ifdef _SQF_VM
