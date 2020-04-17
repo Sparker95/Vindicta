@@ -43,6 +43,12 @@ pr _items = [];
 // NVGs
 pr _NVGs = [];
 
+// Grenades
+pr _grenades = [];
+
+// Explosives
+pr _explosives = [];
+
 // Vests
 pr _vests = [];
 
@@ -65,6 +71,8 @@ if (! isNil {_t select T_INV}) then {
 	_vests = +(_inv#T_INV_vests);
 	_backpacks = +(_inv#T_INV_backpacks);
 	_NVGs = +(_inv#T_INV_NVGs);
+	_grenades = +(_inv#T_INV_grenades);
+	_explosives = +(_inv#T_INV_explosives);
 };
 
 // Loadout Weapons
@@ -177,16 +185,28 @@ _usableMagazines
 
 			// Process items
 			{
-				// We don't need magazines here! Go away!
-				if (! (isClass (configFile >> "cfgMagazines" >> _x))) then {
-					// Check if night vision
-					if (_x isKindOf ["NVGoggles", configFile >> "cfgWeapons"]) then {
-						_NVGs pushBackUnique _nvg;
-					} else {
-						_items pushBackUnique _x;
+				// We don't need magazines here! Go away magazine!
+				([_x] call BIS_fnc_itemType) params ["_category", "_type"];
+				switch (_type) do {
+					case "Mine": {
+						_explosives pushBackUnique _x;
+					};
+					case "Grenade": {
+						_grenades pushBackUnique _x;
+					};
+					case "SmokeShell": {
+						_grenades pushBackUnique _x;
+					};
+					case "NVGoggles": {
+						_NVGs pushBackUnique _x;
+					};
+					default {	// Everything else goes here
+						if (! (isClass (configFile >> "cfgMagazines" >> _x))) then {
+							_items pushBackUnique _x;
+						};
 					};
 				};
-			} forEach ((assignedItems _hO) + (backpackItems _hO));
+			} forEach ((assignedItems _hO) + (backpackItems _hO) + (vestItems _hO) + (uniformItems _hO));
 
 			// Process vest
 			pr _vest = vest _hO;
@@ -247,6 +267,12 @@ LOG_TEMPLATE ["  %1", _handgunWeaponItems];
 LOG_TEMPLATE ["Items:"];
 LOG_TEMPLATE ["  %1", _items];
 
+LOG_TEMPLATE ["Grenades:"];
+LOG_TEMPLATE ["  %1", _grenades];
+
+LOG_TEMPLATE ["Explosives:"];
+LOG_TEMPLATE ["  %1", _explosives];
+
 LOG_TEMPLATE ["Vests:"];
 LOG_TEMPLATE ["  %1", _vests];
 
@@ -281,7 +307,18 @@ while {_i < count _handgunWeapons} do {
 	_i = _i + 1;
 };
 
-pr _arrayExport = [_primary, _primaryWeaponItems, _secondary, _secondaryWeaponItems, _handgun, _handgunWeaponItems, _items, _vests, _backpacks, _NVGs];
+pr _arrayExport = [	_primary,
+					_primaryWeaponItems,
+					_secondary,
+					_secondaryWeaponItems,
+					_handgun,
+					_handgunWeaponItems,
+					_items,
+					_vests,
+					_backpacks,
+					_NVGs,
+					_grenades,
+					_explosives];
 
 // Export a human-readable string if requested
 if (_returnString) then {

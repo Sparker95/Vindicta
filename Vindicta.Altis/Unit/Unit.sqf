@@ -1166,6 +1166,23 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						} forEach _classNames;
 					};
 
+					// Add grenades and explosives
+					pr _grenades = _tInv#T_INV_grenades;
+					{
+						if (random 10 < 7) then {
+							_hO addItemCargoGlobal [_x, _nGuns];
+						};
+					} forEach _grenades;
+
+					// Add explosives
+					pr _explosives = _tInv#T_INV_explosives;
+					pr _nExplosives = ceil (_nGuns*0.2);
+					{
+						if (random 10 < 3) then {
+							_hO addItemCargoGlobal [_x, _nExplosives];
+						};
+					} forEach _explosives;
+
 					// = = = = = END MILITARY BOXES = = = = =
 				} else {
 

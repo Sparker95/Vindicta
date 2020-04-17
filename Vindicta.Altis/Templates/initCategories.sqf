@@ -436,4 +436,6 @@ T_INV_items				= 6;	// Array of item class names
 T_INV_vests				= 7;
 T_INV_backpacks			= 8;
 T_INV_NVGs				= 9;	// Night vision goggles
-T_INV_size				= 10;
+T_INV_grenades			= 10;	// All kinds of grenades
+T_INV_explosives		= 11;	// Explosives
+T_INV_size				= 12;
