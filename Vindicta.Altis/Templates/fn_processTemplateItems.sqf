@@ -179,7 +179,12 @@ _usableMagazines
 			{
 				// We don't need magazines here! Go away!
 				if (! (isClass (configFile >> "cfgMagazines" >> _x))) then {
-					_items pushBackUnique _x;
+					// Check if night vision
+					if (_x isKindOf ["NVGoggles", configFile >> "cfgWeapons"]) then {
+						_NVGs pushBackUnique _nvg;
+					} else {
+						_items pushBackUnique _x;
+					};
 				};
 			} forEach ((assignedItems _hO) + (backpackItems _hO));
 
