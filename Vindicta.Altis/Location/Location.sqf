@@ -238,28 +238,36 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Setup location's spawn positions
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
+
 		#ifndef _SQF_VM
-		private _no = _locPos nearObjects _radius;
+		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius] select { typeOf _x != "" };
+		private _objects = nearestObjects [_locPos, [], _radius] select { typeOf _x != "" };
+		private _allObjects = +_terrainObjects;
+		{
+			_allObjects pushBackUnique _x;
+		} forEach _objects;
+		//(nearestTerrainObjects [_locPos, [], _radius] apply { [true, _x] }) + (nearestObjects [_locPos, [], _radius] apply { [false, _x] });
+		//private _allObjects = _locPos nearObjects _radius;
 		#else
-		private _no = [];
+		private _allObjects = [];
 		#endif
 		FIX_LINE_NUMBERS()
 
-		private _object = objNull;
-		private _type = "";
-		private _bps = []; //Building positions
-		private _bp = []; //Building position
-		private _bc = []; //Building capacity
-		private _inf_capacity = 0;
-		private _position = [];
-		private _bdir = 0; //Building direction
+		// private _object = objNull;
+		// private _type = "";
+		// private _bps = []; //Building positions
+		// private _bp = []; //Building position
+		// private _bc = []; //Building capacity
+		// private _inf_capacity = 0;
+		// private _position = [];
+		// private _bdir = 0; //Building direction
 
-		// forEach _no;
+		// forEach _allObjects;
 		{
-			_object = _x;
+			private _object = _x;
 			if(T_CALLM1("isInBorder", _object)) then
 			{
-				_type = typeOf _object;
+				private _type = typeOf _object;
 
 				switch _type do {
 					//A truck's position defined the position for tracked and wheeled vehicles
@@ -309,12 +317,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						// Why do we need it
 						deleteVehicle _object;
 					};
-					case "B_Soldier_F": {
+					case "I_Soldier_F": {
 						T_CALLM1("addPatrolRoute", _object);
 						OOP_DEBUG_1("findAllObjects for %1: found patrol route", T_GETV("name"));
 						deleteVehicle _object;
 					};
-					case "B_soldier_AR_F": {
+					case "I_soldier_AR_F": {
 						private _anims = (_object getVariable ["enh_ambientanimations_anims", []]) apply { toLower _x };
 						private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
 						if(_ambientAnimIdx != NOT_FOUND) then {
@@ -328,34 +336,24 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					};
 				};
 
-				// Process buildings
-				if (_type isKindOf "House") then {
-					T_CALLM1("addObject", _object);
+				// Process buildings, objects with anim markers, and shooting targets
+				if (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }) then {
+					T_CALLM2("addObject", _object, _object in _terrainObjects);
 					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 				};
-				// if (_type isKindOf "Man") then {
-				// 	if()
-				// 	T_CALLM1("addPatrolRoute", _object);
-				// 	OOP_DEBUG_1("findAllObjects for %1: found man", T_GETV("name"));
+
+				// // Process objects with anim markers
+				// private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
+				// if(_animMarkersIdx != NOT_FOUND) then {
+				// 	T_CALLM1("addObject", _object);
 				// };
-				// Process objects with anim markers
-				private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
-				if(_animMarkersIdx != NOT_FOUND) then {
-					(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
-					{
-						_x params ["_relPos", "_vectorDir", "_vectorUp", "_anims"]; 
-						private _absPos = _object modelToWorldVisual _relPos;
-						private _mrk = createVehicle ["Sign_Pointer_Cyan_F", _absPos, [], 0, "CAN_COLLIDE"];
-						_mrk setVectorDir (_object vectorModelToWorldVisual _vectorDir);
-						_mrk setVariable ["vin_defaultAnims", _anims];
-						// None of these solutions work correctly for some reason:
-						//[_mrk, _object, false] call BIS_fnc_attachToRelative;
-						//_mrk attachTo [_object];
-						//_mrk setVectorDirAndUp [_object vectorModelToWorld _vectorDir, _object vectorModelToWorld _vectorUp];
-					} forEach _animMarkers;
-				};
+
+				// // Process shooting targets
+				// if(_type in gShootingTargetTypes) then {
+				// 	T_CALLM1("addObject", _object);
+				// };
 			};
-		} forEach _no;
+		} forEach _allObjects;
 
 		T_CALLM0("findBuildables");
 	} ENDMETHOD;
@@ -367,7 +365,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments: _hObject
 	*/
 	METHOD("addObject") {
-		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL_DEFAULT_TRUE("_addSpawnPos")];
+		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
 		private _countBP = count (_hObject buildingPos -1);
@@ -377,9 +375,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				true
 			} else {
 				_array pushBackUnique _hObject;
-				if (_addSpawnPos) then {
+				//if (_addSpawnPos) then {
 					T_CALLM1("addSpawnPosFromBuilding", _hObject);
-				};
+				//};
 				false 
 			}
 		} else {
@@ -419,6 +417,33 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_index = location_bt_medical find _type;
 		if (_index != -1) then {
 			CALLSM1("Location", "initMedicalObject", _hObject);
+		};
+
+		// Process it for ambient anims
+		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
+		if(_animMarkersIdx != NOT_FOUND) then {
+			(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
+			{
+				_x params ["_relPos", "_relDir", "_anim"]; 
+				private _mrk = createVehicle ["Sign_Pointer_Cyan_F", [0,0,0], [], 0, "CAN_COLLIDE"];
+				if(_isTerrainObject) then {
+					_mrk setPos (_hObject modelToWorldVisual _relPos);
+					_mrk setDir (getDir _hObject + _relDir);
+				} else {
+					_mrk attachTo [_hObject, _relPos];
+					_mrk setDir _relDir;
+					_mrk attachTo [_hObject, _relPos];
+				};
+				_mrk setVariable ["vin_parent", _hObject];
+				_mrk setVariable ["vin_anim", _anim];
+			} forEach _animMarkers;
+		};
+
+		// Process shooting targets
+		if(_type in gShootingTargetTypes) then {
+			if(isNil {_object getVariable "vin_target_range"}) then {
+				_object setVariable ["vin_target_range", [-25, 0]];
+			};
 		};
 	} ENDMETHOD;
 
@@ -1558,7 +1583,22 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	STATIC_METHOD("nearLocations") {
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
 		GET_STATIC_VAR("Location", "all") select {
-			(GETV(_x, "pos") distance2D _pos) < _radius
+			GETV(_x, "pos") distance2D _pos < _radius
+		}
+	} ENDMETHOD;
+
+	/*
+	Method: (static)overlappingLocations
+	Returns an array of locations that are overlapping with a circle _radius meters at _pos. Distance is checked in 2D mode.
+
+	Parameters: _pos, _radius
+
+	Returns: nil
+	*/
+	STATIC_METHOD("overlappingLocations") {
+		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		GET_STATIC_VAR("Location", "all") select {
+			GETV(_x, "pos") distance2D _pos < _radius + GETV(_x, "boundingRadius")
 		}
 	} ENDMETHOD;
 
@@ -1575,7 +1615,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// Private, thread-unsafe
 	STATIC_METHOD("_processLocationsNearPos") {
 		params [P_THISCLASS, P_POSITION("_pos")];
-		pr _locs = CALLSM2("Location", "nearLocations", _pos, 2000);
+		pr _locs = CALLSM2("Location", "overlappingLocations", _pos, 2000);
 		//  select { // todo arbitrary number for now
 		// 	(GETV(_x, "type") in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK])
 		// };

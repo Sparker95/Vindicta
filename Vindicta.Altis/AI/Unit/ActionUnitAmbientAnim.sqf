@@ -13,7 +13,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 
 		private _target = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET, []);
 		T_SETV("target", _target);
-		private _defaultAnims = _target getVariable ["vin_defaultAnims", ["SIT_LOW"]];
+		private _defaultAnims = [_target getVariable ["vin_anim", "SIT_LOW"]];
 		private _anims = CALLSM3("Action", "getParameterValue", _parameters, TAG_ANIM, _defaultAnims);
 		T_SETV("anims", _anims);
 		private _defaultDuration = selectRandom [5, 10, 20] * 60;

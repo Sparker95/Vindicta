@@ -35,7 +35,7 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		} forEach [WEST, EAST, INDEPENDENT];
 
 		// Search for nearby cities now
-		pr _nearCities = CALLSM2("Location", "nearLocations", CALLM0(_loc, "getPos"), CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS) select {
+		pr _nearCities = CALLSM2("Location", "overlappingLocations", CALLM0(_loc, "getPos"), CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS) select {
 			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
 		};
 

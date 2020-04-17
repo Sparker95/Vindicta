@@ -1788,6 +1788,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	} ENDMETHOD;
 
+	#define CAMP_RADIUS 100
 	METHOD("clientCreateLocation") {
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
@@ -1796,7 +1797,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		_pos set [2, 0];
 
 		// Make sure the position is not very close to an existing location
-		pr _locsNear = CALLSM2("Location", "nearLocations", _pos, 50);
+		pr _locsNear = CALLSM2("Location", "overlappingLocations", _pos, CAMP_RADIUS * 2);
 		pr _index = _locsNear findIf {
 			!IS_NULL_OBJECT(T_CALLM1("getIntelAboutLocation", _x))
 		};
@@ -1832,7 +1833,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Create the location
 		pr _args = [_pos, T_GETV("side")]; // Our side is creating this location
 		pr _loc = NEW_PUBLIC("Location", _args);
-		CALLM2(_loc, "setBorder", "circle", 100);
+		CALLM2(_loc, "setBorder", "circle", CAMP_RADIUS);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
 		CALLM2(_loc, "processObjectsInArea", "House", true);

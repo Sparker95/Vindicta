@@ -69,8 +69,9 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		// TODO: use object classes as well
 		private _objects = _pos nearObjects _radius;
 		private _freeAmbient = _objects select {
-			!isNil {_x getVariable "vin_defaultAnims"} 
+			!isNil {_x getVariable "vin_anim"} 
 			&& {!(_x getVariable ["vin_occupied", false])}
+			&& {!(isObjectHidden (_x getVariable ["vin_parent", objNull]))}
 		} apply {
 			[_x, "GoalUnitAmbientAnim"]
 		};

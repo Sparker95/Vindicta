@@ -20,7 +20,7 @@
 ["GoalUnitVehicleUnflip",					10	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitArrest",							5	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitShootAtTargetRange",				3	] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalUnitAmbientAnim",								2	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitAmbientAnim",						2	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitNothing",							1	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 // ---------------- Goal effects
@@ -38,7 +38,7 @@
 ["GoalUnitNothing",							"ActionUnitNothing"					] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitShootAtTargetRange",				"ActionUnitShootAtTargetRange"		] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitShootLegTarget",					"ActionUnitShootLegTarget"			] call AI_misc_fnc_setGoalPredefinedAction;
-["GoalUnitAmbientAnim",								"ActionUnitAmbientAnim"						] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalUnitAmbientAnim",						"ActionUnitAmbientAnim"				] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitVehicleUnflip",					"ActionUnitVehicleUnflip"			] call AI_misc_fnc_setGoalPredefinedAction;
 
 // ---------------- Action preconditions and effects
