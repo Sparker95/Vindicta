@@ -92,7 +92,10 @@ location_b_capacity =
 		"Land_MedicalTent_01_CSAT_brownhex_generic_inner_F",
 		"Land_MedicalTent_01_NATO_generic_inner_F",
 		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
+		"Land_MedicalTent_01_NATO_tropic_generic_inner_F",
+		"Land_MedicalTent_01_white_generic_closed_F",
+		"Land_MedicalTent_01_NATO_generic_closed_F",
+		"Land_MedicalTent_01_NATO_tropic_generic_closed_F"],
 		8
 	],
 	// WW2 & CUP
