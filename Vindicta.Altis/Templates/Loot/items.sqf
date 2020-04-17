@@ -134,5 +134,56 @@ t_ACEMiscItems = [
 					["ACE_EarPlugs",20],
 					["ACE_Kestrel4500",2],
 					["ACE_ATragMX",6],
-					["ACE_RangeCard",6]
+					["ACE_RangeCard",6],
+					["ACE_HandFlare_White", 30] // Flares
+				];
+
+// ACE medical items for vehicles
+t_ACEMedicalItems_vehicles = [
+				["ACE_fieldDressing", 10],
+				["ACE_packingBandage", 10],
+				["ACE_elasticBandage", 10],
+				["ACE_tourniquet", 5],
+				["ACE_splint", 2],
+				["ACE_morphine", 4],
+				["ACE_adenosine", 3],
+				["ACE_epinephrine", 3],
+				//["ACE_plasmaIV", 1],
+				//["ACE_plasmaIV_500", 1],
+				//["ACE_plasmaIV_250", 0],
+				//["ACE_salineIV", 1],
+				//["ACE_salineIV_500", 1],
+				//["ACE_salineIV_250", 10],
+				//["ACE_bloodIV", 10],
+				["ACE_bloodIV_500", 8],
+				//["ACE_bloodIV_250", 10],
+				["ACE_quikClot", 10],
+				["ACE_personalAidKit", 3],
+				["ACE_surgicalKit", 1] //,
+				//["ACE_bodyBag", 0]
+				];
+
+// ACE medical items for cargo boxes
+t_ACEMedicalItems_cargo = [
+				["ACE_fieldDressing", 40],
+				["ACE_packingBandage", 40],
+				["ACE_elasticBandage", 40],
+				["ACE_tourniquet", 20],
+				["ACE_splint", 8],
+				["ACE_morphine", 50],
+				["ACE_adenosine", 30],
+				["ACE_epinephrine", 30],
+				//["ACE_plasmaIV", 1],
+				["ACE_plasmaIV_500", 10],
+				["ACE_plasmaIV_250", 20],
+				//["ACE_salineIV", 1],
+				["ACE_salineIV_500", 10],
+				["ACE_salineIV_250", 20],
+				["ACE_bloodIV", 30],
+				["ACE_bloodIV_500", 40],
+				["ACE_bloodIV_250", 40],
+				["ACE_quikClot", 10],
+				["ACE_personalAidKit", 10],
+				["ACE_surgicalKit", 10] //,
+				//["ACE_bodyBag", 0]
 				];

@@ -1019,7 +1019,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			} else {
 
-				// = = = = NOT INFANTRY MILITARY = = = =
+				// = = = = MILITARY CARGO AND VEHICLES = = = =
 
 				pr _nInf = CALLM0(_gar, "countInfantryUnits");
 				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
@@ -1078,10 +1078,8 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					// Array with item class name, count
 					pr _ACREclassNames = t_ACRERadios;
 					{
-						if(random 10 < 7) then {
-							_x params ["_itemName", "_itemCount"];
-							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
-						};
+						_x params ["_itemName", "_itemCount"];
+						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, _itemCount, 1.5*_itemCount])];
 					} forEach _ACREclassNames;
 				};
 
@@ -1091,7 +1089,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARclassNames = t_TFARRadios_0912;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
 					} forEach _TFARclassNames;
 				};
 
@@ -1101,19 +1099,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARBetaclassNames = t_TFARRadios_0100;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
 					} forEach _TFARBetaclassNames;
 				};
 
 				// Add vests
-				pr _nVests = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+				pr _nVests = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
 				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
 					_hO addItemCargoGlobal [selectRandom _vests, 1];
 				};
 
 				// Add backpacks
-				pr _nBackpacks = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+				pr _nBackpacks = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
 				pr _backpacks = _tInv#T_INV_backpacks;
 				for "_i" from 0 to _nBackpacks do {
 					_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
@@ -1136,20 +1134,22 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					};
 				};
 
+				// = = = = = END BOTH CARGO AND VEHICLES MILITARY = = = = = =
+
+
+
 				// Add special items to cargo containers
 				if (_catID == T_CARGO) then {
 
 					// = = = = MILITARY CARGO BOXES = = = =
 
 					// Add ACE medical items
+					// NOTE that for cargo boxes and vehicles the arrays are different!
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
-							if(random 10 < 7) then {
-								pr _itemName = getText (_x >> "name");
-								pr _itemCount = getNumber (_x >> "count");
-								_hO addItemCargoGlobal [_itemName, round (0.5 * (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
-							};
-						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
+							_x params ["_className", "_itemCount"];
+							_hO addItemCargoGlobal [_className, round ((random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
+						} forEach t_ACEMedicalItems_cargo;
 					};
 
 					// Add ACE misc items
@@ -1167,6 +1167,18 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					};
 
 					// = = = = = END MILITARY BOXES = = = = =
+				} else {
+
+					// = = = = = MILITARY VEHICLES = = = = =
+
+					// Add ACE medical items
+					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
+						{
+							_x params ["_className", "_itemCount"];
+							_hO addItemCargoGlobal [_className, round ((random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount]))];
+						} forEach t_ACEMedicalItems_vehicles;
+					};
+					// = = = =
 				};
 
 				// = = = = END NOT INFANTRY MILITARY = = = =
