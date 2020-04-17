@@ -1423,7 +1423,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Cargo boxes
 			private _i = 0;
 			while {_i < _cCargoBoxes} do {
-				private _subcatid = selectRandom [T_CARGO_box_small, T_CARGO_box_medium];
+				private _subcatid = T_CARGO_box_small; // selectRandom [T_CARGO_box_small; // , T_CARGO_box_medium]; // - - Disabled big cargo boxes for police for now
 				private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG _subcatid ARG -1 ARG ""]);
 				CALLM1(_newUnit, "setBuildResources", 50);
 				//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals

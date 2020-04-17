@@ -157,7 +157,7 @@ t_ACEMedicalItems_vehicles = [
                 //["ACE_bloodIV", 10],
                 //["ACE_bloodIV_500", 8],
                 //["ACE_bloodIV_250", 10],
-                ["ACE_quikClot", 5],
+                ["ACE_quikClot", 5]
                 //["ACE_personalAidKit", 3],
                 //["ACE_surgicalKit", 1] //,
                 //["ACE_bodyBag", 0]
@@ -184,6 +184,6 @@ t_ACEMedicalItems_cargo = [
                 ["ACE_bloodIV_250",  20],
                 ["ACE_quikClot", 40],
                 ["ACE_personalAidKit", 10],
-                ["ACE_surgicalKit", 10] ,
+                ["ACE_surgicalKit", 10]
                 //["ACE_bodyBag", 0]
                 ];
