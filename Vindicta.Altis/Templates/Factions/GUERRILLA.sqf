@@ -134,8 +134,4 @@ _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 
-_inv = [];
-_array set [T_INV, _inv];
-
-
 _array // End template

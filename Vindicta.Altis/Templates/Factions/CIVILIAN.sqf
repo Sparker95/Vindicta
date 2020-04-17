@@ -310,6 +310,11 @@ _veh set [T_VEH_default, [
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
 
+// ==== Inventory ====
+_inv = [T_INV] call t_fnc_newCategory;
+_inv set [T_INV_items, +t_miscItems_civ_modern ];
+_inv set [T_INV_backpacks, ["B_AssaultPack_cbr", "B_Carryall_ocamo", "B_Carryall_oucamo"]];
+
 //==== Arrays ====
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
@@ -317,5 +322,6 @@ _array set [T_DRONE, []];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, []];
 _array set [T_ARSENAL, _arsenal];
+_array set [T_INV, _inv];
 
 _array

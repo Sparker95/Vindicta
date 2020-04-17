@@ -46,6 +46,23 @@ pr _vests = [];
 // Backpacks
 pr _backpacks = [];
 
+// Check if inventory category has been defined already
+if (! isNil {_t select T_INV}) then {
+	pr _inv = _t#T_INV;
+
+	// Inheritence of these commented inventory items is not supported now
+	// They will be processed by the generic code anyway, class names will be taken from loadouts
+	//_primaryWeapons = +(_inv#T_INV_primary);
+	//_primaryWeaponItems = +(_inv#T_INV_primary_items);
+	//_secondaryWeapons = +(_inv#T_INV_secondary);
+	//_secondaryWeaponItems = +(_inv#T_INV_secondary_items);
+	//_handgunWeapons = +(_inv#T_INV_handgun_items);
+
+	_items = +(_inv#T_INV_items);
+	_vests = +(_inv#T_INV_vests);
+	_backpacks = +(_inv#T_INV_backpacks);
+};
+
 // Loadout Weapons
 // Each element is an array describing loadout weapons of a specific unit subcategory
 pr _loadoutWeapons = [ [[], []] ];
@@ -154,10 +171,13 @@ _usableMagazines
 				};
 			};
 
-			// Process items, except for map, watch, etc
+			// Process items
 			{
-				_items pushBackUnique _x;
-			} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass", "ItemRadio"]);
+				// We don't need magazines here! Go away!
+				if (! (isClass (configFile >> "cfgMagazines" >> _x))) then {
+					_items pushBackUnique _x;
+				};
+			} forEach ((assignedItems _hO) + (backpackItems _hO));
 
 			// Process vest
 			pr _vest = vest _hO;

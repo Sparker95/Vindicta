@@ -992,20 +992,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					};
 				};
 				// Some items
-				if(count (_tInv#T_INV_items) > 0) then {
-					for "_i" from 0 to ceil random[-2, 3, 8] do {
-						_hO addItemCargoGlobal [selectRandom (_tInv#T_INV_items), 1];
+				// Each item has a fixed chance of appearing
+				{
+					if ((random 10) < 7) then {
+						_hO addItemCargoGlobal [_x, 1 + random 2];
 					};
-				};
+				} foreach (_tInv#T_INV_items);
 				// Add backpack
 				if(count (_tInv#T_INV_backpacks) > 0 && random 3 < 1) then {
-					_hO addBackpackCargoGlobal [selectRandom (_tInv#T_INV_backpacks), 1];
-				};
-				if(random 5 < 1) then {
-					_hO addItemCargoGlobal ["ItemMap", 1];
-				};
-				if(random 10 < 1) then {
-					_hO addItemCargoGlobal ["ItemCompass", 1];
+					_hO addBackpackCargoGlobal [selectRandom (_tInv#T_INV_backpacks), 2];
 				};
 				if (random 20 < 1) then {
 					_hO addItemCargoGlobal ["vin_pills", 20];
@@ -1046,7 +1041,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 				// Add items
 				pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],
-							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.3*_nGuns]]; // [_subcatID, num. attempts]
+							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.7*_nGuns]]; // [_subcatID, num. attempts]
 				{
 					_x params ["_subcatID", "_n"];
 

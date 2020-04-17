@@ -17,6 +17,7 @@ publicVariable "t_classnames_array";
 t_validTemplates = [];
 t_allTemplates = [];
 
+call compile preprocessFileLineNumbers "Templates\Loot\init.sqf";
 call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
 call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
 call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
