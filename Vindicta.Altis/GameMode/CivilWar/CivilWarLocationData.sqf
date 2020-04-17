@@ -29,8 +29,8 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		{_sidesOccupied pushBackUnique (CALLM0(_x, "getSide"))} forEach _garrisons;
 		{
 			//  We can respawn here if there is a garrison of our side and
-			// if there is infantry capacity which is calculated from buildings and objects
-			pr _enable = (_x in _sidesOccupied) && (_capInf > 0) || T_GETV("forceEnablePlayerRespawn");
+			// if there is infantry capacity which is calculated from buildings and objects - - DISABLED FOR NOW
+			pr _enable = (_x in _sidesOccupied) /*&& (_capInf > 0)*/ || T_GETV("forceEnablePlayerRespawn");
 			CALLM2(_loc, "enablePlayerRespawn", _x, _enable);
 		} forEach [WEST, EAST, INDEPENDENT];
 
