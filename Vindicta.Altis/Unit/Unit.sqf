@@ -1040,8 +1040,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				} forEach _arr;
 
 				// Add items
-				pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],
-							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.7*_nGuns]]; // [_subcatID, num. attempts]
+				pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],	// [_subcatID, num. attempts]
+							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.7*_nGuns],
+							[T_INV_NVGs, 1.5*_nGuns]]; // We want more NVGs
 				{
 					_x params ["_subcatID", "_n"];
 

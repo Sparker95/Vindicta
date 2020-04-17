@@ -5,7 +5,7 @@ Author: Sparker 30 september 2019
 
 #define pr private
 
-// #define DEBUG_TEMPLATES
+ #define DEBUG_TEMPLATES
 #ifdef DEBUG_TEMPLATES
 #define LOG_TEMPLATE diag_log format
 #else
@@ -40,6 +40,9 @@ pr _handgunWeaponItems = [];
 // General items
 pr _items = [];
 
+// NVGs
+pr _NVGs = [];
+
 // Vests
 pr _vests = [];
 
@@ -61,6 +64,7 @@ if (! isNil {_t select T_INV}) then {
 	_items = +(_inv#T_INV_items);
 	_vests = +(_inv#T_INV_vests);
 	_backpacks = +(_inv#T_INV_backpacks);
+	_NVGs = +(_inv#T_INV_NVGs);
 };
 
 // Loadout Weapons
@@ -194,6 +198,12 @@ _usableMagazines
 				};
 			};
 
+			// Process night vision
+			pr _nvg = hmd _hO;
+			if (_nvg != "") then {
+				_NVGs pushBackUnique _nvg;
+			};
+
 			// Delete the unit
 			deleteVehicle _hO;
 		} forEach _classArray;
@@ -238,6 +248,8 @@ LOG_TEMPLATE ["  %1", _vests];
 LOG_TEMPLATE ["Backpacks:"];
 LOG_TEMPLATE ["  %1", _backpacks];
 
+LOG_TEMPLATE ["Night Vision:"];
+LOG_TEMPLATE ["  %1", _NVGs];
 
 // Export to string
 
@@ -264,7 +276,7 @@ while {_i < count _handgunWeapons} do {
 	_i = _i + 1;
 };
 
-pr _arrayExport = [_primary, _primaryWeaponItems, _secondary, _secondaryWeaponItems, _handgun, _handgunWeaponItems, _items, _vests, _backpacks];
+pr _arrayExport = [_primary, _primaryWeaponItems, _secondary, _secondaryWeaponItems, _handgun, _handgunWeaponItems, _items, _vests, _backpacks, _NVGs];
 
 // Export a human-readable string if requested
 if (_returnString) then {

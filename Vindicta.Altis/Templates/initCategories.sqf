@@ -435,4 +435,5 @@ T_INV_handgun_items		= 5;
 T_INV_items				= 6;	// Array of item class names
 T_INV_vests				= 7;
 T_INV_backpacks			= 8;
-T_INV_size				= 9;
+T_INV_NVGs				= 9;	// Night vision goggles
+T_INV_size				= 10;
