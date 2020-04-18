@@ -358,6 +358,14 @@
 				<Original>Most recent save will be loaded automatically on mission start</Original>
 			</Key>
 		</Container>
+		<Container name="Performance">
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison_Tooltip">
+				<Original>Spawn distance for garrisons, meters</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Civilian_Tooltip">
+				<Original>Spawn distance for civilians in cities, meters</Original>
+			</Key>
+		</Container>
 	</Package>
 	<Package name="GameManager">
 		<Container name="Load">
