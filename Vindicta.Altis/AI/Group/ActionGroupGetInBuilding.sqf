@@ -14,11 +14,11 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 
 	VARIABLE("hBuilding");
 	VARIABLE("timeComplete");
-	
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _hBuilding = CALLSM2("Action", "getParameterValue", _parameters, "building");
+		pr _hBuilding = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		if (isNil "_hBuilding") exitWith {
 			OOP_ERROR_0("Building handle was not provided");
 			T_SETV("hBuilding", objNull);
@@ -51,7 +51,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		pr _dist = (abs ((_bpos select 0) - (_posStart select 0)) ) + (abs ((_bpos select 1) - (_posStart select 1))) + (abs ((_bpos select 2) - (_posStart select 2))); // Manhattan distance
 		pr _ETA = GAME_TIME + (_dist + 60);
 		T_SETV("timeComplete", GAME_TIME + _ETA);
-		
+
 		// Find all available building positions
 		// Building is guaranteed to be alive and not null by now, it's checked in process
 		pr _countPos = count (_hBuilding buildingPos -1);
@@ -67,7 +67,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		{ // foreach units
 			pr _unit = _x;
 			pr _unitAI = CALLM0(_unit, "getAI");
-			
+
 			// Remove previous goals
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMoveBuilding", "");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
@@ -76,8 +76,8 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 				pr _posID = selectRandom _buildingPosIDs;
 				_buildingPosIDs deleteAt (_buildingPosIDs find _posID);
 				pr _parameters = [
-					["building", _hBuilding],
-					["posID", _posID],
+					[TAG_TARGET, _hBuilding],
+					[TAG_BUILDING_POS_ID, _posID],
 					[TAG_INSTANT, _instant]
 				];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMoveBuilding", 0, _parameters, _AI);

@@ -318,6 +318,17 @@
 				<Original>Vindicta</Original>
 			</Key>
 		</Container>
+		<Container name="Autoload">
+			<Key ID="STR_Vindicta_Settings_Autoload">
+				<Original>Auto Load</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autoload_Enabled">
+				<Original>Enabled</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autoload_Enabled_Tooltip">
+				<Original>Most recent save will be loaded automatically on mission start</Original>
+			</Key>
+		</Container>
 		<Container name="Autosave">
 			<Key ID="STR_Vindicta_Settings_Autosave">
 				<Original>Auto Save</Original>
@@ -347,16 +358,76 @@
 				<Original>When enabled will allow autosaving when enemies are within 250m of a player, otherwise it will be delayed by up to 30 minutes after the scheduled time</Original>
 			</Key>
 		</Container>
-		<Container name="Autoload">
-			<Key ID="STR_Vindicta_Settings_Autoload">
-				<Original>Auto Load</Original>
+		<Container name="Server">
+			<Key ID="STR_Vindicta_Settings_Server">
+				<Original>Server</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Autoload_Enabled">
-				<Original>Enabled</Original>
+			<Key ID="STR_Vindicta_Settings_Server_Suspend">
+				<Original>Suspend when empty</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Autoload_Enabled_Tooltip">
-				<Original>Most recent save will be loaded automatically on mission start</Original>
+			<Key ID="STR_Vindicta_Settings_Server_Suspend_Tooltip">
+				<Original>Time will be frozen when no players are connected to the server (applies to dedicated servers only)</Original>
 			</Key>
+		</Container>
+		<Container name="Game">
+			<Key ID="STR_Vindicta_Settings_Game">
+				<Original>Game</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Game_Speed">
+				<Original>Game Speed Multiplier</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Game_Speed_Tooltip">
+				<Original>Determines how fast time progresses in the game</Original>
+			</Key>
+		</Container>
+		<Container name="Difficulty">
+			<!-- <Key ID="STR_Vindicta_Settings_Difficulty_Advanced">
+				<Original>Use advanced difficulty settings</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Advanced_Tooltip">
+				<Original>When enabled the advanced difficulty settings will override the global one</Original>
+			</Key> -->
+			<Key ID="STR_Vindicta_Settings_Difficulty_Global">
+				<Original>Global difficulty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Global_Tooltip">
+				<Original>This value is applied as a modifier to all other difficulty settings</Original>
+			</Key>
+			
+			<!-- Enemy -->
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy">
+				<Original>Enemy difficulty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Tooltip">
+				<Original>This value is applied as a modifier to all Enemy difficulty settings</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Reinforcement_Rate">
+				<Original>Enemy reinforcement rate</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Reinforcement_Rate_Tooltip">
+				<Original>Modifies the rate at which the enemy can reinforce</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Escalation_Rate">
+				<Original>Enemy escalation rate</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Escalation_Rate_Tooltip">
+				<Original>Modifies the rate at which the enemy escalates their force strength (e.g. how soon in the campaign they will start to use tanks)</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Persistence">
+				<Original>Enemy persitence</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Persistence_Tooltip">
+				<Original>Modifies how persistent the enemy will be when sending repeated actions against you</Original>
+			</Key>
+
+			<!-- Enemy AI -->
+			<Key ID="STR_Vindicta_Settings_Difficulty_AI">
+				<Original>AI difficulty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_AI_Tooltip">
+				<Original>This value is applied as a modifier to all AI difficulty settings</Original>
+			</Key>
+
 		</Container>
 		<Container name="Performance">
 			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison_Tooltip">

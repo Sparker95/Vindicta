@@ -74,7 +74,7 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 			while { (count _freeGroups > 0) && (count _buildingsWithTargets > 0)} do {
 				pr _group = _freeGroups#0;
 				pr _groupAI = CALLM0(_group, "getAI");
-				pr _goalParameters = [["building", _buildingsWithTargets#0]];
+				pr _goalParameters = [[TAG_TARGET, _buildingsWithTargets#0]];
 				// Bias the goal higher so we ensure it is high priority than move orders etc.
 				pr _args = ["GoalGroupGetInBuilding", 100, _goalParameters, _AI]; // Get in the house!
 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);

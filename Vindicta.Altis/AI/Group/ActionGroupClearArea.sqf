@@ -44,7 +44,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");
-		pr _isUrban = (CALLSM2("Location", "nearLocations", _pos, _radius) findIf {
+		pr _isUrban = (CALLSM2("Location", "overlappingLocations", _pos, _radius) findIf {
 			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
 		}) != NOT_FOUND;
 

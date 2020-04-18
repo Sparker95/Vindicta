@@ -510,7 +510,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		private _radius = T_CALLM0("getRecruitmentRadius");
 
 		// Get nearby cities
-		private _cities = ( CALLSM2("Location", "nearLocations", _pos, _radius) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY} ) select {
+		private _cities = ( CALLSM2("Location", "overlappingLocations", _pos, _radius) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY} ) select {
 			private _gmdata = GETV(_x, "gameModeData");
 			CALLM0(_gmdata, "getRecruitCount") > 0
 		};
@@ -802,7 +802,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		// Player respawn is enabled in a city which has non-city locations nearby with enabled player respawn
 		pr _loc = T_GETV("location");
 
-		pr _nearLocs = CALLSM2("Location", "nearLocations", CALLM0(_loc, "getPos"), CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS) select {CALLM0(_x, "getType") != LOCATION_TYPE_CITY};
+		pr _nearLocs = CALLSM2("Location", "overlappingLocations", CALLM0(_loc, "getPos"), CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS) select {CALLM0(_x, "getType") != LOCATION_TYPE_CITY};
 
 		pr _forceEnable = T_GETV("forceEnablePlayerRespawn");
 		{

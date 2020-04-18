@@ -19,13 +19,13 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
-		
+
 		OOP_INFO_0("ACTIVATE");
-		
+
 		// Give goals to groups
 		pr _gar = GETV(T_GETV("AI"), "agent");
 		pr _loc = CALLM0(_gar, "getLocation");
-		pr _buildings = if (_loc != "") then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
+		pr _buildings = if (_loc != NULL_OBJECT) then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
 		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
 		_buildings = _buildings apply {[2 * (abs ((boundingBoxReal _x) select 1 select 2)), _x]};
 		_buildings sort false;
@@ -38,8 +38,9 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 		pr _nGroupsPatrolReserve = 0;
 		pr _atPoliceStation = false;
 		pr _atRoadblock = false;
+
 		// We absolutely want at least some bots inside police stations
-		if (_loc != "") then { // If garrison is at location...
+		if (_loc != NULL_OBJECT) then { // If garrison is at location...
 			switch (CALLM0(_loc, "getType")) do {
 				case LOCATION_TYPE_POLICE_STATION: {
 					_atPoliceStation = true;
@@ -49,6 +50,8 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 				};
 			};
 		};
+
+		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
 
 		if (_atPoliceStation) then {
 			// First of all assign groups to guard the police station
@@ -62,64 +65,71 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 			} else {
 				// For non-police stations, we must reserve at least 1...2 groups to perform patrol
 				// Otherwise they all will stay in houses
-				_nGroupsPatrolReserve = (1 + ceil (random 1)); // Reserve some groups for patrol
+				_nGroupsPatrolReserve = MAXIMUM(count _routes, count _groupsInf / 2); // Want enough groups for patrolling the pre-defined routes at least
 			};
 		};
 
 		pr _extraParams = [[TAG_INSTANT, _instant]];
-		// Give orders to some groups to get into building
-		while {(count _groupsInf > _nGroupsPatrolReserve) && (count _buildings > 0)} do {
-			pr _group = _groupsInf#0;
-			pr _groupAI = CALLM0(_group, "getAI");
-			pr _goalParameters = [["building", _buildings#0#1]] + _extraParams;
-			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
-			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 
-			_buildings deleteAt 0;
-			_groupsInf deleteAt 0;
-			_groups deleteAt (_groups find _group);
-		};
-
-		// Give goals to remaining groups
+		// Give goals to groups
 		pr _nPatrolGroups = 0;
-		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
 		{ // foreach _groups
-			pr _type = CALLM0(_x, "getType");
-			pr _groupAI = CALLM0(_x, "getAI");
-			
-			if (_groupAI != "") then {
+			pr _group = _x;
+			pr _groupAI = CALLM0(_group, "getAI");
+
+			if (_groupAI != NULL_OBJECT) then {
 				pr _args = [];
-				switch (_type) do {
+				switch CALLM0(_group, "getType") do {
 					case GROUP_TYPE_INF: {
 						// We need at least enough patrol groups to cover the defined routes
 						if (_nPatrolGroups < count _routes) then {
 							_args = ["GoalGroupPatrol", 0, _extraParams + [[TAG_ROUTE, _routes#_nPatrolGroups]], _AI];
 							_nPatrolGroups = _nPatrolGroups + 1;
 						} else {
-							if (random 10 < 3) then {
+							if (random 10 < 5) then {
 								_args = ["GoalGroupRelax", 0, _extraParams, _AI];
 							} else {
-								_args = ["GoalGroupPatrol", 0, _extraParams, _AI];
+								_args = ["GoalGroupPatrol", 0, _extraParams , _AI];
 								_nPatrolGroups = _nPatrolGroups + 1;
 							};
 						};
 					};
-					
+
 					case GROUP_TYPE_STATIC: {
 						if (_atRoadblock) then {
 							// Get into vehicles at roadblocks
 							_args = ["GoalGroupGetInVehiclesAsCrew", 0, _extraParams, _AI];
 						} else {
-							_args = ["GoalGroupRelax", 0, _extraParams, _AI];
+							// Crew of vehicle groups stays around their vehicle
+							pr _vehUnits = CALLM0(_group, "getVehicleUnits");
+							pr _goalParams = if (count _vehUnits > 0) then {
+								pr _vehUnit = selectRandom _vehUnits;
+								pr _pos = CALLM0(_vehUnit, "getPos");
+								// Relax within 50 meters of the vehicle
+								[[TAG_POS, _pos], [TAG_MOVE_RADIUS, 50]]
+							} else {
+								[]
+							};
+							_args = ["GoalGroupRelax", 0, _goalParams + _extraParams, _AI];
 						};
 					};
-					
+
 					case GROUP_TYPE_VEH: {
 						if (_atRoadblock) then {
 							// Get into vehicles at roadblocks
 							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _extraParams, _AI]; // Occupy only combat vehicles
 						} else {
-							_args = ["GoalGroupPatrol", 0, _extraParams, _AI]; // They will patrol next to their vehicles
+							// Crew of vehicle groups stays around their vehicle
+							pr _vehUnits = CALLM0(_group, "getVehicleUnits");
+							pr _goalParams = if (count _vehUnits > 0) then {
+								pr _vehUnit = selectRandom _vehUnits;
+								pr _pos = CALLM0(_vehUnit, "getPos");
+								// Relax within 50 meters of the vehicle
+								[[TAG_POS, _pos], [TAG_MOVE_RADIUS, 50]]
+							} else {
+								[]
+							};
+							_args = ["GoalGroupRelax", 0, _goalParams + _extraParams, _AI]; // They will patrol next to their vehicles
 						};
 					};
 				};

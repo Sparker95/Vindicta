@@ -1797,18 +1797,6 @@ CLASS(CLASS_NAME, "")
 
 	} ENDMETHOD;
 
-
-	/*
-		Method: onButtonDownCreateCamp
-		Description: Creates a camp at the current location if the button is enabled.
-
-		No parameters
-	*/
-	STATIC_METHOD("onButtonDownCreateCamp") {
-		params ["_thisClass"];
-		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [getPos player], 2, false);
-	} ENDMETHOD;
-
 	// Common code for all 'checkboxes' in this UI
 	// Checkboxes are buttons with [x] or [ ] at the start of their text
 	// Returns the new state of this 'checkbox'

@@ -257,15 +257,27 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Suspend/resume the game on dedicated
 		#ifndef _SQF_VM
 		if(IS_DEDICATED) then {
-			if(count HUMAN_PLAYERS == 0) then {
+			if(vin_server_suspendWhenEmpty && count HUMAN_PLAYERS == 0) then {
 				T_CALLM1("suspend", "Game suspended while no players connected");
-				CALLM0(gGameManager, "checkEmptyAutoSave");
-				waitUntil { count HUMAN_PLAYERS > 0 };
+				// Wait for a player to connect again. Saving on empty server is delayed 5 minutes from when the 
+				// last player disconnected to avoid churning.
+				private _saveTime = time + 5 * 60;
+				waitUntil {
+					if(_saveTime > 0 && _saveTime < time) then {
+						CALLM0(gGameManager, "checkEmptyAutoSave");
+						_saveTime = -1; // disable further auto saves
+					};
+					count HUMAN_PLAYERS > 0
+				};
 				T_CALLM0("resume");
 			};
 		};
 		if(IS_SERVER) then {
 			CALLM0(gGameManager, "checkPeriodicAutoSave");
+
+			if(timeMultiplier != vin_server_gameSpeed) then {
+				setTimeMultiplier vin_server_gameSpeed;
+			}
 		};
 		#endif
 		FIX_LINE_NUMBERS()
