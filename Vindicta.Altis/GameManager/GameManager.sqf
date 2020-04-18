@@ -699,8 +699,8 @@ CLASS("GameManager", "MessageReceiverEx")
 		#define LOC_SCOPE "Vindicta_Settings"
 
 		// Spawn distance
-		["vin_spawnDist_civilian",		"SLIDER",	["Civilian Spawn Distance", _tooltip],		[LOC("Section"), "Performance"], [0, 1000, 300, 0], true] call CBA_fnc_addSetting;
-		["vin_spawnDist_garrison",		"SLIDER",	["Garrison Spawn Distance", _tooltip],		[LOC("Section"), "Performance"], [0, 3000, 1300, 0], true] call CBA_fnc_addSetting;
+		["vin_spawnDist_civilian",		"SLIDER",	[LOC("Performance_spawnDist_Civilian"), LOC("Performance_spawnDist_Civilian_Tooltip")],		[LOC("Section"), "Performance"], [0, 1000, 300, 0], true] call CBA_fnc_addSetting;
+		["vin_spawnDist_garrison",		"SLIDER",	[LOC("Performance_spawnDist_Garrison"), LOC("Performance_spawnDist_Garrison_Tooltip")],		[LOC("Section"), "Performance"], [300, 10000, 1300, 0], true] call CBA_fnc_addSetting;
 		
 		// AI Skills
 		pr _tooltip = "Note: Final AI skill is affected by AI settings in server's profile";
