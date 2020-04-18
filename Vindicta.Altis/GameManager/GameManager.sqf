@@ -697,11 +697,21 @@ CLASS("GameManager", "MessageReceiverEx")
 	METHOD("initSettings") {
 		params [P_THISOBJECT];
 		#define LOC_SCOPE "Vindicta_Settings"
+
+		// AI Skills
+		pr _tooltip = "Note: Final AI skill is affected by AI settings in server's profile";
+		["vin_aiskill_aimingAccuracy",	"SLIDER",	["Aiming Accuracy", _tooltip],	[LOC("Section"), "AI Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_aimingShake",		"SLIDER",	["Aiming Shake", _tooltip],		[LOC("Section"), "AI Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_aimingSpeed",		"SLIDER",	["Aiming Speed", _tooltip],		[LOC("Section"), "AI Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_spotDistance",	"SLIDER",	["Spot Distance", _tooltip],	[LOC("Section"), "AI Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_spotTime",		"SLIDER",	["Spot Time", _tooltip],		[LOC("Section"), "AI Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		
+		// Auto load and auto save
 		["vin_autoSave_enabled",	"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
 		["vin_autoSave_onEmpty",	"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
 		["vin_autoSave_interval",	"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")], [0, 24, 0, 0],	true] call CBA_fnc_addSetting;
 		["vin_autoSave_inCombat",	"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
-		["vin_autoLoad_enabled",	"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")], false,			true] call CBA_fnc_addSetting;
+		["vin_autoLoad_enabled",	"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")], false,			true] call CBA_fnc_addSetting;		
 		#undef LOC_SCOPE
 	} ENDMETHOD;
 
