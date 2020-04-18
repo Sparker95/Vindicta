@@ -53,7 +53,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 		pr _pos = CALLM0(_gar, "getPos");
 		
 		// Get units that can spawn this location that are also within spawn range
-		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _pos) < 2000) && (alive _x) && ((side group _x) != _side)}; // todo retrieve the proper spawn distance
+		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _pos) < 1500) && (alive _x) && ((side group _x) != _side)}; // todo retrieve the proper spawn distance
 		
 		// Get units of this garrison
 		pr _thisUnits = CALLM0(_gar, "getUnits");
@@ -67,7 +67,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				pr _enemyObject = _x;
 				pr _enemyObservesThisUnit = _thisObjects findIf {
 					(_enemyObject targetKnowledge _x) params ["_knownByGroup", "_knownByUnit", "_lastSeenTime"/*, "_lastEndangeredTime", "_targetSide", "_positionError", "_position"*/];
-					_knownByUnit && (_lastSeenTime - GAME_TIME) < 60
+					_knownByUnit && ((time - _lastSeenTime) < 30)
 				};
 				_enemyObservesThisUnit != NOT_FOUND
 			};
