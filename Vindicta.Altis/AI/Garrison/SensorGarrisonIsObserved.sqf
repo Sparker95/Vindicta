@@ -67,7 +67,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				pr _enemyObject = _x;
 				pr _enemyObservesThisUnit = _thisObjects findIf {
 					(_enemyObject targetKnowledge _x) params ["_knownByGroup", "_knownByUnit", "_lastSeenTime"/*, "_lastEndangeredTime", "_targetSide", "_positionError", "_position"*/];
-					_knownByUnit && ((time - _lastSeenTime) < 30)
+					_knownByUnit && ((time - _lastSeenTime) < 6.66)
 				};
 				_enemyObservesThisUnit != NOT_FOUND
 			};
