@@ -19,8 +19,9 @@
 ["GoalUnitGetInVehicle",					10	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitVehicleUnflip",					10	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitArrest",							5	] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalUnitShootAtTargetRange",				3	] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalUnitAmbientAnim",						2	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitShootAtTargetRange",				4	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitAmbientAnim",						3	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitIdle",							2	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitNothing",							1	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 // ---------------- Goal effects
@@ -36,6 +37,7 @@
 ["GoalUnitInfantryMoveBuilding",			"ActionUnitInfantryMoveBuilding"	] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitMove",							"ActionUnitMove"					] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitNothing",							"ActionUnitNothing"					] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalUnitIdle",							"ActionUnitIdle"					] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitShootAtTargetRange",				"ActionUnitShootAtTargetRange"		] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitShootLegTarget",					"ActionUnitShootLegTarget"			] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitAmbientAnim",						"ActionUnitAmbientAnim"				] call AI_misc_fnc_setGoalPredefinedAction;

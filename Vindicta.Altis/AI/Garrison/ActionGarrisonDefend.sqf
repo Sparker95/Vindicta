@@ -63,7 +63,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			pr _group = _groupsInf#0;
 			pr _groupAI = CALLM0(_group, "getAI");
 			pr _goalParameters = [
-				["building", _buildings#0#1]
+				[TAG_TARGET, _buildings#0#1]
 			] + _commonParams;
 			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);

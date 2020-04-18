@@ -55,8 +55,12 @@ pr0_fnc_logAction = {
 			[_AI, ""]
 		};
 	};
+
 	_ownerAndPath params ["_owner", "_path"];
-	OOP_LOGF_4("goap_" + _owner + ".rpt", "%1: %2 .. %3 (prev %4)", _path, _msg, _new, _prev)
+
+	if(!isNil "_owner") then {
+		OOP_LOGF_4("goap_" + _owner + ".rpt", "%1: %2 .. %3 (prev %4)", _path, _msg, _new, _prev)
+	};
 };
 
 pr0_fnc_getLogState = {

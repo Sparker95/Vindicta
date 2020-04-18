@@ -42,3 +42,4 @@
 
 #define TAG_TARGET "g_target"	// General target parameter, usually a unit
 #define TAG_ANIM "g_anim"	// Anim to use in GoalUnitAmbientAnim
+#define TAG_BUILDING_POS_ID "g_buildingPosId"

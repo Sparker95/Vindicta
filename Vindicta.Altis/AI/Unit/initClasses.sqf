@@ -9,6 +9,7 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitDismountCurrentVehicle
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitFlee.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitFollow.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitGetInVehicle.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitIdle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMove.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveBuilding.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveToUnit.sqf";
@@ -28,6 +29,7 @@ call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDismountCurrentVehicle.s
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitFlee.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitFollow.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitGetInVehicle.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitIdle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryMove.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryMoveBuilding.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryRegroup.sqf";

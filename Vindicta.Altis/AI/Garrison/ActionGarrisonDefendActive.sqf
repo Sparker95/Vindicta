@@ -82,7 +82,7 @@ CLASS("ActionGarrisonDefendActive", "ActionGarrisonDefend")
 	// 	while {(count _groupsInf > _nGroupsPatrolReserve) && (count _buildings > 0)} do {
 	// 		private _group = _groupsInf#0;
 	// 		private _groupAI = CALLM0(_group, "getAI");
-	// 		private _goalParameters = [["building", _buildings#0#1]];
+	// 		private _goalParameters = [[TAG_TARGET, _buildings#0#1]];
 	// 		private _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
 	// 		CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 
