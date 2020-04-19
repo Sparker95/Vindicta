@@ -1,22 +1,26 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
+#include "..\CriticalSection\CriticalSection.hpp"
+#include "..\Timer\Timer.hpp"
+#include "..\Message\Message.hpp"
 
 /*
 Class: TimerService
 TimerService is a container for Timer objects. It checks Timer objects supplied to it with some time interval(resolution) and dispatches a message if the time for this timer has expired.
 
 Author: Sparker 31.07.2018
+		Sparker 19 april 2020 converted spawned thread to per frame handler
 */
 
-TimerService_fnc_threadFunc = compile preprocessFileLineNumbers "TimerService\fn_threadFunc.sqf";
+#define pr private
 
 CLASS("TimerService", "")
 
 	VARIABLE("timers");
 	VARIABLE("resolution"); // Time resolution
-	VARIABLE("scriptHandle");
-	VARIABLE("mutex");
+	VARIABLE("eventHandlerID");
 	VARIABLE("suspended");
+	VARIABLE("timeLastProcess");
 	
 	// |                              N E W                                 |
 	/*
@@ -36,12 +40,13 @@ CLASS("TimerService", "")
 		};
 		T_SETV("timers", []);
 		T_SETV("resolution", _resolution);
-		private _mutex = MUTEX_NEW();
-		T_SETV("mutex", _mutex);
-		
-		// Create a thread for this TimerService
-		private _hThread = [_thisObject] spawn TimerService_fnc_threadFunc;
-		T_SETV("scriptHandle", _hThread);
+		T_SETV("timeLastProcess", 0);
+
+		// Create a per frame event handler
+		#ifndef _SQF_VM
+		pr _id = addMissionEventHandler ["EachFrame", format ["""%1"" call %2;", _thisObject, CLASS_METHOD_NAME_STR("TimerService", "PFH")]];
+		T_SETV("eventHandlerID", _id);
+		#endif
 	} ENDMETHOD;
 	
 
@@ -53,13 +58,12 @@ CLASS("TimerService", "")
 	*/
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		// Wait until we lock the mutex. We don't want to stop the thread while it's doing something.
-		private _mutex = T_GETV("mutex");
-		MUTEX_LOCK(_mutex);
-		// Stop the thread
-		private _scriptHandle = T_GETV("_scriptHandle");
-		terminate _scriptHandle;
-		MUTEX_UNLOCK(_mutex);
+
+		// Delete the event handler
+		#ifndef _SQF_VM
+		pr _id = T_GETV("eventHandlerID");
+		removeMissionEventHandler ["EachFrame", _id];
+		#endif
 		
 		// Delete all timers attached to this object
 		{
@@ -102,23 +106,21 @@ CLASS("TimerService", "")
 	*/
 	METHOD("removeTimer") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
-		private _timers = T_GETV("timers");
-		private _timerDereferenced = CALLM0(_timer, "getDataArray");
-		
-		// Lock the mutex. We don't want to manipulate the timer array while it's being accessed by TimerService thread function.
-		private _mutex = T_GETV("mutex");
-		MUTEX_LOCK(_mutex);
-		
-		// Check if the timer exists in the array
-		private _index = _timers find _timerDereferenced;
-		if (_index == -1) exitWith { diag_log format ["[TimerService::removeTimer] Error: timer not found: %1", _timerDereferenced]; };
-		
-		// Such a timer has been found, delete it
-		_timers deleteAt _index;
-		//T_SETV("timers", _timers);
-		
-		// Unlock the mutex
-		MUTEX_UNLOCK(_mutex);
+		CRITICAL_SECTION {
+			private _timers = T_GETV("timers");
+			private _timerDereferenced = CALLM0(_timer, "getDataArray");
+			
+			// Check if the timer exists in the array
+			private _index = _timers find _timerDereferenced;
+			if (_index == -1) exitWith {
+				diag_log format ["[TimerService::removeTimer] Error: timer not found: %1", _timerDereferenced];
+			};
+			
+			// Such a timer has been found, delete it
+			_timers deleteAt _index;
+			//T_SETV("timers", _timers);
+		};
+		0
 	} ENDMETHOD;
 
 	METHOD("suspend") {
@@ -126,19 +128,77 @@ CLASS("TimerService", "")
 		CRITICAL_SECTION {
 			T_SETV("suspended", T_GETV("suspended") + 1);
 		};
-		// Make sure we enter the suspended state before returning by locking the mutex
-		// The suspended value is checked inside the mutex in the timer thread, locking it
-		// ensures that the next check of the suspended value will happen before any further
-		// timer is fired.
-		private _mutex = T_GETV("mutex");
-		MUTEX_LOCK(_mutex);
-		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 	METHOD("resume") {
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			T_SETV("suspended", T_GETV("suspended") - 1);
+		};
+	} ENDMETHOD;
+
+	// Per frame handler
+	METHOD("PFH") {
+		params [P_THISOBJECT];
+		if ((time - T_GETV("timeLastProcess")) > T_GETV("resolution")) then {
+
+			#ifdef ASP_ENABLE
+			private _profilerScope = createProfileScope "TimerService_PFH"; // For ASP
+			#endif
+
+			if(T_GETV("suspended") == 0) then {
+				pr _timers = T_GETV("timers");
+				{ // forEach _timers
+					//diag_log format ["[TimerService::threadFunc] Info: checking timer: %1", _x];
+					// Is it time to trigger this timer yet?
+					if (PROCESS_TIME > (_x select TIMER_DATA_ID_TIME_NEXT)) then {
+						if (_x#TIMER_DATA_ID_UNSCHEDULED) then {
+							// = = = Call the method directly
+
+							private _msg = _x select TIMER_DATA_ID_MESSAGE;
+							private _msgReceiver = _x select TIMER_DATA_ID_MESSAGE_RECEIVER;
+							#ifdef ASP_ENABLE
+							private _profilerScope0 = createProfileScope "TimerService_HandleMessage"; // For ASP
+							private _profilerScope1 = createProfileScope ([format ["TimerService_HandleMessage_%1_%2", GET_OBJECT_CLASS(_msgReceiver), _msg#MESSAGE_ID_TYPE]] call misc_fnc_createStaticString);
+							#endif
+
+							private _msgReceiver = _x select TIMER_DATA_ID_MESSAGE_RECEIVER;
+							CALLM1(_msgReceiver, "handleMessage", _msg);
+						} else {
+							// = = = Post message
+
+							#ifdef ASP_ENABLE
+							private _profilerScope1 = createProfileScope "TimerService_PostMessage"; // For ASP
+							#endif
+
+							//diag_log format ["[TimerService::threadFunc] Info: time to post a message"];
+							// Post a message
+							//private _msgLoop = _x select TIMER_DATA_ID_MESSAGE_LOOP;
+							
+							private _msgID = _x select TIMER_DATA_ID_MESSAGE_ID;
+							
+							// Check if the previous message has been handled (we don't want to overflood the receiver with the same messages)
+							if (CALL_STATIC_METHOD("MessageReceiver", "messageDone", [_msgID])) then {
+								//diag_log format ["[TimerService::threadFunc] Info: posting a message"];
+								// Post a new message
+								// todo inline the MessageReceiver::postMessage it some time later!
+								private _msgReceiver = _x select TIMER_DATA_ID_MESSAGE_RECEIVER;
+								private _msg = _x select TIMER_DATA_ID_MESSAGE;
+								private _newID = CALLM2(_msgReceiver, "postMessage", _msg, true);
+								_x set [TIMER_DATA_ID_MESSAGE_ID, _newID];
+								//diag_log format [" --- Timer posted message to: %1,  msgID: %2", _msgReceiver, _newID];
+							} else {
+								private _msg = _x select TIMER_DATA_ID_MESSAGE;
+								OOP_WARNING_MSG("[TimerService::threadFunc] Info: Message not posted: %1,  msgID: %2", [_msg]+[_msgID]);
+							};
+						};
+						
+						// Set the time when the timer will fire next time
+						_x set [TIMER_DATA_ID_TIME_NEXT, PROCESS_TIME + (_x select TIMER_DATA_ID_INTERVAL)];
+					};
+				} forEach _timers;
+			};
+			T_SETV("timeLastProcess", time);
 		};
 	} ENDMETHOD;
 

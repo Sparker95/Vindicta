@@ -27,8 +27,8 @@ if(T_CALLM("isDestroyed", [])) exitWith {
 private _spawned = T_GETV("spawned");
 
 if (_spawned) exitWith {
-	OOP_ERROR_0("Already spawned");
-	DUMP_CALLSTACK;
+	OOP_WARNING_0("Already spawned");
+	//DUMP_CALLSTACK;
 };
 
 // Set spawned flag
@@ -124,3 +124,5 @@ if (T_GETV("active")) then {
 // Call AI "process" method to accelerate decision taking
 // Pass the _accelerate flag to update sensors sooner, and allow instant completion of some actions
 CALLM1(_AI, "process", true);
+
+0

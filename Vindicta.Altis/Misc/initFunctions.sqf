@@ -27,3 +27,6 @@ misc_fnc_getVersion = compile preprocessFileLineNumbers "Misc\fn_getVersion.sqf"
 misc_fnc_getSaveVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveVersion.sqf";
 
 misc_fnc_isAdminLocal = compile preprocessFileLineNumbers "Misc\fn_isAdminLocal.sqf";
+
+gStaticStringHashmap = [false] call CBA_fnc_createNamespace;
+misc_fnc_createStaticString = compile preprocessFileLineNumbers "Misc\fn_createStaticString.sqf";
