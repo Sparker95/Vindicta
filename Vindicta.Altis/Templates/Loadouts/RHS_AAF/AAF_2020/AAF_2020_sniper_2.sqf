@@ -15,6 +15,7 @@ this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addVest "FGN_AAF_CIRAS_MM";
 
 this addWeapon "rhs_weap_m24sws";
+this addPrimaryWeaponItem "rhsusf_acc_m24_silencer_black";
 this addPrimaryWeaponItem "rhsusf_acc_M8541";
 this addPrimaryWeaponItem "rhsusf_5Rnd_762x51_m118_special_Mag";
 this addPrimaryWeaponItem "rhsusf_acc_harris_swivel";

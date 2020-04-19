@@ -105,7 +105,7 @@ _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F
 _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]]; // = 30
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]]; // = 31
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Zamak_Open", "FGN_AAF_Zamak"]]; // = 32 – REQUIRED
-//_veh set [T_VEH_truck_cargo, ["B_Truck_01_transport_F"]]; // = 33
+_veh set [T_VEH_truck_cargo, ["rhs_kamaz5350_flatbed_msv", "rhs_kamaz5350_flatbed_cover_msv"]]; // = 33
 _veh set [T_VEH_truck_ammo, ["FGN_AAF_Zamak_Repair"]]; // = 34 – REQUIRED
 _veh set [T_VEH_truck_repair, ["FGN_AAF_Zamak_Repair"]]; // = 35
 _veh set [T_VEH_truck_medical , ["FGN_AAF_Zamak_Medic", "rhsusf_m113d_usarmy_medical"]]; // = 36

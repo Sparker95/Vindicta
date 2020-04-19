@@ -15,7 +15,7 @@ this forceAddUniform "rhs_uniform_gorka_1_a";
 this addVest "FGN_AAF_CIRAS_Medic";
 this addBackpack "FGN_AAF_Bergen_Medic_Type07";
 
-this addWeapon "rhs_weap_hk416d10";
+this addWeapon "rhs_weap_mk18_bk";
 this addPrimaryWeaponItem "rhsusf_acc_rotex5_grey";
 _RandomSight = selectRandom ["rhsusf_acc_eotech_xps3", "rhsusf_acc_g33_xps3", "rhsusf_acc_su230", "rhsusf_acc_su230_mrds"];
 this addPrimaryWeaponItem _RandomSight;
@@ -41,5 +41,3 @@ for "_i" from 1 to 20 do {this addItemToBackpack "FirstAidKit";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";
-
-
