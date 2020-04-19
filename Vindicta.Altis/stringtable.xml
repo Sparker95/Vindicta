@@ -429,6 +429,22 @@
 			</Key>
 
 		</Container>
+
+		<Container name="Performance">
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison">
+				<Original>Garrison Virtualization Distance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison_Tooltip">
+				<Original>Garrisons beyond this distance will be virtualized, meters</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Civilian">
+				<Original>Civilian Spawn Distance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Civilian_Tooltip">
+				<Original>Spawn distance for cities, measured from city border, meters</Original>
+			</Key>
+		</Container>
+
 	</Package>
 	<Package name="GameManager">
 		<Container name="Load">

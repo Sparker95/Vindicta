@@ -163,11 +163,6 @@ class RscTitles {
 
 };
 
-class Extended_PreInit_EventHandlers {
-    missionSettings = call compile preprocessFileLineNumbers "Init\initCBAMissionSettings.sqf";
-};
-
-
 // Garbage collector
 // https://community.bistudio.com/wiki/Description.ext#Corpse_.26_wreck_management
 

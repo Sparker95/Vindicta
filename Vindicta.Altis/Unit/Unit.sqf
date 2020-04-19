@@ -379,16 +379,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
-						_objectHandle setSkill ["aimingAccuracy", 0.6];	// Aiming and precision
-						_objectHandle setSkill ["aimingShake", 0.6];
-						_objectHandle setSkill ["aimingSpeed", 0.8];
+						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_aimingAccuracy];	// Aiming and precision
+						_objectHandle setSkill ["aimingShake", vin_aiskill_aimingShake];
+						_objectHandle setSkill ["aimingSpeed", vin_aiskill_aimingSpeed];
 						_objectHandle setSkill ["commanding", 1];		// Everything else
 						_objectHandle setSkill ["courage", 0.5];
 						//_objectHandle setSkill ["endurance", 0.8];
 						_objectHandle setSkill ["general", 1];
 						_objectHandle setSkill ["reloadSpeed", 0.5];
-						_objectHandle setSkill ["spotDistance", 1];
-						_objectHandle setSkill ["spotTime", 1];
+						_objectHandle setSkill ["spotDistance", vin_aiskill_spotDistance];
+						_objectHandle setSkill ["spotTime", vin_aiskill_spotTime];
 
 						// make it impossible to ace interact with this unit, may need better solution in the future
 						if (side _objectHandle != west) then {
@@ -939,6 +939,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
+			
+			// = = = NOT INFANTRY = = =
+			
+
 			// Clear cargo
 			if(_hO in allPlayers) exitWith {
 				DUMP_CALLSTACK;
@@ -968,6 +972,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			pr _side = CALLM0(_data#UNIT_DATA_ID_GARRISON, "getSide");
 			if(_side == CIVILIAN) then {
+
+				// = = = NOT INFANTRY CIVILIAN = = =
+
 				// Small chance for weapons and magazines
 				private _inv = [];
 				if(random 5 < 1) then {
@@ -992,31 +999,34 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					};
 				};
 				// Some items
-				if(count (_tInv#T_INV_items) > 0) then {
-					for "_i" from 0 to ceil random[-2, 3, 8] do {
-						_hO addItemCargoGlobal [selectRandom (_tInv#T_INV_items), 1];
+				// Each item has a fixed chance of appearing
+				{
+					if ((random 10) < 7) then {
+						_hO addItemCargoGlobal [_x, 1 + random 2];
 					};
-				};
+				} foreach (_tInv#T_INV_items);
 				// Add backpack
 				if(count (_tInv#T_INV_backpacks) > 0 && random 3 < 1) then {
-					_hO addBackpackCargoGlobal [selectRandom (_tInv#T_INV_backpacks), 1];
-				};
-				if(random 5 < 1) then {
-					_hO addItemCargoGlobal ["ItemMap", 1];
-				};
-				if(random 10 < 1) then {
-					_hO addItemCargoGlobal ["ItemCompass", 1];
+					_hO addBackpackCargoGlobal [selectRandom (_tInv#T_INV_backpacks), 2];
 				};
 				if (random 20 < 1) then {
 					_hO addItemCargoGlobal ["vin_pills", 20];
 				};
+
+				
+				// = = = END NOT INFANTRY CIVILIAN = = =
+				
+
 			} else {
+
+				// = = = = MILITARY CARGO AND VEHICLES = = = =
+
 				pr _nInf = CALLM0(_gar, "countInfantryUnits");
 				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
 				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 				// Some number which scales the amount of items in this box
-				pr _nGuns = 1 * _nInf / ((_nVeh + _nCargo) max 1);
+				pr _nGuns = 1.3 * _nInf / ((_nVeh + _nCargo) max 1);
 
 				// Modifier for cargo boxes
 				if (_catID == T_CARGO) then {
@@ -1044,9 +1054,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					};
 				} forEach _arr;
 
-				// Add items
-				pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],
-							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.3*_nGuns]]; // [_subcatID, num. attempts]
+				// Add items of weapons, misc items, NVGs
+				pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],	// [_subcatID, num. attempts]
+							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.7*_nGuns],
+							[T_INV_NVGs, 1.5*_nGuns]]; // We want more NVGs
 				{
 					_x params ["_subcatID", "_n"];
 
@@ -1061,162 +1072,46 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					};
 				} forEach _arr;
 
-				// Add some maps and radios for non-civilian units
-				{
-					_hO addItemCargoGlobal [_x, 4 + ( ceil random 10)];
-				} forEach ["ItemMap", "ItemCompass", "ItemRadio" ];
-
 				// Add ACRE Radios
 				// We probably want them in all vehicles, not only in boxes
 				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
 					// Array with item class name, count
-					pr _ACREclassNames = [
-										["ACRE_SEM52SL",2], // medium-range radio, similar to the 148 and 152
-										["ACRE_SEM70",4], // Long-range radio, is NOT a backpack, but needs to be put in a backpack.
-										["ACRE_PRC77",1], // Vietnam-era radio, needs to be put in a backpack.
-										["ACRE_PRC343",6], // Shortest-range infantry radio. (400m-900m range, depending on terrain)
-										["ACRE_PRC152",3], //medium-range radio, 3-5km
-										["ACRE_PRC148",3], //medium-range radio, 3-5km
-										["ACRE_PRC117F",1], //Long range radio, is NOT a backpack, but needs to be put in a backpack. 10-20km
-										["ACRE_VHF30108SPIKE",1], // antenna for radio signal extension, with a spike to put it higher in the air.
-										["ACRE_VHF30108",3], // Just the antenna
-										["ACRE_VHF30108MAST",1] // Antenna with a mast.
-									];
+					pr _ACREclassNames = t_ACRERadios;
 					{
-						if(random 10 < 7) then {
-							_x params ["_itemName", "_itemCount"];
-							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
-						};
+						_x params ["_itemName", "_itemCount"];
+						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, _itemCount, 1.5*_itemCount])];
 					} forEach _ACREclassNames;
 				};
 
 				// Add TFAR Radios (0.9.12)
 				if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
 					// Array with item class name, count
-					pr _TFARclassNames = [
-										//["tf_fadak",2], //"Belongs" to Opfor
-										//["tf_pnr1000a",1], //"Belongs" to Opfor
-										//["tf_anprc154",2], //"Belongs" to INDEP
-										//["tf_anprc148jem",2] //"Belongs" to INDEP
-										["tf_rf7800str",4], //"Belongs" to BluFor
-										["tf_anprc152",2] //"Belongs" to BluFor
-									];
+					pr _TFARclassNames = t_TFARRadios_0912;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
 					} forEach _TFARclassNames;
 				};
 
 				// Add TFAR Radios (BETA)
 				if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
 					// Array with item class name, count
-					pr _TFARBetaclassNames = [
-										//["TFAR_fadak",2], //"Belongs" to Opfor
-										//["TFAR_pnr1000a",1], //"Belongs" to Opfor
-										//["TFAR_anprc154",2], //"Belongs" to INDEP
-										//["TFAR_anprc148jem",2] //"Belongs" to INDEP
-										["TFAR_rf7800str",4], //"Belongs" to BluFor
-										["TFAR_anprc152",2] //"Belongs" to BluFor
-									];
+					pr _TFARBetaclassNames = t_TFARRadios_0100;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
 					} forEach _TFARBetaclassNames;
 				};
 
-				// Add special items to cargo containers
-				if (_catID == T_CARGO) then {
-					// Add ACE medical items
-					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
-						{
-							if(random 10 < 7) then {
-								pr _itemName = getText (_x >> "name");
-								pr _itemCount = getNumber (_x >> "count");
-								_hO addItemCargoGlobal [_itemName, round (0.5 * (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
-							};
-						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
-					};
-
-					// Add ACE misc items
-					if (isClass (configfile >> "CfgPatches" >> "ace_common")) then {
-						// Array with item class name, count
-						// Exported from the ACE_Box_Misc
-						// Then modified a bit
-						pr _classNames = [
-							//["ACE_muzzle_mzls_H",2],
-							//["ACE_muzzle_mzls_B",2],
-							//["ACE_muzzle_mzls_L",2],
-							//["ACE_muzzle_mzls_smg_01",2],
-							//["ACE_muzzle_mzls_smg_02",2],
-							//["ACE_muzzle_mzls_338",5],
-							//["ACE_muzzle_mzls_93mmg",5],
-							//["ACE_HuntIR_monitor",5],
-							//["ACE_acc_pointer_green",4],
-							["ACE_UAVBattery",6],
-							["ACE_wirecutter",4],
-							["ACE_MapTools",12],
-							["ACE_microDAGR",3],
-							//["ACE_MX2A",6], // Thermal imager
-							//["ACE_NVG_Gen1",6],
-							//["ACE_NVG_Gen2",6],
-							//["ACE_NVG_Gen4",6],
-							//["ACE_NVG_Wide",6],
-							//["ACE_optic_Hamr_2D",2],
-							//["ACE_optic_Hamr_PIP",2],
-							//["ACE_optic_Arco_2D",2],
-							//["ACE_optic_Arco_PIP",2],
-							//["ACE_optic_MRCO_2D",2],
-							//["ACE_optic_SOS_2D",2],
-							//["ACE_optic_SOS_PIP",2],
-							//["ACE_optic_LRPS_2D",2],
-							//["ACE_optic_LRPS_PIP",2],
-							["ACE_Altimeter",3],
-							["ACE_Sandbag_empty",10],
-							["ACE_SpottingScope",1],
-							//["ACE_SpraypaintBlack",5],
-							//["ACE_SpraypaintRed",5],
-							//["ACE_SpraypaintBlue",5],
-							//["ACE_SpraypaintGreen",5],
-							["ACE_EntrenchingTool",8],
-							["ACE_Tripod",1],
-							//["ACE_Vector",6],
-							//["ACE_Yardage450",4],
-							//["ACE_IR_Strobe_Item",12],
-							["ACE_CableTie",12],
-							//["ACE_Chemlight_Shield",12],
-							["ACE_DAGR",3],
-							["ACE_Clacker",12],
-							["ACE_M26_Clacker",6],
-							["ACE_DefusalKit",4],
-							//["ACE_Deadmanswitch",6],
-							//["ACE_Cellphone",10],
-							//["ACE_Flashlight_MX991",12],
-							//["ACE_Flashlight_KSF1",12],
-							//["ACE_Flashlight_XL50",12],
-							["ACE_EarPlugs",20],
-							["ACE_Kestrel4500",2],
-							["ACE_ATragMX",6],
-							["ACE_RangeCard",6],
-							["vin_build_res_0", 10]
-						];
-						{
-							_x params ["_itemName", "_itemCount"];
-							if(random 10 < 7) then {
-								_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
-							};
-						} forEach _classNames;
-					};
-				};
-
 				// Add vests
-				pr _nVests = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+				pr _nVests = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
 				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
 					_hO addItemCargoGlobal [selectRandom _vests, 1];
 				};
 
 				// Add backpacks
-				pr _nBackpacks = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+				pr _nBackpacks = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
 				pr _backpacks = _tInv#T_INV_backpacks;
 				for "_i" from 0 to _nBackpacks do {
 					_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
@@ -1225,58 +1120,90 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				// Add TFAR (0.9.12) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
 				if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
 					// Array with backpack class name
-					pr _nTFARbackpack = [
-						["tf_rt1523g"], //"Belongs" to BluFor
-						["tf_rt1523g_big"], //"Belongs" to BluFor
-						["tf_rt1523g_black"], //"Belongs" to BluFor
-						["tf_rt1523g_fabric"], //"Belongs" to BluFor
-						["tf_rt1523g_green"], //"Belongs" to BluFor
-						["tf_rt1523g_rhs"], //"Belongs" to BluFor
-						["tf_rt1523g_sage"], //"Belongs" to BluFor	
-						["tf_rt1523g_big_rhs"], //"Belongs" to BluFor
-						["tf_anarc210"], //"Belongs" to BluFor
-						["tf_anprc152"] //"Belongs" to BluFor
-						//["tf_anprc155"], //"Belongs" to INDEP
-						//["tf_anprc155_coyote"], //"Belongs" to INDEP
-						//["tf_anarc164"], //"Belongs" to INDEP
-						//["tf_mr3000"], //"Belongs" to OPFOR
-						//["tf_mr3000_multicam"], //"Belongs" to OPFOR
-						//["tf_mr3000_rhs"], //"Belongs" to OPFOR
-						//["tf_mr6000l"] //"Belongs" to OPFOR
-					];
-					for "_i" from 0 to _nVests do {
-						_hO addBackpackCargoGlobal [selectRandom _nTFARbackpack, 1];
+					for "_i" from 0 to _nBackpacks do {
+						_hO addBackpackCargoGlobal [selectRandom t_TFARBackpacks_0912, 1];
 					};
 				};
 
 				// Add TFAR (BETA) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
 				if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
 					// Array with backpack class name
-					pr _TFARBETAbackpack = [
-						["TFAR_rt1523g"], //"Belongs" to BluFor
-						["TFAR_rt1523g_big"], //"Belongs" to BluFor
-						["TFAR_rt1523g_black"], //"Belongs" to BluFor
-						["TFAR_rt1523g_fabric"], //"Belongs" to BluFor
-						["TFAR_rt1523g_green"], //"Belongs" to BluFor
-						["TFAR_rt1523g_rhs"], //"Belongs" to BluFor
-						["TFAR_rt1523g_sage"], //"Belongs" to BluFor	
-						["TFAR_rt1523g_big_rhs"], //"Belongs" to BluFor
-						["TFAR_anarc210"], //"Belongs" to BluFor
-						["TFAR_anprc152"] //"Belongs" to BluFor
-						//["TFAR_anprc155"], //"Belongs" to INDEP
-						//["TFAR_anprc155_coyote"], //"Belongs" to INDEP
-						//["TFAR_anarc164"], //"Belongs" to INDEP
-						//["TFAR_mr3000"], //"Belongs" to OPFOR
-						//["TFAR_mr3000_multicam"], //"Belongs" to OPFOR
-						//["TFAR_mr3000_rhs"], //"Belongs" to OPFOR
-						//["TFAR_mr6000l"] //"Belongs" to OPFOR
-					];
+					pr _TFARBETAbackpack = t_TFARBackpacks_0100;
 					for "_i" from 0 to _nVests do {
 						_hO addBackpackCargoGlobal [selectRandom _TFARBETAbackpack, 1];
 					};
 				};
+
+				// = = = = = END BOTH CARGO AND VEHICLES MILITARY = = = = = =
+
+
+
+				// Add special items to cargo containers
+				if (_catID == T_CARGO) then {
+
+					// = = = = MILITARY CARGO BOXES = = = =
+
+					// Add ACE medical items
+					// NOTE that for cargo boxes and vehicles the arrays are different!
+					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
+						{
+							_x params ["_className", "_itemCount"];
+							_hO addItemCargoGlobal [_className, round ((random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
+						} forEach t_ACEMedicalItems_cargo;
+					};
+
+					// Add ACE misc items
+					if (isClass (configfile >> "CfgPatches" >> "ace_common")) then {
+						// Array with item class name, count
+						// Exported from the ACE_Box_Misc
+						// Then modified a bit
+						pr _classNames = t_ACEMiscItems;
+						{
+							_x params ["_itemName", "_itemCount"];
+							if(random 10 < 7) then {
+								_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+							};
+						} forEach _classNames;
+					};
+
+					// Add grenades and explosives
+					pr _grenades = _tInv#T_INV_grenades;
+					{
+						if (random 10 < 7) then {
+							_hO addItemCargoGlobal [_x, _nGuns];
+						};
+					} forEach _grenades;
+
+					// Add explosives
+					pr _explosives = _tInv#T_INV_explosives;
+					pr _nExplosives = ceil (_nGuns*0.2);
+					{
+						if (random 10 < 3) then {
+							_hO addItemCargoGlobal [_x, _nExplosives];
+						};
+					} forEach _explosives;
+
+					// = = = = = END MILITARY BOXES = = = = =
+				} else {
+
+					// = = = = = MILITARY VEHICLES = = = = =
+
+					// Add ACE medical items
+					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
+						{
+							_x params ["_className", "_itemCount"];
+							_hO addItemCargoGlobal [_className, round ((random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount]))];
+						} forEach t_ACEMedicalItems_vehicles;
+					};
+					// = = = =
+				};
+
+				// = = = = END NOT INFANTRY MILITARY = = = =
+
 			};
 		} else {
+
+			// = = I N F A N T R Y = =
 			if (random 100 <= 5) then {
 				_hO addItemToUniform "vin_pills";
 				_hO addItemToUniform "vin_pills";

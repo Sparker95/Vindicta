@@ -14,7 +14,7 @@ pr _dst = _units apply {_x distance _thisPos};
 pr _radius = T_GETV("boundingRadius");
 pr _speedMax = 60;
 pr _dstMin = if (count _dst > 0) then {(selectMin _dst) - _radius} else {100000};
-pr _dstSpawn = 300; // Temporary, distance from nearest player to city border when the city spawns
+pr _dstSpawn = vin_spawnDist_civilian; // Temporary, distance from nearest player to city border when the city spawns
 pr _timer = T_GETV("timer");
 
 // Update build progress every 15 mins or so
