@@ -23,7 +23,7 @@ CLASS("ActionUnitArrest", "Action")
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _a = GETV(_AI, "agent");
-		pr _captor = CALLM(_a, "getObjectHandle", []);
+		pr _captor = CALLM0(_a, "getObjectHandle");
 		T_SETV("objectHandle", _captor);
 		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		T_SETV("target", _target);
@@ -99,7 +99,7 @@ CLASS("ActionUnitArrest", "Action")
 				if (T_GETV("stateChanged")) then {
 
 					T_SETV("stateChanged", false);
-					T_SETV("stateTimer", time);
+					T_SETV("stateTimer", GAME_TIME);
 					
 					_captor dotarget _target;
 
@@ -128,7 +128,7 @@ CLASS("ActionUnitArrest", "Action")
 				} else {
 
 					// been following for X secs
-					if (time - T_GETV("stateTimer") > MAX_CHASE_TIME) then {
+					if (GAME_TIME - T_GETV("stateTimer") > MAX_CHASE_TIME) then {
 						T_SETV("stateMachine", 2);
 						breakTo "switch";
 
@@ -136,8 +136,8 @@ CLASS("ActionUnitArrest", "Action")
 
 						// mitigate the msg flood
 						if (random 10 < 1) then {
-							if (time > T_GETV("screamTime") && (_target getVariable ["isMoving", false])) then {
-								pr _newScreamTime = time + random [10, 15, 20];
+							if (GAME_TIME > T_GETV("screamTime") && (_target getVariable ["isMoving", false])) then {
+								pr _newScreamTime = GAME_TIME + random [10, 15, 20];
 								T_SETV("screamTime", _newScreamTime);
 								
 								pr _sentence = "Hey you, stop here.";
@@ -179,7 +179,7 @@ CLASS("ActionUnitArrest", "Action")
 
 				if (T_GETV("stateChanged")) then {
 					T_SETV("stateChanged", false);
-					T_SETV("stateTimer", time);
+					T_SETV("stateTimer", GAME_TIME);
 					
 					pr _handle = [_captor, _target] spawn {
 						params ["_captor", "_target"];
@@ -230,7 +230,7 @@ CLASS("ActionUnitArrest", "Action")
 					
 					T_SETV("spawnHandle", _handle);
 				} else {
-					if ((T_GETV("stateTimer") + 30) < time) then {
+					if ((T_GETV("stateTimer") + 30) < GAME_TIME) then {
 						T_SETV("stateMachine", 2);
 
 						breakTo "switch";
@@ -290,7 +290,7 @@ CLASS("ActionUnitArrest", "Action")
 				_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
 			};
 		
-			_target setVariable ["timeArrested", time+10];
+			_target setVariable ["timeArrested", GAME_TIME + 10];
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
 		};
 	} ENDMETHOD;

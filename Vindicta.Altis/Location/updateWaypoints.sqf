@@ -17,7 +17,7 @@ _data	- for "circle":
 
 params [P_THISOBJECT];
 
-T_PRVAR(border);
+private _border = T_GETV("border");
 _border params ["_pos", "_a", "_b", "_dir", "_isRectangle"];
 private _waypoints = 
 	if(!_isRectangle) then {

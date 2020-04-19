@@ -37,23 +37,23 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
 			private _intel = NEW("IntelCommanderActionAttack", []);
 
-			T_PRVAR(srcGarrId);
-			T_PRVAR(tgtLocId);
+			private _srcGarrId = T_GETV("srcGarrId");
+			private _tgtLocId = T_GETV("tgtLocId");
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
 			private _tgtLoc = CALLM(_world, "getLocation", [_tgtLocId]);
 			ASSERT_OBJECT(_tgtLoc);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 
 			SETV(_intel, "type", "Take Location");
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
@@ -75,7 +75,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtLoc, "pos")]);
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -84,8 +84,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtLocId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtLocId = T_GETV("tgtLocId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -98,7 +98,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 		
 		// Bail if garrison is dead
-		if(CALLM(_srcGarr, "isDead", [])) exitWith {
+		if(CALLM0(_srcGarr, "isDead")) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 

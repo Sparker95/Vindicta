@@ -13,7 +13,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 		private _hGroupToFollow = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		T_SETV("hGroupToFollow", _hGroupToFollow);
 
-		T_SETV("nextWaypointUpdateTime", TIME_NOW + WAYPOINT_UPDATE_INTERVAL);
+		T_SETV("nextWaypointUpdateTime", GAME_TIME + WAYPOINT_UPDATE_INTERVAL);
 	} ENDMETHOD;
 
 	METHOD("activate") {
@@ -33,7 +33,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 
 		T_CALLM0("regroup");
 
-		T_SETV("nextWaypointUpdateTime", TIME_NOW + WAYPOINT_UPDATE_INTERVAL);
+		T_SETV("nextWaypointUpdateTime", GAME_TIME + WAYPOINT_UPDATE_INTERVAL);
 		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		ACTION_STATE_ACTIVE
@@ -48,7 +48,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 
 		private _state = T_CALLM0("activateIfInactive");
 
-		if (_state == ACTION_STATE_ACTIVE && {TIME_NOW > T_GETV("nextWaypointUpdateTime")}) then {
+		if (_state == ACTION_STATE_ACTIVE && {GAME_TIME > T_GETV("nextWaypointUpdateTime")}) then {
 			// Give a new waypoint periodycally
 			private _group = T_GETV("group");
 			private _hGroupToFollow = T_GETV("hGroupToFollow");
@@ -63,7 +63,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 				_wp setWaypointType "MOVE";
 				_hG setCurrentWaypoint _wp;
 
-				T_SETV("nextWaypointUpdateTime", TIME_NOW + WAYPOINT_UPDATE_INTERVAL);
+				T_SETV("nextWaypointUpdateTime", GAME_TIME + WAYPOINT_UPDATE_INTERVAL);
 			};
 		};
 

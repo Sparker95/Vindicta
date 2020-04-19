@@ -73,12 +73,12 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 
 		// Clean up this action from the garrisons it is assigned to
 		{
-			if(CALLM(_x, "getAction", []) == _thisObject) then {
-				CALLM(_x, "clearAction", []);
+			if(CALLM0(_x, "getAction") == _thisObject) then {
+				CALLM0(_x, "clearAction");
 			} else {
 				OOP_WARNING_MSG("Garrison %1 was registered with action %2 but no longer has the action assigned", [_x ARG _thisObject]);
 			};
@@ -145,7 +145,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	/*protected */ METHOD("registerGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		_garrisons pushBack _garrison;
 	} ENDMETHOD;
 
@@ -160,7 +160,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	/*protected */ METHOD("unregisterGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		private _idx = _garrisons find _garrison;
 		if(_idx == NOT_FOUND) exitWith {
 			OOP_WARNING_MSG("Garrison %1 is not registered with action %2, so can't be unregistered", [_garrison ARG _thisObject]);
@@ -185,8 +185,8 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	/*protected */ METHOD("addGeneralGarrisonIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
-		if(CALLM(_garrison, "isActual", []) && !CALLM0(_garrison, "isDead")) then {
-			T_PRVAR(intelClone);
+		if(CALLM0(_garrison, "isActual") && !CALLM0(_garrison, "isDead")) then {
+			private _intelClone = T_GETV("intelClone");
 
 			// Bail if null
 			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
@@ -215,8 +215,8 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	/*protected */ METHOD("addIntelAtLocationForSide") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location"), P_SIDE("_side")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
-		if(CALLM(_location, "isActual", [])) then {
-			T_PRVAR(intelClone);
+		if(CALLM0(_location, "isActual")) then {
+			private _intelClone = T_GETV("intelClone");
 
 			// Bail if null
 			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
@@ -244,11 +244,11 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 		OOP_INFO_1("setPersonalGarrisonIntel: %1", _garrison);
 
-		if(CALLM(_garrison, "isActual", []) && !CALLM0(_garrison, "isDead")) then {
+		if(CALLM0(_garrison, "isActual") && !CALLM0(_garrison, "isDead")) then {
 
 			OOP_INFO_0("  garrison is actual");
 
-			T_PRVAR(intelClone);
+			private _intelClone = T_GETV("intelClone");
 
 			// Bail if null
 			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
@@ -298,7 +298,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		});
 
 		// Make enemies intercept this intel
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
 			private _intel = CALLM0(_intelClone, "getDbEntry");
 			CALLSM2("AICommander", "interceptIntelAt", _intel, _pos);
@@ -312,7 +312,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	*/
 	METHOD("updateIntelForEnemies") {
 		params [P_THISOBJECT];
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		if (!IS_NULL_OBJECT(_intelClone)) then {
 			private _intel = CALLM0(_intelClone, "getDbEntry");
 			CALLSM2("AICommander", "updateIntelCommanderActionForEnemies", _intel, _intelClone);
@@ -325,7 +325,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	*/
 	METHOD("setIntelState") {
 		params [P_THISOBJECT, ["_state", INTEL_ACTION_STATE_INACTIVE, [0]], ["_updateForEnemies", true, [true]]];
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		if (!IS_NULL_OBJECT(_intelClone)) then {
 			private _statePrev = GETV(_intelClone, "state");
 			SETV(_intelClone, "state", _state);
@@ -352,10 +352,10 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 	/*protected */ METHOD("getFinalScore") {
 		params [P_THISOBJECT];
-		T_PRVAR(scorePriority);
-		T_PRVAR(scoreResource);
-		T_PRVAR(scoreStrategy);
-		T_PRVAR(scoreCompleteness);
+		private _scorePriority = T_GETV("scorePriority");
+		private _scoreResource = T_GETV("scoreResource");
+		private _scoreStrategy = T_GETV("scoreStrategy");
+		private _scoreCompleteness = T_GETV("scoreCompleteness");
 		// TODO: what is the correct to combine these scores?
 		// Should we try to get them all from 0 to 1?
 		// Maybe we want R*(iP + jS + kC)?
@@ -376,7 +376,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	*/
 	/* protected */ METHOD("createVariable") {
 		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
-		T_PRVAR(variables);
+		private _variables = T_GETV("variables");
 		private _index = _variables pushBack _initialValue;
 		_index
 	} ENDMETHOD;
@@ -384,8 +384,8 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	// Push the values of all registered variables.
 	/* private */ METHOD("pushVariables") {
 		params [P_THISOBJECT];
-		T_PRVAR(variables);
-		T_PRVAR(variablesStack);
+		private _variables = T_GETV("variables");
+		private _variablesStack = T_GETV("variablesStack");
 		
 		// Make a deep copy of all the variables and push them into the stack
 		private _variablesCopy = +_variables;
@@ -395,8 +395,8 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	// Pop the values of all registered variables.
 	/* private */ METHOD("popVariables") {
 		params [P_THISOBJECT];
-		T_PRVAR(variables);
-		T_PRVAR(variablesStack);
+		private _variables = T_GETV("variables");
+		private _variablesStack = T_GETV("variablesStack");
 		private _stackSize = count _variablesStack;
 		
 		ASSERT_MSG(_stackSize > 0, "Variables stack is empty");
@@ -409,7 +409,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	// Returns (after creating if necessary) the ASTs of this action.
 	/* private */ METHOD("getTransitions") {
 		params [P_THISOBJECT];
-		T_PRVAR(transitions);
+		private _transitions = T_GETV("transitions");
 		if(count _transitions == 0) then {
 			_transitions = T_CALLM("createTransitions", []);
 			T_SETV("transitions", _transitions);
@@ -432,7 +432,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	*/
 	METHOD("applyToSim") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
-		T_PRVAR(state);
+		private _state = T_GETV("state");
 		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 
@@ -463,9 +463,9 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
 
-		T_PRVAR(state);
+		private _state = T_GETV("state");
 		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 
@@ -493,7 +493,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	METHOD("cancel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
-		T_PRVAR(state);
+		private _state = T_GETV("state");
 
 		// The action is over, so there is surely no current AST
 		if(_state == CMDR_ACTION_STATE_END) exitWith {};
@@ -719,7 +719,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 
 		/* virtual */ METHOD("isAvailable") { 
 			params [P_THISOBJECT, P_STRING("_world")];
-			T_PRVAR(garrisonId);
+			private _garrisonId = T_GETV("garrisonId");
 			private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
 			!(isNil "_garrison")
 		} ENDMETHOD;
@@ -728,12 +728,12 @@ if(isNil "gActionDebugMarkerStyle") then {
 			params [P_THISOBJECT, P_STRING("_world")];
 
 			// Kill the garrison - this should be preserved after applySim
-			T_PRVAR(garrisonId);
+			private _garrisonId = T_GETV("garrisonId");
 			private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
-			CALLM(_garrison, "killed", []);
+			CALLM0(_garrison, "killed");
 
 			// Apply the change to the AST var - this should be reverted after applySim
-			T_PRVAR(newVal);
+			private _newVal = T_GETV("newVal");
 			SET_AST_VAR(T_GETV("action"), T_GETV("var"), _newVal);
 
 			CMDR_ACTION_STATE_KILLED
@@ -753,7 +753,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 
 		/* virtual */ METHOD("apply") { 
 			params [P_THISOBJECT, P_STRING("_world")];
-			T_PRVAR(compareVal);
+			private _compareVal = T_GETV("compareVal");
 			if(GET_AST_VAR(T_GETV("action"), T_GETV("var")) isEqualTo _compareVal) then {
 				CMDR_ACTION_STATE_END
 			} else {
@@ -792,7 +792,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 	CALLM(_garrison, "setAction", [_thisObject]);
 	["Garrison registered correctly 2", (T_GETV("garrisons") find _garrison) != NOT_FOUND] call test_Assert;
 	DELETE(_thisObject);
-	["Action cleared from garrison on delete", CALLM(_garrison, "getAction", []) == NULL_OBJECT] call test_Assert;
+	["Action cleared from garrison on delete", CALLM0(_garrison, "getAction") == NULL_OBJECT] call test_Assert;
 }] call test_AddTest;
 
 ["CmdrAction.createVariable, pushVariables, popVariables", {
@@ -823,7 +823,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 
 ["CmdrAction.getFinalScore", {
 	private _obj = NEW("CmdrAction", []);
-	CALLM(_obj, "getFinalScore", []) == 1
+	CALLM0(_obj, "getFinalScore") == 1
 }] call test_AddTest;
 
 ["CmdrAction.applyToSim", {
@@ -851,7 +851,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 	["Transitions correct", T_GETV("transitions") isEqualTo _asts] call test_Assert;
 
 	private _finalState = T_CALLM("applyToSim", [_world]);
-	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;
+	["applyToSim applied state to sim correctly", CALLM0(_garrison, "isDead")] call test_Assert;
 	["applyToSim modified variables internally correctly", _finalState == CMDR_ACTION_STATE_END] call test_Assert;
 	["applyToSim reverted action variables correctly", GET_AST_VAR(_thisObject, _testVar) isEqualTo "original"] call test_Assert;
 }] call test_AddTest;

@@ -47,7 +47,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 		// Find all engineers
 		pr _infUnits = CALLM0(_gar, "getInfantryUnits");
 		pr _engineerUnits = _infUnits select {
-			pr _hO = CALLM(_x, "getObjectHandle", []);
+			pr _hO = CALLM0(_x, "getObjectHandle");
 			_hO getUnitTrait "engineer"
 		};
 		

@@ -29,7 +29,7 @@ CLASS("ActionUnitScareAway", "Action")
 		//might want to move this to ActionUnit base class
 		T_SETV("target", _target);
 		pr _a = GETV(_AI, "agent"); // cache the object handle
-		pr _oh = CALLM(_a, "getObjectHandle", []);
+		pr _oh = CALLM0(_a, "getObjectHandle");
 		T_SETV("objectHandle", _oh);
 
 	} ENDMETHOD;
@@ -44,7 +44,7 @@ CLASS("ActionUnitScareAway", "Action")
 		OOP_DEBUG_0("active: Unit is pissed off!");
 		
 		//might what to move this to Action base class
-		T_SETV("activationTime", time);
+		T_SETV("activationTime", GAME_TIME);
 		
 		pr _oh = T_GETV("objectHandle");
 		pr _AI = T_GETV("AI");

@@ -131,7 +131,7 @@ CLASS("ActionGroup", "Action")
 		private _combatMode = T_GETV("combatMode");
 		_hG setCombatMode ([_combatMode, _defaultCombatMode] select (_combatMode isEqualTo ""));
 		private _speedMode = T_GETV("speedMode");
-		_hG setSpeedMode ([_speedMode, _defaultCombatMode] select (_speedMode isEqualTo ""));
+		_hG setSpeedMode ([_speedMode, _defaultSpeedMode] select (_speedMode isEqualTo ""));
 	} ENDMETHOD;
 
 	/* protected */ METHOD("clearWaypoints") {

@@ -39,7 +39,7 @@ Target_fnc_GetPos = {
 			private _garr = CALLM(_world, "getGarrison", [_target]);
 			ASSERT_OBJECT(_garr);
 			/*
-			_targetPos = if(CALLM(_garr, "isDead", [])) then {
+			_targetPos = if(CALLM0(_garr, "isDead")) then {
 				false
 			} else {
 				GETV(_garr, "pos")

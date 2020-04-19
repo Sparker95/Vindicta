@@ -17,7 +17,7 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		pr _AI = T_GETV("AI");
 		pr _agent = GETV(_AI, "agent");
-		pr _oh = CALLM(_agent, "getObjectHandle", []);
+		pr _oh = CALLM0(_agent, "getObjectHandle");
 		
 		// Make sure we are not in combat
 		if(behaviour _oh == "COMBAT") exitWith {false};

@@ -18,7 +18,7 @@ OOP_INFO_0("DESPAWN");
 
 ASSERT_THREAD(_thisObject);
 
-T_PRVAR(spawned);
+private _spawned = T_GETV("spawned");
 if (!_spawned) exitWith {
 	OOP_ERROR_0("Already despawned");
 	DUMP_CALLSTACK;

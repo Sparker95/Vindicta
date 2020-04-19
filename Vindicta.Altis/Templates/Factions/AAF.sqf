@@ -79,9 +79,9 @@ _veh set [T_VEH_MRLS, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPA, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPAA, ["I_LT_01_AA_F"]];
 
-_veh set [T_VEH_stat_HMG_high, ["I_HMG_01_high_F"]];
+_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]];
 _veh set [T_VEH_stat_GMG_high, ["I_GMG_01_high_F"]];
-_veh set [T_VEH_stat_HMG_low, ["I_HMG_01_F"]];
+_veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]];
 _veh set [T_VEH_stat_GMG_low, ["I_GMG_01_F"]];
 _veh set [T_VEH_stat_AA, ["I_static_AA_F"]];
 _veh set [T_VEH_stat_AT, ["I_static_AT_F"]];

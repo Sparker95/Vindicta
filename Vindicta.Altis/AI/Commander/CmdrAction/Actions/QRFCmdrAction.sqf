@@ -37,10 +37,10 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
 		private _intel = NULL_OBJECT;
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		// Created lazily here on the first call to update it. This ensures we only
 		// create intel objects for actions that are active rather than merely proposed.
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
@@ -49,14 +49,14 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionAttack", []);
 
-			T_PRVAR(srcGarrId);
-			T_PRVAR(tgtClusterId);
+			private _srcGarrId = T_GETV("srcGarrId");
+			private _tgtClusterId = T_GETV("tgtClusterId");
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
 			private _tgtCluster = CALLM(_world, "getCluster", [_tgtClusterId]);
 			ASSERT_OBJECT(_tgtCluster);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 			SETV(_intel, "state", INTEL_ACTION_STATE_ACTIVE); // It's instantly active
 
 			SETV(_intel, "type", "Take Location");
@@ -90,7 +90,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		} else {
 			// Call the base class function to update the detachment specific intel
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -100,8 +100,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtClusterId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtClusterId = T_GETV("tgtClusterId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -114,8 +114,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT(_tgtCluster);
 
 		// Source or target being dead means action is invalid, return 0 score
-		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
-			T_CALLM("setScore", [ZERO_SCORE]);
+		if(CALLM0(_srcGarr, "isDead") or CALLM0(_tgtCluster, "isDead")) exitWith {
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
@@ -148,7 +148,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Bail if the garrison clearly can not destroy the enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _needTransport = false;
@@ -179,7 +179,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
 			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -190,11 +190,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		*/
 
@@ -252,8 +252,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtClusterId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtClusterId = T_GETV("tgtClusterId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);

@@ -66,7 +66,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// Determine group size and type
 		pr _groups = CALLM0(_gar, "getGroups") apply {
 			[
-				CALLM0(_x, "getType") in [GROUP_TYPE_VEH_NON_STATIC],
+				CALLM0(_x, "getType") == GROUP_TYPE_VEH,
 				_x
 			]
 		};
@@ -159,37 +159,13 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		{
 			_remainingInf append CALLM0(_x, "getInfantryUnits");
 		} forEach _infGroups;
-		
-		// Can't do it like this as follow groups can't apply instant behavior reliably.
-		// They might be executed instantly before the group they are following is teleported.
-		// private _support = [];
-		// while {count _remainingInf > 0 && count _vehGroupsForInfAssignment > 0} do {
-		// 	private _vehGroup = _vehGroupsForInfAssignment deleteAt 0;
-
-		// 	// Create a group, add it to the garrison
-		// 	private _supportGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
-		// 	CALLM0(_supportGroup, "spawnAtLocation");
-		// 	CALLM1(_gar, "addGroup", _supportGroup);
-
-		// 	private _unitsToAdd = _remainingInf select [0, MINIMUM(4, count _remainingInf)];
-		// 	_remainingInf = _remainingInf - _unitsToAdd;
-
-		// 	CALLM1(_supportGroup, "addUnits", _unitsToAdd);
-
-		// 	pr _groupAI = CALLM0(_supportGroup, "getAI");
-		// 	pr _args = ["GoalGroupOverwatchArea", 0, [[TAG_TARGET, CALLM0(_vehGroup, "getGroupHandle")]] + _commonTags, _AI];
-		// 	CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
-		// 	_support pushBack [_supportGroup, _vehGroup];
-		// };
 
 		while {count _remainingInf > 0 && count _vehGroupsForInfAssignment > 0} do {
 			private _vehGroup = _vehGroupsForInfAssignment deleteAt 0;
 			private _count = 0;
-			while {_count < 4 && count _remainingInf > 0} do
-			{
-				private _inf = _remainingInf deleteAt 0;
-				CALLM1(_vehGroup, "addUnit", _inf);
-			};
+			private _toMove = _remainingInf select [0, 4];
+			_remainingInf = _remainingInf - _toMove;
+			CALLM1(_vehGroup, "addUnits", _toMove);
 		};
 		_infGroups = _infGroups select { !CALLM0(_x, "isEmpty") };
 
@@ -222,6 +198,12 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 		{// foreach _sweep
 			pr _groupAI = CALLM0(_x, "getAI");
+			// Vehicles move slow, inf move normal speed
+			pr _speedMode = if(CALLM0(_x, "getType") == GROUP_TYPE_VEH) then {
+				"NORMAL"
+			} else {
+				"LIMITED"
+			};
 			pr _args = [
 				"GoalGroupClearArea",
 				0,
@@ -230,7 +212,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 					[TAG_CLEAR_RADIUS, _radius],
 					[TAG_BEHAVIOUR, "AWARE"],
 					[TAG_COMBAT_MODE, "RED"],
-					[TAG_SPEED_MODE, "LIMITED"],
+					[TAG_SPEED_MODE, _speedMode],
 					[TAG_INSTANT, _instant]
 				],
 				_AI

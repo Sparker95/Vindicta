@@ -54,7 +54,7 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 		private _subactionsStates = _subactions apply {
 			pr _state = GETV(_x select 0, "state");
 			if (_state == ACTION_STATE_ACTIVE || _state == ACTION_STATE_INACTIVE) then {
-				CALLM(_x select 0, "process", [])
+				CALLM0(_x select 0, "process")
 			} else {
 				_state
 			};

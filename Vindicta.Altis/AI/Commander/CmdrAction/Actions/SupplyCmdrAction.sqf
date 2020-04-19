@@ -117,9 +117,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		private _intel = NULL_OBJECT;
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
@@ -127,14 +127,14 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionSupply", []);
 
-			T_PRVAR(srcGarrId);
-			T_PRVAR(tgtGarrId);
+			private _srcGarrId = T_GETV("srcGarrId");
+			private _tgtGarrId = T_GETV("tgtGarrId");
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
 			private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 			ASSERT_OBJECT(_tgtGarr);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 
 			private _typeName = GETSV("SupplyCmdrAction", "SupplyNames") select T_GETV("type");
 			SETV(_intel, "type", _typeName);
@@ -169,7 +169,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			};
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -178,8 +178,8 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtGarrId = T_GETV("tgtGarrId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -187,9 +187,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Bail if src or dst are dead
-		if(CALLM(_srcGarr, "isDead", []) or {CALLM(_tgtGarr, "isDead", [])}) exitWith {
+		if(CALLM0(_srcGarr, "isDead") or {CALLM0(_tgtGarr, "isDead")}) exitWith {
 			OOP_DEBUG_0("Src or dst garrison is dead");
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _side = GETV(_srcGarr, "side");
@@ -237,7 +237,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
 			OOP_DEBUG_MSG("Failed to allocate resources", []);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -250,11 +250,11 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if remaining efficiency is below minimum level for this garrison
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// we must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
@@ -372,8 +372,8 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 				]];
 			};
 			case ACTION_SUPPLY_TYPE_AMMO: {
-				T_PRVAR(srcGarrId);
-				T_PRVAR(tgtGarrId);
+				private _srcGarrId = T_GETV("srcGarrId");
+				private _tgtGarrId = T_GETV("tgtGarrId");
 				private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 				private _side = GETV(_srcGarr, "side");
 				private _t = CALLM2(gGameMode, "getTemplate", _side, "military");

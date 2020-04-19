@@ -16,6 +16,8 @@ this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addBackpack "B_LegStrapBag_coyote_F";
 
 this addWeapon "rhs_weap_m21a_pbg40";
+_RandomSight = selectRandom ["rhs_acc_pkas", "", ""];
+this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
 this addPrimaryWeaponItem "rhs_VOG25";
 

@@ -11,7 +11,7 @@ CLASS("GoalGarrisonRebalanceVehicleGroups", "Goal")
 		private _allHaveTurretOperators = [_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, true] call ws_propertyExistsAndEquals;
 		private _enoughHumansToTurret = [_ws, WSP_GAR_ENOUGH_HUMANS_TO_TURRET_ALL_VEHICLES, true] call ws_propertyExistsAndEquals;
 
-		private _isBalanced = [_ws, WSP_GAR_VEHICLE_GROUPS_BALANCED, true] call ws_propertyExistsAndEquals;
+		private _isBalanced = [_ws, WSP_GAR_GROUPS_BALANCED, true] call ws_propertyExistsAndEquals;
 		private _isAtLocation = CALLM0(GETV(_AI, "agent"), "getLocation") != NULL_OBJECT;
 
 		if (!_allHaveDrivers && _enoughHumansToDrive ||

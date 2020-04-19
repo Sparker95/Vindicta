@@ -56,7 +56,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 			// Terminate and delete a completed action
 			if (_state == ACTION_STATE_COMPLETED) then  {
 				// Action is completed, terminate and delete it
-				CALLM(_subactionFront, "terminate", []);
+				CALLM0(_subactionFront, "terminate");
 				DELETE(_subactionFront);
 				_subactions deleteAt 0;
 			};

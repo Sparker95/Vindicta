@@ -373,7 +373,7 @@ CLASS("Storage", "")
 						//diag_log format ["Created existing object: %1", _refLoaded];
 					};
 
-					T_PRVAR(version);
+					private _version = T_GETV("version");
 					if (!CALLM2(_refLoaded, "preDeserialize", _thisObject, _version)) exitWith {	// Predeserialize
 						OOP_WARNING_1("preDeserialize failed for %1", _refLoaded);
 						OOP_WARNING_1("  value: %1", _serial);

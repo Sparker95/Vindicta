@@ -51,7 +51,7 @@ wf_fnc_hasExpired = {
 	
 	pr _lut = _fact select WF_ID_LAST_UPDATE_TIME; // Last Update Time
 	// Return true if time between last update and current time is more than lifetime of this fact
-	(time - _lut) > _lifetime
+	(GAME_TIME - _lut) > _lifetime
 };
 
 wf_fnc_setType = {
@@ -81,7 +81,7 @@ wf_fnc_setPos = {
 
 wf_fnc_resetLastUpdateTime = {
 	params [P_ARRAY("_fact")];
-	_fact set [WF_ID_LAST_UPDATE_TIME, time];
+	_fact set [WF_ID_LAST_UPDATE_TIME, GAME_TIME];
 };
 
 wf_fnc_setLifetime = {

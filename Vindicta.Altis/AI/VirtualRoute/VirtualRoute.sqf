@@ -105,7 +105,7 @@ CLASS("VirtualRoute", "")
 		T_SETV("nextIdx", 0);
 
 		T_SETV("stopped", true);
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 
 		T_SETV("complete", false);
 
@@ -115,11 +115,11 @@ CLASS("VirtualRoute", "")
 		pr _calcRoute = {
 			params [P_THISOBJECT];
 
-			T_PRVAR(from);
-			T_PRVAR(destination);
-			T_PRVAR(costFn);
-			T_PRVAR(callbackArgs);
-			T_PRVAR(debugDraw);
+			private _from = T_GETV("from");
+			private _destination = T_GETV("destination");
+			private _costFn = T_GETV("costFn");
+			private _callbackArgs = T_GETV("callbackArgs");
+			private _debugDraw = T_GETV("debugDraw");
 
 			private _startRoute = [_from, 2000, gps_blacklistRoads] call bis_fnc_nearestRoad;
 			private _endRoute = [_destination, 2000, gps_blacklistRoads] call bis_fnc_nearestRoad;
@@ -162,7 +162,7 @@ CLASS("VirtualRoute", "")
 				T_SETV("nextIdx", 1);
 				T_SETV("pos", getPos (_fullPath select 0));
 
-				T_PRVAR(speedFn);
+				private _speedFn = T_GETV("speedFn");
 
 				// Speed for first section
 				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1, _callbackArgs] call _speedFn;
@@ -194,7 +194,7 @@ CLASS("VirtualRoute", "")
 
 		T_CALLM("waitUntilCalculated", []);
 
-		T_PRVAR(debugDraw);
+		private _debugDraw = T_GETV("debugDraw");
 		if(_debugDraw) then {
 			T_CALLM("clearDebugDraw", []);
 		};
@@ -219,7 +219,7 @@ CLASS("VirtualRoute", "")
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", false);
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 	} ENDMETHOD;
 
 	/*
@@ -230,7 +230,7 @@ CLASS("VirtualRoute", "")
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", true);
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 	} ENDMETHOD;
 
 	/*
@@ -240,27 +240,27 @@ CLASS("VirtualRoute", "")
 	METHOD("process") {
 		params [P_THISOBJECT];
 		
-		T_PRVAR(failed);
-		T_PRVAR(stopped);
-		T_PRVAR(complete);
-		T_PRVAR(calculated);
+		private _failed = T_GETV("failed");
+		private _stopped = T_GETV("stopped");
+		private _complete = T_GETV("complete");
+		private _calculated = T_GETV("calculated");
 		if(_failed or _stopped or _complete or !_calculated) exitWith {};
 
-		T_PRVAR(last_t);
+		private _last_t = T_GETV("last_t");
 		// Time since last update
-		pr _dt = time - _last_t;
+		pr _dt = GAME_TIME - _last_t;
 		_dt = _dt min 30; // We want to limit the max amount of distance we can travel, otherwise it will appear that AIs teleport
-		T_SETV("last_t", time);
+		T_SETV("last_t", GAME_TIME);
 
 		// How far to the next node?
-		T_PRVAR(pos);
-		T_PRVAR(nextIdx);
-		T_PRVAR(route);
+		private _pos = T_GETV("pos");
+		private _nextIdx = T_GETV("nextIdx");
+		private _route = T_GETV("route");
 		pr _nextPos = getPos (_route select _nextIdx);
 		pr _nextDist = _pos distance _nextPos;
 
 		// How far will should we travel?
-		T_PRVAR(currSpeed_ms);
+		private _currSpeed_ms = T_GETV("currSpeed_ms");
 		//pr _dist = _currSpeed_ms * _dt;
 
 		// If we will reach the next node then...
@@ -277,7 +277,7 @@ CLASS("VirtualRoute", "")
 				_dt = _dt - _nextDist / _currSpeed_ms;
 
 				// Update speed for the next section
-				T_PRVAR(speedFn);
+				private _speedFn = T_GETV("speedFn");
 				_currSpeed_ms = [_route select _nextIdx - 1, _route select _nextIdx] call _speedFn;
 				T_SETV("currSpeed_ms", _currSpeed_ms);
 
@@ -321,9 +321,9 @@ CLASS("VirtualRoute", "")
 		];
 		
 		// How far to the next node?
-		T_PRVAR(pos);
-		T_PRVAR(nextIdx);
-		T_PRVAR(route);
+		private _pos = T_GETV("pos");
+		private _nextIdx = T_GETV("nextIdx");
+		private _route = T_GETV("route");
 		
 		// TODO: we could return some useful defaults here instead?
 		ASSERT_MSG(!T_GETV("failed"), "Route calculation failed, cannot get convoy positions");
@@ -393,7 +393,7 @@ CLASS("VirtualRoute", "")
 		
 		T_CALLM0("clearDebugDraw");
 
-		T_PRVAR(route);
+		private _route = T_GETV("route");
 
 		pr _path_pos = _route apply { getPos _x };
 		pr _seg_positions = [_path_pos, 20] call gps_core_fnc_RDP;
@@ -411,7 +411,7 @@ CLASS("VirtualRoute", "")
 			] call gps_test_fnc_mapDrawLine;
 		};
 
-		 T_PRVAR(waypoints);
+		 private _waypoints = T_GETV("waypoints");
 		 {
 		 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
 		 } forEach _waypoints;

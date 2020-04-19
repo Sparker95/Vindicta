@@ -120,5 +120,10 @@ _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, _civVehicles];
 _array set [T_VEH, _veh];
 
+// Inventory
+_inv = [T_INV] call t_fnc_newCategory;
+_inv set [T_INV_items, +t_miscItems_civ_modern ];
+_array set [T_INV, _inv];
+
 // Return final array
 _array

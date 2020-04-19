@@ -53,14 +53,14 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-		T_PRVAR(action);
+		private _action = T_GETV("action");
 		private _fromGarrId = T_GET_AST_VAR("fromGarrIdVar");
 		ASSERT_MSG(_fromGarrId isEqualType 0, "fromGarrIdVar should be a garrison Id");
 		private _fromGarr = CALLM(_world, "getGarrison", [_fromGarrId]);
 		ASSERT_OBJECT(_fromGarr);
 
 		// If the detachment died then we return the appropriate state
-		if(CALLM(_fromGarr, "isDead", [])) exitWith { 
+		if(CALLM0(_fromGarr, "isDead")) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't merge to target", [_world ARG _action ARG LABEL(_fromGarr)]);
 			T_GETV("fromGarrDeadState")
 		};
@@ -76,7 +76,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 				private _toGarr = CALLM(_world, "getGarrison", [_target]);
 				ASSERT_OBJECT(_toGarr);
 				// Check if the target garrison is dead
-				_targetDead = if(CALLM(_toGarr, "isDead", []) && (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) ) then {
+				_targetDead = if(CALLM0(_toGarr, "isDead") && (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) ) then {
 					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_toGarr)]);
 					true
 				} else {
@@ -184,7 +184,7 @@ AST_MergeOrJoinTarget_test_fn = {
 
 	private _endState = [_world, _garrison, [TARGET_TYPE_GARRISON, GETV(_targetGarrison, "id")]] call AST_MergeOrJoinTarget_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
-	["Source garrison correct after", CALLM(_garrison, "isDead", [])] call test_Assert;
+	["Source garrison correct after", CALLM0(_garrison, "isDead")] call test_Assert;
 	["Target garrison correct after", GETV(_targetGarrison, "efficiency") isEqualTo EFF_ADD(EFF_MIN_EFF, EFF_MIN_EFF)] call test_Assert;
 }] call test_AddTest;
 
@@ -206,7 +206,7 @@ AST_MergeOrJoinTarget_test_fn = {
 
 	private _endState = [_world, _garrison, [TARGET_TYPE_LOCATION, GETV(_targetLocation, "id")]] call AST_MergeOrJoinTarget_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
-	["Garrison assigned to location after", CALLM(_garrison, "getLocation", []) isEqualTo _targetLocation] call test_Assert;
+	["Garrison assigned to location after", CALLM0(_garrison, "getLocation") isEqualTo _targetLocation] call test_Assert;
 
 }] call test_AddTest;
 

@@ -594,9 +594,7 @@ CLASS(CLASS_NAME, "")
 		pr _pos = ctrlPosition _ctrl;
 		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, 1];
 		pr _finalText = format["<t size='0.8' font='EtelkaMonospacePro' align='left'>%1</t>", _text];
-		diag_log _finalText;
 		pr _parsedText = parseText _finalText;
-		diag_log _parsedText;
 		_ctrl ctrlSetStructuredText _parsedText;
 		pr _height = ctrlTextHeight _ctrl;
 		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, _height];
@@ -1797,18 +1795,6 @@ CLASS(CLASS_NAME, "")
 	METHOD("onMouseButtonClick") {
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-	} ENDMETHOD;
-
-
-	/*
-		Method: onButtonDownCreateCamp
-		Description: Creates a camp at the current location if the button is enabled.
-
-		No parameters
-	*/
-	STATIC_METHOD("onButtonDownCreateCamp") {
-		params ["_thisClass"];
-		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [getPos player], 2, false);
 	} ENDMETHOD;
 
 	// Common code for all 'checkboxes' in this UI

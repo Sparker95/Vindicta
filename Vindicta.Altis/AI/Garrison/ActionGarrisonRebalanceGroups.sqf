@@ -1,12 +1,11 @@
 #include "common.hpp"
 
 /*
-This action tries to find drivers and turret operators for vehicles in all vehicle groups
+This action tries to ensure that vehicle groups have the crew they require and no more, and that inf
+groups are appropriate balanced.
 */
 
-#define pr private
-
-CLASS("ActionGarrisonRebalanceVehicleGroups", "ActionGarrison")
+CLASS("ActionGarrisonRebalanceGroups", "ActionGarrison")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
@@ -14,26 +13,23 @@ CLASS("ActionGarrisonRebalanceVehicleGroups", "ActionGarrison")
 
 		OOP_INFO_0("ACTIVATE");
 
-		pr _gar = T_GETV("gar");
-
+		private _gar = T_GETV("gar");
 		CALLM0(_gar, "rebalanceGroups");
 
-		pr _AI = T_GETV("AI");
+		private _AI = T_GETV("AI");
+
 		// Call the health sensor again so that it can update the world state properties
 		CALLM0(GETV(_AI, "sensorState"), "update");
 
-		pr _ws = GETV(_AI, "worldState");
-
-		pr _state = if ([_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, true] call ws_propertyExistsAndEquals) then {
+		private _ws = GETV(_AI, "worldState");
+		private _state = if ([_ws, WSP_GAR_GROUPS_BALANCED, true] call ws_propertyExistsAndEquals) then {
 			ACTION_STATE_COMPLETED
 		} else {
 			ACTION_STATE_FAILED
 		};
 
-		// Set state
 		T_SETV("state", _state);
 		
-		// Return ACTIVE state
 		_state
 	} ENDMETHOD;
 

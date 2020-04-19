@@ -223,12 +223,18 @@ _group set [T_GROUP_inf_recon_team, [
 	] apply { [T_INF, _x] }
 ]];
 
+// Inventory
+// Normally it is created automatically, but sometimes we want to define it ourselves
+_inv = [];
+_inv resize T_INV_size;
+_inv = _inv apply {[]};	// Empty arrays
+
 /* Set arrays */
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-
+_array set [T_INV, _inv];
 
 _array /* END OF TEMPLATE */

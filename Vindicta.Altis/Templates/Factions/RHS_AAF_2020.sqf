@@ -31,8 +31,8 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_default, ["FGN_AAF_Inf_Rifleman"]];
 
-_inf set [T_INF_SL, ["RHS_AAF_2020_SL"]]; // = 1
-_inf set [T_INF_TL, ["RHS_AAF_2020_TL"]]; // = 2
+_inf set [T_INF_SL, ["RHS_AAF_2020_SL", "RHS_AAF_2020_SL_2"]]; // = 1
+_inf set [T_INF_TL, ["RHS_AAF_2020_TL", "RHS_AAF_2020_TL_2"]]; // = 2
 _inf set [T_INF_officer, ["RHS_AAF_2020_officer"]]; // = 3
 _inf set [T_INF_GL, ["RHS_AAF_2020_grenadier"]]; // = 4
 _inf set [T_INF_rifleman, ["RHS_AAF_2020_rifleman"]]; // = 5
@@ -84,9 +84,9 @@ _veh set [T_VEH_MBT, ["rhs_t90sm_tv", "rhs_t90am_tv", "rhssaf_army_t72s"]]; // =
 _veh set [T_VEH_MRLS, ["FGN_AAF_BM21"]]; // = 9
 _veh set [T_VEH_SPA, ["rhs_2s1_tv", "rhs_2s3_tv"]]; // = 10
 _veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]]; // = 11
-_veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]]; // = 12 – REQUIRED
+_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]]; // = 12 – REQUIRED
 //_veh set [T_VEH_stat_GMG_high, []]; // = 13 – Replaced by T_VEH_stat_HMG_high if not set
-_veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_D"]]; // = 14
+_veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]]; // = 14
 _veh set [T_VEH_stat_GMG_low, ["RHS_MK19_TriPod_D", "rhsgref_ins_g_SPG9M"]]; // = 15
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]]; // = 16
 _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_D"]]; // = 17

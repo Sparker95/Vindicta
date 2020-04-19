@@ -35,8 +35,8 @@ CLASS("DirectMoveCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(garrId);
-		T_PRVAR(target);
+		private _garrId = T_GETV("garrId");
+		private _target = T_GETV("target");
 
 		// Assign the action we are performing to the garrison (so it is marked as busy for other actions)
 		private _garrIdVar = T_CALLM1("createVariable", _garrId);

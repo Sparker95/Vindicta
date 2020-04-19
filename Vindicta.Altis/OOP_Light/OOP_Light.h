@@ -82,17 +82,38 @@
 #undef DEBUG_GOAL_MARKERS
 
 #define TIME_NOW 0
+#define GAME_TIME 0
+#define PROCESS_TIME 0
 #define DATE_NOW [0,0,0,0,0]
+#define UI_SLEEP(t)
+#define SET_DATE(d)
+
 #define CLIENT_OWNER 0
 #define IS_SERVER true
+#define IS_DEDICATED true
 #define HAS_INTERFACE true
 #define IS_HEADLESSCLIENT false
-#define PUBLIC_VARIABLE isNil
 #define IS_MULTIPLAYER false
+#define PUBLIC_VARIABLE isNil
+
+#define START_LOADING_SCREEN __null =  
+#define PROGRESS_LOADING_SCREEN __null = 
+#define END_LOADING_SCREEN
 
 #define PROFILE_NAME "Satan"
 #define SCRIPT_NULL objNull
 #define saveProfileNamespace
+
+#define HEADLESS_CLIENTS []
+#define HUMAN_PLAYERS []
+#define PLAYABLE_UNITS []
+#define ALL_VEHICLES []
+
+#define SIMULATION_ENABLED(obj) true
+#define ENABLE_SIMULATION_GLOBAL(obj, state)
+#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
+
+#define 
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -103,17 +124,37 @@
 #define VM_LOG_FMT(t, args)
 
 #define TIME_NOW time
+#define GAME_TIME (time - gGameFreezeTime)
+#define PROCESS_TIME time
 #define DATE_NOW date
+#define UI_SLEEP(t) uisleep (t)
+#define SET_DATE(d) setDate (d)
+
 #define CLIENT_OWNER clientOwner
 #define IS_SERVER isServer
+#define IS_DEDICATED isDedicated
 #define HAS_INTERFACE hasInterface
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
 #define IS_MULTIPLAYER isMultiplayer
 #define PUBLIC_VARIABLE publicVariable
 
-#define PROFILE_NAME profileName
 
+#define START_LOADING_SCREEN startLoadingScreen
+#define PROGRESS_LOADING_SCREEN progressLoadingScreen
+#define END_LOADING_SCREEN endLoadingScreen
+
+#define PROFILE_NAME profileName
 #define SCRIPT_NULL scriptNull
+
+#define HEADLESS_CLIENTS (entities "HeadlessClient_F")
+#define HUMAN_PLAYERS (allPlayers - HEADLESS_CLIENTS)
+#define PLAYABLE_UNITS playableunits
+#define ALL_VEHICLES vehicles
+
+#define SIMULATION_ENABLED(obj) simulationEnabled (obj)
+#define ENABLE_SIMULATION_GLOBAL(obj, state) (obj) enableSimulationGlobal (state);
+#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled) enableDynamicSimulationSystem enabled
+
 #endif
 // ^^^ ARMA ^^^
 
@@ -468,6 +509,13 @@
 #define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
 #endif
 
+#ifdef _SQF_VM
+#define CLEAR_REMOTE_EXEC_JIP(JIP)
+#else
+#define CLEAR_REMOTE_EXEC_JIP(JIP) remoteExec ["", JIP]
+#endif
+
+
 // ----------------------------------------
 // |         A T T R I B U T E S          |
 // ----------------------------------------
@@ -623,6 +671,16 @@
 #define OOP_TRACE_EXIT_FUNCTION 
 #endif
 
+#ifdef OOP_DEBUG_CLASS_DEF
+#define LOG_CLASS_BEGIN(class, base)	diag_log format ["CLASS %1 : %2", class, base]
+#define LOG_METHOD(method)				diag_log format ["  METHOD %1", method]
+#define LOG_CLASS_END(class)			diag_log format ["ENDCLASS %1", class]
+#else
+#define LOG_METHOD(method)
+#define LOG_CLASS_BEGIN(class, base)
+#define LOG_CLASS_END(class)
+#endif
+
 // -----------------------------------------------------
 // |                   M E T H O D S                   |
 // -----------------------------------------------------
@@ -632,6 +690,7 @@
 // that OOP_PROFILE does.
 #ifdef _OOP_FUNCTION_WRAPPERS
 	#define METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr;  \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
@@ -650,6 +709,7 @@
 		} ]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
@@ -668,6 +728,7 @@
 		}]
 
 	#define STATIC_METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
@@ -680,6 +741,7 @@
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
@@ -698,22 +760,26 @@
 		}]
 #else
 	#define METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 	#define ENDMETHOD ]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
 	#define STATIC_METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
@@ -763,6 +829,7 @@
 //  */
 
 #define CLASS(classNameStr, baseClassNames) \
+LOG_CLASS_BEGIN(class, base); \
 call { \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
@@ -820,6 +887,7 @@ VARIABLE(OOP_PUBLIC_STR);
 //  */
 
 #define ENDCLASS  \
+LOG_CLASS_END(_oop_classNameStr); \
 private _serialVariables = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
 _serialVariables = _serialVariables select { \
 	_x params ["_varName", "_attributes"]; \
@@ -1178,7 +1246,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // ----------------------------------------------------------------------
 #define ON_ALL 		0
 #define ON_SERVER 	2
-#define ON_CLIENTS	([0, -2] select isDedicated)
+#define ON_CLIENTS	([0, -2] select IS_DEDICATED)
 #define NO_JIP 		false
 #define ALWAYS_JIP	true
 
@@ -1202,7 +1270,6 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // ----------------------------------------------------------------------
 // |                               M A T H                              |
 // ----------------------------------------------------------------------
-
 // Zero the height component of a vector
 #define ZERO_HEIGHT(pos) ([(pos) select 0, (pos) select 1, 0])
 
@@ -1218,3 +1285,10 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define CLAMP_POSITIVE(val_) MAXIMUM(val_, 0)
 // Clamp val_ between 0 and -inf
 #define CLAMP_NEGATIVE(val_) MINIMUM(val_, 0)
+
+
+// ----------------------------------------------------------------------
+// |                       L O C A L I Z A T I O N                      |
+// ----------------------------------------------------------------------
+#define LOCS(scope, id) (localize ("STR_" + scope + "_" + id))
+#define LOC(id) LOCS(LOC_SCOPE, id)

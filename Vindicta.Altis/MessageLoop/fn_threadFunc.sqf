@@ -28,8 +28,8 @@ It checks for messages in the loop and calls handleMessages of objects.
 #define THREAD_FUNC_DEBUG
 
 #ifdef THREAD_FUNC_DEBUG
-private _nextTickTime = time + 5;
-private _nextProcessLogTime = time + 5;
+private _nextTickTime = PROCESS_TIME + 5;
+private _nextProcessLogTime = PROCESS_TIME + 5;
 #endif
 
 #ifdef PROCESS_CATEGORIES_DEBUG
@@ -68,11 +68,11 @@ while {true} do {
 
 	// Log queue length, post a delay test message
 	#ifdef THREAD_FUNC_DEBUG
-	if(_nextTickTime != 0 and _nextTickTime < time) then {
+	if(_nextTickTime != 0 and _nextTickTime < PROCESS_TIME) then {
 		_nextTickTime = 0;
 		private _str = format ["{ ""name"": ""%1"", ""queue_len"": %2 }", _name, count _msgQueue];
 		OOP_DEBUG_MSG(_str, []);
-		_msgQueue pushBack ["__debugtick", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, time];
+		_msgQueue pushBack ["__debugtick", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, PROCESS_TIME];
 	};
 	#endif
 
@@ -110,11 +110,11 @@ while {true} do {
 			// Check if it's the test message to measure queue delay
 			#ifdef THREAD_FUNC_DEBUG
 			if(_msg#0 == "__debugtick") then {
-				private _t = time - _msg#5;
+				private _t = PROCESS_TIME - _msg#5;
 				private _str = format ["{ ""name"": ""%1"", ""delay"": %2 }", _name, _t];
 				OOP_DEBUG_MSG(_str, []);
 				// OOP_DEBUG_MSG("[message queue len %1]", [count _msgQueue]);
-				_nextTickTime = time + 5;
+				_nextTickTime = PROCESS_TIME + 5;
 			} else {
 			#endif
 
@@ -134,7 +134,7 @@ while {true} do {
 				// If it crashes now, we will read this value, and make a memory dump
 				T_SETV("lastObject", _dest);
 
-				private _result = if(IS_OOP_OBJECT(_dest)) then { CALL_METHOD(_dest, "handleMessage", [_msg]) } else { 0 };
+				private _result = if(IS_OOP_OBJECT(_dest)) then { CALLM(_dest, "handleMessage", [_msg]) } else { 0 };
 
 				// Reset last handled object
 				T_SETV("lastObject", NULL_OBJECT);
@@ -320,7 +320,7 @@ while {true} do {
 		};
 
 		#ifdef THREAD_FUNC_DEBUG
-		if (time > _nextProcessLogTime) then {
+		if (PROCESS_TIME > _nextProcessLogTime) then {
 
 			//pr _cur = _fractionsCurrent apply {round (_x*100)};
 			//pr _req = _fractionsRequired apply {round (_x*100)};
@@ -340,7 +340,7 @@ while {true} do {
 					_name, _tag, _numObjects, _fractionCurrent, _fractionRequired, _updateInterval];
 				OOP_DEBUG_MSG(_str, []);
 			} forEach _processCategories;
-			_nextProcessLogTime = time + 5;
+			_nextProcessLogTime = PROCESS_TIME + 5;
 		};
 		#endif
 

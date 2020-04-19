@@ -102,5 +102,7 @@ if (_isValid) then {
 };
 t_allTemplates pushBack _tName;			// It will be publicVariable'd later
 
+diag_log format ["[Template] ^^ END Initializing template from file: %1", _filePath];
+
 // Return the array
 _t

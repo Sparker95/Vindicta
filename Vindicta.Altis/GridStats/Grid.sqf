@@ -212,9 +212,9 @@ CLASS("Grid", "Storable");
 		_pos params ["_x", "_y"];
 		_size params ["_w", "_h"];
 
-		T_PRVAR(gridArray);
-		T_PRVAR(cellSize);
-		T_PRVAR(gridSize);
+		private _gridArray = T_GETV("gridArray");
+		private _cellSize = T_GETV("cellSize");
+		private _gridSize = T_GETV("gridSize");
 		private _xID = 0 max floor(_x / _cellSize) min (_gridSize-1);
 		private _yID = 0 max floor(_y / _cellSize) min (_gridSize-1);
 
@@ -235,8 +235,8 @@ CLASS("Grid", "Storable");
 	METHOD("applyCircle") {
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius"), P_CODE("_fnApplyCircle")];
 
-		T_PRVAR(gridArray);
-		T_PRVAR(cellSize);
+		private _gridArray = T_GETV("gridArray");
+		private _cellSize = T_GETV("cellSize");
 
 		// Wrap the default fn with some special behaviour for circles: calculate distance to center and
 		// only call into _fn if we are inside the circle. Pass dist so it can be used for falloff or whatever.
@@ -369,7 +369,7 @@ CLASS("Grid", "Storable");
 	METHOD("getMaxValueCircle") {
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
 
-		T_PRVAR(defaultValue);
+		private _defaultValue = T_GETV("defaultValue");
 		if(_defaultValue isEqualType 0) then {
 			private _maxVal = -1000000;
 			private _fnMax = { 
@@ -433,7 +433,7 @@ CLASS("Grid", "Storable");
 	METHOD("getValueCircleSum") {
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
 
-		T_PRVAR(defaultValue);
+		private _defaultValue = T_GETV("defaultValue");
 		if(_defaultValue isEqualType 0) then {
 			private _sumVal = 0;
 			private _fnMax = { 
@@ -487,9 +487,9 @@ CLASS("Grid", "Storable");
 	METHOD("apply") {
 		params [P_THISOBJECT, P_CODE("_fn"), P_ARRAY("_args")];
 
-		T_PRVAR(gridArray);
-		T_PRVAR(cellSize);
-		T_PRVAR(gridSize);
+		private _gridArray = T_GETV("gridArray");
+		private _cellSize = T_GETV("cellSize");
+		private _gridSize = T_GETV("gridSize");
 
 		private _xID = 0;
 		private _yID = 0;
@@ -512,7 +512,7 @@ CLASS("Grid", "Storable");
 
 	METHOD("fade") {
 		params [P_THISOBJECT, P_NUMBER("_factor")];
-		T_PRVAR(defaultValue);
+		private _defaultValue = T_GETV("defaultValue");
 		private _fadeFn =
 			if(_defaultValue isEqualType 0) then {
 				{
@@ -553,7 +553,7 @@ CLASS("Grid", "Storable");
 		// Make a copy of the grid
 		pr _arrayCopy = +_array;
 
-		T_PRVAR(defaultValue);
+		private _defaultValue = T_GETV("defaultValue");
 		if(_defaultValue isEqualType 0) then {
 			for "_xID" from _kOffset to (_nCellsX-_kOffset-1) do {
 				for "_yID" from _kOffset to (_nCellsY-_kOffset-1) do {
@@ -647,7 +647,7 @@ CLASS("Grid", "Storable");
 		pr _halfSize = _cellSize * 0.5;
 		pr _n = count _array - 1;
 
-		T_PRVAR(defaultValue);
+		private _defaultValue = T_GETV("defaultValue");
 		private _getValFn =
 			if(_defaultValue isEqualType 0) then {
 				{
@@ -752,7 +752,7 @@ CLASS("Grid", "Storable");
 		pr _array = T_GETV("gridArray");
 		pr _halfSize = _cellSize * 0.5;
 		
-		T_PRVAR(defaultValue);
+		private _defaultValue = T_GETV("defaultValue");
 
 		pr _val =
 			if(_defaultValue isEqualType 0) then {
@@ -912,21 +912,21 @@ ENDCLASS;
 ["Grid.setValueAll", {
 	private _grid = NEW("Grid", [500, 33]);
 	CALLM(_grid, "setValueAll", [1]);
-	private _grid = CALLM(_grid, "getGridArray", []);
+	private _grid = CALLM0(_grid, "getGridArray");
 	["Value correct", _grid#0#0 == 1] call test_Assert;
 }] call test_AddTest;
 
 ["Grid.setValue", {
 	private _grid = NEW("Grid", [500, 33]);
 	CALLM(_grid, "setValue", [[0 ARG 0] ARG 1]);
-	private _grid = CALLM(_grid, "getGridArray", []);
+	private _grid = CALLM0(_grid, "getGridArray");
 	["Value correct", _grid#0#0 == 1] call test_Assert;
 }] call test_AddTest;
 
 ["Grid.getMaxValueCircle", {
 	private _grid = NEW("Grid", [500, 33]);
 	//CALLM(_grid, "setValue", [[0 ARG 0] ARG 1]);
-	//private _grid = CALLM(_grid, "getGridArray", []);
+	//private _grid = CALLM0(_grid, "getGridArray");
 	private _m = CALLM(_grid, "getMaxValueCircle", [[0 ARG 0 ARG 0] ARG 500]);
 	["Value correct", _m == 33] call test_Assert;
 }] call test_AddTest;
@@ -934,7 +934,7 @@ ENDCLASS;
 ["Grid.getMaxValueCircle(array)", {
 	private _grid = NEW("Grid", [500, [0,1,2,3]]);
 	//CALLM(_grid, "setValue", [[0 ARG 0] ARG 1]);
-	//private _grid = CALLM(_grid, "getGridArray", []);
+	//private _grid = CALLM0(_grid, "getGridArray");
 	private _m = CALLM(_grid, "getMaxValueCircle", [[0 ARG 0 ARG 0] ARG 500]);
 	["Value correct", _m isEqualTo [0,1,2,3]] call test_Assert;
 }] call test_AddTest;
@@ -942,7 +942,7 @@ ENDCLASS;
 ["Grid.getMaxValueSquareNumber", {
 	private _grid = NEW("Grid", [500, 0]);
 	CALLM(_grid, "setValue", [[5000 ARG 3000] ARG 66]);
-	//private _grid = CALLM(_grid, "getGridArray", []);
+	//private _grid = CALLM0(_grid, "getGridArray");
 	private _m = CALLM(_grid, "getMaxValueSquareNumber", [[6000 ARG 4000 ARG 0] ARG 2000]);
 	["Value correct", _m == 66] call test_Assert;
 	private _m = CALLM(_grid, "getMaxValueSquareNumber", [[9000 ARG 7000 ARG 0] ARG 2000]);

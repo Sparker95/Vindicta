@@ -87,13 +87,21 @@ location_b_capacity =
 	],
 	// Tents
 	[
-		["Land_MedicalTent_01_wdl_generic_inner_F",
-		"Land_MedicalTent_01_aaf_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_brownhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
-		8
+		[
+			"Land_MedicalTent_01_white_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_closed_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_outer_F",
+			"Land_MedicalTent_01_NATO_generic_inner_F",
+			"Land_DeconTent_01_NATO_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_outer_F",
+			"Land_MedicalTent_01_wdl_generic_inner_F",
+			"Land_DeconTent_01_NATO_tropic_F",
+			"Land_MedicalTent_01_white_generic_outer_F",
+			"Land_MedicalTent_01_white_generic_inner_F",
+			"Land_DeconTent_01_white_F"
+		],
+		16
 	],
 	// WW2 & CUP
 	[

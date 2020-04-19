@@ -34,7 +34,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("stimulation", 0);
-		T_SETV("timePrevUpdate", time);
+		T_SETV("timePrevUpdate", GAME_TIME);
 		T_SETV("soundSources", []);
 	} ENDMETHOD;
 
@@ -50,7 +50,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		pr _i = 0;
 		while {_i < count _soundSources} do {
 			pr _sourceArray = _soundSources#_i;
-			if (time - (_sourceArray#1) > SOUND_SOURCE_MAX_AGE) then {
+			if (GAME_TIME - (_sourceArray#1) > SOUND_SOURCE_MAX_AGE) then {
 				_soundSources deleteAt _i;
 			} else {
 				_i = _i + 1;
@@ -58,7 +58,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		};
 
 		// Decrease stimulation level gradually
-		pr _timePassed = time - T_GETV("timePrevUpdate");
+		pr _timePassed = GAME_TIME - T_GETV("timePrevUpdate");
 		_stimulation = T_GETV("stimulation") * (exp (-_timePassed/STIMULATION_DECAY_CONSTANT));
 		T_SETV("stimulation", _stimulation);
 
@@ -117,7 +117,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 			CALLM1(_sensorTargets, "handleStimulus", _stim);
 		};
 
-		T_SETV("timePrevUpdate", time);
+		T_SETV("timePrevUpdate", GAME_TIME);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -148,10 +148,10 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		pr _index = _sources findIf {_sourceObjHandle isEqualTo _x#0};
 		if (_index != -1) then {
 			// Reset the time of this source
-			(_sources#_index) set [1, time];
+			(_sources#_index) set [1, GAME_TIME];
 		} else {
 			// Add a new source
-			_sources pushBack [STIMULUS_GET_SOURCE(_stimulus), time];
+			_sources pushBack [STIMULUS_GET_SOURCE(_stimulus), GAME_TIME];
 		};
 	} ENDMETHOD;
 	

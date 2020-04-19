@@ -36,7 +36,7 @@ CLASS("Sensor", "")
 		PROFILER_COUNTER_INC("Sensor");
 		
 		T_SETV("AI", _AI);
-		T_SETV("timeNextUpdate", TIME_NOW+0.01); // Update this sensor ASAP, fix for sensors created at game start when TIME_NOW is zero
+		T_SETV("timeNextUpdate", GAME_TIME+0.01); // Update this sensor ASAP, fix for sensors created at game start when GAME_TIME is zero
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

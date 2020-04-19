@@ -62,8 +62,8 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-		T_PRVAR(action);
-		T_PRVAR(clearing);
+		private _action = T_GETV("action");
+		private _clearing = T_GETV("clearing");
 
 		private _garrId = T_GET_AST_VAR("garrIdVar");
 		ASSERT_MSG(_garrId isEqualType 0, "garrId should be a garrison Id");
@@ -71,7 +71,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		ASSERT_OBJECT(_garr);
 
 		// If the detachment or target died then we just finish the whole action immediately
-		if(CALLM(_garr, "isDead", [])) exitWith { 
+		if(CALLM0(_garr, "isDead")) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't attack target", [_world ARG _action ARG LABEL(_garr)]);
 			if(_clearing and GETV(_world, "type") == WORLD_TYPE_REAL) then {
 				T_SETV("clearing", false);
@@ -84,7 +84,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		private _target = T_GET_AST_VAR("targetVar");
 		if(T_CALLM("isTargetDead", [_world ARG _target])) exitWith {
 			if(_clearing and GETV(_world, "type") == WORLD_TYPE_REAL) then {
-				CALLM(_garr, "cancelClearAreaActual", []);
+				CALLM0(_garr, "cancelClearAreaActual");
 				T_SETV("clearing", false);
 			};
 			T_GETV("successState")
@@ -126,7 +126,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 					T_SETV("clearing", true);
 				} else {
 					// Are we done yet?
-					_success = CALLM(_garr, "clearActualComplete", []);
+					_success = CALLM0(_garr, "clearActualComplete");
 					T_SETV("clearing", not _success);
 				};
 			};
@@ -152,7 +152,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON expects a garrison ID");
 				private _garr = CALLM(_world, "getGarrison", [_target]);
 				ASSERT_OBJECT(_garr);
-				_isDead = CALLM(_garr, "isDead", []);
+				_isDead = CALLM0(_garr, "isDead");
 			};
 			case TARGET_TYPE_LOCATION: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
@@ -166,7 +166,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_CLUSTER expects a cluster ID");
 				private _cluster = CALLM(_world, "getCluster", [_target]);
 				ASSERT_OBJECT(_cluster);
-				_isDead = CALLM(_cluster, "isDead", []);
+				_isDead = CALLM0(_cluster, "isDead");
 			};
 			default {
 				FAILURE("Target is not valid");
@@ -210,7 +210,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON expects a garrison ID");
 				private _garr = CALLM(_world, "getGarrison", [_target]);
 				ASSERT_OBJECT(_garr);
-				CALLM(_garr, "killed", []);
+				CALLM0(_garr, "killed");
 			};
 			case TARGET_TYPE_LOCATION: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
@@ -222,7 +222,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_CLUSTER expects a cluster ID");
 				private _cluster = CALLM(_world, "getCluster", [_target]);
 				ASSERT_OBJECT(_cluster);
-				CALLM(_cluster, "killed", []);
+				CALLM0(_cluster, "killed");
 			};
 			default {
 				FAILURE("Target is not valid");

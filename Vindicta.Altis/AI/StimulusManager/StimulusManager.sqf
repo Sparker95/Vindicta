@@ -84,7 +84,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 				
 				// Check stimulus range
 				if ((_pos select 0) != 0) then { // If the source position is [0, 0, 0] then it is ignored
-					pr _agentPos = CALLM(_agent, "getPos", []);
+					pr _agentPos = CALLM0(_agent, "getPos");
 					_distance = _pos distance _agentPos;
 					if (_distance > (_stimulus select STIMULUS_ID_RANGE)) then {false breakOut "sCheck";};
 				};

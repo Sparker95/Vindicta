@@ -14,9 +14,8 @@ CLASS("GoalGroupArrest", "Goal")
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		pr _group = GETV(_AI, "agent");
-		pr _groupType = CALLM(_group, "getType", []);
-
-		if(!(_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL])) exitWith { 0 };
+		pr _groupType = CALLM0(_group, "getType");		
+		if(_groupType != GROUP_TYPE_INF) exitWith { 0 };
 
 		pr _hG = CALLM0(_group, "getGroupHandle");
 

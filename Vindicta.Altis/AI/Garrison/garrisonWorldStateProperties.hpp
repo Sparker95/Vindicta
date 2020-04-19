@@ -18,7 +18,7 @@
 #define WSP_GAR_CARGO_POSITION								15
 #define WSP_GAR_VEHICLES_POSITION							16
 #define WSP_GAR_VEHICLE_GROUPS_MERGED						17
-#define WSP_GAR_VEHICLE_GROUPS_BALANCED						18
+#define WSP_GAR_GROUPS_BALANCED								18
 #define WSP_GAR_CLEARING_AREA								19
 #define WSP_GAR_CARGO										20
 #define WSP_GAR_HAS_CARGO									21

@@ -48,6 +48,7 @@
 ["Templates\Factions\RHS_APD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CUP_RUS_Police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_Heer_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\WW2_Sov_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_UK_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GSG9.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GM_WestGer_Police.sqf", 			T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;

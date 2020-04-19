@@ -50,7 +50,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _route = CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
 		T_SETV("route", _route);
 
-		T_SETV("time", time);
+		T_SETV("time", GAME_TIME);
 		
 		T_SETV("speedLimit", SPEED_MIN);
 
@@ -108,7 +108,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		_vehLeadHandle limitSpeed SPEED_MIN;
 
 		// Set time last called
-		T_SETV("time", time);
+		T_SETV("time", GAME_TIME);
 
 		T_SETV("leadDriver", NULL_OBJECT);
 		T_SETV("otherDrivers", []);
@@ -217,8 +217,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 				_state = ACTION_STATE_FAILED;
 			};
 
-			pr _dt = time - T_GETV("time") + 0.001;
-			T_SETV("time", time);
+			pr _dt = GAME_TIME - T_GETV("time") + 0.001;
+			T_SETV("time", GAME_TIME);
 
 			//Check the separation of the convoy
 			private _sCur = T_CALLM0("getMaxSeparation"); //The current maximum separation between vehicles
