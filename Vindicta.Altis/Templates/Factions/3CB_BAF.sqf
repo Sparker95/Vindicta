@@ -16,8 +16,10 @@ _array set [T_REQUIRED_ADDONS, [
 	"uk3cb_baf_units_ace",	// BAF Ace Compat
 	"uk3cb_baf_units_rhs",	// BAF RHS Compat
 	"uk3cb_baf_vehicles_MAN", // BAF Vehicles
-	"uk3cb_baf_weapons_L110", // BAF Weaponry
-	"uk3cb_baf_weapons_ace" // BAF RHS Ammo Compat	
+	"uk3cb_baf_weapons_L110", // BAF Weapons
+	"uk3cb_baf_weapons_ace", // BAF RHS Ammo Compat
+	"uk3cb_baf_vehicles_chinook" // BAF Vehicles RHS Skins
+	"rksl_attachments_core" // RKSL Attachments
 ]];
 
 //==== Infantry ====
