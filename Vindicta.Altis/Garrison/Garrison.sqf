@@ -170,7 +170,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
-		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain];
+		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain, true]; // !! Will be called unscheduled
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 	} ENDMETHOD;
@@ -451,6 +451,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// ----------------------------------------------------------------------
 	// |                           P R O C E S S                            |
+	// | THIS IS RUN UNSCHEDULED											|
 	// ----------------------------------------------------------------------
 	METHOD("process") {
 		params [P_THISOBJECT];
@@ -476,7 +477,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			if((T_GETV("side") != CIVILIAN) and {T_GETV("location") == ""} and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
-				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
+				pr _args = [_thisObject];
+				CALLM2(gGarrisonAbandonedVehicles, "postMethodAsync", "addGarrison", _args);
 			};
 
 			pr _loc = T_GETV("location");

@@ -1,7 +1,9 @@
 #include "common.hpp"
 
 // Default resolution of our timer service
-#define TIMER_SERVICE_RESOLUTION 0.45
+// !! Now it's set to 0, which will result in evaluation on each frame
+// This way we can process data more often instead of processing it less often and in larget batches
+#define TIMER_SERVICE_RESOLUTION 0.0
 
 // Debug flag, will limit generation or locations to a small area
 #ifndef RELEASE_BUILD

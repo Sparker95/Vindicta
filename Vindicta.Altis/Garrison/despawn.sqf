@@ -25,8 +25,8 @@ if(T_CALLM("isDestroyed", [])) exitWith {
 
 private _spawned = T_GETV("spawned");
 if (!_spawned) exitWith {
-	OOP_ERROR_0("Already despawned");
-	DUMP_CALLSTACK;
+	OOP_WARNING_0("Already despawned");
+	//DUMP_CALLSTACK;
 };
 
 // Reset spawned flag
@@ -102,3 +102,5 @@ if (T_GETV("active")) then {
 	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
 	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonDespawned", _AI);
 };
+
+0

@@ -1202,7 +1202,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_msg set [MESSAGE_ID_SOURCE, ""];
 		_msg set [MESSAGE_ID_DATA, 0];
 		_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
-		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService")
+		// This timer will execude code in unscheduled!!
+		private _args = [_thisObject, 1, _msg, gTimerServiceMain, true]; //P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService")
 		private _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 	} ENDMETHOD;

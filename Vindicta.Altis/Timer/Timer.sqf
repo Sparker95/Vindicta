@@ -33,10 +33,11 @@ CLASS("Timer", "");
 	_interval - interval between sending messages in seconds
 	_message - a Message which will be posted to the _messageReceiver
 	_timerService - the TimerService object this timer will be attached to
+	_unscheduled - Bool, if true the timer service will call the method directly in unscheduled manner instead of calling "postMessage" 
 	*/
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService") ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService"), P_BOOL("_unscheduled")];
 		//diag_log format ["[Timer::New] _this: %1", _this];
 		// Fill the data array
 		private _data = TIMER_DATA_DEFAULT;
@@ -45,6 +46,7 @@ CLASS("Timer", "");
 		_data set [TIMER_DATA_ID_MESSAGE, +_message];
 		_data set [TIMER_DATA_ID_MESSAGE_RECEIVER, _messageReceiver];
 		_data set [TIMER_DATA_ID_TIMER_SERVICE, _timerService];
+		_data set [TIMER_DATA_ID_UNSCHEDULED, _unscheduled];
 		private _msgLoop = CALLM0(_messageReceiver, "getMessageLoop");
 		_data set [TIMER_DATA_ID_MESSAGE_LOOP, _msgLoop];
 		T_SETV("data", _data);

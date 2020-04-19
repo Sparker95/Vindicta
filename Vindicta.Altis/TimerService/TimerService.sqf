@@ -2,6 +2,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Timer\Timer.hpp"
+#include "..\Message\Message.hpp"
 
 /*
 Class: TimerService
@@ -141,7 +142,9 @@ CLASS("TimerService", "")
 		params [P_THISOBJECT];
 		if ((time - T_GETV("timeLastProcess")) > T_GETV("resolution")) then {
 
+			#ifdef ASP_ENABLE
 			private _profilerScope = createProfileScope "TimerService_PFH"; // For ASP
+			#endif
 
 			if(T_GETV("suspended") == 0) then {
 				pr _timers = T_GETV("timers");
@@ -149,25 +152,45 @@ CLASS("TimerService", "")
 					//diag_log format ["[TimerService::threadFunc] Info: checking timer: %1", _x];
 					// Is it time to trigger this timer yet?
 					if (PROCESS_TIME > (_x select TIMER_DATA_ID_TIME_NEXT)) then {
-						//diag_log format ["[TimerService::threadFunc] Info: time to post a message"];
-						// Post a message
-						//private _msgLoop = _x select TIMER_DATA_ID_MESSAGE_LOOP;
-						
-						private _msgID = _x select TIMER_DATA_ID_MESSAGE_ID;
-						
-						// Check if the previous message has been handled (we don't want to overflood the receiver with the same messages)
-						if (CALL_STATIC_METHOD("MessageReceiver", "messageDone", [_msgID])) then {
-							//diag_log format ["[TimerService::threadFunc] Info: posting a message"];
-							// Post a new message
-							// todo inline the MessageReceiver::postMessage it some time later!
+						if (_x#TIMER_DATA_ID_UNSCHEDULED) then {
+							// = = = Call the method directly
+
+							private _msg = _x select TIMER_DATA_ID_MESSAGE;
 							private _msgReceiver = _x select TIMER_DATA_ID_MESSAGE_RECEIVER;
-							private _msg = _x select TIMER_DATA_ID_MESSAGE;
-							private _newID = CALLM2(_msgReceiver, "postMessage", _msg, true);
-							_x set [TIMER_DATA_ID_MESSAGE_ID, _newID];
-							//diag_log format [" --- Timer posted message to: %1,  msgID: %2", _msgReceiver, _newID];
+							#ifdef ASP_ENABLE
+							private _profilerScope0 = createProfileScope "TimerService_HandleMessage"; // For ASP
+							private _profilerScope1 = createProfileScope ([format ["TimerService_HandleMessage_%1_%2", GET_OBJECT_CLASS(_msgReceiver), _msg#MESSAGE_ID_TYPE]] call misc_fnc_createStaticString);
+							#endif
+
+							private _msgReceiver = _x select TIMER_DATA_ID_MESSAGE_RECEIVER;
+							CALLM1(_msgReceiver, "handleMessage", _msg);
 						} else {
-							private _msg = _x select TIMER_DATA_ID_MESSAGE;
-							OOP_WARNING_MSG("[TimerService::threadFunc] Info: Message not posted: %1,  msgID: %2", [_msg]+[_msgID]);
+							// = = = Post message
+
+							#ifdef ASP_ENABLE
+							private _profilerScope1 = createProfileScope "TimerService_PostMessage"; // For ASP
+							#endif
+
+							//diag_log format ["[TimerService::threadFunc] Info: time to post a message"];
+							// Post a message
+							//private _msgLoop = _x select TIMER_DATA_ID_MESSAGE_LOOP;
+							
+							private _msgID = _x select TIMER_DATA_ID_MESSAGE_ID;
+							
+							// Check if the previous message has been handled (we don't want to overflood the receiver with the same messages)
+							if (CALL_STATIC_METHOD("MessageReceiver", "messageDone", [_msgID])) then {
+								//diag_log format ["[TimerService::threadFunc] Info: posting a message"];
+								// Post a new message
+								// todo inline the MessageReceiver::postMessage it some time later!
+								private _msgReceiver = _x select TIMER_DATA_ID_MESSAGE_RECEIVER;
+								private _msg = _x select TIMER_DATA_ID_MESSAGE;
+								private _newID = CALLM2(_msgReceiver, "postMessage", _msg, true);
+								_x set [TIMER_DATA_ID_MESSAGE_ID, _newID];
+								//diag_log format [" --- Timer posted message to: %1,  msgID: %2", _msgReceiver, _newID];
+							} else {
+								private _msg = _x select TIMER_DATA_ID_MESSAGE;
+								OOP_WARNING_MSG("[TimerService::threadFunc] Info: Message not posted: %1,  msgID: %2", [_msg]+[_msgID]);
+							};
 						};
 						
 						// Set the time when the timer will fire next time

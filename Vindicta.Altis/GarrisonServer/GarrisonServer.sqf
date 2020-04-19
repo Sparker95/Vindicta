@@ -168,10 +168,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	// Marks the garrison requiring an update broadcast
 	METHOD("onGarrisonOutdated") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
-
-		// Check if it's registered here
-		if (GETV(_gar, "regAtServer")) then {
-			T_GETV("outdatedObjects") pushBackUnique _gar;
+		CRITICAL_SECTION {
+			// Check if it's registered here
+			if (GETV(_gar, "regAtServer")) then {
+				T_GETV("outdatedObjects") pushBackUnique _gar;
+			};
 		};
 	} ENDMETHOD;
 
