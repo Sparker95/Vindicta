@@ -109,7 +109,7 @@ _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
 
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Ural", "FGN_AAF_Ural_open"]];
-//_veh set [T_VEH_truck_cargo, [""]];
+_veh set [T_VEH_truck_cargo, ["RHS_Ural_Flat_MSV_01", "RHS_Ural_Open_Flat_MSV_01"]];
 _veh set [T_VEH_truck_ammo, ["FGN_AAF_Zamak_Ammo"]];
 _veh set [T_VEH_truck_repair, ["FGN_AAF_Ural_Repair"]];
 _veh set [T_VEH_truck_medical , ["FGN_AAF_Zamak_Medic", "rhsusf_m113d_usarmy_medical"]];

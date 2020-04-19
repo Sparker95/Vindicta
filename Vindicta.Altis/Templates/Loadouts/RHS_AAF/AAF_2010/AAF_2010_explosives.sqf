@@ -17,8 +17,7 @@ this addVest _RandomVest;
 
 this addBackpack "FGN_AAF_Fieldpack_Lizard";
 
-this addWeapon "rhs_weap_akms";
-this addPrimaryWeaponItem "rhs_acc_dtkakm";
+this addWeapon "rhs_weap_m92";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
 

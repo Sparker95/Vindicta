@@ -33,6 +33,5 @@ this addItemToBackpack "rhs_VG40OP_red";
 for "_i" from 1 to 4 do {this addItemToBackpack "rhs_VG40OP_white";};
 this addItemToBackpack "rhs_VG40OP_green";
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_VOG25P";};
-
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
