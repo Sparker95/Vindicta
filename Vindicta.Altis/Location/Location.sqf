@@ -1870,7 +1870,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("patrolRoutes", []);
 
 		// Lets try and find a location sector that we can update from, incase it changed
-		
 		#ifndef _SQF_VM
 		private _locSectors = entities "Vindicta_LocationSector";
 		#else
@@ -1943,6 +1942,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_PUBLIC_VAR("border");
 		T_PUBLIC_VAR("pos");
 		T_PUBLIC_VAR("isBuilt");
+
 		// SAVEBREAK >>>
 		// buildProgress was added in 12
 		if(isNil {T_GETV("buildProgress")}) then {
@@ -1951,6 +1951,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			T_PUBLIC_VAR("buildProgress");
 		};
 		// <<< SAVEBREAK
+
 		T_PUBLIC_VAR("allowedAreas");
 		T_PUBLIC_VAR("type");
 		T_PUBLIC_VAR("wasOccupied");

@@ -26,15 +26,23 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 		T_SETV("tolerance", 1.0);
 
 		// Mark the position occupied
-		(_building getVariable "vin_occupied_positions") pushBackUnique _posID;
+		CRITICAL_SECTION {
+			private _occupied = _building getVariable ["vin_occupied_positions", []];
+			_occupied pushBackUnique _posID;
+			 _building setVariable ["vin_occupied_positions", _occupied];
+		};
 	} ENDMETHOD;
 
 	METHOD("terminate") {
 		params [P_THISOBJECT];
-	
+
 		// Mark the position unoccupied again
-		private _occupiedPositions = T_GETV("building") getVariable "vin_occupied_positions";
-		_occupiedPositions deleteAt (_occupiedPositions find T_GETV("posID"));
+		CRITICAL_SECTION {
+			private _occupied = _building getVariable "vin_occupied_positions";
+			if(!isNil "_occupied") then {
+				_occupiedPositions deleteAt (_occupiedPositions find T_GETV("posID"));
+			};
+		};
 	} ENDMETHOD;
 ENDCLASS;
 

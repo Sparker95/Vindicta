@@ -23,6 +23,37 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		T_SETV("savedInventory", []);
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		
+		// Mark the target as free for use
+		private _target = T_GETV("target");
+		if(_target isEqualType objNull) then {
+			_target setVariable ["vin_occupied", false];
+		};
+
+		// Terminate the script
+		private _spawnHandle = T_GETV("spawnHandle");
+		if(!isNull _spawnHandle) then {
+			terminate _spawnHandle;
+		};
+
+		// Reset the unit
+		private _hO = T_GETV("hO");
+		if(!isNull _hO) then {
+			//[hO, vin_fnc_ambientAnim__terminate] remoteExec ["call"];
+
+			_hO call vin_fnc_ambientAnim__terminate;
+
+			private _savedInventory = T_GETV("savedInventory");
+			if(!(_savedInventory isEqualTo [])) then {
+				_hO setUnitLoadout _savedInventory;
+			};
+			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_loadInventory;
+			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_deleteInventory;
+		};
+	} ENDMETHOD;
+
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
@@ -56,16 +87,33 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 			params ["_hO", "_target", "_targetPos", "_duration", "_anims"];
 
 			private _moveTimeOut = GAME_TIME + 120;
-			waitUntil { _hO distance _targetPos <= 3 || GAME_TIME > _moveTimeOut };
+			waitUntil {
+				sleep 0.1;
+				_hO distance _targetPos <= 3 || GAME_TIME > _moveTimeOut
+			};
 			doStop _hO;
 			_hO setPos _targetPos;
 
 			private _endTime = GAME_TIME + _duration;
 
 			//[_hO, [_hO, "vin_savedInventory"], [], false ] call BIS_fnc_saveInventory;
-			[_hO, selectRandom _anims, "ASIS", _target] call BIS_fnc_ambientAnim;
-			waitUntil { behaviour _hO == "combat" || { isNil { _hO getVariable "BIS_fnc_ambientAnim__animset" } } };
-			_hO call BIS_fnc_ambientAnim__terminate;
+			//[[_hO, selectRandom _anims, "ASIS", _target], vin_fnc_ambientAnim] remoteExec ["call"];
+			[_hO, selectRandom _anims, _target] call vin_fnc_ambientAnim;
+
+			waitUntil {
+				sleep 0.1;
+				_hO getVariable ["BIS_EhAnimDone", -1] > -1
+			};
+
+			waitUntil {
+				sleep 0.1;
+				_hO getVariable ["BIS_EhAnimDone", -1] == -1
+					|| behaviour _hO == "combat"
+					|| damage _hO > 0
+					|| { _hO call BIS_fnc_enemyDetected }
+			};
+			//[_hO, vin_fnc_ambientAnim__terminate] remoteExec ["call"];
+			_hO call vin_fnc_ambientAnim__terminate;
 			//[_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_loadInventory;
 			//[_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_deleteInventory;
 		};
@@ -93,31 +141,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		_state
 	} ENDMETHOD;
 
-	METHOD("terminate") {
-		params [P_THISOBJECT];
-
-		// Mark the target as free for use
-		private _target = T_GETV("target");
-		if(_target isEqualType objNull) then {
-			_target setVariable ["vin_occupied", false];
-		};
-
-		// Terminate the script
-		private _spawnHandle = T_GETV("spawnHandle");
-		if(!isNull _spawnHandle) then {
-			terminate _spawnHandle;
-		};
-
-		// Reset the unit
-		private _hO = T_GETV("hO");
-		if(!isNull _hO) then {
-			_hO call BIS_fnc_ambientAnim__terminate;
-			private _savedInventory = T_GETV("savedInventory");
-			if(!(_savedInventory isEqualTo [])) then {
-				_hO setUnitLoadout _savedInventory;
-			};
-			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_loadInventory;
-			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_deleteInventory;
-		};
-	} ENDMETHOD;
+	// METHOD("terminate") {
+	// 	params [P_THISOBJECT];
+	// } ENDMETHOD;
 ENDCLASS;
