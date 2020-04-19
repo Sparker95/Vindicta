@@ -96,6 +96,9 @@
 #define IS_MULTIPLAYER false
 #define PUBLIC_VARIABLE isNil
 
+#define IS_LOCAL_ADMIN true
+#define IS_ADMIN_ON_DEDI true
+
 #define START_LOADING_SCREEN __null =  
 #define PROGRESS_LOADING_SCREEN __null = 
 #define END_LOADING_SCREEN
@@ -138,6 +141,8 @@
 #define IS_MULTIPLAYER isMultiplayer
 #define PUBLIC_VARIABLE publicVariable
 
+#define IS_LOCAL_ADMIN (call BIS_fnc_admin != 0)
+#define IS_ADMIN_ON_DEDI (IS_DEDICATED && { HUMAN_PLAYERS findIf { admin owner _x != 0 } != NOT_FOUND })
 
 #define START_LOADING_SCREEN startLoadingScreen
 #define PROGRESS_LOADING_SCREEN progressLoadingScreen
@@ -224,10 +229,8 @@
 // |       M E T H O D   P A R A M E T E R S           |
 // -----------------------------------------------------
 
-#define P_THISOBJECT ["_thisObject", "", [""]]
-#define P_DEFAULT_PARAMS params [["_thisObject", "", [""]]]
-#define P_THISCLASS ["_thisClass", "", [""]]
-#define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
+#define P_THISOBJECT ["_thisObject", ""]
+#define P_THISCLASS ["_thisClass", ""]
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]

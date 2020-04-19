@@ -487,6 +487,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	METHOD("autoLoad") {
 		params [P_THISOBJECT];
+
 		#define LOC_SCOPE "Vindicta_GameManager"
 		if(!vin_autoLoad_enabled) exitWith {
 			LOC("Autoload_Disabled") call pr0_fnc_autoLoadMsg;
@@ -526,7 +527,33 @@ CLASS("GameManager", "MessageReceiverEx")
 			LOC("Autoload_Factions") call pr0_fnc_autoLoadMsg;
 		};
 
-		T_CALLM1("loadGame", _recordName);
+		// Now we wait for players/admins if we are on dedicated server
+		if(IS_DEDICATED) then {
+			[_thisObject, _recordName] spawn {
+				params ["_thisObject", "_recordName"];
+
+				// Wait for players to connect
+				waitUntil {
+					sleep 1;
+					count HUMAN_PLAYERS > 0
+				};
+
+				private _autoLoadTime = PROCESS_TIME + 30;
+				waitUntil {
+					sleep 0.5;
+					format [LOC("Autoload_CountDown"), _autoLoadTime - PROCESS_TIME] call pr0_fnc_autoLoadMsg;
+					IS_ADMIN_ON_DEDI || PROCESS_TIME <= _autoLoadTime
+				};
+
+				if(!IS_ADMIN_ON_DEDI) then {
+					T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+				} else {
+					LOC("Autoload_AdminAbort") call pr0_fnc_autoLoadMsg;
+				};
+			};
+		} else {
+			T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+		};
 
 		#undef LOC_SCOPE
 	} ENDMETHOD;

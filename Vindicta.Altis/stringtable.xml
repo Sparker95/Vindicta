@@ -477,6 +477,12 @@
 			<Key ID="STR_Vindicta_GameManager_Autoload_Factions">
 				<Original>Most recent save for this map has incompatible factions</Original>
 			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_CountDown">
+				<Original>Will autoload in %1s, login as admin to abort</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_AdminAbort">
+				<Original>Autoload aborted as admin is present</Original>
+			</Key>
 		</Container>
 	</Package>
 </Project>
