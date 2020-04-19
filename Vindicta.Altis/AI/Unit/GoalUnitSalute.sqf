@@ -18,7 +18,7 @@ CLASS("GoalUnitSalute", "Goal")
 	// Inherited classes must implement this
 	
 	STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// We want to salute if there is a fact that we have been saluted by someone
 		pr _query = WF_NEW();
@@ -43,7 +43,7 @@ CLASS("GoalUnitSalute", "Goal")
 	// Otherwise it must return ""
 	
 	STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Find the unit to salute to from the world fact
 		pr _target = objNull;
@@ -53,7 +53,7 @@ CLASS("GoalUnitSalute", "Goal")
 		if (! (isNil "_wf")) then {
 			_target = WF_GET_SOURCE(_wf);
 		};
-		pr _args = [_AI, _target];
+		pr _args = [_AI, [[TAG_TARGET, _target]]];
 		pr _action = NEW("ActionUnitSalute", _args);
 		
 		diag_log format ["[GoalSalute:createPredefinedAction] AI: %1, created action to salute to: %2", _AI, _target];

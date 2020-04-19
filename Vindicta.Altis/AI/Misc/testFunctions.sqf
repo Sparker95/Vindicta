@@ -12,7 +12,7 @@
 
 // Makes a unit with objectHandle stop its AI brain and switch to specified action immediately
 AI_misc_fnc_forceUnitAction = {
-	params [ ["_objectHandle", objNull, [objNull]], ["_actionClassName", "", [""]], ["_parameters", []], ["_updateInterval", 1, [1]] ];
+	params [ P_OBJECT("_objectHandle"), P_STRING("_actionClassName"), ["_parameters", []], ["_updateInterval", 1, [1]] ];
 
 	// Find the AI of this objectHandle
 	pr _unit = _objectHandle getVariable "__u";
@@ -58,7 +58,7 @@ _action
 
 // Makes a group which has a unit with objectHandle stop its AI brain and switch to specified action immediately
 AI_misc_fnc_forceGroupAction = {
-	params [ ["_objectHandle", objNull, [objNull]], ["_actionClassName", "", [""]], ["_parameters", []], ["_updateInterval", 3, [1]] ];
+	params [ P_OBJECT("_objectHandle"), P_STRING("_actionClassName"), ["_parameters", []], ["_updateInterval", 3, [1]] ];
 
 	// Find the AI of this objectHandle
 	pr _unit = _objectHandle getVariable "__u";
@@ -100,7 +100,7 @@ _action
 
 // Adds a goal to the group of the unit with given object handle
 AI_misc_fnc_addGroupGoal = {
-	params [ ["_objectHandle", objNull, [objNull]], ["_goalClassName", "", [""]], ["_parameters", []]];
+	params [ P_OBJECT("_objectHandle"), P_STRING("_goalClassName"), ["_parameters", []]];
 
 	// Find the AI of this objectHandle
 	pr _unit = _objectHandle getVariable "__u";
@@ -125,7 +125,7 @@ call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 
 
 AI_misc_fnc_addGarrisonGoal = {
-	params [ ["_objectHandle", objNull, [objNull]], ["_goalClassName", "", [""]], ["_parameters", []]];
+	params [ P_OBJECT("_objectHandle"), P_STRING("_goalClassName"), ["_parameters", []]];
 
 	pr _unit = _objectHandle getVariable "__u";
 	if (isNil "_unit") exitWith { diag_log "Error: object handle is not a unit!"; };

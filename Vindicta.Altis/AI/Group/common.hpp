@@ -18,3 +18,4 @@
 #include "..\targetStruct.hpp"
 #include "..\Garrison\garrisonWorldStateProperties.hpp"
 #include "groupWorldStateProperties.hpp"
+#include "..\..\Location\Location.hpp"

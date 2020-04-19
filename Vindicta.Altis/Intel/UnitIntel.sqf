@@ -252,7 +252,7 @@ CLASS("UnitIntel", "")
 							if (_index != -1) then { // If it's the document item, delete it and 'inspect' it
 								// Call code to inspect the intel item
 								CALLSM1("UnitIntel", "inspectIntel", _data);
-								_deleteItem = true;							
+								_deleteItem = true;
 							}; // if (_data == ...)
 
 							if (_data == "vin_pills") then {
@@ -324,7 +324,7 @@ CLASS("UnitIntel", "")
 
 	// Called on player's computer when he picks up the intel item
 	STATIC_METHOD("inspectIntel") {
-		params ["_thisObject", ["_fullClassName", "", [""]] ];
+		params [P_THISOBJECT, P_STRING("_fullClassName") ];
 
 		// Get base class name and ID of this intel item
 		pr _classAndID = CALLSM1("PersonalInventory", "getBaseClassAndID", _fullClassName);

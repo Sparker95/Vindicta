@@ -84,7 +84,7 @@ _display setvariable ["Dialog_text_ctrlSet" ,[]];
 				
 				_text ctrlSetFade 1;
 				_text ctrlCommit FLOAT_FADE_OUT;
-			};			
+			};
 		};
 		
 		if(!isnull _icon)then{
@@ -98,7 +98,7 @@ _display setvariable ["Dialog_text_ctrlSet" ,[]];
 				//ALTERNITEVE ROTATION BASED
 				private _dir = getDir player;//0 - 360 
 				private _dir_unit = player getDir _unit; //0 - 360 
-				_icon_x = _dir_unit  - _dir; 
+				_icon_x = _dir_unit  - _dir;
 				if(_icon_x > 180)then{_icon_x = _icon_x-360}; //-180 - 180 
 				_icon_x/360*2   +0.5;// 0-1
 			
@@ -121,7 +121,7 @@ _display setvariable ["Dialog_text_ctrlSet" ,[]];
 		_text ctrlsetposition [0, _text_y];
 		_text ctrlCommit 0;
 		
-		_text_y = _text_y - 0.05;	
+		_text_y = _text_y - 0.05;
 	};
 }] call BIS_fnc_addStackedEventHandler;
 

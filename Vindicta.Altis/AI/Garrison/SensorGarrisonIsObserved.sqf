@@ -19,7 +19,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 
 	/*
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 	*/
 	
@@ -31,7 +31,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		//diag_log "UPDATE";
 		
@@ -53,7 +53,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 		pr _pos = CALLM0(_gar, "getPos");
 		
 		// Get units that can spawn this location that are also within spawn range
-		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _pos) < 2000) && (alive _x) && ((side group _x) != _side)}; // todo retrieve the proper spawn distance
+		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _pos) < 1500) && (alive _x) && ((side group _x) != _side)}; // todo retrieve the proper spawn distance
 		
 		// Get units of this garrison
 		pr _thisUnits = CALLM0(_gar, "getUnits");
@@ -67,7 +67,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				pr _enemyObject = _x;
 				pr _enemyObservesThisUnit = _thisObjects findIf {
 					(_enemyObject targetKnowledge _x) params ["_knownByGroup", "_knownByUnit", "_lastSeenTime"/*, "_lastEndangeredTime", "_targetSide", "_positionError", "_position"*/];
-					_knownByUnit && (_lastSeenTime - TIME_NOW) < 60
+					_knownByUnit && ((time - _lastSeenTime) < 6.66)
 				};
 				_enemyObservesThisUnit != NOT_FOUND
 			};
@@ -77,7 +77,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				OOP_INFO_3("Location %1 is observed by side: %2, unit: %3", _loc, _x, _enemyObjectsSide select _observedBySide);
 				
 				// Report to chat for now
-				//systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, time];
+				//systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, GAME_TIME];
 				
 				// Report to the AICommander of the side that observes this location
 				private _AICommander = CALL_STATIC_METHOD("AICommander", "getAICommander", [_s]);

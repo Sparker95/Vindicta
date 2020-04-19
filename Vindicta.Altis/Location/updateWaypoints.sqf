@@ -17,7 +17,7 @@ _data	- for "circle":
 
 params [P_THISOBJECT];
 
-T_PRVAR(border);
+private _border = T_GETV("border");
 _border params ["_pos", "_a", "_b", "_dir", "_isRectangle"];
 private _waypoints = 
 	if(!_isRectangle) then {
@@ -25,7 +25,7 @@ private _waypoints =
 		private _wp = [];
 		private _i = 0;
 		private _d  = 0;
-		private _locPos = GET_VAR(_thisObject, "pos");
+		private _locPos = T_GETV("pos");
 		private _pos = 0;
 	#ifndef _SQF_VM // getPos not implemented, probably surfaceIsWater isn't either.
 		while {_i < 8} do
@@ -99,7 +99,7 @@ private _waypoints =
 		private _i = 0;
 		private _dist = 0;
 		private _wp = [];
-		private _locPos = GET_VAR(_thisObject, "pos");
+		private _locPos = T_GETV("pos");
 		while {_i < 8} do {
 			_dir = _dirWP select _i;
 			_dist = _distWP select _i;
@@ -115,7 +115,7 @@ private _waypoints =
 			_i = _i + 1;
 		
 			//Test
-			//createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];	
+			//createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];
 		};
 		_wp
 	};
@@ -128,4 +128,4 @@ if(T_GETV("type") == LOCATION_TYPE_CITY) then {
 	}) call BIS_fnc_arrayShuffle;
 };
 
-SET_VAR(_thisObject, "borderPatrolWaypoints", _waypoints);
+T_SETV("borderPatrolWaypoints", _waypoints);

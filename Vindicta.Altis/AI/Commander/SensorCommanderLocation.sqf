@@ -14,7 +14,7 @@ Author: Sparker 01.02.2019
 CLASS("SensorCommanderLocation", "SensorStimulatable")
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 
@@ -24,7 +24,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 	} ENDMETHOD;
 	
@@ -52,7 +52,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("Received location data: %1", _stimulus);
 		pr _AI = T_GETV("AI");

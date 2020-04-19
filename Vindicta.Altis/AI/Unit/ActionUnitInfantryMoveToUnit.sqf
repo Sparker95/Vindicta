@@ -17,9 +17,10 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _unit = (_parameters select {_x select 0 == "unit"}) select 0 select 1;
+		pr _unit = CALLSM2("Action", "getParameterValue", _parameters, "unit");
+
 		T_SETV("destUnit", _unit);
 		
 		// Set position
@@ -33,12 +34,12 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 		pr _tolerance = vectorMagnitude _a;
 		T_SETV("tolerance", _tolerance + 1.5);
 		
-		OOP_INFO_2("ACTIVATE: dest unit pos: %1, tolerance: %2", _posDest, _tolerance);
+		OOP_INFO_2("new: dest unit pos: %1, tolerance: %2", _posDest, _tolerance);
 		
 	} ENDMETHOD;
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Bail if dest unit is destroyed or whatever
 		pr _destUnit = T_GETV("destUnit");
@@ -55,13 +56,14 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 
 		// Check if the other unit has moved a lot so we need to update the position
 		pr _pos = T_GETV("pos");
-		if ((_pos distance2D _hDest) > 1.0) then {
+		if ((_pos distance2D _hDest) > 1.0) exitWith {
 			T_SETV("pos", ASLToAGL (getPosASL _hDest));
-			CALL_CLASS_METHOD("ActionUnitInfantryMoveBase", _thisObject, "activate", []);
+			T_SETV("state", ACTION_STATE_INACTIVE);
+			ACTION_STATE_INACTIVE
 		};
 		
 		// Call base class process method
-		pr _state = CALL_CLASS_METHOD("ActionUnitInfantryMoveBase", _thisObject, "process", []);
+		pr _state = T_CALLCM0("ActionUnitInfantryMoveBase", "process");
 		
 		T_SETV("state", _state);
 		_state

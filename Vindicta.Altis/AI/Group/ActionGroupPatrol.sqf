@@ -7,24 +7,30 @@ Class: ActionGroup.ActionGroupPatrol
 #define pr private
 
 CLASS("ActionGroupPatrol", "ActionGroup")
-	
+
+	VARIABLE("route");
+
+	METHOD("new") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
+		// Route can be optionally passed or not
+		// We add the target position to the end
+		private _route = CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
+		T_SETV("route", _route);
+	} ENDMETHOD;
+
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
-		pr _hG = GETV(_thisObject, "hG");
-		
-		// Regroup
-		(units _hG) commandFollow (leader _hG);
-		
-		// Set behaviour
-		_hG setBehaviour "SAFE";
-		
-		// Set combat mode
-		_hG setCombatMode "RED"; // Open fire, engage at will
-		
+		pr _hG = T_GETV("hG");
+
+		T_CALLM3("applyGroupBehaviour", "COLUMN", "SAFE", "RED");
+		T_CALLM0("clearWaypoints");
+		T_CALLM0("regroup");
+
 		// Assign patrol waypoints
-		pr _AI = GETV(_thisObject, "AI");
+		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		pr _type = CALLM0(_group, "getType");
 		OOP_INFO_1("Started for AI: %1", _AI);
@@ -32,26 +38,19 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		pr _loc = CALLM0(_gar, "getLocation");
 		
 		pr _useDefaultPatrolWaypoints = true;
-		pr _pos = [];
-		pr _radius = 10;
-		pr _waypoints = [];
+		pr _waypoints = T_GETV("route");
+
 		// Override behaviour for non-static vehicle groups
 		// They must walk around their vehicles
-		if (_type == GROUP_TYPE_VEH_NON_STATIC) then {
+		if (_type == GROUP_TYPE_VEH) then {
 			// Crew of vehicle groups stays around their vehicle
-			pr _vehUnits = CALLM0(_group, "getUnits") select {
-				CALLM0(_x, "isVehicle")
-			};
+			pr _vehUnits = CALLM0(_group, "getVehicleUnits");
 			if (count _vehUnits > 0) then {
 				pr _vehUnit = selectRandom _vehUnits;
-				pr _hO = CALLM0(_vehUnit, "getObjectHandle");
-				_pos = getPos _hO;
+				pr _pos = CALLM0(_vehUnit, "getPos");
 
-				_radius = 10 + random 10;
 				if (! (_pos isEqualTo [0, 0, 0])) then { // Better to be safe here, we don't want to be in the sea
-					//for "_i" from 0 to 3 do {
-						_waypoints pushBack [_pos#0 + random 13 - 6, _pos#1 + random 13 - 6, 0];
-					//};
+					_waypoints pushBack (_pos getPos [10 + random 20, random 360]);
 					_useDefaultPatrolWaypoints = false;
 				};
 			};
@@ -61,8 +60,8 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		// If at a location, takes waypoints from location border
 		// If in field, adds some circular waypoints
 		// Check if there is a location
-		if (_useDefaultPatrolWaypoints) then {
-			if (_loc != "") then {
+		if (count _waypoints == 0 && _useDefaultPatrolWaypoints) then {
+			if (_loc != NULL_OBJECT) then {
 				_waypoints = CALLM0(_loc, "getPatrolWaypoints");
 			} else {
 				// Generate some random patrol waypoints
@@ -74,10 +73,8 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 				};
 			};
 		};
-		
-		// Remove assigned waypoints first
-		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
-		// Give waipoints to the group
+
+		// Give waypoints to the group
 		pr _direction = selectRandom [false, true];
 		pr _count = count _waypoints;
 		pr _indexStart = floor (random _count);
@@ -121,19 +118,28 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 			_wp setWaypointSpeed "LIMITED";
 			_wp setWaypointFormation "WEDGE";
 		};
-		
-		//Set the closest WP as current
-		_hG setCurrentWaypoint [_hG, _closestWPID];
-		
+
+		pr _activeWP = if(_instant) then {
+			// Teleport to a random patrol waypoint
+			pr _rndWP = selectRandom waypoints _hG;
+			T_CALLM1("teleport", getWPPos _rndWP);
+			_rndWP
+		} else {
+			[_hG, _closestWPID]
+		};
+
+		// Set the closest WP as current
+		_hG setCurrentWaypoint _activeWP;
+
 		// Give a goal to units
 		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
 		} forEach _units;
 
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -142,11 +148,11 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	
 	// Logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		T_CALLM0("failIfEmpty");
 		
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE
@@ -154,12 +160,12 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		pr _hG = GETV(_thisObject, "hG");
+		pr _hG = T_GETV("hG");
 		
 		// Delete all waypoints
-		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
+		T_CALLM0("clearWaypoints");
 
 				
 		// Delete given goals

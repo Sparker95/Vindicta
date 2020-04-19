@@ -89,7 +89,7 @@ _veh set [T_VEH_MRAP_GMG, ["LIB_usa_M3_Scout_FFV"]];
 _veh set [T_VEH_IFV, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_APC, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_MBT, ["fow_v_cromwell_uk", "LIB_Churchill_Mk7", "LIB_Churchill_Mk7_AVRE", "LIB_Churchill_Mk7_Crocodile", "LIB_Crusader_Mk3", "LIB_M4A3_75"]];
-_veh set [T_VEH_MRLS, ["LIB_Nebelwerfer41", "LIB_Nebelwerfer41_Camo", "LIB_Nebelwerfer41_Gelbbraun"]]; 
+_veh set [T_VEH_MRLS, ["LIB_Nebelwerfer41", "LIB_Nebelwerfer41_Camo", "LIB_Nebelwerfer41_Gelbbraun"]];
 _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
 
@@ -153,32 +153,19 @@ _cargo set [T_CARGO_box_medium,	["LIB_BasicWeaponsBox_UK", "LIB_BasicAmmunitionB
 _cargo set [T_CARGO_box_big,	["LIB_WeaponsBox_Big_SU"]];
 
 //==== Groups ====
-_group = [];
+_group = +(tDefault select T_GROUP);
 
 _group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, 				[[[T_INF, T_INF_TL], 		[T_INF, T_INF_LMG], [T_INF, T_INF_rifleman], [T_INF, T_INF_GL]]]];
 
-//_group set [T_GROUP_inf_sentry,				[[[T_INF, T_INF_rifleman], 		[T_INF, T_INF_rifleman]]]];
-//_group set [T_GROUP_inf_fire_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_LMG], 			[T_INF, T_INF_rifleman], 		[T_INF, T_INF_GL]]]];
 _group set [T_GROUP_inf_AA_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_AT], 				[T_INF, T_INF_AT], 				[T_INF, T_INF_ammo]]]];
-//_group set [T_GROUP_inf_AT_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_AT], 				[T_INF, T_INF_AT], 				[T_INF, T_INF_ammo]]]];
-//_group set [T_GROUP_inf_rifle_squad,		[[[T_INF, T_INF_SL], 		[T_INF, T_INF_rifleman], 		[T_INF, T_INF_LMG], 			[T_INF, T_INF_GL], 				[T_INF, T_INF_LAT], 		[T_INF, T_INF_TL], 			[T_INF, T_INF_rifleman], 			[T_INF, T_INF_marksman], 		[T_INF, T_INF_medic]]]];
-//_group set [T_GROUP_inf_assault_squad,		[[[T_INF, T_INF_SL], 		[T_INF, T_INF_exp], 			[T_INF, T_INF_marksman], 		[T_INF, T_INF_GL], 				[T_INF, T_INF_LMG], 		[T_INF, T_INF_TL], 			[T_INF, T_INF_rifleman],			[T_INF, T_INF_engineer], 		[T_INF, T_INF_medic]]]];
-//_group set [T_GROUP_inf_weapons_squad,		[[[T_INF, T_INF_SL], 		[T_INF, T_INF_HMG], 			[T_INF, T_INF_ammo], 			[T_INF, T_INF_LMG], 			[T_INF, T_INF_rifleman],	[T_INF, T_INF_TL], 			[T_INF, T_INF_AT], 					[T_INF, T_INF_LAT], 			[T_INF, T_INF_medic]]]];
-//_group set [T_GROUP_inf_sniper_team,		[[[T_INF, T_INF_sniper], 	[T_INF, T_INF_spotter]]]];
-//_group set [T_GROUP_inf_officer,			[[[T_INF, T_INF_officer], 	[T_INF, T_INF_TL], 				[T_INF, T_INF_rifleman], 		[T_INF, T_INF_rifleman]]]];
-
-//_group set [T_GROUP_inf_recon_patrol,		[[[T_INF, T_INF_recon_TL], 			[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_LAT], 	[T_INF, T_INF_recon_medic]]]];
-//_group set [T_GROUP_inf_recon_sentry,		[[[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_rifleman]]]];
-//_group set [T_GROUP_inf_recon_squad,		[[[T_INF, T_INF_recon_TL], 			[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_marksman], 	[T_INF, T_INF_recon_exp], 	[T_INF, T_INF_recon_LAT],  	[T_INF, T_INF_recon_JTAC], 	[T_INF, T_INF_recon_medic]]]];
-//_group set [T_GROUP_inf_recon_team,			[[[T_INF, T_INF_recon_TL], 			[T_INF, T_INF_recon_rifleman], 	[T_INF, T_INF_recon_marksman], 	[T_INF, T_INF_recon_LAT], 		[T_INF, T_INF_recon_exp], 	[T_INF, T_INF_recon_medic]]]];
 
 //==== Vehicle Descriptions ==== (Broken waiting for fix)
 //(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Unarmed Car"]; //					= 1 Car like a Prowler or UAZ
 //(T_NAMES select T_VEH) set [T_VEH_car_armed, "Armed Car"]; //						= 2 Car with any kind of mounted weapon
 //(T_NAMES select T_VEH) set [T_VEH_MRAP_unarmed, "Unarmed Scout Car"]; //			= 3 MRAP
 //(T_NAMES select T_VEH) set [T_VEH_MRAP_HMG, "Armed Scout Car"]; //				= 4 MRAP with a mounted HMG gun
-//(T_NAMES select T_VEH) set [T_VEH_MRAP_GMG, "Havy Armed Car"]; //					= 5 MRAP with a mounted GMG gun
+//(T_NAMES select T_VEH) set [T_VEH_MRAP_GMG, "Heavy Armed Car"]; //					= 5 MRAP with a mounted GMG gun
+//(T_NAMES select T_VEH) set [T_VEH_MBT, "Light-Medium-Heavy Tank"]; //					= 8 Main Battle Tank
 
 //==== Arrays ====
 _array set [T_INF, _inf];

@@ -19,7 +19,7 @@ pr _wheelHitPointsAndSelections = [];
     pr _wheelName = configName _x;
     pr _wheelCenter = getText (_x >> "center");
     pr _wheelBone = getText (_x >> "boneName");
-    pr _wheelBoneNameResized = _wheelBone select [0, 9]; 
+    pr _wheelBoneNameResized = _wheelBone select [0, 9];
 
     pr _wheelHitPoint = "";
     pr _wheelHitPointSelection = "";

@@ -15,16 +15,19 @@ Author: Sparker 08.12.2018
 
 #define pr private
 
-pr _actions = ["ActionGarrisonMountCrew",
-						"ActionGarrisonMountInfantry",
-						"ActionGarrisonMoveMounted",
-						"ActionGarrisonMoveMountedCargo",
-						"ActionGarrisonMoveDismounted",
-						"ActionGarrisonRepairAllVehicles",
-						"ActionGarrisonLoadCargo",
-						"ActionGarrisonUnloadCurrentCargo"];
+pr _actions = [
+	"ActionGarrisonMountCrew",
+	"ActionGarrisonMountInfantry",
+	"ActionGarrisonMoveMounted",
+	//"ActionGarrisonMoveMountedCargo",
+	"ActionGarrisonMoveDismounted",
+	"ActionGarrisonRepairAllVehicles"
+	//"ActionGarrisonLoadCargo",
+	//"ActionGarrisonUnloadCurrentCargo"
+];
 
 
+// WON'T WORK UNTIL ACTIONS FOR CARGO ARE IMPLEMENTED 
 
 // Goal: transport cargo
 // Fill world states
@@ -44,6 +47,6 @@ pr _wsGoal = [WSP_GAR_COUNT] call ws_new;
 //pr _wsGoal = CALLSM("GoalGarrisonMove", "getEffects", _args);
 
 // Run A*
-//["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"]
+//P_THISCLASS, P_ARRAY("_currentWS"), P_ARRAY("_goalWS"), P_ARRAY("_possibleActions"), P_ARRAY("_goalParameters"), ["_AI", "ASTAR_ERROR_NO_AI"]
 pr _args = [_wsCurrent, _wsGoal, _actions, [["g_cargo", "thisBox"]]];
 CALL_STATIC_METHOD("AI", "planActions", _args);

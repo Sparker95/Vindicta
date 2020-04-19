@@ -18,7 +18,7 @@ this addBackpack "BWA3_AssaultPack_Fleck";
 
 this addWeapon "BWA3_MG4";
 this addPrimaryWeaponItem "BWA3_acc_VarioRay_irlaser_black";
-this addPrimaryWeaponItem "BWA3_optic_EOTech_Mag_Off";
+this addPrimaryWeaponItem "rhsusf_acc_g33_xps3";
 this addPrimaryWeaponItem "BWA3_200Rnd_556x45_Tracer";
 this addWeapon "BWA3_P8";
 this addHandgunItem "BWA3_acc_LLM01_irlaser";

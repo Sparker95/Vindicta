@@ -23,17 +23,17 @@ if(T_CALLM("isDestroyed", [])) exitWith {
 	DUMP_CALLSTACK;
 };
 
-private _spawned = GET_VAR(_thisObject, "spawned");
+private _spawned = T_GETV("spawned");
 if (!_spawned) exitWith {
 	OOP_ERROR_0("Already despawned");
 	DUMP_CALLSTACK;
 };
 
 // Reset spawned flag
-SET_VAR(_thisObject, "spawned", false);
+T_SETV("spawned", false);
 
-private _units = GET_VAR(_thisObject, "units");
-private _groups = (GET_VAR(_thisObject, "groups"));
+private _units = T_GETV("units");
+private _groups = (T_GETV("groups"));
 private _groupsCopy = +_groups;
 
 // Stop group AIs, but don't delete them
@@ -57,7 +57,7 @@ private _i = 0;
 while {_i < count _groups} do
 {
 	private _group = _groups select _i;
-	CALLM(_group, "despawn", []);
+	CALLM0(_group, "despawn");
 	
 	pr _units = CALLM0(_group, "getUnits");
 	if (count _units == 0) then {
@@ -71,13 +71,13 @@ while {_i < count _groups} do
 
 // Despawn single units
 private _ungroupedUnits = _units select {
-	CALL_METHOD(_x, "getGroup", []) == ""
+	CALLM0(_x, "getGroup") == ""
 };
 
 OOP_INFO_1("Despawning ungrouped units: %1", _ungroupedUnits);
 {
 	private _unit = _x;
-	CALL_METHOD(_unit, "despawn", []);
+	CALLM0(_unit, "despawn");
 } forEach _ungroupedUnits;
 
 // Call onGarrisonDespawned
@@ -98,7 +98,7 @@ if (_action != "") then {
 
 // Change process category if active
 if (T_GETV("active")) then {
-	pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+	pr _msgLoop = T_CALLM0("getMessageLoop");
 	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
 	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonDespawned", _AI);
 };

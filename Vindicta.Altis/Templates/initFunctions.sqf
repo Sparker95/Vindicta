@@ -22,6 +22,8 @@ t_fnc_classNameToNumber = compile preprocessFileLineNumbers "Templates\fn_classN
 t_fnc_numberToClassName = compile preprocessFileLineNumbers "Templates\fn_numberToClassName.sqf";
 t_fnc_convertTemplateClassNamesToNumbers = compile preprocessFileLineNumbers "Templates\fn_convertTemplateClassNamesToNumbers.sqf";
 
+t_fnc_newCategory = compile preprocessFileLineNumbers "Templates\fn_newCategory.sqf";
+
 // Loadouts
 t_fnc_addLoadout = compile preprocessFileLineNumbers "Templates\fn_addLoadout.sqf";
 t_fnc_setUnitLoadout = compile preprocessFileLineNumbers "Templates\fn_setUnitLoadout.sqf";

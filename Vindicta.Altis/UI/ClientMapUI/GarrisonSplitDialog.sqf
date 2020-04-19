@@ -201,7 +201,7 @@ CLASS("GarrisonSplitDialog", "")
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: RIGHT LB SEL CHANGED");
 			if (!T_GETV("setCurSelInProgress")) then {
-				CALLM1(_thisObject, "syncListboxRows", 0);
+				T_CALLM1("syncListboxRows", 0);
 			};
 			if (!T_GETV("setCurSelInProgress")) then {
 				/*if(T_GETV("dblClickedRight")) then {

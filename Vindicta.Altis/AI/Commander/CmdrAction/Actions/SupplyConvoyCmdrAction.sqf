@@ -95,7 +95,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		{ DELETE(_x) } forEach T_GETV("transitions");
 
 #ifdef DEBUG_CMDRAI
-		T_PRVAR(routeTargets);
+		private _routeTargets = T_GETV("routeTargets");
 		for "_i" from 0 to count _routeTargets do
 		{
 			deleteMarker (_thisObject + "_line" + str _i);
@@ -113,13 +113,13 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(detachmentEffVar);
-		T_PRVAR(detachmentCompVar);
-		T_PRVAR(targetVar);
-		T_PRVAR(routeTargetsVar);
-		T_PRVAR(departVar);
-		T_PRVAR(scheduleVar);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _detachmentEffVar = T_GETV("detachmentEffVar");
+		private _detachmentCompVar = T_GETV("detachmentCompVar");
+		private _targetVar = T_GETV("targetVar");
+		private _routeTargetsVar = T_GETV("routeTargetsVar");
+		private _departVar = T_GETV("departVar");
+		private _scheduleVar = T_GETV("scheduleVar");
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
@@ -179,7 +179,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_departVar,							// Date to wait until
 				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
-		_asts pushBack NEW("AST_WaitGarrison", _waitAST_Args);	
+		_asts pushBack NEW("AST_WaitGarrison", _waitAST_Args);
 
 		// Select next waypoint for the patrol assigning it to targetVar
 		private _nextWaypointAST_Args = [
@@ -258,8 +258,8 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(state);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _state = T_GETV("state");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		private _srcEff = GETV(_srcGarr, "efficiency");
 
@@ -319,7 +319,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("debugDraw") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -353,24 +353,24 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
-		T_PRVAR(tgtGarrId);
+		private _tgtGarrId = T_GETV("tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
 		private _intel = NULL_OBJECT;
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then {
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionSupplyConvoy", []);
 
-			T_PRVAR(routeTargets);
+			private _routeTargets = T_GETV("routeTargets");
 			private _routeTargetPositions = _routeTargets apply { [_world, _x] call Target_fnc_GetPos };
 			private _locations = _routeTargets select { 
 				_x#0 == TARGET_TYPE_LOCATION
@@ -389,7 +389,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			private _amount = T_GETV("amount");
 			SETV(_intel, "amount", _amount);
 
-			T_PRVAR(schedule);
+			private _schedule = T_GETV("schedule");
 
 			SETV(_intel, "waypoints", _routeTargetPositions);
 			SETV(_intel, "locations", _locations);
@@ -401,7 +401,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			SETV(_intel, "posTgt", GETV(_tgtGarr, "pos"));
 			SETV(_intel, "dateDeparture", _schedule select 0);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
@@ -426,7 +426,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -435,8 +435,8 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtGarrId = T_GETV("tgtGarrId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -444,7 +444,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Bail if src or dst are dead
-		if(CALLM(_srcGarr, "isDead", []) or {CALLM(_tgtGarr, "isDead", [])}) exitWith {
+		if(CALLM0(_srcGarr, "isDead") or {CALLM0(_tgtGarr, "isDead")}) exitWith {
 			OOP_DEBUG_0("Src or dst garrison is dead");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
@@ -536,9 +536,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
 		// _delay = 0 max (120 min _delay);
 		private _startDate = [DATE_NOW, _delay] call pr0_fnc_addMinutesToDate;
-		diag_log _startDate;
 		private _routeTargets = T_GETV("routeTargets");
-		diag_log _routeTargets;
 		private _schedule = [];
 		{
 			_schedule pushBack _startDate;
@@ -643,8 +641,8 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				]];
 			};
 			case ACTION_SUPPLY_TYPE_AMMO: {
-				T_PRVAR(srcGarrId);
-				T_PRVAR(tgtGarrId);
+				private _srcGarrId = T_GETV("srcGarrId");
+				private _tgtGarrId = T_GETV("tgtGarrId");
 				private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 				private _side = GETV(_srcGarr, "side");
 				private _t = CALLM2(gGameMode, "getTemplate", _side, "military");
@@ -798,12 +796,12 @@ if(isNil { GETSV("SupplyConvoyCmdrAction", "SupplyNames")}) then {
 	]);
 
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	CALLM(_thisObject, "applyToSim", [_world]);
+	T_CALLM("applyToSim", [_world]);
 	true
 	// ["Object exists", !(isNil "_class")] call test_Assert;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;

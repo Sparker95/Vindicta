@@ -19,5 +19,5 @@ params ["_magClass"];
 
 pr _ammoClass = getText(configfile >> "CfgMagazines" >> _magClass >> "ammo");
 
-getNumber (configfile >> "CfgAmmo" >> _ammoClass >> "cost"); 
+getNumber (configfile >> "CfgAmmo" >> _ammoClass >> "cost");
 		

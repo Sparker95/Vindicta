@@ -11,7 +11,7 @@ _costTotal = [];
 	{
 		_x params ["_magClass","_amount"];
 		pr _ammoClass = getText(configfile >> "CfgMagazines" >> _magClass >> "ammo");
-		_cost = _cost + (getNumber (configfile >> "CfgAmmo" >> _ammoClass >> "cost") * _amount); 
+		_cost = _cost + (getNumber (configfile >> "CfgAmmo" >> _ammoClass >> "cost") * _amount);
 		
 	}forEach _missingAmmoTurret;
 	_costTotal pushBack _cost;

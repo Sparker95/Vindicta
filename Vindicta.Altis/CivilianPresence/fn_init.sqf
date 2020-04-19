@@ -104,9 +104,9 @@ for "_x_border" from -_a + INT_RESOLUTION/2   to _a - INT_RESOLUTION/2 step INT_
 
 			//paint markers for debugging
 			#ifdef DEBUG_CIVILIAN_PRESENCE				
-			private _markerName = createMarker [format["%1",random 99999], _p]; 
-			_markerName setMarkerShape "ICON"; 
-			_markerName setMarkerType "hd_dot"; 
+			private _markerName = createMarker [format["%1",random 99999], _p];
+			_markerName setMarkerShape "ICON";
+			_markerName setMarkerType "hd_dot";
 			_markerName setMarkerColor "ColorBlack";
 			#endif
 
@@ -125,9 +125,9 @@ for "_x_border" from -_a + INT_RESOLUTION/2   to _a - INT_RESOLUTION/2 step INT_
 					_spawnPoints pushback _waypoint;
 					#ifdef DEBUG_CIVILIAN_PRESENCE				
 					{
-						private _markerName = createMarker [format["%1",random 99999], _x]; 
-						_markerName setMarkerShape "ICON"; 
-						_markerName setMarkerType "hd_dot"; 
+						private _markerName = createMarker [format["%1",random 99999], _x];
+						_markerName setMarkerShape "ICON";
+						_markerName setMarkerType "hd_dot";
 						_markerName setMarkerColor "ColorRed";
 					}forEach _positions;
 					#endif
@@ -136,18 +136,29 @@ for "_x_border" from -_a + INT_RESOLUTION/2   to _a - INT_RESOLUTION/2 step INT_
 				
 				_road = selectRandom (_p nearRoads INT_RESOLUTION/2);
 				if(!isnil "_road")then{
-					private _waypoint = [true] call CBA_fnc_createNamespace;
-					_waypoint setpos getpos _road;
-					_waypoint setVariable ["#type",2];//waypoint
-					_waypoint setVariable ["#positions",[getpos _road]];
-					_waypoints pushback _waypoint;
-					
-					#ifdef DEBUG_CIVILIAN_PRESENCE	
-					private _markerName = createMarker [format["%1",random 99999], getpos _road]; 
-					_markerName setMarkerShape "ICON"; 
-					_markerName setMarkerType "hd_dot"; 
-					_markerName setMarkerColor "ColorBlue";
-					#endif
+					private _rct = roadsConnectedTo _road;
+					if(count _rct > 0) then {
+						private _dir = _road getDir _rct#0;
+						// Check position if it's safe
+						private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
+						// Move to the edge
+						private _pos = [getPos _road, _width - 4, _dir + (selectRandom [90, 270]) ] call BIS_Fnc_relPos;
+						// Move up and down the street a bit
+						_pos = [_pos, _width * 0.5, _dir + (selectRandom [0, 180]) ] call BIS_Fnc_relPos;
+
+						private _waypoint = [true] call CBA_fnc_createNamespace;
+						_waypoint setpos _pos;
+						_waypoint setVariable ["#type",2];//waypoint
+						_waypoint setVariable ["#positions",[_pos]];
+						_waypoints pushback _waypoint;
+						
+						#ifdef DEBUG_CIVILIAN_PRESENCE	
+						private _markerName = createMarker [format["%1",random 99999], _pos];
+						_markerName setMarkerShape "ICON";
+						_markerName setMarkerType "hd_dot";
+						_markerName setMarkerColor "ColorBlue";
+						#endif
+					};
 				};
 			};//end if _useBuilding
 		};

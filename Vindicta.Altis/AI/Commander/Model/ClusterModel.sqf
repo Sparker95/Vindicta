@@ -51,7 +51,7 @@ CLASS("ClusterModel", "ModelBase")
 
 		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 
-		T_PRVAR(actual);
+		private _actual = T_GETV("actual");
 		private _copy = NEW("ClusterModel", [_targetWorldModel ARG _actual]);
 
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
@@ -76,7 +76,7 @@ CLASS("ClusterModel", "ModelBase")
 
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 
-		T_PRVAR(actual);
+		private _actual = T_GETV("actual");
 		_actual params ["_ai", "_clusterId"];
 		private _targetCluster = CALLM(_ai, "getTargetCluster", [_clusterId]);
 		// or {EFF_LTE(_targetCluster select TARGET_CLUSTER_ID_EFFICIENCY, EFF_ZERO)}
@@ -104,7 +104,7 @@ CLASS("ClusterModel", "ModelBase")
 	
 	METHOD("isDead") {
 		params [P_THISOBJECT];
-		T_PRVAR(efficiency);
+		private _efficiency = T_GETV("efficiency");
 		_efficiency isEqualTo EFF_ZERO 
 		// or {EFF_LTE(_efficiency, EFF_ZERO)}
 	} ENDMETHOD;

@@ -158,7 +158,7 @@ CLASS("IntelDatabase", "Storable");
 				OOP_WARNING_1("Intel with given source was not found in database: %1", _srcItem);
 				_return = false;
 			} else {
-				CALLM2(_thisObject, "updateIntel", _item, _srcItem);
+				T_CALLM2("updateIntel", _item, _srcItem);
 				_return = true;
 			};
 		};

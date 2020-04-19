@@ -15,7 +15,7 @@ CLASS("GoalGroupUnflipVehicles", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 
 	/* virtual */ STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		pr _group = GETV(_AI, "agent");
 		pr _groupType = CALLM0(_group, "getType");
@@ -24,7 +24,7 @@ CLASS("GoalGroupUnflipVehicles", "Goal")
 		pr _ws = GETV(_AI, "worldState");
 		if (	([_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, false] call ws_propertyExistsAndEquals) &&
 				((behaviour (leader _hG)) != "COMBAT") &&
-				(_groupType == GROUP_TYPE_VEH_NON_STATIC)) then {
+				(_groupType == GROUP_TYPE_VEH)) then {
 			GET_STATIC_VAR(_thisClass, "relevance");
 		} else {
 			0

@@ -38,9 +38,9 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(targetVar);
-		T_PRVAR(startDateVar);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _targetVar = T_GETV("targetVar");
+		private _startDateVar = T_GETV("startDateVar");
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
@@ -60,7 +60,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_startDateVar,						// Date to wait until
 				_srcGarrIdVar];						// Garrison to wait (checks it is still alive)
-		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);	
+		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);
 
 		T_GET_AST_VAR(_targetVar) params ["_targetType", "_target"];
 
@@ -115,10 +115,10 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		private _srcEff = GETV(_srcGarr, "efficiency");
-		T_PRVAR(state);
+		private _state = T_GETV("state");
 
 		private _startDate = T_GET_AST_VAR("startDateVar");
 		private _timeToStart = if(_startDate isEqualTo []) then {
@@ -142,14 +142,14 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 /* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
 		T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		private _intel = NULL_OBJECT;
 
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
@@ -157,7 +157,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		{
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionRetreat", []);
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 		
 			switch(_targetType) do {
 				case TARGET_TYPE_LOCATION: {
@@ -177,7 +177,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		};
 
 		// Update progress of the garrison
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		private _intelUpdate = if (_intelNotCreated) then {_intel} else {_intelClone};
 		SETV(_intelUpdate, "garrison", GETV(_srcGarr, "actual"));
@@ -191,7 +191,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 		} else {
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 
 		// If we have reached a certain state, mark action intel as active
@@ -203,7 +203,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("debugDraw") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		private _srcGarrPos = GETV(_srcGarr, "pos");

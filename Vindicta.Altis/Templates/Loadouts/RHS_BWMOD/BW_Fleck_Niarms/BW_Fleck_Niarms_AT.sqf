@@ -18,7 +18,7 @@ this addBackpack "BWA3_Kitbag_Fleck";
 
 this addWeapon "hlc_rifle_G36V";
 this addPrimaryWeaponItem "BWA3_acc_VarioRay_irlaser";
-this addPrimaryWeaponItem "BWA3_optic_CompM2";
+this addPrimaryWeaponItem "rhsusf_acc_compm4";
 this addPrimaryWeaponItem "hlc_30rnd_556x45_EPR_G36";
 this addWeapon "BWA3_PzF3";
 this addSecondaryWeaponItem "BWA3_PzF3_Tandem";

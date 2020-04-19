@@ -62,7 +62,7 @@ CLASS("WorldModel", "Storable")
 			T_SETV("rawDamageGrid", _rawDamageGrid);
 			T_SETV("damageGrid", _damageGrid);
 
-			T_SETV("lastGridUpdate", TIME_NOW);
+			T_SETV("lastGridUpdate", GAME_TIME);
 			T_SETV("gridMutex", MUTEX_NEW());
 		} else {
 			T_SETV("rawThreatGrid", NULL_OBJECT);
@@ -78,11 +78,11 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		{ UNREF(_x); } forEach _garrisons;
-		T_PRVAR(locations);
+		private _locations = T_GETV("locations");
 		{ UNREF(_x); } forEach _locations;
-		T_PRVAR(clusters);
+		private _clusters = T_GETV("clusters");
 		{ UNREF(_x); } forEach _clusters;
 		if(T_CALLM("isReal", [])) then {
 			DELETE(T_GETV("rawThreatGrid"));
@@ -110,30 +110,30 @@ CLASS("WorldModel", "Storable")
 		private _worldCopy = NEW("WorldModel", [_type]);
 
 		// Copy garrisons
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		//OOP_DEBUG_MSG("simCopy %1 garrisons", [count _garrisons]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
 
 		// Copy locations
-		T_PRVAR(locations);
+		private _locations = T_GETV("locations");
 		//OOP_DEBUG_MSG("simCopy %1 locations", [count _locations]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
 
 		// Copy clusters
-		T_PRVAR(clusters);
+		private _clusters = T_GETV("clusters");
 		//OOP_DEBUG_MSG("simCopy %1 clusters", [count _clusters]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _clusters;
 
 		//OOP_DEBUG_MSG("simCopy threatGrid", []);
 		// Can copy the grid ref as we don't write to it, and we don't need the raw ones in the sim
-		T_PRVAR(threatGrid);
+		private _threatGrid = T_GETV("threatGrid");
 		SETV(_worldCopy, "threatGrid", _threatGrid);
-		T_PRVAR(activityGrid);
+		private _activityGrid = T_GETV("activityGrid");
 		SETV(_worldCopy, "activityGrid", _activityGrid);
-		T_PRVAR(damageGrid);
+		private _damageGrid = T_GETV("damageGrid");
 		SETV(_worldCopy, "damageGrid", _damageGrid);
 
-		T_PRVAR(gridMutex);
+		private _gridMutex = T_GETV("gridMutex");
 		SETV(_worldCopy, "gridMutex", _gridMutex);
 
 		_worldCopy
@@ -142,13 +142,13 @@ CLASS("WorldModel", "Storable")
 	METHOD("sync") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
-		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
+		{ CALLM0(_x, "sync"); } forEach T_CALLM0("getAliveGarrisons");
 
 		// sync existing locations
 		{ CALLM(_x, "sync", [_AICommander]); } forEach T_GETV("locations");
 
 		// sync existing clusters
-		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
+		{ CALLM0(_x, "sync"); } forEach T_CALLM0("getAliveClusters");
 
 	} ENDMETHOD;
 
@@ -156,9 +156,9 @@ CLASS("WorldModel", "Storable")
 		params [P_THISOBJECT];
 
 		// Update grids
-		T_PRVAR(rawThreatGrid);
-		T_PRVAR(rawActivityGrid);
-		T_PRVAR(rawDamageGrid);
+		private _rawThreatGrid = T_GETV("rawThreatGrid");
+		private _rawActivityGrid = T_GETV("rawActivityGrid");
+		private _rawDamageGrid = T_GETV("rawDamageGrid");
 
 		// Fade grids over time
 
@@ -175,9 +175,9 @@ CLASS("WorldModel", "Storable")
 		// Decays twice after 180 minutes
 		#define DAMAGE_FADE_PERIOD (180*60)
 
-		T_PRVAR(lastGridUpdate);
-		private _dt = TIME_NOW - _lastGridUpdate;
-		T_SETV("lastGridUpdate", TIME_NOW);
+		private _lastGridUpdate = T_GETV("lastGridUpdate");
+		private _dt = GAME_TIME - _lastGridUpdate;
+		T_SETV("lastGridUpdate", GAME_TIME);
 
 		private _threatFade = 2 ^ (-_dt / THREAT_FADE_PERIOD);
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
@@ -194,9 +194,9 @@ CLASS("WorldModel", "Storable")
 			CALLM(_rawThreatGrid, "maxRect", [_pos ARG _size ARG _threat]);
 		} forEach T_CALLM("getAliveClusters", []);
 
-		T_PRVAR(threatGrid);
-		T_PRVAR(activityGrid);
-		T_PRVAR(damageGrid);
+		private _threatGrid = T_GETV("threatGrid");
+		private _activityGrid = T_GETV("activityGrid");
+		private _damageGrid = T_GETV("damageGrid");
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
@@ -219,8 +219,8 @@ CLASS("WorldModel", "Storable")
 		private _threat = 0;
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
-			T_PRVAR(threatGrid);
-			T_PRVAR(activityGrid);
+			private _threatGrid = T_GETV("threatGrid");
+			private _activityGrid = T_GETV("activityGrid");
 
 			_threat = EFF_SUM(CALLM(_threatGrid, "getValue", [_pos])) + CALLM(_activityGrid, "getValue", [_pos]);
 		};
@@ -230,14 +230,14 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
-		T_PRVAR(rawActivityGrid);
+		private _rawActivityGrid = T_GETV("rawActivityGrid");
 
 		// We just sum up all the fields for now, with some scaling
 		private _value = (_effDamage#T_EFF_soft) + 8*(_effDamage#T_EFF_medium) + 16*(_effDamage#T_EFF_armor) + 32*(_effDamage#T_EFF_air);
 		CALLM(_rawActivityGrid, "addValue", [_pos ARG DAMAGE_SCALE*_value]);
 
 		// Add the damage to the damage grid as well
-		T_PRVAR(rawDamageGrid);
+		private _rawDamageGrid = T_GETV("rawDamageGrid");
 		CALLM(_rawDamageGrid, "addValue", [_pos ARG DAMAGE_SCALE*_value]);
 	} ENDMETHOD;
 
@@ -246,7 +246,7 @@ CLASS("WorldModel", "Storable")
 
 		private _damage = 0;
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
-			T_PRVAR(damageGrid);
+			private _damageGrid = T_GETV("damageGrid");
 			//_damage = CALLM(_damageGrid, "getMaxValueCircle", [_pos ARG _radius]); // Takes too long
 			_damage = CALLM2(_damageGrid, "getValueSquareSum", _pos, _radius);
 		};
@@ -262,7 +262,7 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("addActivity") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
-		T_PRVAR(rawActivityGrid);
+		private _rawActivityGrid = T_GETV("rawActivityGrid");
 		CALLM(_rawActivityGrid, "addValue", [_pos ARG _activity]);
 	} ENDMETHOD;
 
@@ -271,7 +271,7 @@ CLASS("WorldModel", "Storable")
 
 		private _activity = 0;
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
-			T_PRVAR(activityGrid);
+			private _activityGrid = T_GETV("activityGrid");
 			//_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]); // Takes too long
 			_activity = CALLM2(_activityGrid, "getValueSquareSum", _pos, _radius);
 		};
@@ -283,7 +283,7 @@ CLASS("WorldModel", "Storable")
 
 	// 	private _activity = 0;
 	// 	MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
-	// 		T_PRVAR(activityGrid);
+	// 		private _activityGrid = T_GETV("activityGrid");
 	// 		_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]);
 	// 	};
 	// 	_activity
@@ -299,7 +299,7 @@ CLASS("WorldModel", "Storable")
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		ASSERT_MSG(GETV(_garrison, "id") == MODEL_HANDLE_INVALID, "GarrisonModel is already attached to a WorldModel");
 
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 
 		//#ifdef OOP_ASSERT
 		//private _existingId = GETV(_garrison, "id");
@@ -322,9 +322,9 @@ CLASS("WorldModel", "Storable")
 		// We don't really remove it at the moment, just mark it dead.
 		// TODO: removing garrisons properly? That means refactor of whole ID system tho.. Maybe faster though if we can use hash table lookup.
 		OOP_DEBUG_MSG("Removing GarrisonModel %1 from WorldModel", [_garrison]);
-		CALLM(_garrison, "killed", []);
+		CALLM0(_garrison, "killed");
 
-		//T_PRVAR(garrisons);
+		//private _garrisons = T_GETV("garrisons");
 
 		// REF(_garrison);
 		// private _idx = _garrisons pushBack _garrison;
@@ -334,7 +334,7 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("getGarrison") {
 		params [P_THISOBJECT, P_NUMBER("_id")];
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		_garrisons select _id
 	} ENDMETHOD;
 
@@ -344,7 +344,7 @@ CLASS("WorldModel", "Storable")
 		ASSERT_OBJECT_CLASS(_actual, "Garrison");
 		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Garrison by Actual in a Sim Model");
 
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
 		if(_idx == NOT_FOUND) exitWith { NULL_OBJECT };
 		_garrisons select _idx
@@ -356,7 +356,7 @@ CLASS("WorldModel", "Storable")
 		ASSERT_OBJECT_CLASS(_actual, "Garrison");
 		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Garrison by Actual in a Sim Model");
 
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
 		if(_idx == NOT_FOUND) then { 
 			private _newGarrison = NEW("GarrisonModel", [_thisObject ARG _actual]);
@@ -381,7 +381,7 @@ CLASS("WorldModel", "Storable")
 
 		private _garrisons = T_GETV("garrisons")
 			select { 
-				!CALLM(_x, "isDead", []) 
+				!CALLM0(_x, "isDead") 
 			};
 
 		if((count _includeFactions == 0) and (count _excludeFactions == 0)) then {
@@ -423,7 +423,7 @@ CLASS("WorldModel", "Storable")
 
 		ASSERT_MSG(GETV(_location, "id") == MODEL_HANDLE_INVALID, "LocationModel is already attached to a WorldModel");
 
-		T_PRVAR(locations);
+		private _locations = T_GETV("locations");
 
 		REF(_location);
 		private _idx = _locations pushBack _location;
@@ -434,14 +434,14 @@ CLASS("WorldModel", "Storable")
 	METHOD("getLocation") {
 		params [P_THISOBJECT, P_NUMBER("_id")];
 
-		T_PRVAR(locations);
+		private _locations = T_GETV("locations");
 		_locations select _id
 	} ENDMETHOD;
 
 	METHOD("getLocations") {
 		params [P_THISOBJECT, P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
-		T_PRVAR(locations);
+		private _locations = T_GETV("locations");
 		if((count _includeTypes == 0) and (count _excludeTypes == 0)) then {
 			+_locations
 		} else {
@@ -459,7 +459,7 @@ CLASS("WorldModel", "Storable")
 
 		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Location by Actual in a Sim Model");
 		
-		T_PRVAR(locations);
+		private _locations = T_GETV("locations");
 		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
 		if(_idx == NOT_FOUND) exitWith { NULL_OBJECT };
 		_locations select _idx
@@ -471,7 +471,7 @@ CLASS("WorldModel", "Storable")
 
 		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Location by Actual in a Sim Model");
 
-		T_PRVAR(locations);
+		private _locations = T_GETV("locations");
 		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
 		if(_idx == NOT_FOUND) then { 
 			private _newLocation = NEW("LocationModel", [_thisObject ARG _actual]);
@@ -484,7 +484,7 @@ CLASS("WorldModel", "Storable")
 	METHOD("getNearestLocations") {
 		params [P_THISOBJECT, P_POSITION("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
-		//T_PRVAR(locations);
+		//private _locations = T_GETV("locations");
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
 		// TODO: is select, sort, while faster here?
 		private _nearestLocations = 
@@ -509,7 +509,7 @@ CLASS("WorldModel", "Storable")
 		ASSERT_MSG(GETV(_cluster, "id") == MODEL_HANDLE_INVALID, "ClusterModel is already attached to a WorldModel");
 		
 
-		T_PRVAR(clusters);
+		private _clusters = T_GETV("clusters");
 
 		REF(_cluster);
 		private _idx = _clusters pushBack _cluster;
@@ -522,7 +522,7 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("getCluster") {
 		params [P_THISOBJECT, P_NUMBER("_id")];
-		T_PRVAR(clusters);
+		private _clusters = T_GETV("clusters");
 		_clusters select _id
 	} ENDMETHOD;
 
@@ -532,7 +532,7 @@ CLASS("WorldModel", "Storable")
 
 		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Cluster by Actual in a Sim Model");
 
-		T_PRVAR(clusters);
+		private _clusters = T_GETV("clusters");
 		private _idx = _clusters findIf { GETV(_x, "actual") isEqualTo _actual };
 		if(_idx == NOT_FOUND) exitWith { NULL_OBJECT };
 		_clusters select _idx
@@ -544,7 +544,7 @@ CLASS("WorldModel", "Storable")
 
 		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Cluster by Actual in a Sim Model");
 
-		T_PRVAR(clusters);
+		private _clusters = T_GETV("clusters");
 		private _idx = _clusters findIf { GETV(_x, "actual") isEqualTo _actual };
 		if(_idx == NOT_FOUND) then { 
 			private _newCluster = NEW("ClusterModel", [_thisObject ARG _actual]);
@@ -556,14 +556,14 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("getAliveClusters") {
 		params [P_THISOBJECT];
-		T_PRVAR(clusters);
-		_clusters select { !CALLM(_x, "isDead", []) }
+		private _clusters = T_GETV("clusters");
+		_clusters select { !CALLM0(_x, "isDead") }
 	} ENDMETHOD;
 
 	METHOD("getNearestClusters") {
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist")];
 
-		T_PRVAR(clusters);
+		private _clusters = T_GETV("clusters");
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
 		private _nearestClusters = [];
@@ -603,7 +603,7 @@ CLASS("WorldModel", "Storable")
 		// This call will do our asserting for us
 		private _cluster = T_CALLM("findClusterByActual", [_actual]);
 		ASSERT_OBJECT(_cluster);
-		CALLM(_cluster, "killed", []);
+		CALLM0(_cluster, "killed");
 		OOP_DEBUG_MSG("Cluster %1 deleted from world model", [LABEL(_cluster)]);
 	} ENDMETHOD;
 
@@ -613,7 +613,7 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("resetScoringCache") {
 		params [P_THISOBJECT];
-		T_PRVAR(garrisons);
+		private _garrisons = T_GETV("garrisons");
 		//private _cache = [];
 		//_cache resize (count _garrisons);
 		T_SETV("cachedGlobalEff", nil);
@@ -629,7 +629,7 @@ CLASS("WorldModel", "Storable")
 
 	METHOD("getGlobalEff") {
 		params [P_THISOBJECT];
-		T_PRVAR(cachedGlobalEff);
+		private _cachedGlobalEff = T_GETV("cachedGlobalEff");
 		if(isNil "_cachedGlobalEff") exitWith {
 			private _cachedGlobalEff = EFF_ZERO;
 			{
@@ -643,7 +643,7 @@ CLASS("WorldModel", "Storable")
 	
 	METHOD("getGlobalEffDesired") {
 		params [P_THISOBJECT];
-		T_PRVAR(cachedGlobalEffDesired);
+		private _cachedGlobalEffDesired = T_GETV("cachedGlobalEffDesired");
 		if(isNil "_cachedGlobalEffDesired") exitWith {
 			private _cachedGlobalEffDesired = EFF_ZERO;
 			{
@@ -683,7 +683,7 @@ CLASS("WorldModel", "Storable")
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
-		T_PRVAR(threatGrid);
+		private _threatGrid = T_GETV("threatGrid");
 		if(IS_NULL_OBJECT(_threatGrid)) exitWith {
 			EFF_GARRISON_MIN_EFF
 		};
@@ -701,7 +701,7 @@ CLASS("WorldModel", "Storable")
 		// TODO: Cache it
 		// EFF_MUL_SCALAR(EFF_MIN_EFF, 2)
 
-		//T_PRVAR(threatGrid);
+		//private _threatGrid = T_GETV("threatGrid");
 		
 		//private _threat = CALLM(_threatGrid, "getValue", [_pos]);
 		
@@ -734,7 +734,7 @@ CLASS("WorldModel", "Storable")
 		
 		// // // Threat map converted from strength into a composition of the same strength
 		// // private _threatGridForce = if(_side == side_opf) then {
-		// // 	T_PRVAR(threatGridOpf);
+		// // 	private _threatGridOpf = T_GETV("threatGridOpf");
 		// // 	private _strength = [_threatGridOpf, _pos#0, _pos#1] call ws_fnc_getValue;
 		// // 	[
 		// // 		_strength * 0.7 / UNIT_STRENGTH,
@@ -782,7 +782,7 @@ CLASS("WorldModel", "Storable")
 	METHOD("getReinforceRequiredScore") {
 		params [P_THISOBJECT, P_STRING("_garr")];
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
-		//T_PRVAR(reinforceRequiredScoreCache);
+		//private _reinforceRequiredScoreCache = T_GETV("reinforceRequiredScoreCache");
 		
 		//private _garrId = GETV(_garr, "id");
 		//private _cacheVal = _reinforceRequiredScoreCache#_garrId;
@@ -874,7 +874,7 @@ CLASS("WorldModel", "Storable")
 
 		// Set up other variables
 		T_SETV("gridMutex", MUTEX_NEW());
-		T_SETV("lastGridUpdate", TIME_NOW);
+		T_SETV("lastGridUpdate", GAME_TIME);
 
 		true
 	} ENDMETHOD;
@@ -974,11 +974,11 @@ ENDCLASS;
 	private _garrison2 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	
-	["Initial", count CALLM(_world, "getAliveGarrisons", []) == 2] call test_Assert;
-	CALLM(_garrison1, "killed", []);
-	["Updates correctly 1", count CALLM(_world, "getAliveGarrisons", []) == 1] call test_Assert;
-	CALLM(_garrison2, "killed", []);
-	["Updates correctly 2", count CALLM(_world, "getAliveGarrisons", []) == 0] call test_Assert;
+	["Initial", count CALLM0(_world, "getAliveGarrisons") == 2] call test_Assert;
+	CALLM0(_garrison1, "killed");
+	["Updates correctly 1", count CALLM0(_world, "getAliveGarrisons") == 1] call test_Assert;
+	CALLM0(_garrison2, "killed");
+	["Updates correctly 2", count CALLM0(_world, "getAliveGarrisons") == 0] call test_Assert;
 }] call test_AddTest;
 
 ["WorldModel.getNearestGarrisons", {
@@ -993,7 +993,7 @@ ENDCLASS;
 	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center ARG 1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center ARG 501]) == 1] call test_Assert;
 	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center ARG 1001]) == 2] call test_Assert;
-	CALLM(_garrison2, "killed", []);
+	CALLM0(_garrison2, "killed");
 	["Excluding dead", count CALLM(_world, "getNearestGarrisons", [_center ARG 1001]) == 1] call test_Assert;
 }] call test_AddTest;
 

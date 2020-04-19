@@ -59,8 +59,8 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	*/
 	METHOD("isActual") {
 		params [P_THISOBJECT];
-		T_PRVAR(world);
-		CALLM(_world, "isReal", []);
+		private _world = T_GETV("world");
+		CALLM0(_world, "isReal");
 	} ENDMETHOD;
 
 	/*
@@ -100,7 +100,7 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	METHOD("update") {
 		params [P_THISOBJECT];
 		T_CALLM("sync", []);
-		// T_PRVAR(world);
+		// private _world = T_GETV("world");
 		// // If we have an assigned owner state then ???
 		// if(_world isEqualType "") then {
 
@@ -108,7 +108,7 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 
 		// TODO: Probably don't even have order in here so we can remove it.
 		// // Update order? Yes, action shouldn't do it, orders are owned by garrison
-		// T_PRVAR(order);
+		// private _order = T_GETV("order");
 
 		// if(_order isEqualType "") then {
 		// 	CALLM(_order, "update", [_thisObject]);

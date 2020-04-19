@@ -6,7 +6,7 @@ _names = [];
 	_tag = configName _x;
 	_functions = "true" configClasses _x;
 	{
-		_names pushBack (format["JN_fnc_%1",configName _x]);	
+		_names pushBack (format["JN_fnc_%1",configName _x]);
 	}forEach _functions;
 }forEach _tags ;
 
@@ -46,7 +46,7 @@ _names = [];
 	_tag = configName _x;
 	_functions = "true" configClasses _x;
 	{
-		_names pushBack (format["A3A_fnc_%1",configName _x]);	
+		_names pushBack (format["A3A_fnc_%1",configName _x]);
 	}forEach _functions;
 }forEach _tags ;
 

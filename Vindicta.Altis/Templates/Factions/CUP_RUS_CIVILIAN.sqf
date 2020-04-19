@@ -2,7 +2,7 @@
 Civilian template for ARMA III
 */
 _array = [];
-_array resize T_SIZE; 
+_array resize T_SIZE;
 
 _array set [T_NAME, "tCUP_RUS_CIVILIAN"];
 _array set [T_DESCRIPTION, "Russian civilians from CUP."];
@@ -160,6 +160,11 @@ _veh = [];
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, _civVehicles];
 _array set [T_VEH, _veh];
+
+// Inventory
+_inv = [T_INV] call t_fnc_newCategory;
+_inv set [T_INV_items, +t_miscItems_civ_modern ];
+_array set [T_INV, _inv];
 
 // Return final array
 _array

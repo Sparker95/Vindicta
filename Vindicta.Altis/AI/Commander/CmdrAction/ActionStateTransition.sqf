@@ -297,7 +297,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 fn_Test_Transitions = {
-	params ["_transitions", "_expectedStates", "_world"];	
+	params ["_transitions", "_expectedStates", "_world"];
 	private _state = CMDR_ACTION_STATE_START;
 	{
 		_x params ["_desc", "_expected"];

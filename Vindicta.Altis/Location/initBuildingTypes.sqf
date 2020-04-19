@@ -87,13 +87,21 @@ location_b_capacity =
 	],
 	// Tents
 	[
-		["Land_MedicalTent_01_wdl_generic_inner_F",
-		"Land_MedicalTent_01_aaf_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_brownhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
-		8
+		[
+			"Land_MedicalTent_01_white_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_closed_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_outer_F",
+			"Land_MedicalTent_01_NATO_generic_inner_F",
+			"Land_DeconTent_01_NATO_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_outer_F",
+			"Land_MedicalTent_01_wdl_generic_inner_F",
+			"Land_DeconTent_01_NATO_tropic_F",
+			"Land_MedicalTent_01_white_generic_outer_F",
+			"Land_MedicalTent_01_white_generic_inner_F",
+			"Land_DeconTent_01_white_F"
+		],
+		16
 	],
 	// WW2 & CUP
 	[
@@ -359,17 +367,17 @@ _textures = _objects select {_x isKindOf "UserTexture1m_F"};
 _arrayExport = []; // dist, posDir, zrel, dir
 
 {
-_b = _house; 
-_o = _x; 
+_b = _house;
+_o = _x;
  
-_bPos = getPosATL _b; 
-_oPos = getPosATL _o; 
+_bPos = getPosATL _b;
+_oPos = getPosATL _o;
  
-_dirRel = (_bPos getDir _oPos) - (direction _b); 
-_zRel = _oPos#2 - _bPos#2; 
-_distRel = _bPos distance2D _oPos; 
+_dirRel = (_bPos getDir _oPos) - (direction _b);
+_zRel = _oPos#2 - _bPos#2;
+_distRel = _bPos distance2D _oPos;
  
-_objDir = (direction _o) - (direction _b); 
+_objDir = (direction _o) - (direction _b);
  
 _arrayExport pushBack [_distRel, _dirRel, _zRel, round _objDir];
 } forEach _textures;
@@ -382,20 +390,20 @@ _arrayExport
 /*
 // Code to export objects from editor in [_pos, [_vectorDir, _vectorUp]]
 
-_objects = get3DENSelected "object"; 
-_house = _objects select {_x isKindOf "House"} select 0; 
-_textures = _objects select {_x isKindOf "UserTexture1m_F"}; 
+_objects = get3DENSelected "object";
+_house = _objects select {_x isKindOf "House"} select 0;
+_textures = _objects select {_x isKindOf "UserTexture1m_F"};
  
 _arrayExport = []; // dist, posDir, zrel, dir 
  
 { 
-_b = _house;  
-_o = _x;  
+_b = _house;
+_o = _x;
 _posModel = _b worldToModel (position _o);
 _vdir = vectorDir _o;
 _vup = vectorUp _o;
-_arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldToModel _vup]]; 
-} forEach _textures; 
+_arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldToModel _vup]];
+} forEach _textures;
  
 _arrayExport
 */

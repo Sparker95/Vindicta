@@ -7,7 +7,7 @@
 
 // What happens to a vehicle when a non-engineer AI repairs it
 AI_misc_fnc_repairWithoutEngineer = {
-	params [["_veh", objNull, [objNull]]];
+	params [P_OBJECT("_veh")];
 	
 	(getAllHitPointsDamage _veh) params ["_names", "_selections", "_damages"];
 	pr _repairNames = ["wheel", "engine", "track", "fuel"];
@@ -29,7 +29,7 @@ AI_misc_fnc_repairWithoutEngineer = {
 
 // Returns true if any wheel or track is damaged on vehicle
 AI_misc_fnc_isAnyWheelDamaged = {
-	params [["_veh", objNull, [objNull]]];
+	params [P_OBJECT("_veh")];
 	
 	if (isNull _veh) exitWith {
 		OOP_ERROR_0("isAnyWheelDamaged: _veh is null!");
