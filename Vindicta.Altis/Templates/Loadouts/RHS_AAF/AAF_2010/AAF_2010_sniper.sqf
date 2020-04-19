@@ -22,9 +22,6 @@ this addPrimaryWeaponItem "rhsgref_10Rnd_792x57_m76";
 this addWeapon "rhs_weap_pb_6p9";
 this addHandgunItem "rhs_acc_6p9_suppressor";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
-
-this forceAddUniform "FGN_AAF_M93_Lizard";
-this addVest "FGN_AAF_M99Vest_Lizard_Radio";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
