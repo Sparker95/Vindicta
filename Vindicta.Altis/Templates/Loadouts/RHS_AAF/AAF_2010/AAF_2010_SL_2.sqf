@@ -16,10 +16,9 @@ _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Rifleman_Radio","FGN_AAF_M99
 this addVest _RandomVest;
 this addBackpack "FGN_AAF_Bergen_SL_Olive";
 
-this addWeapon "rhs_weap_akm_zenitco01_b33";
-this addPrimaryWeaponItem "rhs_acc_dtk1l";
-this addPrimaryWeaponItem "rhs_acc_2dpZenit_ris";
-this addPrimaryWeaponItem "rhs_acc_ekp8_18";
+this addWeapon "rhs_weap_m70b3n";
+_RandomSight = selectRandom ["rhs_acc_pkas", "rhs_acc_1p78_3d"];
+this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
 this addWeapon "rhs_weap_tt33";
 this addHandgunItem "rhs_mag_762x25_8";
@@ -32,6 +31,7 @@ for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mki_mag";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm_tracer";};
+this addItemToBackpack "rhs_acc_1pn93_1";
 this addItemToBackpack "rhs_mag_nspd";
 this addItemToBackpack "rhs_mag_nspn_green";
 this addItemToBackpack "rhs_mag_nspn_red";

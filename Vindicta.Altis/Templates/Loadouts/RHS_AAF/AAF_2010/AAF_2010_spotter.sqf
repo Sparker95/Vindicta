@@ -16,9 +16,11 @@ _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Rifleman_Radio","FGN_AAF_M99
 this addVest _RandomVest;
 this addBackpack "rhs_sidor";
 
-this addWeapon "rhs_weap_akm";
+this addWeapon "rhs_weap_m70b3n";
 this addPrimaryWeaponItem "rhs_acc_pbs1";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
+_RandomSight = selectRandom ["rhs_acc_pkas", ""];
+this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm_U";
 this addWeapon "rhs_weap_pb_6p9";
 this addHandgunItem "rhs_acc_6p9_suppressor";
