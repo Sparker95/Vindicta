@@ -48,7 +48,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		_msg set [MESSAGE_ID_SOURCE, ""];
 		_msg set [MESSAGE_ID_DATA, []];
 		_msg set [MESSAGE_ID_TYPE, "process"];
-		pr _processInterval = 1;
+		pr _processInterval = 2;
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
