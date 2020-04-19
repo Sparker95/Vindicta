@@ -32,14 +32,14 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	VARIABLE("soundSources");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		T_SETV("stimulation", 0);
-		T_SETV("timePrevUpdate", time);
+		T_SETV("timePrevUpdate", GAME_TIME);
 		T_SETV("soundSources", []);
 	} ENDMETHOD;
 
 	METHOD("update") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
@@ -50,7 +50,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		pr _i = 0;
 		while {_i < count _soundSources} do {
 			pr _sourceArray = _soundSources#_i;
-			if (time - (_sourceArray#1) > SOUND_SOURCE_MAX_AGE) then {
+			if (GAME_TIME - (_sourceArray#1) > SOUND_SOURCE_MAX_AGE) then {
 				_soundSources deleteAt _i;
 			} else {
 				_i = _i + 1;
@@ -58,7 +58,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		};
 
 		// Decrease stimulation level gradually
-		pr _timePassed = time - T_GETV("timePrevUpdate");
+		pr _timePassed = GAME_TIME - T_GETV("timePrevUpdate");
 		_stimulation = T_GETV("stimulation") * (exp (-_timePassed/STIMULATION_DECAY_CONSTANT));
 		T_SETV("stimulation", _stimulation);
 
@@ -117,7 +117,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 			CALLM1(_sensorTargets, "handleStimulus", _stim);
 		};
 
-		T_SETV("timePrevUpdate", time);
+		T_SETV("timePrevUpdate", GAME_TIME);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -126,7 +126,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("HANDLE STIMULUS: %1", _stimulus);
 
@@ -148,10 +148,10 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		pr _index = _sources findIf {_sourceObjHandle isEqualTo _x#0};
 		if (_index != -1) then {
 			// Reset the time of this source
-			(_sources#_index) set [1, time];
+			(_sources#_index) set [1, GAME_TIME];
 		} else {
 			// Add a new source
-			_sources pushBack [STIMULUS_GET_SOURCE(_stimulus), time];
+			_sources pushBack [STIMULUS_GET_SOURCE(_stimulus), GAME_TIME];
 		};
 	} ENDMETHOD;
 	
@@ -170,7 +170,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Bail if not spawned
 		// todo later despawned garrisons can also receive this stimulus, so that when they are spawned, they are already alert for instance
@@ -182,11 +182,8 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		// Return true only if garrison is NOT in combat state
 		// If in combat it makes no sense for us to hear gunshots any more
 		// If not in combat, and sensor gets overstimulated, garrison will switch to combat mode
-		pr _garAI = T_GETV("AI");
-		pr _ws = GETV(_garAI, "worldState");
-		pr _inCombat = [_ws, WSP_GAR_AWARE_OF_ENEMY] call ws_getPropertyValue;
-		
-		!_inCombat
+		pr _AI = T_GETV("AI");
+		!CALLM0(_AI, "isAlerted")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -196,7 +193,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		//params [ ["_thisObject", "", [""]]];
+		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
 	} ENDMETHOD;
 

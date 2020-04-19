@@ -32,9 +32,9 @@ CLASS("AnimObject", "")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_object", objNull, [objNull]]];
+		params [P_THISOBJECT, P_OBJECT("_object")];
 		if (isNil "gMessageLoopGoal") exitWith { diag_log "[AnimObject] Error: global goal message loop doesn't exist!"; };
-		SETV(_thisObject, "object", _object);
+		T_SETV("object", _object);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -43,9 +43,9 @@ CLASS("AnimObject", "")
 	// | Returns true if there are any free points left                     |
 	// ----------------------------------------------------------------------
 	METHOD("isFree") {
-		params [["_thisObject", "", [""]]];
-		private _pointCount = GETV(_thisObject, "pointCount");
-		private _units = GETV(_thisObject, "units");
+		params [P_THISOBJECT];
+		private _pointCount = T_GETV("pointCount");
+		private _units = T_GETV("units");
 		private _pointFreeCount = {_x == ""} count _units;
 		private _return = _pointFreeCount > 0;
 		_return
@@ -61,9 +61,9 @@ CLASS("AnimObject", "")
 	// |   _movePosOffset - position in MODEL coordinates
 	// ----------------------------------------------------------------------
 	METHOD("getFreePoint") {
-		params [ ["_thisObject", "", [""]] ];
-		private _units = GETV(_thisObject, "units");
-		private _pointCountM1 = GETV(_thisObject, "pointCount") - 1;
+		params [P_THISOBJECT];
+		private _units = T_GETV("units");
+		private _pointCountM1 = T_GETV("pointCount") - 1;
 		private _freePointIDs = [];
 		for "_i" from 0 to _pointCountM1 do {
 			// Check if this position is free
@@ -77,8 +77,8 @@ CLASS("AnimObject", "")
 		private _pointID = selectRandom _freePointIDs; //selectRandom _freePointIDs;
 
 		// Return point coordinates
-		private _object = GETV(_thisObject, "object");
-		private _movePosOffsetAndRadius = CALLM(_thisObject, "getPointMoveOffset", [_pointID]);
+		private _object = T_GETV("object");
+		private _movePosOffsetAndRadius = T_CALLM("getPointMoveOffset", [_pointID]);
 		//private _posWorld = _object modelToWorld _movePosOffset;
 		private _return = [_pointID] + _movePosOffsetAndRadius;
 
@@ -91,8 +91,8 @@ CLASS("AnimObject", "")
 	// | Returns true if the point with given ID is free                    |
 	// ----------------------------------------------------------------------
 	METHOD("isPointFree") {
-		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
-		private _units = GETV(_thisObject, "units");
+		params [P_THISOBJECT, P_NUMBER("_pointID")];
+		private _units = T_GETV("units");
 		private _return = ( (_units select _pointID) == "");
 		_return
 	} ENDMETHOD;
@@ -105,13 +105,13 @@ CLASS("AnimObject", "")
 	// | _offset, _dir - offset position and direction in MODEL coordinates
 	// ----------------------------------------------------------------------
 	METHOD("getPointData") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]], ["_pointID", 0, [0]]];
-		private _units = GETV(_thisObject, "units");
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_NUMBER("_pointID")];
+		private _units = T_GETV("units");
 
 		// Mark the point occupied by this unit
 		if (_units select _pointID == "") then { // Check if it's already occupied by someone
 			_units set [_pointID, _unit];
-			private _return = CALLM(_thisObject, "getPointDataInternal", [_pointID]);
+			private _return = T_CALLM("getPointDataInternal", [_pointID]);
 			_return
 		} else {
 			[]
@@ -124,8 +124,8 @@ CLASS("AnimObject", "")
 	// | Notifies the AnimObject that the position is now not occupied any more
 	// ----------------------------------------------------------------------
 	METHOD("pointIsFree") {
-		params [["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
-		private _units = GETV(_thisObject, "units");
+		params [P_THISOBJECT, P_NUMBER("_pointID") ];
+		private _units = T_GETV("units");
 		_units set [_pointID, ""];
 	} ENDMETHOD;
 
@@ -133,8 +133,8 @@ CLASS("AnimObject", "")
 	// |                    G E T   O B J E C T
 	// ----------------------------------------------------------------------------
 	METHOD("getObject") {
-		params [["_thisObject", "", [""]] ];
-		GETV(_thisObject, "object")
+		params [P_THISOBJECT ];
+		T_GETV("object")
 	} ENDMETHOD;
 
 
@@ -154,8 +154,8 @@ CLASS("AnimObject", "")
 	// ----------------------------------------------------------------------
 
 	METHOD("getPointMoveOffset") {
-		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
-		private _points = GETV(_thisObject, "points");
+		params [P_THISOBJECT, P_NUMBER("_pointID") ];
+		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
 		[_pointOffset, 1.8]
 	} ENDMETHOD;
@@ -168,10 +168,10 @@ CLASS("AnimObject", "")
 	// | Return value: [_pos, _dir, _animation, _animationOut, _walkOutDir, _walkOutDistance]
 	// ----------------------------------------------------------------------
 	METHOD("getPointDataInternal") {
-		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
-		private _animations = GETV(_thisObject, "animations");
-		private _animationsOut = GETV(_thisObject, "animationsOut");
-		private _points = GETV(_thisObject, "points");
+		params [P_THISOBJECT, P_NUMBER("_pointID")];
+		private _animations = T_GETV("animations");
+		private _animationsOut = T_GETV("animationsOut");
+		private _points = T_GETV("points");
 		private _id = floor (random (count _animations));
 		[_points select _pointID, 0, _animations select _id, "", 0, 0]; // "" animation will cause the unit erase all animations by default
 	} ENDMETHOD;

@@ -30,7 +30,7 @@ private _crossRoad_isHighWay = [_crossRoad] call misc_fnc_isHighWay;
 		if(_countConnected > 2 || _currRoad in _exceptions || _countConnected isEqualTo 1) exitWith {  
 			_currRoad_isHighWay = [_currRoad] call misc_fnc_isHighWay;
 			if(_currRoad_isHighWay && _crossRoad_isHighWay) then {
-				_segmentValue = (_segmentValue / 3); 
+				_segmentValue = (_segmentValue / 3);
 			};
 			_linkedCrossRoads pushBack [_currRoad,_segmentValue];
 		};

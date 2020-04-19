@@ -15,7 +15,7 @@
 // Macro to boost suspicion on each sentence
 #define __BOOST_SUSP CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.2 + (random 0.1))
 
-params [["_civ",objNull,[objNull]], ["_mode", "", [""]]];
+params [["_civ",objNull,[objNull]], P_STRING("_mode")];
 
 if(isnull _civ)exitWith{};
 

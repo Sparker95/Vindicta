@@ -16,7 +16,7 @@ Author: Sparker 2.11.2019
 
 #define pr private
 
-params [ ["_thisClass", "", [""]], ["_pos", [], [objNull, []]]];
+params [P_THISCLASS, ["_pos", [], [objNull, []]]];
 
 pr _all = GETSV("Location", "all");
 

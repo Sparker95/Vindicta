@@ -295,7 +295,7 @@ g_UM_suspWeapons = [
     "Laserdesignator",
     "Laserdesignator_02",
     "Laserdesignator_03"
-]; 
+];
 publicVariable "g_UM_suspWeapons";
 
 /* 

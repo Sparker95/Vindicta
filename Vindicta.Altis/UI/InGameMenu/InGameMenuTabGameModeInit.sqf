@@ -186,7 +186,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 						// warning red!
 						_staticDescription lnbSetColor [[_rowIndex, 0], MUIC_COLOR_BTN_RED];
-						_staticDescription lnbSetColor [[_rowIndex, 1], MUIC_COLOR_BTN_RED];		
+						_staticDescription lnbSetColor [[_rowIndex, 1], MUIC_COLOR_BTN_RED];
 					} forEach (_t#T_MISSING_ADDONS);
 				} else {
 					pr _strError = (localize "STR_INIT_ERROR1");

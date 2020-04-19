@@ -13,23 +13,18 @@ CLASS("ActionUnitNothing", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
-		
 		T_SETV("state", ACTION_STATE_COMPLETED);
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 
 		T_SETV("state", _state);
 		_state
@@ -38,9 +33,9 @@ CLASS("ActionUnitNothing", "ActionUnit")
 	// logic to run when the goal is about to be terminated
 	/*
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-	} ENDMETHOD; 
+	} ENDMETHOD;
 	*/
 
 ENDCLASS;

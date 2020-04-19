@@ -8,24 +8,24 @@ params [P_THISOBJECT];
 ASSERT_THREAD(_thisObject);
 
 //get list of units that can spawn in civilian
-pr _units = CALL_METHOD(gLUAP, "getUnitArray", [CIVILIAN]);
+pr _units = CALLM(gLUAP, "getUnitArray", [CIVILIAN]);
 pr _thisPos = T_CALLM0("getPos");
 pr _dst = _units apply {_x distance _thisPos};
 pr _radius = T_GETV("boundingRadius");
 pr _speedMax = 60;
 pr _dstMin = if (count _dst > 0) then {(selectMin _dst) - _radius} else {100000};
-pr _dstSpawn = 300; // Temporary, distance from nearest player to city border when the city spawns
+pr _dstSpawn = vin_spawnDist_civilian; // Temporary, distance from nearest player to city border when the city spawns
 pr _timer = T_GETV("timer");
 
 // Update build progress every 15 mins or so
 private _lastBuildProgressTime = T_GETV("lastBuildProgressTime");
-private _dt = TIME_NOW - _lastBuildProgressTime;
+private _dt = GAME_TIME - _lastBuildProgressTime;
 #ifdef DEBUG_BUILDING
-T_SETV("lastBuildProgressTime", TIME_NOW);
+T_SETV("lastBuildProgressTime", GAME_TIME);
 T_CALLM1("updateBuildProgress", 15 * 60);
 #else
-if(TIME_NOW - _lastBuildProgressTime > 15 * 60) then {
-	T_SETV("lastBuildProgressTime", TIME_NOW);
+if(GAME_TIME - _lastBuildProgressTime > 15 * 60) then {
+	T_SETV("lastBuildProgressTime", GAME_TIME);
 	T_CALLM1("updateBuildProgress", _dt);
 };
 #endif
@@ -36,7 +36,7 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin < _dstSpawn) then {
 			OOP_INFO_0("Spawning...");
 
-			CALLM0(_thisObject, "spawn");
+			T_CALLM0("spawn");
 
 			// Set timer interval
 			CALLM1(_timer, "setInterval", 7);
@@ -59,7 +59,7 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin > (_dstSpawn + 100)) then {
 			OOP_INFO_0("Despawning...");
 			
-			CALLM0(_thisObject, "despawn");
+			T_CALLM0("despawn");
 
 			T_SETV("spawned", false);
 			T_SETV("hasPlayers", false);
@@ -74,7 +74,7 @@ switch (T_GETV("spawned")) do {
 			} else {
 				T_SETV("hasPlayers", false);
 				T_GETV("hasPlayerSides") resize 0;
-			};			
+			};
 		};
 	}; // case 1
 }; // switch spawn state

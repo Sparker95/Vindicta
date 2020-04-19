@@ -6,7 +6,7 @@ if(isnull _vehicle)exitWith{};
 
 pr _cfg = (configfile >> "CfgVehicles" >> typeof _vehicle);
 
-pr _displayName = getText(_cfg >>"displayname"); 
+pr _displayName = getText(_cfg >>"displayname");
 
 diag_log _displayName;
 

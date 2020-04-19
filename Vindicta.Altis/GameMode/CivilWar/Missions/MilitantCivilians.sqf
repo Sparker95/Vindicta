@@ -36,47 +36,64 @@ pr0_fnc_CivilianJoinPlayer = {
 
 			sleep 2;
 
-			[_target, selectRandom [
-				"I will follow you! Onward!",
-				"Lead the way!",
-				"Together we will be stronger!",
-				"Okay",
-				"What are we waiting for?"
-				], _caller] call Dialog_fnc_hud_createSentence;
+			if(alive _target) then {
+				[_target, selectRandom [
+					"I will follow you! Onward!",
+					"Lead the way!",
+					"Together we will be stronger!",
+					"Okay",
+					"What are we waiting for?"
+					], _caller] call Dialog_fnc_hud_createSentence;
 
-			// Join on server
-			[[_target, _caller, clientOwner], {
-				params ["_target", "_caller", "_clientOwner"];
+				// Join on server
+				[[_target, _caller, clientOwner], {
+					params ["_target", "_caller", "_clientOwner"];
 
-				if (random 1 > 0.5) then {
-					// Do the unit actions on the server
-					_target lookAt _caller;
-					_target action ["Salute", _target];
-					sleep 2;
-				};
+					if (random 1 > 0.5) then {
+						// Do the unit actions on the server
+						_target lookAt _caller;
+						_target action ["Salute", _target];
+						sleep 2;
+					};
 
-				private _otherUnits = units group _caller - [_caller];
-				[_target] join group _caller;
+					private _otherUnits = units group _caller - [_caller];
+					[_target] join group _caller;
 
-				{
-					sleep random [0, 0.5, 1];
-					[[_x, _target], {
-						params ["_unit", "_target"];
-						_unit lookAt _target;
-						[_unit, selectRandom [
-							"Welcome brother!",
-							"Another for the cause!",
-							"Hi",
-							"...",
-							"Do you have any spare bullets?",
-							"Hi neighbour!"
-						], _target] call Dialog_fnc_hud_createSentence;
-					}] remoteExec ["call", _clientOwner];
-				} foreach _otherUnits;
+					{
+						sleep random [0, 0.5, 1];
+						[[_x, _target], {
+							params ["_unit", "_target"];
+							_unit lookAt _target;
+							[_unit, selectRandom [
+								"Welcome brother!",
+								"Another for the cause!",
+								"Hi",
+								"...",
+								"Do you have any spare bullets?",
+								"Hi neighbour!"
+							], _target] call Dialog_fnc_hud_createSentence;
+						}] remoteExec ["call", _clientOwner];
+					} foreach _otherUnits;
 
-				// _target stop false;
-			}] remoteExec ["spawn", 2];
-
+					// _target stop false;
+				}] remoteExec ["spawn", 2];
+			} else {
+				[_target, selectRandom [
+					"(...)",
+					"(bleeds)",
+					"(maybe they are sleeping?)",
+					"(looks so peaceful)",
+					"(NNNNNNNOOOOOOOOOOOOOOOOOOO!!!!!!)",
+					"(he's dead Jim!)",
+					"(refuses the call)",
+					"(has other problems)",
+					"(doesn't appear to be listening)",
+					"(has already given everything)",
+					"(will be missed)",
+					"(ashes to ashes)",
+					"(looks pale)"
+					], _caller] call Dialog_fnc_hud_createSentence;
+			};
 		};
 	} else {
 		[_target, "You are too many already, we must be inconspicuous!", _caller] call Dialog_fnc_hud_createSentence;
@@ -148,13 +165,22 @@ pr0_fnc_selectPrimaryWeapon = {
 
 pr0_fnc_doMoveTimeout = {
 	params ["_unit", "_tgt", "_range"];
-	private _timeout = time + 60;
+	private _timeout = GAME_TIME + 60;
 	systemChat format ["%1 moving to %2", name _unit, mapGridPosition _tgt];
 	_unit stop false;
-	_unit doMove position _tgt;
+	private _lastTgtPos = position _tgt;
+	_unit doMove _lastTgtPos;
 	private _ledByPlayer = leader _unit in allPlayers;
+	private _nextRetarget = GAME_TIME + 5;
 	waitUntil {
 		sleep 1;
+
+		if(_lastTgtPos distance _tgt > 0 && GAME_TIME > _nextRetarget) then {
+			_lastTgtPos = position _tgt;
+			_unit doMove _lastTgtPos;
+			_nextRetarget = GAME_TIME + 5;
+		};
+
 		if(isNull _unit || {!alive _unit}) exitWith {
 			systemChat format ["%1 failed to move to %2: %1 died", name _unit, mapGridPosition _tgt];
 			true
@@ -167,7 +193,7 @@ pr0_fnc_doMoveTimeout = {
 			systemChat format ["%1 moved to %2 successfully", name _unit, mapGridPosition _tgt];
 			true
 		};
-		if(time > _timeout) exitWith {
+		if(GAME_TIME > _timeout) exitWith {
 			systemChat format ["%1 failed to move to %2: timeout", name _unit, mapGridPosition _tgt];
 			true
 		};
@@ -238,7 +264,7 @@ pr0_fnc_militantFindWeapon = {
 
 pr0_fnc_militantFindVest = {
 	private _lootRange = if(leader _this in allPlayers) then { 25 } else { LOOTING_RANGE };
-	private _vestHP = if(vest _this == "") then { 0 } else { getNumber (configfile >> "CfgWeapons" >> vest _this >> "ItemInfo" >> "HitpointsProtectionInfo" >> "Chest" >> "armor") };
+	private _vestHP = if(vest _this == "") then { -1 } else { getNumber (configfile >> "CfgWeapons" >> vest _this >> "ItemInfo" >> "HitpointsProtectionInfo" >> "Chest" >> "armor") };
 	private _obj = allDead select {
 		_x distance _this < _lootRange 
 		&& {vest _x != ""}
@@ -415,8 +441,8 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		T_SETV("activeCivs", []);
-		T_SETV("nextInformant", TIME_NOW);
-		T_SETV("nextIntelUpdate", TIME_NOW);
+		T_SETV("nextInformant", GAME_TIME);
+		T_SETV("nextIntelUpdate", GAME_TIME);
 		T_SETV("newIntel", []);
 	} ENDMETHOD;
 
@@ -424,7 +450,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 		{
 			deleteVehicle _x;
 		} forEach _activeCivs;
@@ -443,7 +469,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Check for dead civs
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 		{
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
@@ -455,9 +481,9 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		private _instability = GETV(_cityData, "instability");
 
 		// Refresh intel if stale
-		if(TIME_NOW > T_GETV("nextIntelUpdate")) then
+		if(GAME_TIME > T_GETV("nextIntelUpdate")) then
 		{
-			T_SETV("nextIntelUpdate", TIME_NOW + 120);
+			T_SETV("nextIntelUpdate", GAME_TIME + 120);
 			// Lets find out if we have some intel for the player that they don't have already
 			private _civGarr = CALLM1(_city, "getGarrisons", civilian) select 0;
 			if(!isNil "_civGarr") then {
@@ -494,11 +520,15 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 					// continue
 				};
 
-				case (TIME_NOW > T_GETV("nextInformant") 
+				case (GAME_TIME >= T_GETV("nextInformant") 
 					&& !_ledByPlayer
 					&& {[_civ, T_GETV("newIntel")] call pr0_fnc_givePlayerIntel}): {
 					// continue
-					private _nextInformant = TIME_NOW + random [150, 300, 450];
+					#ifdef MILITANT_CIVILIANS_TESTING
+					private _nextInformant = GAME_TIME + 30;
+					#else
+					private _nextInformant = GAME_TIME + random [150, 300, 450];
+					#endif
 					T_SETV("nextInformant", _nextInformant);
 				};
 
@@ -523,7 +553,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Add new actions if required
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 
 		private _radius = GETV(_city, "boundingRadius");
 		private _cityData = GETV(_city, "gameModeData");

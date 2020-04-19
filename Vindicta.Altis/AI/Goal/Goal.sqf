@@ -21,7 +21,7 @@ CLASS("Goal", "")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -29,7 +29,7 @@ CLASS("Goal", "")
 	// ----------------------------------------------------------------------
 
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 	} ENDMETHOD;
 
@@ -43,7 +43,7 @@ CLASS("Goal", "")
 	// By default returns instrinsic goal relevance
 
 	/* virtual */ STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _intrinsicRelevance = GET_STATIC_VAR(_thisClass, "relevance");
 		 // Return relevance
 		_intrinsicRelevance
@@ -56,7 +56,7 @@ CLASS("Goal", "")
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 
 	/* virtual */ STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		// Return predefined action from the database
 		pr _actionClass = GET_STATIC_VAR(_thisClass, "predefinedAction");
 		if (!(isNil "_actionClass")) then {
@@ -86,7 +86,7 @@ CLASS("Goal", "")
 	// "GoToNearestCover" can't derive its effect from parameter and is not static, but is supplied by internal logic, therefore this goal must implement this method
 
 	/* virtual */ STATIC_METHOD("getEffects") {
-		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		pr _paramsGood = params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		if (!_paramsGood) then {
 			DUMP_CALLSTACK;
@@ -121,12 +121,12 @@ CLASS("Goal", "")
 
 	// Gets called when an external goal of this class is added to AI
 	STATIC_METHOD("onGoalAdded") {
-		params ["_thisClass", ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 	} ENDMETHOD;
 
 	// Gets called when an external goal of this class is removed from an AI
 	STATIC_METHOD("onGoalDeleted") {
-		params ["_thisClass", ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 	} ENDMETHOD;
 
 ENDCLASS;

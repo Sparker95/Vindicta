@@ -10,7 +10,7 @@ Spawn a unit
 params ["_catID", "_subcatID", "_side"];
 
 pr _template = switch (_side) do {
- case WEST: {tNATO};    
+ case WEST: {tNATO};
  case EAST: {tCSAT};
  case INDEPENDENT: {tAAF};
 };

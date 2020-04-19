@@ -12,15 +12,10 @@ Parameters:
 #define pr private
 
 CLASS("ActionUnitInfantryMove", "ActionUnitInfantryMoveBase")
-	
-	// ------------ N E W ------------
-	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
-		
-		pr _pos = (_parameters select {_x select 0 == "position"}) select 0 select 1;
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, "position");
 		T_SETV("pos", _pos);
-		
 	} ENDMETHOD;
 ENDCLASS;
 

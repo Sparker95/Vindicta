@@ -9,26 +9,33 @@ Parameters:
 "posID" - ID of the building position used with buildingPos command
 */
 
-#define pr private
-
 CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
-	
-	
-	// ------------ N E W ------------
-	
+	VARIABLE("building");
+	VARIABLE("posID");
+
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
-		
-		pr _building = (_parameters select {_x select 0 == "building"}) select 0 select 1;
-		pr _posID = (_parameters select {_x select 0 == "posID"}) select 0 select 1;
-		
-		pr _pos = _building buildingPos _posID;
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
+		private _building = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		T_SETV("building", _building);
+		private _posID = CALLSM2("Action", "getParameterValue", _parameters, TAG_BUILDING_POS_ID);
+		T_SETV("posID", _posID);
+
+		private _pos = _building buildingPos _posID;
 		T_SETV("pos", _pos);
-		
 		T_SETV("tolerance", 1.0);
-		
+
+		// Mark the position occupied
+		(_building getVariable "vin_occupied_positions") pushBackUnique _posID;
 	} ENDMETHOD;
 
+	METHOD("terminate") {
+		params [P_THISOBJECT];
+	
+		// Mark the position unoccupied again
+		private _occupiedPositions = T_GETV("building") getVariable "vin_occupied_positions";
+		_occupiedPositions deleteAt (_occupiedPositions find T_GETV("posID"));
+	} ENDMETHOD;
 ENDCLASS;
 
 /*

@@ -11,7 +11,7 @@
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									
+_array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tGM_WestGer_Police"]; // 							Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Cold war era, western Germany police."]; // 			Template display description
@@ -46,7 +46,7 @@ _cargo = +(tDefault select T_CARGO);
 _group = +(tDefault select T_GROUP);
 
 /* Vehicle descriptions */
-(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Police Car"];
+/*(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Police Car"];*/
 
 /* Set arrays */
 _array set [T_INF, _inf];

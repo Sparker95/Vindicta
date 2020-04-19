@@ -102,7 +102,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 		{
 			deleteVehicle _x;
 		} forEach _activeCivs;
@@ -112,7 +112,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 
 		// Check for finished missions
 		{
@@ -125,8 +125,8 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Add new missions if required
-		T_PRVAR(activeCivs);
-		T_PRVAR(maxActive);
+		private _activeCivs = T_GETV("activeCivs");
+		private _maxActive = T_GETV("maxActive");
 		private _deficit = _maxActive - (count _activeCivs);
 		if(_deficit > 0) then {
 
@@ -186,5 +186,5 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 				}
 			};
 		};
-	} ENDMETHOD;	
+	} ENDMETHOD;
 ENDCLASS;

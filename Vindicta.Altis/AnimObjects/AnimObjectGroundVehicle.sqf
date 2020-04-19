@@ -11,24 +11,24 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_object", objNull, [objNull]]];
+		params [P_THISOBJECT, P_OBJECT("_object")];
 
-		private _objectHandle = GETV(_thisObject, "object");
+		private _objectHandle = T_GETV("object");
 		private _width = [_object] call misc_fnc_getVehicleWidth;
 		// Compensate the Z coordinate of the vehicle, because [0,0,0] of the vehicle model is above the ground
 		private _vehCenter = _objectHandle modelToWorld [0,0,0];
 		private _centerHeight = _vehCenter select 2;
 		private _args = [	[-_width, -1.5, -_centerHeight], [-_width, 0, -_centerHeight], [-_width, 1.5, -_centerHeight],
 							[_width, -1.5, -_centerHeight], [_width, 0, -_centerHeight], [_width, 1.5, -_centerHeight] ];
-		SETV(_thisObject, "points", _args);
+		T_SETV("points", _args);
 
 		private _args = ["", "", "", "", "", ""];
-		SETV(_thisObject, "units", _args);
+		T_SETV("units", _args);
 
-		SETV(_thisObject, "pointCount", 6);
+		T_SETV("pointCount", 6);
 
 		private _animations = GET_STATIC_VAR("AnimObjectGroundVehicle", "animations");
-		SETV(_thisObject, "animations", _animations);
+		T_SETV("animations", _animations);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -38,9 +38,9 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// | Returns [_offset, _animation, _direction]
 	// ----------------------------------------------------------------------
 	METHOD("getPointDataInternal") {
-		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
-		private _animations = GETV(_thisObject, "animations");
-		private _points = GETV(_thisObject, "points");
+		params [P_THISOBJECT, P_NUMBER("_pointID")];
+		private _animations = T_GETV("animations");
+		private _points = T_GETV("points");
 		private _dir = 0;
 		if (_pointID < 3) then {
 			_dir = 90;
@@ -61,8 +61,8 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
 	METHOD("getPointMoveOffset") {
-		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
-		private _points = GETV(_thisObject, "points");
+		params [P_THISOBJECT, P_NUMBER("_pointID") ];
+		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
 		[_pointOffset, 6] // For vehicles completion radius is quite large
 	} ENDMETHOD;

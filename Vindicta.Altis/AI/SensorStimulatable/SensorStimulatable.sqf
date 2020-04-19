@@ -18,7 +18,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 	} ENDMETHOD;
 	
@@ -27,7 +27,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 	} ENDMETHOD;
 
@@ -36,13 +36,13 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	/* private */ METHOD("stimulate") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		
 		// Do sensor-specific complex check
-		if (! (CALLM(_thisObject, "doComplexCheck", [_stimulus]))) exitWith {};
+		if (! (T_CALLM("doComplexCheck", [_stimulus]))) exitWith {};
 		
 		// Create world fact
-		CALLM(_thisObject, "handleStimulus", [_stimulus]);
+		T_CALLM("handleStimulus", [_stimulus]);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -60,7 +60,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -69,7 +69,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("doComplexCheck") {
-		//params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		//params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		// Return true by default
 		true				
 	} ENDMETHOD;

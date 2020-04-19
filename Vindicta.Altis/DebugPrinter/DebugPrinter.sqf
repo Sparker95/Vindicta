@@ -27,9 +27,9 @@ CLASS("DebugPrinter", "MessageReceiver");
 	Returns: nil
 	*/
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_name", "", [""]], ["_msgLoop", "", [""] ] ];
-		SET_VAR(_thisObject, "name", _name);
-		SET_VAR(_thisObject, "msgLoop", _msgLoop);
+		params [P_THISOBJECT, P_STRING("_name"), ["_msgLoop", "", [""] ] ];
+		T_SETV("name", _name);
+		T_SETV("msgLoop", _msgLoop);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -37,7 +37,7 @@ CLASS("DebugPrinter", "MessageReceiver");
 	// ----------------------------------------------------------------------
 
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -45,8 +45,8 @@ CLASS("DebugPrinter", "MessageReceiver");
 	// ----------------------------------------------------------------------
 
 	METHOD("getMessageLoop") { //Derived classes must implement this method
-		params [["_thisObject", "", [""]]];
-		private _return = GET_VAR(_thisObject, "msgLoop");
+		params [P_THISOBJECT];
+		private _return = T_GETV("msgLoop");
 		_return
 	} ENDMETHOD;
 
@@ -55,9 +55,9 @@ CLASS("DebugPrinter", "MessageReceiver");
 	// ----------------------------------------------------------------------
 
 	METHOD("handleMessage") {
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		diag_log format ["[DebugPrinter] Info: %1: %2 has received a message: type: %3, data: %4",
-			_thisObject, GET_VAR(_thisObject, "name"), _msg select MESSAGE_ID_TYPE, _msg select MESSAGE_ID_DATA];
+			_thisObject, T_GETV("name"), _msg select MESSAGE_ID_TYPE, _msg select MESSAGE_ID_DATA];
 		// Returns the data field
 		_msg select MESSAGE_ID_DATA
 	} ENDMETHOD;
@@ -68,17 +68,17 @@ CLASS("DebugPrinter", "MessageReceiver");
 
 		// Must return a single value which can be deserialized to restore value of an object
 	/* virtual */ METHOD("serialize") {
-		params [["_thisObject", "", [""]]];
-		private _data = [GETV(_thisObject, "name"), GETV(_thisObject, "msgLoop")];
+		params [P_THISOBJECT];
+		private _data = [T_GETV("name"), T_GETV("msgLoop")];
 		_data
 	} ENDMETHOD;
 
 	// Takes the output of deserialize and restores values of an object
 	/* virtual */ METHOD("deserialize") {
-		params [["_thisObject", "", [""]], "_serialData"];
+		params [P_THISOBJECT, "_serialData"];
 		_serialData params ["_name", "_msgLoop"];
-		SETV(_thisObject, "name", _serialData);
-		SETV(_thisObject, "msgLoop", _msgLoop);
+		T_SETV("name", _serialData);
+		T_SETV("msgLoop", _msgLoop);
 	} ENDMETHOD;
 
 	// If your class has objects that must be transfered through the same mechanism, you must handle transfer of ownership of such objects here
@@ -90,7 +90,7 @@ CLASS("DebugPrinter", "MessageReceiver");
 
 	// Dummy process method
 	METHOD("process") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		private _size = 5000; // 500; 500 is 1.5ms
 		private _a = []; _a resize _size;
 		private _b = []; _b resize _size;

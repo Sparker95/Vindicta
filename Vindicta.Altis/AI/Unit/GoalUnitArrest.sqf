@@ -9,12 +9,9 @@ Author: Marvis 09.05.2019
 CLASS("GoalUnitArrest", "Goal")
 
 	STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
-		
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
-		pr _args = [_AI, _target];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _action = NEW("ActionUnitArrest", _args);
+		pr _action = NEW("ActionUnitArrest", [_AI ARG _parameters]);
 	
 		_action
 

@@ -12,6 +12,6 @@ CRITICAL_SECTION {
 		gGameMode = NEW(gGameModeName, []);
 
 		systemChat format["Initializing game mode %1", GETV(gGameMode, "name")];
-		CALLM(gGameMode, "init", []);
+		CALLM0(gGameMode, "init");
 		systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
 };

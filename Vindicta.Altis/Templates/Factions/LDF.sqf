@@ -1,17 +1,24 @@
-/*
-AAF templates for ARMA III
-*/
+
+//██╗     ██████╗ ███████╗
+//██║     ██╔══██╗██╔════╝
+//██║     ██║  ██║█████╗  
+//██║     ██║  ██║██╔══╝  
+//███████╗██████╔╝██║     
+//╚══════╝╚═════╝ ╚═╝ 
+//http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=LDF
+
+//Updated: March 2020 by Marvis
+
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
+_array set [T_SIZE-1, nil];
 
-// Name, description, faction, addons, etc
-_array set [T_NAME, "tLDF"];
-_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces. Made by MatrikSky."];
-_array set [T_DISPLAY_NAME, "Arma 3 LDF"];
-_array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
+_array set [T_NAME, "tLDF"]; 														//Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces. Made by MatrikSky."]; 	//Template display description
+_array set [T_DISPLAY_NAME, "Arma 3 LDF"]; 											//Template display name
+_array set [T_FACTION, T_FACTION_Military]; 										//Faction type: police, T_FACTION_military, T_FACTION_Police
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; 								//Addons required to play this template
 
 //==== Infantry ====
 _inf = [];
@@ -41,26 +48,22 @@ _inf set [T_INF_pilot, ["Arma3_LDF_pilot"]];
 _inf set [T_INF_pilot_heli, ["I_E_Helipilot_F"]];
 _inf set [T_INF_survivor, ["I_E_Survivor_F"]];
 _inf set [T_INF_unarmed, ["I_E_Soldier_unarmed_F"]];
-
-//Recon 
+//==== Recon ====
 _inf set [T_INF_recon_TL, ["Arma3_LDF_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["Arma3_LDF_recon_rifleman", "Arma3_LDF_recon_autorifleman"]];
+_inf set [T_INF_recon_rifleman, ["Arma3_LDF_recon_rifleman", "Arma3_LDF_recon_rifleman", "Arma3_LDF_recon_rifleman", "Arma3_LDF_recon_autorifleman"]];
 _inf set [T_INF_recon_medic, ["Arma3_LDF_recon_medic"]];
 _inf set [T_INF_recon_exp, ["Arma3_LDF_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["Arma3_LDF_recon_LAT"]];
 //_inf set [T_INF_recon_LMG, ["Arma3_LDF_recon_autorifleman"]]; // There is no T_INF_recon_LMG right now
 _inf set [T_INF_recon_marksman, ["Arma3_LDF_recon_marksman"]];
 _inf set [T_INF_recon_JTAC, ["Arma3_LDF_recon_JTAC"]];
-
-
-//Divers
+//==== Drivers ====
 _inf set [T_INF_diver_TL, ["I_diver_TL_F"]];
 _inf set [T_INF_diver_rifleman, ["I_diver_F"]];
 _inf set [T_INF_diver_exp, ["I_diver_exp_F"]];
 
 
 //==== Vehicles ====
-
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["I_E_Offroad_01_F"]];
@@ -132,14 +135,21 @@ _drone set [T_DRONE_stat_GMG_low, ["I_E_GMG_01_A_F"]];
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
 
+// Note that we have increased their capacity through the addon, other boxes are going to have reduced capacity
+//_cargo set [T_CARGO_default,	["I_supplyCrate_F"]];
+//_cargo set [T_CARGO_box_small,	["Box_Syndicate_Ammo_F"]];
+//_cargo set [T_CARGO_box_medium,	["I_supplyCrate_F"]];
+//_cargo set [T_CARGO_box_big,	["B_CargoNet_01_ammo_F"]];
+
+
 //==== Groups ====
 _group = +(tDefault select T_GROUP);
 
-//==== Set arrays ====
+//==== Arrays ====
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 
-_array // End template
+_array

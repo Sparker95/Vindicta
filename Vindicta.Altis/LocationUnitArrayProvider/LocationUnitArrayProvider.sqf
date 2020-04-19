@@ -19,13 +19,13 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	Method: New
 	*/
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		if (isNil "gMessageLoopMain") exitWith {"[LocationUnitArrayProvider] Error: global location message loop doesn't exist!";};
 
-		SET_VAR(_thisObject, "spawnWest", []);
-		SET_VAR(_thisObject, "spawnEast", []);
-		SET_VAR(_thisObject, "spawnInd", []);
+		T_SETV("spawnWest", []);
+		T_SETV("spawnEast", []);
+		T_SETV("spawnInd", []);
 		
 		// Create a timer for gLUAP
 		private _msg = MESSAGE_NEW();
@@ -41,7 +41,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	Method: Delete
 	*/
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		DELETE(T_GETV("timer"));
 	} ENDMETHOD;
@@ -56,7 +56,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	// |                     H A N D L E   M E S S A G E
 
 	METHOD("handleMessage") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		//diag_log "[LocationunitArrayProvider] Info: calculating arrays...";
 		// It supports only one kind of messages now
 		// Calculate the arrays
@@ -67,9 +67,9 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 		private _spawnWest = _unitsEast + _unitsInd + _allPlayers;
 		private _spawnEast = _unitsWest + _unitsInd + _allPlayers;
 		private _spawnInd = _unitsWest + _unitsEast + _allPlayers;
-		SET_VAR(_thisObject, "spawnWest", _spawnWest);
-		SET_VAR(_thisObject, "spawnEast", _spawnEast);
-		SET_VAR(_thisObject, "spawnInd", _spawnInd);
+		T_SETV("spawnWest", _spawnWest);
+		T_SETV("spawnEast", _spawnEast);
+		T_SETV("spawnInd", _spawnInd);
 	} ENDMETHOD;
 
 
@@ -85,7 +85,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	Returns: Array with object handles of objects that can spawn locations of given side
 	*/
 	METHOD("getUnitArray") {
-		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]] ];
+		params [P_THISOBJECT, ["_side", WEST, [WEST]] ];
 		switch (_side) do {
 			case WEST: {T_GETV("spawnWest")};
 			case EAST: {T_GETV("spawnEast")};

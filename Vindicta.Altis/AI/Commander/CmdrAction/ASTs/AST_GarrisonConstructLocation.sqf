@@ -64,7 +64,7 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 		ASSERT_OBJECT(_garr);
 
 		// If the garrison is dead then return the appropriate state
-		if(CALLM(_garr, "isDead", [])) exitWith {
+		if(CALLM0(_garr, "isDead")) exitWith {
 			T_GETV("failGarrisonDead")
 		};
 

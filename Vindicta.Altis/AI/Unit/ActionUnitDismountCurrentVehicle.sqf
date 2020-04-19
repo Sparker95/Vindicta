@@ -17,25 +17,19 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI") ];
 
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 		OOP_INFO_0("ACTIVATE");
 		#endif
 
 		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
-		
-		pr _hO = GETV(_thisObject, "hO");
 		/*
 		if (vehicle _hO isEqualTo _hO) then {
 			// We are done here
@@ -46,39 +40,43 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 			OOP_INFO_0("Completed at activation");
 			#endif
 			
-			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
+			T_SETV("state", ACTION_STATE_COMPLETED);
 			RETURN ACTION_STATE_COMPLETED;
 		} else {
 		*/
-			// Unassign from vehicle
-			
-			pr _AI = GETV(_thisObject, "AI");
-			
-			#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
-			OOP_INFO_1("Unassigning %1 from vehicle", _AI);
-			#endif
-			
-			CALLM0(_AI, "unassignVehicle");
+		// Unassign from vehicle
 		
-			// Set state
-			SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
-			// Return ACTIVE state
-			RETURN ACTION_STATE_ACTIVE;
-		//};		
+		pr _AI = T_GETV("AI");
+		
+		#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
+		OOP_INFO_1("Unassigning %1 from vehicle", _AI);
+		#endif
+		
+		CALLM0(_AI, "unassignVehicle");
+
+		pr _state = if(_instant) then {
+			moveOut T_GETV("hO");
+			ACTION_STATE_COMPLETED
+		} else {
+			ACTION_STATE_ACTIVE
+		};
+
+		T_SETV("state", _state);
+		_state;
 	} ENDMETHOD;
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 		OOP_INFO_0("PROCESS");
 		#endif
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
-			pr _hO = GETV(_thisObject, "hO");
+			pr _hO = T_GETV("hO");
 			// Did we dismount already?
 			if ((vehicle _hO) isEqualTo _hO) then {
 			
@@ -87,7 +85,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 				#endif
 			
 				// If yes, the action is complete
-				SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
+				T_SETV("state", ACTION_STATE_COMPLETED);
 				
 				// Return
 				RETURN ACTION_STATE_COMPLETED;
@@ -111,8 +109,8 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	
 	// logic to run when the goal is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
-	} ENDMETHOD; 
+		params [P_THISOBJECT];
+	} ENDMETHOD;
 
 ENDCLASS;
 

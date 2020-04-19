@@ -2,6 +2,12 @@
 Civilian template for ARMA III
 */
 
+_civHeadgear = [];
+
+_civHeadgear = [];
+
+_civFacewear = [];
+
 _civUniforms = [
 	"gm_gc_civ_uniform_man_01_80_blk",
 	"gm_gc_civ_uniform_man_01_80_blu",
@@ -11,9 +17,10 @@ _civUniforms = [
 	"gm_ge_dbp_uniform_suit_80_blu"
 ];
 
-_civFacewear = [];
-
-_civHeadgear = [];
+_civBackpacks = [
+	"gm_ge_backpack_satchel_80_blk",
+	"gm_ge_backpack_satchel_80_san"
+];
 
 _civVehicles = [
 	"gm_ge_dbp_bicycle_01_ylw",	8, // Bicycle
@@ -48,9 +55,10 @@ _array set [T_API, _api];
 // ==== Undercover ====
 _uc = [];
 _uc resize T_UC_SIZE;
-_uc set[T_UC_uniforms, +_civUniforms];
-_uc set[T_UC_facewear, +_civFacewear];
 _uc set[T_UC_headgear, +_civHeadgear];
+_uc set[T_UC_facewear, +_civFacewear];
+_uc set[T_UC_uniforms, +_civUniforms];
+_uc set[T_UC_backpacks, +_civBackpacks];
 _uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
 _array set [T_UC, _uc];
 
@@ -111,6 +119,11 @@ _veh = [];
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, _civVehicles];
 _array set [T_VEH, _veh];
+
+// Inventory
+_inv = [T_INV] call t_fnc_newCategory;
+_inv set [T_INV_items, +t_miscItems_civ_modern ];
+_array set [T_INV, _inv];
 
 // Return final array
 _array

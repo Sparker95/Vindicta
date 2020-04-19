@@ -11,7 +11,7 @@ Author: Sparker 23 August 2019
 CLASS("GarrisonRecord", "")
 
 	// Ref to the actual garrison, which exists only on the server
-	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]); 
+	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]);
 
 	// Generic properties
 	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
@@ -182,7 +182,7 @@ CLASS("GarrisonRecord", "")
 		// Create the map marker
 		pr _mapMarker = NEW("MapMarkerGarrison", [_thisObject]);
 		T_SETV("mapMarker", _mapMarker);
-		T_CALLM0("_updateMapMarker");		
+		T_CALLM0("_updateMapMarker");
 		T_CALLM0("_updateActionMapMarkers");
 
 		// Update linked records if something was pointing at this garrison record
@@ -193,7 +193,7 @@ CLASS("GarrisonRecord", "")
 	METHOD("_updateLinkedRecords") {
 		params [P_THISOBJECT];
 
-		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", GETV(_thisObject, "garRef"));
+		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", T_GETV("garRef"));
 		{
 			CALLM0(_x, "_updateMapMarker");
 			CALLM0(_x, "_updateActionMapMarkers");

@@ -17,7 +17,7 @@ this addVest _RandomVest;
 this addBackpack "BWA3_Kitbag_Fleck";
 
 this addWeapon "hlc_rifle_G36VAG36";
-this addPrimaryWeaponItem "BWA3_optic_EOTech552";
+this addPrimaryWeaponItem "rhsusf_acc_eotech_552";
 this addPrimaryWeaponItem "1Rnd_HE_Grenade_shell";
 this addPrimaryWeaponItem "hlc_30rnd_556x45_EPR_G36";
 

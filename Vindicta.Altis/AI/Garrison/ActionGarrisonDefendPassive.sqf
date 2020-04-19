@@ -1,139 +1,163 @@
 #include "common.hpp"
 
-/*
-All crew of vehicles mounts assigned vehicles.
-*/
+// Passive defense:
+// Assign patrol and idle groups.
+// Patrol groups patrol
+// - patrol speed to normal, formation to staggered column
+// - mount all vehicles
+// - move idle groups inside
+// - patrol roads with vehicle groups
+// - set vehicle gunners to scan their sectors
 
-#define pr private
+CLASS("ActionGarrisonDefendPassive", "ActionGarrisonDefend")
 
-#define THIS_ACTION_NAME "ActionGarrisonDefendPassive"
+	// METHOD("activate") {
+	// 	params [P_THISOBJECT];
 
-CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
+	// 	OOP_INFO_0("ACTIVATE");
 
-	// ------------ N E W ------------
-	
-	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		T_SETV("buildingsAttack", []);
-	} ENDMETHOD;
-	
-	// logic to run when the goal is activated
-	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+	// 	// Give goals to groups
+	// 	private _AI = T_GETV("AI");
+	// 	private _gar = GETV(_AI, "agent");
+
+	// 	// Rebalance groups, ensure all the vehicle groups have drivers, balance the infantry groups
+	// 	// We do this explictly and not as an action precondition because we will be unbalancing the groups
+	// 	// when we assign inf protection squads to vehicle groups
+	// 	// TODO: add group protect action so we can use separate inf groups
+	// 	CALLM0(_gar, "rebalanceGroups");
+
+
+	// 	private _loc = CALLM0(_gar, "getLocation");
+	// 	// Buildings into which groups will be ordered to move
+	// 	private _buildings = if (_loc != NULL_OBJECT) then {+
+	// 		CALLM0(_loc, "getOpenBuildings")
+	// 	} else {
+	// 		[]
+	// 	};
+
+	// 	// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
+	// 	_buildings = _buildings apply { [2 * (abs ((boundingBoxReal _x)#1#2)), _x] };
+	// 	_buildings sort DESCENDING;
+
+	// 	private _groups = +CALLM0(_gar, "getGroups");
+	// 	private _groupsInf = _groups select { CALLM0(_x, "getType") == GROUP_TYPE_INF };
+
+	// 	// Order to some groups to occupy buildings
+	// 	private _i = 0;
+	// 	private _nGroupsPatrolReserve = 0;
+	// 	private _atPoliceStation = false;
+	// 	private _atRoadblock = false;
+	// 	// We absolutely want at least some bots inside police stations
+	// 	if (_loc != NULL_OBJECT) then { // If garrison is at location...
+	// 		switch (CALLM0(_loc, "getType")) do {
+	// 			case LOCATION_TYPE_POLICE_STATION: {
+	// 				_atPoliceStation = true;
+	// 			};
+	// 			case LOCATION_TYPE_ROADBLOCK: {
+	// 				_atRoadblock = true;
+	// 			};
+	// 		};
+	// 	};
+
 		
-		OOP_INFO_0("ACTIVATE");
+	// 	if (_atPoliceStation) then {
+	// 		// First of all assign groups to guard the police station
+	// 		// If there are more groups, they will be on patrol
+	// 		_nGroupsPatrolReserve = 0;
+	// 	} else {
+	// 		if (_atRoadblock) then {
+	// 			// At roadblock we want all groups to patrol if possible
+	// 			// Otherwise they will stand inside not being able to detect anything
+	// 			_nGroupsPatrolReserve = 100;
+	// 		} else {
+	// 			// For non-police stations, we must reserve at least 1...2 groups to perform patrol
+	// 			// Otherwise they all will stay in houses
+	// 			_nGroupsPatrolReserve = (1 + ceil (random 1)); // Reserve some groups for patrol
+	// 		};
+	// 	};
 
-		pr _AI = T_GETV("AI");
-		pr _gar = GETV(_AI, "agent");
-		pr _loc = CALLM0(_gar, "getLocation");
-		pr _buildings = if (_loc != "") then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
-		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
-		_buildings = _buildings apply {[abs ((boundingBoxReal _x) select 1 select 2), _x]};
-		_buildings sort false;
-		pr _groups = +CALLM0(_gar, "getGroups");
-		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
+	// 	// Give orders to some groups to get into building
+	// 	while {(count _groupsInf > _nGroupsPatrolReserve) && (count _buildings > 0)} do {
+	// 		private _group = _groupsInf#0;
+	// 		private _groupAI = CALLM0(_group, "getAI");
+	// 		private _goalParameters = [[TAG_TARGET, _buildings#0#1]];
+	// 		private _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
+	// 		CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 
-		// Order to some groups to occupy buildings
-		// This is obviously ignored if the garrison is not at a location
-		pr _i = 0;
-		while {(count _groupsInf > 0) && (count _buildings > 0)} do {
-			pr _group = _groupsInf#0;
-			pr _groupAI = CALLM0(_group, "getAI");
-			pr _goalParameters = [["building", _buildings#0#1]];
-			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
-			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+	// 		_buildings deleteAt 0;
+	// 		_groupsInf deleteAt 0;
+	// 		_groups deleteAt (_groups find _group);
+	// 	};
 
-			_buildings deleteAt 0;
-			_groupsInf deleteAt 0;
-			_groups deleteAt (_groups find _group);
-		};
-		
-		// Give goals to remaining groups
-		{ // foreach _groups
-			pr _type = CALLM0(_x, "getType");
-			pr _groupAI = CALLM0(_x, "getAI");
+	// 	// Give goals to remaining groups
+	// 	private _nPatrolGroups = 0;
+	// 	{ // foreach _groups
+	// 		private _type = CALLM0(_x, "getType");
+	// 		private _groupAI = CALLM0(_x, "getAI");
 			
-			if (_groupAI != "") then {
-				pr _args = [];
-				switch (_type) do {
-					case GROUP_TYPE_IDLE: {
-						_args = ["GoalGroupRegroup", 0, [], _AI];
-					};
+	// 		if (_groupAI != NULL_OBJECT) then {
+	// 			private _args = [];
+	// 			switch (_type) do {
+	// 				case GROUP_TYPE_INF: {
+	// 					// We need at least two patrol groups
+	// 					if (_nPatrolGroups < 2) then {
+	// 						_args = ["GoalGroupPatrol", 0, [], _AI];
+	// 						_nPatrolGroups = _nPatrolGroups + 1;
+	// 					} else {
+	// 						if (random 10 < 5) then {
+	// 							_args = ["GoalGroupRelax", 0, [], _AI];
+	// 						} else {
+	// 							_args = ["GoalGroupPatrol", 0, [], _AI];
+	// 							_nPatrolGroups = _nPatrolGroups + 1;
+	// 						};
+	// 					};
+	// 				};
 					
-					case GROUP_TYPE_VEH_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
-					};
+	// 				case GROUP_TYPE_STATIC: {
+	// 					if (_atRoadblock) then {
+	// 						// Get into vehicles at roadblocks
+	// 						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
+	// 					} else {
+	// 						_args = ["GoalGroupRelax", 0, [], _AI];
+	// 					};
+	// 				};
 					
-					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
-					};
-					
-					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupRegroup", 0, [["combatMode", "RED"]], _AI];
-					};
-					
-					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupRegroup", 0, [], _AI];
-					};
-				};
+	// 				case GROUP_TYPE_VEH: {
+	// 					if (_atRoadblock) then {
+	// 						// Get into vehicles at roadblocks
+	// 						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
+	// 					} else {
+	// 						_args = ["GoalGroupPatrol", 0, [], _AI]; // They will patrol next to their vehicles
+	// 					};
+	// 				};
+	// 			};
 				
-				if (count _args > 0) then {
-					CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
-					// Poke group AI to switch mode faster
-					CALLM2(_groupAI, "postMethodAsync", "process", []);
-				};
-			};
-		} forEach _groups;
+	// 			if (count _args > 0) then {
+	// 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+	// 			};
+	// 		};
+	// 	} forEach _groups;
 		
+	// 	// Set state
+	// 	T_SETV("state", ACTION_STATE_ACTIVE);
 		
-		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+	// 	// Return ACTIVE state
+	// 	ACTION_STATE_ACTIVE
 		
-		// Return ACTIVE state
-		ACTION_STATE_ACTIVE
-		
-	} ENDMETHOD;
+	// } ENDMETHOD;
 	
-	// logic to run each update-step
-	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+	// // logic to run each update-step
+	// METHOD("process") {
+	// 	params [P_THISOBJECT];
 		
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+	// 	// Bail if not spawned
+	// 	private _gar = T_GETV("gar");
+	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
 
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
-
-		if (_state == ACTION_STATE_ACTIVE) then {
-			T_CALLM0("attackEnemyBuildings"); // It will try to give goals to free groups to attack nearby enemy buildings
-		};
-
-		// Return the current state
-		_state
-	} ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+	// 	T_CALLM0("activateIfInactive");
 		
-		// Bail if not spawned
-		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
-
-		// Remove assigned goals
-		pr _gar = GETV(T_GETV("AI"), "agent");
-		pr _loc = CALLM0(_gar, "getLocation");
-		pr _groups = CALLM0(_gar, "getGroups");
-		pr _AI = T_GETV("AI");
-		{ // foreach _groups
-			//pr _type = CALLM0(_x, "getType");
-			pr _groupAI = CALLM0(_x, "getAI");			
-			if (_groupAI != "") then {
-				pr _args = ["", _AI]; // Just clear all given goals so far
-				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-			};
-		} forEach _groups;
-		
-	} ENDMETHOD; 
+	// 	// Return the current state
+	// 	ACTION_STATE_ACTIVE
+	// } ENDMETHOD;
 
 ENDCLASS;

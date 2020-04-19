@@ -37,7 +37,7 @@ private _currentWeapon = currentWeapon _unit; //we need to store it because when
 		_weaponHolder setVelocity [(sin (_dir) * _speed)+_biasX, (cos (_dir) * _speed)+_biasY, 1];
 		sleep 0.5;//dorp weapon one by one
 	};
-}forEach [[secondaryWeapon _unit,190,1.4], [handgunWeapon _unit,90,1.6], [primaryWeapon _unit,170,1.5]]; 
+}forEach [[secondaryWeapon _unit,190,1.4], [handgunWeapon _unit,90,1.6], [primaryWeapon _unit,170,1.5]];
 
 
 // we place items together in a non simulated weapon holder.

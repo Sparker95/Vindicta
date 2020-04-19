@@ -40,7 +40,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
 
 	METHOD("new") {
-		params ["_thisObject", ["_intel", "", [""]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
 		T_SETV("mouseOver", false);
@@ -86,12 +86,12 @@ CLASS(CLASS_NAME, "MapMarker")
 		if (isNil "_radius") then { _radius = 0; };
 		_radius = 300;
 		T_SETV("radius", _radius);
-		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+		T_CALLM0("updateAccuracyRadiusMarker");
 		*/
 	} ENDMETHOD;
 
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		// Delete markers
 		{
@@ -217,7 +217,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("setNotification") {
-		params ["_thisObject", ["_enable", false, [false]]];
+		params [P_THISOBJECT, ["_enable", false, [false]]];
 
 		T_SETV("notification", _enable);
 		T_CALLM0("update");
@@ -230,13 +230,13 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	// Overwrite the base class method
 	METHOD("setPos") {
-		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		// Call base class method
 		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
 
 		// Update the accuracy marker
-		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+		T_CALLM0("updateAccuracyRadiusMarker");
 
 		// Set marker position
 		{
@@ -247,7 +247,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	// Same as setColor but gets both an array and string
 	METHOD("setColorEx") {
-		params ["_thisObject", ["_colorRGBA", [], [[]]], ["_colorString", "", [""]]];
+		params [P_THISOBJECT, P_ARRAY("_colorRGBA"), P_STRING("_colorString")];
 		T_SETV("color", _colorRGBA);
 
 		// Set color of the associated marker
@@ -256,15 +256,15 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("setAccuracyRadius") {
-		params ["_thisObject", "_radius"];
+		params [P_THISOBJECT, "_radius"];
 
 		T_SETV("radius", _radius);
-		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+		T_CALLM0("updateAccuracyRadiusMarker");
 	} ENDMETHOD;
 
 	// One of location types defined in location.hpp
 	METHOD("setType") {
-		params ["_thisObject", ["_type", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_type")];
 
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 
@@ -308,7 +308,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("updateAccuracyRadiusMarker") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		pr _radius = T_GETV("radius");
 		pr _mrkName = _thisObject+RADIUS_MARKER_SUFFIX;
@@ -332,7 +332,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	METHOD("onDraw") {
 		//if (true) exitWith {};
-		params ["_thisObject", "_control"];
+		params [P_THISOBJECT, "_control"];
 
 
 
@@ -397,7 +397,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	Returns: nil
 	*/
 	METHOD("onMouseEnter") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
 		//T_SETV("selected", true);
 	} ENDMETHOD;
@@ -409,7 +409,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	Returns: nil
 	*/
 	METHOD("onMouseLeave") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
 		//T_SETV("selected", false);
 	} ENDMETHOD;
@@ -426,7 +426,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	Returns: nil
 	*/
 	METHOD("onMouseButtonDown") {
-		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 
 		// We only care about left mouse button events
@@ -436,7 +436,7 @@ CLASS(CLASS_NAME, "MapMarker")
 				CALLSM(CLASS_NAME, "deselectAllMarkers", []);
 
 				// Disable the notification
-				CALLM1(_thisObject, "setNotification", false);
+				T_CALLM1("setNotification", false);
 			};
 
 			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
@@ -445,7 +445,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 			// Update the accuracy radius marker's alpha
 			if (T_GETV("radius") != 0) then {
-				CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+				T_CALLM0("updateAccuracyRadiusMarker");
 			};
 
 			// If only this marker is selected now
@@ -471,7 +471,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	Returns: nil
 	*/
 	METHOD("onMouseButtonUp") {
-		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 
@@ -486,7 +486,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	Returns: nil
 	*/
 	METHOD("onMouseButtonClick") {
-		params ["_thisObject", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
 	} ENDMETHOD;

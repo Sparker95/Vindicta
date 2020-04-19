@@ -48,7 +48,7 @@ T_DECLARE_CATEGORY(T_CARGO, 	3, 	 4)		[				T_FACTION_Guer, T_FACTION_Military, T
 T_DECLARE_CATEGORY(T_GROUP, 	4, 	14)		[				T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
 T_NAME 						  = 5;			// Template name (internal)
 T_INV 						  = 6;			// All inventory items sorted by categories. Initialized by server.
-T_LOADOUT_WEAPONS 			  = 7;			// Unit loadout weapons. Initialized by server.
+T_LOADOUT_WEAPONS 			  = 7;			// Unit loadout weapons. Used to check which weapons correspond to which unit type. Initialized by server.
 T_FACTION 					  = 8;			// Faction
 T_REQUIRED_ADDONS 			  = 9;			// Addons which must be loaded on the server. It checks cfgPatches for these addons.
 T_MISSING_ADDONS 			  = 10;			// Missing addons on the server. Initialized by server.
@@ -231,6 +231,14 @@ T_VEH_ground_combat =
 	T_VEH_car_armed,
 	T_VEH_MRAP_HMG,
 	T_VEH_MRAP_GMG,
+	T_VEH_IFV,
+	T_VEH_APC,
+	T_VEH_MBT
+];
+
+// Ground vehicles considered armored
+T_VEH_armor =
+[
 	T_VEH_IFV,
 	T_VEH_APC,
 	T_VEH_MBT
@@ -427,3 +435,7 @@ T_INV_handgun_items		= 5;
 T_INV_items				= 6;	// Array of item class names
 T_INV_vests				= 7;
 T_INV_backpacks			= 8;
+T_INV_NVGs				= 9;	// Night vision goggles
+T_INV_grenades			= 10;	// All kinds of grenades
+T_INV_explosives		= 11;	// Explosives
+T_INV_size				= 12;

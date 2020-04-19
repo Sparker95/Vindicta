@@ -7,9 +7,59 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+/*Headgear*/
+if (random 10 < 3) then {
+	private _headgear = [
+		"H_Hat_blue",
+		"H_Hat_brown",
+		"H_Hat_checker",
+		"H_Hat_grey",
+		"H_Hat_tan",
+		"H_StrawHat",
+		"H_StrawHat_dark",
+		"H_LIB_CIV_Villager_Cap_1",
+		"H_LIB_CIV_Villager_Cap_2",
+		"H_LIB_CIV_Villager_Cap_3",
+		"H_LIB_CIV_Villager_Cap_4",
+		"H_LIB_CIV_Worker_Cap_1",
+		"H_LIB_CIV_Worker_Cap_2",
+		"H_LIB_CIV_Worker_Cap_3",
+		"H_LIB_CIV_Worker_Cap_4",
+		"GEH_Beret_blue",
+		"GEH_Beret_blk",
+		"H_Hat_Safari_olive_F",
+		"H_Hat_Safari_sand_F"
+	];
 
-private _uniforms = [
+	this addHeadgear selectRandom _headgear;
+};
+
+/*Facewear*/
+if (random 10 < 3) then {
+	private _Facewear = [
+		"G_GEHeadBandage_Bloody",
+		"G_GEHeadBandage_Clean",
+		"G_GEHeadBandage_Stained",
+		"G_LIB_GER_Gloves4",
+		"G_LIB_GER_Gloves2",
+		"G_LIB_GER_Gloves1",
+		"G_LIB_GER_Gloves3",
+		"G_LIB_Scarf2_B",
+		"G_LIB_Scarf2_G",
+		"G_LIB_Scarf_B",
+		"G_LIB_Scarf_G",
+		"G_geBI_Bandanna_khk",
+		"G_geBI_Bandanna_blk",
+		"G_geBI_Bandanna_oli"
+	];
+
+	this addGoggles selectRandom _Facewear;
+};
+
+/*Uniform*/
+this forceAddUniform selectRandom [
+	"U_LIB_CIV_Assistant",
+	"U_LIB_CIV_Assistant_2",
 	"U_LIB_CIV_Citizen_1",
 	"U_LIB_CIV_Citizen_2",
 	"U_LIB_CIV_Citizen_3",
@@ -18,27 +68,26 @@ private _uniforms = [
 	"U_LIB_CIV_Citizen_6",
 	"U_LIB_CIV_Citizen_7",
 	"U_LIB_CIV_Citizen_8",
+	"U_LIB_CIV_Doctor",
+	"U_LIB_CIV_Rocker_1",
+	"U_LIB_CIV_Schoolteacher",
+	"U_LIB_CIV_Schoolteacher_2",
+	"U_LIB_CIV_Villager_1",
+	"U_LIB_CIV_Villager_2",
+	"U_LIB_CIV_Villager_3",
+	"U_LIB_CIV_Villager_4",
+	"U_LIB_CIV_Woodlander_1",
+	"U_LIB_CIV_Woodlander_2",
+	"U_LIB_CIV_Woodlander_3",
+	"U_LIB_CIV_Woodlander_4",
+	"U_LIB_CIV_Worker_1",
+	"U_LIB_CIV_Worker_2",
+	"U_LIB_CIV_Worker_3",
+	"U_LIB_CIV_Worker_4",
 	"U_LIB_CIV_Functionary_1",
 	"U_LIB_CIV_Functionary_2",
 	"U_LIB_CIV_Functionary_3",
-	"U_LIB_CIV_Functionary_4",
-	"U_GELIB_FRA_CitizenFF01",
-	"U_GELIB_FRA_CitizenFF02",
-	"U_GELIB_FRA_CitizenFF03",
-	"U_GELIB_FRA_CitizenFF04",
-	"U_GELIB_FRA_WoodlanderFF01",
-	"U_GELIB_FRA_WoodlanderFF04",
-	"U_GELIB_FRA_AssistantFF",
-	"U_GELIB_FRA_FunctionaryFF01",
-	"U_GELIB_FRA_FunctionaryFF02",
-	"U_GELIB_FRA_VillagerFF01",
-	"U_GELIB_FRA_VillagerFF02",
-	"U_GELIB_FRA_Citizen01",
-	"U_GELIB_FRA_Citizen02",
-	"U_GELIB_FRA_Citizen03",
-	"U_GELIB_FRA_Citizen04",
-	"U_LIB_CIV_Rocker_1",
-	"U_LIB_CIV_Priest"
+	"U_LIB_CIV_Functionary_4"
 ];
 
 if(random 10 > 5) then { this linkItem "ItemWatch" };
@@ -62,8 +111,6 @@ private _gunsAndAmmo = [
 	["LIB_DELISLE",				"lib_7rnd_45acp_delisle",	true],	0.1
 ];
 
-this forceAddUniform selectRandom _uniforms;
-
 (selectRandomWeighted _gunsAndAmmo) params ["_gun", "_ammo", "_isPistol"];
 
 this addWeapon _gun;
@@ -78,8 +125,8 @@ if(_isPistol) then {
 
 for "_i" from 1 to 5 do { this addItemToUniform _ammo };
 
-if(random 5 < 1) then {
-	this addGoggles selectRandomWeighted [
-		"G_Squares", 			1
-	];
-};
+[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+
+this linkItem "ItemMap";
+this linkItem "LIB_GER_ItemCompass";
+this linkItem "LIB_GER_ItemWatch";

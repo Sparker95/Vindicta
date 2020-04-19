@@ -23,9 +23,9 @@ params ["_target", "_caller", "_actionId", "_arguments"];
 		gSideStatWestHR = CALLM0(SideStatWest, "getHumanResources");
 		publicVariable "gSideStatWestHR";
 
-		_sentence = "ok cunt ill fight for ya"; 
+		_sentence = "ok cunt ill fight for ya";
 	} else {
-		_sentence = "fuck ya mate"; 
+		_sentence = "fuck ya mate";
 	};
 
 	[_target, _sentence, _caller, false] remoteExecCall ["Dialog_fnc_hud_createSentence", owner _caller];

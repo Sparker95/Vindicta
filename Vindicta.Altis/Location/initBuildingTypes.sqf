@@ -87,22 +87,30 @@ location_b_capacity =
 	],
 	// Tents
 	[
-		["Land_MedicalTent_01_wdl_generic_inner_F",
-		"Land_MedicalTent_01_aaf_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_brownhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
-		8
+		[
+			"Land_MedicalTent_01_white_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_closed_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_outer_F",
+			"Land_MedicalTent_01_NATO_generic_inner_F",
+			"Land_DeconTent_01_NATO_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_outer_F",
+			"Land_MedicalTent_01_wdl_generic_inner_F",
+			"Land_DeconTent_01_NATO_tropic_F",
+			"Land_MedicalTent_01_white_generic_outer_F",
+			"Land_MedicalTent_01_white_generic_inner_F",
+			"Land_DeconTent_01_white_F"
+		],
+		16
 	],
 	// WW2 & CUP
 	[
-		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L","Land_Mil_Barracks_L","Land_Mil_Barracks_no_interior_CUP"],
-		10
+		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L","Land_Mil_Barracks_L","Land_Mil_Barracks"],
+		12
 	],
 	[
-		["Land_I44_Object_Tent_Us_Small"],
-		2
+		["Land_Mil_Barracks_L","Land_Mil_Barracks"],
+		12
 	],
 	// Global Mobilization
 	[
@@ -163,7 +171,7 @@ location_bp_cargo_medium =
 	],
 	// Beketov
 	[
-		["Land_HouseV2_02_Interier"],
+		["Land_HouseV2_02_Interier", "Land_HouseV2_02_Interier_dam"],
 		[[4.21436,76.2874,0.973242], [6.86528,57.0615,0.973242], [6.2304,306.133,0.973242], [7.66948,288.97,0.973242]]
 	],
 	// Global Mobilization
@@ -212,6 +220,7 @@ location_bt_police =
 	
 	// Beketov - CUP
 	"Land_HouseV2_02_Interier",
+	"Land_HouseV2_02_Interier_dam",
 
 	// Global Mobilization
 	"land_gm_euro_house_07_e",
@@ -265,7 +274,7 @@ location_decorations_police =
 	],
 	// Beketov
 	[
-		["Land_HouseV2_02_Interier"],
+		["Land_HouseV2_02_Interier", "Land_HouseV2_02_Interier_dam"],
 		[[[0.00195313,-8.37939,-2.86904],[[0,1,0],[0,0,1]]],[[-0.0200195,8.30127,-2.89629],[[-8.74228e-008,-1,0],[0,0,1]]]]
 	],
 	// Global Mobilization
@@ -358,17 +367,17 @@ _textures = _objects select {_x isKindOf "UserTexture1m_F"};
 _arrayExport = []; // dist, posDir, zrel, dir
 
 {
-_b = _house; 
-_o = _x; 
+_b = _house;
+_o = _x;
  
-_bPos = getPosATL _b; 
-_oPos = getPosATL _o; 
+_bPos = getPosATL _b;
+_oPos = getPosATL _o;
  
-_dirRel = (_bPos getDir _oPos) - (direction _b); 
-_zRel = _oPos#2 - _bPos#2; 
-_distRel = _bPos distance2D _oPos; 
+_dirRel = (_bPos getDir _oPos) - (direction _b);
+_zRel = _oPos#2 - _bPos#2;
+_distRel = _bPos distance2D _oPos;
  
-_objDir = (direction _o) - (direction _b); 
+_objDir = (direction _o) - (direction _b);
  
 _arrayExport pushBack [_distRel, _dirRel, _zRel, round _objDir];
 } forEach _textures;
@@ -381,20 +390,20 @@ _arrayExport
 /*
 // Code to export objects from editor in [_pos, [_vectorDir, _vectorUp]]
 
-_objects = get3DENSelected "object"; 
-_house = _objects select {_x isKindOf "House"} select 0; 
-_textures = _objects select {_x isKindOf "UserTexture1m_F"}; 
+_objects = get3DENSelected "object";
+_house = _objects select {_x isKindOf "House"} select 0;
+_textures = _objects select {_x isKindOf "UserTexture1m_F"};
  
 _arrayExport = []; // dist, posDir, zrel, dir 
  
 { 
-_b = _house;  
-_o = _x;  
+_b = _house;
+_o = _x;
 _posModel = _b worldToModel (position _o);
 _vdir = vectorDir _o;
 _vup = vectorUp _o;
-_arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldToModel _vup]]; 
-} forEach _textures; 
+_arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldToModel _vup]];
+} forEach _textures;
  
 _arrayExport
 */

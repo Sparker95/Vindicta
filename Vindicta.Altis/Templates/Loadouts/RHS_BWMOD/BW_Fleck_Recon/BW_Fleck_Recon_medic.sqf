@@ -19,7 +19,7 @@ this addBackpack "BWA3_Kitbag_Fleck_Medic";
 this addWeapon "BWA3_G38C_tan";
 this addPrimaryWeaponItem "BWA3_muzzle_snds_Rotex_IIIC";
 this addPrimaryWeaponItem "BWA3_acc_VarioRay_irlaser";
-this addPrimaryWeaponItem "BWA3_optic_EOTech_Mag_Off";
+this addPrimaryWeaponItem "rhsusf_acc_g33_xps3";
 this addPrimaryWeaponItem "BWA3_30Rnd_556x45_G36_Tracer_Dim";
 this addWeapon "BWA3_P8";
 this addHandgunItem "BWA3_acc_LLM01_irlaser";

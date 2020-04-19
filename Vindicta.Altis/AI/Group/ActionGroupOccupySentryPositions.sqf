@@ -11,7 +11,7 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
 		
@@ -28,7 +28,10 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMove", _AI);
 			
 			if (count _sentryPos > 0) then {
-				pr _parameters = [["position", _sentryPos], ["teleport", false]];
+				pr _parameters = [
+					["position", _sentryPos],
+					[TAG_INSTANT, _instant]
+				];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
 			} else {
 				pr _unitData = CALLM0(_unit, "getData");
@@ -44,11 +47,11 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	
 	// Logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		T_CALLM0("failIfEmpty");
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 		
 		/*
 		// Shout at subordinates
@@ -67,13 +70,13 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		//OOP_INFO_1("Unit removed: %1", _unit);
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete external goals
 		pr _group = GETV(T_GETV("AI"), "agent");
@@ -94,9 +97,9 @@ ENDCLASS;
 
 /*
 // Sentry
-_unit = cursorObject; 
-_goalClassName = "GoalGroupOccupySentryPositions"; 
-_parameters = []; 
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf"; 
+_unit = cursorObject;
+_goalClassName = "GoalGroupOccupySentryPositions";
+_parameters = [];
+call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 [_unit, _goalClassName, _parameters] call AI_misc_fnc_addGroupGoal;
 */

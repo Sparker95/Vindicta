@@ -15,7 +15,6 @@ this forceAddUniform "FGN_AAF_M93_Lizard";
 _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard","FGN_AAF_M99Vest_Khaki"];
 this addVest _RandomVest;
 
-
 this addWeapon "rhs_weap_l1a1_wood";
 this addPrimaryWeaponItem "rhsgref_acc_falMuzzle_l1a1";
 this addPrimaryWeaponItem "rhsgref_acc_l1a1_l2a2_3d";
