@@ -539,10 +539,9 @@ CLASS("GameManager", "MessageReceiverEx")
 				};
 
 				private _autoLoadTime = PROCESS_TIME + 30;
-				waitUntil {
+				while { !IS_ADMIN_ON_DEDI && _autoLoadTime > PROCESS_TIME } do {
 					sleep 0.5;
 					format [LOC("Autoload_CountDown"), _autoLoadTime - PROCESS_TIME] call pr0_fnc_autoLoadMsg;
-					IS_ADMIN_ON_DEDI || PROCESS_TIME <= _autoLoadTime
 				};
 
 				if(!IS_ADMIN_ON_DEDI) then {
