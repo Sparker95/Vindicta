@@ -578,33 +578,34 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 				};
+			};
 
-				// Give intel to this unit
-				switch (_catID) do {
-					case T_INF: {
-						// Leaders get intel tablets
-						if (CALLM0(_group, "getLeader") == _thisObject) then {
-							CALLSM1("UnitIntel", "initUnit", _thisObject);
-						} else {
-							// todo give intel to some special unit types, like radio specialists, etc...
-							// Some random infantry units get tablets too
-							if (random 10 < 2) then {
-								CALLSM1("UnitIntel", "initUnit", _thisObject);
-							};
-						};
-					};
-					case T_VEH: {
-						// A very little amount of vehicles gets intel
-						if (random 10 < 3) then {
+			// Give intel to this unit
+			// Intel tablets are not saved in inventory
+			switch (_catID) do {
+				case T_INF: {
+					// Leaders get intel tablets
+					if (CALLM0(_group, "getLeader") == _thisObject) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					} else {
+						// todo give intel to some special unit types, like radio specialists, etc...
+						// Some random infantry units get tablets too
+						if (random 10 < 2) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-					case T_DRONE: {
-						// Don't put intel into drones?
+				};
+				case T_VEH: {
+					// A very little amount of vehicles gets intel
+					if (random 10 < 3) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
 					};
-					case T_CARGO: {
-						// Don't put intel into cargo boxes?
-					};
+				};
+				case T_DRONE: {
+					// Don't put intel into drones?
+				};
+				case T_CARGO: {
+					// Don't put intel into cargo boxes?
 				};
 			};
 
@@ -2455,6 +2456,20 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_data set [UNIT_DATA_ID_OWNER, 0];
 		_data set [UNIT_DATA_ID_MUTEX, 0];
 		_data set [UNIT_DATA_ID_AI, 0];
+
+		// Filter inventory
+		// Array of patterns of items we do not want to save in inventory
+		pr _itemsNoSave = [
+			"vin_tablet_",
+			"vin_document_"
+		];
+
+		pr _inv = _data#UNIT_DATA_ID_INVENTORY;
+		{
+			pr _invArray = _x; // Array of [item, count]
+			_inv set [_foreachindex, _invArray select { pr _className = _x#0; _itemsNoSave findIf {_x in _className} == -1}];
+		} forEach _inv;
+		///
 
 		//diag_log _data;
 

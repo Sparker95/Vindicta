@@ -432,10 +432,12 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								// Check if player is picking a vehicle lock
 								// Can be used for various ACE actions which have a progress bar
 								pr _ctrl = uinamespace getvariable "ACE_common_ctrlProgressBarTitle";
-								if (!(isNull _ctrl)) then {
-									if ((ctrlText _ctrl) == (localize "STR_ACE_VehicleLock_Action_LockpickInUse")) then {
-										_hintKeys pushBack HK_ILLEGAL;
-										_suspicionArr pushBack [SUSP_LOCKPICK, "Picking a vehicle lock"];
+								if (!(isNil "_ctrl")) then{
+									if (!(isNull _ctrl)) then {
+										if ((ctrlText _ctrl) == (localize "STR_ACE_VehicleLock_Action_LockpickInUse")) then {
+											_hintKeys pushBack HK_ILLEGAL;
+											_suspicionArr pushBack [SUSP_LOCKPICK, "Picking a vehicle lock"];
+										};
 									};
 								};
 
