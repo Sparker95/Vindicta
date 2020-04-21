@@ -181,7 +181,7 @@
 				<Original>INJECTING SOME MORPHINE?</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_ILLEGAL">
-				<Original>DO NOT DO THAT!</Original>
+				<Original>ILLEGAL ACTION</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>

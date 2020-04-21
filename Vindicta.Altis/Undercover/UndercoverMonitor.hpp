@@ -23,6 +23,7 @@
 #define SUSP_SPEEDMAX 0.2							// Max suspiciousness gained for movement speed
 #define SUSP_NOROADS 80								// Distance that is too far from roads to not be suspicious
 #define SUSP_OFFROAD 0.3							// Suspiciousness gained for being too far from roads
+#define SUSP_LOCKPICK 0.8							// Suspiciousness gained for picking a vehicle lock
 #define SUSP_INCREMENT 0.08							// UNUSED: value for gradual increase of suspiciousness when performing suspicous behavior while seen
 
 // suspicion values for looking into inventory
