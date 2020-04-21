@@ -135,7 +135,8 @@ t_ACEMiscItems = [
 					["ACE_Kestrel4500",2],
 					["ACE_ATragMX",6],
 					["ACE_RangeCard",6],
-					["ACE_HandFlare_White", 30] // Flares
+					["ACE_HandFlare_White", 30], // Flares
+					["ACE_key_lockpick", 20]	// Lockpick
 				];
 
 // ACE medical items for vehicles

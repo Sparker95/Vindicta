@@ -404,9 +404,11 @@ CLASS("GameManager", "MessageReceiverEx")
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
+						pr _timeStart = diag_tickTime;
 						//CRITICAL_SECTION {
 						CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
 						//};
+						diag_log format ["[GameManager] Game loaded in %1 seconds", diag_tickTime - _timeStart];
 						gGameMode = _gameModeRef;
 						gGameModeServer = _gameModeRef;
 						PUBLIC_VARIABLE "gGameModeServer";
