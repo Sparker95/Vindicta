@@ -184,7 +184,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _respawnLoc = NEW_PUBLIC("Location", [_locPos]);
 			CALLM1(_respawnLoc, "setName", "Initial Respawn Point");
 			CALLM1(_respawnLoc, "setType", LOCATION_TYPE_RESPAWN);
-			CALLM2(_respawnLoc, "setBorder", "circle", 0.1);
+			CALLM1(_respawnLoc, "setBorderCircle", 0.1);
 			{ CALLM2(_respawnLoc, "enablePlayerRespawn",_x, true); } forEach [WEST, EAST, INDEPENDENT];
 
 			// Reveal that location to commanders

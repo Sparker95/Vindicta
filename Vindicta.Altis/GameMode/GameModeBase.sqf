@@ -1202,38 +1202,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locType = _locSector getVariable ["Type", ""];
 			private _locSide = _locSector getVariable ["Side", ""];
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
-			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
-			//private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""]; // capacityInf is calculated from actual buildings
-			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
-
-			if(_locType == LOCATION_TYPE_CITY) then {
-				private _baseRadius = 300; // Radius at which it 
-
-				_locBorder params ["_a", "_b"];
-				private _area = 4*_a*_b;
-				private _density_km2 = 60;	// Amount of civilians per square km
-				private _civsRaw = ceil ((_density_km2/1e6) * _area);
-				// Clamp between 10 and 35
-				_locCapacityCiv = 10 max _civsRaw min 35;
-
-				// https://www.desmos.com/calculator/nahw1lso9f
-				/*
-				_locCapacityCiv = ceil (30 * log (0.0001 * _locBorder#0 * _locBorder#1 + 1));
-				OOP_INFO_MSG("%1 civ count set to %2", [_locName ARG _locCapacityCiv]);
-				//private _houses = _locSectorPos nearObjects ["House", _locBorder#0 max _locBorder#1];
-				//diag_log format["%1 houses at %2", count _houses, _locName];
-				*/
-
-				// https://www.desmos.com/calculator/nahw1lso9f
-				//_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
-				//OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
-			} else {
-				_locCapacityCiv = 0;
-			};
 
 			private _template = "";
 			private _side = "";
-			
+
 			private _side = switch (_locSide) do{
 				case "civilian": { CIVILIAN };//might not need this
 				case "west": { WEST };
@@ -1248,13 +1220,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(_loc, "setName", _locName);
 			CALLM1(_loc, "setSide", _side);
 			CALLM1(_loc, "setType", _locType);
-			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
-			//CALLM1(_loc, "setCapacityInf", _locCapacityInf); // capacityInf is calculated from actual buildings
-			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
-			CALLM1(_loc, "initFromEditor", _locSector);
+			CALLM1(_loc, "setBorder", _locBorder);
+			CALLM0(_loc, "findAllObjects");
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or _locCapacityCiv > 25)) then {
+			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -1265,7 +1235,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
 					private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
 					private _policeStation = NEW_PUBLIC("Location", _args);
-					CALLM2(_policeStation, "setBorder", "circle", 10);
+					CALLM1(_policeStation, "setBorderCircle", 10);
 					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
 					CALLM0(_policeStation, "addSpawnPosFromBuildings");
 					CALLM1(_policeStation, "setSide", _side);
@@ -1345,14 +1315,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Final array of roadblock positions
 		private _roadblockPositionsFinal = _roadblockPositionsAroundLocations + _predefinedRoadblockPositions;
-		
+
 		// Iterate all final positions
 		private _commanders = [];
 		{
 			if (!IS_NULL_OBJECT(T_GETV(_x))) then {_commanders pushBack T_GETV(_x)};
 		} forEach ["AICommanderWest", "AICommanderEast", "AICommanderInd"];
-		
-		{ // foreach _roadblockPositionsFinal			
+
+		{ // foreach _roadblockPositionsFinal
 			private _pos = _x;
 
 			// Reveal positions to commanders
@@ -1391,7 +1361,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _gar = NEW("Garrison", _args);
 
 			OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
-			
 
 			private _nInfGroups = CLAMP(_cInf * 0.5, 2, 6);
 			for "_i" from 1 to _nInfGroups do {

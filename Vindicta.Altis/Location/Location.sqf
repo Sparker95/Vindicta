@@ -94,8 +94,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("side", CIVILIAN);
 		T_SETV_PUBLIC("name", "noname");
 		T_SETV_PUBLIC("garrisons", []);
-		T_SETV_PUBLIC("boundingRadius", 50);
-		T_SETV_PUBLIC("border", 50);
+		T_SETV_PUBLIC("boundingRadius", 0);
+		T_SETV_PUBLIC("border", []);
 		T_SETV("borderPatrolWaypoints", []);
 		T_SETV("patrolRoutes", []);
 		T_SETV("useParentPatrolWaypoints", false);
@@ -136,7 +136,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("sideCreated", _createdBySide);
 
 		// Setup basic border
-		T_CALLM2("setBorder", "circle", [20]);
+		T_CALLM1("setBorderCircle", 20);
 		
 		T_SETV("timer", NULL_OBJECT);
 
@@ -168,20 +168,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("setName") {
 		params [P_THISOBJECT, P_STRING("_name")];
-		SET_VAR_PUBLIC(_thisObject, "name", _name);
+		T_SETV_PUBLIC("name", _name);
 	} ENDMETHOD;
 
 	METHOD("setCapacityInf") {
 		params [P_THISOBJECT, P_NUMBER("_capacityInf")];
 		T_SETV("capacityInf", _capacityInf);
-		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capacityInf);
+		T_SETV_PUBLIC("capacityInf", _capacityInf);
 	} ENDMETHOD;
 
 	METHOD("setCapacityCiv") {
 		params [P_THISOBJECT, P_NUMBER("_capacityCiv")];
 		T_SETV("capacityCiv", _capacityCiv);
 		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY && _capacityCiv > 0)then{
-			private _cpModule = [+T_GETV("pos"),T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
+			private _cpModule = [+T_GETV("pos"), T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
 			if(!isNull _cpModule) then {
 				T_SETV("cpModule",_cpModule);
 			} else {
@@ -411,7 +411,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Increase infantry capacity
 		pr _capnew = T_GETV("capacityInf") + _cap;
 		T_SETV("capacityInf", _capnew);
-		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capnew);
+		T_SETV_PUBLIC("capacityInf", _capnew);
 
 		// Check if it enabled radio functionality for the location
 		private _index = location_bt_radio find _type;
@@ -856,7 +856,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// From now on this place is occupied or was occupied
-		SET_VAR_PUBLIC(_thisObject, "wasOccupied", true);
+		T_SETV_PUBLIC("wasOccupied", true);
 	} ENDMETHOD;
 	
 	METHOD("unregisterGarrison") {
@@ -1169,7 +1169,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("setType") {
 		params [P_THISOBJECT, P_STRING("_type")];
-		SET_VAR_PUBLIC(_thisObject, "type", _type);
+		T_SETV_PUBLIC("type", _type);
 
 		// Create a timer object if the type of the location is a city or a roadblock
 		//if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
@@ -1179,7 +1179,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		//};
 
 		// if (_type == LOCATION_TYPE_ROADBLOCK) then {
-		// 	SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
+		// 	T_SETV_PUBLIC("isBuilt", false); // Unbuild this
 		// };
 
 		T_CALLM("updateWaypoints", []);
@@ -1364,44 +1364,67 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 
 	/*
+	Method: setBorderCircle
+	Sets border parameters for this location as a circle
+
+	Arguments:
+	_radius
+	*/
+	METHOD("setBorderCircle") {
+		params [P_THISOBJECT, P_NUMBER("_radius")];
+		T_CALLM1("setBorder", [_radius ARG _radius ARG 0 ARG false]);
+	} ENDMETHOD;
+
+	/*
 	Method: setBorder
 	Sets border parameters for this location
 
 	Arguments:
-	_type - "circle" or "rectange"
-	_data	- for "circle":
-		_radius
-			- for "rectangle":
-		[_a, _b, _dir] - rectangle dimensions and direction
-
+	_data - [radiusA, radiusB, angle, isRectangle]
 	*/
 	METHOD("setBorder") {
-		params [P_THISOBJECT, P_STRING("_type"), ["_data", [50], [0, []]] ];
+		params [P_THISOBJECT, ["_data", [50, 50, 0, false], [[]]] ];
 
-		switch (_type) do {
-			case "circle" : {
-				_data params [ ["_radius", 0, [0] ] ];
-				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
-				pr _border = [T_GETV("pos"), _radius, _radius, 0, false, -1]; // [center, a, b, angle, isRectangle, c]
-				SET_VAR_PUBLIC(_thisObject, "border", _border);
-			};
-			
-			case "rectangle" : {
-				_data params ["_a", "_b", "_dir"];
-				private _radius = sqrt(_a*_a + _b*_b);
-				pr _border = [T_GETV("pos"), _a, _b, _dir, true, -1]; // [center, a, b, angle, isRectangle, c]
-				SET_VAR_PUBLIC(_thisObject, "border", _border);
-				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
-			};
-			
-			default {
-				diag_log format ["[Location::setBorder] Error: wrong border type: %1, location: %2", _type, T_GETV("name")];
-			};
+		_data params ["_a", "_b", "_dir", "_isRectangle"];
+		private _boundingRadius = if(_isRectangle) then {
+			sqrt(_a*_a + _b*_b);
+		} else {
+			_a max _b
 		};
-
-		T_CALLM("updateWaypoints", []);
+		T_SETV_PUBLIC("boundingRadius", _boundingRadius);
+		pr _border = [T_GETV("pos"), _a, _b, _dir, _isRectangle, -1]; // [center, a, b, angle, isRectangle, c]
+		T_SETV_PUBLIC("border", _border);
+		T_CALLM0("updateWaypoints");
+		T_CALLM0("updateCivCapacity");
 	} ENDMETHOD;
 
+	METHOD("updateCivCapacity") {
+		params [P_THISOBJECT];
+		private _locCapacityCiv = if(T_GETV("type") == LOCATION_TYPE_CITY) then {
+			private _baseRadius = 300; // Radius at which it 
+			private _border = T_GETV("border");
+			_border params ["_pos", "_a", "_b"];
+			private _area = 4*_a*_b;
+			private _density_km2 = 60;	// Amount of civilians per square km
+			private _civsRaw = ceil ((_density_km2/1e6) * _area);
+			CLAMP(_civsRaw, 5, 25)
+
+			// https://www.desmos.com/calculator/nahw1lso9f
+			/*
+			_locCapacityCiv = ceil (30 * log (0.0001 * _locBorder#0 * _locBorder#1 + 1));
+			OOP_INFO_MSG("%1 civ count set to %2", [_locName ARG _locCapacityCiv]);
+			//private _houses = _locSectorPos nearObjects ["House", _locBorder#0 max _locBorder#1];
+			//diag_log format["%1 houses at %2", count _houses, _locName];
+			*/
+
+			// https://www.desmos.com/calculator/nahw1lso9f
+			//_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
+			//OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
+		} else {
+			0
+		};
+		T_CALLM1("setCapacityCiv", _locCapacityCiv);
+	} ENDMETHOD;
 	
 
 	// File-based methods
@@ -1414,9 +1437,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// Checks if given position is inside the border
 	METHOD_FILE("isInBorder", "Location\isInBorder.sqf");
-
-	// Initializes the location from editor-plased objects
-	METHOD_FILE("initFromEditor", "Location\initFromEditor.sqf");
 
 	// Adds a spawn position
 	METHOD_FILE("addSpawnPos", "Location\addSpawnPos.sqf");
@@ -1515,7 +1535,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_pos = _spawnPos;
 			};
 
-			SET_VAR_PUBLIC(_thisObject, "playerRespawnPos", _pos);	// Broadcast the new pos
+			T_SETV_PUBLIC("playerRespawnPos", _pos);	// Broadcast the new pos
 
 			_respawnSides pushBackUnique _side;
 		} else {
@@ -1882,10 +1902,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if(_foundIdx != NOT_FOUND) then {
 			private _locSector = _locSectors#_foundIdx;
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
-			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
-			T_CALLM2("setBorder", _locBorderType, _locBorder);
-			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
-			T_CALLM1("setCapacityCiv", _locCapacityCiv);
+			T_CALLM1("setBorder", _locBorder);
 		};
 
 		pr _gmData = T_GETV("gameModeData");
