@@ -930,7 +930,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			true
 		} else {
 			false
-		}
+		};
+
+		// Give player a lockpick
+		player addItemToUniform "ACE_key_lockpick";
 	} ENDMETHOD;
 
 	// Player death event handler in SP
