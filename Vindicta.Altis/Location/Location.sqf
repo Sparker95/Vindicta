@@ -1032,7 +1032,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT];
 		T_GETV("capacityCiv")
 	} ENDMETHOD;
-	
+
 	/*
 	Method: getOpenBuildings
 	Returns an array of object handles of buildings in which AI infantry can enter (they must return buildingPos positions)
