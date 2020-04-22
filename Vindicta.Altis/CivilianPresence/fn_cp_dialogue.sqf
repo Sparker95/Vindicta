@@ -209,11 +209,12 @@ private _array = [
 
 				private _text = format ["%1 %2 %3, %4", _intro, _typeString, _posString, _distanceString];
 
-				//this code runs when sentence is spoken
+				
 				private _arg = [_distance, _type, _loc];
+				//this code runs when sentence is spoken
 				private _script = {
 					_this#3 params ["_distance","_type","_loc"];
-					__BOOST_SUSP;
+					call __BOOST_SUSP;
 
 					
 
