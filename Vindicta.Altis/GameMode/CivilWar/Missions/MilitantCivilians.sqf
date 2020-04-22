@@ -78,7 +78,7 @@ pr0_fnc_CivilianJoinPlayer = {
 					// _target stop false;
 				}] remoteExec ["spawn", 2];
 			} else {
-				[_target [
+				[_target, [
 					"(...)",
 					"(bleeds)",
 					"(maybe they are sleeping?)",
@@ -403,7 +403,7 @@ pr0_fnc_givePlayerIntel = {
 				
 				sleep 2;
 
-				[_civ [
+				[_civ, [
 					"I must leave now.",
 					"I must be going, they are looking for us!",
 					"Its best not to be seen together.",
