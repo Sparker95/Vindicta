@@ -112,9 +112,10 @@ private _array = [
 		}else{
 			private _texts = ["There is one %2meter to the %1", "An other one is to the %1, about %2 meter", "and one more %2meter %1 of here"];
 			{
+				if(_forEachIndex > 2)exitWith {};//we dont need to know more that 3
 				private _fuelstation = _x;
 				private _dir = (player getRelDir _fuelstation) call pr0_fnc_common_bearingToID;
-				private _dis = round (player distance _fuelstation);
+				private _dis = round ((player distance _fuelstation) / 50) * 50;
 				private _text = format [_texts#_forEachIndex, _dir,_dis]; 
 				_return pushBack [TYPE_SENTENCE,_text,2];
 			}forEach _fuelstations;
