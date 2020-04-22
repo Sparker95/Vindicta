@@ -582,7 +582,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			// _marker setMarkerType "hd_destroy";
 
 			// Use the civ types specified in the presence module
-			private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
+			private _civTypes = missionNameSpace getVariable ["pr0_cp_unitTypes", []];
 
 			for "_i" from 0 to (_deficit-1) do {
 
