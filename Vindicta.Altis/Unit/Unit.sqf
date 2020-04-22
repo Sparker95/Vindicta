@@ -55,7 +55,7 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 		[
 		{
 			params ["_veh", "_isLocked"];
-			diag_log format ["=== SetVehicleLock: %1 %2", _veh, _isLocked];
+			//diag_log format ["=== SetVehicleLock: %1 %2", _veh, _isLocked];
 			private _lockNumber = [0, 3] select _isLocked;
 			_veh lock _lockNumber;
 		},
