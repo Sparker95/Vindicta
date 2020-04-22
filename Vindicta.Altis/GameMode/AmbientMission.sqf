@@ -27,7 +27,7 @@ CLASS("AmbientMission", "")
 	*/
 	METHOD("isActive") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-		T_PRVAR(states);
+		private _states = T_GETV("states");
 		private _cityData = GETV(_city, "gameModeData");
 		GETV(_cityData, "state") in _states
 	} ENDMETHOD;

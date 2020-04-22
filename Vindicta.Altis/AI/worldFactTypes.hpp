@@ -3,3 +3,5 @@
 
 // Knowledge about some location
 #define WF_TYPE_COMMANDER_LOCATION	100
+
+#define WF_TYPE_UNIT_UNPATHABLE		12

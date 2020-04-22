@@ -16,7 +16,7 @@ _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["I_soldier_F"]];							//Default infantry if nothing is found
+_inf set [T_INF_default,  ["I_soldier_F"]];							//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["I_Soldier_SL_F"]];
 _inf set [T_INF_TL, ["I_Soldier_TL_F"]];
@@ -72,16 +72,16 @@ _veh set [T_VEH_MRAP_unarmed, ["I_MRAP_03_F"]];
 _veh set [T_VEH_MRAP_HMG, ["I_MRAP_03_hmg_F"]];
 _veh set [T_VEH_MRAP_GMG, ["I_MRAP_03_gmg_F"]];
 
-_veh set [T_VEH_IFV, ["I_APC_tracked_03_cannon_F", "I_LT_01_AT_F", "I_LT_01_cannon_F"]];
+_veh set [T_VEH_IFV, ["I_APC_tracked_03_cannon_F"]];
 _veh set [T_VEH_APC, ["I_APC_Wheeled_03_cannon_F"]];
 _veh set [T_VEH_MBT, ["I_MBT_03_cannon_F"]];
 _veh set [T_VEH_MRLS, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPA, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPAA, ["I_LT_01_AA_F"]];
 
-_veh set [T_VEH_stat_HMG_high, ["I_HMG_01_high_F"]];
+_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]];
 _veh set [T_VEH_stat_GMG_high, ["I_GMG_01_high_F"]];
-_veh set [T_VEH_stat_HMG_low, ["I_HMG_01_F"]];
+_veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]];
 _veh set [T_VEH_stat_GMG_low, ["I_GMG_01_F"]];
 _veh set [T_VEH_stat_AA, ["I_static_AA_F"]];
 _veh set [T_VEH_stat_AT, ["I_static_AT_F"]];

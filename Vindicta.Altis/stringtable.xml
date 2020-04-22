@@ -181,7 +181,7 @@
 				<Original>INJECTING SOME MORPHINE?</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_ILLEGAL">
-				<Original>DO NOT DO THAT!</Original>
+				<Original>ILLEGAL ACTION</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
@@ -285,7 +285,6 @@
 	</Package>
 </Project>
 
-
 <Project name="DialogBase">
 	<Package name="InGameMenuUI">
 		<Container name="TAB_SAVE">
@@ -308,6 +307,182 @@
 				<Original>Hover to show description.</Original>
 			</Key>
 			
+		</Container>
+	</Package>
+</Project>
+
+<Project name="Vindicta">
+	<Package name="Settings">
+		<Container name="Section">
+			<Key ID="STR_Vindicta_Settings_Section">
+				<Original>Vindicta</Original>
+			</Key>
+		</Container>
+		<Container name="Autoload">
+			<Key ID="STR_Vindicta_Settings_Autoload">
+				<Original>Auto Load</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autoload_Enabled">
+				<Original>Enabled</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autoload_Enabled_Tooltip">
+				<Original>Most recent save will be loaded automatically on mission start</Original>
+			</Key>
+		</Container>
+		<Container name="Autosave">
+			<Key ID="STR_Vindicta_Settings_Autosave">
+				<Original>Auto Save</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_Enabled">
+				<Original>Enabled</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_Enabled_Tooltip">
+				<Original>Enable/disable auto save system</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty">
+				<Original>On empty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty_Tooltip">
+				<Original>Will auto save when the last player leaves the server</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_Interval">
+				<Original>Interval in hours (0 = disabled)</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_Interval_Tooltip">
+				<Original>Auto save will happen on this interval, setting to 0 will disable interval auto save</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat">
+				<Original>In combat</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat_Tooltip">
+				<Original>When enabled will allow autosaving when enemies are within 250m of a player, otherwise it will be delayed by up to 30 minutes after the scheduled time</Original>
+			</Key>
+		</Container>
+		<Container name="Server">
+			<Key ID="STR_Vindicta_Settings_Server">
+				<Original>Server</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Server_Suspend">
+				<Original>Suspend when empty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Server_Suspend_Tooltip">
+				<Original>Time will be frozen when no players are connected to the server (applies to dedicated servers only)</Original>
+			</Key>
+		</Container>
+		<Container name="Game">
+			<Key ID="STR_Vindicta_Settings_Game">
+				<Original>Game</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Game_Speed">
+				<Original>Game Speed Multiplier</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Game_Speed_Tooltip">
+				<Original>Determines how fast time progresses in the game</Original>
+			</Key>
+		</Container>
+		<Container name="Difficulty">
+			<!-- <Key ID="STR_Vindicta_Settings_Difficulty_Advanced">
+				<Original>Use advanced difficulty settings</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Advanced_Tooltip">
+				<Original>When enabled the advanced difficulty settings will override the global one</Original>
+			</Key> -->
+			<Key ID="STR_Vindicta_Settings_Difficulty_Global">
+				<Original>Global difficulty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Global_Tooltip">
+				<Original>This value is applied as a modifier to all other difficulty settings</Original>
+			</Key>
+			
+			<!-- Enemy -->
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy">
+				<Original>Enemy difficulty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Tooltip">
+				<Original>This value is applied as a modifier to all Enemy difficulty settings</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Reinforcement_Rate">
+				<Original>Enemy reinforcement rate</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Reinforcement_Rate_Tooltip">
+				<Original>Modifies the rate at which the enemy can reinforce</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Escalation_Rate">
+				<Original>Enemy escalation rate</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Escalation_Rate_Tooltip">
+				<Original>Modifies the rate at which the enemy escalates their force strength (e.g. how soon in the campaign they will start to use tanks)</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Persistence">
+				<Original>Enemy persitence</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Persistence_Tooltip">
+				<Original>Modifies how persistent the enemy will be when sending repeated actions against you</Original>
+			</Key>
+
+			<!-- Enemy AI -->
+			<Key ID="STR_Vindicta_Settings_Difficulty_AI">
+				<Original>AI difficulty</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Difficulty_AI_Tooltip">
+				<Original>This value is applied as a modifier to all AI difficulty settings</Original>
+			</Key>
+
+		</Container>
+
+		<Container name="Performance">
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison">
+				<Original>Garrison Virtualization Distance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison_Tooltip">
+				<Original>Garrisons beyond this distance will be virtualized, meters</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Civilian">
+				<Original>Civilian Spawn Distance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Civilian_Tooltip">
+				<Original>Spawn distance for cities, measured from city border, meters</Original>
+			</Key>
+		</Container>
+
+	</Package>
+	<Package name="GameManager">
+		<Container name="Load">
+			<Key ID="STR_Vindicta_GameManager_Load_Loading">
+				<Original>LOADING</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Load_Complete">
+				<Original>LOAD COMPLETE</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Load_Failed">
+				<Original>LOAD FAILED</Original>
+			</Key>
+		</Container>
+		<Container name="Autoload">
+			<Key ID="STR_Vindicta_GameManager_Autoload">
+				<Original>Auto load</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_Disabled">
+				<Original>Currently disabled, enable in CBA settings</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_NoSaves">
+				<Original>No saves found</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_NoSavesForMap">
+				<Original>No saves found for this map</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_Version">
+				<Original>Most recent save for this map is an incompatible version</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_Factions">
+				<Original>Most recent save for this map has incompatible factions</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_CountDown">
+				<Original>Will autoload in %1s, login as admin to abort</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_AdminAbort">
+				<Original>Autoload aborted as admin is present</Original>
+			</Key>
 		</Container>
 	</Package>
 </Project>

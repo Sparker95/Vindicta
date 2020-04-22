@@ -259,7 +259,7 @@ CLASS("Storage", "")
 					pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
 					pr _isPublicStr = ["0", "1"] select _isPublic;
 					//diag_log format ["%1 is public: %2 %3", _valueOrRef, _isPublic, _isPublicStr];
-					T_CALLM2("saveString", _valueOrRef + "_" + OOP_PARENT_STR, _className);	
+					T_CALLM2("saveString", _valueOrRef + "_" + OOP_PARENT_STR, _className);
 					T_CALLM2("saveString", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublicStr);
 
 					// Add object ref to the map
@@ -362,7 +362,7 @@ CLASS("Storage", "")
 						} else {
 							_refLoaded = NEW(_className, []);
 						};
-						diag_log format ["Created new object: %1", _refLoaded];
+						//diag_log format ["Created new object: %1", _refLoaded];
 					} else {
 						// Recreate object with the same ref
 						if (_isPublic) then {									// Reconstruct object parent class
@@ -373,22 +373,22 @@ CLASS("Storage", "")
 						//diag_log format ["Created existing object: %1", _refLoaded];
 					};
 
-					T_PRVAR(version);
+					private _version = T_GETV("version");
 					if (!CALLM2(_refLoaded, "preDeserialize", _thisObject, _version)) exitWith {	// Predeserialize
-						OOP_ERROR_1("preDeserialize failed for %1", _refLoaded);
-						OOP_ERROR_1("  value: %1", _serial);
+						OOP_WARNING_1("preDeserialize failed for %1", _refLoaded);
+						OOP_WARNING_1("  value: %1", _serial);
 						NULL_OBJECT
 					};
 
 					if (!CALLM2(_refLoaded, "deserializeFromStorage", _serial, _version)) exitWith {			// Deserialize
-						OOP_ERROR_1("deserialize failed for %1", _refLoaded);
-						OOP_ERROR_1("  value: %1", _serial);
+						OOP_WARNING_1("deserialize failed for %1", _refLoaded);
+						OOP_WARNING_1("  value: %1", _serial);
 						NULL_OBJECT
 					};
 
 					if(!CALLM2(_refLoaded, "postDeserialize", _thisObject, _version)) exitWith {	// PostDeserialize
-						OOP_ERROR_1("postDeserialize failed for %1", _refLoaded);
-						OOP_ERROR_1("  value: %1", _serial);
+						OOP_WARNING_1("postDeserialize failed for %1", _refLoaded);
+						OOP_WARNING_1("  value: %1", _serial);
 						NULL_OBJECT
 					};
 

@@ -23,7 +23,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["CUP_O_TK_Soldier_Backpack"]];
+_inf set [T_INF_default, ["CUP_O_TK_Soldier_Backpack"]];
 
 _inf set [T_INF_SL, ["CUP_O_TK_Soldier_SL"]];
 _inf set [T_INF_TL, ["CUP_O_TK_Soldier_SL"]];

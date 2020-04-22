@@ -16,8 +16,7 @@ _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Rifleman","FGN_AAF_M99Vest_K
 this addVest _RandomVest;
 this addBackpack "B_LegStrapBag_coyote_F";
 
-this addWeapon "rhs_weap_akm_gp25";
-this addPrimaryWeaponItem "rhs_acc_dtkakm";
+this addWeapon "rhs_weap_m70b3n_pbg40";
 this addPrimaryWeaponItem "rhs_VOG25";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
 

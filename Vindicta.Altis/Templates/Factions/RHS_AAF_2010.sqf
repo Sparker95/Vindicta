@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["FGN_AAF_InfRes_Rifleman"]];
+_inf set [T_INF_default, ["FGN_AAF_InfRes_Rifleman"]];
 
 _inf set [T_INF_SL, ["RHS_AAF_2010_SL","RHS_AAF_2010_SL_2"]];
 _inf set [T_INF_TL, ["RHS_AAF_2010_TL"]];
@@ -36,7 +36,7 @@ _inf set [T_INF_ammo, ["RHS_AAF_2010_AT_2","RHS_AAF_2010_MG_2"]];
 _inf set [T_INF_LAT, ["RHS_AAF_2010_LAT", "RHS_AAF_2010_AT_3"]];
 _inf set [T_INF_AT, ["RHS_AAF_2010_AT","RHS_AAF_2010_AT_3"]];
 _inf set [T_INF_AA, ["RHS_AAF_2010_AA"]];
-_inf set [T_INF_LMG, ["RHS_AAF_2010_LMG"]];
+_inf set [T_INF_LMG, ["RHS_AAF_2010_LMG", "RHS_AAF_2010_LMG_2"]];
 _inf set [T_INF_HMG, ["RHS_AAF_2010_MG"]];
 _inf set [T_INF_medic, ["RHS_AAF_2010_medic"]];
 _inf set [T_INF_engineer, ["RHS_AAF_2010_engineer"]];
@@ -63,7 +63,7 @@ _inf set [T_INF_recon_JTAC, ["RHS_AAF_2010_recon_JTAC"]];
 
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["FGN_AAF_M1025_unarmed"]];
 
@@ -80,11 +80,11 @@ _veh set [T_VEH_APC, ["rhsusf_m113d_usarmy_supply", "rhsusf_m113d_usarmy", "rhsu
 _veh set [T_VEH_MBT, ["rhs_t72ba_tv", "rhs_t72bb_tv"]];
 _veh set [T_VEH_MRLS, ["FGN_AAF_BM21"]];
 _veh set [T_VEH_SPA, ["rhs_2s1_tv"]];
-_veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]]; 
+_veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]];
 
-_veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]];
+_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
-_veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_D"]];
+_veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]];
 _veh set [T_VEH_stat_GMG_low, ["rhsgref_ins_g_SPG9"]];
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]];
 _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_D"]];
@@ -92,7 +92,7 @@ _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_D"]];
 _veh set [T_VEH_stat_mortar_light, ["RHS_M252_D"]];
 _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_D"]];
 
-_veh set [T_VEH_heli_light, ["rhs_uh1h_hidf", "RHS_MELB_H6M", "RHS_MELB_MH6M"]]; 
+_veh set [T_VEH_heli_light, ["rhs_uh1h_hidf", "RHS_MELB_H6M", "RHS_MELB_MH6M"]];
 _veh set [T_VEH_heli_heavy, ["rhs_uh1h_hidf_gunship", "RHS_MELB_AH6M"]];
 _veh set [T_VEH_heli_cargo, ["rhs_uh1h_hidf_unarmed"]];
 _veh set [T_VEH_heli_attack, ["RHS_Mi24V_vvs", "RHS_Mi24P_vvs"]];
@@ -109,7 +109,7 @@ _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
 
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Ural", "FGN_AAF_Ural_open"]];
-//_veh set [T_VEH_truck_cargo, [""]];
+_veh set [T_VEH_truck_cargo, ["RHS_Ural_Flat_MSV_01", "RHS_Ural_Open_Flat_MSV_01"]];
 _veh set [T_VEH_truck_ammo, ["FGN_AAF_Zamak_Ammo"]];
 _veh set [T_VEH_truck_repair, ["FGN_AAF_Ural_Repair"]];
 _veh set [T_VEH_truck_medical , ["FGN_AAF_Zamak_Medic", "rhsusf_m113d_usarmy_medical"]];

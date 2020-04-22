@@ -10,8 +10,6 @@ Sends a detachment from the source garrison to join the target garrison.
 Parent: <TakeOrJoinCmdrAction>
 */
 
-#define pr private
-
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtGarrId", [ATTR_SAVE]);
 
@@ -36,9 +34,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		private _intel = NULL_OBJECT;
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
@@ -46,14 +44,14 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionReinforce", []);
 
-			T_PRVAR(srcGarrId);
-			T_PRVAR(tgtGarrId);
+			private _srcGarrId = T_GETV("srcGarrId");
+			private _tgtGarrId = T_GETV("tgtGarrId");
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
 			private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 			ASSERT_OBJECT(_tgtGarr);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 
 			private _compAllocated = T_GET_AST_VAR("detachmentCompVar");
 			if(_compAllocated#T_INF#T_INF_officer > 0) then {
@@ -79,11 +77,6 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtGarr, "pos")]);
 
-			// Reveal it to player side
-			if (random 100 < 80) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
-			};
-
 			// Reveal some friendly locations near the destination to the garrison performing the task
 			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
@@ -95,7 +88,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			};
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -104,18 +97,18 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtGarrId = T_GETV("tgtGarrId");
 
-		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
+		private _srcGarr = CALLM1(_worldNow, "getGarrison", _srcGarrId);
 		ASSERT_OBJECT(_srcGarr);
-		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
+		private _tgtGarr = CALLM1(_worldFuture, "getGarrison", _tgtGarrId);
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Bail if src or dst are dead
-		if(CALLM(_srcGarr, "isDead", []) or {CALLM(_tgtGarr, "isDead", [])}) exitWith {
+		if(CALLM0(_srcGarr, "isDead") or {CALLM0(_tgtGarr, "isDead")}) exitWith {
 			OOP_DEBUG_0("Src or dst garrison is dead");
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _side = GETV(_srcGarr, "side");
@@ -124,9 +117,11 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcGarrComp = GETV(_srcGarr, "composition");
 
 		// TODO: full desired composition metric, not just officers
-		pr _tgtOfficerCount = CALLM0(_tgtGarr, "countOfficers");
-		pr _srcOfficerCount = CALLM0(_srcGarr, "countOfficers");
-		pr _sendAnOfficer = (_srcOfficerCount > 1) && (_tgtOfficerCount == 0);
+		private _tgtLocation = CALLM0(_tgtGarr, "getLocation");
+		private _sendAnOfficer = _tgtLocation != NULL_OBJECT 
+			&& { GETV(_tgtLocation, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_AIRPORT, LOCATION_TYPE_OUTPOST] }
+			&& { CALLM0(_srcGarr, "countOfficers") > 1 } 
+			&& { CALLM0(_tgtGarr, "countOfficers") == 0 };
 
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,
@@ -135,15 +130,16 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
 
 		// How much more efficiency we must overcompensate at this place
-		pr _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
+		private _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
 
 		// Bail if there is no need to reinforce this
 		if (_tgtUnderEff isEqualTo T_EFF_null && !_sendAnOfficer) exitWith {
 			OOP_DEBUG_0("No need to reinforce dst garrison");
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
-		pr _allocationFlags = [	SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
+		private _allocationFlags = [	SPLIT_VALIDATE_ATTACK,
+								SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
 								SPLIT_VALIDATE_CREW_EXT];	// Ensure we provide enough crew to destination
 
 		private _needTransport = false;
@@ -178,23 +174,25 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		};
 
 		// Try to allocate units
-		pr _payloadWhitelistMask = if (_needTransport) then {
+		private _payloadWhitelistMask = if (_needTransport) then {
 			T_comp_ground_or_infantry_mask 
 		} else {
 			T_comp_infantry_mask 
 		};
-		pr _payloadBlacklistMask = T_comp_static_or_cargo_mask;			// Don't take static weapons or cargo under any conditions
-		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
-		pr _transportBlacklistMask = [];
-		pr _requiredComp = [];
+		private _payloadBlacklistMask = T_comp_static_or_cargo_mask;			// Don't take static weapons or cargo under any conditions
+		private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+		private _transportBlacklistMask = [];
+		private _requiredComp = [];
 		if(_sendAnOfficer) then {
 			// Lets send an officer as well!
-			_requiredComp = [[T_INF, T_INF_officer, 1]];
+			_requiredComp = [
+				[T_INF, T_INF_officer, 1]
+			];
 			// Any make sure we have some escort.
 			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
 		};
 
-		pr _args = [_tgtUnderEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+		private _args = [_tgtUnderEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask,
 					_requiredComp];
@@ -203,7 +201,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
 			OOP_DEBUG_MSG("Failed to allocate resources", []);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -213,16 +211,16 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		};
 		// diag_log format ["Allocation results: %1", _allocResult];
 
-		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		private _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 
 		// Bail if remaining efficiency is below minimum level for this garrison
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// we must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
@@ -347,13 +345,13 @@ REGISTER_DEBUG_MARKER_STYLE("ReinforceCmdrAction", "ColorWhite", "mil_join");
 	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 
-	diag_log format ["Reinforce final score: %1", _finalScore];
+	//diag_log format ["Reinforce final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	CALLM(_thisObject, "applyToSim", [_world]);
+	T_CALLM("applyToSim", [_world]);
 	true
 	// ["Object exists", !(isNil "_class")] call test_Assert;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;

@@ -5,65 +5,64 @@ Class: ActionUnit.ActionUnitInfantryMoveBase
 Base action for movement. Has only activate, terminate, process implemented.
 */
 
-#define pr private
-
 //#define TOLERANCE 1.0
 
 CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
-	
+
 	VARIABLE("pos");
-	VARIABLE("ETA");	
+	VARIABLE("ETA");
 	VARIABLE("tolerance"); // completion radius
 	VARIABLE("teleport"); // If true, unit will be teleported if ETA is exceeded
-	
+	VARIABLE("duration"); // Time to wait at the destination before considering the action complete, -1 for never complete
+	VARIABLE("timeToComplete");
+
 	// ------------ N E W ------------
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
-		
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
 		T_SETV("tolerance", 1.0); // Default tolerance value
 
-		pr _teleport = CALLSM2("Action", "getParameterValue", _parameters, "teleport");
-		if (isNil "_teleport") then {
-			_teleport = false;
-		};
+		private _teleport = CALLSM3("Action", "getParameterValue", _parameters, "teleport", false);
 		T_SETV("teleport", _teleport);
-		
+
+		private _duration = CALLSM3("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS, 0);
+		T_SETV("duration", _duration);
+
+		T_SETV("timeToComplete", 0);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
+		private _AI = T_GETV("AI");
+		if (_instant) then {
 			// Teleport the unit to where it needs to be
-			pr _hO = T_GETV("hO");
-			pr _pos = T_GETV("pos");
+			private _hO = T_GETV("hO");
+			private _pos = T_GETV("pos");
 			_ho setPos _pos;
 			doStop _hO;
 
 			// Set state
-			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
-
-			SETV(_AI, "new", false);
+			T_SETV("state", ACTION_STATE_COMPLETED);
 
 			// Return completed state
 			ACTION_STATE_COMPLETED
 		} else {
-			pr _hO = T_GETV("hO");
-			pr _pos = T_GETV("pos");
+			private _hO = T_GETV("hO");
+			private _pos = T_GETV("pos");
 			_hO doMove _pos;
 			
 			// Set ETA
 			// Use manhattan distance
-			pr _posStart = ASLTOAGL (getPosASL _hO);
-			pr _dist = (abs ((_pos select 0) - (_posStart select 0)) ) + (abs ((_pos select 1) - (_posStart select 1))) + (abs ((_pos select 2) - (_posStart select 2)));
-			pr _ETA = time + (_dist/1.4 + 40);
+			private _posStart = ASLTOAGL (getPosASL _hO);
+			private _dist = (abs ((_pos select 0) - (_posStart select 0)) ) + (abs ((_pos select 1) - (_posStart select 1))) + (abs ((_pos select 2) - (_posStart select 2)));
+			private _ETA = GAME_TIME + (_dist/1.4 + 40);
 			T_SETV("ETA", _ETA);
 			
 			// Set state
-			SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+			T_SETV("state", ACTION_STATE_ACTIVE);
 			
 			// Return ACTIVE state
 			ACTION_STATE_ACTIVE
@@ -73,36 +72,47 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		private _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
-		
 			// Check if we have arrived
-			pr _hO = T_GETV("hO");
-			pr _pos = T_GETV("pos");
-			
-			if ((_hO distance _pos) < T_GETV("tolerance")) then {
-				OOP_INFO_1("MOVE COMPLETED for infantry: %1", _thisObject);
-			
-				doStop _hO;
-				
-				_state = ACTION_STATE_COMPLETED;
-			} else {
-				// Check ETA
-				pr _ETA = T_GETV("ETA");
+			private _hO = T_GETV("hO");
+			private _pos = T_GETV("pos");
+
+			private _timeToComplete = T_GETV("timeToComplete");
+			switch true do {
+				// We have arrived
+				case (_timeToComplete == 0 && { (_hO distance _pos) < T_GETV("tolerance") }): {
+					// If duration is < 0 then we never complete this action
+					doStop _hO;
+					private _duration = T_GETV("duration");
+					switch true do {
+						case (_duration > 0): {
+							// Wait around until the requested wait duration has passed
+							T_SETV("timeToComplete", GAME_TIME + T_GETV("duration"))
+						};
+						case (_duration == 0): {
+							// Complete immediately as no wait time was requested
+							_state = ACTION_STATE_COMPLETED;
+						};
+						case (_duration < 0): {
+							// Set state so that no condition in the switch statement will fire again
+							T_SETV("timeToComplete", -1);
+						};
+					};
+				};
 				// Teleport the unit if ETA is exceeded and teleportation is allowed
-				if ((time > _ETA) && T_GETV("teleport")) then {
+				case (_timeToComplete == 0 && { GAME_TIME > T_GETV("ETA") && T_GETV("teleport") }): {
 					OOP_WARNING_2("MOVE FAILED for infantry unit: %1, position: %2", _thisObject, _pos);
-				
-					// Should we teleport him or someone will blame AI for cheating??
 					_ho setPos _pos;
 					doStop _hO;
-					
-					_state = ACTION_STATE_ACTIVE;
-				} else {
-					_state = ACTION_STATE_ACTIVE;
+				};
+				// We passed the wait time, so complete now
+				case (_timeToComplete > 0 && { GAME_TIME > _timeToComplete }): {
+					OOP_INFO_1("MOVE COMPLETED for infantry: %1", _thisObject);
+					_state = ACTION_STATE_COMPLETED;
 				};
 			};
 		};
@@ -113,7 +123,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 ENDCLASS;

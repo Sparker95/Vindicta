@@ -14,16 +14,18 @@ this addGoggles _RandomGoggles;
 this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addVest "FGN_AAF_CIRAS_MM";
 
-this addWeapon "rhs_weap_SCARH_FDE_STD_grip3";
-this addPrimaryWeaponItem "rhsusf_acc_su230a_c";
-this addPrimaryWeaponItem "rhs_mag_20Rnd_SCAR_762x51_m80a1_epr";
-this addPrimaryWeaponItem "rhsusf_acc_grip2";
-this addWeapon "rhssaf_zrak_rd7j";
+this addWeapon "rhs_weap_m24sws";
+this addPrimaryWeaponItem "rhsusf_acc_LEUPOLDMK4";
+this addPrimaryWeaponItem "rhsusf_5Rnd_762x51_m118_special_Mag";
+this addPrimaryWeaponItem "rhsusf_acc_harris_swivel";
+this addWeapon "rhs_weap_tt33";
+this addHandgunItem "rhs_mag_762x25_8";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
+for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_762x25_8";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
-this addItemToVest "rhs_mag_20Rnd_SCAR_762x51_m61_ap";
-for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_20Rnd_SCAR_762x51_m80a1_epr";};
+for "_i" from 1 to 8 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
+for "_i" from 1 to 4 do {this addItemToVest "rhsusf_5Rnd_762x51_m62_Mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

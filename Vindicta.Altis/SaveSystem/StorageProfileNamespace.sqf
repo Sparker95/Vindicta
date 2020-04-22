@@ -294,7 +294,7 @@ CLASS(__CLASS_NAME, "Storage")
 		_recordName = toLower _recordName;
 		pr _index = _recordTable findIf {_x#RECORD_ID_NAME == (toLower _recordName)};
 		if (_index != -1) then {
-			diag_log format ["found: %1", (_recordTable#_index)];
+			//diag_log format ["found: %1", (_recordTable#_index)];
 			pr _array = (_recordTable#_index);
 			+_array
 		} else {
@@ -316,7 +316,7 @@ ENDCLASS;
 
 	// Check records
 	pr _allRecords = CALLM0(_obj, "getAllRecords");
-	["No records yet", _allRecords isEqualTo []] call test_Assert; 
+	["No records yet", _allRecords isEqualTo []] call test_Assert;
 
 	// Ensure it doesn't exist
 	pr _recordName = "testRecordName";
@@ -328,7 +328,6 @@ ENDCLASS;
 
 	// Check if it's in all records
 	pr _allRecords = CALLM0(_obj, "getAllRecords");
-	diag_log format ["All records: %1", _allRecords];
 	["Record found in all records", (tolower _recordName) in _allRecords] call test_Assert;
 
 	// Try to open same record, should fail because it's already open
@@ -448,7 +447,7 @@ ENDCLASS;
 	CALLM1(_storage, "open", "testRecord0");
 
 	pr _newStorable1 = CALLM2(_storage, "load", _testStorable, true);
-	diag_log format ["newStorable0: %1, newStorable1: %2", _newStorable0, _newStorable1];
+	//diag_log format ["newStorable0: %1, newStorable1: %2", _newStorable0, _newStorable1];
 	["Refs are different", _newStorable0 != _newStorable1] call test_Assert;
 	//["New object loaded properly", GETV(_newStorable, "save0") isEqualTo GETV(_testStorable, "save0")] test_Assert;
 

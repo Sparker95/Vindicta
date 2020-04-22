@@ -21,7 +21,7 @@ CLASS("Intel", "Storable")
 
 	/* variable: dateCreated 
 	Date when this intel was created initially in format returned by date command*/
-	VARIABLE_ATTR("dateCreated", [ATTR_SERIALIZABLE]); 
+	VARIABLE_ATTR("dateCreated", [ATTR_SERIALIZABLE]);
 
 	/* variable: dateUpdated 
 	Date when this intel was updated in format returned by date command*/
@@ -65,7 +65,7 @@ CLASS("Intel", "Storable")
 	Constructor. Takes no arguments.
 	*/
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("NEW");
 	} ENDMETHOD;
@@ -166,6 +166,11 @@ CLASS("Intel", "Storable")
 	METHOD("getShortName") {
 		"name"
 	} ENDMETHOD;
+
+	METHOD("getInfo") {
+		text ""
+	} ENDMETHOD;
+	
 
 	/*
 	Method: addToDatabaseIndex
@@ -331,7 +336,7 @@ CLASS("IntelLocation", "Intel")
 		//[_intel] call oop_dumpAllVariables;
 
 
-		pr _mapMarker = GETV(_thisObject, "mapMarker"); // Get map marker from this object, not from source object, because source object doesn't have a marker connected to it
+		pr _mapMarker = T_GETV("mapMarker"); // Get map marker from this object, not from source object, because source object doesn't have a marker connected to it
 		pr _type = GETV(_intel, "type");
 		pr _pos = GETV(_intel, "pos");
 		pr _side = GETV(_intel, "side");
@@ -560,31 +565,12 @@ CLASS("IntelCommanderAction", "Intel")
 	*/
 	METHOD("getTMinutes") {
 		params [P_THISOBJECT];
-		pr _dateDeparture = T_GETV("dateDeparture");
-		pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
-		pr _futureEvent = true;
-		if (_numberDiff < 0) then {
-			_numberDiff = -_numberDiff;
-			_futureEvent = false;
-		};
-		pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
-		_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
-		_month = _month - 1; // Because month counting starts with 1
-		_d = _d - 1; // Because day counting starts with 1
-		pr _minutes = ((_month * 30 + _d) * 24 + _h) * 60 + _m;
-		// T-1 is one minute in the future, T+1 is in the past
-		if(_futureEvent) then { 
-			-_minutes
-		} else {
-			_minutes
-		}
+		[T_GETV("dateDeparture"), date] call pr0_fnc_getTMinutesDiff
 	} ENDMETHOD;
 
 	METHOD("getHoursMinutes") {
 		params [P_THISOBJECT];
-		pr _t = T_CALLM0("getTMinutes");
-		// T, Hours, Minutes, bool Future
-		[_t, floor (abs _t / 60), abs floor (abs _t % 60), _t < 0];
+		T_CALLM0("getTMinutes") call pr0_fnc_getHoursMinutes
 	} ENDMETHOD;
 
 	/*
@@ -628,7 +614,7 @@ CLASS("IntelCommanderAction", "Intel")
 				CALLSM("ClientMapUI", "drawRoute", _args);
 				T_SETV("shownOnMap", true);
 			};
-			// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+			// params ["_thisClass", P_ARRAY("_posArray"), "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 		
 
 		} else {
@@ -695,7 +681,6 @@ ENDCLASS;
 
 /*
 	Class: Intel.IntelCommanderActionSupply
-	Intel about reinforcement commander action.
 */
 CLASS("IntelCommanderActionSupply", "IntelCommanderAction")
 
@@ -704,17 +689,7 @@ CLASS("IntelCommanderActionSupply", "IntelCommanderAction")
 
 	// How much supplies
 	VARIABLE_ATTR("amount", [ATTR_SERIALIZABLE]);
-
-	/* 
-		variable: srcGarrison
-		The source garrison that sent the reinforcements. Probably players have no use to this.
-	*/
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
-
-	/* 
-		variable: tgtGarrison
-		The destination garrison that will be reinforced. Probably players have no use to this.
-	*/
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 
 	METHOD("getShortName") {
@@ -722,6 +697,106 @@ CLASS("IntelCommanderActionSupply", "IntelCommanderAction")
 		T_GETV("type");
 	} ENDMETHOD;
 ENDCLASS;
+
+
+/*
+Class: Intel.IntelCommanderActionSupplyConvoy
+*/
+CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
+	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
+	/* variable: waypoints
+	Waypoints (as positions) that the patrol will visit. */
+	VARIABLE_ATTR("waypoints", [ATTR_SERIALIZABLE]);
+	/* variable: locations
+	Locations of the waypoints will visit. */
+	VARIABLE_ATTR("locations", [ATTR_SERIALIZABLE]);
+	// Type of supplies
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+	// How much supplies
+	VARIABLE_ATTR("amount", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("schedule", [ATTR_SERIALIZABLE]);
+
+	/*
+	Method: showOnMap
+	This method is only relevant to commander actions.
+	Here we have logic to show this intel on the map or hide it.
+	*/
+	/* virtual override */ METHOD("showOnMap") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+
+		//OOP_INFO_1("SHOW ON MAP: %1", _show);
+
+		// Variable might be not initialized
+		if (isNil {T_GETV("shownOnMap")}) exitWith {
+			OOP_ERROR_0("showOnMap: shownOnMap is nil!");
+		};
+
+		if (_show) then {
+			if(!T_GETV("shownOnMap")) then {
+				private _labels = T_GETV("schedule") apply {
+					[[_x] call pr0_fnc_formatDate, "ColorWhite"]
+				};
+				// Remove the start departure time
+				_labels deleteAt 0;
+
+				pr _args = [T_GETV("waypoints"),
+							_thisObject, // Unique string
+							true, // Enable
+							true, // Cycle
+							false, // Draw src and dest markers
+							[T_GETV("side"), true] call BIS_fnc_sideColor,
+							_labels
+							];
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				// params ["_thisClass", P_ARRAY("_posArray"), "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+				T_SETV("shownOnMap", true);
+			};
+		} else {
+			if(T_GETV("shownOnMap")) then {
+				// Delete the markers
+				pr _args = [[],
+							_thisObject, // Unique string
+							false // Enable
+						];
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				T_SETV("shownOnMap", false);
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("getMapZoomPos") {
+		params [P_THISOBJECT];
+		selectRandom T_GETV("waypoints")
+	} ENDMETHOD;
+
+	METHOD("getShortName") {
+		params [P_THISOBJECT];
+		T_GETV("type");
+	} ENDMETHOD;
+
+	METHOD("getInfo") {
+		params [P_THISOBJECT];
+		private _info = "<br/><t color='#FFFFFF' font='EtelkaMonospaceProBold'>Schedule</t><br/>";
+		private _srcGarrison = T_GETV("srcGarrison");
+		private _srcLocation = CALLM0(_srcGarrison, "getLocation");
+		private _tgtGarrison = T_GETV("tgtGarrison");
+		private _tgtLocation = CALLM0(_tgtGarrison, "getLocation");
+		private _locations = [_srcLocation] + T_GETV("locations") + [_tgtLocation];
+		private _schedule = +T_GETV("schedule");
+		{
+			private _locName = CALLM0(_x, "getName");
+			_info = _info + format ["<t color='#FFFFFF'>%1 </t><t color='#AAAAFF'>%2<br/></t>", _forEachIndex + 1, _locName];
+			if(_forEachIndex < count _schedule) then {
+				private _date = _schedule#_forEachIndex;
+				_info = _info + format ["<t>  </t><t color='#AAAAAA' size='0.7'>depart %1</t><br/>", [_date] call pr0_fnc_formatDate];
+			};
+		} forEach _locations;
+
+		_info
+	} ENDMETHOD;
+ENDCLASS;
+
 
 /*
 	Class: Intel.IntelCommanderActionConstructLocation
@@ -802,7 +877,7 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 
 		// Variable might be not initialized
 		if (isNil {T_GETV("shownOnMap")}) exitWith {
-			OOP_ERROR_0("showOnMap: shownOnMap is nil!");
+			OOP_WARNING_0("showOnMap: shownOnMap is nil!");
 		};
 
 		if (_show) then {
@@ -815,7 +890,7 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 							[T_GETV("side"), true] call BIS_fnc_sideColor
 							];
 				CALLSM("ClientMapUI", "drawRoute", _args);
-				// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+				// params ["_thisClass", P_ARRAY("_posArray"), "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 				T_SETV("shownOnMap", true);
 			};
 		} else {
@@ -919,8 +994,8 @@ CLASS("IntelCluster", "Intel")
 
 		// Create notification
 		// Get center position from border positions
-		pr _pos1 = GETV(_thisObject, "pos1");
-		pr _pos2 = GETV(_thisObject, "pos2");
+		pr _pos1 = T_GETV("pos1");
+		pr _pos2 = T_GETV("pos2");
 		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
 		CALLSM1("NotificationFactory", "createSpottedTargets", _pos);
 	} ENDMETHOD;

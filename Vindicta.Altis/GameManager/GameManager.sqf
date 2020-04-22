@@ -16,6 +16,17 @@ It also handles some client requests about saving/loading the game, and initial 
 #define STATE_STARTUP				0
 #define STATE_GAME_MODE_INITIALIZED	1
 
+#ifdef RELEASE_BUILD
+#define DEV_PREFIX ""
+#else
+#define DEV_PREFIX "[DEV]"
+#endif
+FIX_LINE_NUMBERS()
+
+#define SAVE_TYPE_DEFAULT			0
+#define SAVE_TYPE_RECOVERY			1
+#define SAVE_TYPE_AUTO				2
+
 CLASS("GameManager", "MessageReceiverEx")
 
 	VARIABLE("gameModeInitialized");	// State of the game for this machine
@@ -25,6 +36,8 @@ CLASS("GameManager", "MessageReceiverEx")
 	VARIABLE("campaignStartDate");	// In-game date when the campaign was started
 	VARIABLE("templates");			// Array of templates currently used
 	VARIABLE("gameModeClassName");	// 
+	VARIABLE("lastAutoSave");
+	VARIABLE("lastAutoSaveCheck");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -35,22 +48,26 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_SETV("templates", []);
 		T_SETV("campaignStartDate", date);
 		T_SETV("gameModeClassName", "_noname_");
+		T_SETV("lastAutoSave", TIME_NOW);
+		T_SETV("lastAutoSaveCheck", TIME_NOW);
 
 		#ifndef RELEASE_BUILD
 		if(HAS_INTERFACE) then {
 			[] call pr0_fnc_initDebugMenu;
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
 	} ENDMETHOD;
 
-	// This method is called at preinit
-	METHOD("init") {
+	// This method is called at preinit (see https://community.bistudio.com/wiki/Initialization_Order)
+	METHOD("preInit") {
 		params [P_THISOBJECT];
 
 		// Create various objects not related to a particular mission
+		T_CALLM0("initSettings");
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 		};
@@ -58,7 +75,6 @@ CLASS("GameManager", "MessageReceiverEx")
 		if(IS_SERVER) then {
 			// Initialize player database
 			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
-
 		};
 
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
@@ -100,7 +116,6 @@ CLASS("GameManager", "MessageReceiverEx")
 				};
 			};
 
-
 			/*
 			// Code to add some dummy intel for UI tests
 				private _serial = ["IntelCommanderActionAttack","o_intelcommanderactionattack_n_0_12",[2035,6,24,12,6],nil,[21281.7,7212.84,0],nil,nil,"o_IntelCommanderActionAttack_N_0_10",playerSide,[17430,13161,0],[21082,7324,0],"o_Garrison_N_0_27",[21281.7,7212.84,0],nil,nil,[2035,6,24,12,8.93733],[0,0,0,0,0,0,0,0],"o_Garrison_N_0_9","Reinforce garrison","o_Garrison_N_0_10",nil,nil];
@@ -111,6 +126,16 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 	} ENDMETHOD;
 
+	// This method is called from init.sqf (see https://community.bistudio.com/wiki/Initialization_Order)
+	METHOD("init") {
+		params [P_THISOBJECT];
+
+		// This must be done after modules are initialized at least, preferably as late as possible in init order.
+		if(IS_SERVER) then {
+			T_CALLM0("autoLoad");
+		};
+	} ENDMETHOD;
+	
 	// - - - - - Getters for game state - - - - -
 
 	METHOD("isGameModeInitialized") {
@@ -198,7 +223,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	METHOD("saveGame") {
-		params [P_THISOBJECT, P_BOOL("_recovery")];
+		params [P_THISOBJECT, P_NUMBER("_type")];
 
 		// Bail if we are not server
 		if (!isServer) exitWith {
@@ -237,19 +262,31 @@ CLASS("GameManager", "MessageReceiverEx")
 				T_GETV("saveID")
 			];
 
-		if (_recovery) then {
-			_recordNameBase = format["[RECOVERY] %1", _recordNameBase];
+		pr _typePrefix = switch _type do {
+			case SAVE_TYPE_DEFAULT: 	{ "" };
+			case SAVE_TYPE_RECOVERY: 	{ "[RECOVERY]" };
+			case SAVE_TYPE_AUTO: 		{ "[AUTO]" };
 		};
-#ifdef RELEASE_BUILD
-		pr _recordNameFinal = _recordNameBase;
-#else
-		pr _recordNameFinal = format["[DEV] %1", _recordNameBase];
-#endif
-		pr _i = 1;
-		while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
-			_recordNameFinal = format ["%1 %2", _recordNameBase, _i];
-			_i = _i + 1;
+
+		pr _recordNameFinal = DEV_PREFIX + _typePrefix + _recordNameBase;
+
+		// We only keep one recovery and auto save for each campaign name, delete any others
+		if(_type in [SAVE_TYPE_RECOVERY, SAVE_TYPE_AUTO]) then {
+			pr _recordsToDelete = CALLM0(_storage, "getAllRecords") select { 
+				tolower _typePrefix in tolower _x && tolower T_GETV("campaignName") in tolower _x
+			};
+			{
+				CALLM1(_storage, "eraseRecord", _x);
+			} forEach _recordsToDelete;
+		} else {
+			// Find a unique name for the save
+			pr _i = 1;
+			while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
+				_recordNameFinal = format ["%1 %2", _recordNameBase, _i];
+				_i = _i + 1;
+			};
 		};
+
 		diag_log format ["[GameManager] Opening record: %1", _recordNameFinal];
 		CALLM1(_storage, "open", _recordNameFinal);
 
@@ -261,9 +298,9 @@ CLASS("GameManager", "MessageReceiverEx")
 
 			diag_log format ["[GameManager] Saving game mode: %1", gGameMode];
 			CALLM1(_storage, "save", gGameMode);
-			CRITICAL_SECTION {
-				CALLM2(_storage, "save", "gameMode", gGameMode);	// Ref to game mode object
-			};
+			//CRITICAL_SECTION {
+			CALLM2(_storage, "save", "gameMode", gGameMode);	// Ref to game mode object
+			//};
 			
 			diag_log format ["[GameManager] Saving save game header..."];
 			[_header] call OOP_dumpAllVariables;
@@ -303,6 +340,13 @@ CLASS("GameManager", "MessageReceiverEx")
 		_success
 	} ENDMETHOD;
 
+	pr0_fnc_loadGameMsg = {
+		params ["_header", "_message", "_delay"];
+		diag_log _this;
+		["loading", [format ["<t size='5' color='#FF7733'>%1</t><br/><t size='3' color='#FFFFFF'>%2</t>", _header, _message], "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["loading", _delay] remoteExec ["cutFadeOut", ON_ALL, false];
+	};
+
 	// Loads game, returns true on success
 	METHOD("loadGame") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
@@ -319,13 +363,11 @@ CLASS("GameManager", "MessageReceiverEx")
 			false
 		};
 
-
-		// Start loading screen
-		["loading", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>LOADING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
-		["loading", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
-
 		// Bail if game mode is already initialized (although the button should be disabled, right?)
 		if(CALLM0(gGameManager, "isGameModeInitialized")) exitWith { false };
+
+		// Start loading screen
+		[LOCS("Vindicta_GameManager", "Load_Loading"), _recordName, 20000] call pr0_fnc_loadGameMsg;
 
 		pr _storage = NEW(__STORAGE_CLASS, []);
 
@@ -362,9 +404,11 @@ CLASS("GameManager", "MessageReceiverEx")
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
-						CRITICAL_SECTION {
-							CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
-						};
+						pr _timeStart = diag_tickTime;
+						//CRITICAL_SECTION {
+						CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
+						//};
+						diag_log format ["[GameManager] Game loaded in %1 seconds", diag_tickTime - _timeStart];
 						gGameMode = _gameModeRef;
 						gGameModeServer = _gameModeRef;
 						PUBLIC_VARIABLE "gGameModeServer";
@@ -380,7 +424,7 @@ CLASS("GameManager", "MessageReceiverEx")
 						// Execute everywhere but not on server
 						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], ON_ALL, "GameManager_initGameModeClient");
 
-						// Make sure to initialize client UI stuff if we are running combined client/server
+						// Make sure to initialize client UI stuff if we are running combined client/server or single player
 						if(HAS_INTERFACE) then {
 							CALLM0(gGameMode, "initClientOnly");
 						};
@@ -413,10 +457,12 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		DELETE(_storage);
 
-
 		// End loading screen
-		["loading", ["<t size='4' color='#77FF77'>LOAD COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
-		["loading", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+		if(_success) then {
+			[LOCS("Vindicta_GameManager", "Load_Failed"), _recordName, 10] call pr0_fnc_loadGameMsg;
+		} else {
+			[LOCS("Vindicta_GameManager", "Load_Complete"), _recordName, 10] call pr0_fnc_loadGameMsg;
+		};
 
 		OOP_INFO_0("GAME LOAD ENDED");
 		diag_log "[GameManager] GAME LOAD ENDED";
@@ -435,6 +481,84 @@ CLASS("GameManager", "MessageReceiverEx")
 		DELETE(_storage);
 	} ENDMETHOD;
 
+	pr0_fnc_autoLoadMsg = {
+		diag_log _this;
+		["autoloadwarning", [format ["<t size='4' color='#FF7733'>%1</t><br/><t size='2' color='#FFFFFF'>%2</t>", LOCS("Vindicta_GameManager", "Autoload"), _this], "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["autoloadwarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+	};
+
+	METHOD("autoLoad") {
+		params [P_THISOBJECT];
+
+		#define LOC_SCOPE "Vindicta_GameManager"
+		if(!vin_autoLoad_enabled) exitWith {
+			LOC("Autoload_Disabled") call pr0_fnc_autoLoadMsg;
+		};
+
+		// Read headers of all records
+		pr _recordNamesAndHeaders = T_CALLM0("readAllSavedGameHeaders");
+
+		if(count _recordNamesAndHeaders == 0) exitWith {
+			LOC("Autoload_NoSaves") call pr0_fnc_autoLoadMsg;
+		};
+
+		// Check all headers for loadability
+		pr _checkResult = T_CALLM1("checkAllHeadersForLoading", _recordNamesAndHeaders);
+
+		pr _dataForLoad = _checkResult apply {
+			_x params ["_recordName", "_header", "_errors"];
+			DELETE(_header);
+			[_recordName, _errors]
+		} select {
+			!(INCOMPATIBLE_WORLD_NAME in _x#1)
+		};
+
+		if(count _dataForLoad == 0) exitWith {
+			LOC("Autoload_NoSavesForMap") call pr0_fnc_autoLoadMsg;
+		};
+
+		reverse _dataForLoad;
+
+		_dataForLoad#0 params ["_recordName", "_errors"];
+
+		if(INCOMPATIBLE_SAVE_VERSION in _errors) exitWith {
+			LOC("Autoload_Version") call pr0_fnc_autoLoadMsg;
+		};
+
+		if(INCOMPATIBLE_FACTION_TEMPLATES in _errors) exitWith {
+			LOC("Autoload_Factions") call pr0_fnc_autoLoadMsg;
+		};
+
+		// Now we wait for players/admins if we are on dedicated server
+		if(IS_DEDICATED) then {
+			[_thisObject, _recordName] spawn {
+				params ["_thisObject", "_recordName"];
+
+				// Wait for players to connect
+				waitUntil {
+					sleep 1;
+					count HUMAN_PLAYERS > 0
+				};
+
+				private _autoLoadTime = PROCESS_TIME + 30;
+				while { !IS_ADMIN_ON_DEDI && _autoLoadTime > PROCESS_TIME } do {
+					sleep 0.5;
+					format [LOC("Autoload_CountDown"), _autoLoadTime - PROCESS_TIME] call pr0_fnc_autoLoadMsg;
+				};
+
+				if(!IS_ADMIN_ON_DEDI) then {
+					T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+				} else {
+					LOC("Autoload_AdminAbort") call pr0_fnc_autoLoadMsg;
+				};
+			};
+		} else {
+			T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+		};
+
+		#undef LOC_SCOPE
+	} ENDMETHOD;
+	
 	// FUNCTIONS CALLED BY CLIENT
 
 	// Called by client when he needs to get data on all the saved games
@@ -472,7 +596,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	METHOD("serverSaveGameRecovery") {
 		params [P_THISOBJECT];
-		T_CALLM1("saveGame", true);
+		T_CALLM1("saveGame", SAVE_TYPE_RECOVERY);
 	} ENDMETHOD;
 
 	METHOD("clientOverwriteSavedGame") {
@@ -549,9 +673,9 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Run the initialization
 		gGameMode = NEW_PUBLIC(_className, _gameModeParameters);
-		CRITICAL_SECTION {
-			CALLM0(gGameMode, "init");
-		};
+		//CRITICAL_SECTION {
+		CALLM0(gGameMode, "init");
+		//};
 		gGameModeServer = gGameMode;
 		PUBLIC_VARIABLE "gGameModeServer";
 		OOP_INFO_0("Finished initializing game mode");
@@ -597,6 +721,108 @@ CLASS("GameManager", "MessageReceiverEx")
 		CALLM2(_instance, "postMethodAsync", "initGameModeClient", [_className]);
 	} ENDMETHOD;
 
+	// - - - - - Settings - - - - -
+	METHOD("initSettings") {
+		params [P_THISOBJECT];
+		#define LOC_SCOPE "Vindicta_Settings"
+
+		// Spawn distance
+		["vin_spawnDist_civilian",		"SLIDER",	[LOC("Performance_spawnDist_Civilian"), LOC("Performance_spawnDist_Civilian_Tooltip")],		[LOC("Section"), "Performance"], [0, 1000, 300, 0], true] call CBA_fnc_addSetting;
+		["vin_spawnDist_garrison",		"SLIDER",	[LOC("Performance_spawnDist_Garrison"), LOC("Performance_spawnDist_Garrison_Tooltip")],		[LOC("Section"), "Performance"], [300, 10000, 1300, 0], true] call CBA_fnc_addSetting;
+		
+		// AI Skills
+		pr _tooltip = "Note: Final AI skill is affected by AI settings in server's profile";
+		["vin_aiskill_aimingAccuracy",	"SLIDER",	["Aiming Accuracy", _tooltip],	[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_aimingShake",		"SLIDER",	["Aiming Shake", _tooltip],		[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_aimingSpeed",		"SLIDER",	["Aiming Speed", _tooltip],		[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_spotDistance",	"SLIDER",	["Spot Distance", _tooltip],	[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		["vin_aiskill_spotTime",		"SLIDER",	["Spot Time", _tooltip],		[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
+		
+		// Auto load and auto save
+		["vin_autoSave_enabled",	"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_onEmpty",	"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_interval",	"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")], [0, 24, 0, 0],	true] call CBA_fnc_addSetting;
+		["vin_autoSave_inCombat",	"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
+		["vin_autoLoad_enabled",	"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")], false,			true] call CBA_fnc_addSetting;		
+
+		// Auto load
+		["vin_autoLoad_enabled",		"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")],	false,			true] call CBA_fnc_addSetting;
+		// Auto save
+		["vin_autoSave_enabled",		"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_onEmpty",		"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_interval",		"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")],	[0, 24, 0, 0],	true] call CBA_fnc_addSetting;
+		["vin_autoSave_inCombat",		"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		// Server
+		["vin_server_suspendWhenEmpty",	"CHECKBOX",	[LOC("Server_Suspend"),		LOC("Server_Suspend_Tooltip")],		[LOC("Section"), LOC("Server")],	true,			true] call CBA_fnc_addSetting;
+		// Game
+		["vin_server_gameSpeed",		"SLIDER",	[LOC("Game_Speed"),			LOC("Game_Speed_Tooltip")],			[LOC("Section"), LOC("Game")],		[0.1, 5, 1, 1],	true] call CBA_fnc_addSetting;
+
+		#undef LOC_SCOPE
+	} ENDMETHOD;
+
+	// - - - - - Auto Save - - - - -
+	METHOD("_playersInCombat") {
+		params [P_THISOBJECT];
+
+		if(vin_autoSave_inCombat) exitWith { false };
+		private _enemySide = CALLM0(gGameMode, "getEnemySide");
+
+		HUMAN_PLAYERS findIf {
+			// Find nearby enemies
+			(_x nearEntities ["Man", 250] - HUMAN_PLAYERS) findIf { side _x == _enemySide } != NOT_FOUND
+		} != NOT_FOUND;
+	} ENDMETHOD;
+
+	pr0_fnc_autoSaveMsg = {
+		["autosavewarning", [_this, "PLAIN DOWN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["autosavewarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
+	};
+
+	METHOD("checkPeriodicAutoSave") {
+		params [P_THISOBJECT];
+
+		if(!vin_autoSave_enabled || vin_autoSave_interval == 0) exitWith { 
+			// disabled
+		};
+
+		private _playersInCombat = T_CALLM0("_playersInCombat");
+		private _nextAutoSaveTime = T_GETV("lastAutoSave") + vin_autoSave_interval * 60 * 60;
+
+		if(_nextAutoSaveTime > TIME_NOW || {_playersInCombat && _nextAutoSaveTime + 30 * 60 > TIME_NOW}) exitWith {
+			// not time yet
+			private _lastAutoSaveCheck = T_GETV("lastAutoSaveCheck");
+			T_SETV("lastAutoSaveCheck", TIME_NOW);
+			private _delayMessage = if(_playersInCombat) then {
+				"<br/><t size='2' color='#FFFFFF'>(delayed due to enemies within 250m of players)</t>"
+			} else {
+				""
+			};
+			switch true do {
+				// 5m warning
+				case (_nextAutoSaveTime - 300 <= TIME_NOW && _nextAutoSaveTime - 300 > _lastAutoSaveCheck): {
+					("<t size='2' color='#FFFF33'>Auto saving in 5 minutes</t>" + _delayMessage) call pr0_fnc_autoSaveMsg;
+				};
+				// 30s  warning
+				case (_nextAutoSaveTime - 30 <= TIME_NOW && _nextAutoSaveTime - 30 > _lastAutoSaveCheck): {
+					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t>" + _delayMessage) call pr0_fnc_autoSaveMsg;
+				};
+				// Forced warning
+				case (_playersInCombat && _nextAutoSaveTime + 30 * 60 <= TIME_NOW && _nextAutoSaveTime + 30 * 60 - 30 > _lastAutoSaveCheck): {
+					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t><br/><t size='1' color='#FFFFFF'>(was delayed by 30 minutes due to enemies within 250m of players)</t>" + _delayMessage) call pr0_fnc_autoSaveMsg;
+				};
+			};
+		};
+
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
+		T_SETV("lastAutoSave", TIME_NOW);
+	} ENDMETHOD;
+
+	METHOD("checkEmptyAutoSave") {
+		params [P_THISOBJECT];
+		if(!vin_autoSave_enabled || !vin_autoSave_onEmpty) exitWith { };
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
+		T_SETV("lastAutoSave", TIME_NOW);
+	} ENDMETHOD;
 
 	// - - - - Misc methods - - - -
 

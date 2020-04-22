@@ -18,7 +18,7 @@ Return value: Array in format [[x, y, z], direction]
 Author: Sparker 29.07.2018
 */
 
-params [["_thisObject", "", [""]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
+params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), ["_groupType", GROUP_TYPE_INF, [GROUP_TYPE_INF]] ];
 
 //First try to find it in building spawn positions
 private _stAll = T_GETV("spawnPosTypes");
@@ -48,7 +48,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 			private _building = _posArray select LOCATION_SP_ID_BUILDING;
 			if(isNil "_building" || {isNull _building} || {!isObjectHidden _building}) then {
 				_posReturn = _posArray select LOCATION_SP_ID_POS;
-				_dirReturn = _posArray select LOCATION_SP_ID_DIR;			
+				_dirReturn = _posArray select LOCATION_SP_ID_DIR;
 				_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter
 				_found = true;
 			};
@@ -123,10 +123,6 @@ if(_found) then {//If the spawn position has been found
 	//Provide default spawn position
 	if (_catID == T_INF) then {
 		private _locToUse = _thisObject;
-		// Walk up parents to the one we should use
-		while {_groupType == GROUP_TYPE_PATROL && {GETV(_locToUse, "useParentPatrolWaypoints")}} do {
-			_locToUse = GETV(_locToUse, "parent");
-		};
 		private _radius = (0.5 * (GETV(_locToUse, "boundingRadius"))) min 60;
 		private _locPos = GETV(_locToUse, "pos");
 		_return = [[_locPos#0 - _radius + random (2 * _radius), _locPos#1 - _radius + random (2 * _radius), 0], random 360];

@@ -18,7 +18,7 @@ OOP_INFO_0("DESPAWN");
 
 ASSERT_THREAD(_thisObject);
 
-T_PRVAR(spawned);
+private _spawned = T_GETV("spawned");
 if (!_spawned) exitWith {
 	OOP_ERROR_0("Already despawned");
 	DUMP_CALLSTACK;
@@ -31,7 +31,7 @@ T_SETV("spawned", false);
 T_GETV("cpModule") call pr0_fnc_cp_despawn; 
 
 // Reset counters
-private _stAll = GET_VAR(_thisObject, "spawnPosTypes");
+private _stAll = T_GETV("spawnPosTypes");
 {
 	_x set [LOCATION_SPT_ID_COUNTER, 0];
 } forEach _stAll;

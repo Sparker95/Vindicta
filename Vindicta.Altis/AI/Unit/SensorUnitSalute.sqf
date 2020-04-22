@@ -14,10 +14,10 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
-		pr _AI = GETV(_thisObject, "AI");
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
+		pr _AI = T_GETV("AI");
 		pr _agent = GETV(_AI, "agent");
-		pr _oh = CALLM(_agent, "getObjectHandle", []);
+		pr _oh = CALLM0(_agent, "getObjectHandle");
 		
 		// Make sure we are not in combat
 		if(behaviour _oh == "COMBAT") exitWith {false};
@@ -35,8 +35,8 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]]];
-		pr _AI = GETV(_thisObject, "AI");
+		params [P_THISOBJECT];
+		pr _AI = T_GETV("AI");
 		
 		// Don't create a new fact if there is one already
 		pr _wf = WF_NEW();

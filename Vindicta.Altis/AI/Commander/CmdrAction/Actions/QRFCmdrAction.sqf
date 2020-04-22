@@ -37,10 +37,10 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
 		private _intel = NULL_OBJECT;
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		// Created lazily here on the first call to update it. This ensures we only
 		// create intel objects for actions that are active rather than merely proposed.
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
@@ -49,14 +49,14 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionAttack", []);
 
-			T_PRVAR(srcGarrId);
-			T_PRVAR(tgtClusterId);
+			private _srcGarrId = T_GETV("srcGarrId");
+			private _tgtClusterId = T_GETV("tgtClusterId");
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
 			private _tgtCluster = CALLM(_world, "getCluster", [_tgtClusterId]);
 			ASSERT_OBJECT(_tgtCluster);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 			SETV(_intel, "state", INTEL_ACTION_STATE_ACTIVE); // It's instantly active
 
 			SETV(_intel, "type", "Take Location");
@@ -90,7 +90,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		} else {
 			// Call the base class function to update the detachment specific intel
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -100,8 +100,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtClusterId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtClusterId = T_GETV("tgtClusterId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -111,30 +111,46 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 
 		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
-		private _enemyEff = +GETV(_tgtCluster, "efficiency");
-
 		ASSERT_OBJECT(_tgtCluster);
-		private _tgtClusterPos = GETV(_tgtCluster, "pos");
 
 		// Source or target being dead means action is invalid, return 0 score
-		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
-			T_CALLM("setScore", [ZERO_SCORE]);
+		if(CALLM0(_srcGarr, "isDead") or CALLM0(_tgtCluster, "isDead")) exitWith {
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
+		private _tgtClusterPos = GETV(_tgtCluster, "pos");
+
+		// Set up flags for allocation algorithm
+		private _allocationFlags = [
+			  SPLIT_VALIDATE_ATTACK
+			, SPLIT_VALIDATE_CREW
+		];
+
+		#ifdef DEBUG_BIG_QRF
+		// Make sure we allocate a lot of inf
+		_allocationFlags pushBack SPLIT_VALIDATE_CREW_EXT;
+
+		private _enemyEff = +T_EFF_null;
+		_enemyEff set[T_EFF_soft, 30];
+		_enemyEff set[T_EFF_medium, 6];
+		_enemyEff set[T_EFF_armor, 6];
+		_enemyEff set[T_EFF_crew, 24];
+		#else
+		private _enemyEff = +GETV(_tgtCluster, "efficiency");
 		// Scale enemy efficiency
 		private _scaleFactor = (CALLM1(_worldNow, "calcActivityMultiplier", _tgtClusterPos)) max 1.3;
 		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _scaleFactor);
 		if ((_enemyEff#T_eff_soft) > 0) then {
 			_enemyEff set [T_EFF_soft, (_enemyEff#T_eff_soft) max 6];	// Set min amount of attack force
 		};
+		#endif
+		FIX_LINE_NUMBERS()
 
 		// Bail if the garrison clearly can not destroy the enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
-		// Set up flags for allocation algorithm
-		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW]; // Validate attack capability, allocate a min amount of infantry
 		private _needTransport = false;
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
@@ -143,6 +159,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		#else
 		pr _dist = _tgtClusterPos distance _srcGarrPos;
 		#endif
+		FIX_LINE_NUMBERS()
+
 		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
 			_needTransport = true;
@@ -161,7 +179,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
 			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -172,11 +190,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		*/
 
@@ -185,8 +203,6 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
 		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
 		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
-		
-
 
 		// Save the calculation of the efficiency for use later.
 		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
@@ -194,7 +210,6 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// which are only available now, during scoring/planning).
 		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
 		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
-
 
 		// Take the sum of the attack part of the efficiency vector.
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
@@ -226,6 +241,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			_side, LABEL(_srcGarr), LABEL(_tgtCluster), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 
@@ -236,8 +252,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtClusterId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtClusterId = T_GETV("tgtClusterId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -331,13 +347,13 @@ REGISTER_DEBUG_MARKER_STYLE("QRFCmdrAction", "ColorRed", "mil_destroy");
 	private _thisObject = NEW("QRFCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetCluster, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 	diag_log format ["QRF action final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
-	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
+	private _nowSimState = T_CALLM("applyToSim", [_world]);
+	private _futureSimState = T_CALLM("applyToSim", [_future]);
 	["Now sim state correct", _nowSimState == CMDR_ACTION_STATE_READY_TO_MOVE] call test_Assert;
 	["Future sim state correct", _futureSimState == CMDR_ACTION_STATE_END] call test_Assert;
 	

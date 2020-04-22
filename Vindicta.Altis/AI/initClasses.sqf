@@ -1,5 +1,7 @@
 #include "..\config\global_config.hpp"
 
+call compile preprocessFileLineNumbers "AI\Misc\initFunctions.sqf";
+
 call compile preprocessFileLineNumbers "AI\Action\Action.sqf";
 
 call compile preprocessFileLineNumbers "AI\ActionComposite\ActionComposite.sqf";

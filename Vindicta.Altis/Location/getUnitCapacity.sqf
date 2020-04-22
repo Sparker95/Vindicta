@@ -18,7 +18,7 @@ Returns: Number
 Author: Sparker 29.07.2018
 */
 
-params [ ["_thisObject", "", [""]], ["_unitTypes", 0, [[], 0]], ["_groupTypes", [], [[]]] ];
+params [P_THISOBJECT, ["_unitTypes", 0, [[], 0]], P_ARRAY("_groupTypes") ];
 
 // Spawn Pos TypeS
 private _spawnPosTypes = T_GETV("spawnPosTypes");
@@ -30,7 +30,7 @@ if (_unitTypes isEqualType 0) then {
 	private _catID = _unitTypes;
 
 	// Basic infantry capacity is not based on spawn positions but rather on buildings added to this location
-	if (_catID == T_INF && (GROUP_TYPE_IDLE in _groupTypes) || (GROUP_TYPE_PATROL in _groupTypes)) then {
+	if (_catID == T_INF && (GROUP_TYPE_INF in _groupTypes)) then {
 		_capacity = T_GETV("capacityInf");
 	} else 	{
 		{

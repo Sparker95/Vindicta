@@ -13,16 +13,19 @@ CLASS("GoalUnitSurrender", "Goal")
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
 	STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		private _objectHandle = GETV(_AI, "hO");
 
 		if (vehicle _objectHandle != _objectHandle) then {
 			private _actionSerial = NEW("ActionCompositeSerial", [_AI]);
+
 			private _actionDismount = NEW("ActionUnitDismountCurrentVehicle", [_AI]);
-			private _actionSurrender = NEW("ActionUnitSurrender", [_AI]);
 			CALLM1(_actionSerial, "addSubactionToFront", _actionDismount);
+
+			private _actionSurrender = NEW("ActionUnitSurrender", [_AI]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionSurrender);
+
 			_actionSerial
 		} else {
 			private _action = NEW("ActionUnitSurrender", [_AI]);

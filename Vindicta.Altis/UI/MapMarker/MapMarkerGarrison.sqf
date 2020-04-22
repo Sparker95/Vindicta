@@ -68,7 +68,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("setPos") {
-		params [P_THISOBJECT, P_POSITION("_pos")];		
+		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		_mrkName setMarkerPosLocal _pos;
 
@@ -79,7 +79,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	METHOD("onDraw") {
 		//if (true) exitWith {};
 
-		params ["_thisObject", "_control"];
+		params [P_THISOBJECT, "_control"];
 
 		// Draw a surrounding icon if selected
 		if (T_GETV("selected")) then {
@@ -117,7 +117,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	// - - - - - - - Event handlers - - - - - - -
 
 	METHOD("onMouseButtonDown") {
-		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 
 		// We only care about left mouse button events
@@ -141,12 +141,12 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("onMouseButtonUp") {
-		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 
 	METHOD("onMouseButtonClick") {
-		params ["_thisObject", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
 	} ENDMETHOD;

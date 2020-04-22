@@ -5,7 +5,7 @@ Author: Sparker 30 september 2019
 
 #define pr private
 
-// #define DEBUG_TEMPLATES
+ #define DEBUG_TEMPLATES
 #ifdef DEBUG_TEMPLATES
 #define LOG_TEMPLATE diag_log format
 #else
@@ -17,7 +17,7 @@ params ["_t", ["_returnString", false]];
 pr _catID = T_INF;
 pr _catSize = 23; //T_INF_SIZE; // Quick fix to disable recon items from appearing in the weapon pool
 pr _classDefault = _t#_catID#0#0;
-pr _subCatID = T_INF_DEFAULT + 1; // We don't want to process the default loadout/unit!
+pr _subCatID = T_INF_default + 1; // We don't want to process the default loadout/unit!
 pr _group = createGroup WEST;
 
 // Weapons and magazines for corresponding weapons
@@ -40,11 +40,40 @@ pr _handgunWeaponItems = [];
 // General items
 pr _items = [];
 
+// NVGs
+pr _NVGs = [];
+
+// Grenades
+pr _grenades = [];
+
+// Explosives
+pr _explosives = [];
+
 // Vests
 pr _vests = [];
 
 // Backpacks
 pr _backpacks = [];
+
+// Check if inventory category has been defined already
+if (! isNil {_t select T_INV}) then {
+	pr _inv = _t#T_INV;
+
+	// Inheritence of these commented inventory items is not supported now
+	// They will be processed by the generic code anyway, class names will be taken from loadouts
+	//_primaryWeapons = +(_inv#T_INV_primary);
+	//_primaryWeaponItems = +(_inv#T_INV_primary_items);
+	//_secondaryWeapons = +(_inv#T_INV_secondary);
+	//_secondaryWeaponItems = +(_inv#T_INV_secondary_items);
+	//_handgunWeapons = +(_inv#T_INV_handgun_items);
+
+	_items = +(_inv#T_INV_items);
+	_vests = +(_inv#T_INV_vests);
+	_backpacks = +(_inv#T_INV_backpacks);
+	_NVGs = +(_inv#T_INV_NVGs);
+	_grenades = +(_inv#T_INV_grenades);
+	_explosives = +(_inv#T_INV_explosives);
+};
 
 // Loadout Weapons
 // Each element is an array describing loadout weapons of a specific unit subcategory
@@ -81,19 +110,18 @@ while {_subCatID < _catSize} do {
 				[_hO, _classOrLoadout] call t_fnc_setUnitLoadout;
 			};
 
-			
 			pr _unitMags = magazines _hO;
 			LOG_TEMPLATE			["  Unit mags: %1", _unitMags];
 
 			/*
 			// Grabs mags for all muzzles
 			                _usableMagazines = [];
-_cfgWeapon = configfile >> "cfgweapons" >> (primaryweapon player); 
+_cfgWeapon = configfile >> "cfgweapons" >> (primaryweapon player);
                 { 
-                    _cfgMuzzle = if (_x == "this") then {_cfgWeapon} else {_cfgWeapon >> _x}; 
+                    _cfgMuzzle = if (_x == "this") then {_cfgWeapon} else {_cfgWeapon >> _x};
                     { 
-                        _usableMagazines pushBackUnique _x; 
-                    } foreach getarray (_cfgMuzzle >> "magazines"); 
+                        _usableMagazines pushBackUnique _x;
+                    } foreach getarray (_cfgMuzzle >> "magazines");
                 } foreach getarray (_cfgWeapon >> "muzzles");
 _usableMagazines
 			*/
@@ -155,10 +183,30 @@ _usableMagazines
 				};
 			};
 
-			// Process items, except for map, watch, etc
+			// Process items
 			{
-				_items pushBackUnique _x;
-			} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass", "ItemRadio"]);
+				// We don't need magazines here! Go away magazine!
+				([_x] call BIS_fnc_itemType) params ["_category", "_type"];
+				switch (_type) do {
+					case "Mine": {
+						_explosives pushBackUnique _x;
+					};
+					case "Grenade": {
+						_grenades pushBackUnique _x;
+					};
+					case "SmokeShell": {
+						_grenades pushBackUnique _x;
+					};
+					case "NVGoggles": {
+						_NVGs pushBackUnique _x;
+					};
+					default {	// Everything else goes here
+						if (! (isClass (configFile >> "cfgMagazines" >> _x))) then {
+							_items pushBackUnique _x;
+						};
+					};
+				};
+			} forEach ((assignedItems _hO) + (backpackItems _hO) + (vestItems _hO) + (uniformItems _hO));
 
 			// Process vest
 			pr _vest = vest _hO;
@@ -173,6 +221,12 @@ _usableMagazines
 				if (_backpackBase != "") then {
 					_backpacks pushBackUnique _backpackBase;
 				};
+			};
+
+			// Process night vision
+			pr _nvg = hmd _hO;
+			if (_nvg != "") then {
+				_NVGs pushBackUnique _nvg;
 			};
 
 			// Delete the unit
@@ -213,12 +267,20 @@ LOG_TEMPLATE ["  %1", _handgunWeaponItems];
 LOG_TEMPLATE ["Items:"];
 LOG_TEMPLATE ["  %1", _items];
 
+LOG_TEMPLATE ["Grenades:"];
+LOG_TEMPLATE ["  %1", _grenades];
+
+LOG_TEMPLATE ["Explosives:"];
+LOG_TEMPLATE ["  %1", _explosives];
+
 LOG_TEMPLATE ["Vests:"];
 LOG_TEMPLATE ["  %1", _vests];
 
 LOG_TEMPLATE ["Backpacks:"];
 LOG_TEMPLATE ["  %1", _backpacks];
 
+LOG_TEMPLATE ["Night Vision:"];
+LOG_TEMPLATE ["  %1", _NVGs];
 
 // Export to string
 
@@ -245,7 +307,18 @@ while {_i < count _handgunWeapons} do {
 	_i = _i + 1;
 };
 
-pr _arrayExport = [_primary, _primaryWeaponItems, _secondary, _secondaryWeaponItems, _handgun, _handgunWeaponItems, _items, _vests, _backpacks];
+pr _arrayExport = [	_primary,
+					_primaryWeaponItems,
+					_secondary,
+					_secondaryWeaponItems,
+					_handgun,
+					_handgunWeaponItems,
+					_items,
+					_vests,
+					_backpacks,
+					_NVGs,
+					_grenades,
+					_explosives];
 
 // Export a human-readable string if requested
 if (_returnString) then {

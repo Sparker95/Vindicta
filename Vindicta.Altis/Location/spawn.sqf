@@ -18,7 +18,7 @@ OOP_INFO_0("SPAWN");
 ASSERT_THREAD(_thisObject);
 
 
-T_PRVAR(spawned);
+private _spawned = T_GETV("spawned");
 
 if (_spawned) exitWith {
 	OOP_ERROR_0("Already spawned");

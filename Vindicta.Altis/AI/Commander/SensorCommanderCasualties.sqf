@@ -14,7 +14,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 
 	/*
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 	*/
 	
@@ -24,7 +24,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 	// ----------------------------------------------------------------------
 	
 	METHOD("handleStimulus") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		pr _AI = T_GETV("AI");
 		//pr _targetClusters = GETV(_AI, "targetClusters");

@@ -64,7 +64,7 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 		ASSERT_OBJECT(_garr);
 
 		// If the garrison is dead then return the appropriate state
-		if(CALLM(_garr, "isDead", [])) exitWith {
+		if(CALLM0(_garr, "isDead")) exitWith {
 			T_GETV("failGarrisonDead")
 		};
 
@@ -88,7 +88,7 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 				private _args = [T_GETV("locPos"), _side]; // Our side creates this location
 				private _newLoc = NEW_PUBLIC("Location", _args);
 				CALLM1(_newLoc, "setType", T_GETV("locType"));
-				CALLM2(_newLoc, "setBorder", "circle", 100);
+				CALLM1(_newLoc, "setBorderCircle", 100);
 				pr _gridpos = mapGridPosition T_GETV("locPos");
 				pr _type = T_GETV("locType");
 				pr _typeName = CALLSM1("Location", "getTypeString", _type);

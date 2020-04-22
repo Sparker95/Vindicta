@@ -76,4 +76,4 @@ if (IS_SERVER) then {
 	*/
 };
 
-CALLM0(gGameManager, "init");
+CALLM0(gGameManager, "preInit");

@@ -25,8 +25,8 @@ CLASS("RedVsGreenGameMode", "GameModeBase")
 		private _type = GETV(_loc, "type");
 
 		if(_type == LOCATION_TYPE_BASE or _type == LOCATION_TYPE_OUTPOST or _type == LOCATION_TYPE_POLICE_STATION) then {
-			T_PRVAR(linePt);
-			private _locPos = CALLM(_loc, "getPos", []);
+			private _linePt = T_GETV("linePt");
+			private _locPos = CALLM0(_loc, "getPos");
 			if(((_linePt#0 - 15000) * (_locPos#1 - 15000) - (_linePt#1 - 15000) * (_locPos#0 - 15000)) < 0) then {
 				east
 			} else {

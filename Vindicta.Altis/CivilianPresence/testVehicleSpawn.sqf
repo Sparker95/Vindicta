@@ -27,11 +27,11 @@ _gates append (player nearObjects ["Land_City_Gate_F",2000]);//2ms
 			_pos1;
 		};
 		_pos pushBack 1;
-		private _dir = direction _gate + selectRandom[0,180] + random 30 - 15; 
+		private _dir = direction _gate + selectRandom[0,180] + random 30 - 15;
 		private _car = "C_Offroad_01_F" createVehicle [0,0,0];//6ms
 
 		_car setdir _dir;
-		_car setpos _pos;	
+		_car setpos _pos;
 
 	};
 }forEach _gates;
@@ -53,7 +53,7 @@ _garages append (player nearObjects ["Land_i_Garage_V2_F",2000]);
 
 	private _car = "C_Offroad_01_F" createVehicle [0,0,0];
 	_car setdir _dir + selectRandom[90,-90] + (random 10 - 5);
-	_car setpos _pos;	
+	_car setpos _pos;
 
 }forEach _garages;
 
@@ -72,7 +72,7 @@ private _fuelGarages = player nearObjects ["Land_CarService_F",2000];
 
 	private _car = "C_Offroad_01_F" createVehicle [0,0,0];
 	_car setdir _dir + selectRandom[0,180];
-	_car setpos _pos;	
+	_car setpos _pos;
 
 }forEach _fuelGarages
 

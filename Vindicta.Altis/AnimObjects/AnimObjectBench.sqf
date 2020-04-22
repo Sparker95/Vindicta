@@ -14,18 +14,18 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		private _args = GET_STATIC_VAR(THIS_CLASS_NAME, "points");
-		SETV(_thisObject, "points", _args);
+		T_SETV("points", _args);
 
 		private _args = ["", ""];
-		SETV(_thisObject, "units", _args);
+		T_SETV("units", _args);
 
-		SETV(_thisObject, "pointCount", 2);
+		T_SETV("pointCount", 2);
 
 		private _animations = GET_STATIC_VAR(THIS_CLASS_NAME, "animations");
-		SETV(_thisObject, "animations", _animations);
+		T_SETV("animations", _animations);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -35,9 +35,9 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 	// | Returns [_offset, _animation, _direction]
 	// ----------------------------------------------------------------------
 	METHOD("getPointDataInternal") {
-		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
-		private _animations = GETV(_thisObject, "animations");
-		private _points = GETV(_thisObject, "points");
+		params [P_THISOBJECT, P_NUMBER("_pointID")];
+		private _animations = T_GETV("animations");
+		private _points = T_GETV("points");
 		// pos, direction, animation, animationOut
 		// pos offset, animation, animation out, walk out dir, walk out distance
 		[_points select _pointID, 180, selectRandom _animations, "AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutLow", 0, 2]
@@ -51,8 +51,8 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 	// ----------------------------------------------------------------------
 
 	METHOD("getPointMoveOffset") {
-		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
-		private _points = GETV(_thisObject, "points");
+		params [P_THISOBJECT, P_NUMBER("_pointID") ];
+		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
 		private _pointMoveOffset = _pointOffset vectorAdd [0, -1.4, 0]; // For bench, unit must walk to a place in front of it
 		[_pointMoveOffset, 1.8]

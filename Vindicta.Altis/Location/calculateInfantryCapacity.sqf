@@ -11,16 +11,16 @@ Author: Sparker 03.08.2018
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
 
-params [ ["_thisObject", "", [""]] ];
+params [P_THISOBJECT];
 
-private _radius = GET_VAR(_thisObject, "boundingRadius");
-private _locPos = GET_VAR(_thisObject, "pos");
+private _radius = T_GETV("boundingRadius");
+private _locPos = T_GETV("pos");
 private _no = _locPos nearObjects _radius;
 
 private _capacity = 0;
 {
 	if (_x isKindOf "House") then {
-		if(CALL_METHOD(_thisObject, "isInBorder", [_x])) then {
+		if(T_CALLM("isInBorder", [_x])) then {
 			private _class = typeOf _x;
 			//Infantry capacities of buildings
 			_bc = location_b_capacity select { _class in (_x select 0)};
@@ -31,4 +31,4 @@ private _capacity = 0;
 	};
 } forEach _no;
 
-SET_VAR(_thisObject, "capacityInf", _capacity);
+T_SETV("capacityInf", _capacity);

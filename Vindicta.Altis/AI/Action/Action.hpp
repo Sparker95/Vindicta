@@ -17,3 +17,11 @@
 #define ACTION_STATE_REPLAN		4
 
 #define ACTION_STATE_TEXT_ARRAY ["STARTED", "PLANNED", "COMPLETED", "FAILED", "REPLAN"]
+
+gDebugActionStateText = [
+	"ACTIVE",
+	"INACTIVE",
+	"COMPLETED",
+	"FAILED",
+	"REPLAN"
+];

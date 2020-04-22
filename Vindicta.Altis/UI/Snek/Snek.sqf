@@ -37,16 +37,16 @@ CLASS("SnekSegment", "")
 	VARIABLE("y");
 	
 	METHOD("new") {
-		params ["_thisObject", ["_x", 0, [0]], ["_y", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		
 		T_SETV("x", _x);
 		T_SETV("y", _y);
-		CALLM0(_thisObject, "draw");
+		T_CALLM0("draw");
 	} ENDMETHOD;
 	
 	METHOD("delete") {
-		params ["_thisObject"];
-		CALLM0(_thisObject, "undraw");
+		params [P_THISOBJECT];
+		T_CALLM0("undraw");
 	} ENDMETHOD;
 	
 	// Initial drawing of segment
@@ -59,7 +59,7 @@ CLASS("SnekSegment", "")
 	
 	// Setting position of segment
 	/* virtual */ METHOD("setPos") {
-		params ["_thisObject", ["_x", 0, [0]], ["_y", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 	} ENDMETHOD;
 	
 ENDCLASS;
@@ -67,7 +67,7 @@ ENDCLASS;
 CLASS("SnekTail", "SnekSegment")
 	
 	METHOD("draw") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
 		
@@ -80,12 +80,12 @@ CLASS("SnekTail", "SnekSegment")
 	} ENDMETHOD;
 	
 	METHOD("undraw") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
 	} ENDMETHOD;
 	
 	METHOD("setPos") {
-		params ["_thisObject", ["_x", 0, [0]], ["_y", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
 		
@@ -98,18 +98,18 @@ CLASS("SnekHead", "SnekSegment")
 	VARIABLE("direction");
 	
 	METHOD("new") {
-		params ["_thisObject", ["_x", 0, [0]], ["_y", 0, [0]], ["_direction", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y"), P_NUMBER("_direction")];
 		
 		T_SETV("direction", _direction);
 	} ENDMETHOD;
 	
 	METHOD("setDirection") {
-		params ["_thisObject", ["_direction", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_direction")];
 		T_SETV("direction", _direction);
 	} ENDMETHOD;
 	
 	METHOD("draw") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
 		
@@ -134,29 +134,29 @@ CLASS("SnekHead", "SnekSegment")
 		_mrk setMarkerColorLocal "ColorBlue";
 		_mrk setMarkerAlphaLocal 1;
 		
-		CALLM0(_thisObject, "updateEyesPos");
+		T_CALLM0("updateEyesPos");
 		
 	} ENDMETHOD;
 	
 	METHOD("undraw") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
 		deleteMarkerLocal (_thisObject + "_left");
 		deleteMarkerLocal (_thisObject + "_right");
 	} ENDMETHOD;
 	
 	METHOD("setPos") {
-		params ["_thisObject", ["_x", 0, [0]], ["_y", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
 		
 		_thisObject setMarkerPosLocal [GRID_SIZE*_x + GRID_SIZE_HALF, GRID_SIZE*_y + GRID_SIZE_HALF, 0];
 		
-		CALLM0(_thisObject, "updateEyesPos");
+		T_CALLM0("updateEyesPos");
 	} ENDMETHOD;
 	
 	METHOD("updateEyesPos") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
@@ -196,7 +196,7 @@ CLASS("SnekPickup", "")
 	VARIABLE("y");
 	
 	METHOD("new") {
-		params ["_thisObject", "_x", "_y"];
+		params [P_THISOBJECT, "_x", "_y"];
 		
 		T_SETV("x", _x);
 		T_SETV("y", _y);
@@ -211,7 +211,7 @@ CLASS("SnekPickup", "")
 	} ENDMETHOD;
 	
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		deleteMarkerLocal _thisObject;
 	} ENDMETHOD;
@@ -243,7 +243,7 @@ CLASS("Snek", "")
 	
 	// Call start to start the game
 	STATIC_METHOD("start") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("start");
 	
@@ -282,7 +282,7 @@ CLASS("Snek", "")
 
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("NEW");
 		
@@ -312,7 +312,7 @@ CLASS("Snek", "")
 		pr _pickups = [];
 		T_SETV("pickups", _pickups);
 		for "_i" from 0 to 3 do {
-			CALLM0(_thisObject, "createRandomPickup");
+			T_CALLM0("createRandomPickup");
 		};
 		
 		// Add event handlers
@@ -327,7 +327,7 @@ CLASS("Snek", "")
 	} ENDMETHOD;
 	
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("DELETE");
 		
@@ -355,7 +355,7 @@ CLASS("Snek", "")
 	
 	/*
 	METHOD("addSegment") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		pr _segments = T_GETV("segments");
 		pr _args = 
@@ -364,7 +364,7 @@ CLASS("Snek", "")
 	*/
 	
 	METHOD("setDirection") {
-		params ["_thisObject", ["_direction", 0, [0]]];
+		params [P_THISOBJECT, P_NUMBER("_direction")];
 		
 		T_SETV("direction", _direction);
 		
@@ -374,7 +374,7 @@ CLASS("Snek", "")
 	} ENDMETHOD;
 	
 	METHOD("createRandomPickup") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		pr _pickups = T_GETV("pickups");
 		pr _args = [floor((random worldSize) / GRID_SIZE), floor((random worldSize) / GRID_SIZE)];
@@ -383,7 +383,7 @@ CLASS("Snek", "")
 	} ENDMETHOD;
 	
 	METHOD("onKeyDown") {
-		params ["_thisObject", "_params"];
+		params [P_THISOBJECT, "_params"];
 		
 		OOP_INFO_1("On key down: %1", _this);
 		
@@ -392,22 +392,22 @@ CLASS("Snek", "")
 		pr _dir = T_GETV("direction");
 		switch (_key) do {
 			case  0x11: { // W
-				if (_dir != DIR_DOWN) then {CALLM1(_thisObject, "setDirection", DIR_UP); };
+				if (_dir != DIR_DOWN) then {T_CALLM1("setDirection", DIR_UP); };
 				true
 			};
 			
 			case 0x1E: { // A
-				if (_dir != DIR_RIGHT) then {CALLM1(_thisObject, "setDirection", DIR_LEFT); };
+				if (_dir != DIR_RIGHT) then {T_CALLM1("setDirection", DIR_LEFT); };
 				true
 			};
 			
 			case 0x1F: { // S
-				if (_dir != DIR_UP) then {CALLM1(_thisObject, "setDirection", DIR_DOWN); };
+				if (_dir != DIR_UP) then {T_CALLM1("setDirection", DIR_DOWN); };
 				true
 			};
 			
 			case 0x20: { // D
-				if (_dir != DIR_LEFT) then {CALLM1(_thisObject, "setDirection", DIR_RIGHT); };
+				if (_dir != DIR_LEFT) then {T_CALLM1("setDirection", DIR_RIGHT); };
 				true
 			};
 			
@@ -422,7 +422,7 @@ CLASS("Snek", "")
 	} ENDMETHOD;
 	
 	METHOD("onKeyUp") {
-		params ["_thisObject", "_params"];
+		params [P_THISOBJECT, "_params"];
 		
 		_params params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
 		
@@ -434,7 +434,7 @@ CLASS("Snek", "")
 	} ENDMETHOD;
 	
 	METHOD("onTimer") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ON TIMER");
 		
@@ -501,7 +501,7 @@ CLASS("Snek", "")
 					_segments pushBack _segment;
 					
 					// Create a new pickup
-					CALLM0(_thisObject, "createRandomPickup");
+					T_CALLM0("createRandomPickup");
 
 					// Show score to player
 					systemChat format ["Your score: %1", (count _segments) - 1];
@@ -545,15 +545,15 @@ SETSV("Snek", "snek", "");
 CLASS("MapMarkerSnek", "MapMarker")
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		// Put the marker at the bottom left of the map
 		pr _pos = [0, 0];
-		CALLM1(_thisObject, "setPos", _pos);
+		T_CALLM1("setPos", _pos);
 	} ENDMETHOD;
 
 	METHOD("onMouseButtonClick") {
-		params ["_thisObject", "_shift", "_ctrl", "_alt"];
+		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		
 		if (CALLSM0("Snek", "isRunning")) then {
 			CALLSM0("Snek", "stop");

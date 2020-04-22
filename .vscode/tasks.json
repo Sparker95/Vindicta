@@ -48,6 +48,39 @@
             "problemMatcher": []
         },
         {
+            "label": "EDIT STASZOW",
+            "type": "process",
+            "command": "edit_staszow.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT BEKETOV",
+            "type": "process",
+            "command": "edit_beketov.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "EDIT WEFERLINGEN",
+            "type": "process",
+            "command": "edit_gm_weferlingen_summer.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
             "label": "EDIT SAVE",
             "type": "process",
             "command": "edit_save.bat",

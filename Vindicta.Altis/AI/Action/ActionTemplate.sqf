@@ -15,23 +15,21 @@ Template of an Action class
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
-
 CLASS("MyAction", "Action");
 
 	// ------------ N E W ------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -40,9 +38,9 @@ CLASS("MyAction", "Action");
 
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 
 		// Return the current state
 		ACTION_STATE_ACTIVE
@@ -50,14 +48,14 @@ CLASS("MyAction", "Action");
 
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 
 	// Calculates cost of this action
 	/*
-	STATIC_METHOD( ["_thisClass", "", [""]], "getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+	STATIC_METHOD( P_THISCLASS, "getCost") {
+		params [P_OOP_OBJECT("_AI"), P_ARRAY("_wsStart"), P_ARRAY("_wsEnd")];
 
 		// Return cost
 		0

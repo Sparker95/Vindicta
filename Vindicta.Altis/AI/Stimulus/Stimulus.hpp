@@ -34,7 +34,7 @@
 
 // Macro: STIMULUS_NEW()
 //                      0  1          2       3  4     5
-#define STIMULUS_NEW() [0, 0, [0, 0, 0], 666666, 0, time, []]
+#define STIMULUS_NEW() [0, 0, [0, 0, 0], 666666, 0, GAME_TIME, []]
 
 // Macros for getting values
 // Macro: STIMULUS_GET_TYPE(s)

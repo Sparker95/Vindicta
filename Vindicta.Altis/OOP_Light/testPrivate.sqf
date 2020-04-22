@@ -5,7 +5,7 @@ CLASS("ClassA", "")
 	VARIABLE_ATTR("var", [ATTR_PRIVATE]);
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		T_SETV("var", 123);
 	} ENDMETHOD;
@@ -21,7 +21,7 @@ CLASS("ClassB", "")
 	VARIABLE_ATTR("var", [ATTR_PRIVATE]);
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		T_SETV("var", 123);
 	} ENDMETHOD;
@@ -31,7 +31,7 @@ CLASS("ClassB", "")
 	} ENDMETHOD;
 
 	METHOD("illegalAccess") {
-		params ["_thisObject", "_anotherObject"];
+		params [P_THISOBJECT, "_anotherObject"];
 
 		SETV(_anotherObject, "var", 654);
 	} ENDMETHOD;

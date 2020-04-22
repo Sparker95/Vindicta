@@ -8,7 +8,7 @@ CLASS("ActionGroupFlee", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
 		private _group = GETV(_AI, "agent");
@@ -16,7 +16,7 @@ CLASS("ActionGroupFlee", "ActionGroup")
 		{
 			if (CALLM0(_x, "isInfantry")) then {
 				private _unitAI = CALLM0(_x, "getAI");
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitFlee", 0, [], _AI);
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitFlee", 0, [[TAG_INSTANT ARG _instant]], _AI);
 			};
 		} forEach _groupUnits;
 
@@ -29,8 +29,8 @@ CLASS("ActionGroupFlee", "ActionGroup")
 
 	// Logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
-		CALLM0(_thisObject, "activateIfInactive");
+		params [P_THISOBJECT];
+		T_CALLM0("activateIfInactive");
 
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;

@@ -1,22 +1,10 @@
 #include "common.hpp"
 
-/*
-Class: ActionUnit.ActionUnitFlee
-*/
-
-#define pr private
-
 CLASS("ActionUnitFlee", "ActionUnit")
 	
 	METHOD("activate") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		
-		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
-
 		private _unit = T_GETV("hO");
 		private _panicAnimsErectAndKneeled = [
 			"ApanPercMstpSnonWnonDnon_G01", "ApanPercMstpSnonWnonDnon_G02", "ApanPercMstpSnonWnonDnon_G03",
@@ -41,8 +29,8 @@ CLASS("ActionUnitFlee", "ActionUnit")
 	} ENDMETHOD;
 
 	METHOD("process") {
-		params ["_thisObject"];
-		CALLM0(_thisObject, "activateIfInactive");
+		params [P_THISOBJECT];
+		T_CALLM0("activateIfInactive");
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 ENDCLASS;

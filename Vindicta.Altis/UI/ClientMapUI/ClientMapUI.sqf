@@ -87,7 +87,7 @@ CLASS(CLASS_NAME, "")
 
 	// initialize UI event handlers
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Markers under cursor
 		T_SETV("markersUnderCursor", []);
@@ -133,7 +133,7 @@ CLASS(CLASS_NAME, "")
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
 		T_SETV("lastRespawnPos", []);
-		T_SETV("lbSelectionIndices", []);  
+		T_SETV("lbSelectionIndices", []);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -183,7 +183,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
@@ -195,7 +195,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_LIST"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactiveList", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_LIST"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEndedList", _this); }];
@@ -255,7 +255,7 @@ CLASS(CLASS_NAME, "")
 		// Just a macro to give event handlers to buttons cause I'm LZ AF
 		#define __GAR_ACTION_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garActionLBOnButtonClick", buttonStr); \
+				T_CALLM1("garActionLBOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");				// This text is not displayed
@@ -273,7 +273,7 @@ CLASS(CLASS_NAME, "")
 		// Another lazy macro to give event handlers to buttons
 		#define __GAR_SELECT_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garSelMenuOnButtonClick", buttonStr); \
+				T_CALLM1("garSelMenuOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_SPLIT, "split");
@@ -294,7 +294,7 @@ CLASS(CLASS_NAME, "")
 		// Give actions to buttons
 		#define __LOC_SELECT_BUTTON_CLICK_EH(className, buttonStr) T_CALLM1("findControl", className) ctrlAddEventHandler ["ButtonClick", { \
 			_thisObject = gClientMapUI; \
-			CALLM1(_thisObject, "locSelMenuOnButtonClick", buttonStr); \
+			T_CALLM1("locSelMenuOnButtonClick", buttonStr); \
 		}]
 
 		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_RECRUIT", "recruit");
@@ -486,6 +486,7 @@ CLASS(CLASS_NAME, "")
 	*/
 
 	#define __MRK_ROUTE "_route_"
+	#define __MRK_LABEL "_label_"
 	#define __MRK_SOURCE "_src"
 	#define __MRK_DEST "_dst"
 
@@ -494,7 +495,7 @@ CLASS(CLASS_NAME, "")
 		Description: Draws a route on the map, for example for attacks, reinforcements...
 	*/
 	STATIC_METHOD("drawRoute") {
-		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]], ["_color", "ColorRed"] ];
+		params [P_THISCLASS, P_ARRAY("_posArray"), P_STRING("_uniqueString"), P_BOOL("_enable"), P_BOOL("_cycle"), P_BOOL("_drawSrcDest"), ["_color", "ColorRed"], P_ARRAY("_labels") ];
 
 		//OOP_INFO_1("DRAW ROUTE: %1", _this);
 
@@ -530,19 +531,36 @@ CLASS(CLASS_NAME, "")
 					_mrk setMarkerColorLocal _color;
 					_mrk setMarkerAlphaLocal 1;
 					_mrk setMarkerTextLocal _text;
-					_markers pushBack _name; 
+					_markers pushBack _name;
 
 				// no need for source marker label, we already see where it starts and ends
 				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_dot", ""], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_dot", "Destination"]];
 			};
 
 			// Draw lines
-			for "_i" from 0 to (_count - 2) do {
-				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
+			for "_i" from 0 to (_count - 1) do {
 				pr _pos0 = _positions#_i;
-				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, _color, 8, _mrkName] call misc_fnc_mapDrawLineLocal;
-				_markers pushBack _mrkName;
+				if(_i < _count - 1) then {
+					pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
+					pr _pos1 = _positions#(_i+1);
+					[_pos0, _pos1, _color, 8, _mrkName] call misc_fnc_mapDrawLineLocal;
+					// count - 3 due to the ordering of the positions (last one is actually starting pos in a cycle)
+					if(_cycle && _i == _count - 3) then {
+						_mrkName setMarkerBrushLocal "Grid";
+						_mrkName setMarkerAlphaLocal 0.7;
+					};
+					_markers pushBack _mrkName;
+				};
+				if(_i < count _labels) then {
+					(_labels#_i) params ["_text", "_color"];
+					pr _mrkName = _uniqueString + __MRK_ROUTE + __MRK_LABEL + (str _i);
+					createMarkerLocal [_mrkName, _pos0];
+					_mrkName setMarkerTypeLocal "mil_dot";
+					_mrkName setMarkerColorLocal _color;
+					_mrkName setMarkerAlphaLocal 1;
+					_mrkName setMarkerTextLocal _text;
+					_markers pushBack _mrkName;
+				};
 			};
 		};
 
@@ -572,7 +590,15 @@ CLASS(CLASS_NAME, "")
 	METHOD("setDescriptionText") {
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _mapDisplay = findDisplay 12;
-		([_mapDisplay, "CMUI_INTEL_DESCRIPTION"] call ui_fnc_findControl) ctrlSetText _text;
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_DESCRIPTION"] call ui_fnc_findControl);
+		pr _pos = ctrlPosition _ctrl;
+		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, 1];
+		pr _finalText = format["<t size='0.8' font='EtelkaMonospacePro' align='left'>%1</t>", _text];
+		pr _parsedText = parseText _finalText;
+		_ctrl ctrlSetStructuredText _parsedText;
+		pr _height = ctrlTextHeight _ctrl;
+		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, _height];
+		_ctrl ctrlCommit 0;
 	} ENDMETHOD;
 
 	/*
@@ -1193,7 +1219,7 @@ CLASS(CLASS_NAME, "")
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetColumnsPos [0, 0.13, 0.35, 0.76];
-		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 
 		// Read some variables...
 		private _showInactive = T_GETV("showIntelInactiveList");
@@ -1336,7 +1362,7 @@ CLASS(CLASS_NAME, "")
 					} forEach _lnbIndices;
 
 					// can't show multiple descriptions for intel, need to single select
-					T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT"));
+					T_CALLM1("setDescriptionText", text (localize "STR_CMUI_INTEL_MULTISELECT"));
 
 				} else {
 					pr _intel = _lnb lnbData [_row, 0];
@@ -1346,29 +1372,34 @@ CLASS(CLASS_NAME, "")
 						T_CALLM2("mapShowAllIntel", false, true); // Force hide
 						CALLM1(_intel, "showOnMap", true);
 
-						// find description for this item
+						// Find description for this item
 						pr _shortName = CALLM0(_intel, "getShortName");
 
-						switch (toLower(_shortName)) do {
-							case "attack" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_ATTACK")); };
-							case "construct roadblock" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_RB")); };
-							case "reinforce garrison" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_REINFORCE")); };
-							case "patrol" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_PATROL")); };
-							case "assign new officer" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_OFFICER")); };
-							case "building supplies" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_BUILDING")); };
-							case "ammunition" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_AMMO")); };
-							case "explosives" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_EXPLOSIVES")); };
-							case "medical" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MEDICAL")); };
-							case "miscellaneous" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MISC")); };
-							default { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_DEFAULT")); };
+						// Get extra custom info
+						pr _extraInfo = CALLM0(_intel, "getInfo");
+
+						pr _locId = switch (toLower(_shortName)) do {
+							case "attack" : 				{ "STR_CMUI_INTEL_ATTACK" };
+							case "construct roadblock" : 	{ "STR_CMUI_INTEL_RB" };
+							case "reinforce garrison" : 	{ "STR_CMUI_INTEL_REINFORCE" };
+							case "patrol" : 				{ "STR_CMUI_INTEL_PATROL" };
+							case "assign new officer" : 	{ "STR_CMUI_INTEL_OFFICER" };
+							case "building supplies" : 		{ "STR_CMUI_INTEL_CONV_BUILDING" };
+							case "ammunition" : 			{ "STR_CMUI_INTEL_CONV_AMMO" };
+							case "explosives" : 			{ "STR_CMUI_INTEL_CONV_EXPLOSIVES" };
+							case "medical" : 				{ "STR_CMUI_INTEL_CONV_MEDICAL" };
+							case "miscellaneous" : 			{ "STR_CMUI_INTEL_CONV_MISC" };
+							default 						{ "STR_CMUI_INTEL_DEFAULT" };
 						};
+						private _desc = format ["<t color='#AAAAAA'>%1</t><br/>%2", localize _locId, _extraInfo];
+						T_CALLM1("setDescriptionText", _desc);
 					};
 				};
 			} else {
 				T_CALLM0("mapShowAllIntel");
 				// reset selected listbox entries
 				T_SETV("lbSelectionIndices", []);
-				T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT"));
+				T_CALLM1("setDescriptionText", localize "STR_CMUI_INTEL_MULTISELECT");
 			};
 		};
 
@@ -1684,7 +1715,7 @@ CLASS(CLASS_NAME, "")
 
 		// reset selected listbox entries
 		T_SETV("lbSelectionIndices", []);
-		T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT")); // reset intel description panel
+		T_CALLM1("setDescriptionText", localize "STR_CMUI_INTEL_MULTISELECT"); // reset intel description panel
 
 		// Disable the garrison action listbox
 		T_CALLM1("garActionMenuEnable", false);
@@ -1764,18 +1795,6 @@ CLASS(CLASS_NAME, "")
 	METHOD("onMouseButtonClick") {
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-	} ENDMETHOD;
-
-
-	/*
-		Method: onButtonDownCreateCamp
-		Description: Creates a camp at the current location if the button is enabled.
-
-		No parameters
-	*/
-	STATIC_METHOD("onButtonDownCreateCamp") {
-		params ["_thisClass"];
-		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [getPos player], 2, false);
 	} ENDMETHOD;
 
 	// Common code for all 'checkboxes' in this UI
@@ -2142,11 +2161,11 @@ CLASS(CLASS_NAME, "")
 			// If the action LB is shown, we will be pointing at its position
 			if (T_GETV("garActionLBShown")) then {
 				pr _posEndWorld = T_GETV("garActionPos");
-				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]];
 			} else {
 				pr _posEndScreen = getMousePosition;
 				pr _posEndWorld = _ctrl posScreenToWorld _posEndScreen;
-				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]];
 			};
 		};
 	} ENDMETHOD;
@@ -2364,7 +2383,7 @@ CLASS(CLASS_NAME, "")
 			pr _state = selectRandom [INTEL_ACTION_STATE_ACTIVE, INTEL_ACTION_STATE_INACTIVE, INTEL_ACTION_STATE_END];
 			SETV(_intel, "state", _state);
 			_allIntels pushBack _intel;
-			_i = _i + 1;m
+			_i = _i + 1;
 		};
 
 		{

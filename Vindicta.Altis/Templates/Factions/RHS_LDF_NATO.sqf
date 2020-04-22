@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["I_E_Soldier_F"]];
+_inf set [T_INF_default, ["I_E_Soldier_F"]];
 
 _inf set [T_INF_SL, ["RHS_LDF_NATO_SL"]];
 _inf set [T_INF_TL, ["RHS_LDF_NATO_TL", "RHS_LDF_NATO_TL_2"]];
@@ -65,7 +65,7 @@ _inf set [T_INF_recon_JTAC, ["RHS_LDF_NATO_recon_JTAC"]];
 
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["rhsgref_cdf_reg_uaz"]];
 

@@ -13,7 +13,7 @@ call compile preprocessFileLineNumbers "Tests\initTests.sqf";
 
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 };
 
 //Initialize templates

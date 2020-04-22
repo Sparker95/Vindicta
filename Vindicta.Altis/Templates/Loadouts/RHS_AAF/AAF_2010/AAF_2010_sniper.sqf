@@ -15,9 +15,10 @@ this forceAddUniform "FGN_AAF_M93_Lizard";
 _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Radio","FGN_AAF_M99Vest_Khaki_Radio"];
 this addVest _RandomVest;
 
-this addWeapon "rhs_weap_m38_rail";
-this addPrimaryWeaponItem "rhsusf_acc_LEUPOLDMK4";
-this addPrimaryWeaponItem "rhsgref_5Rnd_762x54_m38";
+this addWeapon "rhs_weap_m76";
+this addPrimaryWeaponItem "rhs_acc_dtk1l";
+this addPrimaryWeaponItem "rhs_acc_pso1m2";
+this addPrimaryWeaponItem "rhsgref_10Rnd_792x57_m76";
 this addWeapon "rhs_weap_pb_6p9";
 this addHandgunItem "rhs_acc_6p9_suppressor";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
@@ -25,9 +26,10 @@ this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
-for "_i" from 1 to 10 do {this addItemToVest "rhsgref_5Rnd_762x54_m38";};
 this addItemToVest "rhs_grenade_anm8_mag";
 this addItemToVest "rhs_grenade_mkii_mag";
 this addItemToVest "rhs_grenade_mki_mag";
+for "_i" from 1 to 6 do {this addItemToVest "rhsgref_10Rnd_792x57_m76";};
+for "_i" from 1 to 2 do {this addItemToVest "rhssaf_10Rnd_792x57_m76_tracer";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
