@@ -283,6 +283,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			};
 			// Holster pistol
 			_newUnit action ["SWITCHWEAPON", player, player, -1];
+
+			// Give player a lockpick
+			player addItemToUniform "ACE_key_lockpick";
 		};
 
 	} ENDMETHOD;
