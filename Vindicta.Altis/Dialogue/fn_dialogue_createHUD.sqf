@@ -8,6 +8,11 @@ private _hud =  _display getvariable ["pr0_dialogue_hud" ,controlNull];
 
 if(isnull _hud)then{
 
+	//hide DUI hud
+	diwako_dui_main_toggled_off_before = diwako_dui_main_toggled_off;
+	diwako_dui_main_toggled_off = true;
+
+
 	private _color = [
 		profilenamespace getvariable ['IGUI_BCG_RGB_R',0],
 		profilenamespace getvariable ['IGUI_BCG_RGB_G',1],
