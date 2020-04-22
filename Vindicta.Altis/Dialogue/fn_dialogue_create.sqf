@@ -6,6 +6,8 @@
     Create dialogue based on given conversation ID.
 	Check out https://github.com/Sparker95/Vindicta/wiki/Conversation-framework
 
+	A special variable is set on both units: pr0_cp_inConversation and can be used to check if the unit is in a conversation
+
 	Input:
 		_unit_1:
 		_unit_2(optional):
@@ -61,11 +63,44 @@ private _default_events = []; {_default_events set [_x, [{},[]]];}forEach EVENT_
 	}forEach _dialogueSet;
 }forEach _dialogueSets;
 
+[_unit_1, "pr0_cp_inConversation", true] call CBA_fnc_setVarNet;
+[_unit_2, "pr0_cp_inConversation", true] call CBA_fnc_setVarNet;
+
+//update active conversations count for both units.
+private _activeConversations_unit1 = _unit_1 getVariable ["pr0_cp_activeConversations",0];
+_activeConversations_unit1 = _activeConversations_unit1 + 1;
+_unit_1 getVariable ["pr0_cp_activeConversations",_activeConversations_unit1];
+private _activeConversations_unit2 = _unit_2 getVariable ["pr0_cp_activeConversations",0];
+_activeConversations_unit2 = _activeConversations_unit2 + 1;
+_unit_2 getVariable ["pr0_cp_activeConversations",_activeConversations_unit2];
+
+//script that will update active conversations count for both units after dialogue is done
+private _fn_removeFromList = {
+	params ["_unit_1","_unit_2"];
+
+	private _activeConversations_unit1 = _unit_1 getVariable ["pr0_cp_activeConversations",0];
+	_activeConversations_unit1 = _activeConversations_unit1 - 1;
+	_unit_1 getVariable ["pr0_cp_activeConversations",_activeConversations_unit1];
+
+	if(_activeConversations_unit1 <=0 )then{
+		[_unit_1, "pr0_cp_inConversation", false] call CBA_fnc_setVarNet;
+	};
+
+	private _activeConversations_unit2 = _unit_2 getVariable ["pr0_cp_activeConversations",0];
+	_activeConversations_unit2 = _activeConversations_unit2 - 1;
+	_unit_2 getVariable ["pr0_cp_activeConversations",_activeConversations_unit2];
+
+	if(_activeConversations_unit2 <=0 )then{
+		[_unit_2, "pr0_cp_inConversation", false] call CBA_fnc_setVarNet;
+	};
+};
+
 private _namespace = call CBA_fnc_createNamespace;
+private _end_scripts = [[_fn_removeFromList,nil],[_end_script,nil]];
 _namespace setVariable ["_dialogueSets",_dialogueSets];
 _namespace setVariable ["_unit_1",_unit_1];
 _namespace setVariable ["_unit_2",_unit_2];
-_namespace setVariable ["_end_scripts",[[_end_script]]];
+_namespace setVariable ["_end_scripts",_end_scripts];
 _namespace setVariable ["_conversation_args",_conversation_args];
 _namespace setVariable ["_default_events",_default_events];
 _namespace setVariable ["_events",_default_events];//temp until mainloop overwrite
