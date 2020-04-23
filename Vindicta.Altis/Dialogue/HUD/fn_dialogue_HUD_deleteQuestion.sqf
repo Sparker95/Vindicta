@@ -15,7 +15,7 @@ _ctrl_question setVariable ["_answers",[]];
 
 
 //renumber answers on other questions and remove answers from this question
-{_x  call pr0_fnc_dialogue_updateSentence;}foreach _ctrl_questions;
+{_x  call pr0_fnc_dialogue_HUD_updateSentence;}foreach _ctrl_questions;
 
 //change type so it can be removed
 _ctrl_question setVariable ["_type", TYPE_SENTENCE];

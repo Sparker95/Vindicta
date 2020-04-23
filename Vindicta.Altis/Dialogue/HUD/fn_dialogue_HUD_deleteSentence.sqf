@@ -11,7 +11,7 @@ private _ctrl_sentences = _display getvariable ["pr0_dialogue_sentence_list" ,[]
 _ctrl_sentences = _ctrl_sentences - [_ctrl_sentence];
 _display setvariable ["pr0_dialogue_sentence_list" ,_ctrl_sentences];
 if(count _ctrl_sentences == 0)then{
-	call pr0_fnc_dialogue_deleteHUD;
+	call pr0_fnc_dialogue_HUD_delete;
 };
 
 //resize background

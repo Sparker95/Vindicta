@@ -194,7 +194,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"If you give me that now I will pay you back tuesday",
 			"I will take it from here",
 			"Don't worry, I will do it"
-			]] call pr0_fnc_dialogue_createSimple;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -205,7 +205,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"No problem",
 			"Be careful with it, I'm no explosives expert!",
 			"You owe me"
-			]] call pr0_fnc_dialogue_createSimple;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -222,7 +222,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"I know just where to put this...",
 			"They won't know what hit them!",
 			"Is this thing safe?!"
-			]] call pr0_fnc_dialogue_createSimple;
+			]] call pr0_fnc_dialogue_createSentence;
 		
 		sleep 2;
 
@@ -233,7 +233,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"Good luck!",
 			"Bye!",
 			"I need to be somewhere else..."
-			]] call pr0_fnc_dialogue_createSimple;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		// Civie runs off after maybe saluting
 		[[_target, _caller], { 
@@ -285,7 +285,7 @@ Saboteur_fnc_playerSelectsTarget = {
 			"You wanna be 'sploding something?",
 			"Let me make a suggestion...",
 			"I got an idea"
-			]] call pr0_fnc_dialogue_createSimple;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -295,7 +295,7 @@ Saboteur_fnc_playerSelectsTarget = {
 			"Where?",
 			"Just point the way",
 			"Sorry, you will have to show me"
-			]] call pr0_fnc_dialogue_createSimple;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -332,7 +332,7 @@ Saboteur_fnc_playerSelectsTarget = {
 				"Go here",
 				"What about here?",
 				"Put it just...here"
-				]] call pr0_fnc_dialogue_createSimple;
+				]] call pr0_fnc_dialogue_createSentence;
 
 			sleep 2;
 
@@ -343,7 +343,7 @@ Saboteur_fnc_playerSelectsTarget = {
 				"They will never know what hit them!",
 				"Mwuhahahaha!",
 				"Oh yes."
-				]] call pr0_fnc_dialogue_createSimple;
+				]] call pr0_fnc_dialogue_createSentence;
 
 			// Civie runs off after maybe saluting
 			[[_target, _caller], { 

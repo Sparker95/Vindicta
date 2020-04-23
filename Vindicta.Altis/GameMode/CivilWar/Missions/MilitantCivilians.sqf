@@ -32,7 +32,7 @@ pr0_fnc_CivilianJoinPlayer = {
 				"I need your help",
 				"Follow me!",
 				"We should work together"
-			]] call pr0_fnc_dialogue_createSimple;
+			]] call pr0_fnc_dialogue_createSentence;
 
 			sleep 2;
 
@@ -43,7 +43,7 @@ pr0_fnc_CivilianJoinPlayer = {
 					"Together we will be stronger!",
 					"Okay",
 					"What are we waiting for?"
-					]] call pr0_fnc_dialogue_createSimple;
+					]] call pr0_fnc_dialogue_createSentence;
 
 				// Join on server
 				[[_target, _caller, clientOwner], {
@@ -71,7 +71,7 @@ pr0_fnc_CivilianJoinPlayer = {
 								"...",
 								"Do you have any spare bullets?",
 								"Hi neighbour!"
-							]] call pr0_fnc_dialogue_createSimple;
+							]] call pr0_fnc_dialogue_createSentence;
 						}] remoteExec ["call", _clientOwner];
 					} foreach _otherUnits;
 
@@ -92,11 +92,11 @@ pr0_fnc_CivilianJoinPlayer = {
 					"(will be missed)",
 					"(ashes to ashes)",
 					"(looks pale)"
-					]] call pr0_fnc_dialogue_createSimple;
+					]] call pr0_fnc_dialogue_createSentence;
 			};
 		};
 	} else {
-		[_target, "You are too many already, we must be inconspicuous!"] call pr0_fnc_dialogue_createSimple;
+		[_target, "You are too many already, we must be inconspicuous!"] call pr0_fnc_dialogue_createSentence;
 	};
 };
 
@@ -386,7 +386,7 @@ pr0_fnc_givePlayerIntel = {
 					"Sometimes I hear things...",
 					"They are planing something!",
 					"Please, you must know something..."
-				]]call pr0_fnc_dialogue_createSimple;
+				]]call pr0_fnc_dialogue_createSentence;
 
 				sleep 2;
 
@@ -395,7 +395,7 @@ pr0_fnc_givePlayerIntel = {
 					"There may be %1 near here!",
 					"%1 is planned by the enemy.",
 					"The enemy is planning %1!"
-				], CALLM0(_intel, "getShortName")]] call pr0_fnc_dialogue_createSimple;
+				], CALLM0(_intel, "getShortName")]] call pr0_fnc_dialogue_createSentence;
 
 				sleep 2;
 
@@ -409,7 +409,7 @@ pr0_fnc_givePlayerIntel = {
 					"Its best not to be seen together.",
 					"I will keep my ears open.",
 					"Come back later, I might know more..."
-				]] call pr0_fnc_dialogue_createSimple;
+				]] call pr0_fnc_dialogue_createSentence;
 
 				_civ lookAt _tgt;
 				_civ action ["Salute", _civ];

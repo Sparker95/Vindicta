@@ -37,12 +37,6 @@ _display setvariable ["pr0_dialogue_question_list" ,[]];
 ["pr0_dialogue_compas_onEachFrame", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 
 //show DUI hud again if it was hidden
-diwako_dui_main_toggled_off = diwako_dui_main_toggled_off_before;
-
-
-
-
-
-
-
-
+if!(isnil "diwako_dui_main_toggled_off")then{
+	diwako_dui_main_toggled_off = missionNamespace getVariable ["diwako_dui_main_toggled_off_before", false];
+};

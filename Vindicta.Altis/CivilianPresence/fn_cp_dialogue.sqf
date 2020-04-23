@@ -23,7 +23,7 @@ private _array = [
 		[_civ, [
 			"I dont have time for this",
 			"I have better things to do"
-		], 1] call pr0_fnc_dialogue_createSimple;
+		], 1] call pr0_fnc_dialogue_createSentence;
 	}],
 
 	[TYPE_ON_WALKED_AWAY, {
@@ -33,7 +33,7 @@ private _array = [
 			"We where having a chat!",
 			"You are strange",
 			"Yes, walk away when you are asking something"
-		], 1] call pr0_fnc_dialogue_createSimple;
+		], 1] call pr0_fnc_dialogue_createSentence;
 	}],
 
 	//define nodes
@@ -332,7 +332,7 @@ private _array2 = [
 		[_civ, [
 			"don't leave me here",
 			"Yes, walk away"
-		], 1] call pr0_fnc_dialogue_createSimple;
+		], 1] call pr0_fnc_dialogue_createSentence;
 	}],
 
 	["intro_hello",TYPE_INHERIT,{

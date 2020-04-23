@@ -17,9 +17,9 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 
 		if(_state isEqualTo "panic")exitWith{
 			if(_target getVariable ["dialog_aimed_at",false])then{
-				[_target, "Get away from me!", 1] call pr0_fnc_dialogue_createSimple;
+				[_target, "Get away from me!", 1] call pr0_fnc_dialogue_createSentence;
 			}else{
-				[_target, "can't talk right now", 1] call pr0_fnc_dialogue_createSimple;
+				[_target, "can't talk right now", 1] call pr0_fnc_dialogue_createSentence;
 			};
 		};
 
@@ -42,7 +42,7 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 			_target setVariable ["talkingTo",false];
 		};
 
-		[_caller,_target,_dialogues, "intro_hello",_end_script] call pr0_fnc_dialogue_create;
+		[_caller,_target,_dialogues, "intro_hello",_end_script] call pr0_fnc_dialogue_createConversation;
 
 	}, // Script
 	0, // Arguments
@@ -76,7 +76,7 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 			"I will untie you while the police are not watching",
 			"Run away after I release you",
 			"Tell your friends that rebels helped you today!"
-		]] call  pr0_fnc_dialogue_createSimple;
+		]] call  pr0_fnc_dialogue_createSentence;
 	}, // Code start
 	
 	{
@@ -90,7 +90,7 @@ _unit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.
 			"Thanks man!",
 			"Thank you!",
 			"I will never forget that you helped me!"
-		]] call  pr0_fnc_dialogue_createSimple;
+		]] call  pr0_fnc_dialogue_createSentence;
 
 		// Unarrest him
 		[_target, false] remoteExecCall ["pr0_fnc_cp_arrestUnit", 2, false];

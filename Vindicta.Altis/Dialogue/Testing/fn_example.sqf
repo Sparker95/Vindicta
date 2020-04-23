@@ -71,4 +71,4 @@ params [["_unit",objNull,[objNull]]];
 ["main", _array1] call pr0_fnc_dialogue_registerDataSet;
 ["math", _array2] call pr0_fnc_dialogue_registerDataSet;
 
-[_unit, ["main","math"]] call pr0_fnc_dialogue_setDataSets;
+[_unit, ["main","math"]] call pr0_fnc_dialogue_dataSets_set;

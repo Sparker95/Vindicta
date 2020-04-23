@@ -29,7 +29,7 @@ if(player isEqualTo _speaker)then{
 		"<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence
 	];
 }else{
-	private _color_unit = [_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_unitSideColor;
+	private _color_unit = [_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_HUD_unitSideColor;
 	private _structedText =  parseText format [
 		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1' shadow = '2'>%2:</t> <t color = '#ffffff'>%3",
 		_color_unit,["Unknown",name _speaker]select (player knowsAbout _speaker == 4),_sentence
@@ -87,7 +87,7 @@ for "_i" from count _ctrl_sentences -1 to 0 step -1 do{
 };
 
 //update hut size
-private _hud = call pr0_fnc_dialogue_createHUD;		
+private _hud = call pr0_fnc_dialogue_HUD_create;		
 _hud ctrlSetPosition [0, FLOAT_POS_Y - _pos_y, 1, _pos_y];
 _hud ctrlSetFade 0;//might have started to fade so we set it to 0 again
 _hud ctrlCommit FLOAT_SCROLL_TIME;

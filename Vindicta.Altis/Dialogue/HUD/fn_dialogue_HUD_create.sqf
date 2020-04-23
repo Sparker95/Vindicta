@@ -93,7 +93,7 @@ if(isnull _hud)then{
 
 				}else{
 					if(time > _fadeTime)then{
-						[_ctrl_sentence] call pr0_fnc_dialogue_deleteSentence;
+						[_ctrl_sentence] call pr0_fnc_dialogue_HUD_deleteSentence;
 					};
 				};			
 			};

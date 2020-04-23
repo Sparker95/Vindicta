@@ -24,7 +24,7 @@ if(!_silence)then{
 	//listener needs dialogue with options
 	{
 		if(_x distance _speaker < (FLOAT_MAX_LISTENING_DISTANCE * _loudness))then{
-			[_speaker, _text,_loudness] remoteExecCall ["pr0_fnc_dialogue_createSentence",_x];
+			[_speaker, _text,_loudness] remoteExecCall ["pr0_fnc_dialogue_HUD_createSentence",_x];
 		};
 	}forEach (Allplayers - entities "HeadlessClient_F" - [_listener]);
 };
@@ -35,7 +35,7 @@ if(_listener in Allplayers)then{
 	_namespace setVariable ["_question_event_id",_question_event_id];
 
 	//create question for client
-	[clientOwner,_question_event_id,_speaker,_text,_loudness,_answers] remoteExecCall ["pr0_fnc_dialogue_createQuestion",_listener];
+	[clientOwner,_question_event_id,_speaker,_text,_loudness,_answers] remoteExecCall ["pr0_fnc_dialogue_HUD_createQuestion",_listener];
 	
 	//incase player disconnects or something breaks
 	[{

@@ -7,7 +7,7 @@ disableSerialization;
 private _display = findDisplay 46;
 
 //Create sentence with answers for player
-private _ctrl_question = [_speaker,_text,_loudness,_answers] call pr0_fnc_dialogue_createSentence;
+private _ctrl_question = [_speaker,_text,_loudness,_answers] call pr0_fnc_dialogue_HUD_createSentence;
 
 _ctrl_question setVariable ["_owner",_owner];
 _ctrl_question setVariable ["_question_event_id",_question_event_id];
@@ -49,7 +49,7 @@ if(isNil "_keyDownEvent")then{
 						[STRING_QUESTION_RETURN_EVENT, [_question_event_id, _answer_index], _owner] call CBA_fnc_ownerEvent;
 
 						//remove answers from question 
-						_ctrl_question call pr0_fnc_dialogue_deleteQuestion;
+						_ctrl_question call pr0_fnc_dialogue_HUD_deleteQuestion;
 
 						breakOut "loop_questions";
 					};
@@ -88,7 +88,7 @@ if(isNil "_keyDownEvent")then{
 		[STRING_QUESTION_RETURN_EVENT, [_question_event_id,_event_index-666],_owner] call CBA_fnc_ownerEvent;// event and answer can be 0
 
 		//remove answers from question 
-		[_ctrl_question] call pr0_fnc_dialogue_deleteQuestion;
+		[_ctrl_question] call pr0_fnc_dialogue_HUD_deleteQuestion;
 		true;
 	},//condition
 	{},//code that runs when condition is met
@@ -106,6 +106,6 @@ if(isNil "_keyDownEvent")then{
 		[STRING_QUESTION_RETURN_EVENT, [_question_event_id,TYPE_EVENT_OUT_OF_TIME-666],_owner] call CBA_fnc_ownerEvent;// event and answer can be 0
 
 		//remove answers from question 
-		[_ctrl_question] call pr0_fnc_dialogue_deleteQuestion;
+		[_ctrl_question] call pr0_fnc_dialogue_HUD_deleteQuestion;
 	}//code that runs after time out
 ] call CBA_fnc_waitUntilAndExecute;
