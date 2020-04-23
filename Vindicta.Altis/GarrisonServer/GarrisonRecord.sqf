@@ -52,9 +52,19 @@ CLASS("GarrisonRecord", "")
 		T_GETV("garRef")
 	} ENDMETHOD;
 
+	// Returns location's position when attached to location
+	// returns pure garrison position otherwise
 	METHOD("getPos") {
 		params [P_THISOBJECT];
-		T_GETV("pos")
+		pr _loc = T_GETV("location");
+		pr _attachedToLocation = (_loc != "");
+
+		if (_attachedToLocation && !(IS_NULL_OBJECT(_loc))) then {
+			pr _locPos = CALLM0(_loc, "getPos");
+			_locPos
+		} else {
+			T_GETV("pos")
+		};
 	} ENDMETHOD;
 
 	METHOD("getComposition") {
@@ -93,12 +103,15 @@ CLASS("GarrisonRecord", "")
 		params [P_THISOBJECT];
 
 		pr _mapMarker = T_GETV("mapMarker");
-		CALLM1(_mapMarker, "setPos", T_GETV("pos"));
+		pr _pos = T_CALLM0("getPos"); // !! Returns location position if attached to a location
+
+		// Set properties...
 		CALLM1(_mapMarker, "setSide", T_GETV("side"));
 		CALLM1(_mapMarker, "setText", "");
+		CALLM1(_mapMarker, "setPos", _pos);
 
-		pr _loc = T_GETV("location");
-		CALLM1(_mapMarker, "show", _loc == "");
+		// Show if NOT attached to a location
+		CALLM1(_mapMarker, "show", T_GETV("loc") == "");
 	} ENDMETHOD;
 
 	// Updates the map markers of the action (line, pointer, etc)
