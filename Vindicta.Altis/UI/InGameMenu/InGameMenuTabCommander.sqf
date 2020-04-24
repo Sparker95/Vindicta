@@ -165,6 +165,12 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_CREATE_LOC", "buttonClick", "onButtonClaimLocation");
 		};
 
+		// Skip Time
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_1", "buttonClick", "onButtonSkipTime1");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_2", "buttonClick", "onButtonSkipTime2");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_4", "buttonClick", "onButtonSkipTime4");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_8", "buttonClick", "onButtonSkipTime8");
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -271,6 +277,31 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		pr _args = [clientOwner, _currentLoc, _hBuildResSrc, _buildResCost];
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
+	} ENDMETHOD;
+
+	METHOD("onButtonSkipTime1") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTime", 1);
+	} ENDMETHOD;
+	
+	METHOD("onButtonSkipTime2") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTime", 2);
+	} ENDMETHOD;
+	
+	METHOD("onButtonSkipTime4") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTime", 4);
+	} ENDMETHOD;
+	
+	METHOD("onButtonSkipTime8") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTime", 8);
+	} ENDMETHOD;
+
+	METHOD("_skipTime") {
+		params [P_THISOBJECT, P_NUMBER("_hours")];
+		_hours remoteExecCall ["skipTime", ON_ALL];
 	} ENDMETHOD;
 
 	STATIC_METHOD("showServerResponse") {
