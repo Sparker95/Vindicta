@@ -1296,7 +1296,6 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #endif
 
 // Functions to help with applying difficulty to values
-
 // h is difficulty setting
 // Interpolate linearly between s and t by h (0 <= h <= 1)
 #define MAP_LINEAR(h, s, t) MAP_TO_RANGE(h, 0, 1, s, t)
@@ -1306,6 +1305,10 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // Something like a generalized gamma correction function
 // See https://www.desmos.com/calculator/knchi5fjrz for example of how this function works (k = 0.5 here)
 #define MAP_GAMMA(h, x) ((x) ^ ((1 - (h) * 0.5 + 0.25) ^ 6))
+
+#ifdef _SQF_VM
+#define vin_diff_global 0.5
+#endif
 
 // ----------------------------------------------------------------------
 // |                       L O C A L I Z A T I O N                      |
