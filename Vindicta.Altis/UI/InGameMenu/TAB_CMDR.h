@@ -138,43 +138,34 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.335;
 			w = 0.141;
 			h = 0.038;
-			text = "SKIP TIME";
+			text = "SKIP TO";
 		};
 
-		class TAB_CMDR_BUTTON_SKIP_1 : TAB_CMDR_BUTTON 
+		class TAB_CMDR_BUTTON_SKIP_TO_PREDAWN : TAB_CMDR_BUTTON 
 		{
 			x = 0.183;
 			y = 0.335;
-			w = 0.114;
+			w = 0.146;
 			h = 0.038;
-			text = "1 hour";
+			text = "Predawn";
 		};
 
-		class TAB_CMDR_BUTTON_SKIP_2 : TAB_CMDR_BUTTON 
+		class TAB_CMDR_BUTTON_SKIP_TO_DAWN : TAB_CMDR_BUTTON 
 		{
-			x = 0.183 + (0.124 * 1);
+			x = 0.183 + (0.156 * 1);
 			y = 0.335;
-			w = 0.114;
+			w = 0.146;
 			h = 0.038;
-			text = "2 hour";
+			text = "Dawn";
 		};
 
-		class TAB_CMDR_BUTTON_SKIP_4 : TAB_CMDR_BUTTON 
+		class TAB_CMDR_BUTTON_SKIP_TO_DAYTIME : TAB_CMDR_BUTTON 
 		{
-			x = 0.183 + (0.124 * 2);
+			x = 0.183 + (0.156 * 2);
 			y = 0.335;
-			w = 0.114;
+			w = 0.146;
 			h = 0.038;
-			text = "4 hour";
-		};
-
-		class TAB_CMDR_BUTTON_SKIP_8 : TAB_CMDR_BUTTON 
-		{
-			x = 0.183 + (0.124 * 3);
-			y = 0.335;
-			w = 0.114;
-			h = 0.038;
-			text = "8 hour";
+			text = "Daytime";
 		};
 	};
 };

@@ -55,3 +55,22 @@ pr0_fnc_addMinutesToDate = {
 	[0,0,0,0,0]
 	#endif
 };
+
+// Add days to date with normalization
+pr0_fnc_addDaysToDate = {
+	params ["_date", "_days"];
+	[_date, _days * 24 * 60] call pr0_fnc_addMinutesToDate
+};
+
+pr0_fnc_getHoursUntilNextDawn = {
+	(date call BIS_fnc_sunriseSunsetTime) params ["_dawn", "_dusk"];
+	if(daytime < _dawn) then {
+		// Skip to this dawn if its before dawn
+		_dawn - daytime
+	} else {
+		// Skip to dawn tomorrow if its after dawn
+		private _dateTomorrow = [date, 1] call pr0_fnc_addDaysToDate;
+		(_dateTomorrow call BIS_fnc_sunriseSunsetTime) params ["_dawn", "_dusk"];
+		_dawn + 24 - daytime
+	}
+}
