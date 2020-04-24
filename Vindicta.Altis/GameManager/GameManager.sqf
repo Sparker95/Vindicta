@@ -774,6 +774,8 @@ CLASS("GameManager", "MessageReceiverEx")
 		params [P_THISOBJECT];
 
 		if(vin_autoSave_inCombat) exitWith { false };
+		if(isNil "gGameMode") exitWith { false };
+
 		private _enemySide = CALLM0(gGameMode, "getEnemySide");
 
 		HUMAN_PLAYERS findIf {
