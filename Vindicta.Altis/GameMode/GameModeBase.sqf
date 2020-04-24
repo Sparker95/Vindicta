@@ -279,7 +279,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			if(timeMultiplier != vin_server_gameSpeed) then {
 				setTimeMultiplier vin_server_gameSpeed;
-			}
+			};
 		};
 		#endif
 		FIX_LINE_NUMBERS()

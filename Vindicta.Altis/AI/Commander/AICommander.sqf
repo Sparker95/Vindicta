@@ -2624,7 +2624,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Bail if it's not time to consider reinforcement yet...
 		private _datePrevReinf = T_GETV("datePrevExtReinf");
 		private _dateNextReinf = +_datePrevReinf;
-		_dateNextReinf set [4, _dateNextReinf#4 + CMDR_EXT_REINF_INTERVAL_MINUTES];
+		// How ofter commander will consider to import external reinforcements
+		private _reinfInterval = MAP_LINEAR_SET_POINT(1 - vin_diff_global, 15, 60, 180);
+		_dateNextReinf set [4, _dateNextReinf#4 + _reinfInterval];
 
 		#ifndef REINFORCEMENT_TESTING
 		if ( (dateToNumber date) < (dateToNumber _dateNextReinf) ) exitWith {
@@ -2700,15 +2702,17 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Amount of armor we want to have overall
 		private _armorAll = (_effAll#T_EFF_medium) + (_effAll#T_EFF_armor);
 		private _armorRequiredAll = 0;
+		
 		private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
-		OOP_INFO_1("  Campaign progess: %1", _progress);
+		private _progressScaled = _progress * MAP_GAMMA(vin_diff_global, _progress);
+		OOP_INFO_2("  Campaign progess: %1, scaled by difficulty setting: %2", _progress, _progressScaled);
 		{
 			private _type = CALLM0(_x, "getType");
 			private _add = 0;
-			if (_type == LOCATION_TYPE_AIRPORT) then { _add = 6+10*_progress;};
-			if (_type == LOCATION_TYPE_OUTPOST) then { _add = 1+3*_progress;};
-			if (_type == LOCATION_TYPE_BASE) then { _add = 4+5*_progress;};
-			if (_type == LOCATION_TYPE_CITY) then { _add = 1 + 1*_progress;};
+			if (_type == LOCATION_TYPE_AIRPORT) then { _add = 6+10*_progressScaled; };
+			if (_type == LOCATION_TYPE_OUTPOST) then { _add = 1+3*_progressScaled; };
+			if (_type == LOCATION_TYPE_BASE) then { _add = 4+5*_progressScaled; };
+			if (_type == LOCATION_TYPE_CITY) then { _add = 1 + 1*_progressScaled; };
 			_armorRequiredAll = _armorRequiredAll + _add;
 		} forEach _desiredLocations;
 
@@ -2719,7 +2723,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_INFO_1("  More armor required: %1", _armorMoreRequired);
 
 		// Max amount of vehicles at airfields
-		private _nVehMax = if (_progress < 0.25) then {
+		private _nVehMax = if (_progressScaled < 0.25) then {
 			round 0.5*CMDR_MAX_VEH_AIRFIELD
 		} else {
 			CMDR_MAX_VEH_AIRFIELD
@@ -2835,17 +2839,17 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// If it's low, just give trucks
 		private _transportChances = [
 			T_VEH_truck_inf, 	1,
-			T_VEH_APC, 			0 max (2 * (_progress ^ 2)),
-			T_VEH_IFV, 			0 max (3 * (_progress ^ 3))
+			T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
+			T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3))
 		];
 
 		// Armor types depend on progress
 		private _armorChances = [
 			T_VEH_MRAP_HMG, 	0.5,
 			T_VEH_MRAP_GMG, 	1,
-			T_VEH_APC, 			0 max (2 * (_progress ^ 2)),
-			T_VEH_IFV, 			0 max (3 * (_progress ^ 3)),
-			T_VEH_MBT, 			0 max (5 * (_progress ^ 5))
+			T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
+			T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3)),
+			T_VEH_MBT, 			0 max (5 * (_progressScaled ^ 5))
 		];
 
 		private _vehiclePool = [];
