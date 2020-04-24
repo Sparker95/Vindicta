@@ -17,17 +17,14 @@ private _text = _question#INDEX_SENTENCE_TEXT;
 private _speaker = _question#INDEX_SENTENCE_SPEAKER;
 private _listener = _question#INDEX_SENTENCE_LISTENER;
 private _loudness = _question#INDEX_SENTENCE_LOUDNESS;
-private _silence = _question#INDEX_SENTENCE_SILENCE;
 
-if(!_silence)then{
-	//show the question to all players except listener.
-	//listener needs dialogue with options
-	{
-		if(_x distance _speaker < (FLOAT_MAX_LISTENING_DISTANCE * _loudness))then{
-			[_speaker, _text,_loudness] remoteExecCall ["pr0_fnc_dialogue_HUD_createSentence",_x];
-		};
-	}forEach (Allplayers - entities "HeadlessClient_F" - [_listener]);
-};
+//show the question to all players except listener.
+//listener needs dialogue with options
+{
+	if(_x distance _speaker < (FLOAT_MAX_LISTENING_DISTANCE * _loudness))then{
+		[_speaker, _text,_loudness] remoteExecCall ["pr0_fnc_dialogue_HUD_createSentence",_x];
+	};
+}forEach (Allplayers - entities "HeadlessClient_F" - [_listener]);
 
 if(_listener in Allplayers)then{
 	//every question has its own event handler, who cares it might be a few at the same time max

@@ -39,19 +39,10 @@ private _text = _sentence#INDEX_SENTENCE_TEXT;
 private _speaker = _sentence#INDEX_SENTENCE_SPEAKER;
 private _listener = _sentence#INDEX_SENTENCE_LISTENER;
 private _loudness = _sentence#INDEX_SENTENCE_LOUDNESS;
-private _silence = _sentence#INDEX_SENTENCE_SILENCE;
-if(_silence)then{
-	//show sentence to the ones who are having the conversation
-	if(_speaker in Allplayers)then{
-		[_speaker, _text, _loudness] remoteExecCall [pr0_fnc_dialogue_HUD_createSentence,_speaker];
-	};
-	if(_listener in Allplayers)then{
-		[_speaker, _text, _loudness] remoteExecCall [pr0_fnc_dialogue_HUD_createSentence,_listener];
-	};
-}else{
-	//show sentence to everone who is nearby
-	[_speaker,_text,_loudness] call pr0_fnc_dialogue_createSentence;
-};
+
+//show sentence to everone who is nearby
+[_speaker,_text,_loudness] call pr0_fnc_dialogue_createSentence;
+
 
 //sentence have been said now we need to wait for the next thing to happen
 private _delay=  FLOAT_SPEACH_TIME(_sentence#INDEX_SENTENCE_TEXT) + 0.5;

@@ -62,7 +62,7 @@ private _node_arrays = [];
 
 				if(isNil "_action_array" || {!(_action_array isEqualType [])})then{
 					[_namespace,"node didnt return array"] call pr0_fnc_dialogue_mainLoop_error;
-					breakOut "main";
+					breakOut "mainloop";
 				}else{
 					_node_arrays pushBack [_node_type, _action_array];
 				};
@@ -76,7 +76,7 @@ private _node_arrays = [];
 
 if(count _node_arrays == 0)exitWith{
 	[_namespace,"node(s) is/are empty"] call pr0_fnc_dialogue_mainLoop_error;
-	breakOut "main";
+	breakOut "mainloop";
 };
 
 //we can skip if it if it will be overwriten
@@ -86,7 +86,7 @@ private _overwrite_found = 0;
 	if(_node_type in [TYPE_OVERWRITE,TYPE_CREATE])then{
 		if(_node_type == TYPE_OVERWRITE && _forEachIndex == 0)then{
 			[_namespace,"node type is TYPE_OVERWRITE but nothing was overwriten"] call pr0_fnc_dialogue_mainLoop_error;
-			breakOut "main";
+			breakOut "mainloop";
 		};
 		_overwrite_found = _forEachIndex;
 	};
@@ -115,40 +115,53 @@ for "_i" from _overwrite_found to count _node_arrays -1 do{
 
 		if(_node_type == TYPE_INHERIT && !(_type in INHERIT_TYPES))exitWith{
 			[_namespace, format["inheritence not supported for node_type: %1" ,_node_type]] call pr0_fnc_dialogue_mainLoop_error;
-			breakOut "main";
+			breakOut "mainloop";
 		};
 
-		private _silence = _type in SILENCE_TYPES;
 		//diag_log str [_node_type, _type, _x];
 		switch (_type) do {
 			case TYPE_SENTENCE;
-			case TYPE_SENTENCE_SILENECE;
+			case TYPE_HINT;
 			case TYPE_QUESTION;
-			case TYPE_QUESTION_SILENECE:{
-				_x params [
-					["_text","",["",[]]], 
-					["_int_speaker",0,[0]],
-					["_loudness",1,[0]],
-					["_script",{},[{}]],
-					["_args",[]]
-				];
-				
+			case TYPE_QUESTION_SELF:{
+
+				private _loudness = 0;
+				private _params = if(_type in [TYPE_HINT, TYPE_QUESTION_SELF])then{
+					[
+						["_text","",["",[]]], 
+						["_int_speaker",0,[0]],
+						["_script",{},[{}]],
+						["_args",[]]
+					];
+				}else{
+					[
+						["_text","",["",[]]], 
+						["_int_speaker",0,[0]],
+						["_loudness",1,[0]],
+						["_script",{},[{}]],
+						["_args",[]]
+					];
+				};
+				_x params _params;
 
 				if!(_int_speaker in [1,2])exitWith{
 					[_namespace,"wrong speaker nr given"] call pr0_fnc_dialogue_mainLoop_error;
-					breakOut "main";
+					breakOut "mainloop";
 				};
 
 				private _speaker = [_unit_1, _unit_2] select (_int_speaker-1);
-				private _listener = [_unit_2, _unit_1] select (_int_speaker-1);
-
+				private _listener = if(_type in [TYPE_HINT, TYPE_QUESTION_SELF])then{
+					_speaker;
+				}else{
+					[_unit_2, _unit_1] select (_int_speaker-1);
+				};
 				
 				if(_text isEqualType [])then{_text = selectRandom _text};
 				
-				if(_type in [TYPE_SENTENCE_SILENECE,TYPE_SENTENCE])then{
-					_sentences pushBack [_text,_silence,_speaker,_listener,_loudness,_script,_args];
+				if(_type in [TYPE_HINT,TYPE_SENTENCE])then{
+					_sentences pushBack [_text,_speaker,_listener,_loudness,_script,_args];
 				}else{
-					_question = [_text,_silence,_speaker,_listener,_loudness,_script,_args];
+					_question = [_text,_speaker,_listener,_loudness,_script,_args];
 				};
 				
 			};
@@ -215,7 +228,7 @@ for "_i" from _overwrite_found to count _node_arrays -1 do{
 			case TYPE_ON_END_OVERWRITE: {
 				if!(_node_type isEqualto TYPE_INHERIT)then{
 					[_namespace,"TYPE_ON_END_OVERWRITE found but node_type != TYPE_INHERIT"] call pr0_fnc_dialogue_mainLoop_error;
-					breakOut "main";
+					breakOut "mainloop";
 				};
 
 				_x params [
@@ -226,7 +239,7 @@ for "_i" from _overwrite_found to count _node_arrays -1 do{
 			};
 			default {
 				[_namespace,"undefined type"] call pr0_fnc_dialogue_mainLoop_error;
-				breakOut "main";
+				breakOut "mainloop";
 			};
 		};
 	}forEach _action_array;

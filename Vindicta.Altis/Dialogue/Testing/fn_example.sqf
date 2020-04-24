@@ -10,7 +10,9 @@ private _array1 = [
 	}],
 	["main_question",{
 		[
-			[TYPE_QUESTION, "How can i help you?",2]
+			[TYPE_QUESTION_SELF, "How can i help you?",1],
+			[TYPE_ANSWER, "1", "#end"],
+			[TYPE_ANSWER, "2", "#end"]
 		]
 	}]
 ];
@@ -65,10 +67,7 @@ private _array2 = [
 
 ];
 
-
-params [["_unit",objNull,[objNull]]];
-
 ["main", _array1] call pr0_fnc_dialogue_registerDataSet;
 ["math", _array2] call pr0_fnc_dialogue_registerDataSet;
 
-[_unit, ["main","math"]] call pr0_fnc_dialogue_dataSets_set;
+[player, cursorObject, "main", "main_intro",{}] call pr0_fnc_dialogue_createConversation;

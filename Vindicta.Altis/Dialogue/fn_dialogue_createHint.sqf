@@ -7,8 +7,7 @@
 
 	Input:
 		_unit [Object]:
-		_sentence [String]: 
-		_loudness [Float];
+		_sentence [String]:
 	Output:
 		nil
 */
@@ -21,6 +20,6 @@ params [
 _sentence = "(" + _sentence + ")"; 
 
 if(_unit in Allplayers)then{
-	[_unit, _sentence, 0] remoteExecCall [pr0_fnc_dialogue_HUD_createSentence,_unit];
+	[_unit, _sentence, 0] remoteExecCall ["pr0_fnc_dialogue_HUD_createSentence",_unit];
 };
 

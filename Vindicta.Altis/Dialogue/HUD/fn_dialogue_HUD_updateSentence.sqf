@@ -23,54 +23,57 @@ private _distance_normal = _ctrl_sentence getVariable ["_distance_normal",1];
 
 private _display = ctrlParent _ctrl_sentence;
 
+
 //when player is talking it will show up different
-if(player isEqualTo _speaker)then{
-	_ctrl_sentence ctrlSetStructuredText parseText format [
+private _structedText = if(player isEqualTo _speaker)then{
+	parseText format [
 		"<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence
 	];
 }else{
-	private _color_unit = [_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_HUD_unitSideColor;
-	private _structedText =  parseText format [
+	parseText format [
 		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1' shadow = '2'>%2:</t> <t color = '#ffffff'>%3",
-		_color_unit,["Unknown",name _speaker]select (player knowsAbout _speaker == 4),_sentence
+		[_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_HUD_unitSideColor,
+		["Unknown",name _speaker]select (player knowsAbout _speaker == 4),
+		_sentence
 	];
+};
 
-	if(_type == TYPE_SENTENCE)then{
-		_ctrl_sentence ctrlSetStructuredText  _structedText;
-	}else{ //question
+
+if(_type == TYPE_SENTENCE)then{
+	_ctrl_sentence ctrlSetStructuredText  _structedText;
+}else{ //question
+
+	//there might already be a question on the screen. We dont want to have two answers with the same number.
+	//previous open question has 3 answers 1,2,3. When we create a new question we want to number the answers 4,5,...
 	
-		//there might already be a question on the screen. We dont want to have two answers with the same number.
-		//previous open question has 3 answers 1,2,3. When we create a new question we want to number the answers 4,5,...
-		
-		private _ctrl_questions = _display getvariable ["pr0_dialogue_question_list" ,[]];
-		private _answer_nr = 1;
-		{
-			if(_x isEqualTo _ctrl_sentence)exitWith{};
-			_answer_nr = _answer_nr + count (_x getVariable ["_answers",[]])
-		}forEach _ctrl_questions;
+	private _ctrl_questions = _display getvariable ["pr0_dialogue_question_list" ,[]];
+	private _answer_nr = 1;
+	{
+		if(_x isEqualTo _ctrl_sentence)exitWith{};
+		_answer_nr = _answer_nr + count (_x getVariable ["_answers",[]])
+	}forEach _ctrl_questions;
 
-		//add answers to structured text		
-		{
-			private _answer = _x;
-			_answer set [INDEX_ANSWER_NR,_answer_nr];
-			_structedText = composeText [
-				_structedText,
-				lineBreak,
-				" - ",
-				str _answer_nr,
-				": ",
-				_answer#INDEX_ANSWER_TEXT
-			];
-			_answer_nr = _answer_nr + 1;
-		}forEach _answers;
-		
-		//store answer numbers
-		_ctrl_sentence getVariable ["_answers",_answers];
+	//add answers to structured text		
+	{
+		private _answer = _x;
+		_answer set [INDEX_ANSWER_NR,_answer_nr];
+		_structedText = composeText [
+			_structedText,
+			lineBreak,
+			" - ",
+			str _answer_nr,
+			": ",
+			_answer#INDEX_ANSWER_TEXT
+		];
+		_answer_nr = _answer_nr + 1;
+	}forEach _answers;
+	
+	//store answer numbers
+	_ctrl_sentence getVariable ["_answers",_answers];
 
-		_ctrl_sentence ctrlSetStructuredText _structedText;
-		_ctrl_sentence setVariable ["_size_y",(count _answers + 1) * FLOAT_TEXT_HIGHT];
-		
-	};
+	_ctrl_sentence ctrlSetStructuredText _structedText;
+	_ctrl_sentence setVariable ["_size_y",(count _answers + 1) * FLOAT_TEXT_HIGHT];
+	
 };
 
 //update position for all sentences

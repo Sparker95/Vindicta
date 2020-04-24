@@ -30,7 +30,11 @@ private _hud = call pr0_fnc_dialogue_HUD_create;
 
 
 //fade if player is further away
-private _fade = ((_speaker distance player) / FLOAT_MAX_LISTENING_DISTANCE / _loudness)*0.9;
+private _fade = if(_loudness == 0)then{
+	0;
+}else{
+	((_speaker distance player) / FLOAT_MAX_LISTENING_DISTANCE / _loudness)*0.9;
+};
 
 
 /*remove random letters if far away
