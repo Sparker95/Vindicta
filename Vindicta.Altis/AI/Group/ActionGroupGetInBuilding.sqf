@@ -82,8 +82,14 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 				];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMoveBuilding", 0, _parameters, _AI);
 			} else {
-				// Just regroup if all positions are assigned
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
+				// Move to a position in or near the building, hopefully we end up somewhere sensible
+				pr _buildingPos = position _hBuilding;
+				pr _pos = [_buildingPos, 0, 25, 0, 0, 2, 0, [], [_buildingPos, _buildingPos]] call BIS_fnc_findSafePos;
+				pr _parameters = [
+					[TAG_POS, _pos],
+					[TAG_INSTANT, _instant]
+				];
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
 			};
 		} forEach _units;
 

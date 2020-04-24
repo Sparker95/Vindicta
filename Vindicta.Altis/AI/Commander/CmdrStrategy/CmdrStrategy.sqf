@@ -163,7 +163,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		switch(_locType) do {
 
 			case LOCATION_TYPE_ROADBLOCK: {
-				if (_rawActivity > 4) then {
+				if (_rawActivity > MAP_LINEAR_SET_POINT(1 - vin_diff_global, 0, 15, 75)) then {
 					_priority = T_GETV("constructLocRoadblockPriority") +
 								T_GETV("constructLocRoadblockCoeff") * _activityMult;
 				};

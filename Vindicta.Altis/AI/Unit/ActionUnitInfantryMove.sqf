@@ -14,7 +14,7 @@ Parameters:
 CLASS("ActionUnitInfantryMove", "ActionUnitInfantryMoveBase")
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, "position");
+		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 	} ENDMETHOD;
 ENDCLASS;

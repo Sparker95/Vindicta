@@ -15,7 +15,7 @@ _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf"
 this addGoggles _RandomGoggles;
 this forceAddUniform "rhs_uniform_gorka_1_a";
 
-this addWeapon "rhs_weap_hk416d145";
+this addWeapon "rhs_weap_m4a1_blockII_bk";
 this addPrimaryWeaponItem "rhsusf_acc_rotex5_grey";
 _RandomSight = selectRandom ["rhsusf_acc_eotech_xps3", "rhsusf_acc_g33_xps3", "rhsusf_acc_su230", "rhsusf_acc_su230_mrds"];
 this addPrimaryWeaponItem _RandomSight;

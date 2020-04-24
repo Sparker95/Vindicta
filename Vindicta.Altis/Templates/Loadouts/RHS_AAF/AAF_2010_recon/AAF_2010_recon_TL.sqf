@@ -20,6 +20,7 @@ this addWeapon "rhs_weap_m4a1_carryhandle_m203S";
 this addPrimaryWeaponItem "rhsusf_acc_M952V";
 this addPrimaryWeaponItem "rhsusf_acc_eotech_552";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855_Stanag";
+this addPrimaryWeaponItem "rhs_mag_M433_HEDP";
 this addWeapon "rhs_weap_savz61_folded";
 this addHandgunItem "rhsgref_10rnd_765x17_vz61";
 this addWeapon "rhssaf_zrak_rd7j";

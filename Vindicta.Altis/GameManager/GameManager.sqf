@@ -404,9 +404,11 @@ CLASS("GameManager", "MessageReceiverEx")
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
+						pr _timeStart = diag_tickTime;
 						//CRITICAL_SECTION {
 						CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
 						//};
+						diag_log format ["[GameManager] Game loaded in %1 seconds", diag_tickTime - _timeStart];
 						gGameMode = _gameModeRef;
 						gGameModeServer = _gameModeRef;
 						PUBLIC_VARIABLE "gGameModeServer";
@@ -487,6 +489,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	METHOD("autoLoad") {
 		params [P_THISOBJECT];
+
 		#define LOC_SCOPE "Vindicta_GameManager"
 		if(!vin_autoLoad_enabled) exitWith {
 			LOC("Autoload_Disabled") call pr0_fnc_autoLoadMsg;
@@ -526,7 +529,32 @@ CLASS("GameManager", "MessageReceiverEx")
 			LOC("Autoload_Factions") call pr0_fnc_autoLoadMsg;
 		};
 
-		T_CALLM1("loadGame", _recordName);
+		// Now we wait for players/admins if we are on dedicated server
+		if(IS_DEDICATED) then {
+			[_thisObject, _recordName] spawn {
+				params ["_thisObject", "_recordName"];
+
+				// Wait for players to connect
+				waitUntil {
+					sleep 1;
+					count HUMAN_PLAYERS > 0
+				};
+
+				private _autoLoadTime = PROCESS_TIME + 30;
+				while { !IS_ADMIN_ON_DEDI && _autoLoadTime > PROCESS_TIME } do {
+					sleep 0.5;
+					format [LOC("Autoload_CountDown"), _autoLoadTime - PROCESS_TIME] call pr0_fnc_autoLoadMsg;
+				};
+
+				if(!IS_ADMIN_ON_DEDI) then {
+					T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+				} else {
+					LOC("Autoload_AdminAbort") call pr0_fnc_autoLoadMsg;
+				};
+			};
+		} else {
+			T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+		};
 
 		#undef LOC_SCOPE
 	} ENDMETHOD;
@@ -698,36 +726,45 @@ CLASS("GameManager", "MessageReceiverEx")
 		params [P_THISOBJECT];
 		#define LOC_SCOPE "Vindicta_Settings"
 
+
+		// TODO format this better. Maybe push/pop sections like START_SECTION(sec) if(isNil "_currSection") then { _currSection = sec; _sections = []; } else { _sections pushBack _currSection; _currSection = _currSection + "_" + sec; }
 		// Spawn distance
-		["vin_spawnDist_civilian",		"SLIDER",	[LOC("Performance_spawnDist_Civilian"), LOC("Performance_spawnDist_Civilian_Tooltip")],		[LOC("Section"), "Performance"], [0, 1000, 300, 0], true] call CBA_fnc_addSetting;
-		["vin_spawnDist_garrison",		"SLIDER",	[LOC("Performance_spawnDist_Garrison"), LOC("Performance_spawnDist_Garrison_Tooltip")],		[LOC("Section"), "Performance"], [300, 10000, 1300, 0], true] call CBA_fnc_addSetting;
-		
-		// AI Skills
-		pr _tooltip = "Note: Final AI skill is affected by AI settings in server's profile";
-		["vin_aiskill_aimingAccuracy",	"SLIDER",	["Aiming Accuracy", _tooltip],	[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
-		["vin_aiskill_aimingShake",		"SLIDER",	["Aiming Shake", _tooltip],		[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
-		["vin_aiskill_aimingSpeed",		"SLIDER",	["Aiming Speed", _tooltip],		[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
-		["vin_aiskill_spotDistance",	"SLIDER",	["Spot Distance", _tooltip],	[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
-		["vin_aiskill_spotTime",		"SLIDER",	["Spot Time", _tooltip],		[LOC("Section"), "AI Unit Skills"], [0, 1, 0.5, 2], true] call CBA_fnc_addSetting;
-		
-		// Auto load and auto save
-		["vin_autoSave_enabled",	"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
-		["vin_autoSave_onEmpty",	"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
-		["vin_autoSave_interval",	"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")], [0, 24, 0, 0],	true] call CBA_fnc_addSetting;
-		["vin_autoSave_inCombat",	"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")], false,			true] call CBA_fnc_addSetting;
-		["vin_autoLoad_enabled",	"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")], false,			true] call CBA_fnc_addSetting;		
+		["vin_spawnDist_civilian",		"SLIDER",	[LOC("Perf_Spawn_Civilian"), LOC("Perf_Spawn_Civilian_Tooltip")],		[LOC("Section"), LOC("Perf")], [0, 1000, 300, 0], true] call CBA_fnc_addSetting;
+		["vin_spawnDist_garrison",		"SLIDER",	[LOC("Perf_Spawn_Garrison"), LOC("Perf_Spawn_Garrison_Tooltip")],		[LOC("Section"), LOC("Perf")], [300, 10000, 1300, 0], true] call CBA_fnc_addSetting;
+
+		// Difficulty
+		["vin_diff_global",				"SLIDER",	[LOC("Diff_Global"),		LOC("Diff_Global_Tooltip")],				[LOC("Section"), LOC("Diff")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+
+		// Disabled for now until we work out how best to combine global and individual settings
+		// Difficulty - Cmdr
+		// ["vin_diff_cmdrGlobal",			"SLIDER",	[LOC("Diff_Cmdr_Global"),	LOC("Diff_Cmdr_Global_Tooltip")],			[LOC("Section"), LOC("Diff")],[0, 2, 1, 2],	true] call CBA_fnc_addSetting;
+		// ["vin_diff_cmdrReinforcement",	"SLIDER",	[LOC("Diff_Cmdr_Reinforcement_Rate"), LOC("Diff_Cmdr_Reinforcement_Rate_Tooltip")],	[LOC("Section"), LOC("Diff")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+		// ["vin_diff_cmdrEscalation",		"SLIDER",	[LOC("Diff_Cmdr_Escalation_Rate"), LOC("Diff_Cmdr_Escalation_Rate_Tooltip")],	[LOC("Section"), LOC("Diff")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+		// ["vin_diff_cmdrPersistence",	"SLIDER",	[LOC("Diff_Cmdr_Persistence"), LOC("Diff_Cmdr_Persistence_Tooltip")],	[LOC("Section"), LOC("Diff")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+
+		// AI
+		pr _tooltip = LOC("AI_Tooltip_Note");
+		["vin_aiskill_global",			"SLIDER",	[LOC("AI_Global"),				LOC("AI_Global_Tooltip")],				[LOC("Section"), LOC("AI")],[0, 2, 1, 2],	true] call CBA_fnc_addSetting;
+		["vin_aiskill_aimingAccuracy",	"SLIDER",	[LOC("AI_Accuracy"),			_tooltip],								[LOC("Section"), LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+		["vin_aiskill_aimingShake",		"SLIDER",	[LOC("AI_Shake"),				_tooltip],								[LOC("Section"), LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+		["vin_aiskill_aimingSpeed",		"SLIDER",	[LOC("AI_Speed"),				_tooltip],								[LOC("Section"), LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+		["vin_aiskill_spotDistance",	"SLIDER",	[LOC("AI_Spotting_Distance"), 	_tooltip],								[LOC("Section"), LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+		["vin_aiskill_spotTime",		"SLIDER",	[LOC("AI_Spotting_Time"), 		_tooltip],								[LOC("Section"), LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
 
 		// Auto load
-		["vin_autoLoad_enabled",		"CHECKBOX",	[LOC("Autoload_Enabled"),	LOC("Autoload_Enabled_Tooltip")],	[LOC("Section"), LOC("Autoload")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoLoad_enabled",		"CHECKBOX",	[LOC("Autoload_Enabled"),		LOC("Autoload_Enabled_Tooltip")],		[LOC("Section"), LOC("Autoload")],	false,			true] call CBA_fnc_addSetting;
+
 		// Auto save
-		["vin_autoSave_enabled",		"CHECKBOX",	[LOC("Autosave_Enabled"),	LOC("Autosave_Enabled_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
-		["vin_autoSave_onEmpty",		"CHECKBOX",	[LOC("Autosave_On_Empty"),	LOC("Autosave_On_Empty_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
-		["vin_autoSave_interval",		"SLIDER",	[LOC("Autosave_Interval"),	LOC("Autosave_Interval_Tooltip")],	[LOC("Section"), LOC("Autosave")],	[0, 24, 0, 0],	true] call CBA_fnc_addSetting;
-		["vin_autoSave_inCombat",		"CHECKBOX",	[LOC("Autosave_In_Combat"),	LOC("Autosave_In_Combat_Tooltip")],	[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_enabled",		"CHECKBOX",	[LOC("Autosave_Enabled"),		LOC("Autosave_Enabled_Tooltip")],		[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_onEmpty",		"CHECKBOX",	[LOC("Autosave_On_Empty"),		LOC("Autosave_On_Empty_Tooltip")],		[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+		["vin_autoSave_interval",		"SLIDER",	[LOC("Autosave_Interval"),		LOC("Autosave_Interval_Tooltip")],		[LOC("Section"), LOC("Autosave")],	[0, 24, 0, 0],	true] call CBA_fnc_addSetting;
+		["vin_autoSave_inCombat",		"CHECKBOX",	[LOC("Autosave_In_Combat"),		LOC("Autosave_In_Combat_Tooltip")],		[LOC("Section"), LOC("Autosave")],	false,			true] call CBA_fnc_addSetting;
+
 		// Server
-		["vin_server_suspendWhenEmpty",	"CHECKBOX",	[LOC("Server_Suspend"),		LOC("Server_Suspend_Tooltip")],		[LOC("Section"), LOC("Server")],	true,			true] call CBA_fnc_addSetting;
+		["vin_server_suspendWhenEmpty",	"CHECKBOX",	[LOC("Server_Suspend"),			LOC("Server_Suspend_Tooltip")],			[LOC("Section"), LOC("Server")],	true,			true] call CBA_fnc_addSetting;
+
 		// Game
-		["vin_server_gameSpeed",		"SLIDER",	[LOC("Game_Speed"),			LOC("Game_Speed_Tooltip")],			[LOC("Section"), LOC("Game")],		[0.1, 5, 1, 1],	true] call CBA_fnc_addSetting;
+		["vin_server_gameSpeed",		"SLIDER",	[LOC("Game_Speed"),				LOC("Game_Speed_Tooltip")],				[LOC("Section"), LOC("Game")],		[0.1, 5, 1, 1],	true] call CBA_fnc_addSetting;
 
 		#undef LOC_SCOPE
 	} ENDMETHOD;

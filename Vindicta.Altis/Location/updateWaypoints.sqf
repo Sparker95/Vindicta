@@ -5,14 +5,6 @@
 /*
 Method: updateWaypoints
 Updates waypoint positions
-
-Arguments:
-_type - "circle" or "rectange"
-_data	- for "circle":
-	_radius
-		- for "rectangle":
-	[_a, _b, _dir] - rectangle dimensions and direction
-
 */
 
 params [P_THISOBJECT];

@@ -30,8 +30,10 @@ Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
 Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoUnloaded.sqf";
 
-// Add CBA ACE event handler for loading cargo
+// Add CBA ACE event handlers
 #ifndef _SQF_VM
+
+// Cargo loading/unloading
 if (isNil "Unit_aceCargoLoaded_EH" && isServer) then { // Only server needs this event
 	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded", 
 	{
@@ -43,6 +45,24 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 	{
 		_this call Unit_fnc_EH_aceCargoUnloaded;
 	}] call CBA_fnc_addEventHandler;
+};
+
+// SetVehicleLock from ace
+if (isNil "Unit_aceSetVehicleLock_EH") then {
+
+	private _code = {
+		// We want to run this after ACE event handler, so we wait for a frame
+		[
+		{
+			params ["_veh", "_isLocked"];
+			//diag_log format ["=== SetVehicleLock: %1 %2", _veh, _isLocked];
+			private _lockNumber = [0, 3] select _isLocked;
+			_veh lock _lockNumber;
+		},
+		_this, 0] call CBA_fnc_waitAndExecute;
+	};
+
+	Unit_aceSetVehicleLock_EH = ["ace_vehicleLock_setVehicleLock", _code] call CBA_fnc_addEventHandler;
 };
 #endif
 FIX_LINE_NUMBERS()
@@ -148,6 +168,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
 			T_CALLM0("applyInfantryWeapons");
+
+			if (_catID == T_VEH) then {
+				T_CALLM0("updateVehicleLock");
+			};
 		};
 
 	} ENDMETHOD;
@@ -379,16 +403,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
-						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_aimingAccuracy];	// Aiming and precision
-						_objectHandle setSkill ["aimingShake", vin_aiskill_aimingShake];
-						_objectHandle setSkill ["aimingSpeed", vin_aiskill_aimingSpeed];
+						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_global * vin_aiskill_aimingAccuracy];	// Aiming and precision
+						_objectHandle setSkill ["aimingShake", vin_aiskill_global * vin_aiskill_aimingShake];
+						_objectHandle setSkill ["aimingSpeed", vin_aiskill_global * vin_aiskill_aimingSpeed];
 						_objectHandle setSkill ["commanding", 1];		// Everything else
 						_objectHandle setSkill ["courage", 0.5];
 						//_objectHandle setSkill ["endurance", 0.8];
 						_objectHandle setSkill ["general", 1];
 						_objectHandle setSkill ["reloadSpeed", 0.5];
-						_objectHandle setSkill ["spotDistance", vin_aiskill_spotDistance];
-						_objectHandle setSkill ["spotTime", vin_aiskill_spotTime];
+						_objectHandle setSkill ["spotDistance", vin_aiskill_global * vin_aiskill_spotDistance];
+						_objectHandle setSkill ["spotTime", vin_aiskill_global * vin_aiskill_spotTime];
 
 						// make it impossible to ace interact with this unit, may need better solution in the future
 						if (side _objectHandle != west) then {
@@ -454,6 +478,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						T_CALLM1("createAI", "AIUnitVehicle");
+
+						// Initialize vehicle lock
+						T_CALLM0("updateVehicleLock");
 					};
 					case T_DRONE: {
 					};
@@ -551,33 +578,34 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 				};
+			};
 
-				// Give intel to this unit
-				switch (_catID) do {
-					case T_INF: {
-						// Leaders get intel tablets
-						if (CALLM0(_group, "getLeader") == _thisObject) then {
-							CALLSM1("UnitIntel", "initUnit", _thisObject);
-						} else {
-							// todo give intel to some special unit types, like radio specialists, etc...
-							// Some random infantry units get tablets too
-							if (random 10 < 2) then {
-								CALLSM1("UnitIntel", "initUnit", _thisObject);
-							};
-						};
-					};
-					case T_VEH: {
-						// A very little amount of vehicles gets intel
-						if (random 10 < 3) then {
+			// Give intel to this unit
+			// Intel tablets are not saved in inventory
+			switch (_catID) do {
+				case T_INF: {
+					// Leaders get intel tablets
+					if (CALLM0(_group, "getLeader") == _thisObject) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					} else {
+						// todo give intel to some special unit types, like radio specialists, etc...
+						// Some random infantry units get tablets too
+						if (random 10 < 2) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-					case T_DRONE: {
-						// Don't put intel into drones?
+				};
+				case T_VEH: {
+					// A very little amount of vehicles gets intel
+					if (random 10 < 3) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
 					};
-					case T_CARGO: {
-						// Don't put intel into cargo boxes?
-					};
+				};
+				case T_DRONE: {
+					// Don't put intel into drones?
+				};
+				case T_CARGO: {
+					// Don't put intel into cargo boxes?
 				};
 			};
 
@@ -722,6 +750,33 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO enableDynamicSimulation false;
 			};
 		};
+	} ENDMETHOD;
+
+	/*
+	Sets vehicle lock according to the current side of the vehicle
+	*/
+	METHOD("updateVehicleLock") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+
+		// Bail if not vehicle
+		if ((_data#UNIT_DATA_ID_CAT) != T_VEH) exitWith {};		
+
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		// Bail if not spawned
+		if (isNull _hO) exitWith {};
+
+		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+
+		// Bail if there is no garrison
+		if (IS_NULL_OBJECT(_garrison)) exitWith {};
+
+		pr _side = CALLM0(_garrison, "getSide");
+		pr _lock = (_side != CALLM0(gGameMode, "getPlayerSide")) && (_side != CIVILIAN);
+
+		["ACE_vehicleLock_setVehicleLock", [_hO, _lock], [_hO]] call CBA_fnc_targetEvent;
 	} ENDMETHOD;
 
 	Unit_fnc_hasInventory = {
@@ -1322,6 +1377,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GARRISON, _garrison];
+
+		// Update lock state
+		T_CALLM0("updateVehicleLock");
 	} ENDMETHOD;
 
 	//                         S E T   G R O U P
@@ -2398,6 +2456,20 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_data set [UNIT_DATA_ID_OWNER, 0];
 		_data set [UNIT_DATA_ID_MUTEX, 0];
 		_data set [UNIT_DATA_ID_AI, 0];
+
+		// Filter inventory
+		// Array of patterns of items we do not want to save in inventory
+		pr _itemsNoSave = [
+			"vin_tablet_",
+			"vin_document_"
+		];
+
+		pr _inv = _data#UNIT_DATA_ID_INVENTORY;
+		{
+			pr _invArray = _x; // Array of [item, count]
+			_inv set [_foreachindex, _invArray select { pr _className = _x#0; _itemsNoSave findIf {_x in _className} == -1}];
+		} forEach _inv;
+		///
 
 		//diag_log _data;
 

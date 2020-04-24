@@ -48,7 +48,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		_msg set [MESSAGE_ID_SOURCE, ""];
 		_msg set [MESSAGE_ID_DATA, []];
 		_msg set [MESSAGE_ID_TYPE, "process"];
-		pr _processInterval = 1;
+		pr _processInterval = 2;
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
@@ -168,10 +168,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	// Marks the garrison requiring an update broadcast
 	METHOD("onGarrisonOutdated") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
-
-		// Check if it's registered here
-		if (GETV(_gar, "regAtServer")) then {
-			T_GETV("outdatedObjects") pushBackUnique _gar;
+		CRITICAL_SECTION {
+			// Check if it's registered here
+			if (GETV(_gar, "regAtServer")) then {
+				T_GETV("outdatedObjects") pushBackUnique _gar;
+			};
 		};
 	} ENDMETHOD;
 

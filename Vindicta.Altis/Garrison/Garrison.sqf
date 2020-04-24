@@ -170,7 +170,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
-		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain];
+		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain, true]; // !! Will be called unscheduled
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 	} ENDMETHOD;
@@ -451,6 +451,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// ----------------------------------------------------------------------
 	// |                           P R O C E S S                            |
+	// | THIS IS RUN UNSCHEDULED											|
 	// ----------------------------------------------------------------------
 	METHOD("process") {
 		params [P_THISOBJECT];
@@ -476,7 +477,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			if((T_GETV("side") != CIVILIAN) and {T_GETV("location") == ""} and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
-				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
+				pr _args = [_thisObject];
+				CALLM2(gGarrisonAbandonedVehicles, "postMethodAsync", "addGarrison", _args);
 			};
 
 			pr _loc = T_GETV("location");
@@ -1804,6 +1806,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
 
+		// This can be called async so we must check _garrison still exists
+		if (!IS_OOP_OBJECT(_garrison)) exitWith {
+			OOP_ERROR_1("Attempt to add a non-existant garrison: %1", _garrison);
+		};
+
 		// Bail if adding myself
 		if (_thisObject == _garrison) exitWith {
 			OOP_ERROR_0("Attempt to add garrison to itself");
@@ -1874,6 +1881,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("captureGarrison") {
 		params[P_THISOBJECT, P_OOP_OBJECT("_garrison"), P_BOOL_DEFAULT_TRUE("_destroy")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
+
+		// This can be called async so we must check _garrison still exists
+		if (!IS_OOP_OBJECT(_garrison)) exitWith {
+			OOP_ERROR_1("Attempt to capture a non-existant garrison: %1", _garrison);
+		};
 
 		// Bail if captureing myself
 		if (_thisObject == _garrison) exitWith {
@@ -1952,6 +1964,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addUnitsAndGroups") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_units"), P_ARRAY("_groupsAndUnits")];
 		ASSERT_OBJECT_CLASS(_garSrc, "Garrison");
+
+		// This can be called async so we must check _garrison still exists
+		if (!IS_OOP_OBJECT(_garSrc)) exitWith {
+			OOP_ERROR_1("Attempt to add units and groups from a non-existant garrison: %1", _garSrc);
+		};
 
 		OOP_INFO_1("ADD UNITS AND GROUPS: %1", _this);
 
