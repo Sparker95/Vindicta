@@ -49,7 +49,7 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 						private _unit = [cursorObject] call unit_fnc_getUnitFromObjectHandle;
 						// Is cursorObject a unit?
 						if (_unit != "") then {
-							private _action = CALLM(_unit, "getAction", []);
+							private _action = CALLM0(_unit, "getAction");
 							// Does the unit have a action? Did we exceed max amount of debug controls?
 							if (_action != "" && ((count actionDebugs) < ACTION_DEBUG_MAX_COUNT)) then {
 								// Create a control
@@ -100,7 +100,7 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 		};
 		_text = _text + _action + ": " + _stateText;
 		_level = _level + 1;
-		private _subactions = CALLM(_action, "getSubactions", []);
+		private _subactions = CALLM0(_action, "getSubactions");
 		{
 			_text = [_x, _text, _level] call _appendSubactionTree;
 		} forEach _subactions;
@@ -115,7 +115,7 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 		{
 			private _unit = _x select 0;
 			private _ctrlID = _x select 1;
-			private _action = CALLM(_unit, "getAction", []);
+			private _action = CALLM0(_unit, "getAction");
 			private _text = _unit;
 			if (_action != "") then {
 				// Make a string with the whole action tree
@@ -138,7 +138,7 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 		if (_unitNew != "") then {
 			// Get unit's action
 			_unit = _unitNew;
-			private _actionNew = CALLM(_unit, "getAction", []);
+			private _actionNew = CALLM0(_unit, "getAction");
 			if (_actionNew != "") then {_action = _actionNew; };
 		};
 		if (_action != "") then {

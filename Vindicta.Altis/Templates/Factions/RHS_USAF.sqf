@@ -9,7 +9,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_USAF"];
 _array set [T_DESCRIPTION, "RHS standard US Army units."];
-_array set [T_DISPLAY_NAME, "RHSUSAF"];
+_array set [T_DISPLAY_NAME, "RHS USAF"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhsusf_c_troops"	// RHSUSAF
@@ -18,7 +18,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["rhsusf_army_ocp_rifleman_m4"]];
+_inf set [T_INF_default, ["rhsusf_army_ocp_rifleman_m4"]];
 
 _inf set [T_INF_SL, ["rhsusf_army_ocp_squadleader"]];
 _inf set [T_INF_TL, ["rhsusf_army_ocp_teamleader"]];

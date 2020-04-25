@@ -22,8 +22,8 @@ _no select {
 	// Filter out class names we don't care about
 	if (! (_x isKindOf "Man")) then {
 		// Cast vertical rays to check if the vehicle is inside this building
-		_posASL = getPosASL _x; 
-		_posASLStart = _posASL vectorAdd [0, 0, 100]; 
+		_posASL = getPosASL _x;
+		_posASLStart = _posASL vectorAdd [0, 0, 100];
 		_posASLEnd = _posASL vectorAdd [0, 0, -100];
 		_objs = (lineIntersectsObjs [_posASLStart, _posASLEnd, objNull, objNull, false, 16 + 32]) select { _x == _b };
 		if (count _objs > 0) then {

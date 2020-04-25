@@ -61,7 +61,7 @@ foreach ($extraFile in $extraFiles) {
 # Make the standalone pbos as well
 New-Item ".\dev" -ItemType "directory" -Force | Out-Null
 
-$maps = @("Altis", "Enoch", "Malden")
+$maps = @("Altis", "Enoch", "Malden", "Tembelan")
 foreach ($map in $maps) {
     $mapLower = $map.toLower();
     "Building standalone mission vindicta_$($mapLower)_v$($verStr).$($mapLower).pbo..."

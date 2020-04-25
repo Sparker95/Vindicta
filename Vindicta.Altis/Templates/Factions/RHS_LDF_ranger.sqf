@@ -20,7 +20,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
+_inf set [T_INF_default, ["I_soldier_F"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_officer, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun","RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
 _inf set [T_INF_rifleman, ["RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];

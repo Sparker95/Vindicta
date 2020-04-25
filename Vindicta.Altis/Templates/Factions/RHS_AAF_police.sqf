@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT, ["FGN_AAF_Police_Policeman"]];					//Default infantry if nothing is found
+_inf set [T_INF_default, ["FGN_AAF_Police_Policeman"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_officer, ["RHS_AAF_police_TL_SMG","RHS_AAF_police_TL_rifle","RHS_AAF_police_SMG","RHS_AAF_police_shotgun","RHS_AAF_police_rifle"]];
 _inf set [T_INF_rifleman, ["RHS_AAF_police_SMG","RHS_AAF_police_shotgun","RHS_AAF_police_rifle"]];

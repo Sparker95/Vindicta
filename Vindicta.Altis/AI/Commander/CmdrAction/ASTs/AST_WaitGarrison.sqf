@@ -51,7 +51,7 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
 		ASSERT_OBJECT(_garr);
 
-		if(CALLM(_garr, "isDead", [])) exitWith {
+		if(CALLM0(_garr, "isDead")) exitWith {
 			T_GETV("failGarrisonDead")
 		};
 

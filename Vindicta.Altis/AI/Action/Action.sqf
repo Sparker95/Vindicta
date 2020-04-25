@@ -3,6 +3,7 @@
 #include "Action.hpp"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
+#include "..\parameterTags.hpp"
 
 /*
 Class: Action
@@ -23,44 +24,49 @@ Author: Sparker 05.08.2018
 
 #define pr private
 
-CLASS("Action", "MessageReceiver")
+CLASS("Action", "MessageReceiverEx")
 
 	/* Variable: AI
 	Holds a reference to <AI> object which owns this action*/
 	VARIABLE("AI"); // The AI object this action is attached to
+
 	/* Variable: state
 	State of this action. Can be one of <ACTION_STATE>*/
 	VARIABLE("state"); // Status of this goal
+
 	//VARIABLE("msgLoop"); // Message loop of this goal, if this goal needs to receive any messages
 	/* Variable: timer
 	holds a reference to timer which sends PROCESS messages to this Action, if it's autonomous */
 	VARIABLE("timer"); // The timer which will be sending messages to this goal so that it calls its process method
-	
+
+	// Action should be performed instantly where appropriate
+	// Used when garrisons spawn so they can immediately apply group and unit state for their current action
+	VARIABLE("instant");
+
 	// Variable: (static)cost
 	STATIC_VARIABLE("cost"); // Cost of this action, if getCost returns a static number
-	
-	
-	
+
 	// ---- Inherited actions should have these set if planner is supposed to be used for them: ---
-	
+
 	// World state which must be satisfied for this action to start
 	STATIC_VARIABLE("preconditions");
-	
+
 	// World state after the action ahs been executed
 	STATIC_VARIABLE("effects");
-	
+
 	// Actions that are used by planner will be sorted by their precedence
 	STATIC_VARIABLE("precedence");
-	
+
 	// STATIC_VARIABLE("numParameters"); // Amount of parameters this action requires // Maybe implement it later, not very important
-	
+
 	// Array with parameters which must be derived from goal parameters
 	STATIC_VARIABLE("parameters");
-	
-	// ----------------------------------------------------------------------------------------------
-	
-		
-	
+
+	// Bool indicating how this action can behave during spawning.
+	// This controls how planned actions get the "instant" parameter set in createActionsFromPlan.
+	// No actions beyond a nonInstant action in a list of actions can be applied instantly.
+	STATIC_VARIABLE("nonInstant");
+
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -74,18 +80,19 @@ CLASS("Action", "MessageReceiver")
 	_parameters - Array of parameters. See note above about parameters.
 	*/
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", []]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		PROFILER_COUNTER_INC("Action");
 
 		ASSERT_OBJECT_CLASS(_AI, "AI");
 
-		SET_VAR(_thisObject, "AI", _AI);
-		SET_VAR(_thisObject, "state", ACTION_STATE_INACTIVE); // Default state
-		//pr _msgLoop = CALLM("AI", "getMessageLoop");
-		//SETV(_thisObject, "msgLoop", _msgLoop);
+		T_SETV("AI", _AI);
+		T_SETV("state", ACTION_STATE_INACTIVE); // Default state
+
+		private _instant = CALLSM3("Action", "getParameterValue", _parameters, TAG_INSTANT, false);
+		T_SETV("instant", _instant);
 		
-		SETV(_thisObject, "timer", ""); // No timer for this goal until it has been made autonomous
+		T_SETV("timer", NULL_OBJECT); // No timer for this goal until it has been made autonomous
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -95,13 +102,13 @@ CLASS("Action", "MessageReceiver")
 	Method: delete
 	*/
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_DEC("Action");
 		
 		// Delete the timer of this goal if it exists
-		private _timer = GETV(_thisObject, "timer");
-		if (_timer != "") then {
+		private _timer = T_GETV("timer");
+		if (_timer != NULL_OBJECT) then {
 			DELETE(_timer);
 		};
 	} ENDMETHOD;
@@ -113,16 +120,15 @@ CLASS("Action", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	
 	METHOD("getMessageLoop") {
-		params [ ["_thisObject", "", [""]] ];
-		pr _AI = GETV(_thisObject, "AI");
-		pr _msgLoop = CALLM(_AI, "getMessageLoop", []);
-		//diag_log format ["[Action:getMessageLoop] Action: %1, Returned message loop: %2", _thisObject, _msgLoop];		
-		//ade_dumpCallstack;
-		_msgLoop
+		params [P_THISOBJECT];
+		CALLM0(T_GETV("AI"), "getMessageLoop");
 	} ENDMETHOD;
-	
-	
-	
+
+	/* protected virtual */ METHOD("setInstant") {
+		params [P_THISOBJECT, P_BOOL("_instant")];
+		T_SETV("instant", _instant);
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                   S E T   A U T O N O M O U S                      |
 	// ----------------------------------------------------------------------
@@ -139,7 +145,7 @@ CLASS("Action", "MessageReceiver")
 	Returns: nil
 	*/
 	METHOD("setAutonomous") {
-		params [["_thisObject", "", [""]], ["_timerPeriod", 1, [1]] ];
+		params [P_THISOBJECT, ["_timerPeriod", 1, [1]] ];
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
 		_msg set [MESSAGE_ID_SOURCE, ""];
@@ -147,7 +153,7 @@ CLASS("Action", "MessageReceiver")
 		_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_PROCESS];
 		private _args = [_thisObject, _timerPeriod, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
-		SETV(_thisObject, "timer", _timer);
+		T_SETV("timer", _timer);
 	} ENDMETHOD;
 	
 	
@@ -167,8 +173,8 @@ CLASS("Action", "MessageReceiver")
 
 	Returns: nil
 	*/
-	METHOD("handleMessage") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+	METHOD("handleMessageEx") { //Derived classes must implement this method
+		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE;
 		private _msgHandled = false;
 		
@@ -176,18 +182,18 @@ CLASS("Action", "MessageReceiver")
 			
 			/*case MESSAGE_UNIT_DESTROYED: {
 				diag_log "[Goal::handleMessage] Info: unit was destroyed";
-				SETV(_thisObject, "state", ACTION_STATE_FAILED);
+				T_SETV("state", ACTION_STATE_FAILED);
 				_msgHandled = true; // message handled
 			};*/
 		
 			case ACTION_MESSAGE_PROCESS: {
 				//diag_log format ["[Goal::handleMessage] Info: Calling process method...", _msg];
-				CALLM(_thisObject, "process", []);
+				T_CALLM0("process");
 				_msgHandled = true; // message handled
 			};
 		
 			case ACTION_MESSAGE_DELETE: {
-				CALLM(_thisObject, "terminate", []);
+				T_CALLM0("terminate");
 				DELETE(_thisObject);
 				_msgHandled = true; // message handled
 			};
@@ -208,11 +214,14 @@ CLASS("Action", "MessageReceiver")
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
-	METHOD("activateIfInactive") {
-		params [["_thisObject", "", [""]]];
-		private _state = GETV(_thisObject, "state");
+	/* virtual */ METHOD("activateIfInactive") {
+		params [P_THISOBJECT];
+		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_INACTIVE) then {
-			_state = CALLM(_thisObject, "activate", []);
+			private _instant = T_GETV("instant");
+			_state = T_CALLM1("activate", _instant);
+			// Clear the instant flag, an action can only be applied instantly once
+			T_SETV("instant", false);
 		};
 		_state
 	} ENDMETHOD;
@@ -220,17 +229,18 @@ CLASS("Action", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	// |                 R E A C T I V A T E   I F   F A I L E D            |
 	// ----------------------------------------------------------------------
-		/*
+	/*
 	Method: reactivateIfFailed
 	Calls the Activate method of this action if it's in failed state.
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
 	METHOD("reactivateIfFailed") {
-		params [["_thisObject", "", [""]]];
-		private _state = GETV(_thisObject, "state");
+		params [P_THISOBJECT];
+		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_FAILED) then {
-			_state = CALLM(_thisObject, "activate", []);
+			_state = T_CALLM0("activate");
+			T_SETV("instant", false);
 		};
 		_state
 	} ENDMETHOD;
@@ -242,10 +252,17 @@ CLASS("Action", "MessageReceiver")
 	/*
 	Method: activate
 	Logic to run when the goal is activated. You should set the action state inside.
-	
+	Parameters: 
+		_instant - The action should be completed instantly
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD("activate") {} ENDMETHOD;
+	/* virtual */ METHOD("activate") {
+		params [P_THISOBJECT];
+		// Set state
+		T_SETV("state", ACTION_STATE_ACTIVE);
+		// Return ACTIVE state
+		ACTION_STATE_ACTIVE
+	} ENDMETHOD;
 	
 	/*
 	Method: process
@@ -253,7 +270,11 @@ CLASS("Action", "MessageReceiver")
 	
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD("process") {} ENDMETHOD;
+	/* virtual */ METHOD("process") {
+		params [P_THISOBJECT];
+		private _state = T_CALLM0("activateIfInactive");
+		_state
+	} ENDMETHOD;
 	
 	/*
 	Method: terminate
@@ -261,7 +282,7 @@ CLASS("Action", "MessageReceiver")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD("terminate") {} ENDMETHOD; 
+	/* virtual */ METHOD("terminate") {} ENDMETHOD;
 	
 	/*
 	Method: addSubactionToFront
@@ -301,9 +322,9 @@ CLASS("Action", "MessageReceiver")
 	*/
 	
 	METHOD("getFrontSubaction") {
-		params [ "_thisObject" ];
+		params [P_THISOBJECT];
 		_thisObject
-	} ENDMETHOD;	
+	} ENDMETHOD;
 	
 	
 	
@@ -318,8 +339,8 @@ CLASS("Action", "MessageReceiver")
 	Returns: true if action is in completed state, false otherwise
 	*/
 	METHOD("isCompleted") {
-		params [ ["_thisObject", "", [""]] ];
-		private _state = GETV(_thisObject, "state"); _state == ACTION_STATE_COMPLETED
+		params [P_THISOBJECT];
+		T_GETV("state") == ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 	
 	/*
@@ -328,8 +349,8 @@ CLASS("Action", "MessageReceiver")
 	Returns: true if action is in active state, false otherwise
 	*/
 	METHOD("isActive") {
-		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == ACTION_STATE_ACTIVE
+		params [P_THISOBJECT];
+		T_GETV("state") == ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
 	/*
@@ -338,8 +359,8 @@ CLASS("Action", "MessageReceiver")
 	Returns: true if action is in inactive state, false otherwise
 	*/
 	METHOD("isInactive") {
-		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == ACTION_STATE_INACTIVE
+		params [P_THISOBJECT];
+		(T_GETV("state")) == ACTION_STATE_INACTIVE
 	} ENDMETHOD;
 	
 	/*
@@ -348,8 +369,8 @@ CLASS("Action", "MessageReceiver")
 	Returns: true if action is in failed state, false otherwise
 	*/
 	METHOD("isFailed") {
-		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == ACTION_STATE_FAILED
+		params [P_THISOBJECT];
+		T_GETV("state") == ACTION_STATE_FAILED
 	} ENDMETHOD;
 	
 	
@@ -383,14 +404,14 @@ CLASS("Action", "MessageReceiver")
 	Returns: Number
 	*/
 	STATIC_METHOD("getCost") {
-		//params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_wsStart"), P_ARRAY("_wsEnd")];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
 		//if (isNil "_cost") then {
 		//	0
 		//} else {
-			_cost	
+			_cost
 		//};
 	} ENDMETHOD;
 	
@@ -414,12 +435,11 @@ CLASS("Action", "MessageReceiver")
 	Returns: <WorldState>
 	*/
 	STATIC_METHOD("getPreconditions") {
-		params [ ["_thisClass", "", [""]], ["_goalParameters", [], [[]]], ["_actionParameters", [], [[]]]];
-		
+		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
+
 		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
 		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
-		
-		_wsPre		
+		_wsPre
 	} ENDMETHOD;
 	
 	
@@ -437,7 +457,7 @@ CLASS("Action", "MessageReceiver")
 	Returns: Number
 	*/
 	STATIC_METHOD("getPrecedence") {
-		params [ ["_thisClass", "", [""]] ];
+		params [P_THISCLASS];
 		
 		pr _precedence = GET_STATIC_VAR(_thisClass, "precedence");
 		
@@ -448,7 +468,18 @@ CLASS("Action", "MessageReceiver")
 		//};
 	} ENDMETHOD;
 	
-	
+	STATIC_METHOD("isNonInstant") {
+		params [P_THISCLASS];
+		
+		pr _nonInstant = GET_STATIC_VAR(_thisClass, "nonInstant");
+		
+		if (isNil "_nonInstant") then {
+			false
+		} else {
+			_nonInstant
+		};
+	} ENDMETHOD;
+
 	/*
 	Method: (static)getParameterValue
 	Takes an array with parameters and returns value of parameter with given tag, or nil if such a parameter was not found.
@@ -463,17 +494,31 @@ CLASS("Action", "MessageReceiver")
 	Returns: anything
 	*/
 	STATIC_METHOD("getParameterValue") {
-		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]], ["_showError", true]];
-		pr _index = _parameters findif {_x select 0 == _tag};
-		if (_index == -1) then {
-			if (_showError) then {
-				OOP_INFO_3("[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters);
-			};
+		params [P_THISCLASS, P_ARRAY("_parameters"), ["_tag", "", ["", 0]], P_DYNAMIC("_default")];
+		private _index = _parameters findif { _x select 0 == _tag };
+		private _val = if(_index == NOT_FOUND) then { _default } else { (_parameters#_index)#1 };
+		_val = if(isNil "_val") then { _default } else { _val };
+		if (isNil "_val") then {
+			OOP_INFO_3("[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters);
 			nil
 		} else {
-			(_parameters select _index) select 1
-		};
+			_val
+		}
 	} ENDMETHOD;
+	
+	// Merge _additional parameters into _base parameters, leaving any existing values unchanged
+	STATIC_METHOD("mergeParameterValues") {
+		params [P_THISCLASS, P_ARRAY("_base"), P_ARRAY("_additional")];
+		{
+			_x params ["_tag", "_value"];
+			private _idx = _base findIf { _x select 0 == _tag };
+			if(_idx == -1) then {
+				// Append new value
+				_base pushBack _x;
+			};
+		} forEach _additional;
+	} ENDMETHOD;
+	
 
 
 
@@ -491,7 +536,7 @@ CLASS("Action", "MessageReceiver")
 	Returns: nil
 	*/
 	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
 	} ENDMETHOD;
@@ -509,7 +554,7 @@ CLASS("Action", "MessageReceiver")
 	Returns: nil
 	*/
 	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
 	} ENDMETHOD;
@@ -528,7 +573,7 @@ CLASS("Action", "MessageReceiver")
 	Returns: nil
 	*/
 	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
 	} ENDMETHOD;
@@ -546,9 +591,112 @@ CLASS("Action", "MessageReceiver")
 	Returns: nil
 	*/
 	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
 	} ENDMETHOD;
+
+	// Helper functions
+	STATIC_METHOD("_clearWaypoints") {
+		params [P_THISCLASS, P_GROUP("_hG")];
+		// Add a dummy waypoint as deleting all waypoints results in a dummy one being created later which messes
+		// with waypoint ordering
+		if(isNull _hG) exitWith {
+			// No group
+		};
+		//private _pos = position leader _hG;
+		while { count waypoints _hG > 0 } do {
+			deleteWaypoint [_hG, 0];
+		};
+		// private _wp = [_hG, 0];
+		// _hG setCurrentWaypoint _wp;
+		// _wp setWPPos _pos;
+		// _wp setWaypointCompletionRadius 30;
+		// _wp setWaypointType "MOVE";
+		// _wp setWaypointFormation "NO CHANGE";
+		// _wp setWaypointCombatMode "NO CHANGE";
+		// _wp setWaypointBehaviour "UNCHANGED";
+		// _wp setWaypointSpeed "UNCHANGED";
+		// _wp setWaypointScript  "";
+
+	} ENDMETHOD;
 	
+	STATIC_METHOD("_regroup") {
+		params [P_THISCLASS, P_GROUP("_hG")];
+		if(isNull _hG) exitWith {
+			// No group
+		};
+		{ _x stop false; _x doFollow leader _hG; } forEach units _hG;
+	} ENDMETHOD;
+
+	STATIC_METHOD("_teleport") {
+		params [P_THISCLASS, P_ARRAY("_units"), P_POSITION("_pos")];
+		
+		{
+			private _unit = _x;
+			private _hO = CALLM0(_unit, "getObjectHandle");
+			if(isNull _hO) exitWith {
+				// Can't teleport without a handle
+			};
+
+			if(_hO distance2D _pos < 25) exitWith {
+				// Don't teleport if we are already almost there, its too risky
+			};
+
+			switch true do {
+				// dismounted inf
+				case (CALLM0(_unit, "isInfantry") && vehicle _hO == _hO): {
+					private _tgtPos = [_pos, 0, 25, 0, 0, 2, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
+					_hO setVehiclePosition  [_tgtPos, [], 5];
+					//_hO setPos _tgtPos;
+				};
+				// vehicle
+				case (CALLM0(_unit, "isVehicle")): {
+					// Blacklist nearby vehicles
+					private _tgtPos = [_pos, 0, 25, 7, 0, 0.5, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
+					// _hO allowDamage false;
+					// _hO hideObjectGlobal true;
+					// _hO setVariable ["vin_allow_damage_at", TIME_NOW + 5];
+
+					// private _epeHandle = [_hO, "EpeContactStart", {
+					// 	params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
+					// 	_thisArgs params ["_pos"];
+					// 	if(_force > 10) then {
+					// 		// Spawned unsafely, so try again
+					// 		_object2 allowDamage false;
+					// 		CRITICAL_SECTION {
+					// 			if(_object2 getVariable ["vin_allow_damage_at", 0] == 0) then {
+					// 				_object2 spawn {
+					// 					waitUntil {
+					// 						sleep 1;
+					// 						TIME_NOW > _this getVariable ["vin_allow_damage_at", 0]
+					// 					};
+					// 					sleep 5; 
+					// 					_this allowDamage true;
+					// 					_this setVariable ["vin_allow_damage_at", nil];
+					// 				};
+					// 			};
+					// 			_object2 setVariable ["vin_allow_damage_at", TIME_NOW + 5];
+					// 		};
+					// 		private _tgtPos = [_pos, 0, 25, 7, 0, 0.5, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
+					// 		_object1 setVehiclePosition  [_tgtPos, [], 5];
+					// 	};
+					// }, [_pos]] call CBA_fnc_addBISEventHandler;
+
+					// [_hO, _epeHandle] spawn {
+					// 	params ["_hO", "_epeHandle"];
+					// 	waitUntil {
+					// 		sleep 1;
+					// 		TIME_NOW > _hO getVariable ["vin_allow_damage_at", 0]
+					// 	};
+					// 	_hO allowDamage true; 
+					// 	_hO hideObjectGlobal false;
+					// 	_hO setVariable ["vin_allow_damage_at", nil];
+					// 	_hO removeEventHandler ["EpeContactStart", _epeHandle];
+					// };
+					// _hO setVehiclePosition  [_tgtPos, [], 5];
+				};
+			};
+		} forEach _units;
+	} ENDMETHOD;
 ENDCLASS;

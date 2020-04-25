@@ -1,3 +1,9 @@
+#ifndef _SQF_VM
+if(!isServer) exitWith {};
+#else
+if(true) exitWith {};
+#endif
+
 /*
 ----------------------------------------------------------------------------------------------
 							LIST OF "CIVILIAN" GEAR AND VEHICLES
@@ -82,7 +88,7 @@ g_UM_civUniforms = [
     "U_O_R_Gorka_01_black_F",
     "U_C_E_LooterJacket_01_F"
 ];
-
+publicVariable "g_UM_civUniforms";
 
 g_UM_civHeadgear = [
     "H_Hat_Tinfoil_F",
@@ -173,6 +179,7 @@ g_UM_civHeadgear = [
     "H_StrawHat",
     "H_StrawHat_dark"
 ];
+publicVariable "g_UM_civHeadgear";
 
 g_UM_civVests = [
     "V_DeckCrew_blue_F",
@@ -191,6 +198,7 @@ g_UM_civVests = [
     "V_Safety_orange_F",
     "V_Safety_yellow_F"
 ];
+publicVariable "g_UM_civVests";
 
 g_UM_civFacewear = [
     "G_Aviator",
@@ -223,6 +231,7 @@ g_UM_civFacewear = [
     "G_Tactical_Black",
     "G_Tactical_Clear"
 ];
+publicVariable "g_UM_civFacewear";
 
 g_UM_civBackpacks = [
     "ACE_TacticalLadder_Pack",
@@ -230,6 +239,7 @@ g_UM_civBackpacks = [
     "B_Messenger_Coyote_F",
     "B_Messenger_Olive_F"
 ];
+publicVariable "g_UM_civBackpacks";
 
 g_UM_ghillies = [
 	"U_B_FullGhillie_ard",
@@ -247,6 +257,7 @@ g_UM_ghillies = [
     "U_O_GhillieSuit",
     "U_O_T_FullGhillie_tna_F"
 ];
+publicVariable "g_UM_ghillies";
 
 /* 
 ----------------------------------------------------------------------------------------------
@@ -260,6 +271,7 @@ g_UM_civItems = [
 	"Medikit",
 	"FirstAidKit"
 ];
+publicVariable "g_UM_civItems";
 
 // Exceptions for certain "dummy weapons" used in some innocent animations
 g_UM_civWeapons = [
@@ -275,6 +287,7 @@ g_UM_civWeapons = [
     "ACE_Flashlight_Maglite_ML300L",
     ""
 ];
+publicVariable "g_UM_civWeapons";
 
 g_UM_suspWeapons = [
     "Binocular",
@@ -282,7 +295,8 @@ g_UM_suspWeapons = [
     "Laserdesignator",
     "Laserdesignator_02",
     "Laserdesignator_03"
-]; 
+];
+publicVariable "g_UM_suspWeapons";
 
 /* 
 ----------------------------------------------------------------------------------------------
@@ -291,8 +305,8 @@ g_UM_suspWeapons = [
 */
 
 // no longer used array of civilian vehicles 
-/*
-g_civVehs = [
+
+g_UM_civVehs = [
     "C_Hatchback_01_sport_F",
     "C_Hatchback_01_F",
     "C_Truck_02_box_F",
@@ -331,6 +345,4 @@ g_civVehs = [
     "I_C_Van_02_transport_F",
     "I_C_Van_02_vehicle_F"
 ];
-
-*/
-
+publicVariable "g_UM_civVehs";

@@ -73,24 +73,50 @@
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #define OOP_ASSERT
 #define OOP_ASSERT_ACCESS
-//#undef OOP_DEBUG
+#undef OOP_DEBUG
 #undef OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
 #undef OOP_PROFILE
+#undef UNIT_ALLOCATOR_DEBUG
+#undef DEBUG_GOAL_MARKERS
 
 #define TIME_NOW 0
+#define GAME_TIME 0
+#define PROCESS_TIME 0
 #define DATE_NOW [0,0,0,0,0]
+#define UI_SLEEP(t)
+#define SET_DATE(d)
+
 #define CLIENT_OWNER 0
 #define IS_SERVER true
+#define IS_DEDICATED true
 #define HAS_INTERFACE true
 #define IS_HEADLESSCLIENT false
-#define PUBLIC_VARIABLE isNil
 #define IS_MULTIPLAYER false
+#define PUBLIC_VARIABLE isNil
+
+#define IS_LOCAL_ADMIN true
+#define IS_ADMIN_ON_DEDI true
+
+#define START_LOADING_SCREEN __null =  
+#define PROGRESS_LOADING_SCREEN __null = 
+#define END_LOADING_SCREEN
 
 #define PROFILE_NAME "Satan"
 #define SCRIPT_NULL objNull
 #define saveProfileNamespace
+
+#define HEADLESS_CLIENTS []
+#define HUMAN_PLAYERS []
+#define PLAYABLE_UNITS []
+#define ALL_VEHICLES []
+
+#define SIMULATION_ENABLED(obj) true
+#define ENABLE_SIMULATION_GLOBAL(obj, state)
+#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
+
+#define 
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -101,17 +127,39 @@
 #define VM_LOG_FMT(t, args)
 
 #define TIME_NOW time
+#define GAME_TIME (time - gGameFreezeTime)
+#define PROCESS_TIME time
 #define DATE_NOW date
+#define UI_SLEEP(t) uisleep (t)
+#define SET_DATE(d) setDate (d)
+
 #define CLIENT_OWNER clientOwner
 #define IS_SERVER isServer
+#define IS_DEDICATED isDedicated
 #define HAS_INTERFACE hasInterface
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
 #define IS_MULTIPLAYER isMultiplayer
 #define PUBLIC_VARIABLE publicVariable
 
-#define PROFILE_NAME profileName
+#define IS_LOCAL_ADMIN (call BIS_fnc_admin != 0)
+#define IS_ADMIN_ON_DEDI (IS_DEDICATED && { HUMAN_PLAYERS findIf { admin owner _x != 0 } != NOT_FOUND })
 
+#define START_LOADING_SCREEN startLoadingScreen
+#define PROGRESS_LOADING_SCREEN progressLoadingScreen
+#define END_LOADING_SCREEN endLoadingScreen
+
+#define PROFILE_NAME profileName
 #define SCRIPT_NULL scriptNull
+
+#define HEADLESS_CLIENTS (entities "HeadlessClient_F")
+#define HUMAN_PLAYERS (allPlayers - HEADLESS_CLIENTS)
+#define PLAYABLE_UNITS playableunits
+#define ALL_VEHICLES vehicles
+
+#define SIMULATION_ENABLED(obj) simulationEnabled (obj)
+#define ENABLE_SIMULATION_GLOBAL(obj, state) (obj) enableSimulationGlobal (state);
+#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled) enableDynamicSimulationSystem enabled
+
 #endif
 // ^^^ ARMA ^^^
 
@@ -181,13 +229,12 @@
 // |       M E T H O D   P A R A M E T E R S           |
 // -----------------------------------------------------
 
-#define P_THISOBJECT ["_thisObject", "", [""]]
-#define P_DEFAULT_PARAMS params [["_thisObject", "", [""]]]
-#define P_THISCLASS ["_thisClass", "", [""]]
-#define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
+#define P_THISOBJECT ["_thisObject", ""]
+#define P_THISCLASS ["_thisClass", ""]
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
+#define P_GROUP(paramNameStr) [paramNameStr, grpNull, [grpNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
 #define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
@@ -439,7 +486,13 @@
 #define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
 
 // Call an overidden method from the overriding method.
-#define T_CALLCM(classNameStr, methodNameStr, extraParams) ([_thisObject]+extraParams call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM (classNameStr, methodNameStr, extraParams) 	([_thisObject]+extraParams 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM0(classNameStr, methodNameStr) 					([_thisObject] 					call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM1(classNameStr, methodNameStr, a) 				([_thisObject, a] 				call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM2(classNameStr, methodNameStr, a, b) 			([_thisObject, a, b] 			call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM3(classNameStr, methodNameStr, a, b, c) 		([_thisObject, a, b, c] 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM4(classNameStr, methodNameStr, a, b, c, d) 		([_thisObject, a, b, c, d] 		call GET_METHOD(classNameStr, methodNameStr))
+#define T_CALLCM5(classNameStr, methodNameStr, a, b, c, d, e) 	([_thisObject, a, b, c, d, e] 	call GET_METHOD(classNameStr, methodNameStr))
 
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
 #define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
@@ -458,6 +511,13 @@
 #define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExec [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
 #define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
 #endif
+
+#ifdef _SQF_VM
+#define CLEAR_REMOTE_EXEC_JIP(JIP)
+#else
+#define CLEAR_REMOTE_EXEC_JIP(JIP) remoteExec ["", JIP]
+#endif
+
 
 // ----------------------------------------
 // |         A T T R I B U T E S          |
@@ -491,12 +551,12 @@
 #ifdef OOP_ASSERT
 #define VARIABLE_ATTR(varNameStr, attributes) \
 	if(!((varNameStr) in [OOP_PARENT_STR, OOP_PUBLIC_STR]) && (_oop_memList findIf { (_x select 0) isEqualTo (varNameStr) } != NOT_FOUND)) then { \
-		OOP_ERROR_2("Class %1 is hiding variable %2 in parent", _oop_classNameStr, varNameStr); \
+		OOP_ERROR_2("Class %1 is hiding variable '%2' in parent", _oop_classNameStr, varNameStr); \
 	}; \
 	_oop_memList pushBackUnique [varNameStr, attributes]
 #define STATIC_VARIABLE_ATTR(varNameStr, attributes) \
 	if(_oop_staticMemList findIf { (_x select 0) isEqualTo (varNameStr) } != NOT_FOUND) then { \
-		OOP_ERROR_2("Class %1 is hiding static variable %2 in parent", _oop_classNameStr, varNameStr); \
+		OOP_ERROR_2("Class %1 is hiding static variable '%2' in parent", _oop_classNameStr, varNameStr); \
 	}; \
 	_oop_staticMemList pushBackUnique [varNameStr, attributes]
 #else
@@ -614,6 +674,16 @@
 #define OOP_TRACE_EXIT_FUNCTION 
 #endif
 
+#ifdef OOP_DEBUG_CLASS_DEF
+#define LOG_CLASS_BEGIN(class, base)	diag_log format ["CLASS %1 : %2", class, base]
+#define LOG_METHOD(method)				diag_log format ["  METHOD %1", method]
+#define LOG_CLASS_END(class)			diag_log format ["ENDCLASS %1", class]
+#else
+#define LOG_METHOD(method)
+#define LOG_CLASS_BEGIN(class, base)
+#define LOG_CLASS_END(class)
+#endif
+
 // -----------------------------------------------------
 // |                   M E T H O D S                   |
 // -----------------------------------------------------
@@ -623,6 +693,7 @@
 // that OOP_PROFILE does.
 #ifdef _OOP_FUNCTION_WRAPPERS
 	#define METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr;  \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
@@ -641,6 +712,7 @@
 		} ]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
@@ -659,6 +731,7 @@
 		}]
 
 	#define STATIC_METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
@@ -671,6 +744,7 @@
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
@@ -689,22 +763,26 @@
 		}]
 #else
 	#define METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 	#define ENDMETHOD ]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
 	#define STATIC_METHOD(methodNameStr) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		LOG_METHOD(methodNameStr); \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
@@ -754,8 +832,8 @@
 //  */
 
 #define CLASS(classNameStr, baseClassNames) \
+LOG_CLASS_BEGIN(class, base); \
 call { \
-diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNames]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
 private _oop_memList = []; \
@@ -812,6 +890,7 @@ VARIABLE(OOP_PUBLIC_STR);
 //  */
 
 #define ENDCLASS  \
+LOG_CLASS_END(_oop_classNameStr); \
 private _serialVariables = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
 _serialVariables = _serialVariables select { \
 	_x params ["_varName", "_attributes"]; \
@@ -993,7 +1072,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 
 // If ofstream addon is globally enabled
 #ifdef OFSTREAM_ENABLE
-#define __OFSTREAM_OUT(fileName, text) ((ofstream_new fileName) ofstream_write(text))
+#define __OFSTREAM_OUT(fileName, text) ((ofstream_new (fileName)) ofstream_write(text))
 #define WRITE_CRITICAL(text) ((ofstream_new "Critical.rpt") ofstream_write(text))
 #else
 
@@ -1005,9 +1084,11 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define _OFSTREAM_FILE OFSTREAM_FILE
 
 #ifdef OFSTREAM_FILE
-#define WRITE_LOG(str) __OFSTREAM_OUT(OFSTREAM_FILE, str)
+#define WRITE_LOG(msg) __OFSTREAM_OUT(OFSTREAM_FILE, msg)
+#define WRITE_LOGF(file, msg) __OFSTREAM_OUT(file,  msg)
 #else
-#define WRITE_LOG(str) diag_log TEXT_ str
+#define WRITE_LOG(msg) diag_log TEXT_ msg
+#define WRITE_LOGF(file, msg) diag_log TEXT_ msg
 #endif
 
 #ifdef OOP_PROFILE
@@ -1106,6 +1187,26 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define OOP_DEBUG_6(str, a, b, c, d, e, f)
 #endif
 
+#ifdef OOP_LOGF
+#define OOP_LOGF_MSG(f, msg, a) private _o_str = format ([msg]+a); WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_0(f, msg) private _o_str = msg; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_1(f, msg, a) private _o_str = format [msg, a]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_2(f, msg, a, b) private _o_str = format [msg, a, b]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_3(f, msg, a, b, c) private _o_str = format [msg, a, b, c]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_4(f, msg, a, b, c, d) private _o_str = format [msg, a, b, c, d]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_5(f, msg, a, b, c, d, e) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
+#define OOP_LOGF_6(f, msg, a, b, c, d, e, f) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
+#else
+#define OOP_LOGF_MSG(f, msg, a)
+#define OOP_LOGF_0(f, msg)
+#define OOP_LOGF_1(f, msg, a)
+#define OOP_LOGF_2(f, msg, a, b)
+#define OOP_LOGF_3(f, msg, a, b, c)
+#define OOP_LOGF_4(f, msg, a, b, c, d)
+#define OOP_LOGF_5(f, msg, a, b, c, d, e)
+#define OOP_LOGF_6(f, msg, a, b, c, d, e, f)
+#endif
+
 // ----------------------------------------------------------------------
 // |                A S S E R T I O N S  A N D   C H E C K S            |
 // ----------------------------------------------------------------------
@@ -1148,7 +1249,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // ----------------------------------------------------------------------
 #define ON_ALL 		0
 #define ON_SERVER 	2
-#define ON_CLIENTS	([0, -2] select isDedicated)
+#define ON_CLIENTS	([0, -2] select IS_DEDICATED)
 #define NO_JIP 		false
 #define ALWAYS_JIP	true
 
@@ -1172,7 +1273,6 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // ----------------------------------------------------------------------
 // |                               M A T H                              |
 // ----------------------------------------------------------------------
-
 // Zero the height component of a vector
 #define ZERO_HEIGHT(pos) ([(pos) select 0, (pos) select 1, 0])
 
@@ -1188,3 +1288,30 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define CLAMP_POSITIVE(val_) MAXIMUM(val_, 0)
 // Clamp val_ between 0 and -inf
 #define CLAMP_NEGATIVE(val_) MINIMUM(val_, 0)
+// Map v from (a, b) to (x, y)
+#ifndef _SQF_VM
+#define MAP_TO_RANGE(v, a, b, s, t) (linearConversion [a, b, v, s, t, false])
+#else
+#define MAP_TO_RANGE(v, a, b, s, t) ((s) + ((v) - (a)) * ((t) - (s)) / ((b) - (a)))
+#endif
+
+// Functions to help with applying difficulty to values
+// h is difficulty setting
+// Interpolate linearly between s and t by h (0 <= h <= 1)
+#define MAP_LINEAR(h, s, t) MAP_TO_RANGE(h, 0, 1, s, t)
+// Interpolates between s and t, with m as a fixed point that always maps to h = 0.5. 
+// i.e. linear between s and m for h <= 0.5 and m and t for h > 0.5
+#define MAP_LINEAR_SET_POINT(h, s, m, t) (if ((h) <= 0.5) then { MAP_TO_RANGE(h, 0, 0.5, s, m) } else { MAP_TO_RANGE(h, 0.5, 1, m, t) } )
+// Something like a generalized gamma correction function
+// See https://www.desmos.com/calculator/knchi5fjrz for example of how this function works (k = 0.5 here)
+#define MAP_GAMMA(h, x) ((x) ^ ((1 - (h) * 0.5 + 0.25) ^ 6))
+
+#ifdef _SQF_VM
+#define vin_diff_global 0.5
+#endif
+
+// ----------------------------------------------------------------------
+// |                       L O C A L I Z A T I O N                      |
+// ----------------------------------------------------------------------
+#define LOCS(scope, id) (localize ("STR_" + scope + "_" + id))
+#define LOC(id) LOCS(LOC_SCOPE, id)

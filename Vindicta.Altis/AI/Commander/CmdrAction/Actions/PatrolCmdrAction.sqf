@@ -34,7 +34,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 	Create a CmdrAI action to send a detachment from a garrison to patrol a specified 
 	route.
-	
+
 	Parameters:
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
 		_routeTargets - Array of <CmdrAITarget>, an array of patrol waypoints as targets.
@@ -71,7 +71,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		{ DELETE(_x) } forEach T_GETV("transitions");
 
 #ifdef DEBUG_CMDRAI
-		T_PRVAR(routeTargets);
+		private _routeTargets = T_GETV("routeTargets");
 		for "_i" from 0 to count _routeTargets do
 		{
 			deleteMarker (_thisObject + "_line" + str _i);
@@ -80,15 +80,20 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 	} ENDMETHOD;
 
+	METHOD("getRouteTargets") {
+		params [P_THISOBJECT];
+		T_GET_AST_VAR("routeTargetsVar")
+	} ENDMETHOD;
+	
 	/* protected override */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(detachmentEffVar);
-		T_PRVAR(detachmentCompVar);
-		T_PRVAR(targetVar);
-		T_PRVAR(startDateVar);
-		T_PRVAR(routeTargetsVar);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _detachmentEffVar = T_GETV("detachmentEffVar");
+		private _detachmentCompVar = T_GETV("detachmentCompVar");
+		private _targetVar = T_GETV("targetVar");
+		private _startDateVar = T_GETV("startDateVar");
+		private _routeTargetsVar = T_GETV("routeTargetsVar");
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
@@ -185,8 +190,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(state);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _state = T_GETV("state");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		private _srcEff = GETV(_srcGarr, "efficiency");
 
@@ -219,22 +224,23 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
 		//T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 
 		private _intel = NULL_OBJECT;
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 	
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionPatrol", []);
-			T_PRVAR(routeTargets);
+
+			private _routeTargets = T_GETV("routeTargets");
 			private _routeTargetPositions = _routeTargets apply { [_world, _x] call Target_fnc_GetPos };
 			private _locations = _routeTargets select { 
 				_x#0 == TARGET_TYPE_LOCATION
@@ -256,7 +262,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			//SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
 			SETV(_intel, "dateDeparture", DATE_NOW); // Sparker added this, I think it's allright??
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 			SETV(_intel, "state", INTEL_ACTION_STATE_ACTIVE); // It's instantly active
 		};
 
@@ -294,13 +300,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 					CALLM2(_detachedGarr, "addKnownFriendlyLocationsActual", _x, 2000);
 				};
 			} forEach GETV(_intelClone, "waypoints");
-
-			// Reveal it to player side
-			if (random 100 < 70) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
-			};
 		} else {
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 
 			// Give the intel ref to the actual garrison doing the action
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
@@ -321,7 +322,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("debugDraw") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -358,35 +359,37 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 
 		// Bail if source garrison is dead
-		if(CALLM(_srcGarr, "isDead", [])) exitWith {
+		if(CALLM0(_srcGarr, "isDead")) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _srcGarrEff = GETV(_srcGarr, "efficiency");
 		private _srcGarrComp = GETV(_srcGarr, "composition");
-		T_PRVAR(routeTargets);
+		private _routeTargets = T_GETV("routeTargets");
 		private _routeTargetPositions = T_GETV("routeTargets") apply { [_worldNow, _x] call Target_fnc_GetPos };
 
 		// Here we will determine the maximum distance between two consecutive waypoints,
 		// so we can decide if transport is required or not. We could use the total route length or 
 		// some other metric instead here if we wanted.
 		private _maxDistance = 0;
+		private _maxActivityMultiplier = 0;
 		private _lastPos = _srcGarrPos;
 		{
 			_maxDistance = _maxDistance max (_lastPos distance _x);
 			_lastPos = _x;
+			_maxActivityMultiplier = _maxActivityMultiplier max CALLM1(_worldNow, "calcActivityMultiplier", _x);
 		} forEach ( _routeTargetPositions + [_srcGarrPos]);
 
 		// Will we need transport?
 		pr _needTransport = false;
-		if (_maxDistance > 2000) then {
+		if (_maxDistance > 1000) then {
 			_needTransport = true;
 		};
 
@@ -396,9 +399,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			_needTransport = true;
 			_enemyEff = EFF_MOUNTED_PATROL_EFF;
 		};
-		// Scale efficiency by activity in area
-		private _scaleFactor = CALLM1(_worldNow, "calcActivityMultiplier", _srcGarrPos);
-		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _scaleFactor);
+
+		// Scale efficiency by max activity in route
+		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _maxActivityMultiplier);
 
 		// Bail if the garrison clearly can not destroy the (potential) enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
@@ -509,7 +512,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -595,15 +598,15 @@ REGISTER_DEBUG_MARKER_STYLE("PatrolCmdrAction", "ColorYellow", "mil_pickup");
 	pr _thisObject = NEW("PatrolCmdrAction", [GETV(_garrison, "id") ARG _targets]);
 
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
+	T_CALLM("updateScore", [_world ARG _future]);
 
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	private _finalScore = T_CALLM("getFinalScore", []);
 	diag_log format ["Patrol final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	// Apply to sim
-	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
-	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
+	private _nowSimState = T_CALLM("applyToSim", [_world]);
+	private _futureSimState = T_CALLM("applyToSim", [_future]);
 
 }] call test_addTest;
 

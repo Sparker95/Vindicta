@@ -1,48 +1,48 @@
-#include "defineCommon.inc"
+
+if(isnil "CBA_fnc_waitUntilAndExecute")exitWith{};
 
 fnc_debugv2_overwrite = {
-	//waitUntil {!isNull findDisplay 49}; // no please don't waitUntil in unscheduled, by now display 49 already exists
 	_display = findDisplay 49;
 	
-	_ctrl_debug = _display displayCtrl 13184; 
+	_ctrl_debug = _display displayCtrl 13184;
 	_pos_debug = ctrlposition _ctrl_debug;// [x, y, w, h] 
 	_pos_debug set [2, 1-safeZoneX- _pos_debug#0-0.03];
-	_ctrl_debug ctrlSetPosition _pos_debug; 
+	_ctrl_debug ctrlSetPosition _pos_debug;
 	_ctrl_debug ctrlCommit 0;
 
 
 	_ctrl_expressionBackground = _display displayCtrl 11885;
 	_pos_expressionBackground = ctrlposition _ctrl_expressionBackground;// [x, y, w, h]
 	_pos_expressionBackground set [2,_pos_debug#2];
-	_ctrl_expressionBackground ctrlSetPosition _pos_expressionBackground; 
+	_ctrl_expressionBackground ctrlSetPosition _pos_expressionBackground;
 	_ctrl_expressionBackground ctrlCommit 0;
 
 	_ctrl_expression = _display displayCtrl 12284;
 	_pos_expression = ctrlposition _ctrl_expression;// [x, y, w, h] 
 	_pos_expression set [2,_pos_debug#2 - (_pos_expression#0 *2)];
-	_ctrl_expression ctrlSetPosition _pos_expression; 
+	_ctrl_expression ctrlSetPosition _pos_expression;
 	_ctrl_expression ctrlCommit 0;
 
 	_ctrl_expressionText = _display displayCtrl 11892;
 	_pos_expressionText = ctrlposition _ctrl_expressionText;// [x, y, w, h] 
 	_pos_expressionText set [2,_pos_expression#2];
-	_ctrl_expressionText ctrlSetPosition _pos_expressionText; 
+	_ctrl_expressionText ctrlSetPosition _pos_expressionText;
 	_ctrl_expressionText ctrlCommit 0;
 
 	_ctrl_expressionOutputBackground = _display displayCtrl 13191;
 	_pos_expressionOutputBackground = ctrlposition _ctrl_expressionOutputBackground;
 	_pos_expressionOutputBackground set [2,_pos_expression#2];
-	_ctrl_expressionOutputBackground ctrlSetPosition _pos_expressionOutputBackground; 
+	_ctrl_expressionOutputBackground ctrlSetPosition _pos_expressionOutputBackground;
 	_ctrl_expressionOutputBackground ctrlCommit 0;
 
 	_ctrl_expressionOutput = _display displayCtrl 13190;
-	_ctrl_expressionOutput ctrlSetPosition _pos_expressionOutputBackground; 
+	_ctrl_expressionOutput ctrlSetPosition _pos_expressionOutputBackground;
 	_ctrl_expressionOutput ctrlCommit 0;
 
-	_ctrl_title = _display displayCtrl 11884; 
+	_ctrl_title = _display displayCtrl 11884;
 	_pos_title = ctrlposition _ctrl_title;
 	_pos_title set [2,_pos_expressionBackground#2];
-	_ctrl_title ctrlSetPosition _pos_title; 
+	_ctrl_title ctrlSetPosition _pos_title;
 	_ctrl_title ctrlCommit 0;
 	_ctrl_title ctrlsettext "Ultra Wide Extended Debug Console With Extra Save Buttens!";
 	
@@ -243,7 +243,21 @@ fnc_debugv2_overwrite = {
 	
 	_posY = _posY +_spacingY + _spacingY;
 	_ctrl = _display ctrlCreate ["RscButtonMenu", -1,_ctrl_debug];
-	_ctrl ctrlSetPosition [_posXFINAL,_posY,_posX-_posXFINAL- _spacingY,_button_hieght];
+	_ctrl ctrlSetPosition [_posXFINAL,_posY,(_posX-_posXFINAL- _spacingY*2)/2,_button_hieght];
+
+	_ctrl ctrlCommit 0;
+	_ctrl ctrlSetText "-- cursorObject config file --";
+	_ctrl ctrlAddEventHandler ["ButtonClick", {
+		0 spawn {
+			profileNamespace setVariable ["bis_fnc_configviewer_selected", typeOf cursorObject];
+			profileNamespace setVariable ["bis_fnc_configviewer_path", ["configfile","CfgVehicles",typeOf cursorObject]];
+			[] call BIS_fnc_configViewer;
+		};
+	}];
+
+
+	_ctrl = _display ctrlCreate ["RscButtonMenu", -1,_ctrl_debug];
+	_ctrl ctrlSetPosition [_posXFINAL + (_posX-_posXFINAL- _spacingY*2)/2+_spacingY,_posY,(_posX-_posXFINAL- _spacingY*2)/2,_button_hieght];
 
 	_ctrl ctrlCommit 0;
 	_ctrl ctrlSetText "-- Undo last save --";
@@ -261,23 +275,24 @@ fnc_debugv2_overwrite = {
 		
 		((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText _name;
 	}];
-	
 };
 
 
 if (hasInterface) then {
 	[] spawn {
 
-		waitUntil {!isNull findDisplay 46}; 
+		waitUntil {!isNull findDisplay 46};
 
 		(findDisplay 46) displayAddEventHandler ["KeyDown", {
 			params ["_display", "_key", "_shift", "_ctrl", "_alt"];
-			
 			if(_key == 1)then{
-				0 spawn {
-					waitUntil {!isNull (findDisplay 49)};
-					isNil {call fnc_debugv2_overwrite;}; // Wrap it into isNil to make it do the job in one frame
-				};
+
+				[
+					{!isnull(findDisplay 49)},
+					{
+						call fnc_debugv2_overwrite;
+					}
+				] call CBA_fnc_waitUntilAndExecute;
 			};
 		}];
 

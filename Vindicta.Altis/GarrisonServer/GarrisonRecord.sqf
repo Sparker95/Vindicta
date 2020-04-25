@@ -11,7 +11,7 @@ Author: Sparker 23 August 2019
 CLASS("GarrisonRecord", "")
 
 	// Ref to the actual garrison, which exists only on the server
-	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]); 
+	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]);
 
 	// Generic properties
 	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
@@ -52,9 +52,19 @@ CLASS("GarrisonRecord", "")
 		T_GETV("garRef")
 	} ENDMETHOD;
 
+	// Returns location's position when attached to location
+	// returns pure garrison position otherwise
 	METHOD("getPos") {
 		params [P_THISOBJECT];
-		T_GETV("pos")
+		pr _loc = T_GETV("location");
+		pr _attachedToLocation = (_loc != "");
+
+		if (_attachedToLocation && !(IS_NULL_OBJECT(_loc))) then {
+			pr _locPos = CALLM0(_loc, "getPos");
+			_locPos
+		} else {
+			T_GETV("pos")
+		};
 	} ENDMETHOD;
 
 	METHOD("getComposition") {
@@ -93,12 +103,15 @@ CLASS("GarrisonRecord", "")
 		params [P_THISOBJECT];
 
 		pr _mapMarker = T_GETV("mapMarker");
-		CALLM1(_mapMarker, "setPos", T_GETV("pos"));
+		pr _pos = T_CALLM0("getPos"); // !! Returns location position if attached to a location
+
+		// Set properties...
 		CALLM1(_mapMarker, "setSide", T_GETV("side"));
 		CALLM1(_mapMarker, "setText", "");
+		CALLM1(_mapMarker, "setPos", _pos);
 
-		pr _loc = T_GETV("location");
-		CALLM1(_mapMarker, "show", _loc == "");
+		// Show if NOT attached to a location
+		CALLM1(_mapMarker, "show", T_GETV("loc") != "");
 	} ENDMETHOD;
 
 	// Updates the map markers of the action (line, pointer, etc)
@@ -182,7 +195,7 @@ CLASS("GarrisonRecord", "")
 		// Create the map marker
 		pr _mapMarker = NEW("MapMarkerGarrison", [_thisObject]);
 		T_SETV("mapMarker", _mapMarker);
-		T_CALLM0("_updateMapMarker");		
+		T_CALLM0("_updateMapMarker");
 		T_CALLM0("_updateActionMapMarkers");
 
 		// Update linked records if something was pointing at this garrison record
@@ -193,7 +206,7 @@ CLASS("GarrisonRecord", "")
 	METHOD("_updateLinkedRecords") {
 		params [P_THISOBJECT];
 
-		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", GETV(_thisObject, "garRef"));
+		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", T_GETV("garRef"));
 		{
 			CALLM0(_x, "_updateMapMarker");
 			CALLM0(_x, "_updateActionMapMarkers");

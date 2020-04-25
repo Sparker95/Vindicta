@@ -17,8 +17,9 @@ this addBackpack "FGN_AAF_Bergen_SL_Type07";
 
 this addWeapon "rhs_weap_m21a";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-this addPrimaryWeaponItem "rhs_acc_pkas";
 this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
+_RandomSight = selectRandom ["rhs_acc_pkas", "rhs_acc_ekp8_02b", ""];
+this addPrimaryWeaponItem _RandomSight;
 this addWeapon "rhs_weap_tt33";
 this addHandgunItem "rhs_mag_762x25_8";
 this addWeapon "rhssaf_zrak_rd7j";
@@ -37,6 +38,7 @@ this addItemToBackpack "rhs_mag_nspd";
 this addItemToBackpack "rhs_mag_nspn_green";
 this addItemToBackpack "rhs_mag_nspn_red";
 this addItemToBackpack "rhs_mag_nspn_yellow";
+this addItemToBackpack "rhs_acc_1pn93_1";
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

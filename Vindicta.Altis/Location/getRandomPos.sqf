@@ -12,14 +12,14 @@ Returns: Array, position
 
 #define pr private
 
-params [["_thisObject", "", [""]]];
+params [P_THISOBJECT];
 
 pr _border = T_GETV("border");
 pr _pos = T_GETV("pos");
 
 pr _r = T_GETV("boundingRadius");
 pr _return = [0, 0, 0];
-while {!(CALLM1(_thisObject, "isInBorder", _return))} do {
+while {!(T_CALLM1("isInBorder", _return))} do {
 	_return = _pos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0];
 };
 

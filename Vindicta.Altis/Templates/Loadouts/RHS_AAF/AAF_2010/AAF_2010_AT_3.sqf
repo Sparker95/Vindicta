@@ -16,8 +16,7 @@ _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Rifleman","FGN_AAF_M99Vest_K
 this addVest _RandomVest;
 this addBackpack "rhs_rpg_empty";
 
-this addWeapon "rhs_weap_akms";
-this addPrimaryWeaponItem "rhs_acc_dtkakm";
+this addWeapon "rhs_weap_m70ab2";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
 this addWeapon "rhs_weap_rpg7";
@@ -26,5 +25,6 @@ this addSecondaryWeaponItem "rhs_rpg7_PG7V_mag";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_762x39mm";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
-for "_i" from 1 to 4 do {this addItemToBackpack "rhs_rpg7_PG7V_mag";};
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_PG7V_mag";};
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_OG7V_mag";};
 this linkItem "ItemWatch";

@@ -13,16 +13,15 @@ CLASS("ActionGroupNothing", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		// Set behaviour
-		pr _hG = GETV(_thisObject, "hG");
-		_hG setBehaviour "AWARE";
-		_hG setSpeedMode "NORMAL";
-		{_x doFollow (leader _hG)} forEach (units _hG);
+		T_CALLM2("applyGroupBehaviour", "COLUMN", "AWARE");
+		T_CALLM0("clearWaypoints");
+		T_CALLM0("regroup");
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Add goals to units
 		pr _AI = T_GETV("AI");
@@ -30,7 +29,7 @@ CLASS("ActionGroupNothing", "ActionGroup")
 		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitNothing", 0, [], _AI);
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitNothing", 0, [[TAG_INSTANT ARG _instant]], _AI);
 		} forEach _units;
 		
 		// Return ACTIVE state
@@ -40,11 +39,11 @@ CLASS("ActionGroupNothing", "ActionGroup")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		//CALLM0(_thisObject, "failIfEmpty");
+		//T_CALLM0("failIfEmpty");
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
+		pr _state = T_CALLM0("activateIfInactive");
 
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _group = T_GETV("group");
@@ -62,7 +61,7 @@ CLASS("ActionGroupNothing", "ActionGroup")
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		// Delete given goals
 		pr _AI = T_GETV("AI");

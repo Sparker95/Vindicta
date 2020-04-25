@@ -59,7 +59,7 @@ CLASS("MessageLoop", "Storable");
 	Constructor
 	*/
 	METHOD("new") {
-		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]] ];
+		params [P_THISOBJECT, P_STRING("_name"), ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]] ];
 		T_SETV("msgQueue", []);
 		if (_name == "") then {
 			T_SETV("name", _thisObject);
@@ -87,11 +87,11 @@ CLASS("MessageLoop", "Storable");
 	Warning: must be called in scheduled environment!
 	*/
 	METHOD("delete") {
-		params [ P_THISOBJECT ];
-		private _mutex = GET_VAR(_thisObject, "mutex");
+		params [P_THISOBJECT];
+		private _mutex = T_GETV("mutex");
 		MUTEX_LOCK(_mutex); //Make sure we don't terminate the thread after it locks the mutex!
 		//Clear the variables
-		private _scriptHandle = GET_VAR(_thisObject, "scriptHandle");
+		private _scriptHandle = T_GETV("scriptHandle");
 		terminate _scriptHandle;
 		T_SETV("msgQueue", nil);
 		T_SETV("scriptHandle", nil);
@@ -111,7 +111,7 @@ CLASS("MessageLoop", "Storable");
 	Returns: nil
 	*/
 	METHOD("setName") {
-		params [P_THISOBJECT, ["_name", "", [""]]];
+		params [P_THISOBJECT, P_STRING("_name")];
 		T_SETV("name", _name);
 	} ENDMETHOD;
 
@@ -122,7 +122,7 @@ CLASS("MessageLoop", "Storable");
 	When thread is created, its default value is N_MESSAGES_IN_SERIES_DEFAULT.
 	*/
 	METHOD("setMaxMessagesInSeries") {
-		params [ P_THISOBJECT, ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
+		params [P_THISOBJECT, ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 	} ENDMETHOD;
 
@@ -142,13 +142,13 @@ CLASS("MessageLoop", "Storable");
 		#ifdef DEBUG_MESSAGE_LOOP
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
-		params [ P_THISOBJECT, ["_msg", [], [[]]]];
+		params [P_THISOBJECT, P_ARRAY("_msg")];
 
 		PROFILE_ADD_EXTRA_FIELD("message_source", _msg select MESSAGE_ID_SOURCE);
 		PROFILE_ADD_EXTRA_FIELD("message_dest", _msg select MESSAGE_ID_DESTINATION);
 		PROFILE_ADD_EXTRA_FIELD("message_type", _msg select MESSAGE_ID_TYPE);
     
-		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
+		private _msgQueue = T_GETV("msgQueue");
 		_msgQueue pushBack _msg;
 	} ENDMETHOD;
 
@@ -183,8 +183,8 @@ CLASS("MessageLoop", "Storable");
 	Returns: nil
 	*/
 	METHOD("deleteReceiverMessages") {
-		params [ P_THISOBJECT, ["_msgReceiver", "", [""]] ];
-		private _msgQueue = GETV(_thisObject, "msgQueue");
+		params [P_THISOBJECT, P_OOP_OBJECT("_msgReceiver") ];
+		private _msgQueue = T_GETV("msgQueue");
 
 		//diag_log format ["Deleting message receiver: %1", _msgReceiver];
 		//diag_log format ["Message queue: %1", _msgQueue];
@@ -205,18 +205,18 @@ CLASS("MessageLoop", "Storable");
 
 	METHOD("addProcessCategory") {
 		CRITICAL_SECTION {
-			params ["_thisObject", ["_tag", "", [""]], ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
+			params [P_THISOBJECT, P_STRING("_tag"), ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
 
 			pr _cat = __PC_NEW(_tag, _priority, _minInterval, _maxInterval);
 			pr _cats = T_GETV("processCategories"); // meow ^.^
 			_cats pushBack _cat;
 
-			CALLM0(_thisObject, "updateRequiredFractions");
+			T_CALLM0("updateRequiredFractions");
 		};
 	} ENDMETHOD;
 
 	METHOD("updateRequiredFractions") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		pr _cats = T_GETV("processCategories");
 		pr _fractions = T_GETV("updateFrequencyFractions");
 		_fractions resize (count _cats);
@@ -243,7 +243,7 @@ CLASS("MessageLoop", "Storable");
 
 	METHOD("addProcessCategoryObject") {
 		CRITICAL_SECTION {
-			params ["_thisObject", ["_tag", "", [""]], ["_object", "", [""]]];
+			params [P_THISOBJECT, P_STRING("_tag"), P_OOP_OBJECT("_object")];
 
 			// Find category with given tag
 			pr _cats = T_GETV("processCategories");
@@ -256,13 +256,13 @@ CLASS("MessageLoop", "Storable");
 				OOP_ERROR_1("Process category with tag %1 was not found!", _tag);
 			};
 
-			CALLM0(_thisObject, "updateRequiredFractions");
+			T_CALLM0("updateRequiredFractions");
 		};
 	} ENDMETHOD;
 
 	METHOD("deleteProcessCategoryObject") {
 		CRITICAL_SECTION {
-			params ["_thisObject", ["_object", "", [""]]];
+			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
 
 			pr _cats = T_GETV("processCategories");
 			{
@@ -282,7 +282,7 @@ CLASS("MessageLoop", "Storable");
 				//};
 			} forEach _cats;
 
-			CALLM0(_thisObject, "updateRequiredFractions");
+			T_CALLM0("updateRequiredFractions");
 		};
 	} ENDMETHOD;
 
@@ -320,6 +320,11 @@ CLASS("MessageLoop", "Storable");
 		(scriptDone _scriptHandle)
 	} ENDMETHOD;
 
+	METHOD("getLength") {
+		params [P_THISOBJECT];
+		private _msgQueue = T_GETV("msgQueue");
+		count _msgQueue
+	} ENDMETHOD;
 
 	// STORAGE
 

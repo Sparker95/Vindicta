@@ -26,6 +26,8 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("type", [ATTR_SAVE]);
 	// Amount - abstract value representing "how much" of the stuff to supply from 0-1.
 	VARIABLE_ATTR("amount", [ATTR_SAVE]);
+	VARIABLE_ATTR("cargo", [ATTR_SAVE_VER(16)]);
+
 	// Array of UI names for the types of supplies
 	STATIC_VARIABLE("SupplyNames");
 
@@ -49,6 +51,8 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
+
+		T_SETV("cargo", []);
 	} ENDMETHOD;
 	
 	// Our prepreation will include assigning our cargo
@@ -66,7 +70,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			_fromStates,
 			_successState,
 			_detachedGarrIdVar,
-			T_CALLM0("calculateCargo")
+			T_GETV("cargo")
 		];
 		NEW("AST_AssignCargo", _astArgs)
 	} ENDMETHOD;
@@ -113,9 +117,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		private _intel = NULL_OBJECT;
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
@@ -123,14 +127,14 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionSupply", []);
 
-			T_PRVAR(srcGarrId);
-			T_PRVAR(tgtGarrId);
+			private _srcGarrId = T_GETV("srcGarrId");
+			private _tgtGarrId = T_GETV("tgtGarrId");
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
 			private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 			ASSERT_OBJECT(_tgtGarr);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 
 			private _typeName = GETSV("SupplyCmdrAction", "SupplyNames") select T_GETV("type");
 			SETV(_intel, "type", _typeName);
@@ -154,11 +158,6 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtGarr, "pos")]);
 
-			// Reveal it to player side
-			if (random 100 < 80) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
-			};
-
 			// Reveal some friendly locations near the destination to the garrison performing the task
 			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
@@ -170,7 +169,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			};
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -179,8 +178,8 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _tgtGarrId = T_GETV("tgtGarrId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -188,9 +187,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Bail if src or dst are dead
-		if(CALLM(_srcGarr, "isDead", []) or {CALLM(_tgtGarr, "isDead", [])}) exitWith {
+		if(CALLM0(_srcGarr, "isDead") or {CALLM0(_tgtGarr, "isDead")}) exitWith {
 			OOP_DEBUG_0("Src or dst garrison is dead");
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		private _side = GETV(_srcGarr, "side");
@@ -238,7 +237,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
 			OOP_DEBUG_MSG("Failed to allocate resources", []);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -251,11 +250,11 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if remaining efficiency is below minimum level for this garrison
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// we must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
-			T_CALLM("setScore", [ZERO_SCORE]);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
@@ -296,6 +295,10 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		private _baseScore = MAKE_SCORE_VEC(1, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getSupplyScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _effAllocated ARG _type ARG _amount]);
 		T_CALLM("setScore", [_score]);
+
+		// Calculate the cargo content
+		T_CALLM1("calculateCargo", _worldNow);
+
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""src_garrison"": ""%2"", ""tgt_garrison"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
 			_side, LABEL(_srcGarr), LABEL(_tgtGarr), _score#0, _score#1, _score#2, _score#3];
@@ -341,9 +344,10 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	
 
 	METHOD("calculateCargo") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		private _type = T_GETV("type");
 		private _amount = T_GETV("amount");
+		private _cargo = T_GETV("cargo");
 
 		// Cargo/inventory array format:
 		// 	[
@@ -352,22 +356,27 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		//		[[mag, count],...],
 		//		[[backpack, count],...]
 		// 	]
+		#define CARGO_WEAPONS 0
+		#define CARGO_ITEMS 1
+		#define CARGO_MAGS 2
+		#define CARGO_BACKPACKS 3
+		_cargo set [CARGO_WEAPONS, []];
+		_cargo set [CARGO_ITEMS, []];
+		_cargo set [CARGO_MAGS, []];
+		_cargo set [CARGO_BACKPACKS, []];
+
 		switch (_type) do {
 			case ACTION_SUPPLY_TYPE_BUILDING: {
-				[
-					[],
-					[["vin_build_res_0", CALLSM2("SupplyCmdrAction", "randomAmount", 25, 50 * _amount)]],
-					[],
-					[]
-				]
+				_cargo set [CARGO_ITEMS, [
+					["vin_build_res_0", CALLSM2("SupplyCmdrAction", "randomAmount", 25, 50 * _amount)]
+				]];
 			};
 			case ACTION_SUPPLY_TYPE_AMMO: {
-				T_PRVAR(srcGarrId);
-				T_PRVAR(tgtGarrId);
+				private _srcGarrId = T_GETV("srcGarrId");
+				private _tgtGarrId = T_GETV("tgtGarrId");
 				private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 				private _side = GETV(_srcGarr, "side");
-				private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "");
-				private _t = [_templateName] call t_fnc_getTemplate;
+				private _t = CALLM2(gGameMode, "getTemplate", _side, "military");
 				private _tInv = _t#T_INV;
 
 				// Add weapons and magazines
@@ -413,34 +422,24 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 						};
 					};
 				} forEach _arr;
-
-				[
-					_weapons,
-					[],
-					_mags,
-					[]
-				]
+				_cargo set [CARGO_WEAPONS, _weapons];
+				_cargo set [CARGO_MAGS, _mags];
 			};
 			case ACTION_SUPPLY_TYPE_EXPLOSIVES: {
-				[
-					[],
-					[
-						["IEDLandSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
-						["IEDUrbanSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
-						["IEDLandBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
-						["IEDUrbanBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
-						["DemoCharge_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
-						["SatchelCharge_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
-						["TrainingMine_Mag", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 20 * _amount)],
-						["ACE_DeadManSwitch", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-						["ACE_DefusalKit", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-						["ACE_M26_Clacker", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-						["ACE_Clacker", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-						["MineDetector", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)]
-					],
-					[],
-					[]
-				]
+				_cargo set [CARGO_ITEMS, [
+					["IEDLandSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
+					["IEDUrbanSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
+					["IEDLandBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
+					["IEDUrbanBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
+					["DemoCharge_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
+					["SatchelCharge_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
+					["TrainingMine_Mag", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 20 * _amount)],
+					["ACE_DeadManSwitch", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["ACE_DefusalKit", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["ACE_M26_Clacker", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["ACE_Clacker", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["MineDetector", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)]
+				]];
 			};
 			case ACTION_SUPPLY_TYPE_MEDICAL;
 			case ACTION_SUPPLY_TYPE_MISC: {
@@ -466,17 +465,10 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 				};
 
 				_medical pushBack ["FirstAidKit", CALLSM2("SupplyCmdrAction", "randomAmount", 5, 15 * _amount)];
-
-				[
-					[],
-					_medical,
-					[],
-					[]
-				]
+				_cargo set [CARGO_ITEMS, _medical];
 			};
 		}
 	} ENDMETHOD;
-	
 
 ENDCLASS;
 
@@ -523,13 +515,13 @@ if(isNil { GETSV("SupplyCmdrAction", "SupplyNames")}) then {
 	private _thisObject = NEW("SupplyCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id") ARG ACTION_SUPPLY_TYPE_BUILDING ARG 0.2]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	T_CALLM("updateScore", [_world ARG _future]);
+	private _finalScore = T_CALLM("getFinalScore", []);
 
-	diag_log format ["Reinforce final score: %1", _finalScore];
+	//diag_log format ["Reinforce final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-	CALLM(_thisObject, "applyToSim", [_world]);
+	T_CALLM("applyToSim", [_world]);
 	true
 	// ["Object exists", !(isNil "_class")] call test_Assert;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;

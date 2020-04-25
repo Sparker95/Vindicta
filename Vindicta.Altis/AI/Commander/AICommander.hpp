@@ -116,16 +116,12 @@
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.
 // See Templates\initEfficiency.sqf to understand what these mean:
 //									 0  1  2  3  4  5  6  7  8  9  10 11 12 13
-#define EFF_MIN_EFF					[6, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-#define EFF_FOOT_PATROL_EFF			[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_MOUNTED_PATROL_EFF		[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-// Frequency of reinforcements, etc
-
-// How ofter commander will consider to import external reinforcements
-#define CMDR_EXT_REINF_INTERVAL_MINUTES 60
+//									soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
+#define EFF_MIN_EFF					[6,		0,		0,		0,		6,		0,		0,		0,		0,		0,		0,		0,		0,		0]
+#define EFF_GARRISON_MIN_EFF		[12,	0,		0,		0,		12,		0,		0,		0,		0,		0,		0,		0,		0,		0]
+	
+#define EFF_FOOT_PATROL_EFF			[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		0]
+#define EFF_MOUNTED_PATROL_EFF		[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		0]
 
 // Max amount of simultaneous actions
 #define CMDR_MAX_TAKE_OUTPOST_ACTIONS 3
@@ -158,7 +154,7 @@
 
 #ifdef OOP_INFO
 #define OOP_INFO_MSG_REAL_ONLY(world, fmt, args) \
-	if(CALLM(world, "isReal", [])) then { \
+	if(CALLM0(world, "isReal")) then { \
 		OOP_INFO_MSG(fmt, args); \
 	};
 #else
@@ -166,9 +162,18 @@
 #endif
 #ifdef OOP_DEBUG
 #define OOP_DEBUG_MSG_REAL_ONLY(world, fmt, args) \
-	if(CALLM(world, "isReal", [])) then { \
+	if(CALLM0(world, "isReal")) then { \
 		OOP_DEBUG_MSG(fmt, args); \
 	};
 #else
 #define OOP_DEBUG_MSG_REAL_ONLY(world, fmt, args)
 #endif
+
+// Activity function common between different methods
+// Maps activity at area to a priority multiplier
+// https://www.desmos.com/calculator/sjoagy4rro
+// This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
+#define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * MAP_LINEAR_SET_POINT(vin_diff_global, 0.2, 1, 3) * (rawActivity) + 1))
+
+// https://www.desmos.com/calculator/yxhaqijv19
+#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.2 * (1 - sqrt(0.9 * MAP_GAMMA(vin_diff_global, campaignProgress))) * (rawDamage)) - 0.1)

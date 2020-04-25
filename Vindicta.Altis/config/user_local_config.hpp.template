@@ -7,6 +7,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+#define OOP_LOGF
 
 // You need Arma Debug Engine for these, as per below
 // Enable asserts
@@ -32,6 +33,9 @@
 // Increases planning frequency, plans all action types on each iteration
 //#define CMDR_AI_TESTING
 
+// Log all AIGarrison GOAP activity to separate files
+//#define ENABLE_LOG_GOAP
+
 // Show commander debug marker on map with current commander activity (at bottom left)
 //#define DEBUG_COMMANDER
 
@@ -41,14 +45,32 @@
 // External reinforcement will run every commander process cycle
 //#define REINFORCEMENT_TESTING
 
+// QRFs will be big
+//#define DEBUG_BIG_QRF
+
 // Disables planning for cmdr ai
 //#define CMDR_AI_NO_PLAN
 
 // Debug construction system (update build progress every location.process tick)
 //#define DEBUG_BUILDING
 
-// Debug unit allocator (will log all iteration results)
+// Set build progress to 100% for all locations
+//#define FULLY_BUILT
+
+// Debug Civilian militants
+//#define MILITANT_CIVILIANS_TESTING
+
+// Set campaign progress to 0.9
+//#define DEBUG_END_GAME
+
+// Show garrison and group AI debug markers
+//#define DEBUG_GOAL_MARKERS
+
+// Write debug logging for the unit allocator
 //#define UNIT_ALLOCATOR_DEBUG
+
+// Show civilian presence markup
+//#define DEBUG_CIVILIAN_PRESENCE
 
 // Enable Profiling
 //#define OOP_PROFILE

@@ -16,8 +16,9 @@ _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard","FGN_AAF_M99Vest_Khaki"];
 this addVest _RandomVest;
 this addBackpack "FGN_AAF_Fieldpack_Lizard";
 
-this addWeapon "rhs_weap_pm63";
-this addPrimaryWeaponItem "rhs_acc_dtkakm";
+this addWeapon "rhs_weap_m70b1n";
+_RandomSight = selectRandom ["", "rhs_acc_1p78_3d"];
+this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhs_75Rnd_762x39mm_tracer";
 

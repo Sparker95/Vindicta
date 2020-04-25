@@ -1,14 +1,5 @@
 #include "../common.hpp"
 
-// Activity function common between different methods
-// Maps activity at area to a priority multiplier
-// https://www.desmos.com/calculator/sjoagy4rro
-// This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
-#define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
-
-// https://www.desmos.com/calculator/yxhaqijv19
-#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.2 * (1 - sqrt(0.9 * (campaignProgress))) * (rawDamage)) - 0.1)
-
 /*
 Class: AI.CmdrAI.CmdrStrategy.CmdrStrategy
 
@@ -172,7 +163,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		switch(_locType) do {
 
 			case LOCATION_TYPE_ROADBLOCK: {
-				if (_rawActivity > 4) then {
+				if (_rawActivity > MAP_LINEAR_SET_POINT(1 - vin_diff_global, 0, 15, 75)) then {
 					_priority = T_GETV("constructLocRoadblockPriority") +
 								T_GETV("constructLocRoadblockCoeff") * _activityMult;
 				};
@@ -237,9 +228,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
-		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtClusterPos ARG 1000]);
-		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
-		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
+		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtClusterPos, 1000);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	} ENDMETHOD;
 
@@ -376,9 +365,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
 		private _tgtPos = GETV(_tgtLoc, "pos");
-		private _rawDamage = CALLM(_worldNow, "getDamage", [_tgtPos ARG 1000]);
-		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
-		private _adjustedDamage = __DAMAGE_FUNCTION(_rawDamage, _campaignProgress);
+		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtPos, 1000);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	} ENDMETHOD;
 

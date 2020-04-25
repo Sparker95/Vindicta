@@ -58,7 +58,7 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 
 		// Prefer to fallback to src garrison unless it is dead
 		private _newTarget = [];
-		if(!IS_NULL_OBJECT(_srcGarr) and {!CALLM(_srcGarr, "isDead", [])}) then {
+		if(!IS_NULL_OBJECT(_srcGarr) and {!CALLM0(_srcGarr, "isDead")}) then {
 			_newTarget = [TARGET_TYPE_GARRISON, _srcGarrId];
 			OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_srcGarr)]);
 		} else {
@@ -67,13 +67,13 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 			// select the nearest friendly garrison
 			private _nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos ARG 4000]) select {
 				_x params ["_dist", "_garr"];
-				!CALLM(_garr, "isBusy", []) and (GETV(_garr, "locationId") != MODEL_HANDLE_INVALID) 
+				!CALLM0(_garr, "isBusy") and (GETV(_garr, "locationId") != MODEL_HANDLE_INVALID) 
 			};
 			if(count _nearGarrs == 0) then {
 				// Check further
-				_nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]) select { 
+				_nearGarrs = CALLM1(_world, "getNearestGarrisons", _pos) select { 
 					_x params ["_dist", "_garr"];
-					!CALLM(_garr, "isBusy", []) and (GETV(_garr, "locationId") != MODEL_HANDLE_INVALID) 
+					!CALLM0(_garr, "isBusy") and (GETV(_garr, "locationId") != MODEL_HANDLE_INVALID) 
 				};
 			};
 
@@ -85,9 +85,9 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 				OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_nearGarr)]);
 			} else {
 				// Otherwise find a nearby empty location and go there
-				private _nearLocs = CALLM(_world, "getNearestLocations", [_pos ARG 4000]) select { CALLM(_x select 1, "isEmpty", []) };
+				private _nearLocs = CALLM2(_world, "getNearestLocations", _pos, 4000) select { CALLM0(_x select 1, "isEmpty") };
 				if(count _nearLocs == 0) then {
-					_nearLocs = CALLM(_world, "getNearestLocations", [_pos]);
+					_nearLocs = CALLM1(_world, "getNearestLocations", _pos);
 				};
 				if(count _nearLocs > 0) then {
 					private _nearLoc = _nearLocs#0;

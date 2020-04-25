@@ -53,7 +53,16 @@ location_bp_sentry =
 	[ //The military HQ
 		["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V2_F", "Land_Cargo_HQ_V3_F"],
 		[[4, 90], [5, 0], [6, -45], [7, 225], [8, 180]]
-	]
+	],
+	//Global Mobilization
+	[ 
+		["land_gm_tower_bt_6_fuest_80"],
+		[[2, 280], [3, 180], [4, 0]]
+	],
+	[ 
+		["land_gm_tower_bt_11_60"],
+		[[0, 180], [1, 180]]
+	]	
 ];
 
 // Capacities of buildings for infantry
@@ -78,14 +87,37 @@ location_b_capacity =
 	],
 	// Tents
 	[
-		["Land_MedicalTent_01_wdl_generic_inner_F",
-		"Land_MedicalTent_01_aaf_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_brownhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_generic_inner_F",
-		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
-		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
+		[
+			"Land_MedicalTent_01_white_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_closed_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_closed_F",
+			"Land_MedicalTent_01_NATO_generic_outer_F",
+			"Land_MedicalTent_01_NATO_generic_inner_F",
+			"Land_DeconTent_01_NATO_F",
+			"Land_MedicalTent_01_NATO_tropic_generic_outer_F",
+			"Land_MedicalTent_01_wdl_generic_inner_F",
+			"Land_DeconTent_01_NATO_tropic_F",
+			"Land_MedicalTent_01_white_generic_outer_F",
+			"Land_MedicalTent_01_white_generic_inner_F",
+			"Land_DeconTent_01_white_F"
+		],
+		16
+	],
+	// WW2 & CUP
+	[
+		["Land_WW2_Mil_Barracks","Land_WW2_Mil_Barracks_L","Land_Mil_Barracks_L","Land_Mil_Barracks"],
+		12
+	],
+	[
+		["Land_Mil_Barracks_L","Land_Mil_Barracks"],
+		12
+	],
+	// Global Mobilization
+	[
+		["gm_gc_tent_5x5m"],
 		8
 	]
+	
 ];
 
 // Positions for cargo boxes
@@ -127,6 +159,25 @@ location_bp_cargo_medium =
 	[
 		["Land_PoliceStation_01_F"],
 		[[2.60131,61.8427,1.29491], [7.02257,323.042,0.777817], [4.66018,296.356,0.788269], [7.448,319.591,4.42163], [8.1648,252.885,4.26756]]
+	],
+	//WW2 Staszow
+	[
+		["Land_WW2_Admin"],
+		[[2.64597,143.778,0.32269], [3.85001,153.389,0.32269], [5.09535,16.3686,0.32269], [3.9212,24.0332,0.32269]]
+	],
+	[
+		["Land_WW2_Admin2"],
+		[[4.82119,44.2476,0.233089], [4.11613,54.6484,0.233089], [4.62721,-40.6715,0.233089], [5.48119,-33.2937,0.233089], [4.23542,-133.858,0.233089], [5.042,-142.623,0.233089], [4.92659,-226.911,0.233089], [4.27249,-237.533,0.233089]]
+	],
+	// Beketov
+	[
+		["Land_HouseV2_02_Interier", "Land_HouseV2_02_Interier_dam"],
+		[[4.21436,76.2874,0.973242], [6.86528,57.0615,0.973242], [6.2304,306.133,0.973242], [7.66948,288.97,0.973242]]
+	],
+	// Global Mobilization
+	[
+		["land_gm_euro_house_07_e",	"land_gm_euro_house_07_w",	"land_gm_euro_house_07_d"],
+		[[1.80399,83.2539,0.326653,0.000132318], [2.01474,48.7239,0.336693,359.999], [2.47671,257.29,0.261368,359.999], [2.50627,292.908,0.280899,0.000150937]]
 	]
 ];
 
@@ -161,7 +212,20 @@ location_bt_police =
 
 	//Livonia
 	"Land_PoliceStation_01_F",
-	"Land_House_2B04_F"
+	"Land_House_2B04_F",
+
+	// WW2 Staszo
+	"Land_WW2_Admin",
+	"Land_WW2_Admin2",
+	
+	// Beketov - CUP
+	"Land_HouseV2_02_Interier",
+	"Land_HouseV2_02_Interier_dam",
+
+	// Global Mobilization
+	"land_gm_euro_house_07_e",
+	"land_gm_euro_house_07_w",
+	"land_gm_euro_house_07_d"
 ];
 
 location_decorations_police =
@@ -198,6 +262,25 @@ location_decorations_police =
 	[
 		["Land_u_House_Small_01_V1_F","Land_i_House_Small_01_V3_F","Land_i_House_Small_01_V1_F","Land_i_House_Small_01_V2_F"],
 		[[[-1.12695,-4.81641,1.56931],[[0.012478,0.999922,0],[0,0,1]]],[[1.53125,5.28711,1.06545],[[-0.01174,-0.999931,0],[0,0,1]]]]
+	],
+	//WW2 Staszow
+	[
+		["Land_WW2_Admin"],
+		[[[-3.85253,1.72632,1.65646],[[1,-4.37114e-008,0],[0,0,1]]]]	
+	],
+	[
+		["Land_WW2_Admin2"],
+		[[[2.28076,6.48145,1.68778],[[-8.74228e-008,-1,0],[0,0,1]]]]	
+	],
+	// Beketov
+	[
+		["Land_HouseV2_02_Interier", "Land_HouseV2_02_Interier_dam"],
+		[[[0.00195313,-8.37939,-2.86904],[[0,1,0],[0,0,1]]],[[-0.0200195,8.30127,-2.89629],[[-8.74228e-008,-1,0],[0,0,1]]]]
+	],
+	// Global Mobilization
+	[
+		["land_gm_euro_house_07_e",	"land_gm_euro_house_07_w",	"land_gm_euro_house_07_d"],
+		[[[-1.23242,-3.00391,1.62851],[[0,1,0],[0,0,1]]]]
 	]
 ];
 
@@ -209,7 +292,13 @@ location_bt_radio =
 	"Land_TTowerSmall_2_F",		// Verticall array of small dipoles
 	"Land_TTowerBig_1_F",		// A-like transmitter tower
 	"Land_TTowerBig_2_F",		// Tall I-like transmitter tower
-	"Land_Communication_F"		// Tall tower with antennas on top, often found at military outposts
+	"Land_Communication_F",		// Tall tower with antennas on top, often found at military outposts
+	
+	// WW2
+	"Land_wx_radiomast", 		// WW2 radio mast.
+
+	//Global Mobilization
+	"land_gm_radiotower_01"
 ];
 
 // Objects which heal units
@@ -278,17 +367,17 @@ _textures = _objects select {_x isKindOf "UserTexture1m_F"};
 _arrayExport = []; // dist, posDir, zrel, dir
 
 {
-_b = _house; 
-_o = _x; 
+_b = _house;
+_o = _x;
  
-_bPos = getPosATL _b; 
-_oPos = getPosATL _o; 
+_bPos = getPosATL _b;
+_oPos = getPosATL _o;
  
-_dirRel = (_bPos getDir _oPos) - (direction _b); 
-_zRel = _oPos#2 - _bPos#2; 
-_distRel = _bPos distance2D _oPos; 
+_dirRel = (_bPos getDir _oPos) - (direction _b);
+_zRel = _oPos#2 - _bPos#2;
+_distRel = _bPos distance2D _oPos;
  
-_objDir = (direction _o) - (direction _b); 
+_objDir = (direction _o) - (direction _b);
  
 _arrayExport pushBack [_distRel, _dirRel, _zRel, round _objDir];
 } forEach _textures;
@@ -301,20 +390,20 @@ _arrayExport
 /*
 // Code to export objects from editor in [_pos, [_vectorDir, _vectorUp]]
 
-_objects = get3DENSelected "object"; 
-_house = _objects select {_x isKindOf "House"} select 0; 
-_textures = _objects select {_x isKindOf "UserTexture1m_F"}; 
+_objects = get3DENSelected "object";
+_house = _objects select {_x isKindOf "House"} select 0;
+_textures = _objects select {_x isKindOf "UserTexture1m_F"};
  
 _arrayExport = []; // dist, posDir, zrel, dir 
  
 { 
-_b = _house;  
-_o = _x;  
+_b = _house;
+_o = _x;
 _posModel = _b worldToModel (position _o);
 _vdir = vectorDir _o;
 _vup = vectorUp _o;
-_arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldToModel _vup]]; 
-} forEach _textures; 
+_arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldToModel _vup]];
+} forEach _textures;
  
 _arrayExport
 */

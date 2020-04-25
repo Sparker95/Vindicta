@@ -23,6 +23,11 @@ if(isNil OOP_GVAR_STR(sessionID)) then {
 };
 #endif
 
+if(IS_SERVER) then {
+	gGameFreezeTime = 0;
+	PUBLIC_VARIABLE "gGameFreezeTime";
+};
+
 // Prints an error message with supplied text, file and line number
 OOP_error = {
 	params["_file", "_line", "_text"];
@@ -394,7 +399,7 @@ OOP_assert_static_member_access = {
 
 OOP_assert_get_static_member_access = { 
 	params ["_classNameStr", "_memNameStr", "_file", "_line"];
-	[_classNameStr, _memNameStr, true, _file, _line] call OOP_assert_static_member_access; 
+	[_classNameStr, _memNameStr, true, _file, _line] call OOP_assert_static_member_access;
 };
 OOP_assert_set_static_member_access = { 
 	params ["_classNameStr", "_memNameStr", "_file", "_line"];
@@ -443,7 +448,7 @@ OOP_assert_member_access = {
 
 OOP_assert_get_member_access = {
 	params ["_objNameStr", "_memNameStr", "_file", "_line"];
-	[_objNameStr, _memNameStr, true, _file, _line] call OOP_assert_member_access; 
+	[_objNameStr, _memNameStr, true, _file, _line] call OOP_assert_member_access;
 };
 OOP_assert_set_member_access = { 
 	params ["_objNameStr", "_memNameStr", "_file", "_line"];
@@ -487,7 +492,7 @@ OOP_dumpAllVariables = {
 	diag_log format ["[OOP]: Basic variable dump of %1: %2", _thisObject, _memList];
 	{
 		_x params ["_memName", "_memAttr"];
-		private _varValue = GETV(_thisObject, _memName);
+		private _varValue = T_GETV(_memName);
 		if (isNil "_varValue") then {
 			diag_log format ["  %1.%2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
 		} else {
@@ -529,14 +534,14 @@ OOP_dumpAllVariablesRecursive = {
 	diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1: %2", _thisObject, _memList]));
 	{
 		_x params ["_memName", "_memAttr"];
-		private _varValue = GETV(_thisObject, _memName);
+		private _varValue = T_GETV(_memName);
 		[_thisObject, _memName, _varValue, _indentNum, _objsDumpedAlready, -1, _maxDepth] call OOP_dumpObjectVariable;
 	} forEach _memList;
 };
 
 // Used for recursive variable dump
 OOP_dumpObjectVariable = {
-	params ["_thisObject", "_memName", "_varValue", "_indentNum", "_objsDumpedAlready", "_elementID", "_maxDepth"];
+	params [P_THISOBJECT, "_memName", "_varValue", "_indentNum", "_objsDumpedAlready", "_elementID", "_maxDepth"];
 	private _strIndent = format ["L-%1 ", (str _indentNum)];
 	if (_indentNum > 0) then {
 		for "_i" from 0 to (_indentNum-1) do {
@@ -673,7 +678,7 @@ OOP_objectToJson = {
 		
 		DUMP(COMMA_NL);
 
-		private _varValue = GETV(_thisObject, _memName);
+		private _varValue = T_GETV(_memName);
 		if (isNil "_varValue") then {
 			private _str = format['"%1": "<nil>"', _memName];
 			DUMP(_str);
@@ -771,7 +776,7 @@ OOP_objectToJson_diagLog = {
 		
 		DUMP_DIAGLOG(gComma);
 
-		private _varValue = GETV(_thisObject, _memName);
+		private _varValue = T_GETV(_memName);
 		if (isNil "_varValue") then {
 			private _str = format['"%1": "<nil>"', _memName];
 			DUMP_DIAGLOG(_str);
@@ -827,7 +832,7 @@ OOP_objectCrashDump = {
 // However remote machine doesn't have to know what class the object belongs to
 // So we must find out object's class on this machine and then run the method
 OOP_callFromRemote = {
-	params[["_object", "", [""]], ["_methodNameStr", "", [""]], ["_params", [], [[]]]];
+	params[P_OOP_OBJECT("_object"), P_STRING("_methodNameStr"), ["_params", [], [[]]]];
 	//diag_log format [" --- OOP_callFromRemote: %1", _this];
 	CALLM(_object, _methodNameStr, _params);
 };
@@ -835,7 +840,7 @@ OOP_callFromRemote = {
 // If assertion is enabled, this gets called on remote machine when we call a static method on it
 // So it will run the standard assertions before calling static method
 OOP_callStaticMethodFromRemote = {
-	params [["_classNameStr", "", [""]], ["_methodNameStr", "", [""]], ["_args", [], [[]]]];
+	params [P_STRING("_classNameStr"), P_STRING("_methodNameStr"), ["_args", [], [[]]]];
 	CALL_STATIC_METHOD(_classNameStr, _methodNameStr, _args);
 };
 
@@ -866,7 +871,7 @@ OOP_new = {
 		([_objNameStr] + _extraParams) call GET_METHOD((_oop_parents select _oop_i), "new");
 		_oop_i = _oop_i + 1;
 	};
-	CALL_METHOD(_objNameStr, "new", _extraParams);
+	CALLM(_objNameStr, "new", _extraParams);
 
 	PROFILER_COUNTER_INC(_classNameStr);
 
@@ -900,7 +905,7 @@ OOP_new_public = { // todo implement namespace
 		([_objNameStr] + _extraParams) call GET_METHOD((_oop_parents select _oop_i), "new");
 		_oop_i = _oop_i + 1;
 	};
-	CALL_METHOD(_objNameStr, "new", _extraParams);
+	CALLM(_objNameStr, "new", _extraParams);
 
 	PROFILER_COUNTER_INC(_classNameStr);
 
@@ -929,7 +934,7 @@ OOP_clone = { // todo implement namespace
 
 	FORCE_SET_MEM(_newObjNameStr, OOP_PARENT_STR, _classNameStr);
 	
-	CALL_METHOD(_newObjNameStr, "copy", [_objNameStr]);
+	CALLM(_newObjNameStr, "copy", [_objNameStr]);
 
 	PROFILER_COUNTER_INC(_classNameStr);
 
@@ -938,7 +943,7 @@ OOP_clone = { // todo implement namespace
 
 // Default copy, this is what you get if you don't overwrite "copy" method of your class
 OOP_clone_default = { // todo implement namespace
-	params ["_thisObject", "_srcObject"];
+	params [P_THISOBJECT, "_srcObject"];
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	{
@@ -1223,7 +1228,7 @@ OOP_delete = {
 	private _oop_i = _oop_parentCount - 1;
 	private _oop_namespace = GET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR);
 
-	CALL_METHOD(_objNameStr, "delete", []);
+	CALLM0(_objNameStr, "delete");
 	while {_oop_i > -1} do {
 		[_objNameStr] call GET_METHOD((_oop_parents select _oop_i), "delete");
 		_oop_i = _oop_i - 1;
@@ -1255,7 +1260,7 @@ OOP_delete = {
 
 // set/get session counter
 OOP_setSessionCounter = {
-	params [["_value", 0, [0]]];
+	params [P_NUMBER("_value")];
 	OOP_GVAR(sessionID) = _value;
 };
 
@@ -1284,7 +1289,7 @@ CLASS("RefCounted", "")
 	METHOD("ref") {
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
-			T_PRVAR(refCount);
+			private _refCount = T_GETV("refCount");
 			_refCount = _refCount + 1;
 			//OOP_DEBUG_2("%1 refed to %2", _thisObject, _refCount);
 			T_SETV("refCount", _refCount);
@@ -1294,7 +1299,7 @@ CLASS("RefCounted", "")
 	METHOD("unref") {
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
-			T_PRVAR(refCount);
+			private _refCount = T_GETV("refCount");
 			_refCount = _refCount - 1;
 			//OOP_DEBUG_2("%1 unrefed to %2", _thisObject, _refCount);
 			if(_refCount <= 0) then {
@@ -1405,7 +1410,6 @@ ENDCLASS;
 
 CLASS("mi_a", "")
 	METHOD("new") {
-		diag_log "NEW mi_A";
 	} ENDMETHOD;
 
 	METHOD("getValue") {"A"} ENDMETHOD;
@@ -1413,7 +1417,6 @@ ENDCLASS;
 
 CLASS("mi_b", "mi_a")
 	METHOD("new") {
-		diag_log "NEW mi_B";
 	} ENDMETHOD;
 
 	METHOD("getValue") {"B"} ENDMETHOD; // override
@@ -1421,7 +1424,6 @@ ENDCLASS;
 
 CLASS("mi_c", "")
 	METHOD("new") {
-		diag_log "NEW mi_C";
 	} ENDMETHOD;
 
 	METHOD("getAnotherValue") {"anotherValue"} ENDMETHOD;
@@ -1429,7 +1431,6 @@ ENDCLASS;
 
 CLASS("mi_d", ["mi_b" ARG "mi_c"])
 	METHOD("new") {
-		diag_log "NEW mi_D";
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -1444,13 +1445,13 @@ ENDCLASS;
 
 	//diag_log format ["getValue method: %1", FORCE_GET_METHOD("mi_d", "getValue")];
 
-	private _value = CALLM0(_thisObject, "getValue");
-	private _anotherValue = CALLM0(_thisObject, "getAnotherValue");
+	private _value = T_CALLM0("getValue");
+	private _anotherValue = T_CALLM0("getAnotherValue");
 
 	//diag_log format ["Value: %1, Another value: %2", _value, _anotherValue];
 
-	["Test 1", CALLM0(_thisObject, "getValue") == "B"] call test_Assert;
-	["Test 2", CALLM0(_thisObject, "getAnotherValue") == "anotherValue"] call test_Assert;
+	["Test 1", T_CALLM0("getValue") == "B"] call test_Assert;
+	["Test 2", T_CALLM0("getAnotherValue") == "anotherValue"] call test_Assert;
 
 	true
 }] call test_AddTest;
@@ -1459,10 +1460,10 @@ ENDCLASS;
 ["OOP variable attributes", {
 	private _base = NEW("AttrTestBase1", []);
 
-	["valid default access", { CALLM(_base, "validDefaultAccessTest", []) }] call test_Assert;
-	["valid private access", { CALLM(_base, "validPrivateAccessTest", []) }] call test_Assert;
-	["valid get only access", { CALLM(_base, "validGetOnlyAccessTest", []) }] call test_Assert;
-	["valid static private access", { CALLSM("AttrTestBase1", "validStaticPrivateAccessTest", [_base]) }] call test_Assert;	
+	["valid default access", { CALLM0(_base, "validDefaultAccessTest") }] call test_Assert;
+	["valid private access", { CALLM0(_base, "validPrivateAccessTest") }] call test_Assert;
+	["valid get only access", { CALLM0(_base, "validGetOnlyAccessTest") }] call test_Assert;
+	["valid static private access", { CALLSM("AttrTestBase1", "validStaticPrivateAccessTest", [_base]) }] call test_Assert;
 
 	["valid external get only access", { GETV(_base, "var_get_only"); true }] call test_Assert;
 	["invalid external private access",

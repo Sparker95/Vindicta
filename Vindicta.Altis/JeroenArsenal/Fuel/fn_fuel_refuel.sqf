@@ -32,7 +32,7 @@ _this spawn {
 	if(_cargoCapacity == 0 && {_capacity == 0})exitWith{hint "cant refuel vehicle"};
 
 	pr _hasBoth = (_cargoCapacity != 0 && {_capacity != 0});
-	pr "_anserMsg";	
+	pr "_anserMsg";
 	if _hasBoth then{
 		if(_vehicleTo isEqualTo _vehicleFrom)then{
 			_anserMsg = true
@@ -65,7 +65,7 @@ _this spawn {
 	
 	//disable refuel for other players
 	_vehicleTo setVariable ["refuelAction_inUse",name player,true];
-	_vehicleFrom setVariable ["refuelAction_inUse",name player,true];	
+	_vehicleFrom setVariable ["refuelAction_inUse",name player,true];
 	
 	pr _completeRefuel = true;
 	

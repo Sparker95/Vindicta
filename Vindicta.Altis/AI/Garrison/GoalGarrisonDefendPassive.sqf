@@ -1,28 +1,18 @@
 #include "common.hpp"
 
-/*
-Goal for a garrison to relax
-*/
-
-#define pr private
-
+// Class: AI.Garrison.GoalGarrisonDefendPassive
+// Garrison will be in defensive posture.
+// Low priority action.
+// Only allowed when garrison is vigilant (known targets or high enemy activity).
 CLASS("GoalGarrisonDefendPassive", "Goal")
-
-	// ----------------------------------------------------------------------
-	// |            C A L C U L A T E   R E L E V A N C E
-	// ----------------------------------------------------------------------
-	// Calculates desireability to choose this goal for a given _AI
-	
 	STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Check if the garrison knows about any enemies
-		pr _ws = GETV(_AI, "worldState");
-		if ([_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_propertyExistsAndEquals && CALLM0(_AI, "isSpawned")) then {
+		if (CALLM0(_AI, "isSpawned") && { CALLM0(_AI, "isVigilant") }) then {
 			GET_STATIC_VAR(_thisClass, "relevance")
-			} else {
+		} else {
 			0
 		};
 	} ENDMETHOD;
-
 ENDCLASS;

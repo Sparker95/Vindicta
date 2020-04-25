@@ -102,7 +102,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 		{
 			deleteVehicle _x;
 		} forEach _activeCivs;
@@ -112,7 +112,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 
 		// Check for finished missions
 		{
@@ -125,8 +125,8 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Add new missions if required
-		T_PRVAR(activeCivs);
-		T_PRVAR(maxActive);
+		private _activeCivs = T_GETV("activeCivs");
+		private _maxActive = T_GETV("maxActive");
 		private _deficit = _maxActive - (count _activeCivs);
 		if(_deficit > 0) then {
 
@@ -141,6 +141,16 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 				private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
 				private _tmpGroup = createGroup civilian;
 				private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
+
+				// Lets apply our civ settings from selected faction template
+				private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+				private _templateClass = [_civTemplate, T_INF, T_INF_unarmed, -1] call t_fnc_select;
+				if ([_templateClass] call t_fnc_isLoadout) then {
+					[_civie, _templateClass] call t_fnc_setUnitLoadout;
+				} else {
+					OOP_ERROR_0("Only loadouts are valid for Civilian T_INF_unarmed faction templates (not classes)");
+				};
+
 				private _grp = createGroup [FRIENDLY_SIDE, true];
 				[_civie] joinSilent _grp;
 				deleteGroup _tmpGroup;
@@ -176,5 +186,5 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 				}
 			};
 		};
-	} ENDMETHOD;	
+	} ENDMETHOD;
 ENDCLASS;

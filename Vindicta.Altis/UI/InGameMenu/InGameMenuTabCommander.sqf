@@ -147,7 +147,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 				pr _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 				_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
 			};
-			
+
 			// Set cost text
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_BUILD_RESOURCES");
 			_ctrl ctrlSetText (format ["%1 construction resources", _buildResCost]);
@@ -165,7 +165,26 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_CREATE_LOC", "buttonClick", "onButtonClaimLocation");
 		};
 
+		// Skip Time
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DUSK", "buttonClick", "onButtonSkipDusk");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "buttonClick", "onButtonSkipPredawn");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAWN", "buttonClick", "onButtonSkipDawn");
+
+		T_CALLM0("_updateTimeSkipTooltips");
 	} ENDMETHOD;
+
+	METHOD("_updateTimeSkipTooltips") {
+		params [P_THISOBJECT];
+		private _hoursUntilNextDusk = round call pr0_fnc_getHoursUntilNextDusk;
+		private _hoursUntilNextDawn = round call pr0_fnc_getHoursUntilNextDawn;
+		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DUSK")
+			ctrlSetTooltip format["Will skip time until dusk (dusk is in about %1 hours)", _hoursUntilNextDusk];
+		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN")
+			ctrlSetTooltip format["Will skip time until 30 minutes before dawn (dawn is in about %1 hours)", round _hoursUntilNextDawn];
+		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DAWN")
+			ctrlSetTooltip format["Will skip time until dawn (dawn is in about %1 hours)", _hoursUntilNextDawn];
+	} ENDMETHOD;
+	
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
@@ -206,9 +225,14 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			CALLM1(_dialogObj, "setHintText", "You must select a location type.");
 		};
 
+		// Disable button before sending message to server to avoid race condition
+		pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_BUTTON_CREATE_LOC");
+		_ctrl ctrlEnable false;
+
 		// Send data to cmdr at the server
 		// Server might run extra checks
 		pr _locType = _ctrlLocType lbData _row;
+
 		// Source object where build resources will be deleted from, player or vehicle he's looking at
 		pr _hBuildResSrc = if (_playerBuildRes >= _buildResCost) then {player} else {_cursorObject};
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
@@ -242,7 +266,6 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM1("setHintText", "We already own this place!");
 		};
 
-
 		// Check if player has enough build resources
 		pr _cursorObject = if ((player distance cursorObject) < 10) then {cursorObject} else {objNull};
 		pr _coBuildRes = CALLSM1("Unit", "getVehicleBuildResources", _cursorObject);
@@ -256,6 +279,10 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM1("setHintText", _text);
 		};
 
+		// Disable button before sending message to server to avoid race condition
+		pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_BUTTON_CREATE_LOC");
+		_ctrl ctrlEnable false;
+
 		// Send data to cmdr at the server
 		// Server might run extra checks
 		// Source object where build resources will be deleted from, player or vehicle he's looking at
@@ -263,11 +290,40 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		pr _args = [clientOwner, _currentLoc, _hBuildResSrc, _buildResCost];
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
+	} ENDMETHOD;
 
+	METHOD("onButtonSkipDusk") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTimeDusk", 0);
+	} ENDMETHOD;
+
+	METHOD("onButtonSkipPredawn") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTimeDawn", -0.5);
+	} ENDMETHOD;
+	
+	METHOD("onButtonSkipDawn") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTimeDawn", 0);
+	} ENDMETHOD;
+
+	METHOD("_skipTimeDusk") {
+		params [P_THISOBJECT, P_NUMBER("_offsetFromDusk")];
+		private _hoursUntilNextDusk = call pr0_fnc_getHoursUntilNextDusk;
+		(_hoursUntilNextDusk + _offsetFromDusk) remoteExecCall ["skipTime", ON_ALL];
+		T_CALLM0("_updateTimeSkipTooltips");
+	} ENDMETHOD;
+
+	METHOD("_skipTimeDawn") {
+		params [P_THISOBJECT, P_NUMBER("_offsetFromDawn")];
+		private _hoursUntilNextDawn = call pr0_fnc_getHoursUntilNextDawn;
+		(_hoursUntilNextDawn + _offsetFromDawn) remoteExecCall ["skipTime", ON_ALL];
+		T_CALLM0("_updateTimeSkipTooltips");
 	} ENDMETHOD;
 
 	STATIC_METHOD("showServerResponse") {
 		params [P_THISCLASS, P_STRING("_text")];
+
 		// If this tab is already closed, just throw text into system chat
 		if (isNil "gTabCommander") then {
 			systemChat _text;
