@@ -166,18 +166,25 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		};
 
 		// Skip Time
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DUSK", "buttonClick", "onButtonSkipDusk");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "buttonClick", "onButtonSkipPredawn");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAWN", "buttonClick", "onButtonSkipDawn");
+
+		T_CALLM0("_updateTimeSkipTooltips");
+	} ENDMETHOD;
+
+	METHOD("_updateTimeSkipTooltips") {
+		params [P_THISOBJECT];
+		private _hoursUntilNextDusk = round call pr0_fnc_getHoursUntilNextDusk;
 		private _hoursUntilNextDawn = round call pr0_fnc_getHoursUntilNextDawn;
+		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DUSK")
+			ctrlSetTooltip format["Will skip time until dusk (dusk is in about %1 hours)", _hoursUntilNextDusk];
 		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN")
 			ctrlSetTooltip format["Will skip time until 30 minutes before dawn (dawn is in about %1 hours)", round _hoursUntilNextDawn];
-		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "buttonClick", "onButtonSkipPredawn");
 		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DAWN")
 			ctrlSetTooltip format["Will skip time until dawn (dawn is in about %1 hours)", _hoursUntilNextDawn];
-		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAWN", "buttonClick", "onButtonSkipDawn");
-		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DAYTIME")
-			ctrlSetTooltip format["Will skip time until 30 minutes after dawn (dawn is in about %1 hours)", _hoursUntilNextDawn];
-		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAYTIME", "buttonClick", "onButtonSkipDaytime");
-
 	} ENDMETHOD;
+	
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
@@ -285,25 +292,33 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
 	} ENDMETHOD;
 
+	METHOD("onButtonSkipDusk") {
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTimeDusk", 0);
+	} ENDMETHOD;
+
 	METHOD("onButtonSkipPredawn") {
 		params [P_THISOBJECT];
-		T_CALLM1("_skipTime", -0.5);
+		T_CALLM1("_skipTimeDawn", -0.5);
 	} ENDMETHOD;
 	
 	METHOD("onButtonSkipDawn") {
 		params [P_THISOBJECT];
-		T_CALLM1("_skipTime", 0);
-	} ENDMETHOD;
-	
-	METHOD("onButtonSkipDaytime") {
-		params [P_THISOBJECT];
-		T_CALLM1("_skipTime", 0.5);
+		T_CALLM1("_skipTimeDawn", 0);
 	} ENDMETHOD;
 
-	METHOD("_skipTime") {
+	METHOD("_skipTimeDusk") {
+		params [P_THISOBJECT, P_NUMBER("_offsetFromDusk")];
+		private _hoursUntilNextDusk = call pr0_fnc_getHoursUntilNextDusk;
+		(_hoursUntilNextDusk + _offsetFromDusk) remoteExecCall ["skipTime", ON_ALL];
+		T_CALLM0("_updateTimeSkipTooltips");
+	} ENDMETHOD;
+
+	METHOD("_skipTimeDawn") {
 		params [P_THISOBJECT, P_NUMBER("_offsetFromDawn")];
 		private _hoursUntilNextDawn = call pr0_fnc_getHoursUntilNextDawn;
 		(_hoursUntilNextDawn + _offsetFromDawn) remoteExecCall ["skipTime", ON_ALL];
+		T_CALLM0("_updateTimeSkipTooltips");
 	} ENDMETHOD;
 
 	STATIC_METHOD("showServerResponse") {
