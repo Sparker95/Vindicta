@@ -111,7 +111,7 @@ CLASS("GarrisonRecord", "")
 		CALLM1(_mapMarker, "setPos", _pos);
 
 		// Show if NOT attached to a location
-		CALLM1(_mapMarker, "show", T_GETV("location") != "");
+		CALLM1(_mapMarker, "show", T_GETV("location") == "");
 	} ENDMETHOD;
 
 	// Updates the map markers of the action (line, pointer, etc)
