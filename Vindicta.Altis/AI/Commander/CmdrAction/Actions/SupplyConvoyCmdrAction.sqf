@@ -389,14 +389,13 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			private _amount = T_GETV("amount");
 			SETV(_intel, "amount", _amount);
 
-			private _schedule = T_GETV("schedule");
-
 			SETV(_intel, "waypoints", _routeTargetPositions);
-			SETV(_intel, "locations", _locations);
+			private _srcLocation = CALLM0(GETV(_srcGarr, "actual"), "getLocation");
+			private _tgtLocation = CALLM0(GETV(_tgtGarr, "actual"), "getLocation");
+			SETV(_intel, "locations", [_srcLocation] + _locations + [_tgtLocation]);
+			private _schedule = T_GETV("schedule");
 			SETV(_intel, "schedule", +_schedule);
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
-			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
-			SETV(_intel, "tgtGarrison", GETV(_tgtGarr, "actual"));
 			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
 			SETV(_intel, "posTgt", GETV(_tgtGarr, "pos"));
 			SETV(_intel, "dateDeparture", _schedule select 0);

@@ -102,7 +102,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 						// We need at least enough patrol groups to cover the defined routes
 						if (_nPatrolGroups < count _routes) then {
 							_nPatrolGroups = _nPatrolGroups + 1;
-							["GoalGroupPatrol", 0, [[TAG_ROUTE, _routes#_nPatrolGroups]] + _infExtraParams + _commonParams, _AI];
+							["GoalGroupPatrol", 0, [[TAG_ROUTE, _routes#(_nPatrolGroups - 1)]] + _infExtraParams + _commonParams, _AI];
 						} else {
 							["GoalGroupPatrol", 0, _infExtraParams + _commonParams, _AI];
 						};

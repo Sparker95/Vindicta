@@ -37,8 +37,8 @@ t_TFARBackpacks_0912 = [
 					"tf_rt1523g_rhs", //"Belongs" to BluFor
 					"tf_rt1523g_sage", //"Belongs" to BluFor	
 					"tf_rt1523g_big_rhs", //"Belongs" to BluFor
-					"tf_anarc210", //"Belongs" to BluFor
-					"tf_anprc152" //"Belongs" to BluFor
+					"tf_anarc210" //, //"Belongs" to BluFor
+					//"tf_anprc152" //"Belongs" to BluFor
 					//["tf_anprc155"], //"Belongs" to INDEP
 					//["tf_anprc155_coyote"], //"Belongs" to INDEP
 					//["tf_anarc164"], //"Belongs" to INDEP
@@ -68,8 +68,8 @@ t_TFARBackpacks_0100 = [
 					"TFAR_rt1523g_rhs", //"Belongs" to BluFor
 					"TFAR_rt1523g_sage", //"Belongs" to BluFor	
 					"TFAR_rt1523g_big_rhs", //"Belongs" to BluFor
-					"TFAR_anarc210", //"Belongs" to BluFor
-					"TFAR_anprc152" //"Belongs" to BluFor
+					"TFAR_anarc210" //"Belongs" to BluFor
+					//"TFAR_anprc152" //"Belongs" to BluFor
 					//["TFAR_anprc155"], //"Belongs" to INDEP
 					//["TFAR_anprc155_coyote"], //"Belongs" to INDEP
 					//["TFAR_anarc164"], //"Belongs" to INDEP

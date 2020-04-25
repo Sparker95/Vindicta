@@ -284,6 +284,14 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 	/* protected override */ METHOD("handleUnitsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		// Turn off vehicle sirens for removed units
+		{
+			private _t = CALLM0(CALLM0(_x, "getGarrison"), "getTemplate");
+			private _hO = CALLM0(_x, "getObjectHandle");
+			[_t, T_API, T_API_fnc_VEH_siren, [_hO, false]] call t_fnc_callAPIOptional;
+		} forEach (_units select { CALLM0(_x, "isVehicle") });
+
 		// Reactivate, as we need to reassign goals
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
@@ -291,6 +299,13 @@ CLASS("ActionGroupMove", "ActionGroup")
 	// logic to run when the action is satisfied
 	/* protected override */ METHOD("terminate") {
 		params [P_THISOBJECT];
+
+		// Turn off vehicle sirens
+		{
+			private _t = CALLM0(CALLM0(_x, "getGarrison"), "getTemplate");
+			private _hO = CALLM0(_x, "getObjectHandle");
+			[_t, T_API, T_API_fnc_VEH_siren, [_hO, false]] call t_fnc_callAPIOptional;
+		} forEach CALLM0(T_GETV("group"), "getVehicleUnits");
 
 		T_CALLM0("clearWaypoints");
 		T_CALLM1("clearUnitGoals", ["GoalUnitFollow" ARG "GoalUnitMove"]);
