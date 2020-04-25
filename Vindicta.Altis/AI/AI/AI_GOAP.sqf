@@ -1333,4 +1333,128 @@ CLASS("AI_GOAP", "AI")
 		true
 	} ENDMETHOD;
 
+	// - - - - - - - DEBUG UI - - - - - - - -
+	// Returns array for debug UI
+	METHOD("getDebugUIData") {
+		params [P_THISOBJECT];
+
+		pr _a = [];												// Each + is data pushed to array
+
+		// This agent info
+		pr _agent = T_GETV("agent");
+		pr _agentClass = GET_OBJECT_CLASS(_agent);
+		switch (_agentClass) do {								// + Arma agent (object handle, group handle) or Garrison)
+			case "Unit": {	_a pushBack CALLM0(_agent, "getObjectHandle"); };
+			case "Group": {	_a pushBack CALLM0(_agent, "getGroupHandle"); };
+			case "Garrison": { _a pushBack _agent; };
+			default { _a pushBack "ERROR"; };
+		};
+		_a pushBack _agent;										// + OOP agent
+		_a pushBack GET_OBJECT_CLASS(_agent);					// + OOP agent class name
+
+		// This object info
+		_a pushBack _thisObject;								// + This Object
+
+		// Goal info
+		_a pushBack T_GETV("currentGoal");						// + Current goal
+		_a pushBack T_GETV("currentGoalParameters");			// + Goal parameters
+
+		// Action info
+		pr _action = T_GETV("currentAction");
+		pr _subaction = if(_action != NULL_OBJECT) then { CALLM0(_action, "getFrontSubaction") } else { NULL_OBJECT };
+		pr _state = if(_subaction != NULL_OBJECT) then { GETV(_subaction, "state") } else { -1 };
+		pr _actionClass = if(_action != NULL_OBJECT) then { GET_OBJECT_CLASS(_action) } else { "" };
+		pr _subActionClass = if(_subaction != NULL_OBJECT) then { GET_OBJECT_CLASS(_subaction) } else { "" };
+		[_goal, _actionClass, _subActionClass, _state];
+
+		_a pushBack _action;									// + Action
+		_a pushBack _actionClass;								// + Action class
+		_a pushBack _subAction;									// + Subaction
+		_a pushBack _subActionClass;							// + Subaction class
+		_a pushBack _state;										// + Action state
+
+		_a pushBack T_GETV("currentAction");
+
+		// Return
+		_a
+	} ENDMETHOD;
+
+	STATIC_METHOD("getObjectDebugUIData") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
+
+		if (IS_NULL_OBJECT(_unit)) exitWith {
+			[_object]	// Data is wrong, take back your object handle!
+		};
+
+		pr _ai = CALLM0(_unit, "getAI");
+		if (IS_NULL_OBJECT(_ai)) exitWith {
+			[_object]	// Data is wrong, take back your object handle!
+		};
+
+		pr _a = CALLM0(_ai, "getDebugUIData");
+		_a // Return
+	} ENDMETHOD;
+
+	STATIC_METHOD("getGroupDebugUIData") {
+		params [P_THISCLASS, P_GROUP("_group")];
+
+		pr _group = CALLSM1("Group", "getGroupFromGroupHandle", _group);
+
+		if (IS_NULL_OBJECT(_group)) exitWith {
+			[_object]	// Data is wrong, take back your group handle!
+		};
+
+		pr _ai = CALLM0(_group, "getAI");
+		if (IS_NULL_OBJECT(_ai)) exitWith {
+			[_object]	// Data is wrong, take back your group handle!
+		};
+
+		pr _a = CALLM0(_ai, "getDebugUIData");
+		_a // Return
+	} ENDMETHOD;
+
+	// Takes object as parameter, returns object's garrison's data
+	STATIC_METHOD("getGarrisonDebugUIDataFromObject") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
+
+		if (IS_NULL_OBJECT(_unit)) exitWith {
+			[_object]	// Data is wrong, take back your object handle!
+		};
+
+		pr _garrison = CALLM0(_unit, "getGarrison");
+
+		if (IS_NULL_OBJECT(_garrison)) exitWith {
+			[""]		// Unit has no garrison, not sure how it's possible
+		};
+
+		pr _ai = CALLM0(_garrison, "getAI");
+		pr _a = CALLM0(_ai, "getDebugUIData");
+		_a // Return
+	} ENDMETHOD;
+
+	// Remote-executed on server from client
+	STATIC_METHOD("requestDebugUIData") {
+		params [P_THISCLASS, P_NUMBER("_clientOwner"), P_NUMBER("_requestType"), P_DYNAMIC("_target")];
+
+		pr _data = switch (_requestType) do {
+			case 0: {	// Unit
+				CALLSM1("AI_GOAP", "getObjectDebugUIData", _target);
+			};
+			case 1: {	// Group
+				CALLSM1("AI_GOAP", "getGroupDebugUIData", _target);
+			};
+			case 2: {
+				CALLSM1("AI_GOAP", "getGarrisonDebugUIDataFromObject", _target);
+			};
+			default {[]}; // Error!
+		};
+
+		// Send data back to client
+		REMOTE_EXEC_CALL_STATIC_METHOD("AIDebugUI", "receiveData", _data, _clientOwner, false);
+	} ENDMETHOD;
+
 ENDCLASS;
