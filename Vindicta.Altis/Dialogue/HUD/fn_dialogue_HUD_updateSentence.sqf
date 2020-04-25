@@ -19,21 +19,28 @@ private _speaker = _ctrl_sentence getVariable ["_speaker",objNull];
 private _sentence = _ctrl_sentence getVariable ["_sentence",""];
 private _answers = _ctrl_sentence getVariable ["_answers",[]];
 private _type = _ctrl_sentence getVariable ["_type", TYPE_SENTENCE];
-private _distance_normal = _ctrl_sentence getVariable ["_distance_normal",1];
+private _loudness = _ctrl_sentence getVariable ["_loudness", 1];
 
 private _display = ctrlParent _ctrl_sentence;
 
-
-//when player is talking it will show up different
 private _structedText = if(player isEqualTo _speaker)then{
-	parseText format [
-		"<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence
-	];
-}else{
+	if(_loudness == -1)then{//sentence is a hint or question_self type
+
+		if(count _answers > 0)then{//question_self
+			parseText format ["<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '#FFA300'>(%1)",_sentence];
+		}else{//hint
+			parseText format ["<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '#FFA300'>(%1)",_sentence];
+		};
+
+	}else{//player is talking
+		parseText format ["<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence];
+	};
+
+}else{//some unit is talking to player
 	parseText format [
 		"<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1' shadow = '2'>%2:</t> <t color = '#ffffff'>%3",
-		[_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_HUD_unitSideColor,
-		["Unknown",name _speaker]select (player knowsAbout _speaker == 4),
+		[_speaker, player] select (_speaker isEqualTo player)  call pr0_fnc_dialogue_HUD_unitSideColor,//get color
+		["Unknown",name _speaker]select (player knowsAbout _speaker == 4),//get name
 		_sentence
 	];
 };

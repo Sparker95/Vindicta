@@ -27,6 +27,14 @@ if(_sentence isEqualType [])then{
 	_sentence = selectRandom _sentence;
 };
 
+//only unit can see if its a hint
+if(_loudness == -1)exitWith{
+	if(_unit in (Allplayers - entities "HeadlessClient_F"))then{//only players need to see hints
+		[_unit,_sentence,_loudness] remoteExecCall ["pr0_fnc_dialogue_HUD_createSentence",_unit];
+	};
+};
+
+//send to everyone
 {
 	if(_x distance _unit < (FLOAT_MAX_LISTENING_DISTANCE *_loudness) )then{
 		[_unit,_sentence,_loudness] remoteExecCall ["pr0_fnc_dialogue_HUD_createSentence",_x];

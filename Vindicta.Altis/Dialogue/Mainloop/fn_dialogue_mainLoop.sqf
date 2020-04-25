@@ -125,7 +125,7 @@ for "_i" from _overwrite_found to count _node_arrays -1 do{
 			case TYPE_QUESTION;
 			case TYPE_QUESTION_SELF:{
 
-				private _loudness = 0;
+				private _loudness = -1;
 				private _params = if(_type in [TYPE_HINT, TYPE_QUESTION_SELF])then{
 					[
 						["_text","",["",[]]], 

@@ -62,6 +62,7 @@ _ctrl_sentence setVariable ["_removeTime",_removeTime];
 
 _ctrl_sentence setVariable ["_speaker", _speaker];
 _ctrl_sentence setVariable ["_sentence", _sentence];
+_ctrl_sentence setVariable ["_loudness", _loudness];
 _ctrl_sentence setVariable ["_answers", _answers];
 _ctrl_sentence setVariable ["_type", _type];
 _ctrl_sentence setVariable ["_size_y",FLOAT_TEXT_HIGHT];

@@ -329,7 +329,8 @@
 			"pr0_fnc_dialogue_mainLoop_question_return",
 			"pr0_fnc_dialogue_mainLoop_error",
 			"pr0_fnc_dialogue_mainLoop_end",
-			"pr0_fnc_dialogue_mainLoop_checkConditions"
+			"pr0_fnc_dialogue_mainLoop_checkConditions",
+			"pr0_fnc_dialogue_createConversation"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"

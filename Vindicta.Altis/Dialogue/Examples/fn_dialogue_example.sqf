@@ -1,18 +1,24 @@
 #include "defineCommon.inc"
 
 private _array1 = [
-	["main_intro",{
+	["intro",{
 		[
 			[TYPE_SENTENCE, "Hello, sir", 2],
 			[TYPE_SENTENCE, "Hello, person", 1],
-			[TYPE_JUMP_TO, "main_question"]
+			[TYPE_JUMP_TO, "question"]
 		]
 	}],
-	["main_question",{
+	["question",{
 		[
-			[TYPE_QUESTION_SELF, "How can i help you?",1],
-			[TYPE_ANSWER, "1", "#end"],
-			[TYPE_ANSWER, "2", "#end"]
+			[TYPE_QUESTION_SELF, "Facepalm?",1],
+			[TYPE_ANSWER, "yes", "yes"],
+			[TYPE_ANSWER, "no", "#end"]
+		]
+	}],
+	["yes",{
+		[
+			[TYPE_HINT, "AUWH!",1],
+			[TYPE_JUMP_TO, "#end"]
 		]
 	}]
 ];
@@ -70,4 +76,4 @@ private _array2 = [
 ["main", _array1] call pr0_fnc_dialogue_registerDataSet;
 ["math", _array2] call pr0_fnc_dialogue_registerDataSet;
 
-[player, cursorObject, "main", "main_intro",{}] call pr0_fnc_dialogue_createConversation;
+[player, cursorObject, "main", "intro",{}] call pr0_fnc_dialogue_createConversation;

@@ -17,9 +17,4 @@ params [
 	["_sentence","",["",[]]]
 ];
 
-_sentence = "(" + _sentence + ")"; 
-
-if(_unit in Allplayers)then{
-	[_unit, _sentence, 0] remoteExecCall ["pr0_fnc_dialogue_HUD_createSentence",_unit];
-};
-
+[_unit, _sentence, -1] call pr0_fnc_dialogue_HUD_createSentence;
