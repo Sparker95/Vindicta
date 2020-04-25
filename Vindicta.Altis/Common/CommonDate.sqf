@@ -73,4 +73,17 @@ pr0_fnc_getHoursUntilNextDawn = {
 		(_dateTomorrow call BIS_fnc_sunriseSunsetTime) params ["_dawn", "_dusk"];
 		_dawn + 24 - daytime
 	}
-}
+};
+
+pr0_fnc_getHoursUntilNextDusk = {
+	(date call BIS_fnc_sunriseSunsetTime) params ["_dawn", "_dusk"];
+	if(daytime < _dusk) then {
+		// Skip to this dusk if its before dusk
+		_dusk - daytime
+	} else {
+		// Skip to dusk tomorrow if its after dusk
+		private _dateTomorrow = [date, 1] call pr0_fnc_addDaysToDate;
+		(_dateTomorrow call BIS_fnc_sunriseSunsetTime) params ["_dawn", "_dusk"];
+		_dusk + 24 - daytime
+	}
+};

@@ -315,7 +315,7 @@
 	<Package name="Settings">
 		<Container name="Section">
 			<Key ID="STR_Vindicta_Settings_Section">
-				<Original>Vindicta</Original>
+				<Original>*Vindicta</Original>
 			</Key>
 		</Container>
 		<Container name="Autoload">
