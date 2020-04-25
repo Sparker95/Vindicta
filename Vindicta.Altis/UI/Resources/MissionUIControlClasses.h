@@ -510,7 +510,7 @@ class MUI_TREE
 			};";
 	moving = 0;
 	type = 12;
-	style = MUI_TXT_SIZE_M;
+	style = 0;
 	sizeEx = GUI_TEXT_SIZE_MEDIUM;
 	font = "RobotoCondensed";
 	colorText[] = {1,1,1,1};

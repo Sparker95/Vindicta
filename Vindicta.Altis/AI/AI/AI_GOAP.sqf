@@ -1400,15 +1400,15 @@ CLASS("AI_GOAP", "AI")
 	STATIC_METHOD("getGroupDebugUIData") {
 		params [P_THISCLASS, P_GROUP("_group")];
 
-		pr _group = CALLSM1("Group", "getGroupFromGroupHandle", _group);
+		pr _groupFound = CALLSM1("Group", "getGroupFromGroupHandle", _group);
 
-		if (IS_NULL_OBJECT(_group)) exitWith {
-			[_object]	// Data is wrong, take back your group handle!
+		if (IS_NULL_OBJECT(_groupFound)) exitWith {
+			[_group]	// Data is wrong, take back your group handle!
 		};
 
-		pr _ai = CALLM0(_group, "getAI");
+		pr _ai = CALLM0(_groupFound, "getAI");
 		if (IS_NULL_OBJECT(_ai)) exitWith {
-			[_object]	// Data is wrong, take back your group handle!
+			[_group]	// Data is wrong, take back your group handle!
 		};
 
 		pr _a = CALLM0(_ai, "getDebugUIData");
@@ -1454,7 +1454,7 @@ CLASS("AI_GOAP", "AI")
 		};
 
 		// Send data back to client
-		REMOTE_EXEC_CALL_STATIC_METHOD("AIDebugUI", "receiveData", _data, _clientOwner, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("AIDebugUI", "receiveData", [_data], _clientOwner, false);
 	} ENDMETHOD;
 
 ENDCLASS;

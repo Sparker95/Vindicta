@@ -40,8 +40,6 @@ CLASS("AIDebugUI", "")
 
 		OOP_INFO_0("NEW");
 
-		T_SETV("currentObject", objNull);
-		T_SETV("currentGroup", grpNull);
 		T_SETV("timeLastGroupRequest", time);
 		T_SETV("timeLastGarrisonRequest", time);
 		T_SETV("curatorSelected", curatorSelected);
@@ -62,16 +60,18 @@ CLASS("AIDebugUI", "")
 			if (!isNull _curator) then {
 				
 				pr _id = _curator addEventHandler ["CuratorObjectSelectionChanged", {
-					params ["_curator", "_entity"];
+					//params ["_curator", "_entity"];
 					pr _instance = GETSV("AIDebugUI", "instance");
-					CALLM1(_instance, "onObjectSelectionChanged", _entity);
+					diag_log "Curator: Object selection changed";
+					CALLM0(_instance, "update");
 				}];
 				_ehs pushBack ["CuratorObjectSelectionChanged", _id];
 
 				pr _id = _curator addEventHandler ["CuratorGroupSelectionChanged", {
-					params ["_curator", "_entity"];
+					//params ["_curator", "_entity"];
 					pr _instance = GETSV("AIDebugUI", "instance");
-					CALLM1(_instance, "onGroupSelectionChanged", _entity);
+					diag_log "Curator: Group selection changed";
+					CALLM0(_instance, "update");
 				}];
 				_ehs pushBack ["CuratorGroupSelectionChanged", _id];
 
@@ -147,44 +147,79 @@ CLASS("AIDebugUI", "")
 
 	// Base logic
 
+	METHOD("update") {
+		params [P_THISOBJECT];
+
+		pr _selPrev = T_GETV("curatorSelected");
+		pr _selNew = CuratorSelected;
+		pr _units = _selNew#0;
+		pr _groups = _selNew#1;
+		pr _selChanged = !(_selPrev isEqualTo _selNew);
+		pr _requestGroupAndUnit = false;
+		T_SETV("curatorSelected", _selNew);
+
+		// Request group and unit data if needed
+		if (time - T_GETV("timeLastGroupRequest") > INTERVAL_GROUP_REQUEST || _selChanged) then {
+
+			// Request unit AI data if only one unit is selected
+			if (count _units == 1) then {
+				pr _args = [clientOwner, 0, _units#0];
+				OOP_INFO_1("Request unit data: %1", _units#0);
+				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
+			};
+
+			// Request group AI data if only one group is selected
+			if ((count _groups == 0 && count _units > 0) || (count _groups == 1)) then {
+				pr _group = if(count _groups == 1) then {_groups#0} else {group (_units#0)}; // Selected group or group of first unit
+				pr _args = [clientOwner, 1, _group];
+				OOP_INFO_1("Request group data: %1", _group);
+				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
+				OOP_INFO_1("Requested group data: %1", _group);
+			};
+			T_SETV("timeLastGroupRequest", time);
+		};
+
+		// Request garrison data if needed
+		if (time - T_GETV("timeLastGarrisonRequest") > INTERVAL_GARRISON_REQUEST || _selChanged) then {
+
+			// We must have some unit to get its garrison data
+			if (count _selGroups <= 1|| count _selUnits > 0) then {
+				pr _unit = if (count _selGroups == 1) then {
+					(units (_selGroups#0))#0
+				} else {
+					_selUnits#0
+				};
+
+				pr _args = [clientOwner, 2, _unit];
+				OOP_INFO_1("Request garrison data: %1", _unit);
+				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
+			};
+			
+
+			T_SETV("timeLastGarrisonRequest", time);
+		};
+
+	} ENDMETHOD;
+
 	// Called from "Draw3D" event handler
 	METHOD("onDraw") {
 		params [P_THISOBJECT];
 
-		if (time - T_GETV("timeLastGroupRequest") > INTERVAL_GROUP_REQUEST) then {
-			pr _obj = T_GETV("currentObject");
-			pr _grp = T_GETV("currentGroup");
-
-			// At a single time, we can select either an object or a group
-
-			if (!isNull _grp) then {
-
-			} else {
-				if (!isNull _obj) then {
-
-				};
-			};
-			pr _args = [clientOwner, 0, T_GETV("currentObject")];
-			T_SETV("timeLastGroupRequest", time);
-		};
-
-		if (time - T_GETV("timeLastGarrisonRequest") > INTERVAL_GARRISON_REQUEST) then {
-
-			T_SETV("timeLastGarrisonRequest", time);
-		};
+		T_CALLM0("update");
 	} ENDMETHOD;
 
+	// Not used any more
+	/*
 	METHOD("onObjectSelectionChanged") {
 		params [P_THISOBJECT, P_OBJECT("_object")];
-		T_SETV("currentObject", _object);
 		OOP_INFO_1("Object selection changed: %1", _object);
 	} ENDMETHOD;
 
 	METHOD("onGroupSelectionChanged") {
 		params [P_THISOBJECT, P_GROUP("_group")];
-		T_SETV("currentGroup", _group);
 		OOP_INFO_1("Group selection changed: %1", _group);
 	} ENDMETHOD;
+	*/
 
 	// = = = Static methods to create/delete instance = = = = 
 
@@ -313,25 +348,34 @@ CLASS("AIDebugUI", "")
 			};
 		} else {
 			// Data seems correct
+			pr _sel = T_GETV("curatorSelected");
+			pr _units = _sel#0;
+			pr _groups = _sel#1;
+			
 			pr _armaAgent = _data#0;
 			pr _panel = NULL_OBJECT;
+
 			// Is it a unit?
-			if (_armaAgent isEqualTo T_GETV("currentObject")) then {
+			if (_armaAgent isEqualType objNull && {_armaAgent in _units} && {count _units == 1}) then {
 				_panel = T_GETV("panelUnit");
 			};
-			if (_armaAgent isEqualTo T_GETV("currentGroup")) then {
+			if (_armaAgent isEqualType grpNull && {count _groups <= 1}) then {
 				_panel = T_GETV("panelGroup");
 			};
 			if (_armaAgent isEqualType "") then {
 				_panel = T_GETV("panelGarrison");
 			};
-			CALLM1(_panel, "updateData", _panel);
+			if (!IS_NULL_OBJECT(_panel)) then {
+				CALLM1(_panel, "updateData", _data);
+			};
 		};
 	} ENDMETHOD;
 
 	// Remote-executed on client from server
 	STATIC_METHOD("receiveData") {
 		params [P_THISCLASS, P_ARRAY("_data")];
+
+		OOP_INFO_1("receiveData: %1", _data);
 
 		pr _instance = GETSV(_thisClass, "instance");
 
@@ -423,7 +467,10 @@ CLASS("AIDebugPanel", "")
 			"_actionState"
 		];
 
-		//_edit ctrlSetText 
+		_edit ctrlSetText _ai;
+
+		_tree tvAdd [[], format ["Goal: %1", _goal]];
+		_tree tvAdd [[], format ["Goal parameters: %1", _goalParameters]];
 
 	} ENDMETHOD;
 
