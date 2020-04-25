@@ -89,9 +89,11 @@ class Params {
 };
 
 class CfgFunctions {
+
+    #include "Dialogue\functions.hpp"
+
     class pr0
     {
-        #include "Dialogue\functions.hpp"
         #include "CivilianPresence\functions.hpp"
         #include "Common\functions.hpp"
     };
