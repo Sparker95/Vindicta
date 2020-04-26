@@ -85,6 +85,11 @@ FIX_LINE_NUMBERS()
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 
+// Array of AIs which are requested to halt
+if (isNil "g_AI_GOAP_haltArray") then {
+	g_AI_GOAP_haltArray = [];
+};
+
 CLASS("AI_GOAP", "AI")
 
 	/* Variable: currentAction */
@@ -140,6 +145,12 @@ CLASS("AI_GOAP", "AI")
 	METHOD("process") {
 		params [P_THISOBJECT, P_BOOL("_spawning")];
 		
+		// Halt here if requested for debug
+		if (_thisObject in g_AI_GOAP_haltArray) then {
+			halt;
+			g_AI_GOAP_haltArray deleteAt (g_AI_GOAP_haltArray find _thisObject);
+		};
+
 		//OOP_INFO_0("PROCESS");
 		
 		pr _agent = T_GETV("agent");
@@ -1355,6 +1366,14 @@ CLASS("AI_GOAP", "AI")
 		// This object info
 		_a pushBack _thisObject;								// + This Object
 
+		// World state
+		pr _ws = T_GETV("worldState");
+		if (isNil "_ws") then {
+			_a pushBack [[], []];
+		} else {
+			_a pushBack _ws;									// + World State
+		};
+
 		// Goal info
 		_a pushBack T_GETV("currentGoal");						// + Current goal
 		_a pushBack T_GETV("currentGoalParameters");			// + Goal parameters
@@ -1371,7 +1390,7 @@ CLASS("AI_GOAP", "AI")
 		_a pushBack _actionClass;								// + Action class
 		_a pushBack _subAction;									// + Subaction
 		_a pushBack _subActionClass;							// + Subaction class
-		_a pushBack _state;										// + Action state
+		_a pushBack _state;										// + Subaction state
 
 		_a pushBack T_GETV("currentAction");
 
@@ -1455,6 +1474,16 @@ CLASS("AI_GOAP", "AI")
 
 		// Send data back to client
 		REMOTE_EXEC_CALL_STATIC_METHOD("AIDebugUI", "receiveData", [_data], _clientOwner, false);
+	} ENDMETHOD;
+
+	// Client has requested to halt this AI
+	STATIC_METHOD("requestHaltAI") {
+		params [P_THISCLASS, P_OOP_OBJECT("_ai")];
+		if (!IS_NULL_OBJECT(_ai)) then {
+			if (IS_OOP_OBJECT(_ai)) then{
+				g_AI_GOAP_haltArray pushBackUnique _ai;
+			};
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

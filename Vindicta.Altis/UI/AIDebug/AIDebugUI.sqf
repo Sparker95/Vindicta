@@ -5,6 +5,10 @@
 #define OOP_ASSERT
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\AI\Action\Action.hpp"
+#include "..\..\AI\Group\groupWorldStateProperties.hpp"
+#include "..\..\AI\Garrison\garrisonWorldStateProperties.hpp"
+#include "..\..\AI\WorldState\WorldStateProperty.hpp"
 
 #define pr private
 
@@ -62,7 +66,7 @@ CLASS("AIDebugUI", "")
 				pr _id = _curator addEventHandler ["CuratorObjectSelectionChanged", {
 					//params ["_curator", "_entity"];
 					pr _instance = GETSV("AIDebugUI", "instance");
-					diag_log "Curator: Object selection changed";
+					//diag_log "Curator: Object selection changed";
 					CALLM0(_instance, "update");
 				}];
 				_ehs pushBack ["CuratorObjectSelectionChanged", _id];
@@ -70,7 +74,7 @@ CLASS("AIDebugUI", "")
 				pr _id = _curator addEventHandler ["CuratorGroupSelectionChanged", {
 					//params ["_curator", "_entity"];
 					pr _instance = GETSV("AIDebugUI", "instance");
-					diag_log "Curator: Group selection changed";
+					//diag_log "Curator: Group selection changed";
 					CALLM0(_instance, "update");
 				}];
 				_ehs pushBack ["CuratorGroupSelectionChanged", _id];
@@ -161,8 +165,8 @@ CLASS("AIDebugUI", "")
 		// Request group and unit data if needed
 		if (time - T_GETV("timeLastGroupRequest") > INTERVAL_GROUP_REQUEST || _selChanged) then {
 
-			// Request unit AI data if only one unit is selected
-			if (count _units == 1) then {
+			// Request unit AI data if some units are selected
+			if (count _units > 0) then {
 				pr _args = [clientOwner, 0, _units#0];
 				OOP_INFO_1("Request unit data: %1", _units#0);
 				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
@@ -183,16 +187,19 @@ CLASS("AIDebugUI", "")
 		if (time - T_GETV("timeLastGarrisonRequest") > INTERVAL_GARRISON_REQUEST || _selChanged) then {
 
 			// We must have some unit to get its garrison data
-			if (count _selGroups <= 1|| count _selUnits > 0) then {
-				pr _unit = if (count _selGroups == 1) then {
-					(units (_selGroups#0))#0
+			if (count _groups == 1 || count _units == 1) then {
+				pr _unit = if (count _groups == 1) then {
+					pr _groupUnits = units (_selGroups#0);
+					if (count _groupUnits > 0) then { _groupUnits#0 } else { objNull };
 				} else {
-					_selUnits#0
+					_units#0
 				};
 
-				pr _args = [clientOwner, 2, _unit];
-				OOP_INFO_1("Request garrison data: %1", _unit);
-				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
+				if (!isNull _unit) then {
+					pr _args = [clientOwner, 2, _unit];
+					OOP_INFO_1("Request garrison data: %1", _unit);
+					REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
+				};
 			};
 			
 
@@ -368,6 +375,7 @@ CLASS("AIDebugUI", "")
 			if (!IS_NULL_OBJECT(_panel)) then {
 				CALLM1(_panel, "updateData", _data);
 			};
+			
 		};
 	} ENDMETHOD;
 
@@ -389,8 +397,12 @@ ENDCLASS;
 // Class for one tab
 CLASS("AIDebugPanel", "")
 
+	VARIABLE("ai");	// AI object
+
 	METHOD("new") {
 		params [P_THISOBJECT];
+
+		T_SETV("ai", NULL_OBJECT);
 
 		pr _d = findDisplay 312;
 		pr _ctrl = _d ctrlCreate ["AI_DEBUG_GROUP", -1];
@@ -399,6 +411,22 @@ CLASS("AIDebugPanel", "")
 		uiNamespace sv [_thisObject + "tree", uiNamespace getVariable "vin_aidbg_tree"];
 		uiNamespace sv [_thisObject + "editAI", uiNamespace getVariable "vin_aidbg_edit_ai_ref"];
 		uiNamespace sv [_thisObject + "buttonHalt", uiNamespace getVariable "vin_aidbg_button_halt"];
+
+		// Add button event handler
+		pr _btn = T_CALLM0("getButtonHalt");
+		_btn setVariable ["panel", _thisObject];
+		_btn ctrlAddEventHandler ["ButtonClick", {
+			params ["_control"];
+			pr _thisObject = _control getVariable "panel";
+			pr _ai = T_GETV("AI");
+			if (!IS_NULL_OBJECT(_ai)) then {
+				OOP_INFO_1("Halt AI: %1", _ai);
+				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestHaltAI", [_ai], 2, false);
+			};
+		}];
+
+		// Reset tree veiw - it must have some data
+		T_CALLM0("resetData");
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -451,27 +479,102 @@ CLASS("AIDebugPanel", "")
 
 		pr _edit = T_CALLM0("getEditAI");
 		pr _tree = T_CALLM0("getTreeView");
-		tvClear _tree;
 
 		_data params [
 			"_armaAgent",
 			"_agent",
 			"_agentClass",
 			"_ai",
+			"_worldState",
 			"_goal",
 			"_goalParameters",
 			"_action",
 			"_actionClass",
 			"_subaction",
 			"_subactionClass",
-			"_actionState"
+			"_subactionState"
 		];
+
+		
+		// Set variables ...
+		T_SETV("ai", _ai);
 
 		_edit ctrlSetText _ai;
 
-		_tree tvAdd [[], format ["Goal: %1", _goal]];
-		_tree tvAdd [[], format ["Goal parameters: %1", _goalParameters]];
+		pr _id = 0;
+		#define _INC _id = _id + 1;
 
+		// World state
+		_tree tvSetText [[_id], "World State: ..."];
+		if (_agentClass != "Unit") then {				// Units have no world state currently
+			pr _wsNames = switch (_agentClass) do {		// Names of world state properties
+				//case "Unit": {["nothing"]};
+				case "Group": {WSP_GROUP_NAMES};
+				case "Garrison": {WSP_GARRISON_NAMES};
+				//default {["wtf", "2123"]};
+			};
+			//diag_log format ["World state names: %1, _agentClass: %2", _wsNames, _agentClass];
+			// Clear previous data first
+			pr _count = _tree tvCount [_id];
+			for "_j" from 0 to (_count - 1) do {
+				_tree tvDelete [_id, 0];
+			};
+			// Fill world state properties
+			_worldState params ["_props", "_types"];
+			for "_i" from 0 to ((count _props) - 1) do {
+				
+				pr _valueStr = "";
+				if ((_types#_i) == WSP_TYPE_DOES_NOT_EXIST) then {
+					_valueStr = "<does not exist>";
+				} else {
+					_valueStr = str (_props#_i);
+				};
+				pr _text = format ["%1 %2: %3", _i, _wsNames#_i, _valueStr];
+				_tree tvAdd [[_id], _text];
+			};
+		};
+		_INC
+
+
+
+		// Goal
+		_tree tvSetText [[_id], format ["Goal: %1", _goal]]; _INC
+		
+		// Goal parameters
+		tree tvSetText [[_id], format ["Goal parameters: %1", _goalParameters]];
+		// Clear previous goal parameters first
+		pr _prevParametersCount = _tree tvCount [_id];
+		for "_j" from 0 to (_prevParametersCount-1) do {
+			_tree tvDelete [_id, 0]; // Deletes first row
+		};
+		{	// Add new parameters
+			_tree tvAdd [[_id], str _x];
+		} forEach _goalParameters;
+		_INC
+
+		// Action
+		_tree tvSetText [[_id], format ["Action: %1", _action]]; _INC
+		_tree tvSetText [[_id], format ["Action Class: %1", _actionClass]]; _INC
+
+		// Subaction
+		_tree tvSetText [[_id], format ["Subaction: %1", _subaction]]; _INC
+		_tree tvSetText [[_id], format ["Subaction Class: %1", _subactionClass]]; _INC
+		pr _stateText = if (_subactionState == -1) then {""} else {ACTION_STATE_TEXT_ARRAY select _subactionState};
+		_tree tvSetText [[_id], format ["Subaction State: %1", _stateText]]; _INC
+
+	} ENDMETHOD;
+
+	METHOD("resetData") {
+		params [P_THISOBJECT];
+		pr _tree = T_CALLM0("getTreeView");
+		_tree tvAdd [[], "World State:"];
+		_tree tvAdd [[], "Goal:"];
+		_tree tvAdd [[], "Goal Parameters:"];
+		_tree tvAdd [[], "Action:"];
+		_tree tvAdd [[], "Action Class:"];
+		_tree tvAdd [[], "Subaction:"];
+		_tree tvAdd [[], "Subaction Class:"];
+		_tree tvAdd [[], "Subaction State:"];
 	} ENDMETHOD;
 
 ENDCLASS;
