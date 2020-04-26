@@ -143,7 +143,6 @@ _array set [T_REQUIRED_ADDONS, [
 _api = [];
 _api resize T_API_SIZE;
 _api set [T_API_fnc_init, {}];
-_array set [T_API, _api];
 
 //==== Undercover ====
 _uc = [];
@@ -152,7 +151,6 @@ _uc set[T_UC_uniforms, +_civUniforms];
 _uc set[T_UC_facewear, +_civFacewear];
 _uc set[T_UC_headgear, +_civHeadgear];
 _uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
-_array set [T_UC, _uc];
 
 //==== Arsenal ====
 _arsenal = [];
@@ -185,7 +183,6 @@ _arsenal set[T_ARSENAL_backpacks, [
 _arsenal set[T_ARSENAL_uniforms, +_civUniforms];
 _arsenal set[T_ARSENAL_facewear, +_civFacewear];
 _arsenal set[T_ARSENAL_headgear, +_civHeadgear];
-_array set [T_ARSENAL, _arsenal];
 
 //==== Infantry ====
 _inf = [];
@@ -203,12 +200,28 @@ _inf set [T_INF_exp, [
 _inf set [T_INF_survivor, [
 	"WW2_CIVILIAN_Militant_1"
 ]];
-_array set [T_INF, _inf];
 
 //==== Vehicles ====
 _veh = [];
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, _civVehicles];
+
+//==== Cargo ====
+_cargo = +(tDefault select T_CARGO);
+
+// ==== Inventory ====
+_inv = [T_INV] call t_fnc_newCategory;
+_inv set [T_INV_items, +t_miscItems_civ_WW2 ];
+_inv set [T_INV_backpacks, ["GEB_FieldPack_cbr", "B_LIB_SOV_RA_Rucksack"]];
+
+//==== Arrays ====
+_array set [T_API, _api];
+_array set [T_INF, _inf];
 _array set [T_VEH, _veh];
+_array set [T_CARGO, _cargo];
+_array set [T_DRONE, []];
+_array set [T_GROUP, []];
+_array set [T_ARSENAL, _arsenal];
+_array set [T_UC, _uc];
 
 _array
