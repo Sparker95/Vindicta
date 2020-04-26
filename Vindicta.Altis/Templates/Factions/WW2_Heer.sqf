@@ -103,10 +103,10 @@ _veh set [T_VEH_stat_AT, ["ifr_lg40", "ifa3_p27G", "IFA3_Pak38", "LIB_Pak40", "L
 _veh set [T_VEH_stat_mortar_light, ["LIB_GrWr34", "LIB_GrWr34_g"]];
 _veh set [T_VEH_stat_mortar_heavy, ["LIB_leFH18", "LIB_FlaK_36_ARTY"]];
 
-//_veh set [T_VEH_heli_light, [""]];
-//_veh set [T_VEH_heli_heavy, [""]];
-//_veh set [T_VEH_heli_cargo, [""]];
-//_veh set [T_VEH_heli_attack, [""]];
+_veh set [T_VEH_heli_light, []];
+_veh set [T_VEH_heli_heavy, []];
+_veh set [T_VEH_heli_cargo, []];
+_veh set [T_VEH_heli_attack, []];
 
 _veh set [T_VEH_plane_attack, ["sab_ju88_2", "sab_ju88", "sab_ju87", "sab_bf110", "sab_bf110_2", "sab_bf110", "sab_he111", "LIB_FW190F8", "LIB_FW190F8_4", "LIB_FW190F8_5", "LIB_FW190F8_2", "LIB_FW190F8_3", "LIB_Ju87"]];
 _veh set [T_VEH_plane_fighter, ["sab_fw190_2", "sab_fw190", "sab_bf109", "sab_bf109", "sab_avia_2", "LIB_FW190F8", "LIB_FW190F8_4", "LIB_FW190F8_5", "LIB_FW190F8_2", "LIB_FW190F8_3", "LIB_Ju87"]];
@@ -131,18 +131,6 @@ _veh set [T_VEH_submarine, ["sab_boat_u7"]];
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
-//_drone set [T_DRONE_DEFAULT, [""]];
-
-//_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
-//_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
-//_drone set [T_DRONE_plane_attack, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_plane_unarmed, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_heli_attack, ["B_T_UAV_03_dynamicLoadout_F"]];
-//_drone set [T_DRONE_quadcopter, ["B_UAV_01_F"]];
-//_drone set [T_DRONE_designator, ["B_Static_Designator_01_F"]];
-//_drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
-//_drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
-//_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
 
 //==== Cargo ====
 _cargo = [];
@@ -154,10 +142,14 @@ _cargo set [T_CARGO_box_big,	["LIB_WeaponsBox_Big_GER"]];
 
 //==== Groups ====
 _group = +(tDefault select T_GROUP);
-
-_group set [T_GROUP_SIZE-1, nil];
-
-_group set [T_GROUP_inf_AA_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_AT], 				[T_INF, T_INF_AT], 				[T_INF, T_INF_ammo]]]];
+_group set [T_GROUP_inf_AA_team, [
+	[
+		T_INF_TL,
+		T_INF_AT,
+		T_INF_AT,
+		T_INF_ammo
+	] apply { [T_INF, _x] }
+]];
 
 //==== Vehicle Description ==== (Broken waiting for fix)
 //(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Unarmed Car"]; //					= 1 Car like a Prowler or UAZ

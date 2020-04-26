@@ -1924,7 +1924,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		{ // forEach T_GETV("savedObjects");
 			_x params ["_type", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
 			// Check if there is such an object here already
-			pr _objs = nearestObjects [_posWorld, [_type], 0.01, true];
+			pr _objs = nearestObjects [_posWorld, [], 0.25, true] select { typeOf _x == _type };
 			pr _hO = if (count _objs == 0) then {
 				pr _hO = _type createVehicle [0, 0, 0];
 				_hO setPosWorld _posWorld;

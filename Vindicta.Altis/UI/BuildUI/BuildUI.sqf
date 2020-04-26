@@ -866,11 +866,15 @@ CLASS("BuildUI", "")
 		T_CALLM0("exitMoveMode");
 
 		pr _pos = player modelToWorld _offs;
-		pr _newObj = _type createVehicleLocal _pos;
+
+		// Create it somewhere safe before moving it to position
+		pr _newObj = _type createVehicleLocal [0, 0, 1000];
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
 		_newObj setVariable ["build_ui_newObject", true];
+		_newObj enableSimulation false;
 
 		// Why is this necessary? I don't know but it is!
+		_newObj setPos _pos;
 		_newObj setDir -90;
 		pr _activeObject = [_newObj, _pos, vectorDir _newObj, vectorUp _newObj];
 		T_SETV("activeObject", _activeObject);

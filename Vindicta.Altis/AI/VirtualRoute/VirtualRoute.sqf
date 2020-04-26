@@ -95,6 +95,7 @@ CLASS("VirtualRoute", "")
 			T_SETV("speedFn", _speedFn);
 		};
 #endif
+		FIX_LINE_NUMBERS()
 
 		T_SETV("calculated", false);
 		T_SETV("failed", false);
@@ -173,6 +174,7 @@ CLASS("VirtualRoute", "")
 					T_CALLM("debugDraw", []);
 				};
 #endif
+				FIX_LINE_NUMBERS()
 				// Set it last
 				T_SETV("calculated", true);
 			} catch {
