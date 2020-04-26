@@ -511,7 +511,8 @@ class MUI_TREE
 	moving = 0;
 	type = 12;
 	style = 0;
-	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	sizeEx = MUI_TXT_SIZE_M_SZ;
+	rowHeight = MUI_TXT_SIZE_M_SZ;
 	font = "RobotoCondensed";
 	colorText[] = {1,1,1,1};
 	colorBackground[] = {0,0,0,0.8};
@@ -565,7 +566,7 @@ class MUI_TREE
 	};
 	expandedTexture = "A3\ui_f\data\gui\rsccommon\rsctree\expandedTexture_ca.paa";
 	hiddenTexture = "A3\ui_f\data\gui\rsccommon\rsctree\hiddenTexture_ca.paa";
-	rowHeight = MUI_TXT_SIZE_M_SZ;
+	
 	borderSize = 0;
 	expandOnDoubleclick = 1;
 

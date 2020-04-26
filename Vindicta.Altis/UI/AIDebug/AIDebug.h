@@ -16,7 +16,6 @@ class AI_DEBUG_GROUP : MUI_GROUP
 	{
 		class AI_DEBUG_STATIC_BACKGROUND : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
 			idc = -1;
 			x = 0;
 			y = 0;
@@ -24,9 +23,8 @@ class AI_DEBUG_GROUP : MUI_GROUP
 			h = safeZoneH * 0.29722223;
 		};
 
-		class AI_DEBUG_TREE : MUI_BASE 
+		class AI_DEBUG_TREE : MUI_TREE
 		{
-			type = 0;
 			idc = -1;
 			x = safeZoneX + safeZoneW * 0.29791667 - _x0;
 			y = safeZoneY + safeZoneH * 0.25833334 - _y0;
@@ -38,7 +36,6 @@ class AI_DEBUG_GROUP : MUI_GROUP
 
 		class AI_DEBUG_BUTTON_HALT : MUI_BUTTON_TXT 
 		{
-			type = 1;
 			idc = -1;
 			x = safeZoneX + safeZoneW * 0.4546875 - _x0;
 			y = safeZoneY + safeZoneH * 0.23055556 - _y0;
