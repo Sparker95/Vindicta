@@ -1,9 +1,2 @@
 @echo off
-call "%~dp0tools\edit_map.bat" Malden
-pause
-
-@echo on 
-
-echo "%~dp0tools\edit_map.bat"
-
-pause
+call "%~dp0.\tools\edit_map.bat" Malden
