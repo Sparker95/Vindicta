@@ -82,7 +82,7 @@ _veh set [T_VEH_SPA, ["LIB_US6_BM13"]];
 _veh set [T_VEH_SPAA, ["LIB_zis5v_61K", "ifa3_gazaa_dshk", "ifa3_gazaa_max"]];
 
 _veh set [T_VEH_stat_HMG_high, ["LIB_SU_SearchLight", "IFA3_DSHkM_Mini_TriPod", "lib_maxim_m30_base"]];
-_veh set [T_VEH_stat_GMG_high, ["LIB_SU_SearchLight", "LIB_MG34_Lafette_Deployed", "LIB_MG42_Lafette_Deployed"]];
+_veh set [T_VEH_stat_GMG_high, ["LIB_SU_SearchLight", "IFA3_DSHkM_Mini_TriPod", "lib_maxim_m30_base"]];
 _veh set [T_VEH_stat_HMG_low, ["IFA3_DSHkM_Mini_TriPod", "lib_maxim_m30_base"]];
 _veh set [T_VEH_stat_GMG_low, ["IFA3_DSHkM_Mini_TriPod", "lib_maxim_m30_base"]];
 _veh set [T_VEH_stat_AA, ["sab_static_aa", "sab_small_static_2xaa", "sab_small_static_aa", "LIB_61k", "LIB_61k", "LIB_61k"]];
