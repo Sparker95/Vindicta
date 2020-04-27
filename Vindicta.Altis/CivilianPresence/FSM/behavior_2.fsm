@@ -760,7 +760,7 @@ class FSM
                          "_unit setVariable [""#state"", ""surrender"", true];" \n
                          "" \n
                          "// Say something" \n
-                         "[_unit,_unit, ""dont_shoot_me""] call pr0_fnc_dialogue_createConversation;"/*%FSM</STATEINIT""">*/;
+                         "[_unit, [""Don't shoot"",""No, please!"", ""AWWAAH""]] call pr0_fnc_dialogue_createSentence;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -806,7 +806,7 @@ class FSM
                 {
                         name = "Say_Something_Check";
                         itemno = 28;
-                        init = /*%FSM<STATEINIT""">*/"[_unit,_unit,""dont_shoot_me""] call pr0_fnc_dialogue_createConversation;"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"[_unit,[""Don't shoot"",""No, please!"", ""AWWAAH""]] call pr0_fnc_dialogue_createSentence;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
