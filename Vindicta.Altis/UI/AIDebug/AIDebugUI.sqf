@@ -37,7 +37,9 @@
 			"_actionClass", \
 			"_subaction", \
 			"_subactionClass", \
-			"_subactionState" \
+			"_subactionState", \
+			"_extraAIVariables", \
+			"_extraSubactionVariables" \
 		]
 
 CLASS("AIDebugUI", "")
@@ -606,6 +608,17 @@ CLASS("AIDebugPanel", "")
 		pr _id = 0;
 		#define _INC _id = _id + 1;
 
+		// AI object and its variables
+		_tree tvSetText [[_id], format ["AI: %1", _ai]];
+		pr _count = _tree tvCount [_id];		// Clear prev variables
+		for "_j" from 0 to (_count - 1) do { _tree tvDelete [_id, 0]; };
+		{	// Add new variables
+			_x params ["_varName", "_varValue"]; 
+			_tree tvAdd [[_id], format ["%1: %2", _varName, _varValue]];
+		} forEach _extraAIVariables;
+		_INC
+		
+
 		// World state
 		_tree tvSetText [[_id], "World State: ..."];
 		if (_agentClass != "Unit") then {				// Units have no world state currently
@@ -658,8 +671,16 @@ CLASS("AIDebugPanel", "")
 		_tree tvSetText [[_id], format ["Action: %1", _action]]; _INC
 		_tree tvSetText [[_id], format ["Action Class: %1", _actionClass]]; _INC
 
-		// Subaction
-		_tree tvSetText [[_id], format ["Subaction: %1", _subaction]]; _INC
+		// Subaction and its variables
+		_tree tvSetText [[_id], format ["Subaction: %1", _subaction]];
+		pr _count = _tree tvCount [_id];
+		for "_j" from 0 to (_count - 1) do { _tree tvDelete [_id, 0]; };
+		{
+			_x params ["_varName", "_varValue"]; 
+			_tree tvAdd [[_id], format ["%1: %2", _varName, _varValue]];
+		} forEach _extraSubactionVariables;
+		_INC
+
 		_tree tvSetText [[_id], format ["Subaction Class: %1", _subactionClass]]; _INC
 		pr _stateText = if (_subactionState == -1) then {""} else {ACTION_STATE_TEXT_ARRAY select _subactionState};
 		_tree tvSetText [[_id], format ["Subaction State: %1", _stateText]]; _INC
@@ -670,6 +691,7 @@ CLASS("AIDebugPanel", "")
 		params [P_THISOBJECT];
 		pr _tree = T_CALLM0("getTreeView");
 		tvClear _tree;
+		_tree tvAdd [[], "AI:"];
 		_tree tvAdd [[], "World State:"];
 		_tree tvAdd [[], "Goal:"];
 		_tree tvAdd [[], "Goal Parameters:"];

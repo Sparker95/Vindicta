@@ -656,4 +656,18 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		[]
 	} ENDMETHOD;
 
+	// Debug
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	/* override */ METHOD("getDebugUIVariableNames") {
+		[
+			"hO",
+			"assignedVehicle",
+			"assignedVehicleRole",
+			"assignedCargoIndex",
+			"assignedTurretPath",
+			"mounted",
+			"sentryPos"
+		]
+	} ENDMETHOD;
+
 ENDCLASS;

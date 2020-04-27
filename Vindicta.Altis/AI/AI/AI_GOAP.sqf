@@ -1392,10 +1392,33 @@ CLASS("AI_GOAP", "AI")
 		_a pushBack _subActionClass;							// + Subaction class
 		_a pushBack _state;										// + Subaction state
 
-		_a pushBack T_GETV("currentAction");
+		// Additional AI-specific variables
+		pr _extraVarNames = T_CALLM0("getDebugUIVariableNames");
+		pr _extraAIVariables = [];
+		{
+			_extraAIVariables pushBack [_x, T_GETV(_x)]; 
+		} forEach _extraVarNames;
+		_a pushBack _extraAIVariables;							// + Extra AI variables
+
+		// Additional action-specific variables
+		pr _extraSubactionVarNames = [];
+		pr _extraSubactionVariables = [];
+		if (!IS_NULL_OBJECT(_subAction)) then {
+			_extraSubactionVarNames = CALLM0(_subAction, "getDebugUIVariableNames");
+			{
+				_extraSubactionVariables pushBack [_x, GETV(_subAction, _x)];
+			} forEach _extraSubactionVarNames;
+		};
+		_a pushBack _extraSubactionVariables;						// + Extra Subaction variables
 
 		// Return
 		_a
+	} ENDMETHOD;
+
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	// Override to show debug data in debug UI for specific class
+	/* virtual */ METHOD("getDebugUIVariableNames") {
+		[]
 	} ENDMETHOD;
 
 	STATIC_METHOD("getObjectDebugUIData") {
