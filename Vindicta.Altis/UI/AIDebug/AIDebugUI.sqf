@@ -177,12 +177,23 @@ CLASS("AIDebugUI", "")
 		params [P_THISOBJECT];
 
 		pr _selPrev = T_GETV("curatorSelected");
+		pr _unitsPrev = _selPrev#0;
+		pr _groupsPrev = _selPrev#1;
 		pr _selNew = CuratorSelected;
 		pr _units = _selNew#0;
 		pr _groups = _selNew#1;
 		pr _selChanged = !(_selPrev isEqualTo _selNew);
 		pr _requestGroupAndUnit = false;
 		T_SETV("curatorSelected", _selNew);
+
+		// Erase panels if we have deselected everything
+		if ((count _unitsPrev != 0) && (count _units == 0) ||
+			(count _groupsPrev != 0) && (count _groups == 0)) then {
+			{
+				pr _panel = T_GETV(_x);
+				CALLM0(_panel, "clearData");
+			} forEach ["panelUnit", "panelGroup", "panelGarrison"];
+		};
 
 		// Request group and unit data if needed
 		if (time - T_GETV("timeLastGroupRequest") > INTERVAL_GROUP_REQUEST || _selChanged) then {
@@ -196,6 +207,12 @@ CLASS("AIDebugUI", "")
 			} forEach _units;
 
 			// Request group AI data for all selected group
+			pr _groupsRequest = _groups;
+			if (count _groups == 0) then {				// If no groups are selected
+				if (count _units != 0) then {			// Then we request data from group of first selected unit
+					_groupsRequest = [group (_units#0)];
+				};
+			};
 			{
 				//pr _group = if(count _groups == 1) then {_groups#0} else {group (_units#0)}; // Selected group or group of first unit
 				pr _group = _x;
@@ -203,10 +220,8 @@ CLASS("AIDebugUI", "")
 				OOP_INFO_1("Request group data: %1", _group);
 				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
 				OOP_INFO_1("Requested group data: %1", _group);
-			} forEach _groups;
-			if ((count _groups == 0 && count _units > 0) || (count _groups == 1)) then {
-				
-			};
+			} forEach _groupsRequest;
+
 			T_SETV("timeLastGroupRequest", time);
 		};
 
@@ -564,6 +579,8 @@ CLASS("AIDebugPanel", "")
 	METHOD("clearData") {
 		params [P_THISOBJECT];
 		
+		T_SETV("ai", NULL_OBJECT);
+
 		pr _edit = T_CALLM0("getEditAI");
 		_edit ctrlSetText "";
 
