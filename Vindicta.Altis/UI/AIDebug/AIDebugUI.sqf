@@ -18,6 +18,28 @@
 #define INTERVAL_GROUP_REQUEST 1
 #define INTERVAL_GARRISON_REQUEST 3
 
+// Variable name for storing received data on units
+#define AI_DEBUG_DATA_VAR_NAME "AIDebugData"
+
+// Time when we received update on this unit last time
+#define AI_DEBUG_DATA_LAST_RX_TIME_NAME "AIDebugDataLastUpdate"
+
+// Structure of received debug message
+#define DEBUG_DATA_PARAMS [ \
+			"_armaAgent", \
+			"_agent", \
+			"_agentClass", \
+			"_ai", \
+			"_worldState", \
+			"_goal", \
+			"_goalParameters", \
+			"_action", \
+			"_actionClass", \
+			"_subaction", \
+			"_subactionClass", \
+			"_subactionState" \
+		]
+
 CLASS("AIDebugUI", "")
 
 	STATIC_VARIABLE("initialized");
@@ -166,19 +188,24 @@ CLASS("AIDebugUI", "")
 		if (time - T_GETV("timeLastGroupRequest") > INTERVAL_GROUP_REQUEST || _selChanged) then {
 
 			// Request unit AI data if some units are selected
-			if (count _units > 0) then {
-				pr _args = [clientOwner, 0, _units#0];
-				OOP_INFO_1("Request unit data: %1", _units#0);
+			// Request data for all selected units - we want to draw markers on all of them
+			{
+				pr _args = [clientOwner, 0, _x];
+				OOP_INFO_1("Request unit data: %1", _x);
 				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
-			};
+			} forEach _units;
 
-			// Request group AI data if only one group is selected
-			if ((count _groups == 0 && count _units > 0) || (count _groups == 1)) then {
-				pr _group = if(count _groups == 1) then {_groups#0} else {group (_units#0)}; // Selected group or group of first unit
+			// Request group AI data for all selected group
+			{
+				//pr _group = if(count _groups == 1) then {_groups#0} else {group (_units#0)}; // Selected group or group of first unit
+				pr _group = _x;
 				pr _args = [clientOwner, 1, _group];
 				OOP_INFO_1("Request group data: %1", _group);
 				REMOTE_EXEC_CALL_STATIC_METHOD("AI_GOAP", "requestDebugUIData", _args, 2, false);
 				OOP_INFO_1("Requested group data: %1", _group);
+			} forEach _groups;
+			if ((count _groups == 0 && count _units > 0) || (count _groups == 1)) then {
+				
 			};
 			T_SETV("timeLastGroupRequest", time);
 		};
@@ -213,6 +240,64 @@ CLASS("AIDebugUI", "")
 		params [P_THISOBJECT];
 
 		T_CALLM0("update");
+
+		// Draw markers
+		pr _sel = T_GETV("curatorSelected");
+		pr _units = _sel#0;
+		pr _groups = _sel#1;
+
+		{ // forEach _units;
+			pr _data = _x getVariable AI_DEBUG_DATA_VAR_NAME;
+			pr _text = "No AI";
+
+			// If AI data for this unit/group exists
+			if (!isNil "_data") then {
+				_goal = _data#5;
+				pr _lastUpdateTime = _x getVariable AI_DEBUG_DATA_LAST_RX_TIME_NAME;
+				//OOP_INFO_1("Last update time: %1", _lastUpdateTime);
+				_text = "No Goal";
+				// If this AI has a goal
+				if (_goal != "") then {
+					if (_x isEqualType objNull) then {
+						_text = _goal select [8, 32]; // We want to remove "GoalUnit" at string start
+					} else {
+						_text = _goal select [9, 32]; // Remove "GoalGroup"
+					};
+				};
+
+				// If we haven't received updates on this unit for some time, display a warning
+				//OOP_INFO_1("Delta time: %1", time - _lastUpdateTime);
+				if ((time - _lastUpdateTime) > (INTERVAL_GROUP_REQUEST+2)) then {
+					_text = _text + " OUTDATED";
+				};
+			};
+			
+			// Draw marker
+			pr _texture = "";
+			pr _posAGL = [];
+			if (_x isEqualType objNull) then {
+				// Unit
+				_posAGL = _x modelToWorldVisual [0, 0, 2];
+				_texture = "\A3\ui_f\data\map\markers\handdrawn\unknown_CA.paa";
+			} else {
+				// Group
+				_posAGL = (leader _x) modelToWorldVisual [0, 0, 5];	// Draw marker at leaader pos if it's a group
+				_texture = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+			};
+			drawIcon3D [_texture, //texture,
+						[1, 1, 1, 1], //color, 
+						_posAGL,
+						1.0, //width,
+						1.0, //height,
+						0, //angle,
+						_text, // text
+						true, //shadow - outline
+						0.05]; //textSize,
+						//font,
+						//textAlign,
+						//drawSideArrows];
+		} forEach (_units + _groups);
+
 	} ENDMETHOD;
 
 	// Not used any more
@@ -363,11 +448,25 @@ CLASS("AIDebugUI", "")
 			pr _panel = NULL_OBJECT;
 
 			// Is it a unit?
-			if (_armaAgent isEqualType objNull && {_armaAgent in _units} && {count _units == 1}) then {
-				_panel = T_GETV("panelUnit");
+			if (_armaAgent isEqualType objNull && {_armaAgent in _units}) then {
+
+				// Store received data on this unit
+				_armaAgent setVariable [AI_DEBUG_DATA_VAR_NAME, _data];
+				_armaAgent setVariable [AI_DEBUG_DATA_LAST_RX_TIME_NAME, time];
+
+				if (count _units == 1) then {
+					_panel = T_GETV("panelUnit");
+				};
 			};
-			if (_armaAgent isEqualType grpNull && {count _groups <= 1}) then {
-				_panel = T_GETV("panelGroup");
+			if (_armaAgent isEqualType grpNull) then {
+
+				// Store received data on this group
+				_armaAgent setVariable [AI_DEBUG_DATA_VAR_NAME, _data];
+				_armaAgent setVariable [AI_DEBUG_DATA_LAST_RX_TIME_NAME, time];
+
+				if (count _groups <= 1) then {
+					_panel = T_GETV("panelGroup");
+				};
 			};
 			if (_armaAgent isEqualType "") then {
 				_panel = T_GETV("panelGarrison");
@@ -426,7 +525,7 @@ CLASS("AIDebugPanel", "")
 		}];
 
 		// Reset tree veiw - it must have some data
-		T_CALLM0("resetData");
+		T_CALLM0("resetTreeView");
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -468,8 +567,7 @@ CLASS("AIDebugPanel", "")
 		pr _edit = T_CALLM0("getEditAI");
 		_edit ctrlSetText "";
 
-		pr _tree = T_CALLM0("getTreeView");
-		tvClear _tree;
+		T_CALLM0("resetTreeView");
 
 	} ENDMETHOD;
 
@@ -480,20 +578,7 @@ CLASS("AIDebugPanel", "")
 		pr _edit = T_CALLM0("getEditAI");
 		pr _tree = T_CALLM0("getTreeView");
 
-		_data params [
-			"_armaAgent",
-			"_agent",
-			"_agentClass",
-			"_ai",
-			"_worldState",
-			"_goal",
-			"_goalParameters",
-			"_action",
-			"_actionClass",
-			"_subaction",
-			"_subactionClass",
-			"_subactionState"
-		];
+		_data params DEBUG_DATA_PARAMS;
 
 		
 		// Set variables ...
@@ -564,9 +649,10 @@ CLASS("AIDebugPanel", "")
 
 	} ENDMETHOD;
 
-	METHOD("resetData") {
+	METHOD("resetTreeView") {
 		params [P_THISOBJECT];
 		pr _tree = T_CALLM0("getTreeView");
+		tvClear _tree;
 		_tree tvAdd [[], "World State:"];
 		_tree tvAdd [[], "Goal:"];
 		_tree tvAdd [[], "Goal Parameters:"];
