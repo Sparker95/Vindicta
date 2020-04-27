@@ -154,10 +154,14 @@ _cargo set [T_CARGO_box_big,	["LIB_WeaponsBox_Big_SU"]];
 
 //==== Groups ====
 _group = +(tDefault select T_GROUP);
-
-_group set [T_GROUP_SIZE-1, nil];
-
-_group set [T_GROUP_inf_AA_team,			[[[T_INF, T_INF_TL], 		[T_INF, T_INF_AT], 				[T_INF, T_INF_AT], 				[T_INF, T_INF_ammo]]]];
+_group set [T_GROUP_inf_AA_team, [
+	[
+		T_INF_TL,
+		T_INF_AT,
+		T_INF_AT,
+		T_INF_ammo
+	] apply { [T_INF, _x] }
+]];
 
 //==== Vehicle Descriptions ==== (Broken waiting for fix)
 //(T_NAMES select T_VEH) set [T_VEH_car_unarmed, "Unarmed Car"]; //					= 1 Car like a Prowler or UAZ

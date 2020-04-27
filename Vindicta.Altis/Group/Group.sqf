@@ -248,8 +248,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 	METHOD("removeUnit") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+		T_CALLM1("removeUnits", [_unit]);
+	} ENDMETHOD;
 
-		OOP_INFO_1("REMOVE UNIT: %1", _unit);
+	METHOD("removeUnits") {
+		params [P_THISOBJECT, P_ARRAY("_unitsToRemove")];
+
+		OOP_INFO_1("REMOVE UNITs: %1", _unitsToRemove);
 
 		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
@@ -257,22 +262,25 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Notify group AI of this unit
 		if (T_CALLM0("isSpawned")) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
-			if (_AI != "") then {
-				CALLM3(_AI, "postMethodSync", "handleUnitsRemoved", [[_unit]], true);
+			if (_AI != NULL_OBJECT) then {
+				CALLM3(_AI, "postMethodSync", "handleUnitsRemoved", [_unitsToRemove], true);
 			};
 		};
 
 		// Remove the unit from this group
-		pr _index = _units find _unit;
-		if (_index == -1) then {
-			OOP_ERROR_1("remoteUnit: Unit not found in group: %1", _unit);
-			OOP_ERROR_1("  group units: %1", _units);
-		};
-		_units deleteAt _index;
-		CALLM1(_unit, "setGroup", "");
+		{
+			pr _unit = _x;
+			pr _index = _units find _unit;
+			if (_index == NOT_FOUND) then {
+				OOP_ERROR_1("remoteUnit: Unit not found in group: %1", _unit);
+				OOP_ERROR_1("  group units: %1", _units);
+			};
+			_units deleteAt _index;
+			CALLM1(_unit, "setGroup", "");
+		} forEach _unitsToRemove;
 
 		// Select a new leader if the removed unit is the current leader
-		if ((_data select GROUP_DATA_ID_LEADER) == _unit) then {
+		if ((_data select GROUP_DATA_ID_LEADER) in _unitsToRemove) then {
 			T_CALLM0("_selectNextLeader");
 		};
 	} ENDMETHOD;

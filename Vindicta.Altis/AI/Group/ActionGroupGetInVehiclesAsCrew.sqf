@@ -215,6 +215,12 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	METHOD("handleUnitsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
+		
+		// Remove the specified units from the active units list, their goals have already been removed by the AI
+		private _activeUnits = T_GETV("activeUnits");
+		{
+			_activeUnits deleteAt (_activeUnits find _x);
+		} forEach _units;
 	} ENDMETHOD;
 
 	METHOD("handleUnitsAdded") {

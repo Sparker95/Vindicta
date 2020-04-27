@@ -403,16 +403,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
-						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_aimingAccuracy];	// Aiming and precision
-						_objectHandle setSkill ["aimingShake", vin_aiskill_aimingShake];
-						_objectHandle setSkill ["aimingSpeed", vin_aiskill_aimingSpeed];
+						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_global * vin_aiskill_aimingAccuracy];	// Aiming and precision
+						_objectHandle setSkill ["aimingShake", vin_aiskill_global * vin_aiskill_aimingShake];
+						_objectHandle setSkill ["aimingSpeed", vin_aiskill_global * vin_aiskill_aimingSpeed];
 						_objectHandle setSkill ["commanding", 1];		// Everything else
 						_objectHandle setSkill ["courage", 0.5];
 						//_objectHandle setSkill ["endurance", 0.8];
 						_objectHandle setSkill ["general", 1];
 						_objectHandle setSkill ["reloadSpeed", 0.5];
-						_objectHandle setSkill ["spotDistance", vin_aiskill_spotDistance];
-						_objectHandle setSkill ["spotTime", vin_aiskill_spotTime];
+						_objectHandle setSkill ["spotDistance", vin_aiskill_global * vin_aiskill_spotDistance];
+						_objectHandle setSkill ["spotTime", vin_aiskill_global * vin_aiskill_spotTime];
 
 						// make it impossible to ace interact with this unit, may need better solution in the future
 						if (side _objectHandle != west) then {
@@ -994,9 +994,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
-			
 			// = = = NOT INFANTRY = = =
-			
 
 			// Clear cargo
 			if(_hO in allPlayers) exitWith {
@@ -1075,13 +1073,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			} else {
 
 				// = = = = MILITARY CARGO AND VEHICLES = = = =
+				private _lootScaling = MAP_LINEAR_SET_POINT(1 - vin_diff_global, 0.2, 1, 3);
 
 				pr _nInf = CALLM0(_gar, "countInfantryUnits");
 				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
 				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 				// Some number which scales the amount of items in this box
-				pr _nGuns = 1.3 * _nInf / ((_nVeh + _nCargo) max 1);
+				pr _nGuns = 1.3 * _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
 
 				// Modifier for cargo boxes
 				if (_catID == T_CARGO) then {
@@ -1134,7 +1133,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _ACREclassNames = t_ACRERadios;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, _itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _ACREclassNames;
 				};
 
@@ -1144,7 +1143,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARclassNames = t_TFARRadios_0912;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _TFARclassNames;
 				};
 
@@ -1154,19 +1153,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARBetaclassNames = t_TFARRadios_0100;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _TFARBetaclassNames;
 				};
 
 				// Add vests
-				pr _nVests = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
+				pr _nVests = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
 					_hO addItemCargoGlobal [selectRandom _vests, 1];
 				};
 
 				// Add backpacks
-				pr _nBackpacks = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
+				pr _nBackpacks = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _backpacks = _tInv#T_INV_backpacks;
 				for "_i" from 0 to _nBackpacks do {
 					_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
@@ -1203,7 +1202,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
-							_hO addItemCargoGlobal [_className, round ((random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
+							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 						} forEach t_ACEMedicalItems_cargo;
 					};
 
@@ -1216,7 +1215,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						{
 							_x params ["_itemName", "_itemCount"];
 							if(random 10 < 7) then {
-								_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+								_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 							};
 						} forEach _classNames;
 					};
@@ -1247,7 +1246,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
-							_hO addItemCargoGlobal [_className, round ((random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount]))];
+							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 						} forEach t_ACEMedicalItems_vehicles;
 					};
 					// = = = =

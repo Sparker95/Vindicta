@@ -13,7 +13,7 @@ Returns: nil
 
 #define pr private
 
-params [P_THISOBJECT, P_BOOL("_global")];
+params [P_THISOBJECT, P_BOOL("_global"), P_BOOL("_instantAction")];
 
 OOP_INFO_0("SPAWN");
 
@@ -123,6 +123,6 @@ if (T_GETV("active")) then {
 
 // Call AI "process" method to accelerate decision taking
 // Pass the _accelerate flag to update sensors sooner, and allow instant completion of some actions
-CALLM1(_AI, "process", true);
+CALLM1(_AI, "process", _instantAction);
 
 0

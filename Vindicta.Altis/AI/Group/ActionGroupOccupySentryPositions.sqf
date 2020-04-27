@@ -29,7 +29,7 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 			
 			if (count _sentryPos > 0) then {
 				pr _parameters = [
-					["position", _sentryPos],
+					[TAG_POS, _sentryPos],
 					[TAG_INSTANT, _instant]
 				];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);

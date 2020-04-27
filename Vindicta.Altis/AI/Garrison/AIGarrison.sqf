@@ -361,7 +361,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _action = T_GETV("currentAction");
-		if (_action != "") then {
+		if (_action != NULL_OBJECT) then {
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleGroupsAdded", _groups);
 		};
@@ -386,18 +386,12 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		// Delete goals that have been given by this object
 		{
-			pr _groupAI = CALLM0(_x, "getAI");
-			if (!isNil "_groupAI") then {
-				if (_groupAI != "") then {
-					pr _args = ["", _thisObject]; // Any goal from this object
-					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-				};
-			};
-		} forEach _groups;
+			CALLM0(_x, "resetRecursive");
+		} forEach (_groups apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
 		
 		// Notify the current action
 		pr _action = T_GETV("currentAction");
-		if (_action != "") then {
+		if (_action != NULL_OBJECT) then {
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleGroupsRemoved", _groups);
 		};
@@ -421,19 +415,15 @@ CLASS("AIGarrison", "AI_GOAP")
 	*/
 	METHOD("handleUnitsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
-		
+
 		// Delete goals given by this object
 		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			if (_unitAI != "") then {
-				pr _args = ["", _thisObject]; // Any goal from this object
-				CALLM2(_unitAI, "postMethodAsync", "deleteExternalGoal", _args);
-			};
-		} forEach _units;
-		
+			CALLM0(_x, "resetRecursive");
+		} forEach (_units apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
+
 		// Notify the current action
 		pr _action = T_GETV("currentAction");
-		if (_action != "") then {
+		if (_action != NULL_OBJECT) then {
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleUnitsRemoved", _units);
 		};
@@ -456,7 +446,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		// Notify the current action
 		pr _action = T_GETV("currentAction");
-		if (_action != "") then {
+		if (_action != NULL_OBJECT) then {
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleUnitsAdded", _units);
 		};

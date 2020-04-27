@@ -1288,7 +1288,27 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define CLAMP_POSITIVE(val_) MAXIMUM(val_, 0)
 // Clamp val_ between 0 and -inf
 #define CLAMP_NEGATIVE(val_) MINIMUM(val_, 0)
+// Map v from (a, b) to (x, y)
+#ifndef _SQF_VM
+#define MAP_TO_RANGE(v, a, b, s, t) (linearConversion [a, b, v, s, t, false])
+#else
+#define MAP_TO_RANGE(v, a, b, s, t) ((s) + ((v) - (a)) * ((t) - (s)) / ((b) - (a)))
+#endif
 
+// Functions to help with applying difficulty to values
+// h is difficulty setting
+// Interpolate linearly between s and t by h (0 <= h <= 1)
+#define MAP_LINEAR(h, s, t) MAP_TO_RANGE(h, 0, 1, s, t)
+// Interpolates between s and t, with m as a fixed point that always maps to h = 0.5. 
+// i.e. linear between s and m for h <= 0.5 and m and t for h > 0.5
+#define MAP_LINEAR_SET_POINT(h, s, m, t) (if ((h) <= 0.5) then { MAP_TO_RANGE(h, 0, 0.5, s, m) } else { MAP_TO_RANGE(h, 0.5, 1, m, t) } )
+// Something like a generalized gamma correction function
+// See https://www.desmos.com/calculator/knchi5fjrz for example of how this function works (k = 0.5 here)
+#define MAP_GAMMA(h, x) ((x) ^ ((1 - (h) * 0.5 + 0.25) ^ 6))
+
+#ifdef _SQF_VM
+#define vin_diff_global 0.5
+#endif
 
 // ----------------------------------------------------------------------
 // |                       L O C A L I Z A T I O N                      |

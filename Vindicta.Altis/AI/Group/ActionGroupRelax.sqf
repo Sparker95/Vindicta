@@ -145,6 +145,17 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		};
 	} ENDMETHOD;
 
+	/* public virtual */ METHOD("handleUnitsRemoved") {
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		T_CALLCM1("ActionGroup", "handleUnitsRemoved", _units);
+		// Remove the specified units from the active units list, their goals have already been removed by the AI
+		private _activeUnits = T_GETV("activeUnits");
+		{
+			private _unitBeingRemoved = _x;
+			_activeUnits deleteAt (_activeUnits findIf { _x#0 == _unitBeingRemoved });
+		} forEach _units;
+	} ENDMETHOD;
+
 	METHOD("clearCompleteGoals") {
 		params [P_THISOBJECT];
 		private _activeUnits = T_GETV("activeUnits");

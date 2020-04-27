@@ -123,11 +123,6 @@
 #define EFF_FOOT_PATROL_EFF			[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		0]
 #define EFF_MOUNTED_PATROL_EFF		[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		0]
 
-// Frequency of reinforcements, etc
-
-// How ofter commander will consider to import external reinforcements
-#define CMDR_EXT_REINF_INTERVAL_MINUTES 60
-
 // Max amount of simultaneous actions
 #define CMDR_MAX_TAKE_OUTPOST_ACTIONS 3
 #define CMDR_MAX_REINFORCE_ACTIONS 3
@@ -178,7 +173,7 @@
 // Maps activity at area to a priority multiplier
 // https://www.desmos.com/calculator/sjoagy4rro
 // This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
-#define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
+#define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * MAP_LINEAR_SET_POINT(vin_diff_global, 0.2, 1, 3) * (rawActivity) + 1))
 
 // https://www.desmos.com/calculator/yxhaqijv19
-#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.2 * (1 - sqrt(0.9 * (campaignProgress))) * (rawDamage)) - 0.1)
+#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.2 * (1 - sqrt(0.9 * MAP_GAMMA(vin_diff_global, campaignProgress))) * (rawDamage)) - 0.1)

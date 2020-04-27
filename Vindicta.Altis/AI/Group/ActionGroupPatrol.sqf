@@ -15,7 +15,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 
 		// Route can be optionally passed or not
 		// We add the target position to the end
-		private _route = CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
+		private _route = +CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
 		T_SETV("route", _route);
 	} ENDMETHOD;
 
