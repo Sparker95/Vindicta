@@ -36,3 +36,6 @@ gDebugGroupTypeNames = [
 
 // Array with all group types
 #define GROUP_TYPE_ALL [0, 1, 2]
+
+// String names of public variables set on units
+#define GROUP_VAR_NAME_STR "__u"

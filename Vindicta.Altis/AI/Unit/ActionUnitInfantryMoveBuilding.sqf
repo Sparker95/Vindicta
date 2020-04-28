@@ -44,6 +44,14 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 			};
 		};
 	} ENDMETHOD;
+
+	// Debug
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	// Override to show debug data in debug UI for specific class
+	/* override */ METHOD("getDebugUIVariableNames") {
+		["building", "posID"]
+	} ENDMETHOD;
+
 ENDCLASS;
 
 /*

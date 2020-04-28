@@ -299,4 +299,15 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		gMessageLoopGroupAI
 	} ENDMETHOD;
 
+	// Debug
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	/* override */ METHOD("getDebugUIVariableNames") {
+		[
+			"cargo",
+			"assignedDriver",
+			"assignedCargo",
+			"assignedTurrets"
+		]
+	} ENDMETHOD;
+
 ENDCLASS;

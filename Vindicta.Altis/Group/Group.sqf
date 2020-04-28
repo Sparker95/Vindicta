@@ -297,6 +297,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				_groupHandle = createGroup [_data#GROUP_DATA_ID_SIDE, false]; //side, delete when empty
 				_groupHandle allowFleeing 0; // Never flee
 				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+
+				// Initialize variables
+				_groupHandle setVariable [GROUP_VAR_NAME_STR, _thisObject, true];	// Public variable!`
 			};
 		};
 		_groupHandle
@@ -464,6 +467,21 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		private _garrison = T_CALLM0("getGarrison");
 		CALLM0(_garrison, "getPos")
+	} ENDMETHOD;
+
+	/*
+	Method: (static)getGroupFromGroupHandle
+	Returns the <Group> object the given group handle is associated with, or "" if this groupHandle is not associated with <Group>
+
+	Parameters: _groupHandle
+
+	_groupHandle - the object handle of a unit.
+
+	Returns: <Group> or ""
+	*/
+	STATIC_METHOD("getGroupFromGroupHandle") {
+		params [P_THISCLASS, P_GROUP("_groupHandle") ];
+		_groupHandle getVariable [GROUP_VAR_NAME_STR, ""]
 	} ENDMETHOD;
 	
 	/*

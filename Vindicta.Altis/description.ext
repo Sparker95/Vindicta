@@ -119,6 +119,7 @@ class CfgFunctions {
 #include "UI\RecruitDialog\RecruitDialog.h"
 #include "UI\LoadingScreen\LoadingScreen.h"
 #include "UI\Notification\Notification.h"
+#include "UI\AIDebug\AIDebug.h"
 
 // Just include plain control classes for the intel panel
 #include "UI\ClientMapUI\Controls\IntelPanel.h"
