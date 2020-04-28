@@ -683,20 +683,31 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
 			pr _ehid = [_hO, "Killed", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_KILLED_STR, nil];
-				_unit removeEventHandler ["Killed", _thisID];
-				_this call Unit_fnc_EH_Killed;
+				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
+					systemChat format ["%1 KILLED %2", _unit, _thisID];
+					_unit setVariable [UNIT_EH_KILLED_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					// _unit removeEventHandler ["Killed", _thisID];
+					_this call Unit_fnc_EH_Killed;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
+			if(_hO in allPlayers) then {
+				systemChat format ["%1 Added KILLED EH %2", _hO, _ehid];
+			};
 		};
 
 		// Respawned
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
-				_unit removeEventHandler ["Respawn", _thisID];
-				_this call Unit_fnc_EH_Respawn;
+				if(!isNil {_unit getVariable UNIT_EH_RESPAWN_STR}) then {
+					//systemChat format ["%1 RESPAWNED", _unit];
+					_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					//_unit removeEventHandler ["Respawn", _thisID];
+					_this call Unit_fnc_EH_Respawn;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
 		};

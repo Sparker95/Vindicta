@@ -699,11 +699,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(!IS_MULTIPLAYER) then {
 			// We need to catch player death so we can "respawn" them fakely
 			OOP_INFO_1("Added killed EH to %1", _newUnit);
-			[_newUnit, "Killed", {
-				params ["_unit"];
-				_unit removeEventHandler ["Killed", _thisID];
-				CALLM1(gGameMode, "singlePlayerKilled", _unit);
-			}] call CBA_fnc_addBISEventHandler;
+			if(isNil {_newUnit getVariable "_player_respawn_eh"}) then {
+				private _eh = [_newUnit, "Killed", {
+					params ["_unit"];
+					CALLM1(gGameMode, "singlePlayerKilled", _unit);
+				}] call CBA_fnc_addBISEventHandler;
+				_newUnit setVariable ["_player_respawn_eh", _eh];
+			};
 		};
 
 		// Create a suspiciousness monitor for player
