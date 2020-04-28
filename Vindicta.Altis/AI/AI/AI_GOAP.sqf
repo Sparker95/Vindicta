@@ -85,6 +85,11 @@ FIX_LINE_NUMBERS()
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 
+// Array of AIs which are requested to halt
+if (isNil "g_AI_GOAP_haltArray") then {
+	g_AI_GOAP_haltArray = [];
+};
+
 CLASS("AI_GOAP", "AI")
 
 	/* Variable: currentAction */
@@ -140,6 +145,12 @@ CLASS("AI_GOAP", "AI")
 	METHOD("process") {
 		params [P_THISOBJECT, P_BOOL("_spawning")];
 		
+		// Halt here if requested for debug
+		if (_thisObject in g_AI_GOAP_haltArray) then {
+			halt;
+			g_AI_GOAP_haltArray deleteAt (g_AI_GOAP_haltArray find _thisObject);
+		};
+
 		//OOP_INFO_0("PROCESS");
 		
 		pr _agent = T_GETV("agent");
@@ -1331,6 +1342,171 @@ CLASS("AI_GOAP", "AI")
 		T_SETV("currentGoal", "");
 
 		true
+	} ENDMETHOD;
+
+	// - - - - - - - DEBUG UI - - - - - - - -
+	// Returns array for debug UI
+	METHOD("getDebugUIData") {
+		params [P_THISOBJECT];
+
+		pr _a = [];												// Each + is data pushed to array
+
+		// This agent info
+		pr _agent = T_GETV("agent");
+		pr _agentClass = GET_OBJECT_CLASS(_agent);
+		switch (_agentClass) do {								// + Arma agent (object handle, group handle) or Garrison)
+			case "Unit": {	_a pushBack CALLM0(_agent, "getObjectHandle"); };
+			case "Group": {	_a pushBack CALLM0(_agent, "getGroupHandle"); };
+			case "Garrison": { _a pushBack _agent; };
+			default { _a pushBack "ERROR"; };
+		};
+		_a pushBack _agent;										// + OOP agent
+		_a pushBack GET_OBJECT_CLASS(_agent);					// + OOP agent class name
+
+		// This object info
+		_a pushBack _thisObject;								// + This Object
+
+		// World state
+		pr _ws = T_GETV("worldState");
+		if (isNil "_ws") then {
+			_a pushBack [[], []];
+		} else {
+			_a pushBack _ws;									// + World State
+		};
+
+		// Goal info
+		_a pushBack T_GETV("currentGoal");						// + Current goal
+		_a pushBack T_GETV("currentGoalParameters");			// + Goal parameters
+
+		// Action info
+		pr _action = T_GETV("currentAction");
+		pr _subaction = if(_action != NULL_OBJECT) then { CALLM0(_action, "getFrontSubaction") } else { NULL_OBJECT };
+		pr _state = if(_subaction != NULL_OBJECT) then { GETV(_subaction, "state") } else { -1 };
+		pr _actionClass = if(_action != NULL_OBJECT) then { GET_OBJECT_CLASS(_action) } else { "" };
+		pr _subActionClass = if(_subaction != NULL_OBJECT) then { GET_OBJECT_CLASS(_subaction) } else { "" };
+		[_goal, _actionClass, _subActionClass, _state];
+
+		_a pushBack _action;									// + Action
+		_a pushBack _actionClass;								// + Action class
+		_a pushBack _subAction;									// + Subaction
+		_a pushBack _subActionClass;							// + Subaction class
+		_a pushBack _state;										// + Subaction state
+
+		// Additional AI-specific variables
+		pr _extraVarNames = T_CALLM0("getDebugUIVariableNames");
+		pr _extraAIVariables = [];
+		{
+			_extraAIVariables pushBack [_x, T_GETV(_x)]; 
+		} forEach _extraVarNames;
+		_a pushBack _extraAIVariables;							// + Extra AI variables
+
+		// Additional action-specific variables
+		pr _extraSubactionVarNames = [];
+		pr _extraSubactionVariables = [];
+		if (!IS_NULL_OBJECT(_subAction)) then {
+			_extraSubactionVarNames = CALLM0(_subAction, "getDebugUIVariableNames");
+			{
+				_extraSubactionVariables pushBack [_x, GETV(_subAction, _x)];
+			} forEach _extraSubactionVarNames;
+		};
+		_a pushBack _extraSubactionVariables;						// + Extra Subaction variables
+
+		// Return
+		_a
+	} ENDMETHOD;
+
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	// Override to show debug data in debug UI for specific class
+	/* virtual */ METHOD("getDebugUIVariableNames") {
+		[]
+	} ENDMETHOD;
+
+	STATIC_METHOD("getObjectDebugUIData") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
+
+		if (IS_NULL_OBJECT(_unit)) exitWith {
+			[_object]	// Data is wrong, take back your object handle!
+		};
+
+		pr _ai = CALLM0(_unit, "getAI");
+		if (IS_NULL_OBJECT(_ai)) exitWith {
+			[_object]	// Data is wrong, take back your object handle!
+		};
+
+		pr _a = CALLM0(_ai, "getDebugUIData");
+		_a // Return
+	} ENDMETHOD;
+
+	STATIC_METHOD("getGroupDebugUIData") {
+		params [P_THISCLASS, P_GROUP("_group")];
+
+		pr _groupFound = CALLSM1("Group", "getGroupFromGroupHandle", _group);
+
+		if (IS_NULL_OBJECT(_groupFound)) exitWith {
+			[_group]	// Data is wrong, take back your group handle!
+		};
+
+		pr _ai = CALLM0(_groupFound, "getAI");
+		if (IS_NULL_OBJECT(_ai)) exitWith {
+			[_group]	// Data is wrong, take back your group handle!
+		};
+
+		pr _a = CALLM0(_ai, "getDebugUIData");
+		_a // Return
+	} ENDMETHOD;
+
+	// Takes object as parameter, returns object's garrison's data
+	STATIC_METHOD("getGarrisonDebugUIDataFromObject") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
+
+		if (IS_NULL_OBJECT(_unit)) exitWith {
+			[_object]	// Data is wrong, take back your object handle!
+		};
+
+		pr _garrison = CALLM0(_unit, "getGarrison");
+
+		if (IS_NULL_OBJECT(_garrison)) exitWith {
+			[""]		// Unit has no garrison, not sure how it's possible
+		};
+
+		pr _ai = CALLM0(_garrison, "getAI");
+		pr _a = CALLM0(_ai, "getDebugUIData");
+		_a // Return
+	} ENDMETHOD;
+
+	// Remote-executed on server from client
+	STATIC_METHOD("requestDebugUIData") {
+		params [P_THISCLASS, P_NUMBER("_clientOwner"), P_NUMBER("_requestType"), P_DYNAMIC("_target")];
+
+		pr _data = switch (_requestType) do {
+			case 0: {	// Unit
+				CALLSM1("AI_GOAP", "getObjectDebugUIData", _target);
+			};
+			case 1: {	// Group
+				CALLSM1("AI_GOAP", "getGroupDebugUIData", _target);
+			};
+			case 2: {
+				CALLSM1("AI_GOAP", "getGarrisonDebugUIDataFromObject", _target);
+			};
+			default {[]}; // Error!
+		};
+
+		// Send data back to client
+		REMOTE_EXEC_CALL_STATIC_METHOD("AIDebugUI", "receiveData", [_data], _clientOwner, false);
+	} ENDMETHOD;
+
+	// Client has requested to halt this AI
+	STATIC_METHOD("requestHaltAI") {
+		params [P_THISCLASS, P_OOP_OBJECT("_ai")];
+		if (!IS_NULL_OBJECT(_ai)) then {
+			if (IS_OOP_OBJECT(_ai)) then{
+				g_AI_GOAP_haltArray pushBackUnique _ai;
+			};
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

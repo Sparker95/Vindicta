@@ -294,5 +294,14 @@ CLASS("AIGroup", "AI_GOAP")
 			CALLM1(_currentAction, "handleUnitsAdded", _units);
 		};
 	} ENDMETHOD;
+
+	// Debug
+
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	/* override */ METHOD("getDebugUIVariableNames") {
+		[
+			"suspTarget"
+		]
+	} ENDMETHOD;
 	
 ENDCLASS;

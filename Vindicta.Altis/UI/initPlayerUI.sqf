@@ -82,3 +82,6 @@ CALLM1(gClientMapUI, "respawnPanelEnable", true);
 
 // Center map
 mapAnimAdd [1, 0.1, [worldSize / 2, worldSize / 2, 0]];
+
+// Enable AI debug UI
+CALLSM0("AIDebugUI", "staticInit");

@@ -719,4 +719,19 @@ CLASS("AIGarrison", "AI_GOAP")
 		true
 	} ENDMETHOD;
 
+	// Debug
+
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	/* override */ METHOD("getDebugUIVariableNames") {
+		[
+			"buildingsWithTargets",
+			"assignedTargetsPos",
+			"assignedTargetsRadius",
+			"awareOfAssignedTargets",
+			"cmdrActionRecordSerial",
+			"alertness",
+			"wasSpawned"
+		]
+	} ENDMETHOD;
+
 ENDCLASS;
