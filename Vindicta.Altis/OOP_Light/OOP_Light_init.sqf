@@ -1268,6 +1268,22 @@ OOP_getSessionCounter = {
 	OOP_GVAR(sessionID)
 };
 
+// Creates a static string, needed for profiler to make static strings
+#ifndef _SQF_VM
+OOP_staticStringHashmap = [false] call CBA_fnc_createNamespace;
+#endif
+
+OOP_createStaticString = {
+	params ["_str"];
+	private _strFound = OOP_staticStringHashmap getVariable [_str, ""];
+	if (_strFound == "") then {
+		OOP_staticStringHashmap setVariable [_str, _str];
+		_str
+	} else {
+		_strFound
+	};
+};
+
 // Base class for intrusive ref counting.
 // Use the REF and UNREF macros with objects of classes 
 // derived from this one.

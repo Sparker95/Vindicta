@@ -473,7 +473,7 @@ CLASS("AICommander", "AI")
 
 			// Create intel from location, add it
 			pr _args = [_loc, _updateLevel, _accuracyRadius];
-			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+			pr _intel = T_CALLM("createIntelFromLocation", _args);
 			
 			//OOP_INFO_1("Created intel item from location: %1", _intel);
 			//[_intel] call OOP_dumpAllVariables;
@@ -520,7 +520,7 @@ CLASS("AICommander", "AI")
 
 	// Creates a LocationData array from Location
 	METHOD("createIntelFromLocation") {
-		params ["_thisClass", P_OOP_OBJECT("_loc"), P_NUMBER("_updateLevel"), P_NUMBER("_accuracyRadius")];
+		params ["_thisObject", P_OOP_OBJECT("_loc"), P_NUMBER("_updateLevel"), P_NUMBER("_accuracyRadius")];
 		
 		CALLM0(gMessageLoopMain, "lock");
 

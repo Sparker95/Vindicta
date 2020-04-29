@@ -275,7 +275,7 @@ CLASS("IntelLocation", "Intel")
 		T_SETV("mapMarker", _mrk);
 
 		// Set/update marker properties
-		CALLSM1("IntelLocation", "setLocationMarkerProperties", _thisObject);
+		T_CALLM1("setLocationMarkerProperties", _thisObject);
 
 		pr _loc = T_GETV("location");
 		pr _pos = T_GETV("pos");
@@ -300,7 +300,7 @@ CLASS("IntelLocation", "Intel")
 
 		OOP_INFO_2("Updating %1 from %2", _thisObject, _intelSrc);
 
-		CALLSM1("IntelLocation", "setLocationMarkerProperties", _intelSrc);
+		T_CALLM1("setLocationMarkerProperties", _intelSrc);
 
 		pr _loc = T_GETV("location");
 		pr _pos = T_GETV("pos");
@@ -329,8 +329,8 @@ CLASS("IntelLocation", "Intel")
 
 	} ENDMETHOD;
 
-	STATIC_METHOD("setLocationMarkerProperties") {
-		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
+	METHOD("setLocationMarkerProperties") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 
 		//diag_log format ["--- setLocationMarkerProperties: %1", _intel];
 		//[_intel] call oop_dumpAllVariables;

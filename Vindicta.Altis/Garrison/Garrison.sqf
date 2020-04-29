@@ -1773,7 +1773,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("deleteEmptyGroups") {
 		params [P_THISOBJECT];
 
-		ASSERT_THREAD(_thisObject);
+		//ASSERT_THREAD(_thisObject);
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
