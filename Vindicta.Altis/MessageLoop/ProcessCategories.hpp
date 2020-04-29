@@ -21,7 +21,11 @@
 
 // Only for unscheduled msg loop
 #define __PC_ID_OBJECT_COUNTER_REM 12
+#define __PC_ID_N_OBJECTS_PER_FRAME_MIN 13
+#define __PC_ID_N_OBJECTS_PER_FRAME_MAX 14
+#define __PC_ID_LAST_LOG_TIME 15
 
-#define __PC_NEW(tag, priority, minInterval, maxInterval) [tag, priority, -1, minInterval, maxInterval, 0, 1.1*maxInterval, 1.1*maxInterval, PROCESS_CATEGORY_TIME, [], PROCESS_CATEGORY_TIME, -1, 0]
+#define __PC_NEW(tag, priority, minInterval, maxInterval) [tag, priority, -1, minInterval, maxInterval, 0, 1.1*maxInterval, 1.1*maxInterval, PROCESS_CATEGORY_TIME, [], PROCESS_CATEGORY_TIME, -1, 0, 0, 100, PROCESS_CATEGORY_TIME]
 
-#define __PC_OBJECT_NEW(object) [object, PROCESS_CATEGORY_TIME]
+// Obj handle, timestamp, was processed before
+#define __PC_OBJECT_NEW(object) [object, PROCESS_CATEGORY_TIME, false]

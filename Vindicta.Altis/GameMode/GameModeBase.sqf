@@ -6,9 +6,7 @@
 #define TIMER_SERVICE_RESOLUTION 0.0
 
 // Debug flag, will limit generation or locations to a small area
-#ifndef RELEASE_BUILD
-//#define __SMALL_MAP
-#endif
+#define __SMALL_MAP
 FIX_LINE_NUMBERS()
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
@@ -393,7 +391,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Message loop for group AI
 			if (isNil "gMessageLoopGroupAI") then {
-				gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
+				private _args = ["Group AI", 128, 0, true]; // Unscheduled!
+				gMessageLoopGroupAI = NEW("MessageLoop", _args);
 				T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
 			};
 		};
@@ -441,7 +440,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 
 		if (!IS_NULL_OBJECT(T_GETV("messageLoopGroupAI"))) then {
-			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2 ARG 8]); // Tag, priority, min interval
+			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIGroup" ARG 1 ARG 0 ARG 4]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIInfantry" ARG 0.2 ARG 1 ARG 3]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIVehicle" ARG 10 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
 		};
 
 		if(!IS_NULL_OBJECT(T_GETV("messageLoopGameMode"))) then {
@@ -1201,7 +1202,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			#ifdef __SMALL_MAP
 			_locSectorPos params ["_posX", "_posY"];
-			if (_posX > 20000 && _posY > 16000) then {
+			if (_posX > 6000 && _posY > 8000) then {
 			#endif
 			FIX_LINE_NUMBERS()
 

@@ -164,6 +164,12 @@ CLASS("AI", "MessageReceiverEx")
 
 	METHOD("updateSensors") {
 		params [P_THISOBJECT, ["_forceUpdate", false]];
+
+		#ifdef ASP_ENABLE
+		private _className = GET_OBJECT_CLASS(_thisObject);
+		private __scopeUpdateSensors = createProfileScope ([format ["%1_updateSensors", _className]] call misc_fnc_createStaticString);
+		#endif
+
 		pr _sensors = T_GETV("sensors");
 		//OOP_INFO_1("Updating sensors: %1", _sensors);
 		{
@@ -177,6 +183,12 @@ CLASS("AI", "MessageReceiverEx")
 				if ((GAME_TIME > _timeNextUpdate) || _forceUpdate) then {
 					//OOP_INFO_0("  Calling UPDATE!");
 					//OOP_INFO_1("Updating sensor: %1", _sensor);
+
+					#ifdef ASP_ENABLE
+					private _className = GET_OBJECT_CLASS(_sensor);
+					private __scopeSensor = createProfileScope ([format ["%1_update", _className]] call misc_fnc_createStaticString);
+					#endif
+
 					CALLM0(_sensor, "update");
 					SETV(_sensor, "timeNextUpdate", GAME_TIME + _interval);
 				};
@@ -340,7 +352,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	/*
 	Method: setProcessInterval
-	Sets the process interval of this AI object.
+	Sets the process interval of this AI object. Creates a timer.
 
 	Parameters: _interval
 
@@ -357,6 +369,27 @@ CLASS("AI", "MessageReceiverEx")
 		if (_timer != "") then {
 			CALLM(_timer, "setInterval", [_interval]);
 		};
+	} ENDMETHOD;
+
+	/*
+	Method: addToProcessCategory
+	Adds this object to process category of its message loop.
+	*/
+	METHOD("addToProcessCategory") {
+		params [P_THISOBJECT, P_STRING("_tag")];
+		pr _msgLoop = T_CALLM0("getMessageLoop");
+		CALLM2(_msgLoop, "addProcessCategoryObject", _tag, _thisObject);
+	} ENDMETHOD;
+
+	/*
+	Method: removeFromProcessCategory
+
+	Removes this object from all process categories
+	*/
+	METHOD("removeFromProcessCategory") {
+		params [P_THISOBJECT];
+		pr _msgLoop = T_CALLM0("getMessageLoop");
+		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
 	} ENDMETHOD;
 
 	// - - - - STORAGE - - - - -

@@ -1048,11 +1048,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: array of units.
 	*/
 	METHOD("getSubagents") {
-		params [P_THISOBJECT];
+		//params [P_THISOBJECT];
 
 		// Get all units
-		private _data = T_GETV("data");
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		//private _data = T_GETV("data");
+		//private _unitList = _data select GROUP_DATA_ID_UNITS;
 
 		// Return only units which actually have an AI object (soldiers and drones)
 		/*
@@ -1063,7 +1063,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		//_return
 
 		// Return all units since vehicles have an AI object too :p
-		_unitList
+		//_unitList
+
+		// Return nothing, units are not processed with their group any more
+		[]
 	} ENDMETHOD;
 
 

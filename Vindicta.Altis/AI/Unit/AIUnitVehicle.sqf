@@ -32,11 +32,14 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		//T_SETV("worldState", _ws);
 
 		T_SETV("cargo", []);
+
+		T_CALLM1("addToProcessCategory", "AIVehicle");
 	} ENDMETHOD;
 	
 	METHOD("delete") {
 		params [P_THISOBJECT];
 		
+		T_CALLM0("removeFromProcessCategory");
 		
 		// Unassign all units assigned to this vehicle
 		pr _units = [];

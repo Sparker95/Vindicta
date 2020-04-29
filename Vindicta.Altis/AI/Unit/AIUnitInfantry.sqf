@@ -61,6 +61,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 
 		T_SETV("mounted", false);
 		//T_SETV("worldState", _ws);
+
+		T_CALLM1("addToProcessCategory", "AIInfantry");
 	} ENDMETHOD;
 	
 	METHOD("delete") {
@@ -74,9 +76,10 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_disableDebugMarkers");
 		#endif
+
+		T_CALLM0("removeFromProcessCategory");
 	} ENDMETHOD;
 
-	#ifdef DEBUG_GOAL_MARKERS
 	METHOD("_enableDebugMarkers") {
 		params [P_THISOBJECT];
 
@@ -204,14 +207,18 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	METHOD("process") {
 		params [P_THISOBJECT];
 
+		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("markersEnabled")) then {
 			pr _unused = "";
-		};
+		};	
+		#endif
 
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+
+		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
+		#endif
 	} ENDMETHOD;
-	#endif
 	FIX_LINE_NUMBERS()
 
 	/*

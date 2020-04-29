@@ -11,6 +11,9 @@
 
 #define pr private
 
+// Will log performance of process categories
+#define LOG_PFH_PROCESS_CATEGORY
+
 // Called every frame
 
 params [P_THISOBJECT];
@@ -96,30 +99,69 @@ _scopeMsgQueue = nil;
 	#ifdef ASP_ENABLE
 	private __scopeCat = createProfileScope ([format ["MessageLoop_processCategory_%1", _tag]] call misc_fnc_createStaticString);
 	#endif
-
-	pr _objects = _cat#__PC_ID_OBJECTS;
+	FIX_LINE_NUMBERS()
+	
+	//pr _objects = +(_cat#__PC_ID_OBJECTS); // Make a deep copy for the case object is removed in the process call
+	pr _objects = (_cat#__PC_ID_OBJECTS);
 	pr _nObjects = count _objects;
 	if (_nObjects > 0) then {
-		pr _objID = (_cat#__PC_ID_NEXT_OBJECT_ID) % _nObjects; // Make sure ID is within array size
+		pr _objID = (_cat#__PC_ID_NEXT_OBJECT_ID) % _nObjects; 		// Make sure ID is within array size
 		pr _intervalMax = _cat#__PD_ID_UPDATE_INTERVAL_MAX;
-		pr _nObjectsPerFrame = _nObjects/(_intervalMax*diag_fps);
-		pr _counterRem = _cat#__PC_ID_OBJECT_COUNTER_REM; // Remainder of the coutner of processed objects (number 0..1)
+		pr _nObjectsPerFrame = _nObjects/(_intervalMax*diag_fps);	// How many objects will be processed this frame, in ideal case
+		pr _nObjectsPerFrameMax = _cat#__PC_ID_N_OBJECTS_PER_FRAME_MAX;
+		pr _nObjectsPerFrameMin = _cat#__PC_ID_N_OBJECTS_PER_FRAME_MIN;
+		//diag_log ([format ["DeltaTime: %1", diag_deltaTime]] call misc_fnc_createStaticString);
+		
+		// Remainder of the counter of processed objects (number 0..1)
+		pr _counterRem = _cat#__PC_ID_OBJECT_COUNTER_REM;
 		_counterRem = _counterRem + _nObjectsPerFrame;
+		_cat set [__PC_ID_OBJECT_COUNTER_REM, (_counterRem - (floor _counterRem)) min 1.0]; // We don't want this to be more than 1
 
 		// Process (floor _coutnerRem) objects, the remainder of this number will get added at next frame
-		pr _nObjectsThisFrame = (floor _counterRem) min _nObjects;	// Don't process same object twice this frame
+		pr _nObjectsThisFrame = (floor _counterRem);
+
+		// .. but limit the about of processed objects to min and max values
+		_nObjectsThisFrame = (_nObjectsThisFrame max _nObjectsPerFrameMin) min _nObjectsPerFrameMax;
+
+		// don't process more objects this time than there are objects, it will cause same object to be updated twice
+		_nObjectsThisFrame = _nObjectsThisFrame min _nObjects;
+		
 		while {_nObjectsThisFrame != 0} do {
-			pr _obj = _objects#_objID;
+			pr _objStruct = _objects#_objID;
+			pr _obj = _objStruct#0;
+
+			// Log performance of process category
+			#ifdef LOG_PFH_PROCESS_CATEGORY
+			FIX_LINE_NUMBERS()
+			if (_objID == 0) then {	// Log every time we process object 0
+				pr _timeCurrent = PROCESS_CATEGORY_TIME;
+				pr _timeLastLog = _cat#__PC_ID_LAST_LOG_TIME;
+				pr _timeSinceLastLog = _timeCurrent - _timeLastLog;
+				if (_timeSinceLastLog > 1) then { // Don't spam it more than once per second!
+					if (_objStruct#2) then {	// If it was processed already
+						pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""updateInterval"": %4, ""nObjectsPerFrame"": %5} }", //,  ""callTimeAvg"": %7} }", 
+								T_GETV("name"), _cat#__PC_ID_TAG, _nObjects, _timeCurrent-(_objStruct#1), _nObjectsPerFrame];
+						OOP_DEBUG_MSG(_str, []);
+					};
+					_cat set [__PC_ID_LAST_LOG_TIME, _timeCurrent];
+				};
+			};
+			#endif
 
 			#ifdef ASP_ENABLE
 			private __scopeObj = createProfileScope ([format ["MessageLoop_processObject_%1", _obj]] call misc_fnc_createStaticString);
 			#endif
 
-			CALLM0(_object, "process");
+			_objStruct set [1, PROCESS_CATEGORY_TIME]; // Set time mark when we processed this object last time
+			//OOP_INFO_1("Processing %1", _objStruct);
+			CALLM0(_obj, "process");
+			_objStruct set [2, true]; // Set flag that this has been processed already
 
 			_nObjectsThisFrame = _nObjectsThisFrame - 1;
 			_objID = (_objID + 1) % _nObjects;
 		};
+
+		_cat set [__PC_ID_NEXT_OBJECT_ID, _objID];
 
 	};
 } forEach T_GETV("processCategories");

@@ -28,6 +28,12 @@ CLASS("AIUnit", "AI_GOAP")
 		T_CALLM("addSensor", [_sensorCivNear]);
 
 		//T_SETV("worldState", _ws);
+		T_CALLM1("addToProcessCategory", "AIUnit");
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		T_CALLM0("removeFromProcessCategory");
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------

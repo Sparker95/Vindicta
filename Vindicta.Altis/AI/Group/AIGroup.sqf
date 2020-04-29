@@ -53,21 +53,25 @@ CLASS("AIGroup", "AI_GOAP")
 		// [_ws, WSP_GROUP_DRIVERS_ASSIGNED, false] call ws_setPropertyValue;
 		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, false] call ws_setPropertyValue;
 		T_SETV("worldState", _ws);
-		
-		// Set process interval
-		T_CALLM1("setProcessInterval", 3);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
 		T_SETV("unitMarkersEnabled", false);
 		#endif
 		FIX_LINE_NUMBERS()
+
+		T_CALLM1("addToProcessCategory", "AIGroup");
 	} ENDMETHOD;
 
-	#ifdef DEBUG_GOAL_MARKERS
 	METHOD("delete") {
 		params [P_THISOBJECT];
+
+		T_CALLM0("removeFromProcessCategory");
+
+		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_disableDebugMarkers");
+		#endif
+
 	} ENDMETHOD;
 
 	METHOD("_enableDebugMarkers") {
@@ -221,14 +225,18 @@ CLASS("AIGroup", "AI_GOAP")
 	METHOD("process") {
 		params [P_THISOBJECT];
 
+		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("unitMarkersEnabled")) then {
 			pr _unused = "";
 		};
+		#endif
 
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+
+		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
+		#endif
 	} ENDMETHOD;
-	#endif
 	FIX_LINE_NUMBERS()
 
 	// ----------------------------------------------------------------------

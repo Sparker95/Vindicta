@@ -145,6 +145,11 @@ CLASS("AI_GOAP", "AI")
 	METHOD("process") {
 		params [P_THISOBJECT, P_BOOL("_spawning")];
 		
+		#ifdef ASP_ENABLE
+		private _className = GET_OBJECT_CLASS(_thisObject);
+		private __scopeProcess1 = createProfileScope ([format ["%1_process", _className]] call misc_fnc_createStaticString);
+		#endif
+
 		// Halt here if requested for debug
 		if (_thisObject in g_AI_GOAP_haltArray) then {
 			halt;
@@ -303,7 +308,15 @@ CLASS("AI_GOAP", "AI")
 				CALLM1(_currentAction, "setInstant", true);
 			};
 
+			#ifdef ASP_ENABLE
+			private __scopeProcessAction = createProfileScope "AI_GOAP_processCurrentAction";
+			#endif
+
 			pr _actionState = CALLM0(_currentAction, "process");
+
+			#ifdef ASP_ENABLE
+			__scopeProcessAction = nil;
+			#endif
 
 			CALLM1(_currentAction, "setInstant", false);
 
@@ -350,6 +363,8 @@ CLASS("AI_GOAP", "AI")
 		FIX_LINE_NUMBERS()
 
 		// Call process method of subagents
+		// Currently nothing is using it
+		/*
 		{
 			CALLM0(_x, "process");
 		} forEach (CALLM0(_agent, "getSubagents") apply {
@@ -357,6 +372,7 @@ CLASS("AI_GOAP", "AI")
 		} select {
 			_x != NULL_OBJECT
 		});
+		*/
 
 	} ENDMETHOD;
 
@@ -398,6 +414,11 @@ CLASS("AI_GOAP", "AI")
 	METHOD("getMostRelevantGoal") {
 		params [P_THISOBJECT];
 		
+		#ifdef ASP_ENABLE
+		private _className = GET_OBJECT_CLASS(_thisObject);
+		private __scopeGetGoal = createProfileScope ([format ["%1_getMostRelevantGoal", _className]] call misc_fnc_createStaticString);
+		#endif
+
 		pr _agent = T_GETV("agent");
 		
 		// Get the list of goals available to this agent

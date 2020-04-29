@@ -90,9 +90,11 @@ CLASS("MessageLoop", "Storable");
 		
 		// Start a scheduled 'thread' or create a per-frame handler
 		if (T_GETV("unscheduled")) then {
-			private _codeStr = format ["%1 call MessageLoop_fnc_perFrameHandler;", _thisObject];
+			private _codeStr = format ["[""%1""] call MessageLoop_fnc_perFrameHandler;", _thisObject];
+			#ifndef _SQF_VM
 			private _id = addMissionEventHandler ["EachFrame", _codeStr];
 			T_SETV("eachFrameEHID", _id);
+			#endif
 		} else {
 			// Do this last to avoid race condition on other members of this class
 			private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
@@ -234,8 +236,33 @@ CLASS("MessageLoop", "Storable");
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
 
+			if (T_GETV("unscheduled")) exitWith {
+				OOP_ERROR_0("Attempt to call addProcessCategory on unscheduled message loop");
+			};
+
 			pr _cat = __PC_NEW(_tag, _priority, _minInterval, _maxInterval);
 			pr _cats = T_GETV("processCategories"); // meow ^.^
+			_cats pushBack _cat;
+
+			if (!T_GETV("unscheduled")) then {
+				T_CALLM0("updateRequiredFractions");
+			};
+		};
+	} ENDMETHOD;
+
+	// Only for unscheduled msg loop
+	METHOD("addProcessCategoryUnscheduled") {
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_STRING("_tag"), ["_interval", 1, [0]], ["_minObjPerFrame", 0, [0]], ["_maxObjPerFrame", 100, [0]]];
+
+			if (!T_GETV("unscheduled")) exitWith {
+				OOP_ERROR_0("Attempt to call addProcessCategoryUnscheduled on scheduled message loop");
+			};
+
+			pr _cat = __PC_NEW(_tag, 0, _interval, _interval);
+			_cat set [__PC_ID_N_OBJECTS_PER_FRAME_MIN, _minObjPerFrame];
+			_cat set [__PC_ID_N_OBJECTS_PER_FRAME_MAX, _maxObjPerFrame];
+			pr _cats = T_GETV("processCategories");
 			_cats pushBack _cat;
 
 			if (!T_GETV("unscheduled")) then {
@@ -342,7 +369,7 @@ CLASS("MessageLoop", "Storable");
 	// That is, it has not crashed
 	METHOD("isRunning") {
 		params [P_THISOBJECT];
-		if (T_GETV("_unscheduled")) then {
+		if (T_GETV("unscheduled")) then {
 			true // Always running
 		} else {
 			pr _scriptHandle = T_GETV("scriptHandle");
@@ -354,7 +381,7 @@ CLASS("MessageLoop", "Storable");
 	// Returns true if it has crashed
 	METHOD("isNotRunning") {
 		params [P_THISOBJECT];
-		if (T_GETV("_unscheduled")) then {
+		if (T_GETV("unscheduled")) then {
 			false // Always running
 		} else {
 			pr _scriptHandle = T_GETV("scriptHandle");

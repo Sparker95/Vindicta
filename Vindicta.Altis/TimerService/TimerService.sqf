@@ -44,7 +44,7 @@ CLASS("TimerService", "")
 
 		// Create a per frame event handler
 		#ifndef _SQF_VM
-		pr _id = addMissionEventHandler ["EachFrame", format ["""%1"" call %2;", _thisObject, CLASS_METHOD_NAME_STR("TimerService", "PFH")]];
+		pr _id = addMissionEventHandler ["EachFrame", format ["[""%1""] call %2;", _thisObject, CLASS_METHOD_NAME_STR("TimerService", "PFH")]];
 		T_SETV("eventHandlerID", _id);
 		#endif
 	} ENDMETHOD;
