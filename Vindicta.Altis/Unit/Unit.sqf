@@ -684,7 +684,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _ehid = [_hO, "Killed", {
 				params ["_unit"];
 				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
-					systemChat format ["%1 KILLED %2", _unit, _thisID];
 					_unit setVariable [UNIT_EH_KILLED_STR, nil];
 					// Cannot do this due to https://feedback.bistudio.com/T150628
 					// _unit removeEventHandler ["Killed", _thisID];
@@ -692,9 +691,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
-			if(_hO in allPlayers) then {
-				systemChat format ["%1 Added KILLED EH %2", _hO, _ehid];
-			};
 		};
 
 		// Respawned
@@ -702,7 +698,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
 				if(!isNil {_unit getVariable UNIT_EH_RESPAWN_STR}) then {
-					//systemChat format ["%1 RESPAWNED", _unit];
 					_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
 					// Cannot do this due to https://feedback.bistudio.com/T150628
 					//_unit removeEventHandler ["Respawn", _thisID];
@@ -710,6 +705,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
+		};
+
+		// Rating (hopefully disabling the renegade system)
+		if (isNil {_hO getVariable UNIT_EH_HANDLE_RATING_STR}) then {
+			pr _ehid = [_hO, "HandleRating", { 0 }] call CBA_fnc_addBISEventHandler;
+			_hO setVariable [UNIT_EH_HANDLE_RATING_STR, _ehid];
 		};
 
 		// HandleDamage for infantry

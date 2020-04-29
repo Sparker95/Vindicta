@@ -601,8 +601,6 @@
 		private _scopeKey = _class1; \
 		private _extraProfileFields = [];
 
-
-
 	#define OOP_FUNC_HEADER_PROFILE_STATIC \
 		private _profileTStart = diag_tickTime; \
 		private _class1 = _thisClass; \

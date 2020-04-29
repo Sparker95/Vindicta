@@ -5,12 +5,6 @@
 // This way we can process data more often instead of processing it less often and in larget batches
 #define TIMER_SERVICE_RESOLUTION 0.0
 
-// Debug flag, will limit generation or locations to a small area
-#ifndef RELEASE_BUILD
-//#define __SMALL_MAP
-#endif
-FIX_LINE_NUMBERS()
-
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
 
 #define ALL_MESSAGE_LOOPS_AND_TIMEOUTS ([["messageLoopGameMode", 10], ["messageLoopCommanderEast", 150], ["messageLoopCommanderWest", 150], ["messageLoopCommanderInd", 150], ["messageLoopMain", 30], ["messageLoopGroupAI", 10]])
@@ -708,6 +702,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		};
 
+		// Give player good score to avoid renegade possibilities
+		_newUnit setUnitRank "COLONEL";
+
 		// Create a suspiciousness monitor for player
 		NEW("UndercoverMonitor", [_newUnit]);
 
@@ -925,22 +922,21 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						""]; //memoryPoint
 
 		// Give player a lockpick
-		player addItemToUniform "ACE_key_lockpick";
+		_newUnit addItemToUniform "ACE_key_lockpick";
 
 		// Restore data
-		if(!(_restoreData isEqualTo [])) then {
-			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
+		private _dataWasRestored = if(!(_restoreData isEqualTo [])) then {
+			[_newUnit, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
 			// Clear player gear immediately on this client
 			CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]]);
 			// Tell the server to clear it as well, which will also update the client (just to make sure)
-			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [player], ON_SERVER);
-			true	// RETURN !!
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [_newUnit], ON_SERVER);
+			true
 		} else {
-			false	// RETURN !!
+			false
 		};
 
-		// NOTE: WE MUST RETURN STUFF FROM HERE !!
-
+		_dataWasRestored
 	} ENDMETHOD;
 
 	// Player death event handler in SP
@@ -1201,12 +1197,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
 
-			#ifdef __SMALL_MAP
+
+			#ifdef PARTIAL_MAP_POPULATION
 			_locSectorPos params ["_posX", "_posY"];
 			if (_posX > 20000 && _posY > 16000) then {
 			#endif
 			FIX_LINE_NUMBERS()
-
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
@@ -1284,7 +1280,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			};
 
-			#ifdef __SMALL_MAP
+			#ifdef PARTIAL_MAP_POPULATION
 			};
 			#endif
 			FIX_LINE_NUMBERS()
