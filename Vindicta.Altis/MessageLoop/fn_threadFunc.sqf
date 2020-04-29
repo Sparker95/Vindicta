@@ -160,7 +160,7 @@ while {true} do {
 					};
 				};
 			} else {
-				OOP_WARNING_1("Destination object does not exist: %1", _dest);
+				OOP_ERROR_1("Destination object does not exist: %1", _dest);
 			};
 			#ifdef THREAD_FUNC_DEBUG
 			};

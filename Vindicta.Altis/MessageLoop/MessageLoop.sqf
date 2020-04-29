@@ -21,6 +21,7 @@ Author: Sparker
 #define pr private
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
+MessageLoop_fnc_perFrameHandler = compile preprocessFileLineNumbers "MessageLoop\fn_perFrameHandler.sqf";
 
 #define N_MESSAGES_IN_SERIES_DEFAULT 128
 
@@ -45,6 +46,11 @@ CLASS("MessageLoop", "Storable");
 	// Last processed object (through message queue or process categories)
 				VARIABLE("lastObject");
 
+	// Event handler ID
+				VARIABLE("eachFrameEHID");
+	// Bool, if true then message loop will be processing messages in per-frame handler.
+	/* save */	VARIABLE_ATTR("unscheduled", [ATTR_SAVE_VER(18)]);
+
 	//Constructor
 	//Spawn a script which will be checking messages
 	/*
@@ -53,13 +59,14 @@ CLASS("MessageLoop", "Storable");
 	parameters: _name
 
 	_name - String, optional, name of the message loop used for debug
-	_nMessagesInSeries - number
-	_sleepInterval - number
+	_nMessagesInSeries - number, max amount of messages to process in row.
+	_sleepInterval - number, sleep time between message processing. Irrelevant if _unscheduled == true
+	_unscheduled - bool, default false. If true, message loop will be processing messages in per-frame handler.
 
 	Constructor
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_name"), ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]] ];
+		params [P_THISOBJECT, P_STRING("_name"), ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]], ["_unscheduled", false, [false]] ];
 		T_SETV("msgQueue", []);
 		if (_name == "") then {
 			T_SETV("name", _thisObject);
@@ -72,10 +79,25 @@ CLASS("MessageLoop", "Storable");
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 		T_SETV("sleepInterval", _sleepInterval);
 		T_SETV("lastObject", NULL_OBJECT);
+		T_SETV("unscheduled", _unscheduled);
 
-		// Do this last to avoid race condition on other members of this class
-		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
-		T_SETV("scriptHandle", _scriptHandle);
+		T_CALLM0("_initThreadOrPFH");
+
+	} ENDMETHOD;
+
+	METHOD("_initThreadOrPFH") {
+		params [P_THISOBJECT];
+		
+		// Start a scheduled 'thread' or create a per-frame handler
+		if (T_GETV("unscheduled")) then {
+			private _codeStr = format ["%1 call MessageLoop_fnc_perFrameHandler;", _thisObject];
+			private _id = addMissionEventHandler ["EachFrame", _codeStr];
+			T_SETV("eachFrameEHID", _id);
+		} else {
+			// Do this last to avoid race condition on other members of this class
+			private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
+			T_SETV("scriptHandle", _scriptHandle);
+		};
 	} ENDMETHOD;
 
 	/*
@@ -88,15 +110,18 @@ CLASS("MessageLoop", "Storable");
 	*/
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		private _mutex = T_GETV("mutex");
-		MUTEX_LOCK(_mutex); //Make sure we don't terminate the thread after it locks the mutex!
-		//Clear the variables
-		private _scriptHandle = T_GETV("scriptHandle");
-		terminate _scriptHandle;
-		T_SETV("msgQueue", nil);
-		T_SETV("scriptHandle", nil);
-		MUTEX_UNLOCK(_mutex);
-		T_SETV("mutex", nil);
+
+		if (T_GETV("unscheduled")) then {
+			private _id = T_GETV("eachFrameEHID");
+			removeMissionEventHandler ["EachFrame", _id];
+		} else {
+			private _mutex = T_GETV("mutex");
+			MUTEX_LOCK(_mutex); //Make sure we don't terminate the thread after it locks the mutex!
+			//Clear the variables
+			private _scriptHandle = T_GETV("scriptHandle");
+			terminate _scriptHandle;
+			MUTEX_UNLOCK(_mutex);
+		};
 	} ENDMETHOD;
 
 
@@ -184,19 +209,21 @@ CLASS("MessageLoop", "Storable");
 	*/
 	METHOD("deleteReceiverMessages") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_msgReceiver") ];
-		private _msgQueue = T_GETV("msgQueue");
+		CRITICAL_SECTION {
+			private _msgQueue = T_GETV("msgQueue");
 
-		//diag_log format ["Deleting message receiver: %1", _msgReceiver];
-		//diag_log format ["Message queue: %1", _msgQueue];
+			//diag_log format ["Deleting message receiver: %1", _msgReceiver];
+			//diag_log format ["Message queue: %1", _msgQueue];
 
-		private _i = 0;
-		while {  _i < (count _msgQueue)} do {
-			pr _msg = _msgQueue select _i;
-			if ( (_msg select MESSAGE_ID_DESTINATION) == _msgReceiver) then { // If found a message directed to thi receiver
-				_msgQueue deleteAt _i;
-				//diag_log format ["=========== Deleted a message: %1", _msg];
-			} else {
-				_i = _i + 1;
+			private _i = 0;
+			while {  _i < (count _msgQueue)} do {
+				pr _msg = _msgQueue select _i;
+				if ( (_msg select MESSAGE_ID_DESTINATION) == _msgReceiver) then { // If found a message directed to thi receiver
+					_msgQueue deleteAt _i;
+					//diag_log format ["=========== Deleted a message: %1", _msg];
+				} else {
+					_i = _i + 1;
+				};
 			};
 		};
 	} ENDMETHOD;
@@ -211,10 +238,13 @@ CLASS("MessageLoop", "Storable");
 			pr _cats = T_GETV("processCategories"); // meow ^.^
 			_cats pushBack _cat;
 
-			T_CALLM0("updateRequiredFractions");
+			if (!T_GETV("unscheduled")) then {
+				T_CALLM0("updateRequiredFractions");
+			};
 		};
 	} ENDMETHOD;
 
+	// Only relevant for scheduled process categories
 	METHOD("updateRequiredFractions") {
 		params [P_THISOBJECT];
 		pr _cats = T_GETV("processCategories");
@@ -256,7 +286,9 @@ CLASS("MessageLoop", "Storable");
 				OOP_ERROR_1("Process category with tag %1 was not found!", _tag);
 			};
 
-			T_CALLM0("updateRequiredFractions");
+			if (!T_GETV("unscheduled")) then {
+				T_CALLM0("updateRequiredFractions");
+			};
 		};
 	} ENDMETHOD;
 
@@ -282,7 +314,9 @@ CLASS("MessageLoop", "Storable");
 				//};
 			} forEach _cats;
 
-			T_CALLM0("updateRequiredFractions");
+			if (!T_GETV("unscheduled")) then {
+				T_CALLM0("updateRequiredFractions");
+			};
 		};
 	} ENDMETHOD;
 
@@ -308,16 +342,24 @@ CLASS("MessageLoop", "Storable");
 	// That is, it has not crashed
 	METHOD("isRunning") {
 		params [P_THISOBJECT];
-		pr _scriptHandle = T_GETV("scriptHandle");
-		!(scriptDone _scriptHandle)
+		if (T_GETV("_unscheduled")) then {
+			true // Always running
+		} else {
+			pr _scriptHandle = T_GETV("scriptHandle");
+			!(scriptDone _scriptHandle)
+		};
 	} ENDMETHOD;
 
 	// Same as above, inverted
 	// Returns true if it has crashed
 	METHOD("isNotRunning") {
 		params [P_THISOBJECT];
-		pr _scriptHandle = T_GETV("scriptHandle");
-		(scriptDone _scriptHandle)
+		if (T_GETV("_unscheduled")) then {
+			false // Always running
+		} else {
+			pr _scriptHandle = T_GETV("scriptHandle");
+			(scriptDone _scriptHandle)
+		};
 	} ENDMETHOD;
 
 	METHOD("getLength") {
@@ -337,9 +379,7 @@ CLASS("MessageLoop", "Storable");
 		T_SETV("nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT);
 		T_SETV("lastObject", NULL_OBJECT);
 
-		// Do this last to avoid race condition on other members of this class
-		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
-		T_SETV("scriptHandle", _scriptHandle);
+		T_CALLM0("_initThreadOrPFH");
 
 		true
 	} ENDMETHOD;

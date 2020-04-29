@@ -19,6 +19,9 @@
 #define __PC_ID_ALL_PROCESS_LAST_TIMESTAMP 10
 #define __PC_ID_ALL_PROCESS_INTERVAL 11
 
-#define __PC_NEW(tag, priority, minInterval, maxInterval) [tag, priority, -1, minInterval, maxInterval, 0, 1.1*maxInterval, 1.1*maxInterval, PROCESS_CATEGORY_TIME, [], PROCESS_CATEGORY_TIME, -1]
+// Only for unscheduled msg loop
+#define __PC_ID_OBJECT_COUNTER_REM 12
+
+#define __PC_NEW(tag, priority, minInterval, maxInterval) [tag, priority, -1, minInterval, maxInterval, 0, 1.1*maxInterval, 1.1*maxInterval, PROCESS_CATEGORY_TIME, [], PROCESS_CATEGORY_TIME, -1, 0]
 
 #define __PC_OBJECT_NEW(object) [object, PROCESS_CATEGORY_TIME]
