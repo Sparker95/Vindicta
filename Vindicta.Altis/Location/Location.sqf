@@ -451,13 +451,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Process target range objects
 		if(_type in gShootingTargetTypes) then {
-			if(isNil {_object getVariable "vin_target_range"}) then {
-				_object setVariable ["vin_target_range", [-25, 0]];
+			if(isNil {_hObject getVariable "vin_target_range"}) then {
+				_hObject setVariable ["vin_target_range", [-25, 0]];
 			};
 		};
 
-		if(!isNil { _object getVariable "vin_target_range" }) then {
-			T_GETV("targetRangeObjects") pushBackUnique _object;
+		if(!isNil { _hObject getVariable "vin_target_range" }) then {
+			T_GETV("targetRangeObjects") pushBackUnique _hObject;
 		};
 	} ENDMETHOD;
 

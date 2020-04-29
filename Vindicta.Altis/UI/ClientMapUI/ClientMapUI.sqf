@@ -2257,8 +2257,10 @@ CLASS(CLASS_NAME, "")
 		params [P_THISOBJECT];
 
 		if (T_GETV("respawnPanelEnabled")) then {
+			pr _canRestore = !isNil "gPlayerRestoreData" && {!(gPlayerRestoreData isEqualTo [])};
+
 			if(T_GETV("doZoom") && visibleMap) then {
-				private _zoomPos = T_GETV("lastRespawnPos");
+				private _zoomPos = if(_canRestore) then { gPlayerRestoreData#2 } else { T_GETV("lastRespawnPos") };
 				if(_zoomPos isEqualTo []) then {
 					private _locMarkers = GETSV("MapMarkerLocation", "all");
 					//private _locs = CALLSM0("Location", "getAll");
@@ -2267,7 +2269,9 @@ CLASS(CLASS_NAME, "")
 						private _locMarker = _locMarkers#_locIdx;
 						CALLM0(_locMarker, "select");
 						_zoomPos = GETV(_locMarker, "pos");
-						T_CALLM2("_select", [], [_locMarker]);
+						// If we do this it overwrites the player restore position, as restore data is not available straight away
+						// Perhaps set restore data should clear selected marker?
+						//T_CALLM2("_select", [], [_locMarker]);
 					};
 				};
 
@@ -2277,12 +2281,10 @@ CLASS(CLASS_NAME, "")
 					T_SETV("doZoom", false);
 				};
 			};
-
 			pr _locMarkers = T_GETV("selectedLocationMarkers");
 
 			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
 			
-			pr _canRestore = !isNil "gPlayerRestoreData" && {!(gPlayerRestoreData isEqualTo [])};
 
 			if(_canRestore) then {
 				_ctrlButton ctrlSetText "RESTORE";
@@ -2322,7 +2324,6 @@ CLASS(CLASS_NAME, "")
 				};
 
 				// Check if there are enemies occupying this place, etc...
-
 				pr _enemySides = [EAST, WEST, INDEPENDENT] - [playerSide];
 
 				// Check enemies in area
