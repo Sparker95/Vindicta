@@ -96,6 +96,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			[TAG_POS, _pos],
 			[TAG_MOVE_RADIUS, _radius],
 			[TAG_ROUTE, _route],
+			[TAG_FOLLOWERS, _followGroups],
 			[TAG_MAX_SPEED_KMH, T_GETV("maxSpeed")]
 		], _AI];
 		private _leadGroupAI = CALLM0(_leadGroup, "getAI");
