@@ -8,7 +8,7 @@ groups are appropriate balanced.
 CLASS("ActionGarrisonRebalanceGroups", "ActionGarrison")
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("ACTIVATE");
@@ -31,6 +31,6 @@ CLASS("ActionGarrisonRebalanceGroups", "ActionGarrison")
 		T_SETV("state", _state);
 		
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

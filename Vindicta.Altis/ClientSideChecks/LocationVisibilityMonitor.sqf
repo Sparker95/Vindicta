@@ -31,7 +31,7 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 	VARIABLE("AICommander");	// AI Commander where we will send reports about locations
 	VARIABLE_ATTR("playerMonitor", [ATTR_REFCOUNTED]);	// PlayerMonitor where we will be taking data from
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_unit"), P_OOP_OBJECT("_playerMonitor")];
 
 		T_SETV("unit", _unit);
@@ -49,9 +49,9 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 
 		pr _AICommander = CALLSM1("AICommander", "getAICommander", side group _unit);
 		T_SETV("AICommander", _AICommander);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete the timer
@@ -63,13 +63,13 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 		//pr _pmon = T_GETV("playerMonitor");
 		//CALLM0(_pmon, "unref");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleMessage") {
+	METHOD(handleMessage)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS");
@@ -202,7 +202,7 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 		pr _timer = T_GETV("timer");
 		CALLM1(_timer, "setInterval", (count allPlayers) * UPDATE_INTERVAL);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

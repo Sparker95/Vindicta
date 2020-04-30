@@ -10,7 +10,7 @@ Flipped vehicles get magically unflipped
 CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 		
 		pr _AI = T_GETV("AI");
@@ -29,10 +29,10 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");
@@ -58,10 +58,10 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 		
 		// Return the current state
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		// Delete assigned goals
@@ -75,6 +75,6 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 			CALLM2(_x, "deleteExternalGoal", "GoalUnitVehicleUnflip", _AI);
 		} forEach _vehicleAIs;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

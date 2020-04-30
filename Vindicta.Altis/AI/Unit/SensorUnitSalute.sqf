@@ -13,7 +13,7 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("doComplexCheck") {
+	/*virtual*/ METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		pr _AI = T_GETV("AI");
 		pr _agent = GETV(_AI, "agent");
@@ -27,14 +27,14 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 		if (!(side _src isEqualTo side _oh)) exitWith {false};
 		
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           C R E A T E   W O R L D   F A C T
 	// | Creates a world fact specific to this sensor
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("handleStimulus") {
+	/*virtual*/ METHOD(handleStimulus)
 		params [P_THISOBJECT];
 		pr _AI = T_GETV("AI");
 		
@@ -52,15 +52,15 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 			CALLM(_AI, "addWorldFact", [_wf]);
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNIT_SALUTE]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -28,7 +28,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
@@ -166,14 +166,14 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 		//OOP_INFO_3("Infantry amount: %1, all infantry seats: %2, driver seats: %3", _nInfGarrison, _nSeatsAll, _nDriversAll);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getUpdateInterval") {
+	/* virtual */ METHOD(getUpdateInterval)
 		params [P_THISOBJECT];
 		pr _gar = T_GETV("gar");
 		// If garrison is not spawned, run the check less often
@@ -182,6 +182,6 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		} else {
 			120
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

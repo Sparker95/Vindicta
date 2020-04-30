@@ -41,7 +41,7 @@ g_UM_Hints = [
 
 CLASS(CLASS_NAME, "")
 	
-	STATIC_METHOD("drawUI") {
+	STATIC_METHOD(drawUI)
 		params [P_THISOBJECT, ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];
 
 			pr _textUI = "";
@@ -73,7 +73,7 @@ CLASS(CLASS_NAME, "")
 	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 1;
 	  		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 ENDCLASS;

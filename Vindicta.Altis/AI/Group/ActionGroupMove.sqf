@@ -35,7 +35,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	VARIABLE("leader");
 	VARIABLE("followers");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -66,10 +66,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 		T_SETV("ready", false);
 		T_SETV("leader", NULL_OBJECT);
 		T_SETV("followers", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* protected override */ METHOD("activate") {
+	/* protected override */ METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_SETV("ready", false);
@@ -133,9 +133,9 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("completeActivation") {
+	/* private */ METHOD(completeActivation)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -181,10 +181,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 		T_SETV("followers", _followers);
 
 		T_SETV("ready", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Logic to run each update-step
-	/* protected override */ METHOD("process") {
+	/* protected override */ METHOD(process)
 		params [P_THISOBJECT];
 
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -274,15 +274,15 @@ CLASS("ActionGroupMove", "ActionGroup")
 		};
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("handleUnitsAdded") {
+	/* protected override */ METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Reactivate, as we need to reassign goals
 		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("handleUnitsRemoved") {
+	/* protected override */ METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Turn off vehicle sirens for removed units
@@ -294,10 +294,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		// Reactivate, as we need to reassign goals
 		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	/* protected override */ METHOD("terminate") {
+	/* protected override */ METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Turn off vehicle sirens
@@ -309,10 +309,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		T_CALLM0("clearWaypoints");
 		T_CALLM1("clearUnitGoals", ["GoalUnitFollow" ARG "GoalUnitMove"]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//Gets the maximum separation between vehicles in convoy
-	/* private */ METHOD("getMaxSeparation") {
+	/* private */ METHOD(getMaxSeparation)
 		params [P_THISOBJECT];
 
 		private _group = T_GETV("group");
@@ -332,10 +332,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 			_prev = _x;
 		} forEach _allVehicles;
 		_dMax
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//Gets the maximum separation between following groups
-	/* private */ METHOD("getMaxFollowSeparation") {
+	/* private */ METHOD(getMaxFollowSeparation)
 		params [P_THISOBJECT];
 
 		private _followingGroups = T_GETV("followingGroups") apply { CALLM0(_x, "getGroupHandle") };
@@ -358,5 +358,5 @@ CLASS("ActionGroupMove", "ActionGroup")
 			_lastUnitPrevGroup = _otherUnitsByDistance#0;
 		} forEach _followingGroups;
 		_dMax
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

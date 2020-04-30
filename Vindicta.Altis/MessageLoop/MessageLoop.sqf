@@ -65,7 +65,7 @@ CLASS("MessageLoop", "Storable");
 
 	Constructor
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_name"), ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]], ["_unscheduled", false, [false]] ];
 		T_SETV("msgQueue", []);
 		if (_name == "") then {
@@ -83,9 +83,9 @@ CLASS("MessageLoop", "Storable");
 
 		T_CALLM0("_initThreadOrPFH");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_initThreadOrPFH") {
+	METHOD(_initThreadOrPFH)
 		params [P_THISOBJECT];
 		
 		// Start a scheduled 'thread' or create a per-frame handler
@@ -100,7 +100,7 @@ CLASS("MessageLoop", "Storable");
 			private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
 			T_SETV("scriptHandle", _scriptHandle);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: delete
@@ -110,7 +110,7 @@ CLASS("MessageLoop", "Storable");
 
 	Warning: must be called in scheduled environment!
 	*/
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		if (T_GETV("unscheduled")) then {
@@ -124,7 +124,7 @@ CLASS("MessageLoop", "Storable");
 			terminate _scriptHandle;
 			MUTEX_UNLOCK(_mutex);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -137,10 +137,10 @@ CLASS("MessageLoop", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("setName") {
+	METHOD(setName)
 		params [P_THISOBJECT, P_STRING("_name")];
 		T_SETV("name", _name);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: setMaxMessagesInSeries
@@ -148,10 +148,10 @@ CLASS("MessageLoop", "Storable");
 	before switching to processing its process categories.
 	When thread is created, its default value is N_MESSAGES_IN_SERIES_DEFAULT.
 	*/
-	METHOD("setMaxMessagesInSeries") {
+	METHOD(setMaxMessagesInSeries)
 		params [P_THISOBJECT, ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: postMessage
@@ -165,7 +165,7 @@ CLASS("MessageLoop", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("postMessage") {
+	METHOD(postMessage)
 		#ifdef DEBUG_MESSAGE_LOOP
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
@@ -177,7 +177,7 @@ CLASS("MessageLoop", "Storable");
     
 		private _msgQueue = T_GETV("msgQueue");
 		_msgQueue pushBack _msg;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//MessageLoop can also handle messages directed to it.
 	/*
@@ -189,10 +189,10 @@ CLASS("MessageLoop", "Storable");
 	}
 	*/
 	/*
-	METHOD("handleMessage") {
+	METHOD(handleMessage)
 		// For now it returns false (message not handled)
 		false
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 
@@ -209,7 +209,7 @@ CLASS("MessageLoop", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("deleteReceiverMessages") {
+	METHOD(deleteReceiverMessages)
 		params [P_THISOBJECT, P_OOP_OBJECT("_msgReceiver") ];
 		CRITICAL_SECTION {
 			private _msgQueue = T_GETV("msgQueue");
@@ -228,11 +228,11 @@ CLASS("MessageLoop", "Storable");
 				};
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Functions for process categories
 
-	METHOD("addProcessCategory") {
+	METHOD(addProcessCategory)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
 
@@ -248,10 +248,10 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Only for unscheduled msg loop
-	METHOD("addProcessCategoryUnscheduled") {
+	METHOD(addProcessCategoryUnscheduled)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), ["_interval", 1, [0]], ["_minObjPerFrame", 0, [0]], ["_maxObjPerFrame", 100, [0]]];
 
@@ -269,10 +269,10 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Only relevant for scheduled process categories
-	METHOD("updateRequiredFractions") {
+	METHOD(updateRequiredFractions)
 		params [P_THISOBJECT];
 		pr _cats = T_GETV("processCategories");
 		pr _fractions = T_GETV("updateFrequencyFractions");
@@ -296,9 +296,9 @@ CLASS("MessageLoop", "Storable");
 				_fractions set [_i, (_fractions#_i)/_sum];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("addProcessCategoryObject") {
+	METHOD(addProcessCategoryObject)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), P_OOP_OBJECT("_object")];
 
@@ -317,9 +317,9 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("deleteProcessCategoryObject") {
+	METHOD(deleteProcessCategoryObject)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
 
@@ -345,29 +345,29 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("lock") {
+	METHOD(lock)
 		params [P_THISOBJECT];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_LOCK(_mutex);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("tryLockTimeout") {
+	METHOD(tryLockTimeout)
 		params [P_THISOBJECT, P_NUMBER("_timeout")];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_TRY_LOCK_TIMEOUT(_mutex, _timeout);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("unlock") {
+	METHOD(unlock)
 		params [P_THISOBJECT];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_UNLOCK(_mutex);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns true if message loop is running
 	// That is, it has not crashed
-	METHOD("isRunning") {
+	METHOD(isRunning)
 		params [P_THISOBJECT];
 		if (T_GETV("unscheduled")) then {
 			true // Always running
@@ -375,11 +375,11 @@ CLASS("MessageLoop", "Storable");
 			pr _scriptHandle = T_GETV("scriptHandle");
 			!(scriptDone _scriptHandle)
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Same as above, inverted
 	// Returns true if it has crashed
-	METHOD("isNotRunning") {
+	METHOD(isNotRunning)
 		params [P_THISOBJECT];
 		if (T_GETV("unscheduled")) then {
 			false // Always running
@@ -387,17 +387,17 @@ CLASS("MessageLoop", "Storable");
 			pr _scriptHandle = T_GETV("scriptHandle");
 			(scriptDone _scriptHandle)
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getLength") {
+	METHOD(getLength)
 		params [P_THISOBJECT];
 		private _msgQueue = T_GETV("msgQueue");
 		count _msgQueue
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// STORAGE
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		T_SETV("mutex", MUTEX_NEW());
@@ -409,6 +409,6 @@ CLASS("MessageLoop", "Storable");
 		T_CALLM0("_initThreadOrPFH");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

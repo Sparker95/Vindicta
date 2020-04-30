@@ -24,7 +24,7 @@ CLASS("ClusterModel", "ModelBase")
 	// Cluster efficiency damage caused
 	VARIABLE("damage");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_world"), P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_OR_NULL(_actual);
 
@@ -44,9 +44,9 @@ CLASS("ClusterModel", "ModelBase")
 		};
 		// Add self to world
 		CALLM(_world, "addCluster", [_thisObject]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("simCopy") {
+	METHOD(simCopy)
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 
 		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
@@ -69,9 +69,9 @@ CLASS("ClusterModel", "ModelBase")
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		SETV(_copy, "damage", +T_GETV("damage"));
 		_copy
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("sync") {
+	METHOD(sync)
 		params [P_THISOBJECT];
 
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
@@ -94,20 +94,20 @@ CLASS("ClusterModel", "ModelBase")
 			T_SETV("damage", _targetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE);
 			true
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Cluster is empty (not necessarily killed, could be merged to another cluster etc.)
-	METHOD("killed") {
+	METHOD(killed)
 		params [P_THISOBJECT];
 		T_SETV("efficiency", +EFF_ZERO);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("isDead") {
+	METHOD(isDead)
 		params [P_THISOBJECT];
 		private _efficiency = T_GETV("efficiency");
 		_efficiency isEqualTo EFF_ZERO 
 		// or {EFF_LTE(_efficiency, EFF_ZERO)}
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 

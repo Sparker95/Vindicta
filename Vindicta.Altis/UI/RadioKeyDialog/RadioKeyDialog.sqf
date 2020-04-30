@@ -8,7 +8,7 @@
 
 CLASS("RadioKeyDialog", "DialogBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_CALLM2("addTab", "RadioKeyTab", "");
@@ -19,6 +19,6 @@ CLASS("RadioKeyDialog", "DialogBase")
 		T_CALLM1("setHeadlineText", "Manage radio cryptokeys");
 		T_CALLM1("setHintText", "Hint: Check enemy tablets to find their radio cryptokeys");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -10,17 +10,17 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	VARIABLE("nearPos");
 	VARIABLE("maxDistance");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		T_SETV("activeUnits", []);
 		private _nearPos = CALLSM3("Action", "getParameterValue", _parameters, TAG_POS, []);
 		T_SETV("nearPos", _nearPos);
 		private _maxDistance = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 50);
 		T_SETV("maxDistance", _maxDistance);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// Set behaviour
@@ -36,10 +36,10 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("failIfEmpty");
@@ -50,9 +50,9 @@ CLASS("ActionGroupRelax", "ActionGroup")
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("assignGoalsToFreeUnits") {
+	METHOD(assignGoalsToFreeUnits)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _group = T_GETV("group");
@@ -143,9 +143,9 @@ CLASS("ActionGroupRelax", "ActionGroup")
 				_activeUnits pushBackUnique [_unit, "GoalUnitIdle"];
 			} forEach _freeUnits;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public virtual */ METHOD("handleUnitsRemoved") {
+	/* public virtual */ METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_CALLCM1("ActionGroup", "handleUnitsRemoved", _units);
 		// Remove the specified units from the active units list, their goals have already been removed by the AI
@@ -154,9 +154,9 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			private _unitBeingRemoved = _x;
 			_activeUnits deleteAt (_activeUnits findIf { _x#0 == _unitBeingRemoved });
 		} forEach _units;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clearCompleteGoals") {
+	METHOD(clearCompleteGoals)
 		params [P_THISOBJECT];
 		private _activeUnits = T_GETV("activeUnits");
 		private _AI = T_GETV("AI");
@@ -174,7 +174,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			};
 		} forEach (+_activeUnits);
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
 ENDCLASS;

@@ -14,7 +14,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	VARIABLE("locPos");
 	VARIABLE("radius");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _loc = CALLSM2("Action", "getParameterValue", _parameters, TAG_LOCATION);
@@ -23,10 +23,10 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		T_SETV("locPos", _locPos);
 		pr _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 50);
 		T_SETV("radius", _radius);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
@@ -53,10 +53,10 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		//	// There is no location here any more, wtf
 		//	ACTION_STATE_FAILED
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// // logic to run each update-step
-	// METHOD("process") {
+	// METHOD(process)
 	// 	params [P_THISOBJECT];
 		
 	// 	pr _state = T_CALLM0("activateIfInactive");
@@ -64,18 +64,18 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	// 	// Return the current state
 	// 	T_SETV("state", _state);
 	// 	_state
-	// } ENDMETHOD;
+	// ENDMETHOD;
 	
 	// // logic to run when the action is satisfied
-	// METHOD("terminate") {
+	// METHOD(terminate)
 	// 	params [P_THISOBJECT];
 		
-	// } ENDMETHOD;
+	// ENDMETHOD;
 	
 	// procedural preconditions
 	// POS world state property comes from action parameters
 	
-	STATIC_METHOD("getPreconditions") {
+	STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 
 		pr _loc = CALLSM2("Action", "getParameterValue", _actionParameters, TAG_LOCATION);
@@ -91,6 +91,6 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		[_ws, WSP_GAR_POSITION, _movePos] call ws_setPropertyValue;
 
 		_ws
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

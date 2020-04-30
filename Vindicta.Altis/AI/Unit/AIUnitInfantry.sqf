@@ -31,7 +31,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	VARIABLE("markersEnabled");
 	#endif
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 
 		// Make sure arguments are of proper classes
@@ -63,9 +63,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		//T_SETV("worldState", _ws);
 
 		T_CALLM1("addToProcessCategory", "AIInfantry");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_1("DELETE %1", _thisObject);
@@ -78,9 +78,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		#endif
 
 		T_CALLM0("removeFromProcessCategory");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_enableDebugMarkers") {
+	METHOD(_enableDebugMarkers)
 		params [P_THISOBJECT];
 
 		if(T_GETV("markersEnabled")) exitWith {
@@ -114,9 +114,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		_mrk setMarkerAlpha 0;
 
 		T_SETV("markersEnabled", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_disableDebugMarkers") {
+	METHOD(_disableDebugMarkers)
 		params [P_THISOBJECT];
 		
 		if(!T_GETV("markersEnabled")) exitWith {
@@ -127,9 +127,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		deleteMarker (_thisObject + MRK_ARROW);
 
 		T_SETV("markersEnabled", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_updateDebugMarkers") {
+	METHOD(_updateDebugMarkers)
 		params [P_THISOBJECT];
 
 		pr _unit = T_GETV("agent");
@@ -202,9 +202,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		#ifdef DEBUG_GOAL_MARKERS
@@ -218,7 +218,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 	FIX_LINE_NUMBERS()
 
 	/*
@@ -227,7 +227,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("unassignVehicle") {
+	METHOD(unassignVehicle)
 		params [P_THISOBJECT];
 
 		OOP_INFO_1("unassigning vehicle of %1", _thisObject);
@@ -254,7 +254,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		[_hO] allowGetIn false;
 		//[_hO] orderGetIn false;
 		//_hO action ["getOut", vehicle _hO];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: assignAsDriver
@@ -265,7 +265,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	
 	Returns: true if assignment was successful, false otherwise
 	*/
-	METHOD("assignAsDriver") {
+	METHOD(assignAsDriver)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh")];
 
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
@@ -301,7 +301,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		};
 		true
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: assignAsGunner
@@ -314,7 +314,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	Returns: nil
 	*/
 	/*
-	METHOD("assignAsGunner") {
+	METHOD(assignAsGunner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh") ];
 		
 		// Unassign this inf unit from its current vehicle
@@ -326,7 +326,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		T_SETV("assignedVehicleRole", VEHICLE_ROLE_GUNNER);
 		T_SETV("assignedCargoIndex", nil);
 		T_SETV("assignedTurretPath", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 	
 	/*
@@ -339,7 +339,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	
 	Returns: true if assignment was successful, false otherwise
 	*/
-	METHOD("assignAsTurret") {
+	METHOD(assignAsTurret)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh"), P_ARRAY("_turretPath")];
 		
 		OOP_INFO_3("Assigning %1 as a TURRET %2 of %3", _thisObject, _turretPath, _veh);
@@ -378,7 +378,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		};
 		true
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: assignAsCargoIndex
@@ -389,7 +389,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	
 	Returns: true if assignment was successful, false otherwise
 	*/
-	METHOD("assignAsCargoIndex") {
+	METHOD(assignAsCargoIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh"), P_NUMBER("_cargoIndex")];
 		
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
@@ -427,7 +427,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		T_SETV("assignedTurretPath", nil);
 		true
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: executeVehicleAssignment
@@ -435,7 +435,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("executeVehicleAssignment") {
+	METHOD(executeVehicleAssignment)
 		params [P_THISOBJECT];
 		pr _veh = T_GETV("assignedVehicle");
 		if (!isNil "_veh") then {
@@ -464,7 +464,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 				};
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: moveInAssignedVehicle
@@ -473,7 +473,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	Returns: bool, true if the moveIn* command was executed
 	*/
 	
-	METHOD("moveInAssignedVehicle") {
+	METHOD(moveInAssignedVehicle)
 		params [P_THISOBJECT];
 		pr _veh = T_GETV("assignedVehicle");
 		if (!isNil "_veh") then {
@@ -513,7 +513,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		} else {
 			false
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getAssignedVehicleRole
@@ -522,7 +522,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	Returns: "DRIVER", "TURRET", "CARGO" or "" if the unit is not assigned anywhere
 	*/
 	
-	METHOD("getAssignedVehicleRole") {
+	METHOD(getAssignedVehicleRole)
 		params [P_THISOBJECT];
 		
 		pr _vehRole = T_GETV("assignedVehicleRole");
@@ -545,7 +545,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 			
 			default {""};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 		/*
 	Method: getAssignedVehicle
@@ -554,7 +554,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	Returns: vehicle's <Unit> object or "" if the unit is not assigned anywhere
 	*/
 	
-	METHOD("getAssignedVehicle") {
+	METHOD(getAssignedVehicle)
 		params [P_THISOBJECT];
 		
 		pr _veh = T_GETV("assignedVehicle");
@@ -563,9 +563,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		if (isNil "_veh") exitWith { NULL_OBJECT };
 		
 		_veh
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("isAtAssignedSeat") {
+	METHOD(isAtAssignedSeat)
 		params [P_THISOBJECT];
 		
 		pr _assignedVehicleRole = T_GETV("assignedVehicleRole");
@@ -614,7 +614,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 				false
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: setSentryPos
@@ -627,10 +627,10 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	Returns: nil
 	*/
 	
-	METHOD("setSentryPos") {
+	METHOD(setSentryPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		T_SETV("sentryPos", _pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getSentryPos
@@ -639,7 +639,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	Returns: position or [] if no position was assigned
 	*/
 	
-	METHOD("getSentryPos") {
+	METHOD(getSentryPos)
 		params [P_THISOBJECT];
 		pr _pos = T_GETV("sentryPos");
 		if (isNil "_pos") then {
@@ -647,25 +647,25 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		} else {
 			_pos
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGroupAI
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Common interface
-	/* virtual */ METHOD("getCargoUnits") {
+	/* virtual */ METHOD(getCargoUnits)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD("getDebugUIVariableNames") {
+	/* override */ METHOD(getDebugUIVariableNames)
 		[
 			"hO",
 			"assignedVehicle",
@@ -675,6 +675,6 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 			"mounted",
 			"sentryPos"
 		]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

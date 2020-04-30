@@ -19,7 +19,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	VARIABLE("assignedCargo"); // Array of [unit, cargo index]
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Unit");
@@ -34,9 +34,9 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		T_SETV("cargo", []);
 
 		T_CALLM1("addToProcessCategory", "AIVehicle");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("removeFromProcessCategory");
@@ -77,32 +77,32 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 			} forEach _turrets;
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: addCargoUnit
 	*/
-	METHOD("addCargoUnit") {
+	METHOD(addCargoUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		T_GETV("cargo") pushBackUnique _cargoUnit;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: removeCargoUnit
 	*/
-	METHOD("removeCargoUnit") {
+	METHOD(removeCargoUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		pr _cargoUnits = T_GETV("cargo");
 		_cargoUnits deleteAt (_cargoUnits find _cargoUnit);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getCargo
 	*/
-	/* override */ METHOD("getCargoUnits") {
+	/* override */ METHOD(getCargoUnits)
 		params [P_THISOBJECT];
 		+T_GETV("cargo")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: unassignUnit
@@ -114,7 +114,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("unassignUnit") {
+	METHOD(unassignUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
@@ -158,7 +158,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 			} forEach _turretsThisUnit;
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getAssignedDriver
@@ -166,7 +166,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/
-	METHOD("getAssignedDriver") {
+	METHOD(getAssignedDriver)
 		params [P_THISOBJECT];
 		
 		pr _driver = T_GETV("assignedDriver");
@@ -176,7 +176,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		} else {
 			_driver
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getAssignedTurret
@@ -188,7 +188,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/
-	METHOD("getAssignedTurret") {
+	METHOD(getAssignedTurret)
 		params [P_THISOBJECT, P_ARRAY("_turretPath") ];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		
@@ -201,20 +201,20 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		} else {
 			_assignedTurrets select _index select 0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getAssignedTurrets
 	Returns Array of <Unit> assigned to all turrets.
 	Returns: Array of <Unit>
 	*/
-	METHOD("getAssignedTurrets") {
+	METHOD(getAssignedTurrets)
 		params [P_THISOBJECT];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		// Turret array is not initialized, therefore no turrets were assigned
 		if (isNil "_assignedTurrets") exitWith {[]};
 		_assignedTurrets
-	} ENDMETHOD;
+	ENDMETHOD;
 	/*
 	Method: getAssignedCargo
 	Returns <Unit> assigned to specified cargo index or "" if noone is assigned.
@@ -225,7 +225,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/	
-	METHOD("getAssignedCargo") {
+	METHOD(getAssignedCargo)
 		params [P_THISOBJECT, P_NUMBER("_cargoIndex") ];
 		pr _assignedCargo = T_GETV("assignedCargo");
 		
@@ -238,7 +238,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		} else {
 			_assignedCargo select _index select 0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getAssignedUnits
@@ -252,7 +252,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: Array of <Unit>s
 	*/
-	METHOD("getAssignedUnits") {
+	METHOD(getAssignedUnits)
 		params [P_THISOBJECT, ["_returnDriver", true], ["_returnTurrets", true], ["_returnCargo", true] ];
 		
 		pr _ret = [];
@@ -272,9 +272,9 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		};
 		
 		_ret
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getFreeCargoSeats") {
+	METHOD(getFreeCargoSeats)
 		params [P_THISOBJECT, P_ARRAY("_ignoreUnits")];
 
 		pr _hVeh = CALLM0(T_GETV("agent"), "getObjectHandle");
@@ -290,7 +290,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		}; // empty and person turret
 
 		_freeCargoSeats + _freeFFVSeats
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	// ----------------------------------------------------------------------
@@ -298,19 +298,19 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGroupAI
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD("getDebugUIVariableNames") {
+	/* override */ METHOD(getDebugUIVariableNames)
 		[
 			"cargo",
 			"assignedDriver",
 			"assignedCargo",
 			"assignedTurrets"
 		]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

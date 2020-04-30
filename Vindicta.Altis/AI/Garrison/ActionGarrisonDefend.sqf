@@ -20,14 +20,14 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 	VARIABLE("speedMode");
 	VARIABLE("infantryFormation");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		T_SETV("behaviour", "AWARE");
 		T_SETV("speedMode", "NORMAL");
 		T_SETV("infantryFormation", "STAG COLUMN");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
@@ -118,10 +118,10 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		// Bail if not spawned
@@ -136,6 +136,6 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 
 		// Return the current state
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

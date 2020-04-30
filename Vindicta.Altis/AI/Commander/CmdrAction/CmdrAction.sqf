@@ -57,7 +57,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	// It's an intel clone! The actual intel is in the database
 	VARIABLE_ATTR("intelClone", [ATTR_GET_ONLY ARG ATTR_SAVE]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("scorePriority", 1);
 		T_SETV("scoreResource", 1);
@@ -69,9 +69,9 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		T_SETV("variablesStack", []);
 		T_SETV("garrisons", []);
 		T_SETV("intelClone", NULL_OBJECT);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		private _garrisons = T_GETV("garrisons");
 
@@ -106,7 +106,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 			DELETE(_intelClone); // We delete only the local clone of intel we temporarily used for updating the actual intel in the database
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected) setScore
@@ -115,13 +115,13 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:	
 		_scoreVec - Array of Number, the score vector to assign
 	*/
-	/* protected */ METHOD("setScore") {
+	/* protected */ METHOD(setScore)
 		params [P_THISOBJECT, P_ARRAY("_scoreVec")];
 		T_SETV("scorePriority", GET_SCORE_PRIORITY(_scoreVec));
 		T_SETV("scoreResource", GET_SCORE_RESOURCE(_scoreVec));
 		T_SETV("scoreStrategy", GET_SCORE_STRATEGY(_scoreVec));
 		T_SETV("scoreCompleteness", GET_SCORE_COMPLETENESS(_scoreVec));
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected virtual) createTransitions
@@ -130,9 +130,9 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	definiely be used, and the vast majority of actions that are created are just speculative
 	(they are scored and then discarded if the score is too low).
 	*/
-	/* protected virtual */ METHOD("createTransitions") {
+	/* protected virtual */ METHOD(createTransitions)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: registerGarrison
@@ -142,12 +142,12 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:
 		_garrison - <Model.GarrisonModel>
 	*/
-	/*protected */ METHOD("registerGarrison") {
+	/*protected */ METHOD(registerGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		private _garrisons = T_GETV("garrisons");
 		_garrisons pushBack _garrison;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: unregisterGarrison
@@ -157,7 +157,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:
 		_garrison - <Model.GarrisonModel>
 	*/
-	/*protected */ METHOD("unregisterGarrison") {
+	/*protected */ METHOD(unregisterGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		private _garrisons = T_GETV("garrisons");
@@ -166,7 +166,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 			OOP_WARNING_MSG("Garrison %1 is not registered with action %2, so can't be unregistered", [_garrison ARG _thisObject]);
 		};
 		_garrisons deleteAt _idx;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Garrison's Intel:
@@ -182,7 +182,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:
 		_garrison - <Model.GarrisonModel>, the garrion to assign the intel to.
 	*/
-	/*protected */ METHOD("addGeneralGarrisonIntel") {
+	/*protected */ METHOD(addGeneralGarrisonIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		if(CALLM0(_garrison, "isActual") && !CALLM0(_garrison, "isDead")) then {
@@ -202,7 +202,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 				// 	NOTES: Make Garrison.addIntel only add if it isn't already there because this will happen often.
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected) addIntelAtLocationForSide
@@ -212,7 +212,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		_location - <Model.LocationModel>, the location whose _side garrison the intel should be assigned to.
 		_side - <side>, the side of the garrisons to assign the intel to
 	*/
-	/*protected */ METHOD("addIntelAtLocationForSide") {
+	/*protected */ METHOD(addIntelAtLocationForSide)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location"), P_SIDE("_side")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
 		if(CALLM0(_location, "isActual")) then {
@@ -233,12 +233,12 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 				// 	NOTES: Make Garrison.addIntel only add if it isn't already there because this will happen often.
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected) setPersonalGarrisonIntel
 	*/
-	METHOD("setPersonalGarrisonIntel") {
+	METHOD(setPersonalGarrisonIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 
@@ -264,7 +264,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 				OOP_INFO_2("  sent intel %1 to AI: %2", _intel, _AI);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected) addIntelAt
@@ -275,7 +275,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		_pos - Position, the center of the area in which we are placing intel.
 		_radius - Number, default 2000, the radius in meters in which we are placing intel.
 	*/
-	/*protected */ METHOD("addIntelAt") {
+	/*protected */ METHOD(addIntelAt)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 3500, [0]]]; // Testing
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		{
@@ -303,27 +303,27 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 			private _intel = CALLM0(_intelClone, "getDbEntry");
 			CALLSM2("AICommander", "interceptIntelAt", _intel, _pos);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: updateIntelForEnemies
 
 	Call this when we need to broadcast an intel update to enemies (enemy commanders)
 	*/
-	METHOD("updateIntelForEnemies") {
+	METHOD(updateIntelForEnemies)
 		params [P_THISOBJECT];
 		private _intelClone = T_GETV("intelClone");
 		if (!IS_NULL_OBJECT(_intelClone)) then {
 			private _intel = CALLM0(_intelClone, "getDbEntry");
 			CALLSM2("AICommander", "updateIntelCommanderActionForEnemies", _intel, _intelClone);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: setIntelState
 	Sets the state of the intel associated with this action. Updates it for enemies, but only if state was changed.
 	*/
-	METHOD("setIntelState") {
+	METHOD(setIntelState)
 		params [P_THISOBJECT, ["_state", INTEL_ACTION_STATE_INACTIVE, [0]], ["_updateForEnemies", true, [true]]];
 		private _intelClone = T_GETV("intelClone");
 		if (!IS_NULL_OBJECT(_intelClone)) then {
@@ -334,7 +334,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 				T_CALLM0("updateIntelForEnemies");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) updateScore
@@ -346,11 +346,11 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		_worldNow - <Model.WorldModel>, simulation of world in its current state possibly with some instantaneous actions applied (e.g. resource allocation).
 		_worldFuture - <Model.WorldModel>, simulation of world in its predicted state once all currently planned actions are complete.
 	*/
-	/* virtual */ METHOD("updateScore") {
+	/* virtual */ METHOD(updateScore)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/*protected */ METHOD("getFinalScore") {
+	/*protected */ METHOD(getFinalScore)
 		params [P_THISOBJECT];
 		private _scorePriority = T_GETV("scorePriority");
 		private _scoreResource = T_GETV("scoreResource");
@@ -360,7 +360,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		// Should we try to get them all from 0 to 1?
 		// Maybe we want R*(iP + jS + kC)?
 		CLAMP_POSITIVE(_scorePriority) * CLAMP_POSITIVE(_scoreResource) * CLAMP_POSITIVE(_scoreStrategy) * CLAMP_POSITIVE(_scoreCompleteness)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected) createVariable
@@ -374,15 +374,15 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	
 	Returns: <AST_VAR> reference to the newly created and registered variable.
 	*/
-	/* protected */ METHOD("createVariable") {
+	/* protected */ METHOD(createVariable)
 		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
 		private _variables = T_GETV("variables");
 		private _index = _variables pushBack _initialValue;
 		_index
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Push the values of all registered variables.
-	/* private */ METHOD("pushVariables") {
+	/* private */ METHOD(pushVariables)
 		params [P_THISOBJECT];
 		private _variables = T_GETV("variables");
 		private _variablesStack = T_GETV("variablesStack");
@@ -390,10 +390,10 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		// Make a deep copy of all the variables and push them into the stack
 		private _variablesCopy = +_variables;
 		_variablesStack pushBack _variablesCopy;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Pop the values of all registered variables.
-	/* private */ METHOD("popVariables") {
+	/* private */ METHOD(popVariables)
 		params [P_THISOBJECT];
 		private _variables = T_GETV("variables");
 		private _variablesStack = T_GETV("variablesStack");
@@ -404,10 +404,10 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		// Restore our whole variables array from the top stack element
 		private _prevVariables = _variablesStack deleteAt (_stackSize - 1);
 		T_SETV("variables", _prevVariables);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Returns (after creating if necessary) the ASTs of this action.
-	/* private */ METHOD("getTransitions") {
+	/* private */ METHOD(getTransitions)
 		params [P_THISOBJECT];
 		private _transitions = T_GETV("transitions");
 		if(count _transitions == 0) then {
@@ -415,7 +415,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 			T_SETV("transitions", _transitions);
 		};
 		_transitions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: applyToSim
@@ -430,7 +430,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	
 	Returns: <CMDR_ACTION_STATE>, the state after applying all applicable ASTs
 	*/
-	METHOD("applyToSim") {
+	METHOD(applyToSim)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		private _state = T_GETV("state");
 		private _transitions = T_CALLM("getTransitions", []);
@@ -451,7 +451,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		T_CALLM("popVariables", []);
 		// We don't update to the new state, this is just a simulation, but return it for information purposes
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: update
@@ -460,7 +460,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:
 		_world - <Model.WorldModel>, real world to update this action for. Sim worlds are not valid.
 	*/
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
@@ -483,14 +483,14 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		#ifdef DEBUG_CMDRAI
 		T_CALLM("debugDraw", [_world]);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: cancel
 	Cancel this action while it is in progress.
 	It will call a "cancel" on the current AST.
 	*/
-	METHOD("cancel") {
+	METHOD(cancel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		private _state = T_GETV("state");
@@ -505,17 +505,17 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 			CALLM1(_AST, "cancel", _world);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: isComplete
 	Is this action complete? i.e. reached state <CMDR_ACTION_STATE.CMDR_ACTION_STATE_END>
 	Returns: Boolean, true if the action is complete.
 	*/
-	METHOD("isComplete") {
+	METHOD(isComplete)
 		params [P_THISOBJECT];
 		T_GETV("state") == CMDR_ACTION_STATE_END
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected virtual) updateIntel
@@ -524,9 +524,9 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* protected virtual */ METHOD("updateIntel") {
+	/* protected virtual */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected virtual) getLabel
@@ -535,18 +535,18 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* protected virtual */ METHOD("getLabel") {
+	/* protected virtual */ METHOD(getLabel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		""
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected virtual) debugDraw
 	Implement to perform debug drawing (e.g. update a marker).
 	*/
-	/* protected virtual */ METHOD("debugDraw") {
+	/* protected virtual */ METHOD(debugDraw)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Toolkit for scoring actions -----------------------------------------
 
@@ -563,22 +563,22 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	
 	Returns: Number, value in 0 to 1 range representing the falloff that should be applied for the specified positions.
 	*/
-	STATIC_METHOD("calcDistanceFalloff") {
+	STATIC_METHOD(calcDistanceFalloff)
 		params [P_THISCLASS, P_POSITION("_from"), P_POSITION("_to"), "_k"];
 		private _kf = if(isNil "_k") then { 1 } else { _k };
 		// See https://www.desmos.com/calculator/59i3cltsfr
 		private _distScaled = 0.0005 * (_from distance _to) * _kf;
 		(1 / (1 + _distScaled * _distScaled))
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getDetachmentStrength
 	Returns number from given efficiency vector which represents how 'strong' the detachment is
 	*/
-	STATIC_METHOD("getDetachmentStrength") {
+	STATIC_METHOD(getDetachmentStrength)
 		params [P_THISCLASS, P_ARRAY("_eff")];
 		(_eff#T_EFF_soft) + 1.5*(_eff#T_EFF_medium) + 2*(_eff#T_EFF_armor) + 2*(_eff#T_EFF_air)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -588,17 +588,17 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual */ METHOD("getRecordSerial") {
+	/* virtual */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Return [] by default
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
 	// - - - - - STORAGE - - - - - -
-	/* override */ METHOD("preSerialize") {
+	/* override */ METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save our intel clone
@@ -614,11 +614,11 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		} forEach T_GETV("transitions");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// SAVEBREAK >>>
 	// We don't need this after next save break at all
-	/* virtual */ METHOD("deserializeFromStorage") {
+	/* virtual */ METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
 		if(_version >= 15) then {
 			DESERIALIZE_SAVE_VER(_thisObject, _serial, _version)
@@ -629,10 +629,10 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 			#endif
 			DESERIALIZE_ALL(_thisObject, _serial)
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 	// <<< SAVEBREAK
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Load intel clone
@@ -648,7 +648,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		} forEach T_GETV("transitions");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 
@@ -679,7 +679,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 
 	CLASS("ActionASTVarTest", "CmdrAction")
 
-		METHOD("testVars") {
+		METHOD(testVars)
 			params [P_THISOBJECT];
 
 			private _var = T_CALLM1("createVariable", -1);
@@ -689,7 +689,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 			SET_AST_VAR(_thisObject, _var, 1);
 			["SET_AST_VAR", GET_AST_VAR(_thisObject, _var) == 1] call test_Assert;
 			["AST_VAR share value works", GET_AST_VAR(_thisObject, _var2) == 1] call test_Assert;
-		} ENDMETHOD;
+		ENDMETHOD;
 
 	ENDCLASS;
 
@@ -709,22 +709,22 @@ if(isNil "gActionDebugMarkerStyle") then {
 		VARIABLE("var");
 		VARIABLE("newVal");
 
-		METHOD("new") {
+		METHOD(new)
 			params [P_THISOBJECT, P_OOP_OBJECT("_action"), P_NUMBER("_garrisonId"), P_AST_VAR("_var"), P_DYNAMIC("_newVal")];
 			T_SETV("garrisonId", _garrisonId);
 			T_SETV("var", _var);
 			T_SETV("newVal", _newVal);
 			T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
-		} ENDMETHOD;
+		ENDMETHOD;
 
-		/* virtual */ METHOD("isAvailable") { 
+		/* virtual */ METHOD(isAvailable) 
 			params [P_THISOBJECT, P_STRING("_world")];
 			private _garrisonId = T_GETV("garrisonId");
 			private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
 			!(isNil "_garrison")
-		} ENDMETHOD;
+		ENDMETHOD;
 
-		/* virtual */ METHOD("apply") { 
+		/* virtual */ METHOD(apply) 
 			params [P_THISOBJECT, P_STRING("_world")];
 
 			// Kill the garrison - this should be preserved after applySim
@@ -737,21 +737,21 @@ if(isNil "gActionDebugMarkerStyle") then {
 			SET_AST_VAR(T_GETV("action"), T_GETV("var"), _newVal);
 
 			CMDR_ACTION_STATE_KILLED
-		} ENDMETHOD;
+		ENDMETHOD;
 	ENDCLASS;
 
 	CLASS("AST_TestVariable", "ActionStateTransition")
 		VARIABLE("var");
 		VARIABLE("compareVal");
 
-		METHOD("new") {
+		METHOD(new)
 			params [P_THISOBJECT, P_OOP_OBJECT("_action"), P_AST_VAR("_var"), P_DYNAMIC("_compareVal")];
 			T_SETV("fromStates", [CMDR_ACTION_STATE_KILLED]);
 			T_SETV("var", _var);
 			T_SETV("compareVal", _compareVal);
-		} ENDMETHOD;
+		ENDMETHOD;
 
-		/* virtual */ METHOD("apply") { 
+		/* virtual */ METHOD(apply) 
 			params [P_THISOBJECT, P_STRING("_world")];
 			private _compareVal = T_GETV("compareVal");
 			if(GET_AST_VAR(T_GETV("action"), T_GETV("var")) isEqualTo _compareVal) then {
@@ -759,7 +759,7 @@ if(isNil "gActionDebugMarkerStyle") then {
 			} else {
 				CMDR_ACTION_STATE_FAILED
 			}
-		} ENDMETHOD;
+		ENDMETHOD;
 	ENDCLASS;
 }] call test_AddTest;
 

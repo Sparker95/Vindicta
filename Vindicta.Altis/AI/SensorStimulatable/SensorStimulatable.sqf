@@ -17,25 +17,25 @@ CLASS("SensorStimulatable", "Sensor")
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                            S T I M U L A T E
 	// ----------------------------------------------------------------------
 	
-	/* private */ METHOD("stimulate") {
+	/* private */ METHOD(stimulate)
 		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		
 		// Do sensor-specific complex check
@@ -43,35 +43,35 @@ CLASS("SensorStimulatable", "Sensor")
 		
 		// Create world fact
 		T_CALLM("handleStimulus", [_stimulus]);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           H A N D L E   S T I M U L U S
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("handleStimulus") {
+	/*virtual*/ METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                          D O   C O M P L E X  C H E C K
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("doComplexCheck") {
+	/*virtual*/ METHOD(doComplexCheck)
 		//params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		// Return true by default
 		true				
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

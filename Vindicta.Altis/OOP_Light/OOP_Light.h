@@ -883,8 +883,8 @@ SET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR, NAMESPACE); \
 PROFILER_COUNTER_INIT(_oop_classNameStr); \
 METHOD(new)ENDMETHOD; \
 METHOD(delete)ENDMETHOD; \
-METHOD(copy) OOP_clone_default ENDMETHOD; \
-METHOD(assign) OOP_assign_default ENDMETHOD; \
+METHOD(copy) _this call OOP_clone_default ENDMETHOD; \
+METHOD(assign) _this call OOP_assign_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
 VARIABLE(OOP_PUBLIC_STR);
 

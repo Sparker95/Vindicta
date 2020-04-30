@@ -3,10 +3,10 @@
 #define DEFAULT_COMBINED_SPEED_MAX 12
 
 CLASS("ActionGarrisonMoveCombined", "ActionGarrisonMoveBase")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		// Overwriting the default max speed as we have infantry units following
 		private _maxSpeedKmh = CALLSM3("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH, DEFAULT_COMBINED_SPEED_MAX);
 		T_SETV("maxSpeed", _maxSpeedKmh);
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

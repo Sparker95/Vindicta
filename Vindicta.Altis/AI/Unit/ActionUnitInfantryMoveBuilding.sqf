@@ -13,7 +13,7 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 	VARIABLE("building");
 	VARIABLE("posID");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _building = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
@@ -31,9 +31,9 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 			_occupied pushBackUnique _posID;
 			 _building setVariable ["vin_occupied_positions", _occupied];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Mark the position unoccupied again
@@ -43,14 +43,14 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 				_occupiedPositions deleteAt (_occupiedPositions find T_GETV("posID"));
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	// Override to show debug data in debug UI for specific class
-	/* override */ METHOD("getDebugUIVariableNames") {
+	/* override */ METHOD(getDebugUIVariableNames)
 		["building", "posID"]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

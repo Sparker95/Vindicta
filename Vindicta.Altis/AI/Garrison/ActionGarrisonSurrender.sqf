@@ -8,7 +8,7 @@ Class: ActionGarrison.ActionGarrisonSurrender
 
 CLASS("ActionGarrisonSurrender", "ActionGarrison")
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -28,9 +28,9 @@ CLASS("ActionGarrisonSurrender", "ActionGarrison")
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned
@@ -40,6 +40,6 @@ CLASS("ActionGarrisonSurrender", "ActionGarrison")
 		T_CALLM0("activateIfInactive");
 
 		ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

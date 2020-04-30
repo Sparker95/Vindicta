@@ -13,7 +13,7 @@
 
 CLASS(__CLASS_NAME, "DialogTabBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Create controls
@@ -22,18 +22,18 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		T_CALLM1("setControl", _group);
 
 		SETSV(__CLASS_NAME, "instance", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
 CLASS("MyDialog", "DialogBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
 
 		T_CALLM2("addTab", "DialogTabBase", "Mission");
@@ -42,6 +42,6 @@ CLASS("MyDialog", "DialogBase")
 		T_CALLM1("enableMultiTab", true);
 		T_CALLM2("setContentSize", 0.78, 0.7);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

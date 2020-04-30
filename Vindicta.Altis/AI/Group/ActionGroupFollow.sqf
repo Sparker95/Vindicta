@@ -7,16 +7,16 @@ CLASS("ActionGroupFollow", "ActionGroup")
 	VARIABLE("hGroupToFollow");
 	VARIABLE("nextWaypointUpdateTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _hGroupToFollow = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
 		T_SETV("hGroupToFollow", _hGroupToFollow);
 
 		T_SETV("nextWaypointUpdateTime", GAME_TIME + WAYPOINT_UPDATE_INTERVAL);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _group = T_GETV("group");
@@ -37,9 +37,9 @@ CLASS("ActionGroupFollow", "ActionGroup")
 		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -69,6 +69,6 @@ CLASS("ActionGroupFollow", "ActionGroup")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

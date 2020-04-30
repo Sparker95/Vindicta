@@ -37,7 +37,7 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 
 	VARIABLE("eventHandlers");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_unit")];
 
 		T_SETV("unit", _unit);
@@ -63,9 +63,9 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 		// Add fired event handler
 		pr _ehid = _unit addEventHandler ["FiredMan", GET_METHOD("SoundMonitor", "EHFiredMan")];
 		T_GETV("eventHandlers") pushBack ["FiredMan", _ehid];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete the timer
@@ -79,13 +79,13 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 			_unit removeEventHandler [_type, _id];
 		} forEach T_GETV("eventHandlers");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS");
@@ -139,9 +139,9 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 		};
 
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("EHFiredMan") {
+	STATIC_METHOD(EHFiredMan)
 		// Note the absence of P_THISCLASS in params
 		params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_vehicle"];
 		
@@ -172,6 +172,6 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 				_unit _SETV [__HIT_MAX_VAR_NAME, _hit];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

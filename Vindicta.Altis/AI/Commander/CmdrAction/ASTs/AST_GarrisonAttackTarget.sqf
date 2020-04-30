@@ -34,7 +34,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to attack
 		_moveRadiusVar - IN <AST_VAR>(Number), radius around target at which to stop moving and start attacking
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -56,9 +56,9 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		T_SETV("moveRadiusVar", _moveRadiusVar);
 
 		T_SETV("clearing", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -136,9 +136,9 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		} else {
 			CMDR_ACTION_STATE_NONE
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("isTargetDead") {
+	/* private */ METHOD(isTargetDead)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
@@ -174,9 +174,9 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		};
 		_isDead
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("getTargetRadius") {
+	/* private */ METHOD(getTargetRadius)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
@@ -197,10 +197,10 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			};
 		};
 		_radius
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Simulate the death of the target (for FUTURE sim worlds).
-	/* private */ METHOD("simKillTarget") {
+	/* private */ METHOD(simKillTarget)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
@@ -228,7 +228,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 				FAILURE("Target is not valid");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 

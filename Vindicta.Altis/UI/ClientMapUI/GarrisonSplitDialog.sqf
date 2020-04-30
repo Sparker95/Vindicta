@@ -62,7 +62,7 @@ CLASS("GarrisonSplitDialog", "")
 	
 	// Create a new unique instance of this dialog
 	// There can be only one instance of this dialog
-	/* public */ STATIC_METHOD("newInstance") {
+	/* public */ STATIC_METHOD(newInstance)
 		params [P_THISCLASS, P_OOP_OBJECT("_garRecord")];
 		pr _instance = GETSV(_thisClass, "instance");
 		if (IS_NULL_OBJECT(_instance)) then {
@@ -76,9 +76,9 @@ CLASS("GarrisonSplitDialog", "")
 			// Return a ref to the existing object anyway
 			_instance
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public */ STATIC_METHOD("deleteInstance") {
+	/* public */ STATIC_METHOD(deleteInstance)
 		params [P_THISCLASS];
 		pr _instance = GETSV(_thisClass, "instance");
 		if (IS_NULL_OBJECT(_instance)) then {
@@ -87,15 +87,15 @@ CLASS("GarrisonSplitDialog", "")
 			DELETE(_instance);
 			SETSV(_thisClass, "instance", "");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public */ STATIC_METHOD("getInstance") {
+	/* public */ STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		GETSV(_thisClass, "instance");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	/* private */ METHOD("new") {
+	/* private */ METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		OOP_INFO_1("NEW: %1", _garRecord);
@@ -234,9 +234,9 @@ CLASS("GarrisonSplitDialog", "")
 
 		T_CALLM1("updateListboxAndText", 0);
 		T_CALLM1("updateListboxAndText", 1);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("delete") {
+	/* private */ METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
@@ -246,18 +246,18 @@ CLASS("GarrisonSplitDialog", "")
 
 		// Notify the client map UI??
 		CALLM0(gClientMapUI, "onGarrisonSplitDialogDeleted");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// = = = = = = = = Button callbacks = = = = = = = = = =
 
 	// Close or cancel button was pressed
-	METHOD("onButtonClose") {
+	METHOD(onButtonClose)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON CLOSE");
 		CALLSM0("GarrisonSplitDialog", "deleteInstance");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonMoveLeft") {
+	METHOD(onButtonMoveLeft)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsLeft", false);
 		_unitData params ["_catID", "_subcatID"];
@@ -267,9 +267,9 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonMoveRight") {
+	METHOD(onButtonMoveRight)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsRight", false);
 		_unitData params ["_catID", "_subcatID"];
@@ -279,9 +279,9 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonMoveLeftAll") {
+	METHOD(onButtonMoveLeftAll)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsLeft", true);
 		_unitData params ["_catID", "_subcatID"];
@@ -291,9 +291,9 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonMoveRightAll") {
+	METHOD(onButtonMoveRightAll)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsRight", true);
 		_unitData params ["_catID", "_subcatID"];
@@ -303,9 +303,9 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonSplit") {
+	METHOD(onButtonSplit)
 		params [P_THISOBJECT];
 
 		// Bail if another request is in progress
@@ -344,11 +344,11 @@ CLASS("GarrisonSplitDialog", "")
 		T_SETV("state", 1);
 		// Close now
 		T_CALLM0("onButtonClose");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// = = = = = = = = = Other methods = = = = = = = = = = 
 
-	METHOD("updateListboxAndText") {
+	METHOD(updateListboxAndText)
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight")];
 		private ["_lnb", "_idcInf", "_idcCargo", "_IDsArray", "_comp"];
 		if (_leftOrRight == 1) then {
@@ -392,11 +392,11 @@ CLASS("GarrisonSplitDialog", "")
 			_lnb lnbAddRow [str _i, "Uber soldier"];
 		};
 		*/
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Modifies the composition, moves the currently selected unit on the left LB to the right (LB isn't updated)
 	// Returns [_catID, _subcatID] of the unit just moved
-	METHOD("moveUnitsRight") {
+	METHOD(moveUnitsRight)
 		params [P_THISOBJECT, P_BOOL("_moveAll")];
 
 		OOP_INFO_0("MOVE UNIT RIGHT");
@@ -428,9 +428,9 @@ CLASS("GarrisonSplitDialog", "")
 		};
 
 		[_catID, _subCatID]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("moveUnitsLeft") {
+	METHOD(moveUnitsLeft)
 		params [P_THISOBJECT, P_BOOL("_moveAll")];
 
 		OOP_INFO_0("MOVE UNIT LEFT");
@@ -462,12 +462,12 @@ CLASS("GarrisonSplitDialog", "")
 		};
 
 		[_catID, _subCatID]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Synchronizes currently selected rows
 	// 0 - from left to right
 	// 1 - from right to left
-	METHOD("syncListboxRows") {
+	METHOD(syncListboxRows)
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight"), ["_catID", -1, [0]], P_NUMBER("_subcatID")];
 
 		OOP_INFO_1("SYNC LISTBOX ROWS: %1", _this);
@@ -526,11 +526,11 @@ CLASS("GarrisonSplitDialog", "")
 		T_SETV("setCurSelInProgress", false);
 		*/
 		T_CALLM2("setListboxRow", _leftOrRight, _rowDst);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets the currently selected row of a listbox
 	// We call this instead of directly setting the row because it triggers a callback, and we don't want that
-	METHOD("setListboxRow") {
+	METHOD(setListboxRow)
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight"), P_NUMBER("_row")];
 		private ["_lnbDst", "_lastRowVarName"];
 		if (_leftOrRight == 1) then {
@@ -547,11 +547,11 @@ CLASS("GarrisonSplitDialog", "")
 		OOP_INFO_0("  LB SET CUR SEL ROW END");
 		T_SETV("setCurSelInProgress", false);
 		T_SETV(_lastRowVarName, _row);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Returns amount of infantry units in the composition
-	METHOD("getInfantryCount") {
+	METHOD(getInfantryCount)
 		params [P_THISOBJECT, P_ARRAY("_comp")];
 
 		pr _num = 0;
@@ -560,15 +560,15 @@ CLASS("GarrisonSplitDialog", "")
 		} forEach _comp#T_INF;
 
 		_num
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setHintText") {
+	METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_s")];
 		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_HINTS) ctrlSetText _s;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns amount of cargo seats all the vehicles in the composition have
-	METHOD("getCargoSeatCount") {
+	METHOD(getCargoSeatCount)
 		params [P_THISOBJECT, P_ARRAY("_comp")];
 
 		OOP_INFO_1("COMP: %1", _comp);
@@ -590,10 +590,10 @@ CLASS("GarrisonSplitDialog", "")
 		} forEach [_comp#T_VEH, _comp#T_DRONE];
 
 		_num
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets remotely called by the server
-	STATIC_METHOD("sendServerResponse") {
+	STATIC_METHOD(sendServerResponse)
 		params [P_THISCLASS, P_NUMBER("_responseCode")];
 
 		OOP_INFO_1("SEND SERVER RESPONSE: %1", _this);
@@ -631,7 +631,7 @@ CLASS("GarrisonSplitDialog", "")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 if (isNil {GETSV("GarrisonSplitDialog", "instance")}) then {

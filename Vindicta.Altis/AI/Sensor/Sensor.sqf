@@ -30,34 +30,34 @@ CLASS("Sensor", "")
 	
 	_AI - <AI> - derived object this sensor is attached to
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
 		
 		PROFILER_COUNTER_INC("Sensor");
 		
 		T_SETV("AI", _AI);
 		T_SETV("timeNextUpdate", GAME_TIME+0.01); // Update this sensor ASAP, fix for sensors created at game start when GAME_TIME is zero
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_DEC("Sensor");
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                              U P D A T E
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		// Do nothing by default
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  U P D A T E   I N T E R V A L
@@ -65,18 +65,18 @@ CLASS("Sensor", "")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getUpdateInterval") {
+	/* virtual */ METHOD(getUpdateInterval)
 		//params [P_THISOBJECT];
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

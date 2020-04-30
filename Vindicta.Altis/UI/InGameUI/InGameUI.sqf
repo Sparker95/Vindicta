@@ -22,7 +22,7 @@ CLASS("InGameUI", "")
 
 	STATIC_VARIABLE("instance");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		pr _inst = GETSV("InGameUI", "instance");
@@ -35,14 +35,14 @@ CLASS("InGameUI", "")
 		g_rscLayerInGameUI = ["rscLayerInGameUI"] call BIS_fnc_rscLayer;
 		uiNamespace setVariable ["p0_InGameUI_display", displayNull];
 		g_rscLayerInGameUI cutRsc ["Vin_InGameUI", "PLAIN", -1, false];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		OOP_ERROR_0("ARE YOU SURE THAT YOU WANT TO DELETE THAT?");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setLocationText") {
+	METHOD(setLocationText)
 		params [P_THISOBJECT, P_STRING("_text"), P_COLOR("_color")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
 		if(_text == "") then {
@@ -54,9 +54,9 @@ CLASS("InGameUI", "")
 			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME) ctrlSetText _text;
 			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME) ctrlSetTextColor _color;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setBuildResourcesAmount") {
+	METHOD(setBuildResourcesAmount)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
 
@@ -69,10 +69,10 @@ CLASS("InGameUI", "")
 			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES_DESCR) ctrlShow true;
 			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText format ["%1", _value];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 /*
-	METHOD("setLocationCapacityInf") {
+	METHOD(setLocationCapacityInf)
 		params [P_THISOBJECT, P_NUMBER("_capacity")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
 		if (_capacity < 0) then {
@@ -81,7 +81,7 @@ CLASS("InGameUI", "")
 			pr _text = format ["Max infantry: %1", _capacity];
 			(_display displayCtrl IDC_INGAME_STATIC_MAX_INF) ctrlSetText _text;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 */
 
 ENDCLASS;

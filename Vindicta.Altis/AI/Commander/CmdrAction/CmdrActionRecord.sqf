@@ -30,11 +30,11 @@ Parent: none
 
 CLASS("CmdrActionRecord", "")
 	
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		params [P_THISCLASS];
 		OOP_ERROR_0("getText must be called on final classes!");
 		"<Base class>"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // - - - - Targeted at position or location - - - -
@@ -51,7 +51,7 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 	VARIABLE_ATTR("dstGarRef", [ATTR_SERIALIZABLE]);
 
 	// Returns position, location position or garrison position, !! ON CLIENT !!
-	METHOD("getPos") {
+	METHOD(getPos)
 		params [P_THISOBJECT];
 
 		pr _pos = T_GETV("pos");
@@ -77,49 +77,49 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 		OOP_WARNING_1("No target in cmdr action record %1", _thisObject);
 		//[_thisObject] call OOP_dumpAllVariables;
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		params [P_THISCLASS];
 		OOP_ERROR_0("getText must be called on final classes!");
 		"<Directed base class>"
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
 // Done
 CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"MOVE"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"CAPTURE"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"ATTACK"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"REINFORCE"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("SupplyCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"SUPPLY"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 /*
@@ -136,7 +136,7 @@ ENDCLASS;
 // todo
 CLASS("PatrolCmdrActionRecord", "CmdrActionRecord")
 
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"Patrol"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

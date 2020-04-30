@@ -13,13 +13,13 @@ CLASS("ClassA", "")
 	VARIABLE("b");
 	VARIABLE("cStr");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		diag_log "NEW A";
 		T_SETV("a", 123);
 		T_SETV("b", 456);
 		T_SETV("cStr", "test string");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -31,7 +31,7 @@ CLASS("ClassB", "")
 	VARIABLE("cArrayObj");
 	//VARIABLE("me");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_otherObj")];
 		diag_log "NEW B";
 		
@@ -55,7 +55,7 @@ CLASS("ClassB", "")
 		T_SETV("cArrayObj", _array);
 
 		//T_SETV("me", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -74,7 +74,7 @@ CLASS("Bot", "")
 	VARIABLE("health");
 	VARIABLE("numArray");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		private _ai = NEW("AIBot", [_thisObject]);
@@ -82,7 +82,7 @@ CLASS("Bot", "")
 
 		private _array = [0, 1, 2, "3"];
 		T_SETV("numArray", _array);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -92,11 +92,11 @@ CLASS("AIBot", "")
 	VARIABLE("sameBot");
 	VARIABLE("target");
 	VARIABLE("state");
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_bot")];
 		T_SETV("bot", _bot);
 		T_SETV("sameBot", _bot);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

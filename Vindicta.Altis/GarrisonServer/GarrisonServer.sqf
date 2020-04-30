@@ -34,7 +34,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 	STATIC_VARIABLE("instance");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("outdatedObjects", []);
@@ -58,10 +58,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		};
 		SETSV("GarrisonServer", "instance", _thisObject);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sends update messages about a garrison(_gar) to _target(same as remoteExecCall target)
-	METHOD("_sendUpdate") {
+	METHOD(_sendUpdate)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar"), "_target"];
 
 		// Create a GarrisonRecord to serialize it (to deserialize it at the client machine)
@@ -76,11 +76,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Now we can send the serialized array
 		pr _jipid = _gar + __JIP_ID_SUFFIX;
 		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonDatabaseClient", "update", [_serArray], _target, _jipid); // classNameStr, methodNameStr, extraParams, targets, JIP
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// We only receive messages from timer now, so we don't care about the message type
 	// - - - - Processing of garrisons - - - - -
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		// Broadcast update messages
@@ -133,11 +133,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		T_SETV("destroyedObjects", []);
 		T_SETV("createdObjects", []);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Called when a client has connected
-	METHOD("onClientConnected") {
+	METHOD(onClientConnected)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_SIDE("_side")];
 
 		OOP_INFO_2("CLIENT CONNECTED: %1, side: %2", _clientOwner, _side);
@@ -148,13 +148,13 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			T_CALLM2("_sendUpdate", _x, [_side ARG civilian]); // Send data to all clients of same side as this garrison
 		} forEach _garrisons;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// - - - - Methods to be called by garrison on various events - - - - 
 
 	// Marks the garrison as just created
-	METHOD("onGarrisonCreated") {
+	METHOD(onGarrisonCreated)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 
 		T_GETV("createdObjects") pushBackUnique _gar;
@@ -163,10 +163,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Ref
 		REF(_gar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Marks the garrison requiring an update broadcast
-	METHOD("onGarrisonOutdated") {
+	METHOD(onGarrisonOutdated)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		CRITICAL_SECTION {
 			// Check if it's registered here
@@ -174,10 +174,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 				T_GETV("outdatedObjects") pushBackUnique _gar;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Marks the garrison requiring a destroyed event broadcast
-	METHOD("onGarrisonDestroyed") {
+	METHOD(onGarrisonDestroyed)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 
 		T_GETV("destroyedObjects") pushBackUnique _gar;
@@ -190,7 +190,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		#else
 		_outdatedObjects deleteAt _index;
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -198,9 +198,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 
 	// GarrisonServer is attached to the main message loop
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopMain
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: buildFromGarrison
@@ -210,7 +210,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		Description: Builds an object from the garrison. This runs in the thread.
 
 	*/
-	METHOD("buildFromGarrison") {
+	METHOD(buildFromGarrison)
 		OOP_INFO_1("BUILD FROM GARRISON: %1", _this);
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_STRING("_catCfgClassNameStr"), 
 				P_STRING("_objCfgClassNameStr"), P_POSITION("_vecDir"), P_POSITION("_pos"), P_BOOL("_checkGarrisonBuildRes")];
@@ -290,7 +290,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _objName = getText (configfile >> "CfgVehicles" >> _className >> "displayName");
 		pr _text = format ["Object %1 was build successfully!", _objName];
 		_text remoteExecCall ["systemChat", _clientOwner];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: moveObjectFromGarrison
@@ -307,7 +307,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		> The only known object types that currently, don't synchronise their positions over the net, are statics (simulation = "house")"
 
 	*/
-	METHOD("moveObjectFromGarrison") {
+	METHOD(moveObjectFromGarrison)
 		OOP_INFO_1("moveObjectFromGarrison: %1", _this);
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar"), P_OBJECT("_object"), P_POSITION("_vecDir"), P_POSITION("_pos")];
 
@@ -362,11 +362,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Recruits a unit at this location from one of nearby cities
-	METHOD("recruitUnitAtLocation") {
+	METHOD(recruitUnitAtLocation)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side"), P_NUMBER("_subcatID"), P_ARRAY("_weapons"), P_OOP_OBJECT("_arsenalUnit")];
 
 		OOP_INFO_1("RECRUIT UNIT AT LOCATION: %1", _this);
@@ -456,9 +456,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Send weapon data again, to re-enable client's buttons
 		T_CALLM3("clientRequestRecruitWeaponsAtLocation", _clientOwner, _loc, _side);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientRequestRecruitWeaponsAtLocation") {
+	METHOD(clientRequestRecruitWeaponsAtLocation)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
 		OOP_INFO_1("REQUEST RECRUIT WEAPONS AT LOCATION: %1", _this);
@@ -490,10 +490,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _args = [_unitsAndWeapons, call t_fnc_getAllValidTemplateNames, _nRecruits];
 		OOP_INFO_1("  sending daga: %1", _args);
 		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveData", _args, _clientOwner, false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called from AttachToGarrisonDialog
-	METHOD("getUnitData") {
+	METHOD(getUnitData)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_unit")];
 
 		// Ensure this unit exists
@@ -519,10 +519,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 					_catID, _gar, _garSide];
 		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called from AttachToGarrisonDialog
-	METHOD("attachUnit") {
+	METHOD(attachUnit)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_unit"), P_OOP_OBJECT("_gar")];
 
 		OOP_INFO_1("ATTACH UNIT: %1", _this);
@@ -555,6 +555,6 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 					CALLM0(_unit, "getCategory"), _gar, CALLM0(_gar, "getSide")];
 		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

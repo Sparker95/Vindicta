@@ -25,7 +25,7 @@ CLASS("AST_AssignCargo", "ActionStateTransition")
 		_garrIdVar - Garrison to assign supplies to
 		_cargo - IN <Array of [item, count]>, cargo items and counts to add
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -38,9 +38,9 @@ CLASS("AST_AssignCargo", "ActionStateTransition")
 		T_SETV("doneState", _doneState);
 		T_SETV("garrIdVar", _garrIdVar);
 		T_SETV("cargo", _cargo);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -58,5 +58,5 @@ CLASS("AST_AssignCargo", "ActionStateTransition")
 		};
 #endif
 		T_GETV("doneState")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

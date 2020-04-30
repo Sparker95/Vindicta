@@ -39,7 +39,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_INF, [GROUP_TYPE_INF]]];
 		
 		PROFILER_COUNTER_INC(GROUP_CLASS_NAME);
@@ -54,13 +54,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		_data set [GROUP_DATA_ID_TYPE, _groupType];
 		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
 		T_SETV("data", _data);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                            D E L E T E
 	/*
 	Method: delete
 	*/
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_DEC(GROUP_CLASS_NAME);
@@ -89,7 +89,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			} forEach _units;
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getMessageLoop
@@ -98,9 +98,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: <MessageLoop>
 	*/
 	// Returns the message loop this object is attached to
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopMain
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                           A D D   U N I T
@@ -114,10 +114,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: bool - true if the unit was moved
 	*/
-	METHOD("addUnit") {
+	METHOD(addUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		T_CALLM1("addUnits", [_unit]) > 0
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                           A D D   U N I T S
 	/*
@@ -130,7 +130,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: number of units added
 	*/
-	METHOD("addUnits") {
+	METHOD(addUnits)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		OOP_INFO_1("ADD UNITS: %1", _units);
@@ -198,7 +198,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		count _unitsToMove
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: addGroup
@@ -212,7 +212,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 
-	METHOD("addGroup") {
+	METHOD(addGroup)
 		params [P_THISOBJECT, P_OOP_OBJECT("_group"), ["_delete", false]];
 
 		OOP_INFO_1("ADD GROUP: %1", _group);
@@ -229,7 +229,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (_delete) then {
 			DELETE(_group);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                        R E M O V E   U N I T                       |
@@ -246,12 +246,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("removeUnit") {
+	METHOD(removeUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		T_CALLM1("removeUnits", [_unit]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("removeUnits") {
+	METHOD(removeUnits)
 		params [P_THISOBJECT, P_ARRAY("_unitsToRemove")];
 
 		OOP_INFO_1("REMOVE UNITs: %1", _unitsToRemove);
@@ -283,10 +283,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if ((_data select GROUP_DATA_ID_LEADER) in _unitsToRemove) then {
 			T_CALLM0("_selectNextLeader");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Create new group handle if it doesn't exist
-	/* private */ METHOD("_createGroupHandle") {
+	/* private */ METHOD(_createGroupHandle)
 		pr _groupHandle = grpNull;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -303,9 +303,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			};
 		};
 		_groupHandle
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public */ METHOD("rectifyGroupHandle") {
+	/* public */ METHOD(rectifyGroupHandle)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -333,7 +333,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Reform other units back to the group
 		pr _otherUnitHandles = (_units apply {CALLM0(_x, "getObjectHandle")});
 		(_otherUnitHandles - units _groupHandle) joinSilent _groupHandle;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                          G E T T I N G   M E M B E R   V A L U E S
@@ -348,13 +348,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Array of units.
 	*/
-	METHOD("getUnits") {
+	METHOD(getUnits)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		private _return = +_unitList;
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                         G E T  I N F A N T R Y  U N I T S
 	/*
@@ -363,12 +363,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Array of units.
 	*/
-	METHOD("getInfantryUnits") {
+	METHOD(getInfantryUnits)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList select { CALLM0(_x, "isInfantry") }
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                         G E T   V E H I C L E   U N I T S
 	/*
@@ -377,12 +377,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Array of units.
 	*/
-	METHOD("getVehicleUnits") {
+	METHOD(getVehicleUnits)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList select { CALLM0(_x, "isVehicle") }
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
 	/*
@@ -391,12 +391,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Array of units.
 	*/
-	METHOD("getDroneUnits") {
+	METHOD(getDroneUnits)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList select {CALLM0(_x, "isDrone")}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                         G E T   T Y P E                            |
@@ -406,11 +406,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Number, group type. See <GROUP_TYPE>,
 	*/
-	METHOD("getType") {
+	METHOD(getType)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_TYPE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                         G E T   S I D E                            |
 	/*
@@ -419,11 +419,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Side
 	*/
-	METHOD("getSide") {
+	METHOD(getSide)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_SIDE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                  G E T   G R O U P   H A N D L E
@@ -433,11 +433,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: group handle.
 	*/
-	METHOD("getGroupHandle") {
+	METHOD(getGroupHandle)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_GROUP_HANDLE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                  S E T / G E T   L E A D E R
 	/*
@@ -447,13 +447,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: <Unit> object
 	*/
-	METHOD("getLeader") {
+	METHOD(getLeader)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		_data select GROUP_DATA_ID_LEADER
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getPos") {
+	METHOD(getPos)
 		params [P_THISOBJECT];
 		if(!T_CALLM0("isSpawned")) exitWith {
 			private _garrison = T_CALLM0("getGarrison");
@@ -467,7 +467,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		private _garrison = T_CALLM0("getGarrison");
 		CALLM0(_garrison, "getPos")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getGroupFromGroupHandle
@@ -479,16 +479,16 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: <Group> or ""
 	*/
-	STATIC_METHOD("getGroupFromGroupHandle") {
+	STATIC_METHOD(getGroupFromGroupHandle)
 		params [P_THISCLASS, P_GROUP("_groupHandle") ];
 		_groupHandle getVariable [GROUP_VAR_NAME_STR, ""]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: setLeader
 	Sets the leader of this group to a specified Unit. The Unit must belong to this group.
 	*/
-	METHOD("setLeader") {
+	METHOD(setLeader)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		pr _data = T_GETV("data");
@@ -518,11 +518,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		} else {
 			_data set [GROUP_DATA_ID_LEADER, _unit];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Selects the next leader when the current one is removed or whatever
 	// If there is no more infantry, it sets leader to NULL_OBJECT (no leader)
-	METHOD("_selectNextLeader") {
+	METHOD(_selectNextLeader)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -548,10 +548,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			};
 			_leader
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// All the units in the group have just been spawned so we must select the right leader
-	METHOD("_selectLeaderOnSpawn") {
+	METHOD(_selectLeaderOnSpawn)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -560,7 +560,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _hO = CALLM0(_leader, "getObjectHandle");
 		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
 		_hG selectLeader _hO;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                     S E T / G E T   G A R R I S O N                |
 	//
@@ -577,7 +577,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("setGarrison") {
+	METHOD(setGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison") ];
 		private _data = T_GETV("data");
 		_data set [GROUP_DATA_ID_GARRISON, _garrison];
@@ -585,7 +585,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Set the garrison of all units in this group
 		private _units = _data select GROUP_DATA_ID_UNITS;
 		{ CALLM(_x, "setGarrison", [_garrison]); } forEach _units;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -594,11 +594,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: String, <Garrison>
 	*/
-	METHOD("getGarrison") {
+	METHOD(getGarrison)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select GROUP_DATA_ID_GARRISON
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                           G E T   A I
@@ -608,12 +608,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: String, <AIGroup>
 	*/
-	METHOD("getAI") {
+	METHOD(getAI)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
 		_data select GROUP_DATA_ID_AI
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |                           I S   S P A W N E D
 	/*
@@ -622,12 +622,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Bool
 	*/
-	METHOD("isSpawned") {
+	METHOD(isSpawned)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
 		_data select GROUP_DATA_ID_SPAWNED
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// 								I S   E M P T Y 
 	/*
@@ -636,12 +636,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Bool
 	*/
-	METHOD("isEmpty") {
+	METHOD(isEmpty)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
 		count (_data select GROUP_DATA_ID_UNITS) == 0
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -658,13 +658,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("handleUnitRemoved") {
+	METHOD(handleUnitRemoved)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		diag_log format ["[Group::handleUnitRemoved] Info: %1", _unit];
 
 		T_CALLM1("removeUnit", _unit);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |              H A N D L E   U N I T   D E S P A W N E D             |
@@ -674,9 +674,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("handleUnitDespawned") {
+	METHOD(handleUnitDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit") ];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -687,9 +687,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("handleUnitSpawned") {
+	METHOD(handleUnitSpawned)
 		params [P_THISOBJECT, "_unit"];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -711,7 +711,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("createAI") {
+	METHOD(createAI)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -725,7 +725,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			CALLM1(_AI, "start", "AIGroupLow"); // Kick start it
 		//};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -741,7 +741,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("spawnAtLocation") {
+	METHOD(spawnAtLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		OOP_INFO_1("SPAWN AT LOCATION: %1", _loc);
@@ -774,7 +774,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//	S P A W N   V E H I C L E S   A T   P O S 
 	/*
@@ -789,7 +789,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("spawnVehiclesOnRoad") {
+	METHOD(spawnVehiclesOnRoad)
 		params [P_THISOBJECT, P_ARRAY("_posAndDir"), P_ARRAY("_startPos")];
 
 		OOP_INFO_2("SPAWN VEHICLES ON ROAD: _posAndDir: %1, _startPos: %2", _posAndDir, _startPos);
@@ -861,7 +861,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//	S P A W N   A T   P O S 
 	/*
@@ -874,7 +874,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("spawnAtPos") {
+	METHOD(spawnAtPos)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		OOP_INFO_1("SPAWN AT POS: %1", _pos);
@@ -921,7 +921,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |         D E S P A W N
@@ -931,7 +931,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("despawn") {
+	METHOD(despawn)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DESPAWN");
@@ -971,7 +971,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			OOP_ERROR_0("Already despawned");
 			DUMP_CALLSTACK;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// |         S O R T
 	/*
@@ -985,7 +985,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: nil
 	*/
 
-	METHOD("sort") {
+	METHOD(sort)
 		params [P_THISOBJECT, P_ARRAY("_unitsSorted")];
 
 		pr _data = T_GETV("data");
@@ -1025,7 +1025,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		deleteGroup _tempGroupHandle;
 
 		T_CALLM1("setLeader", _newLeader);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -1047,7 +1047,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: array of units.
 	*/
-	METHOD("getSubagents") {
+	METHOD(getSubagents)
 		//params [P_THISOBJECT];
 
 		// Get all units
@@ -1067,7 +1067,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		// Return nothing, units are not processed with their group any more
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	//                        G E T   P O S S I B L E   G O A L S
@@ -1079,10 +1079,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Array with goal class names
 	*/
-	METHOD("getPossibleGoals") {
+	METHOD(getPossibleGoals)
 		//["GoalGroupRelax"]
 		["GoalGroupUnflipVehicles", "GoalGroupArrest"]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	//                      G E T   P O S S I B L E   A C T I O N S
@@ -1094,9 +1094,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Array with action class names
 	*/
-	METHOD("getPossibleActions") {
+	METHOD(getPossibleActions)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -1109,7 +1109,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	See <MessageReceiver.serialize>
 	*/
 	// Must return a single value which can be deserialized to restore value of an object
-	METHOD("serialize") {
+	METHOD(serialize)
 		params [P_THISOBJECT];
 
 		diag_log "[Group:serialize] was called!";
@@ -1134,14 +1134,14 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		//MUTEX_UNLOCK(_mutex);
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: deserialize
 	See <MessageReceiver.deserialize>
 	*/
 	// Takes the output of deserialize and restores values of an object
-	METHOD("deserialize") {
+	METHOD(deserialize)
 		params [P_THISOBJECT, "_serialData"];
 
 		diag_log "[Group:deserialize] was called!";
@@ -1171,13 +1171,13 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			T_CALLM0("createAI");
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: transferOwnership
 	See <MessageReceiver.transferOwnership>
 	*/
-	METHOD("transferOwnership") {
+	METHOD(transferOwnership)
 		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 
 		diag_log "[Group:transferOwnership] was called!";
@@ -1219,7 +1219,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		// We're done here
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -1241,7 +1241,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: Number, amount of created units.
 	*/
-	METHOD("createUnitsFromTemplate") {
+	METHOD(createUnitsFromTemplate)
 		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_subcatID")];
 		private _groupData = [_template, _subcatID, -1] call t_fnc_selectGroup;
 
@@ -1255,7 +1255,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		} forEach _groupData;
 
 		(count _groupData)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getRequiredCrew
@@ -1264,7 +1264,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 
-	METHOD("getRequiredCrew") {
+	METHOD(getRequiredCrew)
 		params [P_THISOBJECT];
 
 		pr _units = T_GETV("data") select GROUP_DATA_ID_UNITS;
@@ -1286,12 +1286,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		OOP_INFO_3("getRequiredCrew: drivers: %1, turrets: %2, cargo: %3", _nDrivers, _nTurrets, _nCargo);
 
 		[_nDrivers, _nTurrets, _nCargo]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
 	// - - - - - - - STORAGE - - - - - - - -
-	METHOD("preSerialize") {
+	METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save units which we own
@@ -1303,9 +1303,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		} forEach (_data#GROUP_DATA_ID_UNITS);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("serializeForStorage") {
+	/* override */ METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		
 		pr _data = +T_GETV("data");
@@ -1315,9 +1315,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		_data set [GROUP_DATA_ID_SPAWNED, 0];
 
 		_data
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("deserializeFromStorage") {
+	/* override */ METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		
 		_serial set [GROUP_DATA_ID_GROUP_HANDLE, grpNull];
@@ -1328,9 +1328,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		T_SETV("data", _serial);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -1366,7 +1366,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

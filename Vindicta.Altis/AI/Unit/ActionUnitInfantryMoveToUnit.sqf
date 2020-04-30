@@ -16,7 +16,7 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 	
 	// ------------ N E W ------------
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _unit = CALLSM2("Action", "getParameterValue", _parameters, "unit");
@@ -36,9 +36,9 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 		
 		OOP_INFO_2("new: dest unit pos: %1, tolerance: %2", _posDest, _tolerance);
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		// Bail if dest unit is destroyed or whatever
@@ -67,7 +67,7 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 		
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 ENDCLASS;

@@ -10,17 +10,17 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 
 	VARIABLE("route");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		// Route can be optionally passed or not
 		// We add the target position to the end
 		private _route = +CALLSM3("Action", "getParameterValue", _parameters, TAG_ROUTE, []);
 		T_SETV("route", _route);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _hG = T_GETV("hG");
@@ -144,10 +144,10 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");
@@ -156,10 +156,10 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		pr _hG = T_GETV("hG");
@@ -177,6 +177,6 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
 		} forEach _units;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -6,7 +6,7 @@ Strategy for commander to use during phase 2 gameplay.
 Sends QRFs, deploys roadblocks, doesn't capture anything.
 */
 CLASS("Phase2CmdrStrategy", "CmdrStrategy")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("takeLocOutpostPriority", 			1);		// Low priority to take outposts in general
@@ -29,5 +29,5 @@ CLASS("Phase2CmdrStrategy", "CmdrStrategy")
 		T_SETV("constructLocRoadblockPriority", 	-2);	// Construct roadblocks when enemy activity in the area is highish (the coeff is applied to activity before the priority)
 		T_SETV("constructLocRoadblockCoeff", 		5);		// Construct roadblocks with highish priority when required
 
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

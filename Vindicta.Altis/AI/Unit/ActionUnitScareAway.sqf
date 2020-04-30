@@ -15,7 +15,7 @@ CLASS("ActionUnitScareAway", "Action")
 	VARIABLE("step");
 	VARIABLE("warningShotTarget");
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		T_SETV("step",0);
@@ -32,13 +32,13 @@ CLASS("ActionUnitScareAway", "Action")
 		pr _oh = CALLM0(_a, "getObjectHandle");
 		T_SETV("objectHandle", _oh);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
-	} ENDMETHOD;
+	METHOD(delete)
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 		
 		OOP_DEBUG_0("active: Unit is pissed off!");
@@ -68,10 +68,10 @@ CLASS("ActionUnitScareAway", "Action")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		diag_log "scare away process was called!";
@@ -125,10 +125,10 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		diag_log "Terminating scaring civilian!";
@@ -151,6 +151,6 @@ CLASS("ActionUnitScareAway", "Action")
 			deleteVehicle _laserT;
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

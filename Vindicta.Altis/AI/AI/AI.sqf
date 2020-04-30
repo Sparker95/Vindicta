@@ -41,7 +41,7 @@ CLASS("AI", "MessageReceiverEx")
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 
 		OOP_INFO_1("NEW %1", _this);
@@ -57,13 +57,13 @@ CLASS("AI", "MessageReceiverEx")
 		T_SETV("timer", "");
 		T_SETV("processInterval", 1);
 		T_SETV("worldFacts", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
@@ -78,23 +78,23 @@ CLASS("AI", "MessageReceiverEx")
 		{
 			DELETE(_x);
 		} forEach _sensors;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                              P R O C E S S
 	// | Must be called every update interval
 	// ----------------------------------------------------------------------
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   M E S S A G E
 	// |
 	// ----------------------------------------------------------------------
 
-	METHOD("handleMessageEx") { //Derived classes must implement this method
+	METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
@@ -110,7 +110,7 @@ CLASS("AI", "MessageReceiverEx")
 
 			default {false}; // Message not handled
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -139,7 +139,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD("addSensor") {
+	METHOD(addSensor)
 		params [P_THISOBJECT, ["_sensor", "ERROR_NO_SENSOR", [""]]];
 
 		ASSERT_OBJECT_CLASS(_sensor, "Sensor");
@@ -155,14 +155,14 @@ CLASS("AI", "MessageReceiverEx")
 		{
 			_stimTypesThis pushBackUnique _x;
 		} forEach _stimTypesSensor;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   S E N S O R S
 	// | Update values of all sensors, according to their settings
 	// ----------------------------------------------------------------------
 
-	METHOD("updateSensors") {
+	METHOD(updateSensors)
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
 		#ifdef ASP_ENABLE
@@ -194,14 +194,14 @@ CLASS("AI", "MessageReceiverEx")
 				};
 			};
 		} forEach _sensors;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   S T I M U L U S
 	// | Handles external stimulus.
 	// ----------------------------------------------------------------------
 
-	METHOD("handleStimulus") {
+	METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		pr _type = _stimulus select STIMULUS_ID_TYPE;
 		if (_type in T_GETV("sensorStimulusTypes")) then {
@@ -213,7 +213,7 @@ CLASS("AI", "MessageReceiverEx")
 				};
 			} foreach _sensors;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	// ------------------------------------------------------------------------------------------------------
@@ -221,15 +221,15 @@ CLASS("AI", "MessageReceiverEx")
 	// ------------------------------------------------------------------------------------------------------
 
 	// Adds a world fact
-	METHOD("addWorldFact") {
+	METHOD(addWorldFact)
 		params [P_THISOBJECT, P_ARRAY("_fact")];
 		pr _facts = T_GETV("worldFacts");
 		_facts pushBack _fact;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Finds a world fact that matches a query
 	// Returns the found world fact or nil if nothing was found
-	METHOD("findWorldFact") {
+	METHOD(findWorldFact)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -241,11 +241,11 @@ CLASS("AI", "MessageReceiverEx")
 			_i = _i + 1;
 		};
 		if (!isNil "_return") then {_return} else {nil};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Finds all world facts that match a query
 	// Returns array with facts that satisfy criteria or []
-	METHOD("findWorldFacts") {
+	METHOD(findWorldFacts)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -257,10 +257,10 @@ CLASS("AI", "MessageReceiverEx")
 			_i = _i + 1;
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Deletes all facts that match query
-	METHOD("deleteWorldFacts") {
+	METHOD(deleteWorldFacts)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -268,11 +268,11 @@ CLASS("AI", "MessageReceiverEx")
 			pr _fact = _facts select _i;
 			if ([_fact, _query] call wf_fnc_matchesQuery) then {_facts deleteAt _i} else {_i = _i + 1;};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Maintains the array of world facts
 	// Deletes world facts that have exceeded their lifetime
-	METHOD("updateWorldFacts") {
+	METHOD(updateWorldFacts)
 		params [P_THISOBJECT];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -285,7 +285,7 @@ CLASS("AI", "MessageReceiverEx")
 				_i = _i + 1;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                S T A R T
@@ -295,7 +295,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: start
 	Starts the AI brain. From now process method will be called periodically.
 	*/
-	METHOD("start") {
+	METHOD(start)
 		params [P_THISOBJECT, ["_processCategoryTag", ""]];
 		if (_processCategoryTag != "") then {
 			pr _msgLoop = T_CALLM0("getMessageLoop");
@@ -319,7 +319,7 @@ CLASS("AI", "MessageReceiverEx")
 		};
 
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                S T O P
@@ -329,7 +329,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: stop
 	Stops the periodic call of process function.
 	*/
-	METHOD("stop") {
+	METHOD(stop)
 		params [P_THISOBJECT];
 		
 		// Delete this object from process category 
@@ -342,7 +342,7 @@ CLASS("AI", "MessageReceiverEx")
 			DELETE(_timer);
 		};
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -360,7 +360,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD("setProcessInterval") {
+	METHOD(setProcessInterval)
 		params [P_THISOBJECT, ["_interval", 5, [5]]];
 		T_SETV("processInterval", _interval);
 
@@ -369,32 +369,32 @@ CLASS("AI", "MessageReceiverEx")
 		if (_timer != "") then {
 			CALLM(_timer, "setInterval", [_interval]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: addToProcessCategory
 	Adds this object to process category of its message loop.
 	*/
-	METHOD("addToProcessCategory") {
+	METHOD(addToProcessCategory)
 		params [P_THISOBJECT, P_STRING("_tag")];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM2(_msgLoop, "addProcessCategoryObject", _tag, _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: removeFromProcessCategory
 
 	Removes this object from all process categories
 	*/
-	METHOD("removeFromProcessCategory") {
+	METHOD(removeFromProcessCategory)
 		params [P_THISOBJECT];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		//diag_log "AI postDeserialize";
@@ -412,6 +412,6 @@ CLASS("AI", "MessageReceiverEx")
 		// By reinitializing sensors and doing other things
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

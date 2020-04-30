@@ -39,7 +39,7 @@ CLASS("Grid", "Storable");
 	_cellSize - cell size in meters. Each cell is square. And flat.
 	*/
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, ["_cellSize", 500], ["_defaultValue", 0, GRID_ELEMENT_TYPES]];
 
 		private _gridSize = ceil(WORLD_SIZE / _cellSize); //Size of the grid measured in squares
@@ -65,7 +65,7 @@ CLASS("Grid", "Storable");
 		} forEach _gridArray;
 
 		T_SETV("gridArray", _gridArray);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getGridArray
@@ -73,10 +73,10 @@ CLASS("Grid", "Storable");
 	
 	Returns: Array
 	*/
-	METHOD("getGridArray") {
+	METHOD(getGridArray)
 		params [P_THISOBJECT];
 		T_GETV("gridArray")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getCellSize
@@ -84,19 +84,19 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number
 	*/
-	METHOD("getCellSize") {
+	METHOD(getCellSize)
 		params [P_THISOBJECT];
 		T_GETV("cellSize")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getGridSize
 	Returns grid size - integer number, amount of cells in this grid
 	*/
-	METHOD("getGridSize") {
+	METHOD(getGridSize)
 		params [P_THISOBJECT];
 		T_GETV("gridSize");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - Setting values - - - -
 
@@ -110,7 +110,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: nil
 	*/
-	METHOD("setValueAll") {
+	METHOD(setValueAll)
 		params [P_THISOBJECT, ["_value", 0, GRID_ELEMENT_TYPES]];
 		
 		pr _gridArray = T_GETV("gridArray");
@@ -120,7 +120,7 @@ CLASS("Grid", "Storable");
 			_a resize _n;
 			_gridArray set [_forEachIndex, _a apply {_value}];
 		} forEach _gridArray;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: setValue
@@ -134,7 +134,7 @@ CLASS("Grid", "Storable");
 	Returns: nil
 	*/
 	
-	METHOD("setValue") {
+	METHOD(setValue)
 		params [P_THISOBJECT, P_ARRAY("_pos"), ["_value", 0, GRID_ELEMENT_TYPES]];
 	
 		_pos params ["_x", "_y"];
@@ -147,7 +147,7 @@ CLASS("Grid", "Storable");
 		
 		(_array select _xID) set [_yID, _value];
 	
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: addValue
@@ -161,7 +161,7 @@ CLASS("Grid", "Storable");
 	Returns: new value of the element.
 	*/
 	
-	METHOD("addValue") {
+	METHOD(addValue)
 		params [P_THISOBJECT, P_ARRAY("_pos"), ["_value", 0, [0, []]]];
 	
 		_pos params ["_x", "_y"];
@@ -184,7 +184,7 @@ CLASS("Grid", "Storable");
 		(_array select _xID) set [_yID, _v];
 
 		_v
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: findValue
@@ -194,7 +194,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Bool
 	*/
-	METHOD("findValue") {
+	METHOD(findValue)
 		params [P_THISOBJECT, ["_value", 0, GRID_ELEMENT_TYPES]];
 
 		pr _gridArray = T_GETV("gridArray");
@@ -204,9 +204,9 @@ CLASS("Grid", "Storable");
 		};
 
 		_index != -1
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("applyRect") {
+	METHOD(applyRect)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_CODE("_fnApplyRect")];
 
 		_pos params ["_x", "_y"];
@@ -230,9 +230,9 @@ CLASS("Grid", "Storable");
 				[_i, _j, _row] call _fnApplyRect;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("applyCircle") {
+	METHOD(applyCircle)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius"), P_CODE("_fnApplyCircle")];
 
 		private _gridArray = T_GETV("gridArray");
@@ -253,10 +253,10 @@ CLASS("Grid", "Storable");
 		private _pos = [_center#0 - _radius, _center#1 - _radius];
 		private _size = [_radius * 2, _radius * 2];
 		T_CALLM("applyRect", [_pos ARG _size ARG _circleWrapperFn]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Set value to max of the current and new values
-	METHOD("maxRect") {
+	METHOD(maxRect)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), ["_value", 0, [0, []]]];
 		private _fnMax =
 			if(_value isEqualType 0) then {
@@ -275,10 +275,10 @@ CLASS("Grid", "Storable");
 			};
 		
 		T_CALLM("applyRect", [_pos ARG _size ARG _fnMax]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Set value to max of the current and new values in a circle
-	METHOD("maxCircle") {
+	METHOD(maxCircle)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_ARRAY("_radius"), ["_value", 0, [0, []]]];
 		private _fnMax =
 			if(_value isEqualType 0) then {
@@ -296,7 +296,7 @@ CLASS("Grid", "Storable");
 				}
 			};
 		T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
-	} ENDMETHOD;
+	ENDMETHOD;
 	// - - - - - Getting values - - - - -
 
 	/*
@@ -309,7 +309,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number, value of the element.
 	*/
-	METHOD("getValue") {
+	METHOD(getValue)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		_pos params ["_x", "_y"];
@@ -323,7 +323,7 @@ CLASS("Grid", "Storable");
 		pr _v = (_array select _xID) select _yID;
 
 		_v
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getValueSafe
@@ -331,7 +331,7 @@ CLASS("Grid", "Storable");
 
 	If not, default value is returned.
 	*/
-	METHOD("getValueSafe") {
+	METHOD(getValueSafe)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		_pos params ["_x", "_y"];
@@ -349,7 +349,7 @@ CLASS("Grid", "Storable");
 		pr _v = (_array select _xID) select _yID;
 
 		_v
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getMaxValueCircle
@@ -366,7 +366,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number or Array, max value found within the circle
 	*/
-	METHOD("getMaxValueCircle") {
+	METHOD(getMaxValueCircle)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
 
 		private _defaultValue = T_GETV("defaultValue");
@@ -390,10 +390,10 @@ CLASS("Grid", "Storable");
 			T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
 			_maxVal
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets max value at square area centered at _pos as having full width of 2*_halfSize
-	METHOD("getMaxValueSquareNumber") {
+	METHOD(getMaxValueSquareNumber)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfSize")];
 		
 		_pos params ["_x", "_y"];
@@ -417,7 +417,7 @@ CLASS("Grid", "Storable");
 
 		selectMax _maxx
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getValueCircleSum
@@ -430,7 +430,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number or Array, total value found within the circle
 	*/
-	METHOD("getValueCircleSum") {
+	METHOD(getValueCircleSum)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
 
 		private _defaultValue = T_GETV("defaultValue");
@@ -454,10 +454,10 @@ CLASS("Grid", "Storable");
 			T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
 			_sumVal
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets sum value at square area centered at _pos as having full width of 2*_halfSize
-	METHOD("getValueSquareSum") {
+	METHOD(getValueSquareSum)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfSize")];
 		
 		_pos params ["_x", "_y"];
@@ -481,10 +481,10 @@ CLASS("Grid", "Storable");
 			//pr _max = selectMax (_col select [_yIDStart, _nCellsSelect]);
 		} forEach (_array select [_xIDStart, _nCellsSelect]);
 		_sum
-	} ENDMETHOD;
+	ENDMETHOD;
 	// - - - - - Image processing - - - -
 
-	METHOD("apply") {
+	METHOD(apply)
 		params [P_THISOBJECT, P_CODE("_fn"), P_ARRAY("_args")];
 
 		private _gridArray = T_GETV("gridArray");
@@ -508,9 +508,9 @@ CLASS("Grid", "Storable");
 				_row set [_j, _newVal];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("fade") {
+	METHOD(fade)
 		params [P_THISOBJECT, P_NUMBER("_factor")];
 		private _defaultValue = T_GETV("defaultValue");
 		private _fadeFn =
@@ -526,7 +526,7 @@ CLASS("Grid", "Storable");
 				}
 			};
 		T_CALLM("apply", [_fadeFn]);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: filter
@@ -538,7 +538,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Nothing
 	*/
-	METHOD("filter") {
+	METHOD(filter)
 		params [P_THISOBJECT, P_ARRAY("_kernel")];
 
 		pr _kSize = count _kernel;
@@ -602,9 +602,9 @@ CLASS("Grid", "Storable");
 		};
 
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("smooth5x5") {
+	METHOD(smooth5x5)
 		params [P_THISOBJECT];
 		private _kernel = [
 			[1 / 273, 4 / 273, 7 / 273, 4 / 273, 1 / 273],
@@ -614,7 +614,7 @@ CLASS("Grid", "Storable");
 			[1 / 273, 4 / 273, 7 / 273, 4 / 273, 1 / 273]
 		];
 		T_CALLM("filter", [_kernel]);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	// - - - - - Plotting grids - - - - -
@@ -631,7 +631,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: nil
 	*/
-	METHOD("plot") {
+	METHOD(plot)
 		params [P_THISOBJECT, 
 			["_scale", 1, [1]], 
 			["_plotZero", false, [false]], 
@@ -698,7 +698,7 @@ CLASS("Grid", "Storable");
 			};
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: unplot
@@ -707,7 +707,7 @@ CLASS("Grid", "Storable");
 	Returns: nil
 	*/
 	
-	METHOD("unplot") {
+	METHOD(unplot)
 		params [P_THISOBJECT];
 		
 		pr _array = T_GETV("gridArray");
@@ -720,7 +720,7 @@ CLASS("Grid", "Storable");
 				deleteMarkerLocal _mrkName;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: plotCell
@@ -733,7 +733,7 @@ CLASS("Grid", "Storable");
 	Returns: nil
 	*/
 	
-	METHOD("plotCell") {
+	METHOD(plotCell)
 		params [P_THISOBJECT, P_ARRAY("_pos"), ["_scale", 1, [1]], ["_plotZero", false]];
 		
 		_pos params ["_x", "_y"];
@@ -790,10 +790,10 @@ CLASS("Grid", "Storable");
 			};
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// // - - - - - Manipulating values - - - - - -	
-	// METHOD("edit") {
+	// METHOD(edit)
 	// 	params [P_THISOBJECT, ["_value", 1.0], ["_scale", 1.0]];
 		
 	// 	// Unplot previous grid
@@ -849,7 +849,7 @@ CLASS("Grid", "Storable");
 		
 	// 	SETSV("Grid", "mapSingleClickEH", _eh);
 	
-	// } ENDMETHOD;
+	// ENDMETHOD;
 
 	/*
 	Method: copyFrom
@@ -861,7 +861,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: reference to this grid.
 	*/	
-	METHOD("copyFrom") {
+	METHOD(copyFrom)
 		params [P_THISOBJECT, P_OOP_OBJECT("_grid")];
 
 		pr _gridArray = T_GETV("gridArray");
@@ -879,21 +879,21 @@ CLASS("Grid", "Storable");
 		};
 
 		_thisObject
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - STORAGE - - - - - -
 
 	// This is perfectly storable, we just serialize everything
-	/* override */ METHOD("serializeForStorage") {
+	/* override */ METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("deserializeFromStorage") {
+	/* override */ METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

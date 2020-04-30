@@ -68,7 +68,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE("playerInfoArray");
 	VARIABLE("startSuspendTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"), P_STRING("_tNameCivilian"), P_NUMBER("_enemyForcePercent")];
 		T_SETV("name", "unnamed");
 		T_SETV("spawningEnabled", false);
@@ -119,16 +119,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		T_SETV("savedSpecialGarrisons", []);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called in init.sqf. Do NOT override this, implement the various specialized virtual functions
 	// below it instead.
-	METHOD("init") {
+	METHOD(init)
 		params [P_THISOBJECT, P_ARRAY("_extraParams")];
 
 		PROFILE_SCOPE_START(GameModeInit);
@@ -247,11 +247,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		#endif
 
 		PROFILE_SCOPE_START(GameModeEnd);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Called regularly in its own thread to update gameplay
 	// states, mechanics etc. implemented by the Game Mode.
-	/* private */ METHOD("process") {
+	/* private */ METHOD(process)
 		params [P_THISOBJECT];
 
 		// Suspend/resume the game on dedicated
@@ -293,12 +293,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		PROFILE_SCOPE_START(GameModeUpdate);
 		T_CALLM("update", []);
 		PROFILE_SCOPE_END(GameModeUpdate, 1);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Add garrisons to locations based where specified.
 	// Behaviour is controlled by virtual functions "getLocationOwner" and "initGarrison",
 	// or you can override the entire function.
-	/* protected virtual */METHOD("populateLocations") {
+	/* protected virtual */METHOD(populateLocations)
 		params [P_THISOBJECT];
 
 		// Create initial garrisons
@@ -357,10 +357,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			CALLM0(_loc, "initBuildProgress");
 		} forEach GET_STATIC_VAR("Location", "all");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Creates a civilian garrison at a city location
-	METHOD("populateCity") {
+	METHOD(populateCity)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		private _templateName = T_CALLM2("getTemplateName", CIVILIAN, "");
@@ -376,10 +376,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLM1(_gar, "setLocation", _loc);
 		CALLM1(_loc, "registerGarrison", _gar);
 		CALLM1(_gar, "enableAutoSpawn", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Creates message loops
-	METHOD("_createMessageLoops") {
+	METHOD(_createMessageLoops)
 		params [P_THISOBJECT];
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
@@ -427,10 +427,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Initializes properties of message loops, which should be created by now
-	METHOD("_setupMessageLoops") {
+	METHOD(_setupMessageLoops)
 		params [P_THISOBJECT];
 
 		if (!IS_NULL_OBJECT(T_GETV("messageLoopMain"))) then {
@@ -455,9 +455,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_checkMessageLoops") {
+	METHOD(_checkMessageLoops)
 		params [P_THISOBJECT];
 
 		private _recovery = false;
@@ -512,9 +512,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#endif
 			FIX_LINE_NUMBERS()
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_broadcastCrashNotification") {
+	METHOD(_broadcastCrashNotification)
 		params [P_THISOBJECT, P_ARRAY("_crashedMsgLoops")];
 
 		// Report crashed threads, initiate emergency save
@@ -538,9 +538,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_initMissionEventHandlers") {
+	METHOD(_initMissionEventHandlers)
 		params [P_THISOBJECT];
 
 		// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
@@ -569,40 +569,40 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		}];
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// -------------------------------------------------------------------------
 	// |                  V I R T U A L   F U N C T I O N S                    |
 	// -------------------------------------------------------------------------
 	// These are the customization points for game mode setups, implement them
 	// in derived classes.
-	/* protected virtual */ METHOD("preInitAll") {
+	/* protected virtual */ METHOD(preInitAll)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("initServerOrHC") {
+	/* protected virtual */ METHOD(initServerOrHC)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("initServerOnly") {
+	/* protected virtual */ METHOD(initServerOnly)
 		params [P_THISOBJECT];
 
 		T_CALLM0("postLoadServerOnly");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("initClientOrHCOnly") {
+	/* protected virtual */ METHOD(initClientOrHCOnly)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("initHCOnly") {
+	/* protected virtual */ METHOD(initHCOnly)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("initClientOnly") {
+	/* protected virtual */ METHOD(initClientOnly)
 		params [P_THISOBJECT];
 		// Request saved inventory
 		#ifndef _SQF_VM
@@ -613,14 +613,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		FIX_LINE_NUMBERS()
 
 		CALLSM0("undercoverMonitor", "staticInit");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("postInitAll") {
+	/* protected virtual */ METHOD(postInitAll)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("postLoadServerOnly") {
+	/* protected virtual */ METHOD(postLoadServerOnly)
 		params [P_THISOBJECT];
 
 		// Add undercover items from Civ faction
@@ -628,15 +628,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		_civTemplate call t_fnc_addUndercoverItems;
 
 		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("getLocationOwner") {
+	/* protected virtual */ METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		GETV(_loc, "side")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns template name for given side and faction
-	/* public virtual */ METHOD("getTemplateName") {
+	/* public virtual */ METHOD(getTemplateName)
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
@@ -652,16 +652,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				}
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns template for given side and faction
-	/* public virtual */METHOD("getTemplate") {
+	/* public virtual */METHOD(getTemplate)
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 		private _templateName = T_CALLM2("getTemplateName", _side, _faction);
 		[_templateName] call t_fnc_getTemplate
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected virtual */ METHOD("initGarrison") {
+	/* protected virtual */ METHOD(initGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
 		private _type = GETV(_loc, "type");
@@ -687,11 +687,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 			default { NULL_OBJECT };
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Override this to do stuff when player spawns
 	// Call the method of base class(that is, this class)
-	/* protected virtual */METHOD("playerSpawn") {
+	/* protected virtual */METHOD(playerSpawn)
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		OOP_INFO_1("PLAYER SPAWN: %1", _this);
@@ -940,11 +940,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// NOTE: WE MUST RETURN STUFF FROM HERE !!
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Player death event handler in SP
 	// SP is special in this regard, because there is no respawn, so we must make it ourselves, yay \o/
-	/* protected virtual */ METHOD("singlePlayerKilled") {
+	/* protected virtual */ METHOD(singlePlayerKilled)
 		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
 
 		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
@@ -976,61 +976,61 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Standard player respawn handler script like in MP
 		[player, _oldUnit, "", 0, "GameModeBase singlePlayerKilled"] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Override this to perform periodic game mode updates
-	/* protected virtual */METHOD("update") {
+	/* protected virtual */METHOD(update)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Override this to perform actions when a location spawns
-	/* protected virtual */METHOD("locationSpawned") {
+	/* protected virtual */METHOD(locationSpawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Override this to perform actions when a location despawns
-	/* protected virtual */METHOD("locationDespawned") {
+	/* protected virtual */METHOD(locationDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Override this to perform actions when a unit is killed
-	/* protected virtual */METHOD("unitDestroyed") {
+	/* protected virtual */METHOD(unitDestroyed)
 		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Override this to create gameModeData of a location
-	/* protected virtual */	METHOD("initLocationGameModeData") {
+	/* protected virtual */	METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Game-mode specific functions
 	// Must be here for common interface
 	// Returns an array of cities where we can recruit from
-	/* protected virtual */ METHOD("getRecruitCities") {
+	/* protected virtual */ METHOD(getRecruitCities)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
-	/* protected virtual */ METHOD("getRecruitCount") {
+	/* protected virtual */ METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("getRecruitmentRadius") {
+	/* protected virtual */ METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must return a value 0...1 to drive some AICommander logic
-	/* protected virtual */ METHOD("getCampaignProgress") {
+	/* protected virtual */ METHOD(getCampaignProgress)
 		0.5
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Not all game modes need all commanders
 	// By default all commanders are started and perform planning
 	// This can be overriden in this method
-	/* virtual */ METHOD("startCommanders") {
+	/* virtual */ METHOD(startCommanders)
 		_this spawn {
 			params [P_THISOBJECT];
 			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
@@ -1041,12 +1041,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
 			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// -------------------------------------------------------------------------
 	// |                        S E R V E R   O N L Y                          |
 	// -------------------------------------------------------------------------
-	/* private */ METHOD("initCommanders") {
+	/* private */ METHOD(initCommanders)
 		params [P_THISOBJECT];
 
 		// Independent
@@ -1069,9 +1069,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderEast", gAICommanderEast);
 		PUBLIC_VARIABLE "gAICommanderEast";
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_saveSpecialGarrisons") {
+	METHOD(_saveSpecialGarrisons)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		diag_log "Saving special garrisons";
 		// Save the loaded data to the garrisons
@@ -1080,9 +1080,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(_storage, "save", _x);
 		} forEach gSpecialGarrisons;
 		diag_log "Special garrisons saved";
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_loadSpecialGarrisons") {
+	METHOD(_loadSpecialGarrisons)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// SAVEBREAK
@@ -1112,9 +1112,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_CALLM0("_createSpecialGarrisons");
 		};
 		diag_log "Special garrisons done";
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_createSpecialGarrisons") {
+	METHOD(_createSpecialGarrisons)
 		params [P_THISOBJECT];
 
 		// Garrison objects to track players and player owned vehicles
@@ -1130,9 +1130,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getPlayerGarrisonForSide") {
+	STATIC_METHOD(getPlayerGarrisonForSide)
 		params [P_THISCLASS, P_SIDE("_side")];
 		switch(_side) do {
 			case WEST: { gGarrisonPlayersWest };
@@ -1140,7 +1140,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			case INDEPENDENT: { gGarrisonPlayersInd };
 			default { gGarrisonPlayersCiv }; // what?!
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	fnc_getLocName = {
 		params["_name"];
@@ -1148,7 +1148,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(count _names == 0) then { "" } else { configName (_names#0) };
 	};
 
-	METHOD("createMissingCityLocations") {
+	METHOD(createMissingCityLocations)
 		params [P_THISOBJECT];
 
 		// private _existingCityLocations = (entities "Vindicta_LocationSector") select { (_x getVariable ["Type", ""]) == LOCATION_TYPE_CITY } apply { getPos _x };
@@ -1180,10 +1180,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// 		_mrk setMarkerAlpha 0.4;
 		// 	};
 		// } forEach (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameCityCapital", "NameCity", "NameVillage", "CityCenter"], 25000]);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Create locations
-	METHOD("initLocations") {
+	METHOD(initLocations)
 		params [P_THISOBJECT];
 
 		// First generate location modules for any cities/towns etc that don't have them manually placed
@@ -1351,14 +1351,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			FIX_LINE_NUMBERS()
 		} forEach _roadblockPositionsFinal;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
 	//#define ADD_ARMED_MRAPS
 	//#define ADD_ARMOR
 	#define ADD_STATICS
-	METHOD("createGarrison") {
+	METHOD(createGarrison)
 		params [P_THISOBJECT, P_STRING("_faction"), P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 
 		if (_faction == "police") exitWith {
@@ -1619,26 +1619,26 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 
 		_gar
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Create SideStats
-	/* private */ METHOD("initSideStats") {
+	/* private */ METHOD(initSideStats)
 		params [P_THISOBJECT];
 		
 		private _args = [EAST, 5];
 		SideStatWest = NEW("SideStat", _args);
 		gSideStatWestHR = CALLM0(SideStatWest, "getHumanResources");
 		PUBLIC_VARIABLE "gSideStatWestHR";
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// create MissionEventHandlers
-	/* private */ METHOD("initMissionEventHandlers") {
+	/* private */ METHOD(initMissionEventHandlers)
 		params [P_THISOBJECT];
 		call compile preprocessFileLineNumbers "Init\initMissionEH.sqf";
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Initialize dynamic simulation
-	METHOD("initDynamicSimulation") {
+	METHOD(initDynamicSimulation)
 		#ifndef _SQF_VM
 		params [P_THISOBJECT];
 
@@ -1663,18 +1663,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns the side of player faction
-	/* public virtual */ METHOD("getPlayerSide") {
+	/* public virtual */ METHOD(getPlayerSide)
 		WEST
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public virtual */ METHOD("getEnemySide") {
+	/* public virtual */ METHOD(getEnemySide)
 		independent
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("doSpawning") {
+	METHOD(doSpawning)
 		params [P_THISOBJECT];
 
 		if(T_GETV("lastSpawn") + T_GETV("spawningInterval") > GAME_TIME) exitWith {};
@@ -1720,18 +1720,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			};
 		} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE] });
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Registers location here
 	// All locations must be registered at game mode so that it can save/load them
-	METHOD("registerLocation") {
+	METHOD(registerLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		T_GETV("locations") pushBackUnique _loc;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGameMode;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// -------------------------------------------------------------------------
 	// |                         P L A Y E R  S A V E                          |
@@ -1765,13 +1765,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		["delete", _inventoryObj] call OO_INVENTORY;
 	};
 
-	METHOD("savePlayerInfo") {
+	METHOD(savePlayerInfo)
 		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_player"), P_STRING("_name")];
 		private _playerInfo = T_CALLM4("_savePlayerInfoTo", T_GETV("playerInfoArray"), _uid, _player, _name);
 		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_savePlayerInfoTo") {
+	METHOD(_savePlayerInfoTo)
 		params [P_THISOBJECT, P_ARRAY("_array"), P_STRING("_uid"), P_OBJECT("_player"), P_STRING("_name")];
 		private _playerInfo = [_uid, _player, _name] call GameMode_fnc_getPlayerInfo;
 		private _existing = _array findIf {
@@ -1783,9 +1783,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_array set [_existing, _playerInfo];
 		};
 		_playerInfo
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("syncPlayerInfo") {
+	METHOD(syncPlayerInfo)
 		params [P_THISOBJECT, P_OBJECT("_player")];
 		private _playerInfoArray = T_GETV("playerInfoArray");
 		private _uid = getPlayerUID _player;
@@ -1799,9 +1799,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		diag_log format["Syncing player info for %1: %2", name _player, _playerInfo];
 		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clearPlayerInfo") {
+	METHOD(clearPlayerInfo)
 		params [P_THISOBJECT, P_OBJECT("_player")];
 		private _playerInfoArray = T_GETV("playerInfoArray");
 		private _uid = getPlayerUID _player;
@@ -1813,9 +1813,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		diag_log format["Clearing player info for %1", name _player];
 		[[], { gPlayerRestoreData = [] }] remoteExecCall ["call", owner _player, NO_JIP];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getPlayerInfo") {
+	METHOD(getPlayerInfo)
 		params [P_THISOBJECT, P_OBJECT("_player")];
 		private _playerInfoArray = T_GETV("playerInfoArray");
 		private _uid = getPlayerUID _player;
@@ -1827,9 +1827,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} else {
 			[]
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("startLoadingScreen") {
+	STATIC_METHOD(startLoadingScreen)
 		params [P_THISCLASS, P_STRING("_id"), P_STRING("_message")];
 
 		uiNamespace setVariable ["vin_loadingScreenTitle", _message];
@@ -1845,9 +1845,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 
 		CALLSM0("GameModeBase", "setLoadingProgress");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("setLoadingProgress") {
+	STATIC_METHOD(setLoadingProgress)
 		params [P_THISCLASS, P_STRING("_message"), P_NUMBER("_amount"), P_NUMBER("_total")];
 		PROGRESS_LOADING_SCREEN 0;
 		private _subprogress = if(_total == 0) then {
@@ -1864,9 +1864,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			(_display displayCtrl 668) progressSetPosition _subprogress;
 			(_display displayCtrl 668) ctrlCommit 0;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("endLoadingScreen") {
+	STATIC_METHOD(endLoadingScreen)
 		params [P_THISCLASS, P_STRING("_id")];
 		uiNamespace setVariable ["vin_loadingScreenTitle", ''];
 		uiNamespace setVariable ["vin_loadingScreenSubtitle", ''];
@@ -1874,10 +1874,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM0("GameModeBase", "setLoadingProgress");
 		("vindicta_" + _id) call BIS_fnc_endLoadingScreen;
 		END_LOADING_SCREEN;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Suspend the game.
-	METHOD("suspend") {
+	METHOD(suspend)
 		params [P_THISOBJECT, P_STRING("_message"), P_NUMBER_DEFAULT("_timeout", 120)];
 
 		if(!IS_SERVER) exitWith {
@@ -1924,10 +1924,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CHAT_MSG_FMT("Mission suspended: %1", [_message]);
 
 		_suspendedCorrectly
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Resume game after suspend
-	METHOD("resume") {
+	METHOD(resume)
 		params [P_THISOBJECT];
 
 		if(!IS_SERVER) exitWith {
@@ -1961,16 +1961,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			CHAT_MSG_FMT("Mission resumed after %1 seconds", [_timeSuspended]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("flushMessageQueues") {
+	METHOD(flushMessageQueues)
 		params [P_THISOBJECT, P_NUMBER_DEFAULT("_timeout", 120)];
 		private _success = T_CALLM1("suspend", "Flushing message queues...");
 		T_CALLM0("resume");
 		_success
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("_flushMessageQueuesNoSuspend") {
+	METHOD(_flushMessageQueuesNoSuspend)
 		params [P_THISOBJECT, P_NUMBER_DEFAULT("_timeout", 120)];
 
 		CHAT_MSG("FLUSHING MESSAGE QUEUES");
@@ -2018,22 +2018,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CHAT_MSG("MESSAGE QUEUES FLUSHED");
 			true
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// -------------------------------------------------------------------------
 	// |                             S T O R A G E                             |
 	// -------------------------------------------------------------------------
 
-	STATIC_METHOD("getSpawnedPlayers") {
+	STATIC_METHOD(getSpawnedPlayers)
 		params [P_THISCLASS];
 		
 		HUMAN_PLAYERS select {
 			private _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _x);
 			IS_OOP_OBJECT(_unit)
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* override */ METHOD("preSerialize") {
+	/* override */ METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		T_CALLM1("suspend", "Saving...");
@@ -2106,9 +2106,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM1("_saveSpecialGarrisons", _storage);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("postSerialize") {
+	/* override */ METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -2128,18 +2128,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("preDeserialize") {
+	/* override */ METHOD(preDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		CALLSM2("GameModeBase", "startLoadingScreen", "load", "Loading...");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		FIX_LINE_NUMBERS()
 
@@ -2357,7 +2357,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM1("GameModeBase", "endLoadingScreen", "load");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

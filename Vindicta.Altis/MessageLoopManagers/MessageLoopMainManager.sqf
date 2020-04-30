@@ -21,10 +21,10 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("EH_Killed") {
+	METHOD(EH_Killed)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_killer"), P_OBJECT("_instigator"), P_BOOL("_useEffects")];
 		T_CALLM3("_unitDestroyed", _objectHandle, objNull, _killer);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: EH_Respawn
@@ -37,10 +37,10 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("EH_Respawn") {
+	METHOD(EH_Respawn)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle")];
 		T_CALLM2("_unitDestroyed", _objectHandle, _corpseHandle);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	
 	/*
@@ -54,7 +54,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("_unitDestroyed") {
+	METHOD(_unitDestroyed)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle"), P_OBJECT("_killer")];
 
 		ASSERT_THREAD(_thisObject);
@@ -97,16 +97,16 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		} else {
 			OOP_WARNING_1("Unit of object %1 is unknown", _objectHandle);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("KillUnit") {
+	STATIC_METHOD(KillUnit)
 		params [P_THISCLASS, P_OBJECT("_objectHandle")];
 		// Is this object an instance of Unit class?
 		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
 			DELETE(_unit);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: EH_GetIn
@@ -119,7 +119,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("EH_GetIn") {
+	METHOD(EH_GetIn)
 		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetIn: %1", _this);
@@ -148,7 +148,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			OOP_ERROR_2("EH_GetIn: vehicle is not attached to a garrison: %1, %2", _unitVeh, _data);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: EH_GetOut
@@ -161,7 +161,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("EH_GetOut") {
+	METHOD(EH_GetOut)
 		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetOut: %1", _this);
@@ -200,8 +200,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			OOP_ERROR_2("EH_GetOut: vehicle is not attached to a garrison: %1, %2", _unitVeh, _data);
 		};
 
-	} ENDMETHOD;
-	METHOD("EH_aceCargoLoaded") {
+	ENDMETHOD;
+	METHOD(EH_aceCargoLoaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
 		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
@@ -224,9 +224,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			OOP_ERROR_1("EH_aceCargoLoaded: item is not attached to a garrison: %1", _unitItem);
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("EH_aceCargoUnloaded") {
+	METHOD(EH_aceCargoUnloaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
 		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
@@ -249,7 +249,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			OOP_ERROR_1("EH_aceCargoUnLoaded: item is not attached to a garrison: %1", _unitItem);
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: deleteObject
@@ -257,24 +257,24 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("deleteObject") {
+	METHOD(deleteObject)
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
 		if (IS_OOP_OBJECT(_objectRef)) then {
 			DELETE(_objectRef);
 		} else {
 			OOP_ERROR_1("deleteObject: invalid object ref: %1", _objectRef);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopMain
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// We use that to call some static methods in the main thread
-	METHOD("callStaticMethodInThread") {
+	METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
 		CALL_STATIC_METHOD(_className, _methodName, _parameters);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

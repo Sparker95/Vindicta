@@ -12,9 +12,9 @@ Sensor for a group to check its health properties.
 
 CLASS("SensorGroupHealth", "SensorGroup")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// ----------------------------------------------------------------------
@@ -22,7 +22,7 @@ CLASS("SensorGroupHealth", "SensorGroup")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
@@ -126,15 +126,15 @@ CLASS("SensorGroupHealth", "SensorGroup")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD("getUpdateInterval") {
+	METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

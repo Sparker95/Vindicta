@@ -18,7 +18,7 @@ Author: Sparker 05.08.2018
 
 CLASS("ActionCompositeSerial", "ActionComposite")
 
-	/* public override */ METHOD("process") {
+	/* public override */ METHOD(process)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state != ACTION_STATE_FAILED) then {
@@ -28,7 +28,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		
 		// Return state
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: processSubactions
@@ -37,7 +37,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	
 	Returns: Number, current state of the front most action, one of <ACTION_STATE>
 	*/
-	/* private */ METHOD("processSubactions") {
+	/* private */ METHOD(processSubactions)
 		params [P_THISOBJECT];
 		private _subactions = T_GETV("subactions");
 		
@@ -64,9 +64,9 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 
 		// return
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("terminate") {
+	/* protected override */ METHOD(terminate)
 		params [P_THISOBJECT];
 		pr _subactions = T_GETV("subactions");
 		
@@ -75,9 +75,9 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 			pr _a = _subactions select 0;
 			CALLM0(_a, "terminate");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public override */ METHOD("handleMessage") {
+	/* public override */ METHOD(handleMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 
 		// Forward the message to base class Action message handler
@@ -91,7 +91,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 			_msgHandled = false; // message not handled
 		};
 		_msgHandled // return
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: forwardMessageToFrontSubaction
@@ -103,37 +103,37 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		
 	Returns: Bool, true if message was handled
 	*/
-	/* private */ METHOD("forwardMessageToFrontSubaction") {
+	/* private */ METHOD(forwardMessageToFrontSubaction)
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		private _subactions = T_GETV("subactions");
 		private _subactionFront = _subactions select 0;
 		private _msgHandled = CALLM(_subactionFront, "handleMessage", [_msg]);
 		_msgHandled
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public override */ METHOD("handleGroupsAdded") {
+	/* public override */ METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleGroupsAdded", _groups);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public override */ METHOD("handleGroupsRemoved") {
+	/* public override */ METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleGroupsRemoved", _groups);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public override */ METHOD("handleUnitsAdded") {
+	/* public override */ METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleUnitsAdded", _units);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public override */ METHOD("handleUnitsRemoved") {
+	/* public override */ METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
 ENDCLASS;

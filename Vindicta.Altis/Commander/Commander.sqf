@@ -11,16 +11,16 @@ It just implements methods needed for an AI object to function.
 CLASS("Commander", "")
 
 	
-	METHOD("getSubagents") {
+	METHOD(getSubagents)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("getPossibleGoals") {
+	METHOD(getPossibleGoals)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("getPossibleActions") {
+	METHOD(getPossibleActions)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

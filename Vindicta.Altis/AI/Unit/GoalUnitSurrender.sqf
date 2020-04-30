@@ -12,7 +12,7 @@ CLASS("GoalUnitSurrender", "Goal")
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		private _objectHandle = GETV(_AI, "hO");
@@ -31,6 +31,6 @@ CLASS("GoalUnitSurrender", "Goal")
 			private _action = NEW("ActionUnitSurrender", [_AI]);
 			_action
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

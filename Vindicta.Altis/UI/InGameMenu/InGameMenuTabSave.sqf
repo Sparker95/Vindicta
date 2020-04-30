@@ -18,7 +18,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 	// Structure: [record name, record header(ref), errors(array)]
 	VARIABLE("recordData");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Initialize variables
@@ -83,27 +83,27 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Request save game data from server
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientRequestAllSavedGames", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", nil);
 		T_CALLM0("clearRecordData"); // Must delete the save game header objects we have created
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Deletes all local record header objects
-	METHOD("clearRecordData") {
+	METHOD(clearRecordData)
 		params [P_THISOBJECT];
 		{
 			_x params ["_recordName", "_header", "_errors"];
 			DELETE(_header);
 		} forEach T_GETV("recordData");
 		T_SETV("recordData", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - Comms with server - - - - - -
 
-	METHOD("receiveRecordData") {
+	METHOD(receiveRecordData)
 		params [P_THISOBJECT, P_ARRAY("_recordData")];
 
 		OOP_INFO_0("RECEIVE RECORD DATA:");
@@ -125,19 +125,19 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		T_CALLM0("clearRecordData");
 		T_SETV("recordData", _recordDataLocal);
 		T_CALLM0("updateListbox");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("staticReceiveRecordData") {
+	STATIC_METHOD(staticReceiveRecordData)
 		params [P_THISOBJECT, P_ARRAY("_recordData")];
 		pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
 		if (!IS_NULL_OBJECT(_instance)) then {
 			CALLM1(_instance, "receiveRecordData", _recordData);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - UI update event handlers - - - -
 	// Updates listbox from the local record data
-	METHOD("updateListbox") {
+	METHOD(updateListbox)
 		params [P_THISOBJECT];
 
 		pr _lnbSavedGames = T_CALLM1("findControl", "TAB_SAVE_LISTNBOX_SAVES");
@@ -170,11 +170,11 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_ENABLED");
 		};
  
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns index of the currently selected saved game in the recordData array
 	// Or -1 if nothing is selected
-	METHOD("getSelectedSavedGameIndex") {
+	METHOD(getSelectedSavedGameIndex)
 		params [P_THISOBJECT];
 		pr _lnbSavedGames = T_CALLM1("findControl", "TAB_SAVE_LISTNBOX_SAVES");
 		pr _row = lnbCurSelRow _lnbSavedGames;
@@ -182,11 +182,11 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		if (_row >= (count T_GETV("recordData"))) exitWith {-1};
 		pr _indexStr = _lnbSavedGames lnbData [_row, 0];
 		parseNumber _indexStr
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - Button and listbox event handlers - - - -
 
-	METHOD("_saveGame") {
+	METHOD(_saveGame)
 		params [P_THISOBJECT];
 
 		// Send request to server
@@ -194,9 +194,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Close in game menu after saving
 		CALLM0(gInGameMenu, "close");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonNewSave") {
+	METHOD(onButtonNewSave)
 		params [P_THISOBJECT];
 
 		// Bail if game mode is not initialized (although the button should be disabled, right?)
@@ -213,9 +213,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			},
 			[], {}];
 		NEW("DialogConfirmAction", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_overwriteSavedGame") {
+	METHOD(_overwriteSavedGame)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		OOP_INFO_1("Sending request to overwrite saved game: %1", _recordName);
@@ -224,9 +224,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Close in game menu after overwriting
 		CALLM0(gInGameMenu, "close");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonOverwriteSavedGame") {
+	METHOD(onButtonOverwriteSavedGame)
 		params [P_THISOBJECT];
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 		if (_index == -1) exitWith {};
@@ -245,9 +245,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			},
 			[], {}];
 		NEW("DialogConfirmAction", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_loadSavedGame") {
+	METHOD(_loadSavedGame)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		OOP_INFO_1("Sending request to load saved game: %1", _recordName);
@@ -256,9 +256,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Close in game menu after loading
 		CALLM0(gInGameMenu, "close");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonLoadSavedGame") {
+	METHOD(onButtonLoadSavedGame)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("ON BUTTON LOAD SAVED GAME");
@@ -297,18 +297,18 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			},
 			[], {}];
 		NEW("DialogConfirmAction", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
-	METHOD("_deleteSavedGame") {
+	METHOD(_deleteSavedGame)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		OOP_INFO_1("Sending request to delete saved game: %1", _recordName);
 		pr _args = [clientOwner, _recordName];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientDeleteSavedGame", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonDeleteSavedGame") {
+	METHOD(onButtonDeleteSavedGame)
 		params [P_THISOBJECT];
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 		if (_index == -1) exitWith {};
@@ -328,11 +328,11 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			[], {}];
 		NEW("DialogConfirmAction", _args);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
-	METHOD("onListboxSelChanged") {
+	METHOD(onListboxSelChanged)
 		params [P_THISOBJECT];
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 
@@ -368,6 +368,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		_text = (format ["%1", GETV(_header, "saveID") + 1]);
 		_staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_COUNT");
 		_staticSaveData ctrlSetText _text;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

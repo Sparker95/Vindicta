@@ -18,7 +18,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 	VARIABLE("availableWeaponsPrimary");
 	VARIABLE("availableWeaponsSecondary");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		SETSV(__CLASS_NAME, "instance", _thisObject);
@@ -50,14 +50,14 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _loc = GETV(_dialogObj, "location");
 		pr _args = [clientOwner, _loc, playerSide];
 		CALLM2(gGarrisonServer, "postMethodAsync", "clientRequestRecruitWeaponsAtLocation", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onListboxSelChanged") {
+	METHOD(onListboxSelChanged)
 		params [P_THISOBJECT];
 
 		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
@@ -98,9 +98,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		_lnbPrimary lnbSetCurSelRow 0;
 		_lnbSecondary lnbSetCurSelRow 0;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonRecruit") {
+	METHOD(onButtonRecruit)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ON BUTTON RECRUIT");
@@ -149,9 +149,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		// Disable the button
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
 		_ctrl ctrlEnable false;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_receiveData") {
+	METHOD(_receiveData)
 		params [P_THISOBJECT, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
 
 		// Reset the arrays with weapons
@@ -247,9 +247,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
 		lnbClear _lnbSecondary;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("receiveData") {
+	STATIC_METHOD(receiveData)
 		params [P_THISCLASS, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
 
 		OOP_INFO_0("RECEIVE WEAPON DATA:");
@@ -265,6 +265,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		if (!IS_NULL_OBJECT(_instance)) then {
 			CALLM3(_instance, "_receiveData", _unitsAndWeapons, _validTemplates, _nRecruits);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

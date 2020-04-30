@@ -31,7 +31,7 @@ CLASS("GarbageCollector", "")
 
 	Returns: nil
 	*/
-	METHOD("addUnit") {
+	METHOD(addUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		pr _hO = CALLM0(_unit, "getObjectHandle");
@@ -76,6 +76,6 @@ CLASS("GarbageCollector", "")
 
 		// todo what to do with weapon holsters and other things??
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

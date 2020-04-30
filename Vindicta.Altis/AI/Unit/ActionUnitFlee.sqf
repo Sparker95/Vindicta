@@ -2,7 +2,7 @@
 
 CLASS("ActionUnitFlee", "ActionUnit")
 	
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 		
 		private _unit = T_GETV("hO");
@@ -26,13 +26,13 @@ CLASS("ActionUnitFlee", "ActionUnit")
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
 		ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // List of moves

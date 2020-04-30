@@ -52,7 +52,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("groupMarkersEnabled");
 	#endif
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_GLOBAL_OBJECT(gStimulusManagerGarrison);
@@ -121,9 +121,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Register at stimulus manager
 		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		#ifdef DEBUG_GOAL_MARKERS
@@ -135,10 +135,10 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Unregister from stimulus manager
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	#ifdef DEBUG_GOAL_MARKERS
-	METHOD("_initDebugMarkers") {
+	METHOD(_initDebugMarkers)
 		params [P_THISOBJECT];
 
 		T_SETV("groupMarkersEnabled", false);
@@ -186,9 +186,9 @@ CLASS("AIGarrison", "AI_GOAP")
 				false
 			}
 		}, ["AIGarrisonMarker", _thisObject]] call BIS_fnc_addStackedEventHandler;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_updateDebugMarkers") {
+	METHOD(_updateDebugMarkers)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("agent");
@@ -243,11 +243,11 @@ CLASS("AIGarrison", "AI_GOAP")
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	#endif
 	FIX_LINE_NUMBERS()
 
-	METHOD("_initSensors") {
+	METHOD(_initSensors)
 		params [P_THISOBJECT];
 
 		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
@@ -271,9 +271,9 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		pr _sensorSound = NEW("SensorGarrisonSound", [_thisObject]);
 		T_CALLM1("addSensor", _sensorSound);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT, P_BOOL("_accelerate")];
 		
 		pr _gar = T_GETV("agent");
@@ -336,16 +336,16 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Add a "spawned" field to profiling output 
 		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The garrison AI resides in the same thread as the garrison
 	// ----------------------------------------------------------------------
 	
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopMain
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: handleGroupsAdded
@@ -357,7 +357,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleGroupsAdded") {
+	METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _action = T_GETV("currentAction");
@@ -367,7 +367,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -381,7 +381,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleGroupsRemoved") {
+	METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		// Delete goals that have been given by this object
@@ -397,7 +397,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	
@@ -413,7 +413,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Delete goals given by this object
@@ -427,7 +427,7 @@ CLASS("AIGarrison", "AI_GOAP")
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleUnitsRemoved", _units);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: handleUnitsAdded
@@ -441,7 +441,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsAdded") {
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		// Notify the current action
@@ -450,10 +450,10 @@ CLASS("AIGarrison", "AI_GOAP")
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleUnitsAdded", _units);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
-	METHOD("handleLocationChanged") {
+	METHOD(handleLocationChanged)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		// Set location world state property
@@ -479,11 +479,11 @@ CLASS("AIGarrison", "AI_GOAP")
 		#endif
 		FIX_LINE_NUMBERS()
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Updates world state properties related to composition of the garrison
 	// Here we have checks that must be run only when new units/groups are added or removed
-	METHOD("updateComposition") {
+	METHOD(updateComposition)
 		params [P_THISOBJECT];
 		
 		pr _gar = T_GETV("agent");
@@ -503,17 +503,17 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _haveVehicles = count CALLM0(_gar, "getVehicleUnits") > 0;
 		[_worldState, WSP_GAR_HAS_VEHICLES, _haveVehicles] call ws_setPropertyValue;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns spawned state of attached garrison
-	METHOD("isSpawned") {
+	METHOD(isSpawned)
 		params [P_THISOBJECT];
 		//CALLM0(T_GETV("agent"), "isSpawned")
 		GETV(T_GETV("agent"), "spawned")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets the position
-	METHOD("setPos") {
+	METHOD(setPos)
 		params [P_THISOBJECT, "_pos"];
 		
 		OOP_INFO_1("SET POS AI: %1", _pos);
@@ -526,54 +526,54 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets the position
-	METHOD("getPos") {
+	METHOD(getPos)
 		params [P_THISOBJECT];
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_POSITION] call ws_getPropertyValue;
-	} ENDMETHOD;
+	ENDMETHOD;
 	// Gets called after the garrison is spawned
 	// Not used right now
 	/*
-	METHOD("onGarrisonSpawned") {
+	METHOD(onGarrisonSpawned)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called after the garrison is spawned
-	METHOD("onGarrisonDespawned") {
+	METHOD(onGarrisonDespawned)
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 	// This is postMethodAsync'd from GarrisonModel.setAction, to synchronize the current action this garrison is doing
 	// _actionSerial can also be [], meaning there is no current action
-	METHOD("setCmdrActionSerial") {
+	METHOD(setCmdrActionSerial)
 		params [P_THISOBJECT, P_ARRAY("_actionSerial")];
 		T_SETV("cmdrActionRecordSerial", _actionSerial);
 
 		// Notify the garrison server that this garrison should be updated on clients
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Intel stuff
-	METHOD("addGeneralIntel") {
+	METHOD(addGeneralIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 		T_GETV("intelGeneral") pushBackUnique _item;
 
 		// Update intel of units inventory items if garrison is spawned
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getAllGeneralIntel") {
+	METHOD(getAllGeneralIntel)
 		params [P_THISOBJECT];
 		+T_GETV("intelGeneral")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
-	METHOD("setPersonalIntel") {
+	METHOD(setPersonalIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		OOP_INFO_1(" SET PERSONAL INTEL: %1", _item);
@@ -582,19 +582,19 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Update intel of units inventory items if garrison is spawned
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("addKnownFriendlyLocation") {
+	METHOD(addKnownFriendlyLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		T_GETV("knownFriendlyLocations") pushBackUnique _loc;
 
 		// Update intel of units inventory items if garrison is spawned
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Copies intel from another AIGarrison by adding intel items and locations to this object
 	// Should call it when garrisons are being split if we want them to inherit intel
-	METHOD("copyIntelFrom") {
+	METHOD(copyIntelFrom)
 		params [P_THISOBJECT, P_OOP_OBJECT("_otherAI")];
 
 		pr _intelGeneral = T_GETV("intelGeneral");
@@ -618,10 +618,10 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Update intel of units inventory items if garrison is spawned
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets the radio key corresponding to the current position
-	METHOD("updateRadioKey") {
+	METHOD(updateRadioKey)
 		params [P_THISOBJECT];
 		pr _side = CALLM0(T_GETV("agent"), "getSide"); // Garrison's side
 		pr _AICommander = CALLSM1("AICommander", "getAICommander", _side);
@@ -632,9 +632,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		} else {
 			T_SETV("radioKey", "666-ERROR-666");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getAlertness") {
+	METHOD(getAlertness)
 		params [P_THISOBJECT];
 		private _alertness = T_GETV("alertness");
 		if(isNil "_alertness") then {
@@ -651,21 +651,21 @@ CLASS("AIGarrison", "AI_GOAP")
 			T_SETV("alertness", _alertness);
 		};
 		_alertness
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("isAlerted") {
+	METHOD(isAlerted)
 		params [P_THISOBJECT];
 		[ T_GETV("worldState"), WSP_GAR_AWARE_OF_ENEMY, true ] call ws_propertyExistsAndEquals
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("isVigilant") {
+	METHOD(isVigilant)
 		params [P_THISOBJECT];
 		T_CALLM0("isAlerted") || { T_CALLM0("getAlertness") > 0.1 }
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns a serialized UnitIntelData object
 	// Typically we are going to assign the returned value to personal inventory
-	METHOD("getUnitIntelDataSerial") {
+	METHOD(getUnitIntelDataSerial)
 		params [P_THISOBJECT];
 
 		pr _temp = NEW("UnitIntelData", []);
@@ -686,11 +686,11 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _serial = SERIALIZE(_temp);
 		DELETE(_temp);
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - STORAGE - - - - - -
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		//diag_log "AIGarrison postDeserialize";
@@ -717,12 +717,12 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_CALLM0("updateComposition");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Debug
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD("getDebugUIVariableNames") {
+	/* override */ METHOD(getDebugUIVariableNames)
 		[
 			"buildingsWithTargets",
 			"assignedTargetsPos",
@@ -732,6 +732,6 @@ CLASS("AIGarrison", "AI_GOAP")
 			"alertness",
 			"wasSpawned"
 		]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -12,13 +12,13 @@ CLASS("DummyLoad", "")
 	VARIABLE("logDeltaTime");
 	VARIABLE("lastProcessTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("logDeltaTime", false);
 		T_SETV("lastProcessTime", diag_tickTime);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		_a = [];
@@ -34,7 +34,7 @@ CLASS("DummyLoad", "")
 
 		0
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

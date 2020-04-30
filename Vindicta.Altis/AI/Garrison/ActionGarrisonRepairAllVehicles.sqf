@@ -11,16 +11,16 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 	VARIABLE("repairUnit"); // The unit that will perform repairs on vehicles
 	VARIABLE("fubarcar"); // The broken vehicle, beyond all repair
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("repairUnit", NULL_OBJECT);
 		T_SETV("fubarcar", NULL_OBJECT);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _AI = T_GETV("AI");
@@ -88,10 +88,10 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 			ACTION_STATE_FAILED
 		};
 				
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned
@@ -115,10 +115,10 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 		// Return the current state
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		// Bail if not spawned
@@ -135,11 +135,11 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 			CALLM2(_repairUnitAI, "postMethodAsync", "deleteExternalGoal", _args);
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
 
-	METHOD("handleGroupsAdded") {
+	METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		{
@@ -147,9 +147,9 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 		} forEach _groups;
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleGroupsRemoved") {
+	METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		{
@@ -157,9 +157,9 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 		} forEach _groups;
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 			// Fail if either broken vehicle or repair unit is in the array with removed units
@@ -170,12 +170,12 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 			};
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleUnitsAdded") {
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 			
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

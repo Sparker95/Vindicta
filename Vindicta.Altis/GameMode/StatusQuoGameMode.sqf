@@ -2,15 +2,15 @@
 
 CLASS("StatusQuoGameMode", "GameModeBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("name", "status-quo");
 		T_SETV("spawningEnabled", true);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

@@ -62,7 +62,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("planActionGeneratorIDs");	// Array of numbers, IDs of next generator to be run in each array of planGenerators
 	VARIABLE("planningEnabled");		// Bool, true enables planning
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent"), ["_side", WEST, [WEST]], P_OOP_OBJECT("_msgLoop")];
 		
 		OOP_INFO_1("Initializing Commander for side %1", str(_side));
@@ -144,9 +144,9 @@ CLASS("AICommander", "AI")
 
 		//
 		T_SETV("cheatIntelInterception", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("_initSensors") {
+	METHOD(_initSensors)
 		params [P_THISOBJECT];
 
 		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
@@ -155,9 +155,9 @@ CLASS("AICommander", "AI")
 		T_CALLM1("addSensor", _sensorTargets);
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		T_CALLM("addSensor", [_sensorCasualties]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_initPlanActionGenerators") {
+	METHOD(_initPlanActionGenerators)
 		params [P_THISOBJECT];
 
 		pr _value = [
@@ -179,7 +179,7 @@ CLASS("AICommander", "AI")
 		T_SETV("planActionGenerators", _value);
 		T_SETV("planActionGeneratorIDs", [0 ARG 0]);
 		T_SETV("planPhase", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 /*
 88888888ba   88888888ba     ,ad8888ba,      ,ad8888ba,   88888888888  ad88888ba    ad88888ba   
@@ -191,7 +191,7 @@ CLASS("AICommander", "AI")
 88           88     `8b    Y8a.    .a8P    Y8a.    .a8P  88          Y8a     a8P  Y8a     a8P  
 88           88      `8b    `"Y8888Y"'      `"Y8888Y"'   88888888888  "Y88888P"    "Y88888P"   
 */
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
@@ -301,23 +301,23 @@ CLASS("AICommander", "AI")
 		T_SETV("stateStart", GAME_TIME);
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// ----------------------------------------------------------------------
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		params [P_THISOBJECT];
 		
 		T_GETV("msgLoop");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets message loop
-	METHOD("setMessageLoop") {
+	METHOD(setMessageLoop)
 		params [P_THISOBJECT, P_OOP_OBJECT("_msgLoop")];
 		T_SETV("msgLoop", _msgLoop);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getCommanderAIOfSide
@@ -329,7 +329,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: <AICommander>
 	*/
-	STATIC_METHOD("getAICommander") {
+	STATIC_METHOD(getAICommander)
 		params [P_THISCLASS, P_SIDE("_side")];
 		private _cmdr = NULL_OBJECT;
 		switch (_side) do {
@@ -347,7 +347,7 @@ CLASS("AICommander", "AI")
 			};
 		};
 		_cmdr
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getCmdrStrategy
@@ -359,7 +359,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: <CmdrStrategy>
 	*/
-	STATIC_METHOD("getCmdrStrategy") {
+	STATIC_METHOD(getCmdrStrategy)
 		params [P_THISCLASS, P_SIDE("_side")];
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
@@ -368,7 +368,7 @@ CLASS("AICommander", "AI")
 		} else {
 			gCmdrStrategyDefault
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: setCmdrStrategy
@@ -378,12 +378,12 @@ CLASS("AICommander", "AI")
 
 	_strategy - CmdrStrategy
 	*/
-	METHOD("setCmdrStrategy") {
+	METHOD(setCmdrStrategy)
 		params [P_THISOBJECT, P_OOP_OBJECT("_strategy")];
 		ASSERT_OBJECT_CLASS(_strategy, "CmdrStrategy");
 		ASSERT_THREAD(_thisObject);
 		T_SETV_REF("cmdrStrategy", _strategy)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)setCmdrStrategyForSide
@@ -394,7 +394,7 @@ CLASS("AICommander", "AI")
 	_side - side
 	_strategy - CmdrStrategy
 	*/
-	STATIC_METHOD("setCmdrStrategyForSide") {
+	STATIC_METHOD(setCmdrStrategyForSide)
 		params [P_THISCLASS, P_SIDE("_side"), P_OOP_OBJECT("_strategy")];
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
@@ -402,14 +402,14 @@ CLASS("AICommander", "AI")
 		} else {
 			OOP_WARNING_MSG("Can't set cmdr strategy %1, no AICommander found for side %2", [_strategy ARG _side]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	// _updateIfFound - if true, will update an existing item. if false, will not update it
 	// !!! _side parameter seems to be not used any more, need to delete it. We obviously update intel for our own side in this method.
 	// !!! _showNotifications also seems to not work any more
-	METHOD("updateLocationData") {
+	METHOD(updateLocationData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		// OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
@@ -418,6 +418,8 @@ CLASS("AICommander", "AI")
 		// Check if we have intel about such location already
 		pr _intelResult = T_CALLM1("getIntelAboutLocation", _loc);
 		pr _intelDB = T_GETV("intelDB");
+
+		FIX_LINE_NUMBERS()
 
 		if (!IS_NULL_OBJECT(_intelResult)) then {
 			//OOP_INFO_1("Intel query result: %1;", _intelResult);
@@ -498,10 +500,10 @@ CLASS("AICommander", "AI")
 			CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Returns intel we have about specified location
-	METHOD("getIntelAboutLocation") {
+	METHOD(getIntelAboutLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		pr _intelDB = T_GETV("intelDB");
 		pr _result0 = CALLM2(_intelDB, "getFromIndex", "location", _loc);
@@ -516,10 +518,10 @@ CLASS("AICommander", "AI")
 				""
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Creates a LocationData array from Location
-	METHOD("createIntelFromLocation") {
+	METHOD(createIntelFromLocation)
 		params ["_thisObject", P_OOP_OBJECT("_loc"), P_NUMBER("_updateLevel"), P_NUMBER("_accuracyRadius")];
 		
 		CALLM0(gMessageLoopMain, "lock");
@@ -607,12 +609,12 @@ CLASS("AICommander", "AI")
 		CALLM0(gMessageLoopMain, "unlock");
 
 		_value
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Gets a random intel item from an enemy commander.
 	// It's quite a temporary action for now.
 	// Later we needto redo it.
-	METHOD("getRandomIntelFromEnemy") {
+	METHOD(getRandomIntelFromEnemy)
 		params [P_THISOBJECT, ["_clientOwner", 0]];
 
 		pr _commandersEnemy = [gAICommanderWest, gAICommanderEast, gAICommanderInd] - [_thisObject];
@@ -659,22 +661,22 @@ CLASS("AICommander", "AI")
 			"We already know this intel!" remoteExecCall ["systemChat", _clientOwner];
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Thread safe
 	// Remove all intel from _items that is known to _side, returning only that which is unknown
-	STATIC_METHOD("filterOutKnownIntel") {
+	STATIC_METHOD(filterOutKnownIntel)
 		params [P_THISCLASS, P_ARRAY("_items"), P_SIDE("_side")];
 		pr _ai = CALLSM1("AICommander", "getAICommander", _side);
 		pr _intelDb = GETV(_ai, "intelDB");
 		_items select {
 			!CALLM1(_intelDb, "isIntelAddedFromSource", _x)
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Thread safe
 	// Call it from a non-player-commander thread to reveal intel to the AICommander of player side
-	STATIC_METHOD("revealIntelToPlayerSide") {
+	STATIC_METHOD(revealIntelToPlayerSide)
 		params ["_thisClass", P_OOP_OBJECT("_item")];
 
 		// Make a clone of this intel item in our thread
@@ -684,11 +686,11 @@ CLASS("AICommander", "AI")
 		pr _playerSide = CALLM0(gGameMode, "getPlayerSide");
 		pr _ai = CALLSM1("AICommander", "getAICommander", _playerSide);
 		CALLM2(_ai, "postMethodAsync", "stealIntel", [_item ARG _itemClone]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Handles stealing intel item which this commander doesn't own
 	// Temporary function to reveal stuff to players
-	METHOD("stealIntel") {
+	METHOD(stealIntel)
 		 params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_OOP_OBJECT("_itemClone")];
 
 		// Bail if object is wrong
@@ -696,12 +698,12 @@ CLASS("AICommander", "AI")
 
 		pr _thisDB = T_GETV("intelDB");
 		CALLM1(_thisDB, "addIntel", _itemClone);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called when enemy has produced some intel and sends it to some place
 	// Enemies might have a chance to intercept it
 	// Thread-safe function, it will postMethodAsync to other commanders
-	STATIC_METHOD("interceptIntelAt") {
+	STATIC_METHOD(interceptIntelAt)
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
 
 		pr _thisSide = GETV(_intel, "side");
@@ -711,10 +713,10 @@ CLASS("AICommander", "AI")
 			pr _ai = CALLSM1("AICommander", "getAICommander", _x);
 			CALLM2(_ai, "postMethodAsync", "_interceptIntelAt", [_intel ARG _pos ARG _radioKey]);
 		} forEach ([WEST, EAST, INDEPENDENT] - [_thisSide]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Local function, called in thread, on the commander which is tryint to intercept the enemy intel
-	METHOD("_interceptIntelAt") {
+	METHOD(_interceptIntelAt)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_POSITION("_pos"), P_STRING("_radioKey")];
 
 		OOP_INFO_1("INTERCEPT INTEL AT: %1", _this);
@@ -754,11 +756,11 @@ CLASS("AICommander", "AI")
 		// TEST delete this!
 		// Uncomment to intercept all enemy intel from everywhere
 		//T_CALLM2("inspectIntel", _intel, INTEL_METHOD_RADIO);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Checks intel in some other cmdr's database
 	// Makes a copy of that intel and takes it to this commander
-	METHOD("inspectIntel") {
+	METHOD(inspectIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_NUMBER("_method")];
 
 		OOP_INFO_1("INSPECT INTEL: %1", _intel);
@@ -787,10 +789,10 @@ CLASS("AICommander", "AI")
 			SETV(_ourIntel, "source", _intel); // We must mark the external intel item as as source of this intel, for future updates
 			CALLM1(_db, "addIntel", _ourIntel);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called after player has analyzed up an inventory item with intel
-	METHOD("getIntelFromInventoryItem") {
+	METHOD(getIntelFromInventoryItem)
 		params [P_THISOBJECT, P_OOP_OBJECT("_baseClass"), P_NUMBER("_ID"), P_NUMBER("_clientOwner")];
 
 		private _endl = toString [13,10];
@@ -1009,15 +1011,15 @@ CLASS("AICommander", "AI")
 
 		// Reset this inventory item data
 		CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Generates a new target cluster ID
-	METHOD("getNewTargetClusterID") {
+	METHOD(getNewTargetClusterID)
 		params [P_THISOBJECT];
 		pr _nextID = T_GETV("nextClusterID");
 		T_SETV("nextClusterID", _nextID + 1);
 		_nextID
-	} ENDMETHOD;
+	ENDMETHOD;
 		
 	/*
 	Method: onTargetClusterCreated
@@ -1028,7 +1030,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("onTargetClusterCreated") {
+	METHOD(onTargetClusterCreated)
 		params [P_THISOBJECT, "_tcNew"];
 		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _tcNew#TARGET_CLUSTER_ID_ID);
 
@@ -1044,7 +1046,7 @@ CLASS("AICommander", "AI")
 
 		//private _worldModel = T_GETV("worldModel");
 		//NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onTargetClusterSplitted
@@ -1056,7 +1058,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("onTargetClusterSplitted") {
+	METHOD(onTargetClusterSplitted)
 		params [P_THISOBJECT, "_tcOld", "_tcsNew"];
 		
 		pr _IDOld = _tcOld select TARGET_CLUSTER_ID_ID;
@@ -1093,7 +1095,7 @@ CLASS("AICommander", "AI")
 				_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
 			};
 		} forEach _tcsNew;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onTargetClusterMerged
@@ -1106,7 +1108,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("onTargetClustersMerged") {
+	METHOD(onTargetClustersMerged)
 		params [P_THISOBJECT, "_tcsOld", "_tcNew"];
 
 		pr _IDnew = _tcNew select TARGET_CLUSTER_ID_ID;
@@ -1141,7 +1143,7 @@ CLASS("AICommander", "AI")
 			_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: onTargetClusterDeleted
@@ -1153,7 +1155,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("onTargetClusterDeleted") {
+	METHOD(onTargetClusterDeleted)
 		params [P_THISOBJECT, "_tc"];
 		
 		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
@@ -1167,13 +1169,13 @@ CLASS("AICommander", "AI")
 			DELETE(_intel);
 			_tc set [TARGET_CLUSTER_ID_INTEL, NULL_OBJECT];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onTargetClusterUpdated
 	Gets called on update of a target cluster.
 	*/
-	METHOD("onTargetClusterUpdated") {
+	METHOD(onTargetClusterUpdated)
 		params [P_THISOBJECT, "_tc"];
 		
 		OOP_INFO_1("ON TARGET CLUSTER UPDATED: ID: %1", _tc select TARGET_CLUSTER_ID_ID);
@@ -1188,7 +1190,7 @@ CLASS("AICommander", "AI")
 			CALLM2(_inteldb, "updateIntel", _intel, _intelNew);
 			DELETE(_intelNew);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getTargetCluster
@@ -1200,7 +1202,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: target cluster structure or [] if nothing was found
 	*/
-	METHOD("getTargetCluster") {
+	METHOD(getTargetCluster)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 		
 		pr _targetClusters = T_GETV("targetClusters");
@@ -1212,17 +1214,17 @@ CLASS("AICommander", "AI")
 		} forEach _targetClusters;
 		
 		_ret
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets properties of IntelCluster from an actual TARGET_CLUSTER
-	STATIC_METHOD("setIntelClusterProperties") {
+	STATIC_METHOD(setIntelClusterProperties)
 		PARAMS[P_THISCLASS, P_OOP_OBJECT("_intel"), P_DYNAMIC("_targetCluster")];
 
 		SETV(_intel, "efficiency", +(_targetCluster#TARGET_CLUSTER_ID_EFFICIENCY));
 		SETV(_intel, "dateNumberLastSpotted", _targetCluster#TARGET_CLUSTER_ID_MAX_DATE_NUMBER);
 		SETV(_intel, "pos1", [_targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_X1 ARG _targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_Y1]);
 		SETV(_intel, "pos2", [_targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_X2 ARG _targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_Y2]);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getThreat
@@ -1233,42 +1235,42 @@ CLASS("AICommander", "AI")
 	
 	Returns: Number - threat at _pos
 	*/
-	METHOD("getThreat") { // thread-safe
+	METHOD(getThreat) // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "getThreat", [_pos])
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getDamage") { // thread-safe
+	METHOD(getDamage) // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "getDamage", [_pos])
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Thread unsafe
-	METHOD("_addActivity") {
+	METHOD(_addActivity)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
 		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
 		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "addActivity", [_pos ARG _activity])
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_addDamage") {
+	METHOD(_addDamage)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
 		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
 		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "addDamage", [_pos ARG _activity])
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Thread safe
-	STATIC_METHOD("addActivity") {
+	STATIC_METHOD(addActivity)
 		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
 
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_addActivity", [_pos ARG _activity]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getActivity
@@ -1280,11 +1282,11 @@ CLASS("AICommander", "AI")
 	
 	Returns: Number - max activity in radius2
 	*/
-	METHOD("getActivity") { // thread-safe
+	METHOD(getActivity) // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
 		private _worldModel = T_GETV("worldModel");
 		CALLM(_worldModel, "getActivity", [_pos ARG _radius])
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: _registerGarrison
@@ -1295,7 +1297,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: GarrisonModel
 	*/
-	METHOD("_registerGarrison") {
+	METHOD(_registerGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		ASSERT_THREAD(_thisObject);
@@ -1305,7 +1307,7 @@ CLASS("AICommander", "AI")
 		REF(_gar);
 		private _worldModel = T_GETV("worldModel");
 		NEW("GarrisonModel", [_worldModel ARG _gar])
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: registerGarrison
@@ -1316,7 +1318,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: GarrisonModel
 	*/
-	STATIC_METHOD("registerGarrison") {
+	STATIC_METHOD(registerGarrison)
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM0(_gar, "getSide");
@@ -1328,7 +1330,7 @@ CLASS("AICommander", "AI")
 			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
 			NULL_OBJECT
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: registerGarrisonOutOfThread
@@ -1340,7 +1342,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	STATIC_METHOD("registerGarrisonOutOfThread") {
+	STATIC_METHOD(registerGarrisonOutOfThread)
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM0(_gar, "getSide");
@@ -1351,7 +1353,7 @@ CLASS("AICommander", "AI")
 		} else {
 			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: registerLocation
@@ -1362,7 +1364,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("registerLocation") {
+	METHOD(registerLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 
@@ -1372,7 +1374,7 @@ CLASS("AICommander", "AI")
 		private _worldModel = T_GETV("worldModel");
 		// Just creating the location model is registering it with CmdrAI
 		NEW("LocationModel", [_worldModel ARG _loc]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: unregisterGarrison
@@ -1384,7 +1386,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	STATIC_METHOD("unregisterGarrison") {
+	STATIC_METHOD(unregisterGarrison)
 		params [P_THISCLASS, P_OOP_OBJECT("_gar"), ["_destroy", false, [false]]];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM0(_gar, "getSide");
@@ -1394,9 +1396,9 @@ CLASS("AICommander", "AI")
 		} else {
 			OOP_WARNING_MSG("Can't unregisterGarrison %1, no AICommander found for side %2", [_gar ARG _side]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_unregisterGarrison") {
+	METHOD(_unregisterGarrison)
 		params [P_THISOBJECT, P_STRING("_gar"), ["_destroy", false, [false]]];
 		ASSERT_THREAD(_thisObject);
 
@@ -1419,7 +1421,7 @@ CLASS("AICommander", "AI")
 		} else {
 			OOP_WARNING_MSG("Garrison %1 not registered so can't _unregisterGarrison", [_gar]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 		
 	/*
 	Method: registerIntelCommanderAction
@@ -1429,7 +1431,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: clone of _intel item that can be used in further updateIntelFromClone operations.
 	*/
-	STATIC_METHOD("registerIntelCommanderAction") {
+	STATIC_METHOD(registerIntelCommanderAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
@@ -1438,13 +1440,13 @@ CLASS("AICommander", "AI")
 		private _intelDB = T_GETV("intelDB");
 		private _intelClone = CALLM(_intelDB, "addIntelClone", [_intel]);
 		_intelClone
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: unregisterIntelCommanderAction
 	
 	*/
-	STATIC_METHOD("unregisterIntelCommanderAction") {
+	STATIC_METHOD(unregisterIntelCommanderAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_OOP_OBJECT("_intelClone")];
 
 		OOP_INFO_2("UNREGISTER INTEL COMMANDER ACTION: intel: %1, intel clone: %2", _intel, _intelClone);
@@ -1473,10 +1475,10 @@ CLASS("AICommander", "AI")
 				*/
 			};
 		} forEach _enemySides;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Some intel about our own action has changed, so we are going to notify enemies which have such intel about an update
-	STATIC_METHOD("updateIntelCommanderActionForEnemies") {
+	STATIC_METHOD(updateIntelCommanderActionForEnemies)
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_OOP_OBJECT("_intelClone")];
 
 		OOP_INFO_2("UPDATE INTEL COMMANDER ACTION FOR ENEMIES: intel: %1, intel clone: %2", _intel, _intelClone);
@@ -1497,10 +1499,10 @@ CLASS("AICommander", "AI")
 				CALLM1(_db, "updateIntelFromSource", _intel);
 			};
 		} forEach _enemySides;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Temporary function that adds infantry to some location
-	METHOD("debugCreateGarrison") {
+	METHOD(debugCreateGarrison)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _side = T_GETV("side");
 
@@ -1517,10 +1519,10 @@ CLASS("AICommander", "AI")
 		CALLM1(_gar, "addGroup", _group);
 
 		CALLM0(_gar, "activate");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Temporary function that adds infantry to some location
-	METHOD("debugAddGroupToLocation") {
+	METHOD(debugAddGroupToLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		pr _side = T_GETV("side");
@@ -1547,7 +1549,7 @@ CLASS("AICommander", "AI")
 		CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
 
 		// That's all!
-	} ENDMETHOD;
+	ENDMETHOD;
 
 /*
 
@@ -1578,7 +1580,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 	Returns: [TARGET_TYPE_POSITION, _pos], [TARGET_TYPE_LOCATION, _locID], [TARGET_TYPE_GARRISON, _garrID]
 	*/
-	METHOD("resolveTarget") {
+	METHOD(resolveTarget)
 		params [P_THISOBJECT, P_NUMBER("_targetType"), ["_target", [], [[], ""] ]];
 
 		private _worldModel = T_GETV("worldModel");
@@ -1633,35 +1635,35 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			[]
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Call it through postMethodAsync !
-	METHOD("clientCreateMoveAction") {
+	METHOD(clientCreateMoveAction)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
 		T_CALLM4("_clientCreateGarrisonAction", _garRef, _targetType, _target, "DirectMoveCmdrAction");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientCreateReinforceAction") {
+	METHOD(clientCreateReinforceAction)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
 		T_CALLM4("_clientCreateGarrisonAction", _garRef, _targetType, _target, "DirectReinforceCmdrAction");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientCreateAttackAction") {
+	METHOD(clientCreateAttackAction)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
 		T_CALLM4("_clientCreateGarrisonAction", _garRef, _targetType, _target, "DirectAttackCmdrAction");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Thread unsafe, private
-	METHOD("_clientCreateGarrisonAction") {
+	METHOD(_clientCreateGarrisonAction)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], P_STRING("_actionName")];
 
 		OOP_INFO_1("CLIENT CREATE GARRISON ACTION: %1", _this);
@@ -1706,10 +1708,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Don't waste time, update the action ASAP!
 		CALLM1(_action, "update", _worldModel);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called from client to cancel the current order this garrison is doing
-	METHOD("cancelCurrentAction") {
+	METHOD(cancelCurrentAction)
 		params [P_THISOBJECT, P_STRING("_garRef") ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
@@ -1723,11 +1725,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Cancel previously given action
 		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called if player moves a garrison attached to a location to instead create
 	// a new garrison split from the location, taking only non static vehicles and inf
-	METHOD("splitGarrisonFromLocation") {
+	METHOD(splitGarrisonFromLocation)
 		PARAMS[P_THISOBJECT, P_STRING("_garSrcRef")];
 
 		ASSERT_THREAD(_thisObject);
@@ -1753,10 +1755,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			// Failed
 			NULL_OBJECT
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called remotely from player's 'split garrison' dialog
-	METHOD("splitGarrisonFromComposition") {
+	METHOD(splitGarrisonFromComposition)
 		PARAMS[P_THISOBJECT, P_STRING("_garSrcRef"), P_ARRAY("_comp"), P_NUMBER("_clientOwner")];
 
 		ASSERT_THREAD(_thisObject);
@@ -1786,10 +1788,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Send data back to client
 		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonSplitDialog", "sendServerResponse", [22], _clientOwner, false);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	#define CAMP_RADIUS 100
-	METHOD("clientCreateLocation") {
+	METHOD(clientCreateLocation)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
 		// Nullify vertical component, we use position ATL for locations anyway
@@ -1851,9 +1853,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		pr _args = ["We have successfully created a location here!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientClaimLocation") {
+	METHOD(clientClaimLocation)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
 		// Check if we already own it
@@ -1925,7 +1927,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		pr _args = ["Now we own this place!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 /*
   ,ad8888ba,   88b           d88  88888888ba,    88888888ba             db         88  
@@ -1951,7 +1953,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	Parameters:
 		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details) the actions should apply to.
 	*/
-	METHOD("plan") {
+	METHOD(plan)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		
 		pr _phase = T_GETV("planPhase");
@@ -1971,16 +1973,16 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_SETV("planPhase", _phase);
 
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: enablePlanning
 	nalbes planning on a commander AI which is started.
 	*/
-	METHOD("enablePlanning") {
+	METHOD(enablePlanning)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 		T_SETV("planningEnabled", _enable);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: update
@@ -1989,7 +1991,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	Parameters:
 		_world - <Model.WorldModel>, real world model the actions are being performed in.
 	*/
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		// Sync before update
@@ -2019,7 +2021,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: (private) generateAttackActions
@@ -2033,7 +2035,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	Returns: Array of <CmdrAction.Actions.QRFCmdrAction>
 	*/
-	/* private */ METHOD("generateAttackActions") {
+	/* private */ METHOD(generateAttackActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _side = T_GETV("side");
 
@@ -2070,7 +2072,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (private) generateReinforceActions
@@ -2084,7 +2086,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	Returns: Array of <CmdrAction.Actions.ReinforceCmdrAction>
 	*/
-	/* private */ METHOD("generateReinforceActions") {
+	/* private */ METHOD(generateReinforceActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _side = T_GETV("side");
 
@@ -2148,7 +2150,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -2161,7 +2163,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	Returns: Array of <CmdrAction.Actions.ReinforceCmdrAction>
 	*/
-	/* private */ METHOD("generateOfficerAssignmentActions") {
+	/* private */ METHOD(generateOfficerAssignmentActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _side = T_GETV("side");
 
@@ -2225,7 +2227,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (private) generateSupplyActions
@@ -2237,7 +2239,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	Returns: Array of <CmdrAction.Actions.SupplyCmdrAction>
 	*/
-	/* private */ METHOD("generateSupplyActions") {
+	/* private */ METHOD(generateSupplyActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _side = T_GETV("side");
 
@@ -2339,7 +2341,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (private) generateTakeOutpostActions
@@ -2353,7 +2355,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	Returns: Array of <CmdrAction.Actions.TakeLocationCmdrAction>
 	*/
-	/* private */ METHOD("generateTakeOutpostActions") {
+	/* private */ METHOD(generateTakeOutpostActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _activeActions = T_GETV("activeActions");
 		private _side = T_GETV("side");
@@ -2418,7 +2420,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (private) generatePatrolActions
@@ -2432,7 +2434,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	Returns: Array of <CmdrAction.Actions.PatrolCmdrAction>
 	*/
-	/* private */ METHOD("generatePatrolActions") {
+	/* private */ METHOD(generatePatrolActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _activeActions = T_GETV("activeActions");
 		private _side = T_GETV("side");
@@ -2531,9 +2533,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("generateConstructRoadblockActions") {
+	METHOD(generateConstructRoadblockActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 
 		// Limit amount of concurrent actions
@@ -2612,13 +2614,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: updateExternalReinforcement
 	Should be called on each process. Updates external reinforcements.
 	*/
-	METHOD("updateExternalReinforcement") {
+	METHOD(updateExternalReinforcement)
 		params [P_THISOBJECT];
 
 		// Bail if it's not time to consider reinforcement yet...
@@ -2913,7 +2915,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		T_SETV("datePrevExtReinf", date);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (private) selectActions
@@ -2926,7 +2928,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		_simWorldNow - <Model.WorldModel>, now world model (see <Model.WorldModel> or <WORLD_TYPE> for details).
 		_simWorldFuture - <Model.WorldModel>, future world model (see <Model.WorldModel> or <WORLD_TYPE> for details).
 	*/
-	/* private */ METHOD("selectActions") {
+	/* private */ METHOD(selectActions)
 		params [P_THISOBJECT, P_ARRAY("_actionFuncs"), P_NUMBER("_maxNewActions"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
 
 		CALLM0(_simWorldNow, "resetScoringCache");
@@ -3007,7 +3009,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		{
 			DELETE(_x);
 		} forEach _newActions;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (private) _plan
@@ -3017,7 +3019,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details) the actions should apply to.
 		_generatorMethodName - string, method name of the generator which will generate actions
 	*/
-	/* private */ METHOD("_plan") {
+	/* private */ METHOD(_plan)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_STRING("_generatorMethodName")];
 
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (generator %1) - - - - -", [_generatorMethodName]);
@@ -3055,7 +3057,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		DELETE(_simWorldFuture);
 
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G   D O N E - - - - -", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: clearAndCancelGarrisonAction
@@ -3067,7 +3069,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	Returns: nil
 	*/
-	METHOD("clearAndCancelGarrisonAction") {
+	METHOD(clearAndCancelGarrisonAction)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel")];
 
 		pr _action = CALLM0(_garModel, "getAction");
@@ -3087,7 +3089,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _activeActions = T_GETV("activeActions");
 			_activeActions deleteAt (_activeActions find _action);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -3116,7 +3118,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	// = = = = = = = = = = = Radio = = = = = = = = = = = = =
 
 	// Initializes the radio key grid
-	METHOD("initRadioKeys") {
+	METHOD(initRadioKeys)
 		params [P_THISOBJECT];
 
 		if (!isNil {T_GETV("radioKeyGrid")}) exitWith {
@@ -3138,10 +3140,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		T_SETV("radioKeyGrid", _grid);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Generates a random radio key for given position
-	STATIC_METHOD("generateRadioKey") {
+	STATIC_METHOD(generateRadioKey)
 		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_cellSize")];
 
 		private _numdigits = 12;		// Amount of digits in the key code
@@ -3178,16 +3180,16 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		_str
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns the radio key for given position
-	METHOD("getRadioKey") {
+	METHOD(getRadioKey)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _grid = T_GETV("radioKeyGrid");
 		CALLM1(_grid, "getValueSafe", _pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientAddRadioKey") {
+	METHOD(clientAddRadioKey)
 		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_clientOwner"), P_STRING("_key"), P_STRING("_playerName")];
 
 		// Check if we have this radio key
@@ -3240,9 +3242,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		// Send new list of keys back to player
 		CALLSM2("AICommander", "staticClientRequestRadioKeys", _side, _clientOwner);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("staticClientAddRadioKey") {
+	STATIC_METHOD(staticClientAddRadioKey)
 		params [P_THISCLASS, P_SIDE("_side"), P_NUMBER("_clientOwner"), P_STRING("_key"), P_STRING("_playerName")];
 
 		OOP_INFO_1("STATIC CLIENT ADD RADIO KEY: %1", _this);
@@ -3252,11 +3254,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		if (IS_NULL_OBJECT(_AI)) exitWith {	};
 
 		CALLM4(_AI, "clientAddRadioKey", _side, _clientOwner, _key, _playerName);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called REMOTELY by client to get radio keys
 	// Thread unsafe, but getting radio keys is quite safe and trivial so we don't care about thread safety
-	STATIC_METHOD("staticClientRequestRadioKeys") {
+	STATIC_METHOD(staticClientRequestRadioKeys)
 		params [P_THISCLASS, P_SIDE("_side"), P_NUMBER("_clientOwner")];
 
 		OOP_INFO_1("STATIC CLIENT REQUEST RADIO KEYS: %1", _this);
@@ -3267,7 +3269,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		pr _args = [+GETV(_AI, "enemyRadiokeys"), +GETV(_AI, "enemyRadiokeysAddedBy")];
 		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowKeys", _args, _clientOwner, false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -3287,11 +3289,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	// = = = = = = = = = = = = = = Roadblocks and dynamic locations = = = = = = = = = = = = = =
 
 	// Adds a position for commander to consider create a roadblock at
-	METHOD("addRoadblockPosition") {
+	METHOD(addRoadblockPosition)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 
 		T_GETV("newRoadblockPositions") pushBack (+_pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -3312,7 +3314,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	// - - - - - - - STORAGE - - - - - - -
 
-	/* override */ METHOD("preSerialize") {
+	/* override */ METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Save intel database
@@ -3346,10 +3348,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		CALLM1(_storage, "save", _radioKeyGrid);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		FIX_LINE_NUMBERS()
 
@@ -3440,7 +3442,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_SETV("cheatIntelInterception", false);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

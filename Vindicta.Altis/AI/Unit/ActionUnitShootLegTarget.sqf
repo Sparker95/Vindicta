@@ -19,7 +19,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	VARIABLE("isHandleSpawned");
 	VARIABLE("startSpawnedTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _a = GETV(_AI, "agent");
@@ -33,9 +33,9 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		T_SETV("objectHandle", _oh);
 		T_SETV("countAmmo", _count);
 		T_SETV("target", _target);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 		
 		pr _oh = T_GETV("objectHandle");
@@ -48,10 +48,10 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("activateIfInactive");
@@ -128,5 +128,5 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 			_oh doMove _posTarget;
 			ACTION_STATE_ACTIVE
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

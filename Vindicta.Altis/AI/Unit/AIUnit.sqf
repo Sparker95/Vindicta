@@ -10,7 +10,7 @@ Author: Sparker 12.11.2018
 
 CLASS("AIUnit", "AI_GOAP")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Make sure that the needed MessageLoop exists
@@ -29,25 +29,25 @@ CLASS("AIUnit", "AI_GOAP")
 
 		//T_SETV("worldState", _ws);
 		T_CALLM1("addToProcessCategory", "AIUnit");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		T_CALLM0("removeFromProcessCategory");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGroupAI
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Common interface
-	/* virtual */ METHOD("getCargoUnits") {
+	/* virtual */ METHOD(getCargoUnits)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

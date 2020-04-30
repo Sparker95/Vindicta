@@ -22,7 +22,7 @@ CLASS("AIGroup", "AI_GOAP")
 	VARIABLE("unitMarkersEnabled");
 	#endif
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Group");
@@ -61,9 +61,9 @@ CLASS("AIGroup", "AI_GOAP")
 		FIX_LINE_NUMBERS()
 
 		T_CALLM1("addToProcessCategory", "AIGroup");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		T_CALLM0("removeFromProcessCategory");
@@ -72,9 +72,9 @@ CLASS("AIGroup", "AI_GOAP")
 		T_CALLM0("_disableDebugMarkers");
 		#endif
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_enableDebugMarkers") {
+	METHOD(_enableDebugMarkers)
 		params [P_THISOBJECT];
 
 		if(T_GETV("markersEnabled")) exitWith {
@@ -120,9 +120,9 @@ CLASS("AIGroup", "AI_GOAP")
 		}, ["AIGroupMarker", _thisObject]] call BIS_fnc_addStackedEventHandler;
 
 		T_SETV("markersEnabled", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_disableDebugMarkers") {
+	METHOD(_disableDebugMarkers)
 		params [P_THISOBJECT];
 		
 		if(!T_GETV("markersEnabled")) exitWith {
@@ -134,9 +134,9 @@ CLASS("AIGroup", "AI_GOAP")
 		[_thisObject, "onMapSingleClick"] call BIS_fnc_removeStackedEventHandler;
 
 		T_SETV("markersEnabled", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_updateDebugMarkers") {
+	METHOD(_updateDebugMarkers)
 		params [P_THISOBJECT];
 
 		pr _grp = T_GETV("agent");
@@ -220,9 +220,9 @@ CLASS("AIGroup", "AI_GOAP")
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		#ifdef DEBUG_GOAL_MARKERS
@@ -236,7 +236,7 @@ CLASS("AIGroup", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 	FIX_LINE_NUMBERS()
 
 	// ----------------------------------------------------------------------
@@ -244,9 +244,9 @@ CLASS("AIGroup", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGroupAI
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: handleUnitsRemoved
@@ -261,7 +261,7 @@ CLASS("AIGroup", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		OOP_INFO_1("handleUnitsRemoved: %1", _units);
@@ -276,7 +276,7 @@ CLASS("AIGroup", "AI_GOAP")
 		if (_currentAction != NULL_OBJECT) then {
 			CALLM1(_currentAction, "handleUnitsRemoved", _units);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: handleUnitsAdded
@@ -291,7 +291,7 @@ CLASS("AIGroup", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsAdded") {
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		OOP_INFO_1("handleUnitsAdded: %1", _units);
@@ -301,15 +301,15 @@ CLASS("AIGroup", "AI_GOAP")
 		if (_currentAction != NULL_OBJECT) then {
 			CALLM1(_currentAction, "handleUnitsAdded", _units);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Debug
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD("getDebugUIVariableNames") {
+	/* override */ METHOD(getDebugUIVariableNames)
 		[
 			"suspTarget"
 		]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

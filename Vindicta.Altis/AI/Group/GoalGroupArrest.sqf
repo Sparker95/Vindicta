@@ -10,7 +10,7 @@ Author: Marvis 09.05.2019
 
 CLASS("GoalGroupArrest", "Goal")
 
-	STATIC_METHOD("calculateRelevance") {
+	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		pr _group = GETV(_AI, "agent");
@@ -28,9 +28,9 @@ CLASS("GoalGroupArrest", "Goal")
 			0
 		}
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		//OOP_INFO_0("GoalGroupArrest: Creating predefined action.");
@@ -45,6 +45,6 @@ CLASS("GoalGroupArrest", "Goal")
 
 		_action
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

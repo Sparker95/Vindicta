@@ -17,7 +17,7 @@ Author: Sparker 07.05.2019
 
 CLASS("IntelDatabaseClient", "IntelDatabase")
 
-	METHOD("addIntel") {
+	METHOD(addIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -27,10 +27,10 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			// Add the new data to client's UI
 			CALLM0(_item, "clientAdd"); // Register in the client's UI
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("updateIntel") {
+	METHOD(updateIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
@@ -39,9 +39,9 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			// Call base class method
 			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "updateIntel", [_itemDst ARG _itemSrc]); // It will copy values
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("removeIntel") {
+	METHOD(removeIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -49,7 +49,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 			CALLM0(_item, "clientRemove");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)updateIntelClient
@@ -61,7 +61,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 	Returns: nil
 	*/
-	STATIC_METHOD("updateIntelClient") {
+	STATIC_METHOD(updateIntelClient)
 		CRITICAL_SECTION {
 			params [P_THISCLASS, P_ARRAY("_serialIntel")];
 
@@ -123,7 +123,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 				DELETE(_intelObjName);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)removeIntelClient
@@ -135,7 +135,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 	Returns: nil
 	*/
-	STATIC_METHOD("removeIntelClient") {
+	STATIC_METHOD(removeIntelClient)
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 
 		pr _intelLocal = CALLM1(gIntelDatabaseClient, "getIntelFromSource", _intel);
@@ -150,6 +150,6 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 		} else {
 			OOP_INFO_1("Intel with source %1 was not fount", _intel);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

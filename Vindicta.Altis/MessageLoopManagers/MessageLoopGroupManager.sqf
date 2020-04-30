@@ -16,7 +16,7 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("deleteObject") {
+	METHOD(deleteObject)
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
 		if (IS_OOP_OBJECT(_objectRef)) then {
 			DELETE(_objectRef);
@@ -24,9 +24,9 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 			OOP_ERROR_1("deleteObject: invalid object ref: %1", _objectRef);
 		};
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("stopAIobject") {
+	METHOD(stopAIobject)
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
 
 		if (IS_OOP_OBJECT(_objectRef)) then {
@@ -35,17 +35,17 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 			OOP_ERROR_1("stopAIObject: invalid object ref: %1", _objectRef);
 		};
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGroupAI
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// We use that to call some static methods in the main thread
-	METHOD("callStaticMethodInThread") {
+	METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
 		CALL_STATIC_METHOD(_className, _methodName, _parameters);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

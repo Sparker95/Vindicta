@@ -8,7 +8,7 @@ Goal for a group to get in their vehicles as crew.
 
 CLASS("GoalGroupGetInVehiclesAsCrew", "Goal")
 
-	// /* virtual */ STATIC_METHOD("calculateRelevance") {
+	// /* virtual */ STATIC_METHOD(calculateRelevance)
 	// 	params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 	// 	pr _ws = GETV(_AI, "worldState");
@@ -30,5 +30,5 @@ CLASS("GoalGroupGetInVehiclesAsCrew", "Goal")
 	// 		//OOP_INFO_0("Low relevance!");
 	// 		0
 	// 	};
-	// } ENDMETHOD;
+	// ENDMETHOD;
 ENDCLASS;

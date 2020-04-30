@@ -13,11 +13,11 @@
 
 CLASS("ActionGarrisonDefendActive", "ActionGarrisonDefend")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		T_SETV("behaviour", "COMBAT");
 		T_SETV("speedMode", "FULL");
 		T_SETV("infantryFormation", "WEDGE");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

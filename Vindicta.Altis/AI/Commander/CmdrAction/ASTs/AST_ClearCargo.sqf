@@ -23,7 +23,7 @@ CLASS("AST_ClearCargo", "ActionStateTransition")
 		_doneState - <CMDR_ACTION_STATE>, state to return once done
 		_garrIdVar - Garrison to clear the supplies of
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -34,9 +34,9 @@ CLASS("AST_ClearCargo", "ActionStateTransition")
 		T_SETV("fromStates", _fromStates);
 		T_SETV("doneState", _doneState);
 		T_SETV("garrIdVar", _garrIdVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -53,5 +53,5 @@ CLASS("AST_ClearCargo", "ActionStateTransition")
 		};
 #endif
 		T_GETV("doneState")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

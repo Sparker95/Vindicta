@@ -52,7 +52,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		_type - Number, type of supplies we are sending (from the ACTION_SUPPLY_* macros)
 		_amount - Number, 0-1, how much, non-specific units
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId"), P_ARRAY("_routeTargets"), P_NUMBER("_type"), P_NUMBER("_amount")];
 
 		T_SETV("srcGarrId", _srcGarrId);
@@ -87,9 +87,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		// Route schedule
 		private _scheduleVar = T_CALLM("createVariable", [[]]);
 		T_SETV("scheduleVar", _scheduleVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
@@ -103,14 +103,14 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		deleteMarker (_thisObject + "_label");
 #endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getRouteTargets") {
+	METHOD(getRouteTargets)
 		params [P_THISOBJECT];
 		T_GET_AST_VAR("routeTargetsVar")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("createTransitions") {
+	/* protected override */ METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -253,9 +253,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				_targetVar]; 						// Target to merge to (garrison or location is valid)
 		_asts pushBack NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 		_asts
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("getLabel") {
+	/* protected override */ METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -291,9 +291,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
 			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateIntelFromDetachment") {
+	METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
@@ -314,9 +314,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("debugDraw") {
+	/* protected override */ METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -348,9 +348,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
 		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 		// };
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -427,9 +427,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM0(_intelClone, "updateInDb");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -571,7 +571,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		OOP_INFO_MSG(_str, []);
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -581,7 +581,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -598,9 +598,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("randomAmount") {
+	STATIC_METHOD(randomAmount)
 		params [P_THISCLASS, P_NUMBER("_base"), P_NUMBER("_variation")];
 		#ifdef _SQF_VM
 		1
@@ -608,10 +608,10 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		floor (_base + _variation * random [0, 0.5, 1])
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
-	METHOD("calculateCargo") {
+	METHOD(calculateCargo)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		private _type = T_GETV("type");
 		private _amount = T_GETV("amount");
@@ -736,7 +736,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				_cargo set [CARGO_ITEMS, _medical];
 			};
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

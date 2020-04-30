@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 CLASS("GoalGarrisonRebalanceVehicleGroups", "Goal")
-	/* public virtual */ STATIC_METHOD("calculateRelevance") {
+	/* public virtual */ STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		private _ws = GETV(_AI, "worldState");
@@ -23,5 +23,5 @@ CLASS("GoalGarrisonRebalanceVehicleGroups", "Goal")
 		} else {
 			0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

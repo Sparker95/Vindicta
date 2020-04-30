@@ -43,7 +43,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		_type - Number, type of supplies we are sending (from the ACTION_SUPPLY_* macros)
 		_amount - Number, 0-1, how much, non-specific units
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId"), P_NUMBER("_type"), P_NUMBER("_amount")];
 		T_SETV("tgtGarrId", _tgtGarrId);
 		T_SETV("type", _type);
@@ -53,10 +53,10 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
 
 		T_SETV("cargo", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Our prepreation will include assigning our cargo
-	/* protected override */ METHOD("getPrepareActions") {
+	/* protected override */ METHOD(getPrepareActions)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_successState"),
@@ -73,10 +73,10 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			T_GETV("cargo")
 		];
 		NEW("AST_AssignCargo", _astArgs)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Our arrival behavoir will include emptying our cargo, then rtb
-	/* protected override */ METHOD("getArriveAction") {
+	/* protected override */ METHOD(getArriveAction)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_failState"),
@@ -94,10 +94,10 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			_detachedGarrIdVar
 		];
 		NEW("AST_ClearCargo", _astArgs)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// On arriving back at our home base we should make sure to clear up our inventory
-	/* protected override */ METHOD("getPreMergeAction") {
+	/* protected override */ METHOD(getPreMergeAction)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_mergeState"),
@@ -112,9 +112,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			_detachedGarrIdVar
 		];
 		NEW("AST_ClearCargo", _astArgs)
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -171,9 +171,9 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM0(_intelClone, "updateInDb");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -304,7 +304,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 			_side, LABEL(_srcGarr), LABEL(_tgtGarr), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -314,7 +314,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -331,19 +331,19 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("randomAmount") {
+	STATIC_METHOD(randomAmount)
 		params [P_THISCLASS, P_NUMBER("_base"), P_NUMBER("_variation")];
 		#ifdef _SQF_VM
 		1
 		#else
 		floor (_base + _variation * random [0, 0.5, 1])
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
-	METHOD("calculateCargo") {
+	METHOD(calculateCargo)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		private _type = T_GETV("type");
 		private _amount = T_GETV("amount");
@@ -468,7 +468,7 @@ CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 				_cargo set [CARGO_ITEMS, _medical];
 			};
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

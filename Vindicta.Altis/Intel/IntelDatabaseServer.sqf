@@ -18,7 +18,7 @@ Author: Sparker 07.05.2019
 OOP_INFO_0("Compiling IntelDatabaseServer");
 CLASS("IntelDatabaseServer", "IntelDatabase")
 
-	METHOD("addIntel") {
+	METHOD(addIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -33,10 +33,10 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 			_thisClass = nil;
 			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], _side, _item);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("updateIntel") {
+	METHOD(updateIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
@@ -49,9 +49,9 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 			_thisClass = nil;
 			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], _side, _itemDst);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("removeIntel") {
+	METHOD(removeIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -66,7 +66,7 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 			// Remove it from JIP queue
 			remoteExec ["", _item];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 ENDCLASS;

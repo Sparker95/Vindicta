@@ -33,7 +33,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		_detachEffVar - IN <AST_VAR>(Efficiency), efficiency that corresponds to the composition
 		_detachedGarrIdVar - OUT <AST_VAR>(Number), <Model.GarrisonModel> Id of the newly formed garrison
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -52,9 +52,9 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		T_SETV("detachCompVar", _detachCompVar);
 		T_SETV("detachEffVar", _detachEffVar);
 		T_SETV("detachedGarrIdVar", _detachedGarrIdVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -99,7 +99,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		T_SET_AST_VAR("detachedGarrIdVar", GETV(_detachedGarr, "id"));
 
 		T_GETV("successState")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 
@@ -258,14 +258,14 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 // 	// Outputs
 // 	VARIABLE("detachedGarrIdVar");
 
-// 	METHOD("new") {
+// 	METHOD(new)
 // 		params [P_THISOBJECT, P_STRING("_action"), P_NUMBER("_successState"), P_NUMBER("_failState")];
 // 		T_SETV("action", _action);
 // 		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
 // 		// T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
-// 	} ENDMETHOD;
+// 	ENDMETHOD;
 
-// 	/* override */ METHOD("apply") {
+// 	/* override */ METHOD(apply)
 // 		params [P_THISOBJECT, P_STRING("_world")];
 // 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -315,5 +315,5 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 // 		CALLM(_detachedGarr, "setAction", [_action]);
 // 		SETV(_action, "detachedGarrIdVar", GETV(_detachedGarr, "id"));
 // 		true
-// 	} ENDMETHOD;
+// 	ENDMETHOD;
 // ENDCLASS;

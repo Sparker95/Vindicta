@@ -26,7 +26,7 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to select a fallback target for.
 		_targetVar - OUT <AST_VAR>(<CmdrAITarget>), target selected by this AST
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -40,9 +40,9 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 		T_SETV("srcGarrIdVar", _srcGarrIdVar);
 		T_SETV("garrIdVar", _garrIdVar);
 		T_SETV("targetVar", _targetVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -101,5 +101,5 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 		};
 		T_SET_AST_VAR("targetVar", _newTarget);
 		T_GETV("successState")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
