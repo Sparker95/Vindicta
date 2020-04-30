@@ -292,13 +292,13 @@
 #define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) ((OOP_PREFIX) + (classNameStr) + STATIC_SEPARATOR + (memNameStr))
 
 //String name of a method
-#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) ((classNameStr) + METHOD_SEPARATOR + (methodNameStr))
+#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) ((classNameStr) + (methodNameStr))
 
 //String name of a special member
 #define CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + (classNameStr) + SPECIAL_SEPARATOR + (memNameStr))
 
 //String name of a non-static member
-#define OBJECT_MEM_NAME_STR(objNameStr, memNameStr) ((objNameStr) + "_" + memNameStr)
+#define OBJECT_MEM_NAME_STR(objNameStr, memNameStr) ((objNameStr) + memNameStr)
 
 //Gets parent class of an object
 #define OBJECT_PARENT_CLASS_STR(objNameStr) (FORCE_GET_MEM(objNameStr, OOP_PARENT_STR))
