@@ -31,6 +31,7 @@ Author: Sparker
 
 #define SNEK_DELAY 0.1
 
+#define OOP_CLASS_NAME SnekSegment
 CLASS("SnekSegment", "")
 
 	VARIABLE("x");
@@ -64,6 +65,7 @@ CLASS("SnekSegment", "")
 	
 ENDCLASS;
 
+#define OOP_CLASS_NAME SnekTail
 CLASS("SnekTail", "SnekSegment")
 	
 	METHOD(draw)
@@ -93,6 +95,7 @@ CLASS("SnekTail", "SnekSegment")
 	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME SnekHead
 CLASS("SnekHead", "SnekSegment")
 	
 	VARIABLE("direction");
@@ -190,6 +193,7 @@ ENDCLASS;
 
 
 
+#define OOP_CLASS_NAME SnekPickup
 CLASS("SnekPickup", "")
 
 	VARIABLE("x");
@@ -219,6 +223,7 @@ CLASS("SnekPickup", "")
 ENDCLASS;
 
 
+#define OOP_CLASS_NAME Snek
 CLASS("Snek", "")
 
 	// Global snek object
@@ -542,6 +547,7 @@ SETSV("Snek", "snek", "");
 
 // Map marker that starts the game
 /*
+#define OOP_CLASS_NAME MapMarkerSnek
 CLASS("MapMarkerSnek", "MapMarker")
 
 	METHOD(new)

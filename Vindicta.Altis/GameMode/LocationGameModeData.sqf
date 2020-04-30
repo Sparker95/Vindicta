@@ -5,6 +5,7 @@ Class: GameMode.LocationGameModeData
 Base class of objects assigned as Location.gameModeData
 */
 
+#define OOP_CLASS_NAME LocationGameModeData
 CLASS("LocationGameModeData", "MessageReceiverEx")
 
 	VARIABLE_ATTR("location", [ATTR_SAVE]);

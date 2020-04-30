@@ -10,6 +10,7 @@ is a copy that can be simulated.
 
 Parent: <RefCounted>
 */
+#define OOP_CLASS_NAME ModelBase
 CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	// Variable: id
 	// Unique Id of this Model, it is identical between Actual and Sim Models 

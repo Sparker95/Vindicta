@@ -6,6 +6,7 @@ Split a garrison into two parts.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_SplitGarrison
 CLASS("AST_SplitGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -236,6 +237,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 // ORIGINAL
 
 
+// #define OOP_CLASS_NAME ReinforceSplitGarrison
 // CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 // 	VARIABLE("action");
 // 	VARIABLE("successState");

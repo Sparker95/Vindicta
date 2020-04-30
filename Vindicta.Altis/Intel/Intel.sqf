@@ -17,6 +17,7 @@ Author: Sparker 05.05.2019
 	Class: Intel
 	Intel base class. It stores variables that describe intel. It is a base class for more intel types.
 */
+#define OOP_CLASS_NAME Intel
 CLASS("Intel", "Storable")
 
 	/* variable: dateCreated 
@@ -227,6 +228,7 @@ ENDCLASS;
 	Class: Intel.IntelLocation
 	Represents Intel about some location. What faction controls it, how many units there are, and other such things.
 */
+#define OOP_CLASS_NAME IntelLocation
 CLASS("IntelLocation", "Intel")
 
 	/* variable: side
@@ -418,6 +420,7 @@ ENDCLASS;
 	Class: Intel.IntelCommanderAction
 	Base class for all intel about commander actions.
 */
+#define OOP_CLASS_NAME IntelCommanderAction
 CLASS("IntelCommanderAction", "Intel")
 
 	METHOD(new)
@@ -651,6 +654,7 @@ ENDCLASS;
 	Class: Intel.IntelCommanderActionReinforce
 	Intel about reinforcement commander action.
 */
+#define OOP_CLASS_NAME IntelCommanderActionReinforce
 CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 
 	/*
@@ -682,6 +686,7 @@ ENDCLASS;
 /*
 	Class: Intel.IntelCommanderActionSupply
 */
+#define OOP_CLASS_NAME IntelCommanderActionSupply
 CLASS("IntelCommanderActionSupply", "IntelCommanderAction")
 
 	// Type of supplies
@@ -702,6 +707,7 @@ ENDCLASS;
 /*
 Class: Intel.IntelCommanderActionSupplyConvoy
 */
+#define OOP_CLASS_NAME IntelCommanderActionSupplyConvoy
 CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 	// SAVEBREAK >>> Deprecated
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
@@ -800,6 +806,7 @@ ENDCLASS;
 	Class: Intel.IntelCommanderActionConstructLocation
 	Intel about action to build something.
 */
+#define OOP_CLASS_NAME IntelCommanderActionConstructLocation
 CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 	/* 
 		variable: type
@@ -826,6 +833,7 @@ ENDCLASS;
 	Class: Intel.IntelCommanderActionAttack
 	Intel about action to attack something.
 */
+#define OOP_CLASS_NAME IntelCommanderActionAttack
 CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 	/* 
 		variable: srcGarrison
@@ -852,6 +860,7 @@ ENDCLASS;
 Class: Intel.IntelCommanderActionPatrol
 Intel about action to patrol a route.
 */
+#define OOP_CLASS_NAME IntelCommanderActionPatrol
 CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	/* variable: srcGarrison
 	The source garrison that sent the patrol. Probably players have no use to this.*/
@@ -921,6 +930,7 @@ ENDCLASS;
 Class: Intel.IntelCommanderActionRetreat
 Intel about action to retreat from a location.
 */
+#define OOP_CLASS_NAME IntelCommanderActionRetreat
 CLASS("IntelCommanderActionRetreat", "IntelCommanderAction")
 	// Garrison being retreated to.
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
@@ -936,6 +946,7 @@ ENDCLASS;
 Class: Intel.IntelCommanderActionRecon
 The commander is planning something so he sends some recon squads!
 */
+#define OOP_CLASS_NAME IntelCommanderActionRecon
 CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
 	//  
 	METHOD(getShortName)
@@ -948,6 +959,7 @@ ENDCLASS;
 Class: Intel.IntelCluster
 Intel about cluster with spotted enemies
 */
+#define OOP_CLASS_NAME IntelCluster
 CLASS("IntelCluster", "Intel")
 
 	/* variable: efficiency

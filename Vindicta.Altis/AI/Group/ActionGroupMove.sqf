@@ -22,6 +22,7 @@ TAG_MAX_SPEED_KMH
 #define DEBUG_FORMATION
 #endif
 
+#define OOP_CLASS_NAME ActionGroupMove
 CLASS("ActionGroupMove", "ActionGroup")
 
 	VARIABLE("pos");

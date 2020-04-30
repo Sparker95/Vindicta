@@ -9,6 +9,7 @@ Parameters: "vehicle" - <Unit> object
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitRepairVehicle
 CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
 	VARIABLE("veh");

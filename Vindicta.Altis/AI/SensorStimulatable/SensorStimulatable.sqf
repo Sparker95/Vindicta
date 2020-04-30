@@ -11,6 +11,7 @@ A stimulatable sensor class.
 Author: Sparker 23.11.2018
 */
 
+#define OOP_CLASS_NAME SensorStimulatable
 CLASS("SensorStimulatable", "Sensor")
 	
 	// ----------------------------------------------------------------------

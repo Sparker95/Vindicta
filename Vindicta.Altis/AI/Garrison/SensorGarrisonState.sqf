@@ -21,6 +21,7 @@ pr0_fnc_accumulateGroupWSP = {
 	_garValue
 };
 
+#define OOP_CLASS_NAME SensorGarrisonState
 CLASS("SensorGarrisonState", "SensorGarrison")
 
 	// ----------------------------------------------------------------------

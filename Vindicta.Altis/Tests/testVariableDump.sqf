@@ -7,6 +7,7 @@ call compile preprocessFileLineNumbers "Tests\initTests.sqf";
 
 call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
+#define OOP_CLASS_NAME ClassA
 CLASS("ClassA", "")
 
 	VARIABLE("a");
@@ -23,6 +24,7 @@ CLASS("ClassA", "")
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME ClassB
 CLASS("ClassB", "")
 
 	VARIABLE("a");
@@ -69,6 +71,7 @@ diag_log "";
 diag_log "";
 diag_log "";
 
+#define OOP_CLASS_NAME Bot
 CLASS("Bot", "")
 	VARIABLE("AI");
 	VARIABLE("health");
@@ -86,6 +89,7 @@ CLASS("Bot", "")
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME AIBot
 CLASS("AIBot", "")
 
 	VARIABLE("bot");

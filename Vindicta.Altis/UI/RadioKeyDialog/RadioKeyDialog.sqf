@@ -6,6 +6,7 @@
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 
+#define OOP_CLASS_NAME RadioKeyDialog
 CLASS("RadioKeyDialog", "DialogBase")
 
 	METHOD(new)

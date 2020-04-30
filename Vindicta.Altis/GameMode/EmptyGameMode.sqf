@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME EmptyGameMode
 CLASS("EmptyGameMode", "GameModeBase")
 
 	METHOD(new)

@@ -7,6 +7,7 @@ We need to split vehicle groups (after convoy move).
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonSplitVehicleGroups
 CLASS("ActionGarrisonSplitVehicleGroups", "ActionGarrison")
 
 	METHOD(activate)

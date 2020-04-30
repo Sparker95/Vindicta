@@ -7,6 +7,7 @@ Unit will dismount his vehicle and start following his leader
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalUnitInfantryRegroup
 CLASS("GoalUnitInfantryRegroup", "Goal")
 
 	/* virtual */ STATIC_METHOD(createPredefinedAction)

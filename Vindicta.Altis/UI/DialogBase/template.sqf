@@ -10,8 +10,8 @@
 
 // Redefine this!
 #define __CLASS_NAME "MyTab"
-
-CLASS(__CLASS_NAME, "DialogTabBase")
+#define OOP_CLASS_NAME MyTab
+CLASS("MyTab", "DialogTabBase")
 
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -31,6 +31,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME MyDialog
 CLASS("MyDialog", "DialogBase")
 
 	METHOD(new)

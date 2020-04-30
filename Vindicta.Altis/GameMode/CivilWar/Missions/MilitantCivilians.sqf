@@ -429,6 +429,7 @@ pr0_fnc_givePlayerIntel = {
 Class: MilitantCiviliansAmbientMission
 This mission spawns a number of civilians with various weapons who will fight with the police.
 */
+#define OOP_CLASS_NAME MilitantCiviliansAmbientMission
 CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	// The active militants.
 	VARIABLE("activeCivs");

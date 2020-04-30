@@ -8,6 +8,7 @@ Currently it does nothing, but it could potentially perform monitoring of units 
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupStayInVehicles
 CLASS("ActionGroupStayInVehicles", "ActionGroup")
 	
 	// ------------ N E W ------------

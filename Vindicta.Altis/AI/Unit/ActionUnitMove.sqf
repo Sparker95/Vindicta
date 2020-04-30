@@ -10,6 +10,7 @@
 // #define DEBUG_PF 
 #endif
 
+#define OOP_CLASS_NAME ActionUnitMove
 CLASS("ActionUnitMove", "ActionUnit")
 
 	VARIABLE("pos");

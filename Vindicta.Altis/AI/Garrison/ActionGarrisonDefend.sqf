@@ -15,6 +15,7 @@
 // Static group goal
 // Idle group goals -- array of possible goals with weights
 
+#define OOP_CLASS_NAME ActionGarrisonDefend
 CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 	VARIABLE("behaviour");
 	VARIABLE("speedMode");

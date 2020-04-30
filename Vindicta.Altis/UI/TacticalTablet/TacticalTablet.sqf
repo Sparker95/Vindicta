@@ -25,6 +25,7 @@ Opens the tactical tablet display
 #define __EVENT_ID_DELAY 2
 #define __EVENT_NEW(type, data, delay) [type, data, delay]
 
+#define OOP_CLASS_NAME TacticalTablet
 CLASS("TacticalTablet", "")
 
 	STATIC_VARIABLE("instance");

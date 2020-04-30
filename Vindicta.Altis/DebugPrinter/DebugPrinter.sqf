@@ -9,6 +9,7 @@ It can also be passed to another machine through <MessageReceiver.setOwner> meth
 Author: Sparker 31.07.2018
 */
 
+#define OOP_CLASS_NAME DebugPrinter
 CLASS("DebugPrinter", "MessageReceiver");
 
 	VARIABLE("name");

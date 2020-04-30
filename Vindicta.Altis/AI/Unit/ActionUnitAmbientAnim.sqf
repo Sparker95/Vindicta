@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME ActionUnitAmbientAnim
 CLASS("ActionUnitAmbientAnim", "ActionUnit")
 
 	VARIABLE("target");

@@ -16,6 +16,7 @@ Stimulus manager is a common object which gathers stimulus from one source and d
 
 #define pr private
 
+#define OOP_CLASS_NAME StimulusManager
 CLASS("StimulusManager", "MessageReceiverEx")
 
 	VARIABLE("sensingAIs"); // Array of AI objects which will be sensing stimulus

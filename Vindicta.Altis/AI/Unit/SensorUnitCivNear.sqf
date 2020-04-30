@@ -6,6 +6,7 @@ This sensor gets stimulated when someone salutes to this unit
 
 #define pr private
 
+#define OOP_CLASS_NAME SensorUnitCivNear
 CLASS("SensorUnitCivNear", "SensorStimulatable")
 
 	VARIABLE("timeAnnoyed");

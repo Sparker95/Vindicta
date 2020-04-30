@@ -13,6 +13,7 @@ Opens when a user wants to attach one unit he is looking at to the current garri
 
 #define pr private
 
+#define OOP_CLASS_NAME AttachToGarrisonDialog
 CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 
 	VARIABLE("unit");		// Unit

@@ -4,6 +4,7 @@
 Unit action.
 */
 
+#define OOP_CLASS_NAME ActionUnit
 CLASS("ActionUnit", "Action")
 	VARIABLE("hO");
 

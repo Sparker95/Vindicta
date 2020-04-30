@@ -10,6 +10,7 @@ Sends a detachment from the source garrison to join the target garrison.
 Parent: <TakeOrJoinCmdrAction>
 */
 
+#define OOP_CLASS_NAME ReinforceCmdrAction
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtGarrId", [ATTR_SAVE]);
 

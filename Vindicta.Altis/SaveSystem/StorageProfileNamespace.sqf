@@ -35,7 +35,8 @@ Performs saving data into profile namespace
 // Class name is too long to type every time...
 #define __CLASS_NAME "StorageProfileNamespace"
 
-CLASS(__CLASS_NAME, "Storage")
+#define OOP_CLASS_NAME StorageProfileNamespace
+CLASS("StorageProfileNamespace", "Storage")
 
 	VARIABLE("bOpen");			// Bool, true if open
 	VARIABLE("currentRecord");	// String, current record name
@@ -390,7 +391,8 @@ ENDCLASS;
 
 
 	// Try to save/load objects
-	CLASS("StorableTest", "Storable")
+	#define OOP_CLASS_NAME StorableTest
+CLASS("StorableTest", "Storable")
 		VARIABLE("noSave0");
 		VARIABLE_ATTR("save0", [ATTR_SAVE]);
 		VARIABLE_ATTR("save1", [ATTR_SAVE]);

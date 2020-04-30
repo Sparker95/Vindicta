@@ -7,6 +7,7 @@ All members of this group will move to their assigned sentry positions.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupOccupySentryPositions
 CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	
 	// logic to run when the goal is activated

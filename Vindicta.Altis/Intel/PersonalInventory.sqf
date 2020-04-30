@@ -24,6 +24,7 @@ Maintains IDs of free and used inventory items, and what data is assigned to eac
 // Array with true/false which tells if this data cell is occupied
 #define __ID_BITFIELD 3
 
+#define OOP_CLASS_NAME PersonalInventory
 CLASS("PersonalInventory", "")
 
 	VARIABLE("data");

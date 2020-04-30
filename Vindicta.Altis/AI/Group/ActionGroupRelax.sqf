@@ -4,6 +4,7 @@
 Class: ActionGroup.ActionGroupRelax
 */
 
+#define OOP_CLASS_NAME ActionGroupRelax
 CLASS("ActionGroupRelax", "ActionGroup")
 
 	VARIABLE("activeUnits");

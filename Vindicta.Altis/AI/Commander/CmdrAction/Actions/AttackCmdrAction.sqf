@@ -9,6 +9,7 @@ Or at least share functionality via a library or something.
 
 Parent: <CmdrAction>
 */
+#define OOP_CLASS_NAME AttackCmdrAction
 CLASS("AttackCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);

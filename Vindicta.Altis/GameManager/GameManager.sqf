@@ -27,6 +27,7 @@ FIX_LINE_NUMBERS()
 #define SAVE_TYPE_RECOVERY			1
 #define SAVE_TYPE_AUTO				2
 
+#define OOP_CLASS_NAME GameManager
 CLASS("GameManager", "MessageReceiverEx")
 
 	VARIABLE("gameModeInitialized");	// State of the game for this machine

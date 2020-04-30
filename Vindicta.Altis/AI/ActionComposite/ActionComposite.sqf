@@ -10,6 +10,7 @@ Based on source from "Programming Game AI by Example" by Mat Buckland: http://ww
 Author: Sparker 05.08.2018
 */
 
+#define OOP_CLASS_NAME ActionComposite
 CLASS("ActionComposite", "Action")
 
 	VARIABLE("subactions"); // Array with subactions

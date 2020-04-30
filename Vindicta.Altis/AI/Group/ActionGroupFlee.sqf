@@ -4,6 +4,7 @@
 Class: ActionGroup.ActionGroupFlee
 */
 
+#define OOP_CLASS_NAME ActionGroupFlee
 CLASS("ActionGroupFlee", "ActionGroup")
 
 	// logic to run when the goal is activated

@@ -9,6 +9,7 @@ Parameters:
 "posID" - ID of the building position used with buildingPos command
 */
 
+#define OOP_CLASS_NAME ActionUnitInfantryMoveBuilding
 CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 	VARIABLE("building");
 	VARIABLE("posID");

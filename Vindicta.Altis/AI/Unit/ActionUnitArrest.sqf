@@ -10,6 +10,7 @@ Template of an Action class
 #define MIN_ARREST_DIST 2 // minimum distance for arrest animation and method call
 #define MAX_CHASE_TIME 45 
 
+#define OOP_CLASS_NAME ActionUnitArrest
 CLASS("ActionUnitArrest", "Action")
 	
 	VARIABLE("target");

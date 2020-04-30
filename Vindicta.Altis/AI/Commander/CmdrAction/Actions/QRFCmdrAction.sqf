@@ -11,6 +11,7 @@ Parent: <AttackCmdrAction>
 */
 #define pr private
 
+#define OOP_CLASS_NAME QRFCmdrAction
 CLASS("QRFCmdrAction", "AttackCmdrAction")
 	// The target cluster model ID
 	VARIABLE_ATTR("tgtClusterId", [ATTR_SAVE]);

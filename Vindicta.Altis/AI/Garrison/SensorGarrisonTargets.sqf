@@ -19,6 +19,7 @@ Author: Sparker 21.12.2018
 // Will print to the RPT targets received from groups
 //#define PRINT_RECEIVED_TARGETS
 
+#define OOP_CLASS_NAME SensorGarrisonTargets
 CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 
 	METHOD(new)

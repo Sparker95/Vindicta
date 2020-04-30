@@ -6,6 +6,7 @@ AST that does nothing but immediately succeed, used as placeholder, or replaceme
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_Success
 CLASS("AST_Success", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 

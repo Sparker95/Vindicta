@@ -8,6 +8,7 @@ This action also moves ungrouped vehicles into the common vehicle group.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonMergeVehicleGroups
 CLASS("ActionGarrisonMergeVehicleGroups", "ActionGarrison")
 
 	METHOD(activate)

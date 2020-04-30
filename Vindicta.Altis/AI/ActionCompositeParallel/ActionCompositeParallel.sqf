@@ -21,6 +21,7 @@ Author: Sparker 05.08.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionCompositeParallel
 CLASS("ActionCompositeParallel", "ActionComposite")
 	
 	// ----------------------------------------------------------------------

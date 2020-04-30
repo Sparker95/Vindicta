@@ -5,6 +5,7 @@ Class: ActionGroup
 Group action.
 */
 
+#define OOP_CLASS_NAME ActionGroup
 CLASS("ActionGroup", "Action")
 
 	VARIABLE("hG");

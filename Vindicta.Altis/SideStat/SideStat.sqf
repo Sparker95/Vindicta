@@ -10,6 +10,7 @@ Class: SideStat
 Author: zalexki 18.03.2019
 */
 
+#define OOP_CLASS_NAME SideStat
 CLASS("SideStat", "");
 
 	//Integer

@@ -7,6 +7,7 @@ just directly merges/joins.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_MergeOrJoinTarget
 CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("fromGarrDeadState", [ATTR_PRIVATE ARG ATTR_SAVE]);

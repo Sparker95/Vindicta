@@ -15,6 +15,7 @@ Author: Sparker, Billw (reference count improvements)
 
 #define pr private
 
+#define OOP_CLASS_NAME MessageReceiverEx
 CLASS("MessageReceiverEx", "MessageReceiver")
 
 	VARIABLE_ATTR("refCount", [ATTR_SAVE]);

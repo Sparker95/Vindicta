@@ -19,6 +19,7 @@ private _timer = NEW("Timer", _args);
 Author: Sparker 31.07.2018
 */
 
+#define OOP_CLASS_NAME Timer
 CLASS("Timer", "");
 
 	VARIABLE("data");

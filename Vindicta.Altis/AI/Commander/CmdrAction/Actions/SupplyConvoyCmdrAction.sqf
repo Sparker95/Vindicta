@@ -5,6 +5,7 @@ Class: AI.CmdrAI.CmdrAction.Actions.SupplyConvoyCmdrAction
 
 Parent: <CmdrAction>
 */
+#define OOP_CLASS_NAME SupplyConvoyCmdrAction
 CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 	// Originating garrison
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);

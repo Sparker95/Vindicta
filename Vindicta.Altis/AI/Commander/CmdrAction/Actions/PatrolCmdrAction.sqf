@@ -10,6 +10,7 @@ Parent: <CmdrAction>
 
 #define pr private
 
+#define OOP_CLASS_NAME PatrolCmdrAction
 CLASS("PatrolCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);

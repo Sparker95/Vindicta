@@ -7,13 +7,13 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Resources\UIProfileColors.h"
 
-#define __CLASS_NAME "InGameMenuTabGameModeInit"
-
 #define pr private
 
 #define LB_CUR_SEL_DATA(lb) lb lbData (lbCurSel lb)
 
-CLASS(__CLASS_NAME, "DialogTabBase")
+#define __CLASS_NAME "InGameMenuTabGameModeInit"
+#define OOP_CLASS_NAME InGameMenuTabGameModeInit
+CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 
 	METHOD(new)
 		params [P_THISOBJECT];

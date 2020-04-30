@@ -18,8 +18,8 @@ That's how we draw garrisons
 #define MARKER_SUFFIX "_mrk"
 
 #define pr private
-
-CLASS(CLASS_NAME, "MapMarker")
+#define OOP_CLASS_NAME MapMarkerGarrison
+CLASS("MapMarkerGarrison", "MapMarker")
 
 	VARIABLE("selected");
 

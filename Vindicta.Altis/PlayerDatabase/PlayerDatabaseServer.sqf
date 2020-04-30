@@ -15,6 +15,7 @@ Inherits from <DoubleKeyHashmap>.
 
 #define pr private
 
+#define OOP_CLASS_NAME PlayerDatabaseServer
 CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 
 	// Namespace object

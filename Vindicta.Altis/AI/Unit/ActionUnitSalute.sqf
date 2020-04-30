@@ -16,6 +16,7 @@ _guy switchmove "AmovPercMstpSlowWrflDnon_SaluteOut";
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitSalute
 CLASS("ActionUnitSalute", "Action")
 
 	VARIABLE("target");

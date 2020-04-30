@@ -5,6 +5,7 @@ Class: Phase1CmdrStrategy
 Strategy for commander to use during phase 1 gameplay.
 Sends QRFs, doesn't deploy roadblocks, doesn't capture anything.
 */
+#define OOP_CLASS_NAME Phase1CmdrStrategy
 CLASS("Phase1CmdrStrategy", "CmdrStrategy")
 	METHOD(new)
 		params [P_THISOBJECT];

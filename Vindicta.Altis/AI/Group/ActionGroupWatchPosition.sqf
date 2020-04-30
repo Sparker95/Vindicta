@@ -2,6 +2,7 @@
 
 // Class: ActionGroup.ActionGroupWatchPosition
 
+#define OOP_CLASS_NAME ActionGroupWatchPosition
 CLASS("ActionGroupWatchPosition", "ActionGroup")
 	VARIABLE("pos");
 	VARIABLE("radius");

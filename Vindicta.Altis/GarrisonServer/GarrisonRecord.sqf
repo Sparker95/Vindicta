@@ -8,6 +8,7 @@ Author: Sparker 23 August 2019
 
 #define pr private
 
+#define OOP_CLASS_NAME GarrisonRecord
 CLASS("GarrisonRecord", "")
 
 	// Ref to the actual garrison, which exists only on the server

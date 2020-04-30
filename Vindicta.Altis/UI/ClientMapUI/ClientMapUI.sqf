@@ -15,14 +15,15 @@
 #include "..\..\PlayerDatabase\PlayerDatabase.hpp"
 #include "..\..\Intel\Intel.hpp"
 
-#define CLASS_NAME "ClientMapUI"
 #define pr private
 
 /*
 	Class: ClientMapUI
 	Singleton class that performs things related to map user interface
 */
-CLASS(CLASS_NAME, "")
+#define CLASS_NAME "ClientMapUI"
+#define OOP_CLASS_NAME ClientMapUI
+CLASS("ClientMapUI", "")
 
 	// Array with markers which are currently under cursor, gets updated on mouse moving event handler
 	VARIABLE("markersUnderCursor");

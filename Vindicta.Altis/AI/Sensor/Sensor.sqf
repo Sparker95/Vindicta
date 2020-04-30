@@ -14,6 +14,7 @@ Author: Sparker 08.11.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME Sensor
 CLASS("Sensor", "")
 
 	VARIABLE("AI"); // Pointer to the unit which holds this AI object

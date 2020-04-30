@@ -7,6 +7,7 @@ Tell group to arrest a suspicious player unit.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupArrest
 CLASS("ActionGroupArrest", "ActionGroup")
 
 	VARIABLE("target");		// player being arrested

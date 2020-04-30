@@ -7,6 +7,7 @@ Flipped vehicles get magically unflipped
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupUnflipVehicles
 CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 
 	// logic to run when the goal is activated

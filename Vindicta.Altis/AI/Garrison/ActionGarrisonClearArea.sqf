@@ -3,6 +3,7 @@
 #define pr private
 
 // Duration of this action
+#define OOP_CLASS_NAME ActionGarrisonClearArea
 CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 	VARIABLE("pos");

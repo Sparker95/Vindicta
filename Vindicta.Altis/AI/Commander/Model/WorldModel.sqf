@@ -7,6 +7,7 @@
 Class: AI.CmdrAI.Model.WorldModel
 Models either the real world state, or a derivation of it that can be used for simulation.
 */
+#define OOP_CLASS_NAME WorldModel
 CLASS("WorldModel", "Storable")
 
 	VARIABLE_ATTR("type", [ATTR_SAVE]);

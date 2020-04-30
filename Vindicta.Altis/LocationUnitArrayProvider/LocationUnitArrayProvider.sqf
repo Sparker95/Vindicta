@@ -7,6 +7,7 @@ This object calculates arrays with units which can spawn locations of different 
 Calculating these arrays is a resource-consuming and it must not be performed very often, that's why we need a separate object for this.
 */
 
+#define OOP_CLASS_NAME LocationUnitArrayProvider
 CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
 	VARIABLE("spawnWest"); // These units can spawn West locations

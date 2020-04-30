@@ -10,6 +10,7 @@ Parameter tags:
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupGetInBuilding
 CLASS("ActionGroupGetInBuilding", "ActionGroup")
 
 	VARIABLE("hBuilding");

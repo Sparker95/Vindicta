@@ -11,6 +11,7 @@ Author: Sparker 01.02.2019
 // 0 means it is never updated
 #define UPDATE_INTERVAL 0
 
+#define OOP_CLASS_NAME SensorCommanderLocation
 CLASS("SensorCommanderLocation", "SensorStimulatable")
 
 	METHOD(new)

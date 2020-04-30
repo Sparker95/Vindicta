@@ -6,6 +6,7 @@ Class: ActionGroup.ActionGroupPatrol
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupPatrol
 CLASS("ActionGroupPatrol", "ActionGroup")
 
 	VARIABLE("route");

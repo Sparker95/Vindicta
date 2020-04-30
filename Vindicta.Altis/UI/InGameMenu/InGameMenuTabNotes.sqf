@@ -9,6 +9,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME InGameMenuTabNotes
 CLASS("InGameMenuTabNotes", "DialogTabBase")
 
 	STATIC_VARIABLE("text");

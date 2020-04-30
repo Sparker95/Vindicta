@@ -8,6 +8,7 @@ Every goal is static, that is, not instantiated.
 
 #define pr private
 
+#define OOP_CLASS_NAME Goal
 CLASS("Goal", "")
 
 	STATIC_VARIABLE("effects"); // Effects world state

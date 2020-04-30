@@ -18,6 +18,7 @@ This sensor gets stimulated by sounds.
 // todo maybe this number must depend on the activity in the area?? And on previous encounters by this garrison? And something else?
 #define STIMULATION_THRESHOLD 10
 
+#define OOP_CLASS_NAME SensorGarrisonSound
 CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 
 	// Accumulator of stimulation

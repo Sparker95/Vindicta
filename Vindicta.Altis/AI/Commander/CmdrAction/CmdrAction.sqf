@@ -25,6 +25,7 @@ e.g. An action for a garrison to attack an outpost could be parameterized by the
 
 Parent: <RefCounted>
 */
+#define OOP_CLASS_NAME CmdrAction
 CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 	// The priority of this action in relation to other actions of the same or different type.
@@ -677,7 +678,8 @@ if(isNil "gActionDebugMarkerStyle") then {
 
 ["AST_VAR", {
 
-	CLASS("ActionASTVarTest", "CmdrAction")
+	#define OOP_CLASS_NAME ActionASTVarTest
+CLASS("ActionASTVarTest", "CmdrAction")
 
 		METHOD(testVars)
 			params [P_THISOBJECT];
@@ -704,7 +706,8 @@ if(isNil "gActionDebugMarkerStyle") then {
 // Dummy test classes
 
 ["CmdrAction Dummy test classes", {
-	CLASS("AST_KillGarrisonSetVar", "ActionStateTransition")
+	#define OOP_CLASS_NAME AST_KillGarrisonSetVar
+CLASS("AST_KillGarrisonSetVar", "ActionStateTransition")
 		VARIABLE("garrisonId");
 		VARIABLE("var");
 		VARIABLE("newVal");
@@ -740,7 +743,8 @@ if(isNil "gActionDebugMarkerStyle") then {
 		ENDMETHOD;
 	ENDCLASS;
 
-	CLASS("AST_TestVariable", "ActionStateTransition")
+	#define OOP_CLASS_NAME AST_TestVariable
+CLASS("AST_TestVariable", "ActionStateTransition")
 		VARIABLE("var");
 		VARIABLE("compareVal");
 

@@ -28,6 +28,7 @@ Parent: none
 
 #define pr private
 
+#define OOP_CLASS_NAME CmdrActionRecord
 CLASS("CmdrActionRecord", "")
 	
 	STATIC_METHOD(getText)
@@ -39,6 +40,7 @@ ENDCLASS;
 
 // - - - - Targeted at position or location - - - -
 
+#define OOP_CLASS_NAME DirectedCmdrActionRecord
 CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 
 	// Destination position
@@ -88,6 +90,7 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME MoveCmdrActionRecord
 CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD(getText)
 		"MOVE"
@@ -95,6 +98,7 @@ CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME TakeLocationCmdrActionRecord
 CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD(getText)
 		"CAPTURE"
@@ -102,6 +106,7 @@ CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME AttackCmdrActionRecord
 CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD(getText)
 		"ATTACK"
@@ -109,6 +114,7 @@ CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME ReinforceCmdrActionRecord
 CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD(getText)
 		"REINFORCE"
@@ -116,6 +122,7 @@ CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME SupplyCmdrActionRecord
 CLASS("SupplyCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD(getText)
 		"SUPPLY"
@@ -124,6 +131,7 @@ ENDCLASS;
 
 /*
 // NYI
+#define OOP_CLASS_NAME ReconCmdrActionRecord
 CLASS("ReconCmdrActionRecord", "DirectedCmdrActionRecord")
 
 ENDCLASS;
@@ -134,6 +142,7 @@ ENDCLASS;
 // - - - - Other - - - -
 
 // todo
+#define OOP_CLASS_NAME PatrolCmdrActionRecord
 CLASS("PatrolCmdrActionRecord", "CmdrActionRecord")
 
 	STATIC_METHOD(getText)

@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME ActionGarrisonMoveMounted
 CLASS("ActionGarrisonMoveMounted", "ActionGarrisonMoveBase")
 
 	/* private override */ METHOD(assignMoveGoals)

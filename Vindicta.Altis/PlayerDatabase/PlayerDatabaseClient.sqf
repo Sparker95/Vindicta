@@ -14,6 +14,7 @@ Stores data about this client on this client's machine. Data is received data fr
 
 #define pr private
 
+#define OOP_CLASS_NAME PlayerDatabaseClient
 CLASS("PlayerDatabaseClient", "")
 
 	// Namespace object

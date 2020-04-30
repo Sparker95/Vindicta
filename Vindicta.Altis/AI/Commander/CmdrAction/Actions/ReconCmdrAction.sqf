@@ -7,6 +7,7 @@ Should probably involve moving a recon specific detachment to a certain location
 setting up an OP (maybe a dynamic location) and then remaining for a certain 
 amount of time (retreating if discovered?).
 */
+#define OOP_CLASS_NAME ReconCmdrAction
 CLASS("ReconCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	// Actual position we are interested in

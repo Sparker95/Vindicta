@@ -11,6 +11,7 @@
 
 #define CREATE_LOCATION_COST 30
 
+#define OOP_CLASS_NAME InGameMenuTabCommander
 CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 	// How many build res required to build/claim this place

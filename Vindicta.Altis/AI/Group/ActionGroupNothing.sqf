@@ -7,6 +7,7 @@ Every unit in the group will receive a GoalUnitNothing goal.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupNothing
 CLASS("ActionGroupNothing", "ActionGroup")
 	
 	// ------------ N E W ------------

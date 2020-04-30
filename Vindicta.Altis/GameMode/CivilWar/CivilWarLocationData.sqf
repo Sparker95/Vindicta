@@ -7,6 +7,7 @@ Game mode data for general locations
 
 #define pr private
 
+#define OOP_CLASS_NAME CivilWarLocationData
 CLASS("CivilWarLocationData", "LocationGameModeData")
 
 	// Setting it to true will force enable respawn of players here regardless of other rules

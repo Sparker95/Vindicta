@@ -17,6 +17,7 @@ Data which is assigned to personal inventories.
 This class is made for easy serialization and deserialization of tablet data.
 */
 
+#define OOP_CLASS_NAME UnitIntelData
 CLASS("UnitIntelData", "")
 
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);						// What side is this data?

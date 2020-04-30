@@ -7,6 +7,7 @@ target.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_SelectFallbackTarget
 CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE ARG ATTR_SAVE]);

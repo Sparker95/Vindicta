@@ -11,6 +11,7 @@ Receives data from GarrisonServer.
 Author: Sparker 23 August 2019
 */
 
+#define OOP_CLASS_NAME GarrisonDatabaseClient
 CLASS("GarrisonDatabaseClient", "")
 
 	// Hashmap that maps actual garrison references to garrison records

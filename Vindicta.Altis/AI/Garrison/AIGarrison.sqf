@@ -11,6 +11,7 @@ Class: AI.AIGarrison
 #define MRK_GOAL	"_goal"
 #define MRK_ARROW	"_arrow"
 
+#define OOP_CLASS_NAME AIGarrison
 CLASS("AIGarrison", "AI_GOAP")
 
 	// Array of targets known by this garrison

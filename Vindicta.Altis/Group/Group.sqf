@@ -23,7 +23,8 @@ Author: Sparker
 
 #define pr private
 
-CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
+#define OOP_CLASS_NAME Group
+CLASS("Group", "MessageReceiverEx");
 
 	//Variables
 	VARIABLE_ATTR("data", [ATTR_SAVE]);

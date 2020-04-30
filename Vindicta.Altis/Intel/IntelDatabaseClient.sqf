@@ -15,6 +15,7 @@ Author: Sparker 07.05.2019
 
 #define pr private
 
+#define OOP_CLASS_NAME IntelDatabaseClient
 CLASS("IntelDatabaseClient", "IntelDatabase")
 
 	METHOD(addIntel)

@@ -12,6 +12,7 @@ Author: Sparker 12.11.2018
 #define MRK_GOAL	"_goal"
 #define MRK_ARROW	"_arrow"
 
+#define OOP_CLASS_NAME AIGroup
 CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");

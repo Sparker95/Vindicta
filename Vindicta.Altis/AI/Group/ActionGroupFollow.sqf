@@ -2,6 +2,7 @@
 
 #define WAYPOINT_UPDATE_INTERVAL 17
 
+#define OOP_CLASS_NAME ActionGroupFollow
 CLASS("ActionGroupFollow", "ActionGroup")
 
 	VARIABLE("hGroupToFollow");

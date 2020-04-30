@@ -25,6 +25,7 @@ Author: Sparker 03.03.2019
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 
+#define OOP_CLASS_NAME AI
 CLASS("AI", "MessageReceiverEx")
 
 	/* Variable: agent

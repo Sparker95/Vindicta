@@ -90,6 +90,7 @@ if (isNil "g_AI_GOAP_haltArray") then {
 	g_AI_GOAP_haltArray = [];
 };
 
+#define OOP_CLASS_NAME AI_GOAP
 CLASS("AI_GOAP", "AI")
 
 	/* Variable: currentAction */

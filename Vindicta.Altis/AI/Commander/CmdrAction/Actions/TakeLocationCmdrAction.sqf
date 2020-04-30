@@ -12,6 +12,7 @@ Parent: <TakeOrJoinCmdrAction>
 
 #define pr private
 
+#define OOP_CLASS_NAME TakeLocationCmdrAction
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtLocId", [ATTR_SAVE]);
 

@@ -10,6 +10,7 @@ Parent: <ActionStateTransition>
 
 #define pr private
 
+#define OOP_CLASS_NAME AST_GarrisonConstructLocation
 CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 
 	// Inputs

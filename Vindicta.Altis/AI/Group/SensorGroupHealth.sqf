@@ -10,6 +10,7 @@ Sensor for a group to check its health properties.
 // Update interval of this sensor
 #define UPDATE_INTERVAL 10
 
+#define OOP_CLASS_NAME SensorGroupHealth
 CLASS("SensorGroupHealth", "SensorGroup")
 
 	METHOD(new)

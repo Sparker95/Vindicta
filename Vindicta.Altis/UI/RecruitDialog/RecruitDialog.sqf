@@ -8,6 +8,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME RecruitDialog
 CLASS("RecruitDialog", "DialogBase") 
 
 	VARIABLE("location");

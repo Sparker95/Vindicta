@@ -7,6 +7,7 @@ For example to select the next patrol waypoint in an array of positions.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_ArrayPopFront
 CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	VARIABLE_ATTR("notEmptyState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("emptyBeforeState", [ATTR_PRIVATE ARG ATTR_SAVE]);

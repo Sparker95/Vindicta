@@ -2,6 +2,7 @@
 /*
 A vehicle and animations to 'repair' it.
 */
+#define OOP_CLASS_NAME AnimObjectGroundVehicle
 CLASS("AnimObjectGroundVehicle", "AnimObject")
 
 	STATIC_VARIABLE("animations");

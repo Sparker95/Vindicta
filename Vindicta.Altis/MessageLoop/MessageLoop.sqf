@@ -25,6 +25,7 @@ MessageLoop_fnc_perFrameHandler = compile preprocessFileLineNumbers "MessageLoop
 
 #define N_MESSAGES_IN_SERIES_DEFAULT 128
 
+#define OOP_CLASS_NAME MessageLoop
 CLASS("MessageLoop", "Storable");
 
 	//Array with messages

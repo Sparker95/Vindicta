@@ -39,7 +39,8 @@ g_UM_Hints = [
 ];
 #endif
 
-CLASS(CLASS_NAME, "")
+#define OOP_CLASS_NAME UndercoverUI
+CLASS("UndercoverUI", "")
 	
 	STATIC_METHOD(drawUI)
 		params [P_THISOBJECT, ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];

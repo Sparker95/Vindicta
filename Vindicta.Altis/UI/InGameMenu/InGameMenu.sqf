@@ -8,6 +8,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME InGameMenu
 CLASS("InGameMenu", "DialogBase")
 
 	METHOD(new)

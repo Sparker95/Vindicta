@@ -6,6 +6,7 @@ Goal for a group to unflip their vehicles.
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGroupUnflipVehicles
 CLASS("GoalGroupUnflipVehicles", "Goal")
 
 

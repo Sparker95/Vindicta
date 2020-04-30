@@ -16,6 +16,7 @@ Author: Sparker 07.05.2019
 #define pr private
 
 OOP_INFO_0("Compiling IntelDatabaseServer");
+#define OOP_CLASS_NAME IntelDatabaseServer
 CLASS("IntelDatabaseServer", "IntelDatabase")
 
 	METHOD(addIntel)

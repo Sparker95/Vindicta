@@ -8,6 +8,7 @@ Author: Marvis 09.05.2019
 #define IS_ARRESTED_UNCONSCIOUS_DEAD(target) (!alive (target) || {animationState (target) in ["unconsciousoutprone", "unconsciousfacedown", "unconsciousfaceup", "unconsciousrevivedefault", "acts_aidlpsitmstpssurwnondnon_loop", "acts_aidlpsitmstpssurwnondnon01"]})
 #define pr private
 
+#define OOP_CLASS_NAME GoalGroupArrest
 CLASS("GoalGroupArrest", "Goal")
 
 	STATIC_METHOD(calculateRelevance)

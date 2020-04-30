@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME GoalGarrisonRebalanceVehicleGroups
 CLASS("GoalGarrisonRebalanceVehicleGroups", "Goal")
 	/* public virtual */ STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];

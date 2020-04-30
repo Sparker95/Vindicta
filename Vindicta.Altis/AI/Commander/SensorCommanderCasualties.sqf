@@ -10,6 +10,7 @@ On receiving data, it tries to match killer to an existing target in the target 
 // 0 means that it is never updated
 #define UPDATE_INTERVAL 0
 
+#define OOP_CLASS_NAME SensorCommanderCasualties
 CLASS("SensorCommanderCasualties", "SensorStimulatable")
 
 	/*

@@ -67,7 +67,8 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 #endif
 FIX_LINE_NUMBERS()
 
-CLASS(UNIT_CLASS_NAME, "Storable")
+#define OOP_CLASS_NAME Unit
+CLASS("Unit", "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 

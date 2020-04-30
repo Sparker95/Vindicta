@@ -439,6 +439,7 @@ TODO:
 	Make them choose targets better, they should try and blow up police vehicles, the police station, the police themselves!
 	Allow them to set traps for police, roadside bombs, blow up incoming reinforcements etc.
 */
+#define OOP_CLASS_NAME SaboteurCiviliansAmbientMission
 CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 	// Selection of target buildings remaining.
 	VARIABLE("targetBuildings");

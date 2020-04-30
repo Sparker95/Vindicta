@@ -13,6 +13,7 @@ Author: Sparker
 
 #define CLASS_NAME "ActionUnitGetInVehicle"
 
+#define OOP_CLASS_NAME ActionUnitGetInVehicle
 CLASS("ActionUnitGetInVehicle", "ActionUnit")
 
 	VARIABLE("hVeh");

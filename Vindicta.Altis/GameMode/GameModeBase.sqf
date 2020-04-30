@@ -25,6 +25,7 @@ FIX_LINE_NUMBERS()
 
 // Base class for Game Modes. A Game Mode is a set of customizations to 
 // scenario initialization and ongoing gameplay mechanics.
+#define OOP_CLASS_NAME GameModeBase
 CLASS("GameModeBase", "MessageReceiverEx")
 
 	VARIABLE_ATTR("name", [ATTR_SAVE]);

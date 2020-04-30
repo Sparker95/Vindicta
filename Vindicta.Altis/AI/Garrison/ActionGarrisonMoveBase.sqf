@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME ActionGarrisonMoveBase
 CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 	VARIABLE("pos"); // The destination position

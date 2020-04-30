@@ -12,6 +12,7 @@ Author: Sparker 26.11.2018
 //#define DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 #endif
 
+#define OOP_CLASS_NAME ActionUnitDismountCurrentVehicle
 CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 
 	// ------------ N E W ------------

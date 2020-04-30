@@ -16,6 +16,7 @@ Author: Sparker 06.05.2019
 
 #define pr private
 
+#define OOP_CLASS_NAME IntelDatabase
 CLASS("IntelDatabase", "Storable");
 
 				VARIABLE("items");							// Hash map for refs of items added here

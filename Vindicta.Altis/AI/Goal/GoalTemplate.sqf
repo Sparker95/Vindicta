@@ -5,6 +5,7 @@ Template of a goal class
 
 #define pr private
 
+#define OOP_CLASS_NAME MyGoal
 CLASS("MyGoal", "Goal")
 
 	// ----------------------------------------------------------------------

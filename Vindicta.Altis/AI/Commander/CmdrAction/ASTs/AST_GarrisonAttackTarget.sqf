@@ -6,6 +6,7 @@ Order a garrison to attack a target.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_GarrisonAttackTarget
 CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("garrDeadState", [ATTR_PRIVATE ARG ATTR_SAVE]);

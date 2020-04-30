@@ -5,6 +5,7 @@ This action tries to ensure that vehicle groups have the crew they require and n
 groups are appropriate balanced.
 */
 
+#define OOP_CLASS_NAME ActionGarrisonRebalanceGroups
 CLASS("ActionGarrisonRebalanceGroups", "ActionGarrison")
 
 	// logic to run when the goal is activated

@@ -8,6 +8,7 @@ Therefore I have made this class although it doesn't do anything.
 It just implements methods needed for an AI object to function.
 */
 
+#define OOP_CLASS_NAME Commander
 CLASS("Commander", "")
 
 	

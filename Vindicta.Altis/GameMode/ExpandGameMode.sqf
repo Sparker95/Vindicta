@@ -2,6 +2,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME ExpandGameMode
 CLASS("ExpandGameMode", "GameModeBase")
 
 	METHOD(new)
@@ -90,6 +91,7 @@ CLASS("ExpandGameMode", "GameModeBase")
 	
 ENDCLASS;
 
+#define OOP_CLASS_NAME ExpandLocationData
 CLASS("ExpandLocationData", "LocationGameModeData")
 
 	METHOD(new)

@@ -80,6 +80,7 @@ This mission spawns a number of civilians that police will try to arrest (when t
 If the player frees them after they are arrested they will provide rewards of intel, and increase local
 activity.
 */
+#define OOP_CLASS_NAME HarassedCiviliansAmbientMission
 CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 	// How many missions of this type can be running at a time.
 	VARIABLE("maxActive");

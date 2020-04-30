@@ -19,6 +19,7 @@ Make sure that the .ext file is set up correctly!
 https://community.bistudio.com/wiki/Description.ext#Corpse_.26_wreck_management
 */
 
+#define OOP_CLASS_NAME GarbageCollector
 CLASS("GarbageCollector", "")
 
 	/*

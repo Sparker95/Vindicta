@@ -14,6 +14,7 @@ Author: Sparker 31.07.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME TimerService
 CLASS("TimerService", "")
 
 	VARIABLE("timers");

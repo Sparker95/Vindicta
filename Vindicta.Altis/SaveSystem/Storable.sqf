@@ -5,6 +5,7 @@ Class: Storable
 Base class for classes which support saving and loading features
 */
 
+#define OOP_CLASS_NAME Storable
 CLASS("Storable", "")
 
 	// - - - - VIRTUAL METHODS - - - - -

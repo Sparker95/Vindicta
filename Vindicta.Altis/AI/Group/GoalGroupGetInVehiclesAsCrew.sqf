@@ -6,6 +6,7 @@ Goal for a group to get in their vehicles as crew.
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGroupGetInVehiclesAsCrew
 CLASS("GoalGroupGetInVehiclesAsCrew", "Goal")
 
 	// /* virtual */ STATIC_METHOD(calculateRelevance)

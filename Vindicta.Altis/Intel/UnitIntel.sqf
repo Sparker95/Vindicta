@@ -17,6 +17,7 @@ Author: Sparker 18.05.2019
 
 #define __INV_ITEM_DATA "__intel_inv_item"
 
+#define OOP_CLASS_NAME UnitIntel
 CLASS("UnitIntel", "")
 
 	STATIC_VARIABLE("eventHandlerAdded");

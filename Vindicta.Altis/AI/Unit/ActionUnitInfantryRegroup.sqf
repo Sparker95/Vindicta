@@ -7,6 +7,7 @@ Makes a unit follow his leader
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitInfantryRegroup
 CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 	
 	// ------------ N E W ------------

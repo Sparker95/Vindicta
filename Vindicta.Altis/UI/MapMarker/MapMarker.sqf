@@ -15,8 +15,8 @@ It's much like a local map marker, but allows to attach events to them like you 
 #define pr private
 
 #define CLASS_NAME "MapMarker"
-
-CLASS(CLASS_NAME, "")
+#define OOP_CLASS_NAME MapMarker
+CLASS("MapMarker", "")
 
 	// All map marker objects
 	STATIC_VARIABLE("all"); // Child classes must also implement this

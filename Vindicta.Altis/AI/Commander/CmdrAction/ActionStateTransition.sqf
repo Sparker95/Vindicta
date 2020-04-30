@@ -30,6 +30,7 @@ behaviour is ongoing, then an appropriate state once it is complete (or failed).
 <AST_GarrisonAttackTarget> for an example of this. The <CmdrAction> will stay in the same state
 after calling an AST apply function if that function does returns <CMDR_ACTION_STATE_NONE>.
 */
+#define OOP_CLASS_NAME ActionStateTransition
 CLASS("ActionStateTransition", "Storable")
 
 	// If more than one Action Transition is available then 
@@ -224,7 +225,8 @@ ENDCLASS;
 	AST_test = NEW("ActionStateTransition", [CmdrAction_test]);
 
 	// Dummy test classes
-	CLASS("TestASTBase", "ActionStateTransition")
+	#define OOP_CLASS_NAME TestASTBase
+CLASS("TestASTBase", "ActionStateTransition")
 		VARIABLE("successState");
 
 		METHOD(new)
@@ -243,7 +245,8 @@ ENDCLASS;
 		ENDMETHOD;
 	ENDCLASS;
 
-	CLASS("TestAST_Start_1", "TestASTBase")
+	#define OOP_CLASS_NAME TestAST_Start_1
+CLASS("TestAST_Start_1", "TestASTBase")
 		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
@@ -254,7 +257,8 @@ ENDCLASS;
 
 	TestAST_Start_1 = NEW("TestAST_Start_1", [CmdrAction_test]);
 
-	CLASS("TestAST_1_2", "TestASTBase")
+	#define OOP_CLASS_NAME TestAST_1_2
+CLASS("TestAST_1_2", "TestASTBase")
 		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
@@ -263,7 +267,8 @@ ENDCLASS;
 	ENDCLASS;
 	TestAST_1_2 = NEW("TestAST_1_2", [CmdrAction_test]);
 
-	CLASS("TestAST_2_End", "TestASTBase")
+	#define OOP_CLASS_NAME TestAST_2_End
+CLASS("TestAST_2_End", "TestASTBase")
 		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_2]);
@@ -272,7 +277,8 @@ ENDCLASS;
 	ENDCLASS;
 	TestAST_2_End = NEW("TestAST_2_End", [CmdrAction_test]);
 
-	CLASS("TestAST_1_End", "TestASTBase")
+	#define OOP_CLASS_NAME TestAST_1_End
+CLASS("TestAST_1_End", "TestASTBase")
 		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("priority", CMDR_ACTION_PRIOR_HIGH);

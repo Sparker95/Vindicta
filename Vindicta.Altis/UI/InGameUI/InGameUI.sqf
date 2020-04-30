@@ -18,6 +18,7 @@ Author: Sparker 19 september 2019
 
 #define pr private
 
+#define OOP_CLASS_NAME InGameUI
 CLASS("InGameUI", "") 
 
 	STATIC_VARIABLE("instance");

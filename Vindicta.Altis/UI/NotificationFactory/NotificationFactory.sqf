@@ -31,6 +31,7 @@ Has methods specialized for customization of our typical notification types
 #define HINT_COLORS 		WHITE, 	CYAN
 #define CRITICAL_COLORS 	WHITE, 	RED
 
+#define OOP_CLASS_NAME NotificationFactory
 CLASS("NotificationFactory", "")
 
 	// Intel about locations we have discovered

@@ -13,6 +13,7 @@ and override `getLocationDesirability` (or modify the `takeLoc*` member values).
 
 Paremt: <RefCounted>
 */
+#define OOP_CLASS_NAME CmdrStrategy
 CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	// takeLoc*Priority are the base priorities the commander will apply when deciding
 	// whether to occupy a location. If it is non zero then the commander will always

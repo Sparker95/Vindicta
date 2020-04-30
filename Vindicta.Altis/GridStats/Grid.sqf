@@ -16,6 +16,7 @@ Authors: Sparker(initial author), Sen(code porting)
 
 #define pr private
 
+#define OOP_CLASS_NAME Grid
 CLASS("Grid", "Storable");
 	
 	// EH ID of mission event handler

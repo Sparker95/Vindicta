@@ -6,6 +6,7 @@ Class: SaveGameHeader
 Class which stores crucial data about each save game record.
 */
 
+#define OOP_CLASS_NAME SaveGameHeader
 CLASS("SaveGameHeader", "Storable")
 
 	VARIABLE("saveVersion");		// Save record version. Used for checking if saved game is compatible.

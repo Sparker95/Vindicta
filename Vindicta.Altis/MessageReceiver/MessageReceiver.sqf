@@ -50,6 +50,7 @@ MsgRcvr_fnc_setMsgDone = {
 	};
 };
 
+#define OOP_CLASS_NAME MessageReceiver
 CLASS("MessageReceiver", "Storable")
 
 	VARIABLE_ATTR("owner", [ATTR_SAVE]);

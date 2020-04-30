@@ -7,6 +7,7 @@ All members of this group will mount all vehicles in this garrison as cargo.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupGetInGarrisonVehiclesAsCargo
 CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 
 	VARIABLE("activeUnits");

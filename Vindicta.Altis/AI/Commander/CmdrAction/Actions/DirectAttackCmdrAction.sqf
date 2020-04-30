@@ -9,6 +9,7 @@ Not meant for simulations.
 Parent: <CmdrAction>
 */
 
+#define OOP_CLASS_NAME DirectAttackCmdrAction
 CLASS("DirectAttackCmdrAction", "CmdrAction")
 
 	// ID of the garrison

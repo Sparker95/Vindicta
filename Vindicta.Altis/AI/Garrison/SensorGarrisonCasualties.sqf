@@ -8,6 +8,7 @@ This sensor gets stimulated by destroyed units. It keeps track of those who were
 
 #define UPDATE_INTERVAL 5
 
+#define OOP_CLASS_NAME SensorGarrisonCasualties
 CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 
 	VARIABLE("destroyedUnits");

@@ -6,6 +6,7 @@ Author: Sparker 14.02.2019
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitVehicleUnflip
 CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 	
 	VARIABLE("torque"); // Torque which will be applied to vehicle to unflip it

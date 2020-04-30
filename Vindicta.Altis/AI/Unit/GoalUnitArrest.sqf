@@ -6,6 +6,7 @@ Author: Marvis 09.05.2019
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalUnitArrest
 CLASS("GoalUnitArrest", "Goal")
 
 	STATIC_METHOD(createPredefinedAction)

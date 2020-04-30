@@ -3,6 +3,7 @@
 /*
 Unused.
 */
+#define OOP_CLASS_NAME SuppressCmdrStrategy
 CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 
 	METHOD(new)

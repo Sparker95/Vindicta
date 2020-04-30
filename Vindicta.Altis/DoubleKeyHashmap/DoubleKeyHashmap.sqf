@@ -20,6 +20,7 @@ Author: Sparker 22 August 2019
 // Separator
 #define __SEP__ "-"
 
+#define OOP_CLASS_NAME DoubleKeyHashmap
 CLASS("DoubleKeyHashmap", "")
 
 	// Namespace object

@@ -18,14 +18,14 @@ That's how we draw locations
 
 #define pr private
 
-#define CLASS_NAME "MapMarkerLocation"
-
 #define RADIUS_MARKER_SUFFIX "_rad"
 #define MARKER_SUFFIX "_mrk"
 #define NOTIFICATION_SUFFIX "_not"
 #define BG_SUFFIX "_bg"
 
-CLASS(CLASS_NAME, "MapMarker")
+#define CLASS_NAME "MapMarkerLocation"
+#define OOP_CLASS_NAME MapMarkerLocation
+CLASS("MapMarkerLocation", "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");

@@ -9,6 +9,7 @@ See implementations in TakeLocationCmdrAction and ReinforceCmdrAction.
 
 Parent: <CmdrAction>
 */
+#define OOP_CLASS_NAME TakeOrJoinCmdrAction
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);

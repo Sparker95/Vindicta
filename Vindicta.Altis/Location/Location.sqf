@@ -30,6 +30,7 @@ FIX_LINE_NUMBERS()
 
 #define pr private
 
+#define OOP_CLASS_NAME Location
 CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/* save */ 	VARIABLE_ATTR("type", [ATTR_SAVE]);						// String, location type

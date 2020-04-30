@@ -8,6 +8,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME RadioKeyTab
 CLASS("RadioKeyTab", "DialogTabBase")
 
 	// State machine to handle comms with the server

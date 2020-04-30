@@ -31,6 +31,7 @@ To use them, you must add a static variable "instance" to your class.
 #define __DISPLAY_SUFFIX "_display"
 #define __CTRL_THISOBJECT_VAR "_thisobject"
 
+#define OOP_CLASS_NAME DialogBase
 CLASS("DialogBase", "")
 
 	// We set it to true in destructor to ensure proper work of event handlers

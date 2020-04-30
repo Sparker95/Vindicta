@@ -112,6 +112,7 @@ gSideTags = SIDE_ARRAY apply {
 	} forEach _this;
 };
 
+#define OOP_CLASS_NAME Storage
 CLASS("Storage", "")
 
 	VARIABLE("savedObjects");	// Hash maps of objects saved and loaded during this save/load session

@@ -53,8 +53,9 @@
 //#define OOP_LOG_REF_UNREF
 
 // This class name without quotes
+#define OOP_DEFAULT_CLASS_NAME UnknownClassName
 #ifndef OOP_CLASS_NAME
-#define OOP_CLASS_NAME UnknownClassName
+#define OOP_CLASS_NAME OOP_DEFAULT_CLASS_NAME
 #endif
 
 // Enforce some constraints
@@ -69,6 +70,7 @@
 // ___ SQF-VM ___
 #define TEXT_
 #undef ASP_ENABLE
+//#define ASP_ENABLE
 #undef PROFILER_COUNTERS_ENABLE
 #undef ADE
 #undef OFSTREAM_ENABLE
@@ -233,6 +235,16 @@
 	#define NAMESPACE missionNameSpace
 #endif
 
+// ---------------------------------------------------------------------------------
+// |          A R M A   S C R I P T   P R O F I L E R   S C O P E S                |
+// ---------------------------------------------------------------------------------
+
+#ifdef ASP_ENABLE
+#define PROFILER_FUNCTION_NAME(className,methodName) className##_fnc_##methodName
+#define ASP_CREATE_PROFILE_SCOPE(className,methodName) private _oop_ASPScope = createProfileScope QUOTE(PROFILER_FUNCTION_NAME(className,methodName));
+#else
+#define ASP_CREATE_PROFILE_SCOPE(className,methodName)
+#endif
 
 // -----------------------------------------------------
 // |       M E T H O D   P A R A M E T E R S           |
@@ -712,7 +724,8 @@
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			private _result = ([0] apply { _this call {
+			private _result = ([0] apply { _this call { \
+			ASP_CREATE_PROFILE_SCOPE(OOP_CLASS_NAME,methodNameStr)
 
 	#define ENDMETHOD }}) select 0;\
 			OOP_TRACE_EXIT_FUNCTION; \
@@ -776,6 +789,7 @@
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), { \
+		ASP_CREATE_PROFILE_SCOPE(OOP_CLASS_NAME,methodNameStr)
 
 	#define ENDMETHOD }]
 
@@ -789,7 +803,8 @@
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), {
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), { \
+		ASP_CREATE_PROFILE_SCOPE(OOP_CLASS_NAME,methodNameStr)
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
 		LOG_METHOD(QUOTE(methodNameStr)); \
@@ -842,6 +857,7 @@
 //  */
 
 #define CLASS(classNameStr, baseClassNames) \
+if (QUOTE(OOP_CLASS_NAME) == QUOTE(OOP_DEFAULT_CLASS_NAME)) then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", classNameStr]; }; \
 LOG_CLASS_BEGIN(class, base); \
 call { \
 private _oop_classNameStr = classNameStr; \

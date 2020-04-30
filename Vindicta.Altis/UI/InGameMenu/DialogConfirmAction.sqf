@@ -9,6 +9,7 @@
 // Dialog with 'YES' and 'NO' buttons
 // Clicking on any of those will close the dialog and call a callback passed through constructor
 
+#define OOP_CLASS_NAME DialogConfirmAction
 CLASS("DialogConfirmAction", "DialogOneTabButtons")
 
 	VARIABLE("argsYes");

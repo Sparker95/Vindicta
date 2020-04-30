@@ -27,6 +27,7 @@ Author: Sparker 7 November 2019
 
 #define UPDATE_INTERVAL 16
 
+#define OOP_CLASS_NAME SoundMonitor
 CLASS("SoundMonitor", "MessageReceiverEx")
 
 	VARIABLE("timer");			// Timer

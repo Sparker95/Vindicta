@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME StatusQuoGameMode
 CLASS("StatusQuoGameMode", "GameModeBase")
 
 	METHOD(new)

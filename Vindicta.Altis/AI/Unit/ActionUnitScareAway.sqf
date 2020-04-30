@@ -7,6 +7,7 @@ Author: Jeroen 11.12.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitScareAway
 CLASS("ActionUnitScareAway", "Action")
 
 	VARIABLE("target");

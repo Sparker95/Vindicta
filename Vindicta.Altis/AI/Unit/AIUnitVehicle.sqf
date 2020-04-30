@@ -8,6 +8,7 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME AIUnitVehicle
 CLASS("AIUnitVehicle", "AI_GOAP")
 
 	// Array with units which are loaded into cargo space of this unit (through ace cargo system currently).

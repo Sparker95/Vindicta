@@ -12,8 +12,8 @@ abstract Class: PlayerListUI
 Singleton class that performs things related to player list interface
 */
 #define CLASS_NAME "PlayerListUI"
-
-CLASS(CLASS_NAME, "")
+#define OOP_CLASS_NAME PlayerListUI
+CLASS("PlayerListUI", "")
 
 	STATIC_METHOD(new)
 		params [P_THISOBJECT];

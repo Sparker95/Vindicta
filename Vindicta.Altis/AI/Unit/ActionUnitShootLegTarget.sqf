@@ -10,6 +10,7 @@ Parameters:
 */
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitShootLegTarget
 CLASS("ActionUnitShootLegTarget", "ActionUnit")
 
 	VARIABLE("target");

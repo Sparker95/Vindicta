@@ -7,6 +7,7 @@
 
 // call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
+#define OOP_CLASS_NAME RefCountedTest
 CLASS("RefCountedTest", "RefCounted")
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -19,6 +20,7 @@ CLASS("RefCountedTest", "RefCounted")
 	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME RefPtrContainer
 CLASS("RefPtrContainer", "")
 	VARIABLE_ATTR("refPtr", [ATTR_REFCOUNTED]);
 

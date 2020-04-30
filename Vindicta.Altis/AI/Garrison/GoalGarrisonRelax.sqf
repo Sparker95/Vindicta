@@ -3,6 +3,7 @@
 // Class: AI.Garrison.GoalGarrisonRelax
 // Garrison will let down their guard.
 // Only allowed when garrison is not in a vigilant state
+#define OOP_CLASS_NAME GoalGarrisonRelax
 CLASS("GoalGarrisonRelax", "Goal")
 
 	STATIC_METHOD(calculateRelevance)

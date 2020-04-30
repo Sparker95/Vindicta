@@ -8,6 +8,7 @@ Author: Sparker 08.11.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME SensorGarrisonHealth
 CLASS("SensorGarrisonHealth", "SensorGarrison")
 
 	// ----------------------------------------------------------------------

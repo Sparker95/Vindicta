@@ -3,8 +3,8 @@
 A bench where a unit can sit at
 */
 #define THIS_CLASS_NAME "AnimObjectBench"
-
-CLASS(THIS_CLASS_NAME, "AnimObject")
+#define OOP_CLASS_NAME AnimObjectBench
+CLASS("AnimObjectBench", "AnimObject")
 
 	STATIC_VARIABLE("animations");
 	STATIC_VARIABLE("points");

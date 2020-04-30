@@ -31,6 +31,7 @@ Author: Sparker 19 September 2019
 
 #define pr private
 
+#define OOP_CLASS_NAME PlayerMonitor
 CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 	VARIABLE("timer");						// Timer

@@ -7,6 +7,7 @@ Base action for movement. Has only activate, terminate, process implemented.
 
 //#define TOLERANCE 1.0
 
+#define OOP_CLASS_NAME ActionUnitInfantryMoveBase
 CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 
 	VARIABLE("pos");

@@ -5,6 +5,7 @@ Goal for a garrison to move somewhere
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGarrisonMove
 CLASS("GoalGarrisonMove", "Goal")
 
 	// ----------------------------------------------------------------------

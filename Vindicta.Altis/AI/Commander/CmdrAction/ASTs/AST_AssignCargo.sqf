@@ -6,6 +6,7 @@ Assign cargo to T_VEH_Cargo units in the garrison.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_AssignCargo
 CLASS("AST_AssignCargo", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("doneState", [ATTR_PRIVATE ARG ATTR_SAVE]);

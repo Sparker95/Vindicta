@@ -4,6 +4,7 @@
 Class: ActionGroup.ActionGroupSurrender
 */
 
+#define OOP_CLASS_NAME ActionGroupSurrender
 CLASS("ActionGroupSurrender", "ActionGroup")
 
 	// logic to run when the goal is activated

@@ -16,6 +16,7 @@ Author: Sparker 05.08.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionCompositeSerial
 CLASS("ActionCompositeSerial", "ActionComposite")
 
 	/* public override */ METHOD(process)

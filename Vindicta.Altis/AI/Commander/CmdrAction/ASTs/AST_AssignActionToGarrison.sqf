@@ -10,6 +10,7 @@ doing something else.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_AssignActionToGarrison
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 

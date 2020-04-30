@@ -33,6 +33,7 @@ You can also use getButtonControl to get the control handle of the button with t
 Author: Sparker 29 October 2019
 */
 
+#define OOP_CLASS_NAME DialogOneTabButtons
 CLASS("DialogOneTabButtons", "DialogBase")
 
 	VARIABLE("buttonTexts");
@@ -98,6 +99,7 @@ CLASS("DialogOneTabButtons", "DialogBase")
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME TabTextWithButtons
 CLASS("TabTextWithButtons", "DialogTabBase")
 
 	VARIABLE("nButtons");

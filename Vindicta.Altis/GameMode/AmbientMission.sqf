@@ -7,6 +7,7 @@ Class: AmbientMission
 A base class for simple missions that are only active when a location is spawned. 
 They should be created in GameMode.locationSpawned and deleted in GameMode.locationDespawned.
 */
+#define OOP_CLASS_NAME AmbientMission
 CLASS("AmbientMission", "")
 	VARIABLE("states");
 

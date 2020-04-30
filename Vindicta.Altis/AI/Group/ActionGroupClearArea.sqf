@@ -7,6 +7,7 @@ The whole group regroups and gets some waypoints to clear the area
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupClearArea
 CLASS("ActionGroupClearArea", "ActionGroup")
 
 	VARIABLE("pos");

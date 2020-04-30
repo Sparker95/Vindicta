@@ -5,6 +5,7 @@ Goal for a garrison to go destroy some enemies
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGarrisonClearArea
 CLASS("GoalGarrisonClearArea", "Goal")
 
 	// Gets called when an external goal of this class is added to AI

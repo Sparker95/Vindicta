@@ -5,6 +5,7 @@ Goal for a garrison to repair all its vehicles
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGarrisonRepairAllVehicles
 CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 
 	STATIC_VARIABLE("effects"); // Array of world properties

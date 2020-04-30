@@ -4,6 +4,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME AlmostEmptyGameMode
 CLASS("AlmostEmptyGameMode", "GameModeBase")
 
 	VARIABLE("nLocationsInitialized");
@@ -91,6 +92,7 @@ CLASS("AlmostEmptyGameMode", "GameModeBase")
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME AlmostEmptyLocationData
 CLASS("AlmostEmptyLocationData", "LocationGameModeData")
 
 	METHOD(new)

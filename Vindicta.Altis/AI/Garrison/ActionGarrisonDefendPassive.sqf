@@ -9,6 +9,7 @@
 // - patrol roads with vehicle groups
 // - set vehicle gunners to scan their sectors
 
+#define OOP_CLASS_NAME ActionGarrisonDefendPassive
 CLASS("ActionGarrisonDefendPassive", "ActionGarrisonDefend")
 
 ENDCLASS;

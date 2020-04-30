@@ -6,6 +6,7 @@ Garrison moves on available vehicles
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonRepairAllVehicles
 CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 
 	VARIABLE("repairUnit"); // The unit that will perform repairs on vehicles

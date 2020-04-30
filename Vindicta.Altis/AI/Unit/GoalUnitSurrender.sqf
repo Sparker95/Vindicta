@@ -4,6 +4,7 @@
 Class: Goal.GoalUnitSurrender
 */
 
+#define OOP_CLASS_NAME GoalUnitSurrender
 CLASS("GoalUnitSurrender", "Goal")
 
 	// ----------------------------------------------------------------------

@@ -29,6 +29,7 @@ Sensor for a group to gather spotted enemies and relay them to the garrison.
 // Prints targets received through the stimulus
 //#define PRINT_RECEIVED_TARGETS
 
+#define OOP_CLASS_NAME SensorGroupTargets
 CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 
 	VARIABLE("comTime"); // Counter that shows how long the group has been in combat state

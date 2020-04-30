@@ -8,6 +8,7 @@ All crew of vehicles mounts assigned vehicles.
 
 // Duration of this action
 
+#define OOP_CLASS_NAME ActionGarrisonJoinLocation
 CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 
 	VARIABLE("loc");

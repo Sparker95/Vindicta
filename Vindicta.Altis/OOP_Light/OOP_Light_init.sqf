@@ -1292,6 +1292,7 @@ OOP_createStaticString = {
 // Use the SET_VAR_REF, SETV_REF, T_SETV_REF family of functions to write to 
 // these members to get automated de-refing of replaced value, and refing of
 // new value. See RefCountedTest.sqf for example.
+#define OOP_CLASS_NAME RefCounted
 CLASS("RefCounted", "")
 	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
@@ -1332,6 +1333,7 @@ ENDCLASS;
 
 #ifdef _SQF_VM
 
+#define OOP_CLASS_NAME AttrTestBase1
 CLASS("AttrTestBase1", "")
 	VARIABLE("var_default");
 	VARIABLE_ATTR("var_private", [ATTR_PRIVATE]);
@@ -1369,6 +1371,7 @@ CLASS("AttrTestBase1", "")
 	
 ENDCLASS;
 
+#define OOP_CLASS_NAME AttrTestDerived1
 CLASS("AttrTestDerived1", "AttrTestBase1")
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -1394,6 +1397,7 @@ CLASS("AttrTestDerived1", "AttrTestBase1")
 	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME AttrTestNotDerived1
 CLASS("AttrTestNotDerived1", "")
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -1424,6 +1428,7 @@ ENDCLASS;
 
 // Multiple inheritence tests
 
+#define OOP_CLASS_NAME mi_a
 CLASS("mi_a", "")
 	METHOD(new)
 	ENDMETHOD;
@@ -1431,6 +1436,7 @@ CLASS("mi_a", "")
 	METHOD(getValue)"A"ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME mi_b
 CLASS("mi_b", "mi_a")
 	METHOD(new)
 	ENDMETHOD;
@@ -1438,6 +1444,7 @@ CLASS("mi_b", "mi_a")
 	METHOD(getValue)"B"ENDMETHOD; // override
 ENDCLASS;
 
+#define OOP_CLASS_NAME mi_c
 CLASS("mi_c", "")
 	METHOD(new)
 	ENDMETHOD;
@@ -1445,6 +1452,7 @@ CLASS("mi_c", "")
 	METHOD(getAnotherValue)"anotherValue"ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME mi_d
 CLASS("mi_d", ["mi_b" ARG "mi_c"])
 	METHOD(new)
 	ENDMETHOD;
@@ -1511,6 +1519,7 @@ ENDCLASS;
 }] call test_AddTest;
 */
 
+#define OOP_CLASS_NAME JsonTestVarObj
 CLASS("JsonTestVarObj", "")
 	VARIABLE("var1");
 	VARIABLE("var2");
@@ -1522,6 +1531,7 @@ CLASS("JsonTestVarObj", "")
 	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME JsonTest1
 CLASS("JsonTest1", "")
 	VARIABLE("varBool");
 	VARIABLE("varString");
@@ -1561,6 +1571,7 @@ ENDCLASS;
 
 
 
+#define OOP_CLASS_NAME serAttrTest
 CLASS("serAttrTest", "")
 	VARIABLE_ATTR("var_0", [ATTR_SERIALIZABLE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("var_1", [ATTR_SERIALIZABLE]);

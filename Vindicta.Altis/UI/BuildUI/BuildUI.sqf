@@ -60,6 +60,7 @@ g_BuildUI_garbageObjects = [
 	"Box_FIA_Ammo_F"
 ];
 
+#define OOP_CLASS_NAME BuildUI
 CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");

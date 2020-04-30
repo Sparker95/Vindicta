@@ -42,6 +42,7 @@
 			"_extraSubactionVariables" \
 		]
 
+#define OOP_CLASS_NAME AIDebugUI
 CLASS("AIDebugUI", "")
 
 	STATIC_VARIABLE("initialized");
@@ -511,6 +512,7 @@ CLASS("AIDebugUI", "")
 ENDCLASS;
 
 // Class for one tab
+#define OOP_CLASS_NAME AIDebugPanel
 CLASS("AIDebugPanel", "")
 
 	VARIABLE("ai");	// AI object

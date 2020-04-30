@@ -6,6 +6,7 @@ Class: ActionGarrison.ActionGarrisonSurrender
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonSurrender
 CLASS("ActionGarrisonSurrender", "ActionGarrison")
 
 	METHOD(activate)

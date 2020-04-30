@@ -25,6 +25,7 @@ Author: Sparker 21.12.2018
 
 //#define DEBUG_TARGETS
 
+#define OOP_CLASS_NAME SensorCommanderTargets
 CLASS("SensorCommanderTargets", "SensorStimulatable")
 
 	VARIABLE("newTargets"); // Targets which were recognized as new will be added to this array on receiving new targets stimulus

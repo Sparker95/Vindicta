@@ -6,6 +6,7 @@ Relax action
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonRelax
 CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 	
 	// ------------ N E W ------------

@@ -17,6 +17,7 @@ How to use it:
 Author: Sparker 10.08.2018
 */
 
+#define OOP_CLASS_NAME AnimObject
 CLASS("AnimObject", "")
 
 	VARIABLE("object"); // Object the AnimObject is attached to

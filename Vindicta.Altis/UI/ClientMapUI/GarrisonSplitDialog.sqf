@@ -31,6 +31,7 @@ Author: Sparker 30 August 2019
 
 #define pr private
 
+#define OOP_CLASS_NAME GarrisonSplitDialog
 CLASS("GarrisonSplitDialog", "")
 
 	STATIC_VARIABLE("instance");

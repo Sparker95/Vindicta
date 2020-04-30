@@ -26,6 +26,7 @@ A game mode that models the progress of a civil war from scratch. It moves
 through a set of phases that vary the options available to the players, and the 
 reactions of the enemy.
 */
+#define OOP_CLASS_NAME CivilWarGameMode
 CLASS("CivilWarGameMode", "GameModeBase")
 	// Gameplay phase: progresses forward from 1 to 5 only
 	VARIABLE_ATTR("phase", [ATTR_SAVE]);
@@ -574,6 +575,7 @@ ENDCLASS;
 Class: CivilWarCityData
 City data specific to this game mode.
 */
+#define OOP_CLASS_NAME CivilWarCityData
 CLASS("CivilWarCityData", "CivilWarLocationData")
 	// City state (stable, agitated, in revolt, suppressed, liberated)
 	VARIABLE_ATTR("state", [ATTR_SAVE]);
@@ -877,6 +879,7 @@ ENDCLASS;
 Class: CivilWarPoliceStationData
 Police station data specific to this game mode.
 */
+#define OOP_CLASS_NAME CivilWarPoliceStationData
 CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 	// If a reinforcement regiment is on the way then it goes here. We ref count it ourselves as well
 	// so it doesn't get deleted until we are done with it.

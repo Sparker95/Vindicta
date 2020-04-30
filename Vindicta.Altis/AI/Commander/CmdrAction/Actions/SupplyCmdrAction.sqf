@@ -20,6 +20,7 @@ Parent: <TakeOrJoinCmdrAction>
 // #define ACTION_SUPPLY_TYPE_MEDICAL 3
 // #define ACTION_SUPPLY_TYPE_MISC 4
 
+#define OOP_CLASS_NAME SupplyCmdrAction
 CLASS("SupplyCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtGarrId", [ATTR_SAVE]);
 	// Type ACTION_SUPPLY_*

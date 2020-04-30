@@ -11,6 +11,7 @@
 // - move vehicles to spread out positions, perhaps send some to overwatch positions or wide patrol routes
 // - switch patrols to clear area?
 
+#define OOP_CLASS_NAME ActionGarrisonDefendActive
 CLASS("ActionGarrisonDefendActive", "ActionGarrisonDefend")
 
 	METHOD(new)

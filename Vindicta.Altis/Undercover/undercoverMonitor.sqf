@@ -34,6 +34,7 @@ Authors: Marvis, Sparker
 
 // ------------ U N D E R C O V E R  M O N I T O R  C L A S S ------------
 
+#define OOP_CLASS_NAME UndercoverMonitor
 CLASS("UndercoverMonitor", "MessageReceiver");
 
 	VARIABLE("unit"); 														// unit this undercoverMonitor is attached to

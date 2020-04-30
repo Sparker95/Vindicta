@@ -7,6 +7,7 @@ Saves some common variables at construction.
 
 #define pr private
 
+#define OOP_CLASS_NAME SensorGroupStimulatable
 CLASS("SensorGroupStimulatable", "SensorStimulatable")
 
 	VARIABLE("hG"); // Group handle

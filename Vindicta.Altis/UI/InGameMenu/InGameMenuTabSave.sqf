@@ -11,8 +11,8 @@
 #define __CLASS_NAME "InGameMenuTabSave"
 
 #define pr private
-
-CLASS(__CLASS_NAME, "DialogTabBase")
+#define OOP_CLASS_NAME InGameMenuTabSave
+CLASS("InGameMenuTabSave", "DialogTabBase")
 
 	// Array with record header data received from server
 	// Structure: [record name, record header(ref), errors(array)]

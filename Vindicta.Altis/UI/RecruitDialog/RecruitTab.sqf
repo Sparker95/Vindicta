@@ -10,7 +10,8 @@
 
 #define __CLASS_NAME "RecruitTab"
 
-CLASS(__CLASS_NAME, "DialogTabBase")
+#define OOP_CLASS_NAME RecruitTab
+CLASS("RecruitTab", "DialogTabBase")
 
 	VARIABLE("arsenalUnits");
 

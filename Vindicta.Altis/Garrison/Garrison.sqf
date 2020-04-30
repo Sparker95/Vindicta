@@ -16,6 +16,7 @@ Author: Sparker 12.07.2018
 
 #define MESSAGE_LOOP gMessageLoopMain
 
+#define OOP_CLASS_NAME Garrison
 CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");

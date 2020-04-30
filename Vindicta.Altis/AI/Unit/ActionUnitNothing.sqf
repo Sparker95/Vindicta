@@ -7,6 +7,7 @@ Author: Sparker 13.02.2019
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitNothing
 CLASS("ActionUnitNothing", "ActionUnit")
 	
 	// ------------ N E W ------------

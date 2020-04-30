@@ -24,6 +24,7 @@ Author: Sparker 9 June 2019
 
 #define pr private
 
+#define OOP_CLASS_NAME LocationVisibilityMonitor
 CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 
 	VARIABLE("timer");			// Timer

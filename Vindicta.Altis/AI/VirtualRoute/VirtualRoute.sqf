@@ -7,6 +7,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME VirtualRoute
 CLASS("VirtualRoute", "")
 
 	VARIABLE_ATTR("recalculateInterval", [ATTR_PRIVATE]);

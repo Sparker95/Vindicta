@@ -10,6 +10,7 @@ Parent: <CmdrAction>
 
 #define pr private
 
+#define OOP_CLASS_NAME ConstructLocationCmdrAction
 CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 	VARIABLE_ATTR("srcGarrID", [ATTR_SAVE]);

@@ -1,6 +1,7 @@
 #include "common.hpp"
 
 // Class with predefined actions in initDatabase.sqf
+#define OOP_CLASS_NAME GoalGroupMove
 CLASS("GoalGroupMove", "Goal")
 	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];

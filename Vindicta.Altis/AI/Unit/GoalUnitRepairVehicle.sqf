@@ -9,6 +9,7 @@ parameters: "vehicle" - <Unit> of the vehicle that needs repairs
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalUnitRepairVehicle
 CLASS("GoalUnitRepairVehicle", "Goal")
 
 	// ----------------------------------------------------------------------

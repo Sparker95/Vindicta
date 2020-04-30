@@ -8,6 +8,7 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME AIUnit
 CLASS("AIUnit", "AI_GOAP")
 
 	METHOD(new)

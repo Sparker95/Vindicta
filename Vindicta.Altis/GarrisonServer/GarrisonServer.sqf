@@ -15,6 +15,7 @@ Author: Sparker 23 August 2019
 
 #define __JIP_ID_SUFFIX "_srv_update"
 
+#define OOP_CLASS_NAME GarrisonServer
 CLASS("GarrisonServer", "MessageReceiverEx")
 
 	// Array with all objects

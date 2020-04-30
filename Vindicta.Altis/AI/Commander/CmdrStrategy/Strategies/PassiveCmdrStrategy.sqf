@@ -6,6 +6,7 @@ Class: AI.CmdrAI.CmdrStrategy.Strategies.PassiveCmdrStrategy
 Commander does nothing ever.
 Parent: <AI.CmdrAI.CmdrStrategy.CmdrStrategy>
 */
+#define OOP_CLASS_NAME PassiveCmdrStrategy
 CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 
 	METHOD(new)

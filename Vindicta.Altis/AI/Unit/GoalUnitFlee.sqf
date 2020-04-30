@@ -12,6 +12,7 @@
 Class: Goal.GoalUnitFlee
 */
 
+#define OOP_CLASS_NAME GoalUnitFlee
 CLASS("GoalUnitFlee", "Goal")
 	
 ENDCLASS;

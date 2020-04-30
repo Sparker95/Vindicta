@@ -6,6 +6,7 @@ CmdrAI garrison retreat from current location to target location.
 TODO: Could this just be a general move action? Perhaps specific behaviours
 apply when retreating that don't for a normal move. Careless mode etc?
 */
+#define OOP_CLASS_NAME RetreatCmdrAction
 CLASS("RetreatCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);

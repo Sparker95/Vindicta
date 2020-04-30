@@ -15,6 +15,7 @@ Template of an Action class
 
 #define pr private
 
+#define OOP_CLASS_NAME MyAction
 CLASS("MyAction", "Action");
 
 	// ------------ N E W ------------

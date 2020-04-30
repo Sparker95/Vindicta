@@ -8,6 +8,7 @@ We need an object which is always in the thread to send messages to it.
 
 #define pr private
 
+#define OOP_CLASS_NAME MessageLoopMainManager
 CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	/*

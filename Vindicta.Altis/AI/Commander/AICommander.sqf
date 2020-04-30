@@ -14,6 +14,7 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME AICommander
 CLASS("AICommander", "AI")
 
 	/* save */	VARIABLE_ATTR("side", [ATTR_SAVE]);

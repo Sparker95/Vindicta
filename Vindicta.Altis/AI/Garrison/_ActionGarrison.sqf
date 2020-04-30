@@ -7,6 +7,7 @@ Garrison action.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrison
 CLASS("ActionGarrison", "Action")
 
 	VARIABLE("gar");

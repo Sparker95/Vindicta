@@ -8,6 +8,7 @@ Garrison action.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonBehaviour
 CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 
 	// Array of buildings we are currently attacking

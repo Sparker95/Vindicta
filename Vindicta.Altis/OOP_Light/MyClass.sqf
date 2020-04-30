@@ -4,6 +4,7 @@
 A template class.
 */
 
+#define OOP_CLASS_NAME MyClass
 CLASS("MyClass", "MyClassParent");
 
 	VARIABLE("myVariable");

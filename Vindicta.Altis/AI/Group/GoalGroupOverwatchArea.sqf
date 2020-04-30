@@ -2,6 +2,7 @@
 
 // Group will find a place with line of sight, fullfilling required distance, elevation and gradient requirements.
 // Goal for a group to over watch area.
+#define OOP_CLASS_NAME GoalGroupOverwatchArea
 CLASS("GoalGroupOverwatchArea", "Goal")
 	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];

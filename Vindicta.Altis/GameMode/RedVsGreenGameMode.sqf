@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME RedVsGreenGameMode
 CLASS("RedVsGreenGameMode", "GameModeBase")
 	VARIABLE("linePt");
 

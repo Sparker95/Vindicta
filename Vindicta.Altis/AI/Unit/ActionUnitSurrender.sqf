@@ -6,6 +6,7 @@ Class: ActionUnit.ActionUnitSurrender
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitSurrender
 CLASS("ActionUnitSurrender", "ActionUnit")
 		
 	// logic to run when the goal is activated

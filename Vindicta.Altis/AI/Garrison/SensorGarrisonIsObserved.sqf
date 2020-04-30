@@ -15,6 +15,7 @@ Author: Sparker 28.01.2019
 // ---- Debugging defines ----
 
 
+#define OOP_CLASS_NAME SensorGarrisonIsObserved
 CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 
 	/*

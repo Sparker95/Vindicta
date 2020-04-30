@@ -1,5 +1,6 @@
 #include "OOP_Light.h"
 
+#define OOP_CLASS_NAME ClassA
 CLASS("ClassA", "")
 
 	VARIABLE_ATTR("var", [ATTR_PRIVATE]);
@@ -16,6 +17,7 @@ CLASS("ClassA", "")
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME ClassB
 CLASS("ClassB", "")
 
 	VARIABLE_ATTR("var", [ATTR_PRIVATE]);

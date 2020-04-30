@@ -19,6 +19,7 @@ SQF class that represents individual tabs of a <DialogBase>
 // We store the display in ui namespace and use _thisObject+this macro for var name
 #define __CONTROL_SUFFIX "_control"
 
+#define OOP_CLASS_NAME DialogTabBase
 CLASS("DialogTabBase", "")
 
 	VARIABLE("dialogObj");

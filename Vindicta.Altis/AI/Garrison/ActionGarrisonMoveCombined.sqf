@@ -2,6 +2,7 @@
 
 #define DEFAULT_COMBINED_SPEED_MAX 12
 
+#define OOP_CLASS_NAME ActionGarrisonMoveCombined
 CLASS("ActionGarrisonMoveCombined", "ActionGarrisonMoveBase")
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];

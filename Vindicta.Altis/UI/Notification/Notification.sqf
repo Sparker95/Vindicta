@@ -29,6 +29,7 @@ Handles operation of stackable notifications.
 #define DURATION_IDX			4
 #define IMAGE_PATH_IDX			5
 
+#define OOP_CLASS_NAME Notification
 CLASS("Notification", "")
 
 	VARIABLE("control");		// Group control handle

@@ -6,6 +6,7 @@ Have a garrison wait for a period of time.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_WaitGarrison
 CLASS("AST_WaitGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);

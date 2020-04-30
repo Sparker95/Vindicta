@@ -5,6 +5,7 @@
 
 #define SEPARATION 18
 
+#define OOP_CLASS_NAME ActionUnitFollow
 CLASS("ActionUnitFollow", "ActionUnit")
 
 	VARIABLE("expectedDistance");
