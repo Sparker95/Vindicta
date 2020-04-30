@@ -359,12 +359,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD("populateCity") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
-		private _templateName = T_CALLM2("getTemplateName", CIVILIAN, "");
+		private _templateName = T_CALLM1("getTemplateName", CIVILIAN);
 		private _template = [_templateName] call t_fnc_getTemplate;
 		private _args = [CIVILIAN, [], "civilian", _templateName];
 		private _gar = NEW("Garrison", _args);
-		private _radius = GETV(_loc, "boundingRadius");
-		private _maxCars = 3 max (25 min (0.03 * _radius));
+		private _maxCars = CALLM0(_loc, "getMaxCivilianVehicles");
 		for "_i" from 0 to _maxCars do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 			CALLM(_gar, "addUnit", [_newUnit]);

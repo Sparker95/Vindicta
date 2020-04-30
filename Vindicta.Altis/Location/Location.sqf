@@ -1425,7 +1425,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 		T_CALLM1("setCapacityCiv", _locCapacityCiv);
 	} ENDMETHOD;
-	
+
+	// How many civilian cars ought we to spawn in this location (we assume its an appropriate location)
+	METHOD("getMaxCivilianVehicles") {
+		params [P_THISOBJECT];
+		private _radius = T_GETV("boundingRadius");
+		CLAMP(0.03 * _radius, 3, 25)
+	} ENDMETHOD;
 
 	// File-based methods
 
@@ -1814,6 +1820,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
 		{_x setMarkerAlpha 0;} forEach _allowedAreas;
 	} ENDMETHOD;
+
 
 	// - - - - - - S T O R A G E - - - - - -
 
