@@ -69,25 +69,54 @@ location_bp_sentry =
 // Typically a building's inf capacity is amount of its buildingPos, however for some buildings we can override that here
 location_b_capacity =
 [
-	[ //The giant military tower
+	// The giant military tower
+	[
 		["Land_Cargo_Tower_V1_F", "Land_Cargo_Tower_V2_F", "Land_Cargo_Tower_V3_F"],
 		14
 	],
-	[ //The small military watchtower
+	// The small military watchtower
+	[
 		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F"],
 		2
 	],
-	[ //The military HQ
+	// The military HQ
+	[
 		["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V2_F", "Land_Cargo_HQ_V3_F"],
 		10
 	],
-	[ //The military metal box
+	// The military metal box
+	[
 		["Land_Cargo_House_V1_F", "Land_Cargo_House_V2_F", "Land_Cargo_House_V3_F"],
 		4
 	],
-	// Tents
+	// Small tents
 	[
 		[
+			"Land_TentA_F"
+		],
+		2
+	],
+	// Medium tents
+	[
+		[
+			"Land_TentDome_F"
+		],
+		4
+	],
+	// Big tents
+	[
+		[
+			"Land_MedicalTent_01_aaf_generic_open_F",
+			"Land_MedicalTent_01_CSAT_brownhex_generic_open_F",
+			"Land_MedicalTent_01_NATO_generic_open_F",
+			"Land_MedicalTent_01_wdl_generic_open_F",
+
+			"Land_MedicalTent_01_MTP_closed_F",
+			"Land_MedicalTent_01_digital_closed_F",
+			"Land_MedicalTent_01_brownhex_closed_F",
+			"Land_DeconTent_01_wdl_F",
+			"Land_MedicalTent_01_wdl_closed_F",
+
 			"Land_MedicalTent_01_white_generic_closed_F",
 			"Land_MedicalTent_01_NATO_generic_closed_F",
 			"Land_MedicalTent_01_NATO_tropic_generic_closed_F",

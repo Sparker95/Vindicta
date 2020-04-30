@@ -3,6 +3,7 @@
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Timer\Timer.hpp"
 #include "..\Message\Message.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: TimerService
@@ -47,6 +48,7 @@ CLASS("TimerService", "")
 		pr _id = addMissionEventHandler ["EachFrame", format ["""%1"" call %2;", _thisObject, CLASS_METHOD_NAME_STR("TimerService", "PFH")]];
 		T_SETV("eventHandlerID", _id);
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 	
 
@@ -64,6 +66,7 @@ CLASS("TimerService", "")
 		pr _id = T_GETV("eventHandlerID");
 		removeMissionEventHandler ["EachFrame", _id];
 		#endif
+		FIX_LINE_NUMBERS()
 		
 		// Delete all timers attached to this object
 		{
@@ -145,6 +148,7 @@ CLASS("TimerService", "")
 			#ifdef ASP_ENABLE
 			private _profilerScope = createProfileScope "TimerService_PFH"; // For ASP
 			#endif
+			FIX_LINE_NUMBERS()
 
 			if(T_GETV("suspended") == 0) then {
 				pr _timers = T_GETV("timers");

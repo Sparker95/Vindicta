@@ -18,6 +18,8 @@
 #define CLASS_NAME "ClientMapUI"
 #define pr private
 
+FIX_LINE_NUMBERS()
+
 /*
 	Class: ClientMapUI
 	Singleton class that performs things related to map user interface
@@ -37,6 +39,9 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("garActionGarRef");
 	VARIABLE("garActionTargetType");
 	VARIABLE("garActionTarget");
+
+	// Temporary flag used to indicate that the map should perform a zoom to last spawn location when it can
+	VARIABLE("doZoom");
 
 	// GarrisonSplitDialog OOP object
 	VARIABLE("garSplitDialog");
@@ -134,6 +139,8 @@ CLASS(CLASS_NAME, "")
 		T_SETV("respawnPanelEnabled", false);
 		T_SETV("lastRespawnPos", []);
 		T_SETV("lbSelectionIndices", []);
+
+		T_SETV("doZoom", false);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -1303,6 +1310,7 @@ CLASS(CLASS_NAME, "")
 #ifndef _SQF_VM
 					_lnb lnbSetTooltip [[_index, 0], localize "STR_CMUI_INTEL_TOOLTIP"];
 #endif
+					FIX_LINE_NUMBERS()
 
 					// grey if ended
 					switch (_stateStr) do {
@@ -1530,14 +1538,8 @@ CLASS(CLASS_NAME, "")
 		pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 		pr _markersUnderCursor = _garrisonsUnderCursor + _locationsUnderCursor;
-									
 
 		OOP_INFO_1("MARKERS UNDER CURSOR: %1", _markersUnderCursor);
-
-		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
-		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
-		OOP_INFO_1("SELECTED GARRISONS: %1", _selectedGarrisons);
-		OOP_INFO_1("SELECTED LOCATIONS: %1", _selectedLocations);
 
 		// Click anywhere AND givingOrder == true
 		// We want to give a waypoint/order to this garrison
@@ -1612,77 +1614,8 @@ CLASS(CLASS_NAME, "")
 			};
 		};
 
-		if (count _markersUnderCursor == 0) then {
-			// We are definitely not clicking on any map marker
-			T_CALLM0("onMouseClickElsewhere");
-		} else {
-			// Hey we have clicked on something!
-
-			// Disable the garrison action listbox
-			T_CALLM1("garActionMenuEnable", false);
-
-			// Deselect evereything else
-			{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
-			{
-				CALLM1(_x, "select", false);
-				pr _intel = CALLM0(_x, "getIntel");
-				// Disable the circle marker which shows the recruitment radius
-				if (IS_OOP_OBJECT(_intel)) then {
-					if (GETV(_intel, "side") == playerSide) then {
-						CALLM1(_x, "setAccuracyRadius", 0);
-					};
-				};
-			} forEach _selectedLocations;
-
-			// Let's select it
-			{ CALLM1(_x, "select", true); } forEach _markersUnderCursor;
-
-			// If there is any garrison under cursor
-			if (count _garrisonsUnderCursor > 0) then {
-				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-				T_CALLM1("garSelMenuSetGarRecord", _garRecord);
-				T_CALLM1("garSelMenuEnable", true);
-			};
-
-			// If there is any location under cursor
-			if (count _locationsUnderCursor > 0) then {
-				pr _locIntel = CALLM0(_locationsUnderCursor#0, "getIntel");
-				if (GETV(_locIntel, "side") == playerSide) then { // We can only perform things on a friendly location
-					T_CALLM1("locSelMenuSetLocation", GETV(_locIntel, "location"));
-					T_CALLM1("locSelMenuEnable", true);
-					pr _radius = CALLM0(gGameMode, "getRecruitmentRadius");
-					CALLM1(_locationsUnderCursor#0, "setAccuracyRadius", _radius);
-				};
-			};
-
-			//Decide what to do with the panel on the right
-			if (count _garrisonsUnderCursor == 1 && count _locationsUnderCursor == 1) then {
-				// If we have selected both a garrison and a location
-				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-				pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-				T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR]);
-				T_CALLM1("intelPanelUpdateFromGarrisonRecord", _garRecord);
-				//T_CALLM1("intelPanelShowButtons", false);
-			} else {
-				// If one garrison was clicked, update the panel from its record
-				if (count _garrisonsUnderCursor == 1) then {
-					pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, [INTEL_PANEL_CLEAR]); // clear
-					//T_CALLM1("intelPanelShowButtons", false);
-				} else {
-					// If one location was clicked, update panel from the location intel
-					if (count _locationsUnderCursor == 1) then {
-						pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]);
-						//T_CALLM1("intelPanelShowButtons", false);
-					};
-				};
-			};
-		};
-
-		T_SETV("selectedGarrisonMarkers", _garrisonsUnderCursor);
-		T_SETV("selectedLocationMarkers", _locationsUnderCursor);
-		T_CALLM0("updateHintTextFromContext");
+		// Hey we have clicked on something!
+		T_CALLM2("_select", _garrisonsUnderCursor, _locationsUnderCursor);
 
 		// Launch snek
 		pr _posWorld = _displayorcontrol posScreenToWorld [_xPos, _yPos];
@@ -1696,12 +1629,86 @@ CLASS(CLASS_NAME, "")
 
 	} ENDMETHOD;
 
+	METHOD("_select") {
+		params [P_THISOBJECT, P_ARRAY("_garrisonsUnderCursor"), P_ARRAY("_locationsUnderCursor")];
+		
+		// Disable the garrison action listbox
+		T_CALLM1("garActionMenuEnable", false);
 
+		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
+		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
+
+		// Deselect evereything else
+		{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
+		{
+			CALLM1(_x, "select", false);
+			pr _intel = CALLM0(_x, "getIntel");
+			// Disable the circle marker which shows the recruitment radius
+			if (IS_OOP_OBJECT(_intel)) then {
+				if (GETV(_intel, "side") == playerSide) then {
+					CALLM1(_x, "setAccuracyRadius", 0);
+				};
+			};
+		} forEach _selectedLocations;
+
+		// Let's select it
+		{ CALLM1(_x, "select", true); } forEach _markersUnderCursor;
+
+		// If there is any garrison under cursor
+		if (count _garrisonsUnderCursor > 0) then {
+			pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+			T_CALLM1("garSelMenuSetGarRecord", _garRecord);
+			T_CALLM1("garSelMenuEnable", true);
+		};
+
+		// If there is any location under cursor
+		if (count _locationsUnderCursor > 0) then {
+			pr _locIntel = CALLM0(_locationsUnderCursor#0, "getIntel");
+			if (GETV(_locIntel, "side") == playerSide) then { // We can only perform things on a friendly location
+				T_CALLM1("locSelMenuSetLocation", GETV(_locIntel, "location"));
+				T_CALLM1("locSelMenuEnable", true);
+				pr _radius = CALLM0(gGameMode, "getRecruitmentRadius");
+				CALLM1(_locationsUnderCursor#0, "setAccuracyRadius", _radius);
+			};
+		};
+
+		//Decide what to do with the panel on the right
+		if (count _garrisonsUnderCursor == 1 && count _locationsUnderCursor == 1) then {
+			// If we have selected both a garrison and a location
+			pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+			pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
+			T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR]);
+			T_CALLM1("intelPanelUpdateFromGarrisonRecord", _garRecord);
+			//T_CALLM1("intelPanelShowButtons", false);
+		} else {
+			// If one garrison was clicked, update the panel from its record
+			if (count _garrisonsUnderCursor == 1) then {
+				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, [INTEL_PANEL_CLEAR]); // clear
+				//T_CALLM1("intelPanelShowButtons", false);
+			} else {
+				// If one location was clicked, update panel from the location intel
+				if (count _locationsUnderCursor == 1) then {
+					pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
+					T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]);
+					//T_CALLM1("intelPanelShowButtons", false);
+				};
+			};
+		};
+		
+		T_SETV("selectedGarrisonMarkers", _garrisonsUnderCursor);
+		T_SETV("selectedLocationMarkers", _locationsUnderCursor);
+		T_CALLM0("updateHintTextFromContext");
+
+		if (count _garrisonsUnderCursor == 0 && count _locationsUnderCursor == 0) then {
+			T_CALLM0("showGlobalIntel");
+		};
+	} ENDMETHOD;
+	
 	/*
-		Method: onMouseClickElsewhere
-		Description: Gets called when user clicks on the map not on a marker.
+		Method: showGlobalIntel
 	*/
-	METHOD("onMouseClickElsewhere") {
+	METHOD("showGlobalIntel") {
 		params [P_THISOBJECT];
 
 		// set text on sorting buttons
@@ -1725,21 +1732,6 @@ CLASS(CLASS_NAME, "")
 
 		// Disable the selected location menu
 		T_CALLM1("locSelMenuEnable", false);
-
-		// Deselect evereything
-		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
-		{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
-		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
-		{
-			CALLM1(_x, "select", false);
-			pr _intel = CALLM0(_x, "getIntel");
-			// Disable the circle marker which shows the recruitment radius
-			if (IS_OOP_OBJECT(_intel)) then {
-				if (GETV(_intel, "side") == playerSide) then {
-					CALLM1(_x, "setAccuracyRadius", 0);
-				};
-			};
-		} forEach _selectedLocations;
 
 		// Clear the intel panel
 		//T_CALLM0("intelPanelClear");
@@ -1981,7 +1973,7 @@ CLASS(CLASS_NAME, "")
 		pr _mapDisplay = findDisplay 12;
 
 		// Reset the map UI to default state
-		T_CALLM0("onMouseClickElsewhere");
+		T_CALLM0("showGlobalIntel");
 	} ENDMETHOD;
 
 	// Not used now
@@ -2187,24 +2179,14 @@ CLASS(CLASS_NAME, "")
 
 		// Might not be loaded yet
 		if(!isNil "gGameModeServer") then {
+
 			// Request update on players restore point from server
 			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
 
-			private _lastRespawnPos = T_GETV("lastRespawnPos");
-			if(_lastRespawnPos isEqualTo []) then {
-				private _locs = CALLSM0("Location", "getAll");
-				private _locIdx = _locs  findIf { CALLM0(_x, "getType") == LOCATION_TYPE_RESPAWN };
-				if(_locIdx == NOT_FOUND) then {
-					private _loc = _locs#_locIdx;
-					_lastRespawnPos = CALLM0(_loc, "getPos");
-				} else {
-					_lastRespawnPos = [worldSize / 2, worldSize / 2, 0];
-				}
-			};
-			mapAnimAdd [1, 0.1, _lastRespawnPos];
 		};
 
 		T_SETV("respawnPanelEnabled", _enable);
+		T_SETV("doZoom", _enable);
 	} ENDMETHOD;
 
 	METHOD("respawnPanelEnabled") {
@@ -2275,11 +2257,34 @@ CLASS(CLASS_NAME, "")
 		params [P_THISOBJECT];
 
 		if (T_GETV("respawnPanelEnabled")) then {
+			pr _canRestore = !isNil "gPlayerRestoreData" && {!(gPlayerRestoreData isEqualTo [])};
+
+			if(T_GETV("doZoom") && visibleMap) then {
+				private _zoomPos = if(_canRestore) then { gPlayerRestoreData#2 } else { T_GETV("lastRespawnPos") };
+				if(_zoomPos isEqualTo []) then {
+					private _locMarkers = GETSV("MapMarkerLocation", "all");
+					//private _locs = CALLSM0("Location", "getAll");
+					private _locIdx = _locMarkers findIf { GETV(_x, "type") == LOCATION_TYPE_RESPAWN };
+					if(_locIdx != NOT_FOUND) then {
+						private _locMarker = _locMarkers#_locIdx;
+						CALLM0(_locMarker, "select");
+						_zoomPos = GETV(_locMarker, "pos");
+						// If we do this it overwrites the player restore position, as restore data is not available straight away
+						// Perhaps set restore data should clear selected marker?
+						//T_CALLM2("_select", [], [_locMarker]);
+					};
+				};
+
+				if !(_zoomPos isEqualTo []) then {
+					mapAnimAdd [0.1, 0.05, _zoomPos];
+					mapAnimCommit;
+					T_SETV("doZoom", false);
+				};
+			};
 			pr _locMarkers = T_GETV("selectedLocationMarkers");
 
 			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
 			
-			pr _canRestore = !isNil "gPlayerRestoreData" && {!(gPlayerRestoreData isEqualTo [])};
 
 			if(_canRestore) then {
 				_ctrlButton ctrlSetText "RESTORE";
@@ -2292,7 +2297,6 @@ CLASS(CLASS_NAME, "")
 				T_CALLM1("respawnPanelSetText", "You can not respawn because the game mode is not initialized yet.");
 				_ctrlButton ctrlEnable false;
 			};
-
 
 			// Bail if no markers are selected
 			if (!_canRestore && count _locMarkers != 1) exitWith {
@@ -2320,7 +2324,6 @@ CLASS(CLASS_NAME, "")
 				};
 
 				// Check if there are enemies occupying this place, etc...
-
 				pr _enemySides = [EAST, WEST, INDEPENDENT] - [playerSide];
 
 				// Check enemies in area

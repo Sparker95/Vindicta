@@ -11,6 +11,7 @@
 #include "PlayerMonitor.hpp"
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Intel\Intel.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: PlayerMonitor
