@@ -245,6 +245,8 @@
 #define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
 #define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
+#define P_CONTROL(paramNameStr) [paramNameStr, controlNull, [controlNull]]
+#define P_DISPLAY(paramNameStr) [paramNameStr, displayNull, [displayNull]]
 
 #define P_OOP_OBJECT(paramNameStr) P_STRING(paramNameStr)
 
