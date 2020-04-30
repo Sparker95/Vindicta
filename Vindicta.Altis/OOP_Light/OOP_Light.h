@@ -52,6 +52,10 @@
 // Enables logging of each REF/UNREF on OOP objects
 //#define OOP_LOG_REF_UNREF
 
+// This class name without quotes
+#ifndef OOP_CLASS_NAME
+#define OOP_CLASS_NAME UnknownClassName
+#endif
 
 // Enforce some constraints
 #ifndef OFSTREAM_FILE
@@ -73,6 +77,8 @@
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #define OOP_ASSERT
 #define OOP_ASSERT_ACCESS
+//#undef OOP_ASSERT
+//#undef OOP_ASSERT_ACCESS
 #undef OOP_DEBUG
 #undef OOP_INFO
 #define OOP_WARNING
@@ -162,6 +168,9 @@
 
 #endif
 // ^^^ ARMA ^^^
+
+// Wraps text in quotes
+#define QUOTE(smth) #smth
 
 // Some BS to force Arma preprocessor line numbers to be correct.
 // You basically have to put this after every pre-processor block if you want the correct line numbers
@@ -693,37 +702,37 @@
 // that OOP_PROFILE does.
 #ifdef _OOP_FUNCTION_WRAPPERS
 	#define METHOD(methodNameStr) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr;  \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr);  \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), { \
 			private _thisClass = nil; \
 			private _thisObject = _this select 0; \
-			private _methodNameStr = methodNameStr; \
+			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			private _result = ([0] apply { _this call
+			private _result = ([0] apply { _this call {
 
-	#define ENDMETHOD }) select 0;\
+	#define ENDMETHOD }}) select 0;\
 			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		} ]
 
 	#define METHOD_FILE(methodNameStr, path) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr; \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(QUOTE(methodNameStr))), compile preprocessFileLineNumbers path]; \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), { \
 			private _thisClass = nil; \
 			private _thisObject = _this select 0; \
-			private _methodNameStr = methodNameStr; \
+			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(methodNameStr)); \
+			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(QUOTE(methodNameStr))); \
 			private _result = ([0] apply { _this call _fn }) select 0; \
 			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
@@ -731,31 +740,31 @@
 		}]
 
 	#define STATIC_METHOD(methodNameStr) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr; \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), { \
 			private _thisObject = nil; \
 			private _thisClass = _this select 0; \
-			private _methodNameStr = methodNameStr; \
+			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			private _result = ([0] apply { _this call
+			private _result = ([0] apply { _this call {
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr; \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(QUOTE(methodNameStr))), compile preprocessFileLineNumbers path]; \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), { \
 			private _thisObject = nil; \
 			private _thisClass = _this select 0; \
-			private _methodNameStr = methodNameStr; \
+			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
+			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(QUOTE(methodNameStr))); \
 			private _result = ([0] apply { _this call _fn}) select 0; \
 			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
@@ -763,29 +772,30 @@
 		}]
 #else
 	#define METHOD(methodNameStr) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr; \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
-	#define ENDMETHOD ]
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), { \
+
+	#define ENDMETHOD }]
 
 	#define METHOD_FILE(methodNameStr, path) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr; \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), compile preprocessFileLineNumbers path]
 
 	#define STATIC_METHOD(methodNameStr) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr; \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), {
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
-		LOG_METHOD(methodNameStr); \
-		_oop_methodList pushBackUnique methodNameStr; \
-		_oop_newMethodList pushBackUnique methodNameStr; \
-		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+		LOG_METHOD(QUOTE(methodNameStr)); \
+		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
+		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), compile preprocessFileLineNumbers path]
 #endif
 
 // --------------------------------------------------------
@@ -871,10 +881,10 @@ SET_SPECIAL_MEM(_oop_classNameStr, STATIC_MEM_LIST_STR, _oop_staticMemList); \
 SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
 SET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR, NAMESPACE); \
 PROFILER_COUNTER_INIT(_oop_classNameStr); \
-METHOD("new") {} ENDMETHOD; \
-METHOD("delete") {} ENDMETHOD; \
-METHOD("copy") OOP_clone_default ENDMETHOD; \
-METHOD("assign") OOP_assign_default ENDMETHOD; \
+METHOD(new)ENDMETHOD; \
+METHOD(delete)ENDMETHOD; \
+METHOD(copy) OOP_clone_default ENDMETHOD; \
+METHOD(assign) OOP_assign_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
 VARIABLE(OOP_PUBLIC_STR);
 
@@ -1315,3 +1325,27 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // ----------------------------------------------------------------------
 #define LOCS(scope, id) (localize ("STR_" + scope + "_" + id))
 #define LOC(id) LOCS(LOC_SCOPE, id)
+
+
+// Log which flags are enabled which can affect performance
+/*
+#ifdef OOP_TRACE_FUNCTIONS
+diag_log "[OOP] Warning: OOP_TRACE_FUNCTIONS is enabled";
+#endif
+
+#ifdef OOP_PROFILE
+diag_log "[OOP] Warning: OOP_PROFILE is enabled";
+#endif
+
+#ifdef _OOP_FUNCTION_WRAPPERS
+diag_log "[OOP] Warning: _OOP_FUNCTION_WRAPPERS is enabled";
+#endif
+
+#ifdef OOP_ASSERT
+diag_log "[OOP] Warning: OOP_ASSERT is enabled";
+#endif
+
+#ifdef OOP_ASSERT_ACCESS
+diag_log "[OOP] Warning: OOP_ASSERT_ACCESS is enabled";
+#endif
+*/

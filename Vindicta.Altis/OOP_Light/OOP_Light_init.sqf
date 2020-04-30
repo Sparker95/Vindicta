@@ -1295,14 +1295,14 @@ OOP_createStaticString = {
 CLASS("RefCounted", "")
 	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		// Start at ref count zero. When the object gets assigned to a VARIABLE
 		// using T_SETV_REF it will be automatically reffed.
 		T_SETV("refCount", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("ref") {
+	METHOD(ref)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			private _refCount = T_GETV("refCount");
@@ -1310,9 +1310,9 @@ CLASS("RefCounted", "")
 			//OOP_DEBUG_2("%1 refed to %2", _thisObject, _refCount);
 			T_SETV("refCount", _refCount);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("unref") {
+	METHOD(unref)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			private _refCount = T_GETV("refCount");
@@ -1325,7 +1325,7 @@ CLASS("RefCounted", "")
 				T_SETV("refCount", _refCount);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // - - - - - - SQF VM - - - - - -
@@ -1337,117 +1337,117 @@ CLASS("AttrTestBase1", "")
 	VARIABLE_ATTR("var_private", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("var_get_only", [ATTR_GET_ONLY]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("var_default", true);
 		T_SETV("var_private", true);
 		T_SETV("var_get_only", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("validDefaultAccessTest") {
+	METHOD(validDefaultAccessTest)
 		params [P_THISOBJECT];
 		T_SETV("var_default", true);
 		T_GETV("var_default")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validPrivateAccessTest") {
+	METHOD(validPrivateAccessTest)
 		params [P_THISOBJECT];
 		T_SETV("var_private", true);
 		T_GETV("var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	METHOD("validGetOnlyAccessTest") {
+	METHOD(validGetOnlyAccessTest)
 		params [P_THISOBJECT];
 		T_SETV("var_get_only", true);
 		T_GETV("var_get_only")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("validStaticPrivateAccessTest") {
+	STATIC_METHOD(validStaticPrivateAccessTest)
 		params [P_THISCLASS, P_STRING("_obj")];
 		GETV(_obj, "var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 
 CLASS("AttrTestDerived1", "AttrTestBase1")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validDerviedDefaultAccessTest") {
+	METHOD(validDerviedDefaultAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_default", true);
 		GETV(_base, "var_default")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validDerviedPrivateAccessTest") {
+	METHOD(validDerviedPrivateAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_private", true);
 		GETV(_base, "var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	METHOD("validDerviedGetOnlyAccessTest") {
+	METHOD(validDerviedGetOnlyAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_get_only", true);
 		GETV(_base, "var_get_only")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 CLASS("AttrTestNotDerived1", "")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validNonDerivedDefaultAccessTest") {
+	METHOD(validNonDerivedDefaultAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_default", true);
 		GETV(_base, "var_default")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("invalidNonDerivedPrivateAccessTest") {
+	METHOD(invalidNonDerivedPrivateAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_private", true);
 		GETV(_base, "var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	METHOD("validNonDerivedGetOnlyAccessTest") {
+	METHOD(validNonDerivedGetOnlyAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		GETV(_base, "var_get_only")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("invalidNonDerivedGetOnlyAccessTest") {
+	METHOD(invalidNonDerivedGetOnlyAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_get_only", true)
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Multiple inheritence tests
 
 CLASS("mi_a", "")
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 
-	METHOD("getValue") {"A"} ENDMETHOD;
+	METHOD(getValue)"A"ENDMETHOD;
 ENDCLASS;
 
 CLASS("mi_b", "mi_a")
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 
-	METHOD("getValue") {"B"} ENDMETHOD; // override
+	METHOD(getValue)"B"ENDMETHOD; // override
 ENDCLASS;
 
 CLASS("mi_c", "")
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 
-	METHOD("getAnotherValue") {"anotherValue"} ENDMETHOD;
+	METHOD(getAnotherValue)"anotherValue"ENDMETHOD;
 ENDCLASS;
 
 CLASS("mi_d", ["mi_b" ARG "mi_c"])
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 ENDCLASS;
 
 ["OOP Multiple Inheritence", {
@@ -1459,7 +1459,7 @@ ENDCLASS;
 
 	["Proper inheritence classes", _parents isEqualTo ["mi_a","mi_b","mi_c"]] call test_Assert;
 
-	//diag_log format ["getValue method: %1", FORCE_GET_METHOD("mi_d", "getValue")];
+	//diag_log format ["getValue method: %1", FORCE_GET_METHOD(mi_d", "getValue)];
 
 	private _value = T_CALLM0("getValue");
 	private _anotherValue = T_CALLM0("getAnotherValue");
@@ -1515,11 +1515,11 @@ CLASS("JsonTestVarObj", "")
 	VARIABLE("var1");
 	VARIABLE("var2");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("var1", 666);
 		T_SETV("var2", "String!");
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 CLASS("JsonTest1", "")
@@ -1531,7 +1531,7 @@ CLASS("JsonTest1", "")
 	VARIABLE("varOOPObject");
 	VARIABLE("varUnset");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("varBool", true);
 		T_SETV("varString", "a string");
@@ -1541,7 +1541,7 @@ CLASS("JsonTest1", "")
 		T_SETV("varObject", _grp);
 		private _oopObj = NEW("JsonTestVarObj", []);
 		T_SETV("varOOPObject", _oopObj);
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // ["OOP to json", {
