@@ -6,7 +6,13 @@
 	className = #_cfgVehClassName; \
 	buildResource = _buildResource; \
 }
-
+// Object that maps to a faction template item by category and subcategory ids
+#define __BUILD_OBJECT_CLASS_CAT(_cfgCat, _cfgVehClassName, _buildResource, _catID, _subCatID) class _cfgCat##_cfgVehClassName : BuildObjectBase { \
+	className = #_cfgVehClassName; \
+	buildResource = _buildResource; \
+	templateCatID = _catID; \
+	templateSubcatID = _subCatID; \
+}
 
 class BuildObjects
 {
@@ -76,10 +82,10 @@ class BuildObjects
 			displayName = "Storage";
 
 			// Note that we have increased capacity of these boxes through the addon 
-			__BUILD_OBJECT_CLASS(CatStorage,Box_FIA_Support_F,									40);
-			__BUILD_OBJECT_CLASS(CatStorage,Box_Syndicate_Ammo_F,								20);
-			__BUILD_OBJECT_CLASS(CatStorage,I_supplyCrate_F,									40);
-			__BUILD_OBJECT_CLASS(CatStorage,B_CargoNet_01_ammo_F,								80);
+			__BUILD_OBJECT_CLASS_CAT(CatStorage,Box_FIA_Support_F,								40, 3, 2);
+			__BUILD_OBJECT_CLASS_CAT(CatStorage,Box_Syndicate_Ammo_F,							20, 3, 1);
+			__BUILD_OBJECT_CLASS_CAT(CatStorage,I_supplyCrate_F,								40, 3, 2);
+			__BUILD_OBJECT_CLASS_CAT(CatStorage,B_CargoNet_01_ammo_F,							80, 3, 3);
 		};
 
 		class CatCamo {
