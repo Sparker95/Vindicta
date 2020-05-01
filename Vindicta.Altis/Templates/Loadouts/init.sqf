@@ -109,3 +109,5 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_TKA_CIVILIAN\init
 call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_RUS_POLICE\init.sqf";
 // Gendermarie Expansion
 call compile preprocessFileLineNumbers "Templates\Loadouts\GEXP_POLICE\init.sqf";
+// LOP_IRA
+call compile preprocessFileLineNumbers "Templates\Loadouts\LOP_IRA_CIVILIAN\init.sqf";
