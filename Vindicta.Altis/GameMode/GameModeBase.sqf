@@ -93,7 +93,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("tNameMilInd", "tAAF");
 		T_SETV("tNameMilEast", "tCSAT");
 		T_SETV("tNamePolice", "tPOLICE");
-		T_SETV("tNameCivilian", "tCivilian");
+		T_SETV_PUBLIC("tNameCivilian", "tCivilian"); // Required on client
 
 		// Apply values from arguments
 		T_SETV("enemyForceMultiplier", 1);
@@ -104,7 +104,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_SETV("tNamePolice", _tNamePolice);
 		};
 		if (_tNameCivilian != "") then {
-			T_SETV("tNameCivilian", _tNameCivilian);
+			T_SETV_PUBLIC("tNameCivilian", _tNameCivilian); // Required on client
 		};
 		
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
@@ -359,12 +359,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD("populateCity") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
-		private _templateName = T_CALLM2("getTemplateName", CIVILIAN, "");
+		private _templateName = T_CALLM1("getTemplateName", CIVILIAN);
 		private _template = [_templateName] call t_fnc_getTemplate;
 		private _args = [CIVILIAN, [], "civilian", _templateName];
 		private _gar = NEW("Garrison", _args);
-		private _radius = GETV(_loc, "boundingRadius");
-		private _maxCars = 3 max (25 min (0.03 * _radius));
+		private _maxCars = CALLM0(_loc, "getMaxCivilianVehicles");
 		for "_i" from 0 to _maxCars do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 			CALLM(_gar, "addUnit", [_newUnit]);
@@ -2165,6 +2164,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(isNil{T_GETV("tNameCivilian")}) then {
 			T_SETV("tNameCivilian", "tCivilian");
 		};
+		T_PUBLIC_VAR("tNameCivilian");
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution

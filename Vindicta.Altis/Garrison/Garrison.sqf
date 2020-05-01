@@ -494,6 +494,22 @@ CLASS("Garrison", "MessageReceiverEx");
 			};
 		};
 
+		private _location = T_GETV("location");
+		// Top up the civilian cars if this is a civilian garrison (ignore spawn status, we will pop them into existance regardless)
+		if(_location != NULL_OBJECT && { T_GETV("side") == CIVILIAN }) then {
+			private _currCars = T_CALLM0("countVehicleUnits");
+			private _template = T_CALLM0("getTemplate");
+			private _maxCars = CALLM0(_location, "getMaxCivilianVehicles");
+			private _spawned = T_GETV("spawned");
+			// If we aren't spawned then immediately top up, if we are spawned then only top up if 1/2 cars are gone (should mostly avoid cars popping into existance)
+			if(_spawned && _currCars < _maxCars / 2 || !_spawned && _currCars < _maxCars) then {
+				for "_i" from _currCars to _maxCars do {
+					private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
+					T_CALLM1("addUnit", _newUnit);
+				};
+			};
+		};
+
 		// Make sure we spawn
 		// T_CALLM("spawn", []);
 		// private _thisPos = T_CALLM("getPos", []);

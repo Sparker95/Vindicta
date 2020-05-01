@@ -112,20 +112,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
 			DUMP_CALLSTACK
 		};
+
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 
 		// If a random class was requested to be added
-		private _class = "";
-		if (isNull _hO) then {
-			//if(_classID == -1) then {
-			//	private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
-			//	_class = _classData select 0;
-			//} else {
-			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
-			//};
+		private _class = if (isNull _hO) then {
+			[_template, _catID, _subcatID, _classID] call t_fnc_select
 		} else {
-			_class = typeOf _hO;
+			typeOf _hO
 		};
 
 		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
@@ -134,7 +129,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _loadout = "";
 		if ([_class] call t_fnc_isLoadout) then {
 			_loadout = _class;
-			_class = _template select _catID select 0 select 0; // Default class name from the template
+			_class = _template # _catID # 0 # 0; // Default class name from the template
 		};
 
 		// Create the data array

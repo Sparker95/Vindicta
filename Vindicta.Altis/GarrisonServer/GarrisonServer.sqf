@@ -424,11 +424,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 
-		// Create a unit from civilian militant loadouts
+		// Create a unit
 		private _template = CALLM1(gGameMode, "getTemplate", civilian);
 		//pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
 		// P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull]];
-		pr _args = [_template, T_INF, T_INF_survivor, -1, _group, objNull, _weapons];
+		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _weapons];
 		pr _unit = NEW("Unit", _args);
 
 		// Add its new group to the garrison

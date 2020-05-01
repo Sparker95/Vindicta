@@ -187,6 +187,7 @@ _arsenal set[T_ARSENAL_headgear, +_civHeadgear];
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
+_inf = _inf apply { ["WW2_CIVILIAN_Militant_1"] };
 _inf set [T_INF_default, ["I_L_Looter_SG_F"]];
 _inf set [T_INF_rifleman, [
     "WW2_PLAYER_1"
