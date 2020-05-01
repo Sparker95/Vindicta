@@ -1,7 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Undercover\undercoverMonitor.hpp"
 #include "..\InGameUI\InGameUI_Macros.h"
 

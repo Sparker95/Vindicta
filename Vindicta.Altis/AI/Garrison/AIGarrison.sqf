@@ -720,6 +720,42 @@ CLASS("AIGarrison", "AI_GOAP")
 		true
 	ENDMETHOD;
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                                G O A P
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+	// It should return the goals this garrison might be willing to achieve
+	METHOD(getPossibleGoals)
+		["GoalGarrisonRelax",
+		"GoalGarrisonRepairAllVehicles",
+		"GoalGarrisonDefendActive",
+		"GoalGarrisonDefendPassive",
+		"GoalGarrisonRebalanceVehicleGroups",
+		"GoalGarrisonAttackAssignedTargets"]
+	ENDMETHOD;
+
+	METHOD(getPossibleActions)
+		["ActionGarrisonDefendActive",
+		//"ActionGarrisonLoadCargo",
+		"ActionGarrisonMountCrew",
+		"ActionGarrisonMountInfantry",
+		"ActionGarrisonMoveDismounted",
+		//"ActionGarrisonMoveMountedToPosition",
+		//"ActionGarrisonMoveMountedToLocation",
+		"ActionGarrisonMoveCombined",
+		"ActionGarrisonMoveMounted",
+		//"ActionGarrisonMoveMountedCargo",
+		"ActionGarrisonRelax",
+		"ActionGarrisonRepairAllVehicles",
+		//"ActionGarrisonUnloadCurrentCargo",
+		"ActionGarrisonMergeVehicleGroups",
+		"ActionGarrisonSplitVehicleGroups",
+		"ActionGarrisonRebalanceGroups",
+		"ActionGarrisonClearArea",
+		"ActionGarrisonJoinLocation"]
+	ENDMETHOD;
+
 	// Debug
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI

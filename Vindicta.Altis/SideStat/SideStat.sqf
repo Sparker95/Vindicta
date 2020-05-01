@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 /*
 Class: SideStat

@@ -3,7 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "Threads.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 #define pr private
 

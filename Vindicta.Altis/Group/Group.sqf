@@ -5,7 +5,7 @@
 #define OFSTREAM_FILE "Main.rpt"
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
@@ -1069,37 +1069,6 @@ CLASS("Group", "MessageReceiverEx");
 		// Return nothing, units are not processed with their group any more
 		[]
 	ENDMETHOD;
-
-
-	//                        G E T   P O S S I B L E   G O A L S
-	/*
-	Method: getPossibleGoals
-	Returns the list of goals this agent evaluates on its own.
-
-	Access: Used by AI class
-
-	Returns: Array with goal class names
-	*/
-	METHOD(getPossibleGoals)
-		//["GoalGroupRelax"]
-		["GoalGroupUnflipVehicles", "GoalGroupArrest"]
-	ENDMETHOD;
-
-
-	//                      G E T   P O S S I B L E   A C T I O N S
-	/*
-	Method: getPossibleActions
-	Returns the list of actions this agent can use for planning.
-
-	Access: Used by AI class
-
-	Returns: Array with action class names
-	*/
-	METHOD(getPossibleActions)
-		[]
-	ENDMETHOD;
-
-
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                O W N E R S H I P   T R A N S F E R

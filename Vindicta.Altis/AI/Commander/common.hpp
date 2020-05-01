@@ -4,7 +4,7 @@
 #define OOP_WARNING
 
 #define OFSTREAM_FILE "Commander.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\Location\Location.hpp"
 #include "..\..\MessageTypes.hpp"

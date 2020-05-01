@@ -1,5 +1,5 @@
 #define PROFILER_COUNTERS_ENABLE
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "Action.hpp"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"

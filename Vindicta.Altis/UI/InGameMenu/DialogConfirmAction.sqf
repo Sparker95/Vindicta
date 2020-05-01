@@ -4,7 +4,7 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 // Dialog with 'YES' and 'NO' buttons
 // Clicking on any of those will close the dialog and call a callback passed through constructor

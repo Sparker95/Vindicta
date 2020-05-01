@@ -1,5 +1,5 @@
 #include "Location.hpp"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 // Class: Location
 /*

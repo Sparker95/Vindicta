@@ -1,6 +1,6 @@
 
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 /*

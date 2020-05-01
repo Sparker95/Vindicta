@@ -4,7 +4,7 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 #define _setv setVariable
 #define _getv getVariable

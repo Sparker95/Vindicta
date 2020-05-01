@@ -3,7 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#include "..\OOP_Light\OOP_light.h"
+#include "..\common.h"
 
 /*
 Class: DoubleKeyHashmap

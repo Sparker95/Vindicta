@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 #define OFSTREAM_FILE "Intel.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "InventoryItems.hpp"
 
 /*

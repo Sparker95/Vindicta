@@ -8,7 +8,7 @@ Returns: Number - amount of infantry soldeirs that can stay here
 Author: Sparker 03.08.2018
 */
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Group\Group.hpp"
 
 params [P_THISOBJECT];

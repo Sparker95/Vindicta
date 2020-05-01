@@ -1,23 +1,11 @@
 #include "..\config\global_config.hpp"
 
+#include "Common.h"
+
 //  * OOP-Light
 //  * A preprocessor-based limited OOP implementation for SQF
 //  * Author: Sparker
 //  * 02.06.2018
-
-//  * Technical info:
-//  *
-//  * Name formatting:
-//  * Special static class members:	o_MyClass_sm_mySpecialMember
-//  * Static class members: 			o_MyClass_st_myStaticMember
-//  * General members:					o_MyClass_N_123_myMember
-//  *
-//  * Special class members:
-//  * special members are static members of the class meant to be accessed only by the internals of the OOP-Light
-//  * nextID			- NUMBER counter to provide a new ID each time an object of this class is created
-//  * memList			- ARRAY with all members of this class
-//  * staticMemList	- ARRAY with all static members of this class
-//  * methodList		- ARRAY with all methods and static methods of this class
 
 // ----------------------------------------------------
 // |          C O N T R O L  F L A G S                |
@@ -58,7 +46,7 @@
 #define OOP_CLASS_NAME OOP_DEFAULT_CLASS_NAME
 #endif
 
-// Enforce some constraints
+// Default OFSTREAM_FILE to put data to
 #ifndef OFSTREAM_FILE
 #define OFSTREAM_FILE "OOP.rpt"
 #endif
@@ -66,120 +54,9 @@
 #undef OFSTREAM_FILE
 #endif
 
-#ifdef _SQF_VM
-// ___ SQF-VM ___
-#define TEXT_
-#undef ASP_ENABLE
-//#define ASP_ENABLE
-#undef PROFILER_COUNTERS_ENABLE
-#undef ADE
-#undef OFSTREAM_ENABLE
-#undef OFSTREAM_FILE
-#define VM_LOG(t) diag_log t
-#define VM_LOG_FMT(t, args) diag_log format ([t] + args)
-#define OOP_ASSERT
-#define OOP_ASSERT_ACCESS
-//#undef OOP_ASSERT
-//#undef OOP_ASSERT_ACCESS
-#undef OOP_DEBUG
-#undef OOP_INFO
-#define OOP_WARNING
-#define OOP_ERROR
-#undef OOP_PROFILE
-#undef UNIT_ALLOCATOR_DEBUG
-#undef DEBUG_GOAL_MARKERS
+// Include platform-dependant redefinitions
+#include "Platform.h"
 
-#define TIME_NOW 0
-#define GAME_TIME 0
-#define PROCESS_TIME 0
-#define DATE_NOW [0,0,0,0,0]
-#define UI_SLEEP(t)
-#define SET_DATE(d)
-
-#define CLIENT_OWNER 0
-#define IS_SERVER true
-#define IS_DEDICATED true
-#define HAS_INTERFACE true
-#define IS_HEADLESSCLIENT false
-#define IS_MULTIPLAYER false
-#define PUBLIC_VARIABLE isNil
-
-#define IS_LOCAL_ADMIN true
-#define IS_ADMIN_ON_DEDI true
-
-#define START_LOADING_SCREEN __null =  
-#define PROGRESS_LOADING_SCREEN __null = 
-#define END_LOADING_SCREEN
-
-#define PROFILE_NAME "Satan"
-#define SCRIPT_NULL objNull
-#define saveProfileNamespace
-
-#define HEADLESS_CLIENTS []
-#define HUMAN_PLAYERS []
-#define PLAYABLE_UNITS []
-#define ALL_VEHICLES []
-
-#define SIMULATION_ENABLED(obj) true
-#define ENABLE_SIMULATION_GLOBAL(obj, state)
-#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
-
-#define 
-// ^^^ SQF-VM ^^^
-#else
-// ___ ARMA ___
-
-#define TEXT_ text
-
-#define VM_LOG(t)
-#define VM_LOG_FMT(t, args)
-
-#define TIME_NOW time
-#define GAME_TIME (time - gGameFreezeTime)
-#define PROCESS_TIME time
-#define DATE_NOW date
-#define UI_SLEEP(t) uisleep (t)
-#define SET_DATE(d) setDate (d)
-
-#define CLIENT_OWNER clientOwner
-#define IS_SERVER isServer
-#define IS_DEDICATED isDedicated
-#define HAS_INTERFACE hasInterface
-#define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
-#define IS_MULTIPLAYER isMultiplayer
-#define PUBLIC_VARIABLE publicVariable
-
-#define IS_LOCAL_ADMIN (call BIS_fnc_admin != 0)
-#define IS_ADMIN_ON_DEDI (IS_DEDICATED && { HUMAN_PLAYERS findIf { admin owner _x != 0 } != NOT_FOUND })
-
-#define START_LOADING_SCREEN startLoadingScreen
-#define PROGRESS_LOADING_SCREEN progressLoadingScreen
-#define END_LOADING_SCREEN endLoadingScreen
-
-#define PROFILE_NAME profileName
-#define SCRIPT_NULL scriptNull
-
-#define HEADLESS_CLIENTS (entities "HeadlessClient_F")
-#define HUMAN_PLAYERS (allPlayers - HEADLESS_CLIENTS)
-#define PLAYABLE_UNITS playableunits
-#define ALL_VEHICLES vehicles
-
-#define SIMULATION_ENABLED(obj) simulationEnabled (obj)
-#define ENABLE_SIMULATION_GLOBAL(obj, state) (obj) enableSimulationGlobal (state);
-#define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled) enableDynamicSimulationSystem enabled
-
-#endif
-// ^^^ ARMA ^^^
-
-// Wraps text in quotes
-#define QUOTE(smth) #smth
-
-// Some BS to force Arma preprocessor line numbers to be correct.
-// You basically have to put this after every pre-processor block if you want the correct line numbers
-#define FIX_LINE_NUMBERS2(sharp) sharp##line __LINE__ __FILE__
-// Use this with () but WITHOUT terminating ; like:
-// FIX_LINE_NUMBERS()
-#define FIX_LINE_NUMBERS() FIX_LINE_NUMBERS2(#)
 
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
@@ -246,28 +123,7 @@
 #define ASP_CREATE_PROFILE_SCOPE(className,methodName)
 #endif
 
-// -----------------------------------------------------
-// |       M E T H O D   P A R A M E T E R S           |
-// -----------------------------------------------------
 
-#define P_THISOBJECT ["_thisObject", ""]
-#define P_THISCLASS ["_thisClass", ""]
-#define P_STRING(paramNameStr) [paramNameStr, "", [""]]
-#define P_TEXT(paramNameStr) paramNameStr
-#define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
-#define P_GROUP(paramNameStr) [paramNameStr, grpNull, [grpNull]]
-#define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
-#define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
-#define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
-#define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
-#define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
-#define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
-#define P_COLOR(paramNameStr) [paramNameStr, [1,1,1,1]]
-#define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
-#define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
-#define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
-
-#define P_OOP_OBJECT(paramNameStr) P_STRING(paramNameStr)
 
 // ----------------------------------------------------------------------
 // |                 I N T E R N A L   S T R I N G S                    |
@@ -305,10 +161,6 @@
 
 //String name of an inner method
 #define INNER_METHOD_NAME_STR(methodNameStr) (INNER_PREFIX + methodNameStr)
-
-//Macro for global OOP variables
-#define OOP_GVAR(var) o_##var
-#define OOP_GVAR_STR(var) format["o_%1", #var]
 
 // ==== Private special members
 #define NEXT_ID_STR "nextID"
@@ -447,11 +299,6 @@
 #define T_PUBLIC_VAR(varNameStr) PUBLIC_VAR(_thisObject, varNameStr)
 #define T_SETV_PUBLIC(varNameStr, varValue) SET_VAR_PUBLIC(_thisObject, varNameStr, varValue)
 #define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
-
-// Unpacking a _thisObject variable into a private _variable
-// So if we have private _var = GET_VAR(_thisObject, "var"), this macros can help
-#define __STRINGIFY(s) #s
-#define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, __STRINGIFY(varName))
 
 // Returns object class name
 #define GET_OBJECT_CLASS(objNameStr) OBJECT_PARENT_CLASS_STR(objNameStr)
@@ -659,25 +506,6 @@
 	#define OOP_FUNC_HEADER_PROFILE_STATIC
 	#define OOP_FUNC_FOOTER_PROFILE
 #endif
-
-// Enable function wrappers if logging macros are used
-// /*
-// #ifdef OOP_DEBUG
-// #define _OOP_FUNCTION_WRAPPERS
-// #endif
-// #ifdef OOP_INFO
-// #define _OOP_FUNCTION_WRAPPERS
-// #endif
-// #ifdef OOP_WARNING
-// #define _OOP_FUNCTION_WRAPPERS
-// #endif
-// #ifdef OOP_ERROR
-// #define _OOP_FUNCTION_WRAPPERS
-// #endif
-// #ifdef OOP_DEBUG
-// #define _OOP_FUNCTION_WRAPPERS
-// #endif
-// */
 
 // Enable function wrappers if access assertions are enabled
 #ifdef OOP_ASSERT_ACCESS
@@ -1067,172 +895,6 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define UNREF(objNameStr) CALLM0(objNameStr, "unref")
 #endif
 
-// ---------------------------------------------------
-// |         T H R E A D I N G    U T I L S          |
-// ---------------------------------------------------
-
-#define CRITICAL_SECTION isNil
-
-// ----------------------------------------------------------------------
-// |                   L O G G I N G   M A C R O S                      |
-// ----------------------------------------------------------------------
-
-#define LOG_SCOPE(logScopeName) private _oop_logScope = logScopeName
-#define LOG_0 if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }
-
-#ifdef _OOP_FUNCTION_WRAPPERS
-#define LOG_1 if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}
-#else
-#define LOG_1 "fnc"
-#endif
-
-#ifdef ADE
-#define DUMP_CALLSTACK ade_dumpCallstack
-#define ADE_HALT halt
-#define ADE_ASSERT assert 
-#else
-#define DUMP_CALLSTACK diag_log "callstack"
-#define ADE_HALT diag_log "halt"
-#define ADE_ASSERT
-#endif
-
-// If ofstream addon is globally enabled
-#ifdef OFSTREAM_ENABLE
-#define __OFSTREAM_OUT(fileName, text) ((ofstream_new (fileName)) ofstream_write(text))
-#define WRITE_CRITICAL(text) ((ofstream_new "Critical.rpt") ofstream_write(text))
-#else
-
-#define __OFSTREAM_OUT(fileName, str) diag_log TEXT_ str
-#define WRITE_CRITICAL(str)
-
-#endif
-
-#define _OFSTREAM_FILE OFSTREAM_FILE
-
-#ifdef OFSTREAM_FILE
-#define WRITE_LOG(msg) __OFSTREAM_OUT(OFSTREAM_FILE, msg)
-#define WRITE_LOGF(file, msg) __OFSTREAM_OUT(file,  msg)
-#else
-#define WRITE_LOG(msg) diag_log TEXT_ msg
-#define WRITE_LOGF(file, msg) diag_log TEXT_ msg
-#endif
-
-#ifdef OOP_PROFILE
-#define OOP_PROFILE_MSG(str, a) private _o_str = format ["[%1.%2] PROFILE: %3",LOG_0, LOG_1, format ([str]+a)]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
-#define OOP_PROFILE_0(str) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, str]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
-#define OOP_PROFILE_1(str, a) private _o_str = format ["[%1.%2] PROFILE: %3",LOG_0, LOG_1, format [str, a]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
-#define OOP_PROFILE_2(str, a, b) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
-#define OOP_PROFILE_3(str, a, b, c) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
-#define OOP_PROFILE_4(str, a, b, c, d) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
-#define OOP_PROFILE_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
-#else
-#define OOP_PROFILE_MSG(str, a)
-#define OOP_PROFILE_0(str)
-#define OOP_PROFILE_1(str, a)
-#define OOP_PROFILE_2(str, a, b)
-#define OOP_PROFILE_3(str, a, b, c)
-#define OOP_PROFILE_4(str, a, b, c, d)
-#define OOP_PROFILE_5(str, a, b, c, d, e)
-#endif
-
-#ifdef OOP_INFO
-#define OOP_INFO_MSG(str, a) private _o_str = format ["[%1.%2] INFO: %3",LOG_0, LOG_1, format ([str]+a)]; WRITE_LOG(_o_str)
-#define OOP_INFO_0(str) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
-#define OOP_INFO_1(str, a) private _o_str = format ["[%1.%2] INFO: %3",LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
-#define OOP_INFO_2(str, a, b) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
-#define OOP_INFO_3(str, a, b, c) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
-#define OOP_INFO_4(str, a, b, c, d) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
-#define OOP_INFO_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
-#define OOP_INFO_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str)
-#else
-#define OOP_INFO_MSG(str, a)
-#define OOP_INFO_0(str)
-#define OOP_INFO_1(str, a)
-#define OOP_INFO_2(str, a, b)
-#define OOP_INFO_3(str, a, b, c)
-#define OOP_INFO_4(str, a, b, c, d)
-#define OOP_INFO_5(str, a, b, c, d, e)
-#define OOP_INFO_6(str, a, b, c, d, e, f)
-#endif
-
-#ifdef OOP_WARNING
-#define OOP_WARNING_MSG(str, a) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format ([str]+a)]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_WARNING_0(str) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_WARNING_1(str, a) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_WARNING_2(str, a, b) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_WARNING_3(str, a, b, c) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_WARNING_4(str, a, b, c, d) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_WARNING_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#else
-#define OOP_WARNING_MSG(str, a)
-#define OOP_WARNING_0(str)
-#define OOP_WARNING_1(str, a)
-#define OOP_WARNING_2(str, a, b)
-#define OOP_WARNING_3(str, a, b, c)
-#define OOP_WARNING_4(str, a, b, c, d)
-#define OOP_WARNING_5(str, a, b, c, d, e)
-#endif
-
-#ifdef OOP_ERROR
-#define OOP_ERROR_MSG(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_0(str) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_1(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_2(str, a, b) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#else
-#define OOP_ERROR_MSG(str, a)
-#define OOP_ERROR_0(str)
-#define OOP_ERROR_1(str, a)
-#define OOP_ERROR_2(str, a, b)
-#define OOP_ERROR_3(str, a, b, c)
-#define OOP_ERROR_4(str, a, b, c, d)
-#define OOP_ERROR_5(str, a, b, c, d, e)
-#define OOP_ERROR_6(str, a, b, c, d, e, f)
-#endif
-
-#ifdef OOP_DEBUG
-#define OOP_DEBUG_MSG(str, a) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str)
-#define OOP_DEBUG_0(str) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
-#define OOP_DEBUG_1(str, a) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
-#define OOP_DEBUG_2(str, a, b) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
-#define OOP_DEBUG_3(str, a, b, c) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
-#define OOP_DEBUG_4(str, a, b, c, d) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
-#define OOP_DEBUG_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
-#define OOP_DEBUG_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
-#else
-#define OOP_DEBUG_MSG(str, a)
-#define OOP_DEBUG_0(str)
-#define OOP_DEBUG_1(str, a)
-#define OOP_DEBUG_2(str, a, b)
-#define OOP_DEBUG_3(str, a, b, c)
-#define OOP_DEBUG_4(str, a, b, c, d)
-#define OOP_DEBUG_5(str, a, b, c, d, e)
-#define OOP_DEBUG_6(str, a, b, c, d, e, f)
-#endif
-
-#ifdef OOP_LOGF
-#define OOP_LOGF_MSG(f, msg, a) private _o_str = format ([msg]+a); WRITE_LOGF(f, _o_str)
-#define OOP_LOGF_0(f, msg) private _o_str = msg; WRITE_LOGF(f, _o_str)
-#define OOP_LOGF_1(f, msg, a) private _o_str = format [msg, a]; WRITE_LOGF(f, _o_str)
-#define OOP_LOGF_2(f, msg, a, b) private _o_str = format [msg, a, b]; WRITE_LOGF(f, _o_str)
-#define OOP_LOGF_3(f, msg, a, b, c) private _o_str = format [msg, a, b, c]; WRITE_LOGF(f, _o_str)
-#define OOP_LOGF_4(f, msg, a, b, c, d) private _o_str = format [msg, a, b, c, d]; WRITE_LOGF(f, _o_str)
-#define OOP_LOGF_5(f, msg, a, b, c, d, e) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
-#define OOP_LOGF_6(f, msg, a, b, c, d, e, f) private _o_str = format [msg, a, b, c, d, e]; WRITE_LOGF(f, _o_str)
-#else
-#define OOP_LOGF_MSG(f, msg, a)
-#define OOP_LOGF_0(f, msg)
-#define OOP_LOGF_1(f, msg, a)
-#define OOP_LOGF_2(f, msg, a, b)
-#define OOP_LOGF_3(f, msg, a, b, c)
-#define OOP_LOGF_4(f, msg, a, b, c, d)
-#define OOP_LOGF_5(f, msg, a, b, c, d, e)
-#define OOP_LOGF_6(f, msg, a, b, c, d, e, f)
-#endif
-
 // ----------------------------------------------------------------------
 // |                A S S E R T I O N S  A N D   C H E C K S            |
 // ----------------------------------------------------------------------
@@ -1270,78 +932,23 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC
 #define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )
 
-// ----------------------------------------------------------------------
-// |                       R E M O T E   E X E C                        |
-// ----------------------------------------------------------------------
-#define ON_ALL 		0
-#define ON_SERVER 	2
-#define ON_CLIENTS	([0, -2] select IS_DEDICATED)
-#define NO_JIP 		false
-#define ALWAYS_JIP	true
 
-// ----------------------------------------------------------------------
-// |                               M I S C                              |
-// ----------------------------------------------------------------------
-#define ARG ,
+// ----------------------------------------------------
+// |     O B J E C T   T Y P E                        |
+// |     N U L L   O B J E C T                        |
+// ----------------------------------------------------
 
-// Index find and findIf return when they don't find anything
-#define NOT_FOUND -1
-// For use with sort
-#define ASCENDING true
-#define DESCENDING false
 // Is the object handle valid?
 //#define NOT_NULL_OBJECT(object) ((object isEqualType "") and {!(object isEqualTo "")})
 #define IS_NULL_OBJECT(object) (object isEqualTo "")
+
 // Value to assign to an object handle to indicate it is deliberately invalid.
 #define NULL_OBJECT ""
+
 #define OOP_OBJECT_TYPE ""
 
-// ----------------------------------------------------------------------
-// |                               M A T H                              |
-// ----------------------------------------------------------------------
-// Zero the height component of a vector
-#define ZERO_HEIGHT(pos) ([(pos) select 0, (pos) select 1, 0])
-
-// Clamp val_ between min_ and max_
-#define CLAMP(val_, min_, max_) ((min_) max (val_) min (max_))
-// Return greater of two numbers
-#define MAXIMUM(a_, b_) ((a_) max (b_))
-// Return lesser of two numbers
-#define MINIMUM(a_, b_) ((a_) min (b_))
-// Clamp val_ between 0 and 1
-#define SATURATE(val_) CLAMP(val_, 0, 1)
-// Clamp val_ between 0 and +inf
-#define CLAMP_POSITIVE(val_) MAXIMUM(val_, 0)
-// Clamp val_ between 0 and -inf
-#define CLAMP_NEGATIVE(val_) MINIMUM(val_, 0)
-// Map v from (a, b) to (x, y)
-#ifndef _SQF_VM
-#define MAP_TO_RANGE(v, a, b, s, t) (linearConversion [a, b, v, s, t, false])
-#else
-#define MAP_TO_RANGE(v, a, b, s, t) ((s) + ((v) - (a)) * ((t) - (s)) / ((b) - (a)))
-#endif
-
-// Functions to help with applying difficulty to values
-// h is difficulty setting
-// Interpolate linearly between s and t by h (0 <= h <= 1)
-#define MAP_LINEAR(h, s, t) MAP_TO_RANGE(h, 0, 1, s, t)
-// Interpolates between s and t, with m as a fixed point that always maps to h = 0.5. 
-// i.e. linear between s and m for h <= 0.5 and m and t for h > 0.5
-#define MAP_LINEAR_SET_POINT(h, s, m, t) (if ((h) <= 0.5) then { MAP_TO_RANGE(h, 0, 0.5, s, m) } else { MAP_TO_RANGE(h, 0.5, 1, m, t) } )
-// Something like a generalized gamma correction function
-// See https://www.desmos.com/calculator/knchi5fjrz for example of how this function works (k = 0.5 here)
-#define MAP_GAMMA(h, x) ((x) ^ ((1 - (h) * 0.5 + 0.25) ^ 6))
-
-#ifdef _SQF_VM
-#define vin_diff_global 0.5
-#endif
-
-// ----------------------------------------------------------------------
-// |                       L O C A L I Z A T I O N                      |
-// ----------------------------------------------------------------------
-#define LOCS(scope, id) (localize ("STR_" + scope + "_" + id))
-#define LOC(id) LOCS(LOC_SCOPE, id)
-
+// Logging macros - must be inserted here
+#include "OOP_Log.h"
 
 // Log which flags are enabled which can affect performance
 /*

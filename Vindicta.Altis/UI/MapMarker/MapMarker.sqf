@@ -4,7 +4,7 @@
 //#define NAMESPACE uiNamespace
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Resources\MapUI\MapUI_Macros.h"
 
 /*

@@ -4,7 +4,7 @@
 #define OOP_ERROR
 #define OFSTREAM_FILE "buildUI.rpt"
 
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "BuildUI_Macros.h"
 #include "..\..\defineCommon.inc"
 #include "..\defineddikcodes.inc"

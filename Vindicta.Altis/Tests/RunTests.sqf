@@ -11,7 +11,7 @@ diag_log "----------------------------------------------------------------------
 diag_log "|              I N I T I A L I Z I N G   O O P L I G H T              |";
 diag_log "----------------------------------------------------------------------";
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;

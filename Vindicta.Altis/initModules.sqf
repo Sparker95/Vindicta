@@ -1,6 +1,6 @@
 //Just a quick file to initialize the modules already made in needed order
 #define OOP_DEBUG
-#include "OOP_Light\OOP_Light.h"
+#include "common.h"
 
 diag_log "[initModules] Starting...";
 

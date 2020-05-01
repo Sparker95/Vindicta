@@ -664,6 +664,32 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		[]
 	ENDMETHOD;
 
+	//                        G E T   P O S S I B L E   G O A L S
+	/*
+	Method: getPossibleGoals
+	Returns the list of goals this agent evaluates on its own.
+
+	Access: Used by AI class
+
+	Returns: Array with goal class names
+	*/
+	METHOD(getPossibleGoals)
+		["GoalUnitSalute","GoalUnitScareAway"]
+	ENDMETHOD;
+
+	//                      G E T   P O S S I B L E   A C T I O N S
+	/*
+	Method: getPossibleActions
+	Returns the list of actions this agent can use for planning.
+
+	Access: Used by AI class
+
+	Returns: Array with action class names
+	*/
+	METHOD(getPossibleActions)
+		["ActionUnitSalute","ActionUnitScareAway"]
+	ENDMETHOD;
+
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	/* override */ METHOD(getDebugUIVariableNames)

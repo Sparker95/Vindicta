@@ -2,7 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "VirtualRoute.hpp"
 
 #define pr private

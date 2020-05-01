@@ -4,7 +4,7 @@
 #define OOP_DEBUG
 #define OOP_ASSERT
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\AI\Action\Action.hpp"
 #include "..\..\AI\Group\groupWorldStateProperties.hpp"
 #include "..\..\AI\Garrison\garrisonWorldStateProperties.hpp"

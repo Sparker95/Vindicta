@@ -1,5 +1,5 @@
-#define __STRINGIFY(value) #value
-#define __TUT_IMAGE(imagename) __STRINGIFY(\z\vindicta\addons\ui\pictures\imagename)
+#define QUOTE(value) #value
+#define __TUT_IMAGE(imagename) QUOTE(\z\vindicta\addons\ui\pictures\imagename)
 
 class TutorialPages
 {

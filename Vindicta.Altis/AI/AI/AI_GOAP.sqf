@@ -3,7 +3,7 @@
 #define OOP_WARNING
 #define OFSTREAM_FILE "AI.rpt"
 #define PROFILER_COUNTERS_ENABLE
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Message\Message.hpp"
 #include "..\parameterTags.hpp"
 #include "..\..\CriticalSection\CriticalSection.hpp"
@@ -265,7 +265,7 @@ CLASS("AI_GOAP", "AI")
 					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
 					
 					// Get actions this agent can do
-					pr _possActions = CALLM0(_agent, "getPossibleActions");
+					pr _possActions = T_CALLM0("getPossibleActions");
 					
 					// Run the A* planner to generate a plan
 					pr _args = [T_GETV("worldState"), _wsGoal, _possActions, _goalParameters, _thisObject];
@@ -423,7 +423,7 @@ CLASS("AI_GOAP", "AI")
 		pr _agent = T_GETV("agent");
 		
 		// Get the list of goals available to this agent
-		pr _possibleGoals = CALLM0(_agent, "getPossibleGoals");
+		pr _possibleGoals = T_CALLM0("getPossibleGoals");
 		pr _relevanceMax = -1000;
 		pr _mostRelevantGoal = [];
 		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject, ACTION_STATE_INACTIVE]}; // Goal class name, bias, parameter, source, state

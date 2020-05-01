@@ -1,5 +1,5 @@
 #define OOP_ASSERT
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 #ifdef _SQF_VM
 call compile preprocessFileLineNumbers "Tests\initTests.sqf";

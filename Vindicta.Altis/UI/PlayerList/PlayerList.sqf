@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Resources\MapUI\MapUI_Macros.h"
 #include "..\Resources\UIProfileColors.h"
 

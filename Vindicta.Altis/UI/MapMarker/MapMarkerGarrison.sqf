@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\MapUI\MapUI_Macros.h"

@@ -3,7 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "Threads.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"

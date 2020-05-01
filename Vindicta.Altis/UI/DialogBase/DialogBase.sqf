@@ -5,7 +5,7 @@
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\defineCommonGrids.hpp"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Resources\UIProfileColors.h"
 #include "DialogBase_Macros.h"
 

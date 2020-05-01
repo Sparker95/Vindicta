@@ -4,7 +4,7 @@
 #define OOP_ERROR
 #define OFSTREAM_FILE "Main.rpt"
 
-#include "..\OOP_Light\OOP_light.h"
+#include "..\common.h"
 
 /*
 Class: GarbageCollector

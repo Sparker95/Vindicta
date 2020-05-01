@@ -8,7 +8,7 @@
 // It's really part of GarrisonServer, so we don't want to output text into the CmdrAI log file
 //#define OFSTREAM_FILE "CmdrAI.rpt"
 
-#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\..\..\common.h"
 #include "..\..\..\Templates\Efficiency.hpp"
 #include "..\..\..\Mutex\Mutex.hpp"
 #include "..\CmdrAction\CmdrActionStates.hpp"
