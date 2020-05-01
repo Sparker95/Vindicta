@@ -151,6 +151,7 @@ _api set [T_API_fnc_init, {}];
 //==== Undercover ====
 _uc = [];
 _uc resize T_UC_SIZE;
+_uc = _uc apply { [] };
 _uc set[T_UC_uniforms, +_civUniforms];
 _uc set[T_UC_facewear, +_civFacewear];
 _uc set[T_UC_vests, +_civVests];
@@ -193,7 +194,7 @@ _arsenal set[T_ARSENAL_headgear, +_civHeadgear];
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf = _inf apply { ["WW2_CIVILIAN_Militant_1"] };
+_inf = _inf apply { ["WW2_CIVILIAN_Default"] };
 _inf set [T_INF_default, ["I_L_Looter_SG_F"]];
 _inf set [T_INF_rifleman, [
     "WW2_PLAYER_1"

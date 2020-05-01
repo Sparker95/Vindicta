@@ -34,7 +34,7 @@ if (random 10 < 3) then {
 	this addHeadgear selectRandom _headgear;
 };
 
-//===Facewear====
+//===Facewear===
 if (random 10 < 3) then {
 	private _Facewear = [
 		"G_GEHeadBandage_Bloody",
@@ -56,7 +56,7 @@ if (random 10 < 3) then {
 	this addGoggles selectRandom _Facewear;
 };
 
-//===Uniform====
+//===Uniform===
 this forceAddUniform selectRandom [
 		"U_LIB_CIV_Assistant",
 		"U_LIB_CIV_Assistant_2",
@@ -90,28 +90,47 @@ this forceAddUniform selectRandom [
 		"U_LIB_CIV_Functionary_4"
 ];
 
-this addVest "V_LIB_SOV_RA_Belt";
+if(random 10 > 5) then { this linkItem "ItemWatch" };
 
-//===Backpack====
-this addBackpack selectRandom [
-	"B_LIB_GER_Backpack",
-	"B_LIB_SOV_RA_Rucksack",
-	"B_LIB_SOV_RA_Rucksack_Green",
-	"B_LIB_GER_Tonister34_cowhide",
-	"GEB_FieldPack_cbr",
-	"GEB_FieldPack_khk",
-	"GEB_FieldPack_blk",
-	"fow_b_uk_p37_blanco",
-	"fow_b_uk_p37",
-	"B_LIB_UK_HSack",
-	"B_LIB_UK_HSack_Blanco"
+private _gunsAndAmmo = [
+	// pistols
+	["LIB_P38",					"lib_8rnd_9x19",			true],	0.9,
+	["LIB_P08",					"fow_8rnd_9x19",			true],	0.7,
+	["LIB_Colt_M1911",			"lib_7rnd_45acp",			true],	0.7,
+	["LIB_M1896",				"lib_10rnd_9x19_m1896",		true],	0.5,
+	["fow_w_p640p",				"fow_13rnd_9x19",			true],	0.5,
+	["LIB_TT33",				"lib_8rnd_762x25",			true],	0.9,
+	["LIB_M1895",				"lib_7rnd_762x38",			true],	0.6,
+	["LIB_WaltherPPK",			"lib_7rnd_765x17_ppk",		true],	0.7,
+	["LIB_Webley_mk6",			"lib_6rnd_455",				true],	0.6,
+	["fow_w_welrod_mkii",		"fow_8rnd_765x17",			true],	0.3,
+	// long
+	["LIB_M1903A3_Springfield",	"fow_5rnd_762x63",			true],	0.1,
+	["LIB_K98",					"lib_5rnd_792x57",			true],	0.1,
+	["LIB_LeeEnfield_No4",		"lib_10rnd_770x56",			true],	0.1,
+	["LIB_M9130",				"lib_5rnd_762x54",			true],	0.1,
+	["fow_w_type99",			"fow_5rnd_77x58",			true],	0.1,
+	["LIB_DELISLE",				"lib_7rnd_45acp_delisle",	true],	0.1
 ];
 
-if(random 10 > 5) then { this linkItem "ItemWatch" };
+(selectRandomWeighted _gunsAndAmmo) params ["_gun", "_ammo", "_isPistol"];
+
+this addVest "V_LIB_SOV_RA_Belt";
+
+this addWeapon _gun;
+
+if(_isPistol) then {
+	this addHandgunItem "acc_flashlight_pistol";
+	this addHandgunItem _ammo;
+} else {
+	this addWeaponItem [_gun, "acc_flashlight"];
+	this addWeaponItem [_gun, _ammo];
+};
+
+for "_i" from 1 to 4 do { this addItemToUniform _ammo };
 
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
-this addItemToBackpack "LIB_ToolKit";
 this addItemToUniform "FirstAidKit";
 this linkItem "ItemMap";
 this linkItem "LIB_GER_ItemCompass";

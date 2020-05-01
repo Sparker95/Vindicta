@@ -1437,7 +1437,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Remove all items from vest
 		pr _vest = vest _hO;
-		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
+		if (_vest == "") then {
+			_vest = "V_Chestrig_oli";
+		}; // Default vest
 		removeVest _hO;
 		_hO addVest _vest;
 			
