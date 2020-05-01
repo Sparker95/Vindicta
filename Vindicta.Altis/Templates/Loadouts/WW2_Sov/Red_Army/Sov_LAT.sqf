@@ -21,15 +21,15 @@ _RandomBackpack = selectRandom ["B_LIB_SOV_RA_Rucksack", "B_LIB_SOV_RA_Rucksack_
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-this addWeapon "Lib_Mp41r";
+this addWeapon "LIB_PPSh41_m";
 _RandomWeapon2 = selectRandom ["LIB_PzFaust_30m", "fow_w_pzfaust_100", "LIB_PzFaust_60m", "LIB_Faustpatrone"];
 this addWeapon _RandomWeapon2;
 /*WeaponItem*/
-this addPrimaryWeaponItem "lib_32rnd_9x19";
+this addPrimaryWeaponItem "lib_35rnd_762x25";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "lib_32rnd_9x19";};
+for "_i" from 1 to 3 do {this addItemToVest "lib_35rnd_762x25";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Rg42";};
 this addItemToVest "LIB_Rpg6";
 this addItemToVest "LIB_RDG";

@@ -21,7 +21,7 @@ _RandomBackpack = selectRandom ["", "", "", "", "", "", "", "", "", "", "", "", 
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-_RandomWeapon = selectRandom ["LIB_M9130", "LIB_M9130", "LIB_M38", "LIB_M44"];
+_RandomWeapon = selectRandom ["LIB_M9130", "LIB_M9130", "LIB_M9130", "LIB_M9130", "LIB_M38", "LIB_M44"];
 this addWeapon _RandomWeapon;
 /*WeaponItem*/
 this addPrimaryWeaponItem "lib_5rnd_762x54";

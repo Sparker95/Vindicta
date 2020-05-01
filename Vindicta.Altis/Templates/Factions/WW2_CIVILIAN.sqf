@@ -87,6 +87,10 @@ _civFacewear = [
 	"G_Blindfold_01_white_F"
 ];
 
+_civVests = [
+	"V_LIB_SOV_RA_Belt"
+];
+
 _civHeadgear = [
 	"H_Hat_blue",
 	"H_Hat_brown",
@@ -127,16 +131,16 @@ _array set [T_DISPLAY_NAME, "WW2 Civilians"]; 		//Template display name
 _array set [T_FACTION, T_FACTION_Civ]; 				//Faction type
 _array set [T_REQUIRED_ADDONS, [
 		"A3_Characters_F", 
-		"ww2_assets_c_characters_core_c", 
-		"lib_weapons", 
-		"geistl_main", 
-		"fow_weapons", 
-		"sab_boat_c", 
-		"ifa3_comp_ace_main", 
-		"geistl_fow_main", 
-		"ifa3_comp_fow", 
-		"ifa3_comp_fow_ace_settings", 
-		"sab_compat_ace"
+		"IFA3_Core",
+		"IFA3_COMP_ACE_main",
+		"IFA3_FOW_Compat",
+		"LIB_core",
+		"GEISTL_MAIN",
+		"GEISTL_FOW_MAIN",
+		"fow_main",
+		"sab_boat_c",
+		"sab_compat_ace",
+		"I44_Buildings"
 		]]; 										//Addons required to play this template
 
 //==== API ====
@@ -150,6 +154,7 @@ _uc = [];
 _uc resize T_UC_SIZE;
 _uc set[T_UC_uniforms, +_civUniforms];
 _uc set[T_UC_facewear, +_civFacewear];
+_uc set[T_UC_vests, +_civVests];
 _uc set[T_UC_headgear, +_civHeadgear];
 _uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
 _array set [T_UC, _uc];
@@ -170,7 +175,9 @@ _arsenal set[T_ARSENAL_ammo, [
 	"ka_knife_blade"
 ]];
 _arsenal set[T_ARSENAL_items, []];
-_arsenal set[T_ARSENAL_vests, []];
+_arsenal set[T_ARSENAL_vests, [
+	"V_LIB_SOV_RA_Belt"
+]];
 _arsenal set[T_ARSENAL_backpacks, [
 	"GEB_FieldPack_cbr",
 	"GEB_FieldPack_khk",
@@ -178,12 +185,11 @@ _arsenal set[T_ARSENAL_backpacks, [
 	"B_LIB_SOV_RA_MedicalBag_Empty",
 	"B_LIB_SOV_RA_MGAmmoBag_Empty",
 	"B_LIB_SOV_RA_Rucksack",
-	"B_LIB_SOV_RA_Rucksack_Green",
-	"B_LIB_SOV_RA_Rucksack2",
-	"B_LIB_SOV_RA_Rucksack2_Green"
+	"B_LIB_SOV_RA_Rucksack_Green"
 ]];
 _arsenal set[T_ARSENAL_uniforms, +_civUniforms];
 _arsenal set[T_ARSENAL_facewear, +_civFacewear];
+_arsenal set[T_ARSENAL_vests, +_civVests];
 _arsenal set[T_ARSENAL_headgear, +_civHeadgear];
 _array set [T_ARSENAL, _arsenal];
 
