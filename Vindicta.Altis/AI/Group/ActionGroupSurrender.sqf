@@ -8,7 +8,7 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		private _AI = T_GETV("AI");
 		private _group = GETV(_AI, "agent");
@@ -30,11 +30,11 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 
 	// Logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		T_CALLM0("failIfEmpty");
 		
-		CALLM0(_thisObject, "activateIfInactive");
+		T_CALLM0("activateIfInactive");
 
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;

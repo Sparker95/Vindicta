@@ -28,8 +28,8 @@ It checks for messages in the loop and calls handleMessages of objects.
 #define THREAD_FUNC_DEBUG
 
 #ifdef THREAD_FUNC_DEBUG
-private _nextTickTime = time + 5;
-private _nextProcessLogTime = time + 5;
+private _nextTickTime = PROCESS_TIME + 5;
+private _nextProcessLogTime = PROCESS_TIME + 5;
 #endif
 
 #ifdef PROCESS_CATEGORIES_DEBUG
@@ -46,14 +46,14 @@ private _execTimeFilteredArray = [];
 #endif
 
 
-params [ P_THISOBJECT ];
+params [P_THISOBJECT];
 
-private _msgQueue = GET_VAR(_thisObject, "msgQueue");
-private _mutex = GET_VAR(_thisObject, "mutex");
-private _processCategories = GET_VAR(_thisObject, "processCategories");
-private _fractionsRequired = GET_VAR(_thisObject, "updateFrequencyFractions");
-private _sleepInterval = GET_VAR(_thisObject, "sleepInterval");
-//private _objects = GET_VAR(_thisObject, "objects");
+private _msgQueue = T_GETV("msgQueue");
+private _mutex = T_GETV("mutex");
+private _processCategories = T_GETV("processCategories");
+private _fractionsRequired = T_GETV("updateFrequencyFractions");
+private _sleepInterval = T_GETV("sleepInterval");
+//private _objects = T_GETV("objects");
 
 
 #ifdef _SQF_VM // Don't want to run this in VM testing mode
@@ -68,11 +68,11 @@ while {true} do {
 
 	// Log queue length, post a delay test message
 	#ifdef THREAD_FUNC_DEBUG
-	if(_nextTickTime != 0 and _nextTickTime < time) then {
+	if(_nextTickTime != 0 and _nextTickTime < PROCESS_TIME) then {
 		_nextTickTime = 0;
 		private _str = format ["{ ""name"": ""%1"", ""queue_len"": %2 }", _name, count _msgQueue];
 		OOP_DEBUG_MSG(_str, []);
-		_msgQueue pushBack ["__debugtick", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, time];
+		_msgQueue pushBack ["__debugtick", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, PROCESS_TIME];
 	};
 	#endif
 
@@ -110,23 +110,23 @@ while {true} do {
 			// Check if it's the test message to measure queue delay
 			#ifdef THREAD_FUNC_DEBUG
 			if(_msg#0 == "__debugtick") then {
-				private _t = time - _msg#5;
+				private _t = PROCESS_TIME - _msg#5;
 				private _str = format ["{ ""name"": ""%1"", ""delay"": %2 }", _name, _t];
 				OOP_DEBUG_MSG(_str, []);
 				// OOP_DEBUG_MSG("[message queue len %1]", [count _msgQueue]);
-				_nextTickTime = time + 5;
+				_nextTickTime = PROCESS_TIME + 5;
 			} else {
 			#endif
 
 
 
-			pr _msgID = _msg select MESSAGE_ID_SOURCE_ID;
+			private _msgID = _msg#MESSAGE_ID_SOURCE_ID;
 			//Get destination object
-			private _dest = _msg select MESSAGE_ID_DESTINATION;
+			private _dest = _msg#MESSAGE_ID_DESTINATION;
 			//Call handleMessage
 			if(IS_OOP_OBJECT(_dest)) then {
 				#ifdef PROFILE_MESSAGE_JSON
-				pr _objectClass = GET_OBJECT_CLASS(_dest);
+				private _objectClass = GET_OBJECT_CLASS(_dest);
 				private _profileTimeStart = diag_tickTime;
 				#endif
 
@@ -134,15 +134,14 @@ while {true} do {
 				// If it crashes now, we will read this value, and make a memory dump
 				T_SETV("lastObject", _dest);
 
-				pr _result = CALL_METHOD(_dest, "handleMessage", [_msg]);
+				private _result = if(IS_OOP_OBJECT(_dest)) then { CALLM(_dest, "handleMessage", [_msg]) } else { 0 };
 
 				// Reset last handled object
 				T_SETV("lastObject", NULL_OBJECT);
 
 				#ifdef PROFILE_MESSAGE_JSON
 				private _profileTime = diag_tickTime - _profileTimeStart;
-				pr _dest = _msg#MESSAGE_ID_DESTINATION;
-				pr _type = _msg#MESSAGE_ID_TYPE;
+				private _type = _msg#MESSAGE_ID_TYPE;
 				private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4, ""data"": %5} }", _name, _type, _objectClass, _profileTime, str (_msg#MESSAGE_ID_DATA)];
 				OOP_DEBUG_MSG(_str, []);
 				#endif
@@ -151,7 +150,7 @@ while {true} do {
 				// Were we asked to mark the message as processed?
 				if (_msgID != MESSAGE_ID_NOT_REQUESTED) then {
 					// Did the message originate from this machine?
-					pr _msgSourceOwner = _msg select MESSAGE_ID_SOURCE_OWNER;
+					private _msgSourceOwner = _msg#MESSAGE_ID_SOURCE_OWNER;
 					if (_msgSourceOwner == clientOwner) then {
 						// Mark this message processed on this machine
 						[_msgID, _result, _dest] call MsgRcvr_fnc_setMsgDone;
@@ -188,8 +187,8 @@ while {true} do {
 				0
 			} else {
 				1/(_x#__PC_ID_UPDATE_INTERVAL_AVERAGE * _countObjects) // We want to maintain proportions of update frequencies, so that objects with higher priority are processed more often 
-			};			
-		}; 
+			};
+		};
 
 		// Normalize
 		pr _sum = 0;
@@ -207,7 +206,7 @@ while {true} do {
 		for "_i" from 0 to (_count - 1) do {
 			pr _cat = _processCategories#_i;
 			pr _objects = _cat#__PC_ID_OBJECTS;
-			pr _countObjects = count _objects;		
+			pr _countObjects = count _objects;
 			pr _execTime = 0; // Time spent executing this category this time
 
 			// Do we need to process this category?
@@ -321,7 +320,7 @@ while {true} do {
 		};
 
 		#ifdef THREAD_FUNC_DEBUG
-		if (time > _nextProcessLogTime) then {
+		if (PROCESS_TIME > _nextProcessLogTime) then {
 
 			//pr _cur = _fractionsCurrent apply {round (_x*100)};
 			//pr _req = _fractionsRequired apply {round (_x*100)};
@@ -341,7 +340,7 @@ while {true} do {
 					_name, _tag, _numObjects, _fractionCurrent, _fractionRequired, _updateInterval];
 				OOP_DEBUG_MSG(_str, []);
 			} forEach _processCategories;
-			_nextProcessLogTime = time + 5;
+			_nextProcessLogTime = PROCESS_TIME + 5;
 		};
 		#endif
 

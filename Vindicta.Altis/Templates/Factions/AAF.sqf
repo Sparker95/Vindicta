@@ -42,7 +42,7 @@ _inf set [T_INF_pilot_heli, ["I_helipilot_F"]];
 _inf set [T_INF_survivor, ["I_Survivor_F"]];
 _inf set [T_INF_unarmed, ["I_Soldier_unarmed_F"]];
 
-//Recon
+//==== Recon ====
 _inf set [T_INF_recon_TL, ["Arma3_AAF_recon_TL"]];
 _inf set [T_INF_recon_rifleman, ["Arma3_AAF_recon_rifleman", "Arma3_AAF_recon_autorifleman"]];
 _inf set [T_INF_recon_medic, ["Arma3_AAF_recon_medic"]];
@@ -53,14 +53,13 @@ _inf set [T_INF_recon_marksman, ["Arma3_AAF_recon_marksman"]];
 _inf set [T_INF_recon_JTAC, ["Arma3_AAF_recon_JTAC"]];
 
 
-//Divers
+//==== Drivers ====
 _inf set [T_INF_diver_TL, ["I_diver_TL_F"]];
 _inf set [T_INF_diver_rifleman, ["I_diver_F"]];
 _inf set [T_INF_diver_exp, ["I_diver_exp_F"]];
 
 
 //==== Vehicles ====
-
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["I_G_Offroad_01_F"]];
@@ -72,16 +71,16 @@ _veh set [T_VEH_MRAP_unarmed, ["I_MRAP_03_F"]];
 _veh set [T_VEH_MRAP_HMG, ["I_MRAP_03_hmg_F"]];
 _veh set [T_VEH_MRAP_GMG, ["I_MRAP_03_gmg_F"]];
 
-_veh set [T_VEH_IFV, ["I_APC_tracked_03_cannon_F", "I_LT_01_AT_F", "I_LT_01_cannon_F"]];
+_veh set [T_VEH_IFV, ["I_APC_tracked_03_cannon_F"]];
 _veh set [T_VEH_APC, ["I_APC_Wheeled_03_cannon_F"]];
 _veh set [T_VEH_MBT, ["I_MBT_03_cannon_F"]];
 _veh set [T_VEH_MRLS, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPA, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPAA, ["I_LT_01_AA_F"]];
 
-_veh set [T_VEH_stat_HMG_high, ["I_HMG_01_high_F"]];
+_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]];
 _veh set [T_VEH_stat_GMG_high, ["I_GMG_01_high_F"]];
-_veh set [T_VEH_stat_HMG_low, ["I_HMG_01_F"]];
+_veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]];
 _veh set [T_VEH_stat_GMG_low, ["I_GMG_01_F"]];
 _veh set [T_VEH_stat_AA, ["I_static_AA_F"]];
 _veh set [T_VEH_stat_AT, ["I_static_AT_F"]];

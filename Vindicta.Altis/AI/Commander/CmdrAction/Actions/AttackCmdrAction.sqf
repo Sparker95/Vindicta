@@ -75,12 +75,12 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(detachmentEffVar);
-		T_PRVAR(detachmentCompVar);
-		T_PRVAR(targetVar);
-		T_PRVAR(startDateVar);
-		T_PRVAR(rtbTargetVar);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _detachmentEffVar = T_GETV("detachmentEffVar");
+		private _detachmentCompVar = T_GETV("detachmentCompVar");
+		private _targetVar = T_GETV("targetVar");
+		private _startDateVar = T_GETV("startDateVar");
+		private _rtbTargetVar = T_GETV("rtbTargetVar");
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
@@ -177,8 +177,8 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(state);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _state = T_GETV("state");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		private _srcEff = GETV(_srcGarr, "efficiency");
 
@@ -239,7 +239,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("debugDraw") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		private _srcGarrPos = GETV(_srcGarr, "pos");

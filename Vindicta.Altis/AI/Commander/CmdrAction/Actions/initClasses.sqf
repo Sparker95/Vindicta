@@ -8,6 +8,7 @@ call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\TakeLoca
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\ReinforceCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\SupplyCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\ConstructLocationCmdrAction.sqf";
+call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\SupplyConvoyCmdrAction.sqf";
 
 // Direct actions
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\DirectMoveCmdrAction.sqf";

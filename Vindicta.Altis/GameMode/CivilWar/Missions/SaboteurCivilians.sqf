@@ -37,6 +37,17 @@ Saboteur_fnc_initSaboteur =
 	_this addItemToBackpack "IEDLandSmall_Remote_Mag";
 	_this addItemToBackpack "IEDUrbanSmall_Remote_Mag";
 	_this allowFleeing 0; // brave?
+	// Set unit skill
+	_this setSkill ["aimingAccuracy", 0.3];
+	_this setSkill ["aimingShake", 0.3];
+	_this setSkill ["aimingSpeed", 0.4];
+	_this setSkill ["commanding", 0.2];
+	_this setSkill ["courage", 1];
+	//_this setSkill ["endurance", 0.8];
+	_this setSkill ["general", 0.5];
+	_this setSkill ["reloadSpeed", 0.5];
+	_this setSkill ["spotDistance", 0.6];
+	_this setSkill ["spotTime", 0.3];
 };
 
 // Creates a set of waypoints for our saboteur
@@ -50,6 +61,8 @@ Saboteur_fnc_createBombWPs = {
 	_grp allowFleeing 0;
 	deleteGroup _oldGrp;
 
+	deleteWaypoint [_grp, 0];
+
 	// No enemy attacking them for now
 	_civie setCaptive true;
 
@@ -58,11 +71,11 @@ Saboteur_fnc_createBombWPs = {
 	_civie disableAI "CHECKVISIBLE";
 
 	// WAYPOINT 1 - plant bomb
-	private _wp = _grp addWaypoint [_tgtPos, 0];
-	_wp setWaypointType "MOVE";
-	_wp setWaypointBehaviour "STEALTH";
-	_wp setWaypointSpeed "LIMITED";
-	_wp setWaypointStatements ["true", 
+	private _firstWP = _grp addWaypoint [_tgtPos, 0];
+	_firstWP setWaypointType "MOVE";
+	_firstWP setWaypointBehaviour "STEALTH";
+	_firstWP setWaypointSpeed "LIMITED";
+	_firstWP setWaypointStatements ["true", 
 		"
 			this fire ['DemoChargeMuzzle', 'DemoChargeMuzzle', 'IEDUrbanSmall_Remote_Mag'];
 			[this] remoteExec ['removeAllActions', 0, this];
@@ -77,7 +90,7 @@ Saboteur_fnc_createBombWPs = {
 	// 	_range = _range * 2;
 	// };
 	if(count _hidePos == 3) then {
-		_hidePos = _tgtPos vectorAdd [15,15,0]; 
+		_hidePos = _tgtPos vectorAdd [15,15,0];
 	};
 	private _wp = _grp addWaypoint [_hidePos, 0];
 	_wp setWaypointType "MOVE";
@@ -91,7 +104,7 @@ Saboteur_fnc_createBombWPs = {
 	_wp setWaypointType "MOVE";
 	_wp setWaypointBehaviour "STEALTH";
 	_wp setWaypointSpeed "FULL";
-	_wp setWaypointStatements ["this getVariable ['bombed', false]", ""]; 
+	_wp setWaypointStatements ["this getVariable ['bombed', false]", ""];
 
 	// WAYPOINT 4 - run away!
 	// Run far away!
@@ -134,7 +147,7 @@ Saboteur_fnc_createBombWPs = {
 	_trigger setTriggerStatements [
 		_triggerCond,
 		"
-		private _owner = thisTrigger getVariable 'owner'; 
+		private _owner = thisTrigger getVariable 'owner';
 		if(alive _owner) then {
 			systemChat format['%1: Vindicta!', name _owner];
 			_owner action ['TOUCHOFF', _owner];
@@ -145,6 +158,8 @@ Saboteur_fnc_createBombWPs = {
 		[INDEPENDENT, getPos thisTrigger, 5 + random 10] call AI_fnc_addActivity;
 		",
 		"true"];
+	// Resume wp following
+	_civie doFollow leader _civie;
 	_trigger
 };
 
@@ -286,7 +301,7 @@ Saboteur_fnc_playerSelectsTarget = {
 
 		// Open player map so you can click where the bomber should go
 		openMap true;
-		"bomber_map_text" cutText ["<t size='3'>Shift Click to select a target.<br/>Close the map to confirm the selection.<br/>Alt Click to clear the target.</t>", "PLAIN DOWN", -1, true, true];
+		"bomber_map_text" cutText ["<t size='3'>Shift Click to select a target for the bomber.<br/>Close the map to confirm the selection.<br/>Alt Click to clear the target.</t>", "PLAIN DOWN", -1, true, true];
 		gBomberTarget = [];
 		onMapSingleClick {
 			if (_shift) then {
@@ -521,7 +536,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Check for finished actions
-		T_PRVAR(activeCivs);
+		private _activeCivs = T_GETV("activeCivs");
 		{
 			_x params ["_civie", "_trigger"];
 			if(!alive _civie) then {
@@ -542,8 +557,8 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		// Add new actions if don't have enough active already
-		T_PRVAR(activeCivs);
-		T_PRVAR(maxActive);
+		private _activeCivs = T_GETV("activeCivs");
+		private _maxActive = T_GETV("maxActive");
 		private _deficit = _maxActive - (count _activeCivs);
 
 		if(_deficit > 0) then {
@@ -551,8 +566,8 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			private _pos = CALLM0(_city, "getPos");
 			private _radius = GETV(_city, "boundingRadius");
 
-			T_PRVAR(targetBuildings);
-			T_PRVAR(targetRoads);
+			private _targetBuildings = T_GETV("targetBuildings");
+			private _targetRoads = T_GETV("targetRoads");
 
 			private _targetVics = [_city] call Saboteur_fnc_getTargetVehiclePositions;
 			diag_log format ["Target vics: %1", _targetVics];
@@ -628,7 +643,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 				_activeCivs pushBack [_civie, _trigger];
 
 				// "_ied = (nearestObject [thisTrigger, ""IEDLandSmall_Remote_Ammo""]); _ied setDamage 1;"
-				// private _ied = (nearestObject [thisTrigger, 'IEDUrbanSmall_Remote_Ammo']); 
+				// private _ied = (nearestObject [thisTrigger, 'IEDUrbanSmall_Remote_Ammo']);
 				// _ied setDamage 1;
 
 				// for "_j" from 0 to 5 do {

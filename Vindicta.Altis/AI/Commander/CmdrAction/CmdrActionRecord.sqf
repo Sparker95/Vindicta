@@ -64,8 +64,9 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 		if (!isNil "_gar") exitWith {
 			pr _garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _gar);
 			if (IS_NULL_OBJECT(_garRecord)) then {
-				OOP_ERROR_1("Can't resolve position of target garrison: %1", _gar);
-				[_thisObject] call OOP_dumpAllVariables;
+				// This can happen if garrison is destroyed, and associated action didn't terminate yet
+				OOP_WARNING_1("Can't resolve position of target garrison: %1", _gar);
+				//[_thisObject] call OOP_dumpAllVariables;
 				[]
 			} else {
 				GETV(_garRecord, "pos")
@@ -73,8 +74,8 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 		};
 
 		// Else return [] and print an error
-		OOP_ERROR_1("No target in cmdr action record %1", _thisObject);
-		[_thisObject] call OOP_dumpAllVariables;
+		OOP_WARNING_1("No target in cmdr action record %1", _thisObject);
+		//[_thisObject] call OOP_dumpAllVariables;
 		[]
 	} ENDMETHOD;
 

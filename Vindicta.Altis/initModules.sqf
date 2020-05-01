@@ -14,7 +14,7 @@ call compile preprocessFileLineNumbers "DebugMenu\DebugMenu.sqf";
 
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 };
 
 // Initialize StorageInterfaces
@@ -23,6 +23,9 @@ call compile preprocessFileLineNumbers "SaveSystem\initClasses.sqf";
 //Initialize templates
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
+
+// Common functions
+call compile preprocessFileLineNumbers "Common\initFunctions.sqf";
 
 // UI classes and functions
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";

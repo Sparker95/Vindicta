@@ -53,12 +53,12 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 	METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		pr _srcGarrIdVar = T_CALLM1("createVariable", _srcGarrId);
 
-		T_PRVAR(detachmentCompVar);
-		T_PRVAR(detachmentEffVar);
-		T_PRVAR(startDateVar);
+		private _detachmentCompVar = T_GETV("detachmentCompVar");
+		private _detachmentEffVar = T_GETV("detachmentEffVar");
+		private _startDateVar = T_GETV("startDateVar");
 		
 		pr _splitGarrIdVar = T_CALLM("createVariable", [MODEL_HANDLE_INVALID]);
 		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
@@ -127,7 +127,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -140,7 +140,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 
 		// Bail if garrison is dead
-		if(CALLM(_srcGarr, "isDead", [])) exitWith {
+		if(CALLM0(_srcGarr, "isDead")) exitWith {
 			OOP_DEBUG_0("Src garrison is dead");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
@@ -273,20 +273,20 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intelClone);
+		private _intelClone = T_GETV("intelClone");
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
 			private _intel = NEW("IntelCommanderActionConstructLocation", []);
 
-			T_PRVAR(srcGarrId);
+			private _srcGarrId = T_GETV("srcGarrId");
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
 
-			CALLM(_intel, "create", []);
+			CALLM0(_intel, "create");
 
 			SETV(_intel, "type", T_GETV("locType"));
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
@@ -304,14 +304,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG T_GETV("locPos")]);
-
-			// Reveal it to player side
-			if (random 100 < 80) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
-			};
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
-			CALLM(_intelClone, "updateInDb", []);
+			CALLM0(_intelClone, "updateInDb");
 		};
 	} ENDMETHOD;
 
@@ -346,7 +341,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("debugDraw") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
+		private _srcGarrId = T_GETV("srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -371,8 +366,8 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(srcGarrId);
-		T_PRVAR(state);
+		private _srcGarrId = T_GETV("srcGarrId");
+		private _state = T_GETV("state");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		private _srcEff = GETV(_srcGarr, "efficiency");
 
@@ -444,15 +439,15 @@ REGISTER_DEBUG_MARKER_STYLE("ConstructLocationCmdrAction", "ColorBrown", "loc_Ru
 	private _thisObject = NEW("ConstructLocationCmdrAction", _args);
 
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world ARG _future]);
+	T_CALLM("updateScore", [_world ARG _future]);
 
-	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
-	diag_log format ["Construct location final score: %1", _finalScore];
+	private _finalScore = T_CALLM("getFinalScore", []);
+	//diag_log format ["Construct location final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	// Apply to sim
-	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
-	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
+	private _nowSimState = T_CALLM("applyToSim", [_world]);
+	private _futureSimState = T_CALLM("applyToSim", [_future]);
 
 }] call test_AddTest;
 

@@ -32,7 +32,7 @@ _inf set [T_INF_spotter, ["BW_Fleck_spotter"]];
 _inf set [T_INF_exp, ["BW_Fleck_explosives"]];
 _inf set [T_INF_ammo, ["BW_Fleck_AT_2","BW_Fleck_MG_2","BW_Fleck_MG_4"]];
 _inf set [T_INF_LAT, ["BW_Fleck_AT"]];
-_inf set [T_INF_AT, ["BW_Fleck_AT","BW_Fleck_AT_3"]];
+_inf set [T_INF_AT, ["BW_Fleck_AT","BW_Fleck_AT_3","BW_Fleck_AS","BW_Fleck_AS_2"]];							//AS for Anti Structure
 _inf set [T_INF_AA, ["BW_Fleck_AA"]];
 _inf set [T_INF_LMG, ["BW_Fleck_LMG"]];
 _inf set [T_INF_HMG, ["BW_Fleck_MG","BW_Fleck_MG_3"]];
@@ -71,8 +71,8 @@ _veh set [T_VEH_car_unarmed, [ "BWA3_Eagle_Fleck", "rhsusf_m1025_w", "rhsusf_m99
 _veh set [T_VEH_car_armed, ["BWA3_Eagle_FLW100_Fleck","rhsusf_m1025_w_m2"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhsusf_M1232_usarmy_wd", "rhsusf_CGRCAT1A2_usmc_wd", "rhsusf_m1240a1_usmc_wd", "rhsusf_M1220_usarmy_wd"]];
-_veh set [T_VEH_MRAP_HMG, ["rhsusf_CGRCAT1A2_M2_usmc_wd", "rhsusf_m1240a1_m2_usmc_wd", "rhsusf_m1240a1_m240_usmc_wd","rhsusf_M1220_M2_usarmy_wd","rhsusf_M1220_MK19_usarmy_wd"]];
-_veh set [T_VEH_MRAP_GMG, ["rhsusf_m1240a1_mk19_usmc_wd", "rhsusf_CGRCAT1A2_Mk19_usmc_wd", "rhsusf_M1232_MC_MK19_usmc_wd", "rhsusf_m1025_w_s_Mk19"]];
+_veh set [T_VEH_MRAP_HMG, ["rhsusf_CGRCAT1A2_M2_usmc_wd", "rhsusf_m1240a1_m2_usmc_wd", "rhsusf_m1240a1_m240_usmc_wd","rhsusf_M1220_M2_usarmy_wd"]];
+_veh set [T_VEH_MRAP_GMG, ["rhsusf_m1240a1_mk19_usmc_wd", "rhsusf_CGRCAT1A2_Mk19_usmc_wd", "rhsusf_M1232_MK19_usarmy_wd", "rhsusf_m1025_w_s_Mk19","rhsusf_M1220_MK19_usarmy_wd"]];
 
 _veh set [T_VEH_IFV, ["BWA3_Puma_Fleck", "RHS_M2A2_wd", "RHS_M2A2_BUSKI_WD"]];
 _veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_wd","rhsusf_m113_usarmy_M240","rhsusf_m113_usarmy","rhsusf_m113_usarmy_MK19","rhsusf_M1117_W"]];

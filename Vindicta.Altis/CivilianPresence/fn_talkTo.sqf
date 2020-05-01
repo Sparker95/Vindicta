@@ -15,7 +15,7 @@
 // Macro to boost suspicion on each sentence
 #define __BOOST_SUSP CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.2 + (random 0.1))
 
-params [["_civ",objNull,[objNull]], ["_mode", "", [""]]];
+params [["_civ",objNull,[objNull]], P_STRING("_mode")];
 
 if(isnull _civ)exitWith{};
 
@@ -55,7 +55,7 @@ switch (_mode) do {
 		__SLEEP(_text);
 		if (__CHECK_EXIT_COND) exitWith {};
 
-		if (random 1000 < 5) exitWith {
+		if (random 100 < 2) exitWith {
 			_text = selectRandom [	"I am nothing but a simulation on some computer.",
 									"This all is not real! This is a simulation! What shall we do now?",
 									"How can you prove that this world is real? It's all a simulation!",
@@ -147,7 +147,8 @@ switch (_mode) do {
 						_updateLevel = CLD_UPDATE_LEVEL_SIDE;
 						_accuracyRadius = 50+_dist*_distCoeff;
 					};
-					case LOCATION_TYPE_CAMP: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
+					// We don't report camps to player
+					// case LOCATION_TYPE_CAMP: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
 					case LOCATION_TYPE_BASE: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
 					case LOCATION_TYPE_OUTPOST: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
 					case LOCATION_TYPE_AIRPORT: {_updateLevel = CLD_UPDATE_LEVEL_SIDE; _accuracyRadius = 50+_dist*_distCoeff; };

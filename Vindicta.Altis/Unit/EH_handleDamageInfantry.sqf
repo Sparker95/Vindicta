@@ -17,7 +17,7 @@ params ["_unit", "_selection", "_damage", "_source", "_projectile", "_hitIndex",
 
 // Code to dump values passed to the event handler
 /*
-_array = ["_unit", "_selection", "_damage", "_source", "_projectile", "_hitIndex", "_instigator", "_hitPoint"]; 
+_array = ["_unit", "_selection", "_damage", "_source", "_projectile", "_hitIndex", "_instigator", "_hitPoint"];
 _str = "";
 {
 _str = _str + format ["%1: %2, ", _x, _this select _foreachindex];

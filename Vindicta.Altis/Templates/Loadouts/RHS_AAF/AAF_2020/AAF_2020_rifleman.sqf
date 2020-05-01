@@ -16,6 +16,8 @@ this addGoggles _RandomGoggles;
 this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 
 this addWeapon "rhs_weap_m21a";
+_RandomSight = selectRandom ["rhs_acc_pkas", "", ""];
+this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 

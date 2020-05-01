@@ -100,7 +100,7 @@ class CfgFunctions {
 	{
 		class randomThings
 		{
-            class preInit {
+			class preInit {
 				preInit = 1;
 				file = "preInit.sqf";
 			};
@@ -119,6 +119,7 @@ class CfgFunctions {
 #include "UI\RecruitDialog\RecruitDialog.h"
 #include "UI\LoadingScreen\LoadingScreen.h"
 #include "UI\Notification\Notification.h"
+#include "UI\AIDebug\AIDebug.h"
 
 // Just include plain control classes for the intel panel
 #include "UI\ClientMapUI\Controls\IntelPanel.h"
@@ -162,11 +163,6 @@ class RscTitles {
 #include "UI\InGameUI\Vin_InGameUI.h"
 
 };
-
-class Extended_PreInit_EventHandlers {
-    missionSettings = call compile preprocessFileLineNumbers "Init\initCBAMissionSettings.sqf";
-};
-
 
 // Garbage collector
 // https://community.bistudio.com/wiki/Description.ext#Corpse_.26_wreck_management

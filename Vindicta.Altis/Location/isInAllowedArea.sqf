@@ -14,7 +14,7 @@ Returns: nil
 
 #define pr private
 
-params [ ["_thisObject", "", [""]], ["_pos", objNull, [objNull, []]]];
+params [P_THISOBJECT, ["_pos", objNull, [objNull, []]]];
 
 pr _type = T_GETV("type");
 

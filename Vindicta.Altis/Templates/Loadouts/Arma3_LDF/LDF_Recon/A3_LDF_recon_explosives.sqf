@@ -47,3 +47,5 @@ this linkItem "ItemRadio";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "NVGogglesB_blk_F";
+
+[this,"EAF_5thRegiment"] call BIS_fnc_setUnitInsignia;

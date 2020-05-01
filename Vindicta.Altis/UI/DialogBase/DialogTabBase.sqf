@@ -148,7 +148,7 @@ CLASS("DialogTabBase", "")
 			pr _ctrl = _this#0;
 			pr _thisObject = _ctrl getVariable "__tabobject";
 			pr _methodName = _ctrl getVariable "__methodName";
-			CALLM(_thisObject, _methodName, _this);
+			T_CALLM(_methodName, _this);
 		}];
 	} ENDMETHOD;
 
@@ -173,7 +173,7 @@ CLASS("DialogTabBase", "")
 		if (!isNil "_instance") then {
 			if (!IS_NULL_OBJECT(_instance)) then {
 				pr _thisObject = _instance;
-				pr _dialogObj = CALLM0(_thisObject, "getDialogObject");
+				pr _dialogObj = T_CALLM0("getDialogObject");
 				CALLM1(_dialogObj, "setHintText", _text);
 			};
 		};

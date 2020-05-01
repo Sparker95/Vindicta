@@ -12,6 +12,6 @@ _pos - position
 Returns: nil
 */
 
-params [ ["_thisObject", "", [""]], ["_pos", objNull, [objNull, []]]];
+params [P_THISOBJECT, ["_pos", objNull, [objNull, []]]];
 
 _pos inArea T_GETV("border")

@@ -18,6 +18,8 @@
 #define CLASS_NAME "ClientMapUI"
 #define pr private
 
+FIX_LINE_NUMBERS()
+
 /*
 	Class: ClientMapUI
 	Singleton class that performs things related to map user interface
@@ -37,6 +39,9 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("garActionGarRef");
 	VARIABLE("garActionTargetType");
 	VARIABLE("garActionTarget");
+
+	// Temporary flag used to indicate that the map should perform a zoom to last spawn location when it can
+	VARIABLE("doZoom");
 
 	// GarrisonSplitDialog OOP object
 	VARIABLE("garSplitDialog");
@@ -87,7 +92,7 @@ CLASS(CLASS_NAME, "")
 
 	// initialize UI event handlers
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// Markers under cursor
 		T_SETV("markersUnderCursor", []);
@@ -133,7 +138,9 @@ CLASS(CLASS_NAME, "")
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
 		T_SETV("lastRespawnPos", []);
-		T_SETV("lbSelectionIndices", []);  
+		T_SETV("lbSelectionIndices", []);
+
+		T_SETV("doZoom", false);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -183,7 +190,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_MAP"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
@@ -195,7 +202,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_INACTIVE_LIST"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactiveList", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;		
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_BTN_ENDED_LIST"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEndedList", _this); }];
@@ -255,7 +262,7 @@ CLASS(CLASS_NAME, "")
 		// Just a macro to give event handlers to buttons cause I'm LZ AF
 		#define __GAR_ACTION_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garActionLBOnButtonClick", buttonStr); \
+				T_CALLM1("garActionLBOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");				// This text is not displayed
@@ -273,7 +280,7 @@ CLASS(CLASS_NAME, "")
 		// Another lazy macro to give event handlers to buttons
 		#define __GAR_SELECT_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
 				_thisObject = gClientMapUI; \
-				CALLM1(_thisObject, "garSelMenuOnButtonClick", buttonStr); \
+				T_CALLM1("garSelMenuOnButtonClick", buttonStr); \
 			}]
 
 		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_SPLIT, "split");
@@ -294,7 +301,7 @@ CLASS(CLASS_NAME, "")
 		// Give actions to buttons
 		#define __LOC_SELECT_BUTTON_CLICK_EH(className, buttonStr) T_CALLM1("findControl", className) ctrlAddEventHandler ["ButtonClick", { \
 			_thisObject = gClientMapUI; \
-			CALLM1(_thisObject, "locSelMenuOnButtonClick", buttonStr); \
+			T_CALLM1("locSelMenuOnButtonClick", buttonStr); \
 		}]
 
 		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_RECRUIT", "recruit");
@@ -486,6 +493,7 @@ CLASS(CLASS_NAME, "")
 	*/
 
 	#define __MRK_ROUTE "_route_"
+	#define __MRK_LABEL "_label_"
 	#define __MRK_SOURCE "_src"
 	#define __MRK_DEST "_dst"
 
@@ -494,7 +502,7 @@ CLASS(CLASS_NAME, "")
 		Description: Draws a route on the map, for example for attacks, reinforcements...
 	*/
 	STATIC_METHOD("drawRoute") {
-		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]], ["_color", "ColorRed"] ];
+		params [P_THISCLASS, P_ARRAY("_posArray"), P_STRING("_uniqueString"), P_BOOL("_enable"), P_BOOL("_cycle"), P_BOOL("_drawSrcDest"), ["_color", "ColorRed"], P_ARRAY("_labels") ];
 
 		//OOP_INFO_1("DRAW ROUTE: %1", _this);
 
@@ -530,19 +538,36 @@ CLASS(CLASS_NAME, "")
 					_mrk setMarkerColorLocal _color;
 					_mrk setMarkerAlphaLocal 1;
 					_mrk setMarkerTextLocal _text;
-					_markers pushBack _name; 
+					_markers pushBack _name;
 
 				// no need for source marker label, we already see where it starts and ends
 				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_dot", ""], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_dot", "Destination"]];
 			};
 
 			// Draw lines
-			for "_i" from 0 to (_count - 2) do {
-				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
+			for "_i" from 0 to (_count - 1) do {
 				pr _pos0 = _positions#_i;
-				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, _color, 8, _mrkName] call misc_fnc_mapDrawLineLocal;
-				_markers pushBack _mrkName;
+				if(_i < _count - 1) then {
+					pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
+					pr _pos1 = _positions#(_i+1);
+					[_pos0, _pos1, _color, 8, _mrkName] call misc_fnc_mapDrawLineLocal;
+					// count - 3 due to the ordering of the positions (last one is actually starting pos in a cycle)
+					if(_cycle && _i == _count - 3) then {
+						_mrkName setMarkerBrushLocal "Grid";
+						_mrkName setMarkerAlphaLocal 0.7;
+					};
+					_markers pushBack _mrkName;
+				};
+				if(_i < count _labels) then {
+					(_labels#_i) params ["_text", "_color"];
+					pr _mrkName = _uniqueString + __MRK_ROUTE + __MRK_LABEL + (str _i);
+					createMarkerLocal [_mrkName, _pos0];
+					_mrkName setMarkerTypeLocal "mil_dot";
+					_mrkName setMarkerColorLocal _color;
+					_mrkName setMarkerAlphaLocal 1;
+					_mrkName setMarkerTextLocal _text;
+					_markers pushBack _mrkName;
+				};
 			};
 		};
 
@@ -572,7 +597,15 @@ CLASS(CLASS_NAME, "")
 	METHOD("setDescriptionText") {
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _mapDisplay = findDisplay 12;
-		([_mapDisplay, "CMUI_INTEL_DESCRIPTION"] call ui_fnc_findControl) ctrlSetText _text;
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_DESCRIPTION"] call ui_fnc_findControl);
+		pr _pos = ctrlPosition _ctrl;
+		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, 1];
+		pr _finalText = format["<t size='0.8' font='EtelkaMonospacePro' align='left'>%1</t>", _text];
+		pr _parsedText = parseText _finalText;
+		_ctrl ctrlSetStructuredText _parsedText;
+		pr _height = ctrlTextHeight _ctrl;
+		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, _height];
+		_ctrl ctrlCommit 0;
 	} ENDMETHOD;
 
 	/*
@@ -1193,7 +1226,7 @@ CLASS(CLASS_NAME, "")
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetColumnsPos [0, 0.13, 0.35, 0.76];
-		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 
 		// Read some variables...
 		private _showInactive = T_GETV("showIntelInactiveList");
@@ -1277,6 +1310,7 @@ CLASS(CLASS_NAME, "")
 #ifndef _SQF_VM
 					_lnb lnbSetTooltip [[_index, 0], localize "STR_CMUI_INTEL_TOOLTIP"];
 #endif
+					FIX_LINE_NUMBERS()
 
 					// grey if ended
 					switch (_stateStr) do {
@@ -1336,7 +1370,7 @@ CLASS(CLASS_NAME, "")
 					} forEach _lnbIndices;
 
 					// can't show multiple descriptions for intel, need to single select
-					T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT"));
+					T_CALLM1("setDescriptionText", text (localize "STR_CMUI_INTEL_MULTISELECT"));
 
 				} else {
 					pr _intel = _lnb lnbData [_row, 0];
@@ -1346,29 +1380,34 @@ CLASS(CLASS_NAME, "")
 						T_CALLM2("mapShowAllIntel", false, true); // Force hide
 						CALLM1(_intel, "showOnMap", true);
 
-						// find description for this item
+						// Find description for this item
 						pr _shortName = CALLM0(_intel, "getShortName");
 
-						switch (toLower(_shortName)) do {
-							case "attack" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_ATTACK")); };
-							case "construct roadblock" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_RB")); };
-							case "reinforce garrison" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_REINFORCE")); };
-							case "patrol" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_PATROL")); };
-							case "assign new officer" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_OFFICER")); };
-							case "building supplies" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_BUILDING")); };
-							case "ammunition" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_AMMO")); };
-							case "explosives" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_EXPLOSIVES")); };
-							case "medical" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MEDICAL")); };
-							case "miscellaneous" : { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_CONV_MISC")); };
-							default { T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_DEFAULT")); };
+						// Get extra custom info
+						pr _extraInfo = CALLM0(_intel, "getInfo");
+
+						pr _locId = switch (toLower(_shortName)) do {
+							case "attack" : 				{ "STR_CMUI_INTEL_ATTACK" };
+							case "construct roadblock" : 	{ "STR_CMUI_INTEL_RB" };
+							case "reinforce garrison" : 	{ "STR_CMUI_INTEL_REINFORCE" };
+							case "patrol" : 				{ "STR_CMUI_INTEL_PATROL" };
+							case "assign new officer" : 	{ "STR_CMUI_INTEL_OFFICER" };
+							case "building supplies" : 		{ "STR_CMUI_INTEL_CONV_BUILDING" };
+							case "ammunition" : 			{ "STR_CMUI_INTEL_CONV_AMMO" };
+							case "explosives" : 			{ "STR_CMUI_INTEL_CONV_EXPLOSIVES" };
+							case "medical" : 				{ "STR_CMUI_INTEL_CONV_MEDICAL" };
+							case "miscellaneous" : 			{ "STR_CMUI_INTEL_CONV_MISC" };
+							default 						{ "STR_CMUI_INTEL_DEFAULT" };
 						};
+						private _desc = format ["<t color='#AAAAAA'>%1</t><br/>%2", localize _locId, _extraInfo];
+						T_CALLM1("setDescriptionText", _desc);
 					};
 				};
 			} else {
 				T_CALLM0("mapShowAllIntel");
 				// reset selected listbox entries
 				T_SETV("lbSelectionIndices", []);
-				T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT"));
+				T_CALLM1("setDescriptionText", localize "STR_CMUI_INTEL_MULTISELECT");
 			};
 		};
 
@@ -1499,14 +1538,8 @@ CLASS(CLASS_NAME, "")
 		pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 		pr _markersUnderCursor = _garrisonsUnderCursor + _locationsUnderCursor;
-									
 
 		OOP_INFO_1("MARKERS UNDER CURSOR: %1", _markersUnderCursor);
-
-		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
-		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
-		OOP_INFO_1("SELECTED GARRISONS: %1", _selectedGarrisons);
-		OOP_INFO_1("SELECTED LOCATIONS: %1", _selectedLocations);
 
 		// Click anywhere AND givingOrder == true
 		// We want to give a waypoint/order to this garrison
@@ -1581,77 +1614,8 @@ CLASS(CLASS_NAME, "")
 			};
 		};
 
-		if (count _markersUnderCursor == 0) then {
-			// We are definitely not clicking on any map marker
-			T_CALLM0("onMouseClickElsewhere");
-		} else {
-			// Hey we have clicked on something!
-
-			// Disable the garrison action listbox
-			T_CALLM1("garActionMenuEnable", false);
-
-			// Deselect evereything else
-			{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
-			{
-				CALLM1(_x, "select", false);
-				pr _intel = CALLM0(_x, "getIntel");
-				// Disable the circle marker which shows the recruitment radius
-				if (IS_OOP_OBJECT(_intel)) then {
-					if (GETV(_intel, "side") == playerSide) then {
-						CALLM1(_x, "setAccuracyRadius", 0);
-					};
-				};
-			} forEach _selectedLocations;
-
-			// Let's select it
-			{ CALLM1(_x, "select", true); } forEach _markersUnderCursor;
-
-			// If there is any garrison under cursor
-			if (count _garrisonsUnderCursor > 0) then {
-				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-				T_CALLM1("garSelMenuSetGarRecord", _garRecord);
-				T_CALLM1("garSelMenuEnable", true);
-			};
-
-			// If there is any location under cursor
-			if (count _locationsUnderCursor > 0) then {
-				pr _locIntel = CALLM0(_locationsUnderCursor#0, "getIntel");
-				if (GETV(_locIntel, "side") == playerSide) then { // We can only perform things on a friendly location
-					T_CALLM1("locSelMenuSetLocation", GETV(_locIntel, "location"));
-					T_CALLM1("locSelMenuEnable", true);
-					pr _radius = CALLM0(gGameMode, "getRecruitmentRadius");
-					CALLM1(_locationsUnderCursor#0, "setAccuracyRadius", _radius);
-				};
-			};
-
-			//Decide what to do with the panel on the right
-			if (count _garrisonsUnderCursor == 1 && count _locationsUnderCursor == 1) then {
-				// If we have selected both a garrison and a location
-				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-				pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-				T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR]);
-				T_CALLM1("intelPanelUpdateFromGarrisonRecord", _garRecord);
-				//T_CALLM1("intelPanelShowButtons", false);
-			} else {
-				// If one garrison was clicked, update the panel from its record
-				if (count _garrisonsUnderCursor == 1) then {
-					pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, [INTEL_PANEL_CLEAR]); // clear
-					//T_CALLM1("intelPanelShowButtons", false);
-				} else {
-					// If one location was clicked, update panel from the location intel
-					if (count _locationsUnderCursor == 1) then {
-						pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]);
-						//T_CALLM1("intelPanelShowButtons", false);
-					};
-				};
-			};
-		};
-
-		T_SETV("selectedGarrisonMarkers", _garrisonsUnderCursor);
-		T_SETV("selectedLocationMarkers", _locationsUnderCursor);
-		T_CALLM0("updateHintTextFromContext");
+		// Hey we have clicked on something!
+		T_CALLM2("_select", _garrisonsUnderCursor, _locationsUnderCursor);
 
 		// Launch snek
 		pr _posWorld = _displayorcontrol posScreenToWorld [_xPos, _yPos];
@@ -1665,12 +1629,86 @@ CLASS(CLASS_NAME, "")
 
 	} ENDMETHOD;
 
+	METHOD("_select") {
+		params [P_THISOBJECT, P_ARRAY("_garrisonsUnderCursor"), P_ARRAY("_locationsUnderCursor")];
+		
+		// Disable the garrison action listbox
+		T_CALLM1("garActionMenuEnable", false);
 
+		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
+		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
+
+		// Deselect evereything else
+		{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
+		{
+			CALLM1(_x, "select", false);
+			pr _intel = CALLM0(_x, "getIntel");
+			// Disable the circle marker which shows the recruitment radius
+			if (IS_OOP_OBJECT(_intel)) then {
+				if (GETV(_intel, "side") == playerSide) then {
+					CALLM1(_x, "setAccuracyRadius", 0);
+				};
+			};
+		} forEach _selectedLocations;
+
+		// Let's select it
+		{ CALLM1(_x, "select", true); } forEach _markersUnderCursor;
+
+		// If there is any garrison under cursor
+		if (count _garrisonsUnderCursor > 0) then {
+			pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+			T_CALLM1("garSelMenuSetGarRecord", _garRecord);
+			T_CALLM1("garSelMenuEnable", true);
+		};
+
+		// If there is any location under cursor
+		if (count _locationsUnderCursor > 0) then {
+			pr _locIntel = CALLM0(_locationsUnderCursor#0, "getIntel");
+			if (GETV(_locIntel, "side") == playerSide) then { // We can only perform things on a friendly location
+				T_CALLM1("locSelMenuSetLocation", GETV(_locIntel, "location"));
+				T_CALLM1("locSelMenuEnable", true);
+				pr _radius = CALLM0(gGameMode, "getRecruitmentRadius");
+				CALLM1(_locationsUnderCursor#0, "setAccuracyRadius", _radius);
+			};
+		};
+
+		//Decide what to do with the panel on the right
+		if (count _garrisonsUnderCursor == 1 && count _locationsUnderCursor == 1) then {
+			// If we have selected both a garrison and a location
+			pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+			pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
+			T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR]);
+			T_CALLM1("intelPanelUpdateFromGarrisonRecord", _garRecord);
+			//T_CALLM1("intelPanelShowButtons", false);
+		} else {
+			// If one garrison was clicked, update the panel from its record
+			if (count _garrisonsUnderCursor == 1) then {
+				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, [INTEL_PANEL_CLEAR]); // clear
+				//T_CALLM1("intelPanelShowButtons", false);
+			} else {
+				// If one location was clicked, update panel from the location intel
+				if (count _locationsUnderCursor == 1) then {
+					pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
+					T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]);
+					//T_CALLM1("intelPanelShowButtons", false);
+				};
+			};
+		};
+		
+		T_SETV("selectedGarrisonMarkers", _garrisonsUnderCursor);
+		T_SETV("selectedLocationMarkers", _locationsUnderCursor);
+		T_CALLM0("updateHintTextFromContext");
+
+		if (count _garrisonsUnderCursor == 0 && count _locationsUnderCursor == 0) then {
+			T_CALLM0("showGlobalIntel");
+		};
+	} ENDMETHOD;
+	
 	/*
-		Method: onMouseClickElsewhere
-		Description: Gets called when user clicks on the map not on a marker.
+		Method: showGlobalIntel
 	*/
-	METHOD("onMouseClickElsewhere") {
+	METHOD("showGlobalIntel") {
 		params [P_THISOBJECT];
 
 		// set text on sorting buttons
@@ -1684,7 +1722,7 @@ CLASS(CLASS_NAME, "")
 
 		// reset selected listbox entries
 		T_SETV("lbSelectionIndices", []);
-		T_CALLM1("setDescriptionText", (localize "STR_CMUI_INTEL_MULTISELECT")); // reset intel description panel
+		T_CALLM1("setDescriptionText", localize "STR_CMUI_INTEL_MULTISELECT"); // reset intel description panel
 
 		// Disable the garrison action listbox
 		T_CALLM1("garActionMenuEnable", false);
@@ -1694,21 +1732,6 @@ CLASS(CLASS_NAME, "")
 
 		// Disable the selected location menu
 		T_CALLM1("locSelMenuEnable", false);
-
-		// Deselect evereything
-		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
-		{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
-		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
-		{
-			CALLM1(_x, "select", false);
-			pr _intel = CALLM0(_x, "getIntel");
-			// Disable the circle marker which shows the recruitment radius
-			if (IS_OOP_OBJECT(_intel)) then {
-				if (GETV(_intel, "side") == playerSide) then {
-					CALLM1(_x, "setAccuracyRadius", 0);
-				};
-			};
-		} forEach _selectedLocations;
 
 		// Clear the intel panel
 		//T_CALLM0("intelPanelClear");
@@ -1764,18 +1787,6 @@ CLASS(CLASS_NAME, "")
 	METHOD("onMouseButtonClick") {
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-	} ENDMETHOD;
-
-
-	/*
-		Method: onButtonDownCreateCamp
-		Description: Creates a camp at the current location if the button is enabled.
-
-		No parameters
-	*/
-	STATIC_METHOD("onButtonDownCreateCamp") {
-		params ["_thisClass"];
-		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [getPos player], 2, false);
 	} ENDMETHOD;
 
 	// Common code for all 'checkboxes' in this UI
@@ -1962,7 +1973,7 @@ CLASS(CLASS_NAME, "")
 		pr _mapDisplay = findDisplay 12;
 
 		// Reset the map UI to default state
-		T_CALLM0("onMouseClickElsewhere");
+		T_CALLM0("showGlobalIntel");
 	} ENDMETHOD;
 
 	// Not used now
@@ -2142,11 +2153,11 @@ CLASS(CLASS_NAME, "")
 			// If the action LB is shown, we will be pointing at its position
 			if (T_GETV("garActionLBShown")) then {
 				pr _posEndWorld = T_GETV("garActionPos");
-				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]];
 			} else {
 				pr _posEndScreen = getMousePosition;
 				pr _posEndWorld = _ctrl posScreenToWorld _posEndScreen;
-				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]];
 			};
 		};
 	} ENDMETHOD;
@@ -2168,24 +2179,14 @@ CLASS(CLASS_NAME, "")
 
 		// Might not be loaded yet
 		if(!isNil "gGameModeServer") then {
+
 			// Request update on players restore point from server
 			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
 
-			private _lastRespawnPos = T_GETV("lastRespawnPos");
-			if(_lastRespawnPos isEqualTo []) then {
-				private _locs = CALLSM0("Location", "getAll");
-				private _locIdx = _locs  findIf { CALLM0(_x, "getType") == LOCATION_TYPE_RESPAWN };
-				if(_locIdx == NOT_FOUND) then {
-					private _loc = _locs#_locIdx;
-					_lastRespawnPos = CALLM0(_loc, "getPos");
-				} else {
-					_lastRespawnPos = [worldSize / 2, worldSize / 2, 0];
-				}
-			};
-			mapAnimAdd [1, 0.1, _lastRespawnPos];
 		};
 
 		T_SETV("respawnPanelEnabled", _enable);
+		T_SETV("doZoom", _enable);
 	} ENDMETHOD;
 
 	METHOD("respawnPanelEnabled") {
@@ -2256,11 +2257,34 @@ CLASS(CLASS_NAME, "")
 		params [P_THISOBJECT];
 
 		if (T_GETV("respawnPanelEnabled")) then {
+			pr _canRestore = !isNil "gPlayerRestoreData" && {!(gPlayerRestoreData isEqualTo [])};
+
+			if(T_GETV("doZoom") && visibleMap) then {
+				private _zoomPos = if(_canRestore) then { gPlayerRestoreData#2 } else { T_GETV("lastRespawnPos") };
+				if(_zoomPos isEqualTo []) then {
+					private _locMarkers = GETSV("MapMarkerLocation", "all");
+					//private _locs = CALLSM0("Location", "getAll");
+					private _locIdx = _locMarkers findIf { GETV(_x, "type") == LOCATION_TYPE_RESPAWN };
+					if(_locIdx != NOT_FOUND) then {
+						private _locMarker = _locMarkers#_locIdx;
+						CALLM0(_locMarker, "select");
+						_zoomPos = GETV(_locMarker, "pos");
+						// If we do this it overwrites the player restore position, as restore data is not available straight away
+						// Perhaps set restore data should clear selected marker?
+						//T_CALLM2("_select", [], [_locMarker]);
+					};
+				};
+
+				if !(_zoomPos isEqualTo []) then {
+					mapAnimAdd [0.1, 0.05, _zoomPos];
+					mapAnimCommit;
+					T_SETV("doZoom", false);
+				};
+			};
 			pr _locMarkers = T_GETV("selectedLocationMarkers");
 
 			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
 			
-			pr _canRestore = !isNil "gPlayerRestoreData" && {!(gPlayerRestoreData isEqualTo [])};
 
 			if(_canRestore) then {
 				_ctrlButton ctrlSetText "RESTORE";
@@ -2273,7 +2297,6 @@ CLASS(CLASS_NAME, "")
 				T_CALLM1("respawnPanelSetText", "You can not respawn because the game mode is not initialized yet.");
 				_ctrlButton ctrlEnable false;
 			};
-
 
 			// Bail if no markers are selected
 			if (!_canRestore && count _locMarkers != 1) exitWith {
@@ -2301,7 +2324,6 @@ CLASS(CLASS_NAME, "")
 				};
 
 				// Check if there are enemies occupying this place, etc...
-
 				pr _enemySides = [EAST, WEST, INDEPENDENT] - [playerSide];
 
 				// Check enemies in area
@@ -2364,7 +2386,7 @@ CLASS(CLASS_NAME, "")
 			pr _state = selectRandom [INTEL_ACTION_STATE_ACTIVE, INTEL_ACTION_STATE_INACTIVE, INTEL_ACTION_STATE_END];
 			SETV(_intel, "state", _state);
 			_allIntels pushBack _intel;
-			_i = _i + 1;m
+			_i = _i + 1;
 		};
 
 		{

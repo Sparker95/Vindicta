@@ -13,11 +13,13 @@ _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf"
 this addGoggles _RandomGoggles;
 this forceAddUniform "rhs_uniform_gorka_1_a";
 this addVest "FGN_AAF_CIRAS_MM";
+this addBackpack "B_Messenger_Coyote_F";
 
-this addWeapon "rhs_weap_SCARH_FDE_LB";
-this addPrimaryWeaponItem "rhsgref_sdn6_suppressor";
-this addPrimaryWeaponItem "rhsusf_acc_M8541_mrds";
-this addPrimaryWeaponItem "rhs_mag_20Rnd_SCAR_762x51_m80a1_epr";
+this addWeapon "rhs_weap_sr25";
+this addPrimaryWeaponItem "rhsusf_acc_SR25S";
+this addPrimaryWeaponItem "rhsusf_acc_M8541";
+this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_SR25_m118_special_Mag";
 this addPrimaryWeaponItem "rhsusf_acc_harris_bipod";
 this addWeapon "rhsusf_weap_glock17g4";
 this addHandgunItem "rhsusf_acc_omega9k";
@@ -26,10 +28,13 @@ this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "optic_NVS";
-for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_mk3a2";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
 this addItemToVest "I_IR_Grenade";
-for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_20Rnd_SCAR_762x51_m80a1_epr";};
-for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
+for "_i" from 1 to 6 do {this addItemToVest "rhsusf_20Rnd_762x51_SR25_m118_special_Mag";};
+this addItemToBackpack "rhsusf_acc_premier_anpvs27";
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_mk3a2";};
+for "_i" from 1 to 2 do {this addItemToBackpack "rhsusf_20Rnd_762x51_SR25_m62_Mag";};
+for "_i" from 1 to 2 do {this addItemToBackpack "rhsusf_20Rnd_762x51_SR25_m993_Mag";};
 this linkItem "ItemWatch";
+this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";

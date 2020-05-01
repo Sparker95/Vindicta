@@ -9,7 +9,7 @@ Method: handleMessage
 Checks spawn conditions of this location. Spawns garrisons if needed.
 */
 
-params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+params [P_THISOBJECT, P_ARRAY("_msg") ];
 
 private _msgType = _msg select MESSAGE_ID_TYPE;
 
@@ -17,9 +17,9 @@ private _msgType = _msg select MESSAGE_ID_TYPE;
 
 switch (_msgType) do {
 	case LOCATION_MESSAGE_PROCESS: {
-		//diag_log format ["[Location] Info: process %1", GET_VAR(_thisObject, "name")];
+		//diag_log format ["[Location] Info: process %1", T_GETV("name")];
 
-		CALLM0(_thisObject, "process");
+		T_CALLM0("process");
 
 	}; // case LOCATION_MESSAGE_PROCESS
 }; // switch msg type

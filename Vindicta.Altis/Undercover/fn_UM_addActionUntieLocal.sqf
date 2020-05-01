@@ -17,7 +17,7 @@
 */
 
 
-params [["_unit", objNull, [objNull]]];
+params [P_OBJECT("_unit")];
 
 [ 
 	_unit,
@@ -34,7 +34,7 @@ params [["_unit", objNull, [objNull]]];
 	},
 	{ // code when finished
 		params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
-		REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "setUnitFree", [_target], _target, false);	
+		REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "setUnitFree", [_target], _target, false);
 	},
 	{}, 
 	[],

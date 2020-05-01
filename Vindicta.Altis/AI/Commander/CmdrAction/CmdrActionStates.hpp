@@ -81,6 +81,8 @@
 // When a garrison should merge with the target
 #define CMDR_ACTION_STATE_MERGE								(CMDR_ACTION_STATE_CUSTOM+17)
 
+// Wait for next depart time
+#define CMDR_ACTION_STATE_WAIT_TO_DEPART					(CMDR_ACTION_STATE_CUSTOM+18)
 // ActionStateTransition priority values. Potential ASTs are sorted by the priority levels in 
 // ascending order and the first valid one is used. You can use any value for priority
 // these just define some reasonable defaults.

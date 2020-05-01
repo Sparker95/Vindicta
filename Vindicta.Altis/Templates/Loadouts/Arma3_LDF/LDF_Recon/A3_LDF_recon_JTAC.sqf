@@ -44,3 +44,5 @@ this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "NVGogglesB_blk_F";
 this linkItem "Laserdesignator_01_khk_F";
+
+[this,"EAF_5thRegiment"] call BIS_fnc_setUnitInsignia;

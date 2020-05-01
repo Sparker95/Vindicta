@@ -16,7 +16,7 @@ Singleton class that performs things related to player list interface
 CLASS(CLASS_NAME, "")
 
 	STATIC_METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		private _mapDisplay = findDisplay 12;
 
 		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseButtonDown", { CALLSM0(CLASS_NAME, "PlayerListMouseButtonDown") }];

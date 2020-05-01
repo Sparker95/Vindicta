@@ -13,13 +13,13 @@ Updated: March 2020 by Marvis
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									
+_array set [T_SIZE-1, nil];
 
-_array set [T_NAME, "tNATO"]; // 							Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla NATO."]; // 			Template display description
-_array set [T_DISPLAY_NAME, "Arma 3 NATO"]; // 				Template display name
-_array set [T_FACTION, T_FACTION_military]; // 				Faction type: police, T_FACTION_military, T_FACTION_Police
-_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 	Addons required to play this template
+_array set [T_NAME, "tNATO"]; // 														Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "Vanilla North Atlantic Treaty Organization."]; // 			Template display description
+_array set [T_DISPLAY_NAME, "Arma 3 NATO"]; // 											Template display name
+_array set [T_FACTION, T_FACTION_military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 								Addons required to play this template
 
 
 /* Infantry unit classes */
@@ -31,19 +31,19 @@ _inf set [T_INF_SL, ["B_Soldier_SL_F"]]; // = 1
 _inf set [T_INF_TL, ["B_Soldier_TL_F"]]; // = 2
 _inf set [T_INF_officer, ["B_officer_F"]]; // = 3
 _inf set [T_INF_GL, ["B_Soldier_GL_F"]]; // = 4
-_inf set [T_INF_rifleman, ["B_Soldier_F"]]; // = 5
-_inf set [T_INF_marksman, ["B_soldier_M_F"]]; // = 6
-_inf set [T_INF_sniper, ["B_Sharpshooter_F"]]; // = 7
-_inf set [T_INF_spotter, ["B_Soldier_lite_F"]]; // = 8
-_inf set [T_INF_exp, ["B_soldier_exp_F"]]; // = 9
+_inf set [T_INF_rifleman, ["B_Soldier_F", "B_Soldier_lite_F"]]; // = 5
+_inf set [T_INF_marksman, ["B_soldier_M_F", "B_Sharpshooter_F"]]; // = 6
+_inf set [T_INF_sniper, ["B_ghillie_lsh_F"]]; // = 7
+_inf set [T_INF_spotter, ["B_spotter_F"]]; // = 8
+_inf set [T_INF_exp, ["B_soldier_exp_F", "B_soldier_mine_F"]]; // = 9
 _inf set [T_INF_ammo, ["B_Soldier_A_F"]]; // = 10
 _inf set [T_INF_LAT, ["B_soldier_LAT2_F"]]; // = 11
-_inf set [T_INF_AT, ["B_soldier_LAT_F"]]; // = 12
+_inf set [T_INF_AT, ["B_soldier_LAT_F", "B_soldier_AT_F"]]; // = 12
 _inf set [T_INF_AA, ["B_soldier_AA_F"]]; // = 13
 _inf set [T_INF_LMG, ["B_soldier_AR_F"]]; // = 14
 _inf set [T_INF_HMG, ["B_HeavyGunner_F"]]; // = 15
 _inf set [T_INF_medic, ["B_medic_F"]]; // = 16
-_inf set [T_INF_engineer, ["B_engineer_F"]]; // = 17 
+_inf set [T_INF_engineer, ["B_engineer_F", "B_soldier_repair_F"]]; // = 17 
 _inf set [T_INF_crew, ["B_crew_F"]]; // = 18
 _inf set [T_INF_crew_heli, ["B_helicrew_F"]]; // = 19
 _inf set [T_INF_pilot, ["B_Fighter_Pilot_F"]]; // = 20
@@ -56,7 +56,7 @@ _inf set [T_INF_recon_rifleman, ["B_recon_F"]]; // = 25
 _inf set [T_INF_recon_medic, ["B_recon_medic_F"]]; // = 26
 _inf set [T_INF_recon_exp, ["B_recon_exp_F"]]; // = 27
 _inf set [T_INF_recon_LAT, ["B_recon_LAT_F"]]; // = 28
-_inf set [T_INF_recon_marksman, ["B_recon_M_F"]]; // = 29
+_inf set [T_INF_recon_marksman, ["B_recon_M_F", "B_Recon_Sharpshooter_F"]]; // = 29
 _inf set [T_INF_recon_JTAC, ["B_recon_JTAC_F"]]; // = 30
 /* Diver unit classes */
 _inf set [T_INF_diver_TL, ["B_diver_TL_F"]]; // = 31
@@ -67,16 +67,16 @@ _inf set [T_INF_diver_exp, ["B_diver_exp_F"]]; // = 33
 /* Vehicle classes */
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, ["B_MRAP_01_F"]]; // = 0 Default if nothing found
+_veh set [T_VEH_DEFAULT, ["B_LSV_01_unarmed_F"]]; // = 0 Default if nothing found
 
-_veh set [T_VEH_car_unarmed, ["B_MRAP_01_F"]]; // = 1 – REQUIRED
-_veh set [T_VEH_car_armed, ["B_MRAP_01_hmg_F"]]; // = 2
+_veh set [T_VEH_car_unarmed, ["B_LSV_01_unarmed_F"]]; // = 1 – REQUIRED
+_veh set [T_VEH_car_armed, ["B_LSV_01_AT_F", "B_LSV_01_armed_F"]]; // = 2
 _veh set [T_VEH_MRAP_unarmed, ["B_MRAP_01_F"]]; // = 3 – REQUIRED
 _veh set [T_VEH_MRAP_HMG, ["B_MRAP_01_hmg_F"]]; // = 4 – REQUIRED
 _veh set [T_VEH_MRAP_GMG, ["B_MRAP_01_gmg_F"]]; // = 5 – REQUIRED
-_veh set [T_VEH_IFV, ["B_APC_Wheeled_01_cannon_F"]]; // = 6 – REQUIRED
+_veh set [T_VEH_IFV, ["B_APC_Wheeled_01_cannon_F", "B_APC_Tracked_01_CRV_F"]]; // = 6 – REQUIRED
 _veh set [T_VEH_APC, ["B_APC_Tracked_01_rcws_F"]]; // = 7 – REQUIRED
-_veh set [T_VEH_MBT, ["B_MBT_01_cannon_F", "B_MBT_01_TUSK_F"]]; // = 8 – REQUIRED
+_veh set [T_VEH_MBT, ["B_MBT_01_cannon_F", "B_MBT_01_TUSK_F", "B_AFV_Wheeled_01_cannon_F", "B_AFV_Wheeled_01_up_cannon_F"]]; // = 8 – REQUIRED
 _veh set [T_VEH_MRLS, ["B_MBT_01_mlrs_F"]]; // = 9
 _veh set [T_VEH_SPA, ["B_MBT_01_arty_F"]]; // = 10
 _veh set [T_VEH_SPAA, ["B_APC_Tracked_01_AA_F"]]; // = 11
@@ -85,7 +85,7 @@ _veh set [T_VEH_stat_GMG_high, ["B_GMG_01_high_F"]]; // = 13 – Replaced by T_V
 _veh set [T_VEH_stat_HMG_low, ["B_HMG_01_F"]]; // = 14
 _veh set [T_VEH_stat_GMG_low, ["B_GMG_01_F"]]; // = 15
 _veh set [T_VEH_stat_AA, ["B_static_AA_F"]]; // = 16
-_veh set [T_VEH_stat_AT, ["B_static_AT_F"]]; // = 17
+_veh set [T_VEH_stat_AT, ["B_static_AT_F", "ace_dragon_staticAssembled"]]; // = 17
 _veh set [T_VEH_stat_mortar_light, ["B_Mortar_01_F"]]; // = 18 - REQUIRED
 //_veh set [T_VEH_stat_mortar_heavy, ["B_Mortar_01_F"]]; // = 19 – UNUSED
 _veh set [T_VEH_heli_light, ["B_Heli_Light_01_F"]]; // = 20
@@ -217,8 +217,8 @@ _group = +(tDefault select T_GROUP);
 //(T_NAMES select T_VEH) set [T_VEH_SPAA, "Self-Propelled Anti-Aircraft"]; //		= 11 Self-Propelled Anti-Aircraft system
 //(T_NAMES select T_VEH) set [T_VEH_stat_HMG_high, "Static HMG"]; //				= 12 Static tripod Heavy Machine Gun (elevated)
 //(T_NAMES select T_VEH) set [T_VEH_stat_GMG_high, "Static GMG"]; // 				= 13 Static tripod Grenade Machine Gun (elevated)
-//(T_NAMES select T_VEH) set [T_VEH_stat_HMG_low, "Static HMG"]; //						= 14 Static tripod Heavy Machine Gun
-//(T_NAMES select T_VEH) set [T_VEH_stat_GMG_low, "Static GMG"]; //						= 15 Static tripod Grenade Machine Gun
+//(T_NAMES select T_VEH) set [T_VEH_stat_HMG_low, "Static HMG"]; //					= 14 Static tripod Heavy Machine Gun
+//(T_NAMES select T_VEH) set [T_VEH_stat_GMG_low, "Static GMG"]; //					= 15 Static tripod Grenade Machine Gun
 //(T_NAMES select T_VEH) set [T_VEH_stat_AA, "Static AA"]; //						= 16 Static AA, can be a gun or guided-missile launcher
 //(T_NAMES select T_VEH) set [T_VEH_stat_AT, "Static AT"]; //						= 17 Static AT, e.g. a gun or ATGM
 //(T_NAMES select T_VEH) set [T_VEH_stat_mortar_light, "Static Mortar"]; // 		= 18 Light mortar

@@ -4,7 +4,7 @@ class CfgVehicles {
 
 	class Vindicta_LocationSector: Module_F
 	{
-		scope = 2; 
+		scope = 2;
         vehicleClass = "Modules";
 		displayName = "Location Sector";
 		category = "vindicta";
@@ -35,7 +35,7 @@ class CfgVehicles {
 			class Side: Combo
   			{
 				property = "Vindicta_LocationSector_side";
-				displayName = "Side"; 
+				displayName = "Side";
 				tooltip = "Side of the location (city, base, outpost ...)";
 				typeName = "STRING";
 				value = "east";
@@ -52,8 +52,8 @@ class CfgVehicles {
   			{
 				property = "Vindicta_LocationSector_type";
 				displayName = "Type";
-				tooltip = "Type of the location (city, base, outpost ...)"; 
-				typeName = "STRING"; 
+				tooltip = "Type of the location (city, base, outpost ...)";
+				typeName = "STRING";
 				value = "city";
 				defaultValue = "city";
 				class Values

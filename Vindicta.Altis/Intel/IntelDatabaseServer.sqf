@@ -64,7 +64,7 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "removeIntelClient", [_item], _side, false); // Broadcast without JIP
 
 			// Remove it from JIP queue
-			remoteExec ["", _item]; 
+			remoteExec ["", _item];
 		};
 	} ENDMETHOD;
 

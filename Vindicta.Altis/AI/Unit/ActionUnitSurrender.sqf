@@ -10,13 +10,7 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 		
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
-
-		// Handle AI just spawned state
-		pr _AI = T_GETV("AI");
-		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
+		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
 		_hO spawn{
@@ -35,14 +29,14 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 	
 	// logic to run each update-step
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
-		CALLM0(_thisObject, "activateIfInactive");
+		params [P_THISOBJECT];
+		T_CALLM0("activateIfInactive");
 		
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 
 	METHOD("terminate") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		// TODO: when side system will be done need to check if unit is friendly or ennemy
 		private _hO = T_GETV("hO");

@@ -20,7 +20,7 @@ Builds this location depending on its type
 
 #define pr private
 
-params ["_thisObject"];
+params [P_THISOBJECT];
 
 if (T_GETV("isBuilt")) exitWith {};
 
@@ -105,7 +105,7 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 	} forEach _objects;
 
 	// The End!
-	SET_VAR_PUBLIC(_thisObject, "isBuilt", true);
+	T_SETV_PUBLIC("isBuilt", true);
 };
 
 // OOP_ERROR_1("Build method is not implemented for location type: %1", T_GETV("type"));

@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 /*
 Class: GarrisonServer
 Singleton server-only class.
@@ -48,10 +48,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		_msg set [MESSAGE_ID_SOURCE, ""];
 		_msg set [MESSAGE_ID_DATA, []];
 		_msg set [MESSAGE_ID_TYPE, "process"];
-		pr _processInterval = 1;
+		pr _processInterval = 2;
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
-		SETV(_thisObject, "timer", _timer);
+		T_SETV("timer", _timer);
 
 		if (!isNil {GETSV("GarrisonServer", "instance")}) then {
 			OOP_ERROR_1("Multiple instances of GarrisonServer are not allowed! %1", _thisObject);
@@ -115,12 +115,14 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			#ifdef _SQF_VM
 			if (_index != -1) then {
 			#endif
+			FIX_LINE_NUMBERS()
 
 			_objects deleteAt _index;
 
 			#ifdef _SQF_VM
 			};
 			#endif
+			FIX_LINE_NUMBERS()
 
 			// Unref if we have ever referenced it
 			if (_index != -1) then {
@@ -168,10 +170,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	// Marks the garrison requiring an update broadcast
 	METHOD("onGarrisonOutdated") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
-
-		// Check if it's registered here
-		if (GETV(_gar, "regAtServer")) then {
-			T_GETV("outdatedObjects") pushBackUnique _gar;
+		CRITICAL_SECTION {
+			// Check if it's registered here
+			if (GETV(_gar, "regAtServer")) then {
+				T_GETV("outdatedObjects") pushBackUnique _gar;
+			};
 		};
 	} ENDMETHOD;
 
@@ -189,6 +192,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		#else
 		_outdatedObjects deleteAt _index;
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -230,7 +234,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		if (_className == "") exitWith { // Bail if data is incorrect
 			OOP_ERROR_1("BuildFromGarrison: class name is empty. _this: %1", _this);
 		};
-		pr _cost = getNumber (_objClass >> "buildResource");		
+		pr _cost = getNumber (_objClass >> "buildResource");
 		pr _catID = getNumber (_objClass >> "templateCatID");
 		pr _subcatID = getNumber (_objClass >> "templateSubcatID");
 		pr _isRadio = [false, true] select (getNumber (_objClass >> "isRadio"));
@@ -329,7 +333,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			// drop arsenal from some height, safeguard against ground collision that destroys it
 			pr _adjustedPos = [_pos select 0, _pos select 1, ((_pos select 2) + 0.3)];
 			_object setPos _adjustedPos;
-			_object setVectorDirAndUp [_vecDir, _surfaceVectorUp];	
+			_object setVectorDirAndUp [_vecDir, _surfaceVectorUp];
 			_object hideObjectGlobal false;
 		};
 
@@ -413,16 +417,17 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Create a group or pick an existing one
 		pr _groupToJoin = "";
-		pr _groups = CALLM0(_gar, "getGroups") select {(CALLM0(_x, "getType") == GROUP_TYPE_IDLE) && ((count CALLM0(_x, "getUnits")) < 5)};
+		pr _groups = CALLM0(_gar, "getGroups") select {(CALLM0(_x, "getType") == GROUP_TYPE_INF) && ((count CALLM0(_x, "getUnits")) < 5)};
 		if (count _groups != 0) then {
 			_groupToJoin = _groups#0;
 		};
 
-		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 
 		// Create a unit
-		pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
-		// ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
+		private _template = CALLM1(gGameMode, "getTemplate", civilian);
+		//pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
+		// P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull]];
 		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _weapons];
 		pr _unit = NEW("Unit", _args);
 

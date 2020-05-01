@@ -55,11 +55,3 @@
 #define MESSAGE_SET_TYPE(msg, val) msg set [MESSAGE_ID_TYPE, val]
 // Macro: MESSAGE_SET_DATA(msg, val)
 #define MESSAGE_SET_DATA(msg, val) msg set [MESSAGE_ID_DATA, val]
-
-// /*
-// Code to set all parameters:
-// _msg set [MESSAGE_ID_DESTINATION, ...];
-// _msg set [MESSAGE_ID_SOURCE, ""];
-// _msg set [MESSAGE_ID_DATA, ...];
-// _msg set [MESSAGE_ID_TYPE, ...];
-// */

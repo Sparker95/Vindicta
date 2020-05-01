@@ -21,7 +21,7 @@ pr _pylonRun = 1;
 		{
 			if ((_x select 0) isEqualTo _turretPath && (_x select 2) isEqualTo _magClass) then
 			{
-				_tempAmmo = (_x select 3); 
+				_tempAmmo = (_x select 3);
 				_x set [3, (_tempAmmo + _ammoCount)];
 				_inserted = true;
 			};

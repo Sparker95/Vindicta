@@ -12,7 +12,7 @@ Updated: March 2020 by Marvis
 
 _array = [];
 
-_array set [T_SIZE-1, nil];									
+_array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tRHS_AAF_2020"]; // 							Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Altis Armed Forces units. 2020 variant. Uses RHS and AAF2017."]; // 			Template display description
@@ -31,8 +31,8 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_default, ["FGN_AAF_Inf_Rifleman"]];
 
-_inf set [T_INF_SL, ["RHS_AAF_2020_SL"]]; // = 1
-_inf set [T_INF_TL, ["RHS_AAF_2020_TL"]]; // = 2
+_inf set [T_INF_SL, ["RHS_AAF_2020_SL", "RHS_AAF_2020_SL_2"]]; // = 1
+_inf set [T_INF_TL, ["RHS_AAF_2020_TL", "RHS_AAF_2020_TL_2"]]; // = 2
 _inf set [T_INF_officer, ["RHS_AAF_2020_officer"]]; // = 3
 _inf set [T_INF_GL, ["RHS_AAF_2020_grenadier"]]; // = 4
 _inf set [T_INF_rifleman, ["RHS_AAF_2020_rifleman"]]; // = 5
@@ -84,9 +84,9 @@ _veh set [T_VEH_MBT, ["rhs_t90sm_tv", "rhs_t90am_tv", "rhssaf_army_t72s"]]; // =
 _veh set [T_VEH_MRLS, ["FGN_AAF_BM21"]]; // = 9
 _veh set [T_VEH_SPA, ["rhs_2s1_tv", "rhs_2s3_tv"]]; // = 10
 _veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]]; // = 11
-_veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]]; // = 12 – REQUIRED
+_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]]; // = 12 – REQUIRED
 //_veh set [T_VEH_stat_GMG_high, []]; // = 13 – Replaced by T_VEH_stat_HMG_high if not set
-_veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_D"]]; // = 14
+_veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]]; // = 14
 _veh set [T_VEH_stat_GMG_low, ["RHS_MK19_TriPod_D", "rhsgref_ins_g_SPG9M"]]; // = 15
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]]; // = 16
 _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_D"]]; // = 17
@@ -105,7 +105,7 @@ _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F
 _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]]; // = 30
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]]; // = 31
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Zamak_Open", "FGN_AAF_Zamak"]]; // = 32 – REQUIRED
-//_veh set [T_VEH_truck_cargo, ["B_Truck_01_transport_F"]]; // = 33
+_veh set [T_VEH_truck_cargo, ["rhs_kamaz5350_flatbed_msv", "rhs_kamaz5350_flatbed_cover_msv"]]; // = 33
 _veh set [T_VEH_truck_ammo, ["FGN_AAF_Zamak_Repair"]]; // = 34 – REQUIRED
 _veh set [T_VEH_truck_repair, ["FGN_AAF_Zamak_Repair"]]; // = 35
 _veh set [T_VEH_truck_medical , ["FGN_AAF_Zamak_Medic", "rhsusf_m113d_usarmy_medical"]]; // = 36

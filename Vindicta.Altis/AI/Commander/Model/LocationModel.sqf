@@ -41,7 +41,7 @@ CLASS("LocationModel", "ModelBase")
 		if(T_CALLM("isActual", [])) then {
 			// We initialize some variables only once to avoid wasting time
 			//  on each update because they never change
-			T_SETV("pos", CALLM(_actual, "getPos", []));
+			T_SETV("pos", CALLM0(_actual, "getPos"));
 			T_SETV("type", GETV(_actual, "type"));
 			private _radius = GETV(_actual, "boundingRadius");
 			T_SETV("radius", _radius);
@@ -64,7 +64,7 @@ CLASS("LocationModel", "ModelBase")
 
 		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 
-		T_PRVAR(actual);
+		private _actual = T_GETV("actual");
 		private _copy = NEW("LocationModel", [_targetWorldModel ARG _actual]);
 
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
@@ -92,7 +92,7 @@ CLASS("LocationModel", "ModelBase")
 
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 
-		T_PRVAR(actual);
+		private _actual = T_GETV("actual");
 		
 		ASSERT_OBJECT_CLASS(_actual, "Location");
 
@@ -101,9 +101,9 @@ CLASS("LocationModel", "ModelBase")
 		private _side = GETV(_actual, "side");
 		T_SETV("side", _side);
 
-		T_PRVAR(world);
+		private _world = T_GETV("world");
 
-		private _garrisonActuals = CALLM(_actual, "getGarrisons", []);
+		private _garrisonActuals = CALLM0(_actual, "getGarrisons");
 		private _garrisonIds = [];
 		{
 			private _garrison = CALLM(_world, "findGarrisonByActual", [_x]);
@@ -140,7 +140,7 @@ CLASS("LocationModel", "ModelBase")
 	
 	METHOD("isEmpty") {
 		params [P_THISOBJECT];
-		T_PRVAR(garrisonIds);
+		private _garrisonIds = T_GETV("garrisonIds");
 		count _garrisonIds == 0
 	} ENDMETHOD;
 	
@@ -149,7 +149,7 @@ CLASS("LocationModel", "ModelBase")
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		ASSERT_MSG(GETV(_garrison, "locationId") == MODEL_HANDLE_INVALID, "Garrison is already assigned to another location");
 
-		T_PRVAR(garrisonIds);
+		private _garrisonIds = T_GETV("garrisonIds");
 		private _garrisonId = GETV(_garrison, "id");
 		ASSERT_MSG((_garrisonIds find _garrisonId) == NOT_FOUND, "Garrison already occupying this Location");
 		// ASSERT_MSG(_garrisonId == MODEL_HANDLE_INVALID, "Can't setGarrison if location is already occupied, use clearGarrison first");
@@ -158,8 +158,8 @@ CLASS("LocationModel", "ModelBase")
 
 	METHOD("getGarrison") {
 		params [P_THISOBJECT, P_SIDE("_side")];
-		T_PRVAR(garrisonIds);
-		T_PRVAR(world);
+		private _garrisonIds = T_GETV("garrisonIds");
+		private _world = T_GETV("world");
 		
 		private _foundGarr = NULL_OBJECT;
 		{
@@ -176,7 +176,7 @@ CLASS("LocationModel", "ModelBase")
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		ASSERT_MSG(GETV(_garrison, "locationId") == T_GETV("id"), "Garrison is not assigned to this location");
 
-		T_PRVAR(garrisonIds);
+		private _garrisonIds = T_GETV("garrisonIds");
 		private _foundIdx = _garrisonIds find GETV(_garrison, "id");
 		ASSERT_MSG(_foundIdx != NOT_FOUND, "Garrison was not assigned to this Location");
 		_garrisonIds deleteAt _foundIdx;

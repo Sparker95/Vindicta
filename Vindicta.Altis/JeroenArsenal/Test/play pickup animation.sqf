@@ -1,8 +1,8 @@
 steal_weapon = {	
 	params["_unit", "_weapon"];
-	_groundWeaponHolder = "GroundWeaponHolder" createVehicle [0,0,0]; 
-	_groundWeaponHolder addItemCargo ["None", 1]; 
-	_groundWeaponHolder setPos (position _unit); 
+	_groundWeaponHolder = "GroundWeaponHolder" createVehicle [0,0,0];
+	_groundWeaponHolder addItemCargo ["None", 1];
+	_groundWeaponHolder setPos (position _unit);
 	 
 	_unit action ["PutWeapon",_groundWeaponHolder,_unit];
 };
@@ -64,7 +64,7 @@ steal_weapon = {
 	sleep 3;
 	
 	if(_unit distance _disarm<4)then{
-		_disarm addRating -20000; 
+		_disarm addRating -20000;
 	}else{
 		_unit doWatch objNull;
 	};

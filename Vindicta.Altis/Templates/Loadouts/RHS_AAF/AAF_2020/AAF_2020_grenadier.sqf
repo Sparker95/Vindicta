@@ -16,6 +16,8 @@ this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addBackpack "B_LegStrapBag_coyote_F";
 
 this addWeapon "rhs_weap_m21a_pbg40";
+_RandomSight = selectRandom ["rhs_acc_pkas", "", ""];
+this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
 this addPrimaryWeaponItem "rhs_VOG25";
 
@@ -31,6 +33,5 @@ this addItemToBackpack "rhs_VG40OP_red";
 for "_i" from 1 to 4 do {this addItemToBackpack "rhs_VG40OP_white";};
 this addItemToBackpack "rhs_VG40OP_green";
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_VOG25P";};
-
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

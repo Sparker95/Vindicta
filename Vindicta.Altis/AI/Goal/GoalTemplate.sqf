@@ -13,7 +13,7 @@ CLASS("MyGoal", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 	// If this method is not overwritten, it will return a static relevance
 	STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 	} ENDMETHOD;
 	
@@ -24,7 +24,7 @@ CLASS("MyGoal", "Goal")
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
 	/* virtual */ STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		
 	} ENDMETHOD;

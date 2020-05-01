@@ -61,7 +61,7 @@
 				if(!(_x isEqualTo "") and (_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					 MEMBER("unit", nil) removeItemFromBackpack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (backpackItems MEMBER("unit", nil));
 		};
 
@@ -71,15 +71,15 @@
 				if(!(_x isEqualTo "") and !(_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					 MEMBER("unit", nil) removeItemFromBackpack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (backpackItems MEMBER("unit", nil));
-		};		
+		};
 
 		PUBLIC FUNCTION("","clearVest") {
 			DEBUG(#, "OO_INVENTORY::clearVest")
 			{
 				MEMBER("unit", nil) removeItemFromVest _x;
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (vestItems MEMBER("unit", nil));
 		};
 
@@ -89,7 +89,7 @@
 				if(!(_x isEqualTo "") and (_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					 MEMBER("unit", nil) removeItemFromVest _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (vestItems MEMBER("unit", nil));
 		};
 
@@ -99,7 +99,7 @@
 				if(!(_x isEqualTo "") and !(_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					 MEMBER("unit", nil) removeItemFromVest _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (vestItems MEMBER("unit", nil));
 		};
 
@@ -107,7 +107,7 @@
 			DEBUG(#, "OO_INVENTORY::clearUniform")
 			{
 				MEMBER("unit", nil) removeItemFromUniform _x;
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (uniformItems MEMBER("unit", nil));
 		};
 
@@ -117,7 +117,7 @@
 				if(!(_x isEqualTo "") and (_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					 MEMBER("unit", nil) removeItemFromUniform _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (uniformItems MEMBER("unit", nil));
 		};
 
@@ -127,7 +127,7 @@
 				if(!(_x isEqualTo "") and !(_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					 MEMBER("unit", nil) removeItemFromUniform _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (uniformItems MEMBER("unit", nil));
 		};
 
@@ -141,13 +141,13 @@
 				} else {
 					{
 						_holder addItemCargoGlobal [_x , 1] ;
-						sleep 0.001;
+						uisleep 0.001;
 					}foreach _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach MEMBER("getInventory", nil);
 			MEMBER("clearInventory", nil);
-			_holder;			
+			_holder;
 		};
 
 		PUBLIC FUNCTION("","takeOffVest") {
@@ -157,7 +157,7 @@
 			_holder addItemCargoGlobal [(vest MEMBER("unit", nil)) , 1] ;
 			{
 				_holder addItemCargoGlobal [_x , 1] ;
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (vestItems MEMBER("unit", nil));
 			removeVest MEMBER("unit", nil);
 			_holder;
@@ -171,7 +171,7 @@
 
 			{
 				_holder addItemCargoGlobal [_x , 1] ;
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (uniformItems MEMBER("unit", nil));
 			removeUniform MEMBER("unit", nil);
 			_holder;
@@ -193,7 +193,7 @@
 				if((_x select 3 == 1) and !(_x select 4 in ["Vest", "Uniform", "Backpack"])) then {
 					_holder addMagazineAmmoCargo [_x select 0, 1, _x select 1] ;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			}foreach (magazinesAmmoFull MEMBER("unit", nil));
 			MEMBER("unit", nil) removeWeaponGlobal (primaryWeapon MEMBER("unit", nil));
 			_holder;
@@ -209,7 +209,7 @@
 				if((_x select 3 == 4) and !(_x select 4 in ["Vest", "Uniform", "Backpack"])) then {
 					_holder addMagazineAmmoCargo [_x select 0, 1, _x select 1] ;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			}foreach (magazinesAmmoFull MEMBER("unit", nil));
 			MEMBER("unit", nil) removeWeaponGlobal (secondaryWeapon MEMBER("unit", nil));
 			_holder;
@@ -225,7 +225,7 @@
 				if((_x select 3 == 2) and !(_x select 4 in ["Vest", "Uniform", "Backpack"])) then {
 					_holder addMagazineAmmoCargo [_x select 0, 1, _x select 1] ;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			}foreach (magazinesAmmoFull MEMBER("unit", nil));
 			MEMBER("unit", nil) removeWeaponGlobal (handgunWeapon MEMBER("unit", nil));
 			_holder;
@@ -299,7 +299,7 @@
 				if(!(_x isEqualTo "") and (_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					_array pushBack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (uniformItems MEMBER("unit", nil));
 			_array;
 		};
@@ -312,10 +312,10 @@
 				if(!(_x isEqualTo "") and !(_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					_array pushBack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (uniformItems MEMBER("unit", nil));
 			_array;
-		};		
+		};
 
 		PUBLIC FUNCTION("","getVestItems") {
 			DEBUG(#, "OO_INVENTORY::getVestItems")
@@ -325,7 +325,7 @@
 				if(!(_x isEqualTo "") and (_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					_array pushBack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (vestItems MEMBER("unit", nil));
 			_array;
 		};
@@ -338,10 +338,10 @@
 				if(!(_x isEqualTo "") and !(_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					_array pushBack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (vestItems MEMBER("unit", nil));
 			_array;
-		};		
+		};
 
 		PUBLIC FUNCTION("","getBackPackItems") {
 			DEBUG(#, "OO_INVENTORY::getBackPackItems")
@@ -351,7 +351,7 @@
 				if(!(_x isEqualTo "") and (_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					_array pushBack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (backpackItems MEMBER("unit", nil));
 			_array;
 		};
@@ -364,7 +364,7 @@
 				if(!(_x isEqualTo "") and !(_x isKindOf ["ItemCore", configFile >> "CfgWeapons"] )) then {
 					_array pushBack _x;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			} foreach (backpackItems MEMBER("unit", nil));
 			_array;
 		};
@@ -387,7 +387,7 @@
 				if((_x select 3 == _type) and !(_x select 4 in ["Vest", "Uniform", "Backpack"])) then {
 					_ammo = _x select 0;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			}foreach (magazinesAmmoFull MEMBER("unit", nil));
 			_ammo;
 		};
@@ -401,7 +401,7 @@
 				if((_x select 0) isEqualTo _type)  then {
 					_count = (_x select 1) + _count;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			}foreach (magazinesAmmoFull MEMBER("unit", nil));
 			_count;
 		};
@@ -415,7 +415,7 @@
 				if((_x select 0)  isEqualTo _type)  then { 
 					_count = _count + 1;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			}foreach (magazinesAmmoFull MEMBER("unit", nil));
 			_count;
 		};
@@ -453,7 +453,7 @@
 				if((_x select 3 == _type) and !(_x select 4 in ["Vest", "Uniform", "Backpack"])) then {
 					_count = _x select 1;
 				};
-				sleep 0.001;
+				uisleep 0.001;
 			}foreach (magazinesAmmoFull MEMBER("unit", nil));
 			_count;
 		};

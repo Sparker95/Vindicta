@@ -11,6 +11,7 @@
 #include "PlayerMonitor.hpp"
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Intel\Intel.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: PlayerMonitor
@@ -143,7 +144,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			
 			// Update nearby locations
 			pr _posASL = getPosASL _unit;
-			pr _nearLocs = CALLSM2("Location", "nearLocations", _posASL, LOCATION_VIEW_DISTANCE_MAX);
+			pr _nearLocs = CALLSM2("Location", "overlappingLocations", _posASL, LOCATION_VIEW_DISTANCE_MAX);
 			T_SETV("nearLocations", _nearLocs);
 
 			// Update current locations
@@ -153,7 +154,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			if (count _locs != 0) then {
 				// Get the nearest location
 				_locs = _locs apply {[CALLM0(_x, "getPos") distance2D _unit, _x]};
-				_locs sort true; // Ascending
+				_locs sort ASCENDING;
 				pr _loc = _locs#0#1;
 				T_SETV("currentLocation", _loc);
 

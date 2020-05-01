@@ -10,14 +10,14 @@ Spawn a unit
 params ["_catID", "_subcatID", "_side"];
 
 pr _template = switch (_side) do {
- case WEST: {tNATO};    
+ case WEST: {tNATO};
  case EAST: {tCSAT};
  case INDEPENDENT: {tAAF};
 };
 
 // Create a temporary location
 pr _tempLoc = NEW("Location", [getPos player]);
-CALLM2(_tempLoc, "setBorder", "circle", 3); // Circle with 3 meter radius
+CALLM1(_tempLoc, "setBorderCircle", 3); // Circle with 3 meter radius
 
 // Create group
 pr _args = [_side, 0]; // Side, group type
