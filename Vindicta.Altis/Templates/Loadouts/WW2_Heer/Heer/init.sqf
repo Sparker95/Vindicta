@@ -1,7 +1,6 @@
 #include "..\..\common.hpp"
 
 ADD_LOADOUT("WW2_Heer_ammo",		"WW2_Heer\Heer\Heer_ammo.sqf")
-ADD_LOADOUT("WW2_Heer_AT_rifle",	"WW2_Heer\Heer\Heer_AT_rifle.sqf")
 ADD_LOADOUT("WW2_Heer_AT",			"WW2_Heer\Heer\Heer_AT.sqf")
 ADD_LOADOUT("WW2_Heer_crew",		"WW2_Heer\Heer\Heer_crew.sqf")
 ADD_LOADOUT("WW2_Heer_engineer",	"WW2_Heer\Heer\Heer_engineer.sqf")

@@ -21,13 +21,13 @@ _RandomBackpack = selectRandom ["B_LIB_SOV_RA_Rucksack", "B_LIB_SOV_RA_Rucksack_
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-this addWeapon "IFA3_PPS43";
+this addWeapon "LIB_TT33";
 /*WeaponItem*/
-this addPrimaryWeaponItem "ifa3_35rnd_762x25_pps";
+this addHandgunItem "LIB_8Rnd_762x25";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "ifa3_35rnd_762x25_pps";};
+for "_i" from 1 to 3 do {this addItemToVest "LIB_8Rnd_762x25";};
 
 /*Items*/
 this linkItem "ItemMap";

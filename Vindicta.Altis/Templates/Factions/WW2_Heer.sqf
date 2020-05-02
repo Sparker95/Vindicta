@@ -19,16 +19,16 @@ _array set [T_DESCRIPTION, "WW2 German units. 1939-1945. Made by MatrikSky"]; 	/
 _array set [T_DISPLAY_NAME, "WW2 Heer"]; 										//Template display name
 _array set [T_FACTION, T_FACTION_Military]; 									//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
-		"ww2_assets_c_characters_core_c", 
-		"lib_weapons", 
-		"geistl_main", 
-		"fow_weapons", 
-		"sab_boat_c", 
-		"ifa3_comp_ace_main", 
-		"geistl_fow_main", 
-		"ifa3_comp_fow", 
-		"ifa3_comp_fow_ace_settings", 
-		"sab_compat_ace"
+		"IFA3_Core",
+		"IFA3_COMP_ACE_main",
+		"IFA3_FOW_Compat",
+		"LIB_core",
+		"GEISTL_MAIN",
+		"GEISTL_FOW_MAIN",
+		"fow_main",
+		"sab_boat_c",
+		"sab_compat_ace",
+		"I44_Buildings"
 		]]; 																	//Addons required to play this template
 
 //==== Infantry ====
@@ -39,14 +39,14 @@ _inf set [T_INF_default, ["LIB_GER_ober_rifleman"]];	//Default infantry if nothi
 _inf set [T_INF_SL, ["WW2_Heer_SL"]];
 _inf set [T_INF_TL, ["WW2_Heer_TL", "WW2_Heer_TL_2"]];
 _inf set [T_INF_officer, ["WW2_Heer_officer"]];
-_inf set [T_INF_GL, ["WW2_Heer_GL", "WW2_Heer_GL_2"]];
+_inf set [T_INF_GL, ["WW2_Heer_GL", "WW2_Heer_GL", "WW2_Heer_GL_2"]];
 _inf set [T_INF_rifleman, ["WW2_Heer_rifleman", "WW2_Heer_rifleman_2", "WW2_Heer_rifleman_3"]];
 _inf set [T_INF_sniper, ["WW2_Heer_sniper"]];
 _inf set [T_INF_marksman, ["WW2_Heer_marksman"]];
 _inf set [T_INF_exp, ["WW2_Heer_explosives"]];
 _inf set [T_INF_LAT, ["WW2_Heer_LAT"]];
-_inf set [T_INF_AT, ["WW2_Heer_AT", "WW2_Heer_AT_rifle"]];
-_inf set [T_INF_LMG, ["WW2_Heer_LMG", "WW2_Heer_LMG_2"]];
+_inf set [T_INF_AT, ["WW2_Heer_AT"]];
+_inf set [T_INF_LMG, ["WW2_Heer_LMG", "WW2_Heer_LMG", "WW2_Heer_LMG", "WW2_Heer_LMG_2"]];
 _inf set [T_INF_HMG, ["WW2_Heer_HMG"]];
 _inf set [T_INF_medic, ["WW2_Heer_medic"]];
 _inf set [T_INF_crew, ["WW2_Heer_crew"]];
@@ -56,9 +56,9 @@ _inf set [T_INF_spotter, ["WW2_Heer_spotter"]];
 _inf set [T_INF_ammo, ["WW2_Heer_ammo"]];
 _inf set [T_INF_survivor, ["WW2_Heer_unarmed"]];
 _inf set [T_INF_unarmed, ["WW2_Heer_unarmed"]];
-//_inf set [T_INF_pilot_heli, [""]];
-//_inf set [T_INF_crew_heli, [""]];
-//_inf set [T_INF_AA, [""]];
+_inf set [T_INF_pilot_heli, ["WW2_Heer_unarmed"]];
+_inf set [T_INF_crew_heli, ["WW2_Heer_unarmed"]];
+_inf set [T_INF_AA, ["WW2_Heer_unarmed"]];
 
 //==== Recon ====
 _inf set [T_INF_recon_TL, ["WW2_Heer_recon_TL"]];
@@ -79,16 +79,16 @@ _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt"]];
 
-_veh set [T_VEH_car_unarmed, ["ifa3_gaz55_ger", "LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
-_veh set [T_VEH_car_armed, ["R71Ger44Camo", "R71Ger44", "R71GerPre43", "LIB_ger_M3_Scout_IFL", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
+_veh set [T_VEH_car_unarmed, ["LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
+_veh set [T_VEH_car_armed, ["LIB_ger_M3_Scout_IFL", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo"]];
-_veh set [T_VEH_MRAP_HMG, ["R71Ger44Camo", "R71Ger44", "R71GerPre43", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
-_veh set [T_VEH_MRAP_GMG, ["ifa3_Ba10_wm", "LIB_ger_M3_Scout_IFL"]];
+_veh set [T_VEH_MRAP_HMG, ["LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
+_veh set [T_VEH_MRAP_GMG, ["LIB_ger_M3_Scout_IFL"]];
 
 _veh set [T_VEH_IFV, ["LIB_GER_M8_Greyhound", "LIB_SdKfz222", "LIB_SdKfz222_camo", "LIB_SdKfz222_gelbbraun", "LIB_SdKfz234_1", "LIB_SdKfz234_2", "LIB_SdKfz234_3", "LIB_SdKfz234_4"]];
 _veh set [T_VEH_APC, ["LIB_GER_M3_Halftrack", "LIB_SdKfz_7", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
-_veh set [T_VEH_MBT, [ "LIB_ger_M4A3_Sherman", "ifa3_t34_76_ger", "LIB_PzKpfwV", "LIB_PzKpfwVI_B", "LIB_PzKpfwVI_B_tarn51c", "LIB_PzKpfwVI_B_tarn51d", "LIB_PzKpfwVI_E", "LIB_PzKpfwVI_E_2", "LIB_PzKpfwVI_E_tarn51c", "LIB_PzKpfwVI_E_tarn51d", "LIB_PzKpfwVI_E_tarn52c", "LIB_PzKpfwVI_E_tarn52d", "LIB_PzKpfwVI_E_1", "pz2f", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_StuH_42", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_StuH_42", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "ifa3_pz3J_sov", "ifa3_pz3j", "ifa3_pz3N", "ifa3_StuH_42", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d"]];
+_veh set [T_VEH_MBT, [ "LIB_ger_M4A3_Sherman", "LIB_PzKpfwV", "LIB_PzKpfwVI_B", "LIB_PzKpfwVI_B_tarn51c", "LIB_PzKpfwVI_B_tarn51d", "LIB_PzKpfwVI_E", "LIB_PzKpfwVI_E_2", "LIB_PzKpfwVI_E_tarn51c", "LIB_PzKpfwVI_E_tarn51d", "LIB_PzKpfwVI_E_tarn52c", "LIB_PzKpfwVI_E_tarn52d", "LIB_PzKpfwVI_E_1", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d", "LIB_StuG_III_G", "LIB_PzKpfwIV_H", "LIB_PzKpfwIV_H_tarn51c", "LIB_PzKpfwIV_H_tarn51d"]];
 _veh set [T_VEH_MRLS, ["LIB_Nebelwerfer41", "LIB_Nebelwerfer41_Camo", "LIB_Nebelwerfer41_Gelbbraun"]];
 _veh set [T_VEH_SPA, ["LIB_SdKfz124"]];
 _veh set [T_VEH_SPAA, ["LIB_FlakPanzerIV_Wirbelwind", "LIB_SdKfz_7_AA"]];
@@ -98,7 +98,7 @@ _veh set [T_VEH_stat_GMG_high, ["LIB_GER_SearchLight", "LIB_MG34_Lafette_Deploye
 _veh set [T_VEH_stat_HMG_low, ["LIB_MG34_Lafette_low_Deployed", "LIB_MG42_Lafette_low_Deployed"]];
 _veh set [T_VEH_stat_GMG_low, ["LIB_MG34_Lafette_low_Deployed", "LIB_MG42_Lafette_low_Deployed"]];
 _veh set [T_VEH_stat_AA, ["sab_static_aa", "sab_small_static_2xaa", "sab_small_static_aa", "LIB_FlaK_30", "LIB_FlaK_38", "LIB_Flakvierling_38", "LIB_FlaK_36_AA"]];
-_veh set [T_VEH_stat_AT, ["ifr_lg40", "ifa3_p27G", "IFA3_Pak38", "LIB_Pak40", "LIB_leFH18_AT", "LIB_FlaK_36", "LIB_ger_Pak40_Feldgrau"]];
+_veh set [T_VEH_stat_AT, ["LIB_Pak40", "LIB_leFH18_AT", "LIB_FlaK_36", "LIB_ger_Pak40_Feldgrau"]];
 
 _veh set [T_VEH_stat_mortar_light, ["LIB_GrWr34", "LIB_GrWr34_g"]];
 _veh set [T_VEH_stat_mortar_heavy, ["LIB_leFH18", "LIB_FlaK_36_ARTY"]];

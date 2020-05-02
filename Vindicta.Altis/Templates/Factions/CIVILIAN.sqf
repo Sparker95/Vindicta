@@ -269,7 +269,7 @@ _arsenal set[T_ARSENAL_headgear, [
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf = _inf apply { ["Arma3_CIVILIAN_Saboteur_1"] };
+_inf = _inf apply { ["Arma3_CIVILIAN_Default"] };
 _inf set [T_INF_default, ["I_L_Looter_SG_F"]];
 _inf set [T_INF_rifleman, [
     "Arma3_PLAYER_1"
