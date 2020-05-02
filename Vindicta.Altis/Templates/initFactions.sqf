@@ -38,7 +38,6 @@
 ["Templates\Factions\GM_CIVILIAN.sqf", 					T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CUP_RUS_CIVILIAN.sqf", 			T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CUP_TKA_CIVILIAN.sqf", 			T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\Irish_Civilians.sqf", 				T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GUERRILLA.sqf", 					T_FACTION_Guer		]	call t_fnc_initializeTemplateFromFile;
 
 // Police factions
