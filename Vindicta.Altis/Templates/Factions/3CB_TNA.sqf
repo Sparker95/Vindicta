@@ -11,7 +11,7 @@ _array set [T_REQUIRED_ADDONS, [
 	"rhs_c_troops",		// RHSAFRF
 	"rhsusf_c_troops",	// RHSUSAF
 	"rhsgref_c_troops",	// RHSGREF
-	"UK3CB_Factions_Common", // 3CB Factions
+	"uk3cb_factions_TKA", // 3CB Factions
 	"ace_compat_rhs_afrf3", // ACE Compat - RHS Armed Forces of the Russian Federation
 	"ace_compat_rhs_gref3", // ACE Compat - RHS: GREF
 	"ace_compat_rhs_usf3" // ACE Compat - RHS United States Armed Forces
