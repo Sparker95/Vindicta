@@ -24,7 +24,7 @@ Author: Sparker
 #define pr private
 
 #define OOP_CLASS_NAME Group
-CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
+CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	//Variables
 	VARIABLE_ATTR("data", [ATTR_SAVE]);
