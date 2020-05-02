@@ -60,8 +60,6 @@ CLASS("AIGroup", "AI_GOAP")
 		T_SETV("unitMarkersEnabled", false);
 		#endif
 		FIX_LINE_NUMBERS()
-
-		T_CALLM1("addToProcessCategory", "AIGroup");
 	ENDMETHOD;
 
 	METHOD(delete)
@@ -74,6 +72,11 @@ CLASS("AIGroup", "AI_GOAP")
 		#endif
 
 	ENDMETHOD;
+
+	/* override */ METHOD(start)
+		params [P_THISOBJECT];
+		T_CALLM1("addToProcessCategory", "AIGroup");
+	ENDMETHOD
 
 	METHOD(_enableDebugMarkers)
 		params [P_THISOBJECT];
@@ -330,6 +333,10 @@ CLASS("AIGroup", "AI_GOAP")
 	*/
 	METHOD(getPossibleActions)
 		[]
+	ENDMETHOD;
+
+	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+		true
 	ENDMETHOD;
 
 	// Debug

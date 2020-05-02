@@ -86,7 +86,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		private _minDist = 666666;
 		while {_i < _count} do {
 			private _wayPointPos = ZERO_HEIGHT(_waypoints select _index);
-			pr _wp = _hG addWaypoint [_wayPointPos, 0];
+			pr _wp = _hG addWaypoint [_wayPointPos, -1];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointBehaviour "SAFE"; //"AWARE"; //"SAFE";
 			//_wp setWaypointForceBehaviour true; //"AWARE"; //"SAFE";

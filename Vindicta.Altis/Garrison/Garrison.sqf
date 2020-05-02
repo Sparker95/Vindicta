@@ -17,7 +17,7 @@ Author: Sparker 12.07.2018
 #define MESSAGE_LOOP gMessageLoopMain
 
 #define OOP_CLASS_NAME Garrison
-CLASS("Garrison", "MessageReceiverEx");
+CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	STATIC_VARIABLE("all");
 
@@ -1044,26 +1044,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM0(_unit, "clearInventory");
 		} forEach _cargoVehicles;
 	ENDMETHOD;
-	// 						G E T   A I
-	/*
-	Method: getAI
-	Returns the AI object of this garrison.
 
-	Returns: Array of <Unit> objects.
-	*/
-	METHOD(getAI)
-		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			NULL_OBJECT
-		};
-		private _AI = T_GETV("AI");
-		//__MUTEX_UNLOCK;
-		_AI
-	ENDMETHOD;
 
 	// 						G E T   P O S
 	/*
@@ -2849,6 +2830,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	ENDMETHOD;
 
+	// ---------------------------------------------------------------
+	//  G O A P
+	// ---------------------------------------------------------------
 
 	//            G E T   S U B A G E N T S
 	/*
@@ -2862,10 +2846,28 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD(getSubagents)
 		[]
-		// In case we decide to process groups in the same thread as garrison, we can return the groups here
 	ENDMETHOD;
 
+	// 						G E T   A I
+	/*
+	Method: getAI
+	Returns the AI object of this garrison.
 
+	Returns: Array of <Unit> objects.
+	*/
+	METHOD(getAI)
+		params [P_THISOBJECT];
+		//__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			//__MUTEX_UNLOCK;
+			NULL_OBJECT
+		};
+		private _AI = T_GETV("AI");
+		//__MUTEX_UNLOCK;
+		_AI
+	ENDMETHOD;
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

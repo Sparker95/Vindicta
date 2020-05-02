@@ -33,8 +33,6 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		//T_SETV("worldState", _ws);
 
 		T_SETV("cargo", []);
-
-		T_CALLM1("addToProcessCategory", "AIVehicle");
 	ENDMETHOD;
 	
 	METHOD(delete)
@@ -79,6 +77,11 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		};
 		
 	ENDMETHOD;
+
+	/* override */ METHOD(start)
+		params [P_THISOBJECT];
+		T_CALLM1("addToProcessCategory", "AILow");
+	ENDMETHOD
 
 	/*
 	Method: addCargoUnit

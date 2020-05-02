@@ -24,7 +24,7 @@ Author: Sparker
 #define pr private
 
 #define OOP_CLASS_NAME Group
-CLASS("Group", "MessageReceiverEx");
+CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 
 	//Variables
 	VARIABLE_ATTR("data", [ATTR_SAVE]);
@@ -602,20 +602,6 @@ CLASS("Group", "MessageReceiverEx");
 	ENDMETHOD;
 
 
-	// |                           G E T   A I
-	/*
-	Method: getAI
-	Returns the <AI> of this group, if it's spawned, or "" otherwise.
-
-	Returns: String, <AIGroup>
-	*/
-	METHOD(getAI)
-		params [P_THISOBJECT];
-
-		pr _data = T_GETV("data");
-		_data select GROUP_DATA_ID_AI
-	ENDMETHOD;
-
 	// |                           I S   S P A W N E D
 	/*
 	Method: isSpawned
@@ -723,7 +709,7 @@ CLASS("Group", "MessageReceiverEx");
 			pr _AI = NEW("AIGroup", [_thisObject]);
 			pr _data = T_GETV("data");
 			_data set [GROUP_DATA_ID_AI, _AI];
-			CALLM1(_AI, "start", "AIGroupLow"); // Kick start it
+			CALLM0(_AI, "start"); // Kick start it
 		//};
 
 	ENDMETHOD;
@@ -1037,6 +1023,19 @@ CLASS("Group", "MessageReceiverEx");
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+	// |                           G E T   A I
+	/*
+	Method: getAI
+	Returns the <AI> of this group, if it's spawned, or "" otherwise.
+
+	Returns: String, <AIGroup>
+	*/
+	METHOD(getAI)
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+		_data select GROUP_DATA_ID_AI
+	ENDMETHOD;
 
 	//                          G E T   S U B A G E N T S
 	/*
@@ -1052,22 +1051,11 @@ CLASS("Group", "MessageReceiverEx");
 		//params [P_THISOBJECT];
 
 		// Get all units
-		//private _data = T_GETV("data");
-		//private _unitList = _data select GROUP_DATA_ID_UNITS;
-
-		// Return only units which actually have an AI object (soldiers and drones)
-		/*
-		pr _return = _unitList select {
-			CALLM0(_x, "isInfantry")
-		};
-		*/
-		//_return
+		private _data = T_GETV("data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
 
 		// Return all units since vehicles have an AI object too :p
-		//_unitList
-
-		// Return nothing, units are not processed with their group any more
-		[]
+		_unitList
 	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

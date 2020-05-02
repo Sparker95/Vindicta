@@ -1,3 +1,7 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#define OFSTREAM_FILE "Threads.rpt"
 #include "..\common.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
@@ -303,13 +307,22 @@ CLASS("MessageLoop", "Storable");
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), P_OOP_OBJECT("_object")];
 
+			OOP_INFO_2("addProcessCategoryObject: %1 %2", _tag, _object);
+
 			// Find category with given tag
 			pr _cats = T_GETV("processCategories");
 			pr _index = _cats findIf {(_x select __PC_ID_TAG) == _tag};
 			if (_index != -1) then {
 				pr _cat = _cats select _index;
-				pr _objs = _cat select __PC_ID_OBJECTS;
-				_objs pushBack __PC_OBJECT_NEW(_object);
+				pr _allObjects = _cat select __PC_ID_ALL_OBJECTS;
+				// Ensure we don't add same object twice
+				if (_allObjects find _object == -1) then {
+					pr _objs = _cat select __PC_ID_OBJECTS;
+					_objs pushBack __PC_OBJECT_NEW(_object, false);
+					_allObjects pushBack _object;
+				} else {
+					OOP_ERROR_2("Attempt to add object %1 to process category %2 twice", _object, _tag);
+				};
 			} else {
 				OOP_ERROR_1("Process category with tag %1 was not found!", _tag);
 			};
@@ -324,19 +337,32 @@ CLASS("MessageLoop", "Storable");
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
 
+			OOP_INFO_1("deleteProcessCategoryObject: %1", _object);
+
 			pr _cats = T_GETV("processCategories");
 			{
+				pr _allObjects = _x select __PC_ID_ALL_OBJECTS;
+				pr _index = _allObjects find _object;
 				pr _objs = _x select __PC_ID_OBJECTS;
-				pr _index = _objs findIf {_x select 0 == _object};
+
 				#ifdef _SQF_VM
 				if (_index != -1) then {
 				#endif
+
 					//diag_log format ["index: %1", _index];
 					_objs deleteAt _index;
+					_allObjects deleteAt _index;
+
+					// Delete from queue of high priority objects
+					pr _objsHigh = _x select __PC_ID_OBJECTS_URGENT;
+					_objsHigh deleteAt (_objsHigh findIf {(_x#0) == _object});
+
 					//true // No need to search any more
+
 				#ifdef _SQF_VM
 				};
 				#endif
+
 				//} else {
 				//	false // Need to search other categories, this object is not here
 				//};
@@ -344,6 +370,33 @@ CLASS("MessageLoop", "Storable");
 
 			if (!T_GETV("unscheduled")) then {
 				T_CALLM0("updateRequiredFractions");
+			};
+		};
+	ENDMETHOD;
+
+	// Adds this object to high priority queue of its process category
+	METHOD(setObjectUrgentPriority)
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
+
+			OOP_INFO_1("setObjectUrgentPriority: %1", _object);
+
+			// Find category in which this object is
+			pr _added = false;
+			pr _cats = T_GETV("processCategories");
+			{
+				pr _allObjects = _x select __PC_ID_ALL_OBJECTS;
+				pr _index = _allObjects find _object;
+				if (_index != -1) then { // Object found in this cat
+					pr _objsHigh = _x select __PC_ID_OBJECTS_URGENT;
+					_objsHigh pushBack (__PC_OBJECT_NEW(_object, true));
+					OOP_INFO_2("setObjectUrgentPriority: added object %1 from category %2", _object, _x#__PC_ID_TAG);
+					_added = true;				
+				};
+			} forEach _cats;
+
+			if (!_added) then {
+				OOP_ERROR_1("setObjectUrgentPriority: object %1 is not found", _object);
 			};
 		};
 	ENDMETHOD;

@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OOP_DEBUG
-#define OOP_ASSERT
+//#define OOP_ASSERT
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\..\common.h"
 #include "..\..\AI\Action\Action.hpp"

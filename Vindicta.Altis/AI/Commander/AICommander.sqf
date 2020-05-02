@@ -433,7 +433,7 @@ CLASS("AICommander", "AI")
 				if (_updateLevel >= GETV(_intelResult, "accuracy")) then {
 					// Create intel item from location, update the old item
 					pr _args = [_loc, _updateLevel, _accuracyRadius];
-					pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+					pr _intel = T_CALLM("createIntelFromLocation", _args);
 
 					// Check if the created intel and the existing one are the same
 					pr _serialOld = SERIALIZE(_intelResult);

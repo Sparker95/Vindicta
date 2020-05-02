@@ -442,8 +442,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		if (!IS_NULL_OBJECT(T_GETV("messageLoopGroupAI"))) then {
 			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIGroup" ARG 1 ARG 0 ARG 4]); // Interval, minObjPerFrame, maxObjPerFrame
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIInfantry" ARG 0.2 ARG 1 ARG 3]); // Interval, minObjPerFrame, maxObjPerFrame
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIVehicle" ARG 10 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIInfantry" ARG 0.2 ARG 1 ARG 2]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AILow" ARG 3 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
 		};
 
 		if(!IS_NULL_OBJECT(T_GETV("messageLoopGameMode"))) then {

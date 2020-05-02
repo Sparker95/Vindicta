@@ -118,7 +118,7 @@
 
 #ifdef ASP_ENABLE
 #define PROFILER_FUNCTION_NAME(className,methodName) className##_fnc_##methodName
-#define ASP_CREATE_PROFILE_SCOPE(className,methodName) private _oop_ASPScope = createProfileScope QUOTE(PROFILER_FUNCTION_NAME(className,methodName));
+#define ASP_CREATE_PROFILE_SCOPE(className,methodName) private _oop_ASPScope_##className##methodName = createProfileScope QUOTE(PROFILER_FUNCTION_NAME(className,methodName));
 #else
 #define ASP_CREATE_PROFILE_SCOPE(className,methodName)
 #endif
@@ -148,13 +148,13 @@
 #define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) ((OOP_PREFIX) + (classNameStr) + STATIC_SEPARATOR + (memNameStr))
 
 //String name of a method
-#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) ((classNameStr) + (methodNameStr))
+#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) ((classNameStr) + METHOD_SEPARATOR + (methodNameStr))
 
 //String name of a special member
 #define CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + (classNameStr) + SPECIAL_SEPARATOR + (memNameStr))
 
 //String name of a non-static member
-#define OBJECT_MEM_NAME_STR(objNameStr, memNameStr) ((objNameStr) + memNameStr)
+#define OBJECT_MEM_NAME_STR(objNameStr, memNameStr) ((objNameStr) + "_" + memNameStr)
 
 //Gets parent class of an object
 #define OBJECT_PARENT_CLASS_STR(objNameStr) (FORCE_GET_MEM(objNameStr, OOP_PARENT_STR))

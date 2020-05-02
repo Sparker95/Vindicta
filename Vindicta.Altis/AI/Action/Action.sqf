@@ -648,7 +648,7 @@ CLASS("Action", "MessageReceiverEx")
 				// dismounted inf
 				case (CALLM0(_unit, "isInfantry") && vehicle _hO == _hO): {
 					private _tgtPos = [_pos, 0, 25, 0, 0, 2, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
-					_hO setVehiclePosition  [_tgtPos, [], 5];
+					_hO setVehiclePosition  [_tgtPos, [], 5, "CAN_COLLIDE"];
 					//_hO setPos _tgtPos;
 				};
 				// vehicle

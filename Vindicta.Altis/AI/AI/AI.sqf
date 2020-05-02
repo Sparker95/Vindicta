@@ -290,33 +290,30 @@ CLASS("AI", "MessageReceiverEx")
 
 	// ----------------------------------------------------------------------
 	// |                S T A R T
-	// | Starts the AI brain
+	// | Starts the AI brain in timer mode
 	// ----------------------------------------------------------------------
 	/*
 	Method: start
-	Starts the AI brain. From now process method will be called periodically.
+	Starts the AI brain with timer. If this AI doesn't use timer, but a process category, override this.
+	From now process method will be called periodically.
 	*/
 	METHOD(start)
-		params [P_THISOBJECT, ["_processCategoryTag", ""]];
-		if (_processCategoryTag != "") then {
-			pr _msgLoop = T_CALLM0("getMessageLoop");
-			CALLM2(_msgLoop, "addProcessCategoryObject", _processCategoryTag, _thisObject);
-		} else {
-			if (T_GETV("timer") == "") then {
-				// Starts the timer
-				private _msg = MESSAGE_NEW();
-				_msg set [MESSAGE_ID_DESTINATION, _thisObject];
-				_msg set [MESSAGE_ID_SOURCE, ""];
-				_msg set [MESSAGE_ID_DATA, 0];
-				_msg set [MESSAGE_ID_TYPE, AI_MESSAGE_PROCESS];
-				pr _processInterval = T_GETV("processInterval");
-				private _args = [_thisObject, _processInterval, _msg, AI_TIMER_SERVICE]; // message receiver, interval, message, timer service
-				private _timer = NEW("Timer", _args);
-				T_SETV("timer", _timer);
+		params [P_THISOBJECT];
 
-				// Post a message to process immediately to accelerate start up
-				T_CALLM1("postMessage", +_msg);
-			};
+		if (T_GETV("timer") == "") then {
+			// Starts the timer
+			private _msg = MESSAGE_NEW();
+			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+			_msg set [MESSAGE_ID_SOURCE, ""];
+			_msg set [MESSAGE_ID_DATA, 0];
+			_msg set [MESSAGE_ID_TYPE, AI_MESSAGE_PROCESS];
+			pr _processInterval = T_GETV("processInterval");
+			private _args = [_thisObject, _processInterval, _msg, AI_TIMER_SERVICE]; // message receiver, interval, message, timer service
+			private _timer = NEW("Timer", _args);
+			T_SETV("timer", _timer);
+
+			// Post a message to process immediately to accelerate start up
+			T_CALLM1("postMessage", +_msg);
 		};
 
 		nil
@@ -334,8 +331,7 @@ CLASS("AI", "MessageReceiverEx")
 		params [P_THISOBJECT];
 		
 		// Delete this object from process category 
-		pr _msgLoop = T_CALLM0("getMessageLoop");
-		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
+		T_CALLM0("removeFromProcessCategory");
 
 		pr _timer = T_GETV("timer");
 		if (_timer != "") then {
@@ -380,6 +376,17 @@ CLASS("AI", "MessageReceiverEx")
 		params [P_THISOBJECT, P_STRING("_tag")];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM2(_msgLoop, "addProcessCategoryObject", _tag, _thisObject);
+	ENDMETHOD;
+
+	/*
+	Method: setUrgentPriority
+	Sets this object as high priority in its message loop
+	*/
+	METHOD(setUrgentPriority)
+		params [P_THISOBJECT];
+		OOP_INFO_0("setUrgentPriority");
+		pr _msgLoop = T_CALLM0("getMessageLoop");
+		CALLM1(_msgLoop, "setObjectUrgentPriority", _thisObject);
 	ENDMETHOD;
 
 	/*

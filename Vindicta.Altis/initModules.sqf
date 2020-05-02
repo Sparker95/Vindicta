@@ -53,6 +53,9 @@ call compile preprocessFileLineNumbers "modCompatBools.sqf";
 // Initialize Commander class
 call compile preprocessFileLineNumbers "Commander\Commander.sqf";
 
+// Initialize GOAP_Agent - we need it before Unit, Group, Garrison
+call compile preprocessFileLineNumbers "AI\AI\GOAP_Agent.sqf";
+
 // Initialize Unit class
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";
 

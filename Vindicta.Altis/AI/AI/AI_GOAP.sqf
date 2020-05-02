@@ -102,7 +102,7 @@ CLASS("AI_GOAP", "AI")
 	//VARIABLE("currentGoalState"); // State of the action
 	/* save */	VARIABLE_ATTR("goalsExternal", [ATTR_SAVE]); // Goal suggested to this Agent by another agent
 	/* save */	VARIABLE_ATTR("worldState", [ATTR_SAVE]); // The world state relative to this Agent
-	
+
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -363,18 +363,6 @@ CLASS("AI_GOAP", "AI")
 		#endif
 		FIX_LINE_NUMBERS()
 
-		// Call process method of subagents
-		// Currently nothing is using it
-		/*
-		{
-			CALLM0(_x, "process");
-		} forEach (CALLM0(_agent, "getSubagents") apply {
-			CALLM0(_x, "getAI")
-		} select {
-			_x != NULL_OBJECT
-		});
-		*/
-
 	ENDMETHOD;
 
 	METHOD(reset)
@@ -419,8 +407,6 @@ CLASS("AI_GOAP", "AI")
 		private _className = GET_OBJECT_CLASS(_thisObject);
 		private __scopeGetGoal = createProfileScope ([format ["%1_getMostRelevantGoal", _className]] call misc_fnc_createStaticString);
 		#endif
-
-		pr _agent = T_GETV("agent");
 		
 		// Get the list of goals available to this agent
 		pr _possibleGoals = T_CALLM0("getPossibleGoals");
@@ -496,7 +482,7 @@ CLASS("AI_GOAP", "AI")
 	*/
 	
 	METHOD(addExternalGoal)
-		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_NUMBER("_bias"), P_ARRAY("_parameters"), P_OOP_OBJECT("_sourceAI"), ["_deleteSimilarGoals", true], ["_callProcess", true]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_NUMBER("_bias"), P_ARRAY("_parameters"), P_OOP_OBJECT("_sourceAI"), ["_deleteSimilarGoals", true], ["_callProcess", false]];
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
@@ -508,6 +494,7 @@ CLASS("AI_GOAP", "AI")
 		
 		pr _goalsExternal = T_GETV("goalsExternal");
 		
+		//private _scope30 = createProfileScope "_deleteSimilarGoals";
 		if (_deleteSimilarGoals) then {
 			pr _i = 0;
 			pr _goalDeleted = false;
@@ -521,18 +508,32 @@ CLASS("AI_GOAP", "AI")
 				};
 			};
 		};
+		//_scope30 = nil;
 		
 		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
+		//private _scope35 = createProfileScope "_onGoalAdded";
 		// Call the "onGoalAdded" static method
 		CALLSM(_goalClassName, "onGoalAdded", [_thisObject ARG _parameters]);
+		//_scope35 = nil;
 
-		// Call process method to accelerate goal arbitration
-		if (_callProcess) then {
-			T_CALLM0("process");
+		//private _scope40 = createProfileScope "_setUrgentPriority";
+		// Set as high priority if needed
+		if (T_CALLM0("setUrgentPriorityOnAddGoal")) then {
+			T_CALLM0("setUrgentPriority");
 		};
+		//_scope40 = nil;
 
-		nil
+		0
+	ENDMETHOD;
+
+	/*
+	Method: setUrgentPriorityOnAddGoal
+	Returning true from this will cause this AI to be marked as high priority when external goal is added.
+	Override in derived classes!
+	*/
+	/* virtual */ METHOD(setUrgentPriorityOnAddGoal)
+		false
 	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -971,6 +972,32 @@ CLASS("AI_GOAP", "AI")
 			// Return the serial action
 			_actionSerial
 		};
+	ENDMETHOD;
+
+	
+	//                        G E T   P O S S I B L E   G O A L S
+	/*
+	Method: getPossibleGoals
+	Returns the list of goals this AI evaluates on its own.
+
+	Override in derived classes!!
+	*/
+	/* virtual */ METHOD(getPossibleGoals)
+		params [P_THISOBJECT];
+		OOP_ERROR_0("getPossibleGoals is not implemented!");
+		0 // Will cause error
+	ENDMETHOD;
+
+	//                      G E T   P O S S I B L E   A C T I O N S
+	/*
+	Method: getPossibleActions
+	Returns: Array with action class names
+	Override in derived classes!!
+	*/
+	/* virtual */ METHOD(getPossibleActions)
+		params [P_THISOBJECT];
+		OOP_ERROR_0("getPossibleActions is not implemented!");
+		0 // Will cause error
 	ENDMETHOD;
 	
 	

@@ -103,6 +103,7 @@ _scopeMsgQueue = nil;
 	
 	//pr _objects = +(_cat#__PC_ID_OBJECTS); // Make a deep copy for the case object is removed in the process call
 	pr _objects = (_cat#__PC_ID_OBJECTS);
+	pr _objectsHigh = (_cat#__PC_ID_OBJECTS_URGENT);
 	pr _nObjects = count _objects;
 	if (_nObjects > 0) then {
 		pr _objID = (_cat#__PC_ID_NEXT_OBJECT_ID) % _nObjects; 		// Make sure ID is within array size
@@ -126,6 +127,28 @@ _scopeMsgQueue = nil;
 		// don't process more objects this time than there are objects, it will cause same object to be updated twice
 		_nObjectsThisFrame = _nObjectsThisFrame min _nObjects;
 		
+		// Process high priority objects
+		if ((count _objectsHigh > 0) && (_nObjectsThisFrame != 0)) then {
+
+			#ifdef ASP_ENABLE
+			private __scopeCatUrgent = createProfileScope ([format ["MessageLoop_processCategory_%1_urgent", _tag]] call misc_fnc_createStaticString);
+			#endif
+
+			while {(count _objectsHigh > 0) && (_nObjectsThisFrame != 0)} do {
+				pr _objStruct = (_objectsHigh deleteAt 0);
+				pr _obj = _objStruct#0;
+
+				#ifdef ASP_ENABLE
+				private __scopeObj = createProfileScope ([format ["MessageLoop_processObject_%1", _obj]] call misc_fnc_createStaticString);
+				#endif
+
+				CALLM0(_obj, "process");
+
+				_nObjectsThisFrame = _nObjectsThisFrame - 1;
+			};
+		};
+
+		// Process normal objects
 		while {_nObjectsThisFrame != 0} do {
 			pr _objStruct = _objects#_objID;
 			pr _obj = _objStruct#0;
@@ -137,7 +160,7 @@ _scopeMsgQueue = nil;
 				pr _timeCurrent = PROCESS_CATEGORY_TIME;
 				pr _timeLastLog = _cat#__PC_ID_LAST_LOG_TIME;
 				pr _timeSinceLastLog = _timeCurrent - _timeLastLog;
-				if (_timeSinceLastLog > 1) then { // Don't spam it more than once per second!
+				if (_timeSinceLastLog > 5) then { // Don't spam it more than once per second!
 					if (_objStruct#2) then {	// If it was processed already
 						pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""updateInterval"": %4, ""nObjectsPerFrame"": %5} }", //,  ""callTimeAvg"": %7} }", 
 								T_GETV("name"), _cat#__PC_ID_TAG, _nObjects, _timeCurrent-(_objStruct#1), _nObjectsPerFrame];

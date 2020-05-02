@@ -68,7 +68,7 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 FIX_LINE_NUMBERS()
 
 #define OOP_CLASS_NAME Unit
-CLASS("Unit", "Storable")
+CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -276,6 +276,8 @@ CLASS("Unit", "Storable")
 		pr _AI = NEW(_AIClassName, [_thisObject]);
 		_data set [UNIT_DATA_ID_AI, _AI];
 
+		CALLM0(_AI, "start");
+
 		// Return
 		_AI
 	ENDMETHOD;
@@ -396,7 +398,7 @@ CLASS("Unit", "Storable")
 						//_objectHandle disableAI "PATH";
 						//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 
-						pr _AI = T_CALLM1("createAI", "AIUnitInfantry");
+						T_CALLM1("createAI", "AIUnitInfantry");
 
 						pr _groupType = CALLM0(_group, "getType");
 
@@ -1579,18 +1581,6 @@ CLASS("Unit", "Storable")
 		_data select UNIT_DATA_ID_GROUP
 	ENDMETHOD;
 
-	//                           G E T   A I
-	/*
-	Method: getAI
-	Returns the <AIUnit> object of this unit, or "" if it's not spawned
-
-	Returns: <AIUnit>
-	*/
-	METHOD(getAI)
-		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_AI
-	ENDMETHOD;
 
 	//                    G E T   M A I N   D A T A
 	/*
@@ -2185,6 +2175,18 @@ CLASS("Unit", "Storable")
 		[] // A single unit has no subagents
 	ENDMETHOD;
 
+	//                           G E T   A I
+	/*
+	Method: getAI
+	Returns the <AIUnit> object of this unit, or "" if it's not spawned
+
+	Returns: <AIUnit>
+	*/
+	METHOD(getAI)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+		_data select UNIT_DATA_ID_AI
+	ENDMETHOD;
 
 	/*
 	Method: createDefaultCrew

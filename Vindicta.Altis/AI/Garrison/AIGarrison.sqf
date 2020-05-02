@@ -138,6 +138,11 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	ENDMETHOD;
 
+	/* override */ METHOD(start)
+		params [P_THISOBJECT, P_STRING("_category")];
+		T_CALLM1("addToProcessCategory", _category);
+	ENDMETHOD;
+
 	#ifdef DEBUG_GOAL_MARKERS
 	METHOD(_initDebugMarkers)
 		params [P_THISOBJECT];
