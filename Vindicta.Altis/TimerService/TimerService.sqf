@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Timer\Timer.hpp"
@@ -15,6 +15,7 @@ Author: Sparker 31.07.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME TimerService
 CLASS("TimerService", "")
 
 	VARIABLE("timers");
@@ -32,7 +33,7 @@ CLASS("TimerService", "")
 	_resolution - the time interval at which this timer service will check its timers and dispatch messages.
 	It defines the maximum frequency at which your timer can run.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_resolution"), P_BOOL("_startSuspended")];
 		if(_startSuspended) then {
 			T_SETV("suspended", 1);
@@ -45,11 +46,11 @@ CLASS("TimerService", "")
 
 		// Create a per frame event handler
 		#ifndef _SQF_VM
-		pr _id = addMissionEventHandler ["EachFrame", format ["""%1"" call %2;", _thisObject, CLASS_METHOD_NAME_STR("TimerService", "PFH")]];
+		pr _id = addMissionEventHandler ["EachFrame", format ["[""%1""] call %2;", _thisObject, CLASS_METHOD_NAME_STR("TimerService", "PFH")]];
 		T_SETV("eventHandlerID", _id);
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
 	// |                            D E L E T E                             |
@@ -58,7 +59,7 @@ CLASS("TimerService", "")
 	
 	Warning: must be called in scheduled environment!
 	*/
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete the event handler
@@ -72,7 +73,7 @@ CLASS("TimerService", "")
 		{
 			DELETE(_x);
 		} forEach (T_GETV("timers"));
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// |                         A D D   T I M E R                          |
 	/*
@@ -87,12 +88,12 @@ CLASS("TimerService", "")
 	
 	Returns: nil
 	*/
-	METHOD("addTimer") {
+	METHOD(addTimer)
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		private _timers = T_GETV("timers");
 		private _timerDereferenced = CALLM0(_timer, "getDataArray");
 		_timers pushBackUnique _timerDereferenced;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// |                      R E M O V E   T I M E R                       |
 	/*
@@ -107,7 +108,7 @@ CLASS("TimerService", "")
 	
 	Returns: nil
 	*/
-	METHOD("removeTimer") {
+	METHOD(removeTimer)
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		CRITICAL_SECTION {
 			private _timers = T_GETV("timers");
@@ -124,24 +125,24 @@ CLASS("TimerService", "")
 			//T_SETV("timers", _timers);
 		};
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("suspend") {
+	METHOD(suspend)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			T_SETV("suspended", T_GETV("suspended") + 1);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("resume") {
+	METHOD(resume)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			T_SETV("suspended", T_GETV("suspended") - 1);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Per frame handler
-	METHOD("PFH") {
+	METHOD(PFH)
 		params [P_THISOBJECT];
 		if ((time - T_GETV("timeLastProcess")) > T_GETV("resolution")) then {
 
@@ -204,6 +205,6 @@ CLASS("TimerService", "")
 			};
 			T_SETV("timeLastProcess", time);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

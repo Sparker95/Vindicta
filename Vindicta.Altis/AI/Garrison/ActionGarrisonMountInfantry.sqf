@@ -5,18 +5,19 @@ All infantry mounts vehicles as passengers
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonMountInfantry
 CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 	VARIABLE("mount");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _mount = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOUNT);
 		T_SETV("mount", _mount);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* private override */METHOD("activate") {
+	/* private override */METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _AI = T_GETV("AI");
@@ -40,10 +41,10 @@ CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	/* public override */ METHOD("process") {
+	/* public override */ METHOD(process)
 		params [P_THISOBJECT];
 		
 		pr _gar = T_GETV("gar");
@@ -80,6 +81,6 @@ CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 			T_SETV("state", _state);
 			_state
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

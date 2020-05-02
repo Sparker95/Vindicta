@@ -11,12 +11,13 @@ Parameters:
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitInfantryMove
 CLASS("ActionUnitInfantryMove", "ActionUnitInfantryMoveBase")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 /*

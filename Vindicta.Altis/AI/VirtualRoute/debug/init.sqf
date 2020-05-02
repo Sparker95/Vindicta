@@ -2,7 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 
-#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\..\..\common.h"
 
 gps_test_fnc_mapDrawLine = compile preprocessFileLineNumbers "AI\VirtualRoute\debug\mapDrawLine.sqf";
 

@@ -12,6 +12,7 @@ Author: Sparker 12.11.2018
 #define MRK_GOAL	"_goal"
 #define MRK_ARROW	"_arrow"
 
+#define OOP_CLASS_NAME AIGroup
 CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
@@ -22,7 +23,7 @@ CLASS("AIGroup", "AI_GOAP")
 	VARIABLE("unitMarkersEnabled");
 	#endif
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Group");
@@ -53,24 +54,31 @@ CLASS("AIGroup", "AI_GOAP")
 		// [_ws, WSP_GROUP_DRIVERS_ASSIGNED, false] call ws_setPropertyValue;
 		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, false] call ws_setPropertyValue;
 		T_SETV("worldState", _ws);
-		
-		// Set process interval
-		T_CALLM1("setProcessInterval", 3);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
 		T_SETV("unitMarkersEnabled", false);
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	#ifdef DEBUG_GOAL_MARKERS
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
-		T_CALLM0("_disableDebugMarkers");
-	} ENDMETHOD;
 
-	METHOD("_enableDebugMarkers") {
+		T_CALLM0("removeFromProcessCategory");
+
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_disableDebugMarkers");
+		#endif
+
+	ENDMETHOD;
+
+	/* override */ METHOD(start)
+		params [P_THISOBJECT];
+		T_CALLM1("addToProcessCategory", "AIGroup");
+	ENDMETHOD
+
+	METHOD(_enableDebugMarkers)
 		params [P_THISOBJECT];
 
 		if(T_GETV("markersEnabled")) exitWith {
@@ -116,9 +124,9 @@ CLASS("AIGroup", "AI_GOAP")
 		}, ["AIGroupMarker", _thisObject]] call BIS_fnc_addStackedEventHandler;
 
 		T_SETV("markersEnabled", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_disableDebugMarkers") {
+	METHOD(_disableDebugMarkers)
 		params [P_THISOBJECT];
 		
 		if(!T_GETV("markersEnabled")) exitWith {
@@ -130,9 +138,9 @@ CLASS("AIGroup", "AI_GOAP")
 		[_thisObject, "onMapSingleClick"] call BIS_fnc_removeStackedEventHandler;
 
 		T_SETV("markersEnabled", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_updateDebugMarkers") {
+	METHOD(_updateDebugMarkers)
 		params [P_THISOBJECT];
 
 		pr _grp = T_GETV("agent");
@@ -216,19 +224,23 @@ CLASS("AIGroup", "AI_GOAP")
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
+		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("unitMarkersEnabled")) then {
 			pr _unused = "";
 		};
+		#endif
 
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+
+		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
-	} ENDMETHOD;
-	#endif
+		#endif
+	ENDMETHOD;
 	FIX_LINE_NUMBERS()
 
 	// ----------------------------------------------------------------------
@@ -236,9 +248,9 @@ CLASS("AIGroup", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGroupAI
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: handleUnitsRemoved
@@ -253,7 +265,7 @@ CLASS("AIGroup", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		OOP_INFO_1("handleUnitsRemoved: %1", _units);
@@ -268,7 +280,7 @@ CLASS("AIGroup", "AI_GOAP")
 		if (_currentAction != NULL_OBJECT) then {
 			CALLM1(_currentAction, "handleUnitsRemoved", _units);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: handleUnitsAdded
@@ -283,7 +295,7 @@ CLASS("AIGroup", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsAdded") {
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		OOP_INFO_1("handleUnitsAdded: %1", _units);
@@ -293,15 +305,47 @@ CLASS("AIGroup", "AI_GOAP")
 		if (_currentAction != NULL_OBJECT) then {
 			CALLM1(_currentAction, "handleUnitsAdded", _units);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
+
+	//                        G E T   P O S S I B L E   G O A L S
+	/*
+	Method: getPossibleGoals
+	Returns the list of goals this agent evaluates on its own.
+
+	Access: Used by AI class
+
+	Returns: Array with goal class names
+	*/
+	METHOD(getPossibleGoals)
+		//["GoalGroupRelax"]
+		["GoalGroupUnflipVehicles", "GoalGroupArrest"]
+	ENDMETHOD;
+
+
+	//                      G E T   P O S S I B L E   A C T I O N S
+	/*
+	Method: getPossibleActions
+	Returns the list of actions this agent can use for planning.
+
+	Access: Used by AI class
+
+	Returns: Array with action class names
+	*/
+	METHOD(getPossibleActions)
+		[]
+	ENDMETHOD;
+
+	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+		true
+	ENDMETHOD;
 
 	// Debug
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD("getDebugUIVariableNames") {
+	/* override */ METHOD(getDebugUIVariableNames)
 		[
 			"suspTarget"
 		]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

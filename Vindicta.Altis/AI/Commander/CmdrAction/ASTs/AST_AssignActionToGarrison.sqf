@@ -10,6 +10,7 @@ doing something else.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_AssignActionToGarrison
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
@@ -26,7 +27,7 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 		_successState - <CMDR_ACTION_STATE>, state to return after success
 		_garrIdVar - IN <AST_VAR>(Number), Id of the <Model.GarrisonModel> to assign the action to
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -36,9 +37,9 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
 		T_SETV("garrIdVar", _garrIdVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
@@ -50,7 +51,7 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 		CALLM(_action, "setPersonalGarrisonIntel", [_garr]);
 		T_GETV("successState")
 
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 #ifdef _SQF_VM

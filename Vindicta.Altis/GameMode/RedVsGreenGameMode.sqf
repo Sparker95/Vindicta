@@ -1,9 +1,10 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME RedVsGreenGameMode
 CLASS("RedVsGreenGameMode", "GameModeBase")
 	VARIABLE("linePt");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("name", "expand");
 		T_SETV("spawningEnabled", true);
@@ -12,14 +13,14 @@ CLASS("RedVsGreenGameMode", "GameModeBase")
 			random 30000, random 30000
 		];
 		T_SETV("linePt", _linePt);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("getLocationOwner") {
+	/* protected virtual */ METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		
 		private _type = GETV(_loc, "type");
@@ -41,5 +42,5 @@ CLASS("RedVsGreenGameMode", "GameModeBase")
 		// } else {
 		// 	civilian
 		// }
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

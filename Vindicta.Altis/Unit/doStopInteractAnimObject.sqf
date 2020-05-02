@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Unit\Unit.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"

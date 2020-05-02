@@ -2,20 +2,21 @@
 
 #define pr private
 
+#define OOP_CLASS_NAME ExpandGameMode
 CLASS("ExpandGameMode", "GameModeBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("name", "expand");
 		T_SETV("spawningEnabled", false); // It's done by AICommander now
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	/* protected virtual */ METHOD("getLocationOwner") {
+	/* protected virtual */ METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		OOP_DEBUG_MSG("%1", [_loc]);
 		if(GETV(_loc, "type") in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE]) then {
@@ -24,19 +25,19 @@ CLASS("ExpandGameMode", "GameModeBase")
 		} else {
 			CIVILIAN
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getRecruitCount") {
+	METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		100
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getRecruitmentRadius") {
+	METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		10000
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("initLocationGameModeData") {
+	METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		private _type = CALLM0(_loc, "getType");
 		private _data = NEW("ExpandLocationData", [_loc]);
@@ -52,9 +53,9 @@ CLASS("ExpandGameMode", "GameModeBase")
 
 		// Return
 		CALLM0(_loc, "getGameModeData")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("initServerOnly") {
+	METHOD(initServerOnly)
 		params [P_THISOBJECT];
 				
 		// Create LocationGameModeData objects for all locations
@@ -62,9 +63,9 @@ CLASS("ExpandGameMode", "GameModeBase")
 			private _loc = _x;
 			T_CALLM1("initLocationGameModeData", _loc);
 		} forEach GET_STATIC_VAR("Location", "all");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("initClientOnly") {
+	/* protected virtual */ METHOD(initClientOnly)
 		params [P_THISOBJECT];
 
 		["Game Mode", "Add activity here", {
@@ -86,17 +87,18 @@ CLASS("ExpandGameMode", "GameModeBase")
 			}] remoteExec ["call", 0];
 		}] call pr0_fnc_addDebugMenuItem;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 
+#define OOP_CLASS_NAME ExpandLocationData
 CLASS("ExpandLocationData", "LocationGameModeData")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual override */ METHOD("updatePlayerRespawn") {
+	/* virtual override */ METHOD(updatePlayerRespawn)
 		params [P_THISOBJECT];
 
 		pr _loc = T_GETV("location");
@@ -109,6 +111,6 @@ CLASS("ExpandLocationData", "LocationGameModeData")
 			pr _enable = (_x in _sidesOccupied);
 			CALLM2(_loc, "enablePlayerRespawn", _x, _enable);
 		} forEach [WEST, EAST, INDEPENDENT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -5,7 +5,7 @@
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\defineCommonGrids.hpp"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\..\AI\Commander\CmdrAction\CmdrActionStates.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -15,7 +15,6 @@
 #include "..\..\PlayerDatabase\PlayerDatabase.hpp"
 #include "..\..\Intel\Intel.hpp"
 
-#define CLASS_NAME "ClientMapUI"
 #define pr private
 
 FIX_LINE_NUMBERS()
@@ -24,7 +23,9 @@ FIX_LINE_NUMBERS()
 	Class: ClientMapUI
 	Singleton class that performs things related to map user interface
 */
-CLASS(CLASS_NAME, "")
+#define CLASS_NAME "ClientMapUI"
+#define OOP_CLASS_NAME ClientMapUI
+CLASS("ClientMapUI", "")
 
 	// Array with markers which are currently under cursor, gets updated on mouse moving event handler
 	VARIABLE("markersUnderCursor");
@@ -45,11 +46,11 @@ CLASS(CLASS_NAME, "")
 
 	// GarrisonSplitDialog OOP object
 	VARIABLE("garSplitDialog");
-	METHOD("onGarrisonSplitDialogDeleted") {
+	METHOD(onGarrisonSplitDialogDeleted)
 		params [P_THISOBJECT];
 		T_SETV("garSplitDialog", "");
 		T_CALLM0("updateHintTextFromContext");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Currently selected garrisons
 
@@ -91,7 +92,7 @@ CLASS(CLASS_NAME, "")
 
 
 	// initialize UI event handlers
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Markers under cursor
@@ -372,7 +373,7 @@ CLASS(CLASS_NAME, "")
 		}];
 		*/
 
-	} ENDMETHOD; // end "new" METHOD
+	ENDMETHOD; // end "new" METHOD
 
 
 
@@ -388,10 +389,10 @@ CLASS(CLASS_NAME, "")
 	http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 	*/
 
-	STATIC_METHOD("setPlayerRestoreData") {
+	STATIC_METHOD(setPlayerRestoreData)
 		params ["_thisClass", "_playerRestoreData"];
 		gPlayerRestoreData = _playerRestoreData;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -402,14 +403,14 @@ CLASS(CLASS_NAME, "")
 		0: _control - the button to be toggled
 		1: _enable - default: true, false to disable
 	*/
-	STATIC_METHOD("toggleButtonEnabled") {
+	STATIC_METHOD(toggleButtonEnabled)
 		params ["_thisClass", "_control", ["_enable", true]];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Returns marker text of closest marker
-	STATIC_METHOD("getNearestLocationName") {
+	STATIC_METHOD(getNearestLocationName)
 		params ["_thisClass", "_pos"];
 		pr _return = "";
 
@@ -420,7 +421,7 @@ CLASS(CLASS_NAME, "")
 		} forEach entities "Vindicta_LocationSector";
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -431,7 +432,7 @@ CLASS(CLASS_NAME, "")
 		Parameters: 
 		TODO
 	*/
-	METHOD("mapShowAllIntel") {
+	METHOD(mapShowAllIntel)
 		params [P_THISOBJECT, P_BOOL("_forceShow"), P_BOOL("_forceHide")];
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 
@@ -456,7 +457,7 @@ CLASS(CLASS_NAME, "")
 				CALLM1(_x, "showOnMap", _show0);
 			};
 		} forEach _allIntels;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -469,7 +470,7 @@ CLASS(CLASS_NAME, "")
 		Returns: control 
 
 	*/
-	METHOD("findControl") {
+	METHOD(findControl)
 		params [P_THISOBJECT, P_STRING("_className")];
 		pr _display = findDisplay 12;
 		//OOP_INFO_1("FIND CONTROL: %1", _className);
@@ -480,7 +481,7 @@ CLASS(CLASS_NAME, "")
 		} else {
 			controlNull
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*                                                                      
@@ -501,7 +502,7 @@ CLASS(CLASS_NAME, "")
 		Method: drawRoute
 		Description: Draws a route on the map, for example for attacks, reinforcements...
 	*/
-	STATIC_METHOD("drawRoute") {
+	STATIC_METHOD(drawRoute)
 		params [P_THISCLASS, P_ARRAY("_posArray"), P_STRING("_uniqueString"), P_BOOL("_enable"), P_BOOL("_cycle"), P_BOOL("_drawSrcDest"), ["_color", "ColorRed"], P_ARRAY("_labels") ];
 
 		//OOP_INFO_1("DRAW ROUTE: %1", _this);
@@ -572,7 +573,7 @@ CLASS(CLASS_NAME, "")
 		};
 
 		_markers
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -594,7 +595,7 @@ CLASS(CLASS_NAME, "")
 		0: _text - String description 
 
 	*/
-	METHOD("setDescriptionText") {
+	METHOD(setDescriptionText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _mapDisplay = findDisplay 12;
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_DESCRIPTION"] call ui_fnc_findControl);
@@ -606,7 +607,7 @@ CLASS(CLASS_NAME, "")
 		pr _height = ctrlTextHeight _ctrl;
 		_ctrl ctrlSetPosition [_pos#0, _pos#1, _pos#2, _height];
 		_ctrl ctrlCommit 0;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: setHintText
@@ -616,11 +617,11 @@ CLASS(CLASS_NAME, "")
 		0: _text - String that should be set on the hint panel
 
 	*/
-	METHOD("setHintText") {
+	METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _mapDisplay = findDisplay 12;
 		([_mapDisplay, "CMUI_HINTS"] call ui_fnc_findControl) ctrlSetText _text;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -635,7 +636,7 @@ CLASS(CLASS_NAME, "")
 		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 
 	*/
-	METHOD("updateHintTextFromContext") {
+	METHOD(updateHintTextFromContext)
 		params [P_THISOBJECT];
 
 		pr _mapDisplay = findDisplay 12;
@@ -676,7 +677,7 @@ CLASS(CLASS_NAME, "")
 			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison.");
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*                                                                                                                                       
@@ -690,7 +691,7 @@ CLASS(CLASS_NAME, "")
 	*/
 
 	// Enables or disables the garrison action listbox
-	METHOD("garActionMenuEnable") {
+	METHOD(garActionMenuEnable)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		// Move it away if we don't need to see it any more
@@ -739,15 +740,15 @@ CLASS(CLASS_NAME, "")
 		};
 
 		T_CALLM0("updateHintTextFromContext");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets the position of the garrison action listbox
-	METHOD("garActionMenuSetPos") {
+	METHOD(garActionMenuSetPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		T_SETV("garActionPos", _pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("garActionMenuUpdatePos") {
+	METHOD(garActionMenuUpdatePos)
 		params [P_THISOBJECT];
 		// Move the garrison action listbox if needed
 		if (T_GETV("garActionLBShown")) then {
@@ -758,10 +759,10 @@ CLASS(CLASS_NAME, "")
 			_ctrl ctrlSetPosition [_posScreen#0, _posScreen#1, _pos#2, _pos#3];
 			_ctrl ctrlCommit 0;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// The selection in a listbox is changed.
-	METHOD("garActionLBOnButtonClick") {
+	METHOD(garActionLBOnButtonClick)
 		params [P_THISOBJECT, "_action"];
 
 		// Sanity checks
@@ -809,7 +810,7 @@ CLASS(CLASS_NAME, "")
 		T_SETV("givingOrder", false);
 
 		T_CALLM0("updateHintTextFromContext");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -834,7 +835,7 @@ CLASS(CLASS_NAME, "")
 	http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	*/
 
-	METHOD("garSelMenuEnable") {
+	METHOD(garSelMenuEnable)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		T_SETV("garSelMenuEnabled", _enable);
@@ -862,15 +863,15 @@ CLASS(CLASS_NAME, "")
 		};
 
 		T_CALLM0("updateHintTextFromContext");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("garSelMenuSetGarRecord") {
+	METHOD(garSelMenuSetGarRecord)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 		T_SETV("garRecordCurrent", _garRecord);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called on each map draw event to update the position
-	METHOD("garSelMenuUpdatePos") {
+	METHOD(garSelMenuUpdatePos)
 		params [P_THISOBJECT];
 
 		if (T_GETV("garSelMenuEnabled")) then {
@@ -893,10 +894,10 @@ CLASS(CLASS_NAME, "")
 			_ctrl ctrlCommit 0;
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called when user clicks on one of these buttons
-	METHOD("garSelMenuOnButtonClick") {
+	METHOD(garSelMenuOnButtonClick)
 		params [P_THISOBJECT, P_STRING("_button")];
 
 		pr _garRecord = T_GETV("garRecordCurrent");
@@ -946,7 +947,7 @@ CLASS(CLASS_NAME, "")
 		};
 
 		T_CALLM0("updateHintTextFromContext");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -969,7 +970,7 @@ CLASS(CLASS_NAME, "")
 	o88o  8  o88o o888ooo8888 o88o    88    888oo88                                               
 	*/
 
-	METHOD("locSelMenuEnable") {
+	METHOD(locSelMenuEnable)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		T_SETV("locSelMenuEnabled", _enable);
@@ -1000,14 +1001,14 @@ CLASS(CLASS_NAME, "")
 		};
 
 		T_CALLM0("updateHintTextFromContext");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("locSelMenuSetLocation") {
+	METHOD(locSelMenuSetLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		T_SETV("locationCurrent", _loc);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("locSelMenuUpdatePos") {
+	METHOD(locSelMenuUpdatePos)
 		params [P_THISOBJECT];
 
 		if (T_GETV("locSelMenuEnabled")) then {
@@ -1029,9 +1030,9 @@ CLASS(CLASS_NAME, "")
 			_ctrl ctrlCommit 0;
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("locSelMenuOnButtonClick") {
+	METHOD(locSelMenuOnButtonClick)
 		params [P_THISOBJECT, P_STRING("_button")];
 
 		pr _loc = T_GETV("locationCurrent");
@@ -1062,7 +1063,7 @@ CLASS(CLASS_NAME, "")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -1078,7 +1079,7 @@ CLASS(CLASS_NAME, "")
 	#define INTEL_PANEL_CLEAR 0
 	#define INTEL_PANEL_SHOW_COMPOSITION 1
 
-	METHOD("intelPanelUpdateFromGarrisonRecord") {
+	METHOD(intelPanelUpdateFromGarrisonRecord)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), P_ARRAY("_flags")];
 
 		private _mapDisplay = findDisplay 12;
@@ -1107,10 +1108,10 @@ CLASS(CLASS_NAME, "")
 				};
 			} forEach _x;
 		} forEach _comp;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("intelPanelUpdateFromLocationIntel") {
+	METHOD(intelPanelUpdateFromLocationIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_ARRAY("_flags")];
 
 		pr _mapDisplay = findDisplay 12;
@@ -1201,23 +1202,23 @@ CLASS(CLASS_NAME, "")
 		};
 
 		_lnb lnbSetColumnsPos [0, 0.6];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("intelPanelClear") {
+	METHOD(intelPanelClear)
 		params [P_THISOBJECT];
 		private _mapDisplay = findDisplay 12;
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		lnbClear _lnb;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("intelPanelDeselect") {
+	METHOD(intelPanelDeselect)
 		params [P_THISOBJECT];
 		private _mapDisplay = findDisplay 12;
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetCurSelRow -1;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("intelPanelUpdateFromIntel") {
+	METHOD(intelPanelUpdateFromIntel)
 		params [P_THISOBJECT, P_ARRAY("_flags")];
 		
 		private _mapDisplay = findDisplay 12;
@@ -1334,7 +1335,7 @@ CLASS(CLASS_NAME, "")
 				};
 			};
 		} forEach _allIntels;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: intelPanelOnSelChanged
@@ -1343,7 +1344,7 @@ CLASS(CLASS_NAME, "")
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	METHOD("intelPanelOnSelChanged") {
+	METHOD(intelPanelOnSelChanged)
 		params [P_THISOBJECT, "_lnb"];
 
 		// We only care if nothing is selected
@@ -1411,9 +1412,9 @@ CLASS(CLASS_NAME, "")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("intelPanelOnDblClick") {
+	METHOD(intelPanelOnDblClick)
 		params [P_THISOBJECT, "_lnb", "_index"];
 
 		if (_index != -1) then {
@@ -1427,11 +1428,11 @@ CLASS(CLASS_NAME, "")
 			};
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Hides or shows the sort-by-... buttons
 	/*
-	METHOD("intelPanelShowButtons") {
+	METHOD(intelPanelShowButtons)
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		_show = _show && (
@@ -1448,10 +1449,10 @@ CLASS(CLASS_NAME, "")
 					IDC_LOCP_LISTNBOX_BUTTONS_1,
 					IDC_LOCP_LISTNBOX_BUTTONS_2];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
-	METHOD("intelPanelSortIntel") {
+	METHOD(intelPanelSortIntel)
 		params [P_THISOBJECT, P_STRING("_category"), P_BOOL("_inverse")];
 		pr _col = ["side", "status", "type", "time"] find _category;
 		if (_col != -1) then {
@@ -1471,16 +1472,16 @@ CLASS(CLASS_NAME, "")
 				_lnb lnbSortByValue [_col, _inverse];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("intelPanelOnSortButtonClick") {
+	METHOD(intelPanelOnSortButtonClick)
 		params [P_THISOBJECT, P_STRING("_button")];
 		pr _inverse = !T_GETV("intelPanelSortInverse");
 		OOP_INFO_1("INTEL PANEL ON SORT BUTTON CLICK: %1", _button);
 		T_CALLM2("intelPanelSortIntel", _button, _inverse); // _button - "side", "status", "type", "time"
 		T_SETV("intelPanelSortInverse", _inverse);
 		T_SETV("intelPanelSortCategory", _button);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -1517,7 +1518,7 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("onMouseButtonDown") {
+	METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 		OOP_INFO_1("ON MOUSE BUTTON DOWN: %1", _this);
@@ -1703,12 +1704,12 @@ CLASS(CLASS_NAME, "")
 		if (count _garrisonsUnderCursor == 0 && count _locationsUnderCursor == 0) then {
 			T_CALLM0("showGlobalIntel");
 		};
-	} ENDMETHOD;
-	
+	ENDMETHOD;
+
 	/*
 		Method: showGlobalIntel
 	*/
-	METHOD("showGlobalIntel") {
+	METHOD(onMouseClickElsewhere)
 		params [P_THISOBJECT];
 
 		// set text on sorting buttons
@@ -1746,10 +1747,10 @@ CLASS(CLASS_NAME, "")
 
 		// Show the buttons of the listbox
 		//T_CALLM1("intelPanelShowButtons", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("onIntelAdded") {
+	METHOD(onIntelAdded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 
 		// We only care if nothing is selected
@@ -1768,32 +1769,32 @@ CLASS(CLASS_NAME, "")
 			// So we want to check if drawing of all intel on the map is enabled or not
 			T_CALLM0("mapShowAllIntel");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("onIntelRemoved") {
+	METHOD(onIntelRemoved)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 
 		// They are the same now
 		T_CALLM1("onIntelAdded", _intel);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("onMouseButtonUp") {
+	METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onMouseButtonClick") {
+	METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Common code for all 'checkboxes' in this UI
 	// Checkboxes are buttons with [x] or [ ] at the start of their text
 	// Returns the new state of this 'checkbox'
 	// Because in arma checkbox is only the checkbox itself, and it has no text, WTF
-	METHOD("onButtonClickCheckbox") {
+	METHOD(onButtonClickCheckbox)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 
 		OOP_INFO_1("onButtonClickCheckbox: %1", _this);
@@ -1802,26 +1803,26 @@ CLASS(CLASS_NAME, "")
 
 		// Return the new value
 		!_checkedPrev
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onButtonClickShowIntelInactive
 		Description: Toggles visibility of inactive intel on the map.
 
 	*/
-	METHOD("onButtonClickShowIntelInactive") {
+	METHOD(onButtonClickShowIntelInactive)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelInactive", _checked);
 		T_CALLM0("mapShowAllIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onButtonClickShowIntelInactive
 		Description: Toggles visibility of inactive intel in the listbox.
 
 	*/
-	METHOD("onButtonClickShowIntelInactiveList") {
+	METHOD(onButtonClickShowIntelInactiveList)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelInactiveList", _checked);
@@ -1833,26 +1834,26 @@ CLASS(CLASS_NAME, "")
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onButtonClickShowIntelActive
 		Description: Toggles visibility of intel on the map.
 
 	*/
-	METHOD("onButtonClickShowIntelActive") {
+	METHOD(onButtonClickShowIntelActive)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelActive", _checked);
 		T_CALLM0("mapShowAllIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onButtonClickShowIntelActiveList
 		Description: Toggles visibility of intel in the listbox.
 
 	*/
-	METHOD("onButtonClickShowIntelActiveList") {
+	METHOD(onButtonClickShowIntelActiveList)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelActiveList", _checked);
@@ -1864,26 +1865,26 @@ CLASS(CLASS_NAME, "")
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onButtonClickShowIntelEnded
 		Description: Toggles visibility of intel on the map.
 
 	*/
-	METHOD("onButtonClickShowIntelEnded") {
+	METHOD(onButtonClickShowIntelEnded)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelEnded", _checked);
 		T_CALLM0("mapShowAllIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onButtonClickShowIntelEndedList
 		Description: Toggles visibility of intel in the listbox.
 
 	*/
-	METHOD("onButtonClickShowIntelEndedList") {
+	METHOD(onButtonClickShowIntelEndedList)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelEndedList", _checked);
@@ -1894,10 +1895,10 @@ CLASS(CLASS_NAME, "")
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// shows or hides intel panel controls
-	METHOD("onButtonClickShowIntelPanel") {
+	METHOD(onButtonClickShowIntelPanel)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		OOP_INFO_1("onButtonClickShowIntelPanel: %1", _this);
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
@@ -1927,9 +1928,9 @@ CLASS(CLASS_NAME, "")
 		{
 			([(finddisplay 12), _x] call ui_fnc_findControl) ctrlShow _checked;
 		} forEach _controlNames;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonClickShowLocations") {
+	METHOD(onButtonClickShowLocations)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showLocations", _checked);
@@ -1938,29 +1939,29 @@ CLASS(CLASS_NAME, "")
 		{
 			CALLM1(_x, "show", _checked);
 		} forEach _allLocMarkers;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonClickShowPlayers") {
+	METHOD(onButtonClickShowPlayers)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 
 		[_checked] call ui_fnc_enablePlayerMarkers;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
-	METHOD("onButtonClickShowEnemies") {
+	METHOD(onButtonClickShowEnemies)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showEnemies", _checked);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
-	METHOD("onButtonClickClearNotifications") {
+	METHOD(onButtonClickClearNotifications)
 		params [P_THISOBJECT];
 
 		CALLSM1("MapMarkerLocation", "setAllNotifications", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onMapOpen
@@ -1968,16 +1969,16 @@ CLASS(CLASS_NAME, "")
 
 		No parameters
 	*/
-	METHOD("onMapOpen") {
+	METHOD(onMapOpen)
 		params [P_THISOBJECT];
 		pr _mapDisplay = findDisplay 12;
 
 		// Reset the map UI to default state
 		T_CALLM0("showGlobalIntel");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Not used now
-	STATIC_METHOD("onButtonDownAddFriendlyGroup") {
+	STATIC_METHOD(onButtonDownAddFriendlyGroup)
 		params ["_thisClass", "_control"];
 
 		private _mapDisplay = findDisplay 12;
@@ -2002,7 +2003,7 @@ CLASS(CLASS_NAME, "")
 
 		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText "A friendly group has been added to the location!";
 		*/
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -2014,14 +2015,14 @@ CLASS(CLASS_NAME, "")
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	METHOD("onMouseEnter") {
+	METHOD(onMouseEnter)
 		params [P_THISOBJECT, "_ctrl"];
 
 		pr _mapDisplay = findDisplay 12;
 		
 		T_CALLM0("updateHintTextFromContext");
 		false // Must return false to still make it do the config-defined action
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		UNUSED!
@@ -2032,19 +2033,19 @@ CLASS(CLASS_NAME, "")
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	METHOD("onMouseExit") {
+	METHOD(onMouseExit)
 		params [P_THISOBJECT, "_ctrl"];
 
 		T_CALLM0("updateHintTextFromContext");
 		false // Must return false to still make it do the config-defined action
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
 		Method: onMapDraw
 		Description: Gets called each frame if map is open and being redrawn.
 	*/
-	METHOD("onMapDraw") {
+	METHOD(onMapDraw)
 		params [P_THISOBJECT];
 
 		// listbox selection changed event handler is called before lbSelection updates 
@@ -2073,13 +2074,13 @@ CLASS(CLASS_NAME, "")
 		// Update state of respawn panel thing
 		T_CALLM0("respawnPanelOnDraw");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Method: onMouseMoving
 		Fires continuously while moving the mouse with a certain interval.
 	*/
-	METHOD("onMapMouseMoving") {
+	METHOD(onMapMouseMoving)
 		params [P_THISOBJECT, "_control", "_xPos", "_yPos", "_mouseOver"];
 
 		//pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]); // Let's not do it for garrison markers yet, ok?
@@ -2115,7 +2116,7 @@ CLASS(CLASS_NAME, "")
 
 		T_SETV("markersUnderCursor", _markersUnderCursor);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -2138,7 +2139,7 @@ CLASS(CLASS_NAME, "")
 	Gets called from "onMapDraw"
 	*/
 
-	METHOD("garOrderUpdateArrow") {
+	METHOD(garOrderUpdateArrow)
 		params [P_THISOBJECT];
 
 		if (T_GETV("givingOrder")) then {
@@ -2160,14 +2161,14 @@ CLASS(CLASS_NAME, "")
 				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// //////////////////////////////////////////////////////////////////////////////////
 	// //  R E S P A W N   B U T T O N
 	// //////////////////////////////////////////////////////////////////////////////////
 
-	METHOD("respawnPanelEnable") {
+	METHOD(respawnPanelEnable)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		pr _respawnCtrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
@@ -2187,14 +2188,14 @@ CLASS(CLASS_NAME, "")
 
 		T_SETV("respawnPanelEnabled", _enable);
 		T_SETV("doZoom", _enable);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("respawnPanelEnabled") {
+	METHOD(respawnPanelEnabled)
 		params [P_THISOBJECT];
 		T_GETV("respawnPanelEnabled");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonClickRespawn") {
+	METHOD(onButtonClickRespawn)
 		params [P_THISOBJECT];
 
 		// If player has clicked this button, then it must be enabled
@@ -2242,18 +2243,18 @@ CLASS(CLASS_NAME, "")
 
 		// Close the map
 		openMap [false, false];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets text on the respawn panel
-	METHOD("respawnPanelSetText") {
+	METHOD(respawnPanelSetText)
 		params [P_THISOBJECT, P_STRING("_text")];
 
 		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
 		_ctrl ctrlSetText _text;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called on each draw event of map (on each frame when map is open)
-	METHOD("respawnPanelOnDraw") {
+	METHOD(respawnPanelOnDraw)
 		params [P_THISOBJECT];
 
 		if (T_GETV("respawnPanelEnabled")) then {
@@ -2351,7 +2352,7 @@ CLASS(CLASS_NAME, "")
 				_ctrlButton ctrlEnable true;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -2365,7 +2366,7 @@ CLASS(CLASS_NAME, "")
 
 		Example: call ClientMapUI_fnc_addDummyIntel;
 	*/
-	STATIC_METHOD("addDummyIntel") {
+	STATIC_METHOD(addDummyIntel)
 		params [P_THISCLASS];
 
 		// Fill dummy data for testing
@@ -2392,7 +2393,7 @@ CLASS(CLASS_NAME, "")
 		{
 			CALLM1(gIntelDatabaseClient, "addIntel", _x);
 		} forEach _allIntels;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

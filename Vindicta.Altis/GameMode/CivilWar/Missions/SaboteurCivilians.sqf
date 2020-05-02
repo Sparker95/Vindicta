@@ -439,6 +439,7 @@ TODO:
 	Make them choose targets better, they should try and blow up police vehicles, the police station, the police themselves!
 	Allow them to set traps for police, roadside bombs, blow up incoming reinforcements etc.
 */
+#define OOP_CLASS_NAME SaboteurCiviliansAmbientMission
 CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 	// Selection of target buildings remaining.
 	VARIABLE("targetBuildings");
@@ -449,7 +450,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 	// The active saboteurs.
 	VARIABLE("activeCivs");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -508,9 +509,9 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		private _maxActive = 1; //1 + (ln(0.01 * _radius + 1) min 1); // Probably that's too many already
 #endif
 		T_SETV("maxActive", _maxActive);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
@@ -519,19 +520,19 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			deleteVehicle _civie;
 			deleteVehicle _trigger;
 		} forEach T_GETV("activeCivs");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 #ifdef SABOTEUR_CIVILIANS_TESTING
 	// Make it always active mission if we are testing
-	/* override */ METHOD("isActive") {
+	/* override */ METHOD(isActive)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 #endif
 
 	// Called from base class update function, regardless of if the mission is active,
 	// because we might need to cleanup some missions that were ongoing.
-	/* protected override */ METHOD("updateExisting") {
+	/* protected override */ METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_BOOL("_active")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -549,10 +550,10 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 				};
 			};
 		} forEach +_activeCivs;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Called from base class update function, when the mission is active
-	/* protected virtual */ METHOD("spawnNew") {
+	/* protected virtual */ METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -659,6 +660,6 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 				// _wpCycle setWaypointType "CYCLE";
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

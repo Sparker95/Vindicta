@@ -1,8 +1,9 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME ActionGarrisonMoveMounted
 CLASS("ActionGarrisonMoveMounted", "ActionGarrisonMoveBase")
 
-	/* private override */ METHOD("assignMoveGoals") {
+	/* private override */ METHOD(assignMoveGoals)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius"), P_ARRAY("_route"), P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -36,9 +37,9 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrisonMoveBase")
 		} forEach (_infGroups apply {CALLM0(_x, "getAI")});
 
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("checkMoveGoals") {
+	/* protected override */ METHOD(checkMoveGoals)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
@@ -63,6 +64,6 @@ CLASS("ActionGarrisonMoveMounted", "ActionGarrisonMoveBase")
 		};
 
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

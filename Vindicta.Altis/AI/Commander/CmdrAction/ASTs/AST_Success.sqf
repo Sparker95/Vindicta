@@ -6,6 +6,7 @@ AST that does nothing but immediately succeed, used as placeholder, or replaceme
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_Success
 CLASS("AST_Success", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
@@ -18,7 +19,7 @@ CLASS("AST_Success", "ActionStateTransition")
 		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
 		_successState - <CMDR_ACTION_STATE>, state to return after success, which happens immediately
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -27,10 +28,10 @@ CLASS("AST_Success", "ActionStateTransition")
 		
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT];
 		T_GETV("successState")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

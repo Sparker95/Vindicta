@@ -5,6 +5,7 @@ Goal for a garrison to repair all its vehicles
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGarrisonRepairAllVehicles
 CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 
 	STATIC_VARIABLE("effects"); // Array of world properties
@@ -15,7 +16,7 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
-	STATIC_METHOD("calculateRelevance") {
+	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Check world state properties
@@ -33,6 +34,6 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 		} else {
 			0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -7,10 +7,11 @@ All members of this group will move to their assigned sentry positions.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupOccupySentryPositions
 CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
@@ -43,10 +44,10 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");
@@ -67,15 +68,15 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 		
 		// It's NEVER OVER!
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		//OOP_INFO_1("Unit removed: %1", _unit);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		// Delete external goals
@@ -91,7 +92,7 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 			};
 		} forEach _units;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

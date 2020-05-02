@@ -3,6 +3,7 @@
 #define pr private
 
 // Duration of this action
+#define OOP_CLASS_NAME ActionGarrisonClearArea
 CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 	VARIABLE("pos");
@@ -14,7 +15,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	VARIABLE("overwatchGroups");
 	VARIABLE("sweepGroups");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -33,10 +34,10 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		T_SETV("overwatchGroups", []);
 		T_SETV("sweepGroups", []);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* protected virtual */ METHOD("activate") {
+	/* protected virtual */ METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -232,10 +233,10 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	/* public virtual */ METHOD("process") {
+	/* public virtual */ METHOD(process)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
@@ -336,10 +337,10 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// Return the current state
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// // logic to run when the action is satisfied
-	// /* protected virtual */ METHOD("terminate") {
+	// /* protected virtual */ METHOD(terminate)
 	// 	params [P_THISOBJECT];
 
 	// 	// Bail if not spawned
@@ -348,16 +349,16 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 
 	// 	// Remove all assigned goals
 	// 	T_CALLM0("clearGroupGoals");
-	// } ENDMETHOD;
+	// ENDMETHOD;
 	
-	// /* protected virtual */ METHOD("onGarrisonSpawned") {
+	// /* protected virtual */ METHOD(onGarrisonSpawned)
 	// 	params [P_THISOBJECT];
 
 	// 	// Reset action state so that it reactivates
 	// 	T_SETV("state", ACTION_STATE_INACTIVE);
-	// } ENDMETHOD;
+	// ENDMETHOD;
 
-	// METHOD("_assignSweepGoals") {
+	// METHOD(_assignSweepGoals)
 	// 	params [P_THISOBJECT];
 
 	// 	pr _AI = T_GETV("AI");
@@ -381,14 +382,14 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	// 		];
 	// 		CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 	// 	} forEach _sweepGroups;
-	// } ENDMETHOD;
+	// ENDMETHOD;
 	
 	
 	// procedural preconditions
 	// POS world state property comes from action parameters
 	/*
 	// Don't have these preconditions any more, they are supplied by goal instead
-	STATIC_METHOD("getPreconditions") {
+	STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _actionParameters, TAG_POS);
@@ -396,7 +397,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		
 		_ws			
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 	
 ENDCLASS;

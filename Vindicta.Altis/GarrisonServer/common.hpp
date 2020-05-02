@@ -3,7 +3,7 @@
 #define OOP_WARNING
 #define OFSTREAM_FILE "Main.rpt"
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Group\Group.hpp"
 #include "..\Unit\Unit.hpp"
 #include "..\MessageTypes.hpp"

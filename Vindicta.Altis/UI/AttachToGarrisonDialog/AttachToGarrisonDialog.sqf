@@ -4,7 +4,7 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 /*
 Class: AttachToGarrisonDialog
@@ -13,6 +13,7 @@ Opens when a user wants to attach one unit he is looking at to the current garri
 
 #define pr private
 
+#define OOP_CLASS_NAME AttachToGarrisonDialog
 CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 
 	VARIABLE("unit");		// Unit
@@ -21,7 +22,7 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 	VARIABLE("garrison");	// Garrison to which we will be trying to attach the unit
 	VARIABLE("state");		// State of our communication with the server
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_hO")];
 
 		if (!isNil "gAttachToGarrisonDialog") then {
@@ -73,15 +74,15 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 		// Request data from server ... let's hope it replies ...
 		CALLM2(gGarrisonServer, "postMethodAsync", "getUnitData", _args);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		gAttachToGarrisonDialog = nil;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonClick") {
+	METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_0("ON BUTTON CLICK");
@@ -98,9 +99,9 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 		pr _args = [clientOwner, T_GETV("unit"), T_GETV("garrison")];
 		CALLM2(gGarrisonServer, "postMethodAsync", "attachUnit", _args);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("staticShowServerResponse_0") {
+	STATIC_METHOD(staticShowServerResponse_0)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_NUMBER("_code"), P_NUMBER("_unitCatID"), P_OOP_OBJECT("_gar"), P_SIDE("_garSide")];
 
 		OOP_INFO_1("STATIC SHOW SERVER RESPONSE 0: %1", _this);
@@ -166,6 +167,6 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 		// Set text
 		T_CALLM1("setText", _str);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
