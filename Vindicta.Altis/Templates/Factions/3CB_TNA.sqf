@@ -7,7 +7,15 @@ _array set [T_NAME, "t3CB_TNA"];
 _array set [T_DESCRIPTION, "Takistan's National Army. Requires 3CB's Faction pack and RHS."];
 _array set [T_DISPLAY_NAME, "3CB Takistan National Army"];
 _array set [T_FACTION, T_FACTION_Military];
-_array set [T_REQUIRED_ADDONS, []];
+_array set [T_REQUIRED_ADDONS, [
+	"rhs_c_troops",		// RHSAFRF
+	"rhsusf_c_troops",	// RHSUSAF
+	"rhsgref_c_troops",	// RHSGREF
+	"UK3CB_Factions_TKM", // 3CB Factions
+	"ace_compat_rhs_afrf3" // ACE Compat - RHS Armed Forces of the Russian Federation
+	"ace_compat_rhs_gref3" // ACE Compat - RHS: GREF
+	"ace_compat_rhs_usf3" // ACE Compat - RHS United States Armed Forces
+]];
 
 //==== Infantry ====
 _inf = [];
