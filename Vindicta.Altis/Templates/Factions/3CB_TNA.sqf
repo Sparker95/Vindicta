@@ -3,9 +3,9 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 // Name, description, faction, addons, etc
-_array set [T_NAME, "t3CB_TNA"];
-_array set [T_DESCRIPTION, "Takistan's National Army. Requires 3CB's Faction pack and RHS."];
-_array set [T_DISPLAY_NAME, "3CB Takistan National Army"];
+_array set [T_NAME, "t3CB_TNA_B"];
+_array set [T_DESCRIPTION, "Takistan's National Army BLUFOR edition. Requires 3CB's Faction pack and RHS."];
+_array set [T_DISPLAY_NAME, "3CB Takistan National Army BLU"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhs_c_troops",		// RHSAFRF
