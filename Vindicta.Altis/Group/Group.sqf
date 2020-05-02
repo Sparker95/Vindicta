@@ -1048,7 +1048,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: array of units.
 	*/
 	METHOD(getSubagents)
-		//params [P_THISOBJECT];
+		params [P_THISOBJECT];
 
 		// Get all units
 		private _data = T_GETV("data");
