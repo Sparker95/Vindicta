@@ -67,7 +67,7 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 #endif
 FIX_LINE_NUMBERS()
 
-CLASS(UNIT_CLASS_NAME, "Storable")
+CLASS("Unit", "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -768,7 +768,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _data = T_GETV("data");
 
 		// Bail if not vehicle
-		if ((_data#UNIT_DATA_ID_CAT) != T_VEH) exitWith {};		
+		pr _catID = _data#UNIT_DATA_ID_CAT;
+		if ((_catID) != T_VEH) exitWith {};
+
+		// Bail if it's a static weapon
+		pr _subcatID = _data#UNIT_DATA_ID_SUBCAT;
+		if (_subcatID in T_VEH_static) exitWith {};
 
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 
