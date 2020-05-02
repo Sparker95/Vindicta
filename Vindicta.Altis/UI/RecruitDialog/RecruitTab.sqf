@@ -18,6 +18,10 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 	VARIABLE("availableWeaponsPrimary");
 	VARIABLE("availableWeaponsSecondary");
 
+	VARIABLE("lastSelectedRecruit");
+	VARIABLE("primarySelectionHistory");
+	VARIABLE("secondarySelectionHistory");
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 
@@ -28,6 +32,10 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		T_SETV("availableWeaponsPrimary", +_array);
 		T_SETV("availableWeaponsSecondary", +_array);
 		T_SETV("arsenalUnits", []);
+
+		T_SETV("lastSelectedRecruit", -1);
+		T_SETV("primarySelectionHistory", []);
+		T_SETV("secondarySelectionHistory", []);
 
 		// Create controls
 		pr _displayParent = T_CALLM0("getDisplay");
@@ -61,45 +69,57 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		params [P_THISOBJECT];
 
 		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
-		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
-		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
+		T_CALLM1("_recruitSelectionChanged", lnbCurSelRow _lnbMain);
+	} ENDMETHOD;
 
-		// Clear listboxes
-		lnbClear _lnbPrimary;
-		lnbClear _lnbSecondary;
-
-		// Fill listboxes with available weapons
-		pr _id = lnbCurSelRow _lnbMain;
+	// Update listboxes with available gear
+	METHOD("_recruitSelectionChanged") {
+		params [P_THISOBJECT, P_NUMBER("_id")];
 
 		OOP_INFO_1("LISTBOX SEL CHANGED: %1", _id);
 
+		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
+		lnbClear _lnbPrimary;
+
+		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
+		lnbClear _lnbSecondary;
+
 		if (_id == -1) exitWith {}; // Bail if wrong row is selected
+
+		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
 		pr _subcatid = _lnbMain lnbValue [_id, 0];
 
 		OOP_INFO_1("  subcatid: %1", _subcatid);
 
+		// Save it so we can restore the selection in the listbox next time we update it
+		T_SETV("lastSelectedRecruit", _subcatid);
+
 		pr _primary =  T_GETV("availableWeaponsPrimary") select _subcatid;
+		CALLSM3("RecruitTab", "_populateList", _lnbPrimary, _primary, T_GETV("primarySelectionHistory"));
+
 		pr _secondary = T_GETV("availableWeaponsSecondary") select _subcatid;
-
-		//diag_log format ["  primary: %1, secondary: %2", _primary, _secondary];
-		//diag_log _lnbPrimary;
-		//diag_log _lnbSecondary;
-
-		{
-			pr _name = getText (configfile >> "CfgWeapons" >> _x >> "displayName");
-			_lnbPrimary lnbAddRow [_name];
-			_lnbPrimary lnbSetData [ [_foreachindex, 0], _x];
-		} forEach _primary;
-		{
-			pr _name = getText (configfile >> "CfgWeapons" >> _x >> "displayName");
-			_lnbSecondary lnbAddRow [_name];
-			_lnbSecondary lnbSetData [ [_foreachindex, 0], _x];
-		} forEach _secondary;
-
-		_lnbPrimary lnbSetCurSelRow 0;
-		_lnbSecondary lnbSetCurSelRow 0;
+		CALLSM3("RecruitTab", "_populateList", _lnbSecondary, _secondary, T_GETV("secondarySelectionHistory"));
 	} ENDMETHOD;
+	
 
+	// Populate a list control with items, selecting the one most recently selected based on history
+	STATIC_METHOD("_populateList") {
+		params [P_THISCLASS, P_CONTROL("_itemCtrl"), P_ARRAY("_items"), P_ARRAY("_selectionHistory")];
+		private _bestHistoryIdx = -1;
+		private _bestIdx = 0;
+		{
+			pr _name = getText (configfile >> "CfgWeapons" >> _x >> "displayName");
+			_itemCtrl lnbAddRow [_name];
+			_itemCtrl lnbSetData [ [_forEachIndex, 0], _x];
+			pr _historyIdx = _selectionHistory find _x;
+			if(_historyIdx > _bestHistoryIdx) then {
+				_bestHistoryIdx = _historyIdx;
+				_bestIdx = _forEachIndex;
+			};
+		} forEach _items;
+		_itemCtrl lnbSetCurSelRow _bestIdx;
+	} ENDMETHOD;
+	
 	METHOD("onButtonRecruit") {
 		params [P_THISOBJECT];
 		
@@ -109,8 +129,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Get selected loadout
 		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
-		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
-		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
 
 		// Bail if nothing is selected
 		pr _id = lnbCurSelRow _lnbMain;
@@ -119,16 +137,29 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		};
 
 		pr _subcatid = _lnbMain lnbValue [_id, 0];
-		pr _rowPrimary = lnbCurSelRow _lnbPrimary;
-		pr _rowSecondary = lnbCurSelRow _lnbSecondary;
-		pr _weaponPrimary = "";
-		pr _weaponSecondary = "";
 
+		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
+		pr _rowPrimary = lnbCurSelRow _lnbPrimary;
+		pr _weaponPrimary = "";
 		if (_rowPrimary != -1) then {
 			_weaponPrimary = _lnbPrimary lnbData [_rowPrimary, 0];
+			pr _primarySelectionHistory = T_GETV("primarySelectionHistory");
+			_primarySelectionHistory pushBack _weaponPrimary;
+			if(count _primarySelectionHistory > 20) then {
+				_primarySelectionHistory deleteAt 0;
+			};
 		};
+
+		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
+		pr _rowSecondary = lnbCurSelRow _lnbSecondary;
+		pr _weaponSecondary = "";
 		if (_rowSecondary != -1) then {
 			_weaponSecondary = _lnbSecondary lnbData [_rowSecondary, 0];
+			pr _secondarySelectionHistory = T_GETV("secondarySelectionHistory");
+			_secondarySelectionHistory pushBack _weaponSecondary;
+			if(count _secondarySelectionHistory > 20) then {
+				_secondarySelectionHistory deleteAt 0;
+			};
 		};
 
 		// Find the arsenal unit from which we will be taking the weapons
@@ -231,22 +262,27 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		*/
 
 		// Fill the listbox
+		pr _lastSelectedRecruit = T_GETV("lastSelectedRecruit");
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
 		lnbClear _ctrl;
+		pr _selectedIdx = -1;
 		{
 			pr _subcatID = _x;
-			pr _i = _foreachindex;
 			_ctrl lnbAddRow [T_NAMES select T_INF select _subcatID];
-			_ctrl lnbSetValue [[_i, 0], _subcatID];
+			_ctrl lnbSetValue [[_foreachindex, 0], _subcatID];
+			if(_subcatID == _lastSelectedRecruit) then {
+				_selectedIdx = _foreachindex;
+			};
 		} forEach _subcatsAvailable;
-		_ctrl lnbSetCurSelRow -1;
+		_ctrl lnbSetCurSelRow _selectedIdx;
 
-		// Clear other listboxes
-		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
-		lnbClear _lnbPrimary;
-		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
-		lnbClear _lnbSecondary;
+		T_CALLM1("_recruitSelectionChanged", _selectedIdx);
 
+		// // Clear other listboxes
+		// pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
+		// lnbClear _lnbPrimary;
+		// pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
+		// lnbClear _lnbSecondary;
 	} ENDMETHOD;
 
 	STATIC_METHOD("receiveData") {

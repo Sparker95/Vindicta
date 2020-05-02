@@ -274,7 +274,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		pr _restored = CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay ARG _restoreData ARG _restorePosition]);
 		if(!_restored) then {
 			// Select random player gear
-			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTemplate = CALLM1(gGameModeServer, "getTemplate", civilian);
 			private _templateClass = [_civTemplate, T_INF, T_INF_rifleman, -1] call t_fnc_select;
 			if ([_templateClass] call t_fnc_isLoadout) then {
 				[_newUnit, _templateClass] call t_fnc_setUnitLoadout;

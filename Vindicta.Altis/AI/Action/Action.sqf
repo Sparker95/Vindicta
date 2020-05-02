@@ -699,4 +699,13 @@ CLASS("Action", "MessageReceiverEx")
 			};
 		} forEach _units;
 	} ENDMETHOD;
+
+
+	// Debug
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	// Override to show debug data in debug UI for specific class
+	/* virtual */ METHOD("getDebugUIVariableNames") {
+		[]
+	} ENDMETHOD;
+
 ENDCLASS;

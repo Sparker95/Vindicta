@@ -26,7 +26,6 @@ this addWeapon "LIB_MP44";
 /*WeaponItem*/
 this addPrimaryWeaponItem "LIB_30Rnd_792x33";
 this addPrimaryWeaponItem "LIB_ACC_GW_SB_Empty";
-this addSecondaryWeaponItem "LIB_1Rnd_G_PZGR_30";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";

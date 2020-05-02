@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-/*Headgear*/
+//===Headgear===
 if (random 10 < 3) then {
 	private _headgear = [
 		"H_Hat_blue",
@@ -34,7 +34,7 @@ if (random 10 < 3) then {
 	this addHeadgear selectRandom _headgear;
 };
 
-/*Facewear*/
+//===Facewear===
 if (random 10 < 3) then {
 	private _Facewear = [
 		"G_GEHeadBandage_Bloody",
@@ -56,38 +56,38 @@ if (random 10 < 3) then {
 	this addGoggles selectRandom _Facewear;
 };
 
-/*Uniform*/
+//===Uniform===
 this forceAddUniform selectRandom [
-	"U_LIB_CIV_Assistant",
-	"U_LIB_CIV_Assistant_2",
-	"U_LIB_CIV_Citizen_1",
-	"U_LIB_CIV_Citizen_2",
-	"U_LIB_CIV_Citizen_3",
-	"U_LIB_CIV_Citizen_4",
-	"U_LIB_CIV_Citizen_5",
-	"U_LIB_CIV_Citizen_6",
-	"U_LIB_CIV_Citizen_7",
-	"U_LIB_CIV_Citizen_8",
-	"U_LIB_CIV_Doctor",
-	"U_LIB_CIV_Rocker_1",
-	"U_LIB_CIV_Schoolteacher",
-	"U_LIB_CIV_Schoolteacher_2",
-	"U_LIB_CIV_Villager_1",
-	"U_LIB_CIV_Villager_2",
-	"U_LIB_CIV_Villager_3",
-	"U_LIB_CIV_Villager_4",
-	"U_LIB_CIV_Woodlander_1",
-	"U_LIB_CIV_Woodlander_2",
-	"U_LIB_CIV_Woodlander_3",
-	"U_LIB_CIV_Woodlander_4",
-	"U_LIB_CIV_Worker_1",
-	"U_LIB_CIV_Worker_2",
-	"U_LIB_CIV_Worker_3",
-	"U_LIB_CIV_Worker_4",
-	"U_LIB_CIV_Functionary_1",
-	"U_LIB_CIV_Functionary_2",
-	"U_LIB_CIV_Functionary_3",
-	"U_LIB_CIV_Functionary_4"
+		"U_LIB_CIV_Assistant",
+		"U_LIB_CIV_Assistant_2",
+		"U_LIB_CIV_Citizen_1",
+		"U_LIB_CIV_Citizen_2",
+		"U_LIB_CIV_Citizen_3",
+		"U_LIB_CIV_Citizen_4",
+		"U_LIB_CIV_Citizen_5",
+		"U_LIB_CIV_Citizen_6",
+		"U_LIB_CIV_Citizen_7",
+		"U_LIB_CIV_Citizen_8",
+		"U_LIB_CIV_Doctor",
+		"U_LIB_CIV_Rocker_1",
+		"U_LIB_CIV_Schoolteacher",
+		"U_LIB_CIV_Schoolteacher_2",
+		"U_LIB_CIV_Villager_1",
+		"U_LIB_CIV_Villager_2",
+		"U_LIB_CIV_Villager_3",
+		"U_LIB_CIV_Villager_4",
+		"U_LIB_CIV_Woodlander_1",
+		"U_LIB_CIV_Woodlander_2",
+		"U_LIB_CIV_Woodlander_3",
+		"U_LIB_CIV_Woodlander_4",
+		"U_LIB_CIV_Worker_1",
+		"U_LIB_CIV_Worker_2",
+		"U_LIB_CIV_Worker_3",
+		"U_LIB_CIV_Worker_4",
+		"U_LIB_CIV_Functionary_1",
+		"U_LIB_CIV_Functionary_2",
+		"U_LIB_CIV_Functionary_3",
+		"U_LIB_CIV_Functionary_4"
 ];
 
 if(random 10 > 5) then { this linkItem "ItemWatch" };
@@ -96,18 +96,20 @@ private _gunsAndAmmo = [
 	// pistols
 	["LIB_P38",					"lib_8rnd_9x19",			true],	0.9,
 	["LIB_P08",					"fow_8rnd_9x19",			true],	0.7,
-	["fow_w_p08",				"fow_8rnd_9x19",			true],	0.7,
+	["LIB_Colt_M1911",			"lib_7rnd_45acp",			true],	0.7,
 	["LIB_M1896",				"lib_10rnd_9x19_m1896",		true],	0.5,
 	["fow_w_p640p",				"fow_13rnd_9x19",			true],	0.5,
 	["LIB_TT33",				"lib_8rnd_762x25",			true],	0.9,
 	["LIB_M1895",				"lib_7rnd_762x38",			true],	0.6,
-	["fow_w_webley",			"fow_6rnd_455",				true],	0.6,
+	["LIB_WaltherPPK",			"lib_7rnd_765x17_ppk",		true],	0.7,
+	["LIB_Webley_mk6",			"lib_6rnd_455",				true],	0.6,
 	["fow_w_welrod_mkii",		"fow_8rnd_765x17",			true],	0.3,
 	// long
 	["LIB_M1903A3_Springfield",	"fow_5rnd_762x63",			true],	0.1,
-	["fow_w_k98",				"fow_5rnd_792x57",			true],	0.1,
-	["fow_w_m1903A1",			"fow_5rnd_762x63",			true],	0.1,
-	["fow_w_leeenfield_no4mk1",	"fow_10rnd_303",			true],	0.1,
+	["LIB_K98",					"lib_5rnd_792x57",			true],	0.1,
+	["LIB_LeeEnfield_No4",		"lib_10rnd_770x56",			true],	0.1,
+	["LIB_M9130",				"lib_5rnd_762x54",			true],	0.1,
+	["fow_w_type99",			"fow_5rnd_77x58",			true],	0.1,
 	["LIB_DELISLE",				"lib_7rnd_45acp_delisle",	true],	0.1
 ];
 
@@ -123,10 +125,11 @@ if(_isPistol) then {
 	this addWeaponItem [_gun, _ammo];
 };
 
-for "_i" from 1 to 5 do { this addItemToUniform _ammo };
+for "_i" from 1 to 4 do { this addItemToUniform _ammo };
 
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
+this addItemToUniform "FirstAidKit";
 this linkItem "ItemMap";
 this linkItem "LIB_GER_ItemCompass";
 this linkItem "LIB_GER_ItemWatch";

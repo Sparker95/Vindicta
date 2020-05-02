@@ -21,13 +21,13 @@ this addVest _RandomVest;
 this addBackpack "B_LIB_SOV_RA_GasBag";
 
 /*Weapon*/
-this addWeapon "Lib_Mp41r";
+this addWeapon "LIB_PPSh41_m";
 /*WeaponItem*/
-this addPrimaryWeaponItem "lib_32rnd_9x19";
+this addPrimaryWeaponItem "LIB_71Rnd_762x25";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "lib_32rnd_9x19";};
+for "_i" from 1 to 3 do {this addItemToVest "LIB_71Rnd_762x25";};
 for "_i" from 1 to 2 do {this addItemToVest "LIB_Rg42";};
 this addItemToVest "LIB_Rpg6";
 this addItemToVest "LIB_RDG";

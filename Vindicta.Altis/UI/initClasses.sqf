@@ -29,3 +29,5 @@ call compile preprocessFileLineNumbers "UI\RecruitDialog\initClasses.sqf";
 
 call compile preprocessFileLineNumbers "UI\Notification\Notification.sqf";
 call compile preprocessFileLineNumbers "UI\NotificationFactory\NotificationFactory.sqf";
+
+call compile preprocessFileLineNumbers "UI\AIDebug\AIDebugUI.sqf";

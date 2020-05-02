@@ -19,16 +19,17 @@ _array set [T_DESCRIPTION, "WW2 UK units. 1939-1945. Made by MatrikSky"]; 	//Tem
 _array set [T_DISPLAY_NAME, "WW2 UK Police"]; 								//Template display name
 _array set [T_FACTION, T_FACTION_Police]; 									//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
-		"ww2_assets_c_characters_core_c", 
-		"lib_weapons", 
-		"geistl_main", 
-		"fow_weapons", 
-		"sab_boat_c", 
-		"ifa3_comp_ace_main", 
-		"geistl_fow_main", 
-		"ifa3_comp_fow", 
-		"ifa3_comp_fow_ace_settings", 
-		"sab_compat_ace"
+		"A3_Characters_F", 
+		"IFA3_Core",
+		"IFA3_COMP_ACE_main",
+		"IFA3_FOW_Compat",
+		"LIB_core",
+		"GEISTL_MAIN",
+		"GEISTL_FOW_MAIN",
+		"fow_main",
+		"sab_boat_c",
+		"sab_compat_ace",
+		"I44_Buildings"
 		]]; 																//Addons required to play this template
 
 //==== Infantry ====
@@ -55,7 +56,6 @@ _cargo = [];
 _cargo set [T_CARGO_default,	["LIB_BasicWeaponsBox_US"]];
 _cargo set [T_CARGO_box_small,	["LIB_BasicWeaponsBox_US"]];
 _cargo set [T_CARGO_box_medium,	["LIB_BasicWeaponsBox_UK", "LIB_BasicAmmunitionBox_US"]];
-_cargo set [T_CARGO_box_big,	["LIB_WeaponsBox_Big_SU"]];
 
 //==== Groups ====
 _group = +(tDefault select T_GROUP);

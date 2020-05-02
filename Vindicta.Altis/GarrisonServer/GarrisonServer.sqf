@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 /*
 Class: GarrisonServer
 Singleton server-only class.
@@ -115,12 +115,14 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			#ifdef _SQF_VM
 			if (_index != -1) then {
 			#endif
+			FIX_LINE_NUMBERS()
 
 			_objects deleteAt _index;
 
 			#ifdef _SQF_VM
 			};
 			#endif
+			FIX_LINE_NUMBERS()
 
 			// Unref if we have ever referenced it
 			if (_index != -1) then {
@@ -190,6 +192,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		#else
 		_outdatedObjects deleteAt _index;
 		#endif
+		FIX_LINE_NUMBERS()
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -422,7 +425,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 
 		// Create a unit
-		pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
+		private _template = CALLM1(gGameMode, "getTemplate", civilian);
+		//pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
 		// P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull]];
 		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _weapons];
 		pr _unit = NEW("Unit", _args);

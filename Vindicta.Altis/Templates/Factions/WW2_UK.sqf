@@ -18,16 +18,17 @@ _array set [T_DESCRIPTION, "WW2 UK units. 1939-1945. Made by MatrikSky"]; 	//Tem
 _array set [T_DISPLAY_NAME, "WW2 UK"]; 										//Template display name
 _array set [T_FACTION, T_FACTION_Military]; 								//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
-		"ww2_assets_c_characters_core_c", 
-		"lib_weapons", 
-		"geistl_main", 
-		"fow_weapons", 
-		"sab_boat_c", 
-		"ifa3_comp_ace_main", 
-		"geistl_fow_main", 
-		"ifa3_comp_fow", 
-		"ifa3_comp_fow_ace_settings", 
-		"sab_compat_ace"
+		"A3_Characters_F", 
+		"IFA3_Core",
+		"IFA3_COMP_ACE_main",
+		"IFA3_FOW_Compat",
+		"LIB_core",
+		"GEISTL_MAIN",
+		"GEISTL_FOW_MAIN",
+		"fow_main",
+		"sab_boat_c",
+		"sab_compat_ace",
+		"I44_Buildings"
 		]]; 																//Addons required to play this template
 
 //==== Infantry ====
@@ -55,9 +56,9 @@ _inf set [T_INF_crew, ["WW2_UK_crew"]];
 _inf set [T_INF_pilot, ["WW2_UK_pilot"]];
 _inf set [T_INF_survivor, ["WW2_UK_unarmed"]];
 _inf set [T_INF_unarmed, ["WW2_UK_unarmed"]];
-//_inf set [T_INF_crew_heli, [""]];
-//_inf set [T_INF_AA, [""]];
-//_inf set [T_INF_pilot_heli, [""]];
+_inf set [T_INF_crew_heli, ["WW2_UK_unarmed"]];
+_inf set [T_INF_AA, ["WW2_UK_unarmed"]];
+_inf set [T_INF_pilot_heli, ["WW2_UK_unarmed"]];
 
 
 //==== Recon ====
@@ -94,24 +95,24 @@ _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
 
 _veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
-_veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
+_veh set [T_VEH_stat_GMG_high, ["LIB_GER_SearchLight", "LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_HMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_GMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 _veh set [T_VEH_stat_AA, ["sab_static_aa", "sab_small_static_2xaa", "sab_small_static_aa"]];
 _veh set [T_VEH_stat_AT, ["fow_w_6Pounder_uk"]];
 
 _veh set [T_VEH_stat_mortar_light, ["LIB_m2_60"]];
-//_veh set [T_VEH_stat_mortar_heavy, ["LIB_m2_60"]];
+_veh set [T_VEH_stat_mortar_heavy, ["LIB_m2_60"]];
 
-//_veh set [T_VEH_heli_light, [""]];
-//_veh set [T_VEH_heli_heavy, [""]];
-//_veh set [T_VEH_heli_cargo, [""]];
-//_veh set [T_VEH_heli_attack, [""]];
+_veh set [T_VEH_heli_light, []];
+_veh set [T_VEH_heli_heavy, []];
+_veh set [T_VEH_heli_cargo, []];
+_veh set [T_VEH_heli_attack, []];
 
 _veh set [T_VEH_plane_attack, ["LIB_RAF_P39"]];
 _veh set [T_VEH_plane_fighter, ["sab_ca12bo", "LIB_RAF_P39", "sab_gladiator", "sab_mb5"]];
 _veh set [T_VEH_plane_cargo, ["LIB_C47_RAF"]];
-_veh set [T_VEH_plane_unarmed, ["LIB_HORSA_RAF", "LIB_MKI_HADRIAN", "LIB_MKI_HADRIAN_raf2", "LIB_MKI_HADRIAN_raf3"]];
+_veh set [T_VEH_plane_unarmed, ["LIB_C47_RAF"]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
 _veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
@@ -131,18 +132,6 @@ _veh set [T_VEH_truck_fuel, ["LIB_US_GMC_Fuel"]];
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
-//_drone set [T_DRONE_DEFAULT, [""]];
-
-//_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
-//_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
-//_drone set [T_DRONE_plane_attack, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_plane_unarmed, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_heli_attack, ["B_T_UAV_03_dynamicLoadout_F"]];
-//_drone set [T_DRONE_quadcopter, ["B_UAV_01_F"]];
-//_drone set [T_DRONE_designator, ["B_Static_Designator_01_F"]];
-//_drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
-//_drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
-//_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
 
 //==== Cargos ====
 _cargo = [];
@@ -168,8 +157,8 @@ _group set [T_GROUP_inf_AA_team, [
 //(T_NAMES select T_VEH) set [T_VEH_car_armed, "Armed Car"]; //						= 2 Car with any kind of mounted weapon
 //(T_NAMES select T_VEH) set [T_VEH_MRAP_unarmed, "Unarmed Scout Car"]; //			= 3 MRAP
 //(T_NAMES select T_VEH) set [T_VEH_MRAP_HMG, "Armed Scout Car"]; //				= 4 MRAP with a mounted HMG gun
-//(T_NAMES select T_VEH) set [T_VEH_MRAP_GMG, "Heavy Armed Car"]; //					= 5 MRAP with a mounted GMG gun
-//(T_NAMES select T_VEH) set [T_VEH_MBT, "Light-Medium-Heavy Tank"]; //					= 8 Main Battle Tank
+//(T_NAMES select T_VEH) set [T_VEH_MRAP_GMG, "Heavy Armed Car"]; //				= 5 MRAP with a mounted GMG gun
+//(T_NAMES select T_VEH) set [T_VEH_MBT, "Light-Medium-Heavy Tank"]; //				= 8 Main Battle Tank
 
 //==== Arrays ====
 _array set [T_INF, _inf];

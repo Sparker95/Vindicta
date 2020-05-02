@@ -67,7 +67,7 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 #endif
 FIX_LINE_NUMBERS()
 
-CLASS(UNIT_CLASS_NAME, "Storable")
+CLASS("Unit", "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -112,20 +112,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
 			DUMP_CALLSTACK
 		};
+
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 
 		// If a random class was requested to be added
-		private _class = "";
-		if (isNull _hO) then {
-			//if(_classID == -1) then {
-			//	private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
-			//	_class = _classData select 0;
-			//} else {
-			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
-			//};
+		private _class = if (isNull _hO) then {
+			[_template, _catID, _subcatID, _classID] call t_fnc_select
 		} else {
-			_class = typeOf _hO;
+			typeOf _hO
 		};
 
 		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
@@ -134,7 +129,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _loadout = "";
 		if ([_class] call t_fnc_isLoadout) then {
 			_loadout = _class;
-			_class = _template select _catID select 0 select 0; // Default class name from the template
+			_class = _template # _catID # 0 # 0; // Default class name from the template
 		};
 
 		// Create the data array
@@ -683,9 +678,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
 			pr _ehid = [_hO, "Killed", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_KILLED_STR, nil];
-				_unit removeEventHandler ["Killed", _thisID];
-				_this call Unit_fnc_EH_Killed;
+				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
+					_unit setVariable [UNIT_EH_KILLED_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					// _unit removeEventHandler ["Killed", _thisID];
+					_this call Unit_fnc_EH_Killed;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
@@ -694,11 +692,20 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
-				_unit removeEventHandler ["Respawn", _thisID];
-				_this call Unit_fnc_EH_Respawn;
+				if(!isNil {_unit getVariable UNIT_EH_RESPAWN_STR}) then {
+					_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					//_unit removeEventHandler ["Respawn", _thisID];
+					_this call Unit_fnc_EH_Respawn;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
+		};
+
+		// Rating (hopefully disabling the renegade system)
+		if (isNil {_hO getVariable UNIT_EH_HANDLE_RATING_STR}) then {
+			pr _ehid = [_hO, "HandleRating", { 0 }] call CBA_fnc_addBISEventHandler;
+			_hO setVariable [UNIT_EH_HANDLE_RATING_STR, _ehid];
 		};
 
 		// HandleDamage for infantry
@@ -761,7 +768,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _data = T_GETV("data");
 
 		// Bail if not vehicle
-		if ((_data#UNIT_DATA_ID_CAT) != T_VEH) exitWith {};		
+		pr _catID = _data#UNIT_DATA_ID_CAT;
+		if ((_catID) != T_VEH) exitWith {};
+
+		// Bail if it's a static weapon
+		pr _subcatID = _data#UNIT_DATA_ID_SUBCAT;
+		if (_subcatID in T_VEH_static) exitWith {};
 
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 
@@ -1430,7 +1442,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Remove all items from vest
 		pr _vest = vest _hO;
-		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
+		if (_vest == "") then {
+			_vest = "V_Chestrig_oli";
+		}; // Default vest
 		removeVest _hO;
 		_hO addVest _vest;
 			

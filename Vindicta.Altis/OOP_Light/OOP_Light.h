@@ -245,6 +245,8 @@
 #define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
 #define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
+#define P_CONTROL(paramNameStr) [paramNameStr, controlNull, [controlNull]]
+#define P_DISPLAY(paramNameStr) [paramNameStr, displayNull, [displayNull]]
 
 #define P_OOP_OBJECT(paramNameStr) P_STRING(paramNameStr)
 
@@ -600,8 +602,6 @@
 		private _class1 = OBJECT_PARENT_CLASS_STR(_thisObject); \
 		private _scopeKey = _class1; \
 		private _extraProfileFields = [];
-
-
 
 	#define OOP_FUNC_HEADER_PROFILE_STATIC \
 		private _profileTStart = diag_tickTime; \

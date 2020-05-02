@@ -115,20 +115,8 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 					T_SETV("moving", true);
 				} else {
 					// Are we there yet?
-					private _done = CALLM0(_garr, "moveActualComplete");
-					if(_done) then {
-						private _garrPos = GETV(_garr, "pos");
-						// We scale up the radius we are checking against so we can be sure that the 
-						// move order has some leeway if it doesn't get the garrison exactly inside the 
-						// requested radius. We don't want to be stuck where the move order thinks it completes
-						// but we think it fails because the garrison is 1m outside the radius.
-						if((_garrPos distance _targetPos) <= _radius * 1.5 + 10) then {
-							OOP_INFO_MSG("[w %1] Move %2 to %3: complete, reached target within %4m", [_world ARG LABEL(_garr) ARG _targetPos ARG _radius]);
-							_arrived = true;
-						} else {
-							// Move again cos we didn't get within the required radius yet!
-							OOP_INFO_MSG("[w %1] Move %2 to %3: complete, didn't reach target within %4m, moving again", [_world ARG LABEL(_garr) ARG _targetPos ARG _radius]);
-						};
+					_arrived = CALLM0(_garr, "moveActualComplete");
+					if(_arrived) then {
 						T_SETV("moving", false);
 					};
 				};
