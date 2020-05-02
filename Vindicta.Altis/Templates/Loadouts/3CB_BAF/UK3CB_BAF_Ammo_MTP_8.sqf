@@ -17,7 +17,7 @@ private _voice = [
 	"male05engb"
 ];
 
-[this, selectRandom gVanillaFaces, ] call BIS_fnc_setIdentity;
+[this, selectRandom gVanillaFaces, _voice] call BIS_fnc_setIdentity;
 
 // ==== Uniform ====
 this forceAddUniform "UK3CB_BAF_U_CombatUniform_MTP";
