@@ -67,7 +67,7 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 #endif
 FIX_LINE_NUMBERS()
 
-CLASS(UNIT_CLASS_NAME, "Storable")
+CLASS("Unit", "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -768,7 +768,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _data = T_GETV("data");
 
 		// Bail if not vehicle
-		if ((_data#UNIT_DATA_ID_CAT) != T_VEH) exitWith {};		
+		pr _catID = _data#UNIT_DATA_ID_CAT;
+		if ((_catID) != T_VEH) exitWith {};
+
+		// Bail if it's a static weapon
+		pr _subcatID = _data#UNIT_DATA_ID_SUBCAT;
+		if (_subcatID in T_VEH_static) exitWith {};
 
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 
@@ -1437,7 +1442,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Remove all items from vest
 		pr _vest = vest _hO;
-		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
+		if (_vest == "") then {
+			_vest = "V_Chestrig_oli";
+		}; // Default vest
 		removeVest _hO;
 		_hO addVest _vest;
 			
@@ -2493,6 +2500,33 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_serial set[UNIT_DATA_ID_INVENTORY, []];
 		};
 		// SAVEBREAK DELETE <<<
+
+		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
+		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;
+		if(!isClass (configFile >> "CfgVehicles" >> _class)) then {
+			private _garrison = _serial#UNIT_DATA_ID_GARRISON;
+			private _template = if(IS_NULL_OBJECT(_garrison)) then { "" } else { CALLM0(_garrison, "getTemplate") };
+			if(!(_template isEqualTo "")) then {
+				// Select a new random class/loadout
+				private _catID = _serial#UNIT_DATA_ID_CAT;
+				private _subcatID = _serial#UNIT_DATA_ID_SUBCAT;
+				private _newClass = [_template, _catID, _subcatID, -1] call t_fnc_select;
+
+				// Check if the class is actually a custom loadout
+				pr _loadout = "";
+				if ([_newClass] call t_fnc_isLoadout) then {
+					_loadout = _newClass;
+					_newClass = _template # _catID # 0 # 0; // Default class name from the template
+				};
+				_serial set [UNIT_DATA_ID_CLASS_NAME, _newClass];
+				_serial set [UNIT_DATA_ID_LOADOUT, _loadout];
+
+				OOP_WARNING_MSG("Class %1 no longer exists, using %2 instead", [_class ARG _newClass]);
+			} else {
+				OOP_ERROR_MSG("Class %1 no longer exists, and garrison template couldn't be found, so no automatic replacement can happen", [_class]);
+			};
+		};
+
 		T_SETV("data", _serial);
 
 		true

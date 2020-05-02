@@ -93,7 +93,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("tNameMilInd", "tAAF");
 		T_SETV("tNameMilEast", "tCSAT");
 		T_SETV("tNamePolice", "tPOLICE");
-		T_SETV("tNameCivilian", "tCivilian");
+		T_SETV_PUBLIC("tNameCivilian", "tCivilian"); // Required on client
 
 		// Apply values from arguments
 		T_SETV("enemyForceMultiplier", 1);
@@ -104,7 +104,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_SETV("tNamePolice", _tNamePolice);
 		};
 		if (_tNameCivilian != "") then {
-			T_SETV("tNameCivilian", _tNameCivilian);
+			T_SETV_PUBLIC("tNameCivilian", _tNameCivilian); // Required on client
 		};
 		
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
@@ -2164,6 +2164,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(isNil{T_GETV("tNameCivilian")}) then {
 			T_SETV("tNameCivilian", "tCivilian");
 		};
+		T_PUBLIC_VAR("tNameCivilian");
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
