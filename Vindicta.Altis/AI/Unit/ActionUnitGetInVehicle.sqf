@@ -13,6 +13,7 @@ Author: Sparker
 
 #define CLASS_NAME "ActionUnitGetInVehicle"
 
+#define OOP_CLASS_NAME ActionUnitGetInVehicle
 CLASS("ActionUnitGetInVehicle", "ActionUnit")
 
 	VARIABLE("hVeh");
@@ -39,7 +40,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	"vehicleRole" - one of "DRIVER", "TURRET", "CARGO". Cargo will also mean FFV cargo seats.
 	"turretPath" - Array, turret path is _vehRole is "TURRET"
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, "vehicle");
@@ -60,7 +61,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		if (_vehRole == "TURRET") then {
 			T_SETV("turretPath", _turretPath);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: assignVehicle
@@ -70,7 +71,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	
 	Returns: bool
 	*/
-	METHOD("assignVehicle") {
+	METHOD(assignVehicle)
 		params [P_THISOBJECT];
 		
 		pr _vehRole = T_GETV("vehRole");
@@ -169,7 +170,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			};
 		}; // switch
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: seatOccupiedByAnother
@@ -179,7 +180,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	
 	Returns: object handle
 	*/
-	METHOD("seatOccupiedByAnother") {
+	METHOD(seatOccupiedByAnother)
 		params [P_THISOBJECT];
 		
 		pr _vehRole = T_GETV("vehRole");
@@ -261,7 +262,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			};
 		}; // switch
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: atAssignedSeat
@@ -271,7 +272,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	
 	Returns: bool
 	*/
-	METHOD("isAtAssignedSeat") {
+	METHOD(isAtAssignedSeat)
 		params [P_THISOBJECT];
 		
 		pr _vehRole = T_GETV("vehRole");
@@ -330,10 +331,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				false
 			};
 		}; // switch
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _hO = T_GETV("hO");
@@ -374,10 +375,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
@@ -466,10 +467,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		};
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// If the action is active, unassign the unit from the vehicle
@@ -479,7 +480,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			CALLM0(_AI, "unassignVehicle");
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

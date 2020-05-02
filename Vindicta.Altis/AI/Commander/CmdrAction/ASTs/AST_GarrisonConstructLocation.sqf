@@ -10,6 +10,7 @@ Parent: <ActionStateTransition>
 
 #define pr private
 
+#define OOP_CLASS_NAME AST_GarrisonConstructLocation
 CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 
 	// Inputs
@@ -32,7 +33,7 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 			P_NUMBER("_buildRes") - Amount of build resources to remove from the garrison when the AST is complete
 	*/
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -51,9 +52,9 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 		T_SETV("locPos", _locPos);
 		T_SETV("locType", _locType);
 		T_SETV("buildRes", _buildRes);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("apply") {
+	METHOD(apply)
 
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -105,7 +106,7 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 		};
 
 		T_GETV("successState")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

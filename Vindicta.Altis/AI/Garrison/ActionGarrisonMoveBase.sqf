@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME ActionGarrisonMoveBase
 CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 	VARIABLE("pos"); // The destination position
@@ -10,7 +11,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	VARIABLE("followGroups");
 	VARIABLE("maxSpeed");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		// Unpack position/location
@@ -48,9 +49,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		// We will use it both when spawned and despawned
 		T_CALLM0("createVirtualRoute");
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete the virtual route object
@@ -59,11 +60,11 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			DELETE(_vr);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Default implementation has a lead group (defaults to vehicle group, of which there should be only one),
 	// other groups follow in a chain.
-	/* private virtual */  METHOD("assignMoveGoals") {
+	/* private virtual */  METHOD(assignMoveGoals)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius"), P_ARRAY("_route"), P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -120,9 +121,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		T_SETV("followGroups", _followGroups);
 
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private virtual */  METHOD("checkMoveGoals") {
+	/* private virtual */  METHOD(checkMoveGoals)
 		params [P_THISOBJECT];
 
 		private _AI = T_GETV("AI");
@@ -139,10 +140,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		};
 
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -175,10 +176,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
@@ -258,10 +259,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			T_SETV("state", _state);
 			_state
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Returns true if everyone is in vehicles
-	METHOD("isEveryoneInVehicle") {
+	METHOD(isEveryoneInVehicle)
 		params [P_THISOBJECT];
 		private _AI = T_GETV("AI");
 		private _ws = GETV(_AI, "worldState");
@@ -270,9 +271,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 						([_ws, WSP_GAR_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue);
 		
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onGarrisonDespawned") {
+	METHOD(onGarrisonDespawned)
 		params [P_THISOBJECT];
 
 		// Create a new VirtualRoute since old one might be invalid
@@ -280,10 +281,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		// Call base function, this will trigger reactivation
 		T_CALLCM0("ActionGarrison", "onGarrisonDespawned");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Creates a new VirtualRoute object, deletes the old one
-	METHOD("createVirtualRoute") {
+	METHOD(createVirtualRoute)
 		params [P_THISOBJECT];
 
 		// Delete it if it exists already
@@ -310,9 +311,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		T_SETV("virtualRoute", _vr);
 
 		_vr
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("spawn") {
+	METHOD(spawn)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
@@ -374,6 +375,6 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		} forEach _units;
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

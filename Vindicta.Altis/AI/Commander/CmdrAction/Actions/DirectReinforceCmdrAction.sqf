@@ -9,6 +9,7 @@ Not meant for simulations.
 Parent: <CmdrAction>
 */
 
+#define OOP_CLASS_NAME DirectReinforceCmdrAction
 CLASS("DirectReinforceCmdrAction", "CmdrAction")
 
 	// ID of the garrison
@@ -23,15 +24,15 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 
 	// _garrID - the ID of the garrison to move
 	// _target - target variable
-	METHOD("new") {
+	METHOD(new)
 		PARAMS[P_THISOBJECT, P_NUMBER("_garrID"), P_ARRAY("_target") ];
 
 		T_SETV("garrId", _garrID);
 		T_SETV("target", _target);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("createTransitions") {
+	/* protected override */ METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _garrId = T_GETV("garrId");
@@ -71,7 +72,7 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
 		[_assignAST, _moveAST, _mergeAST]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -81,7 +82,7 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -118,6 +119,6 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

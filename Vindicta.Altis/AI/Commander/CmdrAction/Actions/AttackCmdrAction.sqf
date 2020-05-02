@@ -9,6 +9,7 @@ Or at least share functionality via a library or something.
 
 Parent: <CmdrAction>
 */
+#define OOP_CLASS_NAME AttackCmdrAction
 CLASS("AttackCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
@@ -34,7 +35,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	Parameters:
 	  _srcGarrId - Number, the <Model.GarrisonModel> Id of the source garrison that should perform the attack.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 
 		T_SETV("srcGarrId", _srcGarrId);
@@ -59,9 +60,9 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		private _rtbTargetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("rtbTargetVar", _rtbTargetVar);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
@@ -70,9 +71,9 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		deleteMarker (_thisObject + "_line");
 		deleteMarker (_thisObject + "_label");
 #endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("createTransitions") {
+	/* protected override */ METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -171,10 +172,10 @@ CLASS("AttackCmdrAction", "CmdrAction")
 
 		// Return the ASTs as an array
 		[_splitAST, _assignAST, _attackAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Make a debug label from our properties
-	/* protected override */ METHOD("getLabel") {
+	/* protected override */ METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -206,7 +207,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
 			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Function: (protected) updateIntelFromDetachment
@@ -217,7 +218,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		_world - <Model.WorldModel>, the world model being used, should be the real world as we don't create intel for sim worlds.
 		_intel - <Intel.IntelCommanderActionAttack>, the intel object to populate with info about the detachment performing the attack.
 	*/
-	/* protected */ METHOD("updateIntelFromDetachment") {
+	/* protected */ METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
@@ -234,9 +235,9 @@ CLASS("AttackCmdrAction", "CmdrAction")
 			// Send intel to the garrison doing this action
 			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("debugDraw") {
+	/* protected override */ METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -266,6 +267,6 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
 		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 		// };
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

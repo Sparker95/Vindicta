@@ -11,6 +11,7 @@ Parent: <AttackCmdrAction>
 */
 #define pr private
 
+#define OOP_CLASS_NAME QRFCmdrAction
 CLASS("QRFCmdrAction", "AttackCmdrAction")
 	// The target cluster model ID
 	VARIABLE_ATTR("tgtClusterId", [ATTR_SAVE]);
@@ -24,17 +25,17 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the QRF detachment.
 		_tgtClusterId - Number, <Model.ClusterModel> id to attack.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtClusterId")];
 
 		T_SETV("tgtClusterId", _tgtClusterId);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_CLUSTER ARG _tgtClusterId]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Create the intel object for this action
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -92,10 +93,10 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM0(_intelClone, "updateInDb");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Update score for this action
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -242,12 +243,12 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		OOP_INFO_MSG(_str, []);
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 
 	// This is the min of what src has spare and what tgt wants.
 	// TODO: factor out logic for working out detachments for various situations
-	/* private */ METHOD("getDetachmentEff") {
+	/* private */ METHOD(getDetachmentEff)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -283,7 +284,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		//if(_effAvailable#0 < MIN_COMP#0 or _effAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_effAvailable
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -293,7 +294,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -313,7 +314,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

@@ -8,9 +8,10 @@ This action also moves ungrouped vehicles into the common vehicle group.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonMergeVehicleGroups
 CLASS("ActionGarrisonMergeVehicleGroups", "ActionGarrison")
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
@@ -30,6 +31,6 @@ CLASS("ActionGarrisonMergeVehicleGroups", "ActionGarrison")
 
 		ACTION_STATE_COMPLETED
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

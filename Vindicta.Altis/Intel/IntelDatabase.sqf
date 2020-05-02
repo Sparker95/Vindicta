@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "Intel.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\CriticalSection\CriticalSection.hpp"
 
 /*
@@ -16,6 +16,7 @@ Author: Sparker 06.05.2019
 
 #define pr private
 
+#define OOP_CLASS_NAME IntelDatabase
 CLASS("IntelDatabase", "Storable");
 
 				VARIABLE("items");							// Hash map for refs of items added here
@@ -31,17 +32,17 @@ CLASS("IntelDatabase", "Storable");
 
 	_side - side to which this DB is attached to
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_SIDE("_side")];
 
 		OOP_INFO_1("NEW, side: %1", _side);
 		T_SETV("side", _side);
 
 		T_CALLM0("_initHashmaps");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Initializes hashmaps
-	/* private */ METHOD("_initHashmaps") {
+	/* private */ METHOD(_initHashmaps)
 		params [P_THISOBJECT];
 				
 		#ifndef _SQF_VM
@@ -56,7 +57,7 @@ CLASS("IntelDatabase", "Storable");
 		T_SETV("linkedItems", _namespaceLinked);
 		T_SETV("items", _namespaceItems);
 		T_SETV("variables", _namespaceVariables);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: addIntel
@@ -68,12 +69,12 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("addIntel") {
+	METHOD(addIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 			OOP_INFO_1("ADD INTEL: %1", _item);
-
+			FIX_LINE_NUMBERS()
 			pr _items = T_GETV("items");
 
 			// Add to index
@@ -99,7 +100,7 @@ CLASS("IntelDatabase", "Storable");
 				_items setVariable [_item, 1]; // Add to the hashmap of  existing items
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: updateIntel
@@ -112,7 +113,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("updateIntel") {
+	METHOD(updateIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
@@ -132,7 +133,7 @@ CLASS("IntelDatabase", "Storable");
 				};
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: updateIntelFromSource
@@ -144,7 +145,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: Bool, true if the item was updated, false if the item with given source doesn't exist in this database.
 	*/
-	METHOD("updateIntelFromSource") {
+	METHOD(updateIntelFromSource)
 		pr _return = false;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_srcItem")];
@@ -163,7 +164,7 @@ CLASS("IntelDatabase", "Storable");
 			};
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: addIntelClone
@@ -175,7 +176,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: clone of _item that can be used in further updateIntelFromClone operations.
 	*/
-	METHOD("addIntelClone") {
+	METHOD(addIntelClone)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		pr _clone = CLONE(_item);
@@ -202,7 +203,7 @@ CLASS("IntelDatabase", "Storable");
 		};
 
 		_clone
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: updateIntelFromClone
@@ -214,7 +215,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("updateIntelFromClone") {
+	METHOD(updateIntelFromClone)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -226,7 +227,7 @@ CLASS("IntelDatabase", "Storable");
 			T_CALLM("updateIntel", [_dbEntry ARG _item]);
 		};
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: removeIntelForClone
@@ -238,7 +239,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("removeIntelForClone") {
+	METHOD(removeIntelForClone)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -249,7 +250,7 @@ CLASS("IntelDatabase", "Storable");
 			T_CALLM1("removeIntel", _dbEntry);
 		};
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -266,7 +267,7 @@ CLASS("IntelDatabase", "Storable");
 	Returns: Array of <Intel> objects
 	*/
 	/*
-	METHOD("queryIntel") {
+	METHOD(queryIntel)
 		pr _array = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_queryItem")];
@@ -289,7 +290,7 @@ CLASS("IntelDatabase", "Storable");
 			};
 		};
 		_array
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 	/*
@@ -305,7 +306,7 @@ CLASS("IntelDatabase", "Storable");
 	Returns: <Intel> object or "" if such object was not found
 	*/
 	/*
-	METHOD("findFirstIntel") {
+	METHOD(findFirstIntel)
 		pr _return = "";
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_queryItem")];
@@ -326,7 +327,7 @@ CLASS("IntelDatabase", "Storable");
 			if (_index != -1) then { _return = _items select _index; };
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 	/*
@@ -339,11 +340,11 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: Bool
 	*/
-	METHOD("isIntelAdded") {
+	METHOD(isIntelAdded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		!isNil {T_GETV("items") getVariable _item}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: isIntelAddedFromSource
@@ -355,11 +356,11 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: Bool
 	*/
-	METHOD("isIntelAddedFromSource") {
+	METHOD(isIntelAddedFromSource)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		!isNil { T_GETV("linkedItems") getVariable _item }
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getIntelFromSource
@@ -371,7 +372,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: <Intel> object or "" if such there is no object sourced by the passed object
 	*/
-	METHOD("getIntelFromSource") {
+	METHOD(getIntelFromSource)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		pr _return = T_GETV("linkedItems") getVariable [_item, ""];
@@ -379,7 +380,7 @@ CLASS("IntelDatabase", "Storable");
 		OOP_INFO_2("GET INTEL FROM SOURCE: %1, result: %2", _item, _return);
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getAllIntel
@@ -387,13 +388,13 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: array of items
 	*/
-	METHOD("getAllIntel") {
+	METHOD(getAllIntel)
 		params [P_THISOBJECT];
 		pr _items = T_GETV("items");
 		// If we nil a variable in hashmap, allvariables hashmap still returns this variable name!
 		// So we must select variables which are not nil
 		(allVariables _items) select { !isNil {_items getVariable _x} }
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: removeIntel
@@ -405,7 +406,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD("removeIntel") {
+	METHOD(removeIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -428,12 +429,12 @@ CLASS("IntelDatabase", "Storable");
 			};
 		};
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// = = = = = = = = = I N D E X   M E T H O D S = = = = = = = = = =
 
-	METHOD("addToIndex") {
+	METHOD(addToIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_STRING("_varName"), P_STRING("_varValue")];
 
 		pr _variablesHashmap = T_GETV("variables");
@@ -452,6 +453,11 @@ CLASS("IntelDatabase", "Storable");
 		} else {
 			str _varValue
 		};
+
+		if (_varValue == "") then {
+			ADE_dumpCallStack;
+		};
+
 		pr _refsArray = _valuesHashmap getVariable _varValueStr; // Array with intel objects which reference this _varValue
 		if (isNil "_refsArray") then {
 			_refsArray = [];
@@ -459,9 +465,9 @@ CLASS("IntelDatabase", "Storable");
 		};
 		_refsArray pushBack _item;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("removeFromIndex") {
+	METHOD(removeFromIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_STRING("_varName"), "_varValue"];
 
 		pr _variablesHashmap = T_GETV("variables");
@@ -488,9 +494,9 @@ CLASS("IntelDatabase", "Storable");
 			_refsArray deleteAt (_refsArray find _varValue);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getFromIndex") {
+	METHOD(getFromIndex)
 		params [P_THISOBJECT, P_STRING("_varName"), "_varValue"];
 
 		pr _variablesHashmap = T_GETV("variables");
@@ -515,11 +521,11 @@ CLASS("IntelDatabase", "Storable");
 		};
 		
 		_refsArray
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD("preSerialize") {
+	/* override */ METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save all intel objects we have
@@ -532,15 +538,15 @@ CLASS("IntelDatabase", "Storable");
 		T_SETV("savedItems", +_allIntel);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("postSerialize") {
+	/* override */ METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		T_SETV("savedItems", nil);	// Erase the temporary variable
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Reinitialize all our hashmaps
@@ -557,7 +563,7 @@ CLASS("IntelDatabase", "Storable");
 		T_SETV("savedItems", nil);	// Erase the temporary variable
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "Intel.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Location\Location.hpp"
 #include "InventoryItems.hpp"
 #include "PersonalInventory.hpp"
@@ -17,6 +17,7 @@ Author: Sparker 18.05.2019
 
 #define __INV_ITEM_DATA "__intel_inv_item"
 
+#define OOP_CLASS_NAME UnitIntel
 CLASS("UnitIntel", "")
 
 	STATIC_VARIABLE("eventHandlerAdded");
@@ -32,7 +33,7 @@ CLASS("UnitIntel", "")
 
 	Returns: nil
 	*/
-	STATIC_METHOD("initUnit") {
+	STATIC_METHOD(initUnit)
 		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 
 		ASSERT_GLOBAL_OBJECT(gPersonalInventory);
@@ -133,7 +134,7 @@ CLASS("UnitIntel", "")
 			}];
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)updateUnit
@@ -147,7 +148,7 @@ CLASS("UnitIntel", "")
 
 	Returns: nil
 	*/
-	STATIC_METHOD("updateUnit") {
+	STATIC_METHOD(updateUnit)
 		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 
 		// Bail if unit doesn't have an inventory item
@@ -185,7 +186,7 @@ CLASS("UnitIntel", "")
 			CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, _intelArray);
 		} forEach _personalInventoryItems;
 		*/
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: unitHasInventoryItem
@@ -198,12 +199,12 @@ CLASS("UnitIntel", "")
 
 	Returns: bool
 	*/
-	STATIC_METHOD("unitHasInventoryItem") {
+	STATIC_METHOD(unitHasInventoryItem)
 		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 		pr _hO = CALLM0(_unit, "getObjectHandle");
 
 		!(isNil {_hO getVariable __INV_ITEM_DATA})
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)initPlayer
@@ -215,7 +216,7 @@ CLASS("UnitIntel", "")
 
 	Returns: nil
 	*/
-	STATIC_METHOD("initPlayer") {
+	STATIC_METHOD(initPlayer)
 		params [P_THISCLASS];
 
 		//diag_log "--- initPlayer";
@@ -320,10 +321,10 @@ CLASS("UnitIntel", "")
 			SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", true);
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called on player's computer when he picks up the intel item
-	STATIC_METHOD("inspectIntel") {
+	STATIC_METHOD(inspectIntel)
 		params [P_THISOBJECT, P_STRING("_fullClassName") ];
 
 		// Get base class name and ID of this intel item
@@ -378,7 +379,7 @@ CLASS("UnitIntel", "")
 		} forEach _intelDataSerial;
 		*/
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

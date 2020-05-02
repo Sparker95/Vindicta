@@ -10,22 +10,23 @@ Parameter tags:
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupGetInVehiclesAsCrew
 CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 	VARIABLE("activeUnits");
 	VARIABLE("onlyCombat");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, "onlyCombat", false);
 		T_SETV("onlyCombat", _onlyCombat);
 
 		T_SETV("activeUnits", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Helper function to determine the best applicant for a crew position (the unit already occupying the position, or the closest one)
-	STATIC_METHOD("_getPreferredCrew") {
+	STATIC_METHOD(_getPreferredCrew)
 		params [P_THISCLASS, P_ARRAY("_crewAIArray"), P_OOP_OBJECT("_vehicle"), P_STRING("_role"), P_ARRAY("_turretPath")];
 
 		pr _hVeh = CALLM0(_vehicle, "getObjectHandle");
@@ -69,11 +70,11 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		_sortableCrewAI sort DESCENDING;
 		// Return the best
 		_sortableCrewAI#0#1
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
 	// _unitsIgnore - units to ignore in assignment. For instance if this unit was destroyed.
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLM0("clearUnitGoals");
@@ -177,10 +178,10 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		// Return ACTIVE state
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -210,9 +211,9 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
 		
@@ -221,12 +222,12 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		{
 			_activeUnits deleteAt (_activeUnits find _x);
 		} forEach _units;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleUnitsAdded") {
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

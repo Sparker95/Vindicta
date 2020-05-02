@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 // Adds an untie action to the unit locally
 params ["_unit"];

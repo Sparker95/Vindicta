@@ -435,6 +435,7 @@ pr0_fnc_givePlayerIntel = {
 Class: MilitantCiviliansAmbientMission
 This mission spawns a number of civilians with various weapons who will fight with the police.
 */
+#define OOP_CLASS_NAME MilitantCiviliansAmbientMission
 CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	// The active militants.
 	VARIABLE("activeCivs");
@@ -442,7 +443,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	VARIABLE("nextIntelUpdate");
 	VARIABLE("newIntel");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -450,9 +451,9 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		T_SETV("nextInformant", GAME_TIME);
 		T_SETV("nextIntelUpdate", GAME_TIME);
 		T_SETV("newIntel", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
@@ -460,17 +461,17 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		{
 			deleteVehicle _x;
 		} forEach _activeCivs;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 #ifdef MILITANT_CIVILIANS_TESTING
 	// Make it always active mission if we are testing
-	METHOD("isActive") {
+	METHOD(isActive)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 #endif
 
-	/* protected override */ METHOD("updateExisting") {
+	/* protected override */ METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -552,9 +553,9 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			!(_x getVariable [BUSY_TAG, false])
 		});
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("spawnNew") {
+	/* protected override */ METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -628,6 +629,6 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				] remoteExec ["addAction", 0, _civie];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

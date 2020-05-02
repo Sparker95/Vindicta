@@ -1,4 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\defineCommon.inc"
@@ -12,6 +12,7 @@
 Class: Goal.GoalUnitFlee
 */
 
+#define OOP_CLASS_NAME GoalUnitFlee
 CLASS("GoalUnitFlee", "Goal")
 	
 ENDCLASS;

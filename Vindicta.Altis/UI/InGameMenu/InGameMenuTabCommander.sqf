@@ -4,20 +4,21 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Location\Location.hpp"
 
 #define pr private
 
 #define CREATE_LOCATION_COST 30
 
+#define OOP_CLASS_NAME InGameMenuTabCommander
 CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 	// How many build res required to build/claim this place
 	VARIABLE("buildResourcesCost");
 	VARIABLE("currentLocation");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		gTabCommander = _thisObject;
@@ -193,9 +194,9 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAWN", "buttonClick", "onButtonSkipDawn");
 
 		T_CALLM0("_updateTimeSkipTooltips");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_updateTimeSkipTooltips") {
+	METHOD(_updateTimeSkipTooltips)
 		params [P_THISOBJECT];
 		private _hoursUntilNextDusk = round call pr0_fnc_getHoursUntilNextDusk;
 		private _hoursUntilNextDawn = round call pr0_fnc_getHoursUntilNextDawn;
@@ -205,15 +206,15 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			ctrlSetTooltip format["Will skip time until 30 minutes before dawn (dawn is in about %1 hours)", round _hoursUntilNextDawn];
 		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DAWN")
 			ctrlSetTooltip format["Will skip time until dawn (dawn is in about %1 hours)", _hoursUntilNextDawn];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		gTabCommander = nil;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonCreateLocation") {
+	METHOD(onButtonCreateLocation)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("ON BUTTON CREATE LOCATION");
@@ -262,9 +263,9 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		CALLM2(_AI, "postMethodAsync", "clientCreateLocation", _args);
 
 		CALLM1(_dialogObj, "setHintText", "Creating new location ...");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonClaimLocation") {
+	METHOD(onButtonClaimLocation)
 		params [P_THISOBJECT];
 
 		pr _currentLoc = T_GETV("currentLocation");
@@ -312,38 +313,38 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		pr _args = [clientOwner, _currentLoc, _hBuildResSrc, _buildResCost];
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonSkipDusk") {
+	METHOD(onButtonSkipDusk)
 		params [P_THISOBJECT];
 		T_CALLM1("_skipTimeDusk", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonSkipPredawn") {
+	METHOD(onButtonSkipPredawn)
 		params [P_THISOBJECT];
 		T_CALLM1("_skipTimeDawn", -0.5);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("onButtonSkipDawn") {
+	METHOD(onButtonSkipDawn)
 		params [P_THISOBJECT];
 		T_CALLM1("_skipTimeDawn", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_skipTimeDusk") {
+	METHOD(_skipTimeDusk)
 		params [P_THISOBJECT, P_NUMBER("_offsetFromDusk")];
 		private _hoursUntilNextDusk = call pr0_fnc_getHoursUntilNextDusk;
 		(_hoursUntilNextDusk + _offsetFromDusk) remoteExecCall ["skipTime", ON_ALL];
 		T_CALLM0("_updateTimeSkipTooltips");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_skipTimeDawn") {
+	METHOD(_skipTimeDawn)
 		params [P_THISOBJECT, P_NUMBER("_offsetFromDawn")];
 		private _hoursUntilNextDawn = call pr0_fnc_getHoursUntilNextDawn;
 		(_hoursUntilNextDawn + _offsetFromDawn) remoteExecCall ["skipTime", ON_ALL];
 		T_CALLM0("_updateTimeSkipTooltips");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("showServerResponse") {
+	STATIC_METHOD(showServerResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 
 		// If this tab is already closed, just throw text into system chat
@@ -354,13 +355,13 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			pr _dialogObj = T_CALLM0("getDialogObject");
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setHintText") {
+	METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_text")];
 
 		pr _dialogObj = T_CALLM0("getDialogObject");
 		CALLM1(_dialogObj, "setHintText", _text);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

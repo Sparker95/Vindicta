@@ -25,6 +25,7 @@ Author: Sparker 21.12.2018
 
 //#define DEBUG_TARGETS
 
+#define OOP_CLASS_NAME SensorCommanderTargets
 CLASS("SensorCommanderTargets", "SensorStimulatable")
 
 	VARIABLE("newTargets"); // Targets which were recognized as new will be added to this array on receiving new targets stimulus
@@ -35,7 +36,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	VARIABLE("debug_clusterMarkers");
 	#endif
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		
 		T_SETV("newTargets", []);
@@ -46,7 +47,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		T_SETV("debug_clusterMarkers", []);
 		#endif
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// ----------------------------------------------------------------------
@@ -54,7 +55,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		params [P_THISOBJECT];
 		
 		pr _AI = T_GETV("AI");
@@ -334,9 +335,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		T_SETV("newTargets", []);
 		T_SETV("deletedTargets", []);
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("drawCluster") {
+	METHOD(drawCluster)
 		params [P_THISOBJECT, "_tc"];
 		
 		pr _AI = T_GETV("AI");
@@ -390,32 +391,32 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		_clusterMarkers pushBack _mrk;
 		
 		T_SETV("debug_nextMarkerID", _nextMarkerID);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD("getUpdateInterval") {
+	METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_TARGETS]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           H A N D L E   S T I M U L U S
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("handleStimulus") {
+	/*virtual*/ METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		#ifdef DEBUG_TARGETS
@@ -482,7 +483,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			*/
 		} forEach (STIMULUS_GET_VALUE(_stimulus));
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 

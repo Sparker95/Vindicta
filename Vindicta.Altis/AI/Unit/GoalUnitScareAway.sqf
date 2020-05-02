@@ -8,6 +8,7 @@ Author: Jeroen 11.12.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalUnitScareAway
 CLASS("GoalUnitScareAway", "Goal")
 	
 	// ----------------------------------------------------------------------
@@ -16,7 +17,7 @@ CLASS("GoalUnitScareAway", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
-	STATIC_METHOD("calculateRelevance") {
+	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 			
 		// We want to scare away a unit if there is one near by
@@ -30,7 +31,7 @@ CLASS("GoalUnitScareAway", "Goal")
 		
 		diag_log format ["[GoalUnitWarningShot] high relevance for AI: %1", _AI];
 		GOAL_RELEVANCE_UNIT_SCAREAWAY;// * _relevance;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
@@ -39,7 +40,7 @@ CLASS("GoalUnitScareAway", "Goal")
 	// create an Action and return it.
 	// Otherwise it must return ""
 	
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		diag_log "createPredefinedAction";
@@ -59,6 +60,6 @@ CLASS("GoalUnitScareAway", "Goal")
 		
 		// Return the created action
 		_action
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

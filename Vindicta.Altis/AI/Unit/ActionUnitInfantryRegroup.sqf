@@ -7,18 +7,19 @@ Makes a unit follow his leader
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitInfantryRegroup
 CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 	
 	// ------------ N E W ------------
 	
 	/*
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _hO = T_GETV("hO");
@@ -63,23 +64,23 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 		
 		// Return ACTIVE state
 		ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		pr _state = T_CALLM0("activateIfInactive");
 		
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	/*
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 	
 ENDCLASS;

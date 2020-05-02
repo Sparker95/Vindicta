@@ -1,5 +1,5 @@
 #define PROFILER_COUNTERS_ENABLE
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "Action.hpp"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -24,6 +24,7 @@ Author: Sparker 05.08.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME Action
 CLASS("Action", "MessageReceiverEx")
 
 	/* Variable: AI
@@ -79,7 +80,7 @@ CLASS("Action", "MessageReceiverEx")
 	_AI - <AI> of the agent
 	_parameters - Array of parameters. See note above about parameters.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		PROFILER_COUNTER_INC("Action");
@@ -93,7 +94,7 @@ CLASS("Action", "MessageReceiverEx")
 		T_SETV("instant", _instant);
 		
 		T_SETV("timer", NULL_OBJECT); // No timer for this goal until it has been made autonomous
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
@@ -101,7 +102,7 @@ CLASS("Action", "MessageReceiverEx")
 	/*
 	Method: delete
 	*/
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		PROFILER_COUNTER_DEC("Action");
@@ -111,7 +112,7 @@ CLASS("Action", "MessageReceiverEx")
 		if (_timer != NULL_OBJECT) then {
 			DELETE(_timer);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T   M E S S A G E   L O O P                  |
@@ -119,15 +120,15 @@ CLASS("Action", "MessageReceiverEx")
 	// | Must implement this since we inherit from MessageReceiver          |
 	// ----------------------------------------------------------------------
 	
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		params [P_THISOBJECT];
 		CALLM0(T_GETV("AI"), "getMessageLoop");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("setInstant") {
+	/* protected virtual */ METHOD(setInstant)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		T_SETV("instant", _instant);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                   S E T   A U T O N O M O U S                      |
@@ -144,7 +145,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD("setAutonomous") {
+	METHOD(setAutonomous)
 		params [P_THISOBJECT, ["_timerPeriod", 1, [1]] ];
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
@@ -154,7 +155,7 @@ CLASS("Action", "MessageReceiverEx")
 		private _args = [_thisObject, _timerPeriod, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	
@@ -173,7 +174,7 @@ CLASS("Action", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD("handleMessageEx") { //Derived classes must implement this method
+	METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE;
 		private _msgHandled = false;
@@ -201,7 +202,7 @@ CLASS("Action", "MessageReceiverEx")
 		};
 		
 		_msgHandled
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	
@@ -214,7 +215,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
-	/* virtual */ METHOD("activateIfInactive") {
+	/* virtual */ METHOD(activateIfInactive)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_INACTIVE) then {
@@ -224,7 +225,7 @@ CLASS("Action", "MessageReceiverEx")
 			T_SETV("instant", false);
 		};
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                 R E A C T I V A T E   I F   F A I L E D            |
@@ -235,7 +236,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
-	METHOD("reactivateIfFailed") {
+	METHOD(reactivateIfFailed)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_FAILED) then {
@@ -243,7 +244,7 @@ CLASS("Action", "MessageReceiverEx")
 			T_SETV("instant", false);
 		};
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                      V I R T U A L   M E T H O D S                 |
@@ -256,13 +257,13 @@ CLASS("Action", "MessageReceiverEx")
 		_instant - The action should be completed instantly
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD("activate") {
+	/* virtual */ METHOD(activate)
 		params [P_THISOBJECT];
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: process
@@ -270,11 +271,11 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD("process") {
+	/* virtual */ METHOD(process)
 		params [P_THISOBJECT];
 		private _state = T_CALLM0("activateIfInactive");
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: terminate
@@ -282,7 +283,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD("terminate") {} ENDMETHOD;
+	/* virtual */ METHOD(terminate)ENDMETHOD;
 	
 	/*
 	Method: addSubactionToFront
@@ -292,7 +293,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD("addSubactionToFront") { diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!"; } ENDMETHOD;
+	/* virtual */ METHOD(addSubactionToFront) diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!"; ENDMETHOD;
 	
 	/*
 	Method: addSubactionToFront
@@ -302,7 +303,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD("addSubactionToBack") { diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!"; } ENDMETHOD;
+	/* virtual */ METHOD(addSubactionToBack) diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!"; ENDMETHOD;
 	
 	/*
 	Method: getSubactions
@@ -311,7 +312,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: []
 	*/
-	/* virtual */ METHOD("getSubactions") { [] } ENDMETHOD;
+	/* virtual */ METHOD(getSubactions) [] ENDMETHOD;
 	
 	
 	/*
@@ -321,10 +322,10 @@ CLASS("Action", "MessageReceiverEx")
 	Returns: _thisObject
 	*/
 	
-	METHOD("getFrontSubaction") {
+	METHOD(getFrontSubaction)
 		params [P_THISOBJECT];
 		_thisObject
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	
@@ -338,40 +339,40 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in completed state, false otherwise
 	*/
-	METHOD("isCompleted") {
+	METHOD(isCompleted)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: isActive
 	
 	Returns: true if action is in active state, false otherwise
 	*/
-	METHOD("isActive") {
+	METHOD(isActive)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: isInactive
 	
 	Returns: true if action is in inactive state, false otherwise
 	*/
-	METHOD("isInactive") {
+	METHOD(isInactive)
 		params [P_THISOBJECT];
 		(T_GETV("state")) == ACTION_STATE_INACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: isFailed
 	
 	Returns: true if action is in failed state, false otherwise
 	*/
-	METHOD("isFailed") {
+	METHOD(isFailed)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_FAILED
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	
@@ -403,7 +404,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number
 	*/
-	STATIC_METHOD("getCost") {
+	STATIC_METHOD(getCost)
 		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_wsStart"), P_ARRAY("_wsEnd")];
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
@@ -413,7 +414,7 @@ CLASS("Action", "MessageReceiverEx")
 		//} else {
 			_cost
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	// ----------------------------------------------------------------------
@@ -434,13 +435,13 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: <WorldState>
 	*/
-	STATIC_METHOD("getPreconditions") {
+	STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 
 		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
 		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
 		_wsPre
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	// ----------------------------------------------------------------------
@@ -456,7 +457,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number
 	*/
-	STATIC_METHOD("getPrecedence") {
+	STATIC_METHOD(getPrecedence)
 		params [P_THISCLASS];
 		
 		pr _precedence = GET_STATIC_VAR(_thisClass, "precedence");
@@ -466,9 +467,9 @@ CLASS("Action", "MessageReceiverEx")
 		//} else {
 			_precedence
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	STATIC_METHOD("isNonInstant") {
+	STATIC_METHOD(isNonInstant)
 		params [P_THISCLASS];
 		
 		pr _nonInstant = GET_STATIC_VAR(_thisClass, "nonInstant");
@@ -478,7 +479,7 @@ CLASS("Action", "MessageReceiverEx")
 		} else {
 			_nonInstant
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getParameterValue
@@ -493,7 +494,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: anything
 	*/
-	STATIC_METHOD("getParameterValue") {
+	STATIC_METHOD(getParameterValue)
 		params [P_THISCLASS, P_ARRAY("_parameters"), ["_tag", "", ["", 0]], P_DYNAMIC("_default")];
 		private _index = _parameters findif { _x select 0 == _tag };
 		private _val = if(_index == NOT_FOUND) then { _default } else { (_parameters#_index)#1 };
@@ -504,10 +505,10 @@ CLASS("Action", "MessageReceiverEx")
 		} else {
 			_val
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Merge _additional parameters into _base parameters, leaving any existing values unchanged
-	STATIC_METHOD("mergeParameterValues") {
+	STATIC_METHOD(mergeParameterValues)
 		params [P_THISCLASS, P_ARRAY("_base"), P_ARRAY("_additional")];
 		{
 			_x params ["_tag", "_value"];
@@ -517,7 +518,7 @@ CLASS("Action", "MessageReceiverEx")
 				_base pushBack _x;
 			};
 		} forEach _additional;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
 
@@ -535,11 +536,11 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD("handleGroupsAdded") {
+	METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -553,11 +554,11 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD("handleGroupsRemoved") {
+	METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 	/*
@@ -572,11 +573,11 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: handleUnitsAdded
@@ -590,14 +591,14 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitsAdded") {
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Helper functions
-	STATIC_METHOD("_clearWaypoints") {
+	STATIC_METHOD(_clearWaypoints)
 		params [P_THISCLASS, P_GROUP("_hG")];
 		// Add a dummy waypoint as deleting all waypoints results in a dummy one being created later which messes
 		// with waypoint ordering
@@ -619,17 +620,17 @@ CLASS("Action", "MessageReceiverEx")
 		// _wp setWaypointSpeed "UNCHANGED";
 		// _wp setWaypointScript  "";
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	STATIC_METHOD("_regroup") {
+	STATIC_METHOD(_regroup)
 		params [P_THISCLASS, P_GROUP("_hG")];
 		if(isNull _hG) exitWith {
 			// No group
 		};
 		{ _x stop false; _x doFollow leader _hG; } forEach units _hG;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("_teleport") {
+	STATIC_METHOD(_teleport)
 		params [P_THISCLASS, P_ARRAY("_units"), P_POSITION("_pos")];
 		
 		{
@@ -647,7 +648,7 @@ CLASS("Action", "MessageReceiverEx")
 				// dismounted inf
 				case (CALLM0(_unit, "isInfantry") && vehicle _hO == _hO): {
 					private _tgtPos = [_pos, 0, 25, 0, 0, 2, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
-					_hO setVehiclePosition  [_tgtPos, [], 5];
+					_hO setVehiclePosition  [_tgtPos, [], 5, "CAN_COLLIDE"];
 					//_hO setPos _tgtPos;
 				};
 				// vehicle
@@ -698,14 +699,14 @@ CLASS("Action", "MessageReceiverEx")
 				};
 			};
 		} forEach _units;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	// Override to show debug data in debug UI for specific class
-	/* virtual */ METHOD("getDebugUIVariableNames") {
+	/* virtual */ METHOD(getDebugUIVariableNames)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

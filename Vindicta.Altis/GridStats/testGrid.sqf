@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 if(!isNil "gGrid") then {
 	CALLM0(gGrid, "unplot");

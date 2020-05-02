@@ -10,6 +10,7 @@ Parent: <CmdrAction>
 
 #define pr private
 
+#define OOP_CLASS_NAME ConstructLocationCmdrAction
 CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 	VARIABLE_ATTR("srcGarrID", [ATTR_SAVE]);
@@ -21,7 +22,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
 	VARIABLE_ATTR("buildRes", [ATTR_SAVE]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrID"), P_POSITION("_locPos"), P_DYNAMIC("_locType")];
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
@@ -38,9 +39,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		
 		private _startDateVar = T_CALLM1("createVariable", DATE_NOW); // Default to immediate, overriden at updateScore
 		T_SETV("startDateVar", _startDateVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 	
 		// Clear our debug markers
@@ -48,9 +49,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		deleteMarker (_thisObject + "_line");
 		deleteMarker (_thisObject + "_label");
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("createTransitions") {
+	METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -118,11 +119,11 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		private _constructAST = NEW("AST_GarrisonConstructLocation", _constructAST_Args);
 
 		[_splitAST, _assignAST, _waitAST, _moveAST, _constructAST]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Copied from TakeLocationCmdrAction
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -268,9 +269,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			_side, LABEL(_srcGarr), _tgtLocPos, _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -308,9 +309,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM0(_intelClone, "updateInDb");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateIntelFromDetachment") {
+	METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
@@ -333,12 +334,12 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			// Send intel to the garrison doing this action
 			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Debug drawing
 
-	/* protected override */ METHOD("debugDraw") {
+	/* protected override */ METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -361,9 +362,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		_mrk setMarkerPos _centerPos;
 		_mrk setMarkerAlpha 1;
 		_mrk setMarkerText T_CALLM("getLabel", [_world]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("getLabel") {
+	/* protected override */ METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -395,7 +396,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
 			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

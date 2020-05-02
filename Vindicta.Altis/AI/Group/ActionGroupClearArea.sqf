@@ -7,6 +7,7 @@ The whole group regroups and gets some waypoints to clear the area
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupClearArea
 CLASS("ActionGroupClearArea", "ActionGroup")
 
 	VARIABLE("pos");
@@ -14,7 +15,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 	VARIABLE("inCombat");
 	VARIABLE("nextLookTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -30,10 +31,10 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_SETV("behaviour", "AWARE");
 
 		T_SETV("nextLookTime", GAME_TIME);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _AI = T_GETV("AI");
@@ -108,10 +109,10 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("failIfEmpty");
@@ -172,15 +173,15 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		// Return the current state
 		T_GETV("state")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		T_CALLM0("clearWaypoints");
 		T_CALLCM0("ActionGroup", "terminate");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

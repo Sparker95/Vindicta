@@ -1,10 +1,10 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 /*
 Spawn a unit
 */
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #define pr private
 
 params ["_catID", "_subcatID", "_side"];

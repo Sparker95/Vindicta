@@ -1,6 +1,6 @@
 #define OOP_INFO
 #define OOP_DEBUG
-#include "OOP_Light\OOP_Light.h"
+#include "common.h"
 
 #define DEBUG
 

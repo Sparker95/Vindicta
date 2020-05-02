@@ -80,13 +80,14 @@ This mission spawns a number of civilians that police will try to arrest (when t
 If the player frees them after they are arrested they will provide rewards of intel, and increase local
 activity.
 */
+#define OOP_CLASS_NAME HarassedCiviliansAmbientMission
 CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 	// How many missions of this type can be running at a time.
 	VARIABLE("maxActive");
 	// Currently running missions of this type (as represented by the civilian units).
 	VARIABLE("activeCivs");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -96,9 +97,9 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		// How many civilians should be harrassed at the same time for this city size?
 		private _maxActive = 1 + ((3 * ln(0.01 * _radius + 1)) min 5);
 		T_SETV("maxActive", _maxActive);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
@@ -106,9 +107,9 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		{
 			deleteVehicle _x;
 		} forEach _activeCivs;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("updateExisting") {
+	/* protected override */ METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -118,9 +119,9 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		{
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("spawnNew") {
+	/* protected override */ METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -186,5 +187,5 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 				}
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

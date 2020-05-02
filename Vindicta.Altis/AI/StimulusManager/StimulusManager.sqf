@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "ai.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\defineCommon.inc"
@@ -16,6 +16,7 @@ Stimulus manager is a common object which gathers stimulus from one source and d
 
 #define pr private
 
+#define OOP_CLASS_NAME StimulusManager
 CLASS("StimulusManager", "MessageReceiverEx")
 
 	VARIABLE("sensingAIs"); // Array of AI objects which will be sensing stimulus
@@ -25,41 +26,41 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_msgLoop")];
 	
 		T_SETV("msgLoop", _msgLoop);
 		T_SETV("sensingAIs", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("getMessageLoop") { //Derived classes must implement this method if they need to receive messages
+	METHOD(getMessageLoop) //Derived classes must implement this method if they need to receive messages
 		T_GETV("msgLoop");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                            P R O C E S S
 	// ----------------------------------------------------------------------
 	
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                            H A N D L E   S T I M U L U S
 	// | Handles a stimulus when it is created
 	// ----------------------------------------------------------------------
 	
-	METHOD("handleStimulus") {
+	METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("Handle stimulus: %1", _stimulus);
@@ -105,40 +106,40 @@ CLASS("StimulusManager", "MessageReceiverEx")
 				CALLM1(_AI, "handleStimulus", _stimulus);
 			};
 		} forEach _AIs;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                 A D D   /   R E M O V E   S E N S I N G   A I
 	// | Adds/removes the AI to the list of AIs handles by this stimulus manager
 	// ----------------------------------------------------------------------
 	
-	METHOD("addSensingAI") {
+	METHOD(addSensingAI)
 		params [P_THISOBJECT, ["_AI", "ERROR_NO_AI", [""]] ];
 		pr _sensingAIs = T_GETV("sensingAIs");
 		_SensingAIs pushBackUnique _AI;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("removeSensingAI") {
+	METHOD(removeSensingAI)
 		params [P_THISOBJECT, ["_AI", "ERROR_NO_AI", [""]] ];
 		pr _sensingAIs = T_GETV("sensingAIs");
 		pr _ID = _sensingAIs find _AI;
 		if (_ID != -1) then {
 			_sensingAIs deleteAt _ID;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   M E S S A G E
 	// | 
 	// ----------------------------------------------------------------------
 	
-	METHOD("handleMessageEx") { //Derived classes must implement this method
+	METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
 			default {false}; // Message not handled
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	
 

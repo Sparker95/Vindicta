@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Message\Message.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 
@@ -15,20 +15,21 @@ Author: Sparker, Billw (reference count improvements)
 
 #define pr private
 
+#define OOP_CLASS_NAME MessageReceiverEx
 CLASS("MessageReceiverEx", "MessageReceiver")
 
 	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("refCount", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// todo check reference count on deletion
 	/*
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 	
 	/*
@@ -49,7 +50,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: nil
 	*/
-	METHOD("handleMessage") {
+	METHOD(handleMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE; // Message type is the function name
 		private _return = nil;
@@ -66,7 +67,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		};
 		// Did the method return anything?
 		if (isNil "_return") then {	0 } else { _return }
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: handleMessageEx
@@ -79,11 +80,11 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: you can return whatever you need from here to later retrieve it by waitUntilMessageDone.
 	*/
-	METHOD("handleMessageEx") {
+	METHOD(handleMessageEx)
 		params [P_THISOBJECT , P_ARRAY("_msg") ];
 		diag_log format ["[MessageReceiverEx] handleMessageEx: %1", [_msg]];
 		false
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: postMethodAsync
@@ -105,7 +106,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 	*/
 	//
 	// Returns: the ID of the posted message
-	METHOD("postMethodAsync") {
+	METHOD(postMethodAsync)
 		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], P_ARRAY("_params"), ["_returnMsgIDOrContinuation", false, [false, []]]];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
@@ -119,7 +120,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 		// Return the message ID (if it was requested)
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: postMethodSync
@@ -134,7 +135,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: whatever was returned by this object
 	*/
-	METHOD("postMethodSync") {
+	METHOD(postMethodSync)
 		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], P_ARRAY("_methodParams") ];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
@@ -148,19 +149,19 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 #endif
 		// Return whatever was returned by this object
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// - - - - REFERENCE COUNTER - - - -
 	
-	 METHOD("ref") {
+	 METHOD(ref)
 	 	params [P_THISOBJECT];
 	 	CRITICAL_SECTION_START
 		T_SETV("refCount", T_GETV("refCount") + 1);
 		CRITICAL_SECTION_END
 		nil // return this to make SQF happy (= operator returns nothing, not nil)
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("unref") {
+	METHOD(unref)
 		params [P_THISOBJECT];
 		pr _mustDelete = false;
 		
@@ -181,17 +182,17 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		};
 		
 		nil
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - STORAGE - - - - - -
 	
-	/* virtual */ METHOD("postDeserialize") {
+	/* virtual */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiver", _thisObject, "postDeserialize", [_storage]);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

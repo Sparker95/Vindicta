@@ -1,5 +1,5 @@
 #include "..\CivilianPresence\common.hpp"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 #define pr private
 

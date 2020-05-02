@@ -1,5 +1,5 @@
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 /*
 TEst the goal for AI to play repair vehicle animation
 */

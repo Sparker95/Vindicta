@@ -5,6 +5,7 @@ Goal for a group to clear a certain area.
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGroupClearArea
 CLASS("GoalGroupClearArea", "Goal")
 	
 	// ----------------------------------------------------------------------
@@ -13,7 +14,7 @@ CLASS("GoalGroupClearArea", "Goal")
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _group = GETV(_AI, "agent");
@@ -51,6 +52,6 @@ CLASS("GoalGroupClearArea", "Goal")
 
 			_actionSerial
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

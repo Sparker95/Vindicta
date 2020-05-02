@@ -7,6 +7,7 @@ just directly merges/joins.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_MergeOrJoinTarget
 CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("fromGarrDeadState", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -29,7 +30,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		_fromGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison performing the action
 		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to merge or join to
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -47,9 +48,9 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		T_SETV("targetDeadState", _targetDeadState);
 		T_SETV("fromGarrIdVar", _fromGarrIdVar);
 		T_SETV("targetVar", _targetVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -129,7 +130,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		} else {
 			T_GETV("successState")
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 #ifdef _SQF_VM

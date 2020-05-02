@@ -1,3 +1,3 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 private _dlg0 = NEW("RadioKeyDialog", []);

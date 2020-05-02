@@ -4,18 +4,18 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Resources\UIProfileColors.h"
-
-#define __CLASS_NAME "InGameMenuTabGameModeInit"
 
 #define pr private
 
 #define LB_CUR_SEL_DATA(lb) lb lbData (lbCurSel lb)
 
-CLASS(__CLASS_NAME, "DialogTabBase")
+#define __CLASS_NAME "InGameMenuTabGameModeInit"
+#define OOP_CLASS_NAME InGameMenuTabGameModeInit
+CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", _thisObject);
 
@@ -139,23 +139,23 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		// Update the description
 		T_CALLM0("updateDescription");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", nil);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called when we select something new in the combo box
-	METHOD("onCbSelChanged") {
+	METHOD(onCbSelChanged)
 		params [P_THISOBJECT];
 		OOP_INFO_0("CB SEL CHANGED");
 		T_CALLM0("updateDescription");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Updates description text.
-	METHOD("updateDescription") {
+	METHOD(updateDescription)
 		params [P_THISOBJECT];
 
 		pr _cbEnemyFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_ENEMY_FACTION");
@@ -196,15 +196,15 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 				};
 			};
 		} forEach [_enemyTemplateName, _policeTemplateName, _civilianTemplateName];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonRnd") {
+	METHOD(onButtonRnd)
 		params [P_THISOBJECT];
 		pr _editCampaignName = T_CALLM1("findControl", "TAB_GMINIT_EDIT_CAMPAIGN_NAME");
 		_editCampaignName ctrlSetText (selectRandom (call compile preprocessFileLineNumbers "Templates\campaignNames.sqf"));
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("onButtonStart") {
+	METHOD(onButtonStart)
 		params [P_THISOBJECT];
 
 		// Validate inputs
@@ -259,6 +259,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Close in game menu after creating
 		CALLM0(gInGameMenu, "close");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

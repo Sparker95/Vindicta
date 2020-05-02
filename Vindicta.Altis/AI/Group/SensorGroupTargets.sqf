@@ -29,16 +29,17 @@ Sensor for a group to gather spotted enemies and relay them to the garrison.
 // Prints targets received through the stimulus
 //#define PRINT_RECEIVED_TARGETS
 
+#define OOP_CLASS_NAME SensorGroupTargets
 CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 
 	VARIABLE("comTime"); // Counter that shows how long the group has been in combat state
 	VARIABLE("prevMsgID"); // Message ID of the previous receiveTargets message, so that we don't oversaturate the garrison AI thread
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("comTime", 0);
 		T_SETV("prevMsgID", -1); // First message ID is negative as it is always handled
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// ----------------------------------------------------------------------
@@ -46,7 +47,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		params [P_THISOBJECT];
 		
 		// Unpack the group handle
@@ -222,32 +223,32 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		#endif
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD("getUpdateInterval") {
+	METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_TARGETS, STIMULUS_TYPE_FORGET_TARGETS]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           H A N D L E   S T I M U L U S
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("handleStimulus") {
+	/*virtual*/ METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		switch (STIMULUS_GET_TYPE(_stimulus)) do {
@@ -298,6 +299,6 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		};
 		
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

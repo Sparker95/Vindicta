@@ -20,7 +20,7 @@
 			"\tMETHOD(\"new\") {",
 			"\t\tparams [P_THISOBJECT];",
 			"\t\t$0",
-			"\t} ENDMETHOD;",
+			"\tENDMETHOD;",
 			"ENDCLASS;"
 		],
 		"description": "New OOP Light CLASS"
@@ -38,7 +38,7 @@
 			"METHOD(\"$1\") {",
 			"\tparams [P_THISOBJECT];",
 			"\t$0",
-			"} ENDMETHOD;",
+			"ENDMETHOD;",
 			""
 		],
 		"description": "New OOP Light METHOD"
@@ -49,7 +49,7 @@
 			"STATIC_METHOD(\"$1\") {",
 			"\tparams [P_THISCLASS];",
 			"\t$0",
-			"} ENDMETHOD;",
+			"ENDMETHOD;",
 			""
 		],
 		"description": "New OOP Light STATIC_METHOD"

@@ -138,15 +138,15 @@
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \
-	ASSERT_MSG(actual isEqualType [], __STRINGIFY(actual) + " is invalid type. It should be an array."); \
+	ASSERT_MSG(actual isEqualType [], QUOTE(actual) + " is invalid type. It should be an array."); \
 	if(count actual > 0) then { \
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(actual); \
 	}
 #define ASSERT_CLUSTER_ACTUAL_NOT_NULL(actual) \
-	ASSERT_MSG(actual isEqualType [], __STRINGIFY(actual) + " is invalid type. It should be an array."); \
-	ASSERT_MSG(count actual == 2, __STRINGIFY(actual) + " should be an array of the form [AICommander, Cluster ID]"); \
+	ASSERT_MSG(actual isEqualType [], QUOTE(actual) + " is invalid type. It should be an array."); \
+	ASSERT_MSG(count actual == 2, QUOTE(actual) + " should be an array of the form [AICommander, Cluster ID]"); \
 	ASSERT_OBJECT_CLASS(actual select 0, "AICommander"); \
-	ASSERT_MSG((actual select 1) isEqualType 0, __STRINGIFY(actual) + " should be an array of the form [AICommander, Cluster ID]")
+	ASSERT_MSG((actual select 1) isEqualType 0, QUOTE(actual) + " should be an array of the form [AICommander, Cluster ID]")
 #else
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)
 #define ASSERT_CLUSTER_ACTUAL_NOT_NULL(actual)

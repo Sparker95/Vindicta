@@ -9,6 +9,7 @@ Radius is recalculated in case location is specified as destination
 Parent: <ActionStateTransition>
 */
 
+#define OOP_CLASS_NAME AST_MoveGarrison
 CLASS("AST_MoveGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -34,7 +35,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to move to
 		_radiusVar - IN <AST_VAR>(Number), radius around target within which to consider the move complete
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -54,9 +55,9 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		T_SETV("garrIdVar", _garrIdVar);
 		T_SETV("targetVar", _targetVar);
 		T_SETV("radiusVar", _radiusVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -127,9 +128,9 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		} else {
 			CMDR_ACTION_STATE_NONE
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("cancel") {
+	/* override */ METHOD(cancel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		// What we do depends on if we are applying to a sim world model or the real world.
@@ -149,7 +150,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 				};
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 
