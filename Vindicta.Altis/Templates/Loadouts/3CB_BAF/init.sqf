@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "..\common.hpp"
 
 ADD_LOADOUT("UK3CB_BAF_Ammo_MTP_1",		"3CB_BAF\UK3CB_BAF_Ammo_MTP_1.sqf")
 ADD_LOADOUT("UK3CB_BAF_Ammo_MTP_2",		"3CB_BAF\UK3CB_BAF_Ammo_MTP_2.sqf")
