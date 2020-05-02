@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-/*Headgear*/
+//===Headgear===
 if (random 10 < 3) then {
 	private _headgear = [
 		"H_Hat_blue",
@@ -34,7 +34,16 @@ if (random 10 < 3) then {
 	this addHeadgear selectRandom _headgear;
 };
 
-/*Facewear*/
+//===Vest===
+if (random 10 < 3) then {
+	private _Vest = [
+		"V_LIB_SOV_RA_Belt"
+	];
+
+	this addVest selectRandom _Vest;
+};
+
+//===Facewear===
 if (random 10 < 3) then {
 	private _Facewear = [
 		"G_GEHeadBandage_Bloody",
@@ -53,41 +62,43 @@ if (random 10 < 3) then {
 	this addGoggles selectRandom _Facewear;
 };
 
-/*Uniform*/
+//===Uniform===
 this forceAddUniform selectRandom [
-	"U_LIB_CIV_Assistant",
-	"U_LIB_CIV_Assistant_2",
-	"U_LIB_CIV_Citizen_1",
-	"U_LIB_CIV_Citizen_2",
-	"U_LIB_CIV_Citizen_3",
-	"U_LIB_CIV_Citizen_4",
-	"U_LIB_CIV_Citizen_5",
-	"U_LIB_CIV_Citizen_6",
-	"U_LIB_CIV_Citizen_7",
-	"U_LIB_CIV_Citizen_8",
-	"U_LIB_CIV_Doctor",
-	"U_LIB_CIV_Priest",
-	"U_LIB_CIV_Rocker_1",
-	"U_LIB_CIV_Schoolteacher",
-	"U_LIB_CIV_Schoolteacher_2",
-	"U_LIB_CIV_Villager_1",
-	"U_LIB_CIV_Villager_2",
-	"U_LIB_CIV_Villager_3",
-	"U_LIB_CIV_Villager_4",
-	"U_LIB_CIV_Woodlander_1",
-	"U_LIB_CIV_Woodlander_2",
-	"U_LIB_CIV_Woodlander_3",
-	"U_LIB_CIV_Woodlander_4",
-	"U_LIB_CIV_Worker_1",
-	"U_LIB_CIV_Worker_2",
-	"U_LIB_CIV_Worker_3",
-	"U_LIB_CIV_Worker_4",
-	"U_LIB_CIV_Functionary_1",
-	"U_LIB_CIV_Functionary_2",
-	"U_LIB_CIV_Functionary_3",
-	"U_LIB_CIV_Functionary_4"
+		"U_LIB_CIV_Assistant",
+		"U_LIB_CIV_Assistant_2",
+		"U_LIB_CIV_Citizen_1",
+		"U_LIB_CIV_Citizen_2",
+		"U_LIB_CIV_Citizen_3",
+		"U_LIB_CIV_Citizen_4",
+		"U_LIB_CIV_Citizen_5",
+		"U_LIB_CIV_Citizen_6",
+		"U_LIB_CIV_Citizen_7",
+		"U_LIB_CIV_Citizen_8",
+		"U_LIB_CIV_Doctor",
+		"U_LIB_CIV_Priest",
+		"U_LIB_CIV_Rocker_1",
+		"U_LIB_CIV_Schoolteacher",
+		"U_LIB_CIV_Schoolteacher_2",
+		"U_LIB_CIV_Villager_1",
+		"U_LIB_CIV_Villager_2",
+		"U_LIB_CIV_Villager_3",
+		"U_LIB_CIV_Villager_4",
+		"U_LIB_CIV_Woodlander_1",
+		"U_LIB_CIV_Woodlander_2",
+		"U_LIB_CIV_Woodlander_3",
+		"U_LIB_CIV_Woodlander_4",
+		"U_LIB_CIV_Worker_1",
+		"U_LIB_CIV_Worker_2",
+		"U_LIB_CIV_Worker_3",
+		"U_LIB_CIV_Worker_4",
+		"U_LIB_CIV_Functionary_1",
+		"U_LIB_CIV_Functionary_2",
+		"U_LIB_CIV_Functionary_3",
+		"U_LIB_CIV_Functionary_4"
 ];
 
 if(random 10 > 5) then { this linkItem "ItemWatch" };
 
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+
+this addItemToUniform "FirstAidKit";

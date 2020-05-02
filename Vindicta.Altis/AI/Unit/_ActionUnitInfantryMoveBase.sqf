@@ -30,11 +30,11 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 
 		T_SETV("timeToComplete", 0);
 	} ENDMETHOD;
-	
+
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [P_THISOBJECT, P_BOOL("_instant")];
-		
+
 		// Handle AI just spawned state
 		private _AI = T_GETV("AI");
 		if (_instant) then {
@@ -53,21 +53,19 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			private _hO = T_GETV("hO");
 			private _pos = T_GETV("pos");
 			_hO doMove _pos;
-			
+
 			// Set ETA
-			// Use manhattan distance
-			private _posStart = ASLTOAGL (getPosASL _hO);
-			private _dist = (abs ((_pos select 0) - (_posStart select 0)) ) + (abs ((_pos select 1) - (_posStart select 1))) + (abs ((_pos select 2) - (_posStart select 2)));
-			private _ETA = GAME_TIME + (_dist/1.4 + 40);
+			private _dist = _hO distance2D _pos;
+			private _ETA = GAME_TIME + _dist + 60;
 			T_SETV("ETA", _ETA);
-			
+
 			// Set state
 			T_SETV("state", ACTION_STATE_ACTIVE);
-			
+
 			// Return ACTIVE state
 			ACTION_STATE_ACTIVE
 		};
-		
+
 	} ENDMETHOD;
 	
 	// logic to run each update-step

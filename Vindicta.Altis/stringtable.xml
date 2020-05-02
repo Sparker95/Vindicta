@@ -181,7 +181,7 @@
 				<Original>INJECTING SOME MORPHINE?</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_ILLEGAL">
-				<Original>DO NOT DO THAT!</Original>
+				<Original>ILLEGAL ACTION</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
@@ -315,7 +315,7 @@
 	<Package name="Settings">
 		<Container name="Section">
 			<Key ID="STR_Vindicta_Settings_Section">
-				<Original>Vindicta</Original>
+				<Original>*Vindicta</Original>
 			</Key>
 		</Container>
 		<Container name="Autoload">
@@ -380,68 +380,89 @@
 				<Original>Determines how fast time progresses in the game</Original>
 			</Key>
 		</Container>
-		<Container name="Difficulty">
-			<!-- <Key ID="STR_Vindicta_Settings_Difficulty_Advanced">
-				<Original>Use advanced difficulty settings</Original>
+		<Container name="Diff">
+			<Key ID="STR_Vindicta_Settings_Diff">
+				<Original>Difficulty</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Advanced_Tooltip">
-				<Original>When enabled the advanced difficulty settings will override the global one</Original>
-			</Key> -->
-			<Key ID="STR_Vindicta_Settings_Difficulty_Global">
+			<Key ID="STR_Vindicta_Settings_Diff_Global">
 				<Original>Global difficulty</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Global_Tooltip">
+			<Key ID="STR_Vindicta_Settings_Diff_Global_Tooltip">
 				<Original>This value is applied as a modifier to all other difficulty settings</Original>
 			</Key>
-			
-			<!-- Enemy -->
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy">
-				<Original>Enemy difficulty</Original>
+
+			<!-- Enemy Commander -->
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global">
+				<Original>Enemy Commander difficulty</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Tooltip">
-				<Original>This value is applied as a modifier to all Enemy difficulty settings</Original>
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global_Tooltip">
+				<Original>This value is applied as a modifier to all enemy Commander difficulty settings</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Reinforcement_Rate">
-				<Original>Enemy reinforcement rate</Original>
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate">
+				<Original>Reinforcement rate</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Reinforcement_Rate_Tooltip">
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy can reinforce</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Escalation_Rate">
-				<Original>Enemy escalation rate</Original>
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate">
+				<Original>Escalation rate</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Escalation_Rate_Tooltip">
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy escalates their force strength (e.g. how soon in the campaign they will start to use tanks)</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Persistence">
-				<Original>Enemy persitence</Original>
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence">
+				<Original>Persitence</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_Enemy_Persistence_Tooltip">
+			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence_Tooltip">
 				<Original>Modifies how persistent the enemy will be when sending repeated actions against you</Original>
 			</Key>
-
-			<!-- Enemy AI -->
-			<Key ID="STR_Vindicta_Settings_Difficulty_AI">
-				<Original>AI difficulty</Original>
-			</Key>
-			<Key ID="STR_Vindicta_Settings_Difficulty_AI_Tooltip">
-				<Original>This value is applied as a modifier to all AI difficulty settings</Original>
-			</Key>
-
 		</Container>
 
-		<Container name="Performance">
-			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison">
-				<Original>Garrison Virtualization Distance</Original>
+		<Container name="AI">
+			<Key ID="STR_Vindicta_Settings_AI">
+				<Original>AI</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Garrison_Tooltip">
-				<Original>Garrisons beyond this distance will be virtualized, meters</Original>
+			<Key ID="STR_Vindicta_Settings_AI_Global">
+				<Original>AI global</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Civilian">
+			<Key ID="STR_Vindicta_Settings_AI_Global_Tooltip">
+				<Original>This value is applied as a modifier to all AI settings</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_AI_Accuracy">
+				<Original>AI aiming accuracy</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_AI_Shake">
+				<Original>AI aiming shake</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_AI_Speed">
+				<Original>AI aiming speed</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_AI_Spotting_Distance">
+				<Original>AI spotting distance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_AI_Spotting_Time">
+				<Original>AI spotting time</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_AI_Tooltip_Note">
+				<Original>Note: Final AI skill is affected by AI settings in server's profile</Original>
+			</Key>
+		</Container>
+
+		<Container name="Perf">
+			<Key ID="STR_Vindicta_Settings_Perf">
+				<Original>Performance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison">
+				<Original>Garrison Spawn Distance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Tooltip">
+				<Original>Spawn distance for enemy garrisons, measured in meters. Warning: raising this above the default can severely impact performance.</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian">
 				<Original>Civilian Spawn Distance</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Performance_spawnDist_Civilian_Tooltip">
-				<Original>Spawn distance for cities, measured from city border, meters</Original>
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian_Tooltip">
+				<Original>Spawn distance for civilians, measured in meters from the city border. Warning: raising this above the default can severely impact performance.</Original>
 			</Key>
 		</Container>
 
@@ -476,6 +497,12 @@
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Factions">
 				<Original>Most recent save for this map has incompatible factions</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_CountDown">
+				<Original>Will autoload in %1s, login as admin to abort</Original>
+			</Key>
+			<Key ID="STR_Vindicta_GameManager_Autoload_AdminAbort">
+				<Original>Autoload aborted as admin is present</Original>
 			</Key>
 		</Container>
 	</Package>

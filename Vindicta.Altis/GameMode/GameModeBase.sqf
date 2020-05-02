@@ -1,13 +1,9 @@
 #include "common.hpp"
 
 // Default resolution of our timer service
-#define TIMER_SERVICE_RESOLUTION 0.45
-
-// Debug flag, will limit generation or locations to a small area
-#ifndef RELEASE_BUILD
-//#define __SMALL_MAP
-#endif
-FIX_LINE_NUMBERS()
+// !! Now it's set to 0, which will result in evaluation on each frame
+// This way we can process data more often instead of processing it less often and in larget batches
+#define TIMER_SERVICE_RESOLUTION 0.0
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
 
@@ -97,7 +93,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("tNameMilInd", "tAAF");
 		T_SETV("tNameMilEast", "tCSAT");
 		T_SETV("tNamePolice", "tPOLICE");
-		T_SETV("tNameCivilian", "tCivilian");
+		T_SETV_PUBLIC("tNameCivilian", "tCivilian"); // Required on client
 
 		// Apply values from arguments
 		T_SETV("enemyForceMultiplier", 1);
@@ -108,7 +104,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_SETV("tNamePolice", _tNamePolice);
 		};
 		if (_tNameCivilian != "") then {
-			T_SETV("tNameCivilian", _tNameCivilian);
+			T_SETV_PUBLIC("tNameCivilian", _tNameCivilian); // Required on client
 		};
 		
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
@@ -277,7 +273,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			if(timeMultiplier != vin_server_gameSpeed) then {
 				setTimeMultiplier vin_server_gameSpeed;
-			}
+			};
 		};
 		#endif
 		FIX_LINE_NUMBERS()
@@ -363,12 +359,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD("populateCity") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
-		private _templateName = T_CALLM2("getTemplateName", CIVILIAN, "");
+		private _templateName = T_CALLM1("getTemplateName", CIVILIAN);
 		private _template = [_templateName] call t_fnc_getTemplate;
 		private _args = [CIVILIAN, [], "civilian", _templateName];
 		private _gar = NEW("Garrison", _args);
-		private _radius = GETV(_loc, "boundingRadius");
-		private _maxCars = 3 max (25 min (0.03 * _radius));
+		private _maxCars = CALLM0(_loc, "getMaxCivilianVehicles");
 		for "_i" from 0 to _maxCars do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 			CALLM(_gar, "addUnit", [_newUnit]);
@@ -697,12 +692,17 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(!IS_MULTIPLAYER) then {
 			// We need to catch player death so we can "respawn" them fakely
 			OOP_INFO_1("Added killed EH to %1", _newUnit);
-			[_newUnit, "Killed", {
-				params ["_unit"];
-				_unit removeEventHandler ["Killed", _thisID];
-				CALLM1(gGameMode, "singlePlayerKilled", _unit);
-			}] call CBA_fnc_addBISEventHandler;
+			if(isNil {_newUnit getVariable "_player_respawn_eh"}) then {
+				private _eh = [_newUnit, "Killed", {
+					params ["_unit"];
+					CALLM1(gGameMode, "singlePlayerKilled", _unit);
+				}] call CBA_fnc_addBISEventHandler;
+				_newUnit setVariable ["_player_respawn_eh", _eh];
+			};
 		};
+
+		// Give player good score to avoid renegade possibilities
+		_newUnit setUnitRank "COLONEL";
 
 		// Create a suspiciousness monitor for player
 		NEW("UndercoverMonitor", [_newUnit]);
@@ -919,16 +919,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
-		if(!(_restoreData isEqualTo [])) then {
-			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
+
+		// Give player a lockpick
+		_newUnit addItemToUniform "ACE_key_lockpick";
+
+		// Restore data
+		private _dataWasRestored = if(!(_restoreData isEqualTo [])) then {
+			[_newUnit, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
 			// Clear player gear immediately on this client
 			CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]]);
 			// Tell the server to clear it as well, which will also update the client (just to make sure)
-			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [player], ON_SERVER);
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [_newUnit], ON_SERVER);
 			true
 		} else {
 			false
-		}
+		};
+
+		_dataWasRestored
 	} ENDMETHOD;
 
 	// Player death event handler in SP
@@ -1189,49 +1196,21 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
 
-			#ifdef __SMALL_MAP
+
+			#ifdef PARTIAL_MAP_POPULATION
 			_locSectorPos params ["_posX", "_posY"];
 			if (_posX > 20000 && _posY > 16000) then {
 			#endif
 			FIX_LINE_NUMBERS()
-
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
 			private _locSide = _locSector getVariable ["Side", ""];
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
-			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
-			//private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""]; // capacityInf is calculated from actual buildings
-			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
-
-			if(_locType == LOCATION_TYPE_CITY) then {
-				private _baseRadius = 300; // Radius at which it 
-
-				_locBorder params ["_a", "_b"];
-				private _area = 4*_a*_b;
-				private _density_km2 = 60;	// Amount of civilians per square km
-				private _civsRaw = ceil ((_density_km2/1e6) * _area);
-				// Clamp between 10 and 35
-				_locCapacityCiv = 10 max _civsRaw min 35;
-
-				// https://www.desmos.com/calculator/nahw1lso9f
-				/*
-				_locCapacityCiv = ceil (30 * log (0.0001 * _locBorder#0 * _locBorder#1 + 1));
-				OOP_INFO_MSG("%1 civ count set to %2", [_locName ARG _locCapacityCiv]);
-				//private _houses = _locSectorPos nearObjects ["House", _locBorder#0 max _locBorder#1];
-				//diag_log format["%1 houses at %2", count _houses, _locName];
-				*/
-
-				// https://www.desmos.com/calculator/nahw1lso9f
-				//_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
-				//OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
-			} else {
-				_locCapacityCiv = 0;
-			};
 
 			private _template = "";
 			private _side = "";
-			
+
 			private _side = switch (_locSide) do{
 				case "civilian": { CIVILIAN };//might not need this
 				case "west": { WEST };
@@ -1246,13 +1225,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(_loc, "setName", _locName);
 			CALLM1(_loc, "setSide", _side);
 			CALLM1(_loc, "setType", _locType);
-			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
-			//CALLM1(_loc, "setCapacityInf", _locCapacityInf); // capacityInf is calculated from actual buildings
-			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
-			CALLM1(_loc, "initFromEditor", _locSector);
+			CALLM1(_loc, "setBorder", _locBorder);
+			CALLM0(_loc, "findAllObjects");
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or _locCapacityCiv > 25)) then {
+			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -1263,7 +1240,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
 					private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
 					private _policeStation = NEW_PUBLIC("Location", _args);
-					CALLM2(_policeStation, "setBorder", "circle", 10);
+					CALLM1(_policeStation, "setBorderCircle", 10);
 					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
 					CALLM0(_policeStation, "addSpawnPosFromBuildings");
 					CALLM1(_policeStation, "setSide", _side);
@@ -1302,7 +1279,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			};
 
-			#ifdef __SMALL_MAP
+			#ifdef PARTIAL_MAP_POPULATION
 			};
 			#endif
 			FIX_LINE_NUMBERS()
@@ -1343,14 +1320,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Final array of roadblock positions
 		private _roadblockPositionsFinal = _roadblockPositionsAroundLocations + _predefinedRoadblockPositions;
-		
+
 		// Iterate all final positions
 		private _commanders = [];
 		{
 			if (!IS_NULL_OBJECT(T_GETV(_x))) then {_commanders pushBack T_GETV(_x)};
 		} forEach ["AICommanderWest", "AICommanderEast", "AICommanderInd"];
-		
-		{ // foreach _roadblockPositionsFinal			
+
+		{ // foreach _roadblockPositionsFinal
 			private _pos = _x;
 
 			// Reveal positions to commanders
@@ -1389,7 +1366,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _gar = NEW("Garrison", _args);
 
 			OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
-			
 
 			private _nInfGroups = CLAMP(_cInf * 0.5, 2, 6);
 			for "_i" from 1 to _nInfGroups do {
@@ -2188,6 +2164,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(isNil{T_GETV("tNameCivilian")}) then {
 			T_SETV("tNameCivilian", "tCivilian");
 		};
+		T_PUBLIC_VAR("tNameCivilian");
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution

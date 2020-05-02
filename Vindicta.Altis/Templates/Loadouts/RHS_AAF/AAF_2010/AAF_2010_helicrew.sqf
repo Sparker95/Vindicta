@@ -13,7 +13,6 @@ this forceAddUniform "U_I_HeliPilotCoveralls";
 _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard","FGN_AAF_M99Vest_Khaki"];
 this addVest _RandomVest;
 
-
 this addWeapon "rhs_weap_tt33";
 this addHandgunItem "rhs_mag_762x25_8";
 

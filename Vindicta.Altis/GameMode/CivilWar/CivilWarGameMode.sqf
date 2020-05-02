@@ -184,7 +184,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _respawnLoc = NEW_PUBLIC("Location", [_locPos]);
 			CALLM1(_respawnLoc, "setName", "Initial Respawn Point");
 			CALLM1(_respawnLoc, "setType", LOCATION_TYPE_RESPAWN);
-			CALLM2(_respawnLoc, "setBorder", "circle", 0.1);
+			CALLM1(_respawnLoc, "setBorderCircle", 0.1);
 			{ CALLM2(_respawnLoc, "enablePlayerRespawn",_x, true); } forEach [WEST, EAST, INDEPENDENT];
 
 			// Reveal that location to commanders
@@ -274,7 +274,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		pr _restored = CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay ARG _restoreData ARG _restorePosition]);
 		if(!_restored) then {
 			// Select random player gear
-			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTemplate = CALLM1(gGameModeServer, "getTemplate", civilian);
 			private _templateClass = [_civTemplate, T_INF, T_INF_rifleman, -1] call t_fnc_select;
 			if ([_templateClass] call t_fnc_isLoadout) then {
 				[_newUnit, _templateClass] call t_fnc_setUnitLoadout;
@@ -283,6 +283,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			};
 			// Holster pistol
 			_newUnit action ["SWITCHWEAPON", player, player, -1];
+
+			// Give player a lockpick
+			player addItemToUniform "ACE_key_lockpick";
 		};
 
 	} ENDMETHOD;

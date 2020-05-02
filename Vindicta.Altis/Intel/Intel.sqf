@@ -703,8 +703,10 @@ ENDCLASS;
 Class: Intel.IntelCommanderActionSupplyConvoy
 */
 CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
+	// SAVEBREAK >>> Deprecated
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
+	// <<< SAVEBREAK Deprecated
 	/* variable: waypoints
 	Waypoints (as positions) that the patrol will visit. */
 	VARIABLE_ATTR("waypoints", [ATTR_SERIALIZABLE]);
@@ -778,11 +780,7 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 	METHOD("getInfo") {
 		params [P_THISOBJECT];
 		private _info = "<br/><t color='#FFFFFF' font='EtelkaMonospaceProBold'>Schedule</t><br/>";
-		private _srcGarrison = T_GETV("srcGarrison");
-		private _srcLocation = CALLM0(_srcGarrison, "getLocation");
-		private _tgtGarrison = T_GETV("tgtGarrison");
-		private _tgtLocation = CALLM0(_tgtGarrison, "getLocation");
-		private _locations = [_srcLocation] + T_GETV("locations") + [_tgtLocation];
+		// private _locations = [T_GETV("srcLocation")] + T_GETV("locations") + [T_GETV("tgtLocation")];
 		private _schedule = +T_GETV("schedule");
 		{
 			private _locName = CALLM0(_x, "getName");
@@ -791,7 +789,7 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 				private _date = _schedule#_forEachIndex;
 				_info = _info + format ["<t>  </t><t color='#AAAAAA' size='0.7'>depart %1</t><br/>", [_date] call pr0_fnc_formatDate];
 			};
-		} forEach _locations;
+		} forEach T_GETV("locations");
 
 		_info
 	} ENDMETHOD;

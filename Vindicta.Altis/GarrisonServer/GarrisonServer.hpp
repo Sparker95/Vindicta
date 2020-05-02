@@ -1,3 +1,5 @@
+#include "..\CriticalSection\CriticalSection.hpp"
+
 // Message types sent by garrison server
 /*
 #define GS_MESSAGE_CREATE	0

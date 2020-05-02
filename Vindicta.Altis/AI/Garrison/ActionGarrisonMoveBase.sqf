@@ -96,6 +96,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			[TAG_POS, _pos],
 			[TAG_MOVE_RADIUS, _radius],
 			[TAG_ROUTE, _route],
+			[TAG_FOLLOWERS, _followGroups],
 			[TAG_MAX_SPEED_KMH, T_GETV("maxSpeed")]
 		], _AI];
 		private _leadGroupAI = CALLM0(_leadGroup, "getAI");
@@ -149,13 +150,13 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		// Check if virtual route is ready
 		private _vr = T_GETV("virtualRoute");
 
-		private _state = if(_vr == NULL_OBJECT || { GETV(_vr, "calculated") }) then {
+		private _state = if(_vr == NULL_OBJECT || { GETV(_vr, "calculated") } || { GETV(_vr, "failed") }) then {
 			// Give waypoint to the vehicle group
 			private _AI = T_GETV("AI");
 			private _pos = T_GETV("pos");
 			private _radius = T_GETV("radius");
 
-			private _route = if(_vr != NULL_OBJECT) then {
+			private _route = if(_vr != NULL_OBJECT && { GETV(_vr, "calculated") }) then {
 				CALLM0(_vr, "stop"); // Stop the virtual route (we don't use its process method any more)
 				private _garPos = CALLM0(_AI, "getPos");
 				CALLM1(_vr, "setPos", _garPos); // Update the virtual route with the proper garrison position

@@ -26,9 +26,7 @@ _RandomWeapon = selectRandom ["LIB_K98", "LIB_K98_Late"];
 this addWeapon _RandomWeapon;
 /*WeaponItem*/
 this addPrimaryWeaponItem "LIB_5Rnd_792x57";
-this addPrimaryWeaponItem "optic_zf41";
 this addPrimaryWeaponItem "LIB_ACC_GW_SB_Empty";
-this addSecondaryWeaponItem "LIB_1Rnd_G_PZGR_30";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";

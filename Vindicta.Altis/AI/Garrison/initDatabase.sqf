@@ -56,7 +56,6 @@ private _s = WSP_GAR_COUNT;
 ["GoalGarrisonRepairAllVehicles",			"ActionGarrisonRepairAllVehicles"		] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGarrisonRebalanceVehicleGroups",		"ActionGarrisonRebalanceGroups"			] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGarrisonSurrender",					"ActionGarrisonSurrender"				] call AI_misc_fnc_setGoalPredefinedAction;
-["GoalGarrisonDefendPassive",				"ActionGarrisonDefend"					] call AI_misc_fnc_setGoalPredefinedAction;
 
 // ---------------- Action preconditions and effects
 

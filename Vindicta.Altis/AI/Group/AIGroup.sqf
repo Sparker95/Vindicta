@@ -255,22 +255,17 @@ CLASS("AIGroup", "AI_GOAP")
 	*/
 	METHOD("handleUnitsRemoved") {
 		params [P_THISOBJECT, P_ARRAY("_units")];
-		
+
 		OOP_INFO_1("handleUnitsRemoved: %1", _units);
-		
+
 		// Delete goals that have been given by this object
 		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			if (!isNil "_unitAI") then {
-				if (_unitAI != "") then {
-					CALLM2(_unitAI, "deleteExternalGoal", "", _thisObject);
-				};
-			};
-		} forEach _units;
-		
+			CALLM0(_x, "resetRecursive");
+		} forEach (_units apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
+
 		// Call handleUnitsRemoved of the current action, if it exists
 		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != "") then {
+		if (_currentAction != NULL_OBJECT) then {
 			CALLM1(_currentAction, "handleUnitsRemoved", _units);
 		};
 	} ENDMETHOD;
@@ -295,9 +290,18 @@ CLASS("AIGroup", "AI_GOAP")
 		
 		// Call handleUnitAdded of the current action, if it exists
 		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != "") then {
+		if (_currentAction != NULL_OBJECT) then {
 			CALLM1(_currentAction, "handleUnitsAdded", _units);
 		};
+	} ENDMETHOD;
+
+	// Debug
+
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	/* override */ METHOD("getDebugUIVariableNames") {
+		[
+			"suspTarget"
+		]
 	} ENDMETHOD;
 	
 ENDCLASS;

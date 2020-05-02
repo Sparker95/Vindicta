@@ -29,8 +29,8 @@ this addPrimaryWeaponItem _RandomAtta;
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 5 do {this addItemToVest "LIB_5Rnd_792x57";};
-this addItemToVest "Medikit";
-for "_i" from 1 to 3 do {this addItemToVest "FirstAidKit";};
+this addItemToBackpack "Medikit";
+for "_i" from 1 to 3 do {this addItemToBackpack "FirstAidKit";};
 
 /*Items*/
 this linkItem "ItemMap";

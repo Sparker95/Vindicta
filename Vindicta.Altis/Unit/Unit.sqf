@@ -30,8 +30,10 @@ Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
 Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoUnloaded.sqf";
 
-// Add CBA ACE event handler for loading cargo
+// Add CBA ACE event handlers
 #ifndef _SQF_VM
+
+// Cargo loading/unloading
 if (isNil "Unit_aceCargoLoaded_EH" && isServer) then { // Only server needs this event
 	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded", 
 	{
@@ -44,10 +46,28 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 		_this call Unit_fnc_EH_aceCargoUnloaded;
 	}] call CBA_fnc_addEventHandler;
 };
+
+// SetVehicleLock from ace
+if (isNil "Unit_aceSetVehicleLock_EH") then {
+
+	private _code = {
+		// We want to run this after ACE event handler, so we wait for a frame
+		[
+		{
+			params ["_veh", "_isLocked"];
+			//diag_log format ["=== SetVehicleLock: %1 %2", _veh, _isLocked];
+			private _lockNumber = [0, 3] select _isLocked;
+			_veh lock _lockNumber;
+		},
+		_this, 0] call CBA_fnc_waitAndExecute;
+	};
+
+	Unit_aceSetVehicleLock_EH = ["ace_vehicleLock_setVehicleLock", _code] call CBA_fnc_addEventHandler;
+};
 #endif
 FIX_LINE_NUMBERS()
 
-CLASS(UNIT_CLASS_NAME, "Storable")
+CLASS("Unit", "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -92,20 +112,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
 			DUMP_CALLSTACK
 		};
+
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 
 		// If a random class was requested to be added
-		private _class = "";
-		if (isNull _hO) then {
-			//if(_classID == -1) then {
-			//	private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
-			//	_class = _classData select 0;
-			//} else {
-			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
-			//};
+		private _class = if (isNull _hO) then {
+			[_template, _catID, _subcatID, _classID] call t_fnc_select
 		} else {
-			_class = typeOf _hO;
+			typeOf _hO
 		};
 
 		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
@@ -114,7 +129,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _loadout = "";
 		if ([_class] call t_fnc_isLoadout) then {
 			_loadout = _class;
-			_class = _template select _catID select 0 select 0; // Default class name from the template
+			_class = _template # _catID # 0 # 0; // Default class name from the template
 		};
 
 		// Create the data array
@@ -148,6 +163,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
 			T_CALLM0("applyInfantryWeapons");
+
+			if (_catID == T_VEH) then {
+				T_CALLM0("updateVehicleLock");
+			};
 		};
 
 	} ENDMETHOD;
@@ -379,16 +398,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						T_CALLM0("applyInfantryWeapons");
 
 						// Set unit skill
-						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_aimingAccuracy];	// Aiming and precision
-						_objectHandle setSkill ["aimingShake", vin_aiskill_aimingShake];
-						_objectHandle setSkill ["aimingSpeed", vin_aiskill_aimingSpeed];
+						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_global * vin_aiskill_aimingAccuracy];	// Aiming and precision
+						_objectHandle setSkill ["aimingShake", vin_aiskill_global * vin_aiskill_aimingShake];
+						_objectHandle setSkill ["aimingSpeed", vin_aiskill_global * vin_aiskill_aimingSpeed];
 						_objectHandle setSkill ["commanding", 1];		// Everything else
 						_objectHandle setSkill ["courage", 0.5];
 						//_objectHandle setSkill ["endurance", 0.8];
 						_objectHandle setSkill ["general", 1];
 						_objectHandle setSkill ["reloadSpeed", 0.5];
-						_objectHandle setSkill ["spotDistance", vin_aiskill_spotDistance];
-						_objectHandle setSkill ["spotTime", vin_aiskill_spotTime];
+						_objectHandle setSkill ["spotDistance", vin_aiskill_global * vin_aiskill_spotDistance];
+						_objectHandle setSkill ["spotTime", vin_aiskill_global * vin_aiskill_spotTime];
 
 						// make it impossible to ace interact with this unit, may need better solution in the future
 						if (side _objectHandle != west) then {
@@ -454,6 +473,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						T_CALLM1("createAI", "AIUnitVehicle");
+
+						// Initialize vehicle lock
+						T_CALLM0("updateVehicleLock");
 					};
 					case T_DRONE: {
 					};
@@ -551,33 +573,34 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 				};
+			};
 
-				// Give intel to this unit
-				switch (_catID) do {
-					case T_INF: {
-						// Leaders get intel tablets
-						if (CALLM0(_group, "getLeader") == _thisObject) then {
-							CALLSM1("UnitIntel", "initUnit", _thisObject);
-						} else {
-							// todo give intel to some special unit types, like radio specialists, etc...
-							// Some random infantry units get tablets too
-							if (random 10 < 2) then {
-								CALLSM1("UnitIntel", "initUnit", _thisObject);
-							};
-						};
-					};
-					case T_VEH: {
-						// A very little amount of vehicles gets intel
-						if (random 10 < 3) then {
+			// Give intel to this unit
+			// Intel tablets are not saved in inventory
+			switch (_catID) do {
+				case T_INF: {
+					// Leaders get intel tablets
+					if (CALLM0(_group, "getLeader") == _thisObject) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					} else {
+						// todo give intel to some special unit types, like radio specialists, etc...
+						// Some random infantry units get tablets too
+						if (random 10 < 2) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-					case T_DRONE: {
-						// Don't put intel into drones?
+				};
+				case T_VEH: {
+					// A very little amount of vehicles gets intel
+					if (random 10 < 3) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
 					};
-					case T_CARGO: {
-						// Don't put intel into cargo boxes?
-					};
+				};
+				case T_DRONE: {
+					// Don't put intel into drones?
+				};
+				case T_CARGO: {
+					// Don't put intel into cargo boxes?
 				};
 			};
 
@@ -655,9 +678,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
 			pr _ehid = [_hO, "Killed", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_KILLED_STR, nil];
-				_unit removeEventHandler ["Killed", _thisID];
-				_this call Unit_fnc_EH_Killed;
+				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
+					_unit setVariable [UNIT_EH_KILLED_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					// _unit removeEventHandler ["Killed", _thisID];
+					_this call Unit_fnc_EH_Killed;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
@@ -666,11 +692,20 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
-				_unit removeEventHandler ["Respawn", _thisID];
-				_this call Unit_fnc_EH_Respawn;
+				if(!isNil {_unit getVariable UNIT_EH_RESPAWN_STR}) then {
+					_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					//_unit removeEventHandler ["Respawn", _thisID];
+					_this call Unit_fnc_EH_Respawn;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
+		};
+
+		// Rating (hopefully disabling the renegade system)
+		if (isNil {_hO getVariable UNIT_EH_HANDLE_RATING_STR}) then {
+			pr _ehid = [_hO, "HandleRating", { 0 }] call CBA_fnc_addBISEventHandler;
+			_hO setVariable [UNIT_EH_HANDLE_RATING_STR, _ehid];
 		};
 
 		// HandleDamage for infantry
@@ -722,6 +757,38 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO enableDynamicSimulation false;
 			};
 		};
+	} ENDMETHOD;
+
+	/*
+	Sets vehicle lock according to the current side of the vehicle
+	*/
+	METHOD("updateVehicleLock") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+
+		// Bail if not vehicle
+		pr _catID = _data#UNIT_DATA_ID_CAT;
+		if ((_catID) != T_VEH) exitWith {};
+
+		// Bail if it's a static weapon
+		pr _subcatID = _data#UNIT_DATA_ID_SUBCAT;
+		if (_subcatID in T_VEH_static) exitWith {};
+
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		// Bail if not spawned
+		if (isNull _hO) exitWith {};
+
+		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+
+		// Bail if there is no garrison
+		if (IS_NULL_OBJECT(_garrison)) exitWith {};
+
+		pr _side = CALLM0(_garrison, "getSide");
+		pr _lock = (_side != CALLM0(gGameMode, "getPlayerSide")) && (_side != CIVILIAN);
+
+		["ACE_vehicleLock_setVehicleLock", [_hO, _lock], [_hO]] call CBA_fnc_targetEvent;
 	} ENDMETHOD;
 
 	Unit_fnc_hasInventory = {
@@ -939,9 +1006,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
-			
 			// = = = NOT INFANTRY = = =
-			
 
 			// Clear cargo
 			if(_hO in allPlayers) exitWith {
@@ -1020,13 +1085,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			} else {
 
 				// = = = = MILITARY CARGO AND VEHICLES = = = =
+				private _lootScaling = MAP_LINEAR_SET_POINT(1 - vin_diff_global, 0.2, 1, 3);
 
 				pr _nInf = CALLM0(_gar, "countInfantryUnits");
 				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
 				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 				// Some number which scales the amount of items in this box
-				pr _nGuns = 1.3 * _nInf / ((_nVeh + _nCargo) max 1);
+				pr _nGuns = 1.3 * _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
 
 				// Modifier for cargo boxes
 				if (_catID == T_CARGO) then {
@@ -1079,7 +1145,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _ACREclassNames = t_ACRERadios;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, _itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _ACREclassNames;
 				};
 
@@ -1089,7 +1155,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARclassNames = t_TFARRadios_0912;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _TFARclassNames;
 				};
 
@@ -1099,19 +1165,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARBetaclassNames = t_TFARRadios_0100;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _TFARBetaclassNames;
 				};
 
 				// Add vests
-				pr _nVests = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
+				pr _nVests = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
 					_hO addItemCargoGlobal [selectRandom _vests, 1];
 				};
 
 				// Add backpacks
-				pr _nBackpacks = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
+				pr _nBackpacks = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _backpacks = _tInv#T_INV_backpacks;
 				for "_i" from 0 to _nBackpacks do {
 					_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
@@ -1148,7 +1214,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
-							_hO addItemCargoGlobal [_className, round ((random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
+							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 						} forEach t_ACEMedicalItems_cargo;
 					};
 
@@ -1161,7 +1227,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						{
 							_x params ["_itemName", "_itemCount"];
 							if(random 10 < 7) then {
-								_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+								_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 							};
 						} forEach _classNames;
 					};
@@ -1192,7 +1258,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
-							_hO addItemCargoGlobal [_className, round ((random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount]))];
+							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 						} forEach t_ACEMedicalItems_vehicles;
 					};
 					// = = = =
@@ -1322,6 +1388,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GARRISON, _garrison];
+
+		// Update lock state
+		T_CALLM0("updateVehicleLock");
 	} ENDMETHOD;
 
 	//                         S E T   G R O U P
@@ -1373,7 +1442,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Remove all items from vest
 		pr _vest = vest _hO;
-		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
+		if (_vest == "") then {
+			_vest = "V_Chestrig_oli";
+		}; // Default vest
 		removeVest _hO;
 		_hO addVest _vest;
 			
@@ -2399,6 +2470,20 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_data set [UNIT_DATA_ID_MUTEX, 0];
 		_data set [UNIT_DATA_ID_AI, 0];
 
+		// Filter inventory
+		// Array of patterns of items we do not want to save in inventory
+		pr _itemsNoSave = [
+			"vin_tablet_",
+			"vin_document_"
+		];
+
+		pr _inv = _data#UNIT_DATA_ID_INVENTORY;
+		{
+			pr _invArray = _x; // Array of [item, count]
+			_inv set [_foreachindex, _invArray select { pr _className = _x#0; _itemsNoSave findIf {_x in _className} == -1}];
+		} forEach _inv;
+		///
+
 		//diag_log _data;
 
 		_data 
@@ -2415,6 +2500,33 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_serial set[UNIT_DATA_ID_INVENTORY, []];
 		};
 		// SAVEBREAK DELETE <<<
+
+		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
+		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;
+		if(!isClass (configFile >> "CfgVehicles" >> _class)) then {
+			private _garrison = _serial#UNIT_DATA_ID_GARRISON;
+			private _template = if(IS_NULL_OBJECT(_garrison)) then { "" } else { CALLM0(_garrison, "getTemplate") };
+			if(!(_template isEqualTo "")) then {
+				// Select a new random class/loadout
+				private _catID = _serial#UNIT_DATA_ID_CAT;
+				private _subcatID = _serial#UNIT_DATA_ID_SUBCAT;
+				private _newClass = [_template, _catID, _subcatID, -1] call t_fnc_select;
+
+				// Check if the class is actually a custom loadout
+				pr _loadout = "";
+				if ([_newClass] call t_fnc_isLoadout) then {
+					_loadout = _newClass;
+					_newClass = _template # _catID # 0 # 0; // Default class name from the template
+				};
+				_serial set [UNIT_DATA_ID_CLASS_NAME, _newClass];
+				_serial set [UNIT_DATA_ID_LOADOUT, _loadout];
+
+				OOP_WARNING_MSG("Class %1 no longer exists, using %2 instead", [_class ARG _newClass]);
+			} else {
+				OOP_ERROR_MSG("Class %1 no longer exists, and garrison template couldn't be found, so no automatic replacement can happen", [_class]);
+			};
+		};
+
 		T_SETV("data", _serial);
 
 		true

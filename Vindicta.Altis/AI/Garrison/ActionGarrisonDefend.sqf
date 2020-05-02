@@ -16,18 +16,15 @@
 // Idle group goals -- array of possible goals with weights
 
 CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
-
-	VARIABLE("nRoadPatrols");
-	VARIABLE("nOverwatch");
-	VARIABLE("idleFractionInf");
-	VARIABLE("idleFractionVeh");
-	VARIABLE("infBehavior");
-	VARIABLE("vehBehavior");
-	VARIABLE("staticGroupGoal");
-	VARIABLE("idleGroupGoals");
+	VARIABLE("behaviour");
+	VARIABLE("speedMode");
+	VARIABLE("infantryFormation");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+		T_SETV("behaviour", "AWARE");
+		T_SETV("speedMode", "NORMAL");
+		T_SETV("infantryFormation", "STAG COLUMN");
 	} ENDMETHOD;
 
 	METHOD("activate") {
@@ -55,11 +52,19 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		pr _groups = CALLM0(_gar, "getGroups");
 		pr _groupsInf = _groups select { CALLM0(_x, "getType") == GROUP_TYPE_INF };
 
-		pr _commonParams = [[TAG_INSTANT, _instant]];
+		pr _commonParams = [
+			[TAG_COMBAT_MODE, "RED"],
+			[TAG_BEHAVIOUR, T_GETV("behaviour")],
+			[TAG_INSTANT, _instant]
+		];
+
+		// Half patrol / half in buildings
+		pr _maxInBuildings = count _groupsInf / 2;
+
 		// Order to some groups to occupy buildings
 		// This is obviously ignored if the garrison is not at a location
 		pr _i = 0;
-		while {(count _groupsInf > 0) && (count _buildings > 0)} do {
+		while {(count _groupsInf > _maxInBuildings) && (count _buildings > 0)} do {
 			pr _group = _groupsInf#0;
 			pr _groupAI = CALLM0(_group, "getAI");
 			pr _goalParameters = [
@@ -73,6 +78,13 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			_groups deleteAt (_groups find _group);
 		};
 
+		private _infExtraParams = [
+			[TAG_SPEED_MODE, T_GETV("speedMode")],
+			[TAG_FORMATION, T_GETV("infantryFormation")]
+		];
+
+		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
+
 		// Give goals to remaining groups
 		private _nPatrolGroups = 0;
 		{// foreach _groups
@@ -81,14 +93,19 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			if (_groupAI != NULL_OBJECT) then {
 				private _args = switch (CALLM0(_x, "getType")) do {
 					case GROUP_TYPE_STATIC: {
-						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_COMBAT_MODE, "RED"]] + _commonParams, _AI]
+						["GoalGroupGetInVehiclesAsCrew", 0, _commonParams, _AI]
 					};
 					case GROUP_TYPE_VEH: {
-						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_COMBAT_MODE, "RED"], ["onlyCombat", true]] + _commonParams, _AI]
+						["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
 					};
-					//case GROUP_TYPE_INF:
-					default {
-						["GoalGroupRegroup", 0, [[TAG_COMBAT_MODE, "RED"]] + _commonParams, _AI]
+					case GROUP_TYPE_INF: {
+						// We need at least enough patrol groups to cover the defined routes
+						if (_nPatrolGroups < count _routes) then {
+							_nPatrolGroups = _nPatrolGroups + 1;
+							["GoalGroupPatrol", 0, [[TAG_ROUTE, _routes#(_nPatrolGroups - 1)]] + _infExtraParams + _commonParams, _AI];
+						} else {
+							["GoalGroupPatrol", 0, _infExtraParams + _commonParams, _AI];
+						};
 					};
 				};
 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);

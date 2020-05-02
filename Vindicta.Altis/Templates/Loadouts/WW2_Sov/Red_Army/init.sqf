@@ -1,7 +1,6 @@
 #include "..\..\common.hpp"
 
 ADD_LOADOUT("WW2_Sov_ammo",			"WW2_Sov\Red_Army\Sov_ammo.sqf")
-ADD_LOADOUT("WW2_Sov_AT_rifle",		"WW2_Sov\Red_Army\Sov_AT_rifle.sqf")
 ADD_LOADOUT("WW2_Sov_AT",			"WW2_Sov\Red_Army\Sov_AT.sqf")
 ADD_LOADOUT("WW2_Sov_AT_2",			"WW2_Sov\Red_Army\Sov_AT_2.sqf")
 ADD_LOADOUT("WW2_Sov_crew",			"WW2_Sov\Red_Army\Sov_crew.sqf")
@@ -18,8 +17,6 @@ ADD_LOADOUT("WW2_Sov_pilot",		"WW2_Sov\Red_Army\Sov_pilot.sqf")
 ADD_LOADOUT("WW2_Sov_rifleman",		"WW2_Sov\Red_Army\Sov_rifleman.sqf")
 ADD_LOADOUT("WW2_Sov_rifleman_2",	"WW2_Sov\Red_Army\Sov_rifleman_2.sqf")
 ADD_LOADOUT("WW2_Sov_rifleman_3",	"WW2_Sov\Red_Army\Sov_rifleman_3.sqf")
-ADD_LOADOUT("WW2_Sov_rifleman_4",	"WW2_Sov\Red_Army\Sov_rifleman_4.sqf")
-ADD_LOADOUT("WW2_Sov_rifleman_5",	"WW2_Sov\Red_Army\Sov_rifleman_5.sqf")
 ADD_LOADOUT("WW2_Sov_SL",			"WW2_Sov\Red_Army\Sov_SL.sqf")
 ADD_LOADOUT("WW2_Sov_sniper",		"WW2_Sov\Red_Army\Sov_sniper.sqf")
 ADD_LOADOUT("WW2_Sov_spotter",		"WW2_Sov\Red_Army\Sov_spotter.sqf")

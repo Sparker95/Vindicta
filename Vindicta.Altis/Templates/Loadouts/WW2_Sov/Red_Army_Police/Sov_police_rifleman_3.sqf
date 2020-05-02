@@ -15,19 +15,19 @@ this addHeadgear _RandomHeadgear;
 /*Uniform*/
 this forceAddUniform "U_LIB_SOV_NKVD_soldier_1v2pRdvM30";
 /*Vest*/
-this addVest "V_LIB_SOV_RA_MosinBelt";
+this addVest "V_LIB_SOV_RA_MGBelt";
 /*Backpack*/
 _RandomBackpack = selectRandom ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "B_LIB_SOV_RA_Rucksack", "B_LIB_SOV_RA_Rucksack_Green", "B_LIB_SOV_RA_Rucksack_Gas_Kit", "B_LIB_SOV_RA_Rucksack_Gas_Kit_Green", "B_LIB_SOV_RA_Rucksack2_Gas_Kit", "B_LIB_SOV_RA_Rucksack2_Gas_Kit_Green", "B_LIB_SOV_RA_Rucksack2", "B_LIB_SOV_RA_Rucksack2_Green", "B_LIB_SOV_RA_Rucksack2_Shinel", "B_LIB_SOV_RA_Rucksack2_Shinel_Green", "B_LIB_SOV_RA_GasBag", "B_LIB_SOV_RA_Rucksack2_Gas_Kit_Shinel", "B_LIB_SOV_RA_Rucksack2_Gas_Kit_Shinel_Green", "B_LIB_SOV_RA_Shinel"];
 this addBackpack _RandomBackpack;
 
 /*Weapon*/
-this addWeapon "Lib_Mp41r";
+this addWeapon "LIB_TT33";
 /*WeaponItem*/
-this addPrimaryWeaponItem "lib_32rnd_9x19";
+this addPrimaryWeaponItem "LIB_8Rnd_762x25";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "lib_32rnd_9x19";};
+for "_i" from 1 to 3 do {this addItemToVest "LIB_8Rnd_762x25";};
 this addItemToVest "LIB_Rg42";
 
 /*Items*/

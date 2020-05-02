@@ -71,7 +71,7 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin < _dstSpawnMin) then {
 			OOP_INFO_0("  Spawning...");
 
-			T_CALLM0("spawn");
+			T_CALLM2("postMethodAsync", "spawn", [false ARG true]); // flags: global, instant action
 
 			// Set timer interval
 			pr _interval = 4;
@@ -97,7 +97,7 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin > _dstSpawnMax) then {
 			OOP_INFO_0("  Despawning...");
 			
-			T_CALLM0("despawn");
+			T_CALLM2("postMethodAsync", "despawn", []);
 		};
 	}; // case 1
 }; // switch spawn state

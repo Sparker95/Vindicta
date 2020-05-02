@@ -151,6 +151,7 @@ _array set [T_ARSENAL, _arsenal];
 // ==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
+_inf = _inf apply { ["CUP_TKA_CIVILIAN_Militant_1"] };
 _inf set [T_INF_default, ["I_L_Looter_SG_F"]];
 _inf set [T_INF_rifleman, [
     "CUP_TKA_PLAYER_1"

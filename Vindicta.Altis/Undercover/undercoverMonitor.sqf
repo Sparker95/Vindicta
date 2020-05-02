@@ -116,10 +116,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
 		_unit setVariable [UNDERCOVER_WANTED, false, true];					// GLOBAL: if true player unit is hostile and "setCaptive false"
-		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)													
+		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)
 
-
-		T_CALLM0("calcGearSuspicion");							// evaluate suspicion of unit's equipment
+		T_CALLM0("calcGearSuspicion");										// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
 
 		// show debug UI
@@ -146,9 +145,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["FiredMan", _ID];
 
 		// add event handler for deleting this undercover monitor
-		_ID = [player, "Killed", {
+		_ID = [_unit, "Killed", {
 			params ["_unit", "_killer", "_instigator", "_useEffects"];
-			_unit removeEventHandler ["Killed", _thisID];
 			pr _um = _unit getVariable ["undercoverMonitor", ""];
 			if (_um != "") then { // Sanity check
 				pr _msg = MESSAGE_NEW();
@@ -159,8 +157,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["Killed", _ID];
 
 		// Add inventory event handlers
-		_ID = [player, "InventoryClosed", {
+		_ID = [_unit, "InventoryClosed", {
 			params ["_unit", "_container"];
+
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
 				T_SETV("inventoryOpen", false);
@@ -169,8 +168,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["InventoryClosed", _ID];
 
-		_ID = [player, "InventoryOpened", {
+		_ID = [_unit, "InventoryOpened", {
 			params ["_unit", "_container"];
+
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
 				T_SETV("inventoryOpen", true);
@@ -180,7 +180,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["InventoryOpened", _ID];
 
 		// Take/put event handlers
-		_ID = [player, "Take", {
+		_ID = [_unit, "Take", {
 			params ["_unit", "_container", "_item"];
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
@@ -189,14 +189,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _type = typeOf _container;
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
 				if (!(_type in g_UM_civVehs) && (_type isKindOf "ThingX" || _sideNum in [0, 1, 2])) then {
-					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
+					CALLSM2("undercoverMonitor", "boostSuspicion", _unit, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
 		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["Take", _ID];
 
 		// suspicion for planting explosives (?)
-		_ID = [player, "Put", {
+		_ID = [_unit, "Put", {
 			params ["_unit", "_container", "_item"];
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
@@ -205,7 +205,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _type = typeOf _container;
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
 				if (!(_type in g_UM_civVehs) && (_type isKindOf "ThingX" || _sideNum in [0, 1, 2])) then {
-					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
+					CALLSM2("undercoverMonitor", "boostSuspicion", _unit, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
 		}] call CBA_fnc_addBISEventHandler;
@@ -234,9 +234,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 	} ENDMETHOD;
 
-
 	// ------------ D E L E T E ------------
-
 	METHOD("delete") {
 		params [P_THISOBJECT];
 		// Delete the timer
@@ -352,8 +350,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		if (_loc != "") then { 	
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
-                				//_hintKeys pushback HK_ALLOWEDAREA;
-               					OOP_INFO_0("In allowed area");
+								//_hintKeys pushback HK_ALLOWEDAREA;
+			   					OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
@@ -397,8 +395,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								pr _suspStance = 0;
 								switch (stance _unit) do {
 									case "CROUCH": { _suspStance = SUSP_CROUCH; _camoCoeffMod = _camoCoeffMod + CAMO_CROUCH; };
-					    			case "PRONE": { _suspStance = SUSP_PRONE; _camoCoeffMod = _camoCoeffMod + CAMO_PRONE; };
-					    		};
+									case "PRONE": { _suspStance = SUSP_PRONE; _camoCoeffMod = _camoCoeffMod + CAMO_PRONE; };
+								};
 
 								// suspiciousness for inventory
 								pr _suspInv = 0;
@@ -427,6 +425,18 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 									};
 
 									_hintKeys pushBack HK_INVENTORY;
+								};
+
+								// Check if player is picking a vehicle lock
+								// Can be used for various ACE actions which have a progress bar
+								pr _ctrl = uinamespace getvariable "ACE_common_ctrlProgressBarTitle";
+								if (!(isNil "_ctrl")) then{
+									if (!(isNull _ctrl)) then {
+										if ((ctrlText _ctrl) == (localize "STR_ACE_VehicleLock_Action_LockpickInUse")) then {
+											_hintKeys pushBack HK_ILLEGAL;
+											_suspicionArr pushBack [SUSP_LOCKPICK, "Picking a vehicle lock"];
+										};
+									};
 								};
 
 								_suspicionArr pushBack [_suspGear, "On foot equipment"];
