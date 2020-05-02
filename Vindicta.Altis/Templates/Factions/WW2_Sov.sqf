@@ -29,7 +29,7 @@ _inf set [T_INF_SL, ["WW2_Sov_SL"]];
 _inf set [T_INF_TL, ["WW2_Sov_TL"]];
 _inf set [T_INF_officer, ["WW2_Sov_officer"]];
 _inf set [T_INF_GL, ["WW2_Sov_GL"]];
-_inf set [T_INF_rifleman, ["WW2_Sov_rifleman", "WW2_Sov_rifleman_2", "WW2_Sov_rifleman_3"]];
+_inf set [T_INF_rifleman, ["WW2_Sov_rifleman", 3, "WW2_Sov_rifleman_2", 1, "WW2_Sov_rifleman_3", 1]];
 _inf set [T_INF_sniper, ["WW2_Sov_sniper"]];
 _inf set [T_INF_marksman, ["WW2_Sov_marksman"]];
 _inf set [T_INF_exp, ["WW2_Sov_explosives"]];

@@ -37,9 +37,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 					//Make an array full of nil
 _inf set [T_INF_default, ["LIB_UK_Rifleman"]];	//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3"]];
-_inf set [T_INF_TL, ["WW2_UK_TL", "WW2_UK_medic", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3"]];
-_inf set [T_INF_officer, ["WW2_UK_officer", "WW2_UK_medic", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3", "WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3"]];
+_inf set [T_INF_SL, ["WW2_UK_rifleman", "WW2_UK_rifleman_2", "WW2_UK_rifleman_3"]];
+_inf set [T_INF_TL, ["WW2_UK_TL", 3, "WW2_UK_medic", 5, "WW2_UK_rifleman", 10, "WW2_UK_rifleman_2", 5, "WW2_UK_rifleman_3", 5]];
+_inf set [T_INF_officer, ["WW2_UK_officer", 1, "WW2_UK_TL", 28, "WW2_UK_medic", 40, "WW2_UK_rifleman", 50, "WW2_UK_rifleman_2", 40, "WW2_UK_rifleman_3", 40]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);

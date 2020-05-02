@@ -39,14 +39,14 @@ _inf set [T_INF_default, ["LIB_GER_ober_rifleman"]];	//Default infantry if nothi
 _inf set [T_INF_SL, ["WW2_Heer_SL"]];
 _inf set [T_INF_TL, ["WW2_Heer_TL", "WW2_Heer_TL_2"]];
 _inf set [T_INF_officer, ["WW2_Heer_officer"]];
-_inf set [T_INF_GL, ["WW2_Heer_GL", "WW2_Heer_GL", "WW2_Heer_GL_2"]];
-_inf set [T_INF_rifleman, ["WW2_Heer_rifleman", "WW2_Heer_rifleman_2", "WW2_Heer_rifleman_3"]];
+_inf set [T_INF_GL, ["WW2_Heer_GL", 3, "WW2_Heer_GL_2", 1]];
+_inf set [T_INF_rifleman, ["WW2_Heer_rifleman", 4, "WW2_Heer_rifleman_2", 2, "WW2_Heer_rifleman_3", 1]];
 _inf set [T_INF_sniper, ["WW2_Heer_sniper"]];
 _inf set [T_INF_marksman, ["WW2_Heer_marksman"]];
 _inf set [T_INF_exp, ["WW2_Heer_explosives"]];
 _inf set [T_INF_LAT, ["WW2_Heer_LAT"]];
 _inf set [T_INF_AT, ["WW2_Heer_AT"]];
-_inf set [T_INF_LMG, ["WW2_Heer_LMG", "WW2_Heer_LMG", "WW2_Heer_LMG", "WW2_Heer_LMG_2"]];
+_inf set [T_INF_LMG, ["WW2_Heer_LMG", 7,"WW2_Heer_LMG_2", 1]];
 _inf set [T_INF_HMG, ["WW2_Heer_HMG"]];
 _inf set [T_INF_medic, ["WW2_Heer_medic"]];
 _inf set [T_INF_crew, ["WW2_Heer_crew"]];
@@ -62,7 +62,7 @@ _inf set [T_INF_AA, ["WW2_Heer_unarmed"]];
 
 //==== Recon ====
 _inf set [T_INF_recon_TL, ["WW2_Heer_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["WW2_Heer_recon_rifleman", "WW2_Heer_recon_rifleman_2", "WW2_Heer_recon_rifleman_3"]];
+_inf set [T_INF_recon_rifleman, ["WW2_Heer_recon_rifleman", 3, "WW2_Heer_recon_rifleman_2", 2, "WW2_Heer_recon_rifleman_3", 2]];
 _inf set [T_INF_recon_medic, ["WW2_Heer_recon_medic"]];
 _inf set [T_INF_recon_exp, ["WW2_Heer_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["WW2_Heer_recon_LAT"]];

@@ -25,9 +25,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 							//Make an array full of nil
 _inf set [T_INF_default, ["LIB_SOV_rifleman"]];			//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2"]];
-_inf set [T_INF_TL, ["WW2_Sov_police_medic", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2"]];
-_inf set [T_INF_officer, ["WW2_Sov_police_officer", "WW2_Sov_police_medic", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman_3", "WW2_Sov_police_rifleman_3", "WW2_Sov_police_rifleman_3"]];
+_inf set [T_INF_SL, ["WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman_3"]];
+_inf set [T_INF_TL, ["WW2_Sov_police_medic", 5, "WW2_Sov_police_rifleman", 10, "WW2_Sov_police_rifleman_2", 7, "WW2_Sov_police_rifleman_3", 14]];
+_inf set [T_INF_officer, ["WW2_Sov_police_officer", 1, "WW2_Sov_police_medic", 40, "WW2_Sov_police_rifleman", 50, "WW2_Sov_police_rifleman_2", 45, "WW2_Sov_police_rifleman_3", 55]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
