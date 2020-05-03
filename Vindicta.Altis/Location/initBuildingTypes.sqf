@@ -419,20 +419,22 @@ location_bt_radio =
 	"land_gm_radiotower_01"
 ];
 
-// Objects which heal units
 location_bt_medical =
 [
-	"Land_MedicalTent_01_NATO_generic_outer_F",
-	"Land_MedicalTent_01_NATO_generic_inner_F",
-	"Land_DeconTent_01_NATO_F",
-
-	"Land_MedicalTent_01_NATO_tropic_generic_outer_F",
-	"Land_MedicalTent_01_wdl_generic_inner_F",
-	"Land_DeconTent_01_NATO_tropic_F",
-
-	"Land_MedicalTent_01_white_generic_outer_F",
-	"Land_MedicalTent_01_white_generic_inner_F",
-	"Land_DeconTent_01_white_F"
+    "Land_DeconTent_01_NATO_F",
+    "Land_DeconTent_01_NATO_tropic_F",
+    "Land_DeconTent_01_wdl_F",
+    "Land_DeconTent_01_white_F",
+    "Land_MedicalTent_01_brownhex_closed_F",
+    "Land_MedicalTent_01_digital_closed_F",
+    "Land_MedicalTent_01_MTP_closed_F",
+    "Land_MedicalTent_01_NATO_generic_inner_F",
+    "Land_MedicalTent_01_NATO_generic_outer_F",
+    "Land_MedicalTent_01_NATO_tropic_generic_outer_F",
+    "Land_MedicalTent_01_wdl_closed_F",
+    "Land_MedicalTent_01_wdl_generic_inner_F",
+    "Land_MedicalTent_01_white_generic_inner_F",
+    "Land_MedicalTent_01_white_generic_outer_F"
 ];
 
 /*
