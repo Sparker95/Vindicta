@@ -27,10 +27,6 @@ CLASS("MapMarkerGarrison", "MapMarker")
 
 	STATIC_VARIABLE("selectedMarkers");
 
-	// All map marker objects
-	STATIC_VARIABLE("all"); // Child classes must also implement this
-	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
-
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 

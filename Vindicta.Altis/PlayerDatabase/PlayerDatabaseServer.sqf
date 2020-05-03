@@ -18,9 +18,6 @@ Inherits from <DoubleKeyHashmap>.
 #define OOP_CLASS_NAME PlayerDatabaseServer
 CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 
-	// Namespace object
-	VARIABLE("ns");
-
 	METHOD(new)
 		params [P_THISOBJECT];
 

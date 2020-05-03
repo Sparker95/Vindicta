@@ -23,8 +23,6 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 		params [P_THISOBJECT];
 	ENDMETHOD;
 	*/
-	
-	VARIABLE("timeNextUpdate");
 
 	// ----------------------------------------------------------------------
 	// |                              U P D A T E

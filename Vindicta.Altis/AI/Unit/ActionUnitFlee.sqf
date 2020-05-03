@@ -2,7 +2,9 @@
 
 #define OOP_CLASS_NAME ActionUnitFlee
 CLASS("ActionUnitFlee", "ActionUnit")
-	
+
+	VARIABLE("fleePos");
+
 	METHOD(activate)
 		params [P_THISOBJECT];
 		
@@ -16,13 +18,16 @@ CLASS("ActionUnitFlee", "ActionUnit")
 		// private _animationsProned = ["ApanPpneMstpSnonWnonDnon_G01", "ApanPpneMstpSnonWnonDnon_G02", "ApanPpneMstpSnonWnonDnon_G03"];
 
 		doStop _unit;
-		_unit call misc_fnc_actionDropAllWeapons;
+		//_unit spawn misc_fnc_actionDropAllWeapons; // this can sleep so we should spawn it
 		_unit setSpeedMode "FULL";
 		_unit setBehaviour "CARELESS";
 		_unit switchMove selectRandom _panicAnimsErectAndKneeled;
 
 		private _pos = getPos _unit;
-		private _newpos = [_pos select 0, (_pos select 1) + 500, _pos select 2];
+		private _newpos = T_GETV("fleePos");
+		if (isNil "_posFlee") then {
+			_posFlee = [_pos select 0, (_pos select 1) + 500, _pos select 2];
+		};
 		_unit doMove _newpos;
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -32,7 +37,8 @@ CLASS("ActionUnitFlee", "ActionUnit")
 	METHOD(process)
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
-		ACTION_STATE_COMPLETED
+		//ACTION_STATE_COMPLETED
+		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 ENDCLASS;
 

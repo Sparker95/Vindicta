@@ -14,8 +14,6 @@ CLASS("RadioKeyTab", "DialogTabBase")
 	// State machine to handle comms with the server
 	VARIABLE("state");
 
-	STATIC_VARIABLE("instance");
-
 	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("state", 0);

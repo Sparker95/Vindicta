@@ -72,6 +72,9 @@ call compile preprocessFileLineNumbers "MessageLoopManagers\MessageLoopGroupMana
 // Initialize Location class
 call compile preprocessFileLineNumbers "Location\Location.sqf";
 
+// Initialize civ presence
+call compile preprocessFileLineNumbers "CivilianPresence\initClasses.sqf";
+
 // Initialize Timer class
 call compile preprocessFileLineNumbers "Timer\Timer.sqf";
 

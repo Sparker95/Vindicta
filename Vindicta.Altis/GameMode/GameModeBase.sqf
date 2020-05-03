@@ -6,7 +6,7 @@
 #define TIMER_SERVICE_RESOLUTION 0.0
 
 // Debug flag, will limit generation or locations to a small area
-#define __SMALL_MAP
+//#define __SMALL_MAP
 FIX_LINE_NUMBERS()
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
@@ -1197,6 +1197,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Locations which will be processed for potential roadblock positions around them
 		private _locationsForRoadblocks = [];
 
+		private _civPresenceMgr = NEW("CivPresenceMgr", [100]);
+
 		{ // forEach (entities "Vindicta_LocationSector");
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
@@ -1276,6 +1278,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			};
 
+			// Mark city area for civ presence
+			if (_locType == LOCATION_TYPE_CITY) then {
+				CALLM1(_civPresenceMgr, "markAreaForInitialization", [_locSectorPos] + _locBorder);
+			};
+
 			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
 				_predefinedRoadblockPositions pushBack _locSectorPos;
 			} else {
@@ -1289,6 +1296,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#endif
 			FIX_LINE_NUMBERS()
 		} forEach (entities "Vindicta_LocationSector");
+
+		// Initialize civ presence grid
+		CALLM0(_civPresenceMgr, "createCivPresenceObjects");
 
 		// Process locations for roadblocks
 		private _roadblockPositionsAroundLocations = [];

@@ -52,7 +52,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("timer"); 										// Timer object which generates messages for this location
 				VARIABLE("capacityInf"); 								// Infantry capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
-				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
 				VARIABLE_ATTR("buildProgress", [ATTR_SAVE_VER(12)]);	// How much of the location is built from 0 to 1
 				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
@@ -106,7 +105,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityInf", 0);
 		T_SETV_PUBLIC("capacityInf", 0);
 		T_SETV("capacityCiv", 0);
-		T_SETV("cpModule",objnull);
 		T_SETV_PUBLIC("isBuilt", false);
 		T_SETV("lastBuildProgressTime", 0);
 		T_SETV_PUBLIC("buildProgress", 0);
@@ -181,15 +179,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD(setCapacityCiv)
 		params [P_THISOBJECT, P_NUMBER("_capacityCiv")];
 		T_SETV("capacityCiv", _capacityCiv);
-		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY && _capacityCiv > 0)then{
-			private _cpModule = [+T_GETV("pos"), T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
-			if(!isNull _cpModule) then {
-				T_SETV("cpModule",_cpModule);
-			} else {
-				T_SETV("cpModule", objNull);
-			};
-		};
-
 	ENDMETHOD;
 
 	METHOD(setSide)

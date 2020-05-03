@@ -8,12 +8,6 @@ Each grid occupies whole map and starts at [0, 0].
 Authors: Sparker(initial author), Sen(code porting)
 */
 
-#ifndef _SQF_VM
-#define WORLD_SIZE worldSize
-#else
-#define WORLD_SIZE 20000
-#endif
-
 #define pr private
 
 #define OOP_CLASS_NAME Grid
