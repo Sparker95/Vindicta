@@ -19,19 +19,19 @@ _array set [T_REQUIRED_ADDONS, [
 
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_DEFAULT,  ["UK3CB_ANP_B_RIF_1"]]; 
+_inf set [T_INF_DEFAULT,  ["UK3CB_TKP_B_RIF_1"]]; 
 
-_inf set [T_INF_SL, ["UK3CB_ANP_B_SL", "UK3CB_ANP_B_QRF_SL"]];
-_inf set [T_INF_TL, ["UK3CB_ANP_B_TL", "UK3CB_ANP_B_QRF_TL"]];
-_inf set [T_INF_officer, ["UK3CB_ANP_B_RIF_1", "UK3CB_ANP_B_AR", "UK3CB_ANP_B_ENG", "UK3CB_ANP_B_MK", "UK3CB_ANP_B_MD", "UK3CB_ANP_B_RIF_2", "UK3CB_ANP_B_QRF_AR", "UK3CB_ANP_B_QRF_ENG", "UK3CB_ANP_B_QRF_MG", "UK3CB_ANP_B_QRF_MK", "UK3CB_ANP_B_QRF_MD", "UK3CB_ANP_B_QRF_RIF_1", "UK3CB_ANP_B_QRF_RIF_2"]];
+_inf set [T_INF_SL, ["UK3CB_TKP_B_SL", "UK3CB_TKP_B_QRF_SL"]];
+_inf set [T_INF_TL, ["UK3CB_TKP_B_TL", "UK3CB_TKP_B_QRF_TL"]];
+_inf set [T_INF_officer, ["UK3CB_TKP_B_RIF_2", "UK3CB_TKP_B_RIF_1", "UK3CB_TKP_B_MK", "UK3CB_TKP_B_MD", "UK3CB_TKP_B_AR", "UK3CB_TKP_B_ENG", "UK3CB_TKP_B_MG", "UK3CB_TKP_B_QRF_AR", "UK3CB_TKP_B_QRF_ENG", "UK3CB_TKP_B_QRF_MG", "UK3CB_TKP_B_QRF_MK", "UK3CB_TKP_B_QRF_MD", "UK3CB_TKP_B_QRF_RIF_1", "UK3CB_TKP_B_QRF_RIF_2"]];
 
 
 
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, ["UK3CB_ANP_B_Datsun_Pickup"]]; 
+_veh set [T_VEH_DEFAULT, ["UK3CB_TKP_B_Datsun_Pickup"]]; 
 
-_veh set [T_VEH_car_unarmed, ["UK3CB_ANP_B_Datsun_Pickup", "UK3CB_ANP_B_Hilux_Closed", "UK3CB_ANP_B_Hilux_Open", "UK3CB_ANP_B_Offroad", "UK3CB_ANP_B_UAZ_Closed", "UK3CB_ANP_B_UAZ_Open"]]; // = 1 – REQUIRED
+_veh set [T_VEH_car_unarmed, ["UK3CB_TKP_B_Datsun_Pickup", "UK3CB_TKP_B_Hilux_Closed", "UK3CB_TKP_B_Datsun_Pickup", "UK3CB_TKP_B_Lada_Police", "UK3CB_TKP_B_LandRover_Closed", "UK3CB_TKP_B_LandRover_Open", "UK3CB_TKP_B_Offroad", "UK3CB_TKP_B_UAZ_Closed", "UK3CB_TKP_B_UAZ_Open"]]; // = 1 – REQUIRED
 
 
 _drone = +(tDefault select T_DRONE);
