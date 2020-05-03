@@ -197,7 +197,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			if (_co getVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, false]) then {	// If target is a civilian created by civ presence
 				if (!(weaponLowered _unit) && {currentWeapon _unit != ""}) then {			// If we have a gun and it's not lowered
 					if ((_co distance _unit) < 10) then {									// If civilian is close to us
-						[_co, _unit] call CivPresence_fnc_aimAtCivilian;
+						[_co, _unit] call pr0_fnc_cp_aimAtCivilian;
 					};
 				};
 			};

@@ -3,7 +3,6 @@
     By: Jeroen Notenbomer
 
     Function to find all ingame first and last names.
-	Should maybe run on preinit
 
 	Input:
 		

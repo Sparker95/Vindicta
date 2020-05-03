@@ -158,7 +158,7 @@ CLASS("ActionUnitArrest", "Action")
 									];
 								};
 								
-								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+								[_captor, _sentence,2] call pr0_fnc_dialogue_createSentence;
 								_captor setSpeedMode "FULL";
 							};
 						};
@@ -226,7 +226,7 @@ CLASS("ActionUnitArrest", "Action")
 						}; // end waitUntil
 					}; // end spawn script
 						
-					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+					//[_captor,"So who do whe have here?"] call pr0_fnc_dialogue_createSentence;
 					// arrest player by sending a message to unit's undercoverMonitor				
 					
 					T_SETV("spawnHandle", _handle);
@@ -276,8 +276,8 @@ CLASS("ActionUnitArrest", "Action")
 		params [P_THISCLASS, P_OBJECT("_target")];
 
 		// If it's a civilian presence target...
-		if ([_target] call CivPresence_fnc_isUnitCreatedByCP) then {
-			[_target, true] call CivPresence_fnc_arrestUnit;
+		if ([_target] call pr0_fnc_cp_isUnitCreatedByCP) then {
+			[_target, true] call pr0_fnc_cp_arrestUnit;
 		} else {
 			// Otherwise it's a player
 			_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
@@ -313,7 +313,7 @@ CLASS("ActionUnitArrest", "Action")
 				"OPEN FIRE!"
 			];
 
-			[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+			[_captor, _sentence,1.5] call pr0_fnc_dialogue_createSentence;
 
 			pr _args = [_target, 3.0];
 			REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);

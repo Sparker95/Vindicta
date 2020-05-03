@@ -722,54 +722,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 		};
 
-		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
-						{
-							private _civ = [7] call pr0_fnc_coneTarget;
-							if(!isNull _civ) then {
-								[_civ, 'talk'] spawn CivPresence_fnc_talkTo;
-							};
-						}, // Script
-						0, // Arguments
-						9000, // Priority
-						true, // ShowWindow
-						false, //hideOnUse
-						"", //shortcut
-						"call pr0_fnc_talkCond", //condition
-						7, //radius
-						false, //unconscious
-						"", //selection
-						""]; //memoryPoint
-
-		_newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.paa' size='1' color = '#FFA300'/>") + ("<t size='1' color = '#FFA300'> Ask about intel</t>")), // title
-						{
-							private _civ = [7] call pr0_fnc_coneTarget;
-							if(!isNull _civ) then {
-								[_civ, 'intel'] spawn CivPresence_fnc_talkTo;
-							};
-						}, // Script
-						0, // Arguments
-						8999, // Priority
-						true, // ShowWindow
-						false, //hideOnUse
-						"", //shortcut
-						"call pr0_fnc_talkCond", //condition
-						7, //radius
-						false, //unconscious
-						"", //selection
-						""]; //memoryPoint
-
-		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Incite</t>")), // title
-						"[cursorTarget, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
-						0, // Arguments
-						8998, // Priority
-						true, // ShowWindow
-						false, //hideOnUse
-						"", //shortcut
-						"call pr0_fnc_talkCond", //condition
-						7, //radius
-						false, //unconscious
-						"", //selection
-						""]; //memoryPoint
 
 		// Init the UnitIntel on player
 		CALLSM0("UnitIntel", "initPlayer");
