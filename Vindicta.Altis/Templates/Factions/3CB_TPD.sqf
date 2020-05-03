@@ -29,7 +29,7 @@ _inf set [T_INF_officer, ["UK3CB_ANP_B_RIF_1", "UK3CB_ANP_B_AR", "UK3CB_ANP_B_EN
 
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, ["CUP_C_S1203_Militia_CIV"]]; 
+_veh set [T_VEH_DEFAULT, ["UK3CB_ANP_B_Datsun_Pickup"]]; 
 
 _veh set [T_VEH_car_unarmed, ["UK3CB_ANP_B_Datsun_Pickup", "UK3CB_ANP_B_Hilux_Closed", "UK3CB_ANP_B_Hilux_Open", "UK3CB_ANP_B_Offroad", "UK3CB_ANP_B_UAZ_Closed", "UK3CB_ANP_B_UAZ_Open"]]; // = 1 – REQUIRED
 
