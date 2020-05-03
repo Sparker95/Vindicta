@@ -1299,6 +1299,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Initialize civ presence grid
 		CALLM0(_civPresenceMgr, "createCivPresenceObjects");
+		CALLM0(_civPresenceMgr, "start");
 
 		// Process locations for roadblocks
 		private _roadblockPositionsAroundLocations = [];

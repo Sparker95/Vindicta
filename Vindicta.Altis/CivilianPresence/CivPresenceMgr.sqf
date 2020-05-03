@@ -19,7 +19,7 @@ CLASS("CivPresenceMgr", "")
 	VARIABLE("initialized");
 
 	// CivPresence objects which are active
-	VARIABLE("activeObjects");
+	VARIABLE("activeCells");
 
 	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_cellSize")];
@@ -42,7 +42,7 @@ CLASS("CivPresenceMgr", "")
 		T_SETV("gridArray", _gridArray);
 
 		T_SETV("initialized", false);
-		T_SETV("activeObjects", []);
+		T_SETV("activeCells", []);
 	ENDMETHOD;
 
 	// Marks a specific area to be initialized during createCivPresenceObjects call
@@ -89,7 +89,7 @@ CLASS("CivPresenceMgr", "")
 				_mrk setMarkerBrushLocal "SolidFull";
 				_mrk setMarkerTypeLocal "mil_box";
 				_mrk setMarkerColorLocal "ColorBlue";
-				_mrk setMarkerAlphaLocal 1;
+				_mrk setMarkerAlphaLocal 0.3;
 				#endif
 			};
 		};
@@ -123,14 +123,119 @@ CLASS("CivPresenceMgr", "")
 					];
 
 					pr _cp = NEW("CivPresence", _args);
-					_column set [_ly, _cp];
+					_columnArray set [_ly, _cp];
 
 					OOP_INFO_2("  created object at: [%1, %2]", _lx, _ly);
+				} else {
+					_columnArray set [_ly, NULL_OBJECT];
 				};
 			} forEach _columnArray;
 		} forEach T_GETV("gridArray");
 
 		T_SETV("initialized", true);
+	ENDMETHOD;
+
+	// Starts periodic processing of this object
+	METHOD(start)
+		params [P_THISOBJECT];
+		T_CALLM0("process");
+	ENDMETHOD;
+
+	// Maps players to cells they occupy
+	// Returns array of [x, y] where x, y are logical positions of grid
+	METHOD(calculateActiveCells)
+		params [P_THISOBJECT];
+		FIX_LINE_NUMBERS()
+
+		pr _cellSize = T_GETV("cellSize");
+
+		//pr _objects = allPlayers;
+		pr _objects = allUnits select {side group _x == WEST};
+		pr _ws2 = WORLD_SIZE/2;
+		pr _area = [[_ws2, _ws2, 0], _ws2, _ws2, 0, true, -1]; // center, a, b, angle, rectangle, z
+		_objects = _objects select {_x inArea _area};
+
+		// Calculate cells occupied by objects
+		pr _occupiedCells = _objects apply {
+			pr _pos = getPosASL _x;
+			[floor ((_pos#0)/_cellSize), floor ((_pos#1)/_cellSize)]
+		};
+
+		// Extend each cell with nearby cells
+		pr _activeCells = +_occupiedCells;
+		{
+			_x params ["_px", "_py"];
+			_activeCells pushBack [_px-1, _py];
+			_activeCells pushBack [_px+1, _py];
+			_activeCells pushBack [_px, _py-1];
+			_activeCells pushBack [_px, _py+1];
+			_activeCells pushBack [_px-1, _py-1];
+			_activeCells pushBack [_px-1, _py+1];
+			_activeCells pushBack [_px+1, _py-1];
+			_activeCells pushBack [_px+1, _py+1];
+		} forEach _occupiedCells;
+
+		// Leave only unique elements
+		_activeCells = _activeCells arrayIntersect _activeCells;
+
+		// Remove cells which are outside of the map
+		pr _gridSize = T_GETV("gridSize");
+		_activeCells = _activeCells select {
+			_x params ["_px", "_py"];
+			(_px >= 0) && (_px < _gridSize) && (_py >= 0) && (_py < _gridSize)
+		};
+
+		_activeCells
+	ENDMETHOD;
+
+	
+	METHOD(process)
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("process");
+
+		pr _currentActiveCells = T_GETV("activeCells");
+
+		OOP_INFO_1("  current active cells: %1", _currentActiveCells);
+
+		pr _newActiveCells = T_CALLM0("calculateActiveCells");
+		pr _cellsDisable = _currentActiveCells - _newActiveCells;	// Cells to disable this time
+		pr _cellsEnable = _newActiveCells - _currentActiveCells; 	// Cells to enable this time
+
+		OOP_INFO_1("  cells will be disabled: %1", _cellsDisable);
+		OOP_INFO_1("  cells will be enabled:  %1", _cellsEnable);
+
+		pr _gridArray = T_GETV("gridArray");
+		
+		// Disalbe civ presence objects
+		{
+			_x params ["_lx", "_ly"];
+			pr _cp = _gridArray#_lx#_ly;
+			if (!IS_NULL_OBJECT(_cp)) then {
+				CALLM0(_cp, "disable");
+			};
+		} forEach _cellsDisable;
+
+		// Enable civ presence objects
+		{
+			_x params ["_lx", "_ly"];
+			pr _cp = _gridArray#_lx#_ly;
+			if (!IS_NULL_OBJECT(_cp)) then {
+				CALLM0(_cp, "enable");
+			};
+		} forEach _cellsEnable;
+
+		T_SETV("activeCells", _newActiveCells);
+
+		// CBA will execute this after some time
+		[
+			{
+				params ["_thisObject"];
+				T_CALLM0("process");
+			},
+			[_thisObject],
+			1.0
+		] call CBA_fnc_waitAndExecute;
 	ENDMETHOD;
 
 

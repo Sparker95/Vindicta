@@ -35,9 +35,32 @@ CLASS("CivPresence", "")
 		_mrk setMarkerBrushLocal "SolidFull";
 		_mrk setMarkerSizeLocal [_halfWidthx, _halfWidthy];
 		_mrk setMarkerColorLocal "ColorBlue";
-		_mrk setMarkerAlphaLocal 0.4;
+		_mrk setMarkerAlphaLocal 0.2;
+		T_SETV("debugMarker", _mrk);
 		#endif
 
+	ENDMETHOD;
+
+	METHOD(enable)
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("enable");
+
+		#ifdef DEBUG_CIV_PRESENCE
+		pr _mrk = T_GETV("debugMarker");
+		_mrk setMarkerAlphaLocal 0.6;
+		#endif
+	ENDMETHOD;
+
+	METHOD(disable)
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("disable");
+
+		#ifdef DEBUG_CIV_PRESENCE
+		pr _mrk = T_GETV("debugMarker");
+		_mrk setMarkerAlphaLocal 0.2;
+		#endif
 	ENDMETHOD;
 
 	METHOD(init)
