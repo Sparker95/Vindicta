@@ -1902,20 +1902,20 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		};
 
-		// Flush all message queues, we do this so we make sure all pending spawns/despawns are done before freezing all objects
-		private _suspendedCorrectly = T_CALLM1("_flushMessageQueuesNoSuspend", _timeout);
-
 		// Disable all units and vehicles
 		// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
 		// Probably it's because we currently have this executed inside isNil {} block
-
-		[] spawn {
+		// Save the script handle for the unsuspend code
+		gSuspendUnitsHS = [] spawn {
 			ENABLE_DYNAMIC_SIMULATION_SYSTEM(false);
 			{
 				_x setVariable ["vin_simWasEnabled", SIMULATION_ENABLED(_x)];
 				ENABLE_SIMULATION_GLOBAL(_x, false);
-			} forEach (allUnits - PLAYABLE_UNITS + ALL_VEHICLES);
+			} forEach (allUnits - HUMAN_PLAYERS + ALL_VEHICLES);
 		};
+
+		// Flush all message queues, we do this so we make sure all pending spawns/despawns are done before freezing all objects
+		private _suspendedCorrectly = T_CALLM1("_flushMessageQueuesNoSuspend", _timeout);
 
 		CHAT_MSG_FMT("Mission suspended: %1", [_message]);
 
@@ -1938,13 +1938,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		if(gGameSuspended == 0) then {
 			// Free all the units we previously froze
-			[] spawn {
+			_thisObject spawn {
+				private _thisObject = _this;
+
+				// Wait for the suspend command to complate or we might have problems
+				waitUntil { isNil "gSuspendUnitsHS" || { isNull gSuspendUnitsHS } || { scriptDone gSuspendUnitsHS } };
+
 				{
 					ENABLE_SIMULATION_GLOBAL(_x, true);
-				} forEach ((allUnits - PLAYABLE_UNITS + ALL_VEHICLES) select { _x getVariable ["vin_simWasEnabled", false] });
-			};
+				} forEach ((allUnits - HUMAN_PLAYERS + ALL_VEHICLES) select { _x getVariable ["vin_simWasEnabled", false] });
 
-			T_CALLM0("initDynamicSimulation");
+				T_CALLM0("initDynamicSimulation");
+			};
 
 			// Offset the game time
 			private _timeSuspended = time - T_GETV("startSuspendTime");
