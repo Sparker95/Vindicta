@@ -35,7 +35,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		ASSERT_OBJECT_CLASS(_agent, "Unit");
 
 		// Make sure that the needed MessageLoop exists
-		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
+		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 
 		// Set variables
 		pr _hO = CALLM0(_agent, "getObjectHandle");
@@ -66,7 +66,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 
 	/* override */ METHOD(start)
 		params [P_THISOBJECT];
-		T_CALLM1("addToProcessCategory", "AILow");
+		T_CALLM1("addToProcessCategory", "MiscLowPriority");
 	ENDMETHOD
 
 	METHOD(_enableDebugMarkers)
@@ -611,7 +611,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	// ----------------------------------------------------------------------
 	
 	METHOD(getMessageLoop)
-		gMessageLoopGroupAI
+		gMessageLoopUnscheduled
 	ENDMETHOD;
 
 	// Common interface

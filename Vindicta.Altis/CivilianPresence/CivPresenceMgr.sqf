@@ -21,6 +21,8 @@ CLASS("CivPresenceMgr", "")
 	// CivPresence objects which are active
 	VARIABLE("activeCells");
 
+	VARIABLE("capacityMult"); // Global cpacity multiplier for all cells
+
 	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_cellSize")];
 
@@ -43,6 +45,14 @@ CLASS("CivPresenceMgr", "")
 
 		T_SETV("initialized", false);
 		T_SETV("activeCells", []);
+		T_SETV("capacityMult", 1.0);
+	ENDMETHOD;
+
+	METHOD(setCapacityMultiplier)
+		params [P_THISOBJECT, P_NUMBER("_value")];
+
+		T_SETV("capacityMult", _value);
+
 	ENDMETHOD;
 
 	// Marks a specific area to be initialized during createCivPresenceObjects call
@@ -212,7 +222,8 @@ CLASS("CivPresenceMgr", "")
 			_x params ["_lx", "_ly"];
 			pr _cp = _gridArray#_lx#_ly;
 			if (!IS_NULL_OBJECT(_cp)) then {
-				CALLM0(_cp, "disable");
+				CALLM1(_cp, "enable", false);
+				CALLM0(_cp, "commitSettings");
 			};
 		} forEach _cellsDisable;
 
@@ -221,7 +232,9 @@ CLASS("CivPresenceMgr", "")
 			_x params ["_lx", "_ly"];
 			pr _cp = _gridArray#_lx#_ly;
 			if (!IS_NULL_OBJECT(_cp)) then {
-				CALLM0(_cp, "enable");
+				CALLM1(_cp, "enable", true);
+				CALLM1(_cp, "setCapacityMultiplier", T_GETV("capacityMult"));
+				CALLM0(_cp, "commitSettings");
 			};
 		} forEach _cellsEnable;
 

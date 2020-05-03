@@ -15,7 +15,7 @@ CLASS("AIUnit", "AI_GOAP")
 		params [P_THISOBJECT];
 
 		// Make sure that the needed MessageLoop exists
-		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
+		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 
 		// Initialize the world state
 		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
@@ -43,7 +43,7 @@ CLASS("AIUnit", "AI_GOAP")
 	// ----------------------------------------------------------------------
 
 	METHOD(getMessageLoop)
-		gMessageLoopGroupAI
+		gMessageLoopUnscheduled
 	ENDMETHOD;
 
 	// Common interface

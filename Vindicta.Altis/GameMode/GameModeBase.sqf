@@ -11,8 +11,8 @@ FIX_LINE_NUMBERS()
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
 
-#define ALL_MESSAGE_LOOPS_AND_TIMEOUTS ([["messageLoopGameMode", 10], ["messageLoopCommanderEast", 150], ["messageLoopCommanderWest", 150], ["messageLoopCommanderInd", 150], ["messageLoopMain", 30], ["messageLoopGroupAI", 10]])
-#define ALL_MESSAGE_LOOPS (["messageLoopGameMode", "messageLoopCommanderEast", "messageLoopCommanderWest", "messageLoopCommanderInd", "messageLoopMain", "messageLoopGroupAI"])
+#define ALL_MESSAGE_LOOPS_AND_TIMEOUTS ([["messageLoopGameMode", 10], ["messageLoopCommanderEast", 150], ["messageLoopCommanderWest", 150], ["messageLoopCommanderInd", 150], ["messageLoopMain", 30], ["messageLoopUnscheduled", 10]])
+#define ALL_MESSAGE_LOOPS (["messageLoopGameMode", "messageLoopCommanderEast", "messageLoopCommanderWest", "messageLoopCommanderInd", "messageLoopMain", "messageLoopUnscheduled"])
 
 #ifndef _SQF_VM
 #define CHAT_MSG(msg) [msg] remoteExec ["systemChat", ON_CLIENTS, NO_JIP]; diag_log msg
@@ -39,7 +39,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Message loops
 	// Must keep references to them to help with saving
 	VARIABLE_ATTR("messageLoopMain", [ATTR_SAVE]);
-	VARIABLE_ATTR("messageLoopGroupAI", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopUnscheduled", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopGameMode", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopCommanderInd", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopCommanderWest", [ATTR_SAVE]);
@@ -84,7 +84,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("lastSpawn", GAME_TIME);
 
 		T_SETV("messageLoopMain", NULL_OBJECT);
-		T_SETV("messageLoopGroupAI", NULL_OBJECT);
+		T_SETV("messageLoopUnscheduled", NULL_OBJECT);
 		T_SETV("messageLoopGameMode", NULL_OBJECT);
 		T_SETV("messageLoopCommanderInd", NULL_OBJECT);
 		T_SETV("messageLoopCommanderWest", NULL_OBJECT);
@@ -391,10 +391,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 
 			// Message loop for group AI
-			if (isNil "gMessageLoopGroupAI") then {
-				private _args = ["Group AI", 128, 0, true]; // Unscheduled!
-				gMessageLoopGroupAI = NEW("MessageLoop", _args);
-				T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
+			if (isNil "gMessageLoopUnscheduled") then {
+				private _args = ["Unscheduled", 128, 0, true]; // Unscheduled!
+				gMessageLoopUnscheduled = NEW("MessageLoop", _args);
+				T_SETV("messageLoopUnscheduled", gMessageLoopUnscheduled);
 			};
 		};
 
@@ -440,10 +440,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(gMessageLoopMain, "setMaxMessagesInSeries", MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES);
 		};
 
-		if (!IS_NULL_OBJECT(T_GETV("messageLoopGroupAI"))) then {
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIGroup" ARG 1 ARG 0 ARG 4]); // Interval, minObjPerFrame, maxObjPerFrame
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIInfantry" ARG 0.2 ARG 1 ARG 2]); // Interval, minObjPerFrame, maxObjPerFrame
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AILow" ARG 3 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
+		if (!IS_NULL_OBJECT(T_GETV("messageLoopUnscheduled"))) then {
+			CALLM(gMessageLoopUnscheduled, "addProcessCategoryUnscheduled", ["AIGroup" ARG 1 ARG 0 ARG 4]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopUnscheduled, "addProcessCategoryUnscheduled", ["AIInfantry" ARG 0.2 ARG 1 ARG 2]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopUnscheduled, "addProcessCategoryUnscheduled", ["MiscLowPriority" ARG 1 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
 		};
 
 		if(!IS_NULL_OBJECT(T_GETV("messageLoopGameMode"))) then {
@@ -494,7 +494,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					_recovery = true;
 				};
 			};
-		} forEach ["messageLoopMain", "messageLoopGroupAI", "messageLoopGameMode",
+		} forEach ["messageLoopMain", "messageLoopUnscheduled", "messageLoopGameMode",
 					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
 
 		if (!_recovery) then {
@@ -2205,7 +2205,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Set global variables
 		gMessageLoopMain = T_GETV("messageLoopMain");
-		gMessageLoopGroupAI = T_GETV("messageLoopGroupAI");
+		gMessageLoopUnscheduled = T_GETV("messageLoopUnscheduled");
 		gMessageLoopGameMode = T_GETV("messageLoopGameMode");
 		gMessageLoopCommanderInd = T_GETV("messageLoopCommanderInd");
 		gMessageLoopCommanderWest = T_GETV("messageLoopCommanderWest");

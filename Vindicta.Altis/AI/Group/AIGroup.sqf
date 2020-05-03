@@ -29,7 +29,7 @@ CLASS("AIGroup", "AI_GOAP")
 		ASSERT_OBJECT_CLASS(_agent, "Group");
 		
 		// Make sure that the needed MessageLoop exists
-		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
+		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 
 		T_SETV("suspTarget", nil);
 		
@@ -249,7 +249,7 @@ CLASS("AIGroup", "AI_GOAP")
 	// ----------------------------------------------------------------------
 	
 	METHOD(getMessageLoop)
-		gMessageLoopGroupAI
+		gMessageLoopUnscheduled
 	ENDMETHOD;
 	
 	/*

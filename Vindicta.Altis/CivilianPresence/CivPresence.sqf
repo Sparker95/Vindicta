@@ -20,6 +20,20 @@ CLASS("CivPresence", "")
 
 	VARIABLE("debugMarker");
 
+	VARIABLE("capacity");
+	VARIABLE("enabled");
+	VARIABLE("capacityMult");	// Capacity multiplier
+
+	// Target amount of civilians this object will try to keep
+	// Based on values above (0 if disabled, mult*cap if enabled)
+	VARIABLE("targetAmount");
+
+	// Current amount of created civilians
+	VARIABLE("currentAmount");
+
+	// Periodic processing of this object is active
+	VARIABLE("processingEnabled");
+
 	METHOD(new)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy")];
 
@@ -39,28 +53,112 @@ CLASS("CivPresence", "")
 		T_SETV("debugMarker", _mrk);
 		#endif
 
+		T_SETV("capacity", 10);
+		T_SETV("enabled", false);
+		T_SETV("capacityMult", 1.0);
+		T_SETV("targetAmount", 0);
+		T_SETV("currentAmount", 0);
+		T_SETV("processingEnabled", false);
+
 	ENDMETHOD;
 
 	METHOD(enable)
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_enabled")];
 
-		OOP_INFO_0("enable");
+		OOP_INFO_1("enable: %1", _enabled);
+
+		T_SETV("enabled", _enabled);
+		T_CALLM0("_updateTargetAmount");
 
 		#ifdef DEBUG_CIV_PRESENCE
 		pr _mrk = T_GETV("debugMarker");
-		_mrk setMarkerAlphaLocal 0.6;
+		if (_enabled) then {
+			_mrk setMarkerAlphaLocal 0.6;
+		} else {
+			_mrk setMarkerAlphaLocal 0.2;
+		};
 		#endif
 	ENDMETHOD;
 
-	METHOD(disable)
+	METHOD(setCapacity)
+		params [P_THISOBJECT, P_NUBMER("_value")];
+
+		T_SETV("capacity", _value);
+		//T_CALLM0("_updateTargetAmount");
+	ENDMETHOD;
+
+	METHOD(setCapacityMultiplier)
+		params [P_THISOBJECT, P_NUBMER("_value")];
+		T_SETV("capacityMult", _value);
+		//T_CALLM0("_updateTargetAmount");
+	ENDMETHOD;
+
+	// updates target amount of civilians - based on different rules
+	/* private */ METHOD(commitSettings)
+		params [P_THISOBJECT];
+		pr _val = 0;
+		if (T_GETV("enabled")) then {
+			_val = round (T_GETV("capacity") * T_GETV("capacityMult"));
+		};
+		T_SETV("targetAmount", _val);
+
+		// If we must change the amount of created bots, enable processing
+		if (_val != T_GETV("currentAmount")) then {
+			T_CALLM0("_addToProcessCategory");
+		};
+	ENDMETHOD;
+
+	// "process" method of this object will be called periodically
+	/* private */ METHOD(_addToProcessCategory)
+		params [P_THISOBJECT];
+		
+		// Bail if already added
+		if (T_GETV("processingEnabled")) exitWith {};
+
+		CALLM2(gMessageLoopUnscheduled, "addProcessCategoryObject", "MiscLowPriority", _thisObject);
+		T_SETV("processingEnabled", true);
+	ENDMETHOD;
+
+	// "process" method of this object will not be called any more
+	/* private */ METHOD(_removeFromProcessCategory)
+		params [P_THISOBJECT];
+		CALLM1(gMessageLoopUnscheduled, "removeProcessCategoryObject", _thisObject);
+		T_SETV("processingEnabled", false);
+	ENDMETHOD;
+
+	// Called periodically
+	// It might create a civilian at each call, so don't call too often
+	METHOD(process)
 		params [P_THISOBJECT];
 
-		OOP_INFO_0("disable");
+		pr _currentAmount = T_GETV("currentAmount");
+		pr _targetAmount = T_GETV("targetAmount");
 
-		#ifdef DEBUG_CIV_PRESENCE
-		pr _mrk = T_GETV("debugMarker");
-		_mrk setMarkerAlphaLocal 0.2;
-		#endif
+		if (_targetAmount == _currentAmount) then {
+			if (_targetAmount == 0) then {
+				// If we don't need any more civilians, disable processing of this
+				T_CALLM0("_removeFromProcessCategory");
+			};
+		} else {
+			if (_targetAmount > _currentAmount) then {
+				// Try to create one civilian
+				pr _created = T_CALLM0("tryCreateCivilian");
+				if (_created) then {
+					_currentAmount = _currentAmount + 1;
+					T_SETV("currentAmount", _currentAmount);
+				};
+			} else {
+				// Try to remove one civilian
+				pr _removed = T_CALLM0("tryDeleteCivilian");
+				if (_removed) then {
+					_currentAmount = _currentAmount - 1;
+					T_SETV("currentAmount", _currentAmount);
+					if (_currentAmount == 0 && _targetAmount == 0) then {
+						T_CALLM0("_removeFromProcessCategory");
+					};
+				};
+			};
+		};
 	ENDMETHOD;
 
 	METHOD(init)

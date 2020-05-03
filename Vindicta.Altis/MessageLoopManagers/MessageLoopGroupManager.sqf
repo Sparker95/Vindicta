@@ -39,7 +39,7 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 	ENDMETHOD;
 
 	METHOD(getMessageLoop)
-		gMessageLoopGroupAI
+		gMessageLoopUnscheduled
 	ENDMETHOD;
 
 	// We use that to call some static methods in the main thread
