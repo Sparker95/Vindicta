@@ -143,7 +143,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 					private _tgt = selectRandom _tgts;
 					_x glanceAt _tgt;
 					_x lookAt _tgt;
-					_x commandWatch _tgt;
+					_x doWatch _tgt;
 				} foreach units _hG;
 
 				private _nextLookTime = GAME_TIME + random[5, 15, 30];
@@ -153,7 +153,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 					private _lookAtPos = position leader _hG getPos [random [15, 30, 50], direction vehicle leader _hG + random [-45, 0, 45]];// +  [[[position leader _hG, _radius]]] call BIS_fnc_randomPos;
 					_x glanceAt _lookAtPos;
 					_x lookAt _lookAtPos;
-					_x commandWatch _lookAtPos;
+					_x doWatch _lookAtPos;
 				} foreach units _hG;
 
 				private _nextLookTime = GAME_TIME + random[0, 5, 15];
@@ -163,34 +163,12 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		// This action is terminal because it's never over right now
 
-		// Delete all waypoints when we know about some enemies
 		private _hG = T_GETV("hG");
 
 		if (count waypoints _hG <= 1) then {
 			// Force reactivation
 			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
-
-		// This doesn't really improve behavior...
-		// if (behaviour leader _hG == "COMBAT") then {
-		// 	if (!T_GETV("inCombat")) then {
-		// 		// Delete waypoints once, let them chose what to do on their own
-		// 		T_CALLM0("clearWaypoints");
-		// 		OOP_INFO_0("Deleted waypoints");
-		// 		T_SETV("inCombat", true);
-		// 	};
-		// 	private _enemySides = [east, west, independent] select { !([side _hG, _x] call BIS_fnc_sideIsFriendly) };
-		// 	private _enemies = leader _hG targetsQuery [objNull, sideUnknown, "", position leader _hG, 0/*TARGET_AGE_TO_REVEAL*/] select {
-		// 		_x#2 in _enemySides
-		// 	};
-		// } else {
-		// 	if (T_GETV("inCombat") || count waypoints _hG <= 1) then {
-		// 		T_SETV("inCombat", false);
-		// 		// Force reactivation
-		// 		T_SETV("state", ACTION_STATE_INACTIVE);
-		// 	};
-		// };
-		//ACTION_STATE_ACTIVE
 
 		// Return the current state
 		T_GETV("state")
