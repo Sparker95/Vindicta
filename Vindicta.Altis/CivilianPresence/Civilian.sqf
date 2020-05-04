@@ -7,6 +7,7 @@ First create a civilian unit/agent, then create this object and attach it to thi
 
 #define pr private
 
+#define OOP_CLASS_NAME Civilian
 CLASS("Civilian", "GOAP_Agent")
 
 	VARIABLE("hO");
@@ -17,12 +18,14 @@ CLASS("Civilian", "GOAP_Agent")
 		T_SETV("hO", _civObjectHandle);
 
 		// Create AI
-		pr _AI = NEW("AIUnitCivilian", [_thisObject]);
+		//pr _AI = NEW("AIUnitCivilian", [_thisObject]);
 	ENDMETHOD;
 
 	METHOD(delete)
 		params [P_THISOBJECT];
-		DELETE(T_GETV("AI"));
+		//DELETE(T_GETV("AI"));
+
+		deleteVehicle T_GETV("hO");
 	ENDMETHOD;
 
 	/* override */ METHOD(getAI)

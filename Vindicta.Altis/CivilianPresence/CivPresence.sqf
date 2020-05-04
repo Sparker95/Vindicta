@@ -18,8 +18,7 @@ CLASS("CivPresence", "")
 	// Center position
 	VARIABLE("pos");
 
-	VARIABLE("debugMarker");
-
+	// Counters and state
 	VARIABLE("capacity");
 	VARIABLE("enabled");
 	VARIABLE("capacityMult");	// Capacity multiplier
@@ -34,9 +33,17 @@ CLASS("CivPresence", "")
 	// Periodic processing of this object is active
 	VARIABLE("processingEnabled");
 
-	// Array of building positions
+	// Array of positions
 	VARIABLE("buildingPosAGL");
 	VARIABLE("waypointsAGL");
+	VARIABLE("spawnPointsAGL");
+
+	// Array of Civilian-derived OOP objects
+	VARIABLE("civilians");
+
+	// Marker for debug
+	VARIABLE("debugMarkerArea");
+	VARIABLE("debugMarkerText");
 
 	// 
 	/* private */ METHOD(new)
@@ -47,6 +54,8 @@ CLASS("CivPresence", "")
 		T_SETV("pos", _pos);
 
 		#ifdef DEBUG_CIV_PRESENCE
+
+		// Rectangular marker for area
 		_pos params ["_x", "_y"];
 		pr _mrkName = format ["%1_debug_%2_%3", _thisObject, floor _x, floor _y];
 		pr _mrk = createMarkerLocal [_mrkName, _pos];
@@ -55,19 +64,34 @@ CLASS("CivPresence", "")
 		_mrk setMarkerSizeLocal [_halfWidthx, _halfWidthy];
 		_mrk setMarkerColorLocal "ColorBlue";
 		_mrk setMarkerAlphaLocal 0.2;
-		T_SETV("debugMarker", _mrk);
+		T_SETV("debugMarkerArea", _mrk);
+
+		// Marker with text
+		_mrkName = format ["%1_debugText_%2_%3", _thisObject, floor _x, floor _y];
+		pr _mrk = createMarkerLocal [_mrkName, _pos];
+		_mrk setMarkerShapeLocal "ICON";
+		_mrk setMarkerBrushLocal "SolidFull";
+		_mrk setMarkerColorLocal "ColorBlue";
+		_mrk setMarkerAlphaLocal 1.0;
+		_mrk setMarkerTypeLocal "mil_dot";
+		_mrk setMarkerSizeLocal [0.3, 0.3];
+		_mrk setMarkerText "idle";
+		T_SETV("debugMarkerText", _mrk);
+
 		{
 			private _markerName = createMarker [format["%1_wypnt_%2_%3", _thisObject, round (_x#0), round (_x#1)], _x];
 			_markerName setMarkerShape "ICON";
 			_markerName setMarkerType "hd_dot";
 			_markerName setMarkerColor "ColorBlue";
 		} forEach _waypoints;
+
 		{
 			private _markerName = createMarker [format["%1_bpos_%2_%3_%4", _thisObject, round (_x#0), round (_x#1), round(_x#2)], _x];
 			_markerName setMarkerShape "ICON";
 			_markerName setMarkerType "hd_dot";
 			_markerName setMarkerColor "ColorRed";
 		} forEach _buildingPositions;
+
 		#endif
 
 
@@ -79,6 +103,8 @@ CLASS("CivPresence", "")
 		T_SETV("processingEnabled", false);
 		T_SETV("buildingPosAGL", _buildingPositions);
 		T_SETV("waypointsAGL", _waypoints);
+		T_SETV("spawnPointsAGL", _buildingPositions + _waypoints);
+		T_SETV("civilians", []);
 
 	ENDMETHOD;
 
@@ -87,10 +113,34 @@ CLASS("CivPresence", "")
 
 		
 		#ifdef DEBUG_CIV_PRESENCE
-		pr _mrkName = T_GETV("debugMarker");
-		deleteMarkerLocal _mrkName;
+		deleteMarkerLocal T_GETV("debugMarkerArea");
+		deleteMarkerLocal T_GETV("debugMarkerText");
 		#endif
 	ENDMETHOD;
+
+	#ifdef DEBUG_CIV_PRESENCE
+	METHOD(_updateDebugMarkers)
+		params [P_THISOBJECT];
+
+		pr _mrkArea = T_GETV("debugMarkerArea");
+		pr _mrkText = T_GETV("debugMarkerText");
+		if (_enabled) then {
+			_mrkArea setMarkerAlphaLocal 0.6;
+		} else {
+			_mrkArea setMarkerAlphaLocal 0.2;
+		};
+
+		pr _currentAmount = T_GETV("currentAmount");
+		pr _targetAmount = T_GETV("targetAmount");
+		if (_targetAmount == 0 && _currentAmount == 0) then {
+			_mrkText setMarkerTextLocal "";
+		} else {
+			_mrkText setMarkerTextLocal (format ["%1 / %2", _currentAmount, _targetAmount]);
+		};
+
+
+	ENDMETHOD;
+	#endif
 
 	// Creates an object here, returns object or nULL_OBJECT if it cant't be created here
 	METHOD(tryCreateInstance)
@@ -158,7 +208,7 @@ CLASS("CivPresence", "")
 		OOP_INFO_2("  building positions: %1, waypoints: %2", count _buildingPositions, count _waypoints);
 
 		// Does it make sense to create it here?
-		pr _success = ((count _buildingPositions) > 0) && ((count _waypoints) > 0);
+		pr _success = ((count _buildingPositions) > 0) && ((count _waypoints) > 1);
 		pr _instance = NULL_OBJECT;
 		if (_success) then {
 			pr _args = [_pos, _halfWidthX, _halfWidthY, _buildingPositions, _waypoints];
@@ -173,17 +223,12 @@ CLASS("CivPresence", "")
 
 		OOP_INFO_1("enable: %1", _enabled);
 
-		#ifdef DEBUG_CIV_PRESENCE
-		pr _mrk = T_GETV("debugMarker");
-		if (_enabled) then {
-			_mrk setMarkerAlphaLocal 0.6;
-		} else {
-			_mrk setMarkerAlphaLocal 0.2;
-		};
-		#endif
-
 		T_SETV("enabled", _enabled);
-		T_CALLM0("_updateTargetAmount");
+		//T_CALLM0("_updateTargetAmount");
+
+		#ifdef DEBUG_CIV_PRESENCE
+		T_CALLM0("_updateDebugMarkers");
+		#endif
 	ENDMETHOD;
 
 	METHOD(setCapacity)
@@ -191,12 +236,20 @@ CLASS("CivPresence", "")
 
 		T_SETV("capacity", _value);
 		//T_CALLM0("_updateTargetAmount");
+
+		#ifdef DEBUG_CIV_PRESENCE
+		T_CALLM0("_updateDebugMarkers");
+		#endif
 	ENDMETHOD;
 
 	METHOD(setCapacityMultiplier)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 		T_SETV("capacityMult", _value);
 		//T_CALLM0("_updateTargetAmount");
+
+		#ifdef DEBUG_CIV_PRESENCE
+		T_CALLM0("_updateDebugMarkers");
+		#endif
 	ENDMETHOD;
 
 	// updates target amount of civilians - based on different rules
@@ -212,6 +265,10 @@ CLASS("CivPresence", "")
 		if (_val != T_GETV("currentAmount")) then {
 			T_CALLM0("_addToProcessCategory");
 		};
+
+		#ifdef DEBUG_CIV_PRESENCE
+		T_CALLM0("_updateDebugMarkers");
+		#endif
 	ENDMETHOD;
 
 	// "process" method of this object will be called periodically
@@ -228,7 +285,7 @@ CLASS("CivPresence", "")
 	// "process" method of this object will not be called any more
 	/* private */ METHOD(_removeFromProcessCategory)
 		params [P_THISOBJECT];
-		CALLM1(gMessageLoopUnscheduled, "removeProcessCategoryObject", _thisObject);
+		CALLM1(gMessageLoopUnscheduled, "deleteProcessCategoryObject", _thisObject);
 		T_SETV("processingEnabled", false);
 	ENDMETHOD;
 
@@ -248,10 +305,10 @@ CLASS("CivPresence", "")
 		} else {
 			if (_targetAmount > _currentAmount) then {
 				// Try to create one civilian
-				pr _created = T_CALLM0("tryCreateCivilian");
+				pr _created = T_CALLM0("_tryCreateUnit");
 			} else {
 				// Try to remove one civilian
-				pr _removed = T_CALLM0("tryDeleteCivilian");
+				pr _removed = T_CALLM0("_tryDeleteUnit");
 				if (_removed) then {
 					if (T_GETV("currentAmount") == 0 && _targetAmount == 0) then {
 						T_CALLM0("_removeFromProcessCategory");
@@ -259,24 +316,77 @@ CLASS("CivPresence", "")
 				};
 			};
 		};
+
+		#ifdef DEBUG_CIV_PRESENCE
+		T_CALLM0("_updateDebugMarkers");
+		#endif
 	ENDMETHOD;
 
-	METHOD(createCivilian)
+	// Creates an ambient civ
+	// Returns a ref to OOP Civilian object
+	METHOD(_createAmbientCivilian)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_STRING("_className")];
+
+		createAgent [_className, _pos, [], 0, "CAN_COLLIDE"];
+		_ho setVariable ["vin_isagent", true];
+		pr _oop_civ = NEW("Civilian", [_hO]);	// Create OOP object associated with it
+		
+		_oop_civ // Return
+	ENDMETHOD;
+
+	// Tries to create a civilian at random spot
+	// returns bool
+	METHOD(_tryCreateUnit)
+		params [P_THISOBJECT];
+
+		private _pos = selectRandom T_GETV("spawnPointsAGL");
+		private _posASL = (AGLToASL _pos) vectorAdd [0,0,1.5];
+
+		//check if any player can see the point of creation
+		private _seenBy = allPlayers findIf {_x distance _pos < 35 || {(_x distance _pos < 150 && {([_x,"VIEW"] checkVisibility [eyePos _x, _posASL]) > 0.5})}};
+		if (_seenBy != -1) exitWith {false};
+
+		pr _className = "C_Man_3_enoch_F";
+		pr _oop_civ = T_CALLM2("_createAmbientCivilian", _pos, _className);
+
+		// Register it here, increase counters
+		pr _createdObjects = T_GETV("civilians");
+		_createdObjects pushBack _oop_civ;
+		T_SETV("currentAmount", count _createdObjects);
+
+		true
+	ENDMETHOD;
+
+	// Tries to delete a civlian
+	// returns bool
+	METHOD(_tryDeleteUnit)
+		params [P_THISOBJECT];
+
+		pr _createdObjects = T_GETV("civilians");
+		if (count _createdObjects == 0) exitWith {false};
+
+		private _civ = selectRandom _createdObjects;
+		private _hO = CALLM0(_civ, "getObjectHandle");
+		
+		// Check if it can be deleted
+		private _seenBy = allPlayers findIf {_x distance _hO < 50 || {(_x distance _hO < 150 && {([_x,"VIEW",_hO] checkVisibility [eyePos _x, eyePos _hO]) > 0.5})}};
+		if (_seenBy != -1) exitWith {false};
+
+		DELETE(_civ); // Will also delete him from the game world
+		pr _createdObjects = T_GETV("civilians");
+		_createdObjects deleteAt (_createdObjects find _civ);
+
+		T_SETV("currentAmount", count _createdObjects);
+
+		true
+	ENDMETHOD;
+
+	METHOD(_getNearestSafeSpot)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;
 
-	METHOD(deleteCivilian)
-		params [P_THISOBJECT];
-
-	ENDMETHOD;
-
-	METHOD(getNearestSafeSpot)
-		params [P_THISOBJECT];
-
-	ENDMETHOD;
-
-	METHOD(getSafeSpot)
+	METHOD(_getSafeSpot)
 		params [P_THISOBJECT];
 		/*
 
