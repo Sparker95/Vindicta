@@ -71,10 +71,10 @@ CLASS("RecruitTab", "DialogTabBase")
 
 		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
 		T_CALLM1("_recruitSelectionChanged", lnbCurSelRow _lnbMain);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Update listboxes with available gear
-	METHOD("_recruitSelectionChanged") {
+	METHOD(_recruitSelectionChanged)
 		params [P_THISOBJECT, P_NUMBER("_id")];
 
 		OOP_INFO_1("LISTBOX SEL CHANGED: %1", _id);
@@ -100,11 +100,11 @@ CLASS("RecruitTab", "DialogTabBase")
 
 		pr _secondary = T_GETV("availableWeaponsSecondary") select _subcatid;
 		CALLSM3("RecruitTab", "_populateList", _lnbSecondary, _secondary, T_GETV("secondarySelectionHistory"));
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
 	// Populate a list control with items, selecting the one most recently selected based on history
-	STATIC_METHOD("_populateList") {
+	STATIC_METHOD(_populateList)
 		params [P_THISCLASS, P_CONTROL("_itemCtrl"), P_ARRAY("_items"), P_ARRAY("_selectionHistory")];
 		private _bestHistoryIdx = -1;
 		private _bestIdx = 0;

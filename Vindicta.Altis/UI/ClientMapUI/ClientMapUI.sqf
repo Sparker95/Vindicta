@@ -1628,9 +1628,9 @@ CLASS("ClientMapUI", "")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_select") {
+	METHOD(_select)
 		params [P_THISOBJECT, P_ARRAY("_garrisonsUnderCursor"), P_ARRAY("_locationsUnderCursor")];
 		
 		// Disable the garrison action listbox
@@ -1709,7 +1709,7 @@ CLASS("ClientMapUI", "")
 	/*
 		Method: showGlobalIntel
 	*/
-	METHOD(onMouseClickElsewhere)
+	METHOD(showGlobalIntel)
 		params [P_THISOBJECT];
 
 		// set text on sorting buttons

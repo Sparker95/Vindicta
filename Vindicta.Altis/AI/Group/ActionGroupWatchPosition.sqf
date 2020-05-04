@@ -77,6 +77,6 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 
 		// All stop watching position
 		units _hG doWatch objNull;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

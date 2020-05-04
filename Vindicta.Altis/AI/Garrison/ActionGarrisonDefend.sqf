@@ -93,12 +93,13 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			
 			if (_groupAI != NULL_OBJECT) then {
 				private _args = switch (CALLM0(_x, "getType")) do {
+					case GROUP_TYPE_VEH;
 					case GROUP_TYPE_STATIC: {
-						["GoalGroupGetInVehiclesAsCrew", 0, _commonParams, _AI]
-					};
-					case GROUP_TYPE_VEH: {
 						["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
 					};
+					// case GROUP_TYPE_VEH: {
+					// 	["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
+					// };
 					case GROUP_TYPE_INF: {
 						// We need at least enough patrol groups to cover the defined routes
 						if (_nPatrolGroups < count _routes) then {

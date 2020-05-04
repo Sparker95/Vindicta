@@ -669,17 +669,20 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			case LOCATION_TYPE_OUTPOST: {
 				private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]) min 10;
+				private _cVehHeli = CALLM0(_loc, "getCapacityHeli");
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["military" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
+				private _args = ["military", _type, _side, _cInf, _cVehGround, _cVehHeli, _cHMGGMG, _cBuildingSentry, _cCargoBoxes];
+				T_CALLM("createGarrison", _args)
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
 				private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["police" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
+				private _args = ["police", _type, _side, _cInf, _cVehGround, 0, 0, 0, 2];
+				T_CALLM("createGarrison", _args)
 			};
 			default { NULL_OBJECT };
 		};
@@ -1355,11 +1358,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
+	#define ADD_HELIS
 	//#define ADD_ARMED_MRAPS
 	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD(createGarrison)
-		params [P_THISOBJECT, P_STRING("_faction"), P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+		params [P_THISOBJECT, P_STRING("_faction"), P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cVehHeli"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 
 		if (_faction == "police") exitWith {
 			
@@ -1369,7 +1373,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
 			private _gar = NEW("Garrison", _args);
 
-			OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+			//OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries",
+			//	[_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 
 			private _nInfGroups = CLAMP(_cInf * 0.5, 2, 6);
 			for "_i" from 1 to _nInfGroups do {
@@ -1441,7 +1446,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
 		private _gar = NEW("Garrison", _args);
 
-		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+		//OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 
 		// Add default units to the garrison
 
@@ -1537,7 +1542,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		FIX_LINE_NUMBERS()
 
 		// Unarmed MRAPs
-		_i = 0;
+		private _i = 0;
 		#ifdef ADD_UNARMED_MRAPS
 		while {(_cVehGround > 0) && _i < 1} do  {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_MRAP_unarmed ARG -1 ARG ""]);
@@ -1557,6 +1562,21 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		#endif
 		FIX_LINE_NUMBERS()
 
+		// Helis 
+		#ifdef ADD_HELIS
+		for "_i" from 0 to _cVehHeli - 1 do {
+			private _type = T_VEH_heli_attack; 
+			// selectRandomWeighted [
+			// 	T_VEH_heli_light,	1,
+			// 	T_VEH_heli_heavy,	1,
+			// 	T_VEH_heli_attack,	1
+			// ];
+			private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+			OOP_INFO_MSG("%1: Created heli group %2", [_gar ARG _newGroup]);
+		};
+		#endif
+		FIX_LINE_NUMBERS()
+
 		// APCs, IFVs, tanks, MRAPs
 		#ifdef ADD_ARMOR
 		{
@@ -1565,7 +1585,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _i = 0;
 				while{(_cVehGround > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
 					private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
-					OOP_INFO_MSG("%1: Created veh group %2", [_gar ARG _newGroup]);
+					OOP_INFO_MSG("%1: Created armor group %2", [_gar ARG _newGroup]);
 					_cVehGround = _cVehGround - 1;
 					_i = _i + 1;
 				};
@@ -1599,7 +1619,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 
 		// Cargo boxes
-		_i = 0;
+		private _i = 0;
 		while {_cCargoBoxes > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
 			CALLM1(_newUnit, "setBuildResources", 80);

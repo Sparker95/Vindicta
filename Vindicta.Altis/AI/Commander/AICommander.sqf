@@ -528,7 +528,7 @@ CLASS("AICommander", "AI")
 		CALLM0(gMessageLoopMain, "lock");
 
 		ASSERT_OBJECT_CLASS(_loc, "Location");
-		
+
 		// Try to find friendly garrisons there first
 		// Otherwise try to find any garrisons there
 		pr _isFriendly = false;

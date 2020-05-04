@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: Garrison
@@ -9,6 +10,14 @@ Author: Sparker 12.07.2018
 
 
 */
+
+#define SAFE_ACCESSOR(variableName, defaultValue) \
+		(if(IS_GARRISON_DESTROYED(_thisObject)) then { \
+			WARN_GARRISON_DESTROYED; \
+			defaultValue \
+		} else { \
+			T_GETV(variableName) \
+		})
 
 #define pr private
 
@@ -62,6 +71,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				VARIABLE_ATTR("outdated", 	[ATTR_PRIVATE]);
 				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
 	/* save */	VARIABLE_ATTR("savedUnits",	[ATTR_PRIVATE ARG ATTR_SAVE_VER(11)]);
+	// Garrison type: one of each type of garrison can exist at a location
+	/* save */	VARIABLE_ATTR("type",	[ATTR_PRIVATE ARG ATTR_SAVE_VER(18)]);
+
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -74,7 +86,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	_pos - optional, default position to set to the garrison
 	*/
 	METHOD(new)
-		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
+		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName"), P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL)];
 
 		OOP_INFO_1("NEW GARRISON: %1", _this);
 
@@ -87,12 +99,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		//ASSERT_GLOBAL_OBJECT(gGarrisonAbandonedVehicles);
 		ASSERT_GLOBAL_OBJECT(gTimerServiceMain);
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMainManager);
-		
 
 		T_SETV("units", []);
 		T_SETV("groups", []);
 		T_SETV("spawned", false);
 		T_SETV("side", _side);
+		T_SETV("type", _type);
 		T_SETV("name", "");
 		//T_SETV("action", "");
 		T_SETV("effTotal", +T_EFF_null);
@@ -126,7 +138,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			_comp pushBack (_tempArray apply {[]});
 		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 		T_SETV("compositionClassNames", _comp);
-		
+
 		T_SETV("compositionNumbers", +T_comp_null);
 
 		// Create AI object
@@ -727,21 +739,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getFaction)
 		params [P_THISOBJECT];
-
-		//__MUTEX_LOCK;
-
-		private _return = "";
-
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			_return
-		};
-
-		_return = T_GETV("faction");
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("faction", "")
 	ENDMETHOD;
 
 	//                         G E T   S I D E
@@ -753,21 +751,20 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getSide)
 		params [P_THISOBJECT];
-
-		//__MUTEX_LOCK;
-
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			sideUnknown
-		};
-
-		private _return = T_GETV("side");
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("side", sideUnknown)
 	ENDMETHOD;
 
+	//                         G E T   T Y P E
+	/*
+	Method: getType
+	Returns type of this garrison.
+
+	Returns: string
+	*/
+	METHOD(getType)
+		params [P_THISOBJECT];
+		SAFE_ACCESSOR("type", "")
+	ENDMETHOD;
 
 	//                     G E T   L O C A T I O N
 	/*
@@ -778,16 +775,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getLocation)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			NULL_OBJECT
-		};
-		private _return = T_GETV("location");
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("location", NULL_OBJECT)
 	ENDMETHOD;
 
 
@@ -800,17 +788,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getGroups)
 		params [P_THISOBJECT];
-
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			[]
-		};
-		pr _return = +T_GETV("groups");
-		//__MUTEX_UNLOCK;
-		_return
+		+SAFE_ACCESSOR("groups", [])
 	ENDMETHOD;
 
 	// 						G E T   U N I T S
@@ -822,16 +800,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getUnits)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			[]
-		};
-		private _return = +T_GETV("units");
-		//__MUTEX_UNLOCK;
-		_return
+		+SAFE_ACCESSOR("units", [])
 	ENDMETHOD;
 
 	// |                         G E T  I N F A N T R Y  U N I T S
@@ -843,17 +812,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getInfantryUnits)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			[]
-		};
-		private _unitList = T_GETV("units");
-		private _return = _unitList select {CALLM0(_x, "isInfantry")};
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isInfantry") }
 	ENDMETHOD;
 
 	// |                         G E T  O F F I C E R  U N I T S
@@ -877,17 +836,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getVehicleUnits)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			[]
-		};
-		private _unitList = T_GETV("units");
-		private _return = _unitList select {CALLM0(_x, "isVehicle")};
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isVehicle") }
 	ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
@@ -899,17 +848,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getDroneUnits)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			[]
-		};
-		private _unitList = T_GETV("units");
-		private _return = _unitList select {CALLM0(_x, "isDrone")};
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isDrone") }
 	ENDMETHOD;
 
 	// |                         G E T   C A R G O   U N I T S
@@ -921,17 +860,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getCargoUnits)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			[]
-		};
-		private _unitList = T_GETV("units");
-		private _return = _unitList select {CALLM0(_x, "isCargo")};
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isCargo") }
 	ENDMETHOD;
 
 	/*
@@ -949,7 +878,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			T_CALLM0("updateBuildResources");
 			_buildRes = T_GETV("buildResources");
 		};
-		//__MUTEX_UNLOCK;
 
 		_buildRes
 	ENDMETHOD;
@@ -1071,17 +999,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getPos)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
 			[]
 		};
 		pr _AI = T_GETV("AI");
-		private _return = CALLM0(_AI, "getPos");
-		//__MUTEX_UNLOCK;
-		_return
+		+CALLM0(_AI, "getPos")
 	ENDMETHOD;
 	
 	//						I S   E M P T Y
@@ -1093,16 +1016,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(isEmpty)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			true
-		};
-		private _return = (count T_GETV("units")) == 0;
-		//__MUTEX_UNLOCK;
-		_return
+		count SAFE_ACCESSOR("units", []) == 0
 	ENDMETHOD;
 
 	//				I S   O N L Y   E M P T Y   V E H I C L E S
@@ -1114,18 +1028,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(isOnlyEmptyVehicles)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			false
-		};
-		//private _unitList = T_GETV("units");
-		//private _return = (_unitList findIf {CALLM0(_x, "isInfantry")}) == -1 and {(_unitList findIf {CALLM0(_x, "isVehicle")}) != -1};
-		private _return = (T_GETV("countInf") == 0);
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("countInf", []) == 0
 	ENDMETHOD;
 
 	//						I S   S P A W N E D
@@ -1137,16 +1040,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(isSpawned)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			false
-		};
-		private _return = T_GETV("spawned");
-		//__MUTEX_UNLOCK;
-		_return
+		SAFE_ACCESSOR("spawned", false)
 	ENDMETHOD;
 	
 
@@ -1164,11 +1058,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	METHOD(findGroupsByType)
 		params [P_THISOBJECT, ["_types", 0, [0, []]]];
 
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
 			[]
 		};
 
@@ -1182,7 +1073,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			};
 		} forEach _groups;
 		
-		//__MUTEX_UNLOCK;
 		
 		_return
 	ENDMETHOD;
@@ -1193,16 +1083,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(countAllUnits)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			0
-		};
-		private _return = count T_GETV("units");
-		//__MUTEX_UNLOCK;
-		_return
+		count SAFE_ACCESSOR("units", [])
 	ENDMETHOD;
 
 	/*
@@ -1215,16 +1096,13 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getTransportCapacity)
 		params [P_THISOBJECT, P_ARRAY("_vehicleCategories")];
-		
-		//__MUTEX_LOCK;
-		
-		T_GETV("effTotal") # T_EFF_transport
+
+		SAFE_ACCESSOR("effTotal", T_EFF_null) # T_EFF_transport
 
 		/*
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
 			0
 		};
 
@@ -1246,7 +1124,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		{
 			_transportCapacity = _transportCapacity + _x;
 		} foreach _transportCapacityPerUnit;
-		//__MUTEX_UNLOCK;
 
 		_transportCapacity
 		*/
@@ -2313,21 +2190,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	METHOD(getRequiredCrew)
 		params [P_THISOBJECT];
-
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
 			[]
 		};
-
 		pr _units = T_GETV("units");
-		private _return = CALLSM1("Unit", "getRequiredCrew", _units);
-
-		//__MUTEX_UNLOCK;
-
-		_return
+		CALLSM1("Unit", "getRequiredCrew", _units)
 	ENDMETHOD;
 	
 	/*
@@ -2779,17 +2647,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	METHOD(getEfficiencyMobile)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			+T_EFF_null
-		};
-
-		private _return = +T_GETV("effMobile");
-		//__MUTEX_UNLOCK;
-		_return
+		+SAFE_ACCESSOR("effMobile", T_EFF_null)
 	ENDMETHOD;
 	
 	/*
@@ -2801,25 +2659,13 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	METHOD(getEfficiencyTotal)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			+T_EFF_null
-		};
-		pr _return = +T_GETV("effTotal");
-		//__MUTEX_UNLOCK;
-		_return
+		+SAFE_ACCESSOR("effTotal", T_EFF_null)
 	ENDMETHOD;
 
 	METHOD(getCompositionClassNames)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
 			pr _comp = [];
 			{
 				pr _tempArray = [];
@@ -2828,22 +2674,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 			_comp
 		};
-		pr _return = +T_GETV("compositionClassNames");
-		//__MUTEX_UNLOCK;
-		_return
+		+T_GETV("compositionClassNames")
 	ENDMETHOD;
 
 	METHOD(getCompositionNumbers)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			[0] call comp_fnc_new;
-		};
-		pr _return = +T_GETV("compositionNumbers");
-		//__MUTEX_UNLOCK;
-		_return
+		+SAFE_ACCESSOR("compositionNumbers", [0] call comp_fnc_new)
 	ENDMETHOD;
 
 	// ---------------------------------------------------------------
@@ -2873,16 +2709,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getAI)
 		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			NULL_OBJECT
-		};
-		private _AI = T_GETV("AI");
-		//__MUTEX_UNLOCK;
-		_AI
+		SAFE_ACCESSOR("AI", NULL_OBJECT)
 	ENDMETHOD;
 
 
@@ -3289,8 +3116,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	METHOD(countUnits)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		// findUnits will do asserts and locks for us
-		pr _units = T_CALLM1("findUnits", _query);
-		count _units
+		count T_CALLM1("findUnits", _query)
 	ENDMETHOD;
 
 	/*
@@ -3312,7 +3138,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(countConsciousInfantryUnits)
 		params [P_THISOBJECT];
-		{CALLM0(_x, "isConscious")} count T_CALLM0("getInfantryUnits")
+		{ CALLM0(_x, "isConscious") } count T_CALLM0("getInfantryUnits")
 	ENDMETHOD;
 	
 	/*
@@ -3367,7 +3193,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(copyIntelFrom)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
-
 		pr _AI = T_GETV("AI");
 		pr _otherAI = GETV(_gar, "AI");
 		CALLM1(_AI, "copyIntelFrom", _otherAI);
@@ -3398,10 +3223,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	// Update spawn state of the garrison
 	METHOD_FILE(updateSpawnState, "Garrison\updateSpawnState.sqf");
-	
-	// Static helpers
 
-	
+	// Debug functions
+
 	METHOD(createAddInfGroup)
 		params [P_THISOBJECT, "_side", "_subcatID", ["_type", GROUP_TYPE_INF]];
 		// Create an empty group
@@ -3424,6 +3248,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_CALLM("addGroup", [_newGroup]);
 		_newGroup
 	ENDMETHOD;
+	
+	// Static helpers
 
 	// Updates spawn state of garrisons close to the provided position
 	// Public, thread-safe
@@ -3665,15 +3491,20 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
+		// Update version
+		if(GETV(_storage, "version") < 18) then {
+			T_SETV("type", GARRISON_TYPE_GENERAL);
+		};
+
 		// Restore variables which were not saved
 
 		// Load all our units
 		// We don't care that groups will try to restore them as well
 		// Storage class will not load same object twice anyway
-		private _savedUnits = if(GETV(_storage, "version") >= 11) then {
-			T_GETV("savedUnits")
-		} else {
+		private _savedUnits = if(GETV(_storage, "version") < 11) then {
 			T_GETV("units")
+		} else {
+			T_GETV("savedUnits")
 		};
 
 		{
@@ -3714,12 +3545,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		CALLM1(_storage, "load", _AI);
 		if(T_GETV("active")) then {
 			// Start AI object
-			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
-		};
-
-
-		// Register at garrison server if active
-		if (T_GETV("active")) then {
+			CALLM(_AI, "start", ["AIGarrisonDespawned"]);
+			// Register at garrison server if active
 			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 		};
 

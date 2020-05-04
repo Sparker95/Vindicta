@@ -622,12 +622,6 @@ CLASS("WorldModel", "Storable")
 		//T_SETV("reinforceRequiredScoreCache", _cache);
 	ENDMETHOD;
 	
-	// METHOD(clearScoringCacheForGarrison)
-	// 	params [P_THISOBJECT, P_STRING("_garrison")];
-	// 	T_PRVAR("garrisonsReinf")
-	// 	T_SETV("reinforceRequiredScoreCache", []);
-	// ENDMETHOD;
-
 	METHOD(getGlobalEff)
 		params [P_THISOBJECT];
 		private _cachedGlobalEff = T_GETV("cachedGlobalEff");

@@ -20,6 +20,8 @@
 #include "..\MutexRecursive\MutexRecursive.hpp"
 #include "..\AI\Commander\LocationData.hpp"
 
+#include "Garrison.hpp"
+
 // Mutex used in this file
 #ifndef _SQF_VM
 #define __MUTEX_LOCK	private __mutex = T_GETV("mutex"); MUTEX_RECURSIVE_LOCK(__mutex)

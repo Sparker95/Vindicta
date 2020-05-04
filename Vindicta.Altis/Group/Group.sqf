@@ -24,7 +24,7 @@ Author: Sparker
 #define pr private
 
 #define OOP_CLASS_NAME Group
-CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
+CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	//Variables
 	VARIABLE_ATTR("data", [ATTR_SAVE]);
@@ -351,10 +351,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getUnits)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		private _return = +_unitList;
-		_return
+		+(T_GETV("data") select GROUP_DATA_ID_UNITS);
 	ENDMETHOD;
 
 	// |                         G E T  I N F A N T R Y  U N I T S
@@ -366,9 +363,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getInfantryUnits)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList select { CALLM0(_x, "isInfantry") }
+		(T_GETV("data") select GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isInfantry") }
 	ENDMETHOD;
 
 	// |                         G E T   V E H I C L E   U N I T S
@@ -380,9 +375,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getVehicleUnits)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList select { CALLM0(_x, "isVehicle") }
+		(T_GETV("data") select GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isVehicle") }
 	ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
@@ -394,9 +387,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getDroneUnits)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList select {CALLM0(_x, "isDrone")}
+		(T_GETV("data") select GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isDrone") }
 	ENDMETHOD;
 
 
@@ -409,8 +400,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getType)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		_data select GROUP_DATA_ID_TYPE
+		T_GETV("data") select GROUP_DATA_ID_TYPE
 	ENDMETHOD;
 
 	// |                         G E T   S I D E                            |
@@ -422,8 +412,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getSide)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		_data select GROUP_DATA_ID_SIDE
+		T_GETV("data") select GROUP_DATA_ID_SIDE
 	ENDMETHOD;
 
 
@@ -436,8 +425,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getGroupHandle)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		_data select GROUP_DATA_ID_GROUP_HANDLE
+		T_GETV("data") select GROUP_DATA_ID_GROUP_HANDLE
 	ENDMETHOD;
 
 	// |                  S E T / G E T   L E A D E R
@@ -597,8 +585,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getGarrison)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		_data select GROUP_DATA_ID_GARRISON
+		T_GETV("data") select GROUP_DATA_ID_GARRISON
 	ENDMETHOD;
 
 
@@ -611,9 +598,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(isSpawned)
 		params [P_THISOBJECT];
-
-		pr _data = T_GETV("data");
-		_data select GROUP_DATA_ID_SPAWNED
+		T_GETV("data") select GROUP_DATA_ID_SPAWNED
 	ENDMETHOD;
 	
 	// 								I S   E M P T Y 
@@ -625,9 +610,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(isEmpty)
 		params [P_THISOBJECT];
-
-		pr _data = T_GETV("data");
-		count (_data select GROUP_DATA_ID_UNITS) == 0
+		count (T_GETV("data") select GROUP_DATA_ID_UNITS) == 0
 	ENDMETHOD;
 
 
@@ -653,7 +636,6 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 		T_CALLM1("removeUnit", _unit);
 	ENDMETHOD;
 
-
 	// |              H A N D L E   U N I T   D E S P A W N E D             |
 	/*
 	Method: handleUnitDespawned
@@ -664,8 +646,6 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	METHOD(handleUnitDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit") ];
 	ENDMETHOD;
-
-
 
 	// |                 H A N D L E   U N I T   S P A W N E D              |
 	/*
@@ -678,16 +658,9 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 		params [P_THISOBJECT, "_unit"];
 	ENDMETHOD;
 
-
-
-
-
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                          S P A W N I N G   A N D   D E S P A W N I N G
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
 
 	// |                           C R E A T E   A I
 	/*
@@ -971,7 +944,6 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-
 	METHOD(sort)
 		params [P_THISOBJECT, P_ARRAY("_unitsSorted")];
 
@@ -1014,14 +986,9 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 		T_CALLM1("setLeader", _newLeader);
 	ENDMETHOD;
 
-
-
-
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                         G O A P
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 
 	// |                           G E T   A I
 	/*
@@ -1032,9 +999,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	*/
 	METHOD(getAI)
 		params [P_THISOBJECT];
-
-		pr _data = T_GETV("data");
-		_data select GROUP_DATA_ID_AI
+		T_GETV("data") select GROUP_DATA_ID_AI
 	ENDMETHOD;
 
 	//                          G E T   S U B A G E N T S
@@ -1048,14 +1013,9 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 	Returns: array of units.
 	*/
 	METHOD(getSubagents)
-		//params [P_THISOBJECT];
-
-		// Get all units
-		private _data = T_GETV("data");
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
-
-		// Return all units since vehicles have an AI object too :p
-		_unitList
+		params [P_THISOBJECT];
+		// All units can have AI
+		T_GETV("data") select GROUP_DATA_ID_UNITS;
 	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1074,8 +1034,6 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 
 		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
-		//pr _mutex = _data select GROUP_DATA_ID_MUTEX;
-		//MUTEX_LOCK(_mutex);
 
 		// Store data on all units in this group
 		pr _unitsSerialized = [];
@@ -1086,12 +1044,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 		} forEach _units;
 
 		// Store data about this group
-		// ??
-
-		pr _return = [_unitsSerialized, _data];
-
-		//MUTEX_UNLOCK(_mutex);
-		_return
+		[_unitsSerialized, _data];
 	ENDMETHOD;
 
 	/*
@@ -1212,7 +1165,7 @@ CLASS("Group", ["MessageReceiverEx", "GOAP_Agent"]);
 			NEW("Unit", _args);
 		} forEach _groupData;
 
-		(count _groupData)
+		count _groupData
 	ENDMETHOD;
 
 	/*

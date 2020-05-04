@@ -169,7 +169,8 @@ CLASS("GameManager", "MessageReceiverEx")
 					pr _newHeader = CALLM2(_storage, "load", _headerRef, true); // Create a new object
 					_allRecordNamesAndHeaders pushBack [_recordName, _newHeader];
 				} else {
-					OOP_ERROR_1("Save game header not found for %1", _recordName);
+					OOP_ERROR_1("Save game header not found for %1, removing invalid record", _recordName);
+					CALLM1(_storage, "eraseRecord", _recordName);
 				};
 			} else {
 				OOP_ERROR_1("Can't open record %1", _recordName);
