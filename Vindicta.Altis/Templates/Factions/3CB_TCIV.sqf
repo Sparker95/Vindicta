@@ -8,7 +8,15 @@ _array set [T_NAME, "t3CB_TCIV"];
 _array set [T_DESCRIPTION, "Takistani civilians from 3CB."];
 _array set [T_DISPLAY_NAME, "3CB TKA Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
-_array set [T_REQUIRED_ADDONS, []];
+_array set [T_REQUIRED_ADDONS, [
+	"rhs_c_troops",		// RHSAFRF
+	"rhsusf_c_troops",	// RHSUSAF
+	"rhsgref_c_troops",	// RHSGREF
+	"uk3cb_factions_TKA", // 3CB Factions
+	"ace_compat_rhs_afrf3", // ACE Compat - RHS Armed Forces of the Russian Federation
+	"ace_compat_rhs_gref3", // ACE Compat - RHS: GREF
+	"ace_compat_rhs_usf3" // ACE Compat - RHS United States Armed Forces
+]];
 
 _civHeadgear = 	[
 	"UK3CB_TKC_H_Turban_01_1",
