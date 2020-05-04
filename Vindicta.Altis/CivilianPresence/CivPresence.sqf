@@ -34,10 +34,15 @@ CLASS("CivPresence", "")
 	// Periodic processing of this object is active
 	VARIABLE("processingEnabled");
 
-	METHOD(new)
-		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy")];
+	// Array of building positions
+	VARIABLE("buildingPosAGL");
+	VARIABLE("waypointsAGL");
 
-		pr _area = [_pos, _halfWidthx, _halfWidthy, 0, false];
+	// 
+	/* private */ METHOD(new)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy"), P_ARRAY("_buildingPositions"), P_ARRAY("_waypoints")];
+
+		pr _area = [_pos, _halfWidthx, _halfWidthy, 0, true]; // pos, a, b, angle, rectangle
 		T_SETV("area", _area);
 		T_SETV("pos", _pos);
 
@@ -51,7 +56,20 @@ CLASS("CivPresence", "")
 		_mrk setMarkerColorLocal "ColorBlue";
 		_mrk setMarkerAlphaLocal 0.2;
 		T_SETV("debugMarker", _mrk);
+		{
+			private _markerName = createMarker [format["%1_wypnt_%2_%3", _thisObject, round (_x#0), round (_x#1)], _x];
+			_markerName setMarkerShape "ICON";
+			_markerName setMarkerType "hd_dot";
+			_markerName setMarkerColor "ColorBlue";
+		} forEach _waypoints;
+		{
+			private _markerName = createMarker [format["%1_bpos_%2_%3_%4", _thisObject, round (_x#0), round (_x#1), round(_x#2)], _x];
+			_markerName setMarkerShape "ICON";
+			_markerName setMarkerType "hd_dot";
+			_markerName setMarkerColor "ColorRed";
+		} forEach _buildingPositions;
 		#endif
+
 
 		T_SETV("capacity", 10);
 		T_SETV("enabled", false);
@@ -59,16 +77,101 @@ CLASS("CivPresence", "")
 		T_SETV("targetAmount", 0);
 		T_SETV("currentAmount", 0);
 		T_SETV("processingEnabled", false);
+		T_SETV("buildingPosAGL", _buildingPositions);
+		T_SETV("waypointsAGL", _waypoints);
 
+	ENDMETHOD;
+
+	METHOD(delete)
+		params [P_THISOBJECT];
+
+		
+		#ifdef DEBUG_CIV_PRESENCE
+		pr _mrkName = T_GETV("debugMarker");
+		deleteMarkerLocal _mrkName;
+		#endif
+	ENDMETHOD;
+
+	// Creates an object here, returns object or nULL_OBJECT if it cant't be created here
+	METHOD(tryCreateInstance)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy")];
+
+		OOP_INFO_1("tryCreateInstance: %1", _this);
+
+		//loop through the border
+		private _waypoints = [];	//road segments and spawnpoints
+		private _buildingPositions = [];	//locations in buildings
+
+		// in meters, average distance between spawn/way points
+		private _area = [_pos, _halfWidthx, _halfWidthy, 0, true]; // pos, a, b, angle, rectangle
+		_area params ["_pos", "_a", "_b"];
+		private _res = 20; // (_a max _b) / 2; // Resolution of the scan
+		private _nCellsXHalf = ceil(_a/_res); // Amount of cells - one dimension
+		private _nCellsYHalf = ceil(_b/_res);
+
+		private _maxSize = sqrt (_a^2 + _b^2);
+
+		// Traverse a grid covering the entire area specified
+		for "_idx" from -_nCellsXHalf to _nCellsXHalf do {
+			for "_idy" from -_nCellsYHalf to _nCellsYHalf do{
+				//calculate position reletive to whole map
+				private _posSubarea = [_idx*_res + (_pos#0), _idy*_res + (_pos#1), 0];
+
+				//skipping the ones out side the area
+				if(_posSubarea inArea _area) then {
+
+					//paint markers for debugging
+					/*
+					#ifdef DEBUG_CIV_PRESENCE
+					private _markerName = createMarker [format["%1_subarea_%2_%3", _thisObject, _idx, _idy], _posSubarea];
+					_markerName setMarkerShape "ICON";
+					_markerName setMarkerType "hd_dot";
+					_markerName setMarkerColor "ColorBlack";
+					_markerName setMarkerText (format ["(%1, %2)", _idx, _idy]); 
+					#endif
+					*/
+
+					private _building = nearestObject [_posSubarea, "House"]; // (nearestBuilding doesn't return objects placed in editor)
+					private _buildingPositionsThisHouse = (_building buildingPos -1);
+					if ((_building distance2D _posSubarea < _res/2) && {count _buildingPositionsThisHouse > 0}) then {
+						//_buildingPositionsThisHouse = (_buildingPositionsThisHouse call BIS_fnc_arrayShuffle);
+						_buildingPositions append _buildingPositionsThisHouse;
+					};
+					
+					private _nearRoad = selectRandom ((_posSubarea nearRoads _res/2) apply { [_x, roadsConnectedTo _x] } select { count (_x#1) > 0 });
+					if(!isnil "_nearRoad") then {
+						_nearRoad params ["_road", "_rct"];
+						private _dir = _road getDir _rct#0;
+						// Check position if it's safe
+						private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
+						// Move to the edge
+						private _pos = [getPos _road, _width - 4, _dir + (selectRandom [90, 270]) ] call BIS_Fnc_relPos;
+						// Move up and down the street a bit
+						_pos = [_pos, _width * 0.5, _dir + (selectRandom [0, 180]) ] call BIS_Fnc_relPos;
+
+						_waypoints pushBack _pos;
+					};
+				};
+			};//for loop _y
+		};
+
+		OOP_INFO_2("  building positions: %1, waypoints: %2", count _buildingPositions, count _waypoints);
+
+		// Does it make sense to create it here?
+		pr _success = ((count _buildingPositions) > 0) && ((count _waypoints) > 0);
+		pr _instance = NULL_OBJECT;
+		if (_success) then {
+			pr _args = [_pos, _halfWidthX, _halfWidthY, _buildingPositions, _waypoints];
+			_instance = NEW("CivPresence", _args);
+		};
+
+		_instance
 	ENDMETHOD;
 
 	METHOD(enable)
 		params [P_THISOBJECT, P_BOOL("_enabled")];
 
 		OOP_INFO_1("enable: %1", _enabled);
-
-		T_SETV("enabled", _enabled);
-		T_CALLM0("_updateTargetAmount");
 
 		#ifdef DEBUG_CIV_PRESENCE
 		pr _mrk = T_GETV("debugMarker");
@@ -78,17 +181,20 @@ CLASS("CivPresence", "")
 			_mrk setMarkerAlphaLocal 0.2;
 		};
 		#endif
+
+		T_SETV("enabled", _enabled);
+		T_CALLM0("_updateTargetAmount");
 	ENDMETHOD;
 
 	METHOD(setCapacity)
-		params [P_THISOBJECT, P_NUBMER("_value")];
+		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		T_SETV("capacity", _value);
 		//T_CALLM0("_updateTargetAmount");
 	ENDMETHOD;
 
 	METHOD(setCapacityMultiplier)
-		params [P_THISOBJECT, P_NUBMER("_value")];
+		params [P_THISOBJECT, P_NUMBER("_value")];
 		T_SETV("capacityMult", _value);
 		//T_CALLM0("_updateTargetAmount");
 	ENDMETHOD;
@@ -133,7 +239,7 @@ CLASS("CivPresence", "")
 
 		pr _currentAmount = T_GETV("currentAmount");
 		pr _targetAmount = T_GETV("targetAmount");
-
+ 
 		if (_targetAmount == _currentAmount) then {
 			if (_targetAmount == 0) then {
 				// If we don't need any more civilians, disable processing of this
@@ -143,17 +249,11 @@ CLASS("CivPresence", "")
 			if (_targetAmount > _currentAmount) then {
 				// Try to create one civilian
 				pr _created = T_CALLM0("tryCreateCivilian");
-				if (_created) then {
-					_currentAmount = _currentAmount + 1;
-					T_SETV("currentAmount", _currentAmount);
-				};
 			} else {
 				// Try to remove one civilian
 				pr _removed = T_CALLM0("tryDeleteCivilian");
 				if (_removed) then {
-					_currentAmount = _currentAmount - 1;
-					T_SETV("currentAmount", _currentAmount);
-					if (_currentAmount == 0 && _targetAmount == 0) then {
+					if (T_GETV("currentAmount") == 0 && _targetAmount == 0) then {
 						T_CALLM0("_removeFromProcessCategory");
 					};
 				};
@@ -161,82 +261,14 @@ CLASS("CivPresence", "")
 		};
 	ENDMETHOD;
 
-	METHOD(init)
+	METHOD(createCivilian)
 		params [P_THISOBJECT];
-/*
-		//loop through the border
-		private _waypoints = [];//road segments and spawnpoints
-		private _spawnPoints = [];//locations in buildings
 
-		// in meters, average distance between spawn/way points
-		private _res = (_a max _b) / 4;
+	ENDMETHOD;
 
-		private _maxSize = sqrt (_a^2 + _b^2);
+	METHOD(deleteCivilian)
+		params [P_THISOBJECT];
 
-		// Traverse a grid covering the entire area specified
-		for "_xp" from -_maxSize to _maxSize step _res do{
-			for "_yp" from -_maxSize to _maxSize step _res do{
-				//calculate position reletive to whole map
-				private _p = [_xp + _pos0#0, _yp + _pos0#1];
-
-				//skipping the ones out side the area
-				if(_p inArea _border) then {
-					//paint markers for debugging
-					#ifdef DEBUG_CIVILIAN_PRESENCE
-					private _markerName = createMarker [format["%1",random 99999], _p];
-					_markerName setMarkerShape "ICON";
-					_markerName setMarkerType "hd_dot";
-					_markerName setMarkerColor "ColorBlack";
-					#endif
-
-					private _building = nearestObject [_p, "House"]; // (nearestBuilding doesn't return objects placed in editor)
-					private _positions = (_building buildingPos -1);
-					if ((_building distance2D _p < _res/2) && {count _positions > 0}) then {
-						_positions = (_positions call BIS_fnc_arrayShuffle);
-						private _waypoint = [true] call CBA_fnc_createNamespace;
-						_waypoint setpos (_positions#0);
-						_waypoint setVariable ["#type",1];//waypoint & cover
-						_waypoint setVariable ["#positions",_positions];
-						_waypoints pushback _waypoint;
-						_spawnPoints pushback _waypoint;
-						#ifdef DEBUG_CIVILIAN_PRESENCE
-						{
-							private _markerName = createMarker [format["%1",random 99999], _x];
-							_markerName setMarkerShape "ICON";
-							_markerName setMarkerType "hd_dot";
-							_markerName setMarkerColor "ColorRed";
-						}forEach _positions;
-						#endif
-					};
-					private _nearRoad = selectRandom ((_p nearRoads _res/2) apply { [_x, roadsConnectedTo _x] } select { count (_x#1) > 0 });
-					if(!isnil "_nearRoad") then {
-						_nearRoad params ["_road", "_rct"];
-						private _dir = _road getDir _rct#0;
-						// Check position if it's safe
-						private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
-						// Move to the edge
-						private _pos = [getPos _road, _width - 4, _dir + (selectRandom [90, 270]) ] call BIS_Fnc_relPos;
-						// Move up and down the street a bit
-						_pos = [_pos, _width * 0.5, _dir + (selectRandom [0, 180]) ] call BIS_Fnc_relPos;
-
-						private _waypoint = [true] call CBA_fnc_createNamespace;
-						_waypoint setpos _pos;
-						_waypoint setVariable ["#type",2];//waypoint
-						_waypoint setVariable ["#positions",[_pos]];
-						_waypoints pushback _waypoint;
-						
-						#ifdef DEBUG_CIVILIAN_PRESENCE	
-						private _markerName = createMarker [format["%1",random 99999], _pos];
-						_markerName setMarkerShape "ICON";
-						_markerName setMarkerType "hd_dot";
-						_markerName setMarkerColor "ColorBlue";
-						#endif
-					};
-					//};//end if _useBuilding
-				};
-			};//for loop _y
-		};
-*/
 	ENDMETHOD;
 
 	METHOD(getNearestSafeSpot)

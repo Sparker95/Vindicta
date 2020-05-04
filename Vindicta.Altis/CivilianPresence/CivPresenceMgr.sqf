@@ -132,10 +132,14 @@ CLASS("CivPresenceMgr", "")
 						_cellSize/2
 					];
 
-					pr _cp = NEW("CivPresence", _args);
-					_columnArray set [_ly, _cp];
-
-					OOP_INFO_2("  created object at: [%1, %2]", _lx, _ly);
+					pr _cp = CALLSM("CivPresence", "tryCreateInstance", _args);
+					if (!IS_NULL_OBJECT(_cp)) then {
+						_columnArray set [_ly, _cp];	// Register it in grid
+						OOP_INFO_2("  created object at: [%1, %2]", _lx, _ly);
+					} else {
+						_columnArray set [_ly, NULL_OBJECT];
+						OOP_INFO_2("  failed to create object at: [%1, %2]", _lx, _ly);
+					};					
 				} else {
 					_columnArray set [_ly, NULL_OBJECT];
 				};
