@@ -5,13 +5,9 @@ Some generic macros
 // Wraps contents in quotes
 #define QUOTE(smth) #smth
 
-//Macro for global OOP variables
+// Macro for global OOP variables
 #define OOP_GVAR(var) o_##var
 #define OOP_GVAR_STR(var) format["o_%1", #var]
-
-// Unpacking a _thisObject variable into a private _variable
-// So if we have private _var = GET_VAR(_thisObject, "var"), this macros can help
-#define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, QUOTE(varName))
 
 // ---------------------------------------------------
 // |         T H R E A D I N G    U T I L S          |
@@ -26,6 +22,7 @@ Some generic macros
 #define P_THISOBJECT ["_thisObject", ""]
 #define P_THISCLASS ["_thisClass", ""]
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
+#define P_STRING_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [""]]
 #define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_GROUP(paramNameStr) [paramNameStr, grpNull, [grpNull]]
@@ -35,10 +32,14 @@ Some generic macros
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+#define P_ARRAY_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [[]]]
 #define P_COLOR(paramNameStr) [paramNameStr, [1,1,1,1]]
 #define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
 #define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
+#define P_DYNAMIC_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal]
+#define P_CONTROL(paramNameStr) [paramNameStr, controlNull, [controlNull]]
+#define P_DISPLAY(paramNameStr) [paramNameStr, displayNull, [displayNull]]
 
 #define P_OOP_OBJECT(paramNameStr) P_STRING(paramNameStr)
 

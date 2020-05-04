@@ -27,6 +27,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
 	#endif
+	FIX_LINE_NUMBERS()
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
@@ -44,6 +45,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		T_SETV("mounted", false);
 		//T_SETV("worldState", _ws);
@@ -60,6 +62,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_disableDebugMarkers");
 		#endif
+		FIX_LINE_NUMBERS()
 
 		T_CALLM0("removeFromProcessCategory");
 	ENDMETHOD;
@@ -201,12 +204,14 @@ CLASS("AIUnitHuman", "AI_GOAP")
 			pr _unused = "";
 		};	
 		#endif
+		FIX_LINE_NUMBERS()
 
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
 		#endif
+		FIX_LINE_NUMBERS()
 	ENDMETHOD;
 	FIX_LINE_NUMBERS()
 

@@ -7,7 +7,7 @@ Method: addSpawnPos
 Adds a spawn position to to the spawn types array.
 
 Parameters: _typesArray, _groupTypes, _pos, _dir, _building
-_unitTypes - array with 
+_unitTypes - array with unit types
 _groupTypes - array with group types
 _pos - position
 _dir - direction

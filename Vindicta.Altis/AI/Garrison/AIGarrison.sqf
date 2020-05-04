@@ -1,5 +1,3 @@
-//#define OOP_PROFILE
-//#define OOP_PROFILE_MIN_T 0.01
 #include "common.hpp"
 
 /*
@@ -45,7 +43,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Radio key, string, used for player to intercept intel
 	/* save */	VARIABLE_ATTR("radioKey", [ATTR_SAVE]);
 
-	VARIABLE("alertness");
+	/* private float */ VARIABLE("alertness");
 
 	VARIABLE("wasSpawned");
 
@@ -732,33 +730,79 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// It should return the goals this garrison might be willing to achieve
 	METHOD(getPossibleGoals)
-		["GoalGarrisonRelax",
-		"GoalGarrisonRepairAllVehicles",
-		"GoalGarrisonDefendActive",
-		"GoalGarrisonDefendPassive",
-		"GoalGarrisonRebalanceVehicleGroups",
-		"GoalGarrisonAttackAssignedTargets"]
+		params [P_THISOBJECT];
+		switch GETV(T_GETV("agent"), "type") do {
+			case GARRISON_TYPE_GENERAL: {
+				["GoalGarrisonRelax",
+				"GoalGarrisonRepairAllVehicles",
+				"GoalGarrisonDefendActive",
+				"GoalGarrisonDefendPassive",
+				"GoalGarrisonRebalanceVehicleGroups",
+				"GoalGarrisonAttackAssignedTargets"]
+			};
+			case GARRISON_TYPE_AIR: {
+				["GoalGarrisonRelax",
+				"GoalGarrisonRepairAllVehicles",
+				"GoalGarrisonDefendActive",
+				"GoalGarrisonDefendPassive",
+				"GoalGarrisonRebalanceVehicleGroups",
+				"GoalGarrisonAttackAssignedTargets",
+				"GoalAirTransport",
+				"GoalAirSupport"]
+			};
+			case GARRISON_TYPE_PLAYER: {
+				[]
+			};
+		}
 	ENDMETHOD;
 
 	METHOD(getPossibleActions)
-		["ActionGarrisonDefendActive",
-		//"ActionGarrisonLoadCargo",
-		"ActionGarrisonMountCrew",
-		"ActionGarrisonMountInfantry",
-		"ActionGarrisonMoveDismounted",
-		//"ActionGarrisonMoveMountedToPosition",
-		//"ActionGarrisonMoveMountedToLocation",
-		"ActionGarrisonMoveCombined",
-		"ActionGarrisonMoveMounted",
-		//"ActionGarrisonMoveMountedCargo",
-		"ActionGarrisonRelax",
-		"ActionGarrisonRepairAllVehicles",
-		//"ActionGarrisonUnloadCurrentCargo",
-		"ActionGarrisonMergeVehicleGroups",
-		"ActionGarrisonSplitVehicleGroups",
-		"ActionGarrisonRebalanceGroups",
-		"ActionGarrisonClearArea",
-		"ActionGarrisonJoinLocation"]
+		params [P_THISOBJECT];
+		switch GETV(T_GETV("agent"), "type") do {
+			case GARRISON_TYPE_GENERAL: {
+				["ActionGarrisonDefendActive",
+				//"ActionGarrisonLoadCargo",
+				"ActionGarrisonMountCrew",
+				"ActionGarrisonMountInfantry",
+				"ActionGarrisonMoveDismounted",
+				//"ActionGarrisonMoveMountedToPosition",
+				//"ActionGarrisonMoveMountedToLocation",
+				"ActionGarrisonMoveCombined",
+				"ActionGarrisonMoveMounted",
+				//"ActionGarrisonMoveMountedCargo",
+				"ActionGarrisonRelax",
+				"ActionGarrisonRepairAllVehicles",
+				//"ActionGarrisonUnloadCurrentCargo",
+				"ActionGarrisonMergeVehicleGroups",
+				"ActionGarrisonSplitVehicleGroups",
+				"ActionGarrisonRebalanceGroups",
+				"ActionGarrisonClearArea",
+				"ActionGarrisonJoinLocation"]
+			};
+			case GARRISON_TYPE_AIR: {
+				["ActionGarrisonDefendActive",
+				//"ActionGarrisonLoadCargo",
+				"ActionGarrisonMountCrew",
+				"ActionGarrisonMountInfantry",
+				"ActionGarrisonMoveDismounted",
+				//"ActionGarrisonMoveMountedToPosition",
+				//"ActionGarrisonMoveMountedToLocation",
+				"ActionGarrisonMoveCombined",
+				"ActionGarrisonMoveMounted",
+				//"ActionGarrisonMoveMountedCargo",
+				"ActionGarrisonRelax",
+				"ActionGarrisonRepairAllVehicles",
+				//"ActionGarrisonUnloadCurrentCargo",
+				"ActionGarrisonMergeVehicleGroups",
+				"ActionGarrisonSplitVehicleGroups",
+				"ActionGarrisonRebalanceGroups",
+				"ActionGarrisonClearArea",
+				"ActionGarrisonJoinLocation"]
+			};
+			case GARRISON_TYPE_PLAYER: {
+				[]
+			};
+		}
 	ENDMETHOD;
 
 	// Debug
