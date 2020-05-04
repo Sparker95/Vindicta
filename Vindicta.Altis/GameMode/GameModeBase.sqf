@@ -1195,6 +1195,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{ // forEach (entities "Vindicta_LocationSector");
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
+			_locSectorPos set [2, 0];	// Nullify Z coordinate
 
 
 			#ifdef PARTIAL_MAP_POPULATION
