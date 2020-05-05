@@ -231,16 +231,39 @@ CLASS("CivPresenceMgr", "")
 			};
 		} forEach _cellsDisable;
 
+		// Change global multiplier if needed
+		pr _commitAllActive = false;
+		if ((count _newActiveCells) != (count _currentActiveCells)) then {
+			
+			// Calculate multiplier based on amount of active cells
+			// https://www.desmos.com/calculator/tdfjjxrqli
+			pr _mult = 9 / ( (count _newActiveCells) + 8 );
+			CALLSM1("CivPresence", "setMultiplierSystem", _mult);
+
+			_commitAllActive = true;
+		};
+
 		// Enable civ presence objects
 		{
 			_x params ["_lx", "_ly"];
 			pr _cp = _gridArray#_lx#_ly;
 			if (!IS_NULL_OBJECT(_cp)) then {
 				CALLM1(_cp, "enable", true);
-				CALLM1(_cp, "setCapacityMultiplier", T_GETV("capacityMult"));
 				CALLM0(_cp, "commitSettings");
 			};
 		} forEach _cellsEnable;
+
+		if (_commitAllActive) then {
+			// Recommit values on all active cells
+			{
+				_x params ["_lx", "_ly"];
+				pr _cp = _gridArray#_lx#_ly;
+				if (!IS_NULL_OBJECT(_cp)) then {
+					CALLM0(_cp, "commitSettings");
+				};
+			} forEach (_newActiveCells - _cellsEnable);
+			// Don't commit enabled cells - we have already committed them previously
+		};
 
 		T_SETV("activeCells", _newActiveCells);
 

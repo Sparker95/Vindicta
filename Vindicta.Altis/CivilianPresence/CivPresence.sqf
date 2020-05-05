@@ -8,6 +8,12 @@ Some BI civilian presence code is used
 
 #define pr private
 
+// Variable which controls population density
+if (isNil "vin_CivPresence_multiplierUser") then {
+	vin_CivPresence_multiplierUser = 1;
+	vin_CivPresence_multiplierSystem = 1;
+};
+
 #define OOP_CLASS_NAME CivPresence
 CLASS("CivPresence", "")
 
@@ -18,10 +24,11 @@ CLASS("CivPresence", "")
 	// Center position
 	VARIABLE("pos");
 
+	// Amount of houses in this area, used for calculation of civ count
+	VARIABLE("nHouses");
+
 	// Counters and state
-	VARIABLE("capacity");
 	VARIABLE("enabled");
-	VARIABLE("capacityMult");	// Capacity multiplier
 
 	// Target amount of civilians this object will try to keep
 	// Based on values above (0 if disabled, mult*cap if enabled)
@@ -94,10 +101,11 @@ CLASS("CivPresence", "")
 
 		#endif
 
+		// Calculate amount of houses
+		pr _nHouses = {count (_x buildingPos -1) > 0} count (_pos nearObjects ["House", _radius]);
+		T_SETV("nHouses", _nHouses);
 
-		T_SETV("capacity", 10);
 		T_SETV("enabled", false);
-		T_SETV("capacityMult", 1.0);
 		T_SETV("targetAmount", 0);
 		T_SETV("currentAmount", 0);
 		T_SETV("processingEnabled", false);
@@ -148,6 +156,9 @@ CLASS("CivPresence", "")
 
 		OOP_INFO_1("tryCreateInstance: %1", _this);
 
+		pr _pos = +_pos;
+		_pos set [2, 0]; // Snap to ground
+
 		//loop through the border
 		private _waypoints = [];	//road segments and spawnpoints
 		private _buildingPositions = [];	//locations in buildings
@@ -159,7 +170,7 @@ CLASS("CivPresence", "")
 		private _nCellsXHalf = ceil(_a/_res); // Amount of cells - one dimension
 		private _nCellsYHalf = ceil(_b/_res);
 
-		private _maxSize = sqrt (_a^2 + _b^2);
+		private _radius = sqrt (_a^2 + _b^2);
 
 		// Traverse a grid covering the entire area specified
 		for "_idx" from -_nCellsXHalf to _nCellsXHalf do {
@@ -192,9 +203,8 @@ CLASS("CivPresence", "")
 					if(!isnil "_nearRoad") then {
 						_nearRoad params ["_road", "_rct"];
 						private _dir = _road getDir _rct#0;
-						// Check position if it's safe
-						private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
 						// Move to the edge
+						private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
 						private _pos = [getPos _road, _width - 4, _dir + (selectRandom [90, 270]) ] call BIS_Fnc_relPos;
 						// Move up and down the street a bit
 						_pos = [_pos, _width * 0.5, _dir + (selectRandom [0, 180]) ] call BIS_Fnc_relPos;
@@ -210,7 +220,8 @@ CLASS("CivPresence", "")
 		// Does it make sense to create it here?
 		pr _success = ((count _buildingPositions) > 0) && ((count _waypoints) > 1);
 		pr _instance = NULL_OBJECT;
-		if (_success) then {
+		if (_success) then {			
+
 			pr _args = [_pos, _halfWidthX, _halfWidthY, _buildingPositions, _waypoints];
 			_instance = NEW("CivPresence", _args);
 		};
@@ -231,6 +242,7 @@ CLASS("CivPresence", "")
 		#endif
 	ENDMETHOD;
 
+	/*
 	METHOD(setCapacity)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
@@ -241,7 +253,9 @@ CLASS("CivPresence", "")
 		T_CALLM0("_updateDebugMarkers");
 		#endif
 	ENDMETHOD;
+	*/
 
+	/*
 	METHOD(setCapacityMultiplier)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 		T_SETV("capacityMult", _value);
@@ -251,13 +265,29 @@ CLASS("CivPresence", "")
 		T_CALLM0("_updateDebugMarkers");
 		#endif
 	ENDMETHOD;
+	*/
+
+	STATIC_METHOD(setMultiplierUser)
+		params [P_THISCLASS, P_NUMBER("_value")];
+		vin_CivPresence_multiplierUser = _value;
+	ENDMETHOD
+
+	STATIC_METHOD(setMultiplierSystem)
+		params [P_THISCLASS, P_NUMBER("_value")];
+		vin_CivPresence_multiplierSystem = _value;
+	ENDMETHOD
 
 	// updates target amount of civilians - based on different rules
 	/* private */ METHOD(commitSettings)
+
 		params [P_THISOBJECT];
 		pr _val = 0;
 		if (T_GETV("enabled")) then {
-			_val = round (T_GETV("capacity") * T_GETV("capacityMult"));
+			pr _area = T_GETV("area");
+			pr _area_m2 = 4*(_area#1)*(_area#2);
+			pr _capHouses = N_CIVS_PER_HOUSE*T_GETV("nHouses");
+			pr _capArea = MAX_DENSITY*_area_m2;
+			pr _val =  ceil ( vin_CivPresence_multiplierUser*vin_CivPresence_multiplierSystem* (_capHouses min _capArea) );
 		};
 		T_SETV("targetAmount", _val);
 
