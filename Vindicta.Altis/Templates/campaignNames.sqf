@@ -1,11 +1,4 @@
 [
-	"Firestone", 
-	"The Homies Holidays", 
-	"Boxer Rebellion",
-	"The Wineyard Uprising",
-	"Enduring Freedom",
-	"Fenian Rising",
-	"Changing of the Guard",
 	format ["Revolution of %1", worldName],
 	format ["Revolt of %1", worldName],
 	format ["The %1 conflict", worldName],
