@@ -32,6 +32,7 @@
 ["Templates\Factions\RHS_BWMOD_BW_Trop.sqf", 			T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf",	T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf",		T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_CDF.sqf",						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 
 // Other factions
 ["Templates\Factions\CIVILIAN.sqf", 					T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
