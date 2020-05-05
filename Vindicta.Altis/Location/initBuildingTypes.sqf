@@ -271,7 +271,7 @@ location_bp_cargo_medium =
 	],
 	// CUP Chernarus
 	[
-		["Land_HouseV2_04_interier", "Land_HouseV2_04_interier_dam"]
+		["Land_HouseV2_04_interier", "Land_HouseV2_04_interier_dam"],
 		[[6.16649,329.451,0.34021,0],[5.45659,20.5788,0.327789,0]]
 	]
 ];

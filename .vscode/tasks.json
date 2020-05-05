@@ -50,7 +50,7 @@
 		        {
             "label": "EDIT CHERNARUS",
             "type": "process",
-            "command": "edit_chernarus.bat",
+            "command": "edit_cup_chernarus_A3.bat",
             "args": [],
             "options": {
                 "cwd": "${workspaceRoot}"

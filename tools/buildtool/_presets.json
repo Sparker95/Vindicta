@@ -65,10 +65,10 @@
         ]
     },
 	{
-        "sourceFolder": "Vindicta.chernarus",
+        "sourceFolder": "Vindicta.cup_chernarus_A3",
         "missionName": "Vindicta",
         "missionNameBase": "Vindicta",
-        "map": "chernarus",
+        "map": "cup_chernarus_A3",
         "configFiles": [
             "configs/release/global_config.hpp",
             "configs/majorVersion.hpp",
