@@ -9,7 +9,7 @@ Author: Sparker 12.11.2018
 */
 
 #define OOP_CLASS_NAME AIUnitCivilian
-CLASS("AIUnitCivilian", "AI_GOAP")
+CLASS("AIUnitCivilian", "AIUnitHuman")
 
 	// This guy feels in danger
 	VARIABLE("danger");

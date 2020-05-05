@@ -5,6 +5,7 @@
 #define OFSTREAM_FILE "civpresence.rpt"
 #include "..\common.h"
 
+// Enabled debug markers
 #define DEBUG_CIV_PRESENCE
 
 // Civilians per m^2 max

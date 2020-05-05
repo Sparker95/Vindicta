@@ -85,6 +85,7 @@ CLASS("CivPresence", "")
 		_mrk setMarkerText "idle";
 		T_SETV("debugMarkerText", _mrk);
 
+		/*
 		{
 			private _markerName = createMarker [format["%1_wypnt_%2_%3", _thisObject, round (_x#0), round (_x#1)], _x];
 			_markerName setMarkerShape "ICON";
@@ -98,7 +99,8 @@ CLASS("CivPresence", "")
 			_markerName setMarkerType "hd_dot";
 			_markerName setMarkerColor "ColorRed";
 		} forEach _buildingPositions;
-
+		*/
+		
 		#endif
 
 		// Calculate amount of houses
@@ -141,7 +143,7 @@ CLASS("CivPresence", "")
 		pr _currentAmount = T_GETV("currentAmount");
 		pr _targetAmount = T_GETV("targetAmount");
 		if (_targetAmount == 0 && _currentAmount == 0) then {
-			_mrkText setMarkerTextLocal "";
+			_mrkText setMarkerTextLocal "0";
 		} else {
 			_mrkText setMarkerTextLocal (format ["%1 / %2", _currentAmount, _targetAmount]);
 		};
@@ -279,15 +281,19 @@ CLASS("CivPresence", "")
 
 	// updates target amount of civilians - based on different rules
 	/* private */ METHOD(commitSettings)
-
 		params [P_THISOBJECT];
+
+		OOP_INFO_0("commitSettings");
+
 		pr _val = 0;
 		if (T_GETV("enabled")) then {
 			pr _area = T_GETV("area");
 			pr _area_m2 = 4*(_area#1)*(_area#2);
 			pr _capHouses = N_CIVS_PER_HOUSE*T_GETV("nHouses");
 			pr _capArea = MAX_DENSITY*_area_m2;
-			pr _val =  ceil ( vin_CivPresence_multiplierUser*vin_CivPresence_multiplierSystem* (_capHouses min _capArea) );
+			_val =  ceil ( vin_CivPresence_multiplierUser*vin_CivPresence_multiplierSystem* (_capHouses min _capArea) );
+
+			OOP_INFO_5(" area: %1, area m^2: %2, capHouses: %3, capArea: %4, targetAmount: %5", _area, _area_m2, _capHouses, _capArea, _val);
 		};
 		T_SETV("targetAmount", _val);
 
@@ -357,8 +363,8 @@ CLASS("CivPresence", "")
 	METHOD(_createAmbientCivilian)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_STRING("_className")];
 
-		createAgent [_className, _pos, [], 0, "CAN_COLLIDE"];
-		_ho setVariable ["vin_isagent", true];
+		pr _hO = createAgent [_className, _pos, [], 0, "CAN_COLLIDE"];
+		_hO setVariable ["vin_isAgent", true];
 		pr _oop_civ = NEW("Civilian", [_hO]);	// Create OOP object associated with it
 		
 		_oop_civ // Return

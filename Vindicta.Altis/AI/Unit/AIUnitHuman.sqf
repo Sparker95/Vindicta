@@ -32,7 +32,8 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 
 		// Make sure arguments are of proper classes
-		ASSERT_OBJECT_CLASS(_agent, "Unit");
+		// Can be Civilian or Unit
+		//ASSERT_OBJECT_CLASS(_agent, "Unit");
 
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);

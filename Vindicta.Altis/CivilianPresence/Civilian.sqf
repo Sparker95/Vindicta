@@ -1,4 +1,4 @@
-#include "..\common.h"
+#include "common.h"
 
 /*
 OOP class for one civilian.
@@ -15,17 +15,29 @@ CLASS("Civilian", "GOAP_Agent")
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_civObjectHandle")];
+
+		OOP_INFO_1("NEW: %1", _civObjectHandle);
+
+		if (isNull _civObjectHandle) then {
+			OOP_ERROR_0("Passed object handle is null!");
+		};
+
 		T_SETV("hO", _civObjectHandle);
 
 		// Create AI
 		pr _AI = NEW("AIUnitCivilian", [_thisObject]);
+		T_SETV("AI", _AI);
 	ENDMETHOD;
 
 	METHOD(delete)
 		params [P_THISOBJECT];
+
+		OOP_INFO_0("DELETE");
+
 		DELETE(T_GETV("AI"));
 
-		deleteVehicle T_GETV("hO");
+		pr _hO = T_GETV("hO");
+		deleteVehicle _hO;
 	ENDMETHOD;
 
 	/* override */ METHOD(getAI)
