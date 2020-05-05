@@ -93,7 +93,29 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 				"Camp Sparklight",
 				"Camp Redstone",
 				"Camp Blackstone",
-				"Camp Alpha"
+				"Camp Alpha",
+				"Camp Jupiter",
+				"Camp Neptune",
+				"Camp Pluto",
+				"Camp Mars",
+				"Camp Juno",
+				"Camp Ceres",
+				"Camp Saturn",
+				"Camp Mercury",
+				"Camp Apollo",
+				"Camp Sol",
+				"Camp Luna",
+				"Camp Vesta",
+				"Camp Zeus",
+				"Camp Poseidon",
+				"Camp Ares",
+				"Camp Athena",
+				"Camp Apollo",
+				"Camp Artemis",
+				"Camp Hermes",
+				"Camp Nemesis", // Goddess of Revenge
+				"Camp Dionysus", // God of Wine
+				"Camp Hades" // God of Underworld
 			];
 			_ctrl ctrlSetText _newLocName;
 
