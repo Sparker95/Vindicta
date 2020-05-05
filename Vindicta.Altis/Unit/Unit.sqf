@@ -384,7 +384,7 @@ CLASS("Unit", "Storable")
 						};
 						[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 						_objectHandle allowFleeing 0;
-						
+
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						//_objectHandle disableAI "PATH";
@@ -482,7 +482,7 @@ CLASS("Unit", "Storable")
 
 					case T_CARGO: {
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
-						
+
 						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
 						pr _special = "CAN_COLLIDE";
 						/*
@@ -497,6 +497,9 @@ CLASS("Unit", "Storable")
 							OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
 						};
+
+						// No damage for crates
+						_objectHandle allowDamage false;
 
 						// Disabling this as it can cause intersections as other vehicles aren't detected during createVehicle
 						// _objectHandle allowDamage false;
