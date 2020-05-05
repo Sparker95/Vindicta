@@ -268,6 +268,11 @@ location_bp_cargo_medium =
 	[
 		["Land_House_C_4_dam_EP1"],
 		[[2.45109,115.309,0.608643,0],[2.65302,92.5528,3.76466,0]]
+	],
+	// CUP Chernarus
+	[
+		["Land_HouseV2_04_interier", "Land_HouseV2_04_interier_dam"]
+		[[6.16649,329.451,0.34021,0],[5.45659,20.5788,0.327789,0]]
 	]
 ];
 
@@ -343,7 +348,10 @@ location_bt_police =
 	"Land_House_C_5_V3_dam_EP1",
 	"Land_A_Villa_EP1",
 	"Land_A_Office01_EP1",
-	"Land_House_C_4_dam_EP1"
+	"Land_House_C_4_dam_EP1",
+	// Chernarus
+	"Land_HouseV2_04_interier",
+	"Land_HouseV2_04_interier_dam"
 ];
 
 location_decorations_police =
