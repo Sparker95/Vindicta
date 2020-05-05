@@ -24,7 +24,9 @@ if (isNil "_bb") then {
 #endif
 
 	private _veh = _vehType createVehicleLocal [0, 0, 666]; //createSimpleObject [_vehType, [0, 0, 666]];
+#ifndef _SQF_VM
 	_bb = 0 boundingBoxReal _veh;
+#endif
 	deleteVehicle _veh;
 
 #ifdef USE_CACHE
