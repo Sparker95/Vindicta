@@ -535,10 +535,10 @@ CLASS("Unit", "Storable")
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						// Initialize limited arsenal
-						T_CALLM0("limitedArsenalOnSpawn");
-						
-						// I'll tell you what else: make it draggable so we can get it out of buildings!
-						[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
+						if(!T_CALLM0("limitedArsenalOnSpawn")) then {
+							// If it isn't an arsenal object then make it dragable. Arsenal can be moved using build UI only.
+							[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
+						};
 
 						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?			
 						// Give intel to this unit
@@ -2377,7 +2377,11 @@ CLASS("Unit", "Storable")
 
 			// Make the object movable again for the Build UI
 			CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
-		};
+
+			true
+		} else {
+			false
+		}
 	} ENDMETHOD;
 
 	METHOD("limitedArsenalOnDespawn") {
