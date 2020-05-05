@@ -370,6 +370,20 @@ location_bt_police =
 	// WW2 Staszo
 	"Land_WW2_Admin",
 	"Land_WW2_Admin2",
+	"Land_House_2B01_F",
+	"Land_House_2B02_F",
+	"Land_House_2B03_F",
+	"Land_House_1W11_F",
+	"Land_House_2W01_F",
+	"Land_House_2W02_F",
+	"Land_House_2W03_F",
+	"Land_House_2W04_F",
+	"Land_House_2W05_F",
+	"Land_House_1W05_F",
+	"Land_House_1W09_F",
+	"Land_House_1W06_F",
+	"Land_House_1W07_F",
+	"Land_House_1W08_F",
 	
 	// Beketov - CUP
 	"Land_HouseV2_02_Interier",
