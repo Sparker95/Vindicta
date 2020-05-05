@@ -249,25 +249,31 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Looks like we are able to build it
 		CALLM1(_gar, "removeBuildResources", _cost);
 
-		// Create a unit or just a plain object
-		pr _hO = createVehicle [_className, _pos, [], 0, "CAN_COLLIDE"];
-		//_hO setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
+		pr _hO = objNull;
+		CRITICAL_SECTION {
+			// Create a unit or just a plain object
+			_hO = createVehicle [_className, _pos, [], 0, "CAN_COLLIDE"];
+			//_hO setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
 
-		pr _groundPos = [_pos select 0, _pos select 1, 0];
-		pr _surfaceVectorUp = surfaceNormal _groundPos;
-		_hO setVectorDirAndUp [_vecDir, _surfaceVectorUp];
+			pr _groundPos = [_pos select 0, _pos select 1, 0];
+			pr _surfaceVectorUp = surfaceNormal _groundPos;
+			_hO setVectorDirAndUp [_vecDir, _surfaceVectorUp];
 
-		if (_catID != -1) then {
-			pr _args = [[], _catID, _subcatID, -1, "", _hO];
-			pr _unit = NEW("Unit", _args);
-			pr _isValid = CALLM0(_unit, "isValid");
-			if (_isValid) then {
-				CALLM1(_gar, "addUnit", _unit);
+			if (_catID != -1) then {
+				pr _args = [[], _catID, _subcatID, -1, "", _hO];
+				pr _unit = NEW("Unit", _args);
+				pr _isValid = CALLM0(_unit, "isValid");
+				if (_isValid) then {
+					CALLM1(_gar, "addUnit", _unit);
 
-				// If it's a cargo box, initialize the limited arsenal on it
-				if (_catID == T_CARGO) then {
-					CALLM1(_unit, "limitedArsenalEnable", true);
+					// If it's a cargo box, initialize the limited arsenal on it
+					if (_catID == T_CARGO) then {
+						CALLM1(_unit, "limitedArsenalEnable", true);
+					};
 				};
+				if(_catID == T_CARGO) then {
+					_hO allowDamage false;
+				}
 			};
 		};
 
