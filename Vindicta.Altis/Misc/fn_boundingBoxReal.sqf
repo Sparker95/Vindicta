@@ -9,18 +9,29 @@ _vehType - String, class name of the vehicle
 Author: Sparker 29.07.2018
 */
 
+#define USE_CACHE
+
 params [["_vehType", "", [""]]];
 
-// Check if we have it in cache. CreateVehicleLocal takes 5.6 ms
-private _cacheEntry = "bbcache_"+_vehType;
+#ifdef USE_CACHE
+private _bb = gBBoxCache getVariable _vehType;
+#else
+private _bb = [];
+#endif
 
-private _bb = missionNamespace getVariable _cacheEntry;
-
+#ifdef USE_CACHE
 if (isNil "_bb") then {
+#endif
+
 	private _veh = _vehType createVehicleLocal [0, 0, 666]; //createSimpleObject [_vehType, [0, 0, 666]];
-	_bb = boundingBoxReal _veh;
+#ifndef _SQF_VM
+	_bb = 0 boundingBoxReal _veh;
+#endif
 	deleteVehicle _veh;
-	missionNamespace setVariable [_cacheEntry, _bb];
+
+#ifdef USE_CACHE
+	missionNamespace setVariable [_vehType, _bb];
 };
+#endif
 
 _bb
