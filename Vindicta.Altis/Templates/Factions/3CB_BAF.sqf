@@ -14,10 +14,8 @@ _array set [T_REQUIRED_ADDONS, [
 	"uk3cb_baf_units_mtp",	// BAF Units
 	"uk3cb_baf_equipment",	// BAF Equipment
 	"uk3cb_baf_units_ace",	// BAF Ace Compat
-	"uk3cb_baf_units_rhs",	// BAF RHS Compat
 	"uk3cb_baf_vehicles_MAN", // BAF Vehicles
-	"uk3cb_baf_weapons_L110", // BAF Weaponry
-	"uk3cb_baf_weapons_ace" // BAF RHS Ammo Compat	
+	"uk3cb_baf_weapons_L110" // BAF Weaponry
 ]];
 
 //==== Infantry ====
@@ -34,7 +32,7 @@ _inf set [T_INF_marksman, ["UK3CB_BAF_Marksman_MTP"]];
 _inf set [T_INF_sniper, ["UK3CB_BAF_Sniper_MTP_Ghillie_L115", "UK3CB_BAF_Sniper_MTP_Ghillie_L135"]];
 _inf set [T_INF_spotter, ["UK3CB_BAF_Spotter_MTP_Ghillie_L129", "UK3CB_BAF_Spotter_MTP_Ghillie_L85"]];
 _inf set [T_INF_exp, ["UK3CB_BAF_Explosive_MTP_REC"]];
-_inf set [T_INF_ammo, ["UK3CB_BAF_MATC_MTP", "UK3CB_BAF_Rifleman_762_MTP"]];
+_inf set [T_INF_ammo, ["UK3CB_BAF_Ammo_MTP_1", "UK3CB_BAF_Ammo_MTP_2", "UK3CB_BAF_Ammo_MTP_3", "UK3CB_BAF_Ammo_MTP_4", "UK3CB_BAF_Ammo_MTP_5", "UK3CB_BAF_Ammo_MTP_6", "UK3CB_BAF_Ammo_MTP_7", "UK3CB_BAF_Ammo_MTP_8", "UK3CB_BAF_Ammo_MTP_9", "UK3CB_BAF_Ammo_MTP_10"]];
 _inf set [T_INF_LAT, ["UK3CB_BAF_LAT_ILAW_MTP", "UK3CB_BAF_LAT_ILAW_762_MTP"]];
 _inf set [T_INF_AT, ["UK3CB_BAF_LAT_MTP", "UK3CB_BAF_LAT_762_MTP"]];
 _inf set [T_INF_AA, ["UK3CB_BAF_MAT_MTP"]];

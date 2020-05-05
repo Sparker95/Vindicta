@@ -80,6 +80,17 @@
             "group": "build",
             "problemMatcher": []
         },
+		        {
+            "label": "EDIT TAKISTAN",
+            "type": "process",
+            "command": "edit_takistan.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
         {
             "label": "EDIT SAVE",
             "type": "process",
