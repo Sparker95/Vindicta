@@ -732,24 +732,18 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		switch GETV(T_GETV("agent"), "type") do {
-			case GARRISON_TYPE_GENERAL: {
-				["GoalGarrisonRelax",
-				"GoalGarrisonRepairAllVehicles",
-				"GoalGarrisonDefendActive",
-				"GoalGarrisonDefendPassive",
-				"GoalGarrisonRebalanceVehicleGroups",
-				"GoalGarrisonAttackAssignedTargets"]
-			};
-			case GARRISON_TYPE_AIR: {
-				["GoalGarrisonRelax",
-				"GoalGarrisonRepairAllVehicles",
-				"GoalGarrisonDefendActive",
-				"GoalGarrisonDefendPassive",
-				"GoalGarrisonRebalanceVehicleGroups",
+			case GARRISON_TYPE_GENERAL: {[
 				"GoalGarrisonAttackAssignedTargets",
-				"GoalAirTransport",
-				"GoalAirSupport"]
-			};
+				"GoalGarrisonDefendActive",
+				"GoalGarrisonDefendPassive",
+				"GoalGarrisonRebalanceVehicleGroups",
+				"GoalGarrisonRelax",
+				"GoalGarrisonRepairAllVehicles"
+			]};
+			case GARRISON_TYPE_AIR: {[
+				"GoalGarrisonDefendActive",
+				"GoalGarrisonRelax"
+			]};
 			case GARRISON_TYPE_PLAYER: {
 				[]
 			};
@@ -759,45 +753,21 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD(getPossibleActions)
 		params [P_THISOBJECT];
 		switch GETV(T_GETV("agent"), "type") do {
-			case GARRISON_TYPE_GENERAL: {
-				["ActionGarrisonDefendActive",
-				//"ActionGarrisonLoadCargo",
+			case GARRISON_TYPE_GENERAL: {[
+				"ActionGarrisonClearArea",
+				"ActionGarrisonJoinLocation",
+				"ActionGarrisonMergeVehicleGroups",
 				"ActionGarrisonMountCrew",
 				"ActionGarrisonMountInfantry",
-				"ActionGarrisonMoveDismounted",
-				//"ActionGarrisonMoveMountedToPosition",
-				//"ActionGarrisonMoveMountedToLocation",
 				"ActionGarrisonMoveCombined",
+				"ActionGarrisonMoveDismounted",
 				"ActionGarrisonMoveMounted",
-				//"ActionGarrisonMoveMountedCargo",
-				"ActionGarrisonRelax",
-				"ActionGarrisonRepairAllVehicles",
-				//"ActionGarrisonUnloadCurrentCargo",
-				"ActionGarrisonMergeVehicleGroups",
-				"ActionGarrisonSplitVehicleGroups",
 				"ActionGarrisonRebalanceGroups",
-				"ActionGarrisonClearArea",
-				"ActionGarrisonJoinLocation"]
-			};
+				"ActionGarrisonRepairAllVehicles",
+				"ActionGarrisonSplitVehicleGroups"
+			]};
 			case GARRISON_TYPE_AIR: {
-				["ActionGarrisonDefendActive",
-				//"ActionGarrisonLoadCargo",
-				"ActionGarrisonMountCrew",
-				"ActionGarrisonMountInfantry",
-				"ActionGarrisonMoveDismounted",
-				//"ActionGarrisonMoveMountedToPosition",
-				//"ActionGarrisonMoveMountedToLocation",
-				"ActionGarrisonMoveCombined",
-				"ActionGarrisonMoveMounted",
-				//"ActionGarrisonMoveMountedCargo",
-				"ActionGarrisonRelax",
-				"ActionGarrisonRepairAllVehicles",
-				//"ActionGarrisonUnloadCurrentCargo",
-				"ActionGarrisonMergeVehicleGroups",
-				"ActionGarrisonSplitVehicleGroups",
-				"ActionGarrisonRebalanceGroups",
-				"ActionGarrisonClearArea",
-				"ActionGarrisonJoinLocation"]
+				[]
 			};
 			case GARRISON_TYPE_PLAYER: {
 				[]

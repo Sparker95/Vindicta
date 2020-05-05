@@ -9,6 +9,7 @@
 #include "..\MessageTypes.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 
 /*
 Class: Unit
@@ -1915,7 +1916,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isInfantry)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_INF
+		_data#UNIT_DATA_ID_CAT == T_INF
 	ENDMETHOD;
 
 	//                       I S   V E H I C L E
@@ -1928,7 +1929,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isVehicle)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_VEH
+		_data#UNIT_DATA_ID_CAT == T_VEH
 	ENDMETHOD;
 
 	//                         I S   D R O N E
@@ -1941,7 +1942,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isDrone)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_DRONE
+		_data#UNIT_DATA_ID_CAT == T_DRONE
 	ENDMETHOD;
 
 	/*
@@ -1953,9 +1954,21 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isCargo)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_CARGO
+		_data#UNIT_DATA_ID_CAT == T_CARGO
 	ENDMETHOD;
-	
+
+	/*
+	Method: isAir
+	Returns true if given <Unit> is an air unit
+
+	Returns: Bool
+	*/
+	METHOD(isAir)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+		_data#UNIT_DATA_ID_CAT == T_VEH && { _data#UNIT_DATA_ID_SUBCAT in T_VEH_air }
+	ENDMETHOD;
+
 	//                         I S   S T A T I C
 	/*
 	Method: isStatic
@@ -1966,7 +1979,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isStatic)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
+		[_data#UNIT_DATA_ID_CAT, _data#UNIT_DATA_ID_SUBCAT] in T_static
 	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

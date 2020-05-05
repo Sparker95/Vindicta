@@ -1508,7 +1508,7 @@ CLASS("AICommander", "AI")
 		pr _side = T_GETV("side");
 
 		// Create a new garrison and register it
-		pr _gar = NEW("Garrison", [_side ARG _pos]);
+		pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG _side ARG _pos]);
 		// Create some infantry group
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 
@@ -1535,7 +1535,7 @@ CLASS("AICommander", "AI")
 		} else {
 			pr _locPos = CALLM0(_loc, "getPos");
 			// Create a new garrison and register it
-			pr _gar = NEW("Garrison", [_side ARG _locPos]);
+			pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG _side ARG _locPos]);
 			CALLM0(_gar, "activate");
 			CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 			_gar
@@ -1745,7 +1745,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Take the units
 		if(count _combatUnits > 0) then {
 			pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
-			pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
+			pr _newGarr = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _posNew ARG _faction]);
 			CALLM2(_newGarr, "postMethodSync", "takeUnits", [_garSrcRef ARG _combatUnits]);
 			// Activate the new garrison
 			// it will register itself here as well
@@ -1777,7 +1777,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		pr _pos = CALLM0(_garSrcRef, "getPos");
 		pr _faction = CALLM0(_garSrcRef, "getFaction");
 		pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
-		pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
+		pr _newGarr = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _posNew ARG _faction]);
 
 		// Move units
 		pr _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromCompositionClassNames", [_garSrcRef ARG _comp]);
@@ -1842,8 +1842,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM2(_loc, "processObjectsInArea", "House", true);
 		CALLM1(gGameMode, "initLocationGameModeData", _loc);
 
-		// Create the garrison
-		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+		// Create the garrisons, player one for our stuff, general one for recruited fighters
+		// TODO add the player garrison, it requires some way to move vehicles between player and general garrison etc.
+		// pr _gar = NEW("Garrison", [GARRISON_TYPE_PLAYER ARG T_GETV("side") ARG _pos]);
+		// CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+		// CALLM0(_gar, "activate");
+
+		pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _pos]);
 		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
 		CALLM0(_gar, "activate");
 
@@ -1890,7 +1895,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Create new empty garrison for the location
 		pr _pos = CALLM0(_loc, "getPos");
-		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+		pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _pos]);
 
 		// Kick out the enemy garrisons (and claim their empty vehicles and cargo)
 		{
@@ -2644,7 +2649,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _model = T_GETV("worldModel");
 		
 		private _reinfLocations = CALLM0(_model, "getLocations") select {
-			private _garModel = CALLM(_x, "getGarrison", [_side]);
+			private _garModel = CALLM1(_x, "getGarrison", _side);
 			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT)
 			&& {!IS_NULL_OBJECT(_garModel)}
 			&& {private _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")}
@@ -2735,20 +2740,43 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// [_name, _loc, _garrison, _infSpace, _vicSpace]
 		private _reinfInfo = _reinfLocations apply {
 			private _locModel = _x;
-			private _garModel = CALLM(_locModel, "getGarrison", [_side]);
 			private _loc = GETV(_locModel, "actual");
-			private _gar = GETV(_garModel, "actual");
-			private _nInf = CALLM0(_gar, "countInfantryUnits");
-			private _query = +T_PL_tracked_wheeled; // All tracked and wheeled vehicles
-			private _nVeh = CALLM1(_gar, "countUnits", _query);
+			private _generalGar = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_GENERAL) select 0;
+			// TODO: we need to consider units that are out on assignments
+			private _nInf = CALLM0(_generalGar, "countInfantryUnits");
+			private _nVeh = CALLM1(_generalGar, "countUnits", T_PL_tracked_wheeled); // All tracked and wheeled vehicles
+			private _airGar = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_AIR) select 0;
+			private _nHeli = CALLM1(_airGar, "countUnits", T_PL_helicopters);
+			private _nHeliMax = CALLM0(_loc, "getCapacityHeli");
+			private _nPlane = CALLM1(_airGar, "countUnits", T_PL_planes);
+			private _nPlaneMax = 2; // TODO: better number
 			[
 				CALLM0(_loc, "getDisplayName"),
 				_loc,
-				_gar,
+				_generalGar,
 				CMDR_MAX_INF_AIRFIELD - _nInf,
-				_nVehMax - _nVeh
+				_nVehMax - _nVeh,
+				_airGar,
+				_nHeliMax - _nHeli,
+				_nPlaneMax - _nPlane
 			]
 		};
+
+		// Add air
+		{
+			private _airGar = _x#5;
+			private _nHelisRequired = _x#6;
+			for "_i" from 0 to _nHelisRequired - 1 do {
+				private _type = T_VEH_heli_attack; 
+				// selectRandomWeighted [
+				// 	T_VEH_heli_light,	1,
+				// 	T_VEH_heli_heavy,	1,
+				// 	T_VEH_heli_attack,	1
+				// ];
+				private _newGroup = CALLM(_airGar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+				OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
+			};
+		} forEach _reinfInfo;
 
 		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
 

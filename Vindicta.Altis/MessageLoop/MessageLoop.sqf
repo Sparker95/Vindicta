@@ -233,6 +233,7 @@ CLASS("MessageLoop", "Storable");
 				};
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	// Functions for process categories
@@ -253,6 +254,7 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	// Only for unscheduled msg loop
@@ -274,6 +276,7 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	// Only relevant for scheduled process categories
@@ -331,6 +334,7 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	METHOD(deleteProcessCategoryObject)
@@ -372,6 +376,7 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	// Adds this object to high priority queue of its process category
@@ -399,6 +404,7 @@ CLASS("MessageLoop", "Storable");
 				OOP_ERROR_1("setObjectUrgentPriority: object %1 is not found", _object);
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	METHOD(lock)

@@ -910,7 +910,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.findGarrisonByActual", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	private _got = CALLM(_world, "findGarrisonByActual", [_actual]);

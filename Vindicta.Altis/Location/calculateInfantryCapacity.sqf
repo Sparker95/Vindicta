@@ -10,6 +10,7 @@ Author: Sparker 03.08.2018
 
 #include "..\common.h"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 
 params [P_THISOBJECT];
 

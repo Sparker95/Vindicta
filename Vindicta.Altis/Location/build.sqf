@@ -4,6 +4,7 @@
 #include "..\common.h"
 #include "Location.hpp"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 
 // Class: Location
 /*

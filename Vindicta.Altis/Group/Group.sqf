@@ -351,7 +351,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getUnits)
 		params [P_THISOBJECT];
-		+(T_GETV("data") select GROUP_DATA_ID_UNITS);
+		+(T_GETV("data") # GROUP_DATA_ID_UNITS);
 	ENDMETHOD;
 
 	// |                         G E T  I N F A N T R Y  U N I T S
@@ -363,7 +363,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getInfantryUnits)
 		params [P_THISOBJECT];
-		(T_GETV("data") select GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isInfantry") }
+		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isInfantry") }
 	ENDMETHOD;
 
 	// |                         G E T   V E H I C L E   U N I T S
@@ -375,7 +375,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getVehicleUnits)
 		params [P_THISOBJECT];
-		(T_GETV("data") select GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isVehicle") }
+		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isVehicle") }
 	ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
@@ -387,9 +387,19 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getDroneUnits)
 		params [P_THISOBJECT];
-		(T_GETV("data") select GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isDrone") }
+		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isDrone") }
 	ENDMETHOD;
 
+	/*
+	Method: getAirUnits
+	Returns all air units.
+
+	Returns: Array of units.
+	*/
+	METHOD(getAirUnits)
+		params [P_THISOBJECT];
+		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isAir") }
+	ENDMETHOD;
 
 	// |                         G E T   T Y P E                            |
 	/*
@@ -400,7 +410,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getType)
 		params [P_THISOBJECT];
-		T_GETV("data") select GROUP_DATA_ID_TYPE
+		T_GETV("data") # GROUP_DATA_ID_TYPE
 	ENDMETHOD;
 
 	// |                         G E T   S I D E                            |
@@ -412,9 +422,8 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getSide)
 		params [P_THISOBJECT];
-		T_GETV("data") select GROUP_DATA_ID_SIDE
+		T_GETV("data") # GROUP_DATA_ID_SIDE
 	ENDMETHOD;
-
 
 	// |                  G E T   G R O U P   H A N D L E
 	/*
@@ -425,7 +434,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getGroupHandle)
 		params [P_THISOBJECT];
-		T_GETV("data") select GROUP_DATA_ID_GROUP_HANDLE
+		T_GETV("data") # GROUP_DATA_ID_GROUP_HANDLE
 	ENDMETHOD;
 
 	// |                  S E T / G E T   L E A D E R
@@ -438,8 +447,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(getLeader)
 		params [P_THISOBJECT];
-		pr _data = T_GETV("data");
-		_data select GROUP_DATA_ID_LEADER
+		T_GETV("data") # GROUP_DATA_ID_LEADER
 	ENDMETHOD;
 
 	METHOD(getPos)
@@ -613,6 +621,16 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		count (T_GETV("data") select GROUP_DATA_ID_UNITS) == 0
 	ENDMETHOD;
 
+	/*
+	Method: isAirGroup
+	Returns true if group has air units in it
+
+	Returns: Bool
+	*/
+	METHOD(isAirGroup)
+		params [P_THISOBJECT];
+		count T_CALLM0("getAirUnits") > 0
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                E V E N T   H A N D L E R S
@@ -675,15 +693,17 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
-		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+		pr _groupUnits = _data#GROUP_DATA_ID_UNITS;
 
 		// Create an AI for this group if it has any units
-		//if (count _groupUnits > 0) then {
-			pr _AI = NEW("AIGroup", [_thisObject]);
-			pr _data = T_GETV("data");
-			_data set [GROUP_DATA_ID_AI, _AI];
-			CALLM0(_AI, "start"); // Kick start it
-		//};
+		pr _AI = if(T_CALLM0("isAirGroup")) then {
+			NEW("AIGroupAir", [_thisObject])
+		} else {
+			NEW("AIGroup", [_thisObject])
+		};
+		pr _data = T_GETV("data");
+		_data set [GROUP_DATA_ID_AI, _AI];
+		CALLM0(_AI, "start"); // Kick start it
 
 	ENDMETHOD;
 

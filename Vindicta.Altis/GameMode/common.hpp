@@ -7,6 +7,7 @@
 #include "..\AI\Commander\LocationData.hpp"
 #include "..\AI\parameterTags.hpp"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 #include "..\Location\Location.hpp"
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Undercover\UndercoverMonitor.hpp"

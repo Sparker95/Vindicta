@@ -1,5 +1,6 @@
 #include "..\common.h"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 #include "Location.hpp"
 
 // Class: Location

@@ -405,7 +405,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		} else {
 			pr _locPos = CALLM0(_loc, "getPos");
 			// Create a new garrison and register it
-			_gar = NEW("Garrison", [_side ARG _locPos]);
+			_gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG _side ARG _locPos]);
 			CALLM0(_gar, "activate");
 			CALLM1(_gar, "setLocation", _loc);
 			_activate = true;

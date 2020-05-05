@@ -371,9 +371,10 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Make a new garrison
 		private _side = CALLM0(_actual, "getSide");
+		private _type = CALLM0(_actual, "getType");
 		private _faction = CALLM0(_actual, "getFaction");
 		private _templateName = CALLM0(_actual, "getTemplateName");
-		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
+		private _newGarrActual = NEW("Garrison", [_type ARG _side ARG [] ARG _faction ARG _templateName]);
 		private _pos = CALLM0(_actual, "getPos");
 		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 
@@ -924,7 +925,7 @@ CALLSM0("GarrisonModel", "initUnitAllocatorCache");
 #ifdef _SQF_VM
 
 ["GarrisonModel.new(actual)", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
@@ -939,7 +940,7 @@ CALLSM0("GarrisonModel", "initUnitAllocatorCache");
 }] call test_AddTest;
 
 ["GarrisonModel.simCopy", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	private _simWorld = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
@@ -1074,7 +1075,7 @@ Test_group_args = [WEST, 0]; // Side, group type
 Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 
 ["GarrisonModel.actualSplit", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _group = NEW("Group", Test_group_args);
 	private _eff1 = +T_EFF_null;
 	private _comp1 = +T_comp_null;

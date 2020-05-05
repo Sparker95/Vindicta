@@ -18,6 +18,7 @@
 #include "..\worldFactTypes.hpp"
 #include "..\parameterTags.hpp"
 #include "..\..\Group\Group.hpp"
+#include "..\..\Garrison\Garrison.hpp"
 #include "..\..\Unit\Unit.hpp"
 #include "..\targetStruct.hpp"
 #include "..\Garrison\garrisonWorldStateProperties.hpp"

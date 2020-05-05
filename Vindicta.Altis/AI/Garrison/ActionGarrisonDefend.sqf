@@ -39,19 +39,10 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 
 		CALLM0(_gar, "rebalanceGroups");
 
-		private _loc = CALLM0(_gar, "getLocation");
-		// Buildings into which groups will be ordered to move
-		private _buildings = if (_loc != NULL_OBJECT) then {+
-			CALLM0(_loc, "getOpenBuildings")
-		} else {
-			[]
-		};
-
-		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
-		_buildings = _buildings apply {[abs ((boundingBoxReal _x)#1#2), _x]};
-		_buildings sort DESCENDING;
 		pr _groups = CALLM0(_gar, "getGroups");
 		pr _groupsInf = _groups select { CALLM0(_x, "getType") == GROUP_TYPE_INF };
+
+		private _loc = CALLM0(_gar, "getLocation");
 
 		pr _commonParams = [
 			[TAG_COMBAT_MODE, "RED"],
@@ -59,24 +50,37 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			[TAG_INSTANT, _instant]
 		];
 
-		// Half patrol / half in buildings
-		pr _maxInBuildings = count _groupsInf / 2;
+		if(count _groupsInf > 0) then {
+			// Buildings into which groups will be ordered to move
+			private _buildings = if (_loc != NULL_OBJECT) then {+
+				CALLM0(_loc, "getOpenBuildings")
+			} else {
+				[]
+			};
 
-		// Order to some groups to occupy buildings
-		// This is obviously ignored if the garrison is not at a location
-		pr _i = 0;
-		while {(count _groupsInf > _maxInBuildings) && (count _buildings > 0)} do {
-			pr _group = _groupsInf#0;
-			pr _groupAI = CALLM0(_group, "getAI");
-			pr _goalParameters = [
-				[TAG_TARGET, _buildings#0#1]
-			] + _commonParams;
-			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
-			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+			// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
+			_buildings = _buildings apply {[abs ((boundingBoxReal _x)#1#2), _x]};
+			_buildings sort DESCENDING;
 
-			_buildings deleteAt 0;
-			_groupsInf deleteAt 0;
-			_groups deleteAt (_groups find _group);
+			// Half patrol / half in buildings
+			pr _maxInBuildings = count _groupsInf / 2;
+
+			// Order to some groups to occupy buildings
+			// This is obviously ignored if the garrison is not at a location
+			pr _i = 0;
+			while {(count _groupsInf > _maxInBuildings) && (count _buildings > 0)} do {
+				pr _group = _groupsInf#0;
+				pr _groupAI = CALLM0(_group, "getAI");
+				pr _goalParameters = [
+					[TAG_TARGET, _buildings#0#1]
+				] + _commonParams;
+				pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
+				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+
+				_buildings deleteAt 0;
+				_groupsInf deleteAt 0;
+				_groups deleteAt (_groups find _group);
+			};
 		};
 
 		private _infExtraParams = [
@@ -85,15 +89,26 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		];
 
 		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
+		pr _radius = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getBoundingRadius") } else { 250 };
 
 		// Give goals to remaining groups
 		private _nPatrolGroups = 0;
 		{// foreach _groups
-			private _groupAI = CALLM0(_x, "getAI");
+			private _group = _x;
+			private _groupAI = CALLM0(_group, "getAI");
 			
 			if (_groupAI != NULL_OBJECT) then {
-				private _args = switch (CALLM0(_x, "getType")) do {
-					case GROUP_TYPE_VEH;
+				private _args = switch (CALLM0(_group, "getType")) do {
+					case GROUP_TYPE_VEH: {
+						if(CALLM0(_group, "isAirGroup")) then {
+							["GoalGroupClearArea", 0, [
+								[TAG_POS, CALLM0(_group, "getPos")],
+								[TAG_CLEAR_RADIUS, _radius]
+							] + _commonParams, _AI]
+						} else {
+							["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
+						};
+					};
 					case GROUP_TYPE_STATIC: {
 						["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
 					};

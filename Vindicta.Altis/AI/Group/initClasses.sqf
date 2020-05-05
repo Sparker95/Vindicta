@@ -1,5 +1,6 @@
 // Auto generated file
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
+call compile preprocessFileLineNumbers "AI\Group\AIGroupAir.sqf";
 call compile preprocessFileLineNumbers "AI\Group\_ActionGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupFlee.sqf";

@@ -18,7 +18,7 @@ if((Get-Content -Path ..\configs\minorVersion.hpp).Count -gt 1) {
 Set-Content -Path ..\configs\buildVersion.hpp -Value $patch -Force -NoNewline
 
 ..\tools\setup_and_build.bat
-$verDir = (Get-ChildItem -Path ..\_build -Filter "vindicta_v*").Name
+$verDir = (Get-ChildItem -Path ..\_build -Filter "vindicta_v*").Name.Where{!$_.Contains('.')}
 $verStr = $verDir -replace "vindicta_v",""
 
 "Building Vindicta v$($verStr)"

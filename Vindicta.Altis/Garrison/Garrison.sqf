@@ -86,7 +86,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	_pos - optional, default position to set to the garrison
 	*/
 	METHOD(new)
-		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName"), P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL)];
+		params [P_THISOBJECT, P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL), P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
 
 		OOP_INFO_1("NEW GARRISON: %1", _this);
 
@@ -208,7 +208,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Set 'active' flag
 		T_SETV("active", true);
 
-		T_CALLM2("postMethodAsync", "_activate", []);
+		T_CALLM1("postMethodAsync", "_activate");
 
 		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
 		_return
@@ -225,7 +225,11 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 
 		// Enable automatic spawning
-		T_CALLM1("enableAutoSpawn", true);
+		private _autoSpawn = T_GETV("type") in GARRISON_TYPES_AUTOSPAWN;
+		T_CALLM1("enableAutoSpawn", _autoSpawn);
+		if(!_autoSpawn) then {
+			T_CALLM1("spawn", true);
+		};
 	ENDMETHOD;
 
 	/*
@@ -245,7 +249,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_SETV("active", true);
 
 		// Enable automatic spawning
-		T_CALLM1("enableAutoSpawn", true);
+		private _autoSpawn = T_GETV("type") in GARRISON_TYPES_AUTOSPAWN;
+		T_CALLM1("enableAutoSpawn", _autoSpawn);
+		if(!_autoSpawn) then {
+			T_CALLM2("postMethodAsync", "spawn", [true]);
+		};
+		// T_CALLM1("enableAutoSpawn", true);
 		
 		T_SETV("outdated", true);
 
@@ -2759,9 +2768,10 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				// // Make a new garrison
 				// private _actual = _thisObject;
 				// private _side = T_CALLM0("getSide");
+				// private _type = T_CALLM0("getType");
 				// private _faction = T_CALLM0("getFaction");
 				// private _templateName = T_CALLM0("getTemplateName");
-				// private _newGarr = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
+				// private _newGarr = NEW("Garrison", [_type ARG _side ARG [] ARG _faction ARG _templateName]);
 				// private _pos = T_CALLM0("getPos");
 				// CALLM2(_newGarr, "postMethodAsync", "setPos", [_pos]);
 				// // Add the units to the garrison in a new group
@@ -3389,7 +3399,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// ENDMETHOD;
 
 	METHOD(makeGarrisonFromUnits)
-		params [P_THISOBJECT, P_ARRAY("_unitHandles")];
+		params [P_THISOBJECT, P_ARRAY("_unitHandles"), P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL)];
 
 		if(count _unitHandles == 0) exitWith {
 			OOP_WARNING_0("makeGarrisonFromUnits: No unit handles specified");
@@ -3415,7 +3425,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		OOP_INFO_2("Adding units %1 to commander for side %2", _unitHandles, _side);
 
 		// Make a new garrison
-		private _newGarrison = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
+		private _newGarrison = NEW("Garrison", [_type ARG _side ARG [] ARG _faction ARG _templateName]);
 		private _pos = position (_unitHandles#0);
 		CALLM1(_newGarrison, "setPos", _pos);
 
@@ -3550,6 +3560,13 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 		};
 
+		// Enable automatic spawning
+		private _autoSpawn = T_GETV("type") in GARRISON_TYPES_AUTOSPAWN;
+		T_CALLM1("enableAutoSpawn", _autoSpawn);
+		if(!_autoSpawn) then {
+			T_CALLM2("postMethodAsync", "spawn", [true]);
+		};
+
 		// Push to 'all' static variable
 		GETSV("Garrison", "all") pushBack _thisObject;
 
@@ -3583,7 +3600,7 @@ if (isNil { GETSV("Garrison", "all") } ) then {
 #ifdef _SQF_VM
 
 ["Garrison.add units", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _Test_group_args = [WEST, 0]; // Side, group type
 	private _subcatID = T_INF_rifleman;
 	private _Test_unit_args = [tNATO, T_INF, _subcatID, -1];
@@ -3609,7 +3626,7 @@ if (isNil { GETSV("Garrison", "all") } ) then {
 }] call test_AddTest;
 
 ["Garrison.save and load", {
-	private _gar = NEW("Garrison", [WEST ARG [] ARG "military" ARG "tNATO"]);
+	private _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST ARG [] ARG "military" ARG "tNATO"]);
 	["Garrison is OK 0", CALLM0(_gar, "getSide") == WEST] call test_Assert;
 	private _Test_group_args = [WEST, 0]; // Side, group type
 	private _subcatID = T_INF_rifleman;
