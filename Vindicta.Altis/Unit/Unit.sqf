@@ -535,12 +535,16 @@ CLASS("Unit", "Storable")
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						// Initialize limited arsenal
-						if(!T_CALLM0("limitedArsenalOnSpawn")) then {
-							// If it isn't an arsenal object then make it dragable. Arsenal can be moved using build UI only.
-							[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
+						if(T_CALLM0("limitedArsenalOnSpawn")) then {
+							// If its an arsenal then we disable carry and drag
+							[_objectHandle, false] remoteExec ["ace_dragging_fnc_setDraggable", 0, true];
+							[_objectHandle, false] remoteExec ["ace_dragging_fnc_setCarryable", 0, true];
+						} else {
+							// If it isn't an arsenal object then force it to be dragable. Arsenal can be moved using build UI only.
+							[_objectHandle, true, [0, 2, 0.1], 0, true] remoteExec ["ace_dragging_fnc_setDraggable", 0, true];
 						};
 
-						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?			
+						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?
 						// Give intel to this unit
 						//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
 					};
