@@ -32,6 +32,22 @@ CLASS("Civilian", "GOAP_Agent")
 		// Create AI
 		pr _AI = NEW("AIUnitCivilian", [_thisObject ARG _civPresence]);
 		T_SETV("AI", _AI);
+		
+		// Handle death of unit
+		// When killed, delete AI
+		_civObjectHandle addEventHandler ["killed", {
+			pr _hO = _this select 0;
+			pr _thisObject = CALLSM1("Civilian", "getCivilianFromObjectHandle", _hO);
+			if (!IS_NULL_OBJECT(_thisObject)) then {
+				pr _ai = CALLM0(_thisObject, "getAI");
+				if (!IS_NULL_OBJECT(_ai)) then {
+					DELETE(_ai);
+					T_SETV("AI", NULL_OBJECT);
+				};
+			};
+		}];
+		
+		// Start AI
 		CALLM0(_AI, "start");
 	ENDMETHOD;
 
@@ -40,7 +56,11 @@ CLASS("Civilian", "GOAP_Agent")
 
 		OOP_INFO_0("DELETE");
 
-		DELETE(T_GETV("AI"));
+		// Delete AI if not deleted yet
+		pr _ai = T_GETV("AI");
+		if (!IS_NULL_OBJECT(_ai)) then {
+			DELETE(_ai);
+		};
 
 		pr _hO = T_GETV("hO");
 		deleteVehicle _hO;

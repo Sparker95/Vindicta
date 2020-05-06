@@ -34,14 +34,16 @@ CLASS("ActionUnitFlee", "ActionUnit")
 
 		_hO forceWalk false;
 		_hO setUnitPosWeak "UP";
-		if (random 10 > 3) then {
+		_hO setUnitPos "UP";
+		if (random 10 > 4) then {
 			_hO switchAction "Panic";
+			_hO forceSpeed (selectRandom [5, -1]); // 5 - runs slowly, -1 - runs very very fast
 		} else {
 			_hO switchAction "";
+			_hO forceSpeed -1;
 		};
-		_hO forceSpeed (selectRandom [5, -1]); // 5 - runs slowly, -1 - runs very very fast
 
-		_hO setSpeedMode "FULL";
+		//_hO setSpeedMode "FULL";
 		_hO setBehaviour "CARELESS";
 
 		//_hO switchMove selectRandom _panicAnimsErectAndKneeled;

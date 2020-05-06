@@ -3038,7 +3038,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 					STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
 					private _value = [_unitVeh, _infHandle];
 					STIMULUS_SET_VALUE(_stim, _value);
-					CALLM2(_garAI, "postAsync", "handleStimulus", [_stim]);
+					CALLM2(_garAI, "postMethodAsync", "handleStimulus", [_stim]);
 				};
 			};
 		};

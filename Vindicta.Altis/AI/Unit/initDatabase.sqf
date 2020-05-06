@@ -7,7 +7,8 @@
 // ---------------- Goal relevance values and effects
 // The actual relevance returned by goal can be different from the one which is set below
 ["GoalUnitFlee",							100	] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalCivilianPanic",						90	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalCivilianPanicAway",					65	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalCivilianPanicNearest",				60	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitDismountCurrentVehicle",			50	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitSurrender",						40	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitShootLegTarget",					40	] call AI_misc_fnc_setGoalIntrinsicRelevance;

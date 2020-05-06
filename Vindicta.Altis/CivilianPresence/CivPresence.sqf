@@ -422,16 +422,20 @@ CLASS("CivPresence", "")
 		true
 	ENDMETHOD;
 
-	METHOD(_getNearestSafeSpot)
-		params [P_THISOBJECT];
-
-	ENDMETHOD;
 
 	METHOD(getNearestSafeSpot)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _positions = T_GETV("buildingPosAGL") apply {[_x distance _pos, _x]};
 		_positions sort ASCENDING;
-		pr _id = (floor random 6) min (count _positions);
+		pr _id = (floor random 4) min (count _positions);
+		_positions#_id#_1;
+	ENDMETHOD;
+
+	METHOD(getFarthestSafeSpot)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		pr _positions = T_GETV("buildingPosAGL") apply {[_x distance _pos, _x]};
+		_positions sort DESCENDING;
+		pr _id = (floor random 4) min (count _positions);
 		_positions#_id#_1;
 	ENDMETHOD;
 

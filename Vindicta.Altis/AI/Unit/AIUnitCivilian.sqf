@@ -30,7 +30,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		pr _hO = CALLM0(_agent, "getObjectHandle");
 
 		// Add event handlers
-		_ho addEventHandler ["handleDamage", {
+		_ho addEventHandler ["hit", {
 			CALLSM1("AIUnitCivilian", "dangerEventHandler", _this select 0);
 		}];
 
@@ -44,8 +44,15 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		params ["_thisClass", "_hO"];
 		pr _civ = CALLSM1("Civilian", "getCivilianFromObjectHandle", _hO);
 		pr _ai = CALLM0(_civ, "getAI");
+
+		// Bail of no AI
+		if (IS_NULL_OBJECT(_ai)) exitWith { nil };
+
 		SETV(_ai, "danger", true);
 		CALLM0(_ai, "setUrgentPriority");
+
+		// Return nothing if this EH is stacked, we don't override anything
+		nil
 	ENDMETHOD;
 
 	/* override */ METHOD(start)
@@ -55,7 +62,10 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 
 	//                        G E T   P O S S I B L E   G O A L S
 	METHOD(getPossibleGoals)
-		["GoalCivilianPanic"]
+		[
+			"GoalCivilianPanicNearest",
+			"GoalCivilianPanicAway"
+		]
 	ENDMETHOD;
 
 	//                      G E T   P O S S I B L E   A C T I O N S
