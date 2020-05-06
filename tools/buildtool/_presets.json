@@ -51,6 +51,19 @@
             "configs/briefingName.hpp"
         ]
     },
+	{
+        "sourceFolder": "Vindicta.Takistan",
+        "missionName": "Vindicta",
+        "missionNameBase": "Vindicta",
+        "map": "Takistan",
+        "configFiles": [
+            "configs/release/global_config.hpp",
+            "configs/majorVersion.hpp",
+            "configs/minorVersion.hpp",
+            "configs/buildVersion.hpp",
+            "configs/briefingName.hpp"
+        ]
+    },
     {
         "sourceFolder": "Vindicta.Beketov",
         "missionName": "Vindicta",

@@ -60,7 +60,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 				private _lookAtPos = [[[_pos, _radius]]] call BIS_fnc_randomPos;
 				_x glanceAt _lookAtPos;
 				_x lookAt _lookAtPos;
-				_x commandWatch _lookAtPos;
+				_x doWatch _lookAtPos;
 			} foreach units _hG;
 
 			private _nextLookTime = GAME_TIME + random[0, 10, 15];
@@ -75,7 +75,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 		private _hG = T_GETV("hG");
 
 		// All stop watching position
-		units _hG commandWatch objNull;
+		units _hG doWatch objNull;
 	} ENDMETHOD;
 
 ENDCLASS;

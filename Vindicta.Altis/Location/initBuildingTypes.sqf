@@ -207,6 +207,67 @@ location_bp_cargo_medium =
 	[
 		["land_gm_euro_house_07_e",	"land_gm_euro_house_07_w",	"land_gm_euro_house_07_d"],
 		[[1.80399,83.2539,0.326653,0.000132318], [2.01474,48.7239,0.336693,359.999], [2.47671,257.29,0.261368,359.999], [2.50627,292.908,0.280899,0.000150937]]
+	],
+	// CUP Takistan
+	[
+		["Land_House_L_6_EP1", "Land_House_L_6_dam_EP1"],
+		[[4.70777,92.5443,0.361038,0],[2.13738,279.122,0.448914,0]]
+	],
+	[
+		["Land_House_L_4_EP1", "Land_House_L_4_dam_EP1"],
+		[[5.25441,71.0532,0.760803,0],[2.6514,3.12481,0.508163,0]]
+	],
+	[
+		["Land_House_L_7_EP1", "Land_House_L_7_dam_EP1"],
+		[[5.86802,222.248,0.152435,0],[2.62107,52.1737,0.788132,0]]
+	],
+	[
+		["Land_House_L_8_EP1", "Land_House_L_8_dam_EP1"],
+		[[1.73989,328.005,0.98259,0],[2.17966,5.6825,3.70102,0]]
+	],
+	[
+		["Land_House_K_8_EP1", "Land_House_K_8_dam_EP1"],
+		[[2.56369,113.03,6.20528,0],[1.15963,345.765,0.177826,0]]
+	],
+	[
+		["Land_House_K_3_EP1", "Land_House_K_3_dam_EP1"],
+		[[1.39592,136.276,0.530792,0],[4.38602,256.06,0.55954,0]]
+	],
+	[
+		["Land_House_K_7_EP1", "Land_House_K_7_dam_EP1"],
+		[[3.85782,314.077,-0.546814,0],[3.11222,330.692,3.01508,0]]
+	],
+	[
+		["Land_House_C_11_EP1", "Land_House_C_11_dam_EP1"],
+		[[6.27304,66.7475,0.262527,-200],[6.54936,118.458,0.209015,-200]]
+	],
+	[
+		["Land_House_C_5_EP1", "Land_House_C_5_dam_EP1"],
+		[[3.03165,241.569,0.31955,0],[4.31359,39.221,0.380096,0]]
+	],
+	[
+		["Land_House_C_5_V1_dam_EP1", "Land_House_C_5_V1_EP1"],
+		[[3.67072,40.0573,0.318497,0],[3.48948,234.362,0.224457,0]]
+	],
+	[
+		["Land_House_C_5_V2_EP1", "Land_House_C_5_V2_dam_EP1"],
+		[[4.1539,41.6168,0.349426,0],[3.59427,230.844,0.303391,0]]
+	],
+	[
+		["Land_House_C_5_V3_EP1", "Land_House_C_5_V3_dam_EP1"],
+		[[3.45883,236.691,0.267456,0],[4.1695,41.8575,0.370743,0]]
+	],
+	[
+		["Land_A_Villa_EP1"],
+		[[9.28798,55.69,-0.164932,0],[7.3773,22.4268,-0.114807,0]]
+	],
+	[
+		["Land_A_Office01_EP1"],
+		[[2.00421,171.933,0.202118,0],[7.18393,295.112,0.174194,0]]
+	],
+	[
+		["Land_House_C_4_dam_EP1"],
+		[[2.45109,115.309,0.608643,0],[2.65302,92.5528,3.76466,0]]
 	]
 ];
 
@@ -254,7 +315,35 @@ location_bt_police =
 	// Global Mobilization
 	"land_gm_euro_house_07_e",
 	"land_gm_euro_house_07_w",
-	"land_gm_euro_house_07_d"
+	"land_gm_euro_house_07_d",
+	
+	// Takistan
+	"Land_House_L_6_EP1",
+	"Land_House_L_6_dam_EP1",
+	"Land_House_L_4_EP1",
+	"Land_House_L_4_dam_EP1",
+	"Land_House_L_7_EP1",
+	"Land_House_L_7_dam_EP1",
+	"Land_House_L_8_EP1",
+	"Land_House_L_8_dam_EP1",
+	"Land_House_K_8_EP1",
+	"Land_House_K_3_EP1",
+	"Land_House_K_3_dam_EP1",
+	"Land_House_K_7_EP1",
+	"Land_House_K_7_dam_EP1",
+	"Land_House_C_11_EP1",
+	"Land_House_C_11_dam_EP1",
+	"Land_House_C_5_EP1",
+	"Land_House_C_5_dam_EP1",
+	"Land_House_C_5_V1_dam_EP1",
+	"Land_House_C_5_V1_EP1",
+	"Land_House_C_5_V2_EP1",
+	"Land_House_C_5_V2_dam_EP1",
+	"Land_House_C_5_V3_EP1",
+	"Land_House_C_5_V3_dam_EP1",
+	"Land_A_Villa_EP1",
+	"Land_A_Office01_EP1",
+	"Land_House_C_4_dam_EP1"
 ];
 
 location_decorations_police =
@@ -330,20 +419,22 @@ location_bt_radio =
 	"land_gm_radiotower_01"
 ];
 
-// Objects which heal units
 location_bt_medical =
 [
-	"Land_MedicalTent_01_NATO_generic_outer_F",
-	"Land_MedicalTent_01_NATO_generic_inner_F",
-	"Land_DeconTent_01_NATO_F",
-
-	"Land_MedicalTent_01_NATO_tropic_generic_outer_F",
-	"Land_MedicalTent_01_wdl_generic_inner_F",
-	"Land_DeconTent_01_NATO_tropic_F",
-
-	"Land_MedicalTent_01_white_generic_outer_F",
-	"Land_MedicalTent_01_white_generic_inner_F",
-	"Land_DeconTent_01_white_F"
+    "Land_DeconTent_01_NATO_F",
+    "Land_DeconTent_01_NATO_tropic_F",
+    "Land_DeconTent_01_wdl_F",
+    "Land_DeconTent_01_white_F",
+    "Land_MedicalTent_01_brownhex_closed_F",
+    "Land_MedicalTent_01_digital_closed_F",
+    "Land_MedicalTent_01_MTP_closed_F",
+    "Land_MedicalTent_01_NATO_generic_inner_F",
+    "Land_MedicalTent_01_NATO_generic_outer_F",
+    "Land_MedicalTent_01_NATO_tropic_generic_outer_F",
+    "Land_MedicalTent_01_wdl_closed_F",
+    "Land_MedicalTent_01_wdl_generic_inner_F",
+    "Land_MedicalTent_01_white_generic_inner_F",
+    "Land_MedicalTent_01_white_generic_outer_F"
 ];
 
 /*
