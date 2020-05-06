@@ -111,5 +111,7 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_RUS_POLICE\init.s
 call compile preprocessFileLineNumbers "Templates\Loadouts\GEXP_POLICE\init.sqf";
 // 3CB BAF
 call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_BAF\init.sqf";
+// 3CB CCIVS
+call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_CCIVS\init.sqf";
 // 3CB Takistan Civillians
 call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_TCIV\init.sqf";
