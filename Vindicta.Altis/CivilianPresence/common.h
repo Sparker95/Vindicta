@@ -4,6 +4,7 @@
 #define OOP_WARNING
 #define OFSTREAM_FILE "civpresence.rpt"
 #include "..\common.h"
+#include "..\AI\parameterTags.hpp"
 
 // Enabled debug markers
 #define DEBUG_CIV_PRESENCE

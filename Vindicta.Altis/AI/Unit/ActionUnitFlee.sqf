@@ -1,34 +1,63 @@
 #include "common.hpp"
 
+#define pr private
+
 #define OOP_CLASS_NAME ActionUnitFlee
 CLASS("ActionUnitFlee", "ActionUnit")
 
-	VARIABLE("fleePos");
+	VARIABLE("pos");
+
+	METHOD(new)
+		params [P_THISOBJECT, P_OOP_OBJECT("_ai"), P_ARRAY("_parameters")];
+
+		pr _pos = CALLSM3("Action", "getParameterValue", _parameters, TAG_POS, [0 ARG 0 ARG 0]);
+		T_SETV("pos", _pos);
+	ENDMETHOD;
+
 
 	METHOD(activate)
 		params [P_THISOBJECT];
 		
-		private _unit = T_GETV("hO");
+		private _hO = T_GETV("hO");
+		/*
 		private _panicAnimsErectAndKneeled = [
 			"ApanPercMstpSnonWnonDnon_G01", "ApanPercMstpSnonWnonDnon_G02", "ApanPercMstpSnonWnonDnon_G03",
 			"ApanPknlMstpSnonWnonDnon_G01", "ApanPknlMstpSnonWnonDnon_G02", "ApanPknlMstpSnonWnonDnon_G03"
 		];
+		*/
 
 		// Keeping this for a civi variant maybe ?
 		// private _animationsProned = ["ApanPpneMstpSnonWnonDnon_G01", "ApanPpneMstpSnonWnonDnon_G02", "ApanPpneMstpSnonWnonDnon_G03"];
 
-		doStop _unit;
-		//_unit spawn misc_fnc_actionDropAllWeapons; // this can sleep so we should spawn it
-		_unit setSpeedMode "FULL";
-		_unit setBehaviour "CARELESS";
-		_unit switchMove selectRandom _panicAnimsErectAndKneeled;
+		//doStop _hO;
+		//_hO spawn misc_fnc_actionDropAllWeapons; // this can sleep so we should spawn it
 
-		private _pos = getPos _unit;
-		private _newpos = T_GETV("fleePos");
-		if (isNil "_posFlee") then {
-			_posFlee = [_pos select 0, (_pos select 1) + 500, _pos select 2];
+		_hO forceWalk false;
+		_hO setUnitPosWeak "UP";
+		if (random 10 > 3) then {
+			_hO switchAction "Panic";
+		} else {
+			_hO switchAction "";
 		};
-		_unit doMove _newpos;
+		_hO forceSpeed (selectRandom [5, -1]); // 5 - runs slowly, -1 - runs very very fast
+
+		_hO setSpeedMode "FULL";
+		_hO setBehaviour "CARELESS";
+
+		//_hO switchMove selectRandom _panicAnimsErectAndKneeled;
+
+		private _posMove = T_GETV("pos");
+		if (_posMove isEqualTo [0,0,0]) then {
+			private _pos = getPos _hO;
+			_posMove = [(_pos#0) - 100 + random 200, (_pos#1) - 100 + random 200, _pos select 2];
+			T_SETV("pos", _posMove);
+		};
+
+		if (GET_AGENT_FLAG(_hO)) then {
+			_hO setDestination [_posMove,"LEADER PLANNED",true];
+		} else {
+			_hO doMove _posMove;
+		};
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
@@ -38,6 +67,14 @@ CLASS("ActionUnitFlee", "ActionUnit")
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
 		//ACTION_STATE_COMPLETED
+
+		pr _hO = T_GETV("hO");
+		if (_hO distance T_GETV("pos") < 2) then {
+			_hO setUnitPosWeak "Middle";
+			_hO setUnitPos "Middle";
+		};
+
+		// Always active
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 ENDCLASS;

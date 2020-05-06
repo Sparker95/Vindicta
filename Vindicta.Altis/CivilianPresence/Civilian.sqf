@@ -7,6 +7,8 @@ First create a civilian unit/agent, then create this object and attach it to thi
 
 #define pr private
 
+#define CIV_VAR_NAME "__civ"
+
 #define OOP_CLASS_NAME Civilian
 CLASS("Civilian", "GOAP_Agent")
 
@@ -14,7 +16,7 @@ CLASS("Civilian", "GOAP_Agent")
 	VARIABLE("AI");
 
 	METHOD(new)
-		params [P_THISOBJECT, P_OBJECT("_civObjectHandle")];
+		params [P_THISOBJECT, P_OBJECT("_civObjectHandle"), P_OOP_OBJECT("_civPresence")];
 
 		OOP_INFO_1("NEW: %1", _civObjectHandle);
 
@@ -24,9 +26,13 @@ CLASS("Civilian", "GOAP_Agent")
 
 		T_SETV("hO", _civObjectHandle);
 
+		// Mark object
+		_hO setVariable [CIV_VAR_NAME, _thisObject];
+
 		// Create AI
-		pr _AI = NEW("AIUnitCivilian", [_thisObject]);
+		pr _AI = NEW("AIUnitCivilian", [_thisObject ARG _civPresence]);
 		T_SETV("AI", _AI);
+		CALLM0(_AI, "start");
 	ENDMETHOD;
 
 	METHOD(delete)
@@ -53,6 +59,12 @@ CLASS("Civilian", "GOAP_Agent")
 	METHOD(getObjectHandle)
 		params [P_THISOBJECT];
 		T_GETV("hO")
+	ENDMETHOD;
+
+	STATIC_METHOD(getCivilianFromObjectHandle)
+		params [P_THISOBJECT, P_OBJECT("_hO")];
+
+		_hO getVariable [CIV_VAR_NAME, NULL_OBJECT];
 	ENDMETHOD;
 
 ENDCLASS;

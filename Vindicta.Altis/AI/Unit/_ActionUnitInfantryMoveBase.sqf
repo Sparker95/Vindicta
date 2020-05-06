@@ -16,12 +16,11 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	VARIABLE("teleport"); // If true, unit will be teleported if ETA is exceeded
 	VARIABLE("duration"); // Time to wait at the destination before considering the action complete, -1 for never complete
 	VARIABLE("timeToComplete");
+	VARIABLE("distRemaining"); // Remaining distance to go
 
 	// ------------ N E W ------------
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-
-		T_SETV("tolerance", 1.0); // Default tolerance value
 
 		private _teleport = CALLSM3("Action", "getParameterValue", _parameters, "teleport", false);
 		T_SETV("teleport", _teleport);
@@ -29,7 +28,11 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 		private _duration = CALLSM3("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS, 0);
 		T_SETV("duration", _duration);
 
+		private _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 1); // Default tolerance
+		T_SETV("tolerance", _radius); // Default tolerance value
+
 		T_SETV("timeToComplete", 0);
+		T_SETV("distRemaining", 9000);
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -53,7 +56,14 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 		} else {
 			private _hO = T_GETV("hO");
 			private _pos = T_GETV("pos");
-			_hO doMove _pos;
+
+			// Execute movement command
+			// agents and generic units behav differently
+			if (GET_AGENT_FLAG(_hO)) then {
+				_hO setDestination [_pos,"LEADER PLANNED",true];
+			} else {
+				_hO doMove _pos;
+			};
 
 			// Set ETA
 			private _dist = _hO distance2D _pos;
@@ -81,9 +91,11 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			private _pos = T_GETV("pos");
 
 			private _timeToComplete = T_GETV("timeToComplete");
+			private _dist = _hO distance _pos;
+			T_SETV("distRemaining", _dist);
 			switch true do {
 				// We have arrived
-				case (_timeToComplete == 0 && { (_hO distance _pos) < T_GETV("tolerance") }): {
+				case (_timeToComplete == 0 && { (_dist) < T_GETV("tolerance") }): {
 					// If duration is < 0 then we never complete this action
 					doStop _hO;
 					private _duration = T_GETV("duration");
@@ -123,6 +135,10 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	// logic to run when the action is satisfied
 	METHOD(terminate)
 		params [P_THISOBJECT];
+	ENDMETHOD;
+
+	METHOD(getDebugUIVariableNames)
+		["pos", "ETA", "timeToComplete", "distRemaining"]
 	ENDMETHOD;
 
 ENDCLASS;

@@ -71,3 +71,8 @@
 #define ON_CLIENTS	([0, -2] select IS_DEDICATED)
 #define NO_JIP 		false
 #define ALWAYS_JIP	true
+
+
+// Agents
+#define SET_AGENT_FLAG(obj) obj setVariable ["vin_isAgent", true]
+#define GET_AGENT_FLAG(obj) obj getVariable ["vin_isAgent", false]

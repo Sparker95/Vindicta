@@ -364,8 +364,8 @@ CLASS("CivPresence", "")
 		params [P_THISOBJECT, P_POSITION("_pos"), P_STRING("_className")];
 
 		pr _hO = createAgent [_className, _pos, [], 0, "CAN_COLLIDE"];
-		_hO setVariable ["vin_isAgent", true];
-		pr _oop_civ = NEW("Civilian", [_hO]);	// Create OOP object associated with it
+		SET_AGENT_FLAG(_hO);
+		pr _oop_civ = NEW("Civilian", [_hO ARG _thisObject]);	// Create OOP object associated with it
 		
 		_oop_civ // Return
 	ENDMETHOD;
@@ -384,6 +384,11 @@ CLASS("CivPresence", "")
 
 		pr _className = "C_Man_3_enoch_F";
 		pr _oop_civ = T_CALLM2("_createAmbientCivilian", _pos, _className);
+
+		// Give goal to the civilian
+		pr _ai = CALLM0(_oop_civ, "getAI");
+		pr _args = ["GoalCivilianWander", 0, [], NULL_OBJECT, true, false, true]; // repetitive goal!
+		CALLM(_ai, "addExternalGoal", _args);
 
 		// Register it here, increase counters
 		pr _createdObjects = T_GETV("civilians");
@@ -422,45 +427,22 @@ CLASS("CivPresence", "")
 
 	ENDMETHOD;
 
-	METHOD(_getSafeSpot)
+	METHOD(getNearestSafeSpot)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		pr _positions = T_GETV("buildingPosAGL") apply {[_x distance _pos, _x]};
+		_positions sort ASCENDING;
+		pr _id = (floor random 6) min (count _positions);
+		_positions#_id#_1;
+	ENDMETHOD;
+
+	METHOD(getSafeSpot)
 		params [P_THISOBJECT];
-		/*
+		selectRandom T_GETV("buildingPosAGL");
+	ENDMETHOD;
 
-		private _core = _unit getVariable ["#core",objNull]; if (isNull _core) exitWith {objNull};
-		private _safespots = _core getVariable ["#modulesSafeSpots",[]];
-		private _units = _core getVariable ["#units",[]];
-
-
-		_safespots = _safespots select {_x getVariable ["#type",-1] != [2,0] select _mode};
-
-		_safespots = _safespots select
-		{
-			_safespot = _x;
-			_capacity = _safespot getVariable ["#capacity",100];
-			_inhabitantCount = {_x getVariable ["#safespot",objNull] == _safespot} count _units;
-
-
-
-			_inhabitantCount < _capacity
-		};
-
-		if (count _safespots == 0) then {_safespots = _core getVariable ["#modulesSafeSpots",[objNull]]};
-		switch (_mode) do
-		{
-			case 0:
-			{
-				([_safespots,[_unit],{_x distance _input0},"ASCEND"] call bis_fnc_sortBy) param [0,objNull]
-			};
-			case 1:
-			{
-				selectRandom _safespots
-			};
-			default
-			{
-				objNull
-			};
-		};}
-		*/
+	METHOD(getRandomWaypoint)
+		params [P_THISOBJECT];
+		selectRandom T_GETV("waypointsAGL");
 	ENDMETHOD;
 
 ENDCLASS;

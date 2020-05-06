@@ -276,11 +276,14 @@ CLASS("AIDebugUI", "")
 				_text = "No Goal";
 				// If this AI has a goal
 				if (_goal != "") then {
+					_text = _goal;
+					/*
 					if (_x isEqualType objNull) then {
 						_text = _goal select [8, 32]; // We want to remove "GoalUnit" at string start
 					} else {
 						_text = _goal select [9, 32]; // Remove "GoalGroup"
 					};
+					*/
 				};
 
 				// If we haven't received updates on this unit for some time, display a warning
@@ -623,12 +626,12 @@ CLASS("AIDebugPanel", "")
 
 		// World state
 		_tree tvSetText [[_id], "World State: ..."];
-		if (_agentClass != "Unit") then {				// Units have no world state currently
+		if (! (_agentClass in ["Unit", "Civilian"])) then {				// Units have no world state currently
 			pr _wsNames = switch (_agentClass) do {		// Names of world state properties
 				//case "Unit": {["nothing"]};
 				case "Group": {WSP_GROUP_NAMES};
 				case "Garrison": {WSP_GARRISON_NAMES};
-				//default {["wtf", "2123"]};
+				default {["error", "error", "error", "error"]};
 			};
 			//diag_log format ["World state names: %1, _agentClass: %2", _wsNames, _agentClass];
 			// Clear previous data first

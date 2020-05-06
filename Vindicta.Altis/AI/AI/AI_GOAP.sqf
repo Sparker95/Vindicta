@@ -215,7 +215,7 @@ CLASS("AI_GOAP", "AI")
 			pr _currentGoalParameters = T_GETV( "currentGoalParameters");
 			if (_currentGoal == _goalClassName &&
 				_currentGoalParameters isEqualTo _goalParameters
-				|| _goalActionState == ACTION_STATE_COMPLETED // If we have already completed it, no need to do it again
+				// || _goalActionState == ACTION_STATE_COMPLETED // If we have already completed it, no need to do it again
 			) then {
 				// We have the same goal. Do nothing.
 				OOP_INFO_2("PROCESS: SAME GOAL: %1, %2", _currentGoal, _currentGoalParameters);
@@ -412,7 +412,7 @@ CLASS("AI_GOAP", "AI")
 		pr _possibleGoals = T_CALLM0("getPossibleGoals");
 		pr _relevanceMax = -1000;
 		pr _mostRelevantGoal = [];
-		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject, ACTION_STATE_INACTIVE]}; // Goal class name, bias, parameter, source, state
+		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject, ACTION_STATE_INACTIVE, true]}; // Goal class name, bias, parameter, source, state
 		pr _extGoals = T_GETV("goalsExternal");
 		_possibleGoals append _extGoals;
 		#ifdef DEBUG_POSSIBLE_GOALS
@@ -431,13 +431,14 @@ CLASS("AI_GOAP", "AI")
 			};
 
 			// Don't return completed goals
-			if (_goalState != ACTION_STATE_COMPLETED) then {
+			// But return repetitive goals regardless
+			if ((_goalState != ACTION_STATE_COMPLETED) || (_x select 5)) then {
 				pr _goalClassName = _x select 0;
-				pr _bias = _x select 1;
+				//pr _bias = _x select 1; // Not used anywhere
 				pr _parameters = _x select 2;
 				pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject ARG _parameters]);
 				//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
-				_relevance = _relevance + _bias;
+				//_relevance = _relevance + _bias;
 				
 				#ifdef DEBUG_POSSIBLE_GOALS
 					OOP_INFO_2("getMostRelevantGoals goal: %1, relevance: %2", _goalClassName, _relevance);
@@ -476,13 +477,16 @@ CLASS("AI_GOAP", "AI")
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
 	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
 	_deleteSimilarGoals - Bool, optional default true. If true, will automatically delete all goals with the same _goalClassName.
-	_callProcess - Bool, optional default true. If true, also calls process method inside this function call to accelerate goal arbitration.
+	_callProcess - Bool, optional default false. If true, also calls process method inside this function call to accelerate goal arbitration.
+	_repeat - Bool, optional, default false. If true, this goal will be always active, even when completed.
 
 	Returns: nil
 	*/
 	
 	METHOD(addExternalGoal)
-		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_NUMBER("_bias"), P_ARRAY("_parameters"), P_OOP_OBJECT("_sourceAI"), ["_deleteSimilarGoals", true], ["_callProcess", false]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_NUMBER("_bias"),
+				P_ARRAY("_parameters"), P_OOP_OBJECT("_sourceAI"),
+				["_deleteSimilarGoals", true], P_BOOL("_callProcess"), P_BOOL("_repeat")];
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
@@ -510,7 +514,7 @@ CLASS("AI_GOAP", "AI")
 		};
 		//_scope30 = nil;
 		
-		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
+		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE, _repeat];
 		
 		//private _scope35 = createProfileScope "_onGoalAdded";
 		// Call the "onGoalAdded" static method
@@ -1407,6 +1411,7 @@ CLASS("AI_GOAP", "AI")
 			case "Unit": {	_a pushBack CALLM0(_agent, "getObjectHandle"); };
 			case "Group": {	_a pushBack CALLM0(_agent, "getGroupHandle"); };
 			case "Garrison": { _a pushBack _agent; };
+			case "Civilian": { _a pushBack CALLM0(_agent, "getObjectHandle"); };
 			default { _a pushBack "ERROR"; };
 		};
 		_a pushBack _agent;										// + OOP agent
@@ -1474,12 +1479,18 @@ CLASS("AI_GOAP", "AI")
 		params [P_THISCLASS, P_OBJECT("_object")];
 
 		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
+		pr _civ = CALLSM1("Civilian", "getCivilianFromObjectHandle", _object);
 
-		if (IS_NULL_OBJECT(_unit)) exitWith {
+		if (IS_NULL_OBJECT(_unit) && IS_NULL_OBJECT(_civ)) exitWith {
 			[_object]	// Data is wrong, take back your object handle!
 		};
 
-		pr _ai = CALLM0(_unit, "getAI");
+		pr _unitOrCiv = if (IS_NULL_OBJECT(_unit)) then {
+			_civ
+		} else {
+			_unit
+		};
+		pr _ai = CALLM0(_unitOrCiv, "getAI");
 		if (IS_NULL_OBJECT(_ai)) exitWith {
 			[_object]	// Data is wrong, take back your object handle!
 		};
@@ -1513,7 +1524,7 @@ CLASS("AI_GOAP", "AI")
 		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
 
 		if (IS_NULL_OBJECT(_unit)) exitWith {
-			[_object]	// Data is wrong, take back your object handle!
+			[""]		// Data is wrong, take back your object handle!
 		};
 
 		pr _garrison = CALLM0(_unit, "getGarrison");
