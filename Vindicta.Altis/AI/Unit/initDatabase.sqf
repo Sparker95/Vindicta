@@ -22,6 +22,7 @@
 ["GoalUnitVehicleUnflip",					10	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitArrest",							5	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitShootAtTargetRange",				4	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitDialogue",						3.5 ] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitAmbientAnim",						3	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalCivilianWander",						2.5	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitIdle",							2	] call AI_misc_fnc_setGoalIntrinsicRelevance;

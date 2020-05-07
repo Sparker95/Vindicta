@@ -26,6 +26,7 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitShootAtTargetRange.sqf
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitShootLegTarget.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitVehicleUnflip.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitDialogue.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDismountCurrentVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitFlee.sqf";
@@ -45,6 +46,8 @@ call compile preprocessFileLineNumbers "AI\Unit\GoalUnitShootAtTargetRange.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitShootLegTarget.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitVehicleUnflip.sqf";
+
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDialogue.sqf";
 
 call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianWander.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianPanicNearest.sqf";
