@@ -1021,10 +1021,10 @@ CLASS("AI_GOAP", "AI")
 	Performs backwards search of actions to connect current world state and goal world state, starting search from goal world state.
 	*/
 	
-	#ifndef RELEASE_BUILD
+	//#ifndef RELEASE_BUILD
 	// Will print useful data about generated plan and how it was achieved
 	#define ASTAR_DEBUG
-	#endif
+	//#endif
 	FIX_LINE_NUMBERS()
 
 	#ifdef OFSTREAM_ENABLE
@@ -1035,11 +1035,13 @@ CLASS("AI_GOAP", "AI")
 	FIX_LINE_NUMBERS()
 	
 	STATIC_METHOD(planActions)
-		pr _paramsGood = params [P_THISCLASS, P_ARRAY("_currentWS"), P_ARRAY("_goalWS"), P_ARRAY("_possibleActions"), P_ARRAY("_goalParameters"), ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
+		pr _paramsGood = params [P_THISCLASS, P_ARRAY("_currentWS"), P_ARRAY("_goalWS"), P_ARRAY("_possibleActions"), P_ARRAY("_goalParameters") ];
 		
+		/*
 		if (!_paramsGood) then {
 			DUMP_CALLSTACK;
 		};
+		*/
 		
 		// Copy the array of possible actions becasue we are going to modify it
 		pr _availableActions = +_possibleActions;
@@ -1170,9 +1172,12 @@ CLASS("AI_GOAP", "AI")
 				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
 				// Safety check
 				pr _connected = if (!isNil "_preconditions") then { [_preconditions, _effects, _nodeWS] call ws_isActionSuitable; } else {
+					OOP_ERROR_1(" preconditions of %1 are nil!", _action);
 					false;
 				};
 				
+				//OOP_INFO_1("  connected: %1", _connected);
+
 				// If there is connection, create a new node
 				if (_connected) then {
 				
@@ -1260,8 +1265,7 @@ CLASS("AI_GOAP", "AI")
 							
 							// Calculate G value
 							// G = G(_node) + cost of this action
-							pr _args = [_AI, _parameters];
-							pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
+							pr _cost = GET_STATIC_VAR(_x, "cost");
 							pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
 							_n set [ASTAR_NODE_ID_G, _g];
 							

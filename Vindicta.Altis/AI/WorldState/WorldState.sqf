@@ -190,7 +190,7 @@ ws_toString = {
 	pr _properties = _WS select WS_ID_WSP;
 	pr _propTypes = _WS select WS_ID_WSPT;
 	pr _strOut = "[";
-	for "_i" from 0 to (count _properties) do {
+	for "_i" from 0 to ((count _properties) - 1) do {
 		if ((_propTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If this property exists, add it to the string array
 			if ((_propTypes select _i) == WSP_TYPE_ACTION_PARAMETER)  then { // If it's a parameter
 				_strOut = _strOut + format ["%1:<AP %2>  ", _i, _properties select _i]; // Key, tag
