@@ -19,7 +19,6 @@
 ["GoalGroupRegroup",						35	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupArrest",							32	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupPatrol",							30	] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupPatrolMounted",					30	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupAirLand",						3	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupNothing",						2	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupRelax",							1	] call AI_misc_fnc_setGoalIntrinsicRelevance;
