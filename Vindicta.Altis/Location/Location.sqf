@@ -52,6 +52,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("spawned"); 									// Is this location spawned or not
 				VARIABLE("timer"); 										// Timer object which generates messages for this location
 				VARIABLE("capacityInf"); 								// Infantry capacity
+				VARIABLE("capacityHeli"); 								// Helicopter capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
 				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
@@ -107,6 +108,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("spawned", false);
 		T_SETV("capacityInf", 0);
 		T_SETV_PUBLIC("capacityInf", 0);
+		T_SETV("capacityHeli", 0);
+		T_SETV_PUBLIC("capacityHeli", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
 		T_SETV_PUBLIC("isBuilt", false);

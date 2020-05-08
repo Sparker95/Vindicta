@@ -1365,6 +1365,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
+	#define ADD_HELIS
 	//#define ADD_ARMED_MRAPS
 	//#define ADD_ARMOR
 	#define ADD_STATICS
@@ -1564,6 +1565,21 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				DELETE(_newUnit);
 			};
 			_i = _i + 1;
+		};
+		#endif
+		FIX_LINE_NUMBERS()
+
+		// Helis 
+		#ifdef ADD_HELIS
+		for "_i" from 0 to _cVehHeli - 1 do {
+			private _type = T_VEH_heli_attack; 
+			// selectRandomWeighted [
+			// 	T_VEH_heli_light,	1,
+			// 	T_VEH_heli_heavy,	1,
+			// 	T_VEH_heli_attack,	1
+			// ];
+			private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+			OOP_INFO_MSG("%1: Created heli group %2", [_gar ARG _newGroup]);
 		};
 		#endif
 		FIX_LINE_NUMBERS()
