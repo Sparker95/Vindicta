@@ -632,6 +632,20 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		count T_CALLM0("getAirUnits") > 0
 	ENDMETHOD;
 
+	/*
+	Method: isLanded
+	Returns true if group is landed on the ground (if air units), or beach (if water units)
+
+	Returns: Bool
+	*/
+	METHOD(isLanded)
+		params [P_THISOBJECT];
+		private _AI = T_CALLM0("getAI");
+		_AI == NULL_OBJECT || {
+			private _ws = GETV(_AI, "worldState");
+			[_ws, WSP_GROUP_ALL_LANDED, true] call ws_propertyExistsAndEquals
+		}
+	ENDMETHOD;
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                E V E N T   H A N D L E R S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

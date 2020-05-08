@@ -10,8 +10,8 @@ Sensor for a group to check its health properties.
 // Update interval of this sensor
 #define UPDATE_INTERVAL 10
 
-#define OOP_CLASS_NAME SensorGroupHealth
-CLASS("SensorGroupHealth", "SensorGroup")
+#define OOP_CLASS_NAME SensorGroupState
+CLASS("SensorGroupState", "SensorGroup")
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI")];
@@ -33,11 +33,15 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		// Check if vehicles need unflipping
 		pr _vehicleUnits = CALLM0(_group, "getVehicleUnits");
 		pr _vehicleHandles = _vehicleUnits apply { CALLM0(_x, "getObjectHandle") };
-		pr _allTouchingGround = (_vehicleHandles findIf {[_x] call misc_fnc_isVehicleFlipped}) == NOT_FOUND;
-		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, _allTouchingGround] call ws_setPropertyValue;
+		pr _allTouchingGround = _vehicleHandles findIf {[_x] call misc_fnc_isVehicleFlipped} == NOT_FOUND;
+		[_ws, WSP_GROUP_ALL_VEHICLES_UPRIGHT, _allTouchingGround] call ws_setPropertyValue;
+
+		// Check if vehicles are landed
+		pr _allLanded = _vehicleHandles findIf { !isTouchingGround _x } == NOT_FOUND;
+		[_ws, WSP_GROUP_ALL_LANDED, _allLanded] call ws_setPropertyValue;
 
 		// Check if vehicles need repairs
-		pr _allRepaired = (_vehicleHandles findIf {! (canMove _x)}) == NOT_FOUND;
+		pr _allRepaired = _vehicleHandles findIf { !canMove _x } == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, _allRepaired] call ws_setPropertyValue;
 
 		// Check if there are any null objects

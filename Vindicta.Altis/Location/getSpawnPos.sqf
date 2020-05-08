@@ -33,23 +33,22 @@ private _found = false;
 private _posReturn = [];
 private _dirReturn = 0;
 
-if(_catID == T_INF) then //For infantry we use the counter to check for free position, because inf can be spawned everywhere without blowing up
-{
+if(_catID == T_INF) then { //For infantry we use the counter to check for free position, because inf can be spawned everywhere without blowing up
 	private _i = 0;
 	private _count = count _stAll;
-	while {_i < _count && !_found} do {
-		private _stCurrent = _stAll select _i;
-		private _types = _stCurrent select LOCATION_SPT_ID_UNIT_TYPES;
+	while { _i < _count && !_found } do {
+		private _stCurrent = _stAll#_i;
+		private _types = _stCurrent#LOCATION_SPT_ID_UNIT_TYPES;
 		if([_catID, _subcatID] in _types &&
-		   ( _groupType in (_stCurrent select LOCATION_SPT_ID_GROUP_TYPES)) &&
-		   ((count (_stCurrent select LOCATION_SPT_ID_SPAWN_POS)) != (_stCurrent select LOCATION_SPT_ID_COUNTER))) then { //If maximum amount hasn't been reached
-			private _spawnPositions = _stCurrent select LOCATION_SPT_ID_SPAWN_POS;
-			private _nextFreePosID = _stCurrent select LOCATION_SPT_ID_COUNTER;
-			private _posArray = (_spawnPositions select _nextFreePosID);
-			private _building = _posArray select LOCATION_SP_ID_BUILDING;
-			if(isNil "_building" || {isNull _building} || {!isObjectHidden _building}) then {
-				_posReturn = _posArray select LOCATION_SP_ID_POS;
-				_dirReturn = _posArray select LOCATION_SP_ID_DIR;
+		  _groupType in _stCurrent#LOCATION_SPT_ID_GROUP_TYPES &&
+		  count (_stCurrent#LOCATION_SPT_ID_SPAWN_POS) != _stCurrent#LOCATION_SPT_ID_COUNTER) then { //If maximum amount hasn't been reached
+			private _positions = _stCurrent#LOCATION_SPT_ID_SPAWN_POS;
+			private _nextFreePosID = _stCurrent#LOCATION_SPT_ID_COUNTER;
+			private _posArray = _positions#_nextFreePosID;
+			private _object = _posArray#LOCATION_SP_ID_BUILDING;
+			if(isNil "_object" || {isNull _object} || {!isObjectHidden _object}) then {
+				_posReturn = _posArray#LOCATION_SP_ID_POS;
+				_dirReturn = _posArray#LOCATION_SP_ID_DIR;
 				_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter
 				_found = true;
 			};
@@ -58,32 +57,33 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 	};
 } else { //For vehicles we use a special loc_fnc_isPosSafe function that checks if this place is occupied by something else
 	private _i = 0;
-	private _count = count _stAll;
-	while {_i < _count && !_found} do {
-		private _stCurrent = _stAll#_i;
-		private _types = _stCurrent#LOCATION_SPT_ID_UNIT_TYPES;
-		if([_catID, _subcatID] in _types) then {
-			//Find the first free spawn position
-			private _positions = _stCurrent#LOCATION_SPT_ID_SPAWN_POS;
-			private _foundIdx = _positions findIf {
-				private _posArray = _x;
-				private _building = _posArray#LOCATION_SP_ID_BUILDING;
-				if(isNil "_building" || {isNull _building} || {!isObjectHidden _building}) then {
-					// Check if given position is safe to spawn the unit here
-					private _args = [_posArray#LOCATION_SP_ID_POS, _posArray#LOCATION_SP_ID_DIR, _className];
-					CALL_STATIC_METHOD("Location", "isPosSafe", _args)
-				} else {
-					false
-				}
-			};
-			if(_foundIdx != NOT_FOUND) then {
-				private _posArray = _positions#_foundIdx;
-				_posReturn = _posArray#LOCATION_SP_ID_POS;
-				_dirReturn = _posArray#LOCATION_SP_ID_DIR;
-				_found = true;
-				private _nextFreePosID = _stCurrent#LOCATION_SPT_ID_COUNTER;
-				_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter, although it doesn't matter here
-			};
+	private _validSpots = _stAll select { [_catID, _subcatID] in _x#LOCATION_SPT_ID_UNIT_TYPES };
+	private _count = count _validSpots;
+	while { _i < _count && !_found } do {
+		private _stCurrent = _validSpots#_i;
+		// Find the first free spawn position
+		private _positions = _stCurrent#LOCATION_SPT_ID_SPAWN_POS;
+		private _foundIdx = _positions findIf {
+			private _posArray = _x;
+			private _cooldown = _posArray#LOCATION_SP_ID_COOLDOWN;
+			private _object = _posArray#LOCATION_SP_ID_BUILDING;
+			if(_cooldown < GAME_TIME && {isNil "_object" || {isNull _object} || {!isObjectHidden _object}}) then {
+				// Check if given position is safe to spawn the unit here
+				private _args = [_posArray#LOCATION_SP_ID_POS, _posArray#LOCATION_SP_ID_DIR, _className];
+				CALL_STATIC_METHOD("Location", "isPosSafe", _args)
+			} else {
+				false
+			}
+		};
+		if(_foundIdx != NOT_FOUND) then {
+			private _posArray = _positions#_foundIdx;
+			_posReturn = _posArray#LOCATION_SP_ID_POS;
+			_dirReturn = _posArray#LOCATION_SP_ID_DIR;
+			// 15 second cooldown for occuping spawn locations (this helps when allocating multiple spaces at the same time)
+			_posArray set [LOCATION_SP_ID_COOLDOWN, GAME_TIME + 15];
+			private _nextFreePosID = _stCurrent#LOCATION_SPT_ID_COUNTER;
+			_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter, although it doesn't matter here
+			_found = true;
 		};
 		_i = _i + 1;
 	};

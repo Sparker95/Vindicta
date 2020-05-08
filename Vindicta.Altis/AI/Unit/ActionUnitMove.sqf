@@ -184,7 +184,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 			} else {
 				T_GETV("pos")
 			};
-			private _wp = _hG addWaypoint [ZERO_HEIGHT(_nextPos), 0];
+			private _wp = _hG addWaypoint [AGLToASL ZERO_HEIGHT(_nextPos), -1];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointCompletionRadius 0;
 			_wp setWaypointName MOVE_WP_NAME;

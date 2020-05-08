@@ -18,8 +18,11 @@ private _s = WSP_GAR_COUNT;
 ["GoalGarrisonClearArea",					32	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGarrisonJoinLocation",				12	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGarrisonMove",						11	] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGarrisonDefendPassive",				 2	] call AI_misc_fnc_setGoalIntrinsicRelevance; // Higher than relax
+["GoalGarrisonDefendPassive",				 5	] call AI_misc_fnc_setGoalIntrinsicRelevance; // Higher than relax
+["GoalGarrisonAirRtB",						 3	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonLand",						 2	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGarrisonRelax",						 1	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+
 //["GoalGarrisonJoinLocation",				30	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 // ---------------- Goal effects
@@ -48,6 +51,9 @@ private _s = WSP_GAR_COUNT;
 ["GoalGarrisonJoinLocation", _s,			[
 											[WSP_GAR_LOCATION, TAG_LOCATION, true]
 											]]	call AI_misc_fnc_setGoalEffects;
+["GoalGarrisonLand", _s,					[
+											[WSP_GAR_ALL_LANDED, true]
+											]]	call AI_misc_fnc_setGoalEffects;
 
 // ---------------- Predefined actions of goals
 ["GoalGarrisonRelax",						"ActionGarrisonRelax"					] call AI_misc_fnc_setGoalPredefinedAction;
@@ -56,6 +62,7 @@ private _s = WSP_GAR_COUNT;
 ["GoalGarrisonRepairAllVehicles",			"ActionGarrisonRepairAllVehicles"		] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGarrisonRebalanceVehicleGroups",		"ActionGarrisonRebalanceGroups"			] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGarrisonSurrender",					"ActionGarrisonSurrender"				] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGarrisonLand",						"ActionGarrisonLand"					] call AI_misc_fnc_setGoalPredefinedAction;
 
 // ---------------- Action preconditions and effects
 
@@ -170,17 +177,19 @@ private _s = WSP_GAR_COUNT;
 ["ActionGarrisonJoinLocation",				[
 											TAG_MOVE_RADIUS
 											]]	call AI_misc_fnc_setActionParametersFromGoal;
+// ---------------- ActionGarrisonLand
+["ActionGarrisonLand", _s,					[]]	call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonLand", _s,					[
+											[WSP_GAR_ALL_LANDED,						true]
+											]]	call AI_misc_fnc_setActionEffects;
 
 // ---------------- Action costs
 #define C 1.0
 ["ActionGarrisonMountCrew",					C*0.4	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMountInfantry",				C*0.6	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMounted",				C*2.0	]	call AI_misc_fnc_setActionCost;
-//["ActionGarrisonMoveMountedCargo",		C*3.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveCombined",				C*4.5	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveDismounted",			C*7.0	]	call AI_misc_fnc_setActionCost;
-//["ActionGarrisonLoadCargo",				C*2.0	] 	call AI_misc_fnc_setActionCost;
-//["ActionGarrisonUnloadCurrentCargo", 		C*0.3	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonDefendActive", 				C*1.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMergeVehicleGroups", 		C*0.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonSplitVehicleGroups", 		C*0.0	]	call AI_misc_fnc_setActionCost;
@@ -188,6 +197,7 @@ private _s = WSP_GAR_COUNT;
 ["ActionGarrisonRepairAllVehicles", 		C*0.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonClearArea", 				C*0.1	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonJoinLocation", 				C*0.1	]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonLand", 						C*1.0	]	call AI_misc_fnc_setActionCost;
 
 // ---------------- Action precedence
 ["ActionGarrisonMergeVehicleGroups", 		1		]	call AI_misc_fnc_setActionPrecedence;
@@ -196,12 +206,10 @@ private _s = WSP_GAR_COUNT;
 ["ActionGarrisonRebalanceGroups", 			2		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMountCrew",					5		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMountInfantry",				6		]	call AI_misc_fnc_setActionPrecedence;
-//["ActionGarrisonLoadCargo",				10		]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonLand", 						10		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMoveMounted",				20		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMoveCombined",				20		]	call AI_misc_fnc_setActionPrecedence;
-//["ActionGarrisonMoveMountedCargo",		20		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMoveDismounted",			20		]	call AI_misc_fnc_setActionPrecedence;
-//["ActionGarrisonUnloadCurrentCargo", 		30		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonDefend", 					20		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonClearArea", 				40		]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonJoinLocation", 				43		]	call AI_misc_fnc_setActionPrecedence;
@@ -209,6 +217,5 @@ private _s = WSP_GAR_COUNT;
 // ---------------- Action non-instant
 ["ActionGarrisonMoveMounted"						]	call AI_misc_fnc_setActionNonInstant;
 ["ActionGarrisonMoveCombined"						]	call AI_misc_fnc_setActionNonInstant;
-//["ActionGarrisonMoveMountedCargo"					]	call AI_misc_fnc_setActionNonInstant;
 ["ActionGarrisonMoveDismounted"						]	call AI_misc_fnc_setActionNonInstant;
 #endif

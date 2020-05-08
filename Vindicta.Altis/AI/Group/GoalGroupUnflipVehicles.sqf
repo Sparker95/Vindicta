@@ -23,7 +23,7 @@ CLASS("GoalGroupUnflipVehicles", "Goal")
 		pr _hG = CALLM0(_group, "getGroupHandle");
 		// Check for property value in the world state
 		pr _ws = GETV(_AI, "worldState");
-		if (	([_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, false] call ws_propertyExistsAndEquals) &&
+		if (	([_ws, WSP_GROUP_ALL_VEHICLES_UPRIGHT, false] call ws_propertyExistsAndEquals) &&
 				((behaviour (leader _hG)) != "COMBAT") &&
 				(_groupType == GROUP_TYPE_VEH)) then {
 			GET_STATIC_VAR(_thisClass, "relevance");

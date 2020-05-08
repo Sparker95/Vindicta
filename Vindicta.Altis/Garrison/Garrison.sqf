@@ -41,6 +41,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
 	/* save */	VARIABLE_ATTR("name", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("location", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("home", 		[ATTR_PRIVATE ARG ATTR_SAVE]); // Location the garrison considers home (defaults to the first location the garrison is assigned to)
+
 	/* save */	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units
 	/* save */	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units that can move
 				VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
@@ -113,7 +115,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_SETV("countVeh", 0);
 		T_SETV("countDrone", 0);
 		T_SETV("countCargo", 0);
-		T_SETV("location", "");
+		T_SETV("location", NULL_OBJECT);
+		T_SETV("home", NULL_OBJECT);
 		T_SETV("active", false);
 		T_SETV("autoSpawn", false);
 		T_SETV("faction", _faction);
@@ -619,14 +622,17 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		
 		// Detach from current location if it exists
 		pr _currentLoc = T_GETV("location");
-		if (_currentLoc != "") then {
+		if (_currentLoc != NULL_OBJECT) then {
 			CALLM1(_currentLoc, "unregisterGarrison", _thisObject);
 		};
 		
 		// Attach to another location
-		if (_location != "") then {
+		if (_location != NULL_OBJECT) then {
 			ASSERT_OBJECT_CLASS(_location, "Location");
 			CALLM1(_location, "registerGarrison", _thisObject);
+			if(T_GETV("home") == NULL_OBJECT) then {
+				T_SETV("home", _location);
+			};
 		};
 		
 		T_SETV("location", _location);
@@ -634,11 +640,11 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Tell commander to update its location data
 		pr _AI = CALLSM1("AICommander", "getAICommander", T_GETV("side"));
 		if (!IS_NULL_OBJECT(_AI)) then {
-			if (_currentLoc != "") then {
+			if (_currentLoc != NULL_OBJECT) then {
 				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
 			};
-			if (_location != "") then {
+			if (_location != NULL_OBJECT) then {
 				pr _args1 = [_location, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args1);
 			};
@@ -787,6 +793,17 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		SAFE_ACCESSOR("location", NULL_OBJECT)
 	ENDMETHOD;
 
+	//                     G E T   H O M E
+	/*
+	Method: getHome
+	Returns location this garrison considers home (usually the first location it was attached to)
+
+	Returns: <Location>
+	*/
+	METHOD(getHome)
+		params [P_THISOBJECT];
+		SAFE_ACCESSOR("home", NULL_OBJECT)
+	ENDMETHOD;
 
 	//                      G E T   G R O U P S
 	/*
@@ -2354,8 +2371,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		{
 			_freeUnits append CALLM0(_x, "getUnits");
 		} forEach _freeGroups;
+
 		pr _vehGroups = T_CALLM1("findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);
-		
+
 		// We can also take units from vehicle turrets if we really need it
 		{// forEach _vehGroups;
 			pr _group = _x;

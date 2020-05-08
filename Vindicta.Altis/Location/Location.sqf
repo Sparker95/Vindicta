@@ -52,7 +52,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("spawned"); 									// Is this location spawned or not
 				VARIABLE("timer"); 										// Timer object which generates messages for this location
 				VARIABLE("capacityInf"); 								// Infantry capacity
-				VARIABLE("capacityHeli"); 								// Helicopter capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
 				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
@@ -66,6 +65,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("objects"); 									// Handles of objects which can't be entered and other objects
 				VARIABLE("ambientAnimObjects"); 						// Handles of objects representing ambient activities that relaxing units can do
 				VARIABLE("targetRangeObjects"); 						// Handles of objects representing target range targets that units can shoot at
+				VARIABLE("helipads"); 									// Handles of helipads
 	/* save */	VARIABLE_ATTR("respawnSides", [ATTR_SAVE]); 			// Sides for which player respawn is enabled
 				VARIABLE_ATTR("hasRadio", [ATTR_SAVE]); 				// Bool, means that this location has a radio
 	/* save */	VARIABLE_ATTR("wasOccupied", [ATTR_SAVE]); 				// Bool, false at start but sets to true when garrisons are attached here
@@ -107,8 +107,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("spawned", false);
 		T_SETV("capacityInf", 0);
 		T_SETV_PUBLIC("capacityInf", 0);
-		T_SETV("capacityHeli", 0);
-		T_SETV_PUBLIC("capacityHeli", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
 		T_SETV_PUBLIC("isBuilt", false);
@@ -126,6 +124,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("objects", []);
 		T_SETV("ambientAnimObjects", []);
 		T_SETV("targetRangeObjects", []);
+		T_SETV("helipads", []);
 
 		T_SETV_PUBLIC("respawnSides", []);
 		T_SETV_PUBLIC("playerRespawnPos", _pos);
@@ -439,10 +438,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Check for helipad
 		if(_type in location_bt_helipad) then {
-			private _capacityHeli = T_GETV("capacityHeli") + 1;
-			T_SETV("capacityHeli", _capacityHeli);
-			T_SETV_PUBLIC("capacityHeli", _capacityHeli);
-			private _args = [T_PL_helicopters, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _hObject, direction _hObject, objNull];
+			T_GETV("helipads") pushBack _hObject;
+			private _args = [T_PL_helicopters, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _hObject, direction _hObject, _hObject];
 			T_CALLM("addSpawnPos", _args);
 			//T_GETV("spawnPosHeli") pushBackUnique position _hObject;
 		};
@@ -1045,7 +1042,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD(getCapacityHeli)
 		params [P_THISOBJECT];
-		T_GETV("capacityHeli")
+		count T_GETV("helipads")
 	ENDMETHOD;
 
 	/*
@@ -1921,7 +1918,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("lastBuildProgressTime", 0);
 		T_SETV("hasRadio", false);
 		T_SETV("capacityInf", 0);
-		T_SETV("capacityHeli", 0);
+		T_SETV("helipads", []);
 		T_SETV("timer", NULL_OBJECT);
 		T_SETV("spawned", false);
 		T_SETV_PUBLIC("alarmDisabled", false);

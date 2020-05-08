@@ -19,6 +19,8 @@
 ["GoalGroupRegroup",						35	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupArrest",							32	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupPatrol",							30	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupPatrolMounted",					30	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupAirLand",						3	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupNothing",						2	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupRelax",							1	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
@@ -28,6 +30,7 @@
 // ---------------- Predefined actions of goals
 ["GoalGroupRelax",							"ActionGroupRelax"							] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupPatrol",							"ActionGroupPatrol"							] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGroupAirLand",						"ActionGroupAirLand"						] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupArrest",							"ActionGroupArrest"							] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupRegroup",						"ActionGroupRegroup"						] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupStayInVehicles",					"ActionGroupStayInVehicles"					] call AI_misc_fnc_setGoalPredefinedAction;
@@ -43,4 +46,10 @@
 ["GoalGroupNothing",						"ActionGroupNothing"						] call AI_misc_fnc_setGoalPredefinedAction;
 
 // ---------------- Action preconditions and effects
+// ["ActionGroupRelax",	_s,					[
+// 											[WSP_GROUP_ALL_LANDED,						true]
+// 											]]	call AI_misc_fnc_setActionPreconditions;
+// ["ActionGroupAirLand",	_s,					[
+// 											[WSP_GROUP_ALL_LANDED, 						false]
+// 											]]	call AI_misc_fnc_setActionEffects;
 // ---------------- Action costs

@@ -38,10 +38,13 @@ CLASS("GoalGroupClearArea", "Goal")
 			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
 
+			// Move to within the clearable area
+			pr _moveRadius = CALLSM3("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS, 100);
+
 			// Start clear area from center, so move there first
 			pr _moveParams = [
 				[TAG_POS, _pos],
-				[TAG_MOVE_RADIUS, 75]
+				[TAG_MOVE_RADIUS, _moveRadius]
 			];
 			CALLSM2("Action", "mergeParameterValues", _moveParams, _parameters);
 			pr _actionMove = NEW("ActionGroupMove", [_AI ARG _moveParams]);

@@ -62,11 +62,11 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		// Give some waypoints
 		private _hG = T_GETV("hG");
-		private _wp0 = _hG addWaypoint [_pos, _radius];
+		private _wp0 = _hG addWaypoint [AGLToASL (_pos getPos [random _radius, random 360]), -1];
 		_wp0 setWaypointCompletionRadius 20;
 		_wp0 setWaypointType "SAD";
 		for "_i" from 0 to 8 do {
-			private _wp = _hG addWaypoint [_pos, _radius];
+			private _wp = _hG addWaypoint [AGLToASL (_pos getPos [random _radius, random 360]), -1];
 			_wp setWaypointCompletionRadius 20;
 			_wp setWaypointType "SAD";
 		};
@@ -84,7 +84,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		};
 
 		// Create a cycle waypoint
-		pr _wpCycle = _hG addWaypoint [waypointPosition _wp0, 0];
+		pr _wpCycle = _hG addWaypoint [AGLToASL waypointPosition _wp0, -1];
 		_wpCycle setWaypointType "CYCLE";
 
 		// Add goals to units

@@ -120,7 +120,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 			// Sort infantry units by distance to the selected leader
 			private _followers = CALLM0(_group, "getInfantryUnits") - [_leader];
-			private _sortedFollowers =  [_followers, { CALLM0(_x, "getPos") distance _vehLeadPos }, ASCENDING] call pr0_fnc_sortBy;
+			private _sortedFollowers =  [_followers, { CALLM0(_x, "getPos") distance2D _vehLeadPos }, ASCENDING] call pr0_fnc_sortBy;
 
 			// Apply the sorting, this will also assign the _leader as the group leader
 			CALLM3(_group, "postMethodAsync", "sort", [[_leader] + _sortedFollowers], _continuation);
@@ -196,7 +196,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _pos = T_GETV("pos");
 		private _radius = T_GETV("radius");
 
-		if (leader _hG distance _pos <= _radius) exitWith {
+		if (leader _hG distance2D _pos <= _radius) exitWith {
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -325,11 +325,11 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		private _vehLead = vehicle leader CALLM0(_group, "getGroupHandle");
 		// Sort vehicles by distance from lead vehicle
-		_allVehicles = [_allVehicles, { _x distance _vehLead }, ASCENDING] call pr0_fnc_sortBy;
+		_allVehicles = [_allVehicles, { _x distance2D _vehLead }, ASCENDING] call pr0_fnc_sortBy;
 		private _dMax = 0;
 		private _prev = _allVehicles deleteAt 0;
 		{
-			_dMax = MAXIMUM(_x distance _prev, _dMax);
+			_dMax = MAXIMUM(_x distance2D _prev, _dMax);
 			_prev = _x;
 		} forEach _allVehicles;
 		_dMax
@@ -347,15 +347,15 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _hG = T_GETV("hG");
 
 		// Sort following groups by distance from this group
-		_followingGroups = [_followingGroups, { leader _x distance leader _hG }, ASCENDING] call pr0_fnc_sortBy;
+		_followingGroups = [_followingGroups, { leader _x distance2D leader _hG }, ASCENDING] call pr0_fnc_sortBy;
 		private _dMax = 0;
-		private _unitsByDistance = [ units _hG, { _x distance leader _hG }, DESCENDING] call pr0_fnc_sortBy;
+		private _unitsByDistance = [ units _hG, { _x distance2D leader _hG }, DESCENDING] call pr0_fnc_sortBy;
 		private _lastUnitPrevGroup = _unitsByDistance#0;
 		{
 			private _followGrp = _x;
 			// Distance from last unit in previous group to leader of this group
-			_dMax = MAXIMUM(leader _followGrp distance _lastUnitPrevGroup, _dMax);
-			private _otherUnitsByDistance = [ units _followGrp, { _x distance _lastUnitPrevGroup }, DESCENDING] call pr0_fnc_sortBy;
+			_dMax = MAXIMUM(leader _followGrp distance2D _lastUnitPrevGroup, _dMax);
+			private _otherUnitsByDistance = [ units _followGrp, { _x distance2D _lastUnitPrevGroup }, DESCENDING] call pr0_fnc_sortBy;
 			_lastUnitPrevGroup = _otherUnitsByDistance#0;
 		} forEach _followingGroups;
 		_dMax

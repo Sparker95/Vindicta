@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 #define pr private
 
@@ -30,7 +31,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 
 	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
-		
+
 		OOP_INFO_0("ACTIVATE");
 
 		// Give goals to groups
@@ -91,18 +92,20 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
 		pr _radius = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getBoundingRadius") } else { 250 };
 
+		pr _pos = CALLM0(_gar, "getPos");
+
 		// Give goals to remaining groups
 		private _nPatrolGroups = 0;
 		{// foreach _groups
 			private _group = _x;
 			private _groupAI = CALLM0(_group, "getAI");
-			
+
 			if (_groupAI != NULL_OBJECT) then {
 				private _args = switch (CALLM0(_group, "getType")) do {
 					case GROUP_TYPE_VEH: {
 						if(CALLM0(_group, "isAirGroup")) then {
 							["GoalGroupClearArea", 0, [
-								[TAG_POS, CALLM0(_group, "getPos")],
+								[TAG_POS, _pos],
 								[TAG_CLEAR_RADIUS, _radius]
 							] + _commonParams, _AI]
 						} else {
@@ -128,19 +131,19 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 			};
 		} forEach _groups;
-		
+
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
-		
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-		
+
 	ENDMETHOD;
-	
+
 	// logic to run each update-step
 	METHOD(process)
 		params [P_THISOBJECT];
-		
+
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) exitWith {};

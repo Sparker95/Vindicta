@@ -742,7 +742,10 @@ CLASS("AIGarrison", "AI_GOAP")
 			]};
 			case GARRISON_TYPE_AIR: {[
 				"GoalGarrisonDefendActive",
-				"GoalGarrisonRelax"
+				"GoalGarrisonDefendPassive",
+				"GoalGarrisonRelax",
+				"GoalGarrisonLand",
+				"GoalGarrisonAirRtB"
 			]};
 			case GARRISON_TYPE_PLAYER: {
 				[]

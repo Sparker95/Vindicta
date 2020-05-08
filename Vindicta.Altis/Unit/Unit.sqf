@@ -2377,7 +2377,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		} else {
 			false
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	METHOD(limitedArsenalOnDespawn)
 		params [P_THISOBJECT];

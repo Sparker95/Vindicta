@@ -86,7 +86,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		private _minDist = 666666;
 		while {_i < _count} do {
 			private _wayPointPos = ZERO_HEIGHT(_waypoints select _index);
-			pr _wp = _hG addWaypoint [_wayPointPos, -1];
+			pr _wp = _hG addWaypoint [AGLToASL _wayPointPos, -1];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointBehaviour "SAFE"; //"AWARE"; //"SAFE";
 			//_wp setWaypointForceBehaviour true; //"AWARE"; //"SAFE";
@@ -113,7 +113,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		
 		// Add cycle waypoint
 		if (count _waypoints > 1) then {
-			pr _wp = _hG addWaypoint [ZERO_HEIGHT(_waypoints select _indexStart), 0]; //Cycle the waypoints
+			pr _wp = _hG addWaypoint [AGLToASL ZERO_HEIGHT(_waypoints select _indexStart), -1]; //Cycle the waypoints
 			_wp setWaypointType "CYCLE";
 			_wp setWaypointBehaviour "SAFE";
 			_wp setWaypointSpeed "LIMITED";

@@ -38,14 +38,13 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 
 		pr _loc = T_GETV("loc");
 		//if (_dist < 0.5) then {
-		pr _side = CALLM0(_gar, "getSide");
-		pr _locGars = CALLM(_loc, "getGarrisons", [_side]);
+		pr _locGars = CALLM2(_loc, "getGarrisons", CALLM0(_gar, "getSide"), CALLM0(_gar, "getType"));
 		if (count _locGars > 0) then {
 			// All's good, need to merge two garrisons now
 			pr _args = [_gar];
 			CALLM2(_locGars select 0, "postMethodAsync", "addGarrison", _args); // The other garrison can be on another computer
 		} else {
-			// There is no friendly garrison here, just attach here then
+			// There is no friendly garrison here of the same type, just attach here then
 			CALLM1(_gar, "setLocation", _loc);
 		};
 		ACTION_STATE_COMPLETED

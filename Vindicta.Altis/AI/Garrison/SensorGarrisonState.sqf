@@ -99,6 +99,10 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 			pr _allInfMounted = [_allGroups, WSP_GROUP_ALL_INFANTRY_MOUNTED, true] call pr0_fnc_accumulateGroupWSP;
 			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 
+			// Aggregate landed value
+			pr _allGroupsLanded = [_allGroups, WSP_GROUP_ALL_LANDED, true] call pr0_fnc_accumulateGroupWSP;
+			[_worldState, WSP_GAR_ALL_LANDED, _allGroupsLanded] call ws_setPropertyValue;
+
 			// Garrison position is average of group positions, if there are any
 			//pr _allGroups = _infGroups + _vehGroups;
 			if(count _allGroups > 0) then {
@@ -124,6 +128,9 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 			// All inf are considered mounted always
 			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, true] call ws_setPropertyValue;
+
+			// All groups are considered landed always
+			[_worldState, WSP_GAR_ALL_LANDED, true] call ws_setPropertyValue;
 		};
 
 		// Vehicle-related checks
