@@ -976,10 +976,13 @@ CLASS("AI_GOAP", "AI")
 					case ORIGIN_GOAL_PARAMETER: {
 						// Find goal parameter with given tag
 						pr _id = _goalParameters findIf {(_x#0) == _value};
-						_x set [1, _goalParameters#_id#1];
 						if (_id == -1) then {
+							// It might be valid in some cases, it's not an error
+							_x set [1, nil]; // Action.getParameterValue will deal with nil value
 							_parametersResolved = false;
-							OOP_ERROR_3("Goal parameter with tag %1 was not found, action: %2, plan: %3", _value, _actionClassName, _plan);
+							OOP_WARNING_3("Goal parameter with tag %1 was not found, action: %2, plan: %3", _value, _actionClassName, _plan);
+						} else {
+							_x set [1, _goalParameters#_id#1];
 						};
 					};
 					// Do nothing, it's value already
