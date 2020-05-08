@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 // Class: AI.AICommander
 // AI class for the commander.
 
@@ -2738,6 +2738,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// [_name, _loc, _garrison, _infSpace, _vicSpace]
+		// Locations that we can reinforce with ground units
 		private _reinfInfo = _reinfLocations apply {
 			private _locModel = _x;
 			private _loc = GETV(_locModel, "actual");
@@ -2745,27 +2746,41 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			// TODO: we need to consider units that are out on assignments
 			private _nInf = CALLM0(_generalGar, "countInfantryUnits");
 			private _nVeh = CALLM1(_generalGar, "countUnits", T_PL_tracked_wheeled); // All tracked and wheeled vehicles
-			private _airGar = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_AIR) select 0;
-			private _nHeli = CALLM1(_airGar, "countUnits", T_PL_helicopters);
-			private _nHeliMax = CALLM0(_loc, "getCapacityHeli");
-			private _nPlane = CALLM1(_airGar, "countUnits", T_PL_planes);
-			private _nPlaneMax = 2; // TODO: better number
 			[
 				CALLM0(_loc, "getDisplayName"),
 				_loc,
 				_generalGar,
 				CMDR_MAX_INF_AIRFIELD - _nInf,
-				_nVehMax - _nVeh,
-				_airGar,
-				_nHeliMax - _nHeli,
-				_nPlaneMax - _nPlane
+				_nVehMax - _nVeh
 			]
+		};
+
+		// Locations that we can reinforce with air units
+		private _airReinfInfo = _reinfLocations apply {
+			private _locModel = _x;
+			private _loc = GETV(_locModel, "actual");
+			private _airGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_AIR);
+			if(count _airGarrisons > 0) then {
+				private _airGar = _airGarrisons select 0;
+				private _nHeli = CALLM1(_airGar, "countUnits", T_PL_helicopters);
+				private _nHeliMax = CALLM0(_loc, "getCapacityHeli");
+				private _nPlane = CALLM1(_airGar, "countUnits", T_PL_planes);
+				private _nPlaneMax = 2; // TODO: better number
+				[
+					_airGar,
+					_nHeliMax - _nHeli,
+					_nPlaneMax - _nPlane
+				]
+			} else {
+				[]
+			};
+		} select {
+			!(_x isEqualTo [])
 		};
 
 		// Add air
 		{
-			private _airGar = _x#5;
-			private _nHelisRequired = _x#6;
+			_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
 			for "_i" from 0 to _nHelisRequired - 1 do {
 				private _type = T_VEH_heli_attack; 
 				// selectRandomWeighted [
@@ -2776,7 +2791,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				private _newGroup = CALLM(_airGar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
 				OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
 			};
-		} forEach _reinfInfo;
+		} forEach _airReinfInfo;
 
 		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
 
