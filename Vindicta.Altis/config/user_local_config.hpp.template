@@ -36,6 +36,9 @@
 // Log all AIGarrison GOAP activity to separate files
 //#define ENABLE_LOG_GOAP
 
+// Prints useful debug info about A* GOAP planner
+//#define GOAP_PLANNER_ASTAR_DEBUG
+
 // Show commander debug marker on map with current commander activity (at bottom left)
 //#define DEBUG_COMMANDER
 
@@ -84,3 +87,4 @@
 // Defined only in this file
 // Means that we are in the editor
 //#define EDITOR_PREVIEW
+

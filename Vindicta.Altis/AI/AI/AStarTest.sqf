@@ -103,7 +103,7 @@ pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
 
 pr _wsGoal = [WSP_GAR_COUNT, ORIGIN_GOAL_WS] call ws_new;
 //[_wsGoal, WSP_GAR_POSITION, [6, 7, 8]] call ws_setPropertyValue;
-[_wsGoal, WSP_GAR_POSITION, "123123"] call ws_setPropertyGoalParameterTag;
+[_wsGoal, WSP_GAR_POSITION, "goalTag_position"] call ws_setPropertyGoalParameterTag;
 /*
 [_wsGoal, WSP_GAR_CARGO_POSITION, [6, 6, 6]] call ws_setPropertyValue;
 [_wsGoal, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;
@@ -114,7 +114,7 @@ pr _wsGoal = [WSP_GAR_COUNT, ORIGIN_GOAL_WS] call ws_new;
 
 // Run A*
 //[P_THISCLASS, P_ARRAY("_currentWS"), P_ARRAY("_goalWS"), P_ARRAY("_possibleActions"), P_ARRAY("_goalParameters")];
-pr _args = [_wsCurrent, _wsGoal, _actions, [["g_moveRadius", 100]]];
+pr _args = [_wsCurrent, _wsGoal, _actions, [[TAG_MOVE_RADIUS, 100]]];
 pr _plan = CALL_STATIC_METHOD("AI_GOAP", "planActions", _args);
 
 _plan params ["_planDone", "_planArray"];

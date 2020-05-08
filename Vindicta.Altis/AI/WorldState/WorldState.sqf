@@ -32,7 +32,7 @@ Returns: new WorldState object
 
 
 ws_new = {
-	params [P_NUMBER("_size"), ["_origin", ORIGIN_NONE, [0]]];
+	params [P_NUMBER("_size"), ["_origin", ORIGIN_GOAL_WS, [0]]];
 
 	// Array with WorldStateProperties
 	pr _array_WSP = [];
@@ -483,4 +483,23 @@ ws_applyEffectsToParameters = {
 	};
 	
 	_success
+};
+
+// Calculates planner cache key
+ws_getPlannerCacheKey = {
+	params ["_wsCurrent", "_wsGoal"];
+	_wsGoal params ["_goalProps", "_goalTypes"];
+	_goalProps = +_goalProps;
+	_wsCurrent params ["_currentProps", "_currentTypes"];
+	_currentProps = +_currentProps;
+	
+	// todo: use toString instead of str, it's much much faster
+	{
+		if (! (_x isEqualType false)) then {
+			_currentProps set [_forEachIndex, true]; // Bools are much faster to stringify
+			_goalProps set [_forEachIndex, _x isEqualTo (_goalProps#_forEachIndex)];
+		};
+	} forEach _currentProps;
+
+	(str _goalProps) + (str _goalTypes) + (str _currentProps) + (str _currentTypes);
 };

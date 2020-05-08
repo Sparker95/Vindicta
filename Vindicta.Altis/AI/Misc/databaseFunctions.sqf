@@ -99,7 +99,7 @@ AI_misc_fnc_setActionParametersFromGoal = {
 	params [P_STRING("_actionClass"), P_ARRAY("_goalParameterTagsArray")];
 	pr _parameters = [];
 	{
-		_parameters pushBack [_x, "notag", ORIGIN_GOAL_PARAMETER];
+		_parameters pushBack [_x, _x, ORIGIN_GOAL_PARAMETER];
 	} forEach _goalParameterTagsArray;
 	SET_STATIC_VAR(_actionClass, "parameters", _parameters);
 };

@@ -33,10 +33,6 @@ CLASS("AIGroup", "AI_GOAP")
 
 		T_SETV("suspTarget", nil);
 		
-		// Initialize the world state
-		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
-		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
-		
 		// Initialize sensors
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
 		T_CALLM("addSensor", [_sensorTargets]);
