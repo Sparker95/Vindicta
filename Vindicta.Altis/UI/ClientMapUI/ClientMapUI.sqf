@@ -180,7 +180,7 @@ CLASS("ClientMapUI", "")
 		// Map OnMouseMoving
 		// Fires continuously while moving the mouse with a certain interval
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseMoving", {CALLM(gClientMapUI, "onMapMouseMoving", _this);} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
-                                                                 
+																 
 		// We use a fucked up trick to make a nicely looking checkbox button. It constists of two controls: static background to manage appearence,
 		// and transparent foreground button to intercept events. The event handlers must be attached to the button obviously.
 		// Use function ui_fnc_findCheckboxButton to find the button control from given static control.
@@ -415,9 +415,9 @@ CLASS("ClientMapUI", "")
 		pr _return = "";
 
 		{
-     		if(((getPos _x) distance _pos) < 100) exitWith {
-          		_return =  _x getVariable ["Name", ""];
-     		};
+			if(((getPos _x) distance _pos) < 100) exitWith {
+				_return =  _x getVariable ["Name", ""];
+			};
 		} forEach entities "Vindicta_LocationSector";
 
 		_return
@@ -1079,45 +1079,34 @@ CLASS("ClientMapUI", "")
 	#define INTEL_PANEL_CLEAR 0
 	#define INTEL_PANEL_SHOW_COMPOSITION 1
 
-	METHOD(intelPanelUpdateFromGarrisonRecord)
-		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), P_ARRAY("_flags")];
+	METHOD(intelPanelUpdateFromGarrisonRecords)
+		params [P_THISOBJECT, P_ARRAY("_garRecords")];
 
 		private _mapDisplay = findDisplay 12;
 
-		OOP_INFO_1("intelPanelUpdateFromGarrisonRecord: %1", _garRecord);
-
-		// Bail if garrison record is destroyed
-		if (!IS_OOP_OBJECT(_garRecord)) exitWith {
-			OOP_INFO_0("Garrison record is destroyed");
-		};
+		OOP_INFO_1("intelPanelUpdateFromGarrisonRecords: %1", _garRecords);
 
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 		_lnb lnbSetColumnsPos [0, 0.6];
-
-		pr _comp = CALLM0(_garRecord, "getComposition");
-		OOP_INFO_1("Composition: %1", _comp);
 		{
-			pr _catID = _foreachindex;
+			_lnb lnbAddRow ["GARRISON", str (_forEachIndex + 1)];
+			pr _comp = CALLM0(_x, "getComposition");
 			{
-				pr _subcatID = _forEachIndex;
-				pr _classes = _x; // Array with IDs of classes
-				if (count _classes > 0) then {
-					pr _name = T_NAMES#_catID#_subcatID;
-					_lnb lnbAddRow [toUpper(_name), str (count _classes)];
-				};
-			} forEach _x;
-		} forEach _comp;
+				pr _catID = _foreachindex;
+				{
+					pr _subcatID = _forEachIndex;
+					pr _classes = _x; // Array with IDs of classes
+					if (count _classes > 0) then {
+						pr _name = T_NAMES#_catID#_subcatID;
+						_lnb lnbAddRow ["  " + toUpper(_name), str (count _classes)];
+					};
+				} forEach _x;
+			} forEach _comp;
+		} forEach _garRecords;
 	ENDMETHOD;
 
-
-	METHOD(intelPanelUpdateFromLocationIntel)
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_ARRAY("_flags")];
-
-		pr _mapDisplay = findDisplay 12;
-
-		OOP_INFO_1("intelPanelUpdateFromLocationIntel: %1", _intel);
-
+	METHOD(setIntelPanelForItems)
+		params [P_THISOBJECT];
 		// set text on sorting buttons, not needed here. It will simply look like a black bar
 		pr _btns = T_GETV("sortButtons");
 		if !(_btns isEqualTo []) then {
@@ -1126,35 +1115,32 @@ CLASS("ClientMapUI", "")
 			_btns#2 ctrlSetText "";
 			_btns#3 ctrlSetText "";
 		};
+		T_CALLM0("intelPanelClear");
+	ENDMETHOD;
+	
+	METHOD(intelPanelUpdateFromLocationIntel)
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_ARRAY("_flags")];
+
+		OOP_INFO_1("intelPanelUpdateFromLocationIntel: %1", _intel);
 
 		// Bail if this intel item is removed for some reason
 		if (!CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) exitWith {
 			OOP_INFO_0("Intel doesn't exist");
 		};
 
-		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
-		
-
-		pr _typeText = "";
-		pr _timeText = "";
-		pr _sideText = "";
-		pr _soldierCount = 0;
-		pr _vehList = [];
-		
-		_typeText = CALLSM1("Location", "getTypeString", GETV(_intel, "type"));
-		
-		_timeText = str GETV(_intel, "dateUpdated");
-		_sideText = str GETV(_intel, "side");
+		pr _typeText = CALLSM1("Location", "getTypeString", GETV(_intel, "type"));
+		pr _timeText = str GETV(_intel, "dateUpdated");
+		pr _sideText = str GETV(_intel, "side");
 		if (_sideText == "GUER") then { _sideText = "IND"; }; // some people are confused by it being GUERilla
 
+		pr _lnb = [findDisplay 12, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl;
 		// Apply new text for GUI elements
-		private _mapDisplay = findDisplay 12;
 		_lnb lnbSetCurSelRow -1;
 		_lnb lnbAddRow [ "TYPE", _typeText];
 		_lnb lnbAddRow [ "SIDE", _sideText];
 
 		pr _loc = GETV(_intel, "location");
+
 		// Add inf capacity
 		pr _capinf = CALLM0(_loc, "getCapacityInf");
 		//_lnb lnbAddRow [format ["MAX INFANTRY %1", _capInf], "", ""];
@@ -1186,6 +1172,7 @@ CLASS("ClientMapUI", "")
 		if (count _ua > 0 && {INTEL_PANEL_SHOW_COMPOSITION in _flags}) then {
 			_compositionText = "";
 			// Amount of infrantry
+			pr _soldierCount = 0;
 			{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
 			_lnb lnbAddRow ["SOLDIERS", str _soldierCount ];
 
@@ -1538,7 +1525,9 @@ CLASS("ClientMapUI", "")
 
 		pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
-		pr _markersUnderCursor = _garrisonsUnderCursor + _locationsUnderCursor;
+
+		// Try to prioritize location marker
+		pr _markersUnderCursor = _locationsUnderCursor + _garrisonsUnderCursor;
 
 		OOP_INFO_1("MARKERS UNDER CURSOR: %1", _markersUnderCursor);
 
@@ -1556,16 +1545,7 @@ CLASS("ClientMapUI", "")
 			pr _targetPos = [0, 0, 0];
 
 			if ((count _markersUnderCursor > 0) && (count _markersUnderCursor <= 2)) then {
-				pr _destMarker = if (count _markersUnderCursor == 2) then {
-					// Try to prioritize location marker
-					if (count _locationsUnderCursor > 0) then {
-						_locationsUnderCursor#0
-					} else {
-						_markersUnderCursor#0
-					};
-				} else {
-					_markersUnderCursor#0;
-				};
+				pr _destMarker = _markersUnderCursor#0;
 				switch (GET_OBJECT_CLASS(_destMarker)) do {
 					case "MapMarkerLocation" : {
 						_targetType = TARGET_TYPE_LOCATION;
@@ -1631,7 +1611,7 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 	METHOD(_select)
-		params [P_THISOBJECT, P_ARRAY("_garrisonsUnderCursor"), P_ARRAY("_locationsUnderCursor")];
+		params [P_THISOBJECT, P_ARRAY("_garrisons"), P_ARRAY("_locations")];
 		
 		// Disable the garrison action listbox
 		T_CALLM1("garActionMenuEnable", false);
@@ -1652,58 +1632,52 @@ CLASS("ClientMapUI", "")
 			};
 		} forEach _selectedLocations;
 
-		// Let's select it
+		// Select the markers themselves
 		{ CALLM1(_x, "select", true); } forEach _markersUnderCursor;
 
-		// If there is any garrison under cursor
-		if (count _garrisonsUnderCursor > 0) then {
-			pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+		// If there is any garrison selected then enable its menu
+		if (count _garrisons > 0) then {
+			pr _garRecord = CALLM0(_garrisons#0, "getGarrisonRecord");
 			T_CALLM1("garSelMenuSetGarRecord", _garRecord);
 			T_CALLM1("garSelMenuEnable", true);
 		};
 
-		// If there is any location under cursor
-		if (count _locationsUnderCursor > 0) then {
-			pr _locIntel = CALLM0(_locationsUnderCursor#0, "getIntel");
+		// If there is any location selected
+		if (count _locations > 0) then {
+			pr _locIntel = CALLM0(_locations#0, "getIntel");
 			if (GETV(_locIntel, "side") == playerSide) then { // We can only perform things on a friendly location
 				T_CALLM1("locSelMenuSetLocation", GETV(_locIntel, "location"));
 				T_CALLM1("locSelMenuEnable", true);
 				pr _radius = CALLM0(gGameMode, "getRecruitmentRadius");
-				CALLM1(_locationsUnderCursor#0, "setAccuracyRadius", _radius);
+				CALLM1(_locations#0, "setAccuracyRadius", _radius);
 			};
 		};
 
-		//Decide what to do with the panel on the right
-		if (count _garrisonsUnderCursor == 1 && count _locationsUnderCursor == 1) then {
-			// If we have selected both a garrison and a location
-			pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-			pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-			T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR]);
-			T_CALLM1("intelPanelUpdateFromGarrisonRecord", _garRecord);
-			//T_CALLM1("intelPanelShowButtons", false);
+		
+		if (count _garrisons == 0 && count _locations == 0) then {
+			T_CALLM0("showGlobalIntel");
 		} else {
-			// If one garrison was clicked, update the panel from its record
-			if (count _garrisonsUnderCursor == 1) then {
-				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, [INTEL_PANEL_CLEAR]); // clear
-				//T_CALLM1("intelPanelShowButtons", false);
+			// Set the intel panel for items
+			T_CALLM0("setIntelPanelForItems");
+			//Decide what to do with the panel on the right
+			if (count _garrisons > 0 && count _locations == 1) then {
+				// If we have selected both a garrison and a location
+				pr _locIntel = CALLM0(_locations#0, "getIntel");
+				T_CALLM1("intelPanelUpdateFromLocationIntel", _locIntel);
+				pr _garRecords = _garrisons apply { CALLM0(_x, "getGarrisonRecord") } select { _x != NULL_OBJECT };
+				T_CALLM1("intelPanelUpdateFromGarrisonRecords", _garRecords);
 			} else {
 				// If one location was clicked, update panel from the location intel
-				if (count _locationsUnderCursor == 1) then {
-					pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-					T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]);
-					//T_CALLM1("intelPanelShowButtons", false);
+				if (count _locations == 1) then {
+					pr _intel = CALLM0(_locations#0, "getIntel");
+					T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_SHOW_COMPOSITION]);
 				};
 			};
 		};
-		
-		T_SETV("selectedGarrisonMarkers", _garrisonsUnderCursor);
-		T_SETV("selectedLocationMarkers", _locationsUnderCursor);
-		T_CALLM0("updateHintTextFromContext");
 
-		if (count _garrisonsUnderCursor == 0 && count _locationsUnderCursor == 0) then {
-			T_CALLM0("showGlobalIntel");
-		};
+		T_SETV("selectedGarrisonMarkers", _garrisons);
+		T_SETV("selectedLocationMarkers", _locations);
+		T_CALLM0("updateHintTextFromContext");
 	ENDMETHOD;
 
 	/*
