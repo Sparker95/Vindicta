@@ -1660,18 +1660,19 @@ CLASS("ClientMapUI", "")
 			// Set the intel panel for items
 			T_CALLM0("setIntelPanelForItems");
 			//Decide what to do with the panel on the right
-			if (count _garrisons > 0 && count _locations == 1) then {
+			if(count _locations > 0) then {
 				// If we have selected both a garrison and a location
 				pr _locIntel = CALLM0(_locations#0, "getIntel");
-				T_CALLM1("intelPanelUpdateFromLocationIntel", _locIntel);
+				pr _flags = if(count _garrisons == 0) then {
+					[INTEL_PANEL_SHOW_COMPOSITION]
+				} else {
+					[]
+				};
+				T_CALLM2("intelPanelUpdateFromLocationIntel", _locIntel, _flags);
+			};
+			if(count _garrisons > 0) then {
 				pr _garRecords = _garrisons apply { CALLM0(_x, "getGarrisonRecord") } select { _x != NULL_OBJECT };
 				T_CALLM1("intelPanelUpdateFromGarrisonRecords", _garRecords);
-			} else {
-				// If one location was clicked, update panel from the location intel
-				if (count _locations == 1) then {
-					pr _intel = CALLM0(_locations#0, "getIntel");
-					T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_SHOW_COMPOSITION]);
-				};
 			};
 		};
 
