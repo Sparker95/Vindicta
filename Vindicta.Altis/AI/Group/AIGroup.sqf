@@ -95,7 +95,7 @@ CLASS("AIGroup", "AI_GOAP")
 	ENDMETHOD;
 	FIX_LINE_NUMBERS()
 
-	// World state accesors
+	// World state accessors
 
 	METHOD(isLanded)
 		params [P_THISOBJECT];

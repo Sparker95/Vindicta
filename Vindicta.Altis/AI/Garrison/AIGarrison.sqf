@@ -342,6 +342,13 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 	ENDMETHOD;
 
+	// World state accessors
+
+	METHOD(isLanded)
+		params [P_THISOBJECT];
+		[T_GETV("worldState"), WSP_GAR_ALL_LANDED] call ws_getPropertyValue
+	ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The garrison AI resides in the same thread as the garrison
