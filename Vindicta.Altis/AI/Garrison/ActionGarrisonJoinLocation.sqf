@@ -76,6 +76,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	// procedural preconditions
 	// POS world state property comes from action parameters
 	
+	/*
 	STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 
@@ -93,5 +94,6 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 
 		_ws
 	ENDMETHOD;
+	*/
 
 ENDCLASS;

@@ -378,34 +378,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -	
-	
-	// ----------------------------------------------------------------------
-	//                 G E T   P R E C O N D I T I O N S
-	// ----------------------------------------------------------------------
-	/*
-	Method: getPreconditions
-	Returns preconditions of this action depending on parameters
-	By default it tries to apply parameters to preconditions, if preconditions reference any parameters
-	
-	Warning:If an action must provide preconditions which can't be copied from goal parameters, it must re-implement this method
-	
-	Parameters: _goalParameters, _actionParameters
-	
-	_goalParameters - parameters of the <Goal> for which this action is considered
-	_actionParameters - parameters of this action resolved by the action planner
-	_c -
-	
-	Returns: <WorldState>
-	*/
-	STATIC_METHOD(getPreconditions)
-		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
-
-		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
-		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
-		_wsPre
-	ENDMETHOD;
-	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -		
 	
 	// ----------------------------------------------------------------------
 	// |                         G E T   P R E C E D E N C E                |

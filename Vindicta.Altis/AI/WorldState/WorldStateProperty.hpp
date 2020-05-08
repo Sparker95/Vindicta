@@ -1,5 +1,3 @@
-#define WSP_NEW(key, value) value
-
 #define WSP_TYPE_DOES_NOT_EXIST		0
 #define WSP_TYPE_NUMBER				1
 #define WSP_TYPE_STRING				2

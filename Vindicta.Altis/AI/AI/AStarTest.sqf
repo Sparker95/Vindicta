@@ -65,8 +65,8 @@ pr _actions = [
 		"ActionGarrisonMergeVehicleGroups",
 		"ActionGarrisonSplitVehicleGroups",
 		"ActionGarrisonRebalanceGroups",
-		"ActionGarrisonClearArea",
-		"ActionGarrisonJoinLocation"
+		"ActionGarrisonClearArea"//,
+		//"ActionGarrisonJoinLocation"
 ];
 
 
@@ -78,11 +78,11 @@ pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
 [_wsCurrent, WSP_GAR_ALL_VEHICLES_CAN_MOVE, true] call ws_setPropertyValue;
 [_wsCurrent, WSP_GAR_ALL_HUMANS_HEALED, true] call ws_setPropertyValue;
 [_wsCurrent, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
-[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, true] call ws_setPropertyValue;
 // Handling of vehicles and crew
 [_wsCurrent, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, true] call ws_setPropertyValue;
-[_wsCurrent, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, true] call ws_setPropertyValue;
-[_wsCurrent, WSP_GAR_ALL_VEHICLES_HAVE_CREW_ASSIGNED, true] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, false] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_VEHICLES_HAVE_CREW_ASSIGNED, false] call ws_setPropertyValue;
 [_wsCurrent, WSP_GAR_ENGINEER_AVAILABLE, true] call ws_setPropertyValue;
 [_wsCurrent, WSP_GAR_MEDIC_AVAILABLE, true] call ws_setPropertyValue;//								10
 [_wsCurrent, WSP_GAR_ENOUGH_HUMANS_TO_DRIVE_ALL_VEHICLES, true] call ws_setPropertyValue;//			11
@@ -92,7 +92,7 @@ pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
 [_wsCurrent, WSP_GAR_POSITION, [1, 2, 3]] call ws_setPropertyValue;//									14 // Position or the current location this garrison is attached to
 [_wsCurrent, WSP_GAR_CARGO_POSITION, [1, 2, 3]] call ws_setPropertyValue;//								15
 [_wsCurrent, WSP_GAR_VEHICLES_POSITION, [1, 2, 3]] call ws_setPropertyValue;//							16
-[_wsCurrent, WSP_GAR_VEHICLE_GROUPS_MERGED, true] call ws_setPropertyValue;//						17
+[_wsCurrent, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;//						17
 [_wsCurrent, WSP_GAR_GROUPS_BALANCED, true] call ws_setPropertyValue;//								18
 [_wsCurrent, WSP_GAR_CLEARING_AREA, false] call ws_setPropertyValue;//								19
 [_wsCurrent, WSP_GAR_CARGO, false] call ws_setPropertyValue;//										20
@@ -101,8 +101,9 @@ pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
 [_wsCurrent, WSP_GAR_HAS_VEHICLES, true] call ws_setPropertyValue;//								23
 
 
-pr _wsGoal = [WSP_GAR_COUNT] call ws_new;
-[_wsGoal, WSP_GAR_POSITION, [6, 7, 8]] call ws_setPropertyValue;
+pr _wsGoal = [WSP_GAR_COUNT, ORIGIN_GOAL_WS] call ws_new;
+//[_wsGoal, WSP_GAR_POSITION, [6, 7, 8]] call ws_setPropertyValue;
+[_wsGoal, WSP_GAR_POSITION, "123123"] call ws_setPropertyGoalParameterTag;
 /*
 [_wsGoal, WSP_GAR_CARGO_POSITION, [6, 6, 6]] call ws_setPropertyValue;
 [_wsGoal, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;

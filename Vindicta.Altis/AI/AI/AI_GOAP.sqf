@@ -264,6 +264,11 @@ CLASS("AI_GOAP", "AI")
 					pr _args = [/* AI */ _thisObject, _goalParameters];
 					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
 					
+					// todo caching
+					/*
+					cache key: _goalClassName + _goalParameters + currentWorldState + _wsGoal
+					*/
+
 					// Get actions this agent can do
 					pr _possActions = T_CALLM0("getPossibleActions");
 					
@@ -1194,7 +1199,7 @@ CLASS("AI_GOAP", "AI")
 					pr _parametersResolved = true;
 					// Resolve parameters which are derived from goal
 					{ // foreach parameters of this action
-						_x params ["_tag", "_value"];
+						pr _tag = _x#0;
 						
 						// If the value has not been resolved yet
 						if (isNil "_value") then {
@@ -1203,8 +1208,9 @@ CLASS("AI_GOAP", "AI")
 							pr _idSameTag = _goalParameters findIf {(_x select 0) == _tag};
 							//ade_dumpCallstack;
 							if (_idSameTag != -1) then {
-								// Copy the value from goal parameter to the action parameter
-								_x set [1, (_goalParameters select _idSameTag) select 1];
+								// Add reference to goal parameter to the action parameter
+								_x set [1, _tag];
+								_x set [2, ORIGIN_GOAL_PARAMETER];
 							} else {
 								// This parameter is required by action to be retrieved from a goal parameter
 								// But it wasn't found in the goal parameter array
@@ -1241,7 +1247,7 @@ CLASS("AI_GOAP", "AI")
 						[_WSBeforeAction, _effects] call ws_substract;
 						// Fully resolve preconditions since we now know all the parameters of this action
 						pr _args = [_goalParameters, _parameters]; //
-						pr _preconditions = CALL_STATIC_METHOD(_x, "getPreconditions", _args);
+						pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
 						[_WSBeforeAction, _preconditions] call ws_add;
 						
 						// Check if this world state is in close set already
