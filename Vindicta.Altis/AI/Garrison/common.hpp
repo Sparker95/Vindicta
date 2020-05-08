@@ -15,6 +15,7 @@
 #include "..\parameterTags.hpp"
 #include "..\..\Group\Group.hpp"
 #include "..\..\Unit\Unit.hpp"
+#include "..\AI\AI.hpp"
 #include "..\targetStruct.hpp"
 #include "..\..\Location\Location.hpp"
 #include "garrisonWorldStateProperties.hpp"

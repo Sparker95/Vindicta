@@ -733,7 +733,8 @@ class dialog
   {
     class MyLbox:RscListNBox
     {
-        x=y=wherever;
+        x = 0;
+		y = 0;
         canDrag=true;
         rows=10;
         lineSpacing = 1.3;

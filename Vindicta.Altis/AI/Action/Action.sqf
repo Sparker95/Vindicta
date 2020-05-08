@@ -378,71 +378,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		
-
-
-	// ----------------------------------------------------------------------
-	// |                         G E T   C O S T                            |
-	// |                                                                    |
-	// | Returns the cost of taking this action in current situation
-	// | By default it returns the value of "cost" static variable
-	// | You can redefine it for inherited action if the returned cost needs to depend on something
-	// ----------------------------------------------------------------------
-	
-	/*
-	Method: getCost
-	Returns the cost of taking this action in current situation
-	By default it returns the value of "cost" static variable
-	You can redefine it for inherited action if the returned cost needs to depend on something
-	
-	Parameters: _AI, _wsStart, _wsEnd
-	
-	_AI - the <AI> object
-	_wsStart - the start <WorldState>
-	_wsEnd - the end <WorldState>
-	
-	Returns: Number
-	*/
-	STATIC_METHOD(getCost)
-		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_wsStart"), P_ARRAY("_wsEnd")];
-		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		
-		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
-		//if (isNil "_cost") then {
-		//	0
-		//} else {
-			_cost
-		//};
-	ENDMETHOD;
-	
-	
-	// ----------------------------------------------------------------------
-	//                 G E T   P R E C O N D I T I O N S
-	// ----------------------------------------------------------------------
-	/*
-	Method: getPreconditions
-	Returns preconditions of this action depending on parameters
-	By default it tries to apply parameters to preconditions, if preconditions reference any parameters
-	
-	Warning:If an action must provide preconditions which can't be copied from goal parameters, it must re-implement this method
-	
-	Parameters: _goalParameters, _actionParameters
-	
-	_goalParameters - parameters of the <Goal> for which this action is considered
-	_actionParameters - parameters of this action resolved by the action planner
-	_c -
-	
-	Returns: <WorldState>
-	*/
-	STATIC_METHOD(getPreconditions)
-		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
-
-		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
-		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
-		_wsPre
-	ENDMETHOD;
-	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -		
 	
 	// ----------------------------------------------------------------------
 	// |                         G E T   P R E C E D E N C E                |

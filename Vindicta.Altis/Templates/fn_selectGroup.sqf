@@ -25,4 +25,4 @@ if (_group isEqualType configNull) then {
 	} forEach _group;
 };
 
-_return
+_return;

@@ -26,7 +26,7 @@ CLASS("GoalGarrisonAttackAssignedTargets", "Goal")
 
 		pr _pos = GETV(_AI, "assignedTargetsPos");
 
-		pr _ws = [WSP_GAR_COUNT] call ws_new;
+		pr _ws = [WSP_GAR_COUNT, ORIGIN_GOAL_WS] call ws_new;
 		[_ws, WSP_GAR_CLEARING_AREA, _pos] call ws_setPropertyValue;
 		_ws
 	ENDMETHOD;

@@ -2,7 +2,7 @@
 #include "..\goalRelevance.hpp"
 #include "..\parameterTags.hpp"
 
-#ifndef _SQF_VM
+
 
 private _s = WSP_GAR_COUNT;
 
@@ -211,4 +211,3 @@ private _s = WSP_GAR_COUNT;
 ["ActionGarrisonMoveCombined"						]	call AI_misc_fnc_setActionNonInstant;
 //["ActionGarrisonMoveMountedCargo"					]	call AI_misc_fnc_setActionNonInstant;
 ["ActionGarrisonMoveDismounted"						]	call AI_misc_fnc_setActionNonInstant;
-#endif

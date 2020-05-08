@@ -1,9 +1,11 @@
+#include "..\AI\AI.hpp"
 #include "WorldStateProperty.hpp"
 #include "..\..\common.h"
 
 #define pr private
 #define WS_ID_WSP	0
 #define WS_ID_WSPT	1
+#define WS_ID_ORIGIN 2
 
 /*
 Class: WorldState
@@ -26,27 +28,30 @@ _c -
 
 Returns: new WorldState object
 */
+
+
+
 ws_new = {
-	params [P_NUMBER("_size")];
-	pr _array_WSP = [];
-	
+	params [P_NUMBER("_size"), ["_origin", ORIGIN_GOAL_WS, [0]]];
+
 	// Array with WorldStateProperties
-	pr _i = 0;
-	while {_i < _size} do {
-		_array_WSP set [_i, WSP_NEW(_i, 0)]; // Fill it with an array of WorldStateProperties
-		_i = _i + 1;
-	};
+	pr _array_WSP = [];
+	_array_WSP resize _size;
+	_array_WSP = _array_WSP apply {0};
 	
 	// Array with flags indicating if specified WSP exists or not
 	pr _array_propTypes = []; // Array of WorldPropertyExists flags
-	_i = 0;
-	while {_i < _size} do {
-		_array_propTypes set [_i, WSP_TYPE_DOES_NOT_EXIST]; // By default all world properties don't exist
-		_i = _i + 1;
-	};
+	_array_propTypes resize _size;
+	_array_propTypes = _array_propTypes apply {WSP_TYPE_DOES_NOT_EXIST};
+
+
+	// Array with origin of each WSP
+	pr _array_origin = [];
+	_array_origin resize _size;
+	_array_origin = _array_origin apply {_origin};
 	
 	// Return
-	[_array_WSP, _array_propTypes]
+	[_array_WSP, _array_propTypes, _array_origin]
 };
 
 
@@ -79,6 +84,15 @@ Returns: Number
 ws_getPropertyValue = {
 	params [P_ARRAY("_WS"), P_NUMBER("_key")];
 	_WS select WS_ID_WSP select _key
+};
+
+/*
+Method: ws_getPropertyOrigin
+Returns origin of this WSP
+*/
+ws_getPropertyOrigin = {
+	params [P_ARRAY("_WS"), P_NUMBER("_key")];
+	_WS select WS_ID_ORIGIN select _key;
 };
 
 /*
@@ -135,6 +149,17 @@ ws_setPropertyValue = {
 	_propTypes set [_key, _type];
 };
 
+/*
+Method: ws_setPropertyOrigin
+Sets property origin.
+*/
+
+ws_setPropertyOrigin = {
+	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_value", 0, [0]]];
+	pr _origins = _WS select WS_ID_ORIGIN;
+	_origins set [_key, _value];
+};
+
 // Must be used for actions to specify that the property of world state depends on input parameter with _id
 ws_setPropertyActionParameterTag = {
 	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_tag", "ERROR_NO_TAG"]];
@@ -153,6 +178,10 @@ ws_setPropertyGoalParameterTag = {
 	
 	pr _propTypes = _WS select WS_ID_WSPT;
 	_propTypes set [_key, WSP_TYPE_GOAL_PARAMETER];
+
+	// Mark that this property also originates from goal
+	pr _origins = _WS select WS_ID_ORIGIN;
+	_origins set [_key, ORIGIN_GOAL_PARAMETER];
 };
 
 /*
@@ -189,16 +218,17 @@ ws_toString = {
 	params [P_ARRAY("_WS")];
 	pr _properties = _WS select WS_ID_WSP;
 	pr _propTypes = _WS select WS_ID_WSPT;
+	pr _origins = _WS select WS_ID_ORIGIN;
 	pr _strOut = "[";
-	for "_i" from 0 to (count _properties) do {
+	for "_i" from 0 to ((count _properties) - 1) do {
 		if ((_propTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If this property exists, add it to the string array
 			if ((_propTypes select _i) == WSP_TYPE_ACTION_PARAMETER)  then { // If it's a parameter
-				_strOut = _strOut + format ["%1:<AP %2>  ", _i, _properties select _i]; // Key, tag
+				_strOut = _strOut + format ["%1(%2):<AP %3>  ", _i, _origins#_i, _properties#_i]; // Key, tag
 			} else {
 				if ((_propTypes select _i) == WSP_TYPE_GOAL_PARAMETER)  then {
-					_strOut = _strOut + format ["%1:<GP %2>  ", _i, _properties select _i]; // Key, tag
+					_strOut = _strOut + format ["%1(%2):<GP %3>  ", _i, _origins#_i, _properties#_i]; // Key, tag
 				} else {
-					_strOut = _strOut + format ["%1:%2  ", _i, _properties select _i]; // Key, Value
+					_strOut = _strOut + format ["%1(%2):%3  ", _i, _origins#_i, _properties#_i]; // Key, Value
 				};
 			};
 		};
@@ -337,8 +367,10 @@ ws_add = {
 	// Unpack the arrays
 	pr _AProps = _wsA select WS_ID_WSP;
 	pr _APropTypes = _wsA select WS_ID_WSPT;
+	pr _APropOrigins = _wsA select WS_ID_ORIGIN;
 	pr _BProps = _wsB select WS_ID_WSP;
 	pr _BPropTypes = _wsB select WS_ID_WSPT;
+	pr _BPropOrigins = _wsB select WS_ID_ORIGIN;
 	
 	pr _len = count _AProps;
 	
@@ -347,6 +379,7 @@ ws_add = {
 			// Copy values and types
 			_AProps set [_i, _BProps select _i];
 			_APropTypes set [_i, _BPropTypes select _i];
+			_APropOrigins set [_i, _BPropOrigins select _i];
 		};
 	};
 };
@@ -377,9 +410,10 @@ ws_applyParametersToGoalEffects = {
 					_tag, _parameters, [_effects] call ws_toString];
 				_parameterApplied = false;
 			} else {
-				// Copy value from parameter to world state
-				pr _value = (_parameters select _pid) select 1;
-				[_effects, _i, _value] call ws_setPropertyValue;
+				// Put reference of where to take the value from
+				[_effects, _i, _tag] call ws_setPropertyValue;
+				// Specify that it originates from goal parameter
+				[_effects, _i, ORIGIN_GOAL_PARAMETER] call ws_setPropertyOrigin;
 			};
 		};
 	};
@@ -402,6 +436,7 @@ ws_applyEffectsToParameters = {
 	pr _effectsPropTypes = _effects select WS_ID_WSPT;
 	pr _dwsProps = _desiredWS select WS_ID_WSP;
 	pr _dwsPropTypes = _desiredWS select WS_ID_WSPT;
+	pr _dwsOrigins = _desiredWS select WS_ID_ORIGIN;
 	
 	pr _len = count _effectsProps;
 	pr _success = true;
@@ -414,11 +449,24 @@ ws_applyEffectsToParameters = {
 			
 			// Find parameters with given tag
 			pr _parameterTag = _effectsProps select _i;
-			pr _paramsWithTag = _actionParameters select {(_x select 0) == _parameterTag};
+			pr _paramsWithTagID = _actionParameters findIf {(_x select 0) == _parameterTag};
 			
 			// If no parameters with this tag have been found, add it
-			if ((count _paramsWithTag) == 0) then {
-				_actionParameters pushBack [_parameterTag, _dwsProps select _i];
+			if (_paramsWithTagID == -1) then {
+				switch (_dwsOrigins select _i) do {
+					case ORIGIN_GOAL_WS: {
+						_actionParameters pushBack [_parameterTag, _i, ORIGIN_GOAL_WS];
+					};
+					case ORIGIN_GOAL_PARAMETER: {
+						_actionParameters pushBack [_parameterTag, _dwsProps select _i, ORIGIN_GOAL_PARAMETER];
+					};
+					case ORIGIN_STATIC_VALUE: {
+						_actionParameters pushBack [_parameterTag, _dwsProps select _i, ORIGIN_STATIC_VALUE];
+					};
+					default {
+						diag_log format ["ws_applyEffectsToParameters: Error: unknown world state origin: %1", _dwsOrigins select _i];
+					};
+				};
 			/*
 			// This is actually not an error because some actions can propagate a parameter from multiple effect properties to a single parameter
 			} else {
@@ -435,4 +483,23 @@ ws_applyEffectsToParameters = {
 	};
 	
 	_success
+};
+
+// Calculates planner cache key
+ws_getPlannerCacheKey = {
+	params ["_wsCurrent", "_wsGoal"];
+	_wsGoal params ["_goalProps", "_goalTypes"];
+	_goalProps = +_goalProps;
+	_wsCurrent params ["_currentProps", "_currentTypes"];
+	_currentProps = +_currentProps;
+	
+	// todo: use toString instead of str, it's much much faster
+	{
+		if (! (_x isEqualType false)) then {
+			_currentProps set [_forEachIndex, true]; // Bools are much faster to stringify
+			_goalProps set [_forEachIndex, _x isEqualTo (_goalProps#_forEachIndex)];
+		};
+	} forEach _currentProps;
+
+	(str _goalProps) + (str _goalTypes) + (str _currentProps) + (str _currentTypes);
 };
