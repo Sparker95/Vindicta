@@ -62,7 +62,6 @@ Redefinitions of different functions which are not implemented on different plat
 #define ENABLE_SIMULATION_GLOBAL(obj, state)
 #define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
 
-#define 
 // ^^^ SQF-VM ^^^
 
 

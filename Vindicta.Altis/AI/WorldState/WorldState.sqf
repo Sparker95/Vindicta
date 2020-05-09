@@ -121,7 +121,7 @@ Returns: Bool
 ws_propertyExistsAndEquals = {
 	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_value", 0, WSP_TYPES]];
 	pr _prop = _WS select WS_ID_WSP select _key;
-	(!(isNil "_prop")) && {_prop isEqualTo _value}
+	(!(isNil "_prop")) && {_prop isEqualTo _value};
 };
 
 
@@ -285,7 +285,7 @@ ws_getNumUnsatisfiedProps = {
 		if (! isNil {_AProps#_i}) then { // If this property exists in A
 		
 			// If this property doesn't exist in B
-			if (! isNil {_BProps#_i}) then {
+			if (isNil {_BProps#_i}) then {
 				_num = _num + 1;
 			} else {
 				// If property values are different
