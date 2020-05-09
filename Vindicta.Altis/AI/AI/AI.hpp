@@ -21,6 +21,8 @@
 #define ORIGIN_NONE				0
 // Value from goal world state, planner will return it by reference (ID)
 #define ORIGIN_GOAL_WS			5
+// Special type to indicate that the value of world state depends on action input parameter with given tag
+#define ORIGIN_ACTION_PARAMETER 6 
 // Value is from goal parameter, planner will return it by reference (tag from goal parameters)
 #define ORIGIN_GOAL_PARAMETER	7
 // Value is static, planner will return it by value directly

@@ -640,11 +640,11 @@ CLASS("AIDebugPanel", "")
 				_tree tvDelete [_id, 0];
 			};
 			// Fill world state properties
-			_worldState params ["_props", "_types"];
+			_worldState params ["_props"];
 			for "_i" from 0 to ((count _props) - 1) do {
 				
 				pr _valueStr = "";
-				if ((_types#_i) == WSP_TYPE_DOES_NOT_EXIST) then {
+				if (isNil {_props#_i}) then {
 					_valueStr = "<does not exist>";
 				} else {
 					_valueStr = str (_props#_i);

@@ -1,11 +1,11 @@
 #include "..\AI\AI.hpp"
 #include "WorldStateProperty.hpp"
+#include "WorldState.hpp"
 #include "..\..\common.h"
 
 #define pr private
 #define WS_ID_WSP	0
-#define WS_ID_WSPT	1
-#define WS_ID_ORIGIN 2
+#define WS_ID_ORIGIN 1
 
 /*
 Class: WorldState
@@ -37,13 +37,7 @@ ws_new = {
 	// Array with WorldStateProperties
 	pr _array_WSP = [];
 	_array_WSP resize _size;
-	_array_WSP = _array_WSP apply {0};
-	
-	// Array with flags indicating if specified WSP exists or not
-	pr _array_propTypes = []; // Array of WorldPropertyExists flags
-	_array_propTypes resize _size;
-	_array_propTypes = _array_propTypes apply {WSP_TYPE_DOES_NOT_EXIST};
-
+	//_array_WSP = _array_WSP apply {nil}; // They are nil by default anyway
 
 	// Array with origin of each WSP
 	pr _array_origin = [];
@@ -51,7 +45,7 @@ ws_new = {
 	_array_origin = _array_origin apply {_origin};
 	
 	// Return
-	[_array_WSP, _array_propTypes, _array_origin]
+	[_array_WSP, _array_origin]
 };
 
 
@@ -83,7 +77,24 @@ Returns: Number
 */
 ws_getPropertyValue = {
 	params [P_ARRAY("_WS"), P_NUMBER("_key")];
-	_WS select WS_ID_WSP select _key
+	WS_GET(_WS, _key);
+};
+
+/*
+Method: ws_setPropertyValue
+Sets value of property with given key
+
+Parameters: _ws, _key, _value
+
+_ws - world state
+_key - Number, ID of world state property
+_value - value
+
+Returns: nil
+*/
+ws_setPropertyValue = {
+	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_value", 0, WSP_TYPES]];
+	WS_SET(_WS, _key, _value);
 };
 
 /*
@@ -110,44 +121,9 @@ Returns: Bool
 ws_propertyExistsAndEquals = {
 	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_value", 0, WSP_TYPES]];
 	pr _prop = _WS select WS_ID_WSP select _key;
-	pr _propTypes = _WS select WS_ID_WSPT; // property exists
-	// Check both property existance and value
-	if (((_propTypes select _key) != WSP_TYPE_DOES_NOT_EXIST) && (_prop isEqualTo _value)) then {
-		true
-	} else {
-		false
-	};
+	(!(isNil "_prop")) && {_prop isEqualTo _value}
 };
 
-
-/*
-Method: ws_setPropertyValue
-Sets value of property with given key
-
-Parameters: _ws, _key, _value
-
-_ws - world state
-_key - Number, ID of world state property
-_value - value
-
-Returns: nil
-*/
-ws_setPropertyValue = {
-	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_value", 0, WSP_TYPES]];
-	pr _properties = _WS select WS_ID_WSP;
-	_properties set [_key, _value];
-	
-	pr _propTypes = _WS select WS_ID_WSPT;
-	pr _type = WSP_TYPE_DOES_NOT_EXIST;
-	call {
-		if (_value isEqualType 0) exitWith {_type = WSP_TYPE_NUMBER; };
-		if (_value isEqualType "") exitWith {_type = WSP_TYPE_STRING; };
-		if (_value isEqualType objNull) exitWith {_type = WSP_TYPE_OBJECT_HANDLE; };
-		if (_value isEqualType false) exitWith {_type = WSP_TYPE_BOOL; };
-		if (_value isEqualType []) exitWith {_type = WSP_TYPE_ARRAY; };
-	};
-	_propTypes set [_key, _type];
-};
 
 /*
 Method: ws_setPropertyOrigin
@@ -166,8 +142,8 @@ ws_setPropertyActionParameterTag = {
 	pr _properties = _WS select WS_ID_WSP;
 	_properties set [_key, _tag];
 	
-	pr _propTypes = _WS select WS_ID_WSPT;
-	_propTypes set [_key, WSP_TYPE_ACTION_PARAMETER];
+	pr _propOrigins = _WS select WS_ID_ORIGINS;
+	_propOrigins set [_key, ORIGIN_ACTION_PARAMETER];
 };
 
 // Must be used for goals to specify that the property of world state depends on input parameter with _id
@@ -175,9 +151,6 @@ ws_setPropertyGoalParameterTag = {
 	params [P_ARRAY("_WS"), P_NUMBER("_key"), ["_tag", "ERROR_NO_TAG"]];
 	pr _properties = _WS select WS_ID_WSP;
 	_properties set [_key, _tag];
-	
-	pr _propTypes = _WS select WS_ID_WSPT;
-	_propTypes set [_key, WSP_TYPE_GOAL_PARAMETER];
 
 	// Mark that this property also originates from goal
 	pr _origins = _WS select WS_ID_ORIGIN;
@@ -197,10 +170,8 @@ Returns: nil
 */
 ws_clearProperty = {
 	params [P_ARRAY("_WS"), P_NUMBER("_key")];
-	pr _propTypes = _WS select WS_ID_WSPT;
 	pr _props = _WS select WS_ID_WSP;
-	_props set [_key, 0];
-	_propTypes set [_key, WSP_TYPE_DOES_NOT_EXIST]; // Property doesn't exist any more
+	_props set [_key, nil];
 };
 
 /*
@@ -217,18 +188,19 @@ Returns: String
 ws_toString = {
 	params [P_ARRAY("_WS")];
 	pr _properties = _WS select WS_ID_WSP;
-	pr _propTypes = _WS select WS_ID_WSPT;
 	pr _origins = _WS select WS_ID_ORIGIN;
 	pr _strOut = "[";
 	for "_i" from 0 to ((count _properties) - 1) do {
-		if ((_propTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If this property exists, add it to the string array
-			if ((_propTypes select _i) == WSP_TYPE_ACTION_PARAMETER)  then { // If it's a parameter
-				_strOut = _strOut + format ["%1(%2):<AP %3>  ", _i, _origins#_i, _properties#_i]; // Key, tag
+		pr _propOrigin = _origins select _i;
+		pr _propValue = _properties select _i;
+		if (! isNil "_propValue") then { // If this property exists, add it to the string array
+			if (_propOrigin == ORIGIN_ACTION_PARAMETER)  then { // If it's a parameter
+				_strOut = _strOut + format ["%1(%2):<AP %3>  ", _i, _origins#_i, _propValue]; // Key, tag
 			} else {
-				if ((_propTypes select _i) == WSP_TYPE_GOAL_PARAMETER)  then {
-					_strOut = _strOut + format ["%1(%2):<GP %3>  ", _i, _origins#_i, _properties#_i]; // Key, tag
+				if ((_propOrigin) == ORIGIN_GOAL_PARAMETER)  then {
+					_strOut = _strOut + format ["%1(%2):<GP %3>  ", _i, _origins#_i, _propValue]; // Key, tag
 				} else {
-					_strOut = _strOut + format ["%1(%2):%3  ", _i, _origins#_i, _properties#_i]; // Key, Value
+					_strOut = _strOut + format ["%1(%2):%3  ", _i, _origins#_i, _propValue]; // Key, Value
 				};
 			};
 		};
@@ -257,11 +229,10 @@ ws_isActionSuitable = {
 
 	// Unpack the arrays
 	pr _effectsProps = _effects select WS_ID_WSP;
-	pr _effectsPropTypes = _effects select WS_ID_WSPT;
+	pr _effectsOrigins = _effects select WS_ID_ORIGINS;
 	pr _goalProps = _wsGoal select WS_ID_WSP;
-	pr _goalPropTypes = _wsGoal select WS_ID_WSPT;
+	pr _goalOrigins = _wsGoal select WS_ID_ORIGINS;
 	pr _preProps = _preconditions select WS_ID_WSP;
-	pr _prePropTypes = _preconditions select WS_ID_WSPT;
 
 	pr _len = count _effectsProps;
 
@@ -269,13 +240,13 @@ ws_isActionSuitable = {
 	pr _conflicting = false;
 
 	pr _i = 0;
-	while {!_conflicting && _i < _len} do {
+	while {!_conflicting && (_i < _len)} do {
 		// If property exists in goal and effects
-		if (_goalPropTypes#_i != WSP_TYPE_DOES_NOT_EXIST) then {
-			if(_effectsPropTypes#_i != WSP_TYPE_DOES_NOT_EXIST) then {
+		if (!isNil {_goalProps#_i}) then {
+			if(!isNil {_effectsProps#_i}) then {
 				// If property in A is a parameter which can affect a property in B
 				// OR If both properties are equal
-				if (_effectsPropTypes#_i == WSP_TYPE_ACTION_PARAMETER || {_goalProps#_i isEqualTo _effectsProps#_i}) then {
+				if (_effectsOrigins#_i == ORIGIN_ACTION_PARAMETER || {_goalProps#_i isEqualTo _effectsProps#_i}) then {
 					_connected = true;
 				} else {
 					if(!(_goalProps#_i isEqualTo _effectsProps#_i)) then {
@@ -284,7 +255,7 @@ ws_isActionSuitable = {
 				};
 			} else {
 				// Only consider the pre-conditions if the property doesn't exist in the effects (effects cancel preconditions)
-				if(_prePropTypes#_i != WSP_TYPE_DOES_NOT_EXIST && !(_goalProps#_i isEqualTo _preProps#_i)) then {
+				if((!isNil {_preProps#_i}) && !(_goalProps#_i isEqualTo _preProps#_i)) then {
 					_conflicting = true;
 				};
 			};
@@ -306,17 +277,15 @@ ws_getNumUnsatisfiedProps = {
 	
 	// Unpack the arrays
 	pr _AProps = _wsA select WS_ID_WSP;
-	pr _APropTypes = _wsA select WS_ID_WSPT;
 	pr _BProps = _wsB select WS_ID_WSP;
-	pr _BPropTypes = _wsB select WS_ID_WSPT;
 	
 	pr _len = count _AProps;
 	
 	for "_i" from 0 to (_len-1) do {
-		if ((_APropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If this property exists in A
+		if (! isNil {_AProps#_i}) then { // If this property exists in A
 		
 			// If this property doesn't exist in B
-			if ((_BPropTypes select _i) == WSP_TYPE_DOES_NOT_EXIST) then {
+			if (! isNil {_BProps#_i}) then {
 				_num = _num + 1;
 			} else {
 				// If property values are different
@@ -341,16 +310,14 @@ ws_substract = {
 	
 	// Unpack the arrays
 	pr _AProps = _wsA select WS_ID_WSP;
-	pr _APropTypes = _wsA select WS_ID_WSPT;
-	pr _BPropTypes = _wsB select WS_ID_WSPT;
+	pr _BProps = _wsB select WS_ID_WSP;
 	
 	pr _len = count _AProps;
 	
 	for "_i" from 0 to (_len - 1) do {
-		if ((_BPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If property exists in B
+		if (!isNil {_BProps#_i}) then { // If property exists in B
 			// Erase the corresponding property in A
-			_AProps set [_i, 0];
-			_APropTypes set [_i, WSP_TYPE_DOES_NOT_EXIST];
+			_AProps set [_i, nil];
 		};
 	};
 };
@@ -366,19 +333,16 @@ ws_add = {
 	
 	// Unpack the arrays
 	pr _AProps = _wsA select WS_ID_WSP;
-	pr _APropTypes = _wsA select WS_ID_WSPT;
 	pr _APropOrigins = _wsA select WS_ID_ORIGIN;
 	pr _BProps = _wsB select WS_ID_WSP;
-	pr _BPropTypes = _wsB select WS_ID_WSPT;
 	pr _BPropOrigins = _wsB select WS_ID_ORIGIN;
 	
 	pr _len = count _AProps;
 	
 	for "_i" from 0 to (_len - 1) do {
-		if ((_BPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {
+		if (! isNil {_BProps select _i}) then {
 			// Copy values and types
 			_AProps set [_i, _BProps select _i];
-			_APropTypes set [_i, _BPropTypes select _i];
 			_APropOrigins set [_i, _BPropOrigins select _i];
 		};
 	};
@@ -394,13 +358,13 @@ ws_applyParametersToGoalEffects = {
 	if ((count _parameters) == 0) exitWith { false };
 	
 	pr _effectsProps = _effects select WS_ID_WSP;
-	pr _effectsPropTypes = _effects select WS_ID_WSPT;
+	pr _effectsOrigins = _effects select WS_ID_ORIGINS;
 	
 	pr _len = count _effectsProps;
 	pr _parameterApplied = true;
 	
 	for "_i" from 0 to (_len - 1) do {
-		if ((_effectsPropTypes select _i) == WSP_TYPE_GOAL_PARAMETER) then { // If this world state must be retrieved from a goal parameter
+		if ((_effectsOrigins select _i) == ORIGIN_GOAL_PARAMETER) then { // If this world state must be retrieved from a goal parameter
 			pr _tag = _effectsProps select _i;
 			
 			// Search for a parameter with given tag
@@ -433,9 +397,8 @@ ws_applyEffectsToParameters = {
 	
 	// Unpack the arrays
 	pr _effectsProps = _effects select WS_ID_WSP;
-	pr _effectsPropTypes = _effects select WS_ID_WSPT;
+	pr _effectsOrigins = _effects select WS_ID_ORIGINS;
 	pr _dwsProps = _desiredWS select WS_ID_WSP;
-	pr _dwsPropTypes = _desiredWS select WS_ID_WSPT;
 	pr _dwsOrigins = _desiredWS select WS_ID_ORIGIN;
 	
 	pr _len = count _effectsProps;
@@ -444,8 +407,8 @@ ws_applyEffectsToParameters = {
 	for "_i" from 0 to (_len - 1) do {
 	
 		// If it's a parameter and it affects something which exists in desired world state
-		if ( ((_effectsPropTypes select _i) == WSP_TYPE_ACTION_PARAMETER) &&
-			((_dwsPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST)) then {
+		if ( ((_effectsOrigins select _i) == ORIGIN_ACTION_PARAMETER) &&
+			(! isNil {_dwsProps#_i})) then {
 			
 			// Find parameters with given tag
 			pr _parameterTag = _effectsProps select _i;
@@ -488,9 +451,9 @@ ws_applyEffectsToParameters = {
 // Calculates planner cache key
 ws_getPlannerCacheKey = {
 	params ["_wsCurrent", "_wsGoal"];
-	_wsGoal params ["_goalProps", "_goalTypes"];
+	_wsGoal params ["_goalProps"];
 	_goalProps = +_goalProps;
-	_wsCurrent params ["_currentProps", "_currentTypes"];
+	_wsCurrent params ["_currentProps"];
 	_currentProps = +_currentProps;
 	
 	// todo: use toString instead of str, it's much much faster
@@ -501,5 +464,31 @@ ws_getPlannerCacheKey = {
 		};
 	} forEach _currentProps;
 
-	(str _goalProps) + (str _goalTypes) + (str _currentProps) + (str _currentTypes);
+	(str _goalProps) + (str _currentProps);
 };
+
+
+#ifdef _SQF_VM
+
+["WorldState", {
+	
+	pr _ws0 = [5] call ws_new;
+
+
+	pr _valueNum = 123;
+	pr _valueBool = true;
+	pr _valueObj = objNull;
+	pr _valueString = "test";
+	pr _valueArray = [1,2,3];
+
+	[_ws0, 1, _valueNum] call ws_setPropertyValue;
+
+	["Get property", _valueNum == [_ws0, 1] call ws_getPropertyValue] call test_Assert;
+
+	["Property exists and equals", [_ws0, 1, _valueNum] call ws_propertyExistsAndEquals] call test_Assert;
+
+	["Non-existant property NOT exists and equals", !([_ws0, 2, _valueNum] call ws_propertyExistsAndEquals)] call test_Assert;
+
+}] call test_AddTest;
+
+#endif
