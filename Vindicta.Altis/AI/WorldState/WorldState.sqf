@@ -142,7 +142,7 @@ ws_setPropertyActionParameterTag = {
 	pr _properties = _WS select WS_ID_WSP;
 	_properties set [_key, _tag];
 	
-	pr _propOrigins = _WS select WS_ID_ORIGINS;
+	pr _propOrigins = _WS select WS_ID_ORIGIN;
 	_propOrigins set [_key, ORIGIN_ACTION_PARAMETER];
 };
 
@@ -229,9 +229,9 @@ ws_isActionSuitable = {
 
 	// Unpack the arrays
 	pr _effectsProps = _effects select WS_ID_WSP;
-	pr _effectsOrigins = _effects select WS_ID_ORIGINS;
+	pr _effectsOrigins = _effects select WS_ID_ORIGIN;
 	pr _goalProps = _wsGoal select WS_ID_WSP;
-	pr _goalOrigins = _wsGoal select WS_ID_ORIGINS;
+	pr _goalOrigins = _wsGoal select WS_ID_ORIGIN;
 	pr _preProps = _preconditions select WS_ID_WSP;
 
 	pr _len = count _effectsProps;
@@ -358,7 +358,7 @@ ws_applyParametersToGoalEffects = {
 	if ((count _parameters) == 0) exitWith { false };
 	
 	pr _effectsProps = _effects select WS_ID_WSP;
-	pr _effectsOrigins = _effects select WS_ID_ORIGINS;
+	pr _effectsOrigins = _effects select WS_ID_ORIGIN;
 	
 	pr _len = count _effectsProps;
 	pr _parameterApplied = true;
@@ -397,7 +397,7 @@ ws_applyEffectsToParameters = {
 	
 	// Unpack the arrays
 	pr _effectsProps = _effects select WS_ID_WSP;
-	pr _effectsOrigins = _effects select WS_ID_ORIGINS;
+	pr _effectsOrigins = _effects select WS_ID_ORIGIN;
 	pr _dwsProps = _desiredWS select WS_ID_WSP;
 	pr _dwsOrigins = _desiredWS select WS_ID_ORIGIN;
 	
