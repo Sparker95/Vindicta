@@ -186,8 +186,13 @@ CLASS("AIGroup", "AI_GOAP")
 	Returns: Array with goal class names
 	*/
 	METHOD(getPossibleGoals)
-		//["GoalGroupRelax"]
-		["GoalGroupUnflipVehicles", "GoalGroupArrest"]
+		params [P_THISOBJECT];
+		if(CALLM0(T_GETV("agent"), "isAirGroup")) then {
+			["GoalGroupAirLand"]
+		} else {
+			//["GoalGroupRelax"]
+			["GoalGroupUnflipVehicles", "GoalGroupArrest"]
+		};
 	ENDMETHOD;
 
 

@@ -2028,7 +2028,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_INFO_MSG(_str, []);
 		#endif
 	ENDMETHOD;
-	
+
 	/*
 	Method: (private) generateAttackActions
 	Generate a list of possible/reasonable attack actions that could be performed. It will exclude ones that 
@@ -2049,13 +2049,21 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			// Must be on our side and not involved in another action
 			// TODO: We should be able to redirect for QRFs. Perhaps it 
 			(GETV(_x, "side") == _side) and
-			{ !CALLM0(_x, "isBusy") } and
-			// Need officers for offensive actions
-			{ CALLM0(_x, "countOfficers") >= 1 } and 
+			{ !CALLM0(_x, "isBusy") } and 
 			{
-				// Must have at least a minimum strength of twice min efficiency
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
-				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+				(
+					GETV(_x, "type") == GARRISON_TYPE_GENERAL and 
+					// General garrison needs officers for offensive actions
+					{ CALLM0(_x, "countOfficers") >= 1 } and 
+					{
+						// Must have at least a minimum strength
+						private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+						EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+					}
+				) or {
+					// Consider all air garrisons
+					GETV(_x, "type") == GARRISON_TYPE_AIR
+				}
 			}
 		};
 
@@ -2243,7 +2251,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
 		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
 
-	Returns: Array of <CmdrAction.Actions.SupplyCmdrAction>
+	Returns: Array of <CmdrAction.Actions.SupplyConvoyCmdrAction>
 	*/
 	/* private */ METHOD(generateSupplyActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
@@ -2742,7 +2750,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _reinfInfo = _reinfLocations apply {
 			private _locModel = _x;
 			private _loc = GETV(_locModel, "actual");
-			private _generalGar = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_GENERAL) select 0;
+			private _generalGar = CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_GENERAL) select 0;
 			// TODO: we need to consider units that are out on assignments
 			private _nInf = CALLM0(_generalGar, "countInfantryUnits");
 			private _nVeh = CALLM1(_generalGar, "countUnits", T_PL_tracked_wheeled); // All tracked and wheeled vehicles
@@ -2759,7 +2767,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _airReinfInfo = _reinfLocations apply {
 			private _locModel = _x;
 			private _loc = GETV(_locModel, "actual");
-			private _airGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_AIR);
+			private _airGarrisons = CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_AIR);
 			if(count _airGarrisons > 0) then {
 				private _airGar = _airGarrisons select 0;
 				private _nHeli = CALLM1(_airGar, "countUnits", T_PL_helicopters);

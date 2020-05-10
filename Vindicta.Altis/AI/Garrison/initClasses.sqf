@@ -17,6 +17,7 @@ call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveBase.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveCombined.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveDismounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMounted.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveAir.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRebalanceGroups.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRepairAllVehicles.sqf";

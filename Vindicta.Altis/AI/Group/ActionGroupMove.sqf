@@ -246,20 +246,23 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 				// Check for speed control based on vehicle and follow group separation
 				private _speedLimit = T_GETV("speedLimit");
-				if(T_CALLM0("getMaxSeparation") > 3 * SEPARATION || {T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION}) then
-				{
-					// We are driving too fast!
-					_speedLimit = (_speedLimit - _dt*2);
-				}
-				else
-				{
-					// We are driving too slow?
-					_speedLimit = (_speedLimit + _dt*4);
+				if(!CALLM0(_group, "isAirGroup")) then {
+					if(T_CALLM0("getMaxSeparation") > 3 * SEPARATION || {T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION}) then
+					{
+						// We are driving too fast!
+						_speedLimit = (_speedLimit - _dt*2);
+					}
+					else
+					{
+						// We are driving too slow?
+						_speedLimit = (_speedLimit + _dt*4);
+					};
+
+					_speedLimit = CLAMP(_speedLimit, SPEED_MIN, _maxSpeed);
+				} else {
+					_speedLimit = _maxSpeed;
 				};
-
-				_speedLimit = CLAMP(_speedLimit, SPEED_MIN, _maxSpeed);
 				T_SETV("speedLimit", _speedLimit);
-
 				vehicle leader _hG limitSpeed _speedLimit;
 			} else {
 				if(T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION) then {

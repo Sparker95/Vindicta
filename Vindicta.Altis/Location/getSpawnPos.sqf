@@ -116,27 +116,37 @@ else
 
 */
 
-private _return = 0;
-if(_found) then {//If the spawn position has been found
-	OOP_INFO_3("[Location::getSpawnPos] Found spawn for %1 (%2): %3", [_catID ARG _subcatID ARG _groupType], _className, _return);
-	_return = [_posReturn, _dirReturn];
+private _return = if(_found) then {//If the spawn position has been found
+	return [_posReturn, _dirReturn]
 } else {
 	//Provide default spawn position
-	if (_catID == T_INF) then {
-		private _locToUse = _thisObject;
-		private _radius = (0.5 * (GETV(_locToUse, "boundingRadius"))) min 60;
-		private _locPos = GETV(_locToUse, "pos");
-		_return = [[_locPos#0 - _radius + random (2 * _radius), _locPos#1 - _radius + random (2 * _radius), 0], random 360];
-		OOP_WARNING_3("[Location::getSpawnPos] Warning: spawn position not found for unit %1 (%2), returning random position %3", [_catID ARG _subcatID ARG _groupType], _className, _return);
-	} else {
-		// Try to find a random safe position on a road for this vehicle
-		private _locPos = T_GETV("pos");
-		private _locRadius = T_GETV("boundingRadius");
-		private _testPos = [_locPos, _locRadius min random [0, 0, _locRadius*5], random 360] call BIS_fnc_relPos;
-		// DUMP_CALLSTACK;
-		// [[[_locPos, _locRadius]],[]] call BIS_fnc_randomPos;
-		_return = CALLSM3("Location", "findSafePosOnRoad", _testPos, _className, 200 max (_locRadius * 2));
+	private _radius = (0.5 * (T_GETV("boundingRadius"))) min 60;
+	private _locPos = T_GETV("pos");
+	switch true do {
+		case (_catID == T_INF): {
+			return [_locPos getPos [random _radius, random 360], random 360];
+		};
+		case (_catID == T_VEH && _subcatID in T_VEH_heli): {
+			return [_locPos, 250 max _radius, 15, 0.1] call misc_fnc_findSafeSpawnPos;
+		};
+		case (_catID == T_VEH && _subcatID in T_VEH_plane): {
+			return [_locPos, 250 max _radius, 15, 0.01] call misc_fnc_findSafeSpawnPos;
+		};
+		case (_catID == T_VEH && _subcatID in T_VEH_ground): {
+			// Try to find a random safe position on a road for this vehicle
+			private _testPos = [_locPos, _radius min random [0, 0, _radius*5], random 360] call BIS_fnc_relPos;
+			return CALLSM3("Location", "findSafePosOnRoad", _testPos, _className, 200 max (_radius * 2))
+		};
+		case (_catID == T_VEH && _subcatID in T_VEH_static): {
+			// Try to find a random safe position on a road for this vehicle
+			//private _testPos = [_locPos, _radius min random [0, 0, _radius*5], random 360] call BIS_fnc_relPos;
+			return [_locPos, _radius, 3, 0.1] call misc_fnc_findSafeSpawnPos;
+			// return CALLSM3("Location", "findSafePosOnRoad", _testPos, _className, 200 max (_radius * 2))
+		};
+		default {
+			return [_locPos, _radius, 3, 0.3] call misc_fnc_findSafeSpawnPos;
+		};
 	};
 };
 
-_return
+return _return;

@@ -170,6 +170,7 @@ CLASS("AI", "MessageReceiverEx")
 		private _className = GET_OBJECT_CLASS(_thisObject);
 		private __scopeUpdateSensors = createProfileScope ([format ["%1_updateSensors", _className]] call misc_fnc_createStaticString);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		pr _sensors = T_GETV("sensors");
 		//OOP_INFO_1("Updating sensors: %1", _sensors);

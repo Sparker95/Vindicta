@@ -187,15 +187,22 @@ T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_truck_medical,			36)		[T_FACTION_Guer, T_FACTIO
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_truck_fuel,			37)		[T_FACTION_Guer, T_FACTION_Military]; //Fuel truck
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_submarine,				38);	//Submarine
 
-// Air units
-T_VEH_air				= [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_VEH_heli_attack, T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo, T_VEH_plane_unarmed, T_VEH_plane_VTOL];
+// Air vehicles
+T_VEH_heli				= [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_VEH_heli_attack];
+T_VEH_plane				= [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo, T_VEH_plane_unarmed, T_VEH_plane_VTOL];
+T_VEH_air				= T_VEH_heli + T_VEH_plane;
 
-// Vehicle subcategories sorted by required crew
+// Ground vehicles
+T_VEH_ground			= [T_VEH_default, T_VEH_car_unarmed, T_VEH_car_armed, T_VEH_MRAP_unarmed, T_VEH_MRAP_HMG, T_VEH_MRAP_GMG, T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MRLS, T_VEH_SPA, T_VEH_SPAA, T_VEH_truck_inf, T_VEH_truck_cargo, T_VEH_truck_ammo, T_VEH_truck_repair, T_VEH_truck_medical, T_VEH_truck_fuel];
+
+// Static vehicles
+T_VEH_static 			= [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
+
+// Vehicles requiring specific crew
 T_VEH_need_basic_crew 	= [T_VEH_MRAP_HMG, T_VEH_MRAP_GMG, T_VEH_boat_armed]; //Vehicles that need a driver and a gunner, like MRAPs or boats
 T_VEH_need_crew 		= [T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MRLS, T_VEH_SPA, T_VEH_SPAA]; //Vehicles that need crew like T_INF_crew
 T_VEH_need_heli_crew 	= [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_VEH_heli_attack]; //Vehicles that need crew like T_INF_pilot_heli and T_INF_crew_heli
 T_VEH_need_plane_crew 	= [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo]; //Vehicles that need crew like T_INF_pilot
-T_VEH_static 			= [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
 
 // Vehicles which should be occupied when in combat
 T_VEH_combat 			= T_VEH_need_basic_crew + T_VEH_need_crew + T_VEH_need_heli_crew + T_VEH_need_plane_crew + T_VEH_static;

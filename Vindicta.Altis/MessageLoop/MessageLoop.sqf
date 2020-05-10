@@ -7,6 +7,8 @@
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Message\Message.hpp"
 #include "ProcessCategories.hpp"
+FIX_LINE_NUMBERS()
+
 /*
 Class: MessageLoop
 MessageLoop is a thread (a spawned script) which can have

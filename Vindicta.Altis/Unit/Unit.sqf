@@ -1600,7 +1600,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(getGroup)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_GROUP
+		_data # UNIT_DATA_ID_GROUP
 	ENDMETHOD;
 
 
@@ -1614,7 +1614,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(getMainData)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
+		[_data # UNIT_DATA_ID_CAT, _data # UNIT_DATA_ID_SUBCAT, _data # UNIT_DATA_ID_CLASS_NAME]
 	ENDMETHOD;
 	
 	//                    G E T   E F F I C I E N C Y
@@ -1627,7 +1627,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(getEfficiency)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		T_efficiency select (_data select UNIT_DATA_ID_CAT) select (_data select UNIT_DATA_ID_SUBCAT)
+		T_efficiency # (_data # UNIT_DATA_ID_CAT) # (_data # UNIT_DATA_ID_SUBCAT)
 	ENDMETHOD;
 
 	//                        G E T   D A T A

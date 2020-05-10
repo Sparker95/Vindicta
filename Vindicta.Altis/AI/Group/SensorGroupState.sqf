@@ -31,13 +31,19 @@ CLASS("SensorGroupState", "SensorGroup")
 		pr _ws = GETV(_AI, "worldState");
 
 		// Check if vehicles need unflipping
-		pr _vehicleUnits = CALLM0(_group, "getVehicleUnits");
+		pr _units = CALLM0(_group, "getUnits");
+		pr _vehicleUnits = _units select { CALLM0(_x, "isVehicle") };
 		pr _vehicleHandles = _vehicleUnits apply { CALLM0(_x, "getObjectHandle") };
+		pr _infantryUnits = _units select { CALLM0(_x, "isInfantry") };
+		pr _infantryHandles = _infantryUnits apply { CALLM0(_x, "getObjectHandle") };
+
 		pr _allTouchingGround = _vehicleHandles findIf {[_x] call misc_fnc_isVehicleFlipped} == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_VEHICLES_UPRIGHT, _allTouchingGround] call ws_setPropertyValue;
 
-		// Check if vehicles are landed
-		pr _allLanded = _vehicleHandles findIf { !isTouchingGround _x } == NOT_FOUND;
+		// Check if vehicles are landed (or inf is in landed vehicle)
+		pr _allLanded = _infantryHandles findIf { !isTouchingGround vehicle _x } == NOT_FOUND &&
+			{ _vehicleHandles findIf { !isTouchingGround _x } == NOT_FOUND };
+
 		[_ws, WSP_GROUP_ALL_LANDED, _allLanded] call ws_setPropertyValue;
 
 		// Check if vehicles need repairs
@@ -45,7 +51,6 @@ CLASS("SensorGroupState", "SensorGroup")
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, _allRepaired] call ws_setPropertyValue;
 
 		// Check if there are any null objects
-		pr _units = CALLM0(_group, "getUnits");
 		{
 			if (isNull CALLM0(_x, "getObjectHandle")) then {
 				OOP_ERROR_1("UNIT OBJECT IS NULL: %1", _x);
@@ -53,11 +58,9 @@ CLASS("SensorGroupState", "SensorGroup")
 		} forEach _units;
 
 		// Check if all infantry units are in vehicles
-		pr _infantryUnits = CALLM0(_group, "getInfantryUnits");
-		pr _infantryHandles = _infantryUnits apply { CALLM0(_x, "getObjectHandle") };
+		
 		pr _allInfMounted = (_infantryHandles findIf { vehicle _x == _x }) == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
-
 
 		//pr _allCrewMounted = (_allCrewHandles findIf { vehicle _x == _x }) == NOT_FOUND;
 		CALLM0(_group, "getRequiredCrew") params ["_reqDrivers", "_reqTurrets"];

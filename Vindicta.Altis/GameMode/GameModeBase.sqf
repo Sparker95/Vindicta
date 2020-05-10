@@ -2353,13 +2353,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Cleanup broken garrisons
 		private _nonSpecialGarrisons = GETSV("Garrison", "all") - gSpecialGarrisons;
 		private _brokenCivilianGarrisons = _nonSpecialGarrisons select {
-			// Civilian garrisons should be at a location only, and autoSpawn always
-			GETV(_x, "side") == civilian && (GETV(_x, "location") == NULL_OBJECT || !GETV(_x, "autoSpawn"))
+			// Civilian garrisons should be at a location only, and autoSpawn if they are of certain types
+			GETV(_x, "side") == civilian && { GETV(_x, "location") == NULL_OBJECT || { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
 		};
 		private _brokenMilitaryGarrisons = _nonSpecialGarrisons select {
-			// Non civilian garrisons should be at a location or position, and autoSpawn always
-			GETV(_x, "side") != civilian && ((GETV(_x, "location") == NULL_OBJECT && CALLM0(_x, "getPos") isEqualTo [0,0,0]) || !GETV(_x, "autoSpawn"))
+			// Non civilian garrisons should be at a location or position, and autoSpawn if they are of certain types
+			GETV(_x, "side") != civilian && 
+			{ GETV(_x, "location") == NULL_OBJECT && CALLM0(_x, "getPos") isEqualTo [0,0,0]
+			|| { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
 		};
+
 		// Delete the units, the garrisons should get cleaned up automatically
 		{
 			private _gar = _x;

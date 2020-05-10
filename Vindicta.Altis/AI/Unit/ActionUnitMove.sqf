@@ -9,6 +9,7 @@
 #ifndef BUILD_RELEASE
 // #define DEBUG_PF 
 #endif
+FIX_LINE_NUMBERS()
 
 #define OOP_CLASS_NAME ActionUnitMove
 CLASS("ActionUnitMove", "ActionUnit")
@@ -119,7 +120,6 @@ CLASS("ActionUnitMove", "ActionUnit")
 		params [P_THISOBJECT];
 		
 		private _hO = T_GETV("hO");
-		private _pos = T_GETV("pos");
 
 		private _hG = group _hO;
 		private _existingWPs = waypoints _hG;
@@ -160,7 +160,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 			private _currWP = (_existingWPs#_existingWPIdx);
 			private _currWPPos = getWPPos _currWP;
 			private _newWPPos = +_currWPPos;
-			while{ count _remainingRoute > 0 && {_hO distance _newWPPos < MOVE_WP_DIST} } do {
+			while{ count _remainingRoute > 0 && { _hO distance _newWPPos < MOVE_WP_DIST } } do {
 				_newWPPos = _remainingRoute deleteAt 0;
 				// _currWPPos = if(count _remainingRoute > 0) then {
 				//  	_remainingRoute deleteAt 0

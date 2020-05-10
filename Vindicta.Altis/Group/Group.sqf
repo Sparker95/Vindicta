@@ -641,10 +641,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	METHOD(isLanded)
 		params [P_THISOBJECT];
 		private _AI = T_CALLM0("getAI");
-		_AI == NULL_OBJECT || {
-			private _ws = GETV(_AI, "worldState");
-			[_ws, WSP_GROUP_ALL_LANDED, true] call ws_propertyExistsAndEquals
-		}
+		_AI == NULL_OBJECT || { CALLM0(_AI, "isLanded") }
 	ENDMETHOD;
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                E V E N T   H A N D L E R S
@@ -710,11 +707,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		pr _groupUnits = _data#GROUP_DATA_ID_UNITS;
 
 		// Create an AI for this group if it has any units
-		pr _AI = if(T_CALLM0("isAirGroup")) then {
-			NEW("AIGroupAir", [_thisObject])
-		} else {
-			NEW("AIGroup", [_thisObject])
-		};
+		pr _AI = NEW("AIGroup", [_thisObject]);
 		pr _data = T_GETV("data");
 		_data set [GROUP_DATA_ID_AI, _AI];
 		CALLM0(_AI, "start"); // Kick start it
@@ -747,7 +740,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			pr _groupHandle = T_CALLM0("_createGroupHandle");
 
 			_groupHandle setBehaviour "SAFE";
-			
+
 			{
 				private _unit = _x;
 				private _unitData = CALLM0(_unit, "getMainData");
@@ -804,8 +797,12 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 					OOP_WARNING_0("Not enough positions for all vehicles!");
 				};
 				{
-					pr _className = CALLM0(_x, "getClassName");
-					pr _posAndDir = CALLSM3("Location", "findSafePosOnRoad", _startPos, _className, 300);
+					CALLM0(_x, "getMainData") params ["_cat", "_subcat", "_className"];
+					pr _posAndDir = if(_cat == T_VEH && _subcat in T_VEH_ground) then {
+						CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300)
+					} else {
+						CALLSM3("Location", "findSafePos", _pos, _className, 300)
+					};
 					CALLM(_x, "spawn", _posAndDir);
 				} forEach _vehUnits;
 			} else {
@@ -885,8 +882,12 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			pr _vehUnits = T_CALLM0("getVehicleUnits");
 			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
 			{
-				pr _className = CALLM0(_x, "getClassName");
-				pr _posAndDir = CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300);
+				CALLM0(_x, "getMainData") params ["_cat", "_subcat", "_className"];
+				pr _posAndDir = if(_cat == T_VEH && _subcat in T_VEH_ground) then {
+					CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300)
+				} else {
+					CALLSM3("Location", "findSafePos", _pos, _className, 300)
+				};
 				CALLM(_x, "spawn", _posAndDir);
 			} forEach _vehUnits;
 
@@ -895,8 +896,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			// Get position around which infantry will be spawning
 			pr _infSpawnPos = _pos;
 			{
-				// todo improve this
-				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
+				pr _pos = _infSpawnPos getPos [random 15, random 360]; // Just put them anywhere
 				CALLM2(_x, "spawn", _pos, 0);
 			} forEach _infUnits;
 

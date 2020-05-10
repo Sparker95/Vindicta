@@ -147,5 +147,4 @@ To get CAS:
 - add new QRF / attack for air units -- don't send them home, air garrison finds its own home as it requires space, just split + attack goal
 
 TODO:
-- stop rebalance of units in vehicles in the air / stop dismount of units in vehicles in the air?
-- land again goal for aircraft..
+- fix spawn on load for inflight helis -- need to use action spawn in somehow, 

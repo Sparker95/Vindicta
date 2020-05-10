@@ -157,6 +157,13 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			T_CALLM2("postMethodAsync", "setPos", [_pos]);
 		};
 
+		// Enable automatic spawning
+		private _autoSpawn = _type in GARRISON_TYPES_AUTOSPAWN;
+		T_CALLM1("enableAutoSpawn", _autoSpawn);
+		if(!_autoSpawn) then {
+			T_CALLM2("postMethodAsync", "spawn", [true]);
+		};
+
 		/*
 		T_SETV("timer", "");
 		CALLM(MESSAGE_LOOP, "addProcessCategoryObject", ["Garrison" ARG _thisObject]);
@@ -2138,22 +2145,37 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Find units for each category
 		pr _unitsFound = [[], [], [], []];
 		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones", "_unitsFoundCargo"];
-		// forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
-		{
+		pr _groupsUsed = [];
+
+		{// forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
 			private _catID = _x;
-			// forEach _comp#_catID;
-			{
+
+			{// forEach _comp#_catID;
 				private _nUnitsNeeded = _x;
 				private _subcatID = _foreachindex;
-				while {_nUnitsNeeded > 0} do {
+				while { _nUnitsNeeded > 0 } do {
+					// Prefer to take units from the same groups
+					_unitsSrc = [_unitsSrc, {
+						private _grp = CALLM0(_x, "getGroup");
+						[_groupsUsed findIf { _grp == _x }, _x]
+					}, DESCENDING] call pr0_fnc_sortBy;
+
+					//  apply { 
+					// 	private _grp = CALLM0(_x, "getGroup");
+					// 	[_groupsUsed findIf { _grp == _x }, _x]
+					// };
+					// _unitsSrc sort ASCENDING;
+
 					private _index = _unitsSrc findIf {
 						private _mainData = CALLM0(_x, "getMainData");
 						(_mainData#0 == _catID) && {_mainData#1 == _subCatID}
 					};
 
-					if (_index == -1) exitWith { OOP_ERROR_0("addUnitsFromCompositionNumbers Failed to find a unit?!") }; // WTF it should not happen, we have just verified that
+					if (_index == NOT_FOUND) exitWith { OOP_ERROR_0("addUnitsFromCompositionNumbers Failed to find a unit?!") }; // WTF it should not happen, we have just verified that
 
-					(_unitsFound#_catID) pushBack (_unitsSrc#_index);
+					private _unit = _unitsSrc#_index;
+					_groupsUsed pushBackUnique CALLM0(_unit, "getGroup");
+					_unitsFound#_catID pushBack _unit;
 					_unitsSrc deleteAt _index;
 					_nUnitsNeeded = _nUnitsNeeded - 1;
 				};
@@ -2307,8 +2329,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Split every vehicle group
 		{
 			pr _group = _x;
-			pr _groupVehicles = CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")};
-			
+			pr _groupVehicles = CALLM0(_group, "getUnits") select { CALLM0(_x, "isVehicle") };
+
 			// If there are more than one vehicle
 			if (count _groupVehicles > 1) then {
 				// Temporarily stop the AI object of the group because it can perform vehicle assignments in the other thread.
@@ -2317,19 +2339,19 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				if (!IS_NULL_OBJECT(_groupAI)) then {
 					CALLM2(_groupAI, "postMethodSync", "stop",  []);
 				};
-				
+
 				// Create a new group per every vehicle (except for the first one)
 				pr _side = CALLM0(_group, "getSide");
 				for "_i" from 1 to ((count _groupVehicles) - 1) do {
 					pr _vehicle = _groupVehicles select _i;
 					pr _vehAI = CALLM0(_vehicle, "getAI");
-					
+
 					// Create a group, add it to the garrison
 					pr _args = [_side, GROUP_TYPE_VEH];
 					pr _newGroup = NEW("Group", _args);
 					CALLM0(_newGroup, "spawnAtLocation");
 					T_CALLM1("addGroup", _newGroup);
-					
+
 					// Get crew of this vehicle
 					if (!IS_NULL_OBJECT(_vehAI)) then {
 						pr _vehCrew = CALLM3(_vehAI, "getAssignedUnits", true, true, false) select {
@@ -2337,24 +2359,24 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 							CALLM0(_x, "getGroup") == _group
 						};
 						//OOP_INFO_1("Vehicle crew: %1", _vehCrew);
-						
+
 						// Move units to the new group
 						{ CALLM1(_newGroup, "addUnit", _x); } forEach _vehCrew;
 					};
-					
+
 					// Move the vehicle to its new group
 					CALLM1(_newGroup, "addUnit", _vehicle);
 				};
-				
+
 				// Start up the AI object again
 				if (!IS_NULL_OBJECT(_groupAI)) then {
 					CALLM2(_groupAI, "postMethodSync", "start",  []);
 				};
 			};
 		} forEach _vehGroups;
-		
+
 		__MUTEX_UNLOCK;
-		
+
 		nil
 	ENDMETHOD;
 
@@ -2367,12 +2389,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// ===== Ensure all vehicles are manned first =====
 		// Create a pool of units we can use to fill vehicle slots
 		pr _freeUnits = [];
-		pr _freeGroups = T_CALLM1("findGroupsByType", GROUP_TYPE_INF);
+		pr _freeGroups = T_CALLM1("findGroupsByType", GROUP_TYPE_INF);// select { CALLM0(_x, "isLanded") };
 		{
 			_freeUnits append CALLM0(_x, "getUnits");
 		} forEach _freeGroups;
 
-		pr _vehGroups = T_CALLM1("findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);
+		pr _vehGroups = T_CALLM1("findGroupsByType", [GROUP_TYPE_VEH ARG GROUP_TYPE_STATIC]);// select { CALLM0(_x, "isLanded") };
 
 		// We can also take units from vehicle turrets if we really need it
 		{// forEach _vehGroups;
@@ -2457,7 +2479,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		#define DESIRED_GROUP_SIZE 6
 		// ===== Now rebalance remaining inf into effective squads =====
-		pr _infGroups = T_CALLM1("findGroupsByType", GROUP_TYPE_INF) apply {
+		pr _infGroups = T_CALLM1("findGroupsByType", GROUP_TYPE_INF)
+		 // select { CALLM0(_x, "isLanded") }
+		 apply {
 			[
 				CALLM0(_x, "getUnits"),
 				_x
@@ -2524,7 +2548,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				{
 					_groupHandle leaveVehicle _x;
 				} forEach (_allVehicles - _groupVehicles); // Don't unassign the groups ones, we don't want all the crew getting kicked out
-			} forEach T_CALLM0("getGroups");
+			} forEach (T_CALLM0("getGroups") select {
+				CALLM0(_x, "isLanded")
+			});
 		};
 	ENDMETHOD;
 	
@@ -3519,21 +3545,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
-		// Update version
-		if(GETV(_storage, "version") < 18) then {
-			T_SETV("type", GARRISON_TYPE_GENERAL);
-		};
-
 		// Restore variables which were not saved
 
 		// Load all our units
 		// We don't care that groups will try to restore them as well
 		// Storage class will not load same object twice anyway
-		private _savedUnits = if(GETV(_storage, "version") < 11) then {
-			T_GETV("units")
-		} else {
-			T_GETV("savedUnits")
-		};
+		private _savedUnits = T_GETV("savedUnits");
 
 		{
 			private _unit = _x;
@@ -3568,6 +3585,13 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Recalculate all the counters, efficiency, classnames etc.
 		T_CALLM0("_recalculateCounters");
 
+		// Enable automatic spawning
+		private _autoSpawn = T_GETV("type") in GARRISON_TYPES_AUTOSPAWN;
+		T_CALLM1("enableAutoSpawn", _autoSpawn);
+		if(!_autoSpawn) then {
+			T_CALLM2("postMethodAsync", "spawn", [true]);
+		};
+
 		// Load AI object
 		pr _AI = T_GETV("AI");
 		CALLM1(_storage, "load", _AI);
@@ -3576,13 +3600,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			CALLM(_AI, "start", ["AIGarrisonDespawned"]);
 			// Register at garrison server if active
 			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
-		};
-
-		// Enable automatic spawning
-		private _autoSpawn = T_GETV("type") in GARRISON_TYPES_AUTOSPAWN;
-		T_CALLM1("enableAutoSpawn", _autoSpawn);
-		if(!_autoSpawn) then {
-			T_CALLM2("postMethodAsync", "spawn", [true]);
 		};
 
 		// Push to 'all' static variable

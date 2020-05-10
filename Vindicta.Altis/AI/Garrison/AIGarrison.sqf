@@ -750,6 +750,7 @@ CLASS("AIGarrison", "AI_GOAP")
 			case GARRISON_TYPE_AIR: {[
 				"GoalGarrisonDefendActive",
 				"GoalGarrisonDefendPassive",
+				"GoalGarrisonRebalanceVehicleGroups",
 				"GoalGarrisonRelax",
 				"GoalGarrisonLand",
 				"GoalGarrisonAirRtB"
@@ -776,9 +777,17 @@ CLASS("AIGarrison", "AI_GOAP")
 				"ActionGarrisonRepairAllVehicles",
 				"ActionGarrisonSplitVehicleGroups"
 			]};
-			case GARRISON_TYPE_AIR: {
-				[]
-			};
+			case GARRISON_TYPE_AIR: {[
+				"ActionGarrisonClearArea",
+				"ActionGarrisonJoinLocation",
+				"ActionGarrisonMergeVehicleGroups",
+				"ActionGarrisonMountCrew",
+				"ActionGarrisonMountInfantry",
+				"ActionGarrisonMoveMounted",
+				"ActionGarrisonRebalanceGroups",
+				"ActionGarrisonRepairAllVehicles",
+				"ActionGarrisonSplitVehicleGroups"
+			]};
 			case GARRISON_TYPE_PLAYER: {
 				[]
 			};

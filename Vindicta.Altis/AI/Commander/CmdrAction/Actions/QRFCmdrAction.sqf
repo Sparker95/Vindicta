@@ -1,5 +1,11 @@
 #include "common.hpp"
 
+#ifdef _SQF_VM
+#undef DEBUG_AIR_QRF
+#endif
+
+FIX_LINE_NUMBERS()
+
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.QRFCmdrAction
 
@@ -9,7 +15,6 @@ to attack the cluster using the garrison.
 
 Parent: <AttackCmdrAction>
 */
-#define pr private
 
 #define OOP_CLASS_NAME QRFCmdrAction
 CLASS("QRFCmdrAction", "AttackCmdrAction")
@@ -45,8 +50,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Created lazily here on the first call to update it. This ensures we only
 		// create intel objects for actions that are active rather than merely proposed.
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
-		if(_intelNotCreated) then
-		{
+		if(_intelNotCreated) then {
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionAttack", []);
 
@@ -123,8 +127,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Set up flags for allocation algorithm
 		private _allocationFlags = [
-			  SPLIT_VALIDATE_ATTACK
-			, SPLIT_VALIDATE_CREW
+			SPLIT_VALIDATE_ATTACK,
+			SPLIT_VALIDATE_CREW
 		];
 
 		#ifdef DEBUG_BIG_QRF
@@ -156,9 +160,9 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
 		#ifndef _SQF_VM
-		pr _dist = _tgtClusterPos distance2D _srcGarrPos;
+		private _dist = _tgtClusterPos distance2D _srcGarrPos;
 		#else
-		pr _dist = _tgtClusterPos distance _srcGarrPos;
+		private _dist = _tgtClusterPos distance _srcGarrPos;
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -168,18 +172,36 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		};
 
 		// Try to allocate units
-		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
-		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
-		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
-		pr _transportBlacklistMask = [];
-		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+		private _allocResult = switch GETV(_srcGarr, "type") do {
+			#ifndef DEBUG_AIR_QRF
+			case GARRISON_TYPE_GENERAL: {
+				private _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+				private _transportBlacklistMask = [];
+				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask];
-		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+				CALLSM("GarrisonModel", "allocateUnits", _args)
+			};
+			#endif
+			FIX_LINE_NUMBERS()
+			case GARRISON_TYPE_AIR: {
+				private _payloadWhitelistMask = T_comp_air_mask;
+				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+				private _transportBlacklistMask = [];
+				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+				CALLSM("GarrisonModel", "allocateUnits", _args)
+			};
+			default { [] };
+		};
 
 		// Bail if we have failed to allocate resources
-		if ((count _allocResult) == 0) exitWith {
-			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
+		if (count _allocResult == 0) exitWith {
+			// OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
@@ -188,7 +210,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Bail if remaining efficiency is below minimum level for this garrison
 		/*
 		// Disabled those for now, probably we want QRFs to be quite aggressive
-		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		private _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
 			T_CALLM1("setScore", ZERO_SCORE);

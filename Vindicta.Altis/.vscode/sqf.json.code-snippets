@@ -78,5 +78,9 @@
 			"*/"
 		],
 		"description": "Document a function"
+	},
+	"FIX_LINE_NUMBERS": {
+		"prefix": "FIX",
+		"body": ["FIX_LINE_NUMBERS()"]
 	}
 }

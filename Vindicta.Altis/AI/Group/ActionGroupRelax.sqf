@@ -124,8 +124,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 
 		private _AI = T_GETV("AI");
 
-		while { count _freeUnits > 0 && count _allActivities > 0 } do
-		{
+		while { count _freeUnits > 0 && count _allActivities > 0 } do {
 			private _unit = _freeUnits deleteAt 0;
 			private _activity = _allActivities deleteAt 0;
 			_activity params ["_distance", "_goal", "_parameters"];
@@ -135,15 +134,17 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			CALLM4(_unitAI, "addExternalGoal", _goal, 0, _fullParams, _AI);
 		};
 
-		if !(_nearPos isEqualTo []) then {
-			{
-				private _unit = _x;
-				private _unitAI = CALLM0(_unit, "getAI");
-				private _params = [[TAG_POS, _nearPos], [TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, selectRandom [5, 10, 20] * 60]];
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitIdle", 0, _params, _AI);
-				_activeUnits pushBackUnique [_unit, "GoalUnitIdle"];
-			} forEach _freeUnits;
-		};
+		{// forEach _freeUnits
+			private _unit = _x;
+			private _unitAI = CALLM0(_unit, "getAI");
+			private _params = [[TAG_POS, _nearPos], [TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, selectRandom [5, 10, 20] * 60]];
+			if(!(_nearPos isEqualTo []) && { _nearPos distance2D CALLM0(_unit, "getPos") > _maxDistance }) then {
+				// Can't use unit move goal as it uses waypoint which applies to group, so just order move instead
+				CALLM0(_unit, "getObjectHandle") doMove (_nearPos getPos [random _maxDistance, random 360]);
+			};
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitIdle", 0, _params, _AI);
+			_activeUnits pushBackUnique [_unit, "GoalUnitIdle"];
+		} forEach _freeUnits;
 	ENDMETHOD;
 
 	/* public virtual */ METHOD(handleUnitsRemoved)

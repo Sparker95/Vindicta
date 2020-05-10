@@ -40,8 +40,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _intelClone = T_GETV("intelClone");
 		private _intel = NULL_OBJECT;
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
-		if(_intelNotCreated) then
-		{
+		if(_intelNotCreated) then {
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionReinforce", []);
 

@@ -35,3 +35,5 @@ misc_fnc_isAdminLocal = compile preprocessFileLineNumbers "Misc\fn_isAdminLocal.
 gStaticStringHashmap = [false] call CBA_fnc_createNamespace;
 #endif
 misc_fnc_createStaticString = compile preprocessFileLineNumbers "Misc\fn_createStaticString.sqf";
+
+misc_fnc_findSafeSpawnPos = compile preprocessFileLineNumbers "Misc\fn_findSafeSpawnPos.sqf";

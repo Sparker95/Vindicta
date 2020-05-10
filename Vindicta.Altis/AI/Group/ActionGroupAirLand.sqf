@@ -47,10 +47,10 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 				private _pos = T_GETV("pos");
 				private _radius = T_GETV("radius");
 				private _terrainObjects = nearestTerrainObjects [_pos, [], _radius] select {
-					typeOf _x in location_bt_helipad && { count nearestObjects [_x, ["Vehicle"], 10] == 0 }
+					typeOf _x in location_bt_helipad && { count nearestObjects [_x, ["AllVehicles"], 10] == 0 }
 				};
 				private _objects = nearestObjects [_pos, [], _radius] select {
-					typeOf _x in location_bt_helipad && { count nearestObjects [_x, ["Vehicle"], 10] == 0 }
+					typeOf _x in location_bt_helipad && { count nearestObjects [_x, ["AllVehicles"], 10] == 0 }
 				};
 				{
 					_objects pushBackUnique _x;

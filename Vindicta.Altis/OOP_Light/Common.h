@@ -56,3 +56,15 @@ Some generic macros
 // For use with sort
 #define ASCENDING true
 #define DESCENDING false
+
+// ----------------------------------------------------------------------
+// |                            M A R K U P                             |
+// ----------------------------------------------------------------------
+// Use these to markup functions and variables to as documentation
+
+// Can be used to mark a return statement, doesn't have any functionality
+#define return 
+#define public 
+#define protected 
+#define virtual 
+#define override  

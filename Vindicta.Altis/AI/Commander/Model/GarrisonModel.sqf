@@ -60,6 +60,8 @@ CLASS("GarrisonModel", "ModelBase")
 	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]);
 	// Position.
 	VARIABLE_ATTR("pos", []);
+	// What type of garrison this is.
+	VARIABLE_ATTR("type", []);
 	// What side this garrison belongs to.
 	VARIABLE_ATTR("side", []);
 	// What faction within the side this garrison belongs to.
@@ -86,6 +88,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", sideUnknown);
+		T_SETV("type", GARRISON_TYPE_GENERAL);
 		T_SETV("faction", "");
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
 		if(T_CALLM("isActual", [])) then {
@@ -136,6 +139,7 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_copy, "inCombat", T_GETV("inCombat"));
 		SETV(_copy, "pos", +T_GETV("pos"));
 		SETV(_copy, "side", T_GETV("side"));
+		SETV(_copy, "type", T_GETV("type"));
 		SETV(_copy, "faction", T_GETV("faction"));
 		SETV(_copy, "locationId", T_GETV("locationId"));
 		_copy
@@ -152,30 +156,16 @@ CLASS("GarrisonModel", "ModelBase")
 		if(EFF_LTE(_newEff, EFF_ZERO) && (IS_NULL_OBJECT(CALLM0(_actual, "getLocation"))) ) then {
 			T_CALLM("killed", []);
 		} else {
-			private _actualSide = CALLM0(_actual, "getSide");
-			T_SETV("side", _actualSide);
-
-			private _actualFaction = CALLM0(_actual, "getFaction");
-			T_SETV("faction", _actualFaction);
-			
+			T_SETV("type", CALLM0(_actual, "getType"));
+			T_SETV("side", CALLM0(_actual, "getSide"));
+			T_SETV("faction", CALLM0(_actual, "getFaction"));
 			T_SETV("efficiency", _newEff);
-
-			pr _comp = CALLM0(_actual, "getCompositionNumbers"); // It does a deep copy itself
-			T_SETV("composition", _comp);
-
-			// Get seats only for trucks as we care about this most
-			private _seats = CALLM(_actual, "getTransportCapacity", [[T_VEH_truck_inf]]);
-			T_SETV("transport", _seats);
-			
-			private _actualPos = CALLM0(_actual, "getPos");
-			T_SETV("pos", +_actualPos);
-
-
-			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject ARG _actual ARG _actualPos]);
+			T_SETV("composition", CALLM0(_actual, "getCompositionNumbers")); // It does a deep copy itself
+			T_SETV("transport", CALLM(_actual, "getTransportCapacity", [[T_VEH_truck_inf]])); // Get seats only for trucks as we care about this most
+			T_SETV("pos", +CALLM0(_actual, "getPos"));
 			private _locationActual = CALLM0(_actual, "getLocation");
 			if(!IS_NULL_OBJECT(_locationActual)) then {
-				private _world = T_GETV("world");
-				private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
+				private _location = CALLM(T_GETV("world"), "findOrAddLocationByActual", [_locationActual]);
 				T_SETV("locationId", GETV(_location, "id"));
 				// Don't call the proper functions because it deals with updating the LocationModel
 				// and we don't need to do that in sync (LocationModel sync does it)
@@ -377,6 +367,10 @@ CLASS("GarrisonModel", "ModelBase")
 		private _newGarrActual = NEW("Garrison", [_type ARG _side ARG [] ARG _faction ARG _templateName]);
 		private _pos = CALLM0(_actual, "getPos");
 		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
+
+		if(CALLM0(_actual, "isSpawned")) then {
+			CALLM2(_newGarrActual, "postMethodAsync", "spawn", []);
+		};
 
 		// This self registers with the world. From now on we just modify the _newGarrActual itself, the Model gets updated automatically during its
 		// update phase.

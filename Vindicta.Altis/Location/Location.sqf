@@ -912,6 +912,23 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	ENDMETHOD;
 
+	// Get all garrisons that consider this location home
+	METHOD(getHomeGarrisons)
+		params [P_THISOBJECT, P_DYNAMIC_DEFAULT("_sides", 0), P_DYNAMIC_DEFAULT("_types", GARRISON_TYPE_GENERAL)];
+		if(_types isEqualType GARRISON_TYPE_GENERAL) then {
+			_types = [_types];
+		};
+		if (_sides isEqualTo 0) then {
+			CALLSM0("Garrison", "getAll") select { CALLM0(_x, "getHome") == _thisObject && { CALLM0(_x, "getType") in _types } };
+			//T_GETV("garrisons") select { CALLM0(_x, "getType") in _types }
+		} else {
+			if(_sides isEqualType west) then {
+				_sides = [_sides];
+			};
+			CALLSM0("Garrison", "getAll") select { CALLM0(_x, "getHome") == _thisObject && { CALLM0(_x, "getSide") in _sides } && { CALLM0(_x, "getType") in _types } }
+		};
+	ENDMETHOD;
+
 	METHOD(hasGarrisons)
 		params [P_THISOBJECT, P_DYNAMIC_DEFAULT("_sides", 0), P_DYNAMIC_DEFAULT("_types", GARRISON_TYPE_GENERAL)];
 		count T_CALLM2("getGarrisons", _sides, _types) > 0
@@ -1368,7 +1385,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		_posAndDir
 	ENDMETHOD;
-
 
 	/*
 	Method: countAvailableUnits

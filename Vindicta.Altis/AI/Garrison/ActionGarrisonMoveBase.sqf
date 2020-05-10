@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 #define OOP_CLASS_NAME ActionGarrisonMoveBase
 CLASS("ActionGarrisonMoveBase", "ActionGarrison")
@@ -295,7 +296,16 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		// Create a new virtual route
 		private _gar = T_GETV("gar");
+		private _garPos = CALLM0(_gar, "getPos");
+		private _pos = T_GETV("pos");
 
+		// If its an air garrison moving, or distance is short then we can use straight line movement (vehicles will still use roads, just not with planned route)
+		if(CALLM0(_gar, "getType") == GARRISON_TYPE_AIR || { _pos distance2D _garPos < 750 }) exitwith {
+			_vr = NULL_OBJECT;
+			T_SETV("virtualRoute", _vr);
+			_state = ACTION_STATE_ACTIVE;
+			_vr
+		};
 		private _side = CALLM0(_gar, "getSide");
 		private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
@@ -306,10 +316,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			_base_cost + _threat * 20
 		};
 
-		private _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, _threatCostFn, "", [_cmdr], true, true];
+		private _args = [_garPos, _pos, -1, _threatCostFn, "", [_cmdr], true, true];
 		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
-
 		_vr
 	ENDMETHOD;
 
