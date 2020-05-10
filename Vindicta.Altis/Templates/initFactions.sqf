@@ -14,6 +14,7 @@
 ["Templates\Factions\RHS_AAF_2010.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_HIDF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_MNAF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF_NATO.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AFRF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_USAF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
