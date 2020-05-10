@@ -13,10 +13,10 @@ _RandomHeadgear = selectRandom ["rhsgref_helmet_pasgt_erdl","rhsgref_hat_M1951",
 this addHeadgear _RandomHeadgear;
 this addVest "rhsgref_alice_webbing";
 
-this addWeapon "srifle_DMR_06_hunter_F";
+this addWeapon "rhs_weap_m14_rail";
 this addPrimaryWeaponItem "optic_KHS_old";
 this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_m62_Mag";
-this addPrimaryWeaponItem "bipod_03_F_blk";
+this addPrimaryWeaponItem "rhsusf_acc_m14_bipod";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_m67";};
