@@ -116,6 +116,7 @@
 #define ENABLE_SIMULATION_GLOBAL(obj, state)
 #define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
 
+#define 
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
