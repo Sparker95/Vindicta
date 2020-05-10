@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["rhssaf_helmet_m97_veil_digital","rhssaf_helmet_
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["G_Bandanna_oli","G_Balaclava_oli","rhsusf_shemagh_od","rhsusf_shemagh2_od","","",""];
 this addGoggles _RandomGoggles;
-this forceAddUniform "rhssaf_uniform_m10_digital_summer";
+this forceaddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital_rifleman_radio";
 this addBackpack "B_RadioBag_01_eaf_F";
 
@@ -22,7 +22,7 @@ this addPrimaryWeaponItem "rhs_acc_1p78";
 this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 this addWeapon "rhs_weap_makarov_pm";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
-this addWeapon "rhssaf_zrak_rd7j";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_acc_perst1ik";

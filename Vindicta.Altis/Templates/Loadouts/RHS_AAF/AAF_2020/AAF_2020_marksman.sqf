@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["FGN_AAF_PASGT","FGN_AAF_PASGT_ESS","FGN_AAF_PAS
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","","",""];
 this addGoggles _RandomGoggles;
-this forceAddUniform "FGN_AAF_M10_Type07_Summer";
+this forceaddUniform "FGN_AAF_M10_Type07_Summer";
 this addVest "FGN_AAF_CIRAS_MM";
 this addBackpack "B_LegStrapBag_coyote_F";
 

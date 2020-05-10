@@ -11,12 +11,12 @@ _RandomHeadgear = selectRandom ["rhs_tsh4","rhs_tsh4_bala","rhs_tsh4_ess","rhs_t
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","","","",""];
 this addGoggles _RandomGoggles;
-this forceAddUniform "FGN_AAF_M93_Lizard";
+this forceaddUniform "FGN_AAF_M93_Lizard";
 this addVest "rhs_vest_pistol_holster";
 
 this addWeapon "rhs_weap_savz61";
 this addPrimaryWeaponItem "rhsgref_20rnd_765x17_vz61";
-this addWeapon "rhssaf_zrak_rd7j";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_grenade_anm8_mag";

@@ -8,7 +8,7 @@ removeHeadgear this;
 removeGoggles this;
 
 this addHeadgear "rhs_zsh7a_mike_green";
-this forceAddUniform "rhsgref_uniform_para_ttsko_urban";
+this forceaddUniform "rhsgref_uniform_para_ttsko_urban";
 this addVest "rhs_vest_pistol_holster";
 
 this addWeapon "rhsusf_weap_glock17g4";
