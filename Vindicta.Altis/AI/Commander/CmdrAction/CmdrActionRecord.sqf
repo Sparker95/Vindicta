@@ -122,8 +122,8 @@ CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
 ENDCLASS;
 
 // Done
-#define OOP_CLASS_NAME SupplyCmdrActionRecord
-CLASS("SupplyCmdrActionRecord", "DirectedCmdrActionRecord")
+#define OOP_CLASS_NAME SupplyConvoyCmdrActionRecord
+CLASS("SupplyConvoyCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD(getText)
 		"SUPPLY"
 	ENDMETHOD;

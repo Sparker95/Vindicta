@@ -586,7 +586,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
-		private _record = NEW("SupplyCmdrActionRecord", []);
+		private _record = NEW("SupplyConvoyCmdrActionRecord", []);
 
 		// // Fill data values
 		// //SETV(_record, "garRef", GETV(_garModel, "actual"));
@@ -610,7 +610,6 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		#endif
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;
-	
 
 	METHOD(calculateCargo)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
@@ -637,7 +636,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		switch (_type) do {
 			case ACTION_SUPPLY_TYPE_BUILDING: {
 				_cargo set [CARGO_ITEMS, [
-					["vin_build_res_0", CALLSM2("SupplyCmdrAction", "randomAmount", 25, 50 * _amount)]
+					["vin_build_res_0", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 25, 50 * _amount)]
 				]];
 			};
 			case ACTION_SUPPLY_TYPE_AMMO: {
@@ -649,11 +648,11 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				private _tInv = _t#T_INV;
 
 				// Add weapons and magazines
-				private _arr = [[T_INV_handgun, ceil (1 + random 2), CALLSM2("SupplyCmdrAction", "randomAmount", 2, 5 * _amount)]];
+				private _arr = [[T_INV_handgun, ceil (1 + random 2), CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 2, 5 * _amount)]];
 				_arr = _arr + (if(random 10 < 7) then {
-					[[T_INV_primary, ceil (1 + random 2), CALLSM2("SupplyCmdrAction", "randomAmount", 5, 20 * _amount)]]
+					[[T_INV_primary, ceil (1 + random 2), CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 20 * _amount)]]
 				} else {
-					[[T_INV_secondary, ceil (1 + random 2), CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)]]
+					[[T_INV_secondary, ceil (1 + random 2), CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 10 * _amount)]]
 				});
 
 				private _weapons = [];
@@ -696,18 +695,18 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			};
 			case ACTION_SUPPLY_TYPE_EXPLOSIVES: {
 				_cargo set [CARGO_ITEMS, [
-					["IEDLandSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
-					["IEDUrbanSmall_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 4, 10 * _amount)],
-					["IEDLandBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
-					["IEDUrbanBig_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 10 * _amount)],
-					["DemoCharge_Remote_Mag", 		CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
-					["SatchelCharge_Remote_Mag", 	CALLSM2("SupplyCmdrAction", "randomAmount", 0, 5 * _amount)],
-					["TrainingMine_Mag", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 20 * _amount)],
-					["ACE_DeadManSwitch", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-					["ACE_DefusalKit", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-					["ACE_M26_Clacker", 			CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-					["ACE_Clacker", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)],
-					["MineDetector", 				CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)]
+					["IEDLandSmall_Remote_Mag", 	CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 4, 10 * _amount)],
+					["IEDUrbanSmall_Remote_Mag", 	CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 4, 10 * _amount)],
+					["IEDLandBig_Remote_Mag", 		CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 0, 10 * _amount)],
+					["IEDUrbanBig_Remote_Mag", 		CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 0, 10 * _amount)],
+					["DemoCharge_Remote_Mag", 		CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 0, 5 * _amount)],
+					["SatchelCharge_Remote_Mag", 	CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 0, 5 * _amount)],
+					["TrainingMine_Mag", 			CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 20 * _amount)],
+					["ACE_DeadManSwitch", 			CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["ACE_DefusalKit", 				CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["ACE_M26_Clacker", 			CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["ACE_Clacker", 				CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 10 * _amount)],
+					["MineDetector", 				CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 10 * _amount)]
 				]];
 			};
 			case ACTION_SUPPLY_TYPE_MEDICAL;
@@ -717,7 +716,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 					("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems")) apply {
 						private _itemName = getText (_x >> "name");
 						private _itemCount = getNumber (_x >> "count");
-						[_itemName, CALLSM2("SupplyCmdrAction", "randomAmount", 2 * _itemCount, 3 * _itemCount * _amount)]
+						[_itemName, CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 2 * _itemCount, 3 * _itemCount * _amount)]
 					}
 				} else {
 					// wat
@@ -726,14 +725,14 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				// Add ADV medical items
 				// Defibrilator
 				if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-					_medical pushBack ["adv_aceCPR_AED", CALLSM2("SupplyCmdrAction", "randomAmount", 5, 10 * _amount)];
+					_medical pushBack ["adv_aceCPR_AED", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 10 * _amount)];
 				};
 				// Splint
 				if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
-					_medical pushBack ["adv_aceSplint_splint", CALLSM2("SupplyCmdrAction", "randomAmount", 10, 30 * _amount)];
+					_medical pushBack ["adv_aceSplint_splint", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 10, 30 * _amount)];
 				};
 
-				_medical pushBack ["FirstAidKit", CALLSM2("SupplyCmdrAction", "randomAmount", 5, 15 * _amount)];
+				_medical pushBack ["FirstAidKit", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 5, 15 * _amount)];
 				_cargo set [CARGO_ITEMS, _medical];
 			};
 		}
