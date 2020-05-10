@@ -1,5 +1,5 @@
 /*
-custom Horizons Islands Defence Forces template for ARMA III (RHS)
+custom Malden Armed Forces template for ARMA III (RHS)
 */
 
 _array = [];
