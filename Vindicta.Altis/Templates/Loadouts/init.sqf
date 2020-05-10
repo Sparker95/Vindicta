@@ -69,6 +69,9 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF_Recon\ini
 //RHS_HIDF
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf";
+//RHS_MNAF
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_MNAF\MNAF\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_MNAF\MNAF_Recon\init.sqf";
 //RHS_LDF_NATO
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO_Police\init.sqf";

@@ -13,7 +13,7 @@ _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag_green","G_Ba
 this addGoggles _RandomGoggles;
 _RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Lizard","H_Watchcap_khk","H_Shemag_olive_hs","H_Cap_headphones","H_ShemagOpen_tan"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "FGN_AAF_M93_Lizard";
+this forceaddUniform "FGN_AAF_M93_Lizard";
 this addBackpack "FGN_AAF_Fieldpack_Lizard";
 
 this addWeapon "rhs_weap_l1a1";

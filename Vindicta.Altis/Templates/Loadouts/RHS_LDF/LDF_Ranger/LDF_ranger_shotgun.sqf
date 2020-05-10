@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["H_Cap_blk","rhs_beret_milp"];
 this addHeadgear _RandomHeadgear;
 _RandomVest = selectRandom ["rhs_vest_pistol_holster", "rhs_vest_pistol_holster", "rhssaf_vest_md98_woodland"];
 this addVest _RandomVest;
-this forceAddUniform "rhsgref_uniform_olive";
+this forceaddUniform "rhsgref_uniform_olive";
 
 this addWeapon "sgun_HunterShotgun_01_F";
 this addPrimaryWeaponItem "2Rnd_12Gauge_Pellets";

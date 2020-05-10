@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["H_Cap_blk","rhs_beret_milp","FGN_AAF_PASGT_Blac
 this addHeadgear _RandomHeadgear;
 _RandomVest = selectRandom ["rhsusf_mbav", "FGN_AAF_M99Vest_Police_Rifleman", "FGN_AAF_M99Vest_Police_Rifleman_Radio"];
 this addVest _RandomVest;
-this forceAddUniform "rhs_uniform_g3_blk";
+this forceaddUniform "rhs_uniform_g3_blk";
 
 this addWeapon "SMG_05_F";
 this addPrimaryWeaponItem "rhsusf_acc_M952V";

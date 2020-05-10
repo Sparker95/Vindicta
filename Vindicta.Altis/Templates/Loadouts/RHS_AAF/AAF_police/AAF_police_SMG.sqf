@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["FGN_AAF_PatrolCap_Police","FGN_AAF_Beret_Police
 this addHeadgear _RandomHeadgear;
 _RandomVest = selectRandom ["FGN_AAF_M99Vest_Police", "V_LegStrapBag_black_F"];
 this addVest _RandomVest;
-this forceAddUniform "FGN_AAF_M93_Police";
+this forceaddUniform "FGN_AAF_M93_Police";
 
 this addWeapon "rhs_weap_pp2000";
 this addPrimaryWeaponItem "rhs_mag_9x19mm_7n21_20";
