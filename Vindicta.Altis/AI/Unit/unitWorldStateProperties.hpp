@@ -1,56 +1,44 @@
 // === Position
 
-// Position ASL
-#define WSP_UNIT_POS_ASL 0
-
-// Vehicle position ASL
-// Action that performs vehicle driving has this property as effect
-#define WSP_UNIT_VEHICLE_POS_ASL 1
-
-// [buildingHandle, buildingPosID]
-#define WSP_UNIT_POS_BUILDING 2
+// At desired target position
+#define WSP_UNIT_AT_TARGET_POS 0
 
 
 
 // === Vehicle interaction
 
-// Bool, true if in any vehicle
-#define WSP_UNIT_IN_VEHICLE 3
+// In any vehicle
+#define WSP_UNIT_IN_VEHICLE 1		
 
-// OOP Vehicle Unit handle, or NULL_OBJECT if not in vehicle
-#define WSP_UNIT_CURRENT_VEHICLE 4
+// In assigned vehicle
+#define WSP_UNIT_IN_TARGET_VEHICLE 2
 
-// ["TURRET", turretpath]
-// ["DRIVER"]
-// ["CARGO"]
-// [""] - if not in vehicle
-#define WSP_UNIT_VEHICLE_ROLE 5
+// In assigned vehicle and in assigned role
+#define WSP_UNIT_CORRECT_VEHICLE_ROLE 3
 
 
 // === Object interaction
 
-// Object unit is interacting with
-// General case: go to some place or to target, interact with it
-// Target of ambient animation
+// Interacting with something:
+// Ambient animation
 // Shooting range target
-// Target unit to heal
-// Target unit to repair
-// Target to do warning shots
+// Healing another unit
+// Repairing vehicle
+// Doing warning shots
 // What else?
-#define WSP_UNIT_INTERACT_OBJECT 6
-
-// Bool, true if interacting with some object
-#define WSP_UNIT_INTERACTING_WITH_OBJECT 7
+// !! Dialogue is not form of interaction since we can do both dialogue and interaction
+#define WSP_UNIT_DOING_INTERACTION 4
 
 
 // === Other
 
 // Bool, true if talking with someone
-#define WSP_UNIT_DOING_DIALOGUE 8
+#define WSP_UNIT_DOING_DIALOGUE 5
 
 // Following leader while on foot
-#define WSP_UNIT_IN_INFANTRY_FORMATION 9
+// Might be required for some infantry actions
+#define WSP_UNIT_IN_INFANTRY_FORMATION 6
 
 // Bool, true if in combat or in danger
- // Might trigger different behaviours for civilians and military?
-#define WSP_UNIT_DANGER 10
+// Might trigger different behaviours for civilians and military?
+#define WSP_UNIT_IN_DANGER 7

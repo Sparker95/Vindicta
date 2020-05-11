@@ -275,17 +275,17 @@ CLASS("AI_GOAP", "AI")
 					// Get desired world state
 					pr _args = [/* AI */ _thisObject, _goalParameters];
 					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
-					
-					// todo caching
-					/*
-					cache key: _goalClassName + _goalParameters + currentWorldState + _wsGoal
-					*/
+
+					// Calculate current world state
+					// Goal can calculate some world state properties as perceived by goal itself
+					pr _wsCurrent = +T_GETV("worldState");
+					CALLSM3(_goalClassName, "updateCurrentWorldState", _thisObject, _goalParameters,  _wsCurrent);
 
 					// Get actions this agent can do
 					pr _possActions = T_CALLM0("getPossibleActions");
 					
 					// Run the A* planner to generate a plan
-					pr _args = [T_GETV("worldState"), _wsGoal, _possActions, _goalParameters, _thisObject];
+					pr _args = [_wsCurrent, _wsGoal, _possActions, _goalParameters, _thisObject];
 
 					CALL_STATIC_METHOD("AI_GOAP", "planActions", _args) params ["_foundPlan", "_actionPlan"];
 					
@@ -1267,7 +1267,7 @@ CLASS("AI_GOAP", "AI")
 				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
 				// Safety check
 				pr _connected = if (!isNil "_preconditions") then { [_preconditions, _effects, _nodeWS] call ws_isActionSuitable; } else {
-					OOP_ERROR_1(" preconditions of %1 are nil!", _action);
+					OOP_WARNING_1(" preconditions of %1 are nil!", _action);
 					false;
 				};
 				
@@ -1336,8 +1336,7 @@ CLASS("AI_GOAP", "AI")
 						pr _WSBeforeAction = +_nodeWS;
 						[_WSBeforeAction, _effects] call ws_substract;
 						// Fully resolve preconditions since we now know all the parameters of this action
-						pr _args = [_goalParameters, _parameters]; //
-						pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
+						pr _preconditions = CALLSM2(_x, "getPreconditions", _goalParameters, _parameters);
 						[_WSBeforeAction, _preconditions] call ws_add;
 						
 						// Check if this world state is in close set already

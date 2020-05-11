@@ -15,14 +15,14 @@
 #define WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS				13
 // Misc
 #define WSP_GAR_POSITION									14 // Position or the current location this garrison is attached to
-#define WSP_GAR_CARGO_POSITION								15
-#define WSP_GAR_VEHICLES_POSITION							16
+#define WSP_GAR_CARGO_POSITION								15 // <- this
+#define WSP_GAR_VEHICLES_POSITION							16 // <- this
 #define WSP_GAR_VEHICLE_GROUPS_MERGED						17
 #define WSP_GAR_GROUPS_BALANCED								18
 #define WSP_GAR_CLEARING_AREA								19
 #define WSP_GAR_CARGO										20
 #define WSP_GAR_HAS_CARGO									21
-#define WSP_GAR_LOCATION									22 // Location the garrison is attached to
+#define WSP_GAR_LOCATION									22 // <- this? Location the garrison is attached to
 #define WSP_GAR_HAS_VEHICLES								23
 #define WSP_GAR_COUNT										24
 

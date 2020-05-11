@@ -381,6 +381,38 @@ CLASS("Action", "MessageReceiverEx")
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -		
 	
 	// ----------------------------------------------------------------------
+	//                 G E T   P R E C O N D I T I O N S
+	// ----------------------------------------------------------------------
+	/*
+	Method: getPreconditions
+	Returns preconditions of this action depending on parameters
+	By default it returns value of "preconditions" static variable. 
+	
+	It can be overriden on actions to provide preconditions from actual world with following limitations:
+	- Providev set of world state properties must be static.
+		It means that its's forbidden to provide some world state property in some cases and not provide it in others.
+	- Provided values must not affect branching of actions preceding this action.
+		It means that we can return	values like positions, object handles, etc, but typically not bools.
+
+	! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+	! ! !  When creating a world state to return, ensure that you specify its origin as ORIGIN_DYNAMIC_ACTION_PRECONDITIONS ! ! !
+	! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+	
+	Parameters: _goalParameters, _actionParameters
+	
+	_goalParameters - parameters of the <Goal> for which this action is considered
+	_actionParameters - parameters of this action resolved by the action planner
+	
+	Returns: <WorldState>
+	*/
+	STATIC_METHOD(getPreconditions)
+		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
+
+		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
+		_wsPre
+	ENDMETHOD;
+
+	// ----------------------------------------------------------------------
 	// |                         G E T   P R E C E D E N C E                |
 	// |                                                                    |
 	// ----------------------------------------------------------------------

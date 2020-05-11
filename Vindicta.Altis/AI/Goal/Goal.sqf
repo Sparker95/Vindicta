@@ -114,10 +114,19 @@ CLASS("Goal", "")
 				_effects
 			} else {
 				_effects;
-			}
+			};
 		} else {
 			_effects
 		};
+	ENDMETHOD;
+
+	/*
+	Updates current world state as perceived by this goal.
+	Does nothing by default.
+	You can override it and modify the passed _ws world state.
+	*/
+	STATIC_METHOD(updateCurrentWorldState)
+		//params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters"), P_ARRAY("_ws")];
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is added to AI
