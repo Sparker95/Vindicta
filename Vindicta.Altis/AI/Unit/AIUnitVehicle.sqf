@@ -9,7 +9,7 @@ Author: Sparker 12.11.2018
 #define pr private
 
 #define OOP_CLASS_NAME AIUnitVehicle
-CLASS("AIUnitVehicle", "AI_GOAP")
+CLASS("AIUnitVehicle", "AIUnit")
 
 	// Array with units which are loaded into cargo space of this unit (through ace cargo system currently).
 	// Doesn't list infantry units sitting on cargo infantry seats!! 

@@ -164,7 +164,10 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
-			//_hO enableWeaponDisassembly false; // Disable weapon disassmbly
+			// Don't uncomment this until weapon disassembly is supported
+			// I am looking at you Marvis, don't
+			// Just do not
+			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
 			T_CALLM0("initObjectVariables");
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
@@ -477,7 +480,10 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						// 	};
 						// };
 
-						//_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
+						// Don't uncomment this until weapon disassembly is supported
+						// I am looking at you Marvis, don't
+						// Just do not
+						_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						T_CALLM1("createAI", "AIUnitVehicle");

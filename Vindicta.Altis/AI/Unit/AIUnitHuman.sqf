@@ -10,19 +10,17 @@ Base class for human AI. Has vehicle assignment functionality.
 #define MRK_ARROW	"_arrow"
 
 #define OOP_CLASS_NAME AIUnitInfantry
-CLASS("AIUnitHuman", "AI_GOAP")
-
-	// Object handle of the unit
-	VARIABLE("hO");
+CLASS("AIUnitHuman", "AIUnit")
 
 	// Vehicle assignment variables
 	VARIABLE("assignedVehicle");
 	VARIABLE("assignedVehicleRole");
 	VARIABLE("assignedCargoIndex");
 	VARIABLE("assignedTurretPath");
-	
-	VARIABLE("mounted");
 
+	// Position assignment variables
+	VARIABLE("targetPosAGL");
+	VARIABLE("targetPosRadius");	// Radius for movement completion
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
@@ -38,15 +36,22 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 
-		// Set variables
-		pr _hO = CALLM0(_agent, "getObjectHandle");
-		T_SETV("hO", _hO);
+		// Create world state
+		pr _ws = [WSP_UNIT_HUMAN_SIZE] call ws_new; // todo WorldState size must depend on the agent
+		for "_i" from 0 to (WSP_UNIT_HUMAN_SIZE-1) do { // Init all WSPs to false
+			WS_SET(_ws, _i, false);
+		};
+		T_SETV("worldState", _ws);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
 		#endif
 
-		T_SETV("mounted", false);
+		pr _targetPos = [0,0,0]; // Something completely not here
+		T_SETV("targetPosAGL", _targetPos);
+		T_SETV("targetPosRadius", -1);
+
+
 		//T_SETV("worldState", _ws);
 	ENDMETHOD;
 	
@@ -64,6 +69,28 @@ CLASS("AIUnitHuman", "AI_GOAP")
 
 		T_CALLM0("removeFromProcessCategory");
 	ENDMETHOD;
+
+	METHOD(process)
+		params [P_THISOBJECT, P_BOOL("_spawning")];
+
+		#ifdef DEBUG_GOAL_MARKERS
+		if(T_GETV("markersEnabled")) then {
+			pr _unused = "";
+		};	
+		#endif
+
+		// === Update world state properties
+		T_CALLM0("updateVehicleWSP");
+		T_CALLM0("updatePositionWSP");
+
+		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_spawning]);
+
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_updateDebugMarkers");
+		#endif
+	ENDMETHOD;
+	FIX_LINE_NUMBERS()
+	
 
 	/* override */ METHOD(start)
 		params [P_THISOBJECT];
@@ -193,23 +220,6 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		};
 
 	ENDMETHOD;
-
-	METHOD(process)
-		params [P_THISOBJECT];
-
-		#ifdef DEBUG_GOAL_MARKERS
-		if(T_GETV("markersEnabled")) then {
-			pr _unused = "";
-		};	
-		#endif
-
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
-
-		#ifdef DEBUG_GOAL_MARKERS
-		T_CALLM0("_updateDebugMarkers");
-		#endif
-	ENDMETHOD;
-	FIX_LINE_NUMBERS()
 
 	/*
 	Method: unassignVehicle
@@ -555,18 +565,50 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		_veh
 	ENDMETHOD;
 	
-	METHOD(isAtAssignedSeat)
+	// Updates vehicle world state properties
+	METHOD(updateVehicleWSP)
 		params [P_THISOBJECT];
-		
-		pr _assignedVehicleRole = T_GETV("assignedVehicleRole");
-		pr _hVeh = CALLM0(T_GETV("assignedVehicle"), "getObjectHandle");
+
 		pr _hO = T_GETV("hO");
+
+		pr _atAssignedVehAndSeat = T_CALLM0("_isAtAssignedVehicleAndSeat");
+		_atAssignedVehAndSeat params ["_atAssignedVehicle", "_atAssignedSeat"];
+		pr _atAnyVehicle = ! ((vehicle _hO) isEqualTo _hO);
+		WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, _atAssignedVehicle);
+		WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT, _atAssignedSeat);
+		WS_SET(_ws, WSP_UNIT_HUMAN_AT_VEHICLE, _atAnyVehicle);
+	ENDMETHOD;
+
+	// Performs checks
+	// Returns: [isAtAssignedVehicle, isAtAssignedSeat]
+	METHOD(_isAtAssignedVehicleAndSeat)
+		params [P_THISOBJECT];
+
+		pr _assignedVehicleRole = T_GETV("assignedVehicleRole");
+		pr _vehUnit = T_GETV("assignedVehicle");
+		if (isNil "_vehUnit") exitWith {[false, false]};
+		pr _hVeh = CALLM0(_vehUnit, "getObjectHandle");
+		pr _hO = T_GETV("hO");
+
+		// Bail if target vehicle is null (it might have despawned)
+		if (isNull _hVeh) exitWith {[false, false]};
 		
-		switch (_assignedVehicleRole) do {	
+		// Check at assigned vehicle
+		pr _atAssignedVehicle = (vehicle _hO) isEqualTo _hO;
+
+		// Check at assigned vehicle seat
+		pr _atAssignedSeat = switch (_assignedVehicleRole) do {
+
+			// Common case should be fast to reach
+			case VEHICLE_ROLE_NONE: {
+				vehicle _hO == _hO
+			};
+
 			case VEHICLE_ROLE_DRIVER: {
 				pr _driver = driver _hVeh;
 				_driver isEqualTo _hO
 			};
+
 			case VEHICLE_ROLE_TURRET : {
 				pr _turretPath = T_GETV("assignedTurretPath");
 				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x#3 isEqualTo _turretPath};
@@ -574,6 +616,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 				
 				_turretOperator isEqualTo _hO
 			};
+
 			case VEHICLE_ROLE_CARGO : {
 				/* FulLCrew output: Array - format:
 				0: <Object>unit
@@ -597,15 +640,36 @@ CLASS("AIUnitHuman", "AI_GOAP")
 					_turretOperator isEqualTo _hO
 				};
 			}; // case cargo
-			case VEHICLE_ROLE_NONE: {
-				vehicle _hO == _hO
-			};
+
 			default {
 				false
 			};
 		};
+
+		[_atAssignedVehicle, _atAssignedSeat&&_atAssignedVehicle]; // AND them just to be sure
 	ENDMETHOD;
 	
+	// Returns WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT world state property
+	// It is true if unit both in assigned vehicle and at correct seat
+	//
+	METHOD(getAtAssignedVehicleAndSeat)
+		params [P_THISOBJECT];
+		pr _ws = T_GETV("worldState");
+		WS_GET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT);
+	ENDMETHOD;
+
+
+	// ----------------------------------------------------------------------
+	// |                   Position world state property update
+	// ----------------------------------------------------------------------
+
+	METHOD(updatePositionWSP)
+		params [P_THISOBJECT];
+		pr _ws = T_GETV("worldState");
+		pr _atTargetPos = (T_GETV("hO") distance T_GETV("targetPosAGL")) <= T_GETV("targetPosRadius");
+		WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _atTargetPos);
+	ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The group AI resides in its own thread
@@ -633,7 +697,6 @@ CLASS("AIUnitHuman", "AI_GOAP")
 			"assignedVehicleRole",
 			"assignedCargoIndex",
 			"assignedTurretPath",
-			"mounted",
 			"sentryPos"
 		]
 	ENDMETHOD;

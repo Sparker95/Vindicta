@@ -17,6 +17,6 @@
 #include "..\Group\groupWorldStateProperties.hpp"
 #include "..\Garrison\garrisonWorldStateProperties.hpp"
 #include "..\targetStruct.hpp"
-#include "unitWorldStateProperties.hpp"
+#include "unitHumanWorldStateProperties.hpp"
 #include "vehicleRoles.hpp"
 #include "..\goalRelevance.hpp"

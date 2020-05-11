@@ -38,7 +38,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		pr _unitsInf = CALLM0(_group, "getInfantryUnits") select {
 			pr _unitAI = CALLM0(_x, "getAI");
 			// Not assigned to cargo, or not in assigned cargo spot
-			CALLM0(_unitAI, "getAssignedVehicleRole") != "CARGO" || { !CALLM0(_unitAI, "isAtAssignedSeat") }
+			CALLM0(_unitAI, "getAssignedVehicleRole") != "CARGO" || { !CALLM0(_unitAI, "getAtAssignedVehicleAndSeat") }
 		};
 
 		// Succeed instantly if there are no infantry
