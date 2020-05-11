@@ -41,9 +41,19 @@
 
 // Bool, true if in combat or in danger
 // Might trigger different behaviours for civilians and military?
-#define WSP_UNIT_HUMAN_IN_DANGER 7
-
+// --- Probably it's not needed for planner
+//#define WSP_UNIT_HUMAN_IN_DANGER 7
 
 
 // Size is always last
-#define WSP_UNIT_HUMAN_SIZE 8
+#define WSP_UNIT_HUMAN_SIZE 7
+
+#define WSP_UNIT_HUMAN_NAMES [ \
+	"AT TARGET POS", \
+	"AT VEHICLE", \
+	"AT ASSIGNED VEH", \
+	"AT ASSIGNED VEH ROLE", \
+	"DOING INTERACTION", \
+	"DOING DIALOGUE", \
+	"IN FORMATION"
+]

@@ -1523,6 +1523,7 @@ CLASS("AI_GOAP", "AI")
 
 		// This object info
 		_a pushBack _thisObject;								// + This Object
+		_a pushBack GET_OBJECT_CLASS(_thisObject);				// + This object class name
 
 		// World state
 		pr _ws = T_GETV("worldState");

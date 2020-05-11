@@ -47,6 +47,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_SETV("markersEnabled", false);
 		#endif
 
+		// Init target pos variables
 		pr _targetPos = [0,0,0]; // Something completely not here
 		T_SETV("targetPosAGL", _targetPos);
 		T_SETV("targetPosRadius", -1);
@@ -570,13 +571,19 @@ CLASS("AIUnitHuman", "AIUnit")
 		params [P_THISOBJECT];
 
 		pr _hO = T_GETV("hO");
+		pr _ws = T_GETV("worldState");
 
-		pr _atAssignedVehAndSeat = T_CALLM0("_isAtAssignedVehicleAndSeat");
-		_atAssignedVehAndSeat params ["_atAssignedVehicle", "_atAssignedSeat"];
+		// In any vehicle
 		pr _atAnyVehicle = ! ((vehicle _hO) isEqualTo _hO);
-		WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, _atAssignedVehicle);
-		WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT, _atAssignedSeat);
 		WS_SET(_ws, WSP_UNIT_HUMAN_AT_VEHICLE, _atAnyVehicle);
+
+		// Calculation below only makes sense if some vehicle is assigned
+		if (T_GETV("assignedVehicleRole") != VEHICLE_ROLE_NONE) then {
+			pr _atAssignedVehAndSeat = T_CALLM0("_isAtAssignedVehicleAndSeat");
+			_atAssignedVehAndSeat params ["_atAssignedVehicle", "_atAssignedSeat"];
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, _atAssignedVehicle);
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT, _atAssignedSeat);
+		};
 	ENDMETHOD;
 
 	// Performs checks
@@ -599,7 +606,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		// Check at assigned vehicle seat
 		pr _atAssignedSeat = switch (_assignedVehicleRole) do {
 
-			// Common case should be fast to reach
+			// Doesn't seem to make much sense
 			case VEHICLE_ROLE_NONE: {
 				vehicle _hO == _hO
 			};
@@ -697,7 +704,8 @@ CLASS("AIUnitHuman", "AIUnit")
 			"assignedVehicleRole",
 			"assignedCargoIndex",
 			"assignedTurretPath",
-			"sentryPos"
+			"targetPosAGL",
+			"targetPosRadius"
 		]
 	ENDMETHOD;
 

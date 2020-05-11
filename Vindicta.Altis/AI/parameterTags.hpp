@@ -12,6 +12,8 @@
 #define TAG_ROUTE "g_route"
 #define TAG_LOCATION "g_location"
 #define TAG_MOVE_RADIUS "g_moveRadius"
+#define TAG_VEHICLE "g_veh"
+#define TAG_VEHICLE_ROLE "g_vehRole"
 
 // Action should be performed instantly where appropriate
 // Used when garrisons spawn so they can immediately apply group and unit state for their current action
