@@ -125,7 +125,7 @@ CLASS("Goal", "")
 	Does nothing by default.
 	You can override it and modify the passed _ws world state.
 	*/
-	STATIC_METHOD(updateCurrentWorldState)
+	STATIC_METHOD(onGoalChosen)
 		//params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters"), P_ARRAY("_ws")];
 	ENDMETHOD;
 

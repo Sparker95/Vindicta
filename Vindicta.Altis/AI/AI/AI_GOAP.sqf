@@ -279,7 +279,7 @@ CLASS("AI_GOAP", "AI")
 					// Calculate current world state
 					// Goal can calculate some world state properties as perceived by goal itself
 					pr _wsCurrent = +T_GETV("worldState");
-					CALLSM3(_goalClassName, "updateCurrentWorldState", _thisObject, _goalParameters,  _wsCurrent);
+					CALLSM3(_goalClassName, "onGoalChosen", _thisObject, _goalParameters,  _wsCurrent);
 
 					// Get actions this agent can do
 					pr _possActions = T_CALLM0("getPossibleActions");
