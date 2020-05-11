@@ -13,7 +13,8 @@ _array set [T_DISPLAY_NAME, "RHS AFRF"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhs_c_troops",		// RHSAFRF
-	"rhsusf_c_troops"	// RHSUSAF
+	"rhsusf_c_troops",	// RHSUSAF
+	"rhsgref_c_troops" //RHSGREF due to BRDMs, UAZ with DSHKMs not existing in base AFRF
 ]];
 
 //==== Infantry ====
