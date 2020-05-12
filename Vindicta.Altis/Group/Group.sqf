@@ -10,6 +10,7 @@
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\defineCommon.inc"
+FIX_LINE_NUMBERS()
 
 // Class: Group
 /*
@@ -763,7 +764,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		};
 	ENDMETHOD;
 
-	//	S P A W N   V E H I C L E S   A T   P O S 
+	//	S P A W N   V E H I C L E S   O N   R O A D
 	/*
 	Method: spawnVehiclesOnRoad
 	Spawns vehicles in this group specified positions, one after another. Infantry units are spawned nearby.
@@ -917,6 +918,105 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		};
 	ENDMETHOD;
 
+	//	S P A W N   I N   A I R
+	/*
+	Method: spawnInAir
+	Vehicles are spawned in the air, infantry in seats as crew
+
+	Parameters: _pos
+
+	_pos - position
+
+	Returns: nil
+	*/
+	METHOD(spawnInAir)
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+
+		OOP_INFO_1("SPAWN IN AIR: %1", _pos);
+
+		pr _data = T_GETV("data");
+		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
+			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			pr _groupHandle = T_CALLM0("_createGroupHandle");
+			
+			_groupHandle setBehaviour "SAFE";
+			
+			// Handle infantry
+			pr _infUnits = T_CALLM0("getInfantryUnits");
+
+			// Get position around which infantry will be spawning
+			pr _infSpawnPos = _pos;
+			{
+				pr _pos = _infSpawnPos getPos [random 15, random 360]; // Just put them anywhere
+				CALLM2(_x, "spawn", _pos, 0);
+			} forEach _infUnits;
+
+			// Handle vehicles
+			pr _vehUnits = T_CALLM0("getVehicleUnits");
+
+			pr _vehiclesToCrew = [];
+			{
+				private _vehicle = _x;
+				CALLM0(_vehicle, "getMainData") params ["_cat", "_subcat", "_className"];
+				pr _posAndDir = switch true do {
+					case (_subcat in T_VEH_ground): {
+						CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300)
+					};
+					case (_subcat in T_VEH_air): {
+						_vehiclesToCrew pushBack ([_vehicle] + ([CALLM0(_vehicle, "getClassName")] call misc_fnc_getFullCrew));
+						// TODO: determine spawn in height more intelligently (perhaps save it...)
+						[_pos getPos [_forEachIndex * 30, random 360] vectorAdd [0, 0, 50], 0]
+					};
+					default {
+						CALLSM3("Location", "findSafePos", _pos, _className, 300)
+					};
+				};
+				CALLM(_x, "spawn", _posAndDir);
+			} forEach _vehUnits;
+
+			// Assign drivers first to make sure we all have drivers
+			{
+				_x params ["_vehicle", "_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
+				if (_n_driver > 0 && count _infUnits > 0) then {
+					private _driver = _infUnits deleteAt 0;
+					private _driverAI = CALLM0(_driver, "getAI");
+					CALLM1(_driverAI, "assignAsDriver", _vehicle);
+					CALLM0(_driverAI, "executeVehicleAssignment");
+					CALLM0(_driverAI, "moveInAssignedVehicle");
+				};
+			} forEach _vehiclesToCrew;
+
+			// Assign co-pilots and turrets next
+			{
+				_x params ["_vehicle", "_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
+				{
+					private _turretPath = _x;
+					if(count _infUnits > 0) then {
+						private _driver = _infUnits deleteAt 0;
+						private _driverAI = CALLM0(_driver, "getAI");
+						CALLM2(_driverAI, "assignAsTurret", _vehicle, _turretPath);
+						CALLM0(_driverAI, "executeVehicleAssignment");
+						CALLM0(_driverAI, "moveInAssignedVehicle");
+					};
+				} forEach (_stdTurrets + _copilotTurrets);
+			} forEach _vehiclesToCrew;
+
+			// todo Handle drones??
+			
+			// Select leader
+			T_CALLM0("_selectLeaderOnSpawn");
+
+			// Create an AI for this group
+			T_CALLM0("createAI");
+
+			// Set the spawned flag to true
+			_data set [GROUP_DATA_ID_SPAWNED, true];
+		} else {
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
+		};
+	ENDMETHOD;
 
 	// |         D E S P A W N
 	/*

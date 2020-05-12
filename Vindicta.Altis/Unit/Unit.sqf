@@ -326,7 +326,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				} else {
 					false 
 				};
-				
+
 				if (_prevPosSafe) then {
 					_pos = _posATLPrev;
 				} else {
@@ -428,13 +428,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
 						
-						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
-						pr _special = "CAN_COLLIDE";
-						/*
-						if ([_catID, _subcatID] in T_static) then {
-							_special = "CAN_COLLIDE";
+						// Just assuming that if we are over 25m high we are flying, doesn't mean its true...
+						pr _special = if(_subcatID in T_VEH_air && _pos#2 > 25) then {
+							"FLY"
+						} else {
+							"CAN_COLLIDE"
 						};
-						*/
 
 						_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 

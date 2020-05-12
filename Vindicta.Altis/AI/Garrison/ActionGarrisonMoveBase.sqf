@@ -322,68 +322,91 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		_vr
 	ENDMETHOD;
 
-	METHOD(spawn)
-		params [P_THISOBJECT];
-
-		private _gar = T_GETV("gar");
-
-		// Spawn vehicle groups on the road according to convoy positions
-		private _vr = T_GETV("virtualRoute");
-		if (_vr == NULL_OBJECT || !GETV(_vr, "calculated")) exitWith { false }; // Perform standard spawning if there is no virtual route for some reason (why???)
-
-		// Count all vehicles in garrison
-		private _nVeh = count CALLM0(_gar, "getVehicleUnits");
-		// We only provide custom spawning for vehicles
-		if(_nVeh == 0) exitWith {false};
-		private _posAndDir = if(!GETV(_vr, "calculated") || GETV(_vr, "failed")) then {
-			private _vals = [];
-			private _garPos = CALLM0(_gar, "getPos");
-			for "_i" from 1 to _nVeh do {
-				_vals pushBack [_garPos, 0];
-			};
-			_vals
-		} else {
-			CALLM2(_vr, "getConvoyPositions", _nVeh, 30)
-		};
-
-		// Bail if we have failed to get positions
-		if (count _posAndDir != _nVeh) exitWith {false};
-
-		// Iterate through all groups
-		private _currentIndex = 0;
-		private _groups = CALLM0(_gar, "getGroups");
-		{
-			private _nVehThisGroup = count CALLM0(_x, "getVehicleUnits");
-			if (_nVehThisGroup > 0) then {
-				private _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
-				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
-
-				// Make leader the first human in the group
-				CALLM0(_x, "_selectNextLeader");
-
-				_currentIndex = _currentIndex + _nVehThisGroup;
-			} else {
-				private _posAndDirThisGroup = _posAndDir select [0, 1];
-				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
-			};
-		} forEach _groups;
-
+	STATIC_METHOD(spawnSingleUnits)
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		// Spawn single units
 		private _units = CALLM0(_gar, "getUnits");
 		private _garPos = CALLM0(_gar, "getPos");
 		{
 			private _unit = _x;
-			if (CALLM0(_x, "getGroup") == "") then {
+			if (CALLM0(_x, "getGroup") == NULL_OBJECT) then {
 				private _className = CALLM0(_unit, "getClassName");
-
 				private _posAndDir = CALLSM3("Location", "findSafePos", _garPos, _className, 400);
-
 				// After a good place has been found, spawn it
 				CALLM(_unit, "spawn", _posAndDir);
 			};
 		} forEach _units;
+	ENDMETHOD;
+	
+	METHOD(spawn)
+		params [P_THISOBJECT];
 
-		true
+		private _gar = T_GETV("gar");
+
+		if (CALLM0(_gar, "getType") != GARRISON_TYPE_AIR) then {
+			// Perform standard spawning if we are a non air garrison, and there is not a valid virtual route
+			// We need a valid virtual route to generate road positions, other wise we can't do any particlarly good spawning for normal garrisons
+			private _vr = T_GETV("virtualRoute");
+			if(_vr == NULL_OBJECT || {!GETV(_vr, "calculated")}) exitWith { false };
+
+			// Spawn vehicle groups on the road according to convoy positions
+			// Count all vehicles in garrison
+			private _nVeh = count CALLM0(_gar, "getVehicleUnits");
+
+			// We only provide custom spawning for vehicles
+			if(_nVeh == 0) exitWith { false };
+
+			private _posAndDir = if(!GETV(_vr, "calculated") || GETV(_vr, "failed")) then {
+				private _vals = [];
+				private _garPos = CALLM0(_gar, "getPos");
+				for "_i" from 1 to _nVeh do {
+					_vals pushBack [_garPos, 0];
+				};
+				_vals
+			} else {
+				CALLM2(_vr, "getConvoyPositions", _nVeh, 30)
+			};
+
+			// Bail if we have failed to get positions
+			if (count _posAndDir != _nVeh) exitWith {false};
+
+			// Iterate through all groups
+			private _currentIndex = 0;
+			private _groups = CALLM0(_gar, "getGroups");
+			{
+				private _nVehThisGroup = count CALLM0(_x, "getVehicleUnits");
+				if (_nVehThisGroup > 0) then {
+					private _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
+					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+					// Make leader the first human in the group
+					CALLM0(_x, "_selectNextLeader");
+					_currentIndex = _currentIndex + _nVehThisGroup;
+				} else {
+					private _posAndDirThisGroup = _posAndDir select [0, 1];
+					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+				};
+			} forEach _groups;
+
+			// Spawn single units
+			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
+			true
+		} else {
+			private _garPos = CALLM0(_gar, "getPos");
+
+			{
+				private _group = _x;
+				if(CALLM0(_group, "isAirGroup")) then {
+					CALLM1(_x, "spawnInAir", _garPos);
+				} else {
+					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+				};
+
+			} forEach CALLM0(_gar, "getGroups");
+
+			// Spawn single units
+			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
+			true
+		};
 	ENDMETHOD;
 
 ENDCLASS;
