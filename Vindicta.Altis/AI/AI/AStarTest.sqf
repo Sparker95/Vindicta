@@ -124,18 +124,40 @@ pr _plan = CALL_STATIC_METHOD("AI_GOAP", "planActions", _args);
 
 // Test units
 
+/*
+// Arresting
 pr _wsUnitCurrent = [WSP_UNIT_HUMAN_COUNT] call ws_new;
 for "_i" from 0 to (WSP_UNIT_HUMAN_COUNT-1) do { // Init all WSPs to false
-	WS_SET(_ws, _i, false);
+	WS_SET(_wsUnitCurrent, _i, false);
 };
 WS_SET(_wsUnitCurrent, WSP_UNIT_HUMAN_AT_VEHICLE, true);
-
+WS_SET(_wsUnitCurrent, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true);
 
 pr _wsUnitGoal = [WSP_UNIT_HUMAN_COUNT] call ws_new;
 WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_HAS_INTERACTED, true);
 
-pr _shootRange = objNull;
 pr _unitGoalParameters = [[TAG_TARGET_SHOOT_RANGE, _shootRange], [TAG_MOVE_RADIUS, 3], [TAG_POS, [10, 20, 30]]];
+*/
+
+// Getting into vehicle
+pr _wsUnitCurrent = [WSP_UNIT_HUMAN_COUNT] call ws_new;
+for "_i" from 0 to (WSP_UNIT_HUMAN_COUNT-1) do { // Init all WSPs to false
+	WS_SET(_wsUnitCurrent, _i, false);
+};
+WS_SET(_wsUnitCurrent, WSP_UNIT_HUMAN_VEHICLE_ALLOWED, true);
+WS_SET(_wsUnitCurrent, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true);
+
+pr _wsUnitGoal = [WSP_UNIT_HUMAN_COUNT] call ws_new;
+WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_AT_VEHICLE, true);
+WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, true);
+WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, true);
+
+//TAG_TARGET_UNIT, TAG_VEHICLE_ROLE
+pr _unitGoalParameters = [ [TAG_TARGET_UNIT, "veh123"], [TAG_VEHICLE_ROLE, "Driver"]];
+
+
+
+pr _shootRange = objNull;
 pr _unitActions = 		[
 		"ActionUnitArrest", 				
 		"ActionUnitDismountCurrentVehicle",

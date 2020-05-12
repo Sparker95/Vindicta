@@ -16,7 +16,6 @@
 #define TAG_CLEAR_RADIUS "g_clearRadius"
 
 // VEHICLE
-#define TAG_VEHICLE "g_veh"
 #define TAG_VEHICLE_ROLE "g_vehRole"
 
 // INSTANT

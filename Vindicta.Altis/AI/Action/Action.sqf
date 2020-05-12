@@ -430,11 +430,11 @@ CLASS("Action", "MessageReceiverEx")
 		
 		pr _precedence = GET_STATIC_VAR(_thisClass, "precedence");
 		
-		//if (isNil "_precedence") then {
-		//	0
-		//} else {
+		if (isNil "_precedence") then {
+			0
+		} else {
 			_precedence
-		//};
+		};
 	ENDMETHOD;
 	
 	STATIC_METHOD(isNonInstant)

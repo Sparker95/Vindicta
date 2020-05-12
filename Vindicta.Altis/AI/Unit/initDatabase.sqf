@@ -43,13 +43,14 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 										[WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, false]]] call AI_misc_fnc_setActionEffects;
 
 // ------------------- ActionUnitGetInVehicle
-["ActionUnitGetInVehicle",_s,  [[WSP_UNIT_HUMAN_VEHICLE_ALLOWED, true]]] call AI_misc_fnc_setActionPreconditions;
+["ActionUnitGetInVehicle",_s,  [[WSP_UNIT_HUMAN_VEHICLE_ALLOWED, true],
+								[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitGetInVehicle",_s,  [
 							[WSP_UNIT_HUMAN_AT_VEHICLE, true],
 							[WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, true],
 							[WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, true]
 							]] call AI_misc_fnc_setActionEffects;
-["ActionUnitGetInVehicle", [TAG_VEHICLE, TAG_VEHICLE_ROLE]]	call AI_misc_fnc_setActionParametersFromGoal;
+["ActionUnitGetInVehicle", [TAG_TARGET_UNIT, TAG_VEHICLE_ROLE]]	call AI_misc_fnc_setActionParametersFromGoal;
 
 // ------------------- ActionUnitFlee
 ["ActionUnitFlee",_s,  [[WSP_UNIT_HUMAN_AT_VEHICLE, false],
