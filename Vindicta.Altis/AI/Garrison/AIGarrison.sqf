@@ -45,8 +45,6 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	/* private float */ VARIABLE("alertness");
 
-	VARIABLE("wasSpawned");
-
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("groupMarkersEnabled");
 	#endif
@@ -704,8 +702,6 @@ CLASS("AIGarrison", "AI_GOAP")
 	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
-		//diag_log "AIGarrison postDeserialize";
-
 		// Call method of all base classes
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "postDeserialize", [_storage]);
 
@@ -713,6 +709,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_CALLM0("_initSensors");
 
 		// Restore other variables
+		T_SETV("buildingsWithTargets", []);
 		T_SETV("lastBusyTime", GAME_TIME - AI_GARRISON_IDLE_TIME_THRESHOLD-1);
 
 		// Restore debug markers
@@ -783,6 +780,7 @@ CLASS("AIGarrison", "AI_GOAP")
 				"ActionGarrisonMergeVehicleGroups",
 				"ActionGarrisonMountCrew",
 				"ActionGarrisonMountInfantry",
+				"ActionGarrisonMoveDismounted",
 				"ActionGarrisonMoveMounted",
 				"ActionGarrisonRebalanceGroups",
 				"ActionGarrisonRepairAllVehicles",
@@ -804,8 +802,7 @@ CLASS("AIGarrison", "AI_GOAP")
 			"assignedTargetsRadius",
 			"awareOfAssignedTargets",
 			"cmdrActionRecordSerial",
-			"alertness",
-			"wasSpawned"
+			"alertness"
 		]
 	ENDMETHOD;
 
