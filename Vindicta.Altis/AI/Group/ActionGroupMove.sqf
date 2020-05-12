@@ -17,10 +17,12 @@ TAG_MAX_SPEED_KMH
 #define DEFAULT_SPEED_MAX 100
 #define URBAN_SPEED_MAX 20
 #define SPEED_MIN 5
+#define SPEED_SLOW_AIR 50 // speed to slow down to at target (to avoid bad flaring)
 
 #ifndef RELEASE_BUILD
 #define DEBUG_FORMATION
 #endif
+FIX_LINE_NUMBERS()
 
 #define OOP_CLASS_NAME ActionGroupMove
 CLASS("ActionGroupMove", "ActionGroup")
@@ -106,15 +108,17 @@ CLASS("ActionGroupMove", "ActionGroup")
 				[_t, T_API, T_API_fnc_VEH_siren, [_hO, true]] call t_fnc_callAPIOptional;
 			} forEach _vehicles;
 
-			{
-				// Set the speed of all vehicles to unlimited
-				_x limitSpeed 666666;
-				_x setConvoySeparation SEPARATION;
-				//_x forceFollowRoad true;
-			} forEach (_vehicles apply {CALLM0(_x, "getObjectHandle")});
+			if(!CALLM0(_group, "isAirGroup")) then {
+				{
+					// Set the speed of all vehicles to unlimited
+					_x limitSpeed 666666;
+					_x setConvoySeparation SEPARATION;
+					//_x forceFollowRoad true;
+				} forEach (_vehicles apply {CALLM0(_x, "getObjectHandle")});
 
-			private _vehLeadHandle = CALLM0(_vehLead, "getObjectHandle");
-			_vehLeadHandle limitSpeed SPEED_MIN;
+				private _vehLeadHandle = CALLM0(_vehLead, "getObjectHandle");
+				_vehLeadHandle limitSpeed SPEED_MIN;
+			};
 
 			private _vehLeadPos = CALLM0(_vehLead, "getPos");
 
@@ -233,13 +237,6 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 				private _maxSpeed = T_GETV("maxSpeed"); 
 
-				// Check for driving in a built up area, and slow down a lot if we are
-				private _leaderPos = CALLM0(_leader, "getPos");
-				// TODO: predict safe speed better, maybe look ahead for obstacles
-				private _urbanArea = count (_leaderPos nearObjects ["House", 100]) > 50;
-				if(_urbanArea) then { 
-					_maxSpeed = MINIMUM(_maxSpeed, URBAN_SPEED_MAX);
-				};
 
 				private _dt = GAME_TIME - T_GETV("time") + 0.001;
 				T_SETV("time", GAME_TIME);
@@ -258,9 +255,17 @@ CLASS("ActionGroupMove", "ActionGroup")
 						_speedLimit = (_speedLimit + _dt*4);
 					};
 
+					// Check for driving in a built up area, and slow down a lot if we are
+					private _leaderPos = CALLM0(_leader, "getPos");
+					// TODO: predict safe speed better, maybe look ahead for obstacles
+					private _urbanArea = count (_leaderPos nearObjects ["House", 100]) > 50;
+					if(_urbanArea) then { 
+						_maxSpeed = MINIMUM(_maxSpeed, URBAN_SPEED_MAX);
+					};
 					_speedLimit = CLAMP(_speedLimit, SPEED_MIN, _maxSpeed);
 				} else {
-					_speedLimit = _maxSpeed;
+					// Check distance to target, and slow down when getting closer
+					_speedLimit = MAXIMUM(SPEED_SLOW_AIR, 0.25 * ((_pos distance2D leader _hG) - _radius));
 				};
 				T_SETV("speedLimit", _speedLimit);
 				vehicle leader _hG limitSpeed _speedLimit;
@@ -304,11 +309,12 @@ CLASS("ActionGroupMove", "ActionGroup")
 	/* protected override */ METHOD(terminate)
 		params [P_THISOBJECT];
 
-		// Turn off vehicle sirens
+		// Turn off vehicle sirens, and reset speed limits
 		{
 			private _t = CALLM0(CALLM0(_x, "getGarrison"), "getTemplate");
 			private _hO = CALLM0(_x, "getObjectHandle");
 			[_t, T_API, T_API_fnc_VEH_siren, [_hO, false]] call t_fnc_callAPIOptional;
+			_hO limitSpeed 666666;
 		} forEach CALLM0(T_GETV("group"), "getVehicleUnits");
 
 		T_CALLM0("clearWaypoints");
