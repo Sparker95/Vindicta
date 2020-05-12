@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 
 /*
 Sensor for a group to check its health properties.
@@ -46,14 +46,15 @@ CLASS("SensorGroupState", "SensorGroup")
 
 		[_ws, WSP_GROUP_ALL_LANDED, _allLanded] call ws_setPropertyValue;
 
-		// Check if vehicles need repairs
+		// Check if vehicles need repairs (can get this due to either bugs or deleting units in Zeus)
 		pr _allRepaired = _vehicleHandles findIf { !canMove _x } == NOT_FOUND;
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, _allRepaired] call ws_setPropertyValue;
 
 		// Check if there are any null objects
 		{
 			if (isNull CALLM0(_x, "getObjectHandle")) then {
-				OOP_ERROR_1("UNIT OBJECT IS NULL: %1", _x);
+				OOP_WARNING_1("UNIT OBJECT IS NULL: %1, cleaning it up", _x);
+				CALLM2(gMessageLoopMainManager, "postMethodAsync", "UnitKilled", [_x]);
 			};
 		} forEach _units;
 
