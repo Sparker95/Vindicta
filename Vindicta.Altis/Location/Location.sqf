@@ -1949,6 +1949,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		#else
 		private _locSectors = [];
 		#endif
+		FIX_LINE_NUMBERS()
 		private _foundIdx = _locSectors findIf {
 			(_x getVariable ["Name", ""]) isEqualTo T_GETV("name") && (_x getVariable ["Type", ""]) isEqualTo T_GETV("type")
 		};

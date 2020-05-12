@@ -31,7 +31,6 @@ CLASS("Goal", "")
 
 	METHOD(delete)
 		params [P_THISOBJECT];
-
 	ENDMETHOD;
 
 

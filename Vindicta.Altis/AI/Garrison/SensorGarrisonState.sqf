@@ -39,7 +39,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 		// Check if there are enough humans to operate all the vehicles
 		pr _vehUnits = CALLM0(_gar, "getVehicleUnits");
-		CALLSM("Unit", "getRequiredCrew", [_vehUnits]) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];
+		CALLSM1("Unit", "getRequiredCrew", _vehUnits) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];
 
 		// Drivers
 		//pr _query = [[T_INF, -1]];

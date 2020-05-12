@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 /*
 Class: MessageLoopMainManager
 It's a MessageReceiverEx which is always attached to the gMessageLoopMain.
@@ -24,7 +25,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	*/
 	METHOD(EH_Killed)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_killer"), P_OBJECT("_instigator"), P_BOOL("_useEffects")];
-		T_CALLM3("_unitDestroyed", _objectHandle, objNull, _killer);
+		T_CALLM3("UnitObjectKilled", _objectHandle, objNull, _killer);
 	ENDMETHOD;
 
 	/*
@@ -40,22 +41,10 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	*/
 	METHOD(EH_Respawn)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle")];
-		T_CALLM2("_unitDestroyed", _objectHandle, _corpseHandle);
+		T_CALLM2("UnitObjectKilled", _objectHandle, _corpseHandle);
 	ENDMETHOD;
 
-	
-	/*
-	Method: EH_Respawn
-	It is called when a unit respawns.
-	It is called in the main thread, so it's perfectly synchronized with everything.
-
-	Parameters: "_objectHandle", "_corpseHandle"
-
-	Parameters are same as https://community.bistudio.com/wiki/Arma_3:_Event_Handlers#Respawn
-
-	Returns: nil
-	*/
-	METHOD(_unitDestroyed)
+	METHOD(UnitObjectKilled)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle"), P_OBJECT("_killer")];
 
 		ASSERT_THREAD(_thisObject);
@@ -66,37 +55,42 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
 		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
-			pr _data = GETV(_unit, "data");
-			OOP_INFO_2("%1 %2", _unit, _data);
-
-			// Since this code is run in the main thread, we can just call the methods directly
-			// Post a message to the garrison of the unit
-			pr _garrison = _data select UNIT_DATA_ID_GARRISON;
-			if (!IS_NULL_OBJECT(_garrison)) then {	// Sanity check	
-				CALLM1(_garrison, "handleUnitKilled", _unit);
-
-				// Notify game mode that a unit was destroyed
-				pr _catID = CALLM0(_unit, "getCategory");
-				pr _subcatID = CALLM0(_unit, "getSubcategory");
-				pr _side = CALLM0(_garrison, "getSide");
-				pr _faction = CALLM0(_garrison, "getFaction");
-				CALLM4(gGameMode, "unitDestroyed", _catID, _subcatID, _side, _faction);
-
-				// Send stimulus to garrison's casualties sensor
-				pr _garAI = CALLM0(_garrison, "getAI");
-				if (!IS_NULL_OBJECT(_garAI)) then {
-					pr _stim = STIMULUS_NEW();
-					STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
-					pr _value = [_unit, _killer];
-					STIMULUS_SET_VALUE(_stim, _value);
-					CALLM1(_garAI, "handleStimulus", _stim);
-				};
-			} else {
-				OOP_ERROR_2("Unit is not attached to a garrison: %1, %2", _unit, _data);
-			};
-
+			T_CALLM2("UnitKilled", _unit, _killer);
 		} else {
 			OOP_WARNING_1("Unit of object %1 is unknown", _objectHandle);
+		};
+	ENDMETHOD;
+
+	METHOD(UnitKilled)
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_OBJECT("_killer")];
+
+		pr _data = GETV(_unit, "data");
+		OOP_INFO_2("%1 %2", _unit, _data);
+
+		// Since this code is run in the main thread, we can just call the methods directly
+		// Post a message to the garrison of the unit
+		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+		if (!IS_NULL_OBJECT(_garrison)) then {	// Sanity check	
+			CALLM1(_garrison, "handleUnitKilled", _unit);
+
+			// Notify game mode that a unit was destroyed
+			pr _catID = CALLM0(_unit, "getCategory");
+			pr _subcatID = CALLM0(_unit, "getSubcategory");
+			pr _side = CALLM0(_garrison, "getSide");
+			pr _faction = CALLM0(_garrison, "getFaction");
+			CALLM4(gGameMode, "unitDestroyed", _catID, _subcatID, _side, _faction);
+
+			// Send stimulus to garrison's casualties sensor
+			pr _garAI = CALLM0(_garrison, "getAI");
+			if (!IS_NULL_OBJECT(_garAI)) then {
+				pr _stim = STIMULUS_NEW();
+				STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
+				pr _value = [_unit, _killer];
+				STIMULUS_SET_VALUE(_stim, _value);
+				CALLM1(_garAI, "handleStimulus", _stim);
+			};
+		} else {
+			OOP_ERROR_2("Unit is not attached to a garrison: %1, %2", _unit, _data);
 		};
 	ENDMETHOD;
 

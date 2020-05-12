@@ -88,7 +88,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	_pos - optional, default position to set to the garrison
 	*/
 	METHOD(new)
-		params [P_THISOBJECT, P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL), P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
+		params [P_THISOBJECT, P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL), P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName"), P_BOOL("_immediateSpawn"), P_OOP_OBJECT("_home")];
 
 		OOP_INFO_1("NEW GARRISON: %1", _this);
 
@@ -116,7 +116,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_SETV("countDrone", 0);
 		T_SETV("countCargo", 0);
 		T_SETV("location", NULL_OBJECT);
-		T_SETV("home", NULL_OBJECT);
+		T_SETV("home", _home);
 		T_SETV("active", false);
 		T_SETV("autoSpawn", false);
 		T_SETV("faction", _faction);
@@ -160,7 +160,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Enable automatic spawning
 		private _autoSpawn = _type in GARRISON_TYPES_AUTOSPAWN;
 		T_CALLM1("enableAutoSpawn", _autoSpawn);
-		if(!_autoSpawn) then {
+		if(_immediateSpawn || !_autoSpawn) then {
 			T_CALLM2("postMethodAsync", "spawn", [true]);
 		};
 
@@ -667,6 +667,32 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		
 	ENDMETHOD;
 
+	
+	//                     S E T   H O M E
+	/*
+	Method: setHome
+	Sets the location this garrison considers home base
+
+	Parameters: _home
+
+	_home - <Location>
+	*/
+	METHOD(setHome)
+		params [P_THISOBJECT, P_OOP_OBJECT("_home")];
+
+		__MUTEX_LOCK;
+
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+		};
+		T_SETV("home", _home);
+
+		__MUTEX_UNLOCK;
+		
+	ENDMETHOD;
+
 	/*
 	Method: enableAutoSpawn
 	Enables auto spawning of this garrison.
@@ -742,7 +768,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		CALLM(_AI, "setPos", [_pos]);
 
 		// Position change might change spawn state so update it before returning.
-		T_CALLM("updateSpawnState", []);
+		T_CALLM0("updateSpawnState");
 		__MUTEX_UNLOCK;
 	ENDMETHOD;
 
@@ -3585,21 +3611,24 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Recalculate all the counters, efficiency, classnames etc.
 		T_CALLM0("_recalculateCounters");
 
-		// Enable automatic spawning
-		private _autoSpawn = T_GETV("type") in GARRISON_TYPES_AUTOSPAWN;
-		T_CALLM1("enableAutoSpawn", _autoSpawn);
-		if(!_autoSpawn) then {
-			T_CALLM2("postMethodAsync", "spawn", [true]);
-		};
-
 		// Load AI object
 		pr _AI = T_GETV("AI");
 		CALLM1(_storage, "load", _AI);
 		if(T_GETV("active")) then {
 			// Start AI object
-			CALLM(_AI, "start", ["AIGarrisonDespawned"]);
+			CALLM1(_AI, "start", "AIGarrisonDespawned");
 			// Register at garrison server if active
 			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		};
+
+		// Enable automatic spawning
+		private _autoSpawn = T_GETV("type") in GARRISON_TYPES_AUTOSPAWN;
+		T_CALLM1("enableAutoSpawn", _autoSpawn);
+		if(!_autoSpawn) then {
+			if(T_GETV("active")) then {
+				CALLM2(_AI, "postMethodAsync", "process", []);
+			};
+			T_CALLM2("postMethodAsync", "spawn", [true]);
 		};
 
 		// Push to 'all' static variable

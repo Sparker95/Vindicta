@@ -68,7 +68,7 @@ if (!_spawningHandled) then {
 		OOP_INFO_1("Spawning groups: %1", _groups);
 		{
 			private _group = _x;
-			CALLM(_group, "spawnAtLocation", [_loc]);
+			CALLM1(_group, "spawnAtLocation", _loc);
 		} forEach _groups;
 
 		// Spawn single units
@@ -93,7 +93,7 @@ if (!_spawningHandled) then {
 		pr _garPos = T_CALLM0("getPos");
 		OOP_INFO_2("Spawning groups without location at pos %1: %2", _groups, _garPos);
 		{
-			CALLM2(_x, "spawnAtPos", [], _garPos);
+			CALLM1(_x, "spawnAtPos", _garPos);
 		} forEach _groups;
 
 		// Spawn single units (really shouldn't be any)
