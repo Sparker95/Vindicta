@@ -37,8 +37,8 @@ CLASS("AIUnitHuman", "AIUnit")
 		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 
 		// Create world state
-		pr _ws = [WSP_UNIT_HUMAN_SIZE] call ws_new; // todo WorldState size must depend on the agent
-		for "_i" from 0 to (WSP_UNIT_HUMAN_SIZE-1) do { // Init all WSPs to false
+		pr _ws = [WSP_UNIT_HUMAN_COUNT] call ws_new; // todo WorldState size must depend on the agent
+		for "_i" from 0 to (WSP_UNIT_HUMAN_COUNT-1) do { // Init all WSPs to false
 			WS_SET(_ws, _i, false);
 		};
 		T_SETV("worldState", _ws);

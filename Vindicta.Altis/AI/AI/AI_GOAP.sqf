@@ -1305,7 +1305,7 @@ CLASS("AI_GOAP", "AI")
 								// This parameter is required by action to be retrieved from a goal parameter
 								// But it wasn't found in the goal parameter array
 								// Print an error
-								OOP_WARNING_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
+								OOP_INFO_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
 								//_parametersResolved = false;
 							};
 						};

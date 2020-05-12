@@ -9,7 +9,10 @@
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "AI.hpp"
+#include "..\WorldState\WorldState.hpp"
 #include "..\Garrison\garrisonWorldStateProperties.hpp"
+#include "..\Unit\unitHumanWorldStateProperties.hpp"
+#include "..\parameterTags.hpp"
 
 // Initialize test functions
 //call compile preprocessFileLineNumbers "Tests\initTests.sqf";
@@ -39,6 +42,7 @@ call compile preprocessFileLineNumbers "AI\Goal\Goal.sqf";
 call compile preprocessFileLineNumbers "AI\AI\AI.sqf";
 call compile preprocessFileLineNumbers "AI\AI\AI_GOAP.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\initClasses.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
 //call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 
 /*
@@ -117,8 +121,45 @@ pr _wsGoal = [WSP_GAR_COUNT, ORIGIN_GOAL_WS] call ws_new;
 pr _args = [_wsCurrent, _wsGoal, _actions, [[TAG_MOVE_RADIUS, 100]]];
 pr _plan = CALL_STATIC_METHOD("AI_GOAP", "planActions", _args);
 
-_plan params ["_planDone", "_planArray"];
-diag_log format ["Generated plan: %1", _planDone];
-{
-	diag_log _x;
-} forEach _planArray;
+
+// Test units
+
+pr _wsUnitCurrent = [WSP_UNIT_HUMAN_COUNT] call ws_new;
+for "_i" from 0 to (WSP_UNIT_HUMAN_COUNT-1) do { // Init all WSPs to false
+	WS_SET(_ws, _i, false);
+};
+WS_SET(_wsUnitCurrent, WSP_UNIT_HUMAN_AT_VEHICLE, true);
+
+
+pr _wsUnitGoal = [WSP_UNIT_HUMAN_COUNT] call ws_new;
+WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_HAS_INTERACTED, true);
+
+pr _shootRange = objNull;
+pr _unitGoalParameters = [[TAG_TARGET_SHOOT_RANGE, _shootRange], [TAG_MOVE_RADIUS, 3], [TAG_POS, [10, 20, 30]]];
+pr _unitActions = 		[
+		"ActionUnitArrest", 				
+		"ActionUnitDismountCurrentVehicle",
+		"ActionUnitFlee", 			
+		"ActionUnitFollow", 		
+		"ActionUnitGetInVehicle", 			
+		"ActionUnitIdle", 					
+		"ActionUnitInfantryMove", 	
+		"ActionUnitInfantryMoveBuilding",
+		"ActionUnitInfantryMoveToUnit",
+		"ActionUnitInfantryRegroup", 		
+		"ActionUnitInfantryLeaveFormation",
+		//"ActionUnitMove", 			
+		"ActionUnitMoveMounted", 	
+		"ActionUnitNothing", 		
+		"ActionUnitRepairVehicle", 
+		"ActionUnitSalute", 		
+		"ActionUnitScareAway", 	
+		"ActionUnitAmbientAnim", 	
+		"ActionUnitShootAtTargetRange"
+		//"ActionUnitShootLegTarget", 
+		//"ActionUnitSurrender",
+		//"ActionUnitVehicleUnflip"
+		];
+
+pr _args = [_wsUnitCurrent, _wsUnitGoal, _unitActions, _unitGoalParameters];
+pr _plan = CALL_STATIC_METHOD("AI_GOAP", "planActions", _args);

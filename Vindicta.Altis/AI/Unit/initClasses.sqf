@@ -4,6 +4,7 @@ call compile preprocessFileLineNumbers "AI\Unit\AIUnitHuman.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitInfantry.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitCivilian.sqf";
+
 call compile preprocessFileLineNumbers "AI\Unit\_ActionUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\_ActionUnitInfantryMoveBase.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitArrest.sqf";
@@ -16,7 +17,9 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMove.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveBuilding.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveToUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryRegroup.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryLeaveFormation.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitMove.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitMoveMounted.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitNothing.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitRepairVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSalute.sqf";
@@ -26,7 +29,7 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitShootAtTargetRange.sqf
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitShootLegTarget.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitVehicleUnflip.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\ActionUnitDialogue.sqf";
+
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDismountCurrentVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitFlee.sqf";

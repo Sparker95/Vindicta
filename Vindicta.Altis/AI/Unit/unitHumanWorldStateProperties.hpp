@@ -27,33 +27,35 @@
 // Doing warning shots
 // What else?
 // !! Dialogue is not form of interaction since we can do both dialogue and interaction
-#define WSP_UNIT_HUMAN_DOING_INTERACTION 4
+#define WSP_UNIT_HUMAN_HAS_INTERACTED 4
 
 
 // === Other
 
-// Bool, true if talking with someone
-#define WSP_UNIT_HUMAN_DOING_DIALOGUE 5
+// Bool, true if allowed to do dialogue
+#define WSP_UNIT_HUMAN_CAN_DIALOGUE 5
 
 // Following leader while on foot
 // Might be required for some infantry actions
-#define WSP_UNIT_HUMAN_IN_INFANTRY_FORMATION 6
+#define WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE 6
 
-// Bool, true if in combat or in danger
-// Might trigger different behaviours for civilians and military?
-// --- Probably it's not needed for planner
-//#define WSP_UNIT_HUMAN_IN_DANGER 7
+// In danger
+#define WSP_UNIT_HUMAN_IN_DANGER 7
 
+// Bool, true if it is allowed to use vehicles for this plan
+#define WSP_UNIT_HUMAN_VEHICLE_ALLOWED 8
 
 // Size is always last
-#define WSP_UNIT_HUMAN_SIZE 7
+#define WSP_UNIT_HUMAN_COUNT 9
 
 #define WSP_UNIT_HUMAN_NAMES [ \
 	"AT TARGET POS", \
 	"AT VEHICLE", \
 	"AT ASSIGNED VEH", \
 	"AT ASSIGNED VEH ROLE", \
-	"DOING INTERACTION", \
-	"DOING DIALOGUE", \
-	"IN FORMATION"
+	"HAVE INTERACTED", \
+	"CAN DIALOGUE", \
+	"FOLLOWING TEAMMATE", \
+	"IN DANGER", \
+	"VEHICLE ALLOWED" \
 ]

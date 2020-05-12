@@ -81,8 +81,30 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 
 	//                      G E T   P O S S I B L E   A C T I O N S
 	METHOD(getPossibleActions)
-		//["ActionUnitSalute","ActionUnitScareAway"] // This is only for A* planner, which is not used for this AI type
-		[]
+		[
+		"ActionUnitArrest", 				
+		"ActionUnitDismountCurrentVehicle",
+		"ActionUnitFlee", 			
+		"ActionUnitFollow", 		
+		"ActionUnitGetInVehicle", 			
+		"ActionUnitIdle", 					
+		"ActionUnitInfantryMove", 	
+		"ActionUnitInfantryMoveBuilding",
+		"ActionUnitInfantryMoveToUnit",
+		"ActionUnitInfantryRegroup", 		
+		"ActionUnitInfantryLeaveFormation",
+		//"ActionUnitMove", // this is abstract!
+		"ActionUnitMoveMounted", 	
+		"ActionUnitNothing", 		
+		"ActionUnitRepairVehicle", 
+		"ActionUnitSalute", 		
+		"ActionUnitScareAway", 	
+		"ActionUnitAmbientAnim", 	
+		"ActionUnitShootAtTargetRange",
+		//"ActionUnitShootLegTarget", 
+		"ActionUnitSurrender"
+		//"ActionUnitVehicleUnflip"
+		]
 	ENDMETHOD;
 
 	/* override */ METHOD(setUrgentPriorityOnAddGoal)
