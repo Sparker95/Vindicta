@@ -2655,7 +2655,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Pick an airfield we own
 		private _side = T_GETV("side");
 		private _model = T_GETV("worldModel");
-		
+
 		private _reinfLocations = CALLM0(_model, "getLocations") select {
 			private _garModel = CALLM1(_x, "getGarrison", _side);
 			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT)
@@ -2750,32 +2750,48 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _reinfInfo = _reinfLocations apply {
 			private _locModel = _x;
 			private _loc = GETV(_locModel, "actual");
-			private _generalGar = CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_GENERAL) select 0;
-			// TODO: we need to consider units that are out on assignments
-			private _nInf = CALLM0(_generalGar, "countInfantryUnits");
-			private _nVeh = CALLM1(_generalGar, "countUnits", T_PL_tracked_wheeled); // All tracked and wheeled vehicles
-			[
-				CALLM0(_loc, "getDisplayName"),
-				_loc,
-				_generalGar,
-				CMDR_MAX_INF_AIRFIELD - _nInf,
-				_nVehMax - _nVeh
-			]
+			private _generalGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_GENERAL);
+			if(count _generalGarrisons > 0) then {
+				private _nInf = 0; 
+				private _nVeh = 0;
+				// We want to include all garrisons that consider this location home, not just the one at the location currently
+				// (i.e. QRFs, attacks, convoys etc, that may return again)
+				{
+					_nInf = _nInf + CALLM0(_x, "countInfantryUnits");
+					_nVeh = _nVeh + CALLM1(_x, "countUnits", T_PL_tracked_wheeled); // All tracked and wheeled vehicles
+				} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_GENERAL);
+				[
+					CALLM0(_loc, "getDisplayName"),
+					_loc,
+					_generalGarrisons # 0,
+					CMDR_MAX_INF_AIRFIELD - _nInf,
+					_nVehMax - _nVeh
+				]
+			} else {
+				[]
+			};
+		} select {
+			!(_x isEqualTo [])
 		};
 
 		// Locations that we can reinforce with air units
 		private _airReinfInfo = _reinfLocations apply {
 			private _locModel = _x;
 			private _loc = GETV(_locModel, "actual");
-			private _airGarrisons = CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_AIR);
+			private _airGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_AIR);
 			if(count _airGarrisons > 0) then {
-				private _airGar = _airGarrisons select 0;
-				private _nHeli = CALLM1(_airGar, "countUnits", T_PL_helicopters);
+				private _nHeli = 0;
+				private _nPlane = 0;
+				// We want to include all garrisons that consider this location home, not just the one at the location currently
+				// (i.e. QRFs, attacks, convoys etc, that may return again)
+				{
+					_nHeli = _nHeli + CALLM1(_x, "countUnits", T_PL_helicopters);
+					_nPlane = _nPlane + CALLM1(_x, "countUnits", T_PL_planes);
+				} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_AIR);
 				private _nHeliMax = CALLM0(_loc, "getCapacityHeli");
-				private _nPlane = CALLM1(_airGar, "countUnits", T_PL_planes);
 				private _nPlaneMax = 2; // TODO: better number
 				[
-					_airGar,
+					_airGarrisons # 0,
 					_nHeliMax - _nHeli,
 					_nPlaneMax - _nPlane
 				]

@@ -360,26 +360,18 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		// Make a new garrison
-		private _side = CALLM0(_actual, "getSide");
 		private _type = CALLM0(_actual, "getType");
+		private _side = CALLM0(_actual, "getSide");
+		private _pos = CALLM0(_actual, "getPos");
 		private _faction = CALLM0(_actual, "getFaction");
 		private _templateName = CALLM0(_actual, "getTemplateName");
-		private _newGarrActual = NEW("Garrison", [_type ARG _side ARG [] ARG _faction ARG _templateName]);
-		private _pos = CALLM0(_actual, "getPos");
-		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
+		private _spawned = CALLM0(_actual, "isSpawned");
+		private _home = CALLM0(_actual, "getHome");
 
-		if(CALLM0(_actual, "isSpawned")) then {
-			CALLM2(_newGarrActual, "postMethodAsync", "spawn", []);
-		};
+		private _args = [_type, _side, _pos, _faction, _templateName, _spawned, _home];
+		private _newGarrActual = NEW("Garrison", _args);
 
-		// This self registers with the world. From now on we just modify the _newGarrActual itself, the Model gets updated automatically during its
-		// update phase.
-		// private _newGarr = NEW("GarrisonModel", [_world ARG _newGarrActual]);
-
-		// private _locationActual = GETV(_location, "actual");
-		// ASSERT_MSG(_locationActual isEqualType "", "Actual LocationModel required");
-		// CALLM(_newGarrActual, "setLocation", [_locationActual]); // This garrison will spawn here if needed
-		//CALLM0(_newGarrActual, "spawn");
+		// CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 
 		// Try to move the units
 		OOP_INFO_1("Composition before split: %1", GETV(_actual, "compositionNumbers"));
@@ -407,9 +399,6 @@ CLASS("GarrisonModel", "ModelBase")
 		private _newGarr = NEW("GarrisonModel", [_world ARG _newGarrActual]);
 		#endif
 		FIX_LINE_NUMBERS()
-
-		//// Detach from the location
-		//CALLM(_newGarrActual, "postMethodAsync", ["setLocation" ARG [""]]);
 
 		// return the New detachment garrison model
 		_newGarr
