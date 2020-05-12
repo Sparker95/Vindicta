@@ -94,11 +94,13 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 			_h0 setDamage 0;
 
 			T_SETV("state", ACTION_STATE_COMPLETED);
+		} else {
+			private _hG = T_GETV("hG");
+			if(count waypoints _hG == 0) then {
+				// Force reactivation to try again
+				T_SETV("state", ACTION_STATE_INACTIVE);
+			};
 		};
-		//  else {
-		// 	// Force reactivation to try again
-		// 	T_SETV("state", ACTION_STATE_INACTIVE);
-		// };
 
 		// Return the current state
 		T_GETV("state")
