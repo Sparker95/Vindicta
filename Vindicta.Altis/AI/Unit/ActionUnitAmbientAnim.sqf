@@ -11,7 +11,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET, [[], objNull]] ],	// Required parameters
+			[ [TAG_TARGET_AMBIENT_ANIM, [[], objNull]] ],	// Required parameters
 			[ [TAG_DURATION_SECONDS, [0]], [TAG_ANIM, [""]] ]	// Optional parameters
 		]
 	ENDMETHOD;
@@ -19,7 +19,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		private _target = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET, []);
+		private _target = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET_AMBIENT_ANIM, []);
 		T_SETV("target", _target);
 		private _defaultAnims = [_target getVariable ["vin_anim", "SIT_LOW"]];
 		private _anims = CALLSM3("Action", "getParameterValue", _parameters, TAG_ANIM, _defaultAnims);

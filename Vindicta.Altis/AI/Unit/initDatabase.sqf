@@ -106,6 +106,10 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 ["ActionUnitInfantryMoveToUnit", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setActionEffects;
 ["ActionUnitInfantryMoveToUnit", [TAG_TARGET_UNIT]]	call AI_misc_fnc_setActionParametersFromGoal;
 
+// ------------------- ActionUnitInfantryMoveToObject
+["ActionUnitInfantryMoveToObject", _s, [[WSP_UNIT_HUMAN_AT_VEHICLE, false], [WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
+["ActionUnitInfantryMoveToObject", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setActionEffects;
+["ActionUnitInfantryMoveToObject", [TAG_TARGET_OBJECT]]	call AI_misc_fnc_setActionParametersFromGoal;
 
 
 

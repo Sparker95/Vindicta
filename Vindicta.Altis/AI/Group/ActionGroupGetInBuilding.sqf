@@ -16,6 +16,13 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	VARIABLE("hBuilding");
 	VARIABLE("timeComplete");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET, [objNull]]] ],	// Required parameters
+			[  ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		

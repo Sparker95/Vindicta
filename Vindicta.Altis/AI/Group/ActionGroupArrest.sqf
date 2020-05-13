@@ -14,6 +14,13 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	VARIABLE("unit");		// unit arresting player
 	VARIABLE("unitGoal");
 	VARIABLE("arrestingUnit");
+
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_ARREST, [objNull]] ],	// Required parameters
+			[  ]	// Optional parameters
+		]
+	ENDMETHOD;
 	
 	// ------------ N E W ------------
 	METHOD(new)

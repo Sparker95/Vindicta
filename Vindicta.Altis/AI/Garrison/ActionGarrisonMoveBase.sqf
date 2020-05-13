@@ -11,6 +11,14 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	VARIABLE("followGroups");
 	VARIABLE("maxSpeed");
 
+	METHOD(getPossibleParameters)
+		[
+			// We allow only unit OOP objects as target
+			[ [TAG_POS, [[]]] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]], [TAG_MAX_SPEED_KMH, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		

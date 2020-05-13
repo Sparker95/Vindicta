@@ -15,6 +15,14 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	VARIABLE("locPos");
 	VARIABLE("radius");
 
+	METHOD(getPossibleParameters)
+		[
+			// We allow only unit OOP objects as target
+			[ [TAG_LOCATION, [NULL_OBJECT]] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		

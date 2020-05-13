@@ -19,8 +19,8 @@ CLASS("AIUnitHuman", "AIUnit")
 	VARIABLE("assignedTurretPath");
 
 	// Position assignment variables
-	VARIABLE("targetPosAGL");
-	VARIABLE("targetPosRadius");	// Radius for movement completion
+	VARIABLE("moveTarget");
+	VARIABLE("moveRadius");	// Radius for movement completion
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
@@ -50,7 +50,8 @@ CLASS("AIUnitHuman", "AIUnit")
 		// Init target pos variables
 		pr _targetPos = [0,0,0]; // Something completely not here
 		T_SETV("targetPosAGL", _targetPos);
-		T_SETV("targetPosRadius", -1);
+		T_SETV("moveRadius", -1);
+		T_SETV("targetObject", objNull);
 
 
 		//T_SETV("worldState", _ws);
@@ -565,6 +566,13 @@ CLASS("AIUnitHuman", "AIUnit")
 		
 		_veh
 	ENDMETHOD;
+
+	// Enables or disables vehicle usage world state property
+	METHOD(setAllowVehicleWSP)
+		params [P_THISOBJECT, P_BOOL("_value")];
+		pr _ws = T_GETV("worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_VEHICLE_ALLOWED, _enable);
+	ENDMETHOD;
 	
 	// Updates vehicle world state properties
 	METHOD(updateVehicleWSP)
@@ -672,9 +680,65 @@ CLASS("AIUnitHuman", "AIUnit")
 
 	METHOD(updatePositionWSP)
 		params [P_THISOBJECT];
+
+		pr _target = T_GETV("moveTarget");
 		pr _ws = T_GETV("worldState");
-		pr _atTargetPos = (T_GETV("hO") distance T_GETV("targetPosAGL")) <= T_GETV("targetPosRadius");
-		WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _atTargetPos);
+		if (_target isEqualType 0) exitWith {
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, false);
+		};
+
+		if (_target isEqualType []) exitWith {
+			pr _value = (T_GETV("hO") distance _target) <= T_GETV("moveRadius");
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
+		};
+
+		if (_target isEqualType objNull) exitWith {
+			pr _value = (T_GETV("hO") distance _target) <= T_GETV("moveRadius");
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
+		};
+
+		if (_target isEqualType NULL_OBJECT) exitWith {
+			if (IS_OOP_OBJECT(_target)) then {
+				pr _targetObjHandle = CALLM0(_target, "getObjectHandle");
+				if (isNull _targetObjHandle) then {
+					WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, false);
+				} else {
+					pr _value = (T_GETV("hO") distance _targetObjHandle) <= T_GETV("moveRadius");
+					WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
+				};
+			} else {
+				WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, false);
+			};
+		};		
+	ENDMETHOD;
+
+	// Use either of these setTarget... methods below to specify the target for movement
+	METHOD(setTargetPosAGL)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		T_SETV("moveTarget", _pos);
+	ENDMETHOD;
+
+	METHOD(setTargetObject)
+		params [P_THISOBJECT, P_OBJECT("_obj")];
+		T_SETV("moveTarget", _obj);
+	ENDMETHOD;
+
+	// Target is OOP object which has getObjectHandle method
+	METHOD(setTargetUnit)
+		params [P_THISOBJECT, P_OOP_OBJECT("_obj")];
+		T_SETV("moveTarget", _obj);
+	ENDMETHOD;
+
+	METHOD(setTargetRadius)
+		params [P_THISOBJECT];
+		T_SETV("moveRadius", _radius);
+	ENDMETHOD;
+
+	// Resets target
+	METHOD(resetTarget)
+		params [P_THISOBJECT];
+		T_SETV("moveTarget", 0);
+		T_SETV("moveRadius", -1);
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -704,8 +768,8 @@ CLASS("AIUnitHuman", "AIUnit")
 			"assignedVehicleRole",
 			"assignedCargoIndex",
 			"assignedTurretPath",
-			"targetPosAGL",
-			"targetPosRadius"
+			"moveTarget",
+			"moveRadius"
 		]
 	ENDMETHOD;
 

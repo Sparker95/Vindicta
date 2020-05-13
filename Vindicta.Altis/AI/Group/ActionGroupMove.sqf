@@ -36,6 +36,13 @@ CLASS("ActionGroupMove", "ActionGroup")
 	VARIABLE("leader");
 	VARIABLE("followers");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, []], [TAG_MOVE_RADIUS, [0]]] ],	// Required parameters
+			[ [TAG_FOLLOWERS, [[]]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 

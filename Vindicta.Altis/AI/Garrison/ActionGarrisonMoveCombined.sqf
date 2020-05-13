@@ -4,6 +4,9 @@
 
 #define OOP_CLASS_NAME ActionGarrisonMoveCombined
 CLASS("ActionGarrisonMoveCombined", "ActionGarrisonMoveBase")
+
+	// Parameters defined in base
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		// Overwriting the default max speed as we have infantry units following

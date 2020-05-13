@@ -8,6 +8,13 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	VARIABLE("radius");
 	VARIABLE("nextLookTime");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, [[]]] ],	// Required parameters
+			[ [TAG_CLEAR_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		private _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);

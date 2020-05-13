@@ -8,6 +8,13 @@ CLASS("ActionGroupFollow", "ActionGroup")
 	VARIABLE("hGroupToFollow");
 	VARIABLE("nextWaypointUpdateTime");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET, [grpNull]]] ],	// Required parameters
+			[  ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 

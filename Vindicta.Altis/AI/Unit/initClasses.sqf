@@ -16,6 +16,7 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitIdle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMove.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveBuilding.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveToUnit.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveToObject.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryRegroup.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryLeaveFormation.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitMove.sqf";

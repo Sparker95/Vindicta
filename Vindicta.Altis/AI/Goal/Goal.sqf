@@ -185,7 +185,7 @@ CLASS("Goal", "")
 	You can override it and modify the passed _ws world state.
 	*/
 	STATIC_METHOD(onGoalChosen)
-		//params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters"), P_ARRAY("_ws")];
+		//params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is added to AI

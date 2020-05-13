@@ -37,6 +37,7 @@ pr0_fnc_logAction = {
 	if(_prev isEqualTo _new) exitWith {};
 	private _ownerAndPath = switch GET_OBJECT_CLASS(_AI) do {
 		case "AIUnit";
+		case "AIUnitCivilian";
 		case "AIUnitInfantry";
 		case "AIUnitVehicle": {
 			private _unit = GETV(_AI, "agent");
@@ -276,32 +277,26 @@ CLASS("AI_GOAP", "AI")
 					pr _args = [/* AI */ _thisObject, _goalParameters];
 					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
 
-					// Calculate current world state
-					// Goal can calculate some world state properties as perceived by goal itself
-					pr _wsCurrent = +T_GETV("worldState");
-
 					// Make a copy of original parameters
 					// Goal might add something to them
 					pr _goalParametersCopy = +_goalParameters;
 
 					// Goal might do some preparations on AI or goal parameters here
-					CALLSM3(_goalClassName, "onGoalChosen", _thisObject, _goalParametersCopy,  _wsCurrent);
+					CALLSM2(_goalClassName, "onGoalChosen", _thisObject, _goalParametersCopy);
 
 					// Verify goal parameters
-					// Disabled for now
-					/*
 					#ifdef DEBUG_GOAP
 					if (!CALLSM1(_goalClassName, "verifyParameters", _goalParametersCopy)) then {
 						OOP_ERROR_1("Wrong parameters for goal: %1", _goalClassName);
 					};
 					#endif
-					*/
 					FIX_LINE_NUMBERS()
 
 					// Get actions this agent can do
 					pr _possActions = T_CALLM0("getPossibleActions");
 					
 					// Run the A* planner to generate a plan
+					pr _wsCurrent = +T_GETV("worldState");
 					pr _args = [_wsCurrent, _wsGoal, _possActions, _goalParametersCopy, _thisObject];
 
 					CALL_STATIC_METHOD("AI_GOAP", "planActions", _args) params ["_foundPlan", "_actionPlan"];

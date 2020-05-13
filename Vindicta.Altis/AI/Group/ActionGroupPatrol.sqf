@@ -11,6 +11,13 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 
 	VARIABLE("route");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_ROUTE, [[]]] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
