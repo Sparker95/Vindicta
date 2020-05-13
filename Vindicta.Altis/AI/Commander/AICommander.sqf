@@ -1735,18 +1735,19 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		ASSERT_THREAD(_thisObject);
 
-		// Create a new garrison
-		pr _pos = CALLM0(_garSrcRef, "getPos");
-		pr _faction = CALLM0(_garSrcRef, "getFaction");
 
 		// Get all the units except statics and cargo
 		private _combatUnits = (CALLM0(_garSrcRef, "getUnits") select { !CALLM0(_x, "isStatic") && {!CALLM0(_x, "isCargo")} });
 
 		// Take the units
 		if(count _combatUnits > 0) then {
-			pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
-			pr _newGarr = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _posNew ARG _faction]);
+			// Create a new garrison
+			// We don't want them to be too much clustered at the same place (if they are already spawned it will update this value automatically anyway)
+			private _posNew = CALLM0(_garSrcRef, "getPos") getPos [50, random 360];
+			private _newGarr = CALLSM2("Garrison", "newFrom", _garSrcRef, _posNew);
+
 			CALLM2(_newGarr, "postMethodSync", "takeUnits", [_garSrcRef ARG _combatUnits]);
+
 			// Activate the new garrison
 			// it will register itself here as well
 			CALLM0(_newGarr, "activate");
@@ -1766,7 +1767,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Get the garrison model associated with this _garSrcRef
 		private _worldModel = T_GETV("worldModel");
-		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garSrcRef);
+		private _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garSrcRef);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
 			OOP_ERROR_1("splitGarrisonFromComposition: No model of garrison %1", _garSrcRef);
 			// send data back to client owner...
@@ -1774,13 +1775,12 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		};
 
 		// Create a new garrison
-		pr _pos = CALLM0(_garSrcRef, "getPos");
-		pr _faction = CALLM0(_garSrcRef, "getFaction");
-		pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
-		pr _newGarr = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _posNew ARG _faction]);
+		// We don't want them to be too much clustered at the same place (if they are already spawned it will update this value automatically anyway)
+		private _posNew = CALLM0(_garSrcRef, "getPos") getPos [50, random 360];
+		private _newGarr = CALLSM2("Garrison", "newFrom", _garSrcRef, _posNew);
 
 		// Move units
-		pr _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromCompositionClassNames", [_garSrcRef ARG _comp]);
+		private _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromCompositionClassNames", [_garSrcRef ARG _comp]);
 
 		// Activate the new garrison
 		// it will register itself here as well
@@ -1858,28 +1858,30 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Send a success message to player
 		pr _args = ["We have successfully created a location here!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
-		
+
 	ENDMETHOD;
 
 	METHOD(clientClaimLocation)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
 		// Check if we already own it
-		pr _garsFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
+		private _garsFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
 		if (count _garsFriendly > 0) exitWith {
-			pr _args = ["We already own this place!"];
+			private _args = ["We already own this place!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
 		// Check if there are still much enemy forces here
-		pr _thisSide = T_GETV("side");
+		private _thisSide = T_GETV("side");
 		CALLM0(gMessageLoopMain, "lock");
 
 		private _enemyGarrisons = CALLM0(_loc, "getGarrisons") select {
-			pr _side = CALLM0(_x, "getSide");
-			_side != _thisSide && _side != CIVILIAN
+			!(CALLM0(_x, "getSide") in [_thisSide, CIVILIAN])
 		};
-		pr _enemies = 0;
+		private _spawned = _enemyGarrisons findIf {
+			!(CALLM0(_x, "getSide") in [_thisSide, CIVILIAN])
+		};
+		private _enemies = 0;
 		{
 			_enemies = _enemies + _x;
 		} forEach (_enemyGarrisons apply {
@@ -1889,13 +1891,20 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Bail if this place is still occupied by too many enemy
 		if (_enemies > 4) exitWith {
-			pr _args = ["We can't capture this place because too many enemies still remain alive in the area!"];
+			private _args = ["We can't capture this place because too many enemies still remain alive in the area!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
 		// Create new empty garrison for the location
-		pr _pos = CALLM0(_loc, "getPos");
-		pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _pos]);
+		private _pos = CALLM0(_loc, "getPos");
+
+		// Make a new garrison
+		private _faction = "";
+		private _templateName = "";
+		private _spawned = true; // Start spawned always, client can't claim location unless player is there anyway...
+		private _home = _loc;
+		private _args = [GARRISON_TYPE_GENERAL, _thisSide, _pos, _faction, _templateName, _spawned, _home];
+		private _gar = NEW("Garrison", _args);
 
 		// Kick out the enemy garrisons (and claim their empty vehicles and cargo)
 		{
@@ -1930,7 +1939,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		//T_CALLM1("updateLocationData", _loc);
 
 		// Send a success message to player
-		pr _args = ["Now we own this place!"];
+		private _args = ["Now we own this place!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 
 	ENDMETHOD;

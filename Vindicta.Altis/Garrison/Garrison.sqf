@@ -172,6 +172,23 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		GETSV("Garrison", "all") pushBack _thisObject;
 	ENDMETHOD;
 
+	// Create a new garrison from an existing one, copying relevant state
+	STATIC_METHOD(newFrom)
+		params [P_THISCLASS, P_OOP_OBJECT("_other"), P_POSITION("_posOverride")];
+
+		// Make a new garrison
+		private _type = CALLM0(_other, "getType");
+		private _side = CALLM0(_other, "getSide");
+		private _pos = if(_posOverride isEqualTo []) then { CALLM0(_other, "getPos") } else { _posOverride };
+		private _faction = CALLM0(_other, "getFaction");
+		private _templateName = CALLM0(_other, "getTemplateName");
+		private _spawned = CALLM0(_other, "isSpawned");
+		private _home = CALLM0(_other, "getHome");
+
+		private _args = [_type, _side, _pos, _faction, _templateName, _spawned, _home];
+		NEW("Garrison", _args);
+	ENDMETHOD;
+	
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
@@ -3488,16 +3505,16 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			OOP_WARNING_1("makeGarrisonFromUnits: No unit objects found for unit handles %1 in our garrison", _unitHandles);
 		};
 
-		private _side = T_GETV("side");
-		private _faction = T_CALLM0("getFaction");
-		private _templateName = T_CALLM0("getTemplateName");
-
 		OOP_INFO_2("Adding units %1 to commander for side %2", _unitHandles, _side);
 
 		// Make a new garrison
-		private _newGarrison = NEW("Garrison", [_type ARG _side ARG [] ARG _faction ARG _templateName]);
+		private _side = T_GETV("side");
 		private _pos = position (_unitHandles#0);
-		CALLM1(_newGarrison, "setPos", _pos);
+		private _faction = T_CALLM0("getFaction");
+		private _templateName = T_CALLM0("getTemplateName");
+		private _spawned = true; // If we are adding units from unit handles then they must be spawned
+		private _args = [_type, _side, _pos, _faction, _templateName, _spawned];
+		private _newGarrison = NEW("Garrison", _args);
 
 		// Create some infantry group
 		private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);

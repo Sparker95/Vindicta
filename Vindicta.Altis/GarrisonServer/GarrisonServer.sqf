@@ -412,7 +412,6 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			_gar
 		};
 
-
 		// Bail if the infantry capacity of the location has been reached
 		pr _capinf = CALLM0(_loc, "getCapacityInf");
 		pr _nInf = CALLM0(_gar, "countInfantryUnits");

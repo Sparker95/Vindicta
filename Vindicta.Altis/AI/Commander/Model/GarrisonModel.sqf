@@ -360,16 +360,7 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		// Make a new garrison
-		private _type = CALLM0(_actual, "getType");
-		private _side = CALLM0(_actual, "getSide");
-		private _pos = CALLM0(_actual, "getPos");
-		private _faction = CALLM0(_actual, "getFaction");
-		private _templateName = CALLM0(_actual, "getTemplateName");
-		private _spawned = CALLM0(_actual, "isSpawned");
-		private _home = CALLM0(_actual, "getHome");
-
-		private _args = [_type, _side, _pos, _faction, _templateName, _spawned, _home];
-		private _newGarrActual = NEW("Garrison", _args);
+		private _newGarrActual = CALLSM1("Garrison", "newFrom", _actual);
 
 		// CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 
