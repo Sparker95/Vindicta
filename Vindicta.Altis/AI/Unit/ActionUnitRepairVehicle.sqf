@@ -15,13 +15,18 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	VARIABLE("veh");
 	VARIABLE("timeActivated");
 	
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_REPAIR, [NULL_OBJECT] ] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
+	
 	// ------------ N E W ------------
-	
-	
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, "vehicle");
+		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_REPAIR);
 		T_SETV("veh", _veh);
 	ENDMETHOD;
 	

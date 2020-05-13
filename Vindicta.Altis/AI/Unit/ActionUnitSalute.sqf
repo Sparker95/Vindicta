@@ -25,11 +25,18 @@ CLASS("ActionUnitSalute", "Action")
 	
 	// ------------ N E W ------------
 	// _target - whom to salute to
+
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SALUTE, [NULL_OBJECT] ] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
 	
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SALUTE);
 		T_SETV("target", _target);
 
 		pr _agent = GETV(_AI, "agent"); // cache the object handle

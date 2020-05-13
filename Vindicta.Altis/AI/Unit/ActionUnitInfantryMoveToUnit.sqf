@@ -15,12 +15,19 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 	
 	VARIABLE("destUnit");
 	
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_UNIT, [NULL_OBJECT] ] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]], [TAG_DURATION_SECONDS, [0]], [TAG_TELEPORT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	// ------------ N E W ------------
 	
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _unit = CALLSM2("Action", "getParameterValue", _parameters, "unit");
+		pr _unit = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_UNIT);
 
 		T_SETV("destUnit", _unit);
 		

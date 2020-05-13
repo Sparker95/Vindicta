@@ -15,13 +15,20 @@ CLASS("ActionUnitScareAway", "Action")
 	VARIABLE("objectHandle");
 	VARIABLE("step");
 	VARIABLE("warningShotTarget");
+
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SCARE_AWAY, [objNull] ] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
 	
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		T_SETV("step",0);
 
-		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SCARE_AWAY);
 		
 		pr _laserT = createVehicle ["LaserTargetW", [0,0,0], [], 0, "NONE"];
 		_laserT attachto [_target, [0, 0, 3]];

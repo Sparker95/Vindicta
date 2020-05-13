@@ -27,6 +27,14 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	// Time when unit is expected to get into vehicle
 	VARIABLE("ETA");
 
+	METHOD(getPossibleParameters)
+		[
+			// We allow only unit OOP objects as target
+			[ [TAG_TARGET_UNIT, [NULL_OBJECT]],  [TAG_VEHICLE_ROLE, [""]] ],	// Required parameters
+			[ [TAG_TURRET_PATH, [[]]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	// ------------ N E W ------------
 	/*
 	Method: new
@@ -43,9 +51,9 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, "vehicle");
-		pr _vehRole = CALLSM2("Action", "getParameterValue", _parameters, "vehicleRole");
-		pr _turretPath = CALLSM3("Action", "getParameterValue", _parameters, "turretPath", []);
+		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_UNIT);
+		pr _vehRole = CALLSM2("Action", "getParameterValue", _parameters, TAG_VEHICLE_ROLE);
+		pr _turretPath = CALLSM3("Action", "getParameterValue", _parameters, TAG_TURRET_PATH, []);
 		
 		// Is _veh an object handle or a Unit?
 		if (_veh isEqualType objNull) then {

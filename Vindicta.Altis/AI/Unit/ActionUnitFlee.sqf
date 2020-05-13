@@ -7,6 +7,13 @@ CLASS("ActionUnitFlee", "ActionUnit")
 
 	VARIABLE("pos");
 
+	METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_POS, [[]]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_ai"), P_ARRAY("_parameters")];
 

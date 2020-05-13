@@ -14,10 +14,17 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 	VARIABLE("building");
 	VARIABLE("posID");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_OBJECT, [objNull] ], [TAG_BUILDING_POS_ID, [0]] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]], [TAG_DURATION_SECONDS, [0]], [TAG_TELEPORT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		private _building = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		private _building = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_OBJECT);
 		T_SETV("building", _building);
 		private _posID = CALLSM2("Action", "getParameterValue", _parameters, TAG_BUILDING_POS_ID);
 		T_SETV("posID", _posID);

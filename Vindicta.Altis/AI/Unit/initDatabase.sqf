@@ -65,6 +65,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 						[WSP_UNIT_HUMAN_AT_VEHICLE, true]
 						]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitFollow",_s,  [[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true]]] call AI_misc_fnc_setActionEffects;
+["ActionunitFollow", [TAG_TARGET_OBJECT]] call AI_misc_fnc_setActionParametersFromGoal;
 
 // ------------------- ActionUnitIdle
 ["ActionUnitIdle", _s, []] call AI_misc_fnc_setActionPreconditions;
@@ -98,7 +99,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 // ------------------- ActionUnitInfantryMoveBuilding
 ["ActionUnitInfantryMoveBuilding", _s, [[WSP_UNIT_HUMAN_AT_VEHICLE, false], [WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitInfantryMoveBuilding", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setActionEffects;
-["ActionUnitInfantryMoveBuilding", [TAG_TARGET_BUILDING, TAG_BUILDING_POS_ID]]	call AI_misc_fnc_setActionParametersFromGoal;
+["ActionUnitInfantryMoveBuilding", [TAG_TARGET_OBJECT, TAG_BUILDING_POS_ID]]	call AI_misc_fnc_setActionParametersFromGoal;
 
 // ------------------- ActionUnitInfantryMoveToUnit
 ["ActionUnitInfantryMoveToUnit", _s, [[WSP_UNIT_HUMAN_AT_VEHICLE, false], [WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
@@ -149,6 +150,10 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 									[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitShootAtTargetRange", _s, [[WSP_UNIT_HUMAN_HAS_INTERACTED, true]]] call AI_misc_fnc_setActionEffects;
 ["ActionUnitShootAtTargetRange", [TAG_TARGET_SHOOT_RANGE]]	call AI_misc_fnc_setActionParametersFromGoal;
+
+["ActionUnitShootLegTarget", _s, [[WSP_UNIT_HUMAN_AT_VEHICLE, false]]] call AI_misc_fnc_setActionPreconditions;
+["ActionUnitShootLegTarget", _s, [[WSP_UNIT_HUMAN_HAS_INTERACTED, true]]] call AI_misc_fnc_setActionEffects;
+["ActionUnitShootAtTargetRange", [TAG_TARGET_SHOOT_LEG_TARGET]]	call AI_misc_fnc_setActionParametersFromGoal;
 
 //["ActionUnitShootLegTarget", []] call AI_misc_fnc_setActionEffects;
 

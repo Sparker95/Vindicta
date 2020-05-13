@@ -8,10 +8,17 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 	VARIABLE("spawnHandle");
 	VARIABLE("safePosition");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SHOOT_RANGE, [objNull] ] ],	// Required parameters
+			[ [TAG_DURATION_SECONDS, [0]]]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SHOOT_RANGE);
 		T_SETV("target", _target);
 		private _defaultDuration = selectRandom [5, 10, 20] * 60;
 		private _duration = CALLSM3("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS, _defaultDuration);

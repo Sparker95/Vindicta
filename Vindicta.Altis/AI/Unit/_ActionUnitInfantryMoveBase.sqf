@@ -18,11 +18,13 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	VARIABLE("timeToComplete");
 	VARIABLE("distRemaining"); // Remaining distance to go
 
+	
+
 	// ------------ N E W ------------
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		private _teleport = CALLSM3("Action", "getParameterValue", _parameters, "teleport", false);
+		private _teleport = CALLSM3("Action", "getParameterValue", _parameters, TAG_TELEPORT, false);
 		T_SETV("teleport", _teleport);
 
 		private _duration = CALLSM3("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS, 0);

@@ -97,7 +97,7 @@ gAIPlannerCache = "PlannerCache" createVehicle [0,0,0];
 gAIPlannerCache = [false] call CBA_fnc_createNamespace;
 #endif
 
-#ifdef GOAP_PLANNER_ASTAR_DEBUG
+#ifdef DEBUG_GOAP
 AIPlannerCacheNHit = 0;
 AIPlannerCacheNMiss = 0;
 #endif
@@ -279,13 +279,30 @@ CLASS("AI_GOAP", "AI")
 					// Calculate current world state
 					// Goal can calculate some world state properties as perceived by goal itself
 					pr _wsCurrent = +T_GETV("worldState");
-					CALLSM3(_goalClassName, "onGoalChosen", _thisObject, _goalParameters,  _wsCurrent);
+
+					// Make a copy of original parameters
+					// Goal might add something to them
+					pr _goalParametersCopy = +_goalParameters;
+
+					// Goal might do some preparations on AI or goal parameters here
+					CALLSM3(_goalClassName, "onGoalChosen", _thisObject, _goalParametersCopy,  _wsCurrent);
+
+					// Verify goal parameters
+					// Disabled for now
+					/*
+					#ifdef DEBUG_GOAP
+					if (!CALLSM1(_goalClassName, "verifyParameters", _goalParametersCopy)) then {
+						OOP_ERROR_1("Wrong parameters for goal: %1", _goalClassName);
+					};
+					#endif
+					*/
+					FIX_LINE_NUMBERS()
 
 					// Get actions this agent can do
 					pr _possActions = T_CALLM0("getPossibleActions");
 					
 					// Run the A* planner to generate a plan
-					pr _args = [_wsCurrent, _wsGoal, _possActions, _goalParameters, _thisObject];
+					pr _args = [_wsCurrent, _wsGoal, _possActions, _goalParametersCopy, _thisObject];
 
 					CALL_STATIC_METHOD("AI_GOAP", "planActions", _args) params ["_foundPlan", "_actionPlan"];
 					
@@ -297,7 +314,11 @@ CLASS("AI_GOAP", "AI")
 						// Terminate the current action (if it exists)
 						//T_CALLM0("deleteCurrentAction");
 						pr _wsCurr = T_GETV("worldState");
-						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", _wsCurr, _wsGoal);
+						OOP_ERROR_2("PROCESS: Failed to generate an action plan for goal %1, parameters: %2", _goalClassName, _goalParametersCopy);
+						OOP_ERROR_1("Current WS: %1", [_wsCurr] call ws_toString);
+						OOP_ERROR_1("Goal WS: %1", [_wsGoal] call ws_toString);
+
+						CALLSM3(_goalClassName, "onPlanFailed", _thisObject, _goalParametersCopy);
 					};
 				};
 
@@ -1112,7 +1133,7 @@ CLASS("AI_GOAP", "AI")
 		};
 		*/
 		
-		#ifdef GOAP_PLANNER_ASTAR_DEBUG
+		#ifdef DEBUG_GOAP
 		OOP_INFO_0("");
 		OOP_INFO_0("[AI:AStar] Info: ---------- Starting A* ----------");
 		OOP_INFO_4("[AI:AStar] Info: currentWS: %1,  goalWS: %2,  goal parameters: %3  possibleActions: %4", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _goalParameters, _possibleActions);
@@ -1126,7 +1147,7 @@ CLASS("AI_GOAP", "AI")
 		pr _cacheKey = CALLSM4("AI_GOAP", "calculatePlannerCacheKey", _currentWS, _goalWS, _possibleActions, _goalParameters);
 		pr _cacheValue = gAIPlannerCache getVariable _cacheKey;
 		if (!isNil "_cacheValue") exitWith {
-			#ifdef GOAP_PLANNER_ASTAR_DEBUG
+			#ifdef DEBUG_GOAP
 			AIPlannerCacheNHit = AIPlannerCacheNHit + 1;
 			OOP_INFO_3("[AI:AStar] Cache  HIT, cache performance: miss: %1, hit: %2, ttl: %3", AIPlannerCacheNMiss, AIPlannerCacheNHit, AIPlannerCacheNMiss + AIPlannerCacheNHit);
 			OOP_INFO_1("[AI:AStar] Info: Cached plan: %1", _cacheValue);
@@ -1138,7 +1159,7 @@ CLASS("AI_GOAP", "AI")
 		_scopeLookup = nil;
 		#endif
 
-		#ifdef GOAP_PLANNER_ASTAR_DEBUG
+		#ifdef DEBUG_GOAP
 		AIPlannerCacheNMiss = AIPlannerCacheNMiss+1;
 		OOP_INFO_3("[AI:AStar] Cache MISS, cache performance: miss: %1, hit: %2, ttl: %3", AIPlannerCacheNMiss, AIPlannerCacheNHit, AIPlannerCacheNMiss + AIPlannerCacheNHit);
 		#endif
@@ -1152,7 +1173,7 @@ CLASS("AI_GOAP", "AI")
 
 		// We are already there!
 		if(_initialNumUnsatisfiedProps == 0) exitWith { 
-			#ifdef GOAP_PLANNER_ASTAR_DEBUG
+			#ifdef DEBUG_GOAP
 			OOP_INFO_0("[AI:AStar] Info: No search required we are already at our goal!");
 			#endif
 			FIX_LINE_NUMBERS()
@@ -1189,7 +1210,7 @@ CLASS("AI_GOAP", "AI")
 			
 			// Debug output
 			// Print the node we currently analyze
-			#ifdef GOAP_PLANNER_ASTAR_DEBUG
+			#ifdef DEBUG_GOAP
 				OOP_INFO_0("");
 				OOP_INFO_1("[AI:AStar] Info: Step: %1,  Open set:", _count);
 				// Print the open and closed set
@@ -1217,7 +1238,7 @@ CLASS("AI_GOAP", "AI")
 			// ----------------------------------------------------------------------------
 			
 			if (([_nodeWS, _currentWS] call ws_getNumUnsatisfiedProps) == 0) exitWith {
-				#ifdef GOAP_PLANNER_ASTAR_DEBUG
+				#ifdef DEBUG_GOAP
 					OOP_INFO_0("[AI:AStar] Info: Reached current state with path:");
 				#endif
 				FIX_LINE_NUMBERS()
@@ -1229,7 +1250,7 @@ CLASS("AI_GOAP", "AI")
 						pr _actionClassName = _n select ASTAR_NODE_ID_ACTION;
 						pr _precedence = CALLSM0(_actionClassName, "getPrecedence");
 						_path pushBack [_precedence, _actionClassName, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
-						#ifdef GOAP_PLANNER_ASTAR_DEBUG
+						#ifdef DEBUG_GOAP
 						OOP_INFO_2("  %1: %2 ->", count _path, _actionClassName);
 						pr _wsStr = [_n select ASTAR_NODE_ID_WS] call ws_toString;
 						OOP_INFO_1("     State :%1", _wsStr);
@@ -1251,7 +1272,7 @@ CLASS("AI_GOAP", "AI")
 			// ----------------------------------------------------------------------------
 			
 			// Debug text
-			#ifdef GOAP_PLANNER_ASTAR_DEBUG
+			#ifdef DEBUG_GOAP
 				OOP_INFO_1("[AI:AStar] Info: Discovering neighbours:", _nodeString);
 			#endif
 			FIX_LINE_NUMBERS()
@@ -1322,7 +1343,7 @@ CLASS("AI_GOAP", "AI")
 					if (!_parametersResolved) then {
 						OOP_WARNING_1("[AI:AStar] Warning: can't resolve all parameters for action: %1", _action);
 					} else {
-						#ifdef GOAP_PLANNER_ASTAR_DEBUG
+						#ifdef DEBUG_GOAP
 						//	diag_log format ["[AI:AStar] Info: Connected world states: action: %1,  effects: %2,  WS:  %3", _x, [_effects] call ws_toString, [_nodeWS] call ws_toString];
 						#endif
 						FIX_LINE_NUMBERS()
@@ -1343,7 +1364,7 @@ CLASS("AI_GOAP", "AI")
 						pr _possibleAction = _x;
 						if ( (_closeSet findIf { /* ((_x select ASTAR_NODE_ID_ACTION) isEqualTo _possibleAction) && */ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction) }) != -1) then {
 							// Print debug text
-							#ifdef GOAP_PLANNER_ASTAR_DEBUG
+							#ifdef DEBUG_GOAP
 								OOP_INFO_2("[AI:AStar]  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x);
 							#endif
 							FIX_LINE_NUMBERS()
@@ -1387,7 +1408,7 @@ CLASS("AI_GOAP", "AI")
 								_openSet pushBack _n;
 								
 								// Print debug text: neighbour node
-								#ifdef GOAP_PLANNER_ASTAR_DEBUG
+								#ifdef DEBUG_GOAP
 									pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_n]);
 									OOP_INFO_0("[AI:AStar]  New node:            " + _nodeString);
 								#endif
@@ -1411,7 +1432,7 @@ CLASS("AI_GOAP", "AI")
 									_nodeOpen set [ASTAR_NODE_ID_NEXT_NODE, _node];
 									
 									// Print debug text
-									#ifdef GOAP_PLANNER_ASTAR_DEBUG
+									#ifdef DEBUG_GOAP
 										pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
 										//        "  Found in close set:  "
 										OOP_INFO_1("[AI:AStar]  Updated in open set: %1", _nodeString);
@@ -1420,7 +1441,7 @@ CLASS("AI_GOAP", "AI")
 								} else {
 									
 									// Print debug text
-									#ifdef GOAP_PLANNER_ASTAR_DEBUG
+									#ifdef DEBUG_GOAP
 										pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
 										OOP_INFO_1("[AI:AStar]  Found in open set:   %1", _nodeString);
 									#endif
@@ -1443,7 +1464,7 @@ CLASS("AI_GOAP", "AI")
 		// Sort the plan by precedence
 		//_path sort true; // Ascending
 		
-		#ifdef GOAP_PLANNER_ASTAR_DEBUG
+		#ifdef DEBUG_GOAP
 			OOP_INFO_1("[AI:AStar] Info: Generated plan: %1", _path);
 		#endif
 		FIX_LINE_NUMBERS()

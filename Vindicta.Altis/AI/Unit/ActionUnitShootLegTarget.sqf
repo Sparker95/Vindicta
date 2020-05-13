@@ -20,6 +20,13 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	VARIABLE("isHandleSpawned");
 	VARIABLE("startSpawnedTime");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SHOOT_LEG, [objNull] ] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -27,7 +34,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _oh = CALLM0(_a, "getObjectHandle");
 		pr _count = _oh ammo primaryWeapon _oh;
 
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SHOOT_LEG);
 
 		T_SETV("isHandleSpawned", 0);
 		T_SETV("spawnHandle", scriptNull);

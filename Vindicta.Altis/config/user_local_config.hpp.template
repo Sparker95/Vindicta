@@ -37,7 +37,7 @@
 //#define ENABLE_LOG_GOAP
 
 // Prints useful debug info about A* GOAP planner
-//#define GOAP_PLANNER_ASTAR_DEBUG
+//#define DEBUG_GOAP
 
 // Show commander debug marker on map with current commander activity (at bottom left)
 //#define DEBUG_COMMANDER

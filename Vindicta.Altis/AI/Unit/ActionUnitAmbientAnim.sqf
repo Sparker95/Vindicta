@@ -9,6 +9,13 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 	VARIABLE("spawnHandle");
 	VARIABLE("savedInventory");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET, [[], objNull]] ],	// Required parameters
+			[ [TAG_DURATION_SECONDS, [0]], [TAG_ANIM, [""]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 

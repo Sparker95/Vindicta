@@ -90,6 +90,15 @@ CLASS("Action", "MessageReceiverEx")
 		T_SETV("AI", _AI);
 		T_SETV("state", ACTION_STATE_INACTIVE); // Default state
 
+		// Verify parameters
+		#ifdef DEBUG_GOAP
+		pr _parametersGood = T_CALLM1("verifyParameters", _parameters);
+		if (!_parametersGood) then {
+			OOP_ERROR_0("Wrong parameters");
+		};
+		#endif
+		FIX_LINE_NUMBERS()
+
 		private _instant = CALLSM3("Action", "getParameterValue", _parameters, TAG_INSTANT, false);
 		T_SETV("instant", _instant);
 		
@@ -157,6 +166,65 @@ CLASS("Action", "MessageReceiverEx")
 		T_SETV("timer", _timer);
 	ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |          G E T   P O S S I B L E   P A R A M E T E R S             |
+	// ----------------------------------------------------------------------
+	/*
+	Method: getPossibleParameters
+
+	Other classes must override that to declare parameters passed to action! 
+
+	Returns array [requiredParameters, optionalParameters]
+	requiredParameters and optionalParameters are arrays of: [tag, type]
+		tag - string
+		type - some value against which isEqualType will be used
+	*/
+	METHOD(getPossibleParameters)
+		[
+			[],	// Required parameters
+			[]	// Optional parameters
+		]
+	ENDMETHOD;
+
+	// Verifies parameters
+	METHOD(verifyParameters)
+		params [P_THISOBJECT, P_ARRAY("_parameters")];
+
+		pr _allGood = true;
+		pr _pPossible = T_CALLM0("getPossibleParameters");
+		_pPossible params ["_pRequired", "_pOptional"];
+		_pAllowed = _pRequired + _pOptional + [TAG_INSTANT, true]; // Instant is always allowed
+		
+		// Verify that no illegal parameters are passed
+		{
+			pr _tag = _x#0;
+			pr _found = _pAllowed findIf {(_x#0) == _tag};
+			if (_found == -1) then {
+				OOP_ERROR_2("Illegal parameter: %1, allowed parameters: %2", _tag, _pAllowed);
+				_allGood = false;
+			} else {
+				// Verify type
+				pr _types = _pAllowed#_found#1;
+				pr _foundType = _types findIf {(_x#1) isEqualType _x};
+				if (_foundType == -1) then {
+					OOP_ERROR_3("Wrong parameter type for %1: %2, expected: %3", _tag, typeName (_x#1), _types apply {typeName _x});
+					_allGood = false;
+				};
+			};
+		} forEach _parameters;
+
+		// Verify that all required parameters are passed
+		{
+			pr _tag = _x#0;
+			pr _found = _parameters findIf {(_x#0) == _tag};
+			if (_found == -1) then {
+				OOP_ERROR_2("Required parameter not found: %1, passed parameters: %2", _tag, _parameters);
+				_allGood = false;
+			};
+		} forEach _pRequired;
+
+		_allGood;
+	ENDMETHOD;
 	
 	
 	// ----------------------------------------------------------------------

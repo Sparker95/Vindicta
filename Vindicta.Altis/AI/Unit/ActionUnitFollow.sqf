@@ -14,9 +14,16 @@ CLASS("ActionUnitFollow", "ActionUnit")
 	VARIABLE("stuckCounter");
 	VARIABLE("hTarget");
 
+	METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_TARGET_OBJECT, objNull] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		private _hTarget = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET, objNull);
+		private _hTarget = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET_OBJECT, objNull);
 		T_SETV("hTarget", _hTarget);
 	ENDMETHOD;
 	

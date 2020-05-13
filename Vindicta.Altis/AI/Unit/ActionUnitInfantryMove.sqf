@@ -13,6 +13,14 @@ Parameters:
 
 #define OOP_CLASS_NAME ActionUnitInfantryMove
 CLASS("ActionUnitInfantryMove", "ActionUnitInfantryMoveBase")
+
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, [[]] ] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]], [TAG_DURATION_SECONDS, [0]], [TAG_TELEPORT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);

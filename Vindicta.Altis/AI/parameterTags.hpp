@@ -17,11 +17,15 @@
 
 // VEHICLE
 #define TAG_VEHICLE_ROLE "g_vehRole"
+#define TAG_TURRET_PATH "g_turretPath"
 
 // INSTANT
 // Action should be performed instantly where appropriate
 // Used when garrisons spawn so they can immediately apply group and unit state for their current action
 #define TAG_INSTANT "g_instant"
+
+// For move actions
+#define TAG_TELEPORT "g_teleport"
 
 // GROUP BEHAVIOURS
 #define TAG_BEHAVIOUR "g_behaviour"
@@ -44,12 +48,13 @@
 #define TAG_MAX_SPEED_KMH "g_maxSpeedKmh" // Passed to move actions to limit the agents average speed
 #define TAG_FOLLOWERS "g_followers" // Passed to move actions to list other agents that are following this agent (so it can wait for them usually)
 
+#define TAG_TARGET_OBJECT "g_targetObject" // Arma object handle
+
 #define TAG_TARGET_UNIT "g_targetUnit" // Unit OOP object - a target
 
 #define TAG_TARGET "g_target"	// General target parameter, usually a unit
 #define TAG_ANIM "g_anim"	// Anim to use in GoalUnitAmbientAnim
 
-#define TAG_TARGET_BUILDING "g_targetBuilding"
 #define TAG_BUILDING_POS_ID "g_buildingPosId"
 
 // INTERACTION TARGETS
@@ -59,3 +64,4 @@
 #define TAG_TARGET_SCARE_AWAY	"g_targetScareAway"
 #define TAG_TARGET_AMBIENT_ANIM	"g_targetAmbientAnim"
 #define TAG_TARGET_SHOOT_RANGE	"g_targetShootRange"
+#define TAG_TARGET_SHOOT_LEG "g_targetShootLeg"

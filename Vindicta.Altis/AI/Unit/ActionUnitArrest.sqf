@@ -21,12 +21,19 @@ CLASS("ActionUnitArrest", "Action")
 	VARIABLE("spawnHandle");
 	VARIABLE("screamTime");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_ARREST, [objNull]] ],	// Required parameters
+			[  ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _a = GETV(_AI, "agent");
 		pr _captor = CALLM0(_a, "getObjectHandle");
 		T_SETV("objectHandle", _captor);
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_ARREST);
 		T_SETV("target", _target);
 		
 		//FSM

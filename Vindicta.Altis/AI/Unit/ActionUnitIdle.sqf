@@ -5,6 +5,13 @@ CLASS("ActionUnitIdle", "ActionUnit")
 
 	VARIABLE("timeToComplete")
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_DURATION_SECONDS, [0]] ],	// Required parameters
+			[  ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
