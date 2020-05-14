@@ -151,6 +151,71 @@ CLASS("AI_GOAP", "AI")
 		
 	ENDMETHOD;
 
+
+
+
+	// -------------------------------------------------------------------------------------------------------------
+	// VIRTUAL METHODS
+	// These can be overriden in child AI classes
+	// -------------------------------------------------------------------------------------------------------------
+
+	/*
+	Method: setUrgentPriorityOnAddGoal
+	Returning true from this will cause this AI to be marked as high priority when external goal is added.
+	Override in derived classes!
+	*/
+	/* virtual */ METHOD(setUrgentPriorityOnAddGoal)
+		false
+	ENDMETHOD;
+
+	//                        G E T   P O S S I B L E   G O A L S
+	/*
+	Method: getPossibleGoals
+	Returns the list of goals this AI evaluates on its own.
+	Override in derived classes!!
+	*/
+	/* virtual */ METHOD(getPossibleGoals)
+		params [P_THISOBJECT];
+		OOP_ERROR_0("getPossibleGoals is not implemented!");
+		0 // Will cause error
+	ENDMETHOD;
+
+	//                      G E T   P O S S I B L E   A C T I O N S
+	/*
+	Method: getPossibleActions
+	Returns: Array with action class names
+	Override in derived classes!!
+	*/
+	/* virtual */ METHOD(getPossibleActions)
+		params [P_THISOBJECT];
+		OOP_ERROR_0("getPossibleActions is not implemented!");
+		0 // Will cause error
+	ENDMETHOD;
+
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	// Override to show debug data in debug UI for specific class
+	/* virtual */ METHOD(getDebugUIVariableNames)
+		[]
+	ENDMETHOD;
+
+	/*
+	Method: onGoalChosen
+	Called when new goal is chosen.
+	Override to set up some world state properties in AI or alter the goal parameters.
+	Passed goal parameters array is a copy of actual goal parameters.
+	Returns: nothing
+	*/
+	/* virtual */ METHOD(onGoalChosen)
+		//params [P_THISOBJECT, P_ARRAY("_goalParameters")];
+	ENDMETHOD;
+
+	// ------------------------------------------------------------------------------------------------------
+
+
+
+
+	
+
 	// ----------------------------------------------------------------------
 	// |                              P R O C E S S
 	// | Must be called every update interval
@@ -282,6 +347,7 @@ CLASS("AI_GOAP", "AI")
 					pr _goalParametersCopy = +_goalParameters;
 
 					// Goal might do some preparations on AI or goal parameters here
+					T_CALLM1("onGoalChosen", _goalParametersCopy);
 					CALLSM2(_goalClassName, "onGoalChosen", _thisObject, _goalParametersCopy);
 
 					// Verify goal parameters
@@ -562,15 +628,6 @@ CLASS("AI_GOAP", "AI")
 		//_scope40 = nil;
 
 		0
-	ENDMETHOD;
-
-	/*
-	Method: setUrgentPriorityOnAddGoal
-	Returning true from this will cause this AI to be marked as high priority when external goal is added.
-	Override in derived classes!
-	*/
-	/* virtual */ METHOD(setUrgentPriorityOnAddGoal)
-		false
 	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -1050,31 +1107,6 @@ CLASS("AI_GOAP", "AI")
 		};
 	ENDMETHOD;
 
-	
-	//                        G E T   P O S S I B L E   G O A L S
-	/*
-	Method: getPossibleGoals
-	Returns the list of goals this AI evaluates on its own.
-
-	Override in derived classes!!
-	*/
-	/* virtual */ METHOD(getPossibleGoals)
-		params [P_THISOBJECT];
-		OOP_ERROR_0("getPossibleGoals is not implemented!");
-		0 // Will cause error
-	ENDMETHOD;
-
-	//                      G E T   P O S S I B L E   A C T I O N S
-	/*
-	Method: getPossibleActions
-	Returns: Array with action class names
-	Override in derived classes!!
-	*/
-	/* virtual */ METHOD(getPossibleActions)
-		params [P_THISOBJECT];
-		OOP_ERROR_0("getPossibleActions is not implemented!");
-		0 // Will cause error
-	ENDMETHOD;
 	
 	// Calculates a string, hash key for planner cache 
 	STATIC_METHOD(calculatePlannerCacheKey)
@@ -1588,12 +1620,6 @@ CLASS("AI_GOAP", "AI")
 
 		// Return
 		_a
-	ENDMETHOD;
-
-	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	// Override to show debug data in debug UI for specific class
-	/* virtual */ METHOD(getDebugUIVariableNames)
-		[]
 	ENDMETHOD;
 
 	STATIC_METHOD(getObjectDebugUIData)

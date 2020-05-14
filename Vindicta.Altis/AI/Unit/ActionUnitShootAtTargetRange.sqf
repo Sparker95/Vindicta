@@ -26,22 +26,39 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		T_SETV("spawnHandle", scriptNull);
 	ENDMETHOD;
 
+	// Returns [_shootingPosition, _safePosition]
+	STATIC_METHOD(getShootingPos)
+		params [P_THISCLASS, P_OBJECT("_target")];
+
+		private _distDir = _target getVariable ["vin_target_range", []];
+
+		if (count _distDir == 0) exitWith {
+			OOP_ERROR_2("Target %1 at %2 does not have correct vin_target_range array (should be [distance, direction])", _target, getPos _target);
+			[];
+		};
+
+		_distDir params ["_dist", "_dir"];
+		private _shootingPosition = _target getRelPos [_dist, _dir];
+		private _safePosition = _target getRelPos [_dist * 1.2, _dir];
+
+		[_shootingPosition, _safePosition];
+	ENDMETHOD;
+
 	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _target = T_GETV("target");
 		_target setVariable ["vin_occupied", true];
 
-		private _distDir = _target getVariable ["vin_target_range", []];
-
-		if(!(_distDir isEqualTypeArray [0,0])) exitWith {
-			OOP_ERROR_1("Target %1 does not have correct vin_target_range array (should be [distance, direction])", _target);
+		private _positions = CALLSM1("ActionUnitShootAtTargetRange", "getShootingPos", _target);
+		
+		if (count _positions == 0) exitWith {
+			OOP_ERROR_0("Failed, position was not provided.")
 			T_SETV("state", ACTION_STATE_FAILED);
-			ACTION_STATE_FAILED
+			ACTION_STATE_FAILED;
 		};
-		_distDir params ["_dist", "_dir"];
-		private _shootingPosition = _target getRelPos [_dist, _dir];
-		private _safePosition = _target getRelPos [_dist * 1.2, _dir];
+
+		_positions params ["_shootingPosition", "_safePosition"];
 		T_SETV("safePosition", _safePosition);
 		private _duration = T_GETV("duration");
 		private _hO = T_GETV("hO");

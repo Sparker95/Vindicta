@@ -8,5 +8,5 @@ Author: Sparker
 
 #define OOP_CLASS_NAME GoalUnitVehicleUnflip
 CLASS("GoalUnitVehicleUnflip", "Goal")
-
+// nothing else to say...
 ENDCLASS;

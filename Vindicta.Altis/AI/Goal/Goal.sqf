@@ -68,8 +68,10 @@ CLASS("Goal", "")
 			pr _tag = _x#0;
 			pr _found = _pAllowed findIf {(_x#0) == _tag};
 			if (_found == -1) then {
-				OOP_ERROR_3("%1: Illegal parameter: %2, allowed parameters: %3", _thisClass, _tag, _pAllowed);
-				_allGood = false;
+				// Goals might extend their parameters
+				// So there are in fact no forbidden parameters
+				//OOP_ERROR_3("%1: Illegal parameter: %2, allowed parameters: %3", _thisClass, _tag, _pAllowed);
+				//_allGood = false;
 			} else {
 				// Verify type
 				pr _types = _pAllowed#_found#1;

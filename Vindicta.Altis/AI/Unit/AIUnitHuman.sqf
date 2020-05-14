@@ -92,6 +92,50 @@ CLASS("AIUnitHuman", "AIUnit")
 		#endif
 	ENDMETHOD;
 	FIX_LINE_NUMBERS()
+
+
+	/* override */ METHOD(onGoalChosen)
+		params [P_THISOBJECT, P_ARRAY("_goalParameters")];
+
+		pr _moveTarget = 0;
+		pr _newParameters = [];
+
+		// Check goal parameters
+		// Some parameters need to be converted to other parameter tags
+		{
+			_x params ["_tag", "_value"];
+			if (_tag in [	TAG_TARGET_REPAIR,
+							TAG_TARGET_ARREST,
+							//TAG_TARGET_SALUTE,		// no we can salute from anywhere
+							TAG_TARGET_SCARE_AWAY,
+							TAG_TARGET_AMBIENT_ANIM
+							//TAG_TARGET_SHOOT_RANGE,	// no we don't walk straight to shooting range target to shoot it
+							//TAG_TARGET_SHOOT_LEG		// no we don't need to walk to someone to shoot him
+							]) then {
+				_newParameters pushBack [TAG_TARGET_OBJECT, _value];
+				_moveTarget = _value;
+			};
+		} forEach _goalParameters;
+
+		// Append ned parameters to goal parameters
+		_goalParameters append _newParameters;
+
+		// Set move target if we have got it from parameters
+		if (!(_moveTarget isEqualTo 0)) then {
+			T_CALLM1("setMoveTarget", _moveTarget);
+			
+			// Provide move radius from goal if it exists
+			pr _moveRadius = GET_PARAMETER_VALUE_DEFAULT(_goalParameters, TAG_MOVE_RADIUS, -1);
+			if (_moveRadius == -1) then {
+				T_CALLM1("setMoveRadius", 2);	// Action can override it anyway
+			} else {
+				T_CALLM1("setMoveRadius", _moveRadius);
+			};
+			
+			T_CALLM0("updatePositionWSP");
+		};
+
+	ENDMETHOD;
 	
 
 	/* override */ METHOD(start)
@@ -713,6 +757,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	ENDMETHOD;
 
 	// Use either of these setTarget... methods below to specify the target for movement
+	/*
 	METHOD(setTargetPosAGL)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		T_SETV("moveTarget", _pos);
@@ -727,15 +772,20 @@ CLASS("AIUnitHuman", "AIUnit")
 	METHOD(setTargetUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_obj")];
 		T_SETV("moveTarget", _obj);
+	ENDMETHOD;*/
+
+	METHOD(setMoveTarget)
+		params [P_THISOBJECT, P_DYNAMIC("_target")];
+		T_SETV("moveTarget", _target);
 	ENDMETHOD;
 
-	METHOD(setTargetRadius)
+	METHOD(setMoveTargetRadius)
 		params [P_THISOBJECT];
 		T_SETV("moveRadius", _radius);
 	ENDMETHOD;
 
 	// Resets target
-	METHOD(resetTarget)
+	METHOD(resetMoveTarget)
 		params [P_THISOBJECT];
 		T_SETV("moveTarget", 0);
 		T_SETV("moveRadius", -1);

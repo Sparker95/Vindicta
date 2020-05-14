@@ -12,12 +12,12 @@ Parameters: "vehicle" - <Unit> object
 #define OOP_CLASS_NAME ActionUnitRepairVehicle
 CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
-	VARIABLE("veh");
+	VARIABLE("hVeh");
 	VARIABLE("timeActivated");
 	
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET_REPAIR, [NULL_OBJECT] ] ],	// Required parameters
+			[ [TAG_TARGET_REPAIR, [objNull] ] ],	// Required parameters
 			[ ]	// Optional parameters
 		]
 	ENDMETHOD;
@@ -27,7 +27,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_REPAIR);
-		T_SETV("veh", _veh);
+		T_SETV("hVeh", _veh);
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -35,8 +35,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		params [P_THISOBJECT];
 		
 		pr _hO = T_GETV("hO");
-		pr _veh = T_GETV("veh");
-		pr _hVeh = CALLM0(_veh, "getObjectHandle");
+		pr _hVeh = T_GETV("hVeh");
 		
 		_hO action ["repairVehicle", _hVeh];
 		
@@ -59,11 +58,13 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 			// Makethe actual repair affects lag behind the animation
 			if (GAME_TIME - T_GETV("timeActivated") > 5) then {
 				pr _hO = T_GETV("hO");
-				pr _veh = T_GETV("veh");
+				pr _hveh = T_GETV("hVeh");
 				// Check if the unit is not an actual engineer
-				if (!(_hO getUnitTrait "engineer")) then {
-					[CALLM0(_veh, "getObjectHandle")] call AI_misc_fnc_repairWithoutEngineer; // Will do partial repairs of vehicle
-				};
+				// Doesn't matter much actually
+				// Sometimes engineers can be without toolkit and thus unable to repair vehicle in arma-native way
+				//if (!(_hO getUnitTrait "engineer")) then {
+					[_hVeh] call AI_misc_fnc_repairWithoutEngineer; // Will do partial repairs of vehicle
+				//};
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};
