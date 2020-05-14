@@ -47,8 +47,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */ 	VARIABLE_ATTR("useParentPatrolWaypoints", [ATTR_SAVE]);	// If true then use the parents patrol waypoints instead
 	/* save */ 	VARIABLE_ATTR("allowedAreas", [ATTR_SAVE]); 			// Array with allowed areas
 	/* save */ 	VARIABLE_ATTR("pos", [ATTR_SAVE]); 						// Position of this location
-	// SAVEBREAK : remove spawnPosTypes
-	/* save */	VARIABLE_ATTR("spawnPosTypes", [ATTR_SAVE]); 			// Array with spawn positions types
+				VARIABLE("spawnPosTypes"); 								// Array with spawn positions types
 				VARIABLE("spawned"); 									// Is this location spawned or not
 				VARIABLE("timer"); 										// Timer object which generates messages for this location
 				VARIABLE("capacityInf"); 								// Infantry capacity
@@ -995,11 +994,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD(getDisplayName)
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
-		// SAVEBREAK REPLACE >>>
-		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
-		// SAVEBREAK WITH
-		// if(_gmdata != NULL_OBJECT) then {
-		// SAVEBREAK REMOVE <<<
+		if(_gmdata != NULL_OBJECT) then {
 			CALLM0(_gmdata, "getDisplayName")
 		} else {
 			T_GETV("name")
@@ -1014,11 +1009,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD(getDisplayColor)
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
-		// SAVEBREAK REPLACE >>>
-		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
-		// SAVEBREAK WITH
-		// if(_gmdata != NULL_OBJECT) then {
-		// SAVEBREAK REMOVE <<<
+		if(_gmdata != NULL_OBJECT) then {
 			CALLM0(_gmdata, "getDisplayColor")
 		} else {
 			[1,1,1,1]
@@ -2015,14 +2006,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_PUBLIC_VAR("pos");
 		T_PUBLIC_VAR("isBuilt");
 
-		// SAVEBREAK >>>
-		// buildProgress was added in 12
-		if(isNil {T_GETV("buildProgress")}) then {
-			T_SETV_PUBLIC("buildProgress", 0);
-		} else {
-			T_PUBLIC_VAR("buildProgress");
-		};
-		// <<< SAVEBREAK
+		T_PUBLIC_VAR("buildProgress");
 
 		T_PUBLIC_VAR("allowedAreas");
 		T_PUBLIC_VAR("type");

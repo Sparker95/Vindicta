@@ -617,22 +617,6 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		true
 	ENDMETHOD;
 
-	// SAVEBREAK >>>
-	// We don't need this after next save break at all
-	/* virtual */ METHOD(deserializeFromStorage)
-		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
-		if(_version >= 15) then {
-			DESERIALIZE_SAVE_VER(_thisObject, _serial, _version)
-		} else {
-			#ifndef RELEASE_BUILD
-			_serial deleteAt 22;
-			_serial deleteAt 21;
-			#endif
-			DESERIALIZE_ALL(_thisObject, _serial)
-		}
-	ENDMETHOD;
-	// <<< SAVEBREAK
-
 	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		

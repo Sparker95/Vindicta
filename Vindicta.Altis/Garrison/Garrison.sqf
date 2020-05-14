@@ -30,51 +30,51 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	STATIC_VARIABLE("all");
 
-	/* save */	VARIABLE_ATTR("templateName", [ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("type",			[ATTR_PRIVATE ARG ATTR_SAVE]); // Garrison type: one of each type of garrison can exist at a location
+	/* save */	VARIABLE_ATTR("side", 			[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("faction",		[ATTR_PRIVATE ARG ATTR_SAVE]); // Template used for loadouts of the garrison
+	/* save */	VARIABLE_ATTR("templateName", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
+				VARIABLE_ATTR("spawned", 		[ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("autoSpawn",		[ATTR_PRIVATE ARG ATTR_SAVE]); // If true, it will be updating its own spawn state even if inactive
+	/* save */	VARIABLE_ATTR("name", 			[ATTR_PRIVATE ARG ATTR_SAVE]);
 
-	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
-	/* save */	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
-	/* save */	VARIABLE_ATTR("side", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
-	// SAVEBREAK units doesn't need to be saved any more
-	/* save */	VARIABLE_ATTR("units", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
-	/* save */	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
-				VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
-	/* save */	VARIABLE_ATTR("name", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
-	/* save */	VARIABLE_ATTR("location", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
-	/* save */	VARIABLE_ATTR("home", 		[ATTR_PRIVATE ARG ATTR_SAVE]); // Location the garrison considers home (defaults to the first location the garrison is assigned to)
+	/* save */	VARIABLE_ATTR("AI", 			[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
+				VARIABLE_ATTR("timer", 			[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
+				VARIABLE_ATTR("mutex", 			[ATTR_PRIVATE]); // Mutex used to lock the object
 
-	/* save */	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units
-	/* save */	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units that can move
-				VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
-				VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
-	/* save */	VARIABLE_ATTR("active",		[ATTR_PRIVATE ARG ATTR_SAVE]); // Set to true after calling activate method
-	/* save */	VARIABLE_ATTR("autoSpawn",	[ATTR_PRIVATE ARG ATTR_SAVE]); // If true, it will be updating its own spawn state even if inactive
-	/* save */	VARIABLE_ATTR("faction",	[ATTR_PRIVATE ARG ATTR_SAVE]); // Template used for loadouts of the garrison
+	/* save */	VARIABLE_ATTR("active",			[ATTR_PRIVATE ARG ATTR_SAVE]); // Set to true after calling activate method
 
-	/* save */	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE ARG ATTR_SAVE]);
+				VARIABLE_ATTR("units", 			[ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("savedUnits",		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("groups", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+
+	/* save */	VARIABLE_ATTR("location", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("home", 			[ATTR_PRIVATE ARG ATTR_SAVE]); // Location the garrison considers home (defaults to the first location the garrison is assigned to)
+
+				VARIABLE_ATTR("effTotal", 		[ATTR_PRIVATE]); // Efficiency vector of all units
+				VARIABLE_ATTR("effMobile", 		[ATTR_PRIVATE]); // Efficiency vector of all units that can move
+
+				VARIABLE_ATTR("buildResources", [ATTR_PRIVATE]);
 
 	// Counters of subcategories
-	/* save */	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE ARG ATTR_SAVE]);
-	/* save */	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE ARG ATTR_SAVE]);
-	/* save */	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE ARG ATTR_SAVE]);
-	/* save */	VARIABLE_ATTR("countCargo", [ATTR_PRIVATE ARG ATTR_SAVE]);
+				VARIABLE_ATTR("countInf",		[ATTR_PRIVATE]);
+				VARIABLE_ATTR("countVeh",		[ATTR_PRIVATE]);
+				VARIABLE_ATTR("countDrone",		[ATTR_PRIVATE]);
+				VARIABLE_ATTR("countCargo", 	[ATTR_PRIVATE]);
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
-				VARIABLE_ATTR("compositionClassNames", []); // Must be restored after game is loaded!!
+				VARIABLE("compositionClassNames"); // Must be restored after game is loaded!!
 
 	// Array with composition: each element at [_cat][_subcat] is an amount of units of this type
-	/* save */	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE ARG ATTR_SAVE]);
+				VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE]);
 
 	// Flag which is reset at each process call
 	// It is set by various functions changing state of this garrison
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
-				VARIABLE_ATTR("outdated", 	[ATTR_PRIVATE]);
+				VARIABLE_ATTR("outdated", 		[ATTR_PRIVATE]);
 				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
-	/* save */	VARIABLE_ATTR("savedUnits",	[ATTR_PRIVATE ARG ATTR_SAVE_VER(11)]);
-	// Garrison type: one of each type of garrison can exist at a location
-	/* save */	VARIABLE_ATTR("type",	[ATTR_PRIVATE ARG ATTR_SAVE_VER(18)]);
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -102,12 +102,22 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		ASSERT_GLOBAL_OBJECT(gTimerServiceMain);
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMainManager);
 
+		// Ensure some template
+		if (_templateName == "") then {
+			_templateName = "tDefault";
+			OOP_WARNING_1("Garrison without template name was created: %1", _this);
+		};
+
+		T_SETV("side", _side);
+		T_SETV("type", _type);
+		T_SETV("faction", _faction);
+		T_SETV("templateName", _templateName);
 		T_SETV("units", []);
 		T_SETV("groups", []);
 		T_SETV("spawned", false);
-		T_SETV("side", _side);
-		T_SETV("type", _type);
 		T_SETV("name", "");
+		T_SETV("location", NULL_OBJECT);
+		T_SETV("home", _home);
 		//T_SETV("action", "");
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
@@ -115,23 +125,13 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_SETV("countVeh", 0);
 		T_SETV("countDrone", 0);
 		T_SETV("countCargo", 0);
-		T_SETV("location", NULL_OBJECT);
-		T_SETV("home", _home);
 		T_SETV("active", false);
 		T_SETV("autoSpawn", false);
-		T_SETV("faction", _faction);
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
 		T_SETV("regAtServer", false);
 		pr _mutex = MUTEX_RECURSIVE_NEW();
 		T_SETV("mutex", _mutex);
-
-		// Ensure some template
-		if (_templateName == "") then {
-			_templateName = "tDefault";
-			OOP_WARNING_1("Garrison without template name was created: %1", _this);
-		};
-		T_SETV("templateName", _templateName);
 
 		// Set value of composition array
 		pr _comp = [];
@@ -2659,6 +2659,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	*/
 	METHOD(_recalculateCounters)
 		params [P_THISOBJECT];
+
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
 		T_SETV("countInf", 0);
@@ -3554,12 +3555,13 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// - - - - - STORAGE - - - - -
 	/* override */ METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
-		
+
 		// Save all units (except players)
 		pr _savedUnits = T_GETV("units") select {
 			// Don't save players
 			!CALLM0(_x, "isPlayer")
 		};
+
 		T_SETV("savedUnits", _savedUnits);
 		{
 			private _unit = _x;
@@ -3569,7 +3571,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Save our groups
 		{
 			pr _group = _x;
-			//diag_log format ["Saving group: %1", _group];
 			CALLM1(_storage, "save", _group);
 		} forEach T_GETV("groups");
 
@@ -3597,7 +3598,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		{
 			private _unit = _x;
-			//diag_log format ["Loading unit: %1", _unit];
 			CALLM1(_storage, "load", _unit);
 		} forEach _savedUnits;
 
@@ -3607,7 +3607,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Load groups
 		{
 			pr _group = _x;
-			//diag_log format ["Loading group: %1", _group];
 			CALLM1(_storage, "load", _group);
 		} forEach T_GETV("groups");
 
@@ -3624,7 +3623,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_SETV("outdated", true);
 		T_SETV("regAtServer", false);
 
-		// SAVEBREAK -- we can remove these from the save entirely now, cached data shouldn't be saved anyway, it leads to fragility.
 		// Recalculate all the counters, efficiency, classnames etc.
 		T_CALLM0("_recalculateCounters");
 

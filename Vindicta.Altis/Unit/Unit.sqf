@@ -2496,11 +2496,6 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		_serial set [UNIT_DATA_ID_AI, ""];
-		// SAVEBREAK DELETE >>> 
-		if(count _serial < UNIT_DATA_SIZE) then {
-			_serial set[UNIT_DATA_ID_INVENTORY, []];
-		};
-		// SAVEBREAK DELETE <<<
 
 		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
 		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;

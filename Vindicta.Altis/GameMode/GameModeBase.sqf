@@ -1094,33 +1094,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD(_loadSpecialGarrisons)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
-		// SAVEBREAK
-		if(GETV(_storage, "version") >= 11) then {
-			diag_log "Loading special garrisons";
-			gSpecialGarrisons = +T_GETV("savedSpecialGarrisons");
+		diag_log "Loading special garrisons";
+		gSpecialGarrisons = +T_GETV("savedSpecialGarrisons");
 
-			// Add the loaded data back to the garrisons
-			{
-				CALLM1(_storage, "load", _x);
-			} forEach gSpecialGarrisons;
+		// Add the loaded data back to the garrisons
+		{
+			CALLM1(_storage, "load", _x);
+		} forEach gSpecialGarrisons;
 
-			// Garrison objects to track players and player owned vehicles
-			gGarrisonPlayersWest 		= gSpecialGarrisons#0;
-			gGarrisonPlayersEast 		= gSpecialGarrisons#1;
-			gGarrisonPlayersInd 		= gSpecialGarrisons#2;
-			gGarrisonPlayersCiv 		= gSpecialGarrisons#3;
-			gGarrisonAmbient 			= gSpecialGarrisons#4;
-			gGarrisonAbandonedVehicles 	= gSpecialGarrisons#5;
+		// Garrison objects to track players and player owned vehicles
+		gGarrisonPlayersWest 		= gSpecialGarrisons#0;
+		gGarrisonPlayersEast 		= gSpecialGarrisons#1;
+		gGarrisonPlayersInd 		= gSpecialGarrisons#2;
+		gGarrisonPlayersCiv 		= gSpecialGarrisons#3;
+		gGarrisonAmbient 			= gSpecialGarrisons#4;
+		gGarrisonAbandonedVehicles 	= gSpecialGarrisons#5;
 
-			// {
-			// 	CALLM2(_x, "postMethodAsync", "spawn", [true]); // true == global spawn
-			// } forEach gSpecialGarrisons;
-
-		} else {
-			diag_log "Creating special garrisons";
-			T_CALLM0("_createSpecialGarrisons");
-		};
-		diag_log "Special garrisons done";
+			diag_log "Special garrisons done";
 	ENDMETHOD;
 
 	METHOD(_createSpecialGarrisons)
@@ -2334,19 +2324,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Refresh locations
 		CALLSM3("GameModeBase", "setLoadingProgress", "Updating locations...", 0, 5);
 		CALLSM0("Location", "postLoad");
-
-		// SAVEBREAK >>>
-		CALLSM3("GameModeBase", "setLoadingProgress", "Fixing up old save data...", 1, 5);
-		// Bug in saves before 17 means enemy cmdr didn't know about cities, so reveal them all now
-		if(GETV(_storage, "version") < 17) then {
-			{
-				private _cmdr = _x;
-				{
-					CALLM2(_cmdr, "postMethodAsync", "updateLocationData", [_x ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
-				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == LOCATION_TYPE_CITY });
-			} forEach [T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
-		};
-		// <<< SAVEBREAK
 
 		// Cleanup dirty garrisons etc.
 		CALLSM3("GameModeBase", "setLoadingProgress", "Cleaning broken garrisons...", 2, 5);

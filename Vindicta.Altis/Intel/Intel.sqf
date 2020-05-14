@@ -709,10 +709,6 @@ Class: Intel.IntelCommanderActionSupplyConvoy
 */
 #define OOP_CLASS_NAME IntelCommanderActionSupplyConvoy
 CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
-	// SAVEBREAK >>> Deprecated
-	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
-	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
-	// <<< SAVEBREAK Deprecated
 	/* variable: waypoints
 	Waypoints (as positions) that the patrol will visit. */
 	VARIABLE_ATTR("waypoints", [ATTR_SERIALIZABLE]);

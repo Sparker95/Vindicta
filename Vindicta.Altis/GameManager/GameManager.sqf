@@ -36,7 +36,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	VARIABLE("saveID");				// saveID property of SaveGameHeader
 	VARIABLE("campaignStartDate");	// In-game date when the campaign was started
 	VARIABLE("templates");			// Array of templates currently used
-	VARIABLE("gameModeClassName");	// 
+	VARIABLE("gameModeClassName");
 	VARIABLE("lastAutoSave");
 	VARIABLE("lastAutoSaveCheck");
 

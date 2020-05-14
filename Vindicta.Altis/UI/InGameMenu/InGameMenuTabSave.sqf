@@ -273,7 +273,8 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		OOP_INFO_1(" checking record data: %1", _selRecordData);
 		pr _headerVer = parseNumber GETV(_header,"saveVersion");
 		pr _currVer = parseNumber (call misc_fnc_getSaveVersion);
-		if (_headerVer > _currVer) exitWith {
+		// Last save break is at save version 19, we cannot load older games
+		if (_headerVer < 19 || _headerVer > _currVer) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
 			pr _text = format ["Error: version is incompatible: save: %1, current: %2", _headerVer, _currVer];
 			CALLM1(_dialogObj, "setHintText", _text);

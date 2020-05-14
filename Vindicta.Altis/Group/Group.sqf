@@ -1383,20 +1383,6 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		pr _data = T_GETV("data");
 
-		// SAVEBREAK >>> 
-		// Group types are consoldated to only INF, STATIC and VEH now, so remap loaded group types.
-		// We don't bump the version number as it isn't necessary for this change (although it isn't behaviourly backwards compatible it won't crash)
-		pr _newType = [
-		//	New type				//	Old type
-			GROUP_TYPE_INF,			//	GROUP_TYPE_IDLE
-			GROUP_TYPE_STATIC,		//	GROUP_TYPE_VEH_STATIC
-			GROUP_TYPE_VEH,			//	GROUP_TYPE_VEH_NON_STATIC
-			GROUP_TYPE_INF,			//	GROUP_TYPE_PATROL
-			GROUP_TYPE_INF			//	GROUP_TYPE_BUILDING_SENTRY
-		] select (_data#GROUP_DATA_ID_TYPE);
-		_data set [GROUP_DATA_ID_TYPE, _newType];
-		// <<< SAVEBREAK
-
 		// Load all units which we own
 		{
 			pr _unit = _x;

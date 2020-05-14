@@ -29,7 +29,8 @@ CLASS("AICommander", "AI")
 	/* save */	VARIABLE_ATTR("targetClusters", [ATTR_SAVE]);	// Array with target clusters
 	/* save */	VARIABLE_ATTR("nextClusterID", [ATTR_SAVE]);	// A unique cluster ID generator
 	
-	/* save */	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED ARG ATTR_SAVE]);
+	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED]);
+	/* save */	VARIABLE_ATTR("cmdrStrategyClassSave", [ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("worldModel", [ATTR_SAVE]);
 
 	// External reinforcements
@@ -3348,21 +3349,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowKeys", _args, _clientOwner, false);
 	ENDMETHOD;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	// = = = = = = = = = = = = = = Roadblocks and dynamic locations = = = = = = = = = = = = = =
 
 	// Adds a position for commander to consider create a roadblock at
@@ -3371,23 +3357,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		T_GETV("newRoadblockPositions") pushBack (+_pos);
 	ENDMETHOD;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// - - - - - - - STORAGE - - - - - - -
 
@@ -3398,9 +3367,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _db = T_GETV("intelDB");
 		CALLM1(_storage, "save", _db);
 
-		// Save strategy
-		pr _strategy = T_GETV("cmdrStrategy");
-		CALLM1(_storage, "save", _strategy);
+		// Save strategy class name only
+		T_SETV("cmdrStrategyClassSave", OBJECT_PARENT_CLASS_STR(T_GETV("cmdrStrategy")));
 
 		// Save world model
 		pr _model = T_GETV("worldModel");
@@ -3426,7 +3394,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		true
 	ENDMETHOD;
-
 
 	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
@@ -3484,7 +3451,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Load our garrisons
 		{
 			pr _gar = _x;
-			//diag_log format ["Loading garrison: %1", _gar];
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
@@ -3492,13 +3458,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _model = T_GETV("worldModel");
 		CALLM1(_storage, "load", _model);
 
-		// Load strategy
-		pr _strategy = T_GETV("cmdrStrategy");
-		CALLM1(_storage, "load", _strategy);
-
-		// SAVEBREAK -- we should just save the strategy name, not the whole object (strategy is just some constant values)
 		// Recreate the cmdr strategy object
-		private _strategy = NEW(OBJECT_PARENT_CLASS_STR(_strategy), []);
+		private _strategy = NEW(T_GETV("cmdrStrategyClassSave"), []);
 		T_SETV_REF("cmdrStrategy", _strategy);
 
 		// Load actions

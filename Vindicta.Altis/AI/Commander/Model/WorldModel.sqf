@@ -846,26 +846,7 @@ CLASS("WorldModel", "Storable")
 			if(!IS_NULL_OBJECT(_grid)) then {
 				CALLM1(_storage, "load", _grid);
 			};
-		} forEach ["rawThreatGrid", "threatGrid", "rawActivityGrid", "activityGrid"];
-
-		// SAVEBREAK >>>
-		// All grids can be loaded above instead
-		if(GETV(_storage, "version") >= 14) then {
-			{
-				private _grid = T_GETV(_x);
-				if(!IS_NULL_OBJECT(_grid)) then {
-					CALLM1(_storage, "load", _grid);
-				};
-			} forEach ["rawDamageGrid", "damageGrid"];
-		} else {
-			private _damageGridArgs = [500, 0];
-			private _rawDamageGrid = NEW("Grid", _damageGridArgs);
-			private _damageGrid = NEW("Grid", _damageGridArgs);
-
-			T_SETV("rawDamageGrid", _rawDamageGrid);
-			T_SETV("damageGrid", _damageGrid);
-		};
-		// <<< SAVEBREAK
+		} forEach ["rawThreatGrid", "threatGrid", "rawActivityGrid", "activityGrid", "rawDamageGrid", "damageGrid"];
 
 		// Set up other variables
 		T_SETV("gridMutex", MUTEX_NEW());
