@@ -110,6 +110,7 @@ CLASS("ActionUnitSalute", "Action")
 		// If time has expired, terminate
 		diag_log "salute time expired!";
 		T_CALLM("terminate", []);
+		CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 		T_SETV("state", ACTION_STATE_COMPLETED);
 		ACTION_STATE_COMPLETED
 	ENDMETHOD;

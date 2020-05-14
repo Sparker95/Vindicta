@@ -38,7 +38,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_POS, []], [TAG_MOVE_RADIUS, [0]]] ],	// Required parameters
+			[ [TAG_POS, []], [TAG_MOVE_RADIUS, [0]] ],	// Required parameters
 			[ [TAG_FOLLOWERS, [[]]] ]	// Optional parameters
 		]
 	ENDMETHOD;

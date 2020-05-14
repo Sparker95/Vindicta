@@ -139,6 +139,9 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		private _state = T_CALLM0("activateIfInactive");
 		if(_state == ACTION_STATE_ACTIVE) then {
 			if (scriptDone T_GETV("spawnHandle")) then {
+
+				CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
+
 				_state = ACTION_STATE_COMPLETED;
 			} else {
 				_state = ACTION_STATE_ACTIVE;

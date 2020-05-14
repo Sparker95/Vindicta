@@ -91,6 +91,7 @@ CLASS("ActionUnitArrest", "Action")
 
 				if (IS_ARRESTED_UNCONSCIOUS_DEAD(_target)) exitWith {
 					T_SETV("state", ACTION_STATE_COMPLETED);
+					CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 					ACTION_STATE_COMPLETED
 				};
 
@@ -265,7 +266,7 @@ CLASS("ActionUnitArrest", "Action")
 			// COMPLETED SUCCESSFULLY
 			case 3: {
 				//OOP_INFO_0("ActionUnitArrest: COMPLETED.");
-
+				CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};

@@ -20,7 +20,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 ["GoalUnitInfantryRegroup",					25	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitInfantryMoveBuilding",			21	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitInfantryMove",					20	] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalUnitScareWay",						19  ] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitScareAway",						19  ] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitGetInVehicle",					10	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitVehicleUnflip",					10	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitArrest",							5	] call AI_misc_fnc_setGoalIntrinsicRelevance;

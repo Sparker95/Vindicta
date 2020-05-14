@@ -16,7 +16,7 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET_OBJECT, [objNull] ], [TAG_BUILDING_POS_ID, [0]] ],	// Required parameters
+			[ [TAG_TARGET_BUILDING, [objNull] ], [TAG_BUILDING_POS_ID, [0]] ],	// Required parameters
 			[ [TAG_MOVE_RADIUS, [0]], [TAG_DURATION_SECONDS, [0]], [TAG_TELEPORT, [false]] ]	// Optional parameters
 		]
 	ENDMETHOD;

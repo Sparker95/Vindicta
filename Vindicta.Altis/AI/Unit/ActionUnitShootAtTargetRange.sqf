@@ -52,8 +52,8 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 
 		private _positions = CALLSM1("ActionUnitShootAtTargetRange", "getShootingPos", _target);
 		
-		if (count _positions == 0) exitWith {
-			OOP_ERROR_0("Failed, position was not provided.")
+		if ((count _positions) == 0) exitWith {
+			OOP_ERROR_0("Failed, position was not provided.");
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED;
 		};
@@ -147,6 +147,7 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		private _state = T_CALLM0("activateIfInactive");
 		if(_state == ACTION_STATE_ACTIVE) then {
 			if (scriptDone T_GETV("spawnHandle")) then {
+				CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 				_state = ACTION_STATE_COMPLETED;
 			} else {
 				_state = ACTION_STATE_ACTIVE;

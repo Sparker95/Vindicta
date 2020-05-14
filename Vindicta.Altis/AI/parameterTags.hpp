@@ -11,7 +11,6 @@
 #define TAG_G_POS "g_pos"
 #define TAG_POS "a_pos"
 #define TAG_LOCATION "g_location"
-#define TAG_MOVE_RADIUS "g_moveRadius"
 #define TAG_ROUTE "g_route"
 #define TAG_CLEAR_RADIUS "g_clearRadius"
 
@@ -25,7 +24,10 @@
 #define TAG_INSTANT "g_instant"
 
 // For move actions
+#define TAG_MOVE_TARGET "g_moveTarget"
 #define TAG_TELEPORT "g_teleport"
+#define TAG_MOVE_RADIUS "g_moveRadius"
+#define TAG_BUILDING_POS_ID "g_buildingPosId"
 
 // GROUP BEHAVIOURS
 #define TAG_BEHAVIOUR "g_behaviour"
@@ -54,8 +56,6 @@
 
 #define TAG_TARGET "g_target"	// General target parameter, usually a unit
 #define TAG_ANIM "g_anim"	// Anim to use in GoalUnitAmbientAnim
-
-#define TAG_BUILDING_POS_ID "g_buildingPosId"
 
 // INTERACTION TARGETS
 #define TAG_TARGET_REPAIR	"g_targetRepait"

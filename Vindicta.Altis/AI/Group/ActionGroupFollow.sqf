@@ -10,7 +10,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET, [grpNull]]] ],	// Required parameters
+			[ [TAG_TARGET, [grpNull]]],	// Required parameters
 			[  ]	// Optional parameters
 		]
 	ENDMETHOD;

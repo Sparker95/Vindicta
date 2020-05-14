@@ -39,7 +39,7 @@ CLASS("GoalUnitScareAway", "Goal")
 		};
 
 		// Lets teach him some manners
-		GET_STATIC_VARIABLE(_thisClass, "relevance");
+		GETSV(_thisClass, "relevance");
 	ENDMETHOD;
 
 	STATIC_METHOD(onGoalChosen)

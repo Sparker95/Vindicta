@@ -65,6 +65,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 				//if (!(_hO getUnitTrait "engineer")) then {
 					[_hVeh] call AI_misc_fnc_repairWithoutEngineer; // Will do partial repairs of vehicle
 				//};
+				CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};

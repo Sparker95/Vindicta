@@ -379,7 +379,7 @@ CLASS("AI_GOAP", "AI")
 						OOP_ERROR_1("Current WS: %1", [_wsCurr] call ws_toString);
 						OOP_ERROR_1("Goal WS: %1", [_wsGoal] call ws_toString);
 
-						CALLSM3(_goalClassName, "onPlanFailed", _thisObject, _goalParametersCopy);
+						CALLSM2(_goalClassName, "onPlanFailed", _thisObject, _goalParametersCopy);
 					};
 				};
 

@@ -101,7 +101,7 @@ CLASS("ActionUnitScareAway", "Action")
 		_wf = CALLM(_AI, "findWorldFact", [_wf]);
 		
 		if(isnil "_wf" || {_oh distance _target > 10})exitWith{
-			T_CALLM("terminate", []);
+			CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};

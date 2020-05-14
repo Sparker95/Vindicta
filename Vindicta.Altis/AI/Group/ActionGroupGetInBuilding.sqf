@@ -18,7 +18,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET, [objNull]]] ],	// Required parameters
+			[ [TAG_TARGET, [objNull]]],	// Required parameters
 			[  ]	// Optional parameters
 		]
 	ENDMETHOD;

@@ -72,6 +72,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _count = _oh ammo primaryWeapon _oh;
 
 		if (_count < _oldCount - 1) exitWith {
+			CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -81,6 +82,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _posTarget = getPos _target;
 
 		if (IS_ARRESTED_UNCONSCIOUS_DEAD(_target)) exitWith {
+			CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -127,6 +129,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 				ACTION_STATE_ACTIVE
 			} else {				
 				if (scriptDone T_GETV("spawnHandle")) then {
+					CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 					ACTION_STATE_COMPLETED
 				} else {
 					ACTION_STATE_ACTIVE

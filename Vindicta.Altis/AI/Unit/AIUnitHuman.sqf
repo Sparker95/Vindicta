@@ -20,6 +20,7 @@ CLASS("AIUnitHuman", "AIUnit")
 
 	// Position assignment variables
 	VARIABLE("moveTarget");
+	VARIABLE("moveBuildingPosID");
 	VARIABLE("moveRadius");	// Radius for movement completion
 
 	#ifdef DEBUG_GOAL_MARKERS
@@ -49,9 +50,9 @@ CLASS("AIUnitHuman", "AIUnit")
 
 		// Init target pos variables
 		pr _targetPos = [0,0,0]; // Something completely not here
-		T_SETV("targetPosAGL", _targetPos);
+		T_SETV("moveTarget", _targetPos);
 		T_SETV("moveRadius", -1);
-		T_SETV("targetObject", objNull);
+		T_SETV("moveBuildingPosID", -1);
 
 
 		//T_SETV("worldState", _ws);
@@ -114,6 +115,21 @@ CLASS("AIUnitHuman", "AIUnit")
 							]) then {
 				_newParameters pushBack [TAG_TARGET_OBJECT, _value];
 				_moveTarget = _value;
+			};
+
+			// If goal implies some interaction,
+			// reset 'has interacted' flag
+			// so that planner chooses the interaction action
+			if (_tag in [
+					TAG_TARGET_REPAIR,
+					TAG_TARGET_ARREST,
+					TAG_TARGET_SALUTE,
+					TAG_TARGET_SCARE_AWAY,
+					TAG_TARGET_AMBIENT_ANIM,
+					TAG_TARGET_SHOOT_RANGE,
+					TAG_TARGET_SHOOT_LEG
+			]) then {
+				T_CALLM1("setHasInteractedWSP", false);
 			};
 		} forEach _goalParameters;
 
@@ -617,7 +633,15 @@ CLASS("AIUnitHuman", "AIUnit")
 		pr _ws = T_GETV("worldState");
 		WS_SET(_ws, WSP_UNIT_HUMAN_VEHICLE_ALLOWED, _enable);
 	ENDMETHOD;
-	
+
+	// Sets WSP_UNIT_HUMAN_HAS_INTERACTED to some value
+	// Default value is true!
+	METHOD(setHasInteractedWSP)
+		params [P_THISOBJECT, ["_value", true, [true]]];
+		pr _ws = T_GETV("worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_HAS_INTERACTED, true);
+	ENDMETHOD;
+
 	// Updates vehicle world state properties
 	METHOD(updateVehicleWSP)
 		params [P_THISOBJECT];
@@ -727,6 +751,8 @@ CLASS("AIUnitHuman", "AIUnit")
 
 		pr _target = T_GETV("moveTarget");
 		pr _ws = T_GETV("worldState");
+
+		// Bail if nothing is assigned
 		if (_target isEqualType 0) exitWith {
 			WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, false);
 		};
@@ -737,8 +763,16 @@ CLASS("AIUnitHuman", "AIUnit")
 		};
 
 		if (_target isEqualType objNull) exitWith {
-			pr _value = (T_GETV("hO") distance _target) <= T_GETV("moveRadius");
-			WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
+			pr _buildingPosID = T_GETV("moveBuildingPosID");
+			if (_buildingPosID == -1) then {	// If target is not building
+				pr _value = (T_GETV("hO") distance _target) <= T_GETV("moveRadius");
+				WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
+			} else {
+				pr _hO = T_GETV("hO");			// If target is building
+				pr _actualPosition = _hO buildingPos _buildingPosID;
+				pr _value = (_hO distance _actualPosition) <= T_GETV("moveRadius");
+				WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
+			};
 		};
 
 		if (_target isEqualType NULL_OBJECT) exitWith {
@@ -774,9 +808,18 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_SETV("moveTarget", _obj);
 	ENDMETHOD;*/
 
+	// For object, unit, position
 	METHOD(setMoveTarget)
 		params [P_THISOBJECT, P_DYNAMIC("_target")];
 		T_SETV("moveTarget", _target);
+		T_SETV("moveBuildingPosID", -1);
+	ENDMETHOD;
+
+	// For building with building pos ID
+	METHOD(setMoveTargetBuilding)
+		params [P_THISOBJECT, P_OBJECT("_building"), P_NUMBER("_posid")];
+		T_SETV("moveTarget", _building);
+		T_SETV("moveBuildingPosID", _posID);
 	ENDMETHOD;
 
 	METHOD(setMoveTargetRadius)
@@ -789,6 +832,72 @@ CLASS("AIUnitHuman", "AIUnit")
 		params [P_THISOBJECT];
 		T_SETV("moveTarget", 0);
 		T_SETV("moveRadius", -1);
+	ENDMETHOD;
+
+	// Returns AGL position of move target
+	METHOD(getMoveTargetPosAGL)
+		params [P_THISOBJECT];
+
+		pr _target = T_GETV("moveTarget");
+
+		// Bail if nothing is assigned
+		if (_target isEqualType 0) exitWith {
+			OOP_ERROR_0("Move target is not assigned!");
+			[0,0,0];
+		};
+
+		if (_target isEqualType []) exitWith {
+			getPos _target;
+		};
+
+		if (_target isEqualType objNull) exitWith {
+			pr _buildingPosID = T_GETV("moveBuildingPosID");
+			if (_buildingPosID == -1) then {	// If target is not building
+				getPos _target;
+			} else {
+				pr _actualPosition = _hO buildingPos _buildingPosID;
+				_actualPosition;
+			};
+		};
+
+		if (_target isEqualType NULL_OBJECT) exitWith {
+			if (IS_OOP_OBJECT(_target)) then {
+				pr _targetObjHandle = CALLM0(_target, "getObjectHandle");
+				if (isNull _targetObjHandle) then {
+					OOP_ERROR_1("Object handle of OOP object %1 is null!", _target);
+					[0,0,0]; // Error!
+				} else {
+					getPos _targetObjHandle;
+				};
+			} else {
+				OOP_ERROR_1("Target is an invalid OOP object: %1", _target);
+				[0,0,0]; // Error WTF!
+			};
+		};
+	ENDMETHOD;
+
+	// Teleports the unit to destination
+	METHOD(instantMoveToTarget)
+		params [P_THISOBJECT];
+
+		pr _destPos = T_CALLM0(getMoveTargetPosAGL);
+		pr _hO = T_GETV("hO");
+		if (!(_destPos isEqualTo [0,0,0])) then {
+			_hO setPos _destPos;
+		};
+	ENDMETHOD;
+
+	METHOD(orderMoveToTarget)
+		params [P_THISOBJECT];
+		pr _destPos = T_CALLM0(getMoveTargetPosAGL);
+		if (!(_destPos isEqualTo [0,0,0])) then {
+			pr _hO = T_GETV("hO");
+			if (GET_AGENT_FLAG(_hO)) then {
+				_hO setDestination [_destPos,"LEADER PLANNED",true];
+			} else {
+				_hO doMove _destPos;
+			};
+		};
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
