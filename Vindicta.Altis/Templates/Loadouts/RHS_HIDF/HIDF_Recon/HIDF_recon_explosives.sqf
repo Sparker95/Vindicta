@@ -16,7 +16,7 @@ this forceaddUniform "rhs_uniform_bdu_erdl";
 this addBackpack "B_AssaultPack_rgr";
 
 this addWeapon "rhs_weap_m3a1_specops";
-this addPrimaryWeaponItem "rhsusf_acc_T1_high";
+this addPrimaryWeaponItem "rhsgref_acc_RX01_NoFilter_camo";
 this addPrimaryWeaponItem "rhsgref_30rnd_1143x23_M1T_2mag_SMG";
 this addWeapon "rhsusf_weap_m9";
 this addHandgunItem "rhsusf_mag_15Rnd_9x19_JHP";
