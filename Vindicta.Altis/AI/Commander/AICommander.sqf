@@ -2639,6 +2639,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		_actions
 	ENDMETHOD;
+	
+	#define VEHICLE_STOCK_FN(_progress, _rate) (0 max (_rate * (_progress ^ _rate)))
 
 	/*
 	Method: updateExternalReinforcement
@@ -2735,10 +2737,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		{
 			private _type = CALLM0(_x, "getType");
 			private _add = 0;
-			if (_type == LOCATION_TYPE_AIRPORT) then { _add = 6+10*_progressScaled; };
-			if (_type == LOCATION_TYPE_OUTPOST) then { _add = 1+3*_progressScaled; };
-			if (_type == LOCATION_TYPE_BASE) then { _add = 4+5*_progressScaled; };
-			if (_type == LOCATION_TYPE_CITY) then { _add = 1 + 1*_progressScaled; };
+			if (_type == LOCATION_TYPE_AIRPORT) then { _add = 6 + 10 * _progressScaled; };
+			if (_type == LOCATION_TYPE_OUTPOST) then { _add = 1 + 3 * _progressScaled; };
+			if (_type == LOCATION_TYPE_BASE) 	then { _add = 4 + 5 * _progressScaled; };
+			if (_type == LOCATION_TYPE_CITY) 	then { _add = 1 + 1 * _progressScaled; };
 			_armorRequiredAll = _armorRequiredAll + _add;
 		} forEach _desiredLocations;
 
@@ -2785,31 +2787,44 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Locations that we can reinforce with air units
-		private _airReinfInfo = _reinfLocations apply {
-			private _locModel = _x;
-			private _loc = GETV(_locModel, "actual");
+		private _airReinfInfo = _reinfLocations select {
+			GETV(_x, "type") == LOCATION_TYPE_AIRPORT
+		} apply {
+			private _loc = GETV(_x, "actual");
+
 			private _airGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_AIR);
-			if(count _airGarrisons > 0) then {
-				private _nHeli = 0;
-				private _nPlane = 0;
-				// We want to include all garrisons that consider this location home, not just the one at the location currently
-				// (i.e. QRFs, attacks, convoys etc, that may return again)
-				{
-					_nHeli = _nHeli + CALLM1(_x, "countUnits", T_PL_helicopters);
-					_nPlane = _nPlane + CALLM1(_x, "countUnits", T_PL_planes);
-				} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_AIR);
-				private _nHeliMax = CALLM0(_loc, "getCapacityHeli");
-				private _nPlaneMax = 2; // TODO: better number
-				[
-					_airGarrisons # 0,
-					_nHeliMax - _nHeli,
-					_nPlaneMax - _nPlane
-				]
+
+			// Create air garrison if it doesn't exist, we already have a 
+			private _airGarr = if(count _airGarrisons == 0) then {
+				private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
+				private _args = [GARRISON_TYPE_AIR, _side, [], "military", _templateName];
+				private _gar = NEW("Garrison", _args);
+				CALLM1(_gar, "setLocation", _loc);
+				CALLM0(_gar, "activate");
+				_gar
 			} else {
-				[]
+				_airGarrisons # 0
 			};
-		} select {
-			!(_x isEqualTo [])
+
+			private _nHeli = 0;
+			private _nPlane = 0;
+
+			// We want to include all garrisons that consider this location home, not just the one at the location currently
+			// (i.e. QRFs, attacks, convoys etc, that may return again)
+			{
+				_nHeli = _nHeli + CALLM1(_x, "countUnits", T_PL_helicopters);
+				_nPlane = _nPlane + CALLM1(_x, "countUnits", T_PL_planes);
+			} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_AIR);
+
+			private _nHeliSpace = CALLM0(_loc, "getCapacityHeli");
+			private _nPlaneSpace = CALLM0(_loc, "getCapacityPlane");
+			private _nHeliMax = ceil (_nHeliSpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
+			private _nPlaneMax = ceil (_nPlaneSpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
+			[
+				_airGarr,
+				CLAMP(_nHeliMax, 0, _nHeliSpace) - _nHeli,
+				CLAMP(_nPlaneMax, 0, _nPlaneSpace) - _nPlane
+			]
 		};
 
 		// Add air
