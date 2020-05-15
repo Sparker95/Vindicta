@@ -1,5 +1,5 @@
 #define OOP_ERROR
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 /*
 Executed in unscheduled when ACE Cargo is unloaded

@@ -1,6 +1,6 @@
 #include "..\AI\Commander\AICommander.hpp"
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 // Development of the new unit allocator algorithm
 

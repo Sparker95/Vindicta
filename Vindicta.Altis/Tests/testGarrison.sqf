@@ -1,8 +1,8 @@
-#include "OOP_Light\OOP_Light.h"
+#include "common.h"
 
 [] spawn {
 	private _group = NEW("Group", [WEST]);
-	private _garrison = NEW("Garrison", [WEST]);
+	private _garrison = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	CALLM(_garrison, "setName", ["noname"]);
 	private _n = 10;
 	for "_i" from 0 to _n do {

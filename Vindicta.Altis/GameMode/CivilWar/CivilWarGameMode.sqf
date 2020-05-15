@@ -26,6 +26,7 @@ A game mode that models the progress of a civil war from scratch. It moves
 through a set of phases that vary the options available to the players, and the 
 reactions of the enemy.
 */
+#define OOP_CLASS_NAME CivilWarGameMode
 CLASS("CivilWarGameMode", "GameModeBase")
 	// Gameplay phase: progresses forward from 1 to 5 only
 	VARIABLE_ATTR("phase", [ATTR_SAVE]);
@@ -40,7 +41,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	// Campaign progress cached value
 	VARIABLE("campaignProgress");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("name", "CivilWar");
 		T_SETV("spawningEnabled", false);
@@ -53,14 +54,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			T_PUBLIC_VAR("casualties");
 			T_PUBLIC_VAR("campaignProgress");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("startCommanders") {
+	/* virtual */ METHOD(startCommanders)
 		_this spawn {
 			params [P_THISOBJECT];
 			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
@@ -73,10 +74,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
 			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Creates gameModeData of a location
-	/* protected override */	METHOD("initLocationGameModeData") {
+	/* protected override */	METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		private _type = CALLM0(_loc, "getType");
 		switch (_type) do {
@@ -105,10 +106,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		// Return
 		CALLM0(_loc, "getGameModeData")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides GameModeBase, we give only bases and police stations to enemy to start with
-	/* protected override */ METHOD("getLocationOwner") {
+	/* protected override */ METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 
@@ -129,15 +130,15 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				CIVILIAN
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ /* METHOD("preInitAll") {
+	/* protected virtual */ /* METHOD(preInitAll)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 	// Overrides GameModeBase, we do a bunch of custom setup here for this game mode
-	/* protected override */ METHOD("initServerOnly") {
+	/* protected override */ METHOD(initServerOnly)
 		params [P_THISOBJECT];
 
 		// Call base
@@ -200,10 +201,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		};
 		T_SETV("spawnPoints", _spawnPoints);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to add some debug menu items on the clients
-	/* protected virtual */ METHOD("initClientOnly") {
+	/* protected virtual */ METHOD(initClientOnly)
 		params [P_THISOBJECT];
 
 		CALL_CLASS_METHOD("GameModeBase", _thisObject, "initClientOnly", []);
@@ -251,10 +252,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
 			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to give the player some starter gear and holster their weapon for them.
-	/* protected override */ METHOD("playerSpawn") {
+	/* protected override */ METHOD(playerSpawn)
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		// Bail if player has joined one of the not supported sides
@@ -288,9 +289,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			player addItemToUniform "ACE_key_lockpick";
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("update") {
+	/* protected override */ METHOD(update)
 		params [P_THISOBJECT];
 		
 		T_CALLM("updateCampaignProgress", []);
@@ -310,9 +311,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			CALLM(_cityData, "update", [_city ARG _dt]);
 		} forEach T_GETV("activeCities");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateCampaignProgress") {
+	METHOD(updateCampaignProgress)
 		params [P_THISOBJECT];
 		private _totalInstability = 0;
 		private _maxInstability = 1;
@@ -329,9 +330,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// Hits 0.2 when _stabRatio is 0.05 and 1 when _stabRatio is 0.8
 		//private _campaignProgress = 1 min (0.9 * log(15 * _stabRatio + 1));
 		T_SETV_PUBLIC("campaignProgress", _stabRatio);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("updatePhase") {
+	METHOD(updatePhase)
 		params [P_THISOBJECT];
 
 		private _activeCities = T_GETV("activeCities");
@@ -400,9 +401,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				// Phase continues until the end...
 			};
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateEndCondition") {
+	METHOD(updateEndCondition)
 		params [P_THISOBJECT];
 
 		pr _airports = CALLSM0("Location", "getAll") select {
@@ -450,10 +451,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			} remoteExecCall ["spawn", ON_CLIENTS];
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to spawn missions etc in some locations
-	/* protected override */ METHOD("locationSpawned") {
+	/* protected override */ METHOD(locationSpawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
 		private _activeCities = T_GETV("activeCities");
@@ -461,10 +462,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _cityData = GETV(_location, "gameModeData");
 			CALLM(_cityData, "spawned", [_location]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to despawn missions etc in some locations
-	/* protected override */ METHOD("locationDespawned") {
+	/* protected override */ METHOD(locationDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
 		private _activeCities = T_GETV("activeCities");
@@ -472,10 +473,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _cityData = GETV(_location, "gameModeData");
 			CALLM(_cityData, "despawned", [_location]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called in the main thread!
-	/* override */ METHOD("unitDestroyed") {
+	/* override */ METHOD(unitDestroyed)
 		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
 		pr _valueToAdd = 0;
 		if (_catID == T_INF) then {
@@ -499,16 +500,16 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		_casualties = _casualties + _valueToAdd;
 		T_SETV("casualties", _casualties);
 		PUBLIC_VAR(_thisObject, "casualties");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
-	METHOD("getRecruitmentRadius") {
+	METHOD(getRecruitmentRadius)
 		params [P_THISOBJECT];
 		2000
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns an array of cities where we can recruit from
-	METHOD("getRecruitCities") {
+	METHOD(getRecruitCities)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		private _radius = T_CALLM0("getRecruitmentRadius");
 
@@ -519,10 +520,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		};
 
 		_cities
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
-	METHOD("getRecruitCount") {
+	METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 
 		private _sum = 0;
@@ -532,9 +533,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		} forEach _cities;
 
 		_sum
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("getCampaignProgress") {
+	/* protected virtual */ METHOD(getCampaignProgress)
 		params [P_THISOBJECT];
 		#ifdef DEBUG_END_GAME
 		0.9
@@ -542,19 +543,19 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_GETV("campaignProgress");
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public virtual override*/ METHOD("getPlayerSide") {
+	/* public virtual override*/ METHOD(getPlayerSide)
 		FRIENDLY_SIDE // from common.hpp
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public virtual */ METHOD("getEnemySide") {
+	/* public virtual */ METHOD(getEnemySide)
 		ENEMY_SIDE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// STORAGE
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -566,7 +567,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_CALLM0("updateCampaignProgress");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -574,6 +575,7 @@ ENDCLASS;
 Class: CivilWarCityData
 City data specific to this game mode.
 */
+#define OOP_CLASS_NAME CivilWarCityData
 CLASS("CivilWarCityData", "CivilWarLocationData")
 	// City state (stable, agitated, in revolt, suppressed, liberated)
 	VARIABLE_ATTR("state", [ATTR_SAVE]);
@@ -586,7 +588,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	// Map UI info
 	VARIABLE("mapUIInfo");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
@@ -599,9 +601,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			T_PUBLIC_VAR("nRecruits");
 			T_PUBLIC_VAR("mapUIInfo");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("spawned") {
+	METHOD(spawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -618,9 +620,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		// It's quite confusing so I have disabled it for now, sorry
 		_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED ARG CITY_STATE_IN_REVOLT]]));
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("despawned") {
+	METHOD(despawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -631,9 +633,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			DELETE(_x);
 		} forEach _ambientMissions;
 		T_SETV("ambientMissions", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_NUMBER("_dt")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 		private _state = T_GETV("state");
@@ -745,15 +747,15 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		{
 			CALLM(_x, "update", [_city]);
 		} forEach _ambientMissions;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("getMaxRecruits") {
+	METHOD(getMaxRecruits)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Get the recruitment rate per hour
-	METHOD("getRecruitmentRate") {
+	METHOD(getRecruitmentRate)
 		private _rate = 0;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_city")];
@@ -767,10 +769,10 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_rate = 0 max (_instability * _nRecruitsMax * _garrisonedMult / 2);
 		};
 		_rate
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Add/remove recruits
-	METHOD("addRecruits") {
+	METHOD(addRecruits)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_NUMBER("_amount")];
 			private _n = T_GETV("nRecruits");
@@ -778,9 +780,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_n = ((_n + _amount) max 0) min _nRecruitsMax;
 			T_SETV_PUBLIC("nRecruits", _n);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("removeRecruits") {
+	METHOD(removeRecruits)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_NUMBER("_amount")];
 
@@ -788,18 +790,18 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_n = (_n - _amount) max 0;
 			T_SETV_PUBLIC("nRecruits", _n);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getRecruitCount") {
+	METHOD(getRecruitCount)
 		private _return = 0;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
 			_return = floor T_GETV("nRecruits");
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual override */ METHOD("updatePlayerRespawn") {
+	/* virtual override */ METHOD(updatePlayerRespawn)
 		params [P_THISOBJECT];
 
 		// Player respawn is enabled in a city which has non-city locations nearby with enabled player respawn
@@ -814,9 +816,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			pr _enable = (_index != -1) || _forceEnable;
 			CALLM2(_loc, "enablePlayerRespawn", _side, _enable);
 		} forEach [WEST, EAST, INDEPENDENT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual override */ METHOD("getMapInfoEntries") {
+	/* virtual override */ METHOD(getMapInfoEntries)
 		private _return = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -824,10 +826,10 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_return = +_mapUIInfo;
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides the location name
-	/* virtual override */ METHOD("getDisplayName") {
+	/* virtual override */ METHOD(getDisplayName)
 		private _return = objNull;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -838,10 +840,10 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_return = format["%1 (%2)", _baseName, _stateData#0];
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides the location color
-	/* virtual override */ METHOD("getDisplayColor") {
+	/* virtual override */ METHOD(getDisplayColor)
 		private _return = [1,1,1,1];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -850,10 +852,10 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_return = _stateData#1;
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 	// STORAGE
 
-	METHOD("postDeserialize") {
+	METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -869,7 +871,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		T_PUBLIC_VAR("mapUIInfo");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -877,18 +879,19 @@ ENDCLASS;
 Class: CivilWarPoliceStationData
 Police station data specific to this game mode.
 */
+#define OOP_CLASS_NAME CivilWarPoliceStationData
 CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 	// If a reinforcement regiment is on the way then it goes here. We ref count it ourselves as well
 	// so it doesn't get deleted until we are done with it.
 	VARIABLE_ATTR("reinfGarrison", [ATTR_REFCOUNTED]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_policeStation"), P_NUMBER("_cityState")];
 		ASSERT_OBJECT_CLASS(_policeStation, "Location");
 
@@ -928,7 +931,8 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				// Ensure that the found position is far enough from the location which is being reinforced
 				if (_spawnInPos distance2D _locPos > 900) then {
 					// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-					private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG LOCATION_TYPE_POLICE_STATION ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
+					private _args = ["police", LOCATION_TYPE_POLICE_STATION, _side, _cInf, _cVehGround, 0, 0, 0];
+					private _newGarrison = CALLM(gGameMode, "createGarrison", _args);
 					T_SETV_REF("reinfGarrison", _newGarrison);
 
 					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
@@ -940,11 +944,11 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				};
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// STORAGE
 
-	METHOD("postDeserialize") {
+	METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -953,5 +957,5 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

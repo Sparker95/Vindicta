@@ -2,22 +2,23 @@
 
 // Class: ActionGroup.ActionGroupWatchPosition
 
+#define OOP_CLASS_NAME ActionGroupWatchPosition
 CLASS("ActionGroupWatchPosition", "ActionGroup")
 	VARIABLE("pos");
 	VARIABLE("radius");
 	VARIABLE("nextLookTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		private _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", ZERO_HEIGHT(_pos));
 		private _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS, 100);
 		T_SETV("radius", _radius);
 		T_SETV("nextLookTime", GAME_TIME);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLM0("clearWaypoints");
@@ -40,10 +41,10 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		private _state = T_CALLM0("activateIfInactive");
@@ -67,15 +68,15 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 			T_SETV("nextLookTime",  _nextLookTime);
 		};
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		private _hG = T_GETV("hG");
 
 		// All stop watching position
 		units _hG doWatch objNull;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

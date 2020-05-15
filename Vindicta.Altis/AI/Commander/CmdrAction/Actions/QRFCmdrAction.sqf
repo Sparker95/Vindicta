@@ -1,5 +1,11 @@
 #include "common.hpp"
 
+#ifdef _SQF_VM
+#undef DEBUG_AIR_QRF
+#endif
+
+FIX_LINE_NUMBERS()
+
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.QRFCmdrAction
 
@@ -9,8 +15,8 @@ to attack the cluster using the garrison.
 
 Parent: <AttackCmdrAction>
 */
-#define pr private
 
+#define OOP_CLASS_NAME QRFCmdrAction
 CLASS("QRFCmdrAction", "AttackCmdrAction")
 	// The target cluster model ID
 	VARIABLE_ATTR("tgtClusterId", [ATTR_SAVE]);
@@ -24,17 +30,17 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the QRF detachment.
 		_tgtClusterId - Number, <Model.ClusterModel> id to attack.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtClusterId")];
 
 		T_SETV("tgtClusterId", _tgtClusterId);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_CLUSTER ARG _tgtClusterId]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Create the intel object for this action
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -44,8 +50,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Created lazily here on the first call to update it. This ensures we only
 		// create intel objects for actions that are active rather than merely proposed.
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
-		if(_intelNotCreated) then
-		{
+		if(_intelNotCreated) then {
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionAttack", []);
 
@@ -92,10 +97,10 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM0(_intelClone, "updateInDb");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Update score for this action
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -122,11 +127,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Set up flags for allocation algorithm
 		private _allocationFlags = [
-			  SPLIT_VALIDATE_ATTACK
-			, SPLIT_VALIDATE_CREW
+			SPLIT_VALIDATE_ATTACK,
+			SPLIT_VALIDATE_CREW
 		];
 
-		#ifdef DEBUG_BIG_QRF
+#ifdef DEBUG_BIG_QRF
 		// Make sure we allocate a lot of inf
 		_allocationFlags pushBack SPLIT_VALIDATE_CREW_EXT;
 
@@ -135,7 +140,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		_enemyEff set[T_EFF_medium, 6];
 		_enemyEff set[T_EFF_armor, 6];
 		_enemyEff set[T_EFF_crew, 24];
-		#else
+#else
 		private _enemyEff = +GETV(_tgtCluster, "efficiency");
 		// Scale enemy efficiency
 		private _scaleFactor = (CALLM1(_worldNow, "calcActivityMultiplier", _tgtClusterPos)) max 1.3;
@@ -143,23 +148,21 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		if ((_enemyEff#T_eff_soft) > 0) then {
 			_enemyEff set [T_EFF_soft, (_enemyEff#T_eff_soft) max 6];	// Set min amount of attack force
 		};
-		#endif
+#endif
 		FIX_LINE_NUMBERS()
 
 		// Bail if the garrison clearly can not destroy the enemy
-		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+		if (count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
+		private _srcType = GETV(_srcGarr, "type");
+
 		private _needTransport = false;
+
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
-		#ifndef _SQF_VM
-		pr _dist = _tgtClusterPos distance2D _srcGarrPos;
-		#else
-		pr _dist = _tgtClusterPos distance _srcGarrPos;
-		#endif
-		FIX_LINE_NUMBERS()
+		private _dist = _tgtClusterPos DISTANCE_2D _srcGarrPos;
 
 		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
@@ -167,18 +170,36 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		};
 
 		// Try to allocate units
-		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
-		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
-		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
-		pr _transportBlacklistMask = [];
-		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+		private _allocResult = switch _srcType do {
+#ifndef DEBUG_AIR_QRF
+			case GARRISON_TYPE_GENERAL: {
+				private _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+				private _transportBlacklistMask = [];
+				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask];
-		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+				CALLSM("GarrisonModel", "allocateUnits", _args)
+			};
+#endif
+			FIX_LINE_NUMBERS()
+			case GARRISON_TYPE_AIR: {
+				private _payloadWhitelistMask = T_comp_air_mask;
+				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+				private _transportBlacklistMask = [];
+				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+				CALLSM("GarrisonModel", "allocateUnits", _args)
+			};
+			default { [] };
+		};
 
 		// Bail if we have failed to allocate resources
-		if ((count _allocResult) == 0) exitWith {
-			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
+		if (count _allocResult == 0) exitWith {
+			// OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
@@ -187,7 +208,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Bail if remaining efficiency is below minimum level for this garrison
 		/*
 		// Disabled those for now, probably we want QRFs to be quite aggressive
-		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		private _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
 			T_CALLM1("setScore", ZERO_SCORE);
@@ -214,9 +235,27 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Take the sum of the attack part of the efficiency vector.
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
 
+		// Air units prefer to attack higher threat targets only
+		if(_srcType == GARRISON_TYPE_AIR) then {
+			// Air garrison likes to attack armor, and hates AA
+			// This equation will apply a weighting to the enemy efficiency and then calculate its modified strength.
+			// The ration of the original strength to modified is used as a coefficient to calculate our own adjusted strength.
+			// It means our adjusted strength goes up a lot against armor and down a lot against AA, resulting in scoring 
+			// doing the same.
+			//											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
+			#define AIR_GARRISON_EFF_PROFILE 			[0.5,	1.5,	3,		1,		1,		1,		1,		-3,		1,		1,		1,		1,		1,		1]
+			private _enemyStr = EFF_SUM(_enemyEff);
+			if(_enemyStr > 0) then {
+				private _modifiedEnemyEff = EFF_MUL(_enemyEff, AIR_GARRISON_EFF_PROFILE);
+				private _strengthScalar = EFF_SUM(_modifiedEnemyEff) / _enemyStr;
+				_detachEffStrength = _detachEffStrength * CLAMP_POSITIVE(_strengthScalar);
+			};
+		};
+
 		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]);
-		_distCoeff = _distCoeff ^ 1.5; // Make it decrease with distance faster
+		// Air units care about distance a lot less though.
+		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.1 } else { 4 };
+		private _distCoeff = CALLSM3("CmdrAction", "calcDistanceFalloff", _srcGarrPos, _tgtClusterPos, _fallOffRate);
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
@@ -242,12 +281,12 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		OOP_INFO_MSG(_str, []);
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 
 	// This is the min of what src has spare and what tgt wants.
 	// TODO: factor out logic for working out detachments for various situations
-	/* private */ METHOD("getDetachmentEff") {
+	/* private */ METHOD(getDetachmentEff)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -283,7 +322,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		//if(_effAvailable#0 < MIN_COMP#0 or _effAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_effAvailable
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -293,7 +332,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -313,7 +352,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

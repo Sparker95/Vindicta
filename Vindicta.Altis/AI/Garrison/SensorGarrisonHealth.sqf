@@ -8,6 +8,7 @@ Author: Sparker 08.11.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME SensorGarrisonHealth
 CLASS("SensorGarrisonHealth", "SensorGarrison")
 
 	// ----------------------------------------------------------------------
@@ -15,7 +16,7 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		params [P_THISOBJECT];
 		
 		// Bail if not spawned
@@ -60,18 +61,18 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 			*/
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getUpdateInterval") {
+	/* virtual */ METHOD(getUpdateInterval)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
 		[60, 14] select CALLM0(_gar, "isSpawned");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

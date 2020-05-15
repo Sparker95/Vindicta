@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 call compile preprocessFileLineNumbers "Intel\PersonalInventory.sqf";
 
 #define pr private

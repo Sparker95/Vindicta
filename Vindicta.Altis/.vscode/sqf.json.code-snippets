@@ -20,7 +20,7 @@
 			"\tMETHOD(\"new\") {",
 			"\t\tparams [P_THISOBJECT];",
 			"\t\t$0",
-			"\t} ENDMETHOD;",
+			"\tENDMETHOD;",
 			"ENDCLASS;"
 		],
 		"description": "New OOP Light CLASS"
@@ -35,10 +35,10 @@
 	"METHOD": {
 		"prefix": "METHOD",
 		"body": [
-			"METHOD(\"$1\") {",
+			"METHOD($1)",
 			"\tparams [P_THISOBJECT];",
 			"\t$0",
-			"} ENDMETHOD;",
+			"ENDMETHOD;",
 			""
 		],
 		"description": "New OOP Light METHOD"
@@ -46,10 +46,10 @@
 	"STATIC_METHOD": {
 		"prefix": "STATIC_METHOD",
 		"body": [
-			"STATIC_METHOD(\"$1\") {",
+			"STATIC_METHOD($1)",
 			"\tparams [P_THISCLASS];",
 			"\t$0",
-			"} ENDMETHOD;",
+			"ENDMETHOD;",
 			""
 		],
 		"description": "New OOP Light STATIC_METHOD"
@@ -78,5 +78,9 @@
 			"*/"
 		],
 		"description": "Document a function"
+	},
+	"FIX_LINE_NUMBERS": {
+		"prefix": "FIX",
+		"body": ["FIX_LINE_NUMBERS()"]
 	}
 }

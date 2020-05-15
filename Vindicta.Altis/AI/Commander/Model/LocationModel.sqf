@@ -5,6 +5,7 @@
 // Model of a Real Location. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Location as it currently is. A Sim model
 // is a copy that is modified during simulations.
+#define OOP_CLASS_NAME LocationModel
 CLASS("LocationModel", "ModelBase")
 	// Location position
 	VARIABLE("pos");
@@ -26,7 +27,7 @@ CLASS("LocationModel", "ModelBase")
 	// Side which has created this place, or CIVILIAN if it was there at the map initially.
 	VARIABLE("sideCreated");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("pos", []);
 		T_SETV("type", "");
@@ -56,9 +57,9 @@ CLASS("LocationModel", "ModelBase")
 
 		// Add self to world
 		CALLM(_world, "addLocation", [_thisObject]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("simCopy") {
+	METHOD(simCopy)
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
 
@@ -85,9 +86,9 @@ CLASS("LocationModel", "ModelBase")
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		SETV(_copy, "sideCreated", T_GETV("sideCreated"));
 		_copy
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("sync") {
+	METHOD(sync)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
@@ -136,15 +137,15 @@ CLASS("LocationModel", "ModelBase")
 		// } else {
 		// 	T_SETV("garrisonId", MODEL_HANDLE_INVALID);
 		// };
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("isEmpty") {
+	METHOD(isEmpty)
 		params [P_THISOBJECT];
 		private _garrisonIds = T_GETV("garrisonIds");
 		count _garrisonIds == 0
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("addGarrison") {
+	METHOD(addGarrison)
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		ASSERT_MSG(GETV(_garrison, "locationId") == MODEL_HANDLE_INVALID, "Garrison is already assigned to another location");
@@ -154,9 +155,9 @@ CLASS("LocationModel", "ModelBase")
 		ASSERT_MSG((_garrisonIds find _garrisonId) == NOT_FOUND, "Garrison already occupying this Location");
 		// ASSERT_MSG(_garrisonId == MODEL_HANDLE_INVALID, "Can't setGarrison if location is already occupied, use clearGarrison first");
 		_garrisonIds pushBack _garrisonId;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getGarrison") {
+	METHOD(getGarrison)
 		params [P_THISOBJECT, P_SIDE("_side")];
 		private _garrisonIds = T_GETV("garrisonIds");
 		private _world = T_GETV("world");
@@ -169,9 +170,9 @@ CLASS("LocationModel", "ModelBase")
 			}
 		} forEach _garrisonIds;
 		_foundGarr
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	METHOD("removeGarrison") {
+	METHOD(removeGarrison)
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		ASSERT_MSG(GETV(_garrison, "locationId") == T_GETV("id"), "Garrison is not assigned to this location");
@@ -182,10 +183,10 @@ CLASS("LocationModel", "ModelBase")
 		_garrisonIds deleteAt _foundIdx;
 		//SETV(_garrison, "locationId", MODEL_HANDLE_INVALID);
 		//T_SETV("garrisonId", MODEL_HANDLE_INVALID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	
-	// METHOD("attachGarrison") {
+	// METHOD(attachGarrison)
 	// 	params [P_THISOBJECT, P_STRING("_garrison"), P_STRING("_outpost")];
 
 	// 	T_CALLM1("detachGarrison", _garrison);
@@ -216,9 +217,9 @@ CLASS("LocationModel", "ModelBase")
 	// 			CALLM1(_outpost, "setSide", _garrSide);
 	// 		};
 	// 	};
-	// } ENDMETHOD;
+	// ENDMETHOD;
 
-	// METHOD("detachGarrison") {
+	// METHOD(detachGarrison)
 	// 	params [P_THISOBJECT, P_STRING("_garrison")];
 	// 	private _oldOutpostId = GETV(_garrison, "outpostId");
 	// 	if(_oldOutpostId != -1) then {
@@ -233,7 +234,7 @@ CLASS("LocationModel", "ModelBase")
 	// 			};
 	// 		};
 	// 	};
-	// } ENDMETHOD;
+	// ENDMETHOD;
 ENDCLASS;
 
 

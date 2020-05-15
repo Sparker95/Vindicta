@@ -6,12 +6,13 @@ CmdrAI garrison retreat from current location to target location.
 TODO: Could this just be a general move action? Perhaps specific behaviours
 apply when retreating that don't for a normal move. Careless mode etc?
 */
+#define OOP_CLASS_NAME RetreatCmdrAction
 CLASS("RetreatCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);
 	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_ARRAY("_target")];
 
 		T_SETV("srcGarrId", _srcGarrId);
@@ -22,9 +23,9 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		// Start date for this action, default to immediate
 		private _startDateVar = T_CALLM1("createVariable", DATE_NOW);
 		T_SETV("startDateVar", _startDateVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
@@ -33,9 +34,9 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		deleteMarker (_thisObject + "_line");
 		deleteMarker (_thisObject + "_label");
 #endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("createTransitions") {
+	/* protected override */ METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -110,9 +111,9 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 
 		[_assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("getLabel") {
+	/* protected override */ METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -137,9 +138,9 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 
 		private _targetName = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetLabel;
 		format ["%1 %2%3 -> %4%5", _thisObject, LABEL(_srcGarr), _srcEff, _targetName, _timeToStart]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-/* protected override */ METHOD("updateIntel") {
+/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -198,9 +199,9 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		if (T_GETV("state") == CMDR_ACTION_STATE_READY_TO_MOVE) then {
 			T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("debugDraw") {
+	/* protected override */ METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -232,6 +233,6 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
 		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 		// };
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

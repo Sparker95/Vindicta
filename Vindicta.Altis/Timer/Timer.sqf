@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Message\Message.hpp"
 #include "Timer.hpp"
 
@@ -19,6 +19,7 @@ private _timer = NEW("Timer", _args);
 Author: Sparker 31.07.2018
 */
 
+#define OOP_CLASS_NAME Timer
 CLASS("Timer", "");
 
 	VARIABLE("data");
@@ -36,7 +37,7 @@ CLASS("Timer", "");
 	_unscheduled - Bool, if true the timer service will call the method directly in unscheduled manner instead of calling "postMessage" 
 	*/
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService"), P_BOOL("_unscheduled")];
 		//diag_log format ["[Timer::New] _this: %1", _this];
 		// Fill the data array
@@ -53,7 +54,7 @@ CLASS("Timer", "");
 		//diag_log format ["[Timer] Info: %1 data: %2, _msgLoop: %3", _thisObject, _data, _msgLoop];
 		// Add this timer to the timer service
 		CALLM(_timerService, "addTimer", [_thisObject]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                            D E L E T E                             |
@@ -63,12 +64,12 @@ CLASS("Timer", "");
 
 	Warning: must be called in scheduled environment, since it called TimerService.removeTimer.
 	*/
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _timerService = _data select TIMER_DATA_ID_TIMER_SERVICE;
 		CALLM(_timerService, "removeTimer", [_thisObject]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                       S E T   I N T E R V A L                      |
@@ -82,12 +83,12 @@ CLASS("Timer", "");
 
 	Returns: nil
 	*/
-	METHOD("setInterval") {
+	METHOD(setInterval)
 		params [P_THISOBJECT, ["_interval", 1, [0]]];
 		private _data = T_GETV("data");
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
 		_data set [TIMER_DATA_ID_TIME_NEXT, PROCESS_TIME+_interval];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   D A T A   A R R A Y                     |
@@ -101,8 +102,8 @@ CLASS("Timer", "");
 
 	Returns: Array, see Timer.hpp
 	*/
-	METHOD("getDataArray") {
+	METHOD(getDataArray)
 		params [P_THISOBJECT];
 		T_GETV("data")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

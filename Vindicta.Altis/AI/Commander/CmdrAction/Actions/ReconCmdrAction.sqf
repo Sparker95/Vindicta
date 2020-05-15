@@ -7,6 +7,7 @@ Should probably involve moving a recon specific detachment to a certain location
 setting up an OP (maybe a dynamic location) and then remaining for a certain 
 amount of time (retreating if discovered?).
 */
+#define OOP_CLASS_NAME ReconCmdrAction
 CLASS("ReconCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	// Actual position we are interested in
@@ -18,7 +19,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_SAVE]);
 	VARIABLE_ATTR("startDateVar", [ATTR_SAVE]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_POSITION("_position")];
 
 		T_SETV("srcGarrId", _srcGarrId);
@@ -40,9 +41,9 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		// Flags to use when splitting off the detachment garrison		
 		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG RECON_FORCE_HINT]]);
 		T_SETV("splitFlagsVar", _splitFlagsVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
@@ -51,9 +52,9 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		deleteMarker (_thisObject + "_line");
 		deleteMarker (_thisObject + "_label");
 #endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("createTransitions") {
+	/* protected override */ METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -131,9 +132,9 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 
 		[_splitAST, _assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("getLabel") {
+	/* protected override */ METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -165,9 +166,9 @@ CLASS("ReconCmdrAction", "CmdrAction")
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
 			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateIntelFromDetachment") {
+	METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
@@ -189,9 +190,9 @@ CLASS("ReconCmdrAction", "CmdrAction")
 				T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("debugDraw") {
+	/* protected override */ METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -221,6 +222,6 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
 		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 		// };
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

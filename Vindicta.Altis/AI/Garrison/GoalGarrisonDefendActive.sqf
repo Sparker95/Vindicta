@@ -4,16 +4,19 @@
 // Garrison will be in defensive posture.
 // High priority action.
 // Only allowed when garrison is alerted (known targets).
+#define OOP_CLASS_NAME GoalGarrisonDefendActive
 CLASS("GoalGarrisonDefendActive", "Goal")
-	STATIC_METHOD("calculateRelevance") {
+	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Check if the garrison knows about any enemies
-		if (CALLM0(_AI, "isSpawned") && { CALLM0(_AI, "isAlerted") }) then {
+		if (CALLM0(_AI, "isSpawned") 
+		&& { CALLM0(_AI, "isAlerted") }
+		) then {
 			GET_STATIC_VAR(_thisClass, "relevance")
 		} else {
 			0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

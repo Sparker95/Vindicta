@@ -1,5 +1,5 @@
 // Add controls to the map
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "ClientMapUI\ClientMapUI_Macros.h"
 #include "InGameUI\InGameUI_Macros.h"
 #include "defineddikcodes.inc"

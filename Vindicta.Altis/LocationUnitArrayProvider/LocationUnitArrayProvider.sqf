@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Message\Message.hpp"
 
 /*
@@ -7,6 +7,7 @@ This object calculates arrays with units which can spawn locations of different 
 Calculating these arrays is a resource-consuming and it must not be performed very often, that's why we need a separate object for this.
 */
 
+#define OOP_CLASS_NAME LocationUnitArrayProvider
 CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
 	VARIABLE("spawnWest"); // These units can spawn West locations
@@ -18,7 +19,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	/*
 	Method: New
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		if (isNil "gMessageLoopMain") exitWith {"[LocationUnitArrayProvider] Error: global location message loop doesn't exist!";};
@@ -33,29 +34,29 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 		private _args = [_thisObject, 3.5, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                            D E L E T E
 	/*
 	Method: Delete
 	*/
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		DELETE(T_GETV("timer"));
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                  G E T   M E S S A G E   L O O P
-	METHOD("getMessageLoop") { //Derived classes must implement this method
+	METHOD(getMessageLoop) //Derived classes must implement this method
 		gMessageLoopMain
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                     H A N D L E   M E S S A G E
 
-	METHOD("handleMessage") { //Derived classes must implement this method
+	METHOD(handleMessage) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		//diag_log "[LocationunitArrayProvider] Info: calculating arrays...";
 		// It supports only one kind of messages now
@@ -70,7 +71,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 		T_SETV("spawnWest", _spawnWest);
 		T_SETV("spawnEast", _spawnEast);
 		T_SETV("spawnInd", _spawnInd);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// |                    G E T   U N I T   A R R A Y
@@ -84,7 +85,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
 	Returns: Array with object handles of objects that can spawn locations of given side
 	*/
-	METHOD("getUnitArray") {
+	METHOD(getUnitArray)
 		params [P_THISOBJECT, ["_side", WEST, [WEST]] ];
 		switch (_side) do {
 			case WEST: {T_GETV("spawnWest")};
@@ -93,6 +94,6 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 			case CIVILIAN: {allPlayers - entities "HeadlessClient_F";};//returns just players
 			default {[]};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

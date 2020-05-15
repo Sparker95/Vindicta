@@ -5,47 +5,48 @@ Class: GameMode.LocationGameModeData
 Base class of objects assigned as Location.gameModeData
 */
 
+#define OOP_CLASS_NAME LocationGameModeData
 CLASS("LocationGameModeData", "MessageReceiverEx")
 
 	VARIABLE_ATTR("location", [ATTR_SAVE]);
 
 	// 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		T_SETV_PUBLIC("location", _location);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Meant to do processing and enable/disable respawn at this place based on different rules
-	/* virtual */ METHOD("updatePlayerRespawn") {
+	/* virtual */ METHOD(updatePlayerRespawn)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGameMode
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getRecruitCount") { // For common interface
+	METHOD(getRecruitCount) // For common interface
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns intel entries for display on the client map UI
-	/* public virtual */ METHOD("getMapInfoEntries") {
+	/* public virtual */ METHOD(getMapInfoEntries)
 		params [P_THISOBJECT];
 		[]
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides the location name
-	/* public virtual */ METHOD("getDisplayName") {
+	/* public virtual */ METHOD(getDisplayName)
 		params [P_THISOBJECT];
 		private _loc = T_GETV("location");
 		CALLM0(_loc, "getName")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// STORAGE
-	/* override */ METHOD("postDeserialize") {
+	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -54,7 +55,7 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 		T_PUBLIC_VAR("location");
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 ENDCLASS;

@@ -6,9 +6,10 @@ Class: AI.CmdrAI.CmdrStrategy.Strategies.PassiveCmdrStrategy
 Commander does nothing ever.
 Parent: <AI.CmdrAI.CmdrStrategy.CmdrStrategy>
 */
+#define OOP_CLASS_NAME PassiveCmdrStrategy
 CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		// Do not take outposts
 		T_SETV("takeLocOutpostPriority", 0);
@@ -22,9 +23,9 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 		// Do not take cities
 		T_SETV("takeLocCityPriority", 0);
 		T_SETV("takeLocCityCoeff", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("getQRFScore") {
+	/* virtual */ METHOD(getQRFScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -35,9 +36,9 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 			P_ARRAY("_detachEff")];
 		// Do no QRFs
 		APPLY_SCORE_STRATEGY(_defaultScore, 0)
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("getReinforceScore") {
+	/* virtual */ METHOD(getReinforceScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -48,9 +49,9 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 			P_ARRAY("_detachEff")];
 		// Do no reinforcing! 
 		APPLY_SCORE_STRATEGY(_defaultScore, 0)
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("getTakeLocationScore") {
+	/* virtual */ METHOD(getTakeLocationScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -61,7 +62,7 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 			P_ARRAY("_detachEff")];
 		// Take no locations!
 		APPLY_SCORE_STRATEGY(_defaultScore, 0)
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Unit test

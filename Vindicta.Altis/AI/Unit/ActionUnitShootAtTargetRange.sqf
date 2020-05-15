@@ -1,5 +1,6 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME ActionUnitShootAtTargetRange
 CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 
 	VARIABLE("target");
@@ -7,7 +8,7 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 	VARIABLE("spawnHandle");
 	VARIABLE("safePosition");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
@@ -16,9 +17,9 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		private _duration = CALLSM3("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS, _defaultDuration);
 		T_SETV("duration", _duration);
 		T_SETV("spawnHandle", scriptNull);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _target = T_GETV("target");
@@ -113,10 +114,10 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		private _state = T_CALLM0("activateIfInactive");
@@ -130,9 +131,9 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Mark the target as free for use
@@ -154,5 +155,5 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 				_hO doMove T_GETV("safePosition");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

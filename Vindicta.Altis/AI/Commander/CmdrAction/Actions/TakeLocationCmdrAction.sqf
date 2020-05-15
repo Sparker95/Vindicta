@@ -12,6 +12,7 @@ Parent: <TakeOrJoinCmdrAction>
 
 #define pr private
 
+#define OOP_CLASS_NAME TakeLocationCmdrAction
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtLocId", [ATTR_SAVE]);
 
@@ -25,16 +26,16 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the detachment.
 		_tgtLocId - Number, <Model.GarrisonModel> id for the detachment to occupy.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtLocId")];
 
 		T_SETV("tgtLocId", _tgtLocId);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION ARG _tgtLocId]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -77,9 +78,9 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM0(_intelClone, "updateInDb");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -233,7 +234,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			_side, LABEL(_srcGarr), LABEL(_tgtLoc), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -243,7 +244,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -260,7 +261,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

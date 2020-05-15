@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: ActionGroup.ActionGroupClearArea
@@ -7,6 +8,7 @@ The whole group regroups and gets some waypoints to clear the area
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupClearArea
 CLASS("ActionGroupClearArea", "ActionGroup")
 
 	VARIABLE("pos");
@@ -14,7 +16,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 	VARIABLE("inCombat");
 	VARIABLE("nextLookTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -30,10 +32,10 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_SETV("behaviour", "AWARE");
 
 		T_SETV("nextLookTime", GAME_TIME);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _AI = T_GETV("AI");
@@ -59,19 +61,15 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_CALLM0("regroup");
 		T_CALLM0("clearWaypoints");
 
-		// Give some waypoints
 		private _hG = T_GETV("hG");
-		private _wp0 = _hG addWaypoint [_pos, _radius];
-		_wp0 setWaypointCompletionRadius 20;
-		_wp0 setWaypointType "SAD";
-		for "_i" from 0 to 8 do {
-			private _wp = _hG addWaypoint [_pos, _radius];
-			_wp setWaypointCompletionRadius 20;
+
+		// A random bunch of waypoints to get them to run around a bit
+		for "_i" from 0 to 10 do {
+			private _wp = _hG addWaypoint [AGLToASL (_pos getPos [random _radius, random 360]), -1];
 			_wp setWaypointType "SAD";
 		};
-		_hG setCurrentWaypoint [_hG, 0];
 
-		if(_isUrban || !_isInf) then {
+		if(!CALLM0(_group, "isAirGroup") && (_isUrban || !_isInf)) then {
 			// Try and move all waypoints on to nearby roads
 			{
 				pr _pos = getWPPos _x;
@@ -82,9 +80,11 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 			} forEach (waypoints _hG);
 		};
 
+		pr _wp0Pos = waypointPosition [_hG, 0];
 		// Create a cycle waypoint
-		pr _wpCycle = _hG addWaypoint [waypointPosition _wp0, 0];
+		pr _wpCycle = _hG addWaypoint [AGLToASL _wp0Pos, -1];
 		_wpCycle setWaypointType "CYCLE";
+		_hG setCurrentWaypoint [_hG, 0];
 
 		// Add goals to units
 		pr _inf = CALLM0(_group, "getInfantryUnits");
@@ -99,7 +99,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_CALLM0("updateVehicleAssignments");
 
 		if(_instant) then {
-			T_CALLM1("teleport", waypointPosition _wp0);
+			T_CALLM1("teleport", _wp0Pos);
 		};
 
 		T_SETV("nextLookTime", GAME_TIME);
@@ -108,10 +108,10 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("failIfEmpty");
@@ -161,26 +161,26 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 			};
 		};
 
-		// This action is terminal because it's never over right now
+		// This action doesn't return completed ever, it will run until the goal is made non-relevant or removed
 
 		private _hG = T_GETV("hG");
 
-		if (count waypoints _hG <= 1) then {
-			// Force reactivation
+		if (waypointType (waypoints _hG select currentWaypoint _hG) != "SAD") then {
+			// Force reactivation to regenerate the waypoints
 			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
 
 		// Return the current state
 		T_GETV("state")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		T_CALLM0("clearWaypoints");
 		T_CALLCM0("ActionGroup", "terminate");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

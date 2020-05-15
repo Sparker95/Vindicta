@@ -8,7 +8,7 @@
 // It's really part of GarrisonServer, so we don't want to output text into the CmdrAI log file
 //#define OFSTREAM_FILE "CmdrAI.rpt"
 
-#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\..\..\common.h"
 #include "..\..\..\Templates\Efficiency.hpp"
 #include "..\..\..\Mutex\Mutex.hpp"
 #include "..\CmdrAction\CmdrActionStates.hpp"
@@ -28,17 +28,19 @@ Parent: none
 
 #define pr private
 
+#define OOP_CLASS_NAME CmdrActionRecord
 CLASS("CmdrActionRecord", "")
 	
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		params [P_THISCLASS];
 		OOP_ERROR_0("getText must be called on final classes!");
 		"<Base class>"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // - - - - Targeted at position or location - - - -
 
+#define OOP_CLASS_NAME DirectedCmdrActionRecord
 CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 
 	// Destination position
@@ -51,7 +53,7 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 	VARIABLE_ATTR("dstGarRef", [ATTR_SERIALIZABLE]);
 
 	// Returns position, location position or garrison position, !! ON CLIENT !!
-	METHOD("getPos") {
+	METHOD(getPos)
 		params [P_THISOBJECT];
 
 		pr _pos = T_GETV("pos");
@@ -77,53 +79,59 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 		OOP_WARNING_1("No target in cmdr action record %1", _thisObject);
 		//[_thisObject] call OOP_dumpAllVariables;
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		params [P_THISCLASS];
 		OOP_ERROR_0("getText must be called on final classes!");
 		"<Directed base class>"
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME MoveCmdrActionRecord
 CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"MOVE"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME TakeLocationCmdrActionRecord
 CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"CAPTURE"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME AttackCmdrActionRecord
 CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"ATTACK"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
+#define OOP_CLASS_NAME ReinforceCmdrActionRecord
 CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"REINFORCE"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Done
-CLASS("SupplyCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD("getText") {
+#define OOP_CLASS_NAME SupplyConvoyCmdrActionRecord
+CLASS("SupplyConvoyCmdrActionRecord", "DirectedCmdrActionRecord")
+	STATIC_METHOD(getText)
 		"SUPPLY"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 /*
 // NYI
+#define OOP_CLASS_NAME ReconCmdrActionRecord
 CLASS("ReconCmdrActionRecord", "DirectedCmdrActionRecord")
 
 ENDCLASS;
@@ -134,9 +142,10 @@ ENDCLASS;
 // - - - - Other - - - -
 
 // todo
+#define OOP_CLASS_NAME PatrolCmdrActionRecord
 CLASS("PatrolCmdrActionRecord", "CmdrActionRecord")
 
-	STATIC_METHOD("getText") {
+	STATIC_METHOD(getText)
 		"Patrol"
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

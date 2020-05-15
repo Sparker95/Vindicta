@@ -1,4 +1,4 @@
-#include "..\OOP_light\OOP_Light.h"
+#include "..\common.h"
 
 private _locAndDist = CALLSM1("Location", "getNearestLocation", getPos player);
 _locAndDist params ["_loc", "_dist"];

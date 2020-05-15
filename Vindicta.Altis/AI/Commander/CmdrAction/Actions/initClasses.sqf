@@ -6,7 +6,6 @@ call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\PatrolCm
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\QRFCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\TakeLocationCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\ReinforceCmdrAction.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\SupplyCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\ConstructLocationCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\SupplyConvoyCmdrAction.sqf";
 

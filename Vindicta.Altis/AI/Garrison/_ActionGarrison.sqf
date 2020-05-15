@@ -7,13 +7,14 @@ Garrison action.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrison
 CLASS("ActionGarrison", "Action")
 
 	VARIABLE("gar");
 	VARIABLE("reactivateOnSpawn");
 	VARIABLE("replanOnCompositionChange");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI") ];
 
 		ASSERT_OBJECT_CLASS(_AI, "AIGarrison");
@@ -23,9 +24,9 @@ CLASS("ActionGarrison", "Action")
 		T_SETV("gar", _gar);
 		T_SETV("reactivateOnSpawn", true);
 		T_SETV("replanOnCompositionChange", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("terminate") {
+	/* protected override */ METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// If we aren't spawned there shouldn't be any group goals
@@ -33,9 +34,9 @@ CLASS("ActionGarrison", "Action")
 		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
 		T_CALLM0("clearGroupGoals");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected */ METHOD("clearGroupGoals") {
+	/* protected */ METHOD(clearGroupGoals)
 		params [P_THISOBJECT, ["_goals", [""], [[]]], ["_groups", 0, [0, []]]];
 
 		if(_groups isEqualTo 0) then {
@@ -50,7 +51,7 @@ CLASS("ActionGarrison", "Action")
 				CALLM2(_groupAI, "deleteExternalGoal", _x, _AI);
 			} forEach _goals;
 		} forEach _groups;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: spawn
@@ -58,10 +59,10 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Bool. Return true if you have handled spawning here. If you return false, Garrison.spawn will perform spawning on its own.
 	*/
-	/* protected virtual */ METHOD("spawn") {
+	/* protected virtual */ METHOD(spawn)
 		params [P_THISOBJECT];
 		false
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onGarrisonSpawned
@@ -69,14 +70,14 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Nothing.
 	*/
-	/* protected virtual */ METHOD("onGarrisonSpawned") {
+	/* protected virtual */ METHOD(onGarrisonSpawned)
 		params [P_THISOBJECT];
 
 		// Reactivate by default
 		if(T_GETV("reactivateOnSpawn")) then {
 			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: onGarrisonDespawned
@@ -84,51 +85,51 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Nothing.
 	*/
-	/* protected virtual */ METHOD("onGarrisonDespawned") {
+	/* protected virtual */ METHOD(onGarrisonDespawned)
 		params [P_THISOBJECT];
 
 		// Reactivate by default
 		if(T_GETV("reactivateOnSpawn")) then {
 			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	
 	// Handle units/groups added/removed
-	/* protected virtual */ METHOD("handleGroupsAdded") {
+	/* protected virtual */ METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 
 		// Replan by default
 		if(T_GETV("replanOnCompositionChange")) then {
 			T_SETV("state", ACTION_STATE_REPLAN);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected virtual */ METHOD("handleGroupsRemoved") {
+	/* protected virtual */ METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 
 		// Replan by default
 		if(T_GETV("replanOnCompositionChange")) then {
 			T_SETV("state", ACTION_STATE_REPLAN);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected virtual */ METHOD("handleUnitsRemoved") {
+	/* protected virtual */ METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Replan by default
 		if(T_GETV("replanOnCompositionChange")) then {
 			T_SETV("state", ACTION_STATE_REPLAN);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected virtual */ METHOD("handleUnitsAdded") {
+	/* protected virtual */ METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Replan by default
 		if(T_GETV("replanOnCompositionChange")) then {
 			T_SETV("state", ACTION_STATE_REPLAN);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

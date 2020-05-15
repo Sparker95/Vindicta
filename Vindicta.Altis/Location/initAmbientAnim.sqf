@@ -2,3 +2,4 @@ private _animSetNames = ["STAND","STAND1","STAND_IA","STAND2","STAND_U1","STAND_
 gAmbientAnimSets = _animSetNames apply { [ _x, ((_x call BIS_fnc_ambientAnimGetParams) select 0) apply { toLower _x } ] };
 gObjectAnimMarkers = call compile preprocessFileLineNumbers "Location\objectAnimMarkers.sqf";
 gShootingTargetTypes = ["TargetP_Inf_F", "TargetP_Inf_Acc2_F", "TargetP_Inf_Acc1_F", "TargetP_Inf2_F", "TargetP_Inf2_Acc2_F", "TargetP_Inf2_Acc1_F", "TargetP_Inf3_F", "TargetP_Inf3_Acc2_F", "TargetP_Inf3_Acc1_F", "TargetP_Inf4_F", "TargetP_Inf4_Acc2_F", "TargetP_Inf4_Acc1_F", "TargetP_HVT1_F", "TargetP_HVT2_F", "Target_F", "Land_Target_Oval_F"];
+gObjectMakeSimple = call compile preprocessFileLineNumbers "Location\objectMakeSimple.sqf";

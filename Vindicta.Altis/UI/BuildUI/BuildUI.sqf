@@ -4,7 +4,7 @@
 #define OOP_ERROR
 #define OFSTREAM_FILE "buildUI.rpt"
 
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "BuildUI_Macros.h"
 #include "..\..\defineCommon.inc"
 #include "..\defineddikcodes.inc"
@@ -57,6 +57,7 @@ g_BuildUI_garbageObjects = [
 	"Box_FIA_Ammo_F"
 ];
 
+#define OOP_CLASS_NAME BuildUI
 CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");
@@ -90,7 +91,7 @@ CLASS("BuildUI", "")
 	// Source of resources: unit's inventory or location's resources
 	VARIABLE("resourceSource");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		OOP_INFO_0("'new' method called. ====================================");
 
@@ -132,9 +133,9 @@ CLASS("BuildUI", "")
 
 		T_SETV("resourceSource", __RESOURCE_SOURCE_LOCATION);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		T_CALLM0("closeUI");
@@ -146,9 +147,9 @@ CLASS("BuildUI", "")
 		};
 
 		g_BuildUI = nil;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("addOpenBuildMenuAction") {
+	METHOD(addOpenBuildMenuAction)
 		params [P_THISOBJECT, "_object"];
 
 		OOP_INFO_1("Adding Open Build Menu action to %1.", _object);
@@ -160,9 +161,9 @@ CLASS("BuildUI", "")
 		}, [_thisObject]];
 
 		T_GETV("activeBuildMenus") pushBack [_object, _id];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("removeAllActions") {
+	METHOD(removeAllActions)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("Removing all active Open Build Menu actions.");
@@ -171,10 +172,10 @@ CLASS("BuildUI", "")
 			_x params ["_object", "_id"];
 			_object removeAction _id;
 		} forEach T_GETV("activeBuildMenus");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// _source: 0 - building from location, 1 - building from our inventory, -1 - don't care and keep building from anywhere
-	METHOD("openUI") {
+	METHOD(openUI)
 		params [P_THISOBJECT, ["_source", -1]];
 
 		OOP_INFO_0("'openUI' method called.");
@@ -222,16 +223,16 @@ CLASS("BuildUI", "")
 
 		// TODO: Add player on death event to hide UI and drop held items etc.
 		// Also for when they leave camp area.
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getInstanceOpenUI") {
+	STATIC_METHOD(getInstanceOpenUI)
 		params [P_THISOBJECT, P_NUMBER("_source")];
 		pr _thisObject = g_BuildUI;
 		if (isNil "_thisObject") exitWith {};
 		T_CALLM1("openUI", _source);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("UIFrameUpdate") {
+	METHOD(UIFrameUpdate)
 		params [P_THISOBJECT];
 
 		// Tooltips
@@ -336,9 +337,9 @@ CLASS("BuildUI", "")
 		T_SETV("rotation", (_finalVec call CBA_fnc_vect2Polar) select 1);
 
 		// pr _newRotation = _rotation + _rate;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onKeyHandler") {
+	METHOD(onKeyHandler)
 		params [P_THISOBJECT, "_dikCode", "_shiftState", "_ctrlState", "_altState"];
 
 		switch (_dikCode) do { // keyname _dikCode is language dependent!!
@@ -510,9 +511,9 @@ CLASS("BuildUI", "")
 				true; // disables default control 
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("closeUI") {
+	METHOD(closeUI)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("'closeUI' method called. ====================================");
@@ -548,9 +549,9 @@ CLASS("BuildUI", "")
 		player removeEventHandler["InventoryOpened", _playerEvents select 3];
 
 		T_SETV("playerEvents", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleActionKey") {
+	METHOD(handleActionKey)
 		params [P_THISOBJECT];
 		OOP_INFO_0("'handleActionKey' method called");
 
@@ -570,17 +571,17 @@ CLASS("BuildUI", "")
 				T_CALLM0("moveSelectedObjects");
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("rotate") {
+	METHOD(rotate)
 		params [P_THISOBJECT, "_amount"];
 		OOP_INFO_1("'rotate' method called _amount = %1", _amount);
 		private _targetRotation = T_GETV("targetRotation");
 		T_SETV("targetRotation", _targetRotation + _amount);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// opens item list UI element
-	METHOD("openItems") {
+	METHOD(openItems)
 		params [P_THISOBJECT];
 		OOP_INFO_0("'openItems' method called");
 		T_SETV("ItemCatOpen", true);
@@ -592,17 +593,17 @@ CLASS("BuildUI", "")
 
 		T_CALLM0("createCarousel");
 		T_CALLM0("exitMoveMode");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// closes item list UI element
-	METHOD("closeItems") {
+	METHOD(closeItems)
 		params [P_THISOBJECT];
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
 		//T_SETV("currentItemID", 0);
 		T_CALLM0("clearCarousel");
 		T_CALLM0("enterMoveMode");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/* Description: Navigate left or right in either category or item list on the UI
 
@@ -612,7 +613,7 @@ CLASS("BuildUI", "")
 
 		current category index + _num = new index
 	*/
-	METHOD("navLR") {
+	METHOD(navLR)
 		params [P_THISOBJECT, "_num"];
 
 		OOP_INFO_1("'navLR' method called: %1", _num);
@@ -644,11 +645,11 @@ CLASS("BuildUI", "")
 			T_CALLM("makeCatTexts", [_newCatID]);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// generates an array of display strings for each category on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
-	METHOD("makeCatTexts") {
+	METHOD(makeCatTexts)
 		params [P_THISOBJECT, "_currentCatID"];
 		OOP_INFO_0("'makeCatTexts' method called");
 
@@ -667,11 +668,11 @@ CLASS("BuildUI", "")
 
 		T_SETV("UICatTexts", _return);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// generates an array of display strings for the item list on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
-	METHOD("makeItemTexts") {
+	METHOD(makeItemTexts)
 		params [P_THISOBJECT, "_ItemID"];
 		OOP_INFO_0("'makeItemTexts' method called");
 		pr _currentCatID = T_GETV("currentCatID");
@@ -703,7 +704,7 @@ CLASS("BuildUI", "")
 
 		T_SETV("UIItemTexts", _return);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/* 
 		Returns the classname of the currently selected menu item, if the menu is open.
@@ -713,7 +714,7 @@ CLASS("BuildUI", "")
 		private classname = T_CALLM0("currentClassname");
 
 	*/
-	METHOD("currentClassname") {
+	METHOD(currentClassname)
 		params [P_THISOBJECT];
 
 		private _ItemCatOpen = T_GETV("ItemCatOpen");
@@ -729,9 +730,9 @@ CLASS("BuildUI", "")
 		};
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clearCarousel") {
+	METHOD(clearCarousel)
 		params [P_THISOBJECT];
 		OOP_INFO_0("'clearCarousel' method called");
 
@@ -742,9 +743,9 @@ CLASS("BuildUI", "")
 		} forEach _carouselObjects;
 
 		T_SETV("carouselObjects", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getCarouselOffsets") {
+	METHOD(getCarouselOffsets)
 		params [P_THISOBJECT];
 
 		private _currentCatID = T_GETV("currentCatID");
@@ -791,9 +792,9 @@ CLASS("BuildUI", "")
 		};
 
 		_offsets
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("createCarousel") {
+	METHOD(createCarousel)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("'createCarousel' method called");
@@ -825,9 +826,9 @@ CLASS("BuildUI", "")
 			_newObj setDir _rotation;
 			_carouselObjects pushBack _newObj;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateCarouselOffsets") {
+	METHOD(updateCarouselOffsets)
 		params [P_THISOBJECT];
 
 		private _carouselObjects = T_GETV("carouselObjects");
@@ -850,9 +851,9 @@ CLASS("BuildUI", "")
 		};
 
 		_offsets
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("createNewObject") {
+	METHOD(createNewObject)
 		params [P_THISCLASS, "_type", ["_offs", []]];
 		OOP_INFO_2("'createNewObject' method called, _type = %1, _offs = %2", _type, _offs);
 
@@ -876,7 +877,7 @@ CLASS("BuildUI", "")
 		pr _activeObject = [_newObj, _pos, vectorDir _newObj, vectorUp _newObj];
 		T_SETV("activeObject", _activeObject);
 		T_CALLM0("moveSelectedObjects");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	multiply_Vec = {
 		params ["_a", "_b"];
@@ -887,7 +888,7 @@ CLASS("BuildUI", "")
 		_r
 	};
 
-	METHOD("highlightObjectOnEachFrame") {
+	METHOD(highlightObjectOnEachFrame)
 		params [P_THISOBJECT];
 
 		if(T_GETV("isMovingObjects")) exitWith {};
@@ -977,9 +978,9 @@ CLASS("BuildUI", "")
 				}
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("enterMoveMode") {
+	METHOD(enterMoveMode)
 		params [P_THISOBJECT];
 		OOP_INFO_0("'enterMoveMode' method called");
 
@@ -992,9 +993,9 @@ CLASS("BuildUI", "")
 			call build_ui_highlightObjectOnEachFrame;
 		}, []] call BIS_fnc_addStackedEventHandler;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("exitMoveMode") {
+	METHOD(exitMoveMode)
 		params [P_THISOBJECT];
 		OOP_INFO_0("'exitMoveMode' method called");
 
@@ -1005,9 +1006,9 @@ CLASS("BuildUI", "")
 		};
 
 		["BuildUIHighlightObject", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("moveObjectsOnEachFrame") {
+	METHOD(moveObjectsOnEachFrame)
 		params [P_THISOBJECT];
 
 		private _movingObjectGhosts = T_GETV("movingObjectGhosts");
@@ -1042,10 +1043,10 @@ CLASS("BuildUI", "")
 			_ghostObject setVectorUp (player vectorWorldToModel _surfaceVectorUp);
 			_ghostObject setVariable ["build_ui_dist", _dist];
 		} forEach _movingObjectGhosts;
+		
+	ENDMETHOD;
 
-	} ENDMETHOD;
-
-	METHOD("moveSelectedObjects") {
+	METHOD(moveSelectedObjects)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("'moveSelectedObjects' method called");
@@ -1104,13 +1105,13 @@ CLASS("BuildUI", "")
 			CALLM0(g_BuildUI, "moveObjectsOnEachFrame");
 		}, []] call BIS_fnc_addStackedEventHandler;
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	// STATIC_METHOD("createObject") {
+	// STATIC_METHOD(createObject)
 	// 	params [P_THISCLASS];
-	// } ENDMETHOD;
-
-	METHOD("dropHere") {
+	// ENDMETHOD;
+	
+	METHOD(dropHere)
 		params [P_THISOBJECT];
 		private _movingObjectGhosts = T_GETV("movingObjectGhosts");
 
@@ -1187,9 +1188,9 @@ CLASS("BuildUI", "")
 		T_SETV("isMovingObjects", false);
 
 		T_CALLM0("enterMoveMode");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("cancelMovingObjects") {
+	METHOD(cancelMovingObjects)
 		params [P_THISOBJECT];
 
 		if !(T_GETV("isMovingObjects")) exitWith {};
@@ -1217,7 +1218,7 @@ CLASS("BuildUI", "")
 
 		T_CALLM0("enterMoveMode");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/* 
 		Method: demolishActiveObject
@@ -1228,7 +1229,7 @@ CLASS("BuildUI", "")
 
 		Assumes object really can be demolished and refunded.
 	*/
-	METHOD("demolishActiveObject") {
+	METHOD(demolishActiveObject)
 		params [P_THISOBJECT, P_OBJECT("_objectToDelete"), P_NUMBER("_refundBuildRes")];
 
 		OOP_INFO_2("demolishActiveObject called. Object: %1. Refund amount: %2", _objectToDelete, _refundBuildRes);
@@ -1266,46 +1267,46 @@ CLASS("BuildUI", "")
 		T_CALLM0("clearCarousel");
 		T_CALLM0("exitMoveMode");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("setObjectMovable") {
+	STATIC_METHOD(setObjectMovable)
 		params [P_THISCLASS, P_OBJECT("_obj"), P_BOOL("_set")];
 		_obj setVariable [BUILDUI_OBJECT_TAG, _set, true];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("isObjectMovable") {
+	STATIC_METHOD(isObjectMovable)
 		params [P_THISCLASS, P_OBJECT("_obj")];
 		_obj getVariable [BUILDUI_OBJECT_TAG, false]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("addSelection") {
+	STATIC_METHOD(addSelection)
 		params [P_THISCLASS, P_ARRAY("_arr"), P_ARRAY("_obj")];
 		if((_obj select 0) in (_arr apply { _x select 0 })) exitWith {false};
 		_arr pushBack _obj;
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("removeSelection") {
+	STATIC_METHOD(removeSelection)
 		params [P_THISCLASS, P_ARRAY("_arr"), P_ARRAY("_obj")];
 		pr _idx = _arr findIf { (_x select 0) == (_obj select 0) };
 		if(_idx == -1) exitWith {false};
 		_arr deleteAt _idx;
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("createSelectionObject") {
+	STATIC_METHOD(createSelectionObject)
 		params [P_THISCLASS, P_OBJECT("_obj")];
 		[_obj, getPosWorld _obj, vectorDir _obj, vectorUp _obj]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("restoreSelectionObject") {
+	STATIC_METHOD(restoreSelectionObject)
 		params [P_THISCLASS, P_ARRAY("_sobj")];
 		_sobj params ["_obj", "_pos", "_dir", "_up"];
 		OOP_INFO_4("'exitMoveMode' method called %1/%2/%3/%4", _obj, _pos, _dir, _up);
 		_obj setPosWorld _pos;
 		_obj setVectorDirAndUp [_dir, _up];
 		_obj enableSimulation true;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

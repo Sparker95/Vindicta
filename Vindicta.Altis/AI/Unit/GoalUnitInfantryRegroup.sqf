@@ -7,9 +7,10 @@ Unit will dismount his vehicle and start following his leader
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalUnitInfantryRegroup
 CLASS("GoalUnitInfantryRegroup", "Goal")
 
-	/* virtual */ STATIC_METHOD("createPredefinedAction") {
+	/* virtual */ STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _hO = GETV(_AI, "hO");
@@ -29,6 +30,6 @@ CLASS("GoalUnitInfantryRegroup", "Goal")
 			_action
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

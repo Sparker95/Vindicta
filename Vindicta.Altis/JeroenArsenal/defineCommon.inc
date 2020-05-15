@@ -4,7 +4,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OOP_DEBUG
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #define OFSTREAM_FILE "JeroenArsenal.rpt"
 
 #define ERROR_JN_6(A,B,C,D,E,F) diag_log format["JN_ERROR: ,%1,%2,%3,%4,%5,%6",A,B,C,D,E,F]
