@@ -686,8 +686,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_garrisons pushBack T_CALLM("createGarrison", _args);
 		};
 		if(_type == LOCATION_TYPE_AIRPORT) then {
-			private _cVehHeli = CALLM0(_loc, "getCapacityHeli");
-			private _cVehPlanes = 2; //CALLM0(_loc, "getCapacityHeli");
+			private _cVehHeli = 0; //CALLM0(_loc, "getCapacityHeli");
+			private _cVehPlanes = 0; //CALLM0(_loc, "getCapacityPlane");
 			private _args = [_type, _side, _cVehHeli, _cVehPlanes];
 			_garrisons pushBack T_CALLM("createAirGarrison", _args);
 		};
