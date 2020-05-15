@@ -21,12 +21,14 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 	VARIABLE("behaviour");
 	VARIABLE("speedMode");
 	VARIABLE("infantryFormation");
+	VARIABLE("air"); // Fraction of air assets to deploy in defense (0 - 1)
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		T_SETV("behaviour", "AWARE");
 		T_SETV("speedMode", "NORMAL");
 		T_SETV("infantryFormation", "STAG COLUMN");
+		T_SETV("air", 0.25);
 	ENDMETHOD;
 
 	METHOD(activate)
@@ -96,6 +98,10 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 
 		// Give goals to remaining groups
 		private _nPatrolGroups = 0;
+		private _nAirPatrolGroups = 0;
+		private _totalAirGroups = ({ CALLM0(_x, "isAirGroup") } count _groups);
+		private _nDesiredAirPatrolGroups = ceil (_totalAirGroups * T_GETV("air"));
+
 		{// foreach _groups
 			private _group = _x;
 			private _groupAI = CALLM0(_group, "getAI");
@@ -103,7 +109,8 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			if (_groupAI != NULL_OBJECT) then {
 				private _args = switch (CALLM0(_group, "getType")) do {
 					case GROUP_TYPE_VEH: {
-						if(CALLM0(_group, "isAirGroup")) then {
+						if(CALLM0(_group, "isAirGroup") && _nAirPatrolGroups <  _nDesiredAirPatrolGroups) then {
+							_nAirPatrolGroups = _nAirPatrolGroups + 1;
 							["GoalGroupClearArea", 0, [
 								[TAG_POS, _pos],
 								[TAG_CLEAR_RADIUS, _radius]

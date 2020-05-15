@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: ActionGroup.ActionGroupClearArea
@@ -61,37 +62,27 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_CALLM0("clearWaypoints");
 
 		private _hG = T_GETV("hG");
-		private _wp0 = [];
-		if(CALLM0(_group, "isAirGroup")) then {
-			// Just one waypoint for air units, they aren't precise
-			_wp0 = _hG addWaypoint [AGLToASL _pos, -1];
-			_wp0 setWaypointType "SAD";
-		} else {
-			// A random bunch of waypoints to get them to run around a bit
-			_wp0 = _hG addWaypoint [AGLToASL (_pos getPos [random _radius, random 360]), -1];
-			_wp0 setWaypointCompletionRadius 20;
-			_wp0 setWaypointType "SAD";
 
-			for "_i" from 0 to 8 do {
-				private _wp = _hG addWaypoint [AGLToASL (_pos getPos [random _radius, random 360]), -1];
-				_wp setWaypointCompletionRadius 20;
-				_wp setWaypointType "SAD";
-			};
-
-			if(_isUrban || !_isInf) then {
-				// Try and move all waypoints on to nearby roads
-				{
-					pr _pos = getWPPos _x;
-					pr _nearestRoad = [_pos, 50] call BIS_fnc_nearestRoad;
-					if(!isNull _nearestRoad) then {
-						_x setWPPos position _nearestRoad;
-					};
-				} forEach (waypoints _hG);
-			};
+		// A random bunch of waypoints to get them to run around a bit
+		for "_i" from 0 to 10 do {
+			private _wp = _hG addWaypoint [AGLToASL (_pos getPos [random _radius, random 360]), -1];
+			_wp setWaypointType "SAD";
 		};
 
+		if(!CALLM0(_group, "isAirGroup") && (_isUrban || !_isInf)) then {
+			// Try and move all waypoints on to nearby roads
+			{
+				pr _pos = getWPPos _x;
+				pr _nearestRoad = [_pos, 50] call BIS_fnc_nearestRoad;
+				if(!isNull _nearestRoad) then {
+					_x setWPPos position _nearestRoad;
+				};
+			} forEach (waypoints _hG);
+		};
+
+		pr _wp0Pos = waypointPosition [_hG, 0];
 		// Create a cycle waypoint
-		pr _wpCycle = _hG addWaypoint [AGLToASL waypointPosition _wp0, -1];
+		pr _wpCycle = _hG addWaypoint [AGLToASL _wp0Pos, -1];
 		_wpCycle setWaypointType "CYCLE";
 		_hG setCurrentWaypoint [_hG, 0];
 
@@ -108,7 +99,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_CALLM0("updateVehicleAssignments");
 
 		if(_instant) then {
-			T_CALLM1("teleport", waypointPosition _wp0);
+			T_CALLM1("teleport", _wp0Pos);
 		};
 
 		T_SETV("nextLookTime", GAME_TIME);
@@ -174,8 +165,8 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		private _hG = T_GETV("hG");
 
-		if ({ waypointType _x == "SAD" } count waypoints _hG == 0) then {
-			// Force reactivation
+		if (waypointType (waypoints _hG select currentWaypoint _hG) != "SAD") then {
+			// Force reactivation to regenerate the waypoints
 			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
 
