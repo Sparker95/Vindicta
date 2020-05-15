@@ -67,8 +67,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 			private _landWP = _hG addWaypoint [AGLToASL _landingPos, -1];
 			_hG setCurrentWaypoint _landWP;
 			[_hG, _landingPos] spawn BIS_fnc_wpLand;
-			//_landWP setWaypointType "LAND";
-
+			//_landWP setWaypointType "LAND"; Doesn't work...
 			ACTION_STATE_ACTIVE
 		} else {
 			ACTION_STATE_FAILED
@@ -87,12 +86,8 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 		T_CALLM0("activateIfInactive");
 
 		if (CALLM0(T_GETV("AI"), "isLanded")) then {
-			// Engine off, add fuel, repair magic
 			private _h0 = CALLM0(T_GETV("vehicle"), "getObjectHandle");
 			_h0 engineOn false;
-			_h0 setFuel 1;
-			_h0 setDamage 0;
-
 			T_SETV("state", ACTION_STATE_COMPLETED);
 		} else {
 			private _hG = T_GETV("hG");
@@ -113,6 +108,13 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 		T_CALLM0("clearWaypoints");
 		T_CALLCM0("ActionGroup", "terminate");
 
+		if (CALLM0(T_GETV("AI"), "isLanded")) then {
+			private _h0 = CALLM0(T_GETV("vehicle"), "getObjectHandle");
+			_h0 engineOn false;
+			_h0 setFuel 1;
+			_h0 setDamage 0;
+			_h0 setVehicleAmmo 1;
+		};
 	ENDMETHOD;
 
 ENDCLASS;

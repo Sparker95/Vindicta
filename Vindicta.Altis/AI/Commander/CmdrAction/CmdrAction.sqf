@@ -554,8 +554,13 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	/*
 	Method: (static) calcDistanceFalloff
 	Get a value that falls off from 1 to 0 with distance, scaled by k.
+	For k = 1:
 	0m = 1, 2000m = 0.5, 4000m = 0.25, 6000m = 0.2, 10000m = 0.0385
-	See https://www.desmos.com/calculator/59i3cltsfr
+	For k = 4:
+	0m = 1, 500m = 0.5, 1000m = 0.25, 1500m = 0.2, 2500m = 0.0385
+	For k = 0.25:
+	0m = 1, 8000m = 0.5, 13850m = 0.25, 16000m = 0.2, ~40000m = 0.0385
+	See https://www.desmos.com/calculator/pjs09xfxkm
 	
 	Parameters:
 		_from - Position, distance to calculate from
@@ -567,7 +572,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	STATIC_METHOD(calcDistanceFalloff)
 		params [P_THISCLASS, P_POSITION("_from"), P_POSITION("_to"), "_k"];
 		private _kf = if(isNil "_k") then { 1 } else { _k };
-		// See https://www.desmos.com/calculator/59i3cltsfr
+		// See https://www.desmos.com/calculator/pjs09xfxkm
 		private _distScaled = 0.0005 * (_from distance _to) * _kf;
 		(1 / (1 + _distScaled * _distScaled))
 	ENDMETHOD;

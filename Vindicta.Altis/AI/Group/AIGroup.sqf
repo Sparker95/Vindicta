@@ -27,24 +27,24 @@ CLASS("AIGroup", "AI_GOAP")
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Group");
-		
+
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
 
 		T_SETV("suspTarget", nil);
-		
+
 		// Initialize the world state
 		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
-		
+
 		// Initialize sensors
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
 		T_CALLM("addSensor", [_sensorTargets]);
-		
+
 		pr _sensorHealth = NEW("SensorGroupState", [_thisObject]);
 		T_CALLM("addSensor", [_sensorHealth]);
 		T_SETV("sensorHealth", _sensorHealth);
-		
+
 		// Initialize the world state
 		pr _ws = [WSP_GROUP_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
@@ -96,7 +96,6 @@ CLASS("AIGroup", "AI_GOAP")
 	FIX_LINE_NUMBERS()
 
 	// World state accessors
-
 	METHOD(isLanded)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GROUP_ALL_LANDED] call ws_getPropertyValue
@@ -188,7 +187,8 @@ CLASS("AIGroup", "AI_GOAP")
 	METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		if(CALLM0(T_GETV("agent"), "isAirGroup")) then {
-			["GoalGroupAirLand"]
+			["GoalGroupAirLand"],
+			["GoalGroupAirMaintain"]
 		} else {
 			//["GoalGroupRelax"]
 			["GoalGroupUnflipVehicles", "GoalGroupArrest"]
