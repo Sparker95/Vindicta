@@ -69,6 +69,9 @@ CLASS("GarrisonModel", "ModelBase")
 	// Id of the location the garrison is currently occupying.
 	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]);
 
+	// Garrison AI alertness - how alert the garrison is 0-1
+	VARIABLE_ATTR("alertness", []);
+
 	// Hash map for unit allocation algorithm
 	STATIC_VARIABLE("allocatorCache");
 	STATIC_VARIABLE("allocatorCacheAllKeys");	// Array of all keys
@@ -91,6 +94,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("type", GARRISON_TYPE_GENERAL);
 		T_SETV("faction", "");
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
+		T_SETV("alertness", 0);
 		if(T_CALLM("isActual", [])) then {
 			T_CALLM("sync", []);
 			#ifdef OOP_DEBUG
@@ -142,6 +146,7 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_copy, "type", T_GETV("type"));
 		SETV(_copy, "faction", T_GETV("faction"));
 		SETV(_copy, "locationId", T_GETV("locationId"));
+		SETV(_copy, "alertness", T_GETV("alertness"));
 		_copy
 	ENDMETHOD;
 
@@ -163,6 +168,8 @@ CLASS("GarrisonModel", "ModelBase")
 			T_SETV("composition", CALLM0(_actual, "getCompositionNumbers")); // It does a deep copy itself
 			T_SETV("transport", CALLM(_actual, "getTransportCapacity", [[T_VEH_truck_inf]])); // Get seats only for trucks as we care about this most
 			T_SETV("pos", +CALLM0(_actual, "getPos"));
+			private _AI = CALLM0(_actual, "getAI");
+			T_SETV("alertness", CALLM0(_AI, "getAlertness"));
 			private _locationActual = CALLM0(_actual, "getLocation");
 			if(!IS_NULL_OBJECT(_locationActual)) then {
 				private _location = CALLM(T_GETV("world"), "findOrAddLocationByActual", [_locationActual]);

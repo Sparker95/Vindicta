@@ -131,7 +131,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			SPLIT_VALIDATE_CREW
 		];
 
-		#ifdef DEBUG_BIG_QRF
+#ifdef DEBUG_BIG_QRF
 		// Make sure we allocate a lot of inf
 		_allocationFlags pushBack SPLIT_VALIDATE_CREW_EXT;
 
@@ -140,7 +140,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		_enemyEff set[T_EFF_medium, 6];
 		_enemyEff set[T_EFF_armor, 6];
 		_enemyEff set[T_EFF_crew, 24];
-		#else
+#else
 		private _enemyEff = +GETV(_tgtCluster, "efficiency");
 		// Scale enemy efficiency
 		private _scaleFactor = (CALLM1(_worldNow, "calcActivityMultiplier", _tgtClusterPos)) max 1.3;
@@ -148,23 +148,21 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		if ((_enemyEff#T_eff_soft) > 0) then {
 			_enemyEff set [T_EFF_soft, (_enemyEff#T_eff_soft) max 6];	// Set min amount of attack force
 		};
-		#endif
+#endif
 		FIX_LINE_NUMBERS()
 
 		// Bail if the garrison clearly can not destroy the enemy
-		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+		if (count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
+		private _srcType = GETV(_srcGarr, "type");
+
 		private _needTransport = false;
+
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
-		#ifndef _SQF_VM
-		private _dist = _tgtClusterPos distance2D _srcGarrPos;
-		#else
-		private _dist = _tgtClusterPos distance _srcGarrPos;
-		#endif
-		FIX_LINE_NUMBERS()
+		private _dist = _tgtClusterPos DISTANCE_2D _srcGarrPos;
 
 		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
@@ -172,8 +170,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		};
 
 		// Try to allocate units
-		private _allocResult = switch GETV(_srcGarr, "type") do {
-			#ifndef DEBUG_AIR_QRF
+		private _allocResult = switch _srcType do {
+#ifndef DEBUG_AIR_QRF
 			case GARRISON_TYPE_GENERAL: {
 				private _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
 				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
@@ -184,7 +182,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 					_transportWhitelistMask, _transportBlacklistMask];
 				CALLSM("GarrisonModel", "allocateUnits", _args)
 			};
-			#endif
+#endif
 			FIX_LINE_NUMBERS()
 			case GARRISON_TYPE_AIR: {
 				private _payloadWhitelistMask = T_comp_air_mask;
@@ -237,9 +235,27 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Take the sum of the attack part of the efficiency vector.
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
 
+		// Air units prefer to attack higher threat targets only
+		if(_srcType == GARRISON_TYPE_AIR) then {
+			// Air garrison likes to attack armor, and hates AA
+			// This equation will apply a weighting to the enemy efficiency and then calculate its modified strength.
+			// The ration of the original strength to modified is used as a coefficient to calculate our own adjusted strength.
+			// It means our adjusted strength goes up a lot against armor and down a lot against AA, resulting in scoring 
+			// doing the same.
+			//											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
+			#define AIR_GARRISON_EFF_PROFILE 			[0.5,	1.5,	3,		1,		1,		1,		1,		-3,		1,		1,		1,		1,		1,		1]
+			private _enemyStr = EFF_SUM(_enemyEff);
+			if(_enemyStr > 0) then {
+				private _modifiedEnemyEff = EFF_MUL(_enemyEff, AIR_GARRISON_EFF_PROFILE);
+				private _strengthScalar = EFF_SUM(_modifiedEnemyEff) / _enemyStr;
+				_detachEffStrength = _detachEffStrength * CLAMP_POSITIVE(_strengthScalar);
+			};
+		};
+
 		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]);
-		_distCoeff = _distCoeff ^ 1.5; // Make it decrease with distance faster
+		// Air units care about distance a lot less though.
+		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.1 } else { 4 };
+		private _distCoeff = CALLSM3("CmdrAction", "calcDistanceFalloff", _srcGarrPos, _tgtClusterPos, _fallOffRate);
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
