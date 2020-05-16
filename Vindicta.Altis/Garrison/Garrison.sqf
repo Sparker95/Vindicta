@@ -232,6 +232,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	METHOD(activate)
 		params [P_THISOBJECT];
 
+		if(T_GETV("active")) exitWith {
+			OOP_ERROR_0("This garrison is already activated");
+		};
 		// Set 'active' flag
 		T_SETV("active", true);
 

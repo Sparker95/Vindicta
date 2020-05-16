@@ -187,8 +187,7 @@ CLASS("AIGroup", "AI_GOAP")
 	METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		if(CALLM0(T_GETV("agent"), "isAirGroup")) then {
-			["GoalGroupAirLand"],
-			["GoalGroupAirMaintain"]
+			["GoalGroupAirLand", "GoalGroupAirMaintain"]
 		} else {
 			//["GoalGroupRelax"]
 			["GoalGroupUnflipVehicles", "GoalGroupArrest"]

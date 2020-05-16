@@ -269,6 +269,11 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		// Don't start the brain, because its process method will be called by
 		// its group's AI brain
 		pr _data = T_GETV("data");
+
+		if(_data # UNIT_DATA_ID_AI != NULL_OBJECT) exitWith {
+			OOP_ERROR_0("Unit AI is already created");
+		};
+
 		pr _AI = NEW(_AIClassName, [_thisObject]);
 		_data set [UNIT_DATA_ID_AI, _AI];
 
@@ -1320,9 +1325,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			// Stop AI, sensors, etc
 			pr _AI = _data select UNIT_DATA_ID_AI;
 			// Some units are brainless. Check if the unit had a brain.
-			if (_AI != "") then {
+			if (_AI != NULL_OBJECT) then {
 				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
-				_data set [UNIT_DATA_ID_AI, ""];
+				_data set [UNIT_DATA_ID_AI, NULL_OBJECT];
 			};
 
 			// Get the amount of actual build resources in inventory
@@ -1344,7 +1349,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			pr _posATL = getPosATL _objectHandle;
 			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
 			pr _gar = _data#UNIT_DATA_ID_GARRISON;
-			pr _loc = if (_gar != "") then {CALLM0(_gar, "getLocation")} else {""};
+			pr _loc = if (_gar != NULL_OBJECT) then { CALLM0(_gar, "getLocation") } else { NULL_OBJECT };
 			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
@@ -1356,7 +1361,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			};
 
 			//private _group = _data select UNIT_DATA_ID_GROUP;
-			//if (_group != "") then { CALLM(_group, "handleUnitDespawned", [_thisObject]) };
+			//if (_group != NULL_OBJECT) then { CALLM(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
 			OOP_ERROR_0("Already despawned");

@@ -699,20 +699,24 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Access: internal.
 
-	Returns: nil
+	Returns: Created <AI> object
 	*/
 	METHOD(createAI)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
-		pr _groupUnits = _data#GROUP_DATA_ID_UNITS;
 
-		// Create an AI for this group if it has any units
+		if(_data # GROUP_DATA_ID_AI != NULL_OBJECT) exitWith {
+			OOP_ERROR_0("Group AI is already created");
+		};
+
 		pr _AI = NEW("AIGroup", [_thisObject]);
-		pr _data = T_GETV("data");
 		_data set [GROUP_DATA_ID_AI, _AI];
-		CALLM0(_AI, "start"); // Kick start it
 
+		CALLM0(_AI, "start");
+
+		// Return
+		_AI
 	ENDMETHOD;
 
 
@@ -1205,14 +1209,14 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			// Create a new AI for this unit, if it existed
 			pr _unitAI = _unitDataArray select UNIT_DATA_ID_AI;
 			diag_log format [" --- Old unit AI: %1", _unitAI];
-			if (_unitAI != "") then {
+			if (_unitAI != NULL_OBJECT) then {
 				CALLM0(_newUnit, "createAI");
 				diag_log format [" --- Created new unit AI: %1", _unitDataArray select UNIT_DATA_ID_AI];
 			};
 		} forEach _unitsSerialized;
 
 		// Create a new AI for this group
-		if ((_data select GROUP_DATA_ID_AI) != "") then {
+		if (_data select GROUP_DATA_ID_AI != NULL_OBJECT) then {
 			T_CALLM0("createAI");
 		};
 
@@ -1232,7 +1236,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Delete the AI of this group
 		// todo transfer the AI instead, or just transfer the goals and most important data?
 		pr _AI = _data select GROUP_DATA_ID_AI;
-		if (_AI != "") then {
+		if (_AI != NULL_OBJECT) then {
 			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE); // if you ever look at it again, redo it!! with posting msg to group thread manager
 			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
 			//if (_msgID < 0) then {diag_log format ["--- Got wrong msg ID %1 %2 %3", _msgID, __FILE__, __LINE__];};
@@ -1244,7 +1248,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		{
 			pr _unitData = GETV(_x, "data");
 			pr _unitAI = _unitData select UNIT_DATA_ID_AI;
-			if (_unitAI != "") then {
+			if (_unitAI != NULL_OBJECT) then {
 				pr _msg = MESSAGE_NEW_SHORT(_unitAI, AI_MESSAGE_DELETE); // if you ever look at it again, redo it!! with posting msg to group thread manager
 				pr _msgID = CALLM2(_unitAI, "postMessage", _msg, true);
 				//diag_log format ["--- Got msg ID %1 %2 %3 while deleting Unit's AI", _msgID, __FILE__, __LINE__];
