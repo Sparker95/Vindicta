@@ -65,7 +65,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 	// Default implementation has a lead group (defaults to vehicle group, of which there should be only one),
 	// other groups follow in a chain.
-	/* private virtual */  METHOD(assignMoveGoals)
+	protected virtual METHOD(assignMoveGoals)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius"), P_ARRAY("_route"), P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -124,7 +124,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 
-	/* private virtual */  METHOD(checkMoveGoals)
+	protected virtual METHOD(checkMoveGoals)
 		params [P_THISOBJECT];
 
 		private _AI = T_GETV("AI");
@@ -144,7 +144,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -180,7 +180,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	protected override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
@@ -274,7 +274,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		_return
 	ENDMETHOD;
 
-	METHOD(onGarrisonDespawned)
+	public override METHOD(onGarrisonDespawned)
 		params [P_THISOBJECT];
 
 		// Create a new VirtualRoute since old one might be invalid
@@ -338,7 +338,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		} forEach _units;
 	ENDMETHOD;
 	
-	METHOD(spawn)
+	protected override METHOD(spawn)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");

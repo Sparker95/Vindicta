@@ -37,7 +37,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* protected virtual */ METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -236,7 +236,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	/* public virtual */ METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
@@ -339,65 +339,31 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		_state
 	ENDMETHOD;
 
-	// // logic to run when the action is satisfied
-	// /* protected virtual */ METHOD(terminate)
-	// 	params [P_THISOBJECT];
-
-	// 	// Bail if not spawned
-	// 	pr _gar = T_GETV("gar");
-	// 	if (!CALLM0(_gar, "isSpawned")) exitWith {};
-
-	// 	// Remove all assigned goals
-	// 	T_CALLM0("clearGroupGoals");
-	// ENDMETHOD;
 	
-	// /* protected virtual */ METHOD(onGarrisonSpawned)
-	// 	params [P_THISOBJECT];
+	protected override METHOD(spawn)
+		params [P_THISOBJECT];
 
-	// 	// Reset action state so that it reactivates
-	// 	T_SETV("state", ACTION_STATE_INACTIVE);
-	// ENDMETHOD;
+		// Custom air spawning
+		private _gar = T_GETV("gar");
 
-	// METHOD(_assignSweepGoals)
-	// 	params [P_THISOBJECT];
+		if (CALLM0(_gar, "getType") != GARRISON_TYPE_AIR) then {
+			false
+		} else {
+			private _garPos = CALLM0(_gar, "getPos");
 
-	// 	pr _AI = T_GETV("AI");
-	// 	pr _pos = T_GETV("pos");
-	// 	pr _radius = T_GETV("radius");
+			{
+				private _group = _x;
+				if(CALLM0(_group, "isAirGroup")) then {
+					CALLM1(_x, "spawnInAir", _garPos);
+				} else {
+					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+				};
 
-	// 	private _sweepGroups = T_GETV("sweepGroups");
+			} forEach CALLM0(_gar, "getGroups");
 
-	// 	{// foreach _sweep
-	// 		pr _groupAI = CALLM0(_x, "getAI");
-	// 		pr _args = [
-	// 			"GoalGroupClearArea",
-	// 			0,
-	// 			[
-	// 				[TAG_POS, _pos],
-	// 				[TAG_CLEAR_RADIUS, _radius],
-	// 				[TAG_BEHAVIOUR, "COMBAT"],
-	// 				[TAG_COMBAT_MODE, "RED"]
-	// 			],
-	// 			_AI
-	// 		];
-	// 		CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
-	// 	} forEach _sweepGroups;
-	// ENDMETHOD;
-	
-	
-	// procedural preconditions
-	// POS world state property comes from action parameters
-	/*
-	// Don't have these preconditions any more, they are supplied by goal instead
-	STATIC_METHOD(getPreconditions)
-		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
-		
-		pr _pos = CALLSM2("Action", "getParameterValue", _actionParameters, TAG_POS);
-		pr _ws = [WSP_GAR_COUNT] call ws_new;
-		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-		
-		_ws			
+			// Spawn single units
+			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
+			true
+		};
 	ENDMETHOD;
-	*/
-	
 ENDCLASS;

@@ -118,7 +118,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		private _state = T_CALLM0("activateIfInactive");
 
-		if(_state == ACTION_STATE_ACTIVE && {GAME_TIME > T_GETV("nextLookTime")}) then {
+		if(_state == ACTION_STATE_ACTIVE && { GAME_TIME > T_GETV("nextLookTime") }) then {
 			private _pos = T_GETV("pos");
 			private _radius = T_GETV("radius");
 			private _hG = T_GETV("hG");
