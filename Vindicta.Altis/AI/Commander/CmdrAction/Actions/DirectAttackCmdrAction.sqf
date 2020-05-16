@@ -32,7 +32,7 @@ CLASS("DirectAttackCmdrAction", "CmdrAction")
 
 	ENDMETHOD;
 
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _garrId = T_GETV("garrId");
@@ -71,7 +71,7 @@ CLASS("DirectAttackCmdrAction", "CmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD(getRecordSerial)
+	public override METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record

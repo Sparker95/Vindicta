@@ -243,18 +243,22 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			// It means our adjusted strength goes up a lot against armor and down a lot against AA, resulting in scoring 
 			// doing the same.
 			//											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
-			#define AIR_GARRISON_EFF_PROFILE 			[0.5,	1.5,	3,		1,		1,		1,		1,		-3,		1,		1,		1,		1,		1,		1]
+			#define AIR_GARRISON_EFF_PROFILE 			[0.25,	1.5,	3,		1,		1,		1,		1,		-3,		1,		1,		1,		1,		1,		1]
 			private _enemyStr = EFF_SUM(_enemyEff);
 			if(_enemyStr > 0) then {
 				private _modifiedEnemyEff = EFF_MUL(_enemyEff, AIR_GARRISON_EFF_PROFILE);
-				private _strengthScalar = EFF_SUM(_modifiedEnemyEff) / _enemyStr;
+				private _modifiedEnemyStr = EFF_SUM(_modifiedEnemyEff);
+				// We also apply a response curve to stop air units responding vs weak enemy, but preference them vs strong:
+				// Its called softplus Relu https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Softplus
+				// See this function at https://www.desmos.com/calculator/ptlmv3tdcf
+				#define AIR_RESPONSE_FN(_str) (1.45 * ln(1 + exp((_str) - 4.7)))
+				private _strengthScalar = AIR_RESPONSE_FN(_modifiedEnemyStr) / _enemyStr;
 				_detachEffStrength = _detachEffStrength * CLAMP_POSITIVE(_strengthScalar);
 			};
 		};
 
-		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
-		// Air units care about distance a lot less though.
-		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.1 } else { 4 };
+		// Air units care about distance less than ground units (check https://www.desmos.com/calculator/pjs09xfxkm to determine good values)
+		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.4 } else { 1 };
 		private _distCoeff = CALLSM3("CmdrAction", "calcDistanceFalloff", _srcGarrPos, _tgtClusterPos, _fallOffRate);
 
 		// Our final resource score combining available efficiency, distance and transportation.

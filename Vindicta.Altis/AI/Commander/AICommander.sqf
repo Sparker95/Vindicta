@@ -2057,7 +2057,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
-			// TODO: We should be able to redirect for QRFs. Perhaps it 
 			(GETV(_x, "side") == _side) and
 			{ !CALLM0(_x, "isBusy") } and 
 			{
