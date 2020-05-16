@@ -56,7 +56,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		T_SETV("radiusVar", _radiusVar);
 	ENDMETHOD;
 
-	/* override */ METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -129,25 +129,12 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		}
 	ENDMETHOD;
 
-	/* override */ METHOD(cancel)
+	public override METHOD(cancel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
-
-		// What we do depends on if we are applying to a sim world model or the real world.
-		switch(GETV(_world, "type")) do {
-			case WORLD_TYPE_SIM_NOW: {
-				OOP_ERROR_0("cancel is only possible in real world");
-			};
-			
-			case WORLD_TYPE_SIM_FUTURE: {
-				OOP_ERROR_0("cancel is only possible in real world");
-			};
-			case WORLD_TYPE_REAL: {
-				if (T_GETV("moving")) then {
-					private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
-					ASSERT_OBJECT(_garr);
-					CALLM0(_garr, "cancelMoveActual");
-				};
-			};
+		if(GETV(_world, "type") == WORLD_TYPE_REAL && T_GETV("moving")) then {
+			private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
+			ASSERT_OBJECT(_garr);
+			CALLM0(_garr, "cancelMoveActual");
 		};
 	ENDMETHOD;
 ENDCLASS;
