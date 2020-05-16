@@ -88,7 +88,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	_pos - optional, default position to set to the garrison
 	*/
 	METHOD(new)
-		params [P_THISOBJECT, P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL), P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName"), P_BOOL("_immediateSpawn"), P_OOP_OBJECT("_home")];
+		params [P_THISOBJECT, P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL), P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING_DEFAULT("_templateName", "tDefault"), P_BOOL("_immediateSpawn"), P_OOP_OBJECT("_home")];
 
 		OOP_INFO_1("NEW GARRISON: %1", _this);
 

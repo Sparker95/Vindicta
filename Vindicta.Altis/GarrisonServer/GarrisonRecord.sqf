@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 /*
 Class: GarrisonRecord
 Client-side representation of a garrison.

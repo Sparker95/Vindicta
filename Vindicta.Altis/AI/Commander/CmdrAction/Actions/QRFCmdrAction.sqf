@@ -388,7 +388,7 @@ REGISTER_DEBUG_MARKER_STYLE("QRFCmdrAction", "ColorRed", "mil_destroy");
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 	T_CALLM("updateScore", [_world ARG _future]);
 	private _finalScore = T_CALLM("getFinalScore", []);
-	diag_log format ["QRF action final score: %1", _finalScore];
+	//diag_log format ["QRF action final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	private _nowSimState = T_CALLM("applyToSim", [_world]);

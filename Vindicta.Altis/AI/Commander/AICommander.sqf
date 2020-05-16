@@ -345,7 +345,7 @@ CLASS("AICommander", "AI")
 				if(!isNil "gAICommanderInd") then { _cmdr = gAICommanderInd };
 			};
 			default {
-				OOP_WARNING_1("AICommander of side %1 does not exist", _side);
+				// Its fine, return null
 			};
 		};
 		_cmdr

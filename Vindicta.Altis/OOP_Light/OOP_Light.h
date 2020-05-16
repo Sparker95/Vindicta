@@ -683,52 +683,52 @@
 //  */
 
 #define CLASS(classNameStr, baseClassNames) \
-if (QUOTE(OOP_CLASS_NAME) == QUOTE(OOP_DEFAULT_CLASS_NAME)) then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", classNameStr]; }; \
-LOG_CLASS_BEGIN(class, base); \
-call { \
-private _oop_classNameStr = classNameStr; \
-SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
-private _oop_memList = []; \
-private _oop_staticMemList = []; \
-private _oop_parents = []; \
-private _oop_methodList = []; \
-private _oop_newMethodList = []; \
-private _parentClassNames = if(baseClassNames isEqualType "") then {[baseClassNames]} else {baseClassNames}; \
-if (count _parentClassNames > 0) then { \
-	{ \
-		private _baseClassNameStr = _x; \
-		if (_baseClassNameStr != "") then { \
-			if (!([_baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
-				private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
-				FAILURE(_msg); \
-			}; \
-			{_oop_parents pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, PARENTS_STR); \
-			_oop_parents pushBackUnique _baseClassNameStr; \
-			{ _oop_memList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, MEM_LIST_STR); \
-			{ _oop_staticMemList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, STATIC_MEM_LIST_STR); \
-			private _oop_addedMethodList = []; \
-			{ _oop_methodList pushBackUnique _x; _oop_addedMethodList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR); \
-			private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
-			{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
-				FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
-				_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
-				if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
-			} forEach (_oop_addedMethodList - ["new", "delete", "copy"]); \
+	if (QUOTE(OOP_CLASS_NAME) == QUOTE(OOP_DEFAULT_CLASS_NAME)) then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", classNameStr]; }; \
+	LOG_CLASS_BEGIN(class, base); \
+	call { \
+		private _oop_classNameStr = classNameStr; \
+		SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
+		private _oop_memList = []; \
+		private _oop_staticMemList = []; \
+		private _oop_parents = []; \
+		private _oop_methodList = []; \
+		private _oop_newMethodList = []; \
+		private _parentClassNames = if(baseClassNames isEqualType "") then {[baseClassNames]} else {baseClassNames}; \
+		if (count _parentClassNames > 0) then { \
+			{ \
+				private _baseClassNameStr = _x; \
+				if (_baseClassNameStr != "") then { \
+					if (!([_baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
+						private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
+						FAILURE(_msg); \
+					}; \
+					{_oop_parents pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, PARENTS_STR); \
+					_oop_parents pushBackUnique _baseClassNameStr; \
+					{ _oop_memList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, MEM_LIST_STR); \
+					{ _oop_staticMemList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, STATIC_MEM_LIST_STR); \
+					private _oop_addedMethodList = []; \
+					{ _oop_methodList pushBackUnique _x; _oop_addedMethodList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR); \
+					private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
+					{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
+						FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
+						_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
+						if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
+					} forEach (_oop_addedMethodList - ["new", "delete", "copy"]); \
+				}; \
+			} forEach _parentClassNames; \
 		}; \
-	} forEach _parentClassNames; \
-}; \
-SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
-SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList); \
-SET_SPECIAL_MEM(_oop_classNameStr, STATIC_MEM_LIST_STR, _oop_staticMemList); \
-SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
-SET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR, NAMESPACE); \
-PROFILER_COUNTER_INIT(_oop_classNameStr); \
-METHOD(new)ENDMETHOD; \
-METHOD(delete)ENDMETHOD; \
-METHOD(copy) _this call OOP_clone_default ENDMETHOD; \
-METHOD(assign) _this call OOP_assign_default ENDMETHOD; \
-VARIABLE(OOP_PARENT_STR); \
-VARIABLE(OOP_PUBLIC_STR);
+		SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
+		SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList); \
+		SET_SPECIAL_MEM(_oop_classNameStr, STATIC_MEM_LIST_STR, _oop_staticMemList); \
+		SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
+		SET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR, NAMESPACE); \
+		PROFILER_COUNTER_INIT(_oop_classNameStr); \
+		METHOD(new)ENDMETHOD; \
+		METHOD(delete)ENDMETHOD; \
+		METHOD(copy) _this call OOP_clone_default ENDMETHOD; \
+		METHOD(assign) _this call OOP_assign_default ENDMETHOD; \
+		VARIABLE(OOP_PARENT_STR); \
+		VARIABLE(OOP_PUBLIC_STR);
 
 
 // ----------------------------------------

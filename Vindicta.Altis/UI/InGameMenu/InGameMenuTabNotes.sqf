@@ -13,7 +13,6 @@
 CLASS("InGameMenuTabNotes", "DialogTabBase")
 
 	STATIC_VARIABLE("text");
-	STATIC_VARIABLE("instance");
 
 	METHOD(new)
 		params [P_THISOBJECT];

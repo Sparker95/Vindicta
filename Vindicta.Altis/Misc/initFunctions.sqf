@@ -28,6 +28,7 @@ misc_fnc_getVehiclesInBuilding = compile preprocessFileLineNumbers "Misc\fn_getV
 
 misc_fnc_getVersion = compile preprocessFileLineNumbers "Misc\fn_getVersion.sqf";
 misc_fnc_getSaveVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveVersion.sqf";
+misc_fnc_getSaveBreakVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveBreakVersion.sqf";
 
 misc_fnc_isAdminLocal = compile preprocessFileLineNumbers "Misc\fn_isAdminLocal.sqf";
 

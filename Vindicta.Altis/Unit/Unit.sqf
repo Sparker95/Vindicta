@@ -2506,6 +2506,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
 		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;
+		#ifndef _SQF_VM
 		if(!isClass (configFile >> "CfgVehicles" >> _class)) then {
 			private _garrison = _serial#UNIT_DATA_ID_GARRISON;
 			private _template = if(IS_NULL_OBJECT(_garrison)) then { "" } else { CALLM0(_garrison, "getTemplate") };
@@ -2529,6 +2530,8 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				OOP_ERROR_MSG("Class %1 no longer exists, and garrison template couldn't be found, so no automatic replacement can happen", [_class]);
 			};
 		};
+		#endif
+		FIX_LINE_NUMBERS()
 
 		T_SETV("data", _serial);
 

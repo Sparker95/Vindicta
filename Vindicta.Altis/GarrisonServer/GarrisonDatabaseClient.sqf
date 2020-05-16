@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 #define pr private
 
 /*
@@ -26,6 +26,7 @@ CLASS("GarrisonDatabaseClient", "")
 		pr _ns = [false] call CBA_fnc_createNamespace;
 		T_SETV("hm", _ns);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		T_SETV("allRecords", []);
 	ENDMETHOD;
