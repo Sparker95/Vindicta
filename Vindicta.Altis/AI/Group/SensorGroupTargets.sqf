@@ -61,10 +61,10 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		pr _otherSides = [WEST, EAST, INDEPENDENT, CIVILIAN] - [_side];
 		pr _allPlayers = allPlayers;
 		
-		if (({alive _x} count (units _hG)) > 0) then {
+		if ({ alive _x } count units _hG > 0) then {
 		
 			// Check spotted targets
-			pr _nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 0/*TARGET_AGE_TO_REVEAL*/];
+			pr _nt = leader _hG targetsQuery [objNull, sideUnknown, "", [], 0/*TARGET_AGE_TO_REVEAL*/];
 			// Filter objects that are of different side and are currently being seen
 			pr _currentlyObservedObjects = _nt select {
 				//private _o = _x select 1;
@@ -72,7 +72,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				//Target age is the time that has passed since the last time the group has actually seen the enemy unit.
 				// Values lower than 0 mean that they see the enemy right now
 				//private _age = _x select 5;
-				((side group (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
+				side group (_x#1) in _otherSides && _x#5 <= TARGET_AGE_TO_REVEAL
 			};
 			
 			#ifdef DEBUG_SENSOR_GROUP_TARGETS
@@ -120,7 +120,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 			// Add exposed vehicle crew to the array
 			_currentlyObservedObjects append _exposedVehicleCrew;
 		
-			if ((behaviour (leader _hG)) isEqualTo "COMBAT") then {
+			if (behaviour leader _hG isEqualTo "COMBAT") then {
 				// Find new enemies
 				/*
 				0 accuracy: Number - a coefficient, which reflects how close the returned result to the query filter. Range: 0 - 1 (1 - best match)
@@ -137,8 +137,9 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 
 					pr _observedTargets = _currentlyObservedObjects select {
 						pr _hO = _x select 1;
-						( (side group  _hO) in _otherSides) &&
-						(_hO getVariable [UNDERCOVER_WANTED, true]) // If there is no variable, then this unit has no undercoverMonitor, so he is always wanted if spotted
+						//[side group  _hO, _side] call BIS_fnc_sideIsEnemy &&
+						side group  _hO in _otherSides &&
+						_hO getVariable [UNDERCOVER_WANTED, true] // If there is no variable, then this unit has no undercoverMonitor, so he is always wanted if spotted
 					};
 					// Have we spotted anyone??
 					if (count _observedTargets > 0) then {
