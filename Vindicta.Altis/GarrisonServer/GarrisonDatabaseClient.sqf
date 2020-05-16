@@ -15,7 +15,9 @@ Author: Sparker 23 August 2019
 CLASS("GarrisonDatabaseClient", "")
 
 	// Hashmap that maps actual garrison references to garrison records
-	VARIABLE("hm");
+	VARIABLE("refMap");
+	// Hashmap that maps locations to garrison references (only general types)
+	VARIABLE("locMap");
 
 	VARIABLE("allRecords");
 
@@ -23,8 +25,10 @@ CLASS("GarrisonDatabaseClient", "")
 		params [P_THISOBJECT];
 
 		#ifndef _SQF_VM
-		pr _ns = [false] call CBA_fnc_createNamespace;
-		T_SETV("hm", _ns);
+		pr _refMap = [false] call CBA_fnc_createNamespace;
+		T_SETV("refMap", _refMap);
+		pr _locMap = [false] call CBA_fnc_createNamespace;
+		T_SETV("locMap", _locMap);
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -35,7 +39,7 @@ CLASS("GarrisonDatabaseClient", "")
 	METHOD(delete)
 		params [P_THISOBJECT];
 
-		pr _ns = T_GETV("hm");
+		pr _ns = T_GETV("refMap");
 		_ns call CBA_fnc_deleteNamespace;
 	ENDMETHOD;
 
@@ -44,10 +48,11 @@ CLASS("GarrisonDatabaseClient", "")
 
 		OOP_INFO_1("ADD GARRISON RECORD: %1", _garRecord);
 
-		// Add the garrison reference to the hashmap
-		pr _hm = T_GETV("hm");
-		pr _garRef = GETV(_garRecord, "garRef");
-		_hm setVariable [_garRef, _garRecord];
+		// Add the garrison reference to the hashmaps
+		T_GETV("refMap") setVariable [GETV(_garRecord, "garRef"), _garRecord];
+		if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL) then {
+			T_GETV("locMap") setVariable [GETV(_garRecord, "location"), _garRecord];
+		};
 
 		// Initialize the client-side data of the GarrisonRecord
 		CALLM0(_garRecord, "clientAdd");
@@ -61,9 +66,10 @@ CLASS("GarrisonDatabaseClient", "")
 		OOP_INFO_1("DELETE GARRISON RECORD: %1", _garRecord);
 
 		// Remove it from the hashmap
-		pr _hm = T_GETV("hm");
-		pr _garRef = GETV(_garRecord, "garRef");
-		_hm setVariable [_garRef, nil];
+		T_GETV("refMap") setVariable [GETV(_garRecord, "garRef"), nil];
+		if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL) then {
+			T_GETV("locMap") setVariable [GETV(_garRecord, "location"), nil];
+		};
 
 		// Destroy the GarrisonRecord
 		CALLM0(_garRecord, "clientRemove");
@@ -77,8 +83,14 @@ CLASS("GarrisonDatabaseClient", "")
 	METHOD(getGarrisonRecord)
 		params [P_THISOBJECT, P_STRING("_garRef")];
 
-		pr _hm = T_GETV("hm");
-		_hm getVariable [_garRef, ""]
+		T_GETV("refMap") getVariable [_garRef, NULL_OBJECT]
+	ENDMETHOD;
+
+	// Returns garrison record associated with this garrison reference
+	METHOD(getGarrisonRecordForLocation)
+		params [P_THISOBJECT, P_STRING("_location")];
+
+		T_GETV("locMap") getVariable [_location, NULL_OBJECT]
 	ENDMETHOD;
 
 	// Returns an array of existing records which are pointing at the specified _garRef
@@ -108,7 +120,6 @@ CLASS("GarrisonDatabaseClient", "")
 	ENDMETHOD;
 
 	// - - - - - - Remotely executed static methods (by GarrisonServer) - - - - - - 
-
 	STATIC_METHOD(destroy)
 		params [P_THISCLASS, P_STRING("_garRef")];
 		_thisClass = "GarrisonDatabaseClient";
@@ -120,8 +131,8 @@ CLASS("GarrisonDatabaseClient", "")
 		//if (isNil "_object") exitWith{}; // Sanity check
 
 		// Check if we have a local record about this garrison
-		pr _hm = GETV(_object, "hm");
-		pr _garRecordLocal = _hm getVariable _garRef;
+		pr _refMap = GETV(_object, "refMap");
+		pr _garRecordLocal = _refMap getVariable _garRef;
 		if (isNil "_garRecordLocal") then {
 			// We don't have a record of such garrison anyway, ignore it
 		} else {
@@ -146,14 +157,19 @@ CLASS("GarrisonDatabaseClient", "")
 		pr _garRef = GETV(_garRecord, "garRef");
 
 		// Check if we have a local record about this garrison
-		pr _hm = GETV(_object, "hm");
-		pr _garRecordLocal = _hm getVariable _garRef;
-		if (isNil "_garRecordLocal") then {
+		pr _garRecordExisting = GETV(_object, "refMap") getVariable _garRef;
+		if (isNil "_garRecordExisting") then {
 			// Store the just-created GarrisonRecord
 			CALLM1(_object, "addGarrisonRecord", _garRecord);
 		} else {
 			// Update data and then delete it
-			CALLM1(_garRecordLocal, "clientUpdate", _garRecord);
+			// Update location if it changed
+			if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL && GETV(_garRecordExisting, "location") != GETV(_garRecord, "location")) then {
+				private _locMap = T_GETV("locMap");
+				_locMap setVariable [GETV(_garRecordExisting, "location"), nil];
+				_locMap setVariable [GETV(_garRecord, "location"), _garRecordExisting];
+			};
+			CALLM1(_garRecordExisting, "clientUpdate", _garRecord);
 			DELETE(_garRecord); // We have copied data and don't need this any more
 		};
 	ENDMETHOD;
