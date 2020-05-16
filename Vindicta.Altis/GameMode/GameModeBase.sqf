@@ -663,32 +663,32 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _templateName = T_CALLM2("getTemplateName", _side, _faction);
 		[_templateName] call t_fnc_getTemplate
 	ENDMETHOD;
-	
+
 	/* protected virtual */ METHOD(initGarrisons)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
-		private _type = GETV(_loc, "type");
+		private _locationType = GETV(_loc, "type");
 
 		private _garrisons = [];
-		if(_type in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) then {
+		if(_locationType in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) then {
 			private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
 			private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]) min 10;
 			private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
-			private _cBuildingSentry = 0;
 			private _cCargoBoxes = 2;
-			private _args = ["military", _type, _side, _cInf, _cVehGround, _cHMGGMG, _cBuildingSentry, _cCargoBoxes];
-			_garrisons pushBack T_CALLM("createGarrison", _args);
+			private _args = [_locationType, _side, _cInf, _cVehGround, _cHMGGMG, _cCargoBoxes, 80];
+			_garrisons pushBack T_CALLM("createMilitaryGarrison", _args);
 		};
-		if(_type == LOCATION_TYPE_POLICE_STATION) then {
+		if(_locationType == LOCATION_TYPE_POLICE_STATION) then {
 			private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
 			private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
-			private _args = ["police", _type, _side, _cInf, _cVehGround, 0, 0, 0, 2];
-			_garrisons pushBack T_CALLM("createGarrison", _args);
+			private _args = [_side, _cInf, _cVehGround, 2, 50];
+			_garrisons pushBack T_CALLM("createPoliceGarrison", _args);
 		};
-		if(_type == LOCATION_TYPE_AIRPORT) then {
+		if(_locationType == LOCATION_TYPE_AIRPORT) then {
+			// TODO: control this via difficulty setting?
 			private _cVehHeli = 0; //CALLM0(_loc, "getCapacityHeli");
 			private _cVehPlanes = 0; //CALLM0(_loc, "getCapacityPlane");
-			private _args = [_type, _side, _cVehHeli, _cVehPlanes];
+			private _args = [_side, _cVehHeli, _cVehPlanes];
 			_garrisons pushBack T_CALLM("createAirGarrison", _args);
 		};
 		_garrisons
@@ -1350,100 +1350,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#endif;
 			FIX_LINE_NUMBERS()
 		} forEach _roadblockPositionsFinal;
-
 	ENDMETHOD;
-
+	
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
 	#define ADD_HELIS
 	//#define ADD_ARMED_MRAPS
 	//#define ADD_ARMOR
 	#define ADD_STATICS
-	METHOD(createGarrison)
-		params [P_THISOBJECT, P_STRING("_faction"), P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cVehHeli"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+	METHOD(createMilitaryGarrison)
+		params [P_THISOBJECT, P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cCargoBoxes"), P_NUMBER("_buildResources")];
 
-		if (_faction == "police") exitWith {
-			
-			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "police");
-			private _template = [_templateName] call t_fnc_getTemplate;
-
-			private _args = [GARRISON_TYPE_GENERAL, _side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
-			private _gar = NEW("Garrison", _args);
-
-			//OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries",
-			//	[_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
-
-			private _nInfGroups = CLAMP(_cInf * 0.5, 2, 6);
-			for "_i" from 1 to _nInfGroups do {
-				private _infGroup = NEW("Group", [_side ARG GROUP_TYPE_INF]);
-				for "_i" from 0 to 1 do {
-					private _variants = [T_INF_SL, T_INF_officer, T_INF_officer];
-					NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _infGroup]);
-				};
-				OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _infGroup]);
-				if(canSuspend) then {
-					CALLM2(_gar, "postMethodSync", "addGroup", [_infGroup]);
-				} else {
-					CALLM(_gar, "addGroup", [_infGroup]);
-				};
-			};
-
-			// // Remainder back at station
-			// private _infGroup = NEW("Group", [_side ARG GROUP_TYPE_INF]);
-			// private _remainder = _cInf;
-			// for "_i" from 1 to _remainder do {
-			// 	private _variants = [T_INF_SL, T_INF_officer, T_INF_officer];
-			// 	NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _infGroup]);
-			// };
-			// OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _infGroup]);
-			// if(canSuspend) then {
-			// 	CALLM2(_gar, "postMethodSync", "addGroup", [_infGroup]);
-			// } else {
-			// 	CALLM(_gar, "addGroup", [_infGroup]);
-			// };
-
-			// Patrol vehicles
-			for "_i" from 1 to CLAMP(_cVehGround, 2, 6) do {
-				// Add a car in front of police station
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_car_unarmed ARG -1 ARG ""]);
-				if(canSuspend) then {
-					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
-				} else {
-					CALLM(_gar, "addUnit", [_newUnit]);
-				};
-				OOP_INFO_MSG("%1: Added police car %2", [_gar ARG _newUnit]);
-			};
-
-			// Cargo boxes
-			private _i = 0;
-			while {_i < _cCargoBoxes} do {
-				private _subcatid = T_CARGO_box_small; // selectRandom [T_CARGO_box_small; // , T_CARGO_box_medium]; // - - Disabled big cargo boxes for police for now
-				private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG _subcatid ARG -1 ARG ""]);
-				CALLM1(_newUnit, "setBuildResources", 50);
-				//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
-				if (CALLM0(_newUnit, "isValid")) then {
-					if(canSuspend) then {
-						CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
-					} else {
-						CALLM(_gar, "addUnit", [_newUnit]);
-					};
-					OOP_INFO_MSG("%1: Added cargo box %2", [_gar ARG _newUnit]);
-				} else {
-					DELETE(_newUnit);
-				};
-				_i = _i + 1;
-			};
-
-			_gar
-		};
-
+		private _faction = "military";
 		private _templateName = CALLM2(gGameMode, "getTemplateName", _side, _faction);
 		private _template = [_templateName] call t_fnc_getTemplate;
 
-		private _args = [GARRISON_TYPE_GENERAL, _side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
+		private _args = [GARRISON_TYPE_GENERAL, _side, [], _faction, _templateName];
 		private _gar = NEW("Garrison", _args);
-
-		//OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 
 		// Add default units to the garrison
 
@@ -1500,22 +1423,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 		} forEach _infSpec;
 
-		// // Add building sentries
-		// if (_cBuildingSentry > 0) then {
-		// 	private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_INF]);
-		// 	while {_cBuildingSentry > 0} do {
-		// 		private _variants = [T_INF_marksman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_LMG];
-		// 		private _newUnit = NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
-		// 		_cBuildingSentry = _cBuildingSentry - 1;
-		// 	};
-		// 	OOP_INFO_MSG("%1: Created sentry group %2", [_gar ARG _sentryGroup]);
-		// 	if(canSuspend) then {
-		// 		CALLM2(_gar, "postMethodSync", "addGroup", [_sentryGroup]);
-		// 	} else {
-		// 		CALLM(_gar, "addGroup", [_sentryGroup]);
-		// 	};
-		// };
-
 		// Add default vehicles
 		// Some trucks
 		private _i = 0;
@@ -1541,7 +1448,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Unarmed MRAPs
 		private _i = 0;
 		#ifdef ADD_UNARMED_MRAPS
-		while {(_cVehGround > 0) && _i < 1} do  {
+		while {_cVehGround > 0 && _i < 1} do  {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_MRAP_unarmed ARG -1 ARG ""]);
 			if (CALLM0(_newUnit, "isValid")) then {
 				if(canSuspend) then {
@@ -1583,12 +1490,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			
 			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_STATIC]);
 			while {_cHMGGMG > 0} do {
-				private _variants = [T_VEH_stat_HMG_high];
 				// use GMG only if it's defined
-				private _tGMG = (_template select T_VEH) select T_VEH_stat_GMG_high;
-				if !(isNil "_tGMG") then { _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]; };
+				private _tGMG = _template # T_VEH # T_VEH_stat_GMG_high;
+				private _variant = if !(isNil "_tGMG") then {
+					selectRandom [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]
+				} else {
+					T_VEH_stat_HMG_high
+				};
 
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG selectRandom _variants ARG -1 ARG _staticGroup]);
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG _variant ARG -1 ARG _staticGroup]);
 				CALLM(_newUnit, "createDefaultCrew", [_template]);
 				_cHMGGMG = _cHMGGMG - 1;
 			};
@@ -1604,7 +1514,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _i = 0;
 		while {_cCargoBoxes > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
-			CALLM1(_newUnit, "setBuildResources", 80);
+			CALLM1(_newUnit, "setBuildResources", _buildResources);
 			//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
 			if (CALLM0(_newUnit, "isValid")) then {
 				if(canSuspend) then {
@@ -1626,10 +1536,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	#define ADD_HELIS
 	#define ADD_PLANES
 	METHOD(createAirGarrison)
-		params [P_THISOBJECT, P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cVehHeli"), P_NUMBER("_cVehPlane")];
+		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cVehHeli"), P_NUMBER("_cVehPlane")];
 
 		private _templateName = CALLM2(gGameMode, "getTemplateName", _side, _faction);
-		private _template = [_templateName] call t_fnc_getTemplate;
+		//private _template = [_templateName] call t_fnc_getTemplate;
 
 		private _args = [GARRISON_TYPE_AIR, _side, [], _faction, _templateName];
 		private _gar = NEW("Garrison", _args);
@@ -1667,6 +1577,65 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		_gar
 	ENDMETHOD;
+
+	METHOD(createPoliceGarrison)
+		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cCargoBoxes"), P_NUMBER("_buildResources")];
+		
+		private _faction = "police";
+		private _templateName = CALLM2(gGameMode, "getTemplateName", _side, _faction);
+		private _template = [_templateName] call t_fnc_getTemplate;
+
+		private _args = [GARRISON_TYPE_GENERAL, _side, [], _faction, _templateName];
+		private _gar = NEW("Garrison", _args);
+
+		private _nInfGroups = CLAMP(_cInf * 0.5, 2, 6);
+		for "_i" from 1 to _nInfGroups do {
+			private _infGroup = NEW("Group", [_side ARG GROUP_TYPE_INF]);
+			for "_i" from 0 to 1 do {
+				private _variant = selectRandom [T_INF_SL, T_INF_officer, T_INF_officer];
+				NEW("Unit", [_template ARG 0 ARG _variant ARG -1 ARG _infGroup]);
+			};
+			OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _infGroup]);
+			if(canSuspend) then {
+				CALLM2(_gar, "postMethodSync", "addGroup", [_infGroup]);
+			} else {
+				CALLM(_gar, "addGroup", [_infGroup]);
+			};
+		};
+
+		// Patrol vehicles
+		for "_i" from 1 to CLAMP(_cVehGround, 2, 6) do {
+			// Add a car in front of police station
+			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_car_unarmed ARG -1 ARG ""]);
+			if(canSuspend) then {
+				CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+			} else {
+				CALLM(_gar, "addUnit", [_newUnit]);
+			};
+			OOP_INFO_MSG("%1: Added police car %2", [_gar ARG _newUnit]);
+		};
+
+		// Cargo boxes
+		private _i = 0;
+		while {_i < _cCargoBoxes} do {
+			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_small ARG -1 ARG ""]);
+			CALLM1(_newUnit, "setBuildResources", _buildResources);
+			if (CALLM0(_newUnit, "isValid")) then {
+				if(canSuspend) then {
+					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+				} else {
+					CALLM(_gar, "addUnit", [_newUnit]);
+				};
+				OOP_INFO_MSG("%1: Added cargo box %2", [_gar ARG _newUnit]);
+			} else {
+				DELETE(_newUnit);
+			};
+			_i = _i + 1;
+		};
+
+		_gar
+	ENDMETHOD;
+
 	// Create SideStats
 	/* private */ METHOD(initSideStats)
 		params [P_THISOBJECT];
