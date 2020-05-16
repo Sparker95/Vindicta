@@ -406,17 +406,38 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						// Give weapons to the unit (if he has special weapons)
 						T_CALLM0("applyInfantryWeapons");
 
+						// Global difficulty will effect AI between 0.2 and 0.8
+						private _effectiveDiff = if(side _groupHandle == CALLM0(gGameMode, "getEnemySide")) then {
+							vin_diff_global;
+						} else {
+							1 - vin_diff_global
+						};
+
+						// Difficulty on effects AI between 0.2 and 0.8, to make it more responsive.
+						// i.e. difficulty above 0.8 will give all AI skill 1, below 0.2 all AI skill 0
+						private _diffModifer = MAP_TO_RANGE(_effectiveDiff, 0.2, 0.8, 0, 1);
+
 						// Set unit skill
-						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_global * vin_aiskill_aimingAccuracy];	// Aiming and precision
-						_objectHandle setSkill ["aimingShake", vin_aiskill_global * vin_aiskill_aimingShake];
-						_objectHandle setSkill ["aimingSpeed", vin_aiskill_global * vin_aiskill_aimingSpeed];
-						_objectHandle setSkill ["commanding", 1];		// Everything else
-						_objectHandle setSkill ["courage", 0.5];
-						//_objectHandle setSkill ["endurance", 0.8];
-						_objectHandle setSkill ["general", 1];
-						_objectHandle setSkill ["reloadSpeed", 0.5];
-						_objectHandle setSkill ["spotDistance", vin_aiskill_global * vin_aiskill_spotDistance];
-						_objectHandle setSkill ["spotTime", vin_aiskill_global * vin_aiskill_spotTime];
+						// Aiming and precision
+						_objectHandle setSkill ["aimingAccuracy", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingAccuracy * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["aimingShake", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingShake * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["aimingSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingSpeed * vin_aiskill_global, 1)];
+						// Everything else
+						_objectHandle setSkill ["commanding", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["courage", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["general", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["reloadSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["spotDistance", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotDistance * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["spotTime", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotTime * vin_aiskill_global, 1)];
+
+						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+						switch _subcatID do {
+							case T_INF_medic: 		{ _objectHandle setUnitTrait ["medic", true]; };
+							case T_INF_engineer: 	{ _objectHandle setUnitTrait ["engineer", true]; };
+							case T_INF_exp: 		{ _objectHandle setUnitTrait ["explosiveSpecialist", true]; };
+							case T_INF_sniper: 		{ _objectHandle setUnitTrait ["camouflageCoef", 0.5]; };
+							case T_INF_spotter: 	{ _objectHandle setUnitTrait ["camouflageCoef", 0.5]; };
+						};
 
 						// make it impossible to ace interact with this unit, may need better solution in the future
 						if (side _objectHandle != west) then {
