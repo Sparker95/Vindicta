@@ -81,6 +81,9 @@
 // QRFs will be big
 //#define DEBUG_BIG_QRF
 
+// QRFs will be air only
+//#define DEBUG_AIR_QRF
+
 // Disables planning for cmdr ai
 //#define CMDR_AI_NO_PLAN
 
