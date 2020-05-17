@@ -50,7 +50,7 @@ CLASS("GarrisonDatabaseClient", "")
 
 		// Add the garrison reference to the hashmaps
 		T_GETV("refMap") setVariable [GETV(_garRecord, "garRef"), _garRecord];
-		if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL) then {
+		if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL && { GETV(_garRecord, "location") != NULL_OBJECT }) then {
 			T_GETV("locMap") setVariable [GETV(_garRecord, "location"), _garRecord];
 		};
 
@@ -67,7 +67,7 @@ CLASS("GarrisonDatabaseClient", "")
 
 		// Remove it from the hashmap
 		T_GETV("refMap") setVariable [GETV(_garRecord, "garRef"), nil];
-		if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL) then {
+		if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL && { GETV(_garRecord, "location") != NULL_OBJECT }) then {
 			T_GETV("locMap") setVariable [GETV(_garRecord, "location"), nil];
 		};
 
@@ -89,8 +89,11 @@ CLASS("GarrisonDatabaseClient", "")
 	// Returns garrison record associated with this garrison reference
 	METHOD(getGarrisonRecordForLocation)
 		params [P_THISOBJECT, P_STRING("_location")];
-
-		T_GETV("locMap") getVariable [_location, NULL_OBJECT]
+		if(_location == NULL_OBJECT) then {
+			NULL_OBJECT
+		} else {
+			T_GETV("locMap") getVariable [_location, NULL_OBJECT]
+		}
 	ENDMETHOD;
 
 	// Returns an array of existing records which are pointing at the specified _garRef
@@ -163,14 +166,21 @@ CLASS("GarrisonDatabaseClient", "")
 			CALLM1(_object, "addGarrisonRecord", _garRecord);
 		} else {
 			// Update data and then delete it
-			// Update location if it changed
-			if(GETV(_garRecord, "type") == GARRISON_TYPE_GENERAL && GETV(_garRecordExisting, "location") != GETV(_garRecord, "location")) then {
-				private _locMap = T_GETV("locMap");
-				_locMap setVariable [GETV(_garRecordExisting, "location"), nil];
-				_locMap setVariable [GETV(_garRecord, "location"), _garRecordExisting];
+			
+			// Remove record of current location
+			if(GETV(_garRecordExisting, "type") == GARRISON_TYPE_GENERAL) then {
+				pr _prevLoc = GETV(_garRecordExisting, "location");
+				if(_prevLoc != NULL_OBJECT) then { T_GETV("locMap") setVariable [_prevLoc, nil]; };
 			};
+
 			CALLM1(_garRecordExisting, "clientUpdate", _garRecord);
 			DELETE(_garRecord); // We have copied data and don't need this any more
+
+			// Add record of new location (it might not have changed, but whatever)
+			if(GETV(_garRecordExisting, "type") == GARRISON_TYPE_GENERAL) then {
+				pr _newLoc = GETV(_garRecordExisting, "location");
+				if(_newLoc != NULL_OBJECT) then { T_GETV("locMap") setVariable [_newLoc, _garRecordExisting]; };
+			};
 		};
 	ENDMETHOD;
 
