@@ -27,6 +27,7 @@ FIX_LINE_NUMBERS()
 #define SAVE_TYPE_RECOVERY			1
 #define SAVE_TYPE_AUTO				2
 
+#define OOP_CLASS_NAME GameManager
 CLASS("GameManager", "MessageReceiverEx")
 
 	VARIABLE("gameModeInitialized");	// State of the game for this machine
@@ -35,11 +36,11 @@ CLASS("GameManager", "MessageReceiverEx")
 	VARIABLE("saveID");				// saveID property of SaveGameHeader
 	VARIABLE("campaignStartDate");	// In-game date when the campaign was started
 	VARIABLE("templates");			// Array of templates currently used
-	VARIABLE("gameModeClassName");	// 
+	VARIABLE("gameModeClassName");
 	VARIABLE("lastAutoSave");
 	VARIABLE("lastAutoSaveCheck");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("gameModeInitialized", false);
@@ -60,10 +61,10 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// This method is called at preinit (see https://community.bistudio.com/wiki/Initialization_Order)
-	METHOD("preInit") {
+	METHOD(preInit)
 		params [P_THISOBJECT];
 
 		// Create various objects not related to a particular mission
@@ -124,31 +125,31 @@ CLASS("GameManager", "MessageReceiverEx")
 				CALLM1(gIntelDatabaseClient, "addIntel", _dummyIntel);
 			*/
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// This method is called from init.sqf (see https://community.bistudio.com/wiki/Initialization_Order)
-	METHOD("init") {
+	METHOD(init)
 		params [P_THISOBJECT];
 
 		// This must be done after modules are initialized at least, preferably as late as possible in init order.
 		if(IS_SERVER) then {
 			T_CALLM0("autoLoad");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// - - - - - Getters for game state - - - - -
 
-	METHOD("isGameModeInitialized") {
+	METHOD(isGameModeInitialized)
 		params [P_THISOBJECT];
 		T_GETV("gameModeInitialized")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - Saved game management - - - - -
 
 	// Reads all headers of saved games from storage
 	// Returns an array of [record name(string), header(ref)]
 	// !!! Note: headers must be deleted from RAM afterwards !!!
-	METHOD("readAllSavedGameHeaders") {
+	METHOD(readAllSavedGameHeaders)
 		params [P_THISOBJECT];
 		pr _storage = NEW(__STORAGE_CLASS, []);
 
@@ -168,7 +169,8 @@ CLASS("GameManager", "MessageReceiverEx")
 					pr _newHeader = CALLM2(_storage, "load", _headerRef, true); // Create a new object
 					_allRecordNamesAndHeaders pushBack [_recordName, _newHeader];
 				} else {
-					OOP_ERROR_1("Save game header not found for %1", _recordName);
+					OOP_ERROR_1("Save game header not found for %1, removing invalid record", _recordName);
+					CALLM1(_storage, "eraseRecord", _recordName);
 				};
 			} else {
 				OOP_ERROR_1("Can't open record %1", _recordName);
@@ -180,26 +182,27 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Return
 		_allRecordNamesAndHeaders
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Checks all headers if they can be loaded
 	// Parameters: _recordNamesAndHeaders - see readAllSavedGameHeaders output
 	// Returns an array of [record name(string), header(ref), errors(array)]
-	METHOD("checkAllHeadersForLoading") {
+	METHOD(checkAllHeadersForLoading)
 		params [P_THISOBJECT, P_ARRAY("_recordNamesAndHeaders")];
 		// Process all headers and check if these files can be loaded
 		pr _return = []; // Array with server's response
 		OOP_INFO_1("Checking %1 headers:", count _recordNamesAndHeaders);
 		pr _saveVersion = parseNumber (call misc_fnc_getSaveVersion);
+		pr _saveBreakVersion = parseNumber (call misc_fnc_getSaveBreakVersion);
 		{
 			_x params ["_recordName", "_header"];
 			OOP_INFO_2("  checking header: %1 of record: %2", _header, _recordName);
 
 			pr _errors = [];
 			pr _headerSaveVersion = parseNumber GETV(_header, "saveVersion");
-			if (_headerSaveVersion > _saveVersion) then {
+			if (_headerSaveVersion > _saveVersion || _headerSaveVersion < _saveBreakVersion) then {
 				_errors pushBack INCOMPATIBLE_SAVE_VERSION;
-				OOP_INFO_2("  incompatible save version: %1, current: %2", _headerSaveVersion, _saveVersion);
+				OOP_INFO_3("  incompatible save version: %1, current: %2, last compatible: %3", _headerSaveVersion, _saveVersion, _headerSaveVersion);
 				// No point checking further
 			} else {
 				if ((toLower GETV(_header, "worldName")) != (tolower worldName)) then {
@@ -220,9 +223,9 @@ CLASS("GameManager", "MessageReceiverEx")
 		} forEach _recordNamesAndHeaders;
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("saveGame") {
+	METHOD(saveGame)
 		params [P_THISOBJECT, P_NUMBER("_type")];
 
 		// Bail if we are not server
@@ -338,7 +341,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		DELETE(_storage);
 
 		_success
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	pr0_fnc_loadGameMsg = {
 		params ["_header", "_message", "_delay"];
@@ -348,7 +351,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	};
 
 	// Loads game, returns true on success
-	METHOD("loadGame") {
+	METHOD(loadGame)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		OOP_INFO_1("LOAD GAME: %1", _recordName);
@@ -469,9 +472,9 @@ CLASS("GameManager", "MessageReceiverEx")
 		diag_log "[GameManager] - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 
 		_success
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("deleteSavedGame") {
+	METHOD(deleteSavedGame)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		
 		OOP_INFO_1("DELETE SAVED GAME: %1", _recordName);
@@ -479,7 +482,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		pr _storage = NEW(__STORAGE_CLASS, []);
 		CALLM1(_storage, "eraseRecord", _recordName);
 		DELETE(_storage);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	pr0_fnc_autoLoadMsg = {
 		diag_log _this;
@@ -487,7 +490,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		["autoloadwarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 	};
 
-	METHOD("autoLoad") {
+	METHOD(autoLoad)
 		params [P_THISOBJECT];
 
 		#define LOC_SCOPE "Vindicta_GameManager"
@@ -557,12 +560,12 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 
 		#undef LOC_SCOPE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// FUNCTIONS CALLED BY CLIENT
 
 	// Called by client when he needs to get data on all the saved games
-	METHOD("clientRequestAllSavedGames") {
+	METHOD(clientRequestAllSavedGames)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
 
 		// Read headers of all records
@@ -586,20 +589,20 @@ CLASS("GameManager", "MessageReceiverEx")
 			_x params ["_recordName", "_header"];
 			DELETE(_header);
 		} forEach _recordNamesAndHeaders;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientSaveGame") {
+	METHOD(clientSaveGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
 		T_CALLM0("saveGame");
 		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("serverSaveGameRecovery") {
+	METHOD(serverSaveGameRecovery)
 		params [P_THISOBJECT];
 		T_CALLM1("saveGame", SAVE_TYPE_RECOVERY);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientOverwriteSavedGame") {
+	METHOD(clientOverwriteSavedGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
 
 		OOP_INFO_1("CLIENT OVERWRITE SAVED GAME: %1", _recordName);
@@ -607,28 +610,28 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_CALLM1("deleteSavedGame", _recordName);
 		T_CALLM0("saveGame");
 		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientDeleteSavedGame") {
+	METHOD(clientDeleteSavedGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
 		T_CALLM1("deleteSavedGame", _recordName);
 		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clientLoadSavedGame") {
+	METHOD(clientLoadSavedGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
 
 		OOP_INFO_1("CLIENT LOAD SAVED GAME: %1", _recordName);
 
 		T_CALLM1("loadGame", _recordName);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// - - - - Game Mode Initialization - - - -
 
 	// Initializes a new campaign and a new game mode on server (does NOT load a saved game, but creates a new one!)
 	// todo: initialization parameters
-	METHOD("initCampaignServer") {
+	METHOD(initCampaignServer)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_className"),
 				P_ARRAY("_gameModeParameters"), P_STRING("_campaignName"),
 				P_ARRAY("_templatesVerify")];
@@ -689,10 +692,10 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Add data to the JIP queue so that clients can also initialize
 		REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [_className], 0, "GameManager_initGameModeClient");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must be run on client to initialize the game mode
-	METHOD("initGameModeClient") {
+	METHOD(initGameModeClient)
 		params [P_THISOBJECT, P_STRING("_className")];
 
 		if (!T_GETV("gameModeInitialized")) then {
@@ -713,16 +716,16 @@ CLASS("GameManager", "MessageReceiverEx")
 				[_uid, profileName, clientOwner, playerSide] remoteExecCall ["fnc_onPlayerInitializedServer", 2];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("staticInitGameModeClient") {
+	METHOD(staticInitGameModeClient)
 		params [P_THISCLASS, P_STRING("_className")];
 		pr _instance = CALLSM0("GameManager", "getInstance");
 		CALLM2(_instance, "postMethodAsync", "initGameModeClient", [_className]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - Settings - - - - -
-	METHOD("initSettings") {
+	METHOD(initSettings)
 		params [P_THISOBJECT];
 		#define LOC_SCOPE "Vindicta_Settings"
 
@@ -767,10 +770,10 @@ CLASS("GameManager", "MessageReceiverEx")
 		["vin_server_gameSpeed",		"SLIDER",	[LOC("Game_Speed"),				LOC("Game_Speed_Tooltip")],				[_section, LOC("Game")],		[0.1, 5, 1, 1],	true] call CBA_fnc_addSetting;
 
 		#undef LOC_SCOPE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - Auto Save - - - - -
-	METHOD("_playersInCombat") {
+	METHOD(_playersInCombat)
 		params [P_THISOBJECT];
 
 		if(vin_autoSave_inCombat) exitWith { false };
@@ -782,14 +785,14 @@ CLASS("GameManager", "MessageReceiverEx")
 			// Find nearby enemies
 			(_x nearEntities ["Man", 250] - HUMAN_PLAYERS) findIf { side _x == _enemySide } != NOT_FOUND
 		} != NOT_FOUND;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	pr0_fnc_autoSaveMsg = {
 		["autosavewarning", [_this, "PLAIN DOWN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["autosavewarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 	};
 
-	METHOD("checkPeriodicAutoSave") {
+	METHOD(checkPeriodicAutoSave)
 		params [P_THISOBJECT];
 
 		if(!vin_autoSave_enabled || vin_autoSave_interval == 0) exitWith { 
@@ -826,23 +829,23 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
 		T_SETV("lastAutoSave", TIME_NOW);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("checkEmptyAutoSave") {
+	METHOD(checkEmptyAutoSave)
 		params [P_THISOBJECT];
 		if(!vin_autoSave_enabled || !vin_autoSave_onEmpty) exitWith { };
 		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
 		T_SETV("lastAutoSave", TIME_NOW);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - Misc methods - - - -
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGameManager
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getInstance") {
+	STATIC_METHOD(getInstance)
 		gGameManager
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

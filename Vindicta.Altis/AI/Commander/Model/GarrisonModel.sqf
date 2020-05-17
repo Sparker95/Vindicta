@@ -43,6 +43,7 @@ FIX_LINE_NUMBERS()
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
 // is a copy that is modified during simulations.
+#define OOP_CLASS_NAME GarrisonModel
 CLASS("GarrisonModel", "ModelBase")
 	// Strength vector of the garrison.
 	VARIABLE_ATTR("efficiency", []);
@@ -59,12 +60,17 @@ CLASS("GarrisonModel", "ModelBase")
 	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]);
 	// Position.
 	VARIABLE_ATTR("pos", []);
+	// What type of garrison this is.
+	VARIABLE_ATTR("type", []);
 	// What side this garrison belongs to.
 	VARIABLE_ATTR("side", []);
 	// What faction within the side this garrison belongs to.
 	VARIABLE_ATTR("faction", []);
 	// Id of the location the garrison is currently occupying.
 	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]);
+
+	// Garrison AI alertness - how alert the garrison is 0-1
+	VARIABLE_ATTR("alertness", []);
 
 	// Hash map for unit allocation algorithm
 	STATIC_VARIABLE("allocatorCache");
@@ -73,7 +79,7 @@ CLASS("GarrisonModel", "ModelBase")
 	STATIC_VARIABLE("allocatorCacheNMiss");		// Amount of misses in the cache
 	STATIC_VARIABLE("allocatorCacheNHit");		// Amount of hits in the cache
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 
 		//T_SETV_REF("order", objNull);
@@ -85,8 +91,10 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", sideUnknown);
+		T_SETV("type", GARRISON_TYPE_GENERAL);
 		T_SETV("faction", "");
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
+		T_SETV("alertness", 0);
 		if(T_CALLM("isActual", [])) then {
 			T_CALLM("sync", []);
 			#ifdef OOP_DEBUG
@@ -96,14 +104,14 @@ CLASS("GarrisonModel", "ModelBase")
 		};
 		// Add self to world
 		CALLM(_world, "addGarrison", [_thisObject]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		T_CALLM("killed", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("simCopy") {
+	METHOD(simCopy)
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
 
@@ -135,12 +143,14 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_copy, "inCombat", T_GETV("inCombat"));
 		SETV(_copy, "pos", +T_GETV("pos"));
 		SETV(_copy, "side", T_GETV("side"));
+		SETV(_copy, "type", T_GETV("type"));
 		SETV(_copy, "faction", T_GETV("faction"));
 		SETV(_copy, "locationId", T_GETV("locationId"));
+		SETV(_copy, "alertness", T_GETV("alertness"));
 		_copy
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("_sync") {
+	/* private */ METHOD(_sync)
 		params [P_THISOBJECT, P_OOP_OBJECT("_actual")];
 		
 		if(CALLM0(_actual, "isDestroyed") && (IS_NULL_OBJECT(CALLM0(_actual, "getLocation")))) exitWith {
@@ -151,30 +161,18 @@ CLASS("GarrisonModel", "ModelBase")
 		if(EFF_LTE(_newEff, EFF_ZERO) && (IS_NULL_OBJECT(CALLM0(_actual, "getLocation"))) ) then {
 			T_CALLM("killed", []);
 		} else {
-			private _actualSide = CALLM0(_actual, "getSide");
-			T_SETV("side", _actualSide);
-
-			private _actualFaction = CALLM0(_actual, "getFaction");
-			T_SETV("faction", _actualFaction);
-			
+			T_SETV("type", CALLM0(_actual, "getType"));
+			T_SETV("side", CALLM0(_actual, "getSide"));
+			T_SETV("faction", CALLM0(_actual, "getFaction"));
 			T_SETV("efficiency", _newEff);
-
-			pr _comp = CALLM0(_actual, "getCompositionNumbers"); // It does a deep copy itself
-			T_SETV("composition", _comp);
-
-			// Get seats only for trucks as we care about this most
-			private _seats = CALLM(_actual, "getTransportCapacity", [[T_VEH_truck_inf]]);
-			T_SETV("transport", _seats);
-			
-			private _actualPos = CALLM0(_actual, "getPos");
-			T_SETV("pos", +_actualPos);
-
-
-			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject ARG _actual ARG _actualPos]);
+			T_SETV("composition", CALLM0(_actual, "getCompositionNumbers")); // It does a deep copy itself
+			T_SETV("transport", CALLM(_actual, "getTransportCapacity", [[T_VEH_truck_inf]])); // Get seats only for trucks as we care about this most
+			T_SETV("pos", +CALLM0(_actual, "getPos"));
+			private _AI = CALLM0(_actual, "getAI");
+			T_SETV("alertness", CALLM0(_AI, "getAlertness"));
 			private _locationActual = CALLM0(_actual, "getLocation");
 			if(!IS_NULL_OBJECT(_locationActual)) then {
-				private _world = T_GETV("world");
-				private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
+				private _location = CALLM(T_GETV("world"), "findOrAddLocationByActual", [_locationActual]);
 				T_SETV("locationId", GETV(_location, "id"));
 				// Don't call the proper functions because it deals with updating the LocationModel
 				// and we don't need to do that in sync (LocationModel sync does it)
@@ -184,18 +182,18 @@ CLASS("GarrisonModel", "ModelBase")
 				//T_CALLM("detachFromLocation", []);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("sync") {
+	METHOD(sync)
 		params [P_THISOBJECT];
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 		private _actual = T_GETV("actual");
 		ASSERT_OBJECT_CLASS(_actual, "Garrison");
 		CALLM(_actual, "runLocked", [_thisObject ARG "_sync" ARG [_actual]]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Garrison is empty (not necessarily killed, could be merged to another garrison etc.)
-	METHOD("killed") {
+	METHOD(killed)
 		params [P_THISOBJECT];
 
 		private _world = T_GETV("world");
@@ -206,9 +204,9 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_world, "garrisonKilled", [_thisObject]);
 		T_CALLM("clearAction", []);
 		OOP_DEBUG_MSG("Killed %1", [_thisObject]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("attachToLocation") {
+	METHOD(attachToLocation)
 		params [P_THISOBJECT, P_STRING("_location")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
 
@@ -217,9 +215,9 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_location, "addGarrison", [_thisObject]);
 		T_SETV("locationId", GETV(_location, "id"));
 		OOP_DEBUG_MSG("Attached %1 to location %2", [_thisObject ARG _location]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("detachFromLocation") {
+	METHOD(detachFromLocation)
 		params [P_THISOBJECT];
 		private _location = T_CALLM("getLocation", []);
 		if(!IS_NULL_OBJECT(_location)) then {
@@ -227,19 +225,19 @@ CLASS("GarrisonModel", "ModelBase")
 			T_SETV("locationId", MODEL_HANDLE_INVALID);
 			OOP_DEBUG_MSG("Detached %1 from location %2", [_thisObject ARG _location]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("isBusy") {
+	METHOD(isBusy)
 		params [P_THISOBJECT];
 		!IS_NULL_OBJECT(T_GETV("action"))
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getAction") {
+	METHOD(getAction)
 		params [P_THISOBJECT];
 		T_GETV("action")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setAction") {
+	METHOD(setAction)
 		params [P_THISOBJECT, P_STRING("_action")];
 		// Clear previous action first
 		T_CALLM("clearAction", []);
@@ -254,9 +252,9 @@ CLASS("GarrisonModel", "ModelBase")
 			private _recordSerial = CALLM2(_action, "getRecordSerial", _thisObject, _world);
 			CALLM2(_AI, "postMethodAsync", "setCmdrActionSerial", [_recordSerial]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clearAction") {
+	METHOD(clearAction)
 		params [P_THISOBJECT];
 		private _currentAction = T_GETV("action");
 		if(!IS_NULL_OBJECT(_currentAction)) then {
@@ -270,29 +268,29 @@ CLASS("GarrisonModel", "ModelBase")
 			private _AI = CALLM0(_actual, "getAI");
 			CALLM2(_AI, "postMethodAsync", "setCmdrActionSerial", []); // [] means no action is being done any more
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("isDead") {
+	METHOD(isDead)
 		params [P_THISOBJECT];
 		private _efficiency = T_GETV("efficiency");
 		private _locationId = T_GETV("locationId");
 		// Garrison is dead if it's empty AND is not at a location
 		(_efficiency isEqualTo EFF_ZERO) && (_locationID == MODEL_HANDLE_INVALID) //or {EFF_LTE(_efficiency, EFF_ZERO)}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("isDepleted") {
+	METHOD(isDepleted)
 		params [P_THISOBJECT];
 		private _efficiency = T_GETV("efficiency");
 		!EFF_GT(_efficiency, EFF_MIN_EFF)
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getLocation") {
+	METHOD(getLocation)
 		params [P_THISOBJECT];
 		private _locationId = T_GETV("locationId");
 		private _world = T_GETV("world");
 		if(_locationId != MODEL_HANDLE_INVALID) exitWith { CALLM(_world, "getLocation", [_locationId]) };
 		NULL_OBJECT
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: countUnits
@@ -304,7 +302,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 	Returns: Count of units matching query
 	*/
-	METHOD("countUnits") {
+	METHOD(countUnits)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		private _composition = T_GETV("composition");
 		private _return = 0;
@@ -313,16 +311,16 @@ CLASS("GarrisonModel", "ModelBase")
 			_return = _return + _composition#_catID#_subcatID;
 		} forEach _query;
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: countOfficers
 	Returns: the number of officers in the Garrison
 	*/
-	METHOD("countOfficers") {
+	METHOD(countOfficers)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		T_CALLM1("countUnits", [[T_INF ARG T_INF_officer]])
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// -------------------- S I M  /  A C T U A L   M E T H O D   P A I R S -------------------
 	// Does this make sense? Could the sim/actual split be handled in a single functions
@@ -331,7 +329,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 	// SPLIT
 	// Flags defined in CmdrAI/common.hpp
-	METHOD("splitSim") {
+	METHOD(splitSim)
 		params [P_THISOBJECT, P_ARRAY("_compToDetach"), P_ARRAY("_effToDetach")];
 
 		// Here we just add/substract the composition and efficiency values
@@ -358,9 +356,9 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_detachment, "faction", T_GETV("faction"));
 
 		_detachment
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("splitActual") {
+	METHOD(splitActual)
 		params [P_THISOBJECT, P_ARRAY("_compToDetach"), P_ARRAY("_effToDetach")];
 
 		ASSERT_MSG(EFF_SUM(_effToDetach) > 0, "_effToDetach can't be zero");
@@ -369,21 +367,9 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		// Make a new garrison
-		private _side = CALLM0(_actual, "getSide");
-		private _faction = CALLM0(_actual, "getFaction");
-		private _templateName = CALLM0(_actual, "getTemplateName");
-		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
-		private _pos = CALLM0(_actual, "getPos");
-		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
+		private _newGarrActual = CALLSM1("Garrison", "newFrom", _actual);
 
-		// This self registers with the world. From now on we just modify the _newGarrActual itself, the Model gets updated automatically during its
-		// update phase.
-		// private _newGarr = NEW("GarrisonModel", [_world ARG _newGarrActual]);
-
-		// private _locationActual = GETV(_location, "actual");
-		// ASSERT_MSG(_locationActual isEqualType "", "Actual LocationModel required");
-		// CALLM(_newGarrActual, "setLocation", [_locationActual]); // This garrison will spawn here if needed
-		//CALLM0(_newGarrActual, "spawn");
+		// CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 
 		// Try to move the units
 		OOP_INFO_1("Composition before split: %1", GETV(_actual, "compositionNumbers"));
@@ -412,21 +398,18 @@ CLASS("GarrisonModel", "ModelBase")
 		#endif
 		FIX_LINE_NUMBERS()
 
-		//// Detach from the location
-		//CALLM(_newGarrActual, "postMethodAsync", ["setLocation" ARG [""]]);
-
 		// return the New detachment garrison model
 		_newGarr
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// MOVE TO POS
-	METHOD("moveSim") {
+	METHOD(moveSim)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
 
 		T_SETV("pos", _pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("moveActual") {
+	METHOD(moveActual)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
 
 		private _actual = T_GETV("actual");
@@ -436,9 +419,9 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_AI, "postMethodAsync", ["addExternalGoal" ARG ["GoalGarrisonMove" ARG 0 ARG _parameters ARG _thisObject]]);
 
 		OOP_INFO_MSG("Moving %1 to %2 within %3", [LABEL(_thisObject) ARG _pos ARG _radius]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("cancelMoveActual") {
+	METHOD(cancelMoveActual)
 		params [P_THISOBJECT];
 
 		private _actual = T_GETV("actual");
@@ -447,9 +430,9 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_AI, "postMethodAsync", ["deleteExternalGoal" ARG ["GoalGarrisonMove" ARG _thisObject]]);
 
 		OOP_INFO_MSG("Cancelled move of %1", [LABEL(_thisObject)]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("moveActualComplete") {
+	METHOD(moveActualComplete)
 		params [P_THISOBJECT];
 
 		private _actual = T_GETV("actual");
@@ -460,10 +443,10 @@ CLASS("GarrisonModel", "ModelBase")
 			OOP_INFO_MSG("Move of %1 complete", [LABEL(_thisObject)]);
 		};
 		_goalState == ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// MERGE TO ANOTHER GARRISON
-	METHOD("mergeSim") {
+	METHOD(mergeSim)
 		params [P_THISOBJECT, P_STRING("_otherGarr")];
 		ASSERT_OBJECT_CLASS(_otherGarr, "GarrisonModel");
 
@@ -482,9 +465,9 @@ CLASS("GarrisonModel", "ModelBase")
 
 		OOP_DEBUG_MSG("Merged %1%2 to %3%4->%5", [_thisObject ARG _efficiency ARG _otherGarr ARG _otherEff ARG _newOtherEff]);
 		T_CALLM("killed", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("mergeActual") {
+	METHOD(mergeActual)
 		params [P_THISOBJECT, P_STRING("_otherGarr")];
 		ASSERT_OBJECT_CLASS(_otherGarr, "GarrisonModel");
 
@@ -497,19 +480,19 @@ CLASS("GarrisonModel", "ModelBase")
 		T_CALLM("killed", []);
 		OOP_INFO_MSG("Merged %1 to %2", [LABEL(_thisObject) ARG LABEL(_otherGarr)]);
 		//CALLM(_otherActual, "addGarrison", [_actual ARG true]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// JOIN LOCATION
-	METHOD("joinLocationSim") {
+	METHOD(joinLocationSim)
 		params [P_THISOBJECT, P_STRING("_location")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
 		
 		CALLM(_location, "addGarrison", [_thisObject]);
 		private _id = GETV(_location, "id");
 		T_SETV("locationId", _id);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("joinLocationActual") {
+	METHOD(joinLocationActual)
 		params [P_THISOBJECT, P_STRING("_location")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
 
@@ -530,10 +513,10 @@ CLASS("GarrisonModel", "ModelBase")
 		// private _parameters = [[TAG_LOCATION, _locationActual]];
 		// private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];
 		// CALLM(_AI, "postMethodAsync", ["addExternalGoal" ARG _args]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// CLEAR AREA
-	METHOD("clearAreaActual") {
+	METHOD(clearAreaActual)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_moveRadius"), P_NUMBER("_clearRadius"), P_NUMBER("_timeOutSeconds")];
 
 		private _actual = T_GETV("actual");
@@ -543,9 +526,9 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_AI, "postMethodAsync", ["addExternalGoal" ARG ["GoalGarrisonClearArea" ARG 0 ARG _parameters ARG _thisObject]]);
 
 		OOP_INFO_MSG("%1 clearing area at %2, radius %3, timeout %4 seconds", [LABEL(_thisObject) ARG _pos ARG _clearRadius ARG _timeOutSeconds]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("clearActualComplete") {
+	METHOD(clearActualComplete)
 		params [P_THISOBJECT];
 
 		private _actual = T_GETV("actual");
@@ -556,9 +539,9 @@ CLASS("GarrisonModel", "ModelBase")
 			OOP_INFO_MSG("%1 completed clearing area", [LABEL(_thisObject)]);
 		};
 		_goalState == ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("cancelClearAreaActual") {
+	METHOD(cancelClearAreaActual)
 		params [P_THISOBJECT];
 
 		private _actual = T_GETV("actual");
@@ -567,24 +550,24 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_AI, "postMethodAsync", ["deleteExternalGoal" ARG ["GoalGarrisonClearArea" ARG _thisObject]]);
 
 		OOP_INFO_MSG("Cancelled clear area for %1", [LABEL(_thisObject)]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ASSIGN CARGO
-	METHOD("assignCargoActual") {
+	METHOD(assignCargoActual)
 		params [P_THISOBJECT, P_ARRAY("_cargo")];
 		private _actual = T_GETV("actual");
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		CALLM2(_actual, "postMethodAsync", "assignCargo", [_cargo]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// CLEAR CARGO
-	METHOD("clearCargoActual") {
+	METHOD(clearCargoActual)
 		params [P_THISOBJECT];
 		private _actual = T_GETV("actual");
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		CALLM2(_actual, "postMethodAsync", "clearCargo", []);
-	} ENDMETHOD;
-	// METHOD("joinLocationActualComplete") {
+	ENDMETHOD;
+	// METHOD(joinLocationActualComplete)
 	// 	params [P_THISOBJECT];
 
 	// 	private _actual = T_GETV("actual");
@@ -593,11 +576,11 @@ CLASS("GarrisonModel", "ModelBase")
 	// 	private _AI = CALLM0(_actual, "getAI");
 	// 	private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonJoinLocation" ARG _AI]);
 	// 	_goalState == ACTION_STATE_COMPLETED
-	// } ENDMETHOD;
+	// ENDMETHOD;
 
 	// Unit allocation algorithm
 	// Allocates units from composition while trying to satisfy _effExt (external efficiency)
-	STATIC_METHOD("allocateUnits") {
+	STATIC_METHOD(allocateUnits)
 		params [P_THISCLASS,
 				P_ARRAY("_effExt"),						// External efficiency requirement we must fullfill
 				P_ARRAY("_constraintFlags"),			// Array of flags for constraint verification
@@ -853,9 +836,9 @@ CLASS("GarrisonModel", "ModelBase")
 		};
 
 		_result
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("initUnitAllocatorCache") {
+	STATIC_METHOD(initUnitAllocatorCache)
 		params [P_THISCLASS];
 
 		// Bail if already initialized
@@ -874,17 +857,17 @@ CLASS("GarrisonModel", "ModelBase")
 		_allKeys = _allKeys apply {""};
 		SETSV(_thisClass, "allocatorCacheAllKeys", _allKeys);
 		SETSV(_thisClass, "allocatorCacheCounter", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// -------------------- S C O R I N G   T O O L K I T / U T I L S -------------------
-	STATIC_METHOD("transportRequired") {
+	STATIC_METHOD(transportRequired)
 		params [P_THISOBJECT, P_ARRAY("_eff")];
 		_eff#T_EFF_reqTransport
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ------------------------- Intel -----------------------------------
 	// Adds known friendly locations closer that _radius from the _pos
-	METHOD("addKnownFriendlyLocationsActual") {
+	METHOD(addKnownFriendlyLocationsActual)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius")];
 
 		private _actual = T_GETV("actual");
@@ -906,7 +889,7 @@ CLASS("GarrisonModel", "ModelBase")
 			CALLM2(_AI, "postMethodAsync", "addKnownFriendlyLocation", [_locActual]);
 		} forEach _nearLocs;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 
@@ -923,7 +906,7 @@ CALLSM0("GarrisonModel", "initUnitAllocatorCache");
 #ifdef _SQF_VM
 
 ["GarrisonModel.new(actual)", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
@@ -938,7 +921,7 @@ CALLSM0("GarrisonModel", "initUnitAllocatorCache");
 }] call test_AddTest;
 
 ["GarrisonModel.simCopy", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	private _simWorld = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
@@ -1073,7 +1056,7 @@ Test_group_args = [WEST, 0]; // Side, group type
 Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 
 ["GarrisonModel.actualSplit", {
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _group = NEW("Group", Test_group_args);
 	private _eff1 = +T_EFF_null;
 	private _comp1 = +T_comp_null;

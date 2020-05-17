@@ -3,7 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#include "..\OOP_Light\OOP_light.h"
+#include "..\common.h"
 
 /*
 Class: DoubleKeyHashmap
@@ -20,26 +20,27 @@ Author: Sparker 22 August 2019
 // Separator
 #define __SEP__ "-"
 
+#define OOP_CLASS_NAME DoubleKeyHashmap
 CLASS("DoubleKeyHashmap", "")
 
 	// Namespace object
 	VARIABLE("ns");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		#ifndef _SQF_VM
 		pr _ns = [false] call CBA_fnc_createNamespace;
 		T_SETV("ns", _ns);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		pr _ns = T_GETV("ns");
 		_ns call CBA_fnc_deleteNamespace;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: set
@@ -54,10 +55,10 @@ CLASS("DoubleKeyHashmap", "")
 	Returns: nil
 	*/
 
-	METHOD("set") {
+	METHOD(set)
 		params [P_THISOBJECT, P_STRING("_k0"), P_STRING("_k1"), "_value"];
 		T_GETV("ns") setVariable [_k0 + __SEP__ + _k1, _value];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: get
@@ -71,10 +72,10 @@ CLASS("DoubleKeyHashmap", "")
 	Returns: value
 	*/
 
-	METHOD("get") {
+	METHOD(get)
 		params [P_THISOBJECT, P_STRING("_k0"), P_STRING("_k1")];
 		T_GETV("ns") getVariable _k0 + __SEP__ + _k1
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getAllSecondaryKeys
@@ -85,7 +86,7 @@ CLASS("DoubleKeyHashmap", "")
 	Returns: Array of strings
 	*/
 
-	METHOD("getAllSecondaryKeys") {
+	METHOD(getAllSecondaryKeys)
 		params [P_THISOBJECT, P_STRING("_k0")];
 
 		pr _ns = T_GETV("ns");
@@ -100,6 +101,6 @@ CLASS("DoubleKeyHashmap", "")
 		};
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

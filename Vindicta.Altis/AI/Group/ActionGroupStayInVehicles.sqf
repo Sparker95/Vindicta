@@ -8,21 +8,22 @@ Currently it does nothing, but it could potentially perform monitoring of units 
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupStayInVehicles
 CLASS("ActionGroupStayInVehicles", "ActionGroup")
 	
 	// ------------ N E W ------------
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		pr _state = T_CALLM0("activateIfInactive");
@@ -34,12 +35,12 @@ CLASS("ActionGroupStayInVehicles", "ActionGroup")
 		};
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -4,8 +4,9 @@
 #define LOCATION_SP_ID_POS		0
 #define LOCATION_SP_ID_DIR		1
 #define LOCATION_SP_ID_BUILDING	2
+#define LOCATION_SP_ID_COOLDOWN	3
 
-#define LOCATION_SP_DEFAULT [[], 0, objNull]
+#define LOCATION_SP_DEFAULT [[], 0, objNull, 0]
 
 // Spawn Position Types:
 // [_unitTypes, _groupTypes, _positions, _counter]

@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 #ifndef _SQF_VM
 
@@ -194,7 +194,7 @@ pr0_fnc_initDebugMenu = {
 
 		if !(isNil "_cursorObj") then {
 
-			_cursorObj addMagazineCargo ["vin_build_res_0", 100];
+			_cursorObj addMagazineCargoGlobal ["vin_build_res_0", 100];
 			systemChat "Added 100 construction resource to cursorObject.";
 
 		} else {

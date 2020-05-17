@@ -4,7 +4,7 @@
 #define OOP_ERROR
 #define OFSTREAM_FILE "Main.rpt"
 
-#include "..\OOP_Light\OOP_light.h"
+#include "..\common.h"
 
 /*
 Class: GarbageCollector
@@ -19,6 +19,7 @@ Make sure that the .ext file is set up correctly!
 https://community.bistudio.com/wiki/Description.ext#Corpse_.26_wreck_management
 */
 
+#define OOP_CLASS_NAME GarbageCollector
 CLASS("GarbageCollector", "")
 
 	/*
@@ -31,7 +32,7 @@ CLASS("GarbageCollector", "")
 
 	Returns: nil
 	*/
-	METHOD("addUnit") {
+	METHOD(addUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		pr _hO = CALLM0(_unit, "getObjectHandle");
@@ -76,6 +77,6 @@ CLASS("GarbageCollector", "")
 
 		// todo what to do with weapon holsters and other things??
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

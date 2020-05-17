@@ -8,9 +8,10 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME AIUnit
 CLASS("AIUnit", "AI_GOAP")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Make sure that the needed MessageLoop exists
@@ -28,20 +29,26 @@ CLASS("AIUnit", "AI_GOAP")
 		T_CALLM("addSensor", [_sensorCivNear]);
 
 		//T_SETV("worldState", _ws);
-	} ENDMETHOD;
+		T_CALLM1("addToProcessCategory", "AIUnit");
+	ENDMETHOD;
+
+	METHOD(delete)
+		params [P_THISOBJECT];
+		T_CALLM0("removeFromProcessCategory");
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMessageLoopGroupAI
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Common interface
-	/* virtual */ METHOD("getCargoUnits") {
+	/* virtual */ METHOD(getCargoUnits)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

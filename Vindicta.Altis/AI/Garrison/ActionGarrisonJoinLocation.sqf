@@ -8,13 +8,14 @@ All crew of vehicles mounts assigned vehicles.
 
 // Duration of this action
 
+#define OOP_CLASS_NAME ActionGarrisonJoinLocation
 CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 
 	VARIABLE("loc");
 	VARIABLE("locPos");
 	VARIABLE("radius");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _loc = CALLSM2("Action", "getParameterValue", _parameters, TAG_LOCATION);
@@ -23,10 +24,10 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		T_SETV("locPos", _locPos);
 		pr _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 50);
 		T_SETV("radius", _radius);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
@@ -37,14 +38,13 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 
 		pr _loc = T_GETV("loc");
 		//if (_dist < 0.5) then {
-		pr _side = CALLM0(_gar, "getSide");
-		pr _locGars = CALLM(_loc, "getGarrisons", [_side]);
+		pr _locGars = CALLM2(_loc, "getGarrisons", CALLM0(_gar, "getSide"), CALLM0(_gar, "getType"));
 		if (count _locGars > 0) then {
 			// All's good, need to merge two garrisons now
 			pr _args = [_gar];
 			CALLM2(_locGars select 0, "postMethodAsync", "addGarrison", _args); // The other garrison can be on another computer
 		} else {
-			// There is no friendly garrison here, just attach here then
+			// There is no friendly garrison here of the same type, just attach here then
 			CALLM1(_gar, "setLocation", _loc);
 		};
 		ACTION_STATE_COMPLETED
@@ -53,10 +53,10 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		//	// There is no location here any more, wtf
 		//	ACTION_STATE_FAILED
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// // logic to run each update-step
-	// METHOD("process") {
+	// METHOD(process)
 	// 	params [P_THISOBJECT];
 		
 	// 	pr _state = T_CALLM0("activateIfInactive");
@@ -64,18 +64,18 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	// 	// Return the current state
 	// 	T_SETV("state", _state);
 	// 	_state
-	// } ENDMETHOD;
+	// ENDMETHOD;
 	
 	// // logic to run when the action is satisfied
-	// METHOD("terminate") {
+	// METHOD(terminate)
 	// 	params [P_THISOBJECT];
 		
-	// } ENDMETHOD;
+	// ENDMETHOD;
 	
 	// procedural preconditions
 	// POS world state property comes from action parameters
 	
-	STATIC_METHOD("getPreconditions") {
+	STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 
 		pr _loc = CALLSM2("Action", "getParameterValue", _actionParameters, TAG_LOCATION);
@@ -91,6 +91,6 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		[_ws, WSP_GAR_POSITION, _movePos] call ws_setPropertyValue;
 
 		_ws
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

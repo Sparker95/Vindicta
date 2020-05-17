@@ -1,4 +1,4 @@
-#include "OOP_Light\OOP_Light.h"
+#include "common.h"
 
 // Gets called on the server after player's GameMode has been initialized.
 

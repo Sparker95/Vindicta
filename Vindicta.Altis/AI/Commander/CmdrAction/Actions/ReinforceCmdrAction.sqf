@@ -10,6 +10,7 @@ Sends a detachment from the source garrison to join the target garrison.
 Parent: <TakeOrJoinCmdrAction>
 */
 
+#define OOP_CLASS_NAME ReinforceCmdrAction
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE_ATTR("tgtGarrId", [ATTR_SAVE]);
 
@@ -23,15 +24,15 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
 		_tgtGarrId - Number, <Model.GarrisonModel> id to reinforce with the detachment.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];
 		T_SETV("tgtGarrId", _tgtGarrId);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -39,8 +40,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _intelClone = T_GETV("intelClone");
 		private _intel = NULL_OBJECT;
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
-		if(_intelNotCreated) then
-		{
+		if(_intelNotCreated) then {
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionReinforce", []);
 
@@ -90,9 +90,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM0(_intelClone, "updateInDb");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -282,7 +282,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			_side, LABEL(_srcGarr), LABEL(_tgtGarr), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -292,7 +292,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -309,7 +309,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

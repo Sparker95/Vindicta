@@ -10,7 +10,7 @@ removeGoggles this;
 _RandomVest = selectRandom ["rhs_vest_commander", "rhs_vest_commander", "rhssaf_vest_md98_woodland"];
 this addVest _RandomVest;
 this addHeadgear "rhs_beret_mvd";
-this forceAddUniform "rhsgref_uniform_olive";
+this forceaddUniform "rhsgref_uniform_olive";
 
 this addWeapon "sgun_HunterShotgun_01_sawedoff_F";
 this addPrimaryWeaponItem "2Rnd_12Gauge_Pellets";

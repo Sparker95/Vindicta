@@ -1,4 +1,4 @@
-#include "OOP_Light\OOP_Light.h"
+#include "common.h"
 #include "Message\Message.hpp"
 
 private _timerService = NEW("TimerService", [0.2]);

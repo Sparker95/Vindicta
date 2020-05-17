@@ -1,7 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 /*
 Class: Snek
@@ -31,42 +31,44 @@ Author: Sparker
 
 #define SNEK_DELAY 0.1
 
+#define OOP_CLASS_NAME SnekSegment
 CLASS("SnekSegment", "")
 
 	VARIABLE("x");
 	VARIABLE("y");
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		
 		T_SETV("x", _x);
 		T_SETV("y", _y);
 		T_CALLM0("draw");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		T_CALLM0("undraw");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Initial drawing of segment
-	/* virtual */ METHOD("draw") {
-	} ENDMETHOD;
+	/* virtual */ METHOD(draw)
+	ENDMETHOD;
 	
 	// Deletion of segment from display
-	/* virtual */ METHOD("undraw") {
-	} ENDMETHOD;
+	/* virtual */ METHOD(undraw)
+	ENDMETHOD;
 	
 	// Setting position of segment
-	/* virtual */ METHOD("setPos") {
+	/* virtual */ METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 
+#define OOP_CLASS_NAME SnekTail
 CLASS("SnekTail", "SnekSegment")
 	
-	METHOD("draw") {
+	METHOD(draw)
 		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
@@ -77,38 +79,39 @@ CLASS("SnekTail", "SnekSegment")
 		_mrk setMarkerSizeLocal [SEGMENT_SIZE_HALF, SEGMENT_SIZE_HALF];
 		_mrk setMarkerColorLocal "ColorGUER";
 		_mrk setMarkerAlphaLocal 1;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("undraw") {
+	METHOD(undraw)
 		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("setPos") {
+	METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
 		
 		_thisObject setMarkerPosLocal [GRID_SIZE*_x + GRID_SIZE_HALF, GRID_SIZE*_y + GRID_SIZE_HALF, 0];
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME SnekHead
 CLASS("SnekHead", "SnekSegment")
 	
 	VARIABLE("direction");
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y"), P_NUMBER("_direction")];
 		
 		T_SETV("direction", _direction);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("setDirection") {
+	METHOD(setDirection)
 		params [P_THISOBJECT, P_NUMBER("_direction")];
 		T_SETV("direction", _direction);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("draw") {
+	METHOD(draw)
 		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
@@ -136,16 +139,16 @@ CLASS("SnekHead", "SnekSegment")
 		
 		T_CALLM0("updateEyesPos");
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("undraw") {
+	METHOD(undraw)
 		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
 		deleteMarkerLocal (_thisObject + "_left");
 		deleteMarkerLocal (_thisObject + "_right");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("setPos") {
+	METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
@@ -153,9 +156,9 @@ CLASS("SnekHead", "SnekSegment")
 		_thisObject setMarkerPosLocal [GRID_SIZE*_x + GRID_SIZE_HALF, GRID_SIZE*_y + GRID_SIZE_HALF, 0];
 		
 		T_CALLM0("updateEyesPos");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("updateEyesPos") {
+	METHOD(updateEyesPos)
 		params [P_THISOBJECT];
 		
 		pr _x = T_GETV("x");
@@ -184,18 +187,19 @@ CLASS("SnekHead", "SnekSegment")
 			};
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 
 
 
+#define OOP_CLASS_NAME SnekPickup
 CLASS("SnekPickup", "")
 
 	VARIABLE("x");
 	VARIABLE("y");
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, "_x", "_y"];
 		
 		T_SETV("x", _x);
@@ -208,17 +212,18 @@ CLASS("SnekPickup", "")
 		_mrk setMarkerColorLocal "ColorRed";
 		_mrk setMarkerAlphaLocal 1;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		deleteMarkerLocal _thisObject;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
 
+#define OOP_CLASS_NAME Snek
 CLASS("Snek", "")
 
 	// Global snek object
@@ -242,7 +247,7 @@ CLASS("Snek", "")
 	VARIABLE("pickups");
 	
 	// Call start to start the game
-	STATIC_METHOD("start") {
+	STATIC_METHOD(start)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("start");
@@ -257,10 +262,10 @@ CLASS("Snek", "")
 		// Hint
 		hint "Snek game has been started!";
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Call stop to stop the game	
-	STATIC_METHOD("stop") {
+	STATIC_METHOD(stop)
 	
 		OOP_INFO_0("stop");
 	
@@ -271,17 +276,17 @@ CLASS("Snek", "")
 
 		hint "Snek game has been stopped!";
 	
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns true if the game is running
-	STATIC_METHOD("isRunning") {
+	STATIC_METHOD(isRunning)
 
 		GETSV("Snek", "snek") != ""
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("NEW");
@@ -324,9 +329,9 @@ CLASS("Snek", "")
 		// Add CBA wait and execute
 		[{CALLM0(_this, "onTimer");}, _thisObject, SNEK_DELAY] call CBA_fnc_waitAndExecute;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("DELETE");
@@ -351,19 +356,19 @@ CLASS("Snek", "")
 
 		// Reset the global variable
 		SETSV("Snek", "snek", "");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
-	METHOD("addSegment") {
+	METHOD(addSegment)
 		params [P_THISOBJECT];
 		
 		pr _segments = T_GETV("segments");
 		pr _args = 
 		_segments pushBack NEW("SnekSegment");
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 	
-	METHOD("setDirection") {
+	METHOD(setDirection)
 		params [P_THISOBJECT, P_NUMBER("_direction")];
 		
 		T_SETV("direction", _direction);
@@ -371,18 +376,18 @@ CLASS("Snek", "")
 		// Rotate the head too
 		pr _head = T_GETV("segments") select 0;
 		CALLM1(_head, "setDirection", _direction);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("createRandomPickup") {
+	METHOD(createRandomPickup)
 		params [P_THISOBJECT];
 		
 		pr _pickups = T_GETV("pickups");
 		pr _args = [floor((random worldSize) / GRID_SIZE), floor((random worldSize) / GRID_SIZE)];
 		pr _pickup = NEW("SnekPickup", _args);
 		_pickups pushBack _pickup;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("onKeyDown") {
+	METHOD(onKeyDown)
 		params [P_THISOBJECT, "_params"];
 		
 		OOP_INFO_1("On key down: %1", _this);
@@ -419,9 +424,9 @@ CLASS("Snek", "")
 			default {false};
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("onKeyUp") {
+	METHOD(onKeyUp)
 		params [P_THISOBJECT, "_params"];
 		
 		_params params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
@@ -431,9 +436,9 @@ CLASS("Snek", "")
 		};
 		
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("onTimer") {
+	METHOD(onTimer)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ON TIMER");
@@ -533,7 +538,7 @@ CLASS("Snek", "")
 		// Add CBA wait and execute
 		[{CALLM0(_this, "onTimer");}, _thisObject, SNEK_DELAY] call CBA_fnc_waitAndExecute;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -542,17 +547,18 @@ SETSV("Snek", "snek", "");
 
 // Map marker that starts the game
 /*
+#define OOP_CLASS_NAME MapMarkerSnek
 CLASS("MapMarkerSnek", "MapMarker")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Put the marker at the bottom left of the map
 		pr _pos = [0, 0];
 		T_CALLM1("setPos", _pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onMouseButtonClick") {
+	METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		
 		if (CALLSM0("Snek", "isRunning")) then {
@@ -560,12 +566,12 @@ CLASS("MapMarkerSnek", "MapMarker")
 		} else {
 			CALLSM0("Snek", "start");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("onDraw") {
+	METHOD(onDraw)
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 */

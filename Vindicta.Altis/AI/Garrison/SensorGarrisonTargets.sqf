@@ -19,11 +19,12 @@ Author: Sparker 21.12.2018
 // Will print to the RPT targets received from groups
 //#define PRINT_RECEIVED_TARGETS
 
+#define OOP_CLASS_NAME SensorGarrisonTargets
 CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// ----------------------------------------------------------------------
@@ -32,7 +33,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ 
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT];
 		
 		// Bail if not spawned
@@ -154,16 +155,16 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		_buildings = _buildings arrayIntersect _buildings;
 		SETV(_AI, "buildingsWithTargets", _buildings);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD("getUpdateInterval") {
+	METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
@@ -171,9 +172,9 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ 
-	METHOD("getStimulusTypes") {
+	METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_TARGETS]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           H A N D L E   S T I M U L U S
@@ -181,7 +182,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ 
-	METHOD("handleStimulus") {
+	METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		pr _type = STIMULUS_GET_TYPE(_stimulus);
@@ -242,6 +243,6 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		pr _ws = GETV(_AI, "worldState");
 		[_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_setPropertyValue;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

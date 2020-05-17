@@ -5,7 +5,7 @@ class CfgVehicles {
 	class Vindicta_LocationSector: Module_F
 	{
 		scope = 2;
-        vehicleClass = "Modules";
+		vehicleClass = "Modules";
 		displayName = "Location Sector";
 		category = "vindicta";
 		canSetArea = 1;
@@ -32,27 +32,11 @@ class CfgVehicles {
 				property = "Vindicta_LocationSector_name";
 				control = "Edit";
 			};
-			class Side: Combo
-  			{
-				property = "Vindicta_LocationSector_side";
-				displayName = "Side";
-				tooltip = "Side of the location (city, base, outpost ...)";
-				typeName = "STRING";
-				value = "east";
-				defaultValue = "east";
-				class Values
-				{
-					class EAST {name = "east"; value = "east";};
-					class WEST {name = "west"; value = "west";};
-					class INDEPENDENT {name = "independant"; value = "independant";};
-					class NONE {name = "none"; value = "none";};
-				};
-			};
 			class Type: Combo
-  			{
+			{
 				property = "Vindicta_LocationSector_type";
 				displayName = "Type";
-				tooltip = "Type of the location (city, base, outpost ...)";
+				tooltip = "Type determines what role the location plays during gameplay";
 				typeName = "STRING";
 				value = "city";
 				defaultValue = "city";
@@ -69,33 +53,13 @@ class CfgVehicles {
 					// class Camp	{name = "Camp"; value = "camp";};
 				};
 			};
-			class CapacityInfantry: Edit
-			{
-				displayName = "Capacity Infantry";
-				tooltip = "Capacity Infantry of the location";
-				property = "Vindicta_LocationSector_CapacityInfantry";
-				control = "Edit";
-				typeName = "NUMBER";
-				value = 5;
-				defaultValue = 5;
-			};
-			class CivPresUnitCount: Edit
-			{
-				displayName = "$STR_a3_to_basicCivilianPresence25";
-				tooltip = "$STR_a3_to_basicCivilianPresence26";
-				property = "Vindicta_LocationSector_CivPresUnitCount";
-				control = "Edit";
-				typeName = "NUMBER";
-				value = 5;
-				defaultValue = 5;
-			};
 		};
 	};
 
 	class Vindicta_LocationWaypoint: Module_F
 	{
 		scope = 2;
-        vehicleClass = "Modules";
+		vehicleClass = "Modules";
 		displayName = "Location Waypoint";
 		category = "Vindicta";
 

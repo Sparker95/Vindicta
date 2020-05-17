@@ -12,6 +12,7 @@ Author: Sparker 12.11.2018
 #define MRK_GOAL	"_goal"
 #define MRK_ARROW	"_arrow"
 
+#define OOP_CLASS_NAME AIGroup
 CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
@@ -22,55 +23,198 @@ CLASS("AIGroup", "AI_GOAP")
 	VARIABLE("unitMarkersEnabled");
 	#endif
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Group");
-		
+
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
 
 		T_SETV("suspTarget", nil);
-		
+
 		// Initialize the world state
 		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
-		
+
 		// Initialize sensors
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
 		T_CALLM("addSensor", [_sensorTargets]);
-		
-		pr _sensorHealth = NEW("SensorGroupHealth", [_thisObject]);
+
+		pr _sensorHealth = NEW("SensorGroupState", [_thisObject]);
 		T_CALLM("addSensor", [_sensorHealth]);
 		T_SETV("sensorHealth", _sensorHealth);
-		
+
 		// Initialize the world state
 		pr _ws = [WSP_GROUP_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
-		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, true] call ws_setPropertyValue;
+		[_ws, WSP_GROUP_ALL_VEHICLES_UPRIGHT, true] call ws_setPropertyValue;
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GROUP_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GROUP_ALL_LANDED, true] call ws_setPropertyValue;
 		// [_ws, WSP_GROUP_DRIVERS_ASSIGNED, false] call ws_setPropertyValue;
 		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, false] call ws_setPropertyValue;
 		T_SETV("worldState", _ws);
-		
-		// Set process interval
-		T_CALLM1("setProcessInterval", 3);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
 		T_SETV("unitMarkersEnabled", false);
 		#endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	#ifdef DEBUG_GOAL_MARKERS
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
-		T_CALLM0("_disableDebugMarkers");
-	} ENDMETHOD;
 
-	METHOD("_enableDebugMarkers") {
+		T_CALLM0("removeFromProcessCategory");
+
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_disableDebugMarkers");
+		#endif
+	ENDMETHOD;
+
+	/* override */ METHOD(start)
+		params [P_THISOBJECT];
+		T_CALLM1("addToProcessCategory", "AIGroup");
+	ENDMETHOD
+
+	METHOD(process)
+		params [P_THISOBJECT];
+
+		#ifdef DEBUG_GOAL_MARKERS
+		if(T_GETV("unitMarkersEnabled")) then {
+			pr _unused = "";
+		};
+		#endif
+
+		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_updateDebugMarkers");
+		#endif
+	ENDMETHOD;
+	FIX_LINE_NUMBERS()
+
+	// World state accessors
+	METHOD(isLanded)
+		params [P_THISOBJECT];
+		[T_GETV("worldState"), WSP_GROUP_ALL_LANDED] call ws_getPropertyValue
+	ENDMETHOD;
+
+	METHOD(isVehiclesUpright)
+		params [P_THISOBJECT];
+		[T_GETV("worldState"), WSP_GROUP_ALL_VEHICLES_UPRIGHT] call ws_getPropertyValue
+	ENDMETHOD;
+
+	METHOD(isVehiclesRepaired)
+		params [P_THISOBJECT];
+		[T_GETV("worldState"), WSP_GROUP_ALL_VEHICLES_REPAIRED] call ws_getPropertyValue
+	ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                    G E T   M E S S A G E   L O O P
+	// | The group AI resides in its own thread
+	// ----------------------------------------------------------------------
+	
+	METHOD(getMessageLoop)
+		gMessageLoopGroupAI
+	ENDMETHOD;
+	
+	/*
+	Method: handleUnitsRemoved
+	Handles what happens when units get removed from their group, for instance when they gets destroyed.
+	Currently it deletes goals from units that have been given by this AI object and calls handleUnitsRemoved of the current action.
+	
+	Access: internal
+	
+	Parameters: _units
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD(handleUnitsRemoved)
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		OOP_INFO_1("handleUnitsRemoved: %1", _units);
+
+		// Delete goals that have been given by this object
+		{
+			CALLM0(_x, "resetRecursive");
+		} forEach (_units apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
+
+		// Call handleUnitsRemoved of the current action, if it exists
+		pr _currentAction = T_GETV("currentAction");
+		if (_currentAction != NULL_OBJECT) then {
+			CALLM1(_currentAction, "handleUnitsRemoved", _units);
+		};
+	ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Handles what happens when units get added to a group.
+	Currently it calles handleUnitAdded of the current action.
+	
+	Access: internal
+	
+	Parameters: _unit
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD(handleUnitsAdded)
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		
+		OOP_INFO_1("handleUnitsAdded: %1", _units);
+		
+		// Call handleUnitAdded of the current action, if it exists
+		pr _currentAction = T_GETV("currentAction");
+		if (_currentAction != NULL_OBJECT) then {
+			CALLM1(_currentAction, "handleUnitsAdded", _units);
+		};
+	ENDMETHOD;
+
+	//                        G E T   P O S S I B L E   G O A L S
+	/*
+	Method: getPossibleGoals
+	Returns the list of goals this agent evaluates on its own.
+
+	Access: Used by AI class
+
+	Returns: Array with goal class names
+	*/
+	METHOD(getPossibleGoals)
+		params [P_THISOBJECT];
+		if(CALLM0(T_GETV("agent"), "isAirGroup")) then {
+			["GoalGroupAirLand", "GoalGroupAirMaintain"]
+		} else {
+			//["GoalGroupRelax"]
+			["GoalGroupUnflipVehicles", "GoalGroupArrest"]
+		};
+	ENDMETHOD;
+
+
+	//                      G E T   P O S S I B L E   A C T I O N S
+	/*
+	Method: getPossibleActions
+	Returns the list of actions this agent can use for planning.
+
+	Access: Used by AI class
+
+	Returns: Array with action class names
+	*/
+	METHOD(getPossibleActions)
+		[]
+	ENDMETHOD;
+
+	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+		true
+	ENDMETHOD;
+
+	// Debug
+
+	METHOD(_enableDebugMarkers)
 		params [P_THISOBJECT];
 
 		if(T_GETV("markersEnabled")) exitWith {
@@ -116,9 +260,9 @@ CLASS("AIGroup", "AI_GOAP")
 		}, ["AIGroupMarker", _thisObject]] call BIS_fnc_addStackedEventHandler;
 
 		T_SETV("markersEnabled", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_disableDebugMarkers") {
+	METHOD(_disableDebugMarkers)
 		params [P_THISOBJECT];
 		
 		if(!T_GETV("markersEnabled")) exitWith {
@@ -130,9 +274,9 @@ CLASS("AIGroup", "AI_GOAP")
 		[_thisObject, "onMapSingleClick"] call BIS_fnc_removeStackedEventHandler;
 
 		T_SETV("markersEnabled", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_updateDebugMarkers") {
+	METHOD(_updateDebugMarkers)
 		params [P_THISOBJECT];
 
 		pr _grp = T_GETV("agent");
@@ -216,92 +360,12 @@ CLASS("AIGroup", "AI_GOAP")
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
 
-	} ENDMETHOD;
-
-	METHOD("process") {
-		params [P_THISOBJECT];
-
-		if(T_GETV("unitMarkersEnabled")) then {
-			pr _unused = "";
-		};
-
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
-		T_CALLM0("_updateDebugMarkers");
-	} ENDMETHOD;
-	#endif
-	FIX_LINE_NUMBERS()
-
-	// ----------------------------------------------------------------------
-	// |                    G E T   M E S S A G E   L O O P
-	// | The group AI resides in its own thread
-	// ----------------------------------------------------------------------
-	
-	METHOD("getMessageLoop") {
-		gMessageLoopGroupAI
-	} ENDMETHOD;
-	
-	/*
-	Method: handleUnitsRemoved
-	Handles what happens when units get removed from their group, for instance when they gets destroyed.
-	Currently it deletes goals from units that have been given by this AI object and calls handleUnitsRemoved of the current action.
-	
-	Access: internal
-	
-	Parameters: _units
-	
-	_units - Array of <Unit> objects
-	
-	Returns: nil
-	*/
-	METHOD("handleUnitsRemoved") {
-		params [P_THISOBJECT, P_ARRAY("_units")];
-
-		OOP_INFO_1("handleUnitsRemoved: %1", _units);
-
-		// Delete goals that have been given by this object
-		{
-			CALLM0(_x, "resetRecursive");
-		} forEach (_units apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
-
-		// Call handleUnitsRemoved of the current action, if it exists
-		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != NULL_OBJECT) then {
-			CALLM1(_currentAction, "handleUnitsRemoved", _units);
-		};
-	} ENDMETHOD;
-	
-	/*
-	Method: handleUnitsAdded
-	Handles what happens when units get added to a group.
-	Currently it calles handleUnitAdded of the current action.
-	
-	Access: internal
-	
-	Parameters: _unit
-	
-	_units - Array of <Unit> objects
-	
-	Returns: nil
-	*/
-	METHOD("handleUnitsAdded") {
-		params [P_THISOBJECT, P_ARRAY("_units")];
-		
-		OOP_INFO_1("handleUnitsAdded: %1", _units);
-		
-		// Call handleUnitAdded of the current action, if it exists
-		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != NULL_OBJECT) then {
-			CALLM1(_currentAction, "handleUnitsAdded", _units);
-		};
-	} ENDMETHOD;
-
-	// Debug
-
+	ENDMETHOD;
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD("getDebugUIVariableNames") {
+	/* override */ METHOD(getDebugUIVariableNames)
 		[
 			"suspTarget"
 		]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

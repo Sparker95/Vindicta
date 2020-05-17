@@ -3,9 +3,10 @@
 // Class: AI.Garrison.GoalGarrisonRelax
 // Garrison will let down their guard.
 // Only allowed when garrison is not in a vigilant state
+#define OOP_CLASS_NAME GoalGarrisonRelax
 CLASS("GoalGarrisonRelax", "Goal")
 
-	STATIC_METHOD("calculateRelevance") {
+	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// What is the garrison alert level?
@@ -14,9 +15,9 @@ CLASS("GoalGarrisonRelax", "Goal")
 		} else {
 			0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _ws = GETV(_AI, "worldState");
@@ -40,6 +41,6 @@ CLASS("GoalGarrisonRelax", "Goal")
 		CALLM1(_actionSerial, "addSubactionToBack", _actionRelax);
 
 		_actionSerial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

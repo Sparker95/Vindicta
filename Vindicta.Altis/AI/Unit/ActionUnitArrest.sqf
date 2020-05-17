@@ -10,6 +10,7 @@ Template of an Action class
 #define MIN_ARREST_DIST 2 // minimum distance for arrest animation and method call
 #define MAX_CHASE_TIME 45 
 
+#define OOP_CLASS_NAME ActionUnitArrest
 CLASS("ActionUnitArrest", "Action")
 	
 	VARIABLE("target");
@@ -20,7 +21,7 @@ CLASS("ActionUnitArrest", "Action")
 	VARIABLE("spawnHandle");
 	VARIABLE("screamTime");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _a = GETV(_AI, "agent");
 		pr _captor = CALLM0(_a, "getObjectHandle");
@@ -34,9 +35,9 @@ CLASS("ActionUnitArrest", "Action")
 		
 		T_SETV("spawnHandle", scriptNull);
 		T_SETV("screamTime", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 		
 		pr _captor = T_GETV("objectHandle");
@@ -49,9 +50,9 @@ CLASS("ActionUnitArrest", "Action")
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM("activateIfInactive", []);
@@ -265,13 +266,13 @@ CLASS("ActionUnitArrest", "Action")
 		// Return the current state
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Performs the actual arrest of targeted civilian or player.
 		
 	*/
-	STATIC_METHOD("performArrest") {
+	STATIC_METHOD(performArrest)
 		params [P_THISCLASS, P_OBJECT("_target")];
 
 		// If it's a civilian presence target...
@@ -293,13 +294,13 @@ CLASS("ActionUnitArrest", "Action")
 			_target setVariable ["timeArrested", GAME_TIME + 10];
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 		Called only for PLAYER. Player is presumed to have purposely evaded arrest.
 		Makes player (target) go overt in Undercover. Makes unit doing the arrest (captor) go into combat.
 	*/
-	STATIC_METHOD("killArrestTarget") {
+	STATIC_METHOD(killArrestTarget)
 		params [P_THISCLASS, P_OBJECT("_target"), P_OBJECT("_captor")];
 		if (isPlayer _target) then {
 			pr _sentence = selectRandom [
@@ -320,10 +321,10 @@ CLASS("ActionUnitArrest", "Action")
 			_captor setBehaviour "COMBAT";
 			_captor doWatch _target;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		terminate T_GETV("spawnHandle");
@@ -333,6 +334,6 @@ CLASS("ActionUnitArrest", "Action")
 		_captor lockWP false;
 		_captor setSpeedMode "LIMITED";
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -5,7 +5,7 @@
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\defineCommonGrids.hpp"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Resources\UIProfileColors.h"
 #include "DialogBase_Macros.h"
 
@@ -31,6 +31,7 @@ To use them, you must add a static variable "instance" to your class.
 #define __DISPLAY_SUFFIX "_display"
 #define __CTRL_THISOBJECT_VAR "_thisobject"
 
+#define OOP_CLASS_NAME DialogBase
 CLASS("DialogBase", "")
 
 	// We set it to true in destructor to ensure proper work of event handlers
@@ -54,7 +55,7 @@ CLASS("DialogBase", "")
 	// Event handler which will run in the destructor of this dialog
 	VARIABLE("onDeleteCode");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("NEW");
@@ -105,9 +106,9 @@ CLASS("DialogBase", "")
 		T_CALLM0("redraw");
 		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
@@ -127,18 +128,18 @@ CLASS("DialogBase", "")
 		};
 
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Deletes this dialog on next frame
 	// Sometimes deleting the dialog from an event handler can crash arma
-	METHOD("deleteOnNextFrame") {
+	METHOD(deleteOnNextFrame)
 		params [P_THISOBJECT];
 		_thisObject spawn {DELETE(_this)}; // todo replace with CBA
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// = = = = = = = = = = = = = = = = = = = = =
 	// Singleton class template
-	STATIC_METHOD("newInstance") {
+	STATIC_METHOD(newInstance)
 		params [P_THISCLASS, P_ARRAY("_constructorArguments")];
 
 		pr _inst = GETSV(_thisClass, "instance");
@@ -152,9 +153,9 @@ CLASS("DialogBase", "")
 		SETSV(_thisClass, "instance", _inst);
 
 		_inst
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("deleteInstance") {
+	STATIC_METHOD(deleteInstance)
 		params [P_THISCLASS];
 
 		pr _inst = GETSV(_thisClass, "instance");
@@ -162,61 +163,61 @@ CLASS("DialogBase", "")
 			DELETE(_inst);
 			SETSV(_thisClass, "instance", NULL_OBJECT);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getInstance") {
+	STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		pr _inst = GETSV(_thisClass, "instance");
 		if (isNil "_inst") exitWith {NULL_OBJECT};
 		_inst
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// = = = = = = = = = = = = = = = = = = = = =
 
 	// Adds an event handler which will run in the destructor of this dialog
-	METHOD("onDelete") {
+	METHOD(onDelete)
 		params [P_THISOBJECT, P_CODE("_code")];
 		T_SETV("onDeleteCode", _code);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("enableMultiTab") {
+	METHOD(enableMultiTab)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 		T_SETV("multiTab", _enable);
 		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
 		T_CALLM0("redraw");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setContentSize") {
+	METHOD(setContentSize)
 		params [P_THISOBJECT, P_NUMBER("_contentw"), P_NUMBER("_contenth")];
 		T_SETV("contentW", _contentw);
 		T_SETV("contentH", _contenth);
 		T_CALLM2("resize", _contentw, _contenth);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setHeadlineText") {
+	METHOD(setHeadlineText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _ctrl = T_CALLM0("getDisplay") displayCtrl IDC_DIALOG_BASE_STATIC_HEADLINE;
 		_ctrl ctrlSetText toUpper(_text);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setHintText") {
+	METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _ctrl = T_CALLM0("getDisplay") displayCtrl IDC_DIALOG_BASE_STATIC_HINTS;
 		_ctrl ctrlSetText _text;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getDisplay") {
+	METHOD(getDisplay)
 		params [P_THISOBJECT];
 		uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getContentSize") {
+	METHOD(getContentSize)
 		params [P_THISOBJECT];
 		[T_GETV("contentW"), T_GETV("contentH")]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Performs one-time resize of controls according to dialog content size
-	METHOD("resize") {
+	METHOD(resize)
 		params [P_THISOBJECT, P_NUMBER("_contentw"), P_NUMBER("_contenth")];
 
 		pr _multitab = T_GETV("multiTab");
@@ -291,11 +292,11 @@ CLASS("DialogBase", "")
 			CALLM2(_tabobj, "resize", T_GETV("contentW"), T_GETV("contentH"));
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Hides/shows appropriate controls according to settings
 	// Doesn't resize anything
-	METHOD("redraw") {
+	METHOD(redraw)
 		params [P_THISOBJECT];
 
 		pr _display = T_CALLM0("getDisplay");
@@ -307,10 +308,10 @@ CLASS("DialogBase", "")
 		} forEach [IDC_DIALOG_BASE_GROUP_TAB_BUTTONS, IDC_DIALOG_BASE_STATIC_TAB_BUTTONS_BACKGROUND];
 
 		// todo hint bar, esc button, etc
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns new tab ID
-	METHOD("addTab") {
+	METHOD(addTab)
 		params [P_THISOBJECT, P_STRING("_tabClass"), P_STRING("_tabText")];
 
 		pr _display = T_CALLM0("getDisplay");
@@ -352,17 +353,17 @@ CLASS("DialogBase", "")
 
 		// Return tab ID
 		_buttonID
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonTab") {
+	METHOD(onButtonTab)
 		params [P_THISOBJECT, P_NUMBER("_tabID")];
 
 		OOP_INFO_1("ON BUTTON TAB: %1", _tabID);
 		T_CALLM1("setCurrentTab", _tabID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets the current tab
-	METHOD("setCurrentTab") {
+	METHOD(setCurrentTab)
 		params [P_THISOBJECT, P_NUMBER("_tabID")];
 
 		pr _tabs = T_GETV("tabs");
@@ -387,37 +388,37 @@ CLASS("DialogBase", "")
 		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
 
 		T_SETV("currentTabID", _tabID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getCurrentTab
 
 	Returns current tab object
 	*/
-	METHOD("getCurrentTab") {
+	METHOD(getCurrentTab)
 		params [P_THISOBJECT];
 
 		T_GETV("currentTabObj");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("close") {
+	METHOD(close)
 		params [P_THISOBJECT];
 		OOP_INFO_0("CLOSING");
 		T_CALLM0("deleteOnNextFrame");
 		// DELETE(_thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overridable methods
 	// Derived classes can override these
-	METHOD("onButtonClose") {
+	METHOD(onButtonClose)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON CLOSE");
 		T_CALLM0("close");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonQuestion") {
+	METHOD(onButtonQuestion)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON QUESTION");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

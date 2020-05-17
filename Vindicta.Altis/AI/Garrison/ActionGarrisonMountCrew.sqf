@@ -5,21 +5,22 @@ All crew of vehicles mounts assigned vehicles.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonMountCrew
 CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	
 	VARIABLE("mount"); // Bool, true for mounting, false for dismounting
 	
 	// ------------ N E W ------------
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _mount = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOUNT);
 		T_SETV("mount", _mount);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _gar = T_GETV("gar");
@@ -45,10 +46,10 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		// Check if spawned
@@ -86,6 +87,6 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 			T_SETV("state", _state);
 			_state
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

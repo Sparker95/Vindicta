@@ -35,22 +35,23 @@ Performs saving data into profile namespace
 // Class name is too long to type every time...
 #define __CLASS_NAME "StorageProfileNamespace"
 
-CLASS(__CLASS_NAME, "Storage")
+#define OOP_CLASS_NAME StorageProfileNamespace
+CLASS("StorageProfileNamespace", "Storage")
 
 	VARIABLE("bOpen");			// Bool, true if open
 	VARIABLE("currentRecord");	// String, current record name
 	VARIABLE("currentPrefix");	// String, a unique prefix for all variables of this record
 	VARIABLE("allVariables");	// All variables in this record
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("bOpen", false);
 		T_SETV("currentPrefix", "_error_prefix_");
 		T_SETV("currentRecord", "_error_record_");
 		T_SETV("allVariables", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("open") {
+	/* override */ METHOD(open)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		CALL_CLASS_METHOD("Storage", _thisObject, "open", [_recordName]);
@@ -110,10 +111,10 @@ CLASS(__CLASS_NAME, "Storage")
 		};
 		
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must close the file or whatever
-	/* override */ METHOD("close") {
+	/* override */ METHOD(close)
 		params [P_THISOBJECT];
 
 		CALL_CLASS_METHOD("Storage", _thisObject, "close", []);
@@ -132,16 +133,16 @@ CLASS(__CLASS_NAME, "Storage")
 		};
 
 		T_SETV("bOpen", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must return true if the object is ready to save/load data
-	/* override */ METHOD("isOpen") {
+	/* override */ METHOD(isOpen)
 		params [P_THISOBJECT];
 		T_GETV("bOpen");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Saves variable, returns true on success
-	/* override */ METHOD("saveString") {
+	/* override */ METHOD(saveString)
 		//diag_log format ["Save string: %1", _this];
 
 		params [P_THISOBJECT, P_STRING("_varName"), P_STRING("_value")];
@@ -157,15 +158,15 @@ CLASS(__CLASS_NAME, "Storage")
 
 		// Add to the array of all variables
 		T_GETV("allVariables") pushBackUnique _varName;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("_saveString") {
+	/* private */ METHOD(_saveString)
 		params [P_THISOBJECT, P_STRING("_varName"), P_DYNAMIC("_value")];
 		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentPrefix"), _varName), _value];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Loads variable, returns the value it has read
-	/* override */ METHOD("loadString") {
+	/* override */ METHOD(loadString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 
 		#ifdef OOP_ASSERT
@@ -176,15 +177,15 @@ CLASS(__CLASS_NAME, "Storage")
 		#endif
 
 		T_CALLM1("_loadString", _varName);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("_loadString") {
+	/* private */ METHOD(_loadString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 		__PNS getVariable __NS_VAR_NAME(T_GETV("currentPrefix"), _varName)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Erases variable (loadVariable must return nil afterwards)
-	/* virtual */ METHOD("eraseString") {
+	/* virtual */ METHOD(eraseString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 
 		#ifdef OOP_ASSERT
@@ -195,24 +196,24 @@ CLASS(__CLASS_NAME, "Storage")
 		#endif
 
 		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentPrefix"), _varName), nil];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must returns true if a record with given record name already exists
-	/* override */ METHOD("recordExists") {
+	/* override */ METHOD(recordExists)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		_recordName = toLower _recordName;
 		pr _entry = T_CALLM1("_findRecordTableEntry", _recordName);
 		count _entry > 0 // True if a valid array was returned
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must return array of all record names which exist in this storage
-	/* override */ METHOD("getAllRecords") {
+	/* override */ METHOD(getAllRecords)
 		params [P_THISOBJECT];
 		pr _recordTable = T_CALLM0("_loadRecordTable");
 		_recordTable apply {_x#RECORD_ID_NAME};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("eraseRecord") {
+	/* override */ METHOD(eraseRecord)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		OOP_INFO_1("ERASE RECORD: %1", _recordName);
@@ -252,10 +253,10 @@ CLASS(__CLASS_NAME, "Storage")
 		saveProfileNamespace;
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Generates a unique prefix for a new record
-	METHOD("_generateUniquePrefix") {
+	METHOD(_generateUniquePrefix)
 		params [P_THISOBJECT];
 		pr _recordTable = T_CALLM0("_loadRecordTable");
 		pr _allPrefixes = _recordTable apply {_x#RECORD_ID_PREFIX};
@@ -271,23 +272,23 @@ CLASS(__CLASS_NAME, "Storage")
 			};
 		};
 		_newPrefix
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must return an array of structs associated with all records
-	METHOD("_loadRecordTable") {
+	METHOD(_loadRecordTable)
 		params [P_THISOBJECT];
 		__PNS getVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_ALL_RECORDS), []];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Saves the record table
-	METHOD("_saveRecordTable") {
+	METHOD(_saveRecordTable)
 		params [P_THISOBJECT, P_ARRAY("_array")];
 		__PNS setVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_ALL_RECORDS), _array];
 		saveProfileNamespace;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns entry into the record table with given record name
-	METHOD("_findRecordTableEntry") {
+	METHOD(_findRecordTableEntry)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		//diag_log format ["find record by name: %1", _recordName];
 		pr _recordTable = T_CALLM0("_loadRecordTable");
@@ -300,7 +301,7 @@ CLASS(__CLASS_NAME, "Storage")
 		} else {
 			[]
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -390,15 +391,16 @@ ENDCLASS;
 
 
 	// Try to save/load objects
-	CLASS("StorableTest", "Storable")
+	#define OOP_CLASS_NAME StorableTest
+CLASS("StorableTest", "Storable")
 		VARIABLE("noSave0");
 		VARIABLE_ATTR("save0", [ATTR_SAVE]);
 		VARIABLE_ATTR("save1", [ATTR_SAVE]);
 		VARIABLE("noSave1");
 
-		METHOD("new") {
+		METHOD(new)
 			params [P_THISOBJECT];
-		} ENDMETHOD;
+		ENDMETHOD;
 
 	ENDCLASS;
 

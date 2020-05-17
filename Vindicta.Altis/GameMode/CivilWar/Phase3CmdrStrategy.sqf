@@ -5,8 +5,9 @@ Class: Phase3CmdrStrategy
 Strategy for commander to use during phase 3 gameplay.
 Sends QRFs, deploys roadblocks, captures everything it needs.
 */
+#define OOP_CLASS_NAME Phase3CmdrStrategy
 CLASS("Phase3CmdrStrategy", "CmdrStrategy")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("takeLocOutpostPriority", 			1);		// Low priority to take outposts in general
@@ -29,5 +30,5 @@ CLASS("Phase3CmdrStrategy", "CmdrStrategy")
 		T_SETV("constructLocRoadblockPriority", 	0.1);	// Pre-emptively create roadblocks everywhere
 		T_SETV("constructLocRoadblockCoeff", 		5);		// Construct roadblocks with highish priority when required
 
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

@@ -7,19 +7,20 @@ Game mode data for general locations
 
 #define pr private
 
+#define OOP_CLASS_NAME CivilWarLocationData
 CLASS("CivilWarLocationData", "LocationGameModeData")
 
 	// Setting it to true will force enable respawn of players here regardless of other rules
 	VARIABLE_ATTR("forceEnablePlayerRespawn", [ATTR_SAVE]);
 	VARIABLE("ownerSide");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("forceEnablePlayerRespawn", false);
 		T_SETV_PUBLIC("ownerSide", CIVILIAN);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* virtual override server */ METHOD("updatePlayerRespawn") {
+	/* virtual override server */ METHOD(updatePlayerRespawn)
 		params [P_THISOBJECT];
 
 		pr _loc = T_GETV("location");
@@ -72,15 +73,15 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			};
 		};
 		CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("forceEnablePlayerRespawn") {
+	METHOD(forceEnablePlayerRespawn)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 		T_SETV("forceEnablePlayerRespawn", _enable);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overrides the location name
-	/* public virtual client */ METHOD("getDisplayColor") {
+	/* public virtual client */ METHOD(getDisplayColor)
 		params [P_THISOBJECT];
 		switch T_GETV("ownerSide") do {
 			case FRIENDLY_SIDE: {
@@ -93,9 +94,9 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 				[1,1,1,1]
 			};
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual override client */ METHOD("getMapInfoEntries") {
+	/* virtual override client */ METHOD(getMapInfoEntries)
 		private _return = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -114,10 +115,10 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			};
 		};
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// STORAGE
-	/* override server */ METHOD("postDeserialize") {
+	/* override server */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -125,6 +126,6 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		T_SETV_PUBLIC("ownerSide", CIVILIAN);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

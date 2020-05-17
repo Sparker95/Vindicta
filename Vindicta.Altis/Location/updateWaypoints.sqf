@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "Location.hpp"
 
 // Class: Location

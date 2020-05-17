@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 #define OFSTREAM_FILE "Intel.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "InventoryItems.hpp"
 
 /*
@@ -24,11 +24,12 @@ Maintains IDs of free and used inventory items, and what data is assigned to eac
 // Array with true/false which tells if this data cell is occupied
 #define __ID_BITFIELD 3
 
+#define OOP_CLASS_NAME PersonalInventory
 CLASS("PersonalInventory", "")
 
 	VARIABLE("data");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("data", []);
@@ -36,9 +37,9 @@ CLASS("PersonalInventory", "")
 		{
 			T_CALLM2("_addInventoryClass", _x, INTEL_INVENTORY_CLASSES_COPY_AMOUNT);
 		} forEach INTEL_INVENTORY_ALL_CLASSES;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_addInventoryClass") {
+	METHOD(_addInventoryClass)
 		params [P_THISOBJECT, P_STRING("_className"), P_NUMBER("_amount")];
 
 		pr _data = T_GETV("data");
@@ -51,10 +52,10 @@ CLASS("PersonalInventory", "")
 		pr _counter = 0;
 		_data pushBack [_className, _counter, _classData, _bitfield];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns [_data, _dataExists]
-	METHOD("getInventoryData") {
+	METHOD(getInventoryData)
 		pr _returnData = 0;
 		pr _returnDataExists = false;
 		CRITICAL_SECTION {
@@ -81,9 +82,9 @@ CLASS("PersonalInventory", "")
 			OOP_INFO_3("getInventoryData: %1 %2   return: %3", _className, _ID, [_returnData ARG _returnDataExists]);
 		};
 		[_returnData, _returnDataExists]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setInventoryData") {
+	METHOD(setInventoryData)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_className"), P_NUMBER("_ID"), "_inventoryData"];
 			
@@ -110,12 +111,12 @@ CLASS("PersonalInventory", "")
 				OOP_ERROR_1("Base class name %1 not found", _className);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
 	/*
-	METHOD("resetInventoryData") {
+	METHOD(resetInventoryData)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_className"), P_NUMBER("_ID")];
 		
@@ -137,10 +138,10 @@ CLASS("PersonalInventory", "")
 				OOP_ERROR_1("Base class name %1 not found", _className);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
-	METHOD("getInventoryClassIDs") {
+	METHOD(getInventoryClassIDs)
 		pr _return = [];
 
 		CRITICAL_SECTION {
@@ -187,10 +188,10 @@ CLASS("PersonalInventory", "")
 		};
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns the counter for this inventory class
-	METHOD("getInventoryClassCounter") {
+	METHOD(getInventoryClassCounter)
 		pr _return = -1;
 
 		CRITICAL_SECTION {
@@ -210,17 +211,17 @@ CLASS("PersonalInventory", "")
 		};
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns base class name and ID from a full class name
-	STATIC_METHOD("getBaseClassAndID") {
+	STATIC_METHOD(getBaseClassAndID)
 		params [P_THISCLASS, P_STRING("_fullClass")];
 		_array = toArray _fullClass;
 		private _count = count _array;
 		private _i = _count - 1; // Last character
 		while {_array#_i != 95} do {_i = _i - 1}; // 95 = '_' character
 		[_fullClass select [0, _i], parseNumber (_fullClass select [_i+1, _count - _i - 1])]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

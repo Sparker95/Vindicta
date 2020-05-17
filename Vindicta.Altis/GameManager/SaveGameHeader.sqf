@@ -6,6 +6,7 @@ Class: SaveGameHeader
 Class which stores crucial data about each save game record.
 */
 
+#define OOP_CLASS_NAME SaveGameHeader
 CLASS("SaveGameHeader", "Storable")
 
 	VARIABLE("saveVersion");		// Save record version. Used for checking if saved game is compatible.
@@ -26,7 +27,7 @@ CLASS("SaveGameHeader", "Storable")
 	*/
 
 	// Initializes data fields for a new save
-	METHOD("initNew") {
+	METHOD(initNew)
 		params [P_THISOBJECT];
 		T_SETV("saveVersion", call misc_fnc_getSaveVersion);
 		T_SETV("missionVersion", call misc_fnc_getVersion);
@@ -38,20 +39,20 @@ CLASS("SaveGameHeader", "Storable")
 		T_SETV("date", date);
 		T_SETV("campaignStartDate", date);		// Must be set externally
 		T_SETV("templates", []);				// Must be set externally
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// STORAGE
 	
 	// Save all varaibles
-	/* override */ METHOD("serializeForStorage") {
+	/* override */ METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("deserializeFromStorage") {
+	/* override */ METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

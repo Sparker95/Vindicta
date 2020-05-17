@@ -2,6 +2,9 @@ OOP_Light_initialized = true;
 
 #include "OOP_Light.h"
 
+#define FIX_LINE_NUMBERS2(sharp) sharp##line __LINE__ __FILE__
+#define FIX_LINE_NUMBERS() FIX_LINE_NUMBERS2(#)
+
 /*
  * This file contains some functions for OOP_Light, mainly for asserting classess, objects and members.
  * Author: Sparker
@@ -22,6 +25,7 @@ if(isNil OOP_GVAR_STR(sessionID)) then {
 	OOP_GVAR(sessionID) = 0;
 };
 #endif
+FIX_LINE_NUMBERS()
 
 if(IS_SERVER) then {
 	gGameFreezeTime = 0;
@@ -39,6 +43,7 @@ OOP_error = {
 	diag_log _msg;
 	DUMP_CALLSTACK;
 	#endif
+	FIX_LINE_NUMBERS()
 	// Doesn't really work :/
 	// try
 	// {
@@ -309,11 +314,13 @@ OOP_assert_class_member_access = {
 		if(!isNil "_thisClass") then { _thisClass } else { nil }
 	];
 	#endif
+	FIX_LINE_NUMBERS()
 	// If it isn't private or get only then we are fine
 	if(!_isPrivate and !_isGetOnly) exitWith { 
 		#ifdef DEBUG_OOP_ASSERT_FUNCS
 		diag_log "OK: !_isPrivate";
 		#endif
+		FIX_LINE_NUMBERS()
 		true 
 	};
 	// If it is both private and get-only then it is a declaration error, these are mutually exclusive
@@ -392,6 +399,7 @@ OOP_assert_static_member_access = {
 		false
 	};
 #endif
+FIX_LINE_NUMBERS()
 	private _isPrivate = [_classNameStr, _memNameStr, ATTR_PRIVATE] call OOP_static_member_has_attr;
 	private _isGetOnly = [_classNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_static_member_has_attr;
 	[_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly, _file, _line] call OOP_assert_class_member_access;
@@ -419,6 +427,7 @@ OOP_assert_member_access = {
 		if(!isNil "_thisClass") then { _thisClass } else { nil }
 	];
 	#endif
+	FIX_LINE_NUMBERS()
 
 	// EARLY OUT: If we are accessing from within the same object we have no access restrictions
 	if (!isNil "_thisObject" and {_thisObject isEqualTo _objNameStr}) exitWith { true };
@@ -428,12 +437,13 @@ OOP_assert_member_access = {
 
 	// Get the class of the object that owns the member
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-#ifndef _SQF_VM
+	#ifndef _SQF_VM
 	private _threadAffinity = [_objNameStr, _memNameStr, ATTR_THREAD_AFFINITY_ID] call OOP_member_get_attr_ex;
 	if((_threadAffinity isEqualType []) and {!([_objNameStr, _classNameStr, _memNameStr, _threadAffinity#1, _file, _line] call OOP_assert_is_in_required_thread)}) exitWith {
 		false
 	};
-#endif
+	#endif
+	FIX_LINE_NUMBERS()
 	private _thisClass = if(!isNil "_thisClass") then { 
 			_thisClass
 		} else {
@@ -613,10 +623,7 @@ gCommaNewLine = ",";
 #define DUMP_STR(string) (diag_log ("_json_line_ " + (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
 
 #endif
-
-
-
-
+FIX_LINE_NUMBERS()
 
 // Serializes a variable to json
 OOP_dumpVariableToJson = {
@@ -701,10 +708,6 @@ OOP_dumpAsJson = {
 	DUMP(endl + endl + endl);
 };
 
-
-
-
-
 // Dumps to JSON, but always to diag_log
 
 #ifdef _SQF_VM
@@ -712,6 +715,7 @@ OOP_dumpAsJson = {
 #else
 #define __TEXT text
 #endif
+FIX_LINE_NUMBERS()
 
 gComma = toString [44];
 #define CLEAR() 
@@ -820,12 +824,6 @@ OOP_objectCrashDump = {
 		};
 	};
 };
-
-
-
-
-
-
 
 // ---- Remote execution ----
 // A remote code wants to execute something on this machine
@@ -977,6 +975,7 @@ OOP_assign_default = { // todo implement namespace
 		[__FILE__, __LINE__, format ["destination and source classes don't match for objects %1 and %2", _destObject, _srcObject]] call OOP_error;
 	};
 	#endif
+	FIX_LINE_NUMBERS()
 
 	// Get member list and copy everything
 	private _memList = GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
@@ -1089,6 +1088,7 @@ OOP_deserialize = { // todo implement namespace
 	#ifdef OOP_ASSERT
 	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith {};
 	#endif
+	FIX_LINE_NUMBERS()
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
 
@@ -1115,6 +1115,7 @@ OOP_deserialize_attr = {
 	#ifdef OOP_ASSERT
 	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith {};
 	#endif
+	FIX_LINE_NUMBERS()
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	if(!_deserializeAllVariables) then {
@@ -1147,6 +1148,7 @@ OOP_deserialize_save = {
 	#ifdef OOP_ASSERT
 	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith { false };
 	#endif
+	FIX_LINE_NUMBERS()
 
 	// Select member variables we expect to find in this save version
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
@@ -1268,6 +1270,23 @@ OOP_getSessionCounter = {
 	OOP_GVAR(sessionID)
 };
 
+// Creates a static string, needed for profiler to make static strings
+#ifndef _SQF_VM
+OOP_staticStringHashmap = [false] call CBA_fnc_createNamespace;
+#endif
+FIX_LINE_NUMBERS()
+
+OOP_createStaticString = {
+	params ["_str"];
+	private _strFound = OOP_staticStringHashmap getVariable [_str, ""];
+	if (_strFound == "") then {
+		OOP_staticStringHashmap setVariable [_str, _str];
+		_str
+	} else {
+		_strFound
+	};
+};
+
 // Base class for intrusive ref counting.
 // Use the REF and UNREF macros with objects of classes 
 // derived from this one.
@@ -1276,17 +1295,18 @@ OOP_getSessionCounter = {
 // Use the SET_VAR_REF, SETV_REF, T_SETV_REF family of functions to write to 
 // these members to get automated de-refing of replaced value, and refing of
 // new value. See RefCountedTest.sqf for example.
+#define OOP_CLASS_NAME RefCounted
 CLASS("RefCounted", "")
 	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		// Start at ref count zero. When the object gets assigned to a VARIABLE
 		// using T_SETV_REF it will be automatically reffed.
 		T_SETV("refCount", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("ref") {
+	METHOD(ref)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			private _refCount = T_GETV("refCount");
@@ -1294,9 +1314,9 @@ CLASS("RefCounted", "")
 			//OOP_DEBUG_2("%1 refed to %2", _thisObject, _refCount);
 			T_SETV("refCount", _refCount);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("unref") {
+	METHOD(unref)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			private _refCount = T_GETV("refCount");
@@ -1309,129 +1329,136 @@ CLASS("RefCounted", "")
 				T_SETV("refCount", _refCount);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // - - - - - - SQF VM - - - - - -
 
 #ifdef _SQF_VM
 
+#define OOP_CLASS_NAME AttrTestBase1
 CLASS("AttrTestBase1", "")
 	VARIABLE("var_default");
 	VARIABLE_ATTR("var_private", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("var_get_only", [ATTR_GET_ONLY]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("var_default", true);
 		T_SETV("var_private", true);
 		T_SETV("var_get_only", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("validDefaultAccessTest") {
+	METHOD(validDefaultAccessTest)
 		params [P_THISOBJECT];
 		T_SETV("var_default", true);
 		T_GETV("var_default")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validPrivateAccessTest") {
+	METHOD(validPrivateAccessTest)
 		params [P_THISOBJECT];
 		T_SETV("var_private", true);
 		T_GETV("var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	METHOD("validGetOnlyAccessTest") {
+	METHOD(validGetOnlyAccessTest)
 		params [P_THISOBJECT];
 		T_SETV("var_get_only", true);
 		T_GETV("var_get_only")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("validStaticPrivateAccessTest") {
+	STATIC_METHOD(validStaticPrivateAccessTest)
 		params [P_THISCLASS, P_STRING("_obj")];
 		GETV(_obj, "var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;
 
+#define OOP_CLASS_NAME AttrTestDerived1
 CLASS("AttrTestDerived1", "AttrTestBase1")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validDerviedDefaultAccessTest") {
+	METHOD(validDerviedDefaultAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_default", true);
 		GETV(_base, "var_default")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validDerviedPrivateAccessTest") {
+	METHOD(validDerviedPrivateAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_private", true);
 		GETV(_base, "var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	METHOD("validDerviedGetOnlyAccessTest") {
+	METHOD(validDerviedGetOnlyAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_get_only", true);
 		GETV(_base, "var_get_only")
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME AttrTestNotDerived1
 CLASS("AttrTestNotDerived1", "")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("validNonDerivedDefaultAccessTest") {
+	METHOD(validNonDerivedDefaultAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_default", true);
 		GETV(_base, "var_default")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("invalidNonDerivedPrivateAccessTest") {
+	METHOD(invalidNonDerivedPrivateAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_private", true);
 		GETV(_base, "var_private")
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	METHOD("validNonDerivedGetOnlyAccessTest") {
+	METHOD(validNonDerivedGetOnlyAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		GETV(_base, "var_get_only")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("invalidNonDerivedGetOnlyAccessTest") {
+	METHOD(invalidNonDerivedGetOnlyAccessTest)
 		params [P_THISOBJECT, P_STRING("_base")];
 		SETV(_base, "var_get_only", true)
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Multiple inheritence tests
 
+#define OOP_CLASS_NAME mi_a
 CLASS("mi_a", "")
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 
-	METHOD("getValue") {"A"} ENDMETHOD;
+	METHOD(getValue)"A"ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME mi_b
 CLASS("mi_b", "mi_a")
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 
-	METHOD("getValue") {"B"} ENDMETHOD; // override
+	METHOD(getValue)"B"ENDMETHOD; // override
 ENDCLASS;
 
+#define OOP_CLASS_NAME mi_c
 CLASS("mi_c", "")
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 
-	METHOD("getAnotherValue") {"anotherValue"} ENDMETHOD;
+	METHOD(getAnotherValue)"anotherValue"ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME mi_d
 CLASS("mi_d", ["mi_b" ARG "mi_c"])
-	METHOD("new") {
-	} ENDMETHOD;
+	METHOD(new)
+	ENDMETHOD;
 ENDCLASS;
 
 ["OOP Multiple Inheritence", {
@@ -1443,7 +1470,7 @@ ENDCLASS;
 
 	["Proper inheritence classes", _parents isEqualTo ["mi_a","mi_b","mi_c"]] call test_Assert;
 
-	//diag_log format ["getValue method: %1", FORCE_GET_METHOD("mi_d", "getValue")];
+	//diag_log format ["getValue method: %1", FORCE_GET_METHOD(mi_d", "getValue)];
 
 	private _value = T_CALLM0("getValue");
 	private _anotherValue = T_CALLM0("getAnotherValue");
@@ -1495,17 +1522,19 @@ ENDCLASS;
 }] call test_AddTest;
 */
 
+#define OOP_CLASS_NAME JsonTestVarObj
 CLASS("JsonTestVarObj", "")
 	VARIABLE("var1");
 	VARIABLE("var2");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("var1", 666);
 		T_SETV("var2", "String!");
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME JsonTest1
 CLASS("JsonTest1", "")
 	VARIABLE("varBool");
 	VARIABLE("varString");
@@ -1515,7 +1544,7 @@ CLASS("JsonTest1", "")
 	VARIABLE("varOOPObject");
 	VARIABLE("varUnset");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("varBool", true);
 		T_SETV("varString", "a string");
@@ -1525,7 +1554,7 @@ CLASS("JsonTest1", "")
 		T_SETV("varObject", _grp);
 		private _oopObj = NEW("JsonTestVarObj", []);
 		T_SETV("varOOPObject", _oopObj);
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // ["OOP to json", {
@@ -1545,6 +1574,7 @@ ENDCLASS;
 
 
 
+#define OOP_CLASS_NAME serAttrTest
 CLASS("serAttrTest", "")
 	VARIABLE_ATTR("var_0", [ATTR_SERIALIZABLE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("var_1", [ATTR_SERIALIZABLE]);

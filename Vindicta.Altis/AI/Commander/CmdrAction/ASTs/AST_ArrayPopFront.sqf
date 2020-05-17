@@ -7,6 +7,7 @@ For example to select the next patrol waypoint in an array of positions.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_ArrayPopFront
 CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	VARIABLE_ATTR("notEmptyState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("emptyBeforeState", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -27,7 +28,7 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 		_arrayVar - IN <AST_VAR>(Array of Any), array to pop front off of
 		_resultVar - OUT <AST_VAR>(Any), element that was popped from the array
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -43,9 +44,9 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 		T_SETV("emptyAfterState", _emptyAfterState);
 		T_SETV("arrayVar", _arrayVar);
 		T_SETV("resultVar", _resultVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world") ];
 
 		private _array = +T_GET_AST_VAR("arrayVar");
@@ -65,7 +66,7 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 		if(count _array == 0) exitWith { T_GETV("emptyAfterState") };
 
 		T_GETV("notEmptyState");
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 #ifdef _SQF_VM

@@ -9,7 +9,7 @@ removeGoggles this;
 
 _RandomHeadgear = selectRandom ["FGN_AAF_PatrolCap_Police","FGN_AAF_Beret_Police","H_Cap_police"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "FGN_AAF_M93_Police";
+this forceaddUniform "FGN_AAF_M93_Police";
 this addVest "FGN_AAF_M99Vest_Police_Radio";
 
 this addWeapon "rhs_weap_pp2000";

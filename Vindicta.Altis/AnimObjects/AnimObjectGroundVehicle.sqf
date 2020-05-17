@@ -1,7 +1,8 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 /*
 A vehicle and animations to 'repair' it.
 */
+#define OOP_CLASS_NAME AnimObjectGroundVehicle
 CLASS("AnimObjectGroundVehicle", "AnimObject")
 
 	STATIC_VARIABLE("animations");
@@ -10,7 +11,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_object")];
 
 		private _objectHandle = T_GETV("object");
@@ -29,7 +30,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 
 		private _animations = GET_STATIC_VAR("AnimObjectGroundVehicle", "animations");
 		T_SETV("animations", _animations);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |          G E T   P O I N T   D A T A  I N T E R N A L
@@ -37,7 +38,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// | Inherited classes must implement this.
 	// | Returns [_offset, _animation, _direction]
 	// ----------------------------------------------------------------------
-	METHOD("getPointDataInternal") {
+	METHOD(getPointDataInternal)
 		params [P_THISOBJECT, P_NUMBER("_pointID")];
 		private _animations = T_GETV("animations");
 		private _points = T_GETV("points");
@@ -52,7 +53,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 		_offset set [1, (_offset select 1) - 0.5 + (random 1) ]; // Randomize the coordinate along the vehicle
 		// pos offset, animation, animation out, walk out dir, walk out distance
 		[_offset, _dir, selectRandom _animations, "", 0, 0]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
@@ -60,12 +61,12 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// |  Internal function to get the position where the unit must move to, in model coordinates
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
-	METHOD("getPointMoveOffset") {
+	METHOD(getPointMoveOffset)
 		params [P_THISOBJECT, P_NUMBER("_pointID") ];
 		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
 		[_pointOffset, 6] // For vehicles completion radius is quite large
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

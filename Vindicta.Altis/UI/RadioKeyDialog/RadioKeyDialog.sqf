@@ -4,11 +4,12 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
+#define OOP_CLASS_NAME RadioKeyDialog
 CLASS("RadioKeyDialog", "DialogBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_CALLM2("addTab", "RadioKeyTab", "");
@@ -19,6 +20,6 @@ CLASS("RadioKeyDialog", "DialogBase")
 		T_CALLM1("setHeadlineText", "Manage radio cryptokeys");
 		T_CALLM1("setHintText", "Hint: Check enemy tablets to find their radio cryptokeys");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

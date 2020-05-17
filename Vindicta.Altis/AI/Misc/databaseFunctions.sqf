@@ -2,7 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OFSTREAM_FILE "AI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 /*
 These functions help initialize various properties of goals and actions from a single file in a more human-readable way.

@@ -14,7 +14,7 @@ _RandomHeadgear = selectRandom ["State_Hat", "State_Hat", "H_Cap_police"];
 this addHeadgear _RandomHeadgear;
 /*Uniform*/
 _RandomUniform = selectRandom ["APD_3", "APD_4", "APD_5", "APD_6"];
-this forceAddUniform _RandomUniform;
+this forceaddUniform _RandomUniform;
 /*Vest*/
 _RandomVest = selectRandom ["S_VHO_PB_3", "S_VHO_OV_BLK_1", "S_VHO_OV_BLK_2", "S_VHO_OV_BLK_3", "S_VHO_OV_BLK_4", "S_VHO_OV_BLK_1", "S_VHO_OV_BLK_2", "S_VHO_OV_BLK_3", "S_VHO_OV_BLK_4"];
 this addVest _RandomVest;

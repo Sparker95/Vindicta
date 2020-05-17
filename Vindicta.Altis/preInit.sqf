@@ -1,4 +1,4 @@
-#include "OOP_Light\OOP_Light.h"
+#include "common.h"
 
 /*
 This file is called in preinit through cfgFunctions
@@ -11,6 +11,7 @@ preInit is executed before JIP functions and before init.sqf.
 // We need these functions right now, before anything else
 misc_fnc_getVersion = compile preprocessFileLineNumbers "Misc\fn_getVersion.sqf";
 misc_fnc_getSaveVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveVersion.sqf";
+misc_fnc_getSaveBreakVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveBreakVersion.sqf";
 
 private _lines = [
 "",
@@ -43,13 +44,14 @@ diag_log "";
 diag_log "";
 diag_log "";
 diag_log format ["VINDICTA PREINIT SQF"];
-diag_log format ["VERSION:        %1", call misc_fnc_getVersion];
-diag_log format ["SAVE VERSION:   %1", call misc_fnc_getSaveVersion];
-diag_log format ["IS SERVER:      %1", isServer];
-diag_log format ["IS MULTIPLAYER: %1", isMultiplayer];
-diag_log format ["HAS INTERFACE:  %1", hasInterface];
-diag_log format ["WORLD NAME:     %1", worldName];
-diag_log format ["PROFILE NAME:   %1", profileName];
+diag_log format ["VERSION:              %1", call misc_fnc_getVersion];
+diag_log format ["SAVE VERSION:         %1", call misc_fnc_getSaveVersion];
+diag_log format ["SAVE BREAK VERSION:   %1", call misc_fnc_getSaveBreakVersion];
+diag_log format ["IS SERVER:            %1", isServer];
+diag_log format ["IS MULTIPLAYER:       %1", isMultiplayer];
+diag_log format ["HAS INTERFACE:        %1", hasInterface];
+diag_log format ["WORLD NAME:           %1", worldName];
+diag_log format ["PROFILE NAME:         %1", profileName];
 //diag_log format ["UID:            %1", getPlayerUID player]; // Returns empty string anyway
 diag_log "";
 diag_log "";

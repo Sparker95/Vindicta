@@ -1,6 +1,6 @@
 //Just a quick file to initialize the modules already made in needed order
 #define OOP_DEBUG
-#include "OOP_Light\OOP_Light.h"
+#include "common.h"
 
 diag_log "[initModules] Starting...";
 
@@ -52,6 +52,9 @@ call compile preprocessFileLineNumbers "modCompatBools.sqf";
 
 // Initialize Commander class
 call compile preprocessFileLineNumbers "Commander\Commander.sqf";
+
+// Initialize GOAP_Agent - we need it before Unit, Group, Garrison
+call compile preprocessFileLineNumbers "AI\AI\GOAP_Agent.sqf";
 
 // Initialize Unit class
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";

@@ -133,7 +133,7 @@
 #define NULL_TARGET []
 #define IS_NULL_TARGET(target) (target isEqualTo [])
 
-// Supply types for SupplyCmdrAction
+// Supply types for SupplyConvoyCmdrAction
 #define ACTION_SUPPLY_TYPE_BUILDING 0
 #define ACTION_SUPPLY_TYPE_AMMO 1
 #define ACTION_SUPPLY_TYPE_EXPLOSIVES 2

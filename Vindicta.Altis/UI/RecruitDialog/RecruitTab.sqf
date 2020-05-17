@@ -4,13 +4,14 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 #define pr private
 
 #define __CLASS_NAME "RecruitTab"
 
-CLASS(__CLASS_NAME, "DialogTabBase")
+#define OOP_CLASS_NAME RecruitTab
+CLASS("RecruitTab", "DialogTabBase")
 
 	VARIABLE("arsenalUnits");
 
@@ -22,7 +23,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 	VARIABLE("primarySelectionHistory");
 	VARIABLE("secondarySelectionHistory");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		SETSV(__CLASS_NAME, "instance", _thisObject);
@@ -58,22 +59,22 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _loc = GETV(_dialogObj, "location");
 		pr _args = [clientOwner, _loc, playerSide];
 		CALLM2(gGarrisonServer, "postMethodAsync", "clientRequestRecruitWeaponsAtLocation", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onListboxSelChanged") {
+	METHOD(onListboxSelChanged)
 		params [P_THISOBJECT];
 
 		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
 		T_CALLM1("_recruitSelectionChanged", lnbCurSelRow _lnbMain);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Update listboxes with available gear
-	METHOD("_recruitSelectionChanged") {
+	METHOD(_recruitSelectionChanged)
 		params [P_THISOBJECT, P_NUMBER("_id")];
 
 		OOP_INFO_1("LISTBOX SEL CHANGED: %1", _id);
@@ -99,11 +100,11 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		pr _secondary = T_GETV("availableWeaponsSecondary") select _subcatid;
 		CALLSM3("RecruitTab", "_populateList", _lnbSecondary, _secondary, T_GETV("secondarySelectionHistory"));
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 
 	// Populate a list control with items, selecting the one most recently selected based on history
-	STATIC_METHOD("_populateList") {
+	STATIC_METHOD(_populateList)
 		params [P_THISCLASS, P_CONTROL("_itemCtrl"), P_ARRAY("_items"), P_ARRAY("_selectionHistory")];
 		private _bestHistoryIdx = -1;
 		private _bestIdx = 0;
@@ -118,9 +119,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			};
 		} forEach _items;
 		_itemCtrl lnbSetCurSelRow _bestIdx;
-	} ENDMETHOD;
-	
-	METHOD("onButtonRecruit") {
+	ENDMETHOD;
+
+	METHOD(onButtonRecruit)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ON BUTTON RECRUIT");
@@ -180,9 +181,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		// Disable the button
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
 		_ctrl ctrlEnable false;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_receiveData") {
+	METHOD(_receiveData)
 		params [P_THISOBJECT, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
 
 		// Reset the arrays with weapons
@@ -278,14 +279,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		T_CALLM1("_recruitSelectionChanged", _selectedIdx);
 
-		// // Clear other listboxes
-		// pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
-		// lnbClear _lnbPrimary;
-		// pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
-		// lnbClear _lnbSecondary;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("receiveData") {
+	STATIC_METHOD(receiveData)
 		params [P_THISCLASS, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
 
 		OOP_INFO_0("RECEIVE WEAPON DATA:");
@@ -301,6 +297,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		if (!IS_NULL_OBJECT(_instance)) then {
 			CALLM3(_instance, "_receiveData", _unitsAndWeapons, _validTemplates, _nRecruits);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

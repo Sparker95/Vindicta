@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 // Class: Garrison
 /*
 Method: spawn
@@ -68,7 +68,7 @@ if (!_spawningHandled) then {
 		OOP_INFO_1("Spawning groups: %1", _groups);
 		{
 			private _group = _x;
-			CALLM(_group, "spawnAtLocation", [_loc]);
+			CALLM1(_group, "spawnAtLocation", _loc);
 		} forEach _groups;
 
 		// Spawn single units
@@ -93,10 +93,10 @@ if (!_spawningHandled) then {
 		pr _garPos = T_CALLM0("getPos");
 		OOP_INFO_2("Spawning groups without location at pos %1: %2", _groups, _garPos);
 		{
-			CALLM2(_x, "spawnVehiclesOnRoad", [], _garPos);
+			CALLM1(_x, "spawnAtPos", _garPos);
 		} forEach _groups;
 
-		// Spawn single units
+		// Spawn single units (really shouldn't be any)
 		{
 			CALLM3(_x, "spawn", _garPos, 0, _global);
 		} forEach (_units select { CALLM0(_x, "getGroup") == NULL_OBJECT });

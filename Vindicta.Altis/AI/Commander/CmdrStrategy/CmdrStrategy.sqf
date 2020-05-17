@@ -13,6 +13,7 @@ and override `getLocationDesirability` (or modify the `takeLoc*` member values).
 
 Paremt: <RefCounted>
 */
+#define OOP_CLASS_NAME CmdrStrategy
 CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	// takeLoc*Priority are the base priorities the commander will apply when deciding
 	// whether to occupy a location. If it is non zero then the commander will always
@@ -43,7 +44,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	Constructor: new
 	See implementing classes for specific contructors.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Default is for cmdr to do everything
@@ -62,7 +63,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 		T_SETV("constructLocRoadblockPriority", 	1);
 		T_SETV("constructLocRoadblockCoeff", 		1);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getLocationDesirability
@@ -76,7 +77,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	Returns: Number, the relative desireability of the location as compared to other locations. This value has no 
 	specific meaning or units.
 	*/
-	/* virtual */ METHOD("getLocationDesirability") {
+	/* virtual */ METHOD(getLocationDesirability)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
 		ASSERT_OBJECT_CLASS(_loc, "LocationModel");
@@ -136,7 +137,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 		// Sum up calculated priority and other priority boosts
 		_priority + _priorityGeneral
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getConstructLocationDesirability
@@ -151,7 +152,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	Returns: Number, the relative desireability of the location as compared to other locations. This value has no 
 	specific meaning or units.
 	*/
-	/* virtual */ METHOD("getConstructLocationDesirability") {
+	/* virtual */ METHOD(getConstructLocationDesirability)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_POSITION("_locPos"), P_DYNAMIC("_locType"), P_SIDE("_side")];
 
 		// Same as for taking locations
@@ -196,7 +197,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 		_priority
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getQRFScore
@@ -218,7 +219,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD("getQRFScore") {
+	/* virtual */ METHOD(getQRFScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -230,7 +231,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
 		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtClusterPos, 1000);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getPatrolScore
@@ -252,7 +253,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD("getPatrolScore") {
+	/* virtual */ METHOD(getPatrolScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -262,7 +263,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_ARRAY("_routeTargets"),
 			P_ARRAY("_detachEff")];
 		_defaultScore
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getReinforceScore
@@ -284,7 +285,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD("getReinforceScore") {
+	/* virtual */ METHOD(getReinforceScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -294,16 +295,16 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtGarr"),
 			P_ARRAY("_detachEff")];
 		_defaultScore
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getSupplyScore
 	Return a value indicating the commanders desire to send supplies from the specified source garrison to the
 	specified target garrison of the specified type and amount.
-	Default <CmdrAction.Actions.SupplyCmdrAction> behaviour is to send supplies whenever they are needed.
+	Default <CmdrAction.Actions.SupplyConvoyCmdrAction> behaviour is to send supplies whenever they are needed.
 	
 	Parameters:
-		_action - <CmdrAction.Actions.SupplyCmdrAction>, action being evaluated.
+		_action - <CmdrAction.Actions.SupplyConvoyCmdrAction>, action being evaluated.
 		_defaultScore - Array of Numbers, score vector, the score as calculated by the default algorithm. This can be returned as 
 			it to get default behaviour (detailed above in the method description).
 		_worldNow - <Model.WorldModel>, the current world model (only resource requirements of new and planned actions are applied).
@@ -312,12 +313,12 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		_tgtGarr - <Model.GarrisonModel>, garrison that would receive the supplies.
 		_detachEff - Array of Numbers, efficiency vector, the efficiency of the detachment the source garrison is capable of
 			sending, capped against what is required by the target garrison.
-		_type - Number, type of the supplies to send (as per the ACTION_SUPPLY_TYPE_* macros in SupplyCmdrAction.sqf)
+		_type - Number, type of the supplies to send (as per the ACTION_SUPPLY_TYPE_* macros in SupplyConvoyCmdrAction.sqf)
 		_amount - Number, 0-1 representing the amount of supplies (no specific units)
 
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD("getSupplyScore") {
+	/* virtual */ METHOD(getSupplyScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -330,7 +331,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_NUMBER("_amount")
 			];
 		_defaultScore
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getTakeLocationScore
@@ -355,7 +356,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD("getTakeLocationScore") {
+	/* virtual */ METHOD(getTakeLocationScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -367,9 +368,9 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		private _tgtPos = GETV(_tgtLoc, "pos");
 		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtPos, 1000);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("getConstructLocationScore") {
+	/* virtual */ METHOD(getConstructLocationScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -379,19 +380,19 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_POSITION("_tgtLocPos"),
 			P_ARRAY("_detachEff")];
 		_defaultScore
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Save all varaibles
-	/* override */ METHOD("serializeForStorage") {
+	/* override */ METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("deserializeFromStorage") {
+	/* override */ METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

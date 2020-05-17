@@ -4,17 +4,17 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Location\Location.hpp"
 
 #define pr private
 
+#define OOP_CLASS_NAME InGameMenuTabNotes
 CLASS("InGameMenuTabNotes", "DialogTabBase")
 
 	STATIC_VARIABLE("text");
-	STATIC_VARIABLE("instance");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		
 		SETSV("InGameMenuTabNotes", "instance", _thisObject);
@@ -30,17 +30,17 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 		pr _ctrl = T_CALLM1("findControl", "TAB_NOTES_EDIT");
 		_ctrl ctrlSetText _text;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		SETSV("InGameMenuTabNotes", "instance", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
-	/* virtual */ METHOD("beforeDelete") {
+	/* virtual */ METHOD(beforeDelete)
 		params [P_THISOBJECT];
 
 		// We want to save the text to restore it next time this tab is open
@@ -49,10 +49,10 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 			pr _text = ctrlText _ctrl;
 			SETSV("InGameMenuTabNotes", "text", _text);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Appends text to the currently open tab or to the static variable
-	STATIC_METHOD("staticAppendText") {
+	STATIC_METHOD(staticAppendText)
 		params [P_THISCLASS, P_STRING("_text")];
 
 		pr _instance = GETSV("InGameMenuTabNotes", "instance");
@@ -65,7 +65,7 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 			pr _currentText = ctrlText _ctrl;
 			_ctrl ctrlSetText (_currentText + _text);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

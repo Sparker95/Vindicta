@@ -21,6 +21,7 @@ pr0_fnc_accumulateGroupWSP = {
 	_garValue
 };
 
+#define OOP_CLASS_NAME SensorGarrisonState
 CLASS("SensorGarrisonState", "SensorGarrison")
 
 	// ----------------------------------------------------------------------
@@ -28,7 +29,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
@@ -38,7 +39,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 		// Check if there are enough humans to operate all the vehicles
 		pr _vehUnits = CALLM0(_gar, "getVehicleUnits");
-		CALLSM("Unit", "getRequiredCrew", [_vehUnits]) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];
+		CALLSM1("Unit", "getRequiredCrew", _vehUnits) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];
 
 		// Drivers
 		//pr _query = [[T_INF, -1]];
@@ -98,6 +99,10 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 			pr _allInfMounted = [_allGroups, WSP_GROUP_ALL_INFANTRY_MOUNTED, true] call pr0_fnc_accumulateGroupWSP;
 			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 
+			// Aggregate landed value
+			pr _allGroupsLanded = [_allGroups, WSP_GROUP_ALL_LANDED, true] call pr0_fnc_accumulateGroupWSP;
+			[_worldState, WSP_GAR_ALL_LANDED, _allGroupsLanded] call ws_setPropertyValue;
+
 			// Garrison position is average of group positions, if there are any
 			//pr _allGroups = _infGroups + _vehGroups;
 			if(count _allGroups > 0) then {
@@ -123,6 +128,9 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 			// All inf are considered mounted always
 			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, true] call ws_setPropertyValue;
+
+			// All groups are considered landed always
+			[_worldState, WSP_GAR_ALL_LANDED, true] call ws_setPropertyValue;
 		};
 
 		// Vehicle-related checks
@@ -166,14 +174,14 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 		//OOP_INFO_3("Infantry amount: %1, all infantry seats: %2, driver seats: %3", _nInfGarrison, _nSeatsAll, _nDriversAll);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getUpdateInterval") {
+	/* virtual */ METHOD(getUpdateInterval)
 		params [P_THISOBJECT];
 		pr _gar = T_GETV("gar");
 		// If garrison is not spawned, run the check less often
@@ -182,6 +190,6 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		} else {
 			120
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

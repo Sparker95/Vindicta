@@ -5,7 +5,7 @@
 //#define NAMESPACE uiNamespace
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Location\Location.hpp"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -18,14 +18,14 @@ That's how we draw locations
 
 #define pr private
 
-#define CLASS_NAME "MapMarkerLocation"
-
 #define RADIUS_MARKER_SUFFIX "_rad"
 #define MARKER_SUFFIX "_mrk"
 #define NOTIFICATION_SUFFIX "_not"
 #define BG_SUFFIX "_bg"
 
-CLASS(CLASS_NAME, "MapMarker")
+#define CLASS_NAME "MapMarkerLocation"
+#define OOP_CLASS_NAME MapMarkerLocation
+CLASS("MapMarkerLocation", "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
@@ -35,11 +35,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	VARIABLE("type");
 	VARIABLE("notification"); // Bool
 
-	// All map marker objects
-	STATIC_VARIABLE("all"); // Child classes must also implement this
-	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
-
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
@@ -88,9 +84,9 @@ CLASS(CLASS_NAME, "MapMarker")
 		T_SETV("radius", _radius);
 		T_CALLM0("updateAccuracyRadiusMarker");
 		*/
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete markers
@@ -98,19 +94,19 @@ CLASS(CLASS_NAME, "MapMarker")
 			deleteMarkerLocal (_thisObject + _x);
 		} forEach [MARKER_SUFFIX, RADIUS_MARKER_SUFFIX, NOTIFICATION_SUFFIX, BG_SUFFIX];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets the "mouse over" state of this object
-	METHOD("setMouseOver") {
+	METHOD(setMouseOver)
 		params [P_THISOBJECT, P_BOOL("_mouseOver")];
 
 		OOP_INFO_1("SET MOUSE OVER: %1", _mouseOver);
 
 		T_SETV("mouseOver", _mouseOver);
 		T_CALLM0("update");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("select") {
+	METHOD(select)
 		params [P_THISOBJECT, P_BOOL("_selected")];
 
 		// Reset notification if we have selected it
@@ -123,10 +119,10 @@ CLASS(CLASS_NAME, "MapMarker")
 
 		// Call the base class method
 		CALL_CLASS_METHOD("MapMarker", _thisObject, "select", [_selected]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Updates markers according to various states
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT];
 		pr _selected = T_GETV("selected");
 		pr _mouseOver = T_GETV("mouseOver");
@@ -203,10 +199,10 @@ CLASS(CLASS_NAME, "MapMarker")
 		} else {
 			(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal 0;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Shows or hides this map marker entirely
-	METHOD("show") {
+	METHOD(show)
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		// Call base class method (it sets the shown variable value)
@@ -214,22 +210,22 @@ CLASS(CLASS_NAME, "MapMarker")
 
 		// Update marker properties
 		T_CALLM0("update");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setNotification") {
+	METHOD(setNotification)
 		params [P_THISOBJECT, ["_enable", false, [false]]];
 
 		T_SETV("notification", _enable);
 		T_CALLM0("update");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getIntel") {
+	METHOD(getIntel)
 		params [P_THISOBJECT];
 		T_GETV("intel")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Overwrite the base class method
-	METHOD("setPos") {
+	METHOD(setPos)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		// Call base class method
@@ -243,27 +239,27 @@ CLASS(CLASS_NAME, "MapMarker")
 			(_thisObject+_x) setMarkerPosLocal (T_GETV("pos")+[0]);
 		} forEach [MARKER_SUFFIX, NOTIFICATION_SUFFIX, BG_SUFFIX];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Same as setColor but gets both an array and string
-	METHOD("setColorEx") {
+	METHOD(setColorEx)
 		params [P_THISOBJECT, P_ARRAY("_colorRGBA"), P_STRING("_colorString")];
 		T_SETV("color", _colorRGBA);
 
 		// Set color of the associated marker
 		_mrkName = _thisObject+BG_SUFFIX;
 		_mrkName setMarkerColorLocal _colorString;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setAccuracyRadius") {
+	METHOD(setAccuracyRadius)
 		params [P_THISOBJECT, "_radius"];
 
 		T_SETV("radius", _radius);
 		T_CALLM0("updateAccuracyRadiusMarker");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// One of location types defined in location.hpp
-	METHOD("setType") {
+	METHOD(setType)
 		params [P_THISOBJECT, P_STRING("_type")];
 
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
@@ -305,9 +301,9 @@ CLASS(CLASS_NAME, "MapMarker")
 		};
 		T_SETV("type", _type);
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateAccuracyRadiusMarker") {
+	METHOD(updateAccuracyRadiusMarker)
 		params [P_THISOBJECT];
 
 		pr _radius = T_GETV("radius");
@@ -328,9 +324,9 @@ CLASS(CLASS_NAME, "MapMarker")
 			pr _alpha = [0.3, 0.45] select T_GETV("selected");
 			_mrkName setMarkerAlphaLocal _alpha;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onDraw") {
+	METHOD(onDraw)
 		//if (true) exitWith {};
 		params [P_THISOBJECT, "_control"];
 
@@ -388,7 +384,7 @@ CLASS(CLASS_NAME, "MapMarker")
 			//T_SETV("angle", _angle + 20/diag_FPS);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseEnter
@@ -396,11 +392,11 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD("onMouseEnter") {
+	METHOD(onMouseEnter)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
 		//T_SETV("selected", true);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseLeave
@@ -408,11 +404,11 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD("onMouseLeave") {
+	METHOD(onMouseLeave)
 		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
 		//T_SETV("selected", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseButtonDown
@@ -425,7 +421,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD("onMouseButtonDown") {
+	METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 
@@ -457,7 +453,7 @@ CLASS(CLASS_NAME, "MapMarker")
 				CALL_STATIC_METHOD("ClientMapUI", "onMapMarkerMouseButtonDown", ["" ARG ""]);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseButtonUp
@@ -470,10 +466,10 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD("onMouseButtonUp") {
+	METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseButtonClick
@@ -485,13 +481,13 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD("onMouseButtonClick") {
+	METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("deselectAllMarkers") {
+	STATIC_METHOD(deselectAllMarkers)
 		params ["_thisClass"];
 
 		pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
@@ -503,9 +499,9 @@ CLASS(CLASS_NAME, "MapMarker")
 		} forEach _selectedMarkers;
 
 		SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("onMouseClickElsewhere") {
+	STATIC_METHOD(onMouseClickElsewhere)
 		params ["_thisClass", "_button", "_shift", "_ctrl", "_alt"];
 
 		if (_button == 0) then {
@@ -513,15 +509,15 @@ CLASS(CLASS_NAME, "MapMarker")
 			CALLSM0("ClientMapUI", "onMouseClickElsewhere");
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Enables/disabled notification dots on all icons
-	STATIC_METHOD("setAllNotifications") {
+	STATIC_METHOD(setAllNotifications)
 		params ["_thisClass", ["_enable", false, [false]]];
 		{
 			CALLM1(_x, "setNotification", _enable);
 		} forEach GET_STATIC_VAR(_thisClass, "all");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

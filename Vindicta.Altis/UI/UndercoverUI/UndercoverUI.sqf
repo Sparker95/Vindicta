@@ -1,7 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Undercover\undercoverMonitor.hpp"
 #include "..\InGameUI\InGameUI_Macros.h"
 
@@ -39,9 +39,10 @@ g_UM_Hints = [
 ];
 #endif
 
-CLASS(CLASS_NAME, "")
+#define OOP_CLASS_NAME UndercoverUI
+CLASS("UndercoverUI", "")
 	
-	STATIC_METHOD("drawUI") {
+	STATIC_METHOD(drawUI)
 		params [P_THISOBJECT, ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];
 
 			pr _textUI = "";
@@ -73,7 +74,7 @@ CLASS(CLASS_NAME, "")
 	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 1;
 	  		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 ENDCLASS;

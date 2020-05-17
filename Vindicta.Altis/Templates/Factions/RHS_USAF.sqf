@@ -73,7 +73,7 @@ _veh set [T_VEH_MRAP_HMG, ["rhsusf_M1238A1_M2_socom_wd", "rhsusf_M1239_M2_socom_
 _veh set [T_VEH_MRAP_GMG, ["rhsusf_M1239_MK19_socom_wd", "rhsusf_M1239_MK19_Deploy_socom_wd", "rhsusf_M1238A1_Mk19_socom_wd", "rhsusf_M1232_MK19_usarmy_wd", "rhsusf_M1237_MK19_usarmy_wd", "rhsusf_M1220_M153_MK19_usarmy_wd", "rhsusf_M1220_MK19_usarmy_wd", "rhsusf_M1230_MK19_usarmy_wd"]];
 
 _veh set [T_VEH_IFV, ["RHS_M2A3_wd", "RHS_M2A3_BUSKI_wd", "RHS_M2A3_BUSKIII_wd", "RHS_M2A2_wd", "RHS_M2A2_BUSKI_WD"]];
-_veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_wd"]];
+_veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_d", "rhsusf_stryker_m1126_mk19_d", "rhsusf_stryker_m1127_m2_d", "rhsusf_stryker_m1132_m2_d", "rhsusf_stryker_m1134_d"]];
 _veh set [T_VEH_MBT, ["rhsusf_m1a1aimwd_usarmy", "rhsusf_m1a1aim_tuski_wd", "rhsusf_m1a2sep1wd_usarmy", "rhsusf_m1a2sep1tuskiwd_usarmy", "rhsusf_m1a2sep1tuskiiwd_usarmy"]];
 
 _veh set [T_VEH_MRLS, ["rhsusf_M142_usarmy_WD"]];

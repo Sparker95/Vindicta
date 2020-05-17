@@ -4,18 +4,17 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 #define pr private
 
+#define OOP_CLASS_NAME RadioKeyTab
 CLASS("RadioKeyTab", "DialogTabBase")
 
 	// State machine to handle comms with the server
 	VARIABLE("state");
 
-	STATIC_VARIABLE("instance");
-
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("state", 0);
 		SETSV("RadioKeyTab", "instance", _thisObject);
@@ -31,15 +30,15 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		// Ask for radio keys from server
 		pr _args = [playerSide, clientOwner];
 		REMOTE_EXEC_CALL_STATIC_METHOD("AICommander", "staticClientRequestRadioKeys", _args, 2, false); // Call it on server
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		SETSV("RadioKeyTab", "instance", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getInstance") {
+	METHOD(getInstance)
 		params [P_THISCLASS];
 		pr _inst = GETSV(_thisClass, "instance");
 		if (isNil "_inst") then {
@@ -47,10 +46,10 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		} else {
 			_inst
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("onButtonAddKey") {
+	METHOD(onButtonAddKey)
 		params [P_THISOBJECT];
 
 		// Bail if our previous response has not been processed yet
@@ -80,10 +79,10 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		pr _args = [playerSide, clientOwner, _key, name player];
 		REMOTE_EXEC_CALL_STATIC_METHOD("AICommander", "staticClientAddRadioKey", _args, 2, false);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Show server's response
-	METHOD("showResponse") {
+	METHOD(showResponse)
 		params [P_THISOBJECT, P_STRING("_text")];
 
 		OOP_INFO_1("SHOW RESPONSE: %1", _this);
@@ -93,10 +92,10 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		// We are just showing hint text
 		pr _dialogObj = T_CALLM0("getDialogObject");
 		CALLM1(_dialogObj, "setHintText", _text);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Lists all keys we have
-	METHOD("showKeys") {
+	METHOD(showKeys)
 	 	params [P_THISOBJECT, P_ARRAY("_keys"), P_ARRAY("_keysAddedBy")];
 		
 		OOP_INFO_1("SHOW KEYS: %1", _this);
@@ -117,11 +116,11 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		} forEach _keys;
 
 		_ctrl ctrlSetText _str;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called on client REMOTELY by server to show the radio keys
 	// _keys - array of strings
-	STATIC_METHOD("staticServerShowKeys") {
+	STATIC_METHOD(staticServerShowKeys)
 		params [P_THISCLASS, P_ARRAY("_keys"), P_ARRAY("_keysAddedBy")];
 
 		OOP_INFO_1("STATIC SERVER SHOW KEYS: %1", _this);
@@ -131,10 +130,10 @@ CLASS("RadioKeyTab", "DialogTabBase")
 			_thisClass = nil;
 			CALLM2(_inst, "showKeys", _keys, _keysAddedBy);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called on client REMOTELY by server to show some response
-	STATIC_METHOD("staticServerShowResponse") {
+	STATIC_METHOD(staticServerShowResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 
 		OOP_INFO_1("STATIC SERVER SHOW RESPONSE: %1", _text);
@@ -144,10 +143,10 @@ CLASS("RadioKeyTab", "DialogTabBase")
 			_thisClass = nil;
 			CALLM1(_inst, "showResponse", _text);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
-	STATIC_METHOD("showServerResponse") {
+	STATIC_METHOD(showServerResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 		// If this tab is already closed, just throw text into system chat
 		if (isNil "gTabCommander") then {
@@ -157,7 +156,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 			pr _dialogObj = T_CALLM0("getDialogObject");
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 ENDCLASS;

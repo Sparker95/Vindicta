@@ -8,18 +8,19 @@ Garrison action.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGarrisonBehaviour
 CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 
 	// Array of buildings we are currently attacking
 	VARIABLE("buildingsAttack");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("buildingsAttack", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gives goals to groups to attack enemy buildings
-	METHOD("attackEnemyBuildings") {
+	METHOD(attackEnemyBuildings)
 		params [P_THISOBJECT, ["_groups", 0, [0, []]]];
 
 		pr _AI = T_GETV("AI");
@@ -99,6 +100,6 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

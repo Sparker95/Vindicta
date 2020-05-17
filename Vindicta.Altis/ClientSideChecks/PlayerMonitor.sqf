@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OFSTREAM_FILE "ClientChecks.rpt"
-#include "..\OOP_light\OOP_light.h"
+#include "..\common.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\AI\Stimulus\Stimulus.hpp"
@@ -32,6 +32,7 @@ Author: Sparker 19 September 2019
 
 #define pr private
 
+#define OOP_CLASS_NAME PlayerMonitor
 CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 	VARIABLE("timer");						// Timer
@@ -52,7 +53,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 	VARIABLE("intelStarted");				// Intel we have reminded the player has started
 	VARIABLE("playerGroupUnits");			// Cache for units known to be in the players group so we can determine when we need to update it
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_unit")];
 
 		T_SETV("prevPos", [0 ARG 0 ARG 0]);
@@ -101,9 +102,9 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_SETV("timerLowFreq", _timer);
 
 		_unit setVariable [PLAYER_MONITOR_UNIT_VAR, _thisObject];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete the timer
@@ -118,13 +119,13 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 		T_GETV("unit") setVariable [PLAYER_MONITOR_UNIT_VAR, nil];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS");
@@ -159,13 +160,10 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				T_SETV("currentLocation", _loc);
 
 				// Check if the location has any garrisons we know about
-				pr _gars = CALLM0(_loc, "getGarrisons");
 				pr _garRecord = "";
-				CRITICAL_SECTION { // We want a critical section here because garrison record can be easily deleted at any point
-					_gars findIf {
-						_garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _x);
-						_garRecord != ""
-					};
+				// We want a critical section here because garrison record can be easily deleted at any point
+				CRITICAL_SECTION {
+					_garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecordForLocation", _loc);
 					T_SETV("currentGarrisonRecord", _garRecord);
 					if (_garRecord != "") then {
 						pr _gar = CALLM0(_garRecord, "getGarrison");
@@ -220,9 +218,9 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		OOP_INFO_1("CURRENT LOCATIONS: %1", T_GETV("currentLocations"));
 
 		T_SETV("prevPos", getPosASL _unit);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("processUI") {
+	METHOD(processUI)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS UI");
@@ -251,9 +249,9 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			CALLM1(gInGameUI, "setLocationText", "");
 			CALLM1(gInGameUI, "setBuildResourcesAmount", -1);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("processLowFreq") {
+	METHOD(processLowFreq)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS LOW FREQ");
@@ -396,29 +394,29 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			setApertureNew [-1]; // reset
 		};
 		*/
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getCurrentLocations") {
+	METHOD(getCurrentLocations)
 		params [P_THISOBJECT];
 		T_GETV("currentLocations")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getNearLocations") {
+	METHOD(getNearLocations)
 		params [P_THISOBJECT];
 		T_GETV("nearLocations")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getCurrentGarrison") {
+	METHOD(getCurrentGarrison)
 		params [P_THISOBJECT];
 		T_GETV("currentGarrison")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("isAtFriendlyLocation") {
+	METHOD(isAtFriendlyLocation)
 		params [P_THISOBJECT];
 		T_GETV("atFriendlyLocation")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("canUnitBuildAtLocation") {
+	STATIC_METHOD(canUnitBuildAtLocation)
 		params [P_THISCLASS, "_unit"];
 		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
 		if (!isNil "_thisObject") then {
@@ -426,14 +424,14 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		} else {
 			false
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("canUnitBuildFromInventory") {
+	STATIC_METHOD(canUnitBuildFromInventory)
 		params [P_THISCLASS, "_unit"];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("isUnitAtFriendlyLocation") {
+	STATIC_METHOD(isUnitAtFriendlyLocation)
 		params [P_THISCLASS, "_unit"];
 		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
 		if (!isNil "_thisObject") then {
@@ -441,6 +439,6 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		} else {
 			false
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

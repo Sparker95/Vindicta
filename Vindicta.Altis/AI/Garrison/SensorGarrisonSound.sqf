@@ -18,6 +18,7 @@ This sensor gets stimulated by sounds.
 // todo maybe this number must depend on the activity in the area?? And on previous encounters by this garrison? And something else?
 #define STIMULATION_THRESHOLD 10
 
+#define OOP_CLASS_NAME SensorGarrisonSound
 CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 
 	// Accumulator of stimulation
@@ -31,14 +32,14 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// Array of [source object handle, time]
 	VARIABLE("soundSources");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("stimulation", 0);
 		T_SETV("timePrevUpdate", GAME_TIME);
 		T_SETV("soundSources", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned
@@ -118,14 +119,14 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		};
 
 		T_SETV("timePrevUpdate", GAME_TIME);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           H A N D L E   S T I M U L U S
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	METHOD("handleStimulus") {
+	METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("HANDLE STIMULUS: %1", _stimulus);
@@ -153,23 +154,23 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 			// Add a new source
 			_sources pushBack [STIMULUS_GET_SOURCE(_stimulus), GAME_TIME];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_SOUND]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                          D O   C O M P L E X  C H E C K
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	METHOD("doComplexCheck") {
+	METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Bail if not spawned
@@ -184,7 +185,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		// If not in combat, and sensor gets overstimulated, garrison will switch to combat mode
 		pr _AI = T_GETV("AI");
 		!CALLM0(_AI, "isAlerted")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  U P D A T E   I N T E R V A L
@@ -192,9 +193,9 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getUpdateInterval") {
+	/* virtual */ METHOD(getUpdateInterval)
 		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
