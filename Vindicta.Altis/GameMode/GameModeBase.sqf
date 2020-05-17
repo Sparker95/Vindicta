@@ -142,10 +142,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("preInitAll", []);
 
 		#ifndef _SQF_VM
-		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init", "Initializing..."], ON_ALL, "GameModeBase.init");
+		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, "GameModeBase.init");
 		#endif
 		//CALLSM1("GameModeBase", "startLoadingScreen", "Initializing...");
-		
+
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop manager
 			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
@@ -237,7 +237,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);
-		
+
 		#ifndef _SQF_VM
 		CLEAR_REMOTE_EXEC_JIP("GameModeBase.init");
 		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
