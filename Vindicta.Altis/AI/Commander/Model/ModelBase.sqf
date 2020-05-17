@@ -10,6 +10,7 @@ is a copy that can be simulated.
 
 Parent: <RefCounted>
 */
+#define OOP_CLASS_NAME ModelBase
 CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	// Variable: id
 	// Unique Id of this Model, it is identical between Actual and Sim Models 
@@ -35,7 +36,7 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 		_world - <WorldModel>, world model that owns this model object.
 		_actual - Any, the real object this model represents.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_DYNAMIC("_actual")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -49,7 +50,7 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 		//} else {
 			//T_SETV("label", "<undefined>");
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: isActual
@@ -57,11 +58,11 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	
 	Returns: Boolean, true if this is a real model, false if it is a sim one.
 	*/
-	METHOD("isActual") {
+	METHOD(isActual)
 		params [P_THISOBJECT];
 		private _world = T_GETV("world");
 		CALLM0(_world, "isReal");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) simCopy
@@ -73,31 +74,31 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	
 	Returns: <ModelBase>, concrete type is same as this object type.
 	*/
-	/* virtual */ METHOD("simCopy") {
+	/* virtual */ METHOD(simCopy)
 		params [P_THISOBJECT, P_OOP_OBJECT("_targetWorldModel")];
 		FAILURE("simCopy method must be implemented when deriving from ModelBase");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	// METHOD("setId") {
+	// METHOD(setId)
 	// 	params [P_THISOBJECT, P_NUMBER("_id")];
 	// 	T_SETV("id", _id);
-	// } ENDMETHOD;
+	// ENDMETHOD;
 	
 	/*
 	Method: (virtual) sync
 	Sync this model from its actual object, if it is a real model. 
 	Must be implemented by derived classes.
 	*/
-	/* virtual */ METHOD("sync") {
+	/* virtual */ METHOD(sync)
 		params [P_THISOBJECT];
 		FAILURE("sync method must be implemented when deriving from ModelBase");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: update
 	Not used?
 	*/
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT];
 		T_CALLM("sync", []);
 		// private _world = T_GETV("world");
@@ -116,20 +117,20 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 
 		// TODO: What else does update even do? Actual simulation at some point, but for 
 		// now the Action applyImmediate will be all we use.
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -
 
 	// Serialize all variables of this and all parent and derived classes
-	/* override */ METHOD("serializeForStorage") {
+	/* override */ METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("deserializeFromStorage") {
+	/* override */ METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

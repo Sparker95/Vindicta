@@ -4,10 +4,11 @@
 Class: ActionGroup.ActionGroupFlee
 */
 
+#define OOP_CLASS_NAME ActionGroupFlee
 CLASS("ActionGroupFlee", "ActionGroup")
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -25,14 +26,14 @@ CLASS("ActionGroupFlee", "ActionGroup")
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
 
 		ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

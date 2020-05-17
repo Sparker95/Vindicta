@@ -2,7 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OFSTREAM_FILE "AI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Templates\Efficiency.hpp"
 #include "..\..\Message\Message.hpp"
 #include "..\Action\Action.hpp"
@@ -14,6 +14,7 @@
 #include "..\worldFactTypes.hpp"
 #include "..\parameterTags.hpp"
 #include "..\..\Group\Group.hpp"
+#include "..\..\Garrison\Garrison.hpp"
 #include "..\..\Unit\Unit.hpp"
 #include "..\targetStruct.hpp"
 #include "..\..\Location\Location.hpp"

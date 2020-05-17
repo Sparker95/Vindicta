@@ -4,6 +4,7 @@
 Class: Goal.GoalGroupFlee
 */
 
+#define OOP_CLASS_NAME GoalGroupFlee
 CLASS("GoalGroupFlee", "Goal")
 
 ENDCLASS;

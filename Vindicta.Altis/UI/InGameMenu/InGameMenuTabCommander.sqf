@@ -4,20 +4,21 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Location\Location.hpp"
 
 #define pr private
 
 #define CREATE_LOCATION_COST 30
 
+#define OOP_CLASS_NAME InGameMenuTabCommander
 CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 	// How many build res required to build/claim this place
 	VARIABLE("buildResourcesCost");
 	VARIABLE("currentLocation");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		gTabCommander = _thisObject;
@@ -93,7 +94,29 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 				"Camp Sparklight",
 				"Camp Redstone",
 				"Camp Blackstone",
-				"Camp Alpha"
+				"Camp Alpha",
+				"Camp Jupiter",
+				"Camp Neptune",
+				"Camp Pluto",
+				"Camp Mars",
+				"Camp Juno",
+				"Camp Ceres",
+				"Camp Saturn",
+				"Camp Mercury",
+				"Camp Apollo",
+				"Camp Sol",
+				"Camp Luna",
+				"Camp Vesta",
+				"Camp Zeus",
+				"Camp Poseidon",
+				"Camp Ares",
+				"Camp Athena",
+				"Camp Apollo",
+				"Camp Artemis",
+				"Camp Hermes",
+				"Camp Nemesis", // Goddess of Revenge
+				"Camp Dionysus", // God of Wine
+				"Camp Hades" // God of Underworld
 			];
 			_ctrl ctrlSetText _newLocName;
 
@@ -147,7 +170,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 				pr _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 				_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
 			};
-			
+
 			// Set cost text
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_BUILD_RESOURCES");
 			_ctrl ctrlSetText (format ["%1 construction resources", _buildResCost]);
@@ -165,14 +188,33 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_CREATE_LOC", "buttonClick", "onButtonClaimLocation");
 		};
 
-	} ENDMETHOD;
+		// Skip Time
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DUSK", "buttonClick", "onButtonSkipDusk");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "buttonClick", "onButtonSkipPredawn");
+		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAWN", "buttonClick", "onButtonSkipDawn");
 
-	METHOD("delete") {
+		T_CALLM0("_updateTimeSkipTooltips");
+	ENDMETHOD;
+
+	METHOD(_updateTimeSkipTooltips)
+		params [P_THISOBJECT];
+		private _hoursUntilNextDusk = round call pr0_fnc_getHoursUntilNextDusk;
+		private _hoursUntilNextDawn = round call pr0_fnc_getHoursUntilNextDawn;
+		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DUSK")
+			ctrlSetTooltip format["Will skip time until dusk (dusk is in about %1 hours)", _hoursUntilNextDusk];
+		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN")
+			ctrlSetTooltip format["Will skip time until 30 minutes before dawn (dawn is in about %1 hours)", round _hoursUntilNextDawn];
+		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DAWN")
+			ctrlSetTooltip format["Will skip time until dawn (dawn is in about %1 hours)", _hoursUntilNextDawn];
+	ENDMETHOD;
+	
+
+	METHOD(delete)
 		params [P_THISOBJECT];
 		gTabCommander = nil;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonCreateLocation") {
+	METHOD(onButtonCreateLocation)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("ON BUTTON CREATE LOCATION");
@@ -221,9 +263,9 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		CALLM2(_AI, "postMethodAsync", "clientCreateLocation", _args);
 
 		CALLM1(_dialogObj, "setHintText", "Creating new location ...");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonClaimLocation") {
+	METHOD(onButtonClaimLocation)
 		params [P_THISOBJECT];
 
 		pr _currentLoc = T_GETV("currentLocation");
@@ -271,9 +313,38 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		pr _args = [clientOwner, _currentLoc, _hBuildResSrc, _buildResCost];
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("showServerResponse") {
+	METHOD(onButtonSkipDusk)
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTimeDusk", 0);
+	ENDMETHOD;
+
+	METHOD(onButtonSkipPredawn)
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTimeDawn", -0.5);
+	ENDMETHOD;
+	
+	METHOD(onButtonSkipDawn)
+		params [P_THISOBJECT];
+		T_CALLM1("_skipTimeDawn", 0);
+	ENDMETHOD;
+
+	METHOD(_skipTimeDusk)
+		params [P_THISOBJECT, P_NUMBER("_offsetFromDusk")];
+		private _hoursUntilNextDusk = call pr0_fnc_getHoursUntilNextDusk;
+		(_hoursUntilNextDusk + _offsetFromDusk) remoteExecCall ["skipTime", ON_ALL];
+		T_CALLM0("_updateTimeSkipTooltips");
+	ENDMETHOD;
+
+	METHOD(_skipTimeDawn)
+		params [P_THISOBJECT, P_NUMBER("_offsetFromDawn")];
+		private _hoursUntilNextDawn = call pr0_fnc_getHoursUntilNextDawn;
+		(_hoursUntilNextDawn + _offsetFromDawn) remoteExecCall ["skipTime", ON_ALL];
+		T_CALLM0("_updateTimeSkipTooltips");
+	ENDMETHOD;
+
+	STATIC_METHOD(showServerResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 
 		// If this tab is already closed, just throw text into system chat
@@ -284,13 +355,13 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			pr _dialogObj = T_CALLM0("getDialogObject");
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setHintText") {
+	METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_text")];
 
 		pr _dialogObj = T_CALLM0("getDialogObject");
 		CALLM1(_dialogObj, "setHintText", _text);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

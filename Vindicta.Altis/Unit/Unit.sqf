@@ -3,12 +3,13 @@
 #define OOP_WARNING
 #define OFSTREAM_FILE "Main.rpt"
 #include "Unit.hpp"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 
 /*
 Class: Unit
@@ -30,8 +31,10 @@ Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
 Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoUnloaded.sqf";
 
-// Add CBA ACE event handler for loading cargo
+// Add CBA ACE event handlers
 #ifndef _SQF_VM
+
+// Cargo loading/unloading
 if (isNil "Unit_aceCargoLoaded_EH" && isServer) then { // Only server needs this event
 	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded", 
 	{
@@ -44,10 +47,29 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 		_this call Unit_fnc_EH_aceCargoUnloaded;
 	}] call CBA_fnc_addEventHandler;
 };
+
+// SetVehicleLock from ace
+if (isNil "Unit_aceSetVehicleLock_EH") then {
+
+	private _code = {
+		// We want to run this after ACE event handler, so we wait for a frame
+		[
+		{
+			params ["_veh", "_isLocked"];
+			//diag_log format ["=== SetVehicleLock: %1 %2", _veh, _isLocked];
+			private _lockNumber = [0, 3] select _isLocked;
+			_veh lock _lockNumber;
+		},
+		_this, 0] call CBA_fnc_waitAndExecute;
+	};
+
+	Unit_aceSetVehicleLock_EH = ["ace_vehicleLock_setVehicleLock", _code] call CBA_fnc_addEventHandler;
+};
 #endif
 FIX_LINE_NUMBERS()
 
-CLASS(UNIT_CLASS_NAME, "Storable")
+#define OOP_CLASS_NAME Unit
+CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -65,7 +87,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	_weapons - array with weapons to give to this unit, for format check Unit.hpp. Can be an empty array, then unit will have standard weapons from the config or loadout.
 	*/
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull], ["_weapons", []]];
 
 		OOP_INFO_0("NEW UNIT");
@@ -92,20 +114,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
 			DUMP_CALLSTACK
 		};
+
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 
 		// If a random class was requested to be added
-		private _class = "";
-		if (isNull _hO) then {
-			//if(_classID == -1) then {
-			//	private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
-			//	_class = _classData select 0;
-			//} else {
-			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
-			//};
+		private _class = if (isNull _hO) then {
+			[_template, _catID, _subcatID, _classID] call t_fnc_select
 		} else {
-			_class = typeOf _hO;
+			typeOf _hO
 		};
 
 		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
@@ -114,7 +131,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _loadout = "";
 		if ([_class] call t_fnc_isLoadout) then {
 			_loadout = _class;
-			_class = _template select _catID select 0 select 0; // Default class name from the template
+			_class = _template # _catID # 0 # 0; // Default class name from the template
 		};
 
 		// Create the data array
@@ -148,9 +165,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
 			T_CALLM0("applyInfantryWeapons");
+
+			if (_catID == T_VEH) then {
+				T_CALLM0("updateVehicleLock");
+			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	//                             D E L E T E
@@ -159,7 +180,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Deletes this object, despawns the physical unit if neccessary.
 	*/
 
-	METHOD("delete") {
+	METHOD(delete)
 		params[P_THISOBJECT];
 
 		OOP_INFO_0("DELETE UNIT");
@@ -192,16 +213,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			T_CALLM0("deinitObjectVariables");
 		};
 		T_SETV("data", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("release") {
+	METHOD(release)
 		params [P_THISOBJECT];
 		// detach the Arma unit handle from this object if it is spawned
 		// Despawn this unit if it was spawned
 		if (T_CALLM0("isSpawned")) then {
 			T_CALLM1("despawn", true);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                              I S   V A L I D
 	/*
@@ -211,7 +232,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: bool
 	*/
-	METHOD("isValid") {
+	METHOD(isValid)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		pr _return = if (isNil "_data") then {
@@ -224,7 +245,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (!_return) then {OOP_ERROR_1("INVALID UNIT, _data: %1", _data);};
 
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -241,19 +262,26 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Created <AI> object
 	*/
-	METHOD("createAI") {
+	METHOD(createAI)
 		params [P_THISOBJECT, P_STRING("_AIClassName")];
 
 		// Create an AI object of the unit
 		// Don't start the brain, because its process method will be called by
 		// its group's AI brain
 		pr _data = T_GETV("data");
+
+		if(_data # UNIT_DATA_ID_AI != NULL_OBJECT) exitWith {
+			OOP_ERROR_0("Unit AI is already created");
+		};
+
 		pr _AI = NEW(_AIClassName, [_thisObject]);
 		_data set [UNIT_DATA_ID_AI, _AI];
 
+		CALLM0(_AI, "start");
+
 		// Return
 		_AI
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -269,7 +297,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: nil
 	*/
-	METHOD("spawn") {
+	METHOD(spawn)
 		params [P_THISOBJECT, "_pos", "_dir", ["_spawnAtPrevPos", false]];
 
 		OOP_INFO_1("SPAWN: %1", _this);
@@ -303,7 +331,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				} else {
 					false 
 				};
-				
+
 				if (_prevPosSafe) then {
 					_pos = _posATLPrev;
 				} else {
@@ -365,30 +393,51 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						};
 						[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 						_objectHandle allowFleeing 0;
-						
+
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						//_objectHandle disableAI "PATH";
 						//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 
-						pr _AI = T_CALLM1("createAI", "AIUnitInfantry");
+						T_CALLM1("createAI", "AIUnitInfantry");
 
 						pr _groupType = CALLM0(_group, "getType");
 
 						// Give weapons to the unit (if he has special weapons)
 						T_CALLM0("applyInfantryWeapons");
 
+						// Global difficulty will effect AI between 0.2 and 0.8
+						private _effectiveDiff = if(side _groupHandle == CALLM0(gGameMode, "getEnemySide")) then {
+							vin_diff_global;
+						} else {
+							1 - vin_diff_global
+						};
+
+						// Difficulty on effects AI between 0.2 and 0.8, to make it more responsive.
+						// i.e. difficulty above 0.8 will give all AI skill 1, below 0.2 all AI skill 0
+						private _diffModifer = MAP_TO_RANGE(_effectiveDiff, 0.2, 0.8, 0, 1);
+
 						// Set unit skill
-						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_aimingAccuracy];	// Aiming and precision
-						_objectHandle setSkill ["aimingShake", vin_aiskill_aimingShake];
-						_objectHandle setSkill ["aimingSpeed", vin_aiskill_aimingSpeed];
-						_objectHandle setSkill ["commanding", 1];		// Everything else
-						_objectHandle setSkill ["courage", 0.5];
-						//_objectHandle setSkill ["endurance", 0.8];
-						_objectHandle setSkill ["general", 1];
-						_objectHandle setSkill ["reloadSpeed", 0.5];
-						_objectHandle setSkill ["spotDistance", vin_aiskill_spotDistance];
-						_objectHandle setSkill ["spotTime", vin_aiskill_spotTime];
+						// Aiming and precision
+						_objectHandle setSkill ["aimingAccuracy", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingAccuracy * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["aimingShake", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingShake * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["aimingSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingSpeed * vin_aiskill_global, 1)];
+						// Everything else
+						_objectHandle setSkill ["commanding", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["courage", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["general", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["reloadSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["spotDistance", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotDistance * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["spotTime", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotTime * vin_aiskill_global, 1)];
+
+						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+						switch _subcatID do {
+							case T_INF_medic: 		{ _objectHandle setUnitTrait ["medic", true]; };
+							case T_INF_engineer: 	{ _objectHandle setUnitTrait ["engineer", true]; };
+							case T_INF_exp: 		{ _objectHandle setUnitTrait ["explosiveSpecialist", true]; };
+							case T_INF_sniper: 		{ _objectHandle setUnitTrait ["camouflageCoef", 0.5]; };
+							case T_INF_spotter: 	{ _objectHandle setUnitTrait ["camouflageCoef", 0.5]; };
+						};
 
 						// make it impossible to ace interact with this unit, may need better solution in the future
 						if (side _objectHandle != west) then {
@@ -405,13 +454,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
 						
-						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
-						pr _special = "CAN_COLLIDE";
-						/*
-						if ([_catID, _subcatID] in T_static) then {
-							_special = "CAN_COLLIDE";
+						// Just assuming that if we are over 25m high we are flying, doesn't mean its true...
+						pr _special = if(_subcatID in T_VEH_air && _pos#2 > 25) then {
+							"FLY"
+						} else {
+							"CAN_COLLIDE"
 						};
-						*/
 
 						_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 
@@ -454,13 +502,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						T_CALLM1("createAI", "AIUnitVehicle");
+
+						// Initialize vehicle lock
+						T_CALLM0("updateVehicleLock");
 					};
 					case T_DRONE: {
 					};
 
 					case T_CARGO: {
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
-						
+
 						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
 						pr _special = "CAN_COLLIDE";
 						/*
@@ -475,6 +526,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
 						};
+
+						// No damage for crates
+						_objectHandle allowDamage false;
 
 						// Disabling this as it can cause intersections as other vehicles aren't detected during createVehicle
 						// _objectHandle allowDamage false;
@@ -510,12 +564,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						// Initialize limited arsenal
-						T_CALLM0("limitedArsenalOnSpawn");
-						
-						// I'll tell you what else: make it draggable so we can get it out of buildings!
-						[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
+						if(T_CALLM0("limitedArsenalOnSpawn")) then {
+							// If its an arsenal then we disable carry and drag
+							[_objectHandle, false] remoteExec ["ace_dragging_fnc_setDraggable", 0, true];
+							[_objectHandle, false] remoteExec ["ace_dragging_fnc_setCarryable", 0, true];
+						} else {
+							// If it isn't an arsenal object then force it to be dragable. Arsenal can be moved using build UI only.
+							[_objectHandle, true, [0, 2, 0.1], 0, true] remoteExec ["ace_dragging_fnc_setDraggable", 0, true];
+						};
 
-						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?			
+						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?
 						// Give intel to this unit
 						//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
 					};
@@ -551,33 +609,34 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 				};
+			};
 
-				// Give intel to this unit
-				switch (_catID) do {
-					case T_INF: {
-						// Leaders get intel tablets
-						if (CALLM0(_group, "getLeader") == _thisObject) then {
-							CALLSM1("UnitIntel", "initUnit", _thisObject);
-						} else {
-							// todo give intel to some special unit types, like radio specialists, etc...
-							// Some random infantry units get tablets too
-							if (random 10 < 2) then {
-								CALLSM1("UnitIntel", "initUnit", _thisObject);
-							};
-						};
-					};
-					case T_VEH: {
-						// A very little amount of vehicles gets intel
-						if (random 10 < 3) then {
+			// Give intel to this unit
+			// Intel tablets are not saved in inventory
+			switch (_catID) do {
+				case T_INF: {
+					// Leaders get intel tablets
+					if (CALLM0(_group, "getLeader") == _thisObject) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					} else {
+						// todo give intel to some special unit types, like radio specialists, etc...
+						// Some random infantry units get tablets too
+						if (random 10 < 2) then {
 							CALLSM1("UnitIntel", "initUnit", _thisObject);
 						};
 					};
-					case T_DRONE: {
-						// Don't put intel into drones?
+				};
+				case T_VEH: {
+					// A very little amount of vehicles gets intel
+					if (random 10 < 3) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
 					};
-					case T_CARGO: {
-						// Don't put intel into cargo boxes?
-					};
+				};
+				case T_DRONE: {
+					// Don't put intel into drones?
+				};
+				case T_CARGO: {
+					// Don't put intel into cargo boxes?
 				};
 			};
 
@@ -588,7 +647,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: initObjectVariables
@@ -596,7 +655,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: nil
 	*/
-	METHOD("initObjectVariables") {
+	METHOD(initObjectVariables)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -614,7 +673,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			// That's all really
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: initObjectVariables
@@ -622,7 +681,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: nil
 	*/
-	METHOD("deinitObjectVariables") {
+	METHOD(deinitObjectVariables)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -636,7 +695,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			// Variable with the efficiency vector of this unit
 			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: initObjectEventHandlers
@@ -644,7 +703,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: nil
 	*/
-	METHOD("initObjectEventHandlers") {
+	METHOD(initObjectEventHandlers)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -655,9 +714,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
 			pr _ehid = [_hO, "Killed", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_KILLED_STR, nil];
-				_unit removeEventHandler ["Killed", _thisID];
-				_this call Unit_fnc_EH_Killed;
+				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
+					_unit setVariable [UNIT_EH_KILLED_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					// _unit removeEventHandler ["Killed", _thisID];
+					_this call Unit_fnc_EH_Killed;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
@@ -666,16 +728,26 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
-				_unit removeEventHandler ["Respawn", _thisID];
-				_this call Unit_fnc_EH_Respawn;
+				if(!isNil {_unit getVariable UNIT_EH_RESPAWN_STR}) then {
+					_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					//_unit removeEventHandler ["Respawn", _thisID];
+					_this call Unit_fnc_EH_Respawn;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
+		};
+
+		// Rating (hopefully disabling the renegade system)
+		if (isNil {_hO getVariable UNIT_EH_HANDLE_RATING_STR}) then {
+			pr _ehid = [_hO, "HandleRating", { 0 }] call CBA_fnc_addBISEventHandler;
+			_hO setVariable [UNIT_EH_HANDLE_RATING_STR, _ehid];
 		};
 
 		// HandleDamage for infantry
 		// Disabled for now, let's see if it changed anything
 		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
+		/*
 		if ((_data select UNIT_DATA_ID_CAT == T_INF) &&	// Only to infantry
 			{owner _hO in [0, clientOwner]} &&			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 			{!(_hO isEqualTo player)}) then { 			// Ignore player
@@ -686,15 +758,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
+		*/
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
 			_hO addEventHandler ["GetIn", Unit_fnc_EH_GetIn];
 			_hO addEventHandler ["GetOut", Unit_fnc_EH_GetOut];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("initObjectDynamicSimulation") {
+	METHOD(initObjectDynamicSimulation)
 		params [P_THISOBJECT];
 		
 		pr _data = T_GETV("data");
@@ -722,7 +795,39 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO enableDynamicSimulation false;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
+
+	/*
+	Sets vehicle lock according to the current side of the vehicle
+	*/
+	METHOD(updateVehicleLock)
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+
+		// Bail if not vehicle
+		pr _catID = _data#UNIT_DATA_ID_CAT;
+		if ((_catID) != T_VEH) exitWith {};
+
+		// Bail if it's a static weapon
+		pr _subcatID = _data#UNIT_DATA_ID_SUBCAT;
+		if (_subcatID in T_VEH_static) exitWith {};
+
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		// Bail if not spawned
+		if (isNull _hO) exitWith {};
+
+		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+
+		// Bail if there is no garrison
+		if (IS_NULL_OBJECT(_garrison)) exitWith {};
+
+		pr _side = CALLM0(_garrison, "getSide");
+		pr _lock = (_side != CALLM0(gGameMode, "getPlayerSide")) && (_side != CIVILIAN);
+
+		["ACE_vehicleLock_setVehicleLock", [_hO, _lock], [_hO]] call CBA_fnc_targetEvent;
+	ENDMETHOD;
 
 	Unit_fnc_hasInventory = {
 		//check if object has inventory
@@ -733,7 +838,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		(_tb > 0  || _tm > 0 || _tw > 0)
 	};
 
-	/* private */ METHOD("setInventory") {
+	/* private */ METHOD(setInventory)
 		params [P_THISOBJECT, P_ARRAY("_inventory")];
 
 		private _data = T_GETV("data");
@@ -745,15 +850,15 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_data set[UNIT_DATA_ID_INVENTORY, +_inventory];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("clearInventory") {
+	/* private */ METHOD(clearInventory)
 		params [P_THISOBJECT];
 		private _emptyInventory = [[],[],[],[]];
 		T_CALLM1("setInventory", _emptyInventory);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("addToInventory") {
+	/* private */ METHOD(addToInventory)
 		params [P_THISOBJECT, P_ARRAY("_inventory")];
 
 		private _data = T_GETV("data");
@@ -785,9 +890,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("restoreInventory") {
+	/* private */ METHOD(restoreInventory)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 
@@ -808,9 +913,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			false
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private */ METHOD("_setRealInventory") {
+	/* private */ METHOD(_setRealInventory)
 		params [P_THISOBJECT, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 
 		if(_hO in allPlayers) exitWith {
@@ -828,9 +933,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		clearBackpackCargoGlobal _hO;
 
 		CALLSM2("Unit", "_addToRealInventory", _hO, _inventory);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* private */ STATIC_METHOD("_addToRealInventory") {
+	/* private */ STATIC_METHOD(_addToRealInventory)
 		params [P_THISCLASS, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 		//weapons
 		{
@@ -859,9 +964,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		{
 			_hO addBackpackCargoGlobal _x;
 		} forEach _inventory#3;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("saveInventory") {
+	METHOD(saveInventory)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 
@@ -926,9 +1031,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			//diag_log format["SAVED INV FOR %1: %2", _hO, _savedInventory];
 			_data set [UNIT_DATA_ID_INVENTORY, _savedInventory];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("initObjectInventory") {
+	METHOD(initObjectInventory)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -939,9 +1044,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		pr _catid = _data select UNIT_DATA_ID_CAT;
 		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
-			
 			// = = = NOT INFANTRY = = =
-			
 
 			// Clear cargo
 			if(_hO in allPlayers) exitWith {
@@ -1020,13 +1123,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			} else {
 
 				// = = = = MILITARY CARGO AND VEHICLES = = = =
+				private _lootScaling = MAP_LINEAR_SET_POINT(1 - vin_diff_global, 0.2, 1, 3);
 
 				pr _nInf = CALLM0(_gar, "countInfantryUnits");
 				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
 				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 				// Some number which scales the amount of items in this box
-				pr _nGuns = 1.3 * _nInf / ((_nVeh + _nCargo) max 1);
+				pr _nGuns = 1.3 * _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
 
 				// Modifier for cargo boxes
 				if (_catID == T_CARGO) then {
@@ -1079,7 +1183,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _ACREclassNames = t_ACRERadios;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, _itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _ACREclassNames;
 				};
 
@@ -1089,7 +1193,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARclassNames = t_TFARRadios_0912;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _TFARclassNames;
 				};
 
@@ -1099,19 +1203,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _TFARBetaclassNames = t_TFARRadios_0100;
 					{
 						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount])];
+						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 					} forEach _TFARBetaclassNames;
 				};
 
 				// Add vests
-				pr _nVests = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
+				pr _nVests = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
 					_hO addItemCargoGlobal [selectRandom _vests, 1];
 				};
 
 				// Add backpacks
-				pr _nBackpacks = ceil (random [0.5*_nGuns, _nGuns, 1.5*_nGuns]);
+				pr _nBackpacks = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _backpacks = _tInv#T_INV_backpacks;
 				for "_i" from 0 to _nBackpacks do {
 					_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
@@ -1148,7 +1252,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
-							_hO addItemCargoGlobal [_className, round ((random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount]))];
+							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 						} forEach t_ACEMedicalItems_cargo;
 					};
 
@@ -1161,7 +1265,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						{
 							_x params ["_itemName", "_itemCount"];
 							if(random 10 < 7) then {
-								_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+								_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 							};
 						} forEach _classNames;
 					};
@@ -1192,7 +1296,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
-							_hO addItemCargoGlobal [_className, round ((random [0.5*_itemCount, 1*_itemCount, 1.5*_itemCount]))];
+							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 						} forEach t_ACEMedicalItems_vehicles;
 					};
 					// = = = =
@@ -1210,7 +1314,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO addItemToUniform "vin_pills";
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                            D E S P A W N
 	/*
@@ -1224,7 +1328,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: nil
 	*/
-	METHOD("despawn") {
+	METHOD(despawn)
 		params [P_THISOBJECT, P_BOOL("_releaseHandle")];
 
 		OOP_INFO_0("DESPAWN");
@@ -1242,9 +1346,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			// Stop AI, sensors, etc
 			pr _AI = _data select UNIT_DATA_ID_AI;
 			// Some units are brainless. Check if the unit had a brain.
-			if (_AI != "") then {
+			if (_AI != NULL_OBJECT) then {
 				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
-				_data set [UNIT_DATA_ID_AI, ""];
+				_data set [UNIT_DATA_ID_AI, NULL_OBJECT];
 			};
 
 			// Get the amount of actual build resources in inventory
@@ -1266,7 +1370,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _posATL = getPosATL _objectHandle;
 			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
 			pr _gar = _data#UNIT_DATA_ID_GARRISON;
-			pr _loc = if (_gar != "") then {CALLM0(_gar, "getLocation")} else {""};
+			pr _loc = if (_gar != NULL_OBJECT) then { CALLM0(_gar, "getLocation") } else { NULL_OBJECT };
 			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
@@ -1278,7 +1382,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 
 			//private _group = _data select UNIT_DATA_ID_GROUP;
-			//if (_group != "") then { CALLM(_group, "handleUnitDespawned", [_thisObject]) };
+			//if (_group != NULL_OBJECT) then { CALLM(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
 			OOP_ERROR_0("Already despawned");
@@ -1286,7 +1390,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -1297,9 +1401,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Assigns the unit to a vehicle with specified vehicle role
 	*/
-	METHOD("setVehicleRole") {
+	METHOD(setVehicleRole)
 		params [P_THISOBJECT, "_vehicle", "_vehicleRole"];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	//                         S E T   G A R R I S O N
@@ -1315,14 +1419,17 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: nil
 	*/
-	METHOD("setGarrison") {
+	METHOD(setGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison") ];
 
 		OOP_INFO_1("SET GARRISON: %1", _garrison);
 
 		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GARRISON, _garrison];
-	} ENDMETHOD;
+
+		// Update lock state
+		T_CALLM0("updateVehicleLock");
+	ENDMETHOD;
 
 	//                         S E T   G R O U P
 	/*
@@ -1337,17 +1444,17 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: nil
 	*/
-	METHOD("setGroup") {
+	METHOD(setGroup)
 		params [P_THISOBJECT, P_OOP_OBJECT("_group") ];
 		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GROUP, _group];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: applyWeapons
 	Gives weapons to the unit from the weapons array of this unit
 	*/
-	METHOD("applyInfantryWeapons") {
+	METHOD(applyInfantryWeapons)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 
@@ -1373,7 +1480,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		// Remove all items from vest
 		pr _vest = vest _hO;
-		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
+		if (_vest == "") then {
+			_vest = "V_Chestrig_oli";
+		}; // Default vest
 		removeVest _hO;
 		_hO addVest _vest;
 			
@@ -1442,7 +1551,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1457,7 +1566,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: <Garrison>
 	*/
-	METHOD("getGarrison") {
+	METHOD(getGarrison)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 
@@ -1469,7 +1578,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			// For ungrouped units, return the garrison of the unit
 			_data select UNIT_DATA_ID_GARRISON
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                         G E T   O B J E C T   H A N D L E
 	/*
@@ -1478,11 +1587,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: object handle of this unit, or objNull if it's not spawned
 	*/
-	METHOD("getObjectHandle") {
+	METHOD(getObjectHandle)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_OBJECT_HANDLE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getClassName
@@ -1490,22 +1599,22 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: String
 	*/
-	METHOD("getClassName") {
+	METHOD(getClassName)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_CLASS_NAME
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: isPlayer
 	Returns: true if the unit is a player
 	*/
-	METHOD("isPlayer") {
+	METHOD(isPlayer)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		!(isNull _hO) && {_hO in allPlayers}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                        G E T   G R O U P
 	/*
@@ -1515,24 +1624,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: <Group>
 	*/
 	// Returns the group of this unit
-	METHOD("getGroup") {
+	METHOD(getGroup)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_GROUP
-	} ENDMETHOD;
+		_data # UNIT_DATA_ID_GROUP
+	ENDMETHOD;
 
-	//                           G E T   A I
-	/*
-	Method: getAI
-	Returns the <AIUnit> object of this unit, or "" if it's not spawned
-
-	Returns: <AIUnit>
-	*/
-	METHOD("getAI") {
-		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_AI
-	} ENDMETHOD;
 
 	//                    G E T   M A I N   D A T A
 	/*
@@ -1541,11 +1638,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: array: [_catID, _subcatID, _className]
 	*/
-	METHOD("getMainData") {
+	METHOD(getMainData)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
-	} ENDMETHOD;
+		[_data # UNIT_DATA_ID_CAT, _data # UNIT_DATA_ID_SUBCAT, _data # UNIT_DATA_ID_CLASS_NAME]
+	ENDMETHOD;
 	
 	//                    G E T   E F F I C I E N C Y
 	/*
@@ -1554,11 +1651,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Efficiency vector
 	*/
-	METHOD("getEfficiency") {
+	METHOD(getEfficiency)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		T_efficiency select (_data select UNIT_DATA_ID_CAT) select (_data select UNIT_DATA_ID_SUBCAT)
-	} ENDMETHOD;
+		T_efficiency # (_data # UNIT_DATA_ID_CAT) # (_data # UNIT_DATA_ID_SUBCAT)
+	ENDMETHOD;
 
 	//                        G E T   D A T A
 	/*
@@ -1568,10 +1665,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: the internal data array of this unit.
 	*/
-	METHOD("getData") {
+	METHOD(getData)
 		params [P_THISOBJECT];
 		T_GETV("data")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	//                             G E T   P O S
@@ -1581,12 +1678,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: [x, y, z]
 	*/
-	METHOD("getPos") {
+	METHOD(getPos)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		getPos _oh
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getDespawnLocation
@@ -1594,38 +1691,38 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: <Location> or ""
 	*/
-	METHOD("getDespawnLocation") {
+	METHOD(getDespawnLocation)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_LOCATION
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getCategory
 	Returns category ID, number
 	*/
-	METHOD("getCategory") {
+	METHOD(getCategory)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		_data#UNIT_DATA_ID_CAT
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getSubcategory
 	Returns subcategory ID, number
 	*/
-	METHOD("getSubcategory") {
+	METHOD(getSubcategory)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		_data#UNIT_DATA_ID_SUBCAT
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                     H A N D L E   K I L L E D
 	/*
 	Method: handleKilled
 	Gets called when a unit is killed.
 	*/
-	METHOD("handleKilled") {
+	METHOD(handleKilled)
 		params [P_THISOBJECT];
 
 		// Delete the brain of this unit, if it exists
@@ -1644,25 +1741,25 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		if (!isNull _objectHandle) then {
 			T_CALLM0("deinitObjectVariables");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Some cargo was loaded into this unit
-	METHOD("handleCargoLoaded") {
+	METHOD(handleCargoLoaded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		pr _AI = T_CALLM0("getAI");
 		if (_AI != "") then {
 			CALLM1(_AI, "addCargoUnit", _cargoUnit);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Some cargo was unloaded from this unit
-	METHOD("handleCargoUnloaded") {
+	METHOD(handleCargoUnloaded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		pr _AI = T_CALLM0("getAI");
 		if (_AI != "") then {
 			CALLM1(_AI, "removeCargoUnit", _cargoUnit);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S T A T I C   M E T H O D S
@@ -1679,10 +1776,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: <Unit> or ""
 	*/
-	STATIC_METHOD("getUnitFromObjectHandle") {
+	STATIC_METHOD(getUnitFromObjectHandle)
 		params [P_THISCLASS, P_OBJECT("_objectHandle") ];
 		GET_UNIT_FROM_OBJECT_HANDLE(_objectHandle);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)createUnitFromObjectHandle
@@ -1691,8 +1788,8 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: <Unit>
 	*/
-	STATIC_METHOD("createUnitFromObjectHandle") {
-	} ENDMETHOD;
+	STATIC_METHOD(createUnitFromObjectHandle)
+	ENDMETHOD;
 
 
 	/*
@@ -1706,7 +1803,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 	
-	STATIC_METHOD("getRequiredCrew") {
+	STATIC_METHOD(getRequiredCrew)
 		params ["_thisClass", P_ARRAY("_units")];
 		
 		pr _nDrivers = 0;
@@ -1722,7 +1819,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 		} forEach _units;
 		[_nDrivers, _nTurrets, _nCargo]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Function: (static)getCargoInfantryCapacity
@@ -1734,11 +1831,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	
 	Returns: Number
 	*/
-	STATIC_METHOD("getCargoInfantryCapacity") {
+	STATIC_METHOD(getCargoInfantryCapacity)
 		params ["_thisClass", P_ARRAY("_units")];
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
@@ -1752,12 +1849,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: String - One of "CARELESS", "SAFE", "AWARE", "COMBAT" and "STEALTH"
 	*/
-	METHOD("getBehaviour") {
+	METHOD(getBehaviour)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		behaviour _object
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                          I S  A L I V E
 	/*
@@ -1767,7 +1864,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Bool
 	*/
-	METHOD("isAlive") {
+	METHOD(isAlive)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1777,7 +1874,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			alive _object
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: isConscious
@@ -1786,7 +1883,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Bool
 	*/
-	METHOD("isConscious") {
+	METHOD(isConscious)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1796,7 +1893,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			!(_object getVariable ["ACE_isUnconscious", false])
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                          I S   S P A W N E D
 	/*
@@ -1805,14 +1902,14 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: bool, true if the unit is spawned
 	*/
-	METHOD("isSpawned") {
+	METHOD(isSpawned)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		private _return = !( isNull (_data select UNIT_DATA_ID_OBJECT_HANDLE));
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("isDamaged") {
+	METHOD(isDamaged)
 		params [P_THISOBJECT];
 		if(T_CALLM0("isSpawned")) then {
 			pr _oh = T_CALLM0("getObjectHandle");
@@ -1820,9 +1917,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			false
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("canMove") {
+	METHOD(canMove)
 		params [P_THISOBJECT];
 		if(T_CALLM0("isSpawned")) then {
 			pr _oh = T_CALLM0("getObjectHandle");
@@ -1830,7 +1927,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			true
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |               I S   I N F A N T R Y   /   V E H I C L E   /   D R O N E
@@ -1843,11 +1940,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Bool
 	*/
-	METHOD("isInfantry") {
+	METHOD(isInfantry)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_INF
-	} ENDMETHOD;
+		_data#UNIT_DATA_ID_CAT == T_INF
+	ENDMETHOD;
 
 	//                       I S   V E H I C L E
 	/*
@@ -1856,11 +1953,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Bool
 	*/
-	METHOD("isVehicle") {
+	METHOD(isVehicle)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_VEH
-	} ENDMETHOD;
+		_data#UNIT_DATA_ID_CAT == T_VEH
+	ENDMETHOD;
 
 	//                         I S   D R O N E
 	/*
@@ -1869,11 +1966,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Bool
 	*/
-	METHOD("isDrone") {
+	METHOD(isDrone)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_DRONE
-	} ENDMETHOD;
+		_data#UNIT_DATA_ID_CAT == T_DRONE
+	ENDMETHOD;
 
 	/*
 	Method: isCargo
@@ -1881,12 +1978,24 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Bool
 	*/
-	METHOD("isCargo") {
+	METHOD(isCargo)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_CARGO
-	} ENDMETHOD;
-	
+		_data#UNIT_DATA_ID_CAT == T_CARGO
+	ENDMETHOD;
+
+	/*
+	Method: isAir
+	Returns true if given <Unit> is an air unit
+
+	Returns: Bool
+	*/
+	METHOD(isAir)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+		_data#UNIT_DATA_ID_CAT == T_VEH && { _data#UNIT_DATA_ID_SUBCAT in T_VEH_air }
+	ENDMETHOD;
+
 	//                         I S   S T A T I C
 	/*
 	Method: isStatic
@@ -1894,17 +2003,17 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: Bool
 	*/
-	METHOD("isStatic") {
+	METHOD(isStatic)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
-	} ENDMETHOD;
+		[_data#UNIT_DATA_ID_CAT, _data#UNIT_DATA_ID_SUBCAT] in T_static
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               B U I L D   R E S O U R C E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	METHOD("setBuildResources") {
+	METHOD(setBuildResources)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if we can't carry any build resources
@@ -1917,9 +2026,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getBuildResources") {
+	METHOD(getBuildResources)
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("GET BUILD RESOURCES");
@@ -1937,9 +2046,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 		_return
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("addBuildResources") {
+	METHOD(addBuildResources)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if a negative number is specified
@@ -1950,9 +2059,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _resCurrent = T_CALLM0("getBuildResources");
 		pr _resNew = _resCurrent + _value;
 		T_CALLM1("setBuildResources", _resNew);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("removeBuildResources") {
+	METHOD(removeBuildResources)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if a negative number is specified
@@ -1962,9 +2071,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _resNew = _resCurrent - _value;
 		if (_resNew < 0) then {_resNew = 0;};
 		T_CALLM1("setBuildResources", _resNew);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_setBuildResourcesSpawned") {
+	METHOD(_setBuildResourcesSpawned)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		private _data = T_GETV("data");
@@ -2018,9 +2127,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				};
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_getBuildResourcesSpawned") {
+	METHOD(_getBuildResourcesSpawned)
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("_getBuildResourcesSpawned");
@@ -2056,24 +2165,24 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			_return
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("canHaveBuildResources") {
+	METHOD(canHaveBuildResources)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		pr _cat = _data#UNIT_DATA_ID_CAT;
 		_cat != T_INF
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getInfantryBuildResources") {
+	STATIC_METHOD(getInfantryBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO")];
 		pr _items = (uniformItems _hO) + (vestItems _hO) + (backpackitems _hO);
 		pr _nItems = {_x == "vin_build_res_0"} count _items;
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 		_nItems*_buildResPerMag
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("removeInfantryBuildResources") {
+	STATIC_METHOD(removeInfantryBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 		pr _nItemsToRemove = round (_value / _buildResPerMag);
@@ -2082,9 +2191,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_hO removeMagazine "vin_build_res_0";
 			_i = _i + 1;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("getVehicleBuildResources") {
+	STATIC_METHOD(getVehicleBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO")];
 
 		pr _magCargo = getMagazineCargo _hO;
@@ -2096,9 +2205,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("removeVehicleBuildResources") {
+	STATIC_METHOD(removeVehicleBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
 
 		// Bail if negative number is passed
@@ -2108,7 +2217,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _nItemsToRemove = ceil (_value/_buildResPerMag);
 
 		[_hO, "vin_build_res_0", _nItemsToRemove] call CBA_fnc_removeMagazineCargo;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               G O A P
@@ -2123,35 +2232,22 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: []
 	*/
-	METHOD("getSubagents") {
+	METHOD(getSubagents)
 		[] // A single unit has no subagents
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	//                        G E T   P O S S I B L E   G O A L S
+	//                           G E T   A I
 	/*
-	Method: getPossibleGoals
-	Returns the list of goals this agent evaluates on its own.
+	Method: getAI
+	Returns the <AIUnit> object of this unit, or "" if it's not spawned
 
-	Access: Used by AI class
-
-	Returns: Array with goal class names
+	Returns: <AIUnit>
 	*/
-	METHOD("getPossibleGoals") {
-		["GoalUnitSalute","GoalUnitScareAway"]
-	} ENDMETHOD;
-
-	//                      G E T   P O S S I B L E   A C T I O N S
-	/*
-	Method: getPossibleActions
-	Returns the list of actions this agent can use for planning.
-
-	Access: Used by AI class
-
-	Returns: Array with action class names
-	*/
-	METHOD("getPossibleActions") {
-		["ActionUnitSalute","ActionUnitScareAway"]
-	} ENDMETHOD;
+	METHOD(getAI)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+		_data select UNIT_DATA_ID_AI
+	ENDMETHOD;
 
 	/*
 	Method: createDefaultCrew
@@ -2165,7 +2261,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	Returns: nil
 	*/
 
-	METHOD("createDefaultCrew") {
+	METHOD(createDefaultCrew)
 		params [P_THISOBJECT, P_ARRAY("_template") ];
 
 		private _data = T_GETV("data");
@@ -2186,7 +2282,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			private _args = [_template, _unitCatID, _unitSubcatID, _unitClassID, _group]; // P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group")
 			private _newUnit = NEW("Unit", _args);
 		} forEach _crewData;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	//                             I S   E M P T Y
 	/*
@@ -2195,19 +2291,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	Returns: bool
 	*/
-	METHOD("isEmpty") {
+	METHOD(isEmpty)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		(count fullCrew _oh) == 0
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               L I M I T E D   A R S E N A L
 	// | Methods for manipulating the limited arsenal
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	METHOD("limitedArsenalEnable") {
+	METHOD(limitedArsenalEnable)
 		params [P_THISOBJECT, P_BOOL("_enabled")];
 
 		pr _data = T_GETV("data");
@@ -2277,16 +2373,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				// todo remove actions, kick players out of arsenal, etc ...
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("limitedArsenalEnabled") {
+	METHOD(limitedArsenalEnabled)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
 		count _dataList > 0
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("limitedArsenalOnSpawn") {
+	METHOD(limitedArsenalOnSpawn)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -2303,17 +2399,21 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			// Make the object movable again for the Build UI
 			CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
-		};
-	} ENDMETHOD;
 
-	METHOD("limitedArsenalOnDespawn") {
+			true
+		} else {
+			false
+		}
+	ENDMETHOD;
+
+	METHOD(limitedArsenalOnDespawn)
 		params [P_THISOBJECT];
 
 		T_CALLM0("limitedArsenalSyncToUnit");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// This method must synchronize Unit OOP object's data fields to match those of the 'real' unit
-	METHOD("limitedArsenalSyncToUnit") {
+	METHOD(limitedArsenalSyncToUnit)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");
@@ -2329,10 +2429,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _dataList];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets JNA data list depending on the spawn state of the unit
-	METHOD("limitedArsenalGetDataList") {
+	METHOD(limitedArsenalGetDataList)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 
@@ -2346,10 +2446,10 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} else {
 			_hO getVariable "jna_dataList";
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Removes items from the arsenal
-	METHOD("limitedArsenalRemoveItem") {
+	METHOD(limitedArsenalRemoveItem)
 		params [P_THISOBJECT, P_STRING("_item"), P_NUMBER("_amount")];
 		pr _index = _item call jn_fnc_arsenal_itemType;
 		pr _data = T_GETV("data");
@@ -2366,11 +2466,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				[_hO, _index, _item, 1] call jn_fnc_arsenal_removeItem;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD("serializeForStorage") {
+	/* override */ METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 
 		// Need to do this before copying "data"
@@ -2399,38 +2499,77 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_data set [UNIT_DATA_ID_MUTEX, 0];
 		_data set [UNIT_DATA_ID_AI, 0];
 
+		// Filter inventory
+		// Array of patterns of items we do not want to save in inventory
+		pr _itemsNoSave = [
+			"vin_tablet_",
+			"vin_document_"
+		];
+
+		pr _inv = _data#UNIT_DATA_ID_INVENTORY;
+		{
+			pr _invArray = _x; // Array of [item, count]
+			_inv set [_foreachindex, _invArray select { pr _className = _x#0; _itemsNoSave findIf {_x in _className} == -1}];
+		} forEach _inv;
+		///
+
 		//diag_log _data;
 
 		_data 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("deserializeFromStorage") {
+	/* override */ METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		_serial set [UNIT_DATA_ID_OWNER, 2]; // Server
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		_serial set [UNIT_DATA_ID_AI, ""];
-		// SAVEBREAK DELETE >>> 
-		if(count _serial < UNIT_DATA_SIZE) then {
-			_serial set[UNIT_DATA_ID_INVENTORY, []];
+
+		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
+		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;
+		#ifndef _SQF_VM
+		if(!isClass (configFile >> "CfgVehicles" >> _class)) then {
+			private _garrison = _serial#UNIT_DATA_ID_GARRISON;
+			private _template = if(IS_NULL_OBJECT(_garrison)) then { "" } else { CALLM0(_garrison, "getTemplate") };
+			if(!(_template isEqualTo "")) then {
+				// Select a new random class/loadout
+				private _catID = _serial#UNIT_DATA_ID_CAT;
+				private _subcatID = _serial#UNIT_DATA_ID_SUBCAT;
+				private _newClass = [_template, _catID, _subcatID, -1] call t_fnc_select;
+
+				// Check if the class is actually a custom loadout
+				pr _loadout = "";
+				if ([_newClass] call t_fnc_isLoadout) then {
+					_loadout = _newClass;
+					_newClass = _template # _catID # 0 # 0; // Default class name from the template
+				};
+				_serial set [UNIT_DATA_ID_CLASS_NAME, _newClass];
+				_serial set [UNIT_DATA_ID_LOADOUT, _loadout];
+
+				OOP_WARNING_MSG("Class %1 no longer exists, using %2 instead", [_class ARG _newClass]);
+			} else {
+				OOP_ERROR_MSG("Class %1 no longer exists, and garrison template couldn't be found, so no automatic replacement can happen", [_class]);
+			};
 		};
-		// SAVEBREAK DELETE <<<
+		#endif
+		FIX_LINE_NUMBERS()
+
 		T_SETV("data", _serial);
 
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD("saveStaticVariables") {
+	/* virtual */ STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = GETSV("Unit", "all");
 		CALLM2(_storage, "save", "Unit_all", +_all);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD("loadStaticVariables") {
+	/* virtual */ STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = CALLM1(_storage, "load", "Unit_all");
 		SETSV("Unit", "all", +_all);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

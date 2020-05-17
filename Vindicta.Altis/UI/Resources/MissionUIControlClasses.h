@@ -1,4 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "defineCommonGrids.hpp"
 #include "UIProfileColors.h"
 
@@ -489,6 +489,99 @@ class MUI_COMBOBOX : RscCombo
 };
 __MUI_CLASS_ABS(MUI_COMBOBOX);
 
+class MUI_TREE
+{
+	/* Common properties */
+	idc = -1;
+	/* Add some entries */
+	onLoad = "params ['_tv'];\
+			_classes = 'true' configClasses (configFile >> 'CfgVehicles');\
+			for '_i' from 0 to 10 do\
+			{\
+				_tv tvAdd [[], configName selectRandom _classes];\
+				for '_j' from 0 to 10 do\
+				{\
+					_tv tvAdd [[_i], configName selectRandom _classes];\
+					for '_k' from 0 to 10 do\
+					{\
+						_tv tvAdd [[_i, _j], configName selectRandom _classes];\
+					};\
+				};\
+			};";
+	moving = 0;
+	type = 12;
+	style = 0;
+	sizeEx = MUI_TXT_SIZE_M_SZ;
+	rowHeight = MUI_TXT_SIZE_M_SZ;
+	font = "RobotoCondensed";
+	colorText[] = {1,1,1,1};
+	colorBackground[] = {0,0,0,0.8};
+	colorDisabled[] = {1,1,1,0.25};
+	shadow = 0;
+	access = 0;
+
+	/* CT_TREE specific properties */
+	idcSearch = -1;
+	colorSelect[] = {1,1,1,0.7};
+	colorSelectText[] = {0,0,0,1};
+	colorBorder[] = {0,0,0,0};
+	colorSearch[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_A',0.8])"
+	};
+	colorMarked[] = {0.2,0.3,0.7,1};
+	colorMarkedText[] = {0,0,0,1};
+	colorMarkedSelected[] = {0,0.5,0.5,1};
+	multiselectEnabled = 0;
+	colorPicture[] = {1,1,1,1};
+	colorPictureSelected[] = {0,0,0,1};
+	colorPictureDisabled[] = {1,1,1,0.25};
+	colorPictureRight[] = {1,1,1,1};
+	colorPictureRightSelected[] = {0,0,0,1};
+	colorPictureRightDisabled[] = {1,1,1,0.25};
+	colorArrow[] = {1,1,1,1};
+	maxHistoryDelay = 1;
+	colorSelectBackground[] = {0,0,0,0.5};
+	colorLines[] = {0,0,0,0};
+	class ScrollBar
+	{
+		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+		autoScrollDelay = 5;
+		autoScrollEnabled = 0;
+		autoScrollRewind = 0;
+		autoScrollSpeed = -1;
+		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+		color[] = {1,1,1,0.6};
+		colorActive[] = {1,1,1,1};
+		colorDisabled[] = {1,1,1,0.3};
+		height = 0;
+		scrollSpeed = 0.06;
+		shadow = 0;
+		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+		width = 0;
+	};
+	expandedTexture = "A3\ui_f\data\gui\rsccommon\rsctree\expandedTexture_ca.paa";
+	hiddenTexture = "A3\ui_f\data\gui\rsccommon\rsctree\hiddenTexture_ca.paa";
+	
+	borderSize = 0;
+	expandOnDoubleclick = 1;
+
+	/* CT_TREE user interface eventhandlers */
+	/*
+	onTreeSelChanged = "systemChat str ['onTreeSelChanged',_this]; false";
+	onTreeLButtonDown = "systemChat str ['onTreeLButtonDown',_this]; false";
+	onTreeDblClick = "systemChat str ['onTreeDblClick',_this]; false";
+	onTreeExpanded = "systemChat str ['onTreeExpanded',_this]; false";
+	onTreeCollapsed = "systemChat str ['onTreeCollapsed',_this]; false";
+	onTreeMouseMove = "systemChat str ['onTreeMouseMove',_this]; false";
+	onTreeMouseHold = "systemChat str ['onTreeMouseHold',_this]; false";
+	onTreeMouseExit = "systemChat str ['onTreeMouseExit',_this]; false";
+	*/
+};
 
 #endif
 

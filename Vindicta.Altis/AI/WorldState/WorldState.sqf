@@ -1,5 +1,5 @@
 #include "WorldStateProperty.hpp"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 #define pr private
 #define WS_ID_WSP	0

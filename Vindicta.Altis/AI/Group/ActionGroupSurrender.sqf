@@ -4,10 +4,11 @@
 Class: ActionGroup.ActionGroupSurrender
 */
 
+#define OOP_CLASS_NAME ActionGroupSurrender
 CLASS("ActionGroupSurrender", "ActionGroup")
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		private _AI = T_GETV("AI");
@@ -26,10 +27,10 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");
@@ -37,6 +38,6 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 		T_CALLM0("activateIfInactive");
 
 		ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

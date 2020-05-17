@@ -7,20 +7,21 @@ All members of this group will mount all vehicles in this garrison as cargo.
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupGetInGarrisonVehiclesAsCargo
 CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 
 	VARIABLE("activeUnits");
 	//VARIABLE("freeVehicles");
 	VARIABLE("instantOverride");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		
 		T_SETV("activeUnits", []);
 		T_SETV("instantOverride", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// We need to save instant flag here as this action can need to reactivate multiple times to find a free seat
@@ -112,9 +113,9 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -187,17 +188,23 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
 
-	METHOD("handleUnitsAdded") {
+		// Remove the specified units from the active units list, their goals have already been removed by the AI
+		private _activeUnits = T_GETV("activeUnits");
+		{
+			_activeUnits deleteAt (_activeUnits find _x);
+		} forEach _units;
+	ENDMETHOD;
+
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units") ];
 		T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

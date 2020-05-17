@@ -13,10 +13,10 @@ _RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut",
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","rhsusf_oakley_goggles_blk","",""];
 this addGoggles _RandomGoggles;
-this forceAddUniform "rhs_uniform_gorka_1_a";
+this forceaddUniform "rhs_uniform_gorka_1_a";
 this addBackpack "FGN_AAF_Bergen_SL_Type07";
 
-this addWeapon "rhs_weap_hk416d10";
+this addWeapon "rhs_weap_mk18_KAC_bk";
 this addPrimaryWeaponItem "rhsusf_acc_rotex5_grey";
 _RandomSight = selectRandom ["rhsusf_acc_eotech_xps3", "rhsusf_acc_g33_xps3", "rhsusf_acc_su230", "rhsusf_acc_su230_mrds"];
 this addPrimaryWeaponItem _RandomSight;
@@ -30,7 +30,7 @@ this addWeapon "rhsusf_weap_glock17g4";
 this addHandgunItem "rhsusf_acc_omega9k";
 this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
-this addWeapon "rhssaf_zrak_rd7j";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "optic_NVS";
@@ -50,4 +50,5 @@ this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
+this linkItem "ItemGPS";
 this linkItem "NVGoggles_OPFOR";

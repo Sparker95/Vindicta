@@ -20,7 +20,8 @@
 
 	#include "oop.h"
 
-	CLASS("OO_INVENTORY")
+	#define OOP_CLASS_NAME OO_INVENTORY
+CLASS("OO_INVENTORY")
 		PRIVATE VARIABLE("object","unit");
 
 		PUBLIC FUNCTION("object","constructor") { 

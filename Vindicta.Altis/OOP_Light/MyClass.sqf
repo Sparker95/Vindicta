@@ -1,9 +1,10 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 /*
 A template class.
 */
 
+#define OOP_CLASS_NAME MyClass
 CLASS("MyClass", "MyClassParent");
 
 	VARIABLE("myVariable");
@@ -12,20 +13,20 @@ CLASS("MyClass", "MyClassParent");
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
-
-	METHOD("new") {
-		P_DEFAULT_PARAMS;
-
-	} ENDMETHOD;
+	
+	METHOD(new)
+		params [P_THISOBJECT];
+		
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 
-	METHOD("delete") {
-		P_DEFAULT_PARAMS;
+	METHOD(delete)
+		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

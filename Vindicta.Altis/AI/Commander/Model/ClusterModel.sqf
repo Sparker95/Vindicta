@@ -12,6 +12,7 @@ How do we sync cluster? We could
 // Model of a Real Cluster. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Cluster as it currently is. A Sim model
 // is a copy that is modified during simulations.
+#define OOP_CLASS_NAME ClusterModel
 CLASS("ClusterModel", "ModelBase")
 	// Cluster position
 	VARIABLE("pos");
@@ -24,7 +25,7 @@ CLASS("ClusterModel", "ModelBase")
 	// Cluster efficiency damage caused
 	VARIABLE("damage");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_world"), P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_OR_NULL(_actual);
 
@@ -44,9 +45,9 @@ CLASS("ClusterModel", "ModelBase")
 		};
 		// Add self to world
 		CALLM(_world, "addCluster", [_thisObject]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("simCopy") {
+	METHOD(simCopy)
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 
 		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
@@ -69,9 +70,9 @@ CLASS("ClusterModel", "ModelBase")
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		SETV(_copy, "damage", +T_GETV("damage"));
 		_copy
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("sync") {
+	METHOD(sync)
 		params [P_THISOBJECT];
 
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
@@ -94,20 +95,20 @@ CLASS("ClusterModel", "ModelBase")
 			T_SETV("damage", _targetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE);
 			true
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Cluster is empty (not necessarily killed, could be merged to another cluster etc.)
-	METHOD("killed") {
+	METHOD(killed)
 		params [P_THISOBJECT];
 		T_SETV("efficiency", +EFF_ZERO);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("isDead") {
+	METHOD(isDead)
 		params [P_THISOBJECT];
 		private _efficiency = T_GETV("efficiency");
 		_efficiency isEqualTo EFF_ZERO 
 		// or {EFF_LTE(_efficiency, EFF_ZERO)}
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 
@@ -115,7 +116,7 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 // ["LocationModel.new(actual)", {
-// 	private _actual = NEW("Garrison", [WEST]);
+// 	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 // 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 // 	private _location = NEW("LocationModel", [_world] + [_actual]);
 // 	private _class = OBJECT_PARENT_CLASS_STR(_location);

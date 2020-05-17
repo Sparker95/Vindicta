@@ -16,6 +16,7 @@ _guy switchmove "AmovPercMstpSlowWrflDnon_SaluteOut";
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitSalute
 CLASS("ActionUnitSalute", "Action")
 
 	VARIABLE("target");
@@ -25,7 +26,7 @@ CLASS("ActionUnitSalute", "Action")
 	// ------------ N E W ------------
 	// _target - whom to salute to
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
@@ -34,13 +35,13 @@ CLASS("ActionUnitSalute", "Action")
 		pr _agent = GETV(_AI, "agent"); // cache the object handle
 		pr _hO = CALLM0(_agent, "getObjectHandle");
 		T_SETV("objectHandle", _hO);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("delete") {
-	} ENDMETHOD;
+	METHOD(delete)
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 		
 		// Handle AI just spawned state
@@ -79,10 +80,10 @@ CLASS("ActionUnitSalute", "Action")
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		diag_log "salute process was called!";
@@ -104,10 +105,10 @@ CLASS("ActionUnitSalute", "Action")
 		T_CALLM("terminate", []);
 		T_SETV("state", ACTION_STATE_COMPLETED);
 		ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		diag_log "Terminating salute!";
@@ -135,6 +136,6 @@ CLASS("ActionUnitSalute", "Action")
 		};
 		
 		//T_SETV("state", ACTION_STATE_INACTIVE);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

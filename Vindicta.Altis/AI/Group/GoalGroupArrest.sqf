@@ -8,9 +8,10 @@ Author: Marvis 09.05.2019
 #define IS_ARRESTED_UNCONSCIOUS_DEAD(target) (!alive (target) || {animationState (target) in ["unconsciousoutprone", "unconsciousfacedown", "unconsciousfaceup", "unconsciousrevivedefault", "acts_aidlpsitmstpssurwnondnon_loop", "acts_aidlpsitmstpssurwnondnon01"]})
 #define pr private
 
+#define OOP_CLASS_NAME GoalGroupArrest
 CLASS("GoalGroupArrest", "Goal")
 
-	STATIC_METHOD("calculateRelevance") {
+	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		pr _group = GETV(_AI, "agent");
@@ -28,9 +29,9 @@ CLASS("GoalGroupArrest", "Goal")
 			0
 		}
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		//OOP_INFO_0("GoalGroupArrest: Creating predefined action.");
@@ -45,6 +46,6 @@ CLASS("GoalGroupArrest", "Goal")
 
 		_action
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

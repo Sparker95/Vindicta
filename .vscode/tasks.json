@@ -47,6 +47,17 @@
             "group": "build",
             "problemMatcher": []
         },
+		        {
+            "label": "EDIT CHERNARUS",
+            "type": "process",
+            "command": "edit_cup_chernarus_A3.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
         {
             "label": "EDIT STASZOW",
             "type": "process",
@@ -73,6 +84,17 @@
             "label": "EDIT WEFERLINGEN",
             "type": "process",
             "command": "edit_gm_weferlingen_summer.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+		        {
+            "label": "EDIT TAKISTAN",
+            "type": "process",
+            "command": "edit_takistan.bat",
             "args": [],
             "options": {
                 "cwd": "${workspaceRoot}"

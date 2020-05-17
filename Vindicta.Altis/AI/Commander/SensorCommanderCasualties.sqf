@@ -10,12 +10,13 @@ On receiving data, it tries to match killer to an existing target in the target 
 // 0 means that it is never updated
 #define UPDATE_INTERVAL 0
 
+#define OOP_CLASS_NAME SensorCommanderCasualties
 CLASS("SensorCommanderCasualties", "SensorStimulatable")
 
 	/*
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 	
 	// ----------------------------------------------------------------------
@@ -23,7 +24,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	METHOD("handleStimulus") {
+	METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		pr _AI = T_GETV("AI");
@@ -69,16 +70,16 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 				CALLM2(_worldModel, "addDamage", _pos, _eff);
 			//};
 		} forEach _value;
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNITS_DESTROYED]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  U P D A T E   I N T E R V A L
@@ -86,8 +87,8 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	METHOD("getUpdateInterval") {
+	METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

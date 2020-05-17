@@ -30,6 +30,7 @@ behaviour is ongoing, then an appropriate state once it is complete (or failed).
 <AST_GarrisonAttackTarget> for an example of this. The <CmdrAction> will stay in the same state
 after calling an AST apply function if that function does returns <CMDR_ACTION_STATE_NONE>.
 */
+#define OOP_CLASS_NAME ActionStateTransition
 CLASS("ActionStateTransition", "Storable")
 
 	// If more than one Action Transition is available then 
@@ -44,13 +45,13 @@ CLASS("ActionStateTransition", "Storable")
 	Method: new
 	Base constructor for ASTs. See implementing classes (AST_*) for concrete constuctor definitions.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_action")];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 		T_SETV("action", _action);
 		T_SETV("priority", CMDR_ACTION_PRIOR_LOW);
 		T_SETV("fromStates", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: isValidFromState
@@ -62,11 +63,11 @@ CLASS("ActionStateTransition", "Storable")
 	
 	Returns: Boolean, true if this AST can apply a transition from _state
 	*/
-	METHOD("isValidFromState") {
+	METHOD(isValidFromState)
 		params [P_THISOBJECT, P_NUMBER("_state")];
 		private _states = T_GETV("fromStates");
 		(_state in _states) or (CMDR_ACTION_STATE_ALL in _states)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static) selectAndApply
@@ -79,7 +80,7 @@ CLASS("ActionStateTransition", "Storable")
 	
 	Returns: <CMDR_ACTION_STATE>, new state (might not have changed)
 	*/
-	STATIC_METHOD("selectAndApply") {
+	STATIC_METHOD(selectAndApply)
 		params [P_THISCLASS, P_OOP_OBJECT("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
 
 		if(_state == CMDR_ACTION_STATE_END) exitWith { _state };
@@ -111,7 +112,7 @@ CLASS("ActionStateTransition", "Storable")
 			_state = CMDR_ACTION_STATE_END;
 		};
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static) selectTransition
@@ -125,7 +126,7 @@ CLASS("ActionStateTransition", "Storable")
 	Returns: a transition which can be run from the current _state, or NULL_OBJECT
 	*/
 
-	STATIC_METHOD("selectTransition") {
+	STATIC_METHOD(selectTransition)
 		params [P_THISCLASS, P_OOP_OBJECT("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
 
 		if(_state == CMDR_ACTION_STATE_END) exitWith { NULL_OBJECT };
@@ -148,7 +149,7 @@ CLASS("ActionStateTransition", "Storable")
 		} else {
 			NULL_OBJECT
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------+----------------------------------
 	// |                 V I R T U A L   F U N C T I O N S                 |
@@ -162,10 +163,10 @@ CLASS("ActionStateTransition", "Storable")
 
 	Returns: Boolean, if the AST is allowed to be applied now, defaults to true
 	*/
-	/* virtual */ METHOD("isAvailable") { 
+	/* virtual */ METHOD(isAvailable) 
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	
 	/*
@@ -178,10 +179,10 @@ CLASS("ActionStateTransition", "Storable")
 	Return: <CMDR_ACTION_STATE>, the new state, or <CMDR_ACTION_STATE_NONE> to stay in the 
 	current state (can be used for transitions that take time).
 	*/
-	/* virtual */ METHOD("apply") { 
+	/* virtual */ METHOD(apply) 
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		FAILURE("apply method must be implemented when deriving from ActionStateTransition");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (abstract virtual) cancel
@@ -193,23 +194,9 @@ CLASS("ActionStateTransition", "Storable")
 	Return: <CMDR_ACTION_STATE>, the new state, or <CMDR_ACTION_STATE_NONE> to stay in the 
 	current state (can be used for transitions that take time).
 	*/
-	/* virtual */ METHOD("cancel") {
+	/* virtual */ METHOD(cancel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
-	} ENDMETHOD;
-
-	// // - - - - - STORAGE - - - - - -
-
-	// SAVEBREAK >>>
-	// We don't need this after next save break at all
-	/* virtual */ METHOD("deserializeFromStorage") {
-		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
-		if(_version >= 15) then {
-			DESERIALIZE_SAVE_VER(_thisObject, _serial, _version)
-		} else {
-			DESERIALIZE_ALL(_thisObject, _serial)
-		}
-	} ENDMETHOD;
-	// <<< SAVEBREAK
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -224,61 +211,66 @@ ENDCLASS;
 	AST_test = NEW("ActionStateTransition", [CmdrAction_test]);
 
 	// Dummy test classes
-	CLASS("TestASTBase", "ActionStateTransition")
+	#define OOP_CLASS_NAME TestASTBase
+CLASS("TestASTBase", "ActionStateTransition")
 		VARIABLE("successState");
 
-		METHOD("new") {
+		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("successState", CMDR_ACTION_STATE_END);
-		} ENDMETHOD;
+		ENDMETHOD;
 
-		/* virtual */ METHOD("isAvailable") { 
+		/* virtual */ METHOD(isAvailable) 
 			params [P_THISOBJECT, P_STRING("_world")];
 			true
-		} ENDMETHOD;
+		ENDMETHOD;
 
-		/* virtual */ METHOD("apply") { 
+		/* virtual */ METHOD(apply) 
 			params [P_THISOBJECT, P_STRING("_world")];
 			T_GETV("successState")
-		} ENDMETHOD;
+		ENDMETHOD;
 	ENDCLASS;
 
-	CLASS("TestAST_Start_1", "TestASTBase")
-		METHOD("new") {
+	#define OOP_CLASS_NAME TestAST_Start_1
+CLASS("TestAST_Start_1", "TestASTBase")
+		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
 			T_SETV("successState", CMDR_ACTION_STATE_TEST_1);
 			//T_SETV("toStates", [CMDR_ACTION_STATE_TEST_1]);
-		} ENDMETHOD;
+		ENDMETHOD;
 	ENDCLASS;
 
 	TestAST_Start_1 = NEW("TestAST_Start_1", [CmdrAction_test]);
 
-	CLASS("TestAST_1_2", "TestASTBase")
-		METHOD("new") {
+	#define OOP_CLASS_NAME TestAST_1_2
+CLASS("TestAST_1_2", "TestASTBase")
+		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
 			T_SETV("successState", CMDR_ACTION_STATE_TEST_2);
-		} ENDMETHOD;
+		ENDMETHOD;
 	ENDCLASS;
 	TestAST_1_2 = NEW("TestAST_1_2", [CmdrAction_test]);
 
-	CLASS("TestAST_2_End", "TestASTBase")
-		METHOD("new") {
+	#define OOP_CLASS_NAME TestAST_2_End
+CLASS("TestAST_2_End", "TestASTBase")
+		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_2]);
 			T_SETV("successState", CMDR_ACTION_STATE_END);
-		} ENDMETHOD;
+		ENDMETHOD;
 	ENDCLASS;
 	TestAST_2_End = NEW("TestAST_2_End", [CmdrAction_test]);
 
-	CLASS("TestAST_1_End", "TestASTBase")
-		METHOD("new") {
+	#define OOP_CLASS_NAME TestAST_1_End
+CLASS("TestAST_1_End", "TestASTBase")
+		METHOD(new)
 			params [P_THISOBJECT];
 			T_SETV("priority", CMDR_ACTION_PRIOR_HIGH);
 			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
 			T_SETV("successState", CMDR_ACTION_STATE_END);
-		} ENDMETHOD;
+		ENDMETHOD;
 	ENDCLASS;
 	TestAST_1_End = NEW("TestAST_1_End", [CmdrAction_test]);
 }] call test_AddTest;

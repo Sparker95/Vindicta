@@ -90,6 +90,8 @@ this forceAddUniform selectRandom [
 		"U_LIB_CIV_Functionary_4"
 ];
 
+this addVest "V_LIB_SOV_RA_Belt";
+
 //===Backpack====
 this addBackpack selectRandom [
 	"B_LIB_GER_Backpack",

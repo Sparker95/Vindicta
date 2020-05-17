@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 // Class: Location
 /*
@@ -24,6 +24,6 @@ pr _areas = T_GETV("allowedAreas");
 
 _areas pushBack [_pos, _a, _b, _dir];
 
-SET_VAR_PUBLIC(_thisObject, "allowedAreas", _areas);
+T_SETV_PUBLIC("allowedAreas", _areas);
 
 nil

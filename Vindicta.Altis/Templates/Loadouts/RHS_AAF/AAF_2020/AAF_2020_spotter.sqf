@@ -11,11 +11,11 @@ _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf"
 this addGoggles _RandomGoggles;
 _RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","FGN_AAF_Boonie_Type07","rhsusf_bowman_cap"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "FGN_AAF_M10_Type07_Summer";
+this forceaddUniform "FGN_AAF_M10_Type07_Summer";
 this addVest "FGN_AAF_CIRAS_RF01";
 this addBackpack "FGN_AAF_Bergen_Radio_Type07";
 
-this addWeapon "rhs_weap_hk416d10_grip3";
+this addWeapon "rhs_weap_m4a1_blockII_bk";
 this addPrimaryWeaponItem "rhsusf_acc_SF3P556";
 this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
 this addPrimaryWeaponItem "rhsusf_acc_RX01_NoFilter";

@@ -2,6 +2,12 @@
 
 #define LOOTING_RANGE 250
 
+#ifdef MILITANT_CIVILIANS_TESTING
+#define LOG_MILITANT systemChat format
+#else
+#define LOG_MILITANT __null = 
+#endif
+
 // Called on client
 pr0_fnc_CivilianJoinPlayer = {
 	params ["_target", "_caller", "_actionId", "_arguments"];
@@ -166,7 +172,7 @@ pr0_fnc_selectPrimaryWeapon = {
 pr0_fnc_doMoveTimeout = {
 	params ["_unit", "_tgt", "_range"];
 	private _timeout = GAME_TIME + 60;
-	systemChat format ["%1 moving to %2", name _unit, mapGridPosition _tgt];
+	LOG_MILITANT ["%1 moving to %2", name _unit, mapGridPosition _tgt];
 	_unit stop false;
 	private _lastTgtPos = position _tgt;
 	_unit doMove _lastTgtPos;
@@ -182,23 +188,23 @@ pr0_fnc_doMoveTimeout = {
 		};
 
 		if(isNull _unit || {!alive _unit}) exitWith {
-			systemChat format ["%1 failed to move to %2: %1 died", name _unit, mapGridPosition _tgt];
+			LOG_MILITANT ["%1 failed to move to %2: %1 died", name _unit, mapGridPosition _tgt];
 			true
 		};
 		if(isNull _tgt) exitWith {
-			systemChat format ["%1 failed to move to target: target became invalid", name _unit];
+			LOG_MILITANT ["%1 failed to move to target: target became invalid", name _unit];
 			true
 		};
 		if(_unit distance _tgt <= _range) exitWith {
-			systemChat format ["%1 moved to %2 successfully", name _unit, mapGridPosition _tgt];
+			LOG_MILITANT ["%1 moved to %2 successfully", name _unit, mapGridPosition _tgt];
 			true
 		};
 		if(GAME_TIME > _timeout) exitWith {
-			systemChat format ["%1 failed to move to %2: timeout", name _unit, mapGridPosition _tgt];
+			LOG_MILITANT ["%1 failed to move to %2: timeout", name _unit, mapGridPosition _tgt];
 			true
 		};
 		if(!_ledByPlayer && {leader _unit in allPlayers}) exitWith {
-			systemChat format ["%1 failed to move to %2: now led by player", name _unit, mapGridPosition _tgt];
+			LOG_MILITANT ["%1 failed to move to %2: now led by player", name _unit, mapGridPosition _tgt];
 			true
 		};
 		false
@@ -221,7 +227,7 @@ pr0_fnc_militantFindWeapon = {
 
 	if(count _sourcesWithWeapons > 0) then {
 		_sourcesWithWeapons#0 params ["_src", "_weapons"];
-		systemChat format ["%1: rearming at %2", name _this, mapGridPosition _src];
+		LOG_MILITANT ["%1: rearming at %2", name _this, mapGridPosition _src];
 		_this setVariable [BUSY_TAG, true];
 		_src setVariable [USAGE_TAG, (_src getVariable [USAGE_TAG, 0]) + 1];
 
@@ -245,7 +251,7 @@ pr0_fnc_militantFindWeapon = {
 					sleep 3;
 					_civ call pr0_fnc_selectPrimaryWeapon;
 					sleep 3;
-					systemChat format ["%1: rearmed with a %2!", name _civ, getText (configfile >> "cfgweapons" >> _newWeapon >> "displayName")];
+					LOG_MILITANT ["%1: rearmed with a %2!", name _civ, getText (configfile >> "cfgweapons" >> _newWeapon >> "displayName")];
 				};
 			};
 			if(!isNull _civ) then {
@@ -280,7 +286,7 @@ pr0_fnc_militantFindVest = {
 
 	if(count _sourcesWithVests > 0) then {
 		private _src = _sourcesWithVests#0;
-		systemChat format ["%1: taking vest from %2", name _this, mapGridPosition _src];
+		LOG_MILITANT ["%1: taking vest from %2", name _this, mapGridPosition _src];
 		_this setVariable [BUSY_TAG, true];
 		_src setVariable [USAGE_TAG + "vest", true];
 
@@ -296,13 +302,13 @@ pr0_fnc_militantFindVest = {
 					{_civ addItemToVest _x} forEach _srcItems;
 					_civ action ["rearm", _src];
 					removeVest _src;
-					systemChat format ["%1: took a %2 vest!", name _civ, getText (configfile >> "cfgweapons" >> _vest >> "displayName")];
+					LOG_MILITANT ["%1: took a %2 vest!", name _civ, getText (configfile >> "cfgweapons" >> _vest >> "displayName")];
 				};
 				private _headgear = headgear _src;
 				if(_headgear != "") then {
 					_civ addHeadgear _headgear;
 					removeHeadgear _src;
-					systemChat format ["%1: took a %2 helmet!", name _civ, getText (configfile >> "cfgweapons" >> _headgear >> "displayName")];
+					LOG_MILITANT ["%1: took a %2 helmet!", name _civ, getText (configfile >> "cfgweapons" >> _headgear >> "displayName")];
 				};
 			};
 			if(!isNull _civ) then {
@@ -346,7 +352,7 @@ pr0_fnc_findLeader = {
 	};
 
 	private _bestGroup = _groups#0#1;
-	systemChat format ["%1: joining a group led by %2", name _civ, name leader _bestGroup];
+	LOG_MILITANT ["%1: joining a group led by %2", name _civ, name leader _bestGroup];
 	[_civ] joinSilent _bestGroup;
 	true
 };
@@ -371,7 +377,7 @@ pr0_fnc_givePlayerIntel = {
 		private _tgt = _players#0;
 		private _intel = selectRandom _newIntel;
 
-		systemChat format ["%1: giving intel %2 to %3", name _civ, CALLM0(_intel, "getShortName"), name _tgt];
+		LOG_MILITANT ["%1: giving intel %2 to %3", name _civ, CALLM0(_intel, "getShortName"), name _tgt];
 		_civ setVariable [BUSY_TAG, true];
 
 		[_civ, _tgt, _intel] spawn {
@@ -429,6 +435,7 @@ pr0_fnc_givePlayerIntel = {
 Class: MilitantCiviliansAmbientMission
 This mission spawns a number of civilians with various weapons who will fight with the police.
 */
+#define OOP_CLASS_NAME MilitantCiviliansAmbientMission
 CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	// The active militants.
 	VARIABLE("activeCivs");
@@ -436,7 +443,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	VARIABLE("nextIntelUpdate");
 	VARIABLE("newIntel");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -444,9 +451,9 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		T_SETV("nextInformant", GAME_TIME);
 		T_SETV("nextIntelUpdate", GAME_TIME);
 		T_SETV("newIntel", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Clean up an active missions
@@ -454,17 +461,17 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		{
 			deleteVehicle _x;
 		} forEach _activeCivs;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 #ifdef MILITANT_CIVILIANS_TESTING
 	// Make it always active mission if we are testing
-	METHOD("isActive") {
+	METHOD(isActive)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 #endif
 
-	/* protected override */ METHOD("updateExisting") {
+	/* protected override */ METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -546,9 +553,9 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			!(_x getVariable [BUSY_TAG, false])
 		});
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("spawnNew") {
+	/* protected override */ METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -622,6 +629,6 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				] remoteExec ["addAction", 0, _civie];
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

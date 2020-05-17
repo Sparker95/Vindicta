@@ -8,16 +8,17 @@ This sensor gets stimulated by destroyed units. It keeps track of those who were
 
 #define UPDATE_INTERVAL 5
 
+#define OOP_CLASS_NAME SensorGarrisonCasualties
 CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 
 	VARIABLE("destroyedUnits");
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("destroyedUnits", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned
@@ -39,14 +40,14 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 		CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
 		
 		T_SETV("destroyedUnits", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           H A N D L E   S T I M U L U S
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	METHOD("handleStimulus") {
+	METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Add the data about destroyed unit to the array, which will be sent to commander on next update
@@ -59,30 +60,30 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 			pr _destroyedUnits = T_GETV("destroyedUnits");
 			_destroyedUnits pushBack [_catID, _subcatID, _hOKiller, _pos];
 		//};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNIT_DESTROYED]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                          D O   C O M P L E X  C H E C K
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	METHOD("doComplexCheck") {
+	METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 
 		// Return true only if garrison is in combat state
 		pr _AI = T_GETV("AI");
 
 		CALLM0(_AI, "isAlerted")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  U P D A T E   I N T E R V A L
@@ -90,9 +91,9 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getUpdateInterval") {
+	/* virtual */ METHOD(getUpdateInterval)
 		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

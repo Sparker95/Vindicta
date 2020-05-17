@@ -1,18 +1,10 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "Location.hpp"
 
 // Class: Location
 /*
 Method: updateWaypoints
 Updates waypoint positions
-
-Arguments:
-_type - "circle" or "rectange"
-_data	- for "circle":
-	_radius
-		- for "rectangle":
-	[_a, _b, _dir] - rectangle dimensions and direction
-
 */
 
 params [P_THISOBJECT];

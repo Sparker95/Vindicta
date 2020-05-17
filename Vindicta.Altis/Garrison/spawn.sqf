@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 // Class: Garrison
 /*
 Method: spawn
@@ -13,7 +13,7 @@ Returns: nil
 
 #define pr private
 
-params [P_THISOBJECT, P_BOOL("_global")];
+params [P_THISOBJECT, P_BOOL("_global"), P_BOOL("_instantAction")];
 
 OOP_INFO_0("SPAWN");
 
@@ -27,8 +27,8 @@ if(T_CALLM("isDestroyed", [])) exitWith {
 private _spawned = T_GETV("spawned");
 
 if (_spawned) exitWith {
-	OOP_ERROR_0("Already spawned");
-	DUMP_CALLSTACK;
+	OOP_WARNING_0("Already spawned");
+	//DUMP_CALLSTACK;
 };
 
 // Set spawned flag
@@ -68,7 +68,7 @@ if (!_spawningHandled) then {
 		OOP_INFO_1("Spawning groups: %1", _groups);
 		{
 			private _group = _x;
-			CALLM(_group, "spawnAtLocation", [_loc]);
+			CALLM1(_group, "spawnAtLocation", _loc);
 		} forEach _groups;
 
 		// Spawn single units
@@ -93,10 +93,10 @@ if (!_spawningHandled) then {
 		pr _garPos = T_CALLM0("getPos");
 		OOP_INFO_2("Spawning groups without location at pos %1: %2", _groups, _garPos);
 		{
-			CALLM2(_x, "spawnVehiclesOnRoad", [], _garPos);
+			CALLM1(_x, "spawnAtPos", _garPos);
 		} forEach _groups;
 
-		// Spawn single units
+		// Spawn single units (really shouldn't be any)
 		{
 			CALLM3(_x, "spawn", _garPos, 0, _global);
 		} forEach (_units select { CALLM0(_x, "getGroup") == NULL_OBJECT });
@@ -123,4 +123,6 @@ if (T_GETV("active")) then {
 
 // Call AI "process" method to accelerate decision taking
 // Pass the _accelerate flag to update sensors sooner, and allow instant completion of some actions
-CALLM1(_AI, "process", true);
+CALLM1(_AI, "process", _instantAction);
+
+0

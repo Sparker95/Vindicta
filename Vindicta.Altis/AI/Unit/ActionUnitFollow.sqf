@@ -5,6 +5,7 @@
 
 #define SEPARATION 18
 
+#define OOP_CLASS_NAME ActionUnitFollow
 CLASS("ActionUnitFollow", "ActionUnit")
 
 	VARIABLE("expectedDistance");
@@ -13,14 +14,14 @@ CLASS("ActionUnitFollow", "ActionUnit")
 	VARIABLE("stuckCounter");
 	VARIABLE("hTarget");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		private _hTarget = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET, objNull);
 		T_SETV("hTarget", _hTarget);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
@@ -48,10 +49,10 @@ CLASS("ActionUnitFollow", "ActionUnit")
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
@@ -128,14 +129,14 @@ CLASS("ActionUnitFollow", "ActionUnit")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Stop moving
 		doStop T_GETV("hO");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 /*
 Class: Commander
@@ -8,19 +8,20 @@ Therefore I have made this class although it doesn't do anything.
 It just implements methods needed for an AI object to function.
 */
 
+#define OOP_CLASS_NAME Commander
 CLASS("Commander", "")
 
 	
-	METHOD("getSubagents") {
+	METHOD(getSubagents)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("getPossibleGoals") {
+	METHOD(getPossibleGoals)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("getPossibleActions") {
+	METHOD(getPossibleActions)
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

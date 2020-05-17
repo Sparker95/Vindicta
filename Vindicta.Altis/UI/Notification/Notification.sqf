@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 #define OFSTREAM_FILE "ui.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 /*
 Class: Notification
@@ -29,6 +29,7 @@ Handles operation of stackable notifications.
 #define DURATION_IDX			4
 #define IMAGE_PATH_IDX			5
 
+#define OOP_CLASS_NAME Notification
 CLASS("Notification", "")
 
 	VARIABLE("control");		// Group control handle
@@ -46,7 +47,7 @@ CLASS("Notification", "")
 	STATIC_VARIABLE("queueModified");//Time the queue was last modified, used to batch notifications
 
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_imagePath"), P_DYNAMIC("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration"), P_BOOL("_important")];
 
 		pr _group = (findDisplay 46) ctrlCreate ["NOTIFICATION_GROUP", -1];
@@ -101,19 +102,19 @@ CLASS("Notification", "")
 		T_SETV("timeEnd", time + _duration);
 		T_SETV("important", _important);
 		T_SETV("targetPosID", 0);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
 
 		pr _group = T_GETV("control") select 0;
 		ctrlDelete _group;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Notification will start moving to position 0 from offscreen
-	METHOD("_startMoveIn") {
+	METHOD(_startMoveIn)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("START MOVE IN");
@@ -134,10 +135,10 @@ CLASS("Notification", "")
 
 		T_SETV("targetPosID", 0);
 		T_SETV("state", _STATE_MOVING_IN);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Notification will start moving to a new position
-	METHOD("_startMoveToPos") {
+	METHOD(_startMoveToPos)
 		params [P_THISOBJECT, P_NUMBER("_targetPosID")];
 
 		OOP_INFO_1("START MOVE TO POS: %1", _targetPosID);
@@ -151,10 +152,10 @@ CLASS("Notification", "")
 		#endif
 		T_SETV("targetPosID", _targetPosID);
 		T_SETV("state", _STATE_MOVING_NEXT_POS);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns [x, y] of the position with given ID
-	STATIC_METHOD("_getTargetPosFromID") {
+	STATIC_METHOD(_getTargetPosFromID)
 		params [P_THISCLASS, P_NUMBER("_targetID")];
 
 		// Sanity check
@@ -164,7 +165,7 @@ CLASS("Notification", "")
 		pr _posY = safeZoneY + 0.2*safeZoneH + _targetID*_HEIGHT;
 
 		[_posx, _posy]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)createNotification
@@ -172,7 +173,7 @@ CLASS("Notification", "")
 
 	Parameters: (string)_category, (string)_text, (string)_hint, (number)_duration (in seconds)
 	*/
-	STATIC_METHOD("createNotification") {
+	STATIC_METHOD(createNotification)
 		params [P_THISCLASS, P_STRING("_imagePath"), P_DYNAMIC("_category"), P_STRING("_text"), P_DYNAMIC("_hint"), P_NUMBER("_duration"), P_STRING("_sound"), P_BOOL("_important")];
 
 		// Bail if not initialized
@@ -189,9 +190,9 @@ CLASS("Notification", "")
 		pr _args = [_imagePath, _category, _text, _hint, _duration, _sound, _important];
 		_queue pushBack _args;
 		SETSV("Notification", "queueModified", TIME_NOW);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("onEachFrame") {
+	STATIC_METHOD(onEachFrame)
 		params [P_THISCLASS];
 
 		pr _objects = GETSV(_thisClass, "objects");
@@ -308,7 +309,7 @@ CLASS("Notification", "")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static) staticInit
@@ -316,7 +317,7 @@ CLASS("Notification", "")
 
 	Parameters: none
 	*/
-	STATIC_METHOD("staticInit") {
+	STATIC_METHOD(staticInit)
 		params [P_THISCLASS];
 
 		// Bail if initialized already
@@ -340,6 +341,6 @@ CLASS("Notification", "")
 		// Add on each frame handler
 		pr _ehid = addMissionEventHandler ["EachFrame", {CALLSM0("Notification", "onEachFrame")}];
 		SETSV(_thisClass, "ehID", _ehid);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

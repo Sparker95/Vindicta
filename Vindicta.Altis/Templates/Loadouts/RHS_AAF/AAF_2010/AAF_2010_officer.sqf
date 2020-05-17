@@ -9,11 +9,10 @@ removeGoggles this;
 
 _RandomGoggles = selectRandom ["G_Aviator","",""];
 this addGoggles _RandomGoggles;
-this forceAddUniform "FGN_AAF_M93_Lizard";
+this forceaddUniform "FGN_AAF_M93_Lizard";
 this addVest "rhs_vest_commander";
 
-this addWeapon "rhs_weap_akms_folded";
-this addPrimaryWeaponItem "rhs_acc_dtkakm";
+this addWeapon "rhs_weap_m92";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
 this addWeapon "hgun_Pistol_heavy_02_F";

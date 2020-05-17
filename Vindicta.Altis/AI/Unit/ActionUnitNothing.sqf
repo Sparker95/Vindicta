@@ -7,35 +7,36 @@ Author: Sparker 13.02.2019
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionUnitNothing
 CLASS("ActionUnitNothing", "ActionUnit")
 	
 	// ------------ N E W ------------
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 		
 		// Handle AI just spawned state
 		T_SETV("state", ACTION_STATE_COMPLETED);
 		ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		pr _state = T_CALLM0("activateIfInactive");
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is about to be terminated
 	/*
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 ENDCLASS;

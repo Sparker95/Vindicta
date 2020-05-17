@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #define OFSTREAM_FILE "Undercover.rpt"
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
@@ -34,6 +34,7 @@ Authors: Marvis, Sparker
 
 // ------------ U N D E R C O V E R  M O N I T O R  C L A S S ------------
 
+#define OOP_CLASS_NAME UndercoverMonitor
 CLASS("UndercoverMonitor", "MessageReceiver");
 
 	VARIABLE("unit"); 														// unit this undercoverMonitor is attached to
@@ -69,7 +70,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 	// ------------ N E W ------------
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_unit")];
 
 		T_SETV("unit", _unit);
@@ -116,10 +117,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
 		_unit setVariable [UNDERCOVER_WANTED, false, true];					// GLOBAL: if true player unit is hostile and "setCaptive false"
-		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)													
+		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)
 
-
-		T_CALLM0("calcGearSuspicion");							// evaluate suspicion of unit's equipment
+		T_CALLM0("calcGearSuspicion");										// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
 
 		// show debug UI
@@ -146,9 +146,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["FiredMan", _ID];
 
 		// add event handler for deleting this undercover monitor
-		_ID = [player, "Killed", {
+		_ID = [_unit, "Killed", {
 			params ["_unit", "_killer", "_instigator", "_useEffects"];
-			_unit removeEventHandler ["Killed", _thisID];
 			pr _um = _unit getVariable ["undercoverMonitor", ""];
 			if (_um != "") then { // Sanity check
 				pr _msg = MESSAGE_NEW();
@@ -159,8 +158,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["Killed", _ID];
 
 		// Add inventory event handlers
-		_ID = [player, "InventoryClosed", {
+		_ID = [_unit, "InventoryClosed", {
 			params ["_unit", "_container"];
+
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
 				T_SETV("inventoryOpen", false);
@@ -169,8 +169,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["InventoryClosed", _ID];
 
-		_ID = [player, "InventoryOpened", {
+		_ID = [_unit, "InventoryOpened", {
 			params ["_unit", "_container"];
+
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
 				T_SETV("inventoryOpen", true);
@@ -180,7 +181,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["InventoryOpened", _ID];
 
 		// Take/put event handlers
-		_ID = [player, "Take", {
+		_ID = [_unit, "Take", {
 			params ["_unit", "_container", "_item"];
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
@@ -189,14 +190,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _type = typeOf _container;
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
 				if (!(_type in g_UM_civVehs) && (_type isKindOf "ThingX" || _sideNum in [0, 1, 2])) then {
-					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
+					CALLSM2("undercoverMonitor", "boostSuspicion", _unit, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
 		}] call CBA_fnc_addBISEventHandler;
 		T_GETV("eventHandlers") pushBack ["Take", _ID];
 
 		// suspicion for planting explosives (?)
-		_ID = [player, "Put", {
+		_ID = [_unit, "Put", {
 			params ["_unit", "_container", "_item"];
 
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
@@ -205,7 +206,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _type = typeOf _container;
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
 				if (!(_type in g_UM_civVehs) && (_type isKindOf "ThingX" || _sideNum in [0, 1, 2])) then {
-					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
+					CALLSM2("undercoverMonitor", "boostSuspicion", _unit, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
 		}] call CBA_fnc_addBISEventHandler;
@@ -232,12 +233,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 #endif
 		FIX_LINE_NUMBERS()
 
-	} ENDMETHOD;
-
+	ENDMETHOD;
 
 	// ------------ D E L E T E ------------
-
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		// Delete the timer
 		pr _timer = T_GETV("timer");
@@ -261,16 +260,16 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			_x call CBA_fnc_removePlayerEventHandler;
 		} forEach (T_GETV("eventHandlersCBA"));
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMessageLoop") {
+	METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// ------------ H A N D L E  M E S S A G E ------------
 
-	METHOD("handleMessage") {
+	METHOD(handleMessage)
 		params [P_THISOBJECT , ["_msg", [], [[] ]]];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 
@@ -352,8 +351,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		if (_loc != "") then { 	
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
-                				//_hintKeys pushback HK_ALLOWEDAREA;
-               					OOP_INFO_0("In allowed area");
+								//_hintKeys pushback HK_ALLOWEDAREA;
+			   					OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
@@ -397,8 +396,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								pr _suspStance = 0;
 								switch (stance _unit) do {
 									case "CROUCH": { _suspStance = SUSP_CROUCH; _camoCoeffMod = _camoCoeffMod + CAMO_CROUCH; };
-					    			case "PRONE": { _suspStance = SUSP_PRONE; _camoCoeffMod = _camoCoeffMod + CAMO_PRONE; };
-					    		};
+									case "PRONE": { _suspStance = SUSP_PRONE; _camoCoeffMod = _camoCoeffMod + CAMO_PRONE; };
+								};
 
 								// suspiciousness for inventory
 								pr _suspInv = 0;
@@ -427,6 +426,18 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 									};
 
 									_hintKeys pushBack HK_INVENTORY;
+								};
+
+								// Check if player is picking a vehicle lock
+								// Can be used for various ACE actions which have a progress bar
+								pr _ctrl = uinamespace getvariable "ACE_common_ctrlProgressBarTitle";
+								if (!(isNil "_ctrl")) then{
+									if (!(isNull _ctrl)) then {
+										if ((ctrlText _ctrl) == (localize "STR_ACE_VehicleLock_Action_LockpickInUse")) then {
+											_hintKeys pushBack HK_ILLEGAL;
+											_suspicionArr pushBack [SUSP_LOCKPICK, "Picking a vehicle lock"];
+										};
+									};
 								};
 
 								_suspicionArr pushBack [_suspGear, "On foot equipment"];
@@ -748,14 +759,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		};
 
 		false
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/* 
 		SensorGroupTargets remoteExecutes this on this computer when an enemy group is currently spotting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD("onUnitSpotted") {
+	STATIC_METHOD(onUnitSpotted)
 		params ["_thisClass", P_OBJECT("_unit"), ["_group", grpNull, [grpNull]]];
 		pr _um = _unit getVariable ["undercoverMonitor", ""];
 		if (_um != "") then { // Sanity check
@@ -764,13 +775,13 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			MESSAGE_SET_DATA(_msg, _group);
 			CALLM1(_um, "postMessage", _msg);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/* 
 		ActionUnitArrest remoteExecutes this on this computer when an enemy group is arresting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD("onUnitArrested") {
+	STATIC_METHOD(onUnitArrested)
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _uM = _unit getVariable ["undercoverMonitor", ""];
 		if (_uM != "") then { // Sanity check
@@ -781,26 +792,26 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			};
 		};
 		OOP_INFO_0("onUnitArrested called.");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/* 
 		setUnitFree remoteExecutes this on this computer when an enemy group is arresting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD("setUnitFree") {
+	STATIC_METHOD(setUnitFree)
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _uM = _unit getVariable ["undercoverMonitor", ""];
 		if (_uM != "") then { // Sanity check
 			SETV(_uM, "bCaptive", false);
 		};
 		OOP_INFO_0("setUnitFree called");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/* 
 		Other player's computers remoteExecute this on this computer to make this player overt.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD("onUnitCompromised") {
+	STATIC_METHOD(onUnitCompromised)
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _um = _unit getVariable ["undercoverMonitor", ""];
 		if (_um != "") then { // Sanity check
@@ -808,7 +819,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
 			CALLM1(_um, "postMessage", _msg);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -819,7 +830,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					1: _suspicionArr 	- (Array) array with suspicion values of unit, format: [[<suspicion value>, "debug description"], ...]
 
 	*/
-	METHOD("calcCaptive") {
+	METHOD(calcCaptive)
 		params [P_THISOBJECT, ["_suspicionArr", [], [[0, ""]]], ["_state", sUNDERCOVER]];
 		pr _unit = T_GETV("unit");
 		
@@ -854,7 +865,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		#endif
 		FIX_LINE_NUMBERS()
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -863,7 +874,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 		Parameters: 0: _state 			- (Integer) new state for UM
 	*/
-	METHOD("setState") {
+	METHOD(setState)
 		params [P_THISOBJECT, ["_state", 0]];
 
 		T_SETV("state", _state);
@@ -871,7 +882,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 		OOP_INFO_1("setState Method: state set to: %1", T_GETV("state"));
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -879,7 +890,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 		Calculates the suspiciousness of the units equipment on foot and in vehicles, and stores it in two variables for this object.
 	*/
-	METHOD("calcGearSuspicion") {
+	METHOD(calcGearSuspicion)
 		params [P_THISOBJECT];
 		pr _unit = T_GETV("unit");
 
@@ -900,7 +911,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("suspGear", _suspGear);
 		T_SETV("suspGearVeh", _suspGearVeh);
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -911,7 +922,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 		Returns: Number between 0.0 and 1.0.
 	*/
-	METHOD("getBodyExposure") {
+	METHOD(getBodyExposure)
 		params [P_THISOBJECT, P_OBJECT("_unit")];
 
 		pr _bodyExposure = T_GETV("bodyExposure");
@@ -933,10 +944,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("bodyExposure", _bodyExposure);
 		_bodyExposure
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Boosts suspicion for this interval
-	STATIC_METHOD("boostSuspicion") {
+	STATIC_METHOD(boostSuspicion)
 		params [P_THISCLASS, P_OBJECT("_unit"), P_NUMBER("_value")];
 		pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 		if (_thisObject != "") then {
@@ -944,10 +955,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			T_SETV("suspicionBoost", _boost + _value);
 			T_SETV("timeBoost", (time + TIME_BOOST));
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called once on mission start
-	STATIC_METHOD("staticInit") {
+	STATIC_METHOD(staticInit)
 		params [P_THISCLASS];
 
 #ifndef _SQF_VM
@@ -957,6 +968,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}] call CBA_fnc_addEventHandler;
 #endif
 		FIX_LINE_NUMBERS()
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

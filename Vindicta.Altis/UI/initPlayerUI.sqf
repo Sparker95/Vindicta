@@ -1,5 +1,5 @@
 // Add controls to the map
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "ClientMapUI\ClientMapUI_Macros.h"
 #include "InGameUI\InGameUI_Macros.h"
 #include "defineddikcodes.inc"
@@ -80,5 +80,13 @@ gPlayerUIInitialized = true;
 // Enable the respawn panel the first time
 CALLM1(gClientMapUI, "respawnPanelEnable", true);
 
-// Center map
-mapAnimAdd [1, 0.1, [worldSize / 2, worldSize / 2, 0]];
+// Center map once it becomes visible
+[] spawn {
+	sleep 1;
+	waitUntil { visibleMap };
+	mapAnimAdd [1, 1, [worldSize / 2, worldSize / 2, 0]];
+	mapAnimCommit;
+};
+
+// Enable AI debug UI
+CALLSM0("AIDebugUI", "staticInit");

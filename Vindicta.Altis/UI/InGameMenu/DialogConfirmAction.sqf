@@ -4,11 +4,12 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 // Dialog with 'YES' and 'NO' buttons
 // Clicking on any of those will close the dialog and call a callback passed through constructor
 
+#define OOP_CLASS_NAME DialogConfirmAction
 CLASS("DialogConfirmAction", "DialogOneTabButtons")
 
 	VARIABLE("argsYes");
@@ -16,7 +17,7 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 	VARIABLE("codeYes");
 	VARIABLE("codeNo");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_text"),
 			P_ARRAY("_argsYes"), P_CODE("_codeYes"),
 			P_ARRAY("_argsNo"), P_CODE("_codeNo")];
@@ -31,9 +32,9 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 		T_SETV("argsNo", _argsNo);
 		T_SETV("codeYes", _codeYes);
 		T_SETV("codeNo", _codeNo);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("onButtonClick") {
+	/* override */ METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_1("Button was clicked: %1", _ID);
@@ -47,6 +48,6 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 		};
 
 		T_CALLM0("deleteOnNextFrame");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

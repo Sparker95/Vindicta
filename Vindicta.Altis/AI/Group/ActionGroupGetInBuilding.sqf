@@ -10,12 +10,13 @@ Parameter tags:
 
 #define pr private
 
+#define OOP_CLASS_NAME ActionGroupGetInBuilding
 CLASS("ActionGroupGetInBuilding", "ActionGroup")
 
 	VARIABLE("hBuilding");
 	VARIABLE("timeComplete");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		pr _hBuilding = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
@@ -27,10 +28,10 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 
 		T_SETV("timeComplete", 0);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
@@ -82,8 +83,14 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 				];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMoveBuilding", 0, _parameters, _AI);
 			} else {
-				// Just regroup if all positions are assigned
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
+				// Move to a position in or near the building, hopefully we end up somewhere sensible
+				pr _buildingPos = position _hBuilding;
+				pr _pos = [_buildingPos, 0, 25, 0, 0, 2, 0, [], [_buildingPos, _buildingPos]] call BIS_fnc_findSafePos;
+				pr _parameters = [
+					[TAG_POS, _pos],
+					[TAG_INSTANT, _instant]
+				];
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
 			};
 		} forEach _units;
 
@@ -95,10 +102,10 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -132,21 +139,21 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("handleUnitsRemoved") {
+	METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Let them go, we don't care
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("handleUnitsAdded") {
+	METHOD(handleUnitsAdded)
 		params [P_THISOBJECT];
 		// We must replan everything
 		T_SETV("state", ACTION_STATE_REPLAN);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		// Delete external goals
@@ -164,6 +171,6 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 			};
 		} forEach _units;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

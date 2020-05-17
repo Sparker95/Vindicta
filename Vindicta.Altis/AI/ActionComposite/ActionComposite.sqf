@@ -1,4 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Action\Action.hpp"
 
 /*
@@ -10,6 +10,7 @@ Based on source from "Programming Game AI by Example" by Mat Buckland: http://ww
 Author: Sparker 05.08.2018
 */
 
+#define OOP_CLASS_NAME ActionComposite
 CLASS("ActionComposite", "Action")
 
 	VARIABLE("subactions"); // Array with subactions
@@ -18,24 +19,24 @@ CLASS("ActionComposite", "Action")
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("subactions", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 	
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		// Delete all subactions
 		T_CALLM0("deleteAllSubactions");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("setInstant") {
+	/* protected override */ METHOD(setInstant)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLCM1("Action", "setInstant", _instant);
@@ -46,7 +47,7 @@ CLASS("ActionComposite", "Action")
 				CALLM1(_x, "setInstant", _instant);
 			} forEach T_CALLM0("getSubactions");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -56,7 +57,7 @@ CLASS("ActionComposite", "Action")
 	Returns: <Action> or ""
 	*/
 	
-	METHOD("getFrontSubaction") {
+	METHOD(getFrontSubaction)
 		params [P_THISOBJECT];
 
 		private _sa = T_GETV("subactions");
@@ -65,10 +66,10 @@ CLASS("ActionComposite", "Action")
 		} else {
 			_sa select 0
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Serial and Parallel composite actions implement this method differently
-	/*virtual*/ METHOD("processSubactions") {	} ENDMETHOD;
+	/*virtual*/ METHOD(processSubactions)	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |            A D D   S U B A C T I O N   T O   F R O N T        
@@ -83,14 +84,14 @@ CLASS("ActionComposite", "Action")
 	
 	Returns: nil
 	*/
-	METHOD("addSubactionToFront") {
+	METHOD(addSubactionToFront)
 		params [P_THISOBJECT, P_OOP_OBJECT("_subaction")];
 
 		private _subactions = T_GETV("subactions");
 		private _newSubactions = [_subaction];
 		_newSubactions append _subactions;
 		T_SETV("subactions", _newSubactions);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |            A D D   S U B A C T I O N   T O   F R O N T               
@@ -105,12 +106,12 @@ CLASS("ActionComposite", "Action")
 	
 	Returns: nil
 	*/
-	METHOD("addSubactionToBack") {
+	METHOD(addSubactionToBack)
 		params [P_THISOBJECT, P_OOP_OBJECT("_subaction")];
 
 		private _subactions = T_GETV("subactions");
 		_subactions pushBack _subaction;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                          G E T   S U B A C T I O N S
@@ -121,11 +122,11 @@ CLASS("ActionComposite", "Action")
 	
 	Returns: Array of actions
 	*/
-	METHOD("getSubactions") {
+	METHOD(getSubactions)
 		params [P_THISOBJECT];
 
 		T_GETV("subactions")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                   D E L E T E   A L L   S U B A C T I O N S
@@ -136,7 +137,7 @@ CLASS("ActionComposite", "Action")
 	
 	Returns: nil
 	*/
-	METHOD("deleteAllSubactions") {
+	METHOD(deleteAllSubactions)
 		params [P_THISOBJECT];
 
 		// Regardless if the action is serial or parallel, terminate and delete all subactions
@@ -146,6 +147,6 @@ CLASS("ActionComposite", "Action")
 			DELETE(_x);
 		} forEach _subactions;
 		T_SETV("subactions", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

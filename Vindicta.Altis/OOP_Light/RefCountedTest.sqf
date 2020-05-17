@@ -7,31 +7,33 @@
 
 // call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
+#define OOP_CLASS_NAME RefCountedTest
 CLASS("RefCountedTest", "RefCounted")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		OOP_INFO_1("%1 created", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		OOP_INFO_1("%1 deleted", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
+#define OOP_CLASS_NAME RefPtrContainer
 CLASS("RefPtrContainer", "")
 	VARIABLE_ATTR("refPtr", [ATTR_REFCOUNTED]);
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_refPtrIn")];
 		T_SETV_REF("refPtr", _refPtrIn);
 		OOP_INFO_1("%1 created", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		OOP_INFO_1("%1 deleted", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 OOP_INFO_0("Test single ref unref ==============================================");

@@ -5,7 +5,7 @@
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\defineCommonGrids.hpp"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Resources\UIProfileColors.h"
 
 /*
@@ -25,6 +25,7 @@ Opens the tactical tablet display
 #define __EVENT_ID_DELAY 2
 #define __EVENT_NEW(type, data, delay) [type, data, delay]
 
+#define OOP_CLASS_NAME TacticalTablet
 CLASS("TacticalTablet", "")
 
 	STATIC_VARIABLE("instance");
@@ -42,7 +43,7 @@ CLASS("TacticalTablet", "")
 	// Time when we will pop the next event from the queue
 	VARIABLE("timePopNextEvent");
 
-	/* private */ METHOD("new") {
+	/* private */ METHOD(new)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("NEW");
@@ -84,9 +85,9 @@ CLASS("TacticalTablet", "")
 		T_SETV("onEachFrameHandlerID", _ehid);
 
 		T_CALLM1("setText", "");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
@@ -103,14 +104,14 @@ CLASS("TacticalTablet", "")
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
 
 		SETSV("TacticalTablet", "instance", NULL_OBJECT);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Static methods
 
 	// Creates a dialog safely and returns its OOP object ref
 	// Use that instead of the constructor please
-	STATIC_METHOD("newInstance") {
+	STATIC_METHOD(newInstance)
 		params [P_THISCLASS];
 
 		pr _inst = GETSV(_thisClass, "instance");
@@ -125,10 +126,10 @@ CLASS("TacticalTablet", "")
 		SETSV(_thisClass, "instance", _inst);
 
 		_inst
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
-	STATIC_METHOD("deleteInstance") {
+	STATIC_METHOD(deleteInstance)
 		params [P_THISCLASS];
 
 		pr _inst = GETSV(_thisClass, "instance");
@@ -136,56 +137,56 @@ CLASS("TacticalTablet", "")
 			DELETE(_inst);
 			SETSV(_thisClass, "instance", NULL_OBJECT);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
-	STATIC_METHOD("getInstance") {
+	STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		GETSV("TacticalTablet", "instance");
-	} ENDMETHOD;
+	ENDMETHOD;
 	//////////////////
 
 
-	METHOD("getDisplay") {
+	METHOD(getDisplay)
 		params [P_THISOBJECT];
 		uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull]
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setText") {
+	METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _display = T_CALLM0("getDisplay");
 		pr _ctrl = [_display, "TABLET_DISPLAY_TEXT"] call ui_fnc_findControl;
 		_ctrl ctrlSetText _text;
 		T_SETV("text", _text);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("appendText") {
+	METHOD(appendText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _textNew = T_GETV("text") + _text;
 		T_CALLM1("setText", _textNew);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Appends text but with delay
-	METHOD("appendTextDelay") {
+	METHOD(appendTextDelay)
 		params [P_THISOBJECT, P_STRING("_text"), P_NUMBER("_delay")];
 		T_GETV("eventQueue") pushBack (__EVENT_NEW("append", _text, _delay));
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("staticAppendTextDelay") {
+	STATIC_METHOD(staticAppendTextDelay)
 		params [P_THISCLASS, P_STRING("_text"), P_NUMBER("_delay")];
 		pr _inst = CALLSM0("TacticalTablet", "getInstance");
 		if (!IS_NULL_OBJECT(_inst)) then {
 			CALLM2(_inst, "appendTextDelay", _text, _delay);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets text but with delay
-	METHOD("setTextDelay") {
+	METHOD(setTextDelay)
 		params [P_THISOBJECT, P_STRING("_text"), P_NUMBER("_delay")];
 		T_GETV("eventQueue") pushBack (__EVENT_NEW("set", _text, _delay));
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onEachFrame") {
+	METHOD(onEachFrame)
 		params [P_THISOBJECT];
 
 		// Process events in the queue
@@ -219,7 +220,7 @@ CLASS("TacticalTablet", "")
 		} else {
 			T_SETV("timePopNextEvent", -1);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

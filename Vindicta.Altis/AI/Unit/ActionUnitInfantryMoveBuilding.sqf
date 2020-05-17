@@ -9,11 +9,12 @@ Parameters:
 "posID" - ID of the building position used with buildingPos command
 */
 
+#define OOP_CLASS_NAME ActionUnitInfantryMoveBuilding
 CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 	VARIABLE("building");
 	VARIABLE("posID");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _building = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
@@ -26,16 +27,32 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 		T_SETV("tolerance", 1.0);
 
 		// Mark the position occupied
-		(_building getVariable "vin_occupied_positions") pushBackUnique _posID;
-	} ENDMETHOD;
+		CRITICAL_SECTION {
+			private _occupied = _building getVariable ["vin_occupied_positions", []];
+			_occupied pushBackUnique _posID;
+			 _building setVariable ["vin_occupied_positions", _occupied];
+		};
+	ENDMETHOD;
 
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
-	
+
 		// Mark the position unoccupied again
-		private _occupiedPositions = T_GETV("building") getVariable "vin_occupied_positions";
-		_occupiedPositions deleteAt (_occupiedPositions find T_GETV("posID"));
-	} ENDMETHOD;
+		CRITICAL_SECTION {
+			private _occupied = _building getVariable "vin_occupied_positions";
+			if(!isNil "_occupied") then {
+				_occupiedPositions deleteAt (_occupiedPositions find T_GETV("posID"));
+			};
+		};
+	ENDMETHOD;
+
+	// Debug
+	// Returns array of class-specific additional variable names to be transmitted to debug UI
+	// Override to show debug data in debug UI for specific class
+	/* override */ METHOD(getDebugUIVariableNames)
+		["building", "posID"]
+	ENDMETHOD;
+
 ENDCLASS;
 
 /*

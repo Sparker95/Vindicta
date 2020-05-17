@@ -9,6 +9,7 @@ See implementations in TakeLocationCmdrAction and ReinforceCmdrAction.
 
 Parent: <CmdrAction>
 */
+#define OOP_CLASS_NAME TakeOrJoinCmdrAction
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
 	VARIABLE_ATTR("targetVar", [ATTR_SAVE]);
@@ -25,7 +26,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	Parameters:
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the detachment performing the action.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 
 		T_SETV("srcGarrId", _srcGarrId);
@@ -44,9 +45,9 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		private _targetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("targetVar", _targetVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
@@ -56,9 +57,9 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		//deleteMarker (_thisObject + "_line2");
 		deleteMarker (_thisObject + "_label");
 #endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("createTransitions") {
+	/* protected override */ METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -194,10 +195,10 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _preMergeAST = T_CALLM("getPreMergeAction", _preMergeAST_Args);
 
 		[_splitAST, _prepareAST, _assignAST, _waitAST, _moveAST, _arriveAST, _mergeAST, _newTargetAST, _rtbAST, _preMergeAST]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Optional customization of the actions detachment
-	/* protected virtual */ METHOD("getPrepareActions") {
+	/* protected virtual */ METHOD(getPrepareActions)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_successState"),
@@ -212,10 +213,10 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 			_successState
 		];
 		NEW("AST_Success", _astArgs)
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Overridable arrival action, defaults to merging with the target
-	/* protected virtual */ METHOD("getArriveAction") {
+	/* protected virtual */ METHOD(getArriveAction)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_failState"),
@@ -232,10 +233,10 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 			_mergeWithTargetState
 		];
 		NEW("AST_Success", _astArgs)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Optional pre-merge override, called just before a garrison doing RTB will merge with target
-	/* protected virtual */ METHOD("getPreMergeAction") {
+	/* protected virtual */ METHOD(getPreMergeAction)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_mergeState"),
@@ -249,9 +250,9 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 			_mergeState
 		];
 		NEW("AST_Success", _astArgs)
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("getLabel") {
+	/* protected override */ METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -283,9 +284,9 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
 			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("updateIntelFromDetachment") {
+	METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
@@ -306,9 +307,9 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("debugDraw") {
+	/* protected override */ METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -340,6 +341,6 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
 		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 		// };
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

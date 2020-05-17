@@ -8,7 +8,7 @@ removeHeadgear this;
 removeGoggles this;
 
 _RandomUniform = selectRandom ["rhsgref_uniform_ERDL","rhsgref_uniform_og107","rhsgref_uniform_og107_erdl"];
-this addUniform _RandomUniform;
+this forceaddUniform _RandomUniform;
 _RandomHeadgear = selectRandom ["rhsusf_hgu56p_visor_mask_green","rhsusf_hgu56p_visor_green","rhsusf_hgu56p_mask_green", "rhsusf_hgu56p_green"];
 this addHeadgear _RandomHeadgear;
 this addVest "rhs_vest_pistol_holster";

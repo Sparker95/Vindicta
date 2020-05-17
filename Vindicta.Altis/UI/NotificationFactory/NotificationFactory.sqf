@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 #define OFSTREAM_FILE "ui.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 /*
 Class: NotificationFactory
@@ -31,10 +31,11 @@ Has methods specialized for customization of our typical notification types
 #define HINT_COLORS 		WHITE, 	CYAN
 #define CRITICAL_COLORS 	WHITE, 	RED
 
+#define OOP_CLASS_NAME NotificationFactory
 CLASS("NotificationFactory", "")
 
 	// Intel about locations we have discovered
-	STATIC_METHOD("createIntelLocation") {
+	STATIC_METHOD(createIntelLocation)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "UAV_01";
@@ -43,10 +44,10 @@ CLASS("NotificationFactory", "")
 		private _hint = "Check your map for more info"; // Override hint!
 		private _args = [_picture, [_category, INTEL_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Intel about commander actions
-	STATIC_METHOD("createIntelCommanderAction") {
+	STATIC_METHOD(createIntelCommanderAction)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text")];
 
 		private _sound = "UAV_02";
@@ -55,10 +56,10 @@ CLASS("NotificationFactory", "")
 		private _hint = "Check your map for more info"; // Override hint!
 		private _args = [_picture, [_category, ACTION_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Intel about commander actions
-	STATIC_METHOD("createIntelCommanderActionReminder") {
+	STATIC_METHOD(createIntelCommanderActionReminder)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text")];
 
 		private _sound = "Topic_Done";
@@ -68,10 +69,10 @@ CLASS("NotificationFactory", "")
 		private _important = true;
 		private _args = [_picture, [_category, ACTION_COLORS], _text, _hint, _duration, _sound, _important];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Resource notification
-	STATIC_METHOD("createResourceNotification") {
+	STATIC_METHOD(createResourceNotification)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "defaultNotification";
@@ -79,10 +80,10 @@ CLASS("NotificationFactory", "")
 		private _duration = 5;
 		private _args = [_picture, [_category, RESOURCE_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Player location notification
-	STATIC_METHOD("createLocationNotification") {
+	STATIC_METHOD(createLocationNotification)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "defaultNotification";
@@ -90,10 +91,10 @@ CLASS("NotificationFactory", "")
 		private _duration = 5;
 		private _args = [_picture, [_category, RESOURCE_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Player garrison notification
-	STATIC_METHOD("createGarrisonNotification") {
+	STATIC_METHOD(createGarrisonNotification)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "defaultNotification";
@@ -101,10 +102,10 @@ CLASS("NotificationFactory", "")
 		private _duration = 5;
 		private _args = [_picture, [_category, RESOURCE_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called when we find a new cryptokey we didn't have yet
-	STATIC_METHOD("createRadioCryptokey") {
+	STATIC_METHOD(createRadioCryptokey)
 		params [P_THISOBJECT, P_STRING("_key")];
 
 		private _sound = "UAV_03";
@@ -115,10 +116,10 @@ CLASS("NotificationFactory", "")
 		private _hint = "Check notes in the in-game menu"; // Override hint!
 		private _args = [_picture, [_category, RADIO_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// System notification
-	STATIC_METHOD("createSystem") {
+	STATIC_METHOD(createSystem)
 		params [P_THISOBJECT, P_STRING("_text"), P_STRING("_picture")];
 
 		private _sound = "beep_target";
@@ -130,10 +131,10 @@ CLASS("NotificationFactory", "")
 		};
 		private _args = [_picture, [_category, SYSTEM_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Hint notification
-	STATIC_METHOD("createHint") {
+	STATIC_METHOD(createHint)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "hint";
@@ -141,10 +142,10 @@ CLASS("NotificationFactory", "")
 		private _duration = 10;
 		private _args = [_picture, [_category, HINT_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Critical notification
-	STATIC_METHOD("createCritical") {
+	STATIC_METHOD(createCritical)
 		params [P_THISOBJECT, P_STRING("_text")];
 
 		private _sound = "defaultNotification";
@@ -154,10 +155,10 @@ CLASS("NotificationFactory", "")
 		private _hint = ""; // Override hint!
 		private _args = [_picture, [_category, CRITICAL_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Basic UI notification
-	STATIC_METHOD("createBasicUI") {
+	STATIC_METHOD(createBasicUI)
 		params [P_THISOBJECT, P_NUMBER("_type"), P_STRING("_text"), P_STRING("_hint")];
 
 		// todo we can make success/failure/info types, with different sounds and pictures! Marvis??
@@ -167,10 +168,10 @@ CLASS("NotificationFactory", "")
 		private _duration = 5;
 		private _args = [_picture, "INFO", _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Intel about us spotting something
-	STATIC_METHOD("createSpottedTargets") {
+	STATIC_METHOD(createSpottedTargets)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		private _sound = "UAV_04";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\binoculars_ca.paa";
@@ -180,7 +181,7 @@ CLASS("NotificationFactory", "")
 		private _hint = "Check your map for more info"; // Override hint!
 		private _args = [_picture, _category, _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

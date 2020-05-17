@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-this forceAddUniform "U_I_pilotCoveralls";
+this forceaddUniform "U_I_pilotCoveralls";
 this addVest "rhs_vest_pistol_holster";
 this addHeadgear "rhs_zsh7a_alt";
 

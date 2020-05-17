@@ -37,6 +37,7 @@ Base class for derived classes which perform saving and loading of variables els
 #ifndef _SQF_VM
 #define BROADCAST_PROGRESS
 #endif
+FIX_LINE_NUMBERS()
 
 // Variable needed for converting sides into strings and back
 gSideTags = SIDE_ARRAY apply {
@@ -66,6 +67,7 @@ gSideTags = SIDE_ARRAY apply {
 					#else
 					_x call storage_fnc_preStringifyArray;
 					#endif
+					FIX_LINE_NUMBERS()
 				};
 				case "SIDE": {
 					// Convert side to string
@@ -112,6 +114,7 @@ gSideTags = SIDE_ARRAY apply {
 	} forEach _this;
 };
 
+#define OOP_CLASS_NAME Storage
 CLASS("Storage", "")
 
 	VARIABLE("savedObjects");	// Hash maps of objects saved and loaded during this save/load session
@@ -121,7 +124,7 @@ CLASS("Storage", "")
 
 	VARIABLE("version"); // string, storage version
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		#ifndef _SQF_VM
 		T_SETV("savedObjects", locationNull);
@@ -132,14 +135,15 @@ CLASS("Storage", "")
 		#endif
 
 		T_SETV("saveDataOutgoing", false);
-#ifndef _SQF_VM
+		#ifndef _SQF_VM
 		T_SETV("version", (parseNumber call misc_fnc_getVersion));
-#else
+		#else
 		T_SETV("version", 666);
-#endif
-	} ENDMETHOD;
+		#endif
+		FIX_LINE_NUMBERS()
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		T_CALLM0("_clearObjectMaps");
@@ -148,10 +152,10 @@ CLASS("Storage", "")
 		if (T_CALLM0("isOpen")) then {
 			T_CALLM0("close");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Clears hashmaps of object references
-	/* private */ METHOD("_clearObjectMaps") {
+	/* private */ METHOD(_clearObjectMaps)
 		params [P_THISOBJECT];
 
 		#ifndef _SQF_VM
@@ -169,8 +173,8 @@ CLASS("Storage", "")
 		T_SETV("savedObjects", objNull);
 		T_SETV("loadedObjects", objNull);
 		#endif
-
-	} ENDMETHOD;
+		FIX_LINE_NUMBERS()
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// SAVE and LOAD methods
@@ -192,7 +196,7 @@ CLASS("Storage", "")
 
 	Returns: true if value was saved successfully
 	*/
-	/* public */	METHOD("save") {
+	/* public */	METHOD(save)
 		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
 		private _result = nil;
 		//CRITICAL_SECTION {
@@ -201,6 +205,7 @@ CLASS("Storage", "")
 				//diag_log format ["Save: %1", _this];
 				[format ["[Storage] Saving %1", _valueOrRef]] remoteExec ["systemChat"];
 				#endif
+				FIX_LINE_NUMBERS()
 
 				// Set flag
 				T_SETV("saveDataOutgoing", true);
@@ -283,7 +288,7 @@ CLASS("Storage", "")
 			};
 		//};
 		_result
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Loads a basic type with given ref
 	/*
@@ -302,7 +307,7 @@ CLASS("Storage", "")
 	object ref or NULL_OBJECT on failure, if an OOP object ref is passed
 	value, if general variable name is passed
 	*/
-	/* public */	METHOD("load") {
+	/* public */	METHOD(load)
 		params [P_THISOBJECT, P_DYNAMIC("_ref"), P_BOOL("_createNewObject"), P_NUMBER("_specificVersion")];
 		private _result = nil;
 		//CRITICAL_SECTION {
@@ -317,6 +322,7 @@ CLASS("Storage", "")
 				//diag_log format ["Save: %1", _this];
 				[format ["[Storage] Loading %1", _ref]] remoteExec ["systemChat"];
 				#endif
+				FIX_LINE_NUMBERS()
 
 				// Check if it was a saved OOP object
 				pr _className = T_CALLM1("loadString", _ref + "_" + OOP_PARENT_STR);
@@ -341,6 +347,7 @@ CLASS("Storage", "")
 					#else
 					pr _serial = parseSimpleArray _serialStr;  // Fuck this, it does not understand SIDE values
 					#endif
+					FIX_LINE_NUMBERS()
 
 					// Convert some special strings into proper data types
 					_serial call storage_fnc_postParseArray;
@@ -409,13 +416,14 @@ CLASS("Storage", "")
 					#else
 					pr _array = parseSimpleArray _string;  // Fuck this, it does not understand SIDE values
 					#endif
+					FIX_LINE_NUMBERS()
 					_array call storage_fnc_postParseArray; // Again run our conversion code to convert special values
 					_array select 0
 				};
 			};
 		//};
 		if (!isNil "_result") then { _result } else { nil }
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -437,7 +445,7 @@ CLASS("Storage", "")
 	// It should also prohibit opening same record twice
 	// Returns nothing
 	// ! ! ! Must be called by inherited classes ! ! !
-	/* virtual */ METHOD("open") {
+	/* virtual */ METHOD(open)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		// Set up hashmaps
@@ -449,18 +457,19 @@ CLASS("Storage", "")
 		pr _hashmapSave = "Dummy" createVehicle [0, 0, 0];
 		pr _hashmapLoad = "Dummy" createVehicle [0, 0, 0];
 		#endif
+		FIX_LINE_NUMBERS()
 		T_SETV("savedObjects", _hashMapSave);
 		T_SETV("loadedObjects", _hashMapLoad);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must close the file or whatever
 	// ! ! ! Must be called by inherited classes ! ! !
-	/* virtual */ METHOD("close") {
+	/* virtual */ METHOD(close)
 		params [P_THISOBJECT];
 
 		// Clear hashmaps
 		T_CALLM0("_clearObjectMaps");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// Methods below do not need hierarchical calling. They just must be implemented.
@@ -473,26 +482,26 @@ CLASS("Storage", "")
 	*/
 
 	// Saves variable
-	/* virtual */ METHOD("saveString") {
+	/* virtual */ METHOD(saveString)
 		params [P_THISOBJECT, P_STRING("_varName"), P_STRING("_value")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Loads variable, returns the value it has read
-	/* virtual */ METHOD("loadString") {
+	/* virtual */ METHOD(loadString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Erases variable (loadVariable must return nil afterwards)
-	/* virtual */ METHOD("eraseString") {
+	/* virtual */ METHOD(eraseString)
 		params [P_THISOBJECT, P_STRING("_varName")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must return true if the object is ready to save/load data
-	/* virtual */ METHOD("isOpen") {
+	/* virtual */ METHOD(isOpen)
 		params [P_THISOBJECT];
 		false
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -501,21 +510,21 @@ CLASS("Storage", "")
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Must returns true if a record with given record name already exists
-	/* virtual */ METHOD("recordExists") {
+	/* virtual */ METHOD(recordExists)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		false
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must erase all variables of this record. Must return true on success.
-	/* virtual */ METHOD("eraseRecord") {
+	/* virtual */ METHOD(eraseRecord)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must return array of all record names which exist in this storage
-	/* virtual */ METHOD("getAllRecords") {
+	/* virtual */ METHOD(getAllRecords)
 		params [P_THISOBJECT];
 		[]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

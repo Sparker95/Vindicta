@@ -15,22 +15,21 @@ Author: Sparker 28.01.2019
 // ---- Debugging defines ----
 
 
+#define OOP_CLASS_NAME SensorGarrisonIsObserved
 CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 
 	/*
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
-	
-	VARIABLE("timeNextUpdate");
 
 	// ----------------------------------------------------------------------
 	// |                              U P D A T E
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ METHOD(update)
 		params [P_THISOBJECT];
 		
 		//diag_log "UPDATE";
@@ -98,15 +97,15 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 			};
 		} forEach _enemySides;
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD("getUpdateInterval") {
+	METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

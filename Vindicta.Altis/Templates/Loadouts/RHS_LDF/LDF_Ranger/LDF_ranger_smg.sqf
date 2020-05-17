@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["H_Cap_blk","rhs_beret_milp"];
 this addHeadgear _RandomHeadgear;
 _RandomVest = selectRandom ["rhs_vest_pistol_holster", "rhs_vest_pistol_holster", "rhssaf_vest_md98_woodland"];
 this addVest _RandomVest;
-this forceAddUniform "rhsgref_uniform_olive";
+this forceaddUniform "rhsgref_uniform_olive";
 
 this addWeapon "rhs_weap_savz61";
 this addPrimaryWeaponItem "rhsgref_20rnd_765x17_vz61";

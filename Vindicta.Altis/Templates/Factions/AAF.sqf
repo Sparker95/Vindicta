@@ -42,7 +42,7 @@ _inf set [T_INF_pilot_heli, ["I_helipilot_F"]];
 _inf set [T_INF_survivor, ["I_Survivor_F"]];
 _inf set [T_INF_unarmed, ["I_Soldier_unarmed_F"]];
 
-//Recon
+//==== Recon ====
 _inf set [T_INF_recon_TL, ["Arma3_AAF_recon_TL"]];
 _inf set [T_INF_recon_rifleman, ["Arma3_AAF_recon_rifleman", "Arma3_AAF_recon_autorifleman"]];
 _inf set [T_INF_recon_medic, ["Arma3_AAF_recon_medic"]];
@@ -53,14 +53,13 @@ _inf set [T_INF_recon_marksman, ["Arma3_AAF_recon_marksman"]];
 _inf set [T_INF_recon_JTAC, ["Arma3_AAF_recon_JTAC"]];
 
 
-//Divers
+//==== Drivers ====
 _inf set [T_INF_diver_TL, ["I_diver_TL_F"]];
 _inf set [T_INF_diver_rifleman, ["I_diver_F"]];
 _inf set [T_INF_diver_exp, ["I_diver_exp_F"]];
 
 
 //==== Vehicles ====
-
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["I_G_Offroad_01_F"]];
