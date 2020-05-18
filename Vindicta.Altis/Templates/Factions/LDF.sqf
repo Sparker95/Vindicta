@@ -15,7 +15,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tLDF"]; 														//Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces.."]; 	//Template display description
+_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces."]; 	//Template display description
 _array set [T_DISPLAY_NAME, "Arma 3 LDF"]; 											//Template display name
 _array set [T_FACTION, T_FACTION_Military]; 										//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; 								//Addons required to play this template
