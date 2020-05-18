@@ -22,6 +22,10 @@ CLASS("AIUnitHuman", "AIUnit")
 	VARIABLE("moveTarget");
 	VARIABLE("moveBuildingPosID");
 	VARIABLE("moveRadius");	// Radius for movement completion
+	VARIABLE("orderedToMove");
+	VARIABLE("prevPos");
+	VARIABLE("stuckDuration");
+	VARIABLE("timeLastProcess");
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
@@ -53,7 +57,11 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_SETV("moveTarget", _targetPos);
 		T_SETV("moveRadius", -1);
 		T_SETV("moveBuildingPosID", -1);
-
+		T_SETV("stuckDuration", 0);
+		pr _hO = T_GETV("hO");
+		T_SETV("prevPos", getPos _hO);
+		T_SETV("orderedToMove", false);
+		T_SETV("timeLastProcess", time);
 
 		//T_SETV("worldState", _ws);
 	ENDMETHOD;
@@ -82,11 +90,28 @@ CLASS("AIUnitHuman", "AIUnit")
 		};	
 		#endif
 
+		pr _deltaTime = time - T_GETV("timeLastProcess");
+
 		// === Update world state properties
 		T_CALLM0("updateVehicleWSP");
 		T_CALLM0("updatePositionWSP");
 
+		// Stuck detector
+		if (T_GETV("orderedToMove")) then {
+			pr _prevPos = T_GETV("prevPos");
+			pr _hO = T_GETV("hO");
+			if (_hO distance _prevPos < 3) then {
+				pr _stuckTimer = T_GETV("stuckDuration");
+				T_SETV("stuckDuration", _stuckTimer + _deltaTime);
+			} else {
+				T_SETV("stuckDuration", 0);
+				T_SETV("prevPos", getPos _hO);
+			};
+		};
+
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_spawning]);
+
+		T_SETV("timeLastProcess", time);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
@@ -109,11 +134,13 @@ CLASS("AIUnitHuman", "AIUnit")
 							TAG_TARGET_ARREST,
 							//TAG_TARGET_SALUTE,		// no we can salute from anywhere
 							TAG_TARGET_SCARE_AWAY,
-							TAG_TARGET_AMBIENT_ANIM
+							TAG_TARGET_AMBIENT_ANIM,
+							TAG_TARGET_STAND_IDLE,
+							TAG_TARGET_VEHICLE_UNIT
 							//TAG_TARGET_SHOOT_RANGE,	// no we don't walk straight to shooting range target to shoot it
 							//TAG_TARGET_SHOOT_LEG		// no we don't need to walk to someone to shoot him
 							]) then {
-				_newParameters pushBack [TAG_TARGET_OBJECT, _value];
+				_newParameters pushBack [TAG_MOVE_TARGET, _value];
 				_moveTarget = _value;
 			};
 
@@ -127,14 +154,12 @@ CLASS("AIUnitHuman", "AIUnit")
 					TAG_TARGET_SCARE_AWAY,
 					TAG_TARGET_AMBIENT_ANIM,
 					TAG_TARGET_SHOOT_RANGE,
-					TAG_TARGET_SHOOT_LEG
+					TAG_TARGET_SHOOT_LEG,
+					TAG_TARGET_STAND_IDLE
 			]) then {
 				T_CALLM1("setHasInteractedWSP", false);
 			};
 		} forEach _goalParameters;
-
-		// Append ned parameters to goal parameters
-		_goalParameters append _newParameters;
 
 		// Set move target if we have got it from parameters
 		if (!(_moveTarget isEqualTo 0)) then {
@@ -143,13 +168,16 @@ CLASS("AIUnitHuman", "AIUnit")
 			// Provide move radius from goal if it exists
 			pr _moveRadius = GET_PARAMETER_VALUE_DEFAULT(_goalParameters, TAG_MOVE_RADIUS, -1);
 			if (_moveRadius == -1) then {
-				T_CALLM1("setMoveRadius", 2);	// Action can override it anyway
+				T_CALLM1("setMoveTargetRadius", 2);	// Action can override it anyway
 			} else {
-				T_CALLM1("setMoveRadius", _moveRadius);
+				T_CALLM1("setMoveTargetRadius", _moveRadius);
 			};
 			
 			T_CALLM0("updatePositionWSP");
 		};
+
+		// Append ned parameters to goal parameters
+		_goalParameters append _newParameters;
 
 	ENDMETHOD;
 	
@@ -639,7 +667,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	METHOD(setHasInteractedWSP)
 		params [P_THISOBJECT, ["_value", true, [true]]];
 		pr _ws = T_GETV("worldState");
-		WS_SET(_ws, WSP_UNIT_HUMAN_HAS_INTERACTED, true);
+		WS_SET(_ws, WSP_UNIT_HUMAN_HAS_INTERACTED, _value);
 	ENDMETHOD;
 
 	// Updates vehicle world state properties
@@ -658,7 +686,7 @@ CLASS("AIUnitHuman", "AIUnit")
 			pr _atAssignedVehAndSeat = T_CALLM0("_isAtAssignedVehicleAndSeat");
 			_atAssignedVehAndSeat params ["_atAssignedVehicle", "_atAssignedSeat"];
 			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, _atAssignedVehicle);
-			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT, _atAssignedSeat);
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, _atAssignedSeat);
 		};
 	ENDMETHOD;
 
@@ -732,13 +760,13 @@ CLASS("AIUnitHuman", "AIUnit")
 		[_atAssignedVehicle, _atAssignedSeat&&_atAssignedVehicle]; // AND them just to be sure
 	ENDMETHOD;
 	
-	// Returns WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT world state property
+	// Returns WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE world state property
 	// It is true if unit both in assigned vehicle and at correct seat
 	//
 	METHOD(getAtAssignedVehicleAndSeat)
 		params [P_THISOBJECT];
 		pr _ws = T_GETV("worldState");
-		WS_GET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_SEAT);
+		WS_GET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE);
 	ENDMETHOD;
 
 
@@ -823,7 +851,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	ENDMETHOD;
 
 	METHOD(setMoveTargetRadius)
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_NUMBER("_radius")];
 		T_SETV("moveRadius", _radius);
 	ENDMETHOD;
 
@@ -843,53 +871,78 @@ CLASS("AIUnitHuman", "AIUnit")
 		// Bail if nothing is assigned
 		if (_target isEqualType 0) exitWith {
 			OOP_ERROR_0("Move target is not assigned!");
-			[0,0,0];
+			[0,0,0];  // fucking return statement
 		};
 
 		if (_target isEqualType []) exitWith {
-			getPos _target;
+			OOP_INFO_1("getMoveTargetPosAGL returning array: %1", _target);
+			_target; // fucking return statement
 		};
 
 		if (_target isEqualType objNull) exitWith {
 			pr _buildingPosID = T_GETV("moveBuildingPosID");
-			if (_buildingPosID == -1) then {	// If target is not building
+			pr _return = if (_buildingPosID == -1) then {	// If target is not building
+				OOP_INFO_1("getMoveTargetPosAGL returning object pos: %1", getPos _target);
 				getPos _target;
 			} else {
-				pr _actualPosition = _hO buildingPos _buildingPosID;
+				pr _actualPosition = _target buildingPos _buildingPosID;
+				OOP_INFO_1("getMoveTargetPosAGL returning building pos: %1", _actualPosition);
 				_actualPosition;
 			};
+			OOP_INFO_1("getMoveTargetPosAGL returning object pos or building pos: %1", _return);
+
+			_return; // fucking return statement
 		};
 
 		if (_target isEqualType NULL_OBJECT) exitWith {
-			if (IS_OOP_OBJECT(_target)) then {
+			pr _return = if (IS_OOP_OBJECT(_target)) then {
 				pr _targetObjHandle = CALLM0(_target, "getObjectHandle");
 				if (isNull _targetObjHandle) then {
 					OOP_ERROR_1("Object handle of OOP object %1 is null!", _target);
 					[0,0,0]; // Error!
 				} else {
+					OOP_INFO_1("getMoveTargetPosAGL returning pos of unit object handle: %1", getPos _targetObjHandle);
 					getPos _targetObjHandle;
 				};
 			} else {
 				OOP_ERROR_1("Target is an invalid OOP object: %1", _target);
 				[0,0,0]; // Error WTF!
 			};
+
+			_return; // fucking return statement
 		};
+
+		[0,0,0];  // fucking return statement if we didn't hit any other fucking exitwith
 	ENDMETHOD;
 
+	FIX_LINE_NUMBERS()
 	// Teleports the unit to destination
 	METHOD(instantMoveToTarget)
 		params [P_THISOBJECT];
 
-		pr _destPos = T_CALLM0(getMoveTargetPosAGL);
+		pr _destPos = T_CALLM0("getMoveTargetPosAGL");
+		OOP_INFO_1("instantMoveToTarget: %1", _destPos);
 		pr _hO = T_GETV("hO");
 		if (!(_destPos isEqualTo [0,0,0])) then {
 			_hO setPos _destPos;
+			OOP_INFO_0(" setPos executed");
 		};
 	ENDMETHOD;
+	FIX_LINE_NUMBERS()
 
 	METHOD(orderMoveToTarget)
 		params [P_THISOBJECT];
-		pr _destPos = T_CALLM0(getMoveTargetPosAGL);
+		FIX_LINE_NUMBERS()
+		pr _destPos = T_CALLM0("getMoveTargetPosAGL");
+
+		#ifdef DEBUG_GOAP
+		if (isNil "_destPos") then {
+			//DUMP_CALLSTACK;
+			OOP_ERROR_0("getMoveTargetPosAGL returned nil!");
+		};
+		#endif
+
+		OOP_INFO_1("orderMoveToTarget: %1", _destPos);
 		if (!(_destPos isEqualTo [0,0,0])) then {
 			pr _hO = T_GETV("hO");
 			if (GET_AGENT_FLAG(_hO)) then {
@@ -897,7 +950,18 @@ CLASS("AIUnitHuman", "AIUnit")
 			} else {
 				_hO doMove _destPos;
 			};
+			T_SETV("orderedToMove", true);
+			T_SETV("stuckDuration", 0); // Reset stuck timer	
+			OOP_INFO_0("  move order executed");
 		};
+	ENDMETHOD;
+
+	METHOD(stopMoveToTarget)
+		params [P_THISOBJECT];
+		pr _hO = T_GETV("hO");
+		doStop _hO;
+		T_SETV("orderedToMove", false);
+		T_SETV("stuckDuration", 0); // Reset stuck timer
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -928,7 +992,12 @@ CLASS("AIUnitHuman", "AIUnit")
 			"assignedCargoIndex",
 			"assignedTurretPath",
 			"moveTarget",
-			"moveRadius"
+			"moveBuildingPosID",
+			"moveRadius",	// Radius for movement completion
+			"orderedToMove",
+			"prevPos",
+			"stuckDuration",
+			"timeLastProcess"
 		]
 	ENDMETHOD;
 

@@ -88,8 +88,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 			};
 			pr _unitAI = CALLM0(_unit, "getAI");
 			pr _args = [
-				["vehicle", _veh],
-				["vehicleRole", "CARGO"],
+				[TAG_TARGET_VEHICLE_UNIT, _veh],
+				[TAG_VEHICLE_ROLE, "CARGO"],
 				[TAG_INSTANT, _instant]
 			];
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);

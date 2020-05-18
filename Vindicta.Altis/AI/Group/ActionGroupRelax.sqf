@@ -11,6 +11,13 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	VARIABLE("nearPos");
 	VARIABLE("maxDistance");
 
+	METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_POS, [[]]], [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		T_SETV("activeUnits", []);
@@ -83,7 +90,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist, "GoalUnitAmbientAnim", [
-				[TAG_TARGET, _x]
+				[TAG_TARGET_AMBIENT_ANIM, _x]
 			]]
 		};
 
@@ -92,7 +99,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist,"GoalUnitShootAtTargetRange", [
-				[TAG_TARGET, _x]
+				[TAG_TARGET_SHOOT_RANGE, _x]
 			]]
 		};
 
@@ -107,9 +114,10 @@ CLASS("ActionGroupRelax", "ActionGroup")
 				_allBuildingPosIDs set [_i, _i];
 			};
 			_freeBuildingLocs append ((_allBuildingPosIDs - (_building getVariable "vin_occupied_positions")) apply {
-				[_dist, "GoalUnitInfantryMoveBuilding", [
-					[TAG_TARGET, _building],
-					[TAG_BUILDING_POS_ID, _x]
+				[_dist, "GoalUnitInfantryStandIdle", [
+					[TAG_TARGET_STAND_IDLE, _building],
+					[TAG_BUILDING_POS_ID, _x],
+					[TAG_DURATION_SECONDS, 99999999] // Stay here forever!
 				]]
 			});
 		} forEach _buildings;

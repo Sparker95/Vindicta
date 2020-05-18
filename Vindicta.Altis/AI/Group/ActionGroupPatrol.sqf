@@ -13,8 +13,8 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_ROUTE, [[]] ] ],	// Required parameters
-			[ ]	// Optional parameters
+			[ ],	// Required parameters
+			[ [TAG_ROUTE, [[]] ] ]	// Optional parameters
 		]
 	ENDMETHOD;
 

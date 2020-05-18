@@ -370,7 +370,7 @@ CLASS("AI_GOAP", "AI")
 					// Did the planner succeed?
 					if (_foundPlan) then {
 						// Unpack the plan
-						_newAction = T_CALLM4("createActionsFromPlan", _actionPlan, _wsGoal, _goalParameters, _spawning);
+						_newAction = T_CALLM4("createActionsFromPlan", _actionPlan, _wsGoal, _goalParametersCopy, _spawning);
 					} else {
 						// Terminate the current action (if it exists)
 						//T_CALLM0("deleteCurrentAction");
@@ -1053,7 +1053,9 @@ CLASS("AI_GOAP", "AI")
 							// It might be valid in some cases, it's not an error
 							_x set [1, nil]; // Action.getParameterValue will deal with nil value
 							_parametersResolved = false;
-							OOP_WARNING_3("Goal parameter with tag %1 was not found, action: %2, plan: %3", _value, _actionClassName, _plan);
+							OOP_WARNING_2("Goal parameter with tag %1 was not found, action: %2", _value, _actionClassName);
+							OOP_WARNING_1("  Plan: %1", _plan);
+							OOP_WARNING_1("  Goal parameters: %1", _goalParameters);
 						} else {
 							_x set [1, _goalParameters#_id#1];
 						};
@@ -1163,7 +1165,12 @@ CLASS("AI_GOAP", "AI")
 		#ifdef DEBUG_GOAP
 		OOP_INFO_0("");
 		OOP_INFO_0("[AI:AStar] Info: ---------- Starting A* ----------");
-		OOP_INFO_4("[AI:AStar] Info: currentWS: %1,  goalWS: %2,  goal parameters: %3  possibleActions: %4", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _goalParameters, _possibleActions);
+		OOP_INFO_1("[AI:AStar] Info: currentWS: %1", [_currentWS] call ws_toString);
+		OOP_INFO_1("[AI:AStar] Info: goalWS:    %1", [_goalWS] call ws_toString);
+		OOP_INFO_1("[AI:AStar] Info: goal parameters: %1", _goalParameters);
+		OOP_INFO_1("[AI:AStar] Info: possible actions: %1", _possibleActions);
+
+		
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -1325,39 +1332,52 @@ CLASS("AI_GOAP", "AI")
 				if (_connected) then {
 				
 					// Array with parameters for this action we are currently considering
-					pr _parameters = GET_STATIC_VAR(_x, "parameters");
+					pr _parameters = GET_STATIC_VAR(_x, "parametersFromGoal");
+					pr _parametersOptional = GET_STATIC_VAR(_x, "parametersFromGoalOptional");
 					if (isNil "_parameters") then {_parameters = [];} else {
 						_parameters = +_parameters; // Make a deep copy
 					};
+					if (isNil "_parametersOptional") then {_parametersOptional = [];} else {
+						_parametersOptional = +_parametersOptional;
+					};
+					OOP_INFO_3("Action: %1, parameters: %2, optional: %3", _x, _parameters, _parametersOptional);
 					
 					// ----------------------------------------------------------------------------
 					// Try to resolve action parameters
 					// ----------------------------------------------------------------------------
 					
 					pr _parametersResolved = true;
-					// Resolve parameters which are derived from goal
+					// Resolve required parameters which are derived from goal
 					{ // foreach parameters of this action
 						pr _tag = _x#0;
-						
-						// If the value has not been resolved yet
-						if (isNil "_value") then {
-						
+						// Find a parameter with the same tag in goal parameters
+						pr _idSameTag = _goalParameters findIf {(_x select 0) == _tag};
+						if (_idSameTag != -1) then {
+							// Add reference to goal parameter to the action parameter
+							_x set [1, _tag];
+							_x set [2, ORIGIN_GOAL_PARAMETER];
+						} else {
+							// This parameter is required by action to be retrieved from a goal parameter
+							// But it wasn't found in the goal parameter array
+							// Print an error
+							OOP_WARNING_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
+							_parametersResolved = false;
+						};
+					} forEach _parameters;
+
+					// Resolve optional parameters
+					if (_parametersResolved) then {
+						{ // foreach parameters of this action
+							pr _tag = _x#0;
 							// Find a parameter with the same tag in goal parameters
 							pr _idSameTag = _goalParameters findIf {(_x select 0) == _tag};
-							//ade_dumpCallstack;
 							if (_idSameTag != -1) then {
 								// Add reference to goal parameter to the action parameter
 								_x set [1, _tag];
 								_x set [2, ORIGIN_GOAL_PARAMETER];
-							} else {
-								// This parameter is required by action to be retrieved from a goal parameter
-								// But it wasn't found in the goal parameter array
-								// Print an error
-								OOP_INFO_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
-								//_parametersResolved = false;
 							};
-						};
-					} forEach _parameters;
+						} forEach _parametersOptional;
+					};
 					
 					// Have parameters from the goal been resolved so far, if they existed?
 					if (_parametersResolved) then {
@@ -1612,6 +1632,7 @@ CLASS("AI_GOAP", "AI")
 		pr _extraSubactionVariables = [];
 		if (!IS_NULL_OBJECT(_subAction)) then {
 			_extraSubactionVarNames = CALLM0(_subAction, "getDebugUIVariableNames");
+			_extraSubactionVarNames = ["AI", "state", "instant"] + _extraSubactionVarNames;
 			{
 				_extraSubactionVariables pushBack [_x, GETV(_subAction, _x)];
 			} forEach _extraSubactionVarNames;

@@ -15,6 +15,7 @@
 #define TAG_CLEAR_RADIUS "g_clearRadius"
 
 // VEHICLE
+#define TAG_TARGET_VEHICLE_UNIT "g_vehTarget"
 #define TAG_VEHICLE_ROLE "g_vehRole"
 #define TAG_TURRET_PATH "g_turretPath"
 
@@ -65,3 +66,4 @@
 #define TAG_TARGET_AMBIENT_ANIM	"g_targetAmbientAnim"
 #define TAG_TARGET_SHOOT_RANGE	"g_targetShootRange"
 #define TAG_TARGET_SHOOT_LEG "g_targetShootLeg"
+#define TAG_TARGET_STAND_IDLE "g_targetStandIdle"

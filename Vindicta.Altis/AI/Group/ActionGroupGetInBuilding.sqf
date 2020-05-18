@@ -84,17 +84,17 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 				pr _posID = selectRandom _buildingPosIDs;
 				_buildingPosIDs deleteAt (_buildingPosIDs find _posID);
 				pr _parameters = [
-					[TAG_TARGET, _hBuilding],
+					[TAG_MOVE_TARGET, _hBuilding],
 					[TAG_BUILDING_POS_ID, _posID],
 					[TAG_INSTANT, _instant]
 				];
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMoveBuilding", 0, _parameters, _AI);
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
 			} else {
 				// Move to a position in or near the building, hopefully we end up somewhere sensible
 				pr _buildingPos = position _hBuilding;
 				pr _pos = [_buildingPos, 0, 25, 0, 0, 2, 0, [], [_buildingPos, _buildingPos]] call BIS_fnc_findSafePos;
 				pr _parameters = [
-					[TAG_POS, _pos],
+					[TAG_MOVE_TARGET, _pos],
 					[TAG_INSTANT, _instant]
 				];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);

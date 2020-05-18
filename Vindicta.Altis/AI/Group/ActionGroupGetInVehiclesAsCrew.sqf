@@ -121,8 +121,8 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 				// Add goal to this driver
 				pr _parameters = [
-					["vehicle", _vehicle],
-					["vehicleRole", "DRIVER"],
+					[TAG_TARGET_VEHICLE_UNIT, _vehicle],
+					[TAG_VEHICLE_ROLE, "DRIVER"],
 					[TAG_INSTANT, _instant]
 				];
 				CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
@@ -146,9 +146,9 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 					// Add goal to this turret
 					pr _parameters = [
-						["vehicle", _vehicle],
-						["vehicleRole", "TURRET"],
-						["turretPath", _turretPath],
+						[TAG_TARGET_VEHICLE_UNIT, _vehicle],
+						[TAG_VEHICLE_ROLE, "TURRET"],
+						[TAG_TURRET_PATH, _turretPath],
 						[TAG_INSTANT, _instant]
 					];
 					CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);

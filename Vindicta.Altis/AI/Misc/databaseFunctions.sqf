@@ -95,13 +95,22 @@ AI_misc_fnc_setActionPreconditions = {
 	SET_STATIC_VAR(_actionClass, "preconditions", _ws);
 };
 
-AI_misc_fnc_setActionParametersFromGoal = {
+AI_misc_fnc_setActionParametersFromGoalRequired = {
 	params [P_STRING("_actionClass"), P_ARRAY("_goalParameterTagsArray")];
 	pr _parameters = [];
 	{
 		_parameters pushBack [_x, _x, ORIGIN_GOAL_PARAMETER];
 	} forEach _goalParameterTagsArray;
-	SET_STATIC_VAR(_actionClass, "parameters", _parameters);
+	SET_STATIC_VAR(_actionClass, "parametersFromGoal", _parameters);
+};
+
+AI_misc_fnc_setActionParametersFromGoalOptional = {
+	params [P_STRING("_actionClass"), P_ARRAY("_goalParameterTagsArray")];
+	pr _parameters = [];
+	{
+		_parameters pushBack [_x, _x, ORIGIN_GOAL_PARAMETER];
+	} forEach _goalParameterTagsArray;
+	SET_STATIC_VAR(_actionClass, "parametersFromGoalOptional", _parameters);
 };
 
 AI_misc_fnc_setActionPrecedence = {

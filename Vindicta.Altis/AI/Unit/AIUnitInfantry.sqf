@@ -88,9 +88,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 		"ActionUnitFollow", 		
 		"ActionUnitGetInVehicle", 			
 		"ActionUnitIdle", 					
-		"ActionUnitInfantryMove", 	
-		"ActionUnitInfantryMoveBuilding",
-		"ActionUnitInfantryMoveToUnit",
+		"ActionUnitInfantryMove",
 		"ActionUnitInfantryRegroup", 		
 		"ActionUnitInfantryLeaveFormation",
 		//"ActionUnitMove", // this is abstract!
@@ -101,6 +99,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 		"ActionUnitScareAway", 	
 		"ActionUnitAmbientAnim", 	
 		"ActionUnitShootAtTargetRange",
+		"ActionUnitInfantryStandIdle",
 		//"ActionUnitShootLegTarget", 
 		"ActionUnitSurrender"
 		//"ActionUnitVehicleUnflip"

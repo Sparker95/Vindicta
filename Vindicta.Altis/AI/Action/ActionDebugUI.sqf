@@ -1,3 +1,4 @@
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\common.h"
 #include "..\Action\Action.hpp"
 

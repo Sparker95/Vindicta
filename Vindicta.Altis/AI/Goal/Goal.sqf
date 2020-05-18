@@ -1,3 +1,4 @@
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\common.h"
 #include "..\WorldState\WorldState.hpp"
 
@@ -61,12 +62,16 @@ CLASS("Goal", "")
 		pr _allGood = true;
 		pr _pPossible = CALLSM0(_thisClass, "getPossibleParameters");
 		_pPossible params ["_pRequired", "_pOptional"];
-		_pAllowed = _pRequired + _pOptional + [TAG_INSTANT, true]; // Instant is always allowed
+		_pAllowed = _pRequired + _pOptional + [[TAG_INSTANT, [true]]]; // Instant is always allowed
 		
 		// Verify that no illegal parameters are passed
 		{
 			pr _tag = _x#0;
+			pr _value = _x#1;
 			pr _found = _pAllowed findIf {(_x#0) == _tag};
+			if (isNil "_value") then {
+				OOP_ERROR_1("Value of parameter %1 is nil!", _tag);
+			};
 			if (_found == -1) then {
 				// Goals might extend their parameters
 				// So there are in fact no forbidden parameters
@@ -75,7 +80,7 @@ CLASS("Goal", "")
 			} else {
 				// Verify type
 				pr _types = _pAllowed#_found#1;
-				pr _foundType = _types findIf {(_x#1) isEqualType _x};
+				pr _foundType = _types findIf {_value isEqualType _x};
 				if (_foundType == -1) then {
 					OOP_ERROR_4("%1: Wrong parameter type for %2: %3, expected: %4", _thisClass, _tag, typeName (_x#1), _types apply {typeName _x});
 					_allGood = false;
@@ -107,6 +112,11 @@ CLASS("Goal", "")
 	/* virtual */ STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _intrinsicRelevance = GET_STATIC_VAR(_thisClass, "relevance");
+		#ifdef DEBUG_GOAP
+		if (isNil "_intrinsicRelevance") then {
+			OOP_ERROR_1("Relevance of goal %1 is nil!", _thisClass);
+		};
+		#endif
 		 // Return relevance
 		_intrinsicRelevance
 	ENDMETHOD;

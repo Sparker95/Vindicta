@@ -29,7 +29,7 @@ CLASS("GoalUnitShootAtTargetRange", "Goal")
 
 		// Set move target and evaluate if we are close to it already
 		CALLM1(_ai, "setMoveTarget", _shootingPos);
-		CALLM1(_ai, "setMoveRadius", 2);
+		CALLM1(_ai, "setMoveTargetRadius", 2);
 		CALLM0(_ai, "updatePositionWSP");
 
 	ENDMETHOD;

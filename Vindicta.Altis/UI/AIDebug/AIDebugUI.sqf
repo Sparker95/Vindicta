@@ -272,7 +272,7 @@ CLASS("AIDebugUI", "")
 
 			// If AI data for this unit/group exists
 			if (!isNil "_data") then {
-				_goal = _data#5;
+				_goal = _data#6;
 				pr _lastUpdateTime = _x getVariable AI_DEBUG_DATA_LAST_RX_TIME_NAME;
 				//OOP_INFO_1("Last update time: %1", _lastUpdateTime);
 				_text = "No Goal";
@@ -628,7 +628,7 @@ CLASS("AIDebugPanel", "")
 
 		// World state
 		_tree tvSetText [[_id], "World State: ..."];
-		if (! (_agentClass in ["Unit", "Civilian"])) then {				// Units have no world state currently
+		if (! (_agentClass in [/*"Unit", "Civilian"*/])) then {				// Units have no world state currently
 			pr _wsNames = switch (_aiClass) do {		// Names of world state properties
 				case "AIUnitInfantry";
 				case "AIUnitCivilian": {WSP_UNIT_HUMAN_NAMES};

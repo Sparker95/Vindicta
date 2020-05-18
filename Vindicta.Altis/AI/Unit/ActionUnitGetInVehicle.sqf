@@ -30,7 +30,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	METHOD(getPossibleParameters)
 		[
 			// We allow only unit OOP objects as target
-			[ [TAG_TARGET_UNIT, [NULL_OBJECT]],  [TAG_VEHICLE_ROLE, [""]] ],	// Required parameters
+			[ [TAG_TARGET_VEHICLE_UNIT, [NULL_OBJECT]],  [TAG_VEHICLE_ROLE, [""]] ],	// Required parameters
 			[ [TAG_TURRET_PATH, [[]]] ]	// Optional parameters
 		]
 	ENDMETHOD;

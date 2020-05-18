@@ -70,12 +70,30 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 
 	//                      G E T   P O S S I B L E   A C T I O N S
 	METHOD(getPossibleActions)
-		[]
+		[
+			"ActionUnitInfantryMove",
+			"ActionUnitFlee",
+			"ActionUnitDismountCurrentVehicle",
+			"ActionUnitAmbientAnim",
+			"ActionUnitInfantryStandIdle"
+		]
 	ENDMETHOD;
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	/* override */ METHOD(getDebugUIVariableNames)
 		[
+			"hO",
+			"assignedVehicle",
+			"assignedVehicleRole",
+			"assignedCargoIndex",
+			"assignedTurretPath",
+			"moveTarget",
+			"moveBuildingPosID",
+			"moveRadius",	// Radius for movement completion
+			"orderedToMove",
+			"prevPos",
+			"stuckDuration",
+			"timeLastProcess",
 			"danger",
 			"civPresence"
 		]

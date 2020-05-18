@@ -336,6 +336,7 @@ CLASS("AIUnitVehicle", "AIUnit")
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	/* override */ METHOD(getDebugUIVariableNames)
 		[
+			"hO",
 			"cargo",
 			"assignedDriver",
 			"assignedCargo",

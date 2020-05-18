@@ -1,56 +1,8 @@
-#define OOP_INFO
-#define OOP_WARNING
-#define OOP_ERROR
-#include "..\..\common.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\Action\Action.hpp"
-#include "..\..\defineCommon.inc"
-#include "..\goalRelevance.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-#include "AI.hpp"
-#include "..\WorldState\WorldState.hpp"
-#include "..\Garrison\garrisonWorldStateProperties.hpp"
-#include "..\Unit\unitHumanWorldStateProperties.hpp"
-#include "..\parameterTags.hpp"
+#include "common.h"
 
-// Initialize test functions
-//call compile preprocessFileLineNumbers "Tests\initTests.sqf";
-
-// Init OOP
-OOP_Light_initialized = true;
-call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
-
-// Init dependent classes
-call compile preprocessFileLineNumbers "SaveSystem\initClasses.sqf";
-call compile preprocessFileLineNumbers "AI\AI\GOAP_Agent.sqf";
-call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
-call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\repairFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\WorldState\WorldState.sqf";
-call compile preprocessFileLineNumbers "AI\WorldFact\WorldFact.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\initFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\Action\Action.sqf";
-call compile preprocessFileLineNumbers "AI\Sensor\Sensor.sqf";
-call compile preprocessFileLineNumbers "AI\SensorStimulatable\SensorStimulatable.sqf";
-call compile preprocessFileLineNumbers "AI\ActionComposite\ActionComposite.sqf";
-call compile preprocessFileLineNumbers "AI\ActionCompositeParallel\ActionCompositeParallel.sqf";
-call compile preprocessFileLineNumbers "AI\ActionCompositeSerial\ActionCompositeSerial.sqf";
-call compile preprocessFileLineNumbers "AI\Goal\Goal.sqf";
-call compile preprocessFileLineNumbers "AI\AI\AI.sqf";
-call compile preprocessFileLineNumbers "AI\AI\AI_GOAP.sqf";
-call compile preprocessFileLineNumbers "AI\Garrison\initClasses.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
-//call compile preprocessFileLineNumbers "AI\initClasses.sqf";
-
-/*
-A script to test how AStar works
-Author: Sparker 08.12.2018
-*/
-
-#define pr private
+#ifndef _SQF_VM
+"ai.rpt" ofstream_write "===== GARRISON A* TESTS";
+#endif
 
 pr _actions = [
 		"ActionGarrisonDefendActive",
@@ -138,50 +90,3 @@ WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_HAS_INTERACTED, true);
 
 pr _unitGoalParameters = [[TAG_TARGET_SHOOT_RANGE, _shootRange], [TAG_MOVE_RADIUS, 3], [TAG_POS, [10, 20, 30]]];
 */
-
-// Getting into vehicle
-pr _wsUnitCurrent = [WSP_UNIT_HUMAN_COUNT] call ws_new;
-for "_i" from 0 to (WSP_UNIT_HUMAN_COUNT-1) do { // Init all WSPs to false
-	WS_SET(_wsUnitCurrent, _i, false);
-};
-WS_SET(_wsUnitCurrent, WSP_UNIT_HUMAN_VEHICLE_ALLOWED, true);
-WS_SET(_wsUnitCurrent, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true);
-
-pr _wsUnitGoal = [WSP_UNIT_HUMAN_COUNT] call ws_new;
-WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_AT_VEHICLE, true);
-WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, true);
-WS_SET(_wsUnitGoal, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, true);
-
-//TAG_TARGET_UNIT, TAG_VEHICLE_ROLE
-pr _unitGoalParameters = [ [TAG_TARGET_UNIT, "veh123"], [TAG_VEHICLE_ROLE, "Driver"]];
-
-
-
-pr _shootRange = objNull;
-pr _unitActions = 		[
-		"ActionUnitArrest", 				
-		"ActionUnitDismountCurrentVehicle",
-		"ActionUnitFlee", 			
-		"ActionUnitFollow", 		
-		"ActionUnitGetInVehicle", 			
-		"ActionUnitIdle", 					
-		"ActionUnitInfantryMove", 	
-		"ActionUnitInfantryMoveBuilding",
-		"ActionUnitInfantryMoveToUnit",
-		"ActionUnitInfantryRegroup", 		
-		"ActionUnitInfantryLeaveFormation",
-		//"ActionUnitMove", 			
-		"ActionUnitMoveMounted", 	
-		"ActionUnitNothing", 		
-		"ActionUnitRepairVehicle", 
-		"ActionUnitSalute", 		
-		"ActionUnitScareAway", 	
-		"ActionUnitAmbientAnim", 	
-		"ActionUnitShootAtTargetRange"
-		//"ActionUnitShootLegTarget", 
-		//"ActionUnitSurrender",
-		//"ActionUnitVehicleUnflip"
-		];
-
-pr _args = [_wsUnitCurrent, _wsUnitGoal, _unitActions, _unitGoalParameters];
-pr _plan = CALL_STATIC_METHOD("AI_GOAP", "planActions", _args);

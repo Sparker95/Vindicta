@@ -1,17 +1,17 @@
 #include "common.hpp"
 
 /*
-Author: Marvis 09.05.2019
-*/
+Class: Goal.GoalUnitInfantryStandIdle
 
+*/
 #define pr private
 
-#define OOP_CLASS_NAME GoalUnitArrest
-CLASS("GoalUnitArrest", "Goal")
+#define OOP_CLASS_NAME GoalUnitInfantryStandIdle
+CLASS("GoalUnitInfantryStandIdle", "Goal")
 
 	STATIC_METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET_ARREST, [objNull]] ],	// Required parameters
+			[ [TAG_TARGET_STAND_IDLE, [objNull, [], NULL_OBJECT]] ],	// Required parameters
 			[]	// Optional parameters
 		]
 	ENDMETHOD;
@@ -21,7 +21,7 @@ CLASS("GoalUnitArrest", "Goal")
 
 		// Vehicle usage is forbidden
 		CALLM1(_ai, "setAllowVehicleWSP", false);
-		
+
 	ENDMETHOD;
 
 ENDCLASS;

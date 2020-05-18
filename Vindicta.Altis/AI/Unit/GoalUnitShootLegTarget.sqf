@@ -22,20 +22,6 @@ CLASS("GoalUnitShootLegTarget", "Goal")
 		// Vehicle usage is forbidden
 		CALLM1(_ai, "setAllowVehicleWSP", false);
 
-		pr _target = GET_PARAMETER_VALUE(_goalParameters, TAG_TARGET_SHOOT_RANGE);
-		pr _positions = CALLSM1("ActionUnitShootAtTargetRange", "getShootingPos", _target);
-
-		// Positions are not provided, planning is impossible
-		if (count _positions == 0) exitWith {};
-
-		_positions params ["_shootingPos", "_safePos"];
-		_goalParameters pushBack [TAG_POS, _shootingPos];
-
-		// Set move target and evaluate if we are close to it already
-		CALLM1(_ai, "setMoveTarget", _shootingPos);
-		CALLM1(_ai, "setMoveRadius", 2);
-		CALLM0(_ai, "updatePositionWSP");
-
 	ENDMETHOD;
 
 ENDCLASS;

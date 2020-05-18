@@ -83,13 +83,16 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		T_SETV("arrestingUnit", _arrestingUnit);
 
 		pr _arrestingUnitAI = CALLM0(_arrestingUnit, "getAI");
-		pr _parameters = [[TAG_TARGET, _target]];
+		pr _parameters = [];
 
 		// randomly try to shoot the leg
-		pr _unitGoal = if (random 10 <= 2) then {
-			"GoalUnitShootLegTarget"
+		pr _unitGoal = "";
+		if (random 10 <= 2) then {
+			_unitGoal = "GoalUnitShootLegTarget";
+			_parameters = [[TAG_TARGET_SHOOT_LEG, _target]]
 		} else {
-			"GoalUnitArrest"
+			_unitGoal = "GoalUnitArrest";
+			_parameters = [[TAG_TARGET_ARREST, _target]];
 		};
 		CALLM4(_arrestingUnitAI, "addExternalGoal", _unitGoal, 0, _parameters, _AI);
 		T_SETV("unitGoal", _unitGoal);

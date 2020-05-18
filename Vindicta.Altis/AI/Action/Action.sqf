@@ -1,4 +1,4 @@
-#define PROFILER_COUNTERS_ENABLE
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\common.h"
 #include "Action.hpp"
 #include "..\..\Message\Message.hpp"
@@ -61,7 +61,9 @@ CLASS("Action", "MessageReceiverEx")
 	// STATIC_VARIABLE("numParameters"); // Amount of parameters this action requires // Maybe implement it later, not very important
 
 	// Array with parameters which must be derived from goal parameters
-	STATIC_VARIABLE("parameters");
+	STATIC_VARIABLE("parametersFromGoal");
+	// Array with parameters which can be derived from goal parameters
+	STATIC_VARIABLE("parametersFromGoalOptional");
 
 	// Bool indicating how this action can behave during spawning.
 	// This controls how planned actions get the "instant" parameter set in createActionsFromPlan.
@@ -193,21 +195,25 @@ CLASS("Action", "MessageReceiverEx")
 		pr _allGood = true;
 		pr _pPossible = T_CALLM0("getPossibleParameters");
 		_pPossible params ["_pRequired", "_pOptional"];
-		_pAllowed = _pRequired + _pOptional + [TAG_INSTANT, true]; // Instant is always allowed
+		_pAllowed = _pRequired + _pOptional + [[TAG_INSTANT, [true]]]; // Instant is always allowed
 		
 		// Verify that no illegal parameters are passed
 		{
 			pr _tag = _x#0;
+			pr _value = _x#1;
 			pr _found = _pAllowed findIf {(_x#0) == _tag};
+			if (isNil "_value") then {
+				OOP_ERROR_1("Value of parameter %1 is nil!", _tag);
+			};
 			if (_found == -1) then {
 				OOP_ERROR_2("Illegal parameter: %1, allowed parameters: %2", _tag, _pAllowed);
 				_allGood = false;
 			} else {
 				// Verify type
 				pr _types = _pAllowed#_found#1;
-				pr _foundType = _types findIf {(_x#1) isEqualType _x};
+				pr _foundType = _types findIf {_value isEqualType _x};
 				if (_foundType == -1) then {
-					OOP_ERROR_3("Wrong parameter type for %1: %2, expected: %3", _tag, typeName (_x#1), _types apply {typeName _x});
+					OOP_ERROR_3("Wrong parameter type for %1: %2, expected: %3", _tag, typeName _value, _types apply {typeName _x});
 					_allGood = false;
 				};
 			};

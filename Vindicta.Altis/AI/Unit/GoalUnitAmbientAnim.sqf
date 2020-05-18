@@ -5,8 +5,8 @@ CLASS("GoalUnitAmbientAnim", "Goal")
 
 	STATIC_METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET_AMBIENT_ANIM, [objNull]] ],	// Required parameters
-			[]	// Optional parameters
+			[ [TAG_TARGET_AMBIENT_ANIM, [[], objNull]] ],	// Required parameters
+			[ [TAG_DURATION_SECONDS, [0]], [TAG_ANIM, [""]] ]	// Optional parameters
 		]
 	ENDMETHOD;
 

@@ -1,6 +1,10 @@
 #include "common.hpp"
 
 /*
+NOT USED ANY MORE?!?!?!?!!?!?!?!
+*/
+
+/*
 Class: ActionGroup.ActionGroupOccupySentryPositions
 All members of this group will move to their assigned sentry positions.
 */

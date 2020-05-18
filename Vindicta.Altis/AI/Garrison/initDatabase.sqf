@@ -95,7 +95,7 @@ private _s = WSP_GAR_COUNT;
 											]]	call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveMounted", 				[
 											TAG_MOVE_RADIUS
-											]]	call AI_misc_fnc_setActionParametersFromGoal;
+											]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
 // ---------------- ActionGarrisonMoveCombined
 ["ActionGarrisonMoveCombined", _s,			[
 											[WSP_GAR_HAS_VEHICLES, 						true],
@@ -111,7 +111,7 @@ private _s = WSP_GAR_COUNT;
 											]]	call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveCombined", 				[
 											TAG_MOVE_RADIUS
-											]]	call AI_misc_fnc_setActionParametersFromGoal;
+											]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
 // ---------------- ActionGarrisonMoveDismounted
 ["ActionGarrisonMoveDismounted", _s,		[
 											[WSP_GAR_GROUPS_BALANCED,					true]
@@ -121,7 +121,7 @@ private _s = WSP_GAR_COUNT;
 											]]	call AI_misc_fnc_setActionEffects;
 ["ActionGarrisonMoveDismounted",			[
 											TAG_MOVE_RADIUS
-											]]	call AI_misc_fnc_setActionParametersFromGoal;
+											]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
 // ---------------- ActionGarrisonDefend
 ["ActionGarrisonDefend", _s,				[]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonDefend", _s, 				[
@@ -161,7 +161,7 @@ private _s = WSP_GAR_COUNT;
 ["ActionGarrisonClearArea",					[
 											TAG_CLEAR_RADIUS,
 											TAG_DURATION_SECONDS
-											]]	call AI_misc_fnc_setActionParametersFromGoal;
+											]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
 // ---------------- ActionGarrisonJoinLocation
 ["ActionGarrisonJoinLocation", _s,			[]]	call AI_misc_fnc_setActionPreconditions; // These are procedural
 ["ActionGarrisonJoinLocation", _s,			[
@@ -169,7 +169,7 @@ private _s = WSP_GAR_COUNT;
 											]]	call AI_misc_fnc_setActionEffects;
 ["ActionGarrisonJoinLocation",				[
 											TAG_MOVE_RADIUS
-											]]	call AI_misc_fnc_setActionParametersFromGoal;
+											]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
 
 // ---------------- Action costs
 #define C 1.0
