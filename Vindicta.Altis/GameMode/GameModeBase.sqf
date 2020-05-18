@@ -141,10 +141,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("preInitAll", []);
 
 		#ifndef _SQF_VM
-		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init", "Initializing..."], ON_ALL, "GameModeBase.init");
+		REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, NO_JIP);
 		#endif
-		//CALLSM1("GameModeBase", "startLoadingScreen", "Initializing...");
-		
+
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop manager
 			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
@@ -236,10 +235,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);
-		
+
 		#ifndef _SQF_VM
-		CLEAR_REMOTE_EXEC_JIP("GameModeBase.init");
-		REMOTE_EXEC_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
+		REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
 		#endif
 
 		PROFILE_SCOPE_START(GameModeEnd);
@@ -1307,8 +1305,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Check if this position is far enough from other positions
 			OOP_INFO_1("Checking roadblock position: %1", _newPos);
-			private _id0 = _roadblockPositionsAroundLocations findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700)};
-			private _id1 = _predefinedRoadblockPositions findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700) };
+			private _id0 = _roadblockPositionsAroundLocations findIf { !(_x isEqualTo _newPos) && (_x distance2D _newPos < 700)};
+			private _id1 = _predefinedRoadblockPositions findIf { !(_x isEqualTo _newPos) && (_x distance2D _newPos < 700) };
 			if ( (_id0 == NOT_FOUND) && (_id1 == NOT_FOUND) ) then {
 				_i = _i + 1;
 				OOP_INFO_0("  OK");
@@ -1330,7 +1328,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		{ // foreach _roadblockPositionsFinal
 			private _pos = _x;
-
+			private _roads = (_pos nearRoads 300) apply {[_x distance2D _pos, _x]};
+			if(count _roads == 0) then {
+				diag_log format ["Roadblock at %1 doesn't have nearby roads?!", _pos];
+			};
 			// Reveal positions to commanders
 			{
 				CALLM1(_x, "addRoadblockPosition", _pos);
