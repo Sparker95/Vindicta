@@ -15,7 +15,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tWW2_Heer"]; 												//Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "WW2 German units. 1939-1945. Made by MatrikSky"]; 	//Template display description
+_array set [T_DESCRIPTION, "WW2 German units. 1939-1945."]; 	//Template display description
 _array set [T_DISPLAY_NAME, "WW2 Heer"]; 										//Template display name
 _array set [T_FACTION, T_FACTION_Military]; 									//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
