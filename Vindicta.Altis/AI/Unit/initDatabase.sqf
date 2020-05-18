@@ -125,7 +125,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 ["ActionUnitInfantryMove", _s, [[WSP_UNIT_HUMAN_AT_VEHICLE, false], [WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitInfantryMove", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setActionEffects;
 ["ActionUnitInfantryMove", [TAG_MOVE_TARGET]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
-["ActionUnitInfantryMove", [TAG_MOVE_RADIUS]]	call AI_misc_fnc_setActionParametersFromGoalOptional;
+["ActionUnitInfantryMove", [TAG_MOVE_RADIUS, TAG_BUILDING_POS_ID]]	call AI_misc_fnc_setActionParametersFromGoalOptional;
 
 // ------------------- ActionUnitNothing
 ["ActionUnitNothing", _s, []] call AI_misc_fnc_setActionPreconditions;

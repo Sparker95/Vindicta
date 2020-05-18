@@ -176,6 +176,12 @@ OOP_assert_member = {
 	params["_objNameStr", "_memNameStr", "_file", "_line"];
 	//Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	// Check if member name is not nil
+	if (isNil "_memNameStr") exitWith {
+		private _errorText = "member name is nil";
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
@@ -459,6 +465,12 @@ OOP_assert_set_member_access = {
 //Check method and print error if it's not found
 OOP_assert_method = {
 	params["_classNameStr", "_methodNameStr", "_file", "_line"];
+
+	if (isNil "_methodNameStr") exitWith {
+		private _errorText = "method name is nil";
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
 
 	if (isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
