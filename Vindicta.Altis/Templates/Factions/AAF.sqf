@@ -29,7 +29,7 @@ _inf set [T_INF_spotter, ["Arma3_AAF_spotter"]];
 _inf set [T_INF_exp, ["I_Soldier_exp_F", "I_soldier_mine_F"]];
 _inf set [T_INF_ammo, ["I_Soldier_A_F"]];
 _inf set [T_INF_LAT, ["I_Soldier_LAT2_F"]];
-_inf set [T_INF_AT, ["I_Soldier_LAT_F", "I_Soldier_AT_F"]];
+_inf set [T_INF_AT, ["I_Soldier_LAT_F", 5, "I_Soldier_AT_F", 1]];
 _inf set [T_INF_AA, ["I_Soldier_AA_F"]];
 _inf set [T_INF_LMG, ["I_Soldier_AR_F"]];
 _inf set [T_INF_HMG, ["Arma3_AAF_HMG"]];
@@ -44,7 +44,7 @@ _inf set [T_INF_unarmed, ["I_Soldier_unarmed_F"]];
 
 //==== Recon ====
 _inf set [T_INF_recon_TL, ["Arma3_AAF_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["Arma3_AAF_recon_rifleman", "Arma3_AAF_recon_autorifleman"]];
+_inf set [T_INF_recon_rifleman, ["Arma3_AAF_recon_rifleman", 5, "Arma3_AAF_recon_autorifleman", 1]];
 _inf set [T_INF_recon_medic, ["Arma3_AAF_recon_medic"]];
 _inf set [T_INF_recon_exp, ["Arma3_AAF_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["Arma3_AAF_recon_LAT"]];
