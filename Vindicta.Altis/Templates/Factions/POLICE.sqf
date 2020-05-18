@@ -42,9 +42,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 					//Make an array full of nil
 _inf set [T_INF_default, ["B_GEN_Soldier_F"]];	//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_5", 4, "Arma3_police_6", 4, "Arma3_police_7", 4, "Arma3_police_8", 4, "Arma3_police_9", 4, "Arma3_police_10", 4]];
-_inf set [T_INF_TL, ["Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_5", 4, "Arma3_police_6", 4, "Arma3_police_7", 4, "Arma3_police_8", 4, "Arma3_police_9", 4, "Arma3_police_10", 4]];
-_inf set [T_INF_officer, ["Arma3_police_officer", 0.3, "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_5", 3, "Arma3_police_6", 3, "Arma3_police_7", 3, "Arma3_police_8", 3, "Arma3_police_9", 3, "Arma3_police_10", 3]];
+_inf set [T_INF_SL, ["Arma3_police_ert_1", 1, "Arma3_police_ert_2", 1, "Arma3_police_ert_3", 1, 0.2, "Arma3_police_1", 2, "Arma3_police_2", 2, "Arma3_police_3", 2, "Arma3_police_4", 2, "Arma3_police_5", 4, "Arma3_police_6", 4, "Arma3_police_7", 4, "Arma3_police_8", 4, "Arma3_police_9", 4, "Arma3_police_10", 4]];
+_inf set [T_INF_TL, ["Arma3_police_ert_1", 1, "Arma3_police_ert_2", 1, "Arma3_police_ert_3", 1, "Arma3_police_1", 2, "Arma3_police_2", 2, "Arma3_police_3", 2, "Arma3_police_4", 2, "Arma3_police_5", 4, "Arma3_police_6", 4, "Arma3_police_7", 4, "Arma3_police_8", 4, "Arma3_police_9", 4, "Arma3_police_10", 4]];
+_inf set [T_INF_officer, ["Arma3_police_ert_1", 1, "Arma3_police_ert_2", 1, "Arma3_police_ert_3", 1, "Arma3_police_officer", 1.5, "Arma3_police_1", 2, "Arma3_police_2", 2, "Arma3_police_3", 2, "Arma3_police_4", 2, "Arma3_police_5", 3, "Arma3_police_6", 3, "Arma3_police_7", 3, "Arma3_police_8", 3, "Arma3_police_9", 3, "Arma3_police_10", 3]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);

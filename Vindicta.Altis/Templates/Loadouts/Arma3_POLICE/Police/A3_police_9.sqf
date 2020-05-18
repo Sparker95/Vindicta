@@ -10,13 +10,13 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-_RandomHeadgear = selectRandom ["H_MilCap_gen_F", "H_Cap_police"];
+_RandomHeadgear = selectRandom ["H_MilCap_blue", "H_Cap_police"];
 this addHeadgear _RandomHeadgear;
 /*Uniform*/
-_RandomUniform = selectRandom ["U_B_GEN_Commander_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F"];
+_RandomUniform = selectRandom ["U_B_GEN_Commander_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F"];
 this forceAddUniform _RandomUniform;
 /*Vest*/
-_RandomVest = selectRandom ["V_TacVest_gen_F", "V_Rangemaster_belt", "V_Rangemaster_belt", "V_Rangemaster_belt", "V_Safety_yellow_F"];
+_RandomVest = selectRandom ["V_TacVest_blk_POLICE", "V_TacVest_blk_POLICE", "V_TacVest_blk_POLICE", "V_Rangemaster_belt", "V_Rangemaster_belt", "V_Rangemaster_belt", "V_BandollierB_blk"];
 this addVest _RandomVest;
 /*Backpack*/
 
