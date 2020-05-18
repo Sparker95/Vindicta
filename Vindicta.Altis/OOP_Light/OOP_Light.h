@@ -116,7 +116,8 @@
 #define ENABLE_SIMULATION_GLOBAL(obj, state)
 #define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
 
-#define 
+#define IS_SIMPLE_OBJECT isNull
+
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -159,6 +160,8 @@
 #define SIMULATION_ENABLED(obj) simulationEnabled (obj)
 #define ENABLE_SIMULATION_GLOBAL(obj, state) (obj) enableSimulationGlobal (state);
 #define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled) enableDynamicSimulationSystem enabled
+
+#define IS_SIMPLE_OBJECT isSimpleObject
 
 #endif
 // ^^^ ARMA ^^^

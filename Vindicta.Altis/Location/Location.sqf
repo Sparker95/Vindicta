@@ -372,6 +372,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("addObject") {
 		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
+		// Convert to simple object if required
+		if(!_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
+			_hObject = [_hObject] call BIS_fnc_replaceWithSimpleObject;
+		};
+
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
 		private _countBP = count (_hObject buildingPos -1);
 		private _alreadyRegistered = if (_countBP > 0) then {
