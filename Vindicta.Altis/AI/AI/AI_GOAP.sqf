@@ -1340,6 +1340,7 @@ CLASS("AI_GOAP", "AI")
 					if (isNil "_parametersOptional") then {_parametersOptional = [];} else {
 						_parametersOptional = +_parametersOptional;
 					};
+					_parametersOptional pushBack [TAG_INSTANT, TAG_INSTANT, ORIGIN_GOAL_PARAMETER];	// TAG_INSTANT can be received by all actions
 					OOP_INFO_3("Action: %1, parameters: %2, optional: %3", _x, _parameters, _parametersOptional);
 					
 					// ----------------------------------------------------------------------------
@@ -1360,7 +1361,7 @@ CLASS("AI_GOAP", "AI")
 							// This parameter is required by action to be retrieved from a goal parameter
 							// But it wasn't found in the goal parameter array
 							// Print an error
-							OOP_WARNING_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
+							OOP_INFO_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
 							_parametersResolved = false;
 						};
 					} forEach _parameters;
@@ -1375,10 +1376,11 @@ CLASS("AI_GOAP", "AI")
 								// Add reference to goal parameter to the action parameter
 								_x set [1, _tag];
 								_x set [2, ORIGIN_GOAL_PARAMETER];
-							};
+								_parameters pushBack (+_x); // Copy into parameters array
+							};	// If it's not found, ignore it
 						} forEach _parametersOptional;
 					};
-					
+
 					// Have parameters from the goal been resolved so far, if they existed?
 					if (_parametersResolved) then {
 						// Resolve parameters which are passed from effects
@@ -1388,7 +1390,7 @@ CLASS("AI_GOAP", "AI")
 					};
 					
 					if (!_parametersResolved) then {
-						OOP_WARNING_1("[AI:AStar] Warning: can't resolve all parameters for action: %1", _action);
+						OOP_INFO_1("[AI:AStar] Can't resolve all parameters for action: %1", _action);
 					} else {
 						#ifdef DEBUG_GOAP
 						//	diag_log format ["[AI:AStar] Info: Connected world states: action: %1,  effects: %2,  WS:  %3", _x, [_effects] call ws_toString, [_nodeWS] call ws_toString];

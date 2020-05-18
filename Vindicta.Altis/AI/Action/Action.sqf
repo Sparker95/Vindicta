@@ -92,6 +92,8 @@ CLASS("Action", "MessageReceiverEx")
 		T_SETV("AI", _AI);
 		T_SETV("state", ACTION_STATE_INACTIVE); // Default state
 
+		OOP_INFO_2("NEW: AI: %1, parameters: %2", _AI, _parameters);
+
 		// Verify parameters
 		#ifdef DEBUG_GOAP
 		pr _parametersGood = T_CALLM1("verifyParameters", _parameters);
