@@ -343,7 +343,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				// Process buildings, objects with anim markers, and shooting targets
 				if (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }) then {
-					T_CALLM2("addObject", _object, _object in _terrainObjects);
+					T_CALLM2("addObject", _object, _object in _terrainObjects, true);
 					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 				};
 
@@ -370,10 +370,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments: _hObject
 	*/
 	METHOD("addObject") {
-		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
+		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject"), P_BOOL("_autoSimple")];
 
 		// Convert to simple object if required
-		if(!_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
+		if(_autoSimple && !_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
 			_hObject = [_hObject] call BIS_fnc_replaceWithSimpleObject;
 		};
 
