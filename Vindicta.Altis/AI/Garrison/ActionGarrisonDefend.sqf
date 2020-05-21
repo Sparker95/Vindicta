@@ -84,6 +84,12 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			[TAG_FORMATION, T_GETV("infantryFormation")]
 		];
 
+		private _vehExtraParams = [
+			[TAG_COMBAT_MODE, "GREEN"],// Vehicle operators must mount vehicles first of all, not chase enemies
+			[TAG_BEHAVIOUR, "AWARE"],
+			[TAG_INSTANT, _instant]
+		];
+
 		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
 
 		// Give goals to remaining groups
@@ -94,10 +100,10 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			if (_groupAI != NULL_OBJECT) then {
 				private _args = switch (CALLM0(_x, "getType")) do {
 					case GROUP_TYPE_STATIC: {
-						["GoalGroupGetInVehiclesAsCrew", 0, _commonParams, _AI]
+						["GoalGroupGetInVehiclesAsCrew", 0, _vehExtraParams, _AI]
 					};
 					case GROUP_TYPE_VEH: {
-						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _commonParams, _AI]
+						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _vehExtraParams, _AI]
 					};
 					case GROUP_TYPE_INF: {
 						// We need at least enough patrol groups to cover the defined routes

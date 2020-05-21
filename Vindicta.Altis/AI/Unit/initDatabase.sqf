@@ -78,6 +78,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 							[WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, true]
 							]] call AI_misc_fnc_setActionEffects;
 ["ActionUnitGetInVehicle", [TAG_TARGET_VEHICLE_UNIT, TAG_VEHICLE_ROLE]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
+["ActionUnitGetInVehicle", [TAG_TURRET_PATH]]	call AI_misc_fnc_setActionParametersFromGoalOptional;
 
 // ------------------- ActionUnitFlee
 ["ActionUnitFlee",_s,  [[WSP_UNIT_HUMAN_AT_VEHICLE, false],

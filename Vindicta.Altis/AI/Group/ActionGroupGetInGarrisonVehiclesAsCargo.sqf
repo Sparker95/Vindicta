@@ -28,6 +28,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		_instant = T_GETV("instantOverride") || _instant;
 		T_SETV("instantOverride", _instant);
 
+		T_CALLM0("applyGroupBehaviour");
+
 		T_CALLM0("clearUnitGoals");
 		T_CALLM0("regroup");
 

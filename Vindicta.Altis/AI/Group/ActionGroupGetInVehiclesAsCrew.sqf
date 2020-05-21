@@ -87,6 +87,8 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		T_CALLM0("clearUnitGoals");
 		T_CALLM0("regroup");
 
+		T_CALLM0("applyGroupBehaviour");
+
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		pr _onlyCombat = T_GETV("onlyCombat");

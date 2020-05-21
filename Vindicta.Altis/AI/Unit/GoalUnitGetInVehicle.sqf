@@ -12,7 +12,7 @@ CLASS("GoalUnitGetInVehicle", "Goal")
 	STATIC_METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_VEHICLE_UNIT, [NULL_OBJECT]],  [TAG_VEHICLE_ROLE, [""]] ],	// Required parameters
-			[ [TAG_TURRET_PATH, [[]]] ]	// Optional parameters
+			[ [TAG_TURRET_PATH, [[]]], [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
 		]
 	ENDMETHOD;
 
@@ -21,6 +21,10 @@ CLASS("GoalUnitGetInVehicle", "Goal")
 
 		// Vehicle usage is allowed
 		CALLM1(_ai, "setAllowVehicleWSP", true);
+
+		// Otherwise bots are not be able to move close to vehicle
+		// when in combat
+		_goalParameters pushBack [TAG_MOVE_RADIUS, 25];
 
 		// todo implement handling of vehicle world state property
 		// todo for this we must move vehicle assignment out of action
