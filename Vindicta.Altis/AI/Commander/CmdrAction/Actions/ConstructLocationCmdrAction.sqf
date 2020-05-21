@@ -222,7 +222,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 
 		// How much to scale the score for distance to target
-		private _distCoeff = 1; //CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]); // We don't care how far is it really, it's close enough anyway
+		private _distCoeff = 1; //CALLSM1("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtLocPos); // We don't care how far is it really, it's close enough anyway
 		// How much to scale the score for transport requirements
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
 

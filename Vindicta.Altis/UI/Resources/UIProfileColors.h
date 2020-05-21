@@ -27,7 +27,8 @@ Macros for user-defined GUI colors
 
 // Base colors for control classes
 #define MUIC_TRANSPARENT {0, 0, 0, 0}
-#define MUIC_BLACK {0, 0, 0, 1}
+#define MUIC_BLACK {0.1, 0.1, 0.1, 1}
+#define MUIC_DARKGREY {0.1, 0.1, 0.1, 1}
 #define MUIC_BLACKTRANSP {0, 0, 0, 0.75}
 #define MUIC_WHITE {1, 1, 1, 1}
 #define MUIC_TXT_DISABLED {0.3, 0.3, 0.3, 1}

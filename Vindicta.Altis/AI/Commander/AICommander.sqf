@@ -2301,9 +2301,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				{
 					GETV(_loc, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]
 				}
-			} and
+			}
 			// And have an officer (we only want to set supplies )
-			{ CALLM0(_x, "countOfficers") > 0 }
+			&& { CALLM0(_x, "countOfficers") > 0 }
 		};
 
 		private _actions = [];
@@ -2830,13 +2830,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		{
 			_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
 			for "_i" from 0 to _nHelisRequired - 1 do {
-				private _type = T_VEH_heli_attack; 
+				private _type = T_VEH_heli_attack;
 				// selectRandomWeighted [
 				// 	T_VEH_heli_light,	1,
 				// 	T_VEH_heli_heavy,	1,
 				// 	T_VEH_heli_attack,	1
 				// ];
-				private _newGroup = CALLM(_airGar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+				private _newGroup = CALLM4(_airGar, "createAddVehGroup", _side, T_VEH, _type, -1);
 				OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
 			};
 		} forEach _airReinfInfo;

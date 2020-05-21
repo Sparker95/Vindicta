@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 /*
 Class: ActionUnit.ActionUnitInfantryMoveToUnit
 Makes a single unit move to a specified another <Unit>, destination position will be updated.

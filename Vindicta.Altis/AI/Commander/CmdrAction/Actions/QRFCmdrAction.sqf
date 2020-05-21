@@ -259,7 +259,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Air units care about distance less than ground units (check https://www.desmos.com/calculator/pjs09xfxkm to determine good values)
 		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.4 } else { 1 };
-		private _distCoeff = CALLSM3("CmdrAction", "calcDistanceFalloff", _srcGarrPos, _tgtClusterPos, _fallOffRate);
+		private _distCoeff = CALLSM2("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtClusterPos, _fallOffRate);
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
