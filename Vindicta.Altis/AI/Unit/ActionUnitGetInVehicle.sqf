@@ -51,7 +51,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
-		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_UNIT);
+		pr _veh = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_VEHICLE_UNIT);
 		pr _vehRole = CALLSM2("Action", "getParameterValue", _parameters, TAG_VEHICLE_ROLE);
 		pr _turretPath = CALLSM3("Action", "getParameterValue", _parameters, TAG_TURRET_PATH, []);
 		
@@ -344,7 +344,11 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				OOP_INFO_0("Assigned seat is FREE");
 
 				// Check if the unit is already in the required vehicle
-				if (vehicle _hO isEqualTo _hVeh) then {
+				pr _ws = GETV(_ai, "worldState");
+				pr _atRightVeh = WS_GET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE);
+				pr _atRightRole = WS_GET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE);
+				pr _atAnyVeh = WS_GET(_ws, WSP_UNIT_HUMAN_AT_VEHICLE);
+				if (_atRightVeh) then {
 					OOP_INFO_0("Inside assigned vehicle");
 				
 					// Execute vehicle assignment
@@ -355,7 +359,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					[_hO] orderGetIn true;
 				
 					// Check if the unit is in the required seat
-					if (T_CALLM0("isAtAssignedSeat")) then {
+					if (_atRightRole) then {
 						OOP_INFO_0("Arrived at assigned seat");
 						
 						// Tell the driver to stop or he'll start driving around like an insane
@@ -378,7 +382,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					};
 				} else {
 					// If the unit is on foot now
-					if (vehicle _hO isEqualTo _hO) then {						
+					if (!_atAnyVeh) then {						
 						OOP_INFO_0("Not in vehicle yet. Going on ...");
 					
 						// Execute vehicle assignment

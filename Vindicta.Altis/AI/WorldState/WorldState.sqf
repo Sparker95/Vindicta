@@ -458,13 +458,14 @@ ws_getPlannerCacheKey = {
 	
 	// todo: use toString instead of str, it's much much faster
 	{
+		//if (isNil "_x") then {_x = "__nil";};
 		if (! (_x isEqualType false)) then {
 			_currentProps set [_forEachIndex, true]; // Bools are much faster to stringify
 			_goalProps set [_forEachIndex, _x isEqualTo (_goalProps#_forEachIndex)];
 		};
 	} forEach _currentProps;
 
-	(str _goalProps) + (str _currentProps);
+	(str _currentProps) + (str _goalProps);
 };
 
 

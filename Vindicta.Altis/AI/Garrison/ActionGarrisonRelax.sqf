@@ -118,7 +118,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 					case GROUP_TYPE_VEH: {
 						if (_atRoadblock) then {
 							// Get into vehicles at roadblocks
-							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _extraParams, _AI]; // Occupy only combat vehicles
+							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _extraParams, _AI]; // Occupy only combat vehicles
 						} else {
 							// Crew of vehicle groups stays around their vehicle
 							pr _vehUnits = CALLM0(_group, "getVehicleUnits");
@@ -161,6 +161,14 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 
 		T_SETV("state", _state);
 		_state
+	ENDMETHOD;
+
+	/* override */ METHOD(handleUnitsRemoved)
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		// Do nothing
+		// Default implementation forces a replan, which means that when units are detached elsewhere,
+		// previous units get their positions and animations reassigned
 	ENDMETHOD;
 
 ENDCLASS;

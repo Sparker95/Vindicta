@@ -32,7 +32,7 @@ CLASS("GoalGroupClearArea", "Goal")
 
 			// Create action to get in vehicles
 			private _getInParams = [
-				["onlyCombat", true] // Only combat vehicle operators must stay in vehicles
+				[TAG_ONLY_COMBAT_VEHICLES, true] // Only combat vehicle operators must stay in vehicles
 			];
 			CALLSM2("Action", "mergeParameterValues", _getInParams, _parameters);
 			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);

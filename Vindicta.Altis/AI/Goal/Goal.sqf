@@ -1,6 +1,7 @@
 #define OFSTREAM_FILE "AI.rpt"
 #include "..\..\common.h"
 #include "..\WorldState\WorldState.hpp"
+#include "..\parameterTags.hpp"
 
 /*
 Class: Goal

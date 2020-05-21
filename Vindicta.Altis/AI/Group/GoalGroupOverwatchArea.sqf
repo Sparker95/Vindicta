@@ -46,7 +46,7 @@ CLASS("GoalGroupOverwatchArea", "Goal")
 		if(_isVehicle) then {
 			// Mount vehicles
 			private _actionGetInParams = [
-				["onlyCombat", true] // Only combat vehicle operators must stay in vehicles
+				[TAG_ONLY_COMBAT_VEHICLES, true] // Only combat vehicle operators must stay in vehicles
 			];
 			CALLSM2("Action", "mergeParameterValues", _actionGetInParams, _parameters);
 			private _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _actionGetInParams]);

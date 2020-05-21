@@ -64,12 +64,28 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
-		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLES_CAN_MOVE, true] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_HUMANS_HEALED, true] call ws_setPropertyValue;
 		[_ws, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+		// Handling of vehicles and crew
+		[_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLES_HAVE_CREW_ASSIGNED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENGINEER_AVAILABLE, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_MEDIC_AVAILABLE, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENOUGH_HUMANS_TO_DRIVE_ALL_VEHICLES, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENOUGH_HUMANS_TO_TURRET_ALL_VEHICLES, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS, false] call ws_setPropertyValue;
+		// Misc
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_GROUPS_BALANCED, false] call ws_setPropertyValue;
-		[_ws, WSP_GAR_CLEARING_AREA, [0, 0, 0]] call ws_setPropertyValue;
+		[_ws, WSP_GAR_CLEARING_AREA, 	[0,0,0]] call ws_setPropertyValue;
+		[_ws, WSP_GAR_CARGO, NULL_OBJECT] call ws_setPropertyValue;
+		[_ws, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_HAS_VEHICLES, false] call ws_setPropertyValue;
+
 		// Location
 		pr _loc = CALLM0(_agent, "getLocation");
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
@@ -79,7 +95,11 @@ CLASS("AIGarrison", "AI_GOAP")
 		} else {
 			[0, 0, 0];
 		};
-		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+
+		[_ws, WSP_GAR_POSITION, +_pos] call ws_setPropertyValue;
+		[_ws, WSP_GAR_CARGO_POSITION, +_pos] call ws_setPropertyValue;
+		[_ws, WSP_GAR_VEHICLES_POSITION, +_pos] call ws_setPropertyValue;
+		
 		
 		T_SETV("worldState", _ws);
 		T_SETV("targets", []);

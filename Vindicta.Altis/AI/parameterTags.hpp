@@ -67,3 +67,6 @@
 #define TAG_TARGET_SHOOT_RANGE	"g_targetShootRange"
 #define TAG_TARGET_SHOOT_LEG "g_targetShootLeg"
 #define TAG_TARGET_STAND_IDLE "g_targetStandIdle"
+
+
+#define TAG_ONLY_COMBAT_VEHICLES "g_onlyCombat"

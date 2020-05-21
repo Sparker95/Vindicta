@@ -18,7 +18,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 	METHOD(getPossibleParameters)
 		[
 			[ [TAG_MOVE_TARGET, [objNull, NULL_OBJECT, []] ] ],	// Required parameters
-			[ [TAG_MOVE_RADIUS, [0]], [TAG_TELEPORT, [false], [TAG_BUILDING_POS_ID, [0]]] ]	// Optional parameters
+			[ [TAG_MOVE_RADIUS, [0]], [TAG_TELEPORT, [false]], [TAG_BUILDING_POS_ID, [0]]  ]	// Optional parameters
 		]
 	ENDMETHOD;
 
@@ -59,7 +59,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 					};
 
 					// Set tolerance from bounding box size
-					pr _a = (boundingBoxReal _moveTarget) select 0;
+					pr _a = (boundingBoxReal _objHandle) select 0;
 					_a set [2, 0]; // Erase the vertical component
 					_radius = (vectorMagnitude _a) + 1.5;
 				} else {

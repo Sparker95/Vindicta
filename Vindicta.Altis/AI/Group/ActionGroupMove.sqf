@@ -38,8 +38,8 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_POS, []], [TAG_MOVE_RADIUS, [0]] ],	// Required parameters
-			[ [TAG_FOLLOWERS, [[]]] ]	// Optional parameters
+			[ [TAG_POS, [[]]], [TAG_MOVE_RADIUS, [0]] ],	// Required parameters
+			[ [TAG_FOLLOWERS, [[]]], [TAG_ROUTE, [[]]], [TAG_MAX_SPEED_KMH, [0]] ]	// Optional parameters
 		]
 	ENDMETHOD;
 
@@ -150,8 +150,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _group = GETV(_AI, "agent");
 
 		T_CALLM0("clearWaypoints");
-
-		if(count CALLM0(_group, "getVehicleUnits") > 0) then {
+		
+		private _vehUnits = CALLM0(_group, "getVehicleUnits");
+		private _infUnits = CALLM0(_group, "getInfantryUnits");
+		if(count _vehUnits > 0) then {
 			T_CALLM4("applyGroupBehaviour", "COLUMN", "CARELESS", "YELLOW", "NORMAL");
 		} else {
 			T_CALLM4("applyGroupBehaviour", "STAG COLUMN", "AWARE", "YELLOW", "NORMAL");
@@ -159,28 +161,47 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		private _leader = CALLM0(_group, "getLeader");
 
-		// Add follow goals for units other than the leader
-		private _followersAndAI = (CALLM0(_group, "getInfantryUnits") - [_leader]) apply {
-			[_x, CALLM0(_x, "getAI")]
-		} select {
-			_x params ["_unit", "_AI"];
-			CALLM0(_AI, "getAssignedVehicleRole") == "DRIVER"
-		};
-		private _followers = _followersAndAI apply { _x#0 };
-		private _followersAI = _followersAndAI apply { _x#1 };
-		{
-			CALLM4(_x, "addExternalGoal", "GoalUnitFollow", 0, [[TAG_INSTANT ARG _instant]], _AI);
-		} forEach _followersAI;
-
 		// Add move goal to leader
 		private _leaderAI = CALLM0(_leader, "getAI");
-		private _parameters = [
-			[TAG_POS, T_GETV("pos")],
-			[TAG_MOVE_RADIUS, T_GETV("radius")],
-			[TAG_ROUTE, T_GETV("route")],
-			[TAG_INSTANT, _instant]
-		];
-		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMove", 0, _parameters, _AI);
+		if (count _vehUnits > 0) then {
+
+			// Add follow goals for units other than the leader
+			private _followersAndAI = (_infUnits - [_leader]) apply {
+				[_x, CALLM0(_x, "getAI")]
+			} select {
+				_x params ["_unit", "_AI"];
+				CALLM0(_AI, "getAssignedVehicleRole") == "DRIVER"
+			};
+			private _followers = _followersAndAI apply { _x#0 };
+			private _followersAI = _followersAndAI apply { _x#1 };
+			{
+				CALLM4(_x, "addExternalGoal", "GoalUnitFollow", 0, [[TAG_INSTANT ARG _instant]], _AI);
+			} forEach _followersAI;
+
+			// Move with vehicle
+			private _parameters = [
+				[TAG_POS, T_GETV("pos")],
+				[TAG_MOVE_RADIUS, T_GETV("radius")],
+				[TAG_ROUTE, T_GETV("route")],
+				[TAG_INSTANT, _instant]
+			];
+			CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMove", 0, _parameters, _AI);
+		} else {
+			// Just move on foot
+			private _parameters = [
+				[TAG_MOVE_TARGET, T_GETV("pos")],
+				[TAG_MOVE_RADIUS, T_GETV("radius")],
+				[TAG_INSTANT, _instant]
+			];
+			CALLM4(_leaderAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
+
+			// Everyone else must regroup
+			{
+				private _ai = CALLM0(_x, "getAI");
+				private _parameters = [[TAG_INSTANT, _instant]];
+				CALLM4(_ai, "addExternalGoal", "GoalUnitInfantryRegroup", 0, _parameters, _AI);
+			} forEach (_infUnits - [_leader]);
+		};
 
 		// Make sure crew get mounted and infantry are assigned as cargo
 		T_CALLM0("updateVehicleAssignments");

@@ -659,7 +659,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	METHOD(setAllowVehicleWSP)
 		params [P_THISOBJECT, P_BOOL("_value")];
 		pr _ws = T_GETV("worldState");
-		WS_SET(_ws, WSP_UNIT_HUMAN_VEHICLE_ALLOWED, _enable);
+		WS_SET(_ws, WSP_UNIT_HUMAN_VEHICLE_ALLOWED, _value);
 	ENDMETHOD;
 
 	// Sets WSP_UNIT_HUMAN_HAS_INTERACTED to some value
@@ -687,6 +687,9 @@ CLASS("AIUnitHuman", "AIUnit")
 			_atAssignedVehAndSeat params ["_atAssignedVehicle", "_atAssignedSeat"];
 			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, _atAssignedVehicle);
 			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, _atAssignedSeat);
+		} else {
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, false);
+			WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, false);
 		};
 	ENDMETHOD;
 
@@ -705,7 +708,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		if (isNull _hVeh) exitWith {[false, false]};
 		
 		// Check at assigned vehicle
-		pr _atAssignedVehicle = (vehicle _hO) isEqualTo _hO;
+		pr _atAssignedVehicle = (vehicle _hO) isEqualTo _hVeh;
 
 		// Check at assigned vehicle seat
 		pr _atAssignedSeat = switch (_assignedVehicleRole) do {

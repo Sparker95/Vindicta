@@ -19,7 +19,7 @@ CLASS("GoalGroupMove", "Goal")
 
 			// Create action to get in vehicles
 			private _getInParams = [
-				["onlyCombat", false] // All crew should be mounted
+				[TAG_ONLY_COMBAT_VEHICLES, false] // All crew should be mounted
 			];
 			CALLSM2("Action", "mergeParameterValues", _getInParams, _parameters);
 			private _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);

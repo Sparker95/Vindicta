@@ -5,7 +5,7 @@ Class: ActionGroup.ActionGroupGetInVehiclesAsCrew
 All members of this group will mount all vehicles in this group.
 
 Parameter tags:
-"onlyCombat" - optional, default false. if true, units will occupy only combat vehicles.
+TAG_ONLY_COMBAT_VEHICLES - optional, default false. if true, units will occupy only combat vehicles.
 */
 
 #define pr private
@@ -16,10 +16,17 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	VARIABLE("activeUnits");
 	VARIABLE("onlyCombat");
 
+	METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET, [objNull]]],	// Required parameters
+			[ [TAG_ONLY_COMBAT_VEHICLES, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, "onlyCombat", false);
+		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, TAG_ONLY_COMBAT_VEHICLES, false);
 		T_SETV("onlyCombat", _onlyCombat);
 
 		T_SETV("activeUnits", []);

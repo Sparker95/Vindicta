@@ -1,5 +1,9 @@
 #include "common.hpp"
 
+/*
+Performs moving while in vehicle, supports waypoints.
+*/
+
 // How much time it's allowed to stand at one place without being considered 'stuck'
 #define TIMER_STUCK_THRESHOLD 20
 
@@ -9,6 +13,8 @@
 #ifndef BUILD_RELEASE
 // #define DEBUG_PF 
 #endif
+
+#define pr private
 
 #define OOP_CLASS_NAME ActionUnitMove
 CLASS("ActionUnitMove", "ActionUnit")
@@ -41,6 +47,11 @@ CLASS("ActionUnitMove", "ActionUnit")
 
 		private _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 10);
 		T_SETV("radius", _radius);
+
+		pr _ai = T_GETV("ai");
+		CALLM1(_ai, "setMoveTarget", _pos);
+		CALLM1(_ai, "setMoveTargetRadius", _radius);
+		CALLM0(_ai, "updatePositionWSP");
 
 		// Route can be optionally passed or not
 		// We add the target position to the end
@@ -205,9 +216,13 @@ CLASS("ActionUnitMove", "ActionUnit")
 		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
+		pr _ai = T_GETV("ai");
+		pr _ws = GETV(_ai, "worldState");
+		pr _arrived = WS_GET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS);
+
 
 		// Success condition: reached destination within specified radius
-		if(_hO distance2D T_GETV("pos") <= T_GETV("radius")) exitWith {
+		if(_arrived) exitWith {
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
