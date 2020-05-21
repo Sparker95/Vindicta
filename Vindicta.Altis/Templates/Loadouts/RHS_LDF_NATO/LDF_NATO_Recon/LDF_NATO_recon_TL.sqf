@@ -8,7 +8,7 @@ removeHeadgear this;
 removeGoggles this;
 
 _RandomUniform = ["rhs_uniform_g3_rgr", "rhsgref_uniform_para_ttsko_urban"] call BIS_fnc_selectRandom;
-this addUniform _RandomUniform;
+this forceaddUniform _RandomUniform;
 _RandomHeadgear = ["rhsusf_opscore_rg_cover", "rhsusf_opscore_paint", "rhssaf_Helmet_m97_woodland"] call BIS_fnc_selectRandom;
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = ["rhs_googles_clear", "rhs_googles_yellow", "rhs_googles_orange" ] call BIS_fnc_selectRandom;

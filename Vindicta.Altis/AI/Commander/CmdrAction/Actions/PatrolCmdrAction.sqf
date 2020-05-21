@@ -10,6 +10,7 @@ Parent: <CmdrAction>
 
 #define pr private
 
+#define OOP_CLASS_NAME PatrolCmdrAction
 CLASS("PatrolCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
 	VARIABLE_ATTR("srcGarrId", [ATTR_SAVE]);
@@ -39,7 +40,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
 		_routeTargets - Array of <CmdrAITarget>, an array of patrol waypoints as targets.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_ARRAY("_routeTargets")];
 
 		T_SETV("srcGarrId", _srcGarrId);
@@ -63,9 +64,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// Waypoints on the route
 		private _routeTargetsVar = T_CALLM("createVariable", [+_routeTargets]);
 		T_SETV("routeTargetsVar", _routeTargetsVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
@@ -78,14 +79,14 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		};
 		deleteMarker (_thisObject + "_label");
 #endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getRouteTargets") {
+	METHOD(getRouteTargets)
 		params [P_THISOBJECT];
 		T_GET_AST_VAR("routeTargetsVar")
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("createTransitions") {
+	/* protected override */ METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -185,9 +186,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Return the ASTs as an array
 		[_splitAST, _assignAST, _nextWaypointAST, _moveWaypointsAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("getLabel") {
+	/* protected override */ METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -219,9 +220,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
 			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -317,9 +318,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				//[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* protected override */ METHOD("debugDraw") {
+	/* protected override */ METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -352,9 +353,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
 		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 		// };
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	/* override */ METHOD("updateScore") {
+	/* override */ METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -503,11 +504,11 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			_side, LABEL(_srcGarr), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Get efficency requirements of the patrol we should send
 	// TODO: factor out logic for working out detachments for various situations
-	/* private */ METHOD("getDetachmentEff") {
+	/* private */ METHOD(getDetachmentEff)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture"), P_ARRAY("_desiredEff")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -529,7 +530,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _desiredEff)), 0);
 
 		_effAvailable
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (virtual) getRecordSerial
@@ -539,7 +540,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD("getRecordSerial") {
+	/* virtual override */ METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
@@ -556,7 +557,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Return the serialized data
 		_serial
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 ENDCLASS;
@@ -601,7 +602,7 @@ REGISTER_DEBUG_MARKER_STYLE("PatrolCmdrAction", "ColorYellow", "mil_pickup");
 	T_CALLM("updateScore", [_world ARG _future]);
 
 	private _finalScore = T_CALLM("getFinalScore", []);
-	diag_log format ["Patrol final score: %1", _finalScore];
+	//diag_log format ["Patrol final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	// Apply to sim

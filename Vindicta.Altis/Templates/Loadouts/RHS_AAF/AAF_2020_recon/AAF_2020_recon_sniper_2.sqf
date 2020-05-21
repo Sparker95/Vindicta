@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut",
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","rhsusf_oakley_goggles_blk","",""];
 this addGoggles _RandomGoggles;
-this forceAddUniform "rhs_uniform_gorka_1_a";
+this forceaddUniform "rhs_uniform_gorka_1_a";
 this addVest "FGN_AAF_CIRAS_MM";
 this addBackpack "B_Messenger_Coyote_F";
 
@@ -25,7 +25,7 @@ this addWeapon "rhsusf_weap_glock17g4";
 this addHandgunItem "rhsusf_acc_omega9k";
 this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
-this addWeapon "rhssaf_zrak_rd7j";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};

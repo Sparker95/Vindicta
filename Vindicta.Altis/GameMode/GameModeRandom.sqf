@@ -1,19 +1,20 @@
 #include "common.hpp"
 
+#define OOP_CLASS_NAME GameModeRandom
 CLASS("GameModeRandom", "GameModeBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("name", "Random mode by Sparker");
 		T_SETV("spawningEnabled", false);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 		
-	/* protected virtual */ METHOD("getLocationOwner") {
+	/* protected virtual */ METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		OOP_DEBUG_MSG("%1", [_loc]);
 		private _type = GETV(_loc, "type");
@@ -34,5 +35,5 @@ CLASS("GameModeRandom", "GameModeBase")
 				CIVILIAN
 			};
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

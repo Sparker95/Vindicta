@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-this forceAddUniform "U_O_R_Gorka_01_F";
+this forceaddUniform "U_O_R_Gorka_01_F";
 _RandomHeadgear = selectRandom ["rhssaf_booniehat_digital", "rhssaf_booniehat_digital", "rhssaf_bandana_digital", "rhssaf_bandana_smb", "rhs_beanie_green"];
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["G_Bandanna_khk", "G_Bandanna_oli", "G_Balaclava_oli", "" ];
@@ -21,7 +21,7 @@ this addPrimaryWeaponItem "rhs_10Rnd_762x54mmR_7N1";
 this addWeapon "rhs_weap_pb_6p9";
 this addHandgunItem "rhs_acc_6p9_suppressor";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
-this addWeapon "rhssaf_zrak_rd7j";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_acc_1pn93_1";

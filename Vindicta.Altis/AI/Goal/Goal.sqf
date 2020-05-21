@@ -1,4 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\WorldState\WorldState.hpp"
 
 /*
@@ -8,6 +8,7 @@ Every goal is static, that is, not instantiated.
 
 #define pr private
 
+#define OOP_CLASS_NAME Goal
 CLASS("Goal", "")
 
 	STATIC_VARIABLE("effects"); // Effects world state
@@ -20,18 +21,17 @@ CLASS("Goal", "")
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
-
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -42,12 +42,12 @@ CLASS("Goal", "")
 	// Inherited classes must implement this
 	// By default returns instrinsic goal relevance
 
-	/* virtual */ STATIC_METHOD("calculateRelevance") {
+	/* virtual */ STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _intrinsicRelevance = GET_STATIC_VAR(_thisClass, "relevance");
 		 // Return relevance
 		_intrinsicRelevance
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
@@ -55,7 +55,7 @@ CLASS("Goal", "")
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 
-	/* virtual */ STATIC_METHOD("createPredefinedAction") {
+	/* virtual */ STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		// Return predefined action from the database
 		pr _actionClass = GET_STATIC_VAR(_thisClass, "predefinedAction");
@@ -73,7 +73,7 @@ CLASS("Goal", "")
 			// Return no action
 			""
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                      G E T   E F F E C T S
@@ -85,7 +85,7 @@ CLASS("Goal", "")
 	// "HealYourself" goal can return a standard world state effect from database, thus doesn't need to reimplement this method
 	// "GoToNearestCover" can't derive its effect from parameter and is not static, but is supplied by internal logic, therefore this goal must implement this method
 
-	/* virtual */ STATIC_METHOD("getEffects") {
+	/* virtual */ STATIC_METHOD(getEffects)
 		pr _paramsGood = params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		if (!_paramsGood) then {
@@ -117,17 +117,17 @@ CLASS("Goal", "")
 		} else {
 			_effects
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called when an external goal of this class is added to AI
-	STATIC_METHOD("onGoalAdded") {
+	STATIC_METHOD(onGoalAdded)
 		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets called when an external goal of this class is removed from an AI
-	STATIC_METHOD("onGoalDeleted") {
+	STATIC_METHOD(onGoalDeleted)
 		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

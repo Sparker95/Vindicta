@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 /*
 Class: GarrisonRecord
 Client-side representation of a garrison.
@@ -8,14 +9,16 @@ Author: Sparker 23 August 2019
 
 #define pr private
 
+#define OOP_CLASS_NAME GarrisonRecord
 CLASS("GarrisonRecord", "")
 
 	// Ref to the actual garrison, which exists only on the server
 	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]);
 
 	// Generic properties
-	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("location", [ATTR_SERIALIZABLE]);
 
 	// Amount of build resources (number)
@@ -36,25 +39,25 @@ CLASS("GarrisonRecord", "")
 
 	// What else did I forget?
 	
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("cmdrActionRecord", "");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns the garrison reference of the actual garrison
-	METHOD("getGarrison") {
+	METHOD(getGarrison)
 		params [P_THISOBJECT];
 		T_GETV("garRef")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns location's position when attached to location
 	// returns pure garrison position otherwise
-	METHOD("getPos") {
+	METHOD(getPos)
 		params [P_THISOBJECT];
 		pr _loc = T_GETV("location");
 		pr _attachedToLocation = (_loc != "");
@@ -65,20 +68,20 @@ CLASS("GarrisonRecord", "")
 		} else {
 			T_GETV("pos")
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getComposition") {
+	METHOD(getComposition)
 		params [P_THISOBJECT];
 		T_GETV("composition")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getBuildResources") {
+	METHOD(getBuildResources)
 		params [P_THISOBJECT];
 		T_GETV("buildResources")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Fills data fields from a garrison object
-	METHOD("initFromGarrison") {
+	METHOD(initFromGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 
 		T_SETV("garRef", _gar);
@@ -88,18 +91,19 @@ CLASS("GarrisonRecord", "")
 		// todo need to rethink it probably...
 		pr _AI = GETV(_gar, "AI");
 		T_SETV("pos", CALLM0(_AI, "getPos"));
+		T_SETV("type", GETV(_gar, "type"));
 		T_SETV("side", GETV(_gar, "side"));
 		T_SETV("composition", GETV(_gar, "compositionClassNames"));
 		T_SETV("cmdrActionRecordSerial", GETV(_AI, "cmdrActionRecordSerial"));
 		T_SETV("buildResources", CALLM0(_gar, "getBuildResources"));
 		T_SETV("location", GETV(_gar, "location"));
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// - - - - Client-side functions - - - -
 
 	// Updates the main map marker at the position of the garrison
-	METHOD("_updateMapMarker") {
+	METHOD(_updateMapMarker)
 		params [P_THISOBJECT];
 
 		pr _mapMarker = T_GETV("mapMarker");
@@ -112,12 +116,12 @@ CLASS("GarrisonRecord", "")
 
 		// Show if NOT attached to a location
 		CALLM1(_mapMarker, "show", T_GETV("location") == "");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Updates the map markers of the action (line, pointer, etc)
 	#define __MRK_LINE "_line"
 	#define __MRK_END "_end"
-	METHOD("_updateActionMapMarkers") {
+	METHOD(_updateActionMapMarkers)
 		params [P_THISOBJECT];
 
 		// Delete previous map markers
@@ -164,20 +168,20 @@ CLASS("GarrisonRecord", "")
 			// Set text of the garrison marker
 			CALLM1(T_GETV("mapMarker"), "setText", format ["%1" ARG _actionText]);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_removeActionMapMarkers") {
+	METHOD(_removeActionMapMarkers)
 		params [P_THISOBJECT];
 		pr _mrkLine = _thisObject + __MRK_LINE;
 		pr _mrkEnd = _thisObject + __MRK_END;
 		deleteMarkerLocal _mrkLine;
 		deleteMarkerLocal _mrkEnd;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
 	// Initializes this object on the client side 
-	METHOD("clientAdd") {
+	METHOD(clientAdd)
 		params [P_THISOBJECT];
 
 		// Deserialize the commander action record
@@ -200,10 +204,10 @@ CLASS("GarrisonRecord", "")
 
 		// Update linked records if something was pointing at this garrison record
 		T_CALLM0("_updateLinkedRecords");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Check if any linked garrison records were pointing at this and update them too
-	METHOD("_updateLinkedRecords") {
+	METHOD(_updateLinkedRecords)
 		params [P_THISOBJECT];
 
 		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", T_GETV("garRef"));
@@ -211,16 +215,17 @@ CLASS("GarrisonRecord", "")
 			CALLM0(_x, "_updateMapMarker");
 			CALLM0(_x, "_updateActionMapMarkers");
 		} forEach _linkedRecords;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Updates data in this object from another garrison record
 	#define __TCOPYVAR(objNameStr, varNameStr) T_SETV(varNameStr, GETV(objNameStr, varNameStr)) // I love the preprocessor :3
-	METHOD("clientUpdate") {
+	METHOD(clientUpdate)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		pr _posChanged = ! (T_GETV("pos") isEqualTo GETV(_garRecord, "pos") );
 
 		__TCOPYVAR(_garRecord, "pos");
+		__TCOPYVAR(_garRecord, "type");
 		__TCOPYVAR(_garRecord, "side");
 		__TCOPYVAR(_garRecord, "location");
 		__TCOPYVAR(_garRecord, "composition");
@@ -252,10 +257,10 @@ CLASS("GarrisonRecord", "")
 			T_CALLM0("_updateLinkedRecords");
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Must be called before deleting this on client
-	METHOD("clientRemove") {
+	METHOD(clientRemove)
 		params [P_THISOBJECT];
 
 		// Delete the map marker
@@ -274,7 +279,7 @@ CLASS("GarrisonRecord", "")
 		};
 
 		// Notify the UI?
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 

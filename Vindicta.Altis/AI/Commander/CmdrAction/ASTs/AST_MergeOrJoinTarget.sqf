@@ -7,6 +7,7 @@ just directly merges/joins.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_MergeOrJoinTarget
 CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("fromGarrDeadState", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -29,7 +30,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		_fromGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison performing the action
 		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to merge or join to
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -47,9 +48,9 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		T_SETV("targetDeadState", _targetDeadState);
 		T_SETV("fromGarrIdVar", _fromGarrIdVar);
 		T_SETV("targetVar", _targetVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -61,7 +62,11 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 
 		// If the detachment died then we return the appropriate state
 		if(CALLM0(_fromGarr, "isDead")) exitWith { 
+			#ifndef _SQF_VM
+			// We don't want this warning in auto-tests, its already being tested
 			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't merge to target", [_world ARG _action ARG LABEL(_fromGarr)]);
+			#endif
+			FIX_LINE_NUMBERS()
 			T_GETV("fromGarrDeadState")
 		};
 
@@ -77,7 +82,11 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 				ASSERT_OBJECT(_toGarr);
 				// Check if the target garrison is dead
 				_targetDead = if(CALLM0(_toGarr, "isDead") && (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) ) then {
+					#ifndef _SQF_VM
+					// We don't want this warning in auto-tests, its already being tested
 					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_toGarr)]);
+					#endif
+					FIX_LINE_NUMBERS()
 					true
 				} else {
 					// If target is alive then do the merge
@@ -129,7 +138,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		} else {
 			T_GETV("successState")
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 #ifdef _SQF_VM

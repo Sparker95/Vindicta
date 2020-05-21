@@ -1,4 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 private _dlg0 = NEW("DialogOneTabButtons", []);
 CALLM1(_dlg0, "setHeadlineText", "Basic dialog");

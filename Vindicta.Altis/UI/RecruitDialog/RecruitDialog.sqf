@@ -4,15 +4,16 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 #define pr private
 
+#define OOP_CLASS_NAME RecruitDialog
 CLASS("RecruitDialog", "DialogBase") 
 
 	VARIABLE("location");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		OOP_INFO_1("NEW: %1", _this);
@@ -27,6 +28,6 @@ CLASS("RecruitDialog", "DialogBase")
 		T_CALLM1("setHeadlineText", "Recruit Soldiers");
 		T_CALLM1("setHintText", "Hint: Location must have an Arsenal");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

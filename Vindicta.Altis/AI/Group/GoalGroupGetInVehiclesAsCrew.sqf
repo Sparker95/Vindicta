@@ -1,4 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 /*
 Goal for a group to get in their vehicles as crew.
@@ -6,9 +6,10 @@ Goal for a group to get in their vehicles as crew.
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGroupGetInVehiclesAsCrew
 CLASS("GoalGroupGetInVehiclesAsCrew", "Goal")
 
-	// /* virtual */ STATIC_METHOD("calculateRelevance") {
+	// /* virtual */ STATIC_METHOD(calculateRelevance)
 	// 	params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 	// 	pr _ws = GETV(_AI, "worldState");
@@ -30,5 +31,5 @@ CLASS("GoalGroupGetInVehiclesAsCrew", "Goal")
 	// 		//OOP_INFO_0("Low relevance!");
 	// 		0
 	// 	};
-	// } ENDMETHOD;
+	// ENDMETHOD;
 ENDCLASS;

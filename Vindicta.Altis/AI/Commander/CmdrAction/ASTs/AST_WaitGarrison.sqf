@@ -6,8 +6,8 @@ Have a garrison wait for a period of time.
 
 Parent: <ActionStateTransition>
 */
+#define OOP_CLASS_NAME AST_WaitGarrison
 CLASS("AST_WaitGarrison", "ActionStateTransition")
-	VARIABLE_ATTR("action", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
@@ -27,7 +27,7 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 		_waitUntilDateVar - IN <AST_VAR>(Date), date to wait until
 		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison waiting
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
@@ -42,9 +42,9 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 		T_SETV("failGarrisonDead", _failGarrisonDead);
 		T_SETV("garrIdVar", _garrIdVar);
 		T_SETV("waitUntilDateVar", _waitUntilDateVar);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("apply") {
+	/* override */ METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -66,5 +66,5 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 #else
 		T_GETV("successState")
 #endif
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

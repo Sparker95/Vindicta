@@ -1,5 +1,5 @@
 #define OOP_ASSERT
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 #ifdef _SQF_VM
 call compile preprocessFileLineNumbers "Tests\initTests.sqf";
@@ -7,22 +7,24 @@ call compile preprocessFileLineNumbers "Tests\initTests.sqf";
 
 call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
+#define OOP_CLASS_NAME ClassA
 CLASS("ClassA", "")
 
 	VARIABLE("a");
 	VARIABLE("b");
 	VARIABLE("cStr");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		diag_log "NEW A";
 		T_SETV("a", 123);
 		T_SETV("b", 456);
 		T_SETV("cStr", "test string");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME ClassB
 CLASS("ClassB", "")
 
 	VARIABLE("a");
@@ -31,7 +33,7 @@ CLASS("ClassB", "")
 	VARIABLE("cArrayObj");
 	//VARIABLE("me");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_otherObj")];
 		diag_log "NEW B";
 		
@@ -55,7 +57,7 @@ CLASS("ClassB", "")
 		T_SETV("cArrayObj", _array);
 
 		//T_SETV("me", _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
@@ -69,12 +71,13 @@ diag_log "";
 diag_log "";
 diag_log "";
 
+#define OOP_CLASS_NAME Bot
 CLASS("Bot", "")
 	VARIABLE("AI");
 	VARIABLE("health");
 	VARIABLE("numArray");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		private _ai = NEW("AIBot", [_thisObject]);
@@ -82,21 +85,22 @@ CLASS("Bot", "")
 
 		private _array = [0, 1, 2, "3"];
 		T_SETV("numArray", _array);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME AIBot
 CLASS("AIBot", "")
 
 	VARIABLE("bot");
 	VARIABLE("sameBot");
 	VARIABLE("target");
 	VARIABLE("state");
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_bot")];
 		T_SETV("bot", _bot);
 		T_SETV("sameBot", _bot);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

@@ -3,7 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#include "..\OOP_Light\OOP_light.h"
+#include "..\common.h"
 #include "PlayerDatabase.hpp"
 
 /*
@@ -15,21 +15,8 @@ Inherits from <DoubleKeyHashmap>.
 
 #define pr private
 
+#define OOP_CLASS_NAME PlayerDatabaseServer
 CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
-
-	// Namespace object
-	VARIABLE("ns");
-
-	METHOD("new") {
-		params [P_THISOBJECT];
-
-	} ENDMETHOD;
-
-	METHOD("delete") {
-		params [P_THISOBJECT];
-
-	} ENDMETHOD;
-
 	/*
 	Method: set
 	Sets value associated with key0-key1 pair.
@@ -43,13 +30,13 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 	Returns: nil
 	*/
 
-	METHOD("set") {
+	METHOD(set)
 		params [P_THISOBJECT, P_STRING("_uid"), P_STRING("_key"), "_value"];
 		pr _args = [_uid, _key, _value];
 		CALL_CLASS_METHOD("DoubleKeyHashmap", _thisObject, "set", _args); // classNameStr, objNameStr, methodNameStr, extraParams
 
 		// Broadcast data to this client
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: get
@@ -63,13 +50,13 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 	Returns: value
 	*/
 /*
-	METHOD("get") {
+	METHOD(get)
 		params [P_THISOBJECT, P_STRING("_uid"), P_STRING("_key")];
 		T_GETV("ns") getVariable _uid + __SEP__ + _key
-	} ENDMETHOD;
+	ENDMETHOD;
 */
 
-	METHOD("onPlayerConnected") { // getPlayerUID player, profileName, clientOwner
+	METHOD(onPlayerConnected) // getPlayerUID player, profileName, clientOwner
 		params [P_THISOBJECT, P_STRING("_uid"), P_STRING("_profileName"), P_NUMBER("_clientOwner")];
 
 		OOP_INFO_0("- - - - - - - onPlayerConnected - - - - - - -");
@@ -84,7 +71,7 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 			T_CALLM("_onPlayerConnectedFirstTime", _args);
 
 			
-		OOP_INFO_1("  NEW PLAYER", _clientOwner);
+			OOP_INFO_1("  NEW PLAYER", _clientOwner);
 
 		} else {
 			// This player has been here before
@@ -99,7 +86,7 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 				};
 			} forEach PDB_KEY_ALL;
 
-		OOP_INFO_1("  PLAYER HAS BEEN RECOGNIZED", _clientOwner);
+			OOP_INFO_1("  PLAYER HAS BEEN RECOGNIZED", _clientOwner);
 
 		};
 
@@ -114,9 +101,9 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 		};
 		REMOTE_EXEC_CALL_STATIC_METHOD("PlayerDatabaseClient", "receiveData", [_keyValuePairs], _clientOwner, false); // classNameStr, methodNameStr, extraParams, targets, JIP
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("_onPlayerConnectedFirstTime") {
+	METHOD(_onPlayerConnectedFirstTime)
 		params [P_THISOBJECT, P_STRING("_uid"), P_STRING("_profileName"), P_NUMBER("_clientOwner")];
 
 		// Create initial records about this player
@@ -160,6 +147,6 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 			_x params ["_key", "_value"];
 			T_CALLM3("set", _uid, _key, _value);
 		} forEach _keyValuePairs;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

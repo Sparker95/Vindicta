@@ -7,13 +7,14 @@ Class: AmbientMission
 A base class for simple missions that are only active when a location is spawned. 
 They should be created in GameMode.locationSpawned and deleted in GameMode.locationDespawned.
 */
+#define OOP_CLASS_NAME AmbientMission
 CLASS("AmbientMission", "")
 	VARIABLE("states");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_ARRAY("_states")];
 		T_SETV("states", _states);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: isActive
@@ -25,12 +26,12 @@ CLASS("AmbientMission", "")
 	
 	Returns: Boolean, whether the mission should be active for the city specified.
 	*/
-	METHOD("isActive") {
+	METHOD(isActive)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		private _states = T_GETV("states");
 		private _cityData = GETV(_city, "gameModeData");
 		GETV(_cityData, "state") in _states
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: update
@@ -40,7 +41,7 @@ CLASS("AmbientMission", "")
 	
 	_city - Location, the city we want to update for.
 	*/
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 
 		private _active = T_CALLM("isActive", [_city]);
@@ -49,7 +50,7 @@ CLASS("AmbientMission", "")
 		if(_active) then {
 			T_CALLM("spawnNew", [_city]);
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected virtual) updateExisting
@@ -60,9 +61,9 @@ CLASS("AmbientMission", "")
 	
 	_city - Location, the city we want to update for.
 	*/
-	/* protected virtual */ METHOD("updateExisting") {
+	/* protected virtual */ METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (protected virtual) spawnNew
@@ -73,8 +74,8 @@ CLASS("AmbientMission", "")
 	
 	_city - Location, the city we want to (maybe) spawn new missions for.
 	*/
-	/* protected virtual */ METHOD("spawnNew") {
+	/* protected virtual */ METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 ENDCLASS;

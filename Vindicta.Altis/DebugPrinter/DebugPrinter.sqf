@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Message\Message.hpp"
 
 /*
@@ -9,6 +9,7 @@ It can also be passed to another machine through <MessageReceiver.setOwner> meth
 Author: Sparker 31.07.2018
 */
 
+#define OOP_CLASS_NAME DebugPrinter
 CLASS("DebugPrinter", "MessageReceiver");
 
 	VARIABLE("name");
@@ -26,70 +27,70 @@ CLASS("DebugPrinter", "MessageReceiver");
 
 	Returns: nil
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_STRING("_name"), ["_msgLoop", "", [""] ] ];
 		T_SETV("name", _name);
 		T_SETV("msgLoop", _msgLoop);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                  G E T   M E S S A G E   L O O P                   |
 	// ----------------------------------------------------------------------
 
-	METHOD("getMessageLoop") { //Derived classes must implement this method
+	METHOD(getMessageLoop) //Derived classes must implement this method
 		params [P_THISOBJECT];
 		private _return = T_GETV("msgLoop");
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   M E S S A G E                     |
 	// ----------------------------------------------------------------------
 
-	METHOD("handleMessage") {
+	METHOD(handleMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		diag_log format ["[DebugPrinter] Info: %1: %2 has received a message: type: %3, data: %4",
 			_thisObject, T_GETV("name"), _msg select MESSAGE_ID_TYPE, _msg select MESSAGE_ID_DATA];
 		// Returns the data field
 		_msg select MESSAGE_ID_DATA
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Change ownership
 
 
 		// Must return a single value which can be deserialized to restore value of an object
-	/* virtual */ METHOD("serialize") {
+	/* virtual */ METHOD(serialize)
 		params [P_THISOBJECT];
 		private _data = [T_GETV("name"), T_GETV("msgLoop")];
 		_data
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Takes the output of deserialize and restores values of an object
-	/* virtual */ METHOD("deserialize") {
+	/* virtual */ METHOD(deserialize)
 		params [P_THISOBJECT, "_serialData"];
 		_serialData params ["_name", "_msgLoop"];
 		T_SETV("name", _serialData);
 		T_SETV("msgLoop", _msgLoop);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// If your class has objects that must be transfered through the same mechanism, you must handle transfer of ownership of such objects here
 	// Must return true if all objects have been successfully transfered and return false otherwise
 	// You can also clear unneeded variables of this object here
-	/* virtual */ METHOD("transferOwnership") {
+	/* virtual */ METHOD(transferOwnership)
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Dummy process method
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		private _size = 5000; // 500; 500 is 1.5ms
 		private _a = []; _a resize _size;
@@ -102,6 +103,6 @@ CLASS("DebugPrinter", "MessageReceiver");
 			_i = _i + 1;
 		};
 		diag_log format [" %1  Process: %2", _thisObject, T_GETV("name")];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

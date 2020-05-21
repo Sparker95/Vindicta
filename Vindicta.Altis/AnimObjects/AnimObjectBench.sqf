@@ -1,10 +1,10 @@
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 /*
 A bench where a unit can sit at
 */
 #define THIS_CLASS_NAME "AnimObjectBench"
-
-CLASS(THIS_CLASS_NAME, "AnimObject")
+#define OOP_CLASS_NAME AnimObjectBench
+CLASS("AnimObjectBench", "AnimObject")
 
 	STATIC_VARIABLE("animations");
 	STATIC_VARIABLE("points");
@@ -13,7 +13,7 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		private _args = GET_STATIC_VAR(THIS_CLASS_NAME, "points");
@@ -26,7 +26,7 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 
 		private _animations = GET_STATIC_VAR(THIS_CLASS_NAME, "animations");
 		T_SETV("animations", _animations);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |          G E T   P O I N T   D A T A  I N T E R N A L
@@ -34,14 +34,14 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 	// | Inherited classes must implement this.
 	// | Returns [_offset, _animation, _direction]
 	// ----------------------------------------------------------------------
-	METHOD("getPointDataInternal") {
+	METHOD(getPointDataInternal)
 		params [P_THISOBJECT, P_NUMBER("_pointID")];
 		private _animations = T_GETV("animations");
 		private _points = T_GETV("points");
 		// pos, direction, animation, animationOut
 		// pos offset, animation, animation out, walk out dir, walk out distance
 		[_points select _pointID, 180, selectRandom _animations, "AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutLow", 0, 2]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
@@ -50,13 +50,13 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
 
-	METHOD("getPointMoveOffset") {
+	METHOD(getPointMoveOffset)
 		params [P_THISOBJECT, P_NUMBER("_pointID") ];
 		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
 		private _pointMoveOffset = _pointOffset vectorAdd [0, -1.4, 0]; // For bench, unit must walk to a place in front of it
 		[_pointMoveOffset, 1.8]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

@@ -4,13 +4,14 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 #define pr private
 
+#define OOP_CLASS_NAME InGameMenu
 CLASS("InGameMenu", "DialogBase")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		pr _gameModeInitialized = if(isNil "gGameManager") then {
@@ -43,6 +44,6 @@ CLASS("InGameMenu", "DialogBase")
 		T_CALLM1("enableMultiTab", true);
 		T_CALLM2("setContentSize", 0.7, 0.9);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

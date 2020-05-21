@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -18,8 +18,8 @@ That's how we draw garrisons
 #define MARKER_SUFFIX "_mrk"
 
 #define pr private
-
-CLASS(CLASS_NAME, "MapMarker")
+#define OOP_CLASS_NAME MapMarkerGarrison
+CLASS("MapMarkerGarrison", "MapMarker")
 
 	VARIABLE("selected");
 
@@ -27,11 +27,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	STATIC_VARIABLE("selectedMarkers");
 
-	// All map marker objects
-	STATIC_VARIABLE("all"); // Child classes must also implement this
-	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
-
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		T_SETV("garRecord", _garRecord);
@@ -45,38 +41,38 @@ CLASS(CLASS_NAME, "MapMarker")
 		_mrkName setMarkerAlphaLocal 0.85;
 		_mrkName setMarkerTypeLocal "b_unknown";
 		_mrkName setMarkerTextLocal "<Garrison>";
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete the marker
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		OOP_INFO_1("DELETE mrkName: %1", _mrkName);
 		deleteMarkerLocal _mrkName;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getGarrisonRecord") {
+	METHOD(getGarrisonRecord)
 		params [P_THISOBJECT];
 		T_GETV("garRecord")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setSide") {
+	METHOD(setSide)
 		params [P_THISOBJECT, P_SIDE("_side")];
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		_mrkName setMarkerColorLocal ([_side, true] call BIS_fnc_sideColor);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setPos") {
+	METHOD(setPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		_mrkName setMarkerPosLocal _pos;
 
 		// Call base class method
 		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onDraw") {
+	METHOD(onDraw)
 		//if (true) exitWith {};
 
 		params [P_THISOBJECT, "_control"];
@@ -95,28 +91,28 @@ CLASS(CLASS_NAME, "MapMarker")
 				"" // Text
 			];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getMarker") {
+	METHOD(getMarker)
 		params [P_THISOBJECT];
 		_thisObject+MARKER_SUFFIX
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setText") {
+	METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		(_thisObject+MARKER_SUFFIX) setMarkerTextLocal _text;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("show") {
+	METHOD(show)
 		params [P_THISOBJECT, P_BOOL("_show")];
 		pr _alpha = [0, 0.85] select _show;
 		(_thisObject+MARKER_SUFFIX) setMarkerAlphaLocal _alpha;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// - - - - - - - Event handlers - - - - - - -
 
-	METHOD("onMouseButtonDown") {
+	METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 
@@ -138,29 +134,29 @@ CLASS(CLASS_NAME, "MapMarker")
 
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onMouseButtonUp") {
+	METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onMouseButtonClick") {
+	METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("onMouseClickElsewhere") {
+	STATIC_METHOD(onMouseClickElsewhere)
 		params ["_thisClass", "_button", "_shift", "_ctrl", "_alt"];
 
 		if (_button == 0) then {
 			CALLSM0(CLASS_NAME, "deselectAllMarkers");
 		};
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("deselectAllMarkers") {
+	STATIC_METHOD(deselectAllMarkers)
 		params ["_thisClass"];
 
 		pr _selectedMarkers = GET_STATIC_VAR(_thisClass, "selectedMarkers");
@@ -169,7 +165,7 @@ CLASS(CLASS_NAME, "MapMarker")
 		} forEach _selectedMarkers;
 
 		SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

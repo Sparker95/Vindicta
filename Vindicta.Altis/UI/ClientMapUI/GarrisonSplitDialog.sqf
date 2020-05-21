@@ -5,7 +5,7 @@
 
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\defineCommonGrids.hpp"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\..\AI\Commander\CmdrAction\CmdrActionStates.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -13,6 +13,8 @@
 #include "..\..\Location\Location.hpp"
 #include "..\Resources\UIProfileColors.h"
 #include "..\..\PlayerDatabase\PlayerDatabase.hpp"
+
+FIX_LINE_NUMBERS()
 
 /*                                                                                                                                       
  ad88888ba   88888888ba   88           88  888888888888     88888888ba,    88         db         88           ,ad8888ba,      ,ad8888ba,   
@@ -31,6 +33,10 @@ Author: Sparker 30 August 2019
 
 #define pr private
 
+#define LEFT_COL 0
+#define RIGHT_COL 1
+
+#define OOP_CLASS_NAME GarrisonSplitDialog
 CLASS("GarrisonSplitDialog", "")
 
 	STATIC_VARIABLE("instance");
@@ -62,7 +68,7 @@ CLASS("GarrisonSplitDialog", "")
 	
 	// Create a new unique instance of this dialog
 	// There can be only one instance of this dialog
-	/* public */ STATIC_METHOD("newInstance") {
+	/* public */ STATIC_METHOD(newInstance)
 		params [P_THISCLASS, P_OOP_OBJECT("_garRecord")];
 		pr _instance = GETSV(_thisClass, "instance");
 		if (IS_NULL_OBJECT(_instance)) then {
@@ -76,9 +82,9 @@ CLASS("GarrisonSplitDialog", "")
 			// Return a ref to the existing object anyway
 			_instance
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public */ STATIC_METHOD("deleteInstance") {
+	/* public */ STATIC_METHOD(deleteInstance)
 		params [P_THISCLASS];
 		pr _instance = GETSV(_thisClass, "instance");
 		if (IS_NULL_OBJECT(_instance)) then {
@@ -87,15 +93,15 @@ CLASS("GarrisonSplitDialog", "")
 			DELETE(_instance);
 			SETSV(_thisClass, "instance", "");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* public */ STATIC_METHOD("getInstance") {
+	/* public */ STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		GETSV(_thisClass, "instance");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	/* private */ METHOD("new") {
+	/* private */ METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		OOP_INFO_1("NEW: %1", _garRecord);
@@ -191,7 +197,7 @@ CLASS("GarrisonSplitDialog", "")
 					T_SETV("dblClickedLeft", false); OOP_INFO_0("  IGNORED: PREV DBL CLICK");
 					T_CALLM2("setListboxRow", 0, T_GETV("lastSetRowLeft"));
 				} else {*/
-					T_CALLM1("syncListboxRows", 1);
+					T_CALLM1("syncListboxRows", RIGHT_COL);
 				//};
 			} else {
 				OOP_INFO_0("  IGNORED: IN PROGRESS");
@@ -201,14 +207,14 @@ CLASS("GarrisonSplitDialog", "")
 			_thisObject = CALLSM0("GarrisonSplitDialog", "getInstance");
 			OOP_INFO_0("EH: RIGHT LB SEL CHANGED");
 			if (!T_GETV("setCurSelInProgress")) then {
-				T_CALLM1("syncListboxRows", 0);
+				T_CALLM1("syncListboxRows", LEFT_COL);
 			};
 			if (!T_GETV("setCurSelInProgress")) then {
 				/*if(T_GETV("dblClickedRight")) then {
 					T_SETV("dblClickedRight", false); OOP_INFO_0("  IGNORED: PREV DBL CLICK");
 					T_CALLM2("setListboxRow", 1, T_GETV("lastSetRowRight"));
 				} else {*/
-					T_CALLM1("syncListboxRows", 0);
+					T_CALLM1("syncListboxRows", LEFT_COL);
 				//};
 			} else {
 				OOP_INFO_0("  IGNORED: IN PROGRESS");
@@ -232,11 +238,11 @@ CLASS("GarrisonSplitDialog", "")
 			T_CALLM0("onButtonMoveRight");
 		}];
 
-		T_CALLM1("updateListboxAndText", 0);
-		T_CALLM1("updateListboxAndText", 1);
-	} ENDMETHOD;
+		T_CALLM1("updateListboxAndText", LEFT_COL);
+		T_CALLM1("updateListboxAndText", RIGHT_COL);
+	ENDMETHOD;
 
-	/* private */ METHOD("delete") {
+	/* private */ METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
@@ -246,66 +252,66 @@ CLASS("GarrisonSplitDialog", "")
 
 		// Notify the client map UI??
 		CALLM0(gClientMapUI, "onGarrisonSplitDialogDeleted");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// = = = = = = = = Button callbacks = = = = = = = = = =
 
 	// Close or cancel button was pressed
-	METHOD("onButtonClose") {
+	METHOD(onButtonClose)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON CLOSE");
 		CALLSM0("GarrisonSplitDialog", "deleteInstance");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonMoveLeft") {
+	METHOD(onButtonMoveLeft)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsLeft", false);
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListboxAndText", 0);
-		T_CALLM1("updateListboxAndText", 1);
-		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
-		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
-	} ENDMETHOD;
+		T_CALLM1("updateListboxAndText", LEFT_COL);
+		T_CALLM1("updateListboxAndText", RIGHT_COL);
+		T_CALLM3("syncListboxRows", RIGHT_COL, _catID, _subcatID);
+		T_CALLM3("syncListboxRows", LEFT_COL, _catID, _subcatID);
+	ENDMETHOD;
 
-	METHOD("onButtonMoveRight") {
+	METHOD(onButtonMoveRight)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsRight", false);
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListboxAndText", 0);
-		T_CALLM1("updateListboxAndText", 1);
-		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
-		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
-	} ENDMETHOD;
+		T_CALLM1("updateListboxAndText", LEFT_COL);
+		T_CALLM1("updateListboxAndText", RIGHT_COL);
+		T_CALLM3("syncListboxRows", LEFT_COL, _catID, _subcatID);
+		T_CALLM3("syncListboxRows", RIGHT_COL, _catID, _subcatID);
+	ENDMETHOD;
 
-	METHOD("onButtonMoveLeftAll") {
+	METHOD(onButtonMoveLeftAll)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsLeft", true);
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListboxAndText", 0);
-		T_CALLM1("updateListboxAndText", 1);
-		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
-		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
-	} ENDMETHOD;
+		T_CALLM1("updateListboxAndText", LEFT_COL);
+		T_CALLM1("updateListboxAndText", RIGHT_COL);
+		T_CALLM3("syncListboxRows", RIGHT_COL, _catID, _subcatID);
+		T_CALLM3("syncListboxRows", LEFT_COL, _catID, _subcatID);
+	ENDMETHOD;
 
-	METHOD("onButtonMoveRightAll") {
+	METHOD(onButtonMoveRightAll)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsRight", true);
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListboxAndText", 0);
-		T_CALLM1("updateListboxAndText", 1);
-		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
-		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
-	} ENDMETHOD;
+		T_CALLM1("updateListboxAndText", LEFT_COL);
+		T_CALLM1("updateListboxAndText", RIGHT_COL);
+		T_CALLM3("syncListboxRows", LEFT_COL, _catID, _subcatID);
+		T_CALLM3("syncListboxRows", RIGHT_COL, _catID, _subcatID);
+	ENDMETHOD;
 
-	METHOD("onButtonSplit") {
+	METHOD(onButtonSplit)
 		params [P_THISOBJECT];
 
 		// Bail if another request is in progress
@@ -344,14 +350,14 @@ CLASS("GarrisonSplitDialog", "")
 		T_SETV("state", 1);
 		// Close now
 		T_CALLM0("onButtonClose");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// = = = = = = = = = Other methods = = = = = = = = = = 
 
-	METHOD("updateListboxAndText") {
+	METHOD(updateListboxAndText)
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight")];
 		private ["_lnb", "_idcInf", "_idcCargo", "_IDsArray", "_comp"];
-		if (_leftOrRight == 1) then {
+		if (_leftOrRight == RIGHT_COL) then {
 			_lnb = (findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT;
 			_idcInf = IDC_GSPLIT_STATIC_NEW_INF;
 			_idcCargo = IDC_GSPLIT_STATIC_NEW_CARGO;
@@ -380,7 +386,7 @@ CLASS("GarrisonSplitDialog", "")
 				};
 			} forEach _x;
 		} forEach _comp;
-		
+
 		// Update text
 		pr _nInf = T_CALLM1("getInfantryCount", _comp);
 		pr _nCargo = T_CALLM1("getCargoSeatCount", _comp);
@@ -392,63 +398,44 @@ CLASS("GarrisonSplitDialog", "")
 			_lnb lnbAddRow [str _i, "Uber soldier"];
 		};
 		*/
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Modifies the composition, moves the currently selected unit on the left LB to the right (LB isn't updated)
 	// Returns [_catID, _subcatID] of the unit just moved
-	METHOD("moveUnitsRight") {
+	METHOD(moveUnitsRight)
 		params [P_THISOBJECT, P_BOOL("_moveAll")];
 
 		OOP_INFO_0("MOVE UNIT RIGHT");
 
-		pr _compLeft = T_GETV("compLeft");
-		pr _compRight = T_GETV("compRight");
-		pr _IDsLeft = T_GETV("IDsCompLeft");
-		pr _IDsRight = T_GETV("IDsCompRight");
-		// Get row index
-		pr _rowID = lnbCurSelRow ((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_LEFT);
+		return T_CALLM2("_moveUnitsTo", RIGHT_COL, _moveAll)
+	ENDMETHOD;
 
-		// Bail if row is incorrect
-		if (_rowID < 0 || _rowID >= count _IDsLeft) exitWith { OOP_ERROR_1("Wrong left row selected: %1", _rowID); [-1, -1] };
-
-		// Move one item
-		(_IDsLeft#_rowID) params ["_catID", "_subCatID"];
-		pr _classesSrc = _compLeft#_catID#_subcatID;
-		pr _classesDst = _compRight#_catID#_subcatID;
-
-		// Bail if there is nothing to select here (why???)
-		if (count _classesSrc == 0) exitWith { OOP_ERROR_0("Nothing to move from this row any more"); [-1, -1] };
-
-		pr _moveCount = [1, count _classesSrc] select _moveAll;
-		while {count _classesSrc > 0 && _moveCount > 0} do {
-			pr _class = _classesSrc#0;
-			_classesSrc deleteAt 0;
-			_classesDst pushBack _class;
-			_moveCount = _moveCount - 1;
-		};
-
-		[_catID, _subCatID]
-	} ENDMETHOD;
-
-	METHOD("moveUnitsLeft") {
+	METHOD(moveUnitsLeft)
 		params [P_THISOBJECT, P_BOOL("_moveAll")];
 
 		OOP_INFO_0("MOVE UNIT LEFT");
 
-		pr _compLeft = T_GETV("compLeft");
-		pr _compRight = T_GETV("compRight");
-		pr _IDsLeft = T_GETV("IDsCompLeft");
-		pr _IDsRight = T_GETV("IDsCompRight");
+		return T_CALLM2("_moveUnitsTo", LEFT_COL, _moveAll)
+	ENDMETHOD;
+
+	METHOD(_moveUnitsTo)
+		params [P_THISOBJECT, P_NUMBER("_leftOrRight"), P_BOOL("_moveAll")];
+
+		pr _compFrom = [T_GETV("compRight"), T_GETV("compLeft")] select _leftOrRight;
+		pr _IDsFrom = [T_GETV("IDsCompRight"), T_GETV("IDsCompLeft")] select _leftOrRight;
+		pr _compTo = [T_GETV("compLeft"), T_GETV("compRight")] select _leftOrRight;
+		pr _listCtrlFrom = ((findDisplay IDD_GSPLIT_DIALOG) displayCtrl ([IDC_GSPLIT_LB_RIGHT, IDC_GSPLIT_LB_LEFT] select _leftOrRight));
+
 		// Get row index
-		pr _rowID = lnbCurSelRow ((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT);
+		pr _rowID = lnbCurSelRow _listCtrlFrom;
 
 		// Bail if row is incorrect
-		if (_rowID < 0 || _rowID >= count _IDsRight) exitWith { OOP_ERROR_1("Wrong right row selected: %1", _rowID); [-1, -1] };
+		if (_rowID < 0 || _rowID >= count _IDsFrom) exitWith { OOP_ERROR_1("Wrong row selected: %1", _rowID); [-1, -1] };
 
 		// Move one item
-		(_IDsRight#_rowID) params ["_catID", "_subCatID"];
-		pr _classesSrc = _compRight#_catID#_subcatID;
-		pr _classesDst = _compLeft#_catID#_subcatID;
+		(_IDsFrom#_rowID) params ["_catID", "_subCatID"];
+		pr _classesSrc = _compFrom#_catID#_subcatID;
+		pr _classesDst = _compTo#_catID#_subcatID;
 
 		// Bail if there is nothing to select here (why???)
 		if (count _classesSrc == 0) exitWith { OOP_ERROR_0("Nothing to move from this row any more"); [-1, -1] };
@@ -462,47 +449,37 @@ CLASS("GarrisonSplitDialog", "")
 		};
 
 		[_catID, _subCatID]
-	} ENDMETHOD;
+	ENDMETHOD;
+	
 
 	// Synchronizes currently selected rows
 	// 0 - from left to right
 	// 1 - from right to left
-	METHOD("syncListboxRows") {
+	METHOD(syncListboxRows)
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight"), ["_catID", -1, [0]], P_NUMBER("_subcatID")];
 
 		OOP_INFO_1("SYNC LISTBOX ROWS: %1", _this);
-
-		private ["_IDsSrc", "_IDsDst", "_lnbDst", "_lastRowVarName"];
-		if (_leftOrRight == 1) then {
+		
+		private ["_IDsSrc", "_IDsDst", "_rowSrc", "_lnbDst", "_lastRowVarName"];
+		if (_leftOrRight == RIGHT_COL) then {
 			// From left
 			_IDsSrc = T_GETV("IDsCompLeft");
 			_IDsDst = T_GETV("IDsCompRight");
 			_rowSrc = lnbCurSelRow ((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_LEFT);
-			_lnbDst = (findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT;
-			_lastRowVarName = "lastSetRowRight";
 			OOP_INFO_0("  LEFT --> RIGHT");
 		} else {
 			// From right
 			_IDsSrc = T_GETV("IDsCompRight");
 			_IDsDst = T_GETV("IDsCompLeft");
 			_rowSrc = lnbCurSelRow ((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT);
-			_lnbDst = (findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_LEFT;
-			_lastRowVarName = "lastSetRowLeft";
 			OOP_INFO_0("  LEFT <-- RIGHT");
 		};
 
-		// Bail if row is incorrect
-		
 		pr _rowDst = if (_catID != -1) then {
 			// If _catID and _subcatID are supplied, we search for [_catID, _subcatID]
 			_IDsDst findIf {_x isEqualTo [_catID, _subcatID]};
 		} else {
 			// Otherwise we try to sync with the other listbox
-			private _rowSrc = if (_leftOrRight == 1) then {
-				lnbCurSelRow ((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_LEFT);
-			} else {
-				lnbCurSelRow ((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT);
-			};
 			if (_rowSrc < 0 || _rowSrc >= count _IDsSrc) then {
 				OOP_ERROR_1("Wrong source row selected: %1", _rowSrc);
 				-1
@@ -510,30 +487,15 @@ CLASS("GarrisonSplitDialog", "")
 				_IDsDst findIf {_x isEqualTo (_IDsSrc#_rowSrc)};
 			};
 		};
-		/*
-		T_SETV("setCurSelInProgress", true);
-		if (_rowDst != -1) then {
-			OOP_INFO_1("  LB SET CUR SEL ROW START: new row: %1", _rowDst);
-			_lnbDst lnbSetCurSelRow _rowDst;
-			OOP_INFO_0("  LB SET CUR SEL ROW END");
-			T_SETV(_lastRowVarName, _rowDst);
-		} else {
-			OOP_INFO_0("  NO SAME UNIT FOUND, DESELECTING START");
-			_lnbDst lnbSetCurSelRow -1;
-			OOP_INFO_0("  DESELECTING END");
-			T_SETV(_lastRowVarName, -1);
-		};
-		T_SETV("setCurSelInProgress", false);
-		*/
 		T_CALLM2("setListboxRow", _leftOrRight, _rowDst);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Sets the currently selected row of a listbox
 	// We call this instead of directly setting the row because it triggers a callback, and we don't want that
-	METHOD("setListboxRow") {
+	METHOD(setListboxRow)
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight"), P_NUMBER("_row")];
 		private ["_lnbDst", "_lastRowVarName"];
-		if (_leftOrRight == 1) then {
+		if (_leftOrRight == RIGHT_COL) then {
 			_lnbDst = (findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT;
 			_lastRowVarName = "lastSetRowRight";
 		} else {
@@ -547,11 +509,11 @@ CLASS("GarrisonSplitDialog", "")
 		OOP_INFO_0("  LB SET CUR SEL ROW END");
 		T_SETV("setCurSelInProgress", false);
 		T_SETV(_lastRowVarName, _row);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Returns amount of infantry units in the composition
-	METHOD("getInfantryCount") {
+	METHOD(getInfantryCount)
 		params [P_THISOBJECT, P_ARRAY("_comp")];
 
 		pr _num = 0;
@@ -560,15 +522,15 @@ CLASS("GarrisonSplitDialog", "")
 		} forEach _comp#T_INF;
 
 		_num
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setHintText") {
+	METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_s")];
 		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_HINTS) ctrlSetText _s;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns amount of cargo seats all the vehicles in the composition have
-	METHOD("getCargoSeatCount") {
+	METHOD(getCargoSeatCount)
 		params [P_THISOBJECT, P_ARRAY("_comp")];
 
 		OOP_INFO_1("COMP: %1", _comp);
@@ -590,10 +552,10 @@ CLASS("GarrisonSplitDialog", "")
 		} forEach [_comp#T_VEH, _comp#T_DRONE];
 
 		_num
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Gets remotely called by the server
-	STATIC_METHOD("sendServerResponse") {
+	STATIC_METHOD(sendServerResponse)
 		params [P_THISCLASS, P_NUMBER("_responseCode")];
 
 		OOP_INFO_1("SEND SERVER RESPONSE: %1", _this);
@@ -631,7 +593,7 @@ CLASS("GarrisonSplitDialog", "")
 			};
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 if (isNil {GETSV("GarrisonSplitDialog", "instance")}) then {

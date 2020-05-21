@@ -9,7 +9,9 @@
 #ifndef BUILD_RELEASE
 // #define DEBUG_PF 
 #endif
+FIX_LINE_NUMBERS()
 
+#define OOP_CLASS_NAME ActionUnitMove
 CLASS("ActionUnitMove", "ActionUnit")
 
 	VARIABLE("pos");
@@ -25,7 +27,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 	VARIABLE("pathingFailedCounter");	// How many times pathfinding has failed in a row, reset on success
 	VARIABLE("pathingFailing");			// Set in the PathCalculated handler based on the result of the last pathfind operation
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -40,10 +42,10 @@ CLASS("ActionUnitMove", "ActionUnit")
 		T_SETV("route", _route);
 
 		T_SETV("lastPos", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// Handle AI just spawned state
@@ -112,13 +114,12 @@ CLASS("ActionUnitMove", "ActionUnit")
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 	
-	METHOD("nextWaypoint") {
+	METHOD(nextWaypoint)
 		params [P_THISOBJECT];
 		
 		private _hO = T_GETV("hO");
-		private _pos = T_GETV("pos");
 
 		private _hG = group _hO;
 		private _existingWPs = waypoints _hG;
@@ -159,7 +160,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 			private _currWP = (_existingWPs#_existingWPIdx);
 			private _currWPPos = getWPPos _currWP;
 			private _newWPPos = +_currWPPos;
-			while{ count _remainingRoute > 0 && {_hO distance _newWPPos < MOVE_WP_DIST} } do {
+			while{ count _remainingRoute > 0 && { _hO distance _newWPPos < MOVE_WP_DIST } } do {
 				_newWPPos = _remainingRoute deleteAt 0;
 				// _currWPPos = if(count _remainingRoute > 0) then {
 				//  	_remainingRoute deleteAt 0
@@ -183,17 +184,17 @@ CLASS("ActionUnitMove", "ActionUnit")
 			} else {
 				T_GETV("pos")
 			};
-			private _wp = _hG addWaypoint [ZERO_HEIGHT(_nextPos), 0];
+			private _wp = _hG addWaypoint [AGLToASL ZERO_HEIGHT(_nextPos), -1];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointCompletionRadius 0;
 			_wp setWaypointName MOVE_WP_NAME;
 			_hG setCurrentWaypoint _wp;
 			T_CALLM0("regroup");
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
@@ -289,10 +290,10 @@ CLASS("ActionUnitMove", "ActionUnit")
 		T_SETV("lastPos", position _hO);
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// logic to run when the goal is about to be terminated
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Delete waypoints
@@ -307,6 +308,6 @@ CLASS("ActionUnitMove", "ActionUnit")
 		if(!isNil "_eventId") then {
 			_hO removeEventHandler["PathCalculated", _eventId];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

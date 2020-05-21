@@ -1,5 +1,7 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
+#define OOP_CLASS_NAME ActionGarrisonMoveBase
 CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 	VARIABLE("pos"); // The destination position
@@ -10,7 +12,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	VARIABLE("followGroups");
 	VARIABLE("maxSpeed");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		// Unpack position/location
@@ -48,9 +50,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		// We will use it both when spawned and despawned
 		T_CALLM0("createVirtualRoute");
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Delete the virtual route object
@@ -59,11 +61,11 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			DELETE(_vr);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Default implementation has a lead group (defaults to vehicle group, of which there should be only one),
 	// other groups follow in a chain.
-	/* private virtual */  METHOD("assignMoveGoals") {
+	protected virtual METHOD(assignMoveGoals)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius"), P_ARRAY("_route"), P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -120,9 +122,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		T_SETV("followGroups", _followGroups);
 
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* private virtual */  METHOD("checkMoveGoals") {
+	protected virtual METHOD(checkMoveGoals)
 		params [P_THISOBJECT];
 
 		private _AI = T_GETV("AI");
@@ -139,10 +141,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		};
 
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -175,10 +177,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	protected override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
@@ -258,10 +260,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			T_SETV("state", _state);
 			_state
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// Returns true if everyone is in vehicles
-	METHOD("isEveryoneInVehicle") {
+	METHOD(isEveryoneInVehicle)
 		params [P_THISOBJECT];
 		private _AI = T_GETV("AI");
 		private _ws = GETV(_AI, "worldState");
@@ -270,9 +272,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 						([_ws, WSP_GAR_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue);
 		
 		_return
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onGarrisonDespawned") {
+	public override METHOD(onGarrisonDespawned)
 		params [P_THISOBJECT];
 
 		// Create a new VirtualRoute since old one might be invalid
@@ -280,10 +282,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		// Call base function, this will trigger reactivation
 		T_CALLCM0("ActionGarrison", "onGarrisonDespawned");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Creates a new VirtualRoute object, deletes the old one
-	METHOD("createVirtualRoute") {
+	METHOD(createVirtualRoute)
 		params [P_THISOBJECT];
 
 		// Delete it if it exists already
@@ -294,7 +296,16 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		// Create a new virtual route
 		private _gar = T_GETV("gar");
+		private _garPos = CALLM0(_gar, "getPos");
+		private _pos = T_GETV("pos");
 
+		// If its an air garrison moving, or distance is short then we can use straight line movement (vehicles will still use roads, just not with planned route)
+		if(CALLM0(_gar, "getType") == GARRISON_TYPE_AIR || { _pos distance2D _garPos < 750 }) exitwith {
+			_vr = NULL_OBJECT;
+			T_SETV("virtualRoute", _vr);
+			_state = ACTION_STATE_ACTIVE;
+			_vr
+		};
 		private _side = CALLM0(_gar, "getSide");
 		private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
@@ -305,75 +316,97 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			_base_cost + _threat * 20
 		};
 
-		private _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, _threatCostFn, "", [_cmdr], true, true];
+		private _args = [_garPos, _pos, -1, _threatCostFn, "", [_cmdr], true, true];
 		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
-
 		_vr
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("spawn") {
-		params [P_THISOBJECT];
-
-		private _gar = T_GETV("gar");
-
-		// Spawn vehicle groups on the road according to convoy positions
-		private _vr = T_GETV("virtualRoute");
-		if (_vr == NULL_OBJECT || !GETV(_vr, "calculated")) exitWith { false }; // Perform standard spawning if there is no virtual route for some reason (why???)
-
-		// Count all vehicles in garrison
-		private _nVeh = count CALLM0(_gar, "getVehicleUnits");
-		// We only provide custom spawning for vehicles
-		if(_nVeh == 0) exitWith {false};
-		private _posAndDir = if(!GETV(_vr, "calculated") || GETV(_vr, "failed")) then {
-			private _vals = [];
-			private _garPos = CALLM0(_gar, "getPos");
-			for "_i" from 1 to _nVeh do {
-				_vals pushBack [_garPos, 0];
-			};
-			_vals
-		} else {
-			CALLM2(_vr, "getConvoyPositions", _nVeh, 30)
-		};
-
-		// Bail if we have failed to get positions
-		if (count _posAndDir != _nVeh) exitWith {false};
-
-		// Iterate through all groups
-		private _currentIndex = 0;
-		private _groups = CALLM0(_gar, "getGroups");
-		{
-			private _nVehThisGroup = count CALLM0(_x, "getVehicleUnits");
-			if (_nVehThisGroup > 0) then {
-				private _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
-				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
-
-				// Make leader the first human in the group
-				CALLM0(_x, "_selectNextLeader");
-
-				_currentIndex = _currentIndex + _nVehThisGroup;
-			} else {
-				private _posAndDirThisGroup = _posAndDir select [0, 1];
-				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
-			};
-		} forEach _groups;
-
+	STATIC_METHOD(spawnSingleUnits)
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		// Spawn single units
 		private _units = CALLM0(_gar, "getUnits");
 		private _garPos = CALLM0(_gar, "getPos");
 		{
 			private _unit = _x;
-			if (CALLM0(_x, "getGroup") == "") then {
+			if (CALLM0(_x, "getGroup") == NULL_OBJECT) then {
 				private _className = CALLM0(_unit, "getClassName");
-
 				private _posAndDir = CALLSM3("Location", "findSafePos", _garPos, _className, 400);
-
 				// After a good place has been found, spawn it
 				CALLM(_unit, "spawn", _posAndDir);
 			};
 		} forEach _units;
+	ENDMETHOD;
+	
+	protected override METHOD(spawn)
+		params [P_THISOBJECT];
 
-		true
-	} ENDMETHOD;
+		private _gar = T_GETV("gar");
+
+		if (CALLM0(_gar, "getType") != GARRISON_TYPE_AIR) then {
+			// Perform standard spawning if we are a non air garrison, and there is not a valid virtual route
+			// We need a valid virtual route to generate road positions, other wise we can't do any particlarly good spawning for normal garrisons
+			private _vr = T_GETV("virtualRoute");
+			if(_vr == NULL_OBJECT || {!GETV(_vr, "calculated")}) exitWith { false };
+
+			// Spawn vehicle groups on the road according to convoy positions
+			// Count all vehicles in garrison
+			private _nVeh = count CALLM0(_gar, "getVehicleUnits");
+
+			// We only provide custom spawning for vehicles
+			if(_nVeh == 0) exitWith { false };
+
+			private _posAndDir = if(!GETV(_vr, "calculated") || GETV(_vr, "failed")) then {
+				private _vals = [];
+				private _garPos = CALLM0(_gar, "getPos");
+				for "_i" from 1 to _nVeh do {
+					_vals pushBack [_garPos, 0];
+				};
+				_vals
+			} else {
+				CALLM2(_vr, "getConvoyPositions", _nVeh, 30)
+			};
+
+			// Bail if we have failed to get positions
+			if (count _posAndDir != _nVeh) exitWith {false};
+
+			// Iterate through all groups
+			private _currentIndex = 0;
+			private _groups = CALLM0(_gar, "getGroups");
+			{
+				private _nVehThisGroup = count CALLM0(_x, "getVehicleUnits");
+				if (_nVehThisGroup > 0) then {
+					private _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
+					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+					// Make leader the first human in the group
+					CALLM0(_x, "_selectNextLeader");
+					_currentIndex = _currentIndex + _nVehThisGroup;
+				} else {
+					private _posAndDirThisGroup = _posAndDir select [0, 1];
+					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+				};
+			} forEach _groups;
+
+			// Spawn single units
+			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
+			true
+		} else {
+			private _garPos = CALLM0(_gar, "getPos");
+
+			{
+				private _group = _x;
+				if(CALLM0(_group, "isAirGroup")) then {
+					CALLM1(_x, "spawnInAir", _garPos);
+				} else {
+					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+				};
+
+			} forEach CALLM0(_gar, "getGroups");
+
+			// Spawn single units
+			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
+			true
+		};
+	ENDMETHOD;
 
 ENDCLASS;

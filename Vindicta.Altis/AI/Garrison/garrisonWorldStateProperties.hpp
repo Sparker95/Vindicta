@@ -24,7 +24,8 @@
 #define WSP_GAR_HAS_CARGO									21
 #define WSP_GAR_LOCATION									22 // Location the garrison is attached to
 #define WSP_GAR_HAS_VEHICLES								23
-#define WSP_GAR_COUNT										24
+#define WSP_GAR_ALL_LANDED									24
+#define WSP_GAR_COUNT										25
 
 
 #define WSP_GARRISON_NAMES [ \
@@ -51,7 +52,8 @@
 	"CARGO", \
 	"HAS CARGO",  \
 	"LOCATION", \
-	"HAS VEHICLES" \
+	"HAS VEHICLES", \
+	"ALL LANDED" \
 ]
 
 

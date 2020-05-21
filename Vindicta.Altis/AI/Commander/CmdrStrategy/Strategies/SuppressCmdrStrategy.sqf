@@ -3,9 +3,10 @@
 /*
 Unused.
 */
+#define OOP_CLASS_NAME SuppressCmdrStrategy
 CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 		// Take outposts in areas with activity
 		T_SETV("takeLocOutpostPriority", 0);
@@ -16,9 +17,9 @@ CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 		// Take roadblocks in areas with activity
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockCoeff", 2);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("getQRFScore") {
+	/* virtual */ METHOD(getQRFScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -29,9 +30,9 @@ CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 			P_ARRAY("_detachEff")];
 		// Do default QRFs
 		_defaultScore
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("getReinforceScore") {
+	/* virtual */ METHOD(getReinforceScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -42,9 +43,9 @@ CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 			P_ARRAY("_detachEff")];
 		// Default reinforcing
 		_defaultScore
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* virtual */ METHOD("getTakeLocationScore") {
+	/* virtual */ METHOD(getTakeLocationScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -63,7 +64,7 @@ CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 		// } else {
 		// 	APPLY_SCORE_STRATEGY(_defaultScore, 0)
 		// }
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;
 
 // Unit test

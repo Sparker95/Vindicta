@@ -8,7 +8,7 @@ call {
     private _oop_methodList = [];
     private _oop_newMethodList = [];
     if ("MessageReceiver" != "") then {
-        if (!(["MessageReceiver", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h", 513] call OOP_assert_class)) then {
+        if (!(["MessageReceiver", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\common.h", 513] call OOP_assert_class)) then {
             private _msg = format["Invalid base class for %1: %2", "MessageReceiverEx", "MessageReceiver"];
             private _o_str = format["[%1.%2] ERROR: %3",
                 if (!(isNil "_thisObject")) then {
@@ -26,7 +26,7 @@ call {
                 }, "fnc", format["Failure: %1", _msg]];
             diag_log _o_str;;
             ade_dumpCallstack;
-            throw ["c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h", 768, _msg];
+            throw ["c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\common.h", 768, _msg];
         };
         _oop_parents = +(missionNamespace getVariable("o_" + ("MessageReceiver") + "_spm_" + ("parents")));
         _oop_parents pushBackUnique "MessageReceiver";

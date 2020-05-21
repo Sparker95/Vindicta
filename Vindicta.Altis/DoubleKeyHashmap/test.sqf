@@ -1,4 +1,4 @@
-#include "..\OOP_Light\OOP_light.h"
+#include "..\common.h"
 
 call compile preprocessFileLineNumbers "DoubleKeyHashmap\DoubleKeyHashmap.sqf";
 

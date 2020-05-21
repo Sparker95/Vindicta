@@ -2,9 +2,9 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OOP_DEBUG
-#define OOP_ASSERT
+//#define OOP_ASSERT
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\AI\Action\Action.hpp"
 #include "..\..\AI\Group\groupWorldStateProperties.hpp"
 #include "..\..\AI\Garrison\garrisonWorldStateProperties.hpp"
@@ -42,6 +42,7 @@
 			"_extraSubactionVariables" \
 		]
 
+#define OOP_CLASS_NAME AIDebugUI
 CLASS("AIDebugUI", "")
 
 	STATIC_VARIABLE("initialized");
@@ -63,7 +64,7 @@ CLASS("AIDebugUI", "")
 	VARIABLE("timeLastGroupRequest");		// Group and unit requests are sent at the same time
 	VARIABLE("timeLastGarrisonRequest");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("NEW");
@@ -152,9 +153,9 @@ CLASS("AIDebugUI", "")
 		#endif
 		// ========================
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
@@ -171,11 +172,11 @@ CLASS("AIDebugUI", "")
 		DELETE(T_GETV("panelGarrison"));
 		DELETE(T_GETV("panelGroup"));
 		DELETE(T_GETV("panelUnit"));
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Base logic
 
-	METHOD("update") {
+	METHOD(update)
 		params [P_THISOBJECT];
 
 		pr _selPrev = T_GETV("curatorSelected");
@@ -250,10 +251,10 @@ CLASS("AIDebugUI", "")
 			T_SETV("timeLastGarrisonRequest", time);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called from "Draw3D" event handler
-	METHOD("onDraw") {
+	METHOD(onDraw)
 		params [P_THISOBJECT];
 
 		T_CALLM0("update");
@@ -315,25 +316,25 @@ CLASS("AIDebugUI", "")
 						//drawSideArrows];
 		} forEach (_units + _groups);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Not used any more
 	/*
-	METHOD("onObjectSelectionChanged") {
+	METHOD(onObjectSelectionChanged)
 		params [P_THISOBJECT, P_OBJECT("_object")];
 		OOP_INFO_1("Object selection changed: %1", _object);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onGroupSelectionChanged") {
+	METHOD(onGroupSelectionChanged)
 		params [P_THISOBJECT, P_GROUP("_group")];
 		OOP_INFO_1("Group selection changed: %1", _group);
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 	// = = = Static methods to create/delete instance = = = = 
 
 	// Static method to create this object
-	STATIC_METHOD("createInstance") {
+	STATIC_METHOD(createInstance)
 		params [P_THISCLASS];
 
 		OOP_INFO_0("CREATE INSTANCE");
@@ -346,9 +347,9 @@ CLASS("AIDebugUI", "")
 		pr _ret = NEW("AIDebugUI", []);
 		SETSV("AIDebugUI", "instance", _ret);
 		_ret
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("deleteInstance") {
+	STATIC_METHOD(deleteInstance)
 		params [P_THISCLASS];
 
 		OOP_INFO_0("DELETE INSTANCE");
@@ -359,14 +360,14 @@ CLASS("AIDebugUI", "")
 			DELETE(_inst);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// = = = = = = = = = = = = = = = = =
 
 
 
 	// ================ Curator open/close event handlers ==================
-	STATIC_METHOD("onCuratorOpen") {
+	STATIC_METHOD(onCuratorOpen)
 		params [P_THISCLASS];
 
 		if (call misc_fnc_isAdminLocal) then {	// Only for admin!
@@ -395,18 +396,18 @@ CLASS("AIDebugUI", "")
 				};
 			}];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	STATIC_METHOD("onCuratorClose") {
+	STATIC_METHOD(onCuratorClose)
 		params [P_THISCLASS];
 		CALLSM0("AIDebugUI", "deleteInstance");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ===================================================
 
 
 	// Performs initialization of debug UI, must be called once when mission is loaded
-	STATIC_METHOD("staticInit") {
+	STATIC_METHOD(staticInit)
 		params [P_THISCLASS];
 
 		OOP_INFO_0("STATIC INIT");
@@ -427,13 +428,13 @@ CLASS("AIDebugUI", "")
 				CALLSM0("AIDebugUI", "onCuratorClose");
 			};
 		}] call CBA_fnc_addPlayerEventHandler;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
 	// =========================== Comms with server =====================
 
-	METHOD("_receiveData") {
+	METHOD(_receiveData)
 		params [P_THISOBJECT, P_ARRAY("_data")];
 
 		// Error
@@ -493,10 +494,10 @@ CLASS("AIDebugUI", "")
 			};
 			
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Remote-executed on client from server
-	STATIC_METHOD("receiveData") {
+	STATIC_METHOD(receiveData)
 		params [P_THISCLASS, P_ARRAY("_data")];
 
 		OOP_INFO_1("receiveData: %1", _data);
@@ -506,16 +507,17 @@ CLASS("AIDebugUI", "")
 		if (!IS_NULL_OBJECT(_instance)) then {
 			CALLM1(_instance, "_receiveData", _data);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
 // Class for one tab
+#define OOP_CLASS_NAME AIDebugPanel
 CLASS("AIDebugPanel", "")
 
 	VARIABLE("ai");	// AI object
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_SETV("ai", NULL_OBJECT);
@@ -543,9 +545,9 @@ CLASS("AIDebugPanel", "")
 
 		// Reset tree veiw - it must have some data
 		T_CALLM0("resetTreeView");
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		pr _ctrl = T_CALLM0("getGroupPanel");
@@ -555,30 +557,30 @@ CLASS("AIDebugPanel", "")
 		uiNamespace sv [_thisObject + "tree", nil];
 		uiNamespace sv [_thisObject + "editAI", nil];
 		uiNamespace sv [_thisObject + "buttonHalt", nil];
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getGroupPanel") {
+	METHOD(getGroupPanel)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "group")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getTreeView") {
+	METHOD(getTreeView)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "tree")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getEditAI") {
+	METHOD(getEditAI)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "editAI")
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("getButtonHalt") {
+	METHOD(getButtonHalt)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "buttonHalt")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Clears all UI fields
-	METHOD("clearData") {
+	METHOD(clearData)
 		params [P_THISOBJECT];
 		
 		T_SETV("ai", NULL_OBJECT);
@@ -588,10 +590,10 @@ CLASS("AIDebugPanel", "")
 
 		T_CALLM0("resetTreeView");
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Updates data of this panel from data array (AIDebugUI.receiveData format)
-	METHOD("updateData") {
+	METHOD(updateData)
 		params [P_THISOBJECT, P_ARRAY("_data")];
 
 		pr _edit = T_CALLM0("getEditAI");
@@ -685,9 +687,9 @@ CLASS("AIDebugPanel", "")
 		pr _stateText = if (_subactionState == -1) then {""} else {ACTION_STATE_TEXT_ARRAY select _subactionState};
 		_tree tvSetText [[_id], format ["Subaction State: %1", _stateText]]; _INC
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("resetTreeView") {
+	METHOD(resetTreeView)
 		params [P_THISOBJECT];
 		pr _tree = T_CALLM0("getTreeView");
 		tvClear _tree;
@@ -700,7 +702,7 @@ CLASS("AIDebugPanel", "")
 		_tree tvAdd [[], "Subaction:"];
 		_tree tvAdd [[], "Subaction Class:"];
 		_tree tvAdd [[], "Subaction State:"];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 

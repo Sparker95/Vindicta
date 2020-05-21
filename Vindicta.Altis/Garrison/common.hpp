@@ -5,8 +5,9 @@
 #define OOP_WARNING
 #define OFSTREAM_FILE "Main.rpt"
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\AI\Garrison\garrisonWorldStateProperties.hpp"
 #include "..\AI\Garrison\AIGarrison.hpp"
@@ -19,6 +20,8 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\MutexRecursive\MutexRecursive.hpp"
 #include "..\AI\Commander\LocationData.hpp"
+
+#include "Garrison.hpp"
 
 // Mutex used in this file
 #ifndef _SQF_VM

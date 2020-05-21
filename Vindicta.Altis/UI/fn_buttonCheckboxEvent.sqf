@@ -4,7 +4,7 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 // Code which does processing of events of our custom checkbox-like button
 params ["_ctrlButton", "_event"];

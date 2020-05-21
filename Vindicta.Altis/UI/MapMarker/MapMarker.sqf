@@ -4,7 +4,7 @@
 //#define NAMESPACE uiNamespace
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\Resources\MapUI\MapUI_Macros.h"
 
 /*
@@ -15,8 +15,8 @@ It's much like a local map marker, but allows to attach events to them like you 
 #define pr private
 
 #define CLASS_NAME "MapMarker"
-
-CLASS(CLASS_NAME, "")
+#define OOP_CLASS_NAME MapMarker
+CLASS("MapMarker", "")
 
 	// All map marker objects
 	STATIC_VARIABLE("all"); // Child classes must also implement this
@@ -44,7 +44,7 @@ CLASS(CLASS_NAME, "")
 	Creates a new MapMarker
 	*/
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		pr _args = [0, 0];
@@ -65,9 +65,9 @@ CLASS(CLASS_NAME, "")
 		// Add it to the array of base class
 		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 		_all pushBackUnique _thisObject;
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		// Remove from the all array of the final class
@@ -81,7 +81,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _allSelected = GET_STATIC_VAR(_thisClass, "allSelected");
 		_allSelected deleteAt (_allSelected find _thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 
@@ -100,7 +100,7 @@ CLASS(CLASS_NAME, "")
 	Returns: nil
 	*/
 
-	METHOD("onDraw") {
+	METHOD(onDraw)
 		params [P_THISOBJECT, "_control"];
 
 		pr _pos = T_GETV("pos");
@@ -116,7 +116,7 @@ CLASS(CLASS_NAME, "")
 			_thisObject // Text
 		];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: setPos
@@ -126,10 +126,10 @@ CLASS(CLASS_NAME, "")
 	_pos - Array, [x, y]
 	Returns: nil
 	*/
-	METHOD("setPos") {
+	METHOD(setPos)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		T_SETV("pos", _pos);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: select
@@ -141,7 +141,7 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("select") {
+	METHOD(select)
 		params [P_THISOBJECT, ["_select", true]];
 
 		OOP_INFO_1("SELECT: %1", _select);
@@ -154,7 +154,7 @@ CLASS(CLASS_NAME, "")
 		} else {
 			_selected deleteAt (_selected find _thisObject);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: show
@@ -167,11 +167,11 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("show") {
+	METHOD(show)
 		params [P_THISOBJECT, ["_show", true]];
 
 		T_SETV("shown", _show);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseEnter
@@ -179,10 +179,10 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("onMouseEnter") {
+	METHOD(onMouseEnter)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseLeave
@@ -190,10 +190,10 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("onMouseLeave") {
+	METHOD(onMouseLeave)
 		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseButtonDown
@@ -206,10 +206,10 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("onMouseButtonDown") {
+	METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseButtonUp
@@ -222,10 +222,10 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("onMouseButtonUp") {
+	METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: onMouseButtonClick
@@ -237,10 +237,10 @@ CLASS(CLASS_NAME, "")
 
 	Returns: nil
 	*/
-	METHOD("onMouseButtonClick") {
+	METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// === Static methods ====
 	/*
@@ -255,7 +255,7 @@ CLASS(CLASS_NAME, "")
 
 	Returns: <MapMarker> or ""
 	*/
-	STATIC_METHOD("getMarkerUnderCursor") {
+	STATIC_METHOD(getMarkerUnderCursor)
 		params ["_thisClass", "_mapControl", "_xCursorPosUI", "_yCursorPosUI"];
 		pr _all = GET_STATIC_VAR(_thisClass, "all");
 
@@ -280,7 +280,7 @@ CLASS(CLASS_NAME, "")
 		} else {
 			_all select _index;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getMarkersUnderCursor
@@ -294,7 +294,7 @@ CLASS(CLASS_NAME, "")
 
 	Returns: array of MapMarker objects.
 	*/
-	STATIC_METHOD("getMarkersUnderCursor") {
+	STATIC_METHOD(getMarkersUnderCursor)
 		params ["_thisClass", "_mapControl", "_xCursorPosUI", "_yCursorPosUI"];
 		pr _all = GET_STATIC_VAR(_thisClass, "all");
 
@@ -313,25 +313,25 @@ CLASS(CLASS_NAME, "")
 			[_xCursorPosUI, _yCursorPosUI] inArea [[_mrkPosUIX, _mrkPosUIY], _eWidthUI, _eHeightUI, 0, true, -1]
 			&& GETV(_x, "shown")
 		}
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getAll
 	Returns an array of all map markers of this class.
 	*/
-	STATIC_METHOD("getAll") {
+	STATIC_METHOD(getAll)
 		params [P_THISCLASS];
 		GETSV(_thisClass, "all");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: (static)getAllSelected
 	Returns an array of all selected map markers of this class
 	*/
-	STATIC_METHOD("getAllSelected") {
+	STATIC_METHOD(getAllSelected)
 		params [P_THISCLASS];
 		GETSV(_thisClass, "allSelected") select {GETV(_x, "shown")}; // Return only markers which are shown
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 ENDCLASS;

@@ -15,11 +15,10 @@ private _umArrays = [
 ];
 
 {
-	private _items = _x;
-	if(!isNil "_items") then {
+	if(!isNil "_x") then {
 		private _umName = _umArrays#_forEachIndex;
 		private _umItems = missionNamespace getVariable _umName;
-		_umItems append _items;
+		_umItems append _x;
 		publicVariable _umName;
 	};
 } forEach _undercoverItems;

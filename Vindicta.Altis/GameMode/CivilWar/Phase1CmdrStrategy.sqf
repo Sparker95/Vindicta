@@ -5,8 +5,9 @@ Class: Phase1CmdrStrategy
 Strategy for commander to use during phase 1 gameplay.
 Sends QRFs, doesn't deploy roadblocks, doesn't capture anything.
 */
+#define OOP_CLASS_NAME Phase1CmdrStrategy
 CLASS("Phase1CmdrStrategy", "CmdrStrategy")
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		//T_SETV("takeLocOutpostPriority", 			0);
@@ -29,5 +30,5 @@ CLASS("Phase1CmdrStrategy", "CmdrStrategy")
 		//T_SETV("constructLocRoadblockPriority", 	0);
 		//T_SETV("constructLocRoadblockCoeff", 		0);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 ENDCLASS;

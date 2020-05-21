@@ -1,5 +1,7 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
+#define OOP_CLASS_NAME ActionUnitAmbientAnim
 CLASS("ActionUnitAmbientAnim", "ActionUnit")
 
 	VARIABLE("target");
@@ -8,7 +10,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 	VARIABLE("spawnHandle");
 	VARIABLE("savedInventory");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _target = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET, []);
@@ -21,9 +23,9 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		T_SETV("duration", _duration);
 		T_SETV("spawnHandle", scriptNull);
 		T_SETV("savedInventory", []);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 		
 		// Mark the target as free for use
@@ -52,9 +54,9 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_loadInventory;
 			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_deleteInventory;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _hO = T_GETV("hO");
@@ -122,10 +124,10 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		private _state = T_CALLM0("activateIfInactive");
@@ -139,9 +141,9 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 
 		T_SETV("state", _state);
 		_state
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	// METHOD("terminate") {
+	// METHOD(terminate)
 	// 	params [P_THISOBJECT];
-	// } ENDMETHOD;
+	// ENDMETHOD;
 ENDCLASS;

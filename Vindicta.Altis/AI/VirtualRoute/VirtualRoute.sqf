@@ -2,11 +2,12 @@
 #define OOP_ERROR
 #define OOP_WARNING
 
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "VirtualRoute.hpp"
 
 #define pr private
 
+#define OOP_CLASS_NAME VirtualRoute
 CLASS("VirtualRoute", "")
 
 	VARIABLE_ATTR("recalculateInterval", [ATTR_PRIVATE]);
@@ -46,7 +47,7 @@ CLASS("VirtualRoute", "")
 	_speedFn - Optional, function to override convoy speed, called during update.
 	_async - Optional, bool, default true. If true, calculates the route in another thread. If false, calculates the route right now.
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [
 			P_THISOBJECT,
 			"_from",
@@ -189,9 +190,9 @@ CLASS("VirtualRoute", "")
 		} else {
 			[_thisObject] call _calcRoute;
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		T_CALLM("waitUntilCalculated", []);
@@ -200,9 +201,9 @@ CLASS("VirtualRoute", "")
 		if(_debugDraw) then {
 			T_CALLM("clearDebugDraw", []);
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("waitUntilCalculated") {
+	METHOD(waitUntilCalculated)
 		params [P_THISOBJECT];
 		// Make sure calculation is terminated. If it isn't then we must have run it async, so we should be 
 		// able to wait for it I guess?
@@ -211,35 +212,35 @@ CLASS("VirtualRoute", "")
 				T_GETV("calculated") or T_GETV("failed")
 			};
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: start
 	Start moving during process calls.
 	*/
-	METHOD("start") {
+	METHOD(start)
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", false);
 		T_SETV("last_t", GAME_TIME);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: stop
 	Stop moving during process calls.
 	*/
-	METHOD("stop") {
+	METHOD(stop)
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", true);
 		T_SETV("last_t", GAME_TIME);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: process
 	Update position, moving along route. Only moves if started.
 	*/
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 		
 		private _failed = T_GETV("failed");
@@ -300,7 +301,7 @@ CLASS("VirtualRoute", "")
 		_pos = _pos vectorAdd (vectorNormalized (_nextPos vectorDiff _pos) vectorMultiply _dist);
 		T_SETV("pos", _pos);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	/*
@@ -315,7 +316,7 @@ CLASS("VirtualRoute", "")
 	Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...].
 	First array element corresponds to the lead vehicle.
 	*/
-	METHOD("getConvoyPositions") {
+	METHOD(getConvoyPositions)
 		params [
 			P_THISOBJECT,
 			"_number",
@@ -375,7 +376,7 @@ CLASS("VirtualRoute", "")
 		};
 
 		_convoyPositions
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: debugDraw
@@ -386,7 +387,7 @@ CLASS("VirtualRoute", "")
 	_routeColor - color to use to draw the route path.
 	_waypointColor - color to use to draw waypoints
 	*/
-	METHOD("debugDraw") {
+	METHOD(debugDraw)
 		params [
 			P_THISOBJECT,
 			["_routeColor", "ColorBlack"],
@@ -417,41 +418,41 @@ CLASS("VirtualRoute", "")
 		 {
 		 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
 		 } forEach _waypoints;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: clearDebugDraw
 	Clear debug markers for this route.
 	*/
-	METHOD("clearDebugDraw") {
+	METHOD(clearDebugDraw)
 		params [P_THISOBJECT];
 		["gps_route_" + _thisObject] call gps_test_fn_clear_markers;
 		["gps_waypoint_" + _thisObject] call gps_test_fn_clear_markers;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: clearAllDebugDraw
 	Clear debug markers for all routes.
 	*/
-	STATIC_METHOD("clearAllDebugDraw") {
+	STATIC_METHOD(clearAllDebugDraw)
 		["gps_route_"] call gps_test_fn_clear_markers;
 		["gps_waypoint_"] call gps_test_fn_clear_markers;
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getPos
 	Returns: current position
 	*/
-	METHOD("getPos") {
+	METHOD(getPos)
 		params [P_THISOBJECT];
 		T_GETV("pos")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: sets the current position to the nearest position along the route.
 	Returns: nothing
 	*/
-	METHOD("setPos") {
+	METHOD(setPos)
 		params [P_THISOBJECT, P_ARRAY("_pos") ];
 
 		if (T_GETV("calculated")) then {
@@ -490,15 +491,15 @@ CLASS("VirtualRoute", "")
 			// We want to set a position before it has actually been calculated
 			// It's not good but probably we can just ignore this because it means we haven't gone too far away
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: getAIWaypoints
 	Returns: array of waypoints for AI navigation, taking account the current position
 	*/
-	METHOD("getAIWaypoints") {
+	METHOD(getAIWaypoints)
 		params [P_THISOBJECT];
 		T_GETV("waypoints")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

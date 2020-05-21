@@ -4,7 +4,7 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Location\Location.hpp"
 
 #define pr private
@@ -33,11 +33,12 @@ You can also use getButtonControl to get the control handle of the button with t
 Author: Sparker 29 October 2019
 */
 
+#define OOP_CLASS_NAME DialogOneTabButtons
 CLASS("DialogOneTabButtons", "DialogBase")
 
 	VARIABLE("buttonTexts");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		T_CALLM2("addTab", "TabTextWithButtons", "");
@@ -48,16 +49,16 @@ CLASS("DialogOneTabButtons", "DialogBase")
 
 		T_CALLM1("setCurrentTab", 0); // Will call the tab constructor
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Call this to set text of this dialog
-	METHOD("setText") {
+	METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _tab = T_CALLM0("getCurrentTab");
 		CALLM1(_tab, "setText", _text);
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("createButtons") {
+	METHOD(createButtons)
 		params [P_THISOBJECT, P_ARRAY("_buttonTexts")];
 
 		OOP_INFO_1("CREATE BUTTONS: %1", _buttonTexts);
@@ -67,42 +68,43 @@ CLASS("DialogOneTabButtons", "DialogBase")
 
 		// Resize the UI
 		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Called when user clicks on button
 	// Button ID is passed, 0 is leftmost button
-	/* virtual */ METHOD("onButtonClick") {
+	/* virtual */ METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_1("Button was clicked: %1", _ID);
 
 		//DELETE(_thisObject);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Returns button control with given ID
-	METHOD("getButtonControl") {
+	METHOD(getButtonControl)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 		pr _tag = format ["TAG_BUTTON_%1", _ID];
 		pr _tab = T_CALLM0("getCurrentTab");
 		CALLM1(_tab, "findControl", _tag)
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Adds code which will be executed when button with given ID is pushed
-	METHOD("addButtonClickHandler") {
+	METHOD(addButtonClickHandler)
 		params [P_THISOBJECT, P_NUMBER("_ID"), P_CODE("_code")];
 		pr _ctrl = T_CALLM1("getButtonControl", _ID);
 		if (! (isNull _ctrl)) then {
 			_ctrl ctrlAddEventHandler ["buttonClick", _code];
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
 
+#define OOP_CLASS_NAME TabTextWithButtons
 CLASS("TabTextWithButtons", "DialogTabBase")
 
 	VARIABLE("nButtons");
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_dialogObj")];
 
 		pr _display = T_CALLM0("getDisplay");
@@ -117,9 +119,9 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 
 		T_SETV("nButtons", 0);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("createButtons") {
+	METHOD(createButtons)
 		params [P_THISOBJECT, P_ARRAY("_buttonTexts")];
 
 		OOP_INFO_1("CREATE BUTTONS: %1", _buttonTexts);
@@ -140,9 +142,9 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 		} forEach _buttonTexts;
 
 		// Buttons will be resized separately
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("setText") {
+	METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text"), P_BOOL_DEFAULT_TRUE("_fitTextHeight")];
 
 		pr _ctrl = T_CALLM1("findControl", "TAG_TEXT");
@@ -158,9 +160,9 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 			CALLM2(_dlgobj, "setContentSize", _width, _height);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	/* override */ METHOD("resize") {
+	/* override */ METHOD(resize)
 		params [P_THISOBJECT, P_NUMBER("_width"), P_NUMBER("_height")];
 
 		OOP_INFO_0("RESIZE");
@@ -213,11 +215,11 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 			_ctrl ctrlCommit 0;
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// private function, don't touch it
 	// use dialog's onButtonClick instead
-	METHOD("_onButton") {
+	METHOD(_onButton)
 		params [P_THISOBJECT, "_ctrl"];
 
 		// Get ID of the button
@@ -226,6 +228,6 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 		// Call the dialog's function
 		pr _dlgobj = T_CALLM0("getDialogObject");
 		CALLM1(_dlgobj, "onButtonClick", _ID);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

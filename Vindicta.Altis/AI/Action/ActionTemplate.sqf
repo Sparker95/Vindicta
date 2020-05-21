@@ -1,4 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Message\Message.hpp"
 #include "..\Action\Action.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -15,17 +15,18 @@ Template of an Action class
 
 #define pr private
 
+#define OOP_CLASS_NAME MyAction
 CLASS("MyAction", "Action");
 
 	// ------------ N E W ------------
 
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD("activate") {
+	METHOD(activate)
 		params [P_THISOBJECT];
 
 		// Set state
@@ -34,32 +35,32 @@ CLASS("MyAction", "Action");
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD("process") {
+	METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("activateIfInactive");
 
 		// Return the current state
 		ACTION_STATE_ACTIVE
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	METHOD("terminate") {
+	METHOD(terminate)
 		params [P_THISOBJECT];
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Calculates cost of this action
 	/*
-	STATIC_METHOD( P_THISCLASS, "getCost") {
+	STATIC_METHOD(P_THISCLASS, "getCost") {
 		params [P_OOP_OBJECT("_AI"), P_ARRAY("_wsStart"), P_ARRAY("_wsEnd")];
 
 		// Return cost
 		0
-	} ENDMETHOD;
+	ENDMETHOD;
 	*/
 
 ENDCLASS;

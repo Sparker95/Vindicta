@@ -8,12 +8,12 @@ removeHeadgear this;
 removeGoggles this;
 
 _RandomUniform = selectRandom ["rhsgref_uniform_ERDL","rhsgref_uniform_og107","rhsgref_uniform_og107_erdl"];
-this addUniform _RandomUniform;
+this forceaddUniform _RandomUniform;
 _RandomHeadgear = selectRandom ["H_Bandanna_khk_hs","H_Booniehat_khk_hs","H_Cap_oli_hs", "H_Booniehat_oli"];
 this addHeadgear _RandomHeadgear;
 _RandomVest = selectRandom ["rhsgref_chestrig","V_Chestrig_oli"];
 this addVest _RandomVest;
-this forceAddUniform "rhsgref_uniform_tigerstripe";
+this forceaddUniform "rhsgref_uniform_tigerstripe";
 
 this addWeapon "rhs_weap_m3a1_specops";
 this addPrimaryWeaponItem "rhsgref_30rnd_1143x23_M1T_SMG";

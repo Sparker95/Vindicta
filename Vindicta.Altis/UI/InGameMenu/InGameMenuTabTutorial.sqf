@@ -4,16 +4,15 @@
 #define OOP_DEBUG
 
 #define OFSTREAM_FILE "UI.rpt"
-#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\common.h"
 #include "..\..\Location\Location.hpp"
 
 #define pr private
 
+#define OOP_CLASS_NAME InGameMenuTabTutorial
 CLASS("InGameMenuTabTutorial", "DialogTabBase")
 
-	STATIC_VARIABLE("instance");
-
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT];
 
 		SETSV("InGameMenuTabTutorial", "instance", _thisObject);
@@ -42,17 +41,17 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 
 		_listnbox lnbSetCurSelRow 0;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("delete") {
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		SETSV("InGameMenuTabTutorial", "instance", nil);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("drawPageWithIndex") {
+	METHOD(drawPageWithIndex)
 		params [P_THISOBJECT, P_NUMBER("_index")];
 
 		if (_index <= -1) exitWith {};
@@ -74,19 +73,19 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 		pr _imageCtrl = T_CALLM1("findControl", "TAB_TUT_PICTURE");
 		_imageCtrl ctrlSetText _imagePath;
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("onListboxSelChanged") {
+	METHOD(onListboxSelChanged)
 		params [P_THISOBJECT];
 
 		pr _listnbox = T_CALLM1("findControl", "TAB_TUT_LISTBOX");
 		pr _index = lnbCurSelRow _listnbox;
 		T_CALLM1("drawPageWithIndex", _index);
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
-	METHOD("onButtonNext") {
+	METHOD(onButtonNext)
 		params [P_THISOBJECT];
 
 		// get current listbox index
@@ -101,10 +100,10 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 		};
 
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
-	METHOD("onButtonPrevious") {
+	METHOD(onButtonPrevious)
 		params [P_THISOBJECT];
 
 		// get current listbox index
@@ -118,14 +117,14 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 			_listnbox lnbSetCurSelRow (_index - 1);
 		};
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
-	/* virtual */ METHOD("beforeDelete") {
+	/* virtual */ METHOD(beforeDelete)
 		params [P_THISOBJECT];
 
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

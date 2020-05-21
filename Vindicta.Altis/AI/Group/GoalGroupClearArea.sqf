@@ -5,6 +5,7 @@ Goal for a group to clear a certain area.
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalGroupClearArea
 CLASS("GoalGroupClearArea", "Goal")
 	
 	// ----------------------------------------------------------------------
@@ -13,7 +14,7 @@ CLASS("GoalGroupClearArea", "Goal")
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _group = GETV(_AI, "agent");
@@ -37,10 +38,13 @@ CLASS("GoalGroupClearArea", "Goal")
 			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
 
+			// Move to within the clearable area
+			pr _moveRadius = CALLSM3("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS, 100);
+
 			// Start clear area from center, so move there first
 			pr _moveParams = [
 				[TAG_POS, _pos],
-				[TAG_MOVE_RADIUS, 75]
+				[TAG_MOVE_RADIUS, _moveRadius]
 			];
 			CALLSM2("Action", "mergeParameterValues", _moveParams, _parameters);
 			pr _actionMove = NEW("ActionGroupMove", [_AI ARG _moveParams]);
@@ -51,6 +55,6 @@ CLASS("GoalGroupClearArea", "Goal")
 
 			_actionSerial
 		};
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

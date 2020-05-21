@@ -69,6 +69,9 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF_Recon\ini
 //RHS_HIDF
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf";
+//RHS_MNAF
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_MNAF\MNAF\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_MNAF\MNAF_Recon\init.sqf";
 //RHS_LDF_NATO
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF_NATO\LDF_NATO_Police\init.sqf";
@@ -111,5 +114,7 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_RUS_POLICE\init.s
 call compile preprocessFileLineNumbers "Templates\Loadouts\GEXP_POLICE\init.sqf";
 // 3CB BAF
 call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_BAF\init.sqf";
+// 3CB CCIVS
+call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_CCIVS\init.sqf";
 // 3CB Takistan Civillians
 call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_TCIV\init.sqf";

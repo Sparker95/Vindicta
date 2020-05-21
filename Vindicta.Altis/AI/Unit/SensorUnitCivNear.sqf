@@ -6,6 +6,7 @@ This sensor gets stimulated when someone salutes to this unit
 
 #define pr private
 
+#define OOP_CLASS_NAME SensorUnitCivNear
 CLASS("SensorUnitCivNear", "SensorStimulatable")
 
 	VARIABLE("timeAnnoyed");
@@ -15,7 +16,7 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("doComplexCheck") {
+	/*virtual*/ METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		
 		
@@ -31,14 +32,14 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 		//if ((side _src isEqualTo side _oh)) exitWith {false};
 		
 		true
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                           H A N D L E   S T I M U L U S
 	// | Creates a world fact specific to this sensor
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("handleStimulus") {
+	/*virtual*/ METHOD(handleStimulus)
 		params [P_THISOBJECT,["_stimulus",[],[[]] ] ];
 		pr _AI = T_GETV("AI");
 		pr _value = STIMULUS_GET_VALUE(_stimulus);
@@ -72,15 +73,15 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 
 		
 		
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   G E T  S T I M U L U S   T Y P E S
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNIT_CIV_NEAR]
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

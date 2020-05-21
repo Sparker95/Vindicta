@@ -9,6 +9,7 @@ Author: Sparker 24.11.2018
 
 #define pr private
 
+#define OOP_CLASS_NAME GoalUnitSalute
 CLASS("GoalUnitSalute", "Goal")
 	
 	// ----------------------------------------------------------------------
@@ -17,7 +18,7 @@ CLASS("GoalUnitSalute", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
-	STATIC_METHOD("calculateRelevance") {
+	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// We want to salute if there is a fact that we have been saluted by someone
@@ -33,7 +34,7 @@ CLASS("GoalUnitSalute", "Goal")
 		
 		diag_log format ["[GoalUnitSalute] high relevance for AI: %1", _AI];
 		GET_STATIC_VAR("GoalUnitSalute", "relevance")
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
@@ -42,7 +43,7 @@ CLASS("GoalUnitSalute", "Goal")
 	// create an Action and return it.
 	// Otherwise it must return ""
 	
-	STATIC_METHOD("createPredefinedAction") {
+	STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Find the unit to salute to from the world fact
@@ -60,6 +61,6 @@ CLASS("GoalUnitSalute", "Goal")
 		
 		// Return the created action
 		_action
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;

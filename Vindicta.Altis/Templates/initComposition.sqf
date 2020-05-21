@@ -35,5 +35,4 @@ T_comp_ground_or_infantry_mask = [T_comp_ground_mask, T_comp_infantry_mask] call
 
 T_comp_static_or_cargo_mask = [T_comp_static_mask, T_comp_static_cargo] call comp_fnc_maskOrMask;
 
-
 T_comp_null = [0] call comp_fnc_new;

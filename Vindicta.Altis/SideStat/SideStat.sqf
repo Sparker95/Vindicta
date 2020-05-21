@@ -3,13 +3,14 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\common.h"
 
 /*
 Class: SideStat
 Author: zalexki 18.03.2019
 */
 
+#define OOP_CLASS_NAME SideStat
 CLASS("SideStat", "");
 
 	//Integer
@@ -23,20 +24,20 @@ CLASS("SideStat", "");
 	_side - Side
 	Returns: nil
 	*/
-	METHOD("new") {
+	METHOD(new)
 		params [P_THISOBJECT, "_side", "_humanResources"];
 		T_SETV("side", _side);
 		T_SETV("humanResources", _humanResources);
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: getHumanResources
 	Returns: integer - humanResources
 	*/
-	METHOD("getHumanResources") {
+	METHOD(getHumanResources)
 		params [P_THISOBJECT];
 		T_GETV("humanResources");
-	} ENDMETHOD;
+	ENDMETHOD;
 	
 	/*
 	Method: incrementHumanResourcesBy
@@ -44,13 +45,13 @@ CLASS("SideStat", "");
 	_valueToInc - integer
 	Returns: nil
 	*/
-	METHOD("incrementHumanResourcesBy") {
+	METHOD(incrementHumanResourcesBy)
 		params [P_THISOBJECT, "_valueToInc"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR + _valueToInc;
 
 		T_SETV("humanResources", _nextHR);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	/*
 	Method: decrementHumanResourcesBy 
@@ -58,12 +59,12 @@ CLASS("SideStat", "");
 	_valueToDec - integer
 	Returns: nil
 	*/
-	METHOD("decrementHumanResourcesBy") {
+	METHOD(decrementHumanResourcesBy)
 		params [P_THISOBJECT, "_valueToDec"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR - _valueToDec;
 
 		T_SETV("humanResources", _nextHR);
-	} ENDMETHOD;
+	ENDMETHOD;
 
 ENDCLASS;
