@@ -800,7 +800,7 @@ CLASS("AIUnitHuman", "AIUnit")
 				WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
 			} else {
 				pr _hO = T_GETV("hO");			// If target is building
-				pr _actualPosition = _hO buildingPos _buildingPosID;
+				pr _actualPosition = _target buildingPos _buildingPosID;
 				pr _value = (_hO distance _actualPosition) <= T_GETV("moveRadius");
 				WS_SET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS, _value);
 			};

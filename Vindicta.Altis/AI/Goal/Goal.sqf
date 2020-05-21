@@ -56,6 +56,24 @@ CLASS("Goal", "")
 		]
 	ENDMETHOD;
 
+	/*
+	Method: getCommonParameters
+
+	Other classes must override that to declare parameters passed to action.
+	Typically some base class of multiple actions can have some common parameters.
+
+	Returns array [requiredParameters, optionalParameters]
+	requiredParameters and optionalParameters are arrays of: [tag, type]
+		tag - string
+		type - some value against which isEqualType will be used
+	*/
+	STATIC_METHOD(getCommonParameters)
+		[
+			[],	// Required parameters
+			[ [TAG_INSTANT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	// Verifies parameters
 	STATIC_METHOD(verifyParameters)
 		params [P_THISCLASS, P_ARRAY("_parameters")];
@@ -63,7 +81,9 @@ CLASS("Goal", "")
 		pr _allGood = true;
 		pr _pPossible = CALLSM0(_thisClass, "getPossibleParameters");
 		_pPossible params ["_pRequired", "_pOptional"];
-		_pAllowed = _pRequired + _pOptional + [[TAG_INSTANT, [true]]]; // Instant is always allowed
+		pr _pCommon = CALLSM0(_thisClass, "getCommonParameters");
+		_pCommon params ["_pCommonRequired", "_pCommonOptional"];
+		_pAllowed = _pRequired + _pOptional + _pCommonRequired + _pCommonOptional; // Instant is always allowed
 		
 		// Verify that no illegal parameters are passed
 		{
@@ -97,7 +117,7 @@ CLASS("Goal", "")
 				OOP_ERROR_3("%1: Required parameter not found: %2, passed parameters: %3", _thisClass, _tag, _parameters);
 				_allGood = false;
 			};
-		} forEach _pRequired;
+		} forEach (_pRequired + _pCommonRequired);
 
 		_allGood;
 	ENDMETHOD;

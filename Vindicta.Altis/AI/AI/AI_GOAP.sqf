@@ -613,7 +613,8 @@ CLASS("AI_GOAP", "AI")
 		};
 		//_scope30 = nil;
 		
-		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE, _repeat];
+		// !! It makes a deep copy of parameters
+		_goalsExternal pushBackUnique [_goalClassName, _bias, +_parameters, _sourceAI, ACTION_STATE_INACTIVE, _repeat];
 		
 		//private _scope35 = createProfileScope "_onGoalAdded";
 		// Call the "onGoalAdded" static method

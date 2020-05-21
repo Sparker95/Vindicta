@@ -176,7 +176,8 @@ CLASS("Action", "MessageReceiverEx")
 	/*
 	Method: getPossibleParameters
 
-	Other classes must override that to declare parameters passed to action! 
+	Other classes must override that to declare parameters passed to action!
+	The final possible parameters array is sum of getPossibleParameters and getCommonParameters
 
 	Returns array [requiredParameters, optionalParameters]
 	requiredParameters and optionalParameters are arrays of: [tag, type]
@@ -190,6 +191,24 @@ CLASS("Action", "MessageReceiverEx")
 		]
 	ENDMETHOD;
 
+	/*
+	Method: getCommonParameters
+
+	Other classes must override that to declare parameters passed to action.
+	Typically some base class of multiple actions can have some common parameters.
+
+	Returns array [requiredParameters, optionalParameters]
+	requiredParameters and optionalParameters are arrays of: [tag, type]
+		tag - string
+		type - some value against which isEqualType will be used
+	*/
+	METHOD(getCommonParameters)
+		[
+			[],	// Required parameters
+			[ [TAG_INSTANT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	// Verifies parameters
 	METHOD(verifyParameters)
 		params [P_THISOBJECT, P_ARRAY("_parameters")];
@@ -197,7 +216,9 @@ CLASS("Action", "MessageReceiverEx")
 		pr _allGood = true;
 		pr _pPossible = T_CALLM0("getPossibleParameters");
 		_pPossible params ["_pRequired", "_pOptional"];
-		_pAllowed = _pRequired + _pOptional + [[TAG_INSTANT, [true]]]; // Instant is always allowed
+		pr _pCommon = T_CALLM0("getCommonParameters");
+		_pCommon params ["_pCommonRequired", "_pCommonOptional"];
+		_pAllowed = _pRequired + _pOptional + _pCommonRequired + _pCommonOptional; // Instant is always allowed
 		
 		// Verify that no illegal parameters are passed
 		{
@@ -229,7 +250,7 @@ CLASS("Action", "MessageReceiverEx")
 				OOP_ERROR_2("Required parameter not found: %1, passed parameters: %2", _tag, _parameters);
 				_allGood = false;
 			};
-		} forEach _pRequired;
+		} forEach (_pRequired + _pCommonRequired);
 
 		_allGood;
 	ENDMETHOD;

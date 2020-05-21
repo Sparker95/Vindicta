@@ -6,7 +6,7 @@ Goal for a group to clear a certain area.
 #define pr private
 
 #define OOP_CLASS_NAME GoalGroupClearArea
-CLASS("GoalGroupClearArea", "Goal")
+CLASS("GoalGroupClearArea", "GoalGroup")
 	
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N

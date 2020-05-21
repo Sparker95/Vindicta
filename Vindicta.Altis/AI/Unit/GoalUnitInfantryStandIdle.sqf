@@ -11,7 +11,7 @@ CLASS("GoalUnitInfantryStandIdle", "Goal")
 
 	STATIC_METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET_STAND_IDLE, [objNull, [], NULL_OBJECT]] ],	// Required parameters
+			[ [TAG_TARGET_STAND_IDLE, [objNull, [], NULL_OBJECT]], [TAG_DURATION_SECONDS, [0]] ],	// Required parameters
 			[]	// Optional parameters
 		]
 	ENDMETHOD;

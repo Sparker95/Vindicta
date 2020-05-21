@@ -139,7 +139,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			_activity params ["_distance", "_goal", "_parameters"];
 			_activeUnits pushBackUnique [_unit, _goal];
 			private _unitAI = CALLM0(_unit, "getAI");
-			private _fullParams = _parameters + [[TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, selectRandom [5, 10, 20] * 60]];
+			private _fullParams = _parameters + [[TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, (selectRandom [5, 10, 20]) * 60]];
 			CALLM4(_unitAI, "addExternalGoal", _goal, 0, _fullParams, _AI);
 		};
 
@@ -147,9 +147,10 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			{
 				private _unit = _x;
 				private _unitAI = CALLM0(_unit, "getAI");
-				private _params = [[TAG_POS, _nearPos], [TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, selectRandom [5, 10, 20] * 60]];
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitIdle", 0, _params, _AI);
-				_activeUnits pushBackUnique [_unit, "GoalUnitIdle"];
+				private _randomOffset = [-10 + random 20, -10 + random 20, 0];
+				private _params = [[TAG_TARGET_STAND_IDLE, _nearPos vectorAdd _randomOffset], [TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, (selectRandom [5, 10, 20]) * 60 ]];
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryStandIdle", 0, _params, _AI);
+				_activeUnits pushBackUnique [_unit, "GoalUnitInfantryStandIdle"];
 			} forEach _freeUnits;
 		};
 	ENDMETHOD;

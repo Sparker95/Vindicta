@@ -18,6 +18,7 @@ call compile preprocessFileLineNumbers "AI\Group\ActionGroupStayInVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupUnflipVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupWatchPosition.sqf";
+call compile preprocessFileLineNumbers "AI\Group\_GoalGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupClearArea.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupFlee.sqf";

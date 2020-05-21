@@ -18,7 +18,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 	METHOD(getPossibleParameters)
 		[
-			[ [TAG_TARGET, [objNull]]],	// Required parameters
+			[ ],	// Required parameters
 			[ [TAG_ONLY_COMBAT_VEHICLES, [false]] ]	// Optional parameters
 		]
 	ENDMETHOD;

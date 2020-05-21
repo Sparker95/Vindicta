@@ -93,7 +93,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 		pr _ai = T_GETV("ai");
 		pr _actualTargetPos = CALLM0(_ai, "getMoveTargetPosAGL");
 		if ((_actualTargetPos distance _targetPos) > T_GETV("moveRadius")) then {
-			T_SETV("targetPos", _targetPos);
+			T_SETV("targetPos", _actualTargetPos);
 			true;
 		} else {
 			false;
@@ -181,15 +181,18 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 						pr _actualTargetPos = CALLM0(_ai, "getMoveTargetPosAGL");
 						pr _currentPos = getPos _hO;
 						
-						OOP_WARNING_2("Unit stuck for logner than 10 seconds. Position: %1, destination: %2", _currentPos, _actualTargetPos);
+						OOP_WARNING_2("Unit stuck for longer than 15 seconds. Position: %1, destination: %2", _currentPos, _actualTargetPos);
 						OOP_WARNING_0("Moving unit by 1 meter");
 
 						// Try to move unit towards its target
 						pr _vectorDiff = _actualTargetPos vectorDiff _currentPos;
+						pr _distRemaining = _hO distance _actualTargetPos;
+						pr _pushDistance = _distRemaining min 1.0;	// If we are closer than one meter, don't move by one meter
 						// todo detection if in building or destination is building
 						pr _vectorDiffNorm = vectorNormalized _vectorDiff;
-						_vectorDiffNorm set [2, 0]; // Discard vertical difference
-						_hO setPos (_currentPos vectorAdd _vectorDiffNorm);
+						_vectorDiffNorm set [2, 0.1]; 				// Discard vertical difference
+						pr _vectorPush = _vectorDiffNorm vectorMultiply _pushDistance;
+						_hO setPos (_currentPos vectorAdd _vectorPush);
 					};
 				};
 			};

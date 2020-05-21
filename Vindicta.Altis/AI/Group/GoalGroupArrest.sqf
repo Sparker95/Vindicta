@@ -9,7 +9,7 @@ Author: Marvis 09.05.2019
 #define pr private
 
 #define OOP_CLASS_NAME GoalGroupArrest
-CLASS("GoalGroupArrest", "Goal")
+CLASS("GoalGroupArrest", "GoalGroup")
 
 	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
