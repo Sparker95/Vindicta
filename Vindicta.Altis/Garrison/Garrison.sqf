@@ -3325,31 +3325,74 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// Update spawn state of the garrison
 	METHOD_FILE(updateSpawnState, "Garrison\updateSpawnState.sqf");
 
-	// Debug functions
-
 	METHOD(createAddInfGroup)
 		params [P_THISOBJECT, "_side", "_subcatID", ["_type", GROUP_TYPE_INF]];
+
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			OOP_WARNING_MSG("Garrison is already destroyed", []);
+		};
+
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG _type]);
 		// Create units from template
 		private _template = CALLM2(gGameMode, "getTemplate", _side, "");
-		private _count = CALLM(_newGroup, "createUnitsFromTemplate", [_template ARG _subcatID]);
-		T_CALLM("addGroup", [_newGroup]);
+		private _count = CALLM2(_newGroup, "createUnitsFromTemplate", _template, _subcatID);
+		T_CALLM2("postMessageAsync", "addGroup", [_newGroup]);
 		[_newGroup, _count]
 	ENDMETHOD;
-	
+
+	METHOD(createAddInfGroupInThread)
+		params [P_THISOBJECT, "_side", "_subcatID", ["_type", GROUP_TYPE_INF]];
+
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			OOP_WARNING_MSG("Garrison is already destroyed", []);
+		};
+		ASSERT_THREAD(_thisObject);
+
+		// Create an empty group
+		private _newGroup = NEW("Group", [_side ARG _type]);
+		// Create units from template
+		private _template = CALLM2(gGameMode, "getTemplate", _side, "");
+		private _count = CALLM2(_newGroup, "createUnitsFromTemplate", _template, _subcatID);
+		T_CALLM1("addGroup", _newGroup);
+		[_newGroup, _count]
+	ENDMETHOD;
+
 	METHOD(createAddVehGroup)
 		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
+
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			OOP_WARNING_MSG("Garrison is already destroyed", []);
+		};
+
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH]);
 		private _template = CALLM2(gGameMode, "getTemplate", _side, "");
 		private _newUnit = NEW("Unit", [_template ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
 		// Create crew for the vehicle
-		CALLM(_newUnit, "createDefaultCrew", [_template]);
-		T_CALLM("addGroup", [_newGroup]);
+		CALLM1(_newUnit, "createDefaultCrew", _template);
+		T_CALLM2("postMessageAsync", "addGroup", [_newGroup]);
 		_newGroup
 	ENDMETHOD;
-	
+
+	METHOD(createAddVehGroupInThread)
+		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
+
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			OOP_WARNING_MSG("Garrison is already destroyed", []);
+		};
+		ASSERT_THREAD(_thisObject);
+
+		// Create an empty group
+		private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH]);
+		private _template = CALLM2(gGameMode, "getTemplate", _side, "");
+		private _newUnit = NEW("Unit", [_template ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
+		// Create crew for the vehicle
+		CALLM1(_newUnit, "createDefaultCrew", _template);
+		T_CALLM1("addGroup", _newGroup);
+		_newGroup
+	ENDMETHOD;
+
 	// Static helpers
 
 	// Updates spawn state of garrisons close to the provided position
