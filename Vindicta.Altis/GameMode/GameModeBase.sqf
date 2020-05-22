@@ -1308,8 +1308,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Check if this position is far enough from other positions
 			OOP_INFO_1("Checking roadblock position: %1", _newPos);
-			private _id0 = _roadblockPositionsAroundLocations findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700)};
-			private _id1 = _predefinedRoadblockPositions findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700) };
+			private _id0 = _roadblockPositionsAroundLocations findIf { !(_x isEqualTo _newPos) && (_x distance2D _newPos < 700)};
+			private _id1 = _predefinedRoadblockPositions findIf { !(_x isEqualTo _newPos) && (_x distance2D _newPos < 700) };
 			if ( (_id0 == NOT_FOUND) && (_id1 == NOT_FOUND) ) then {
 				_i = _i + 1;
 				OOP_INFO_0("  OK");
@@ -1331,7 +1331,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		{ // foreach _roadblockPositionsFinal
 			private _pos = _x;
-
+			private _roads = (_pos nearRoads 300) apply {[_x distance2D _pos, _x]};
+			if(count _roads == 0) then {
+				diag_log format ["Roadblock at %1 doesn't have nearby roads?!", _pos];
+			};
 			// Reveal positions to commanders
 			{
 				CALLM1(_x, "addRoadblockPosition", _pos);

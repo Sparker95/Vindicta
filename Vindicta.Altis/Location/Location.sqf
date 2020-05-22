@@ -359,6 +359,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					};
 				};
 
+				// Process buildings, objects with anim markers, and shooting targets
+				if (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }) then {
+					T_CALLM3("addObject", _object, _object in _terrainObjects, true);
+					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
+				};
+
 				// // Process objects with anim markers
 				// private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
 				// if(_animMarkersIdx != NOT_FOUND) then {
@@ -382,10 +388,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments: _hObject
 	*/
 	METHOD(addObject)
-		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
+		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject"), P_BOOL("_autoSimple")];
 
 		// Convert to simple object if required
-		if(!_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
+		if(_autoSimple && !_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
 			_hObject = [_hObject] call BIS_fnc_replaceWithSimpleObject;
 		};
 
@@ -1146,10 +1152,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Get near roads and sort them far to near, taking width into account
 		private _roads_remaining = ((_pos nearRoads 1500) select {
-			pr _roadPos = getPosASL _x;
-			(_roadPos distance _pos > 400) &&			// Pos is far enough
-			((count (_x nearRoads 20)) < 3) &&	// Not too many roads because it might mean a crossroad
-			(count (roadsConnectedTo _x) == 2)			// Connected to two roads, we don't need end road elements
+			pr _roadPos = getPos _x;
+			_roadPos distance2D _pos > 400 &&			// Pos is far enough
+			count (_x nearRoads 20) < 3 &&				// Not too many roads because it might mean a crossroad
+			count (roadsConnectedTo _x) == 2			// Connected to two roads, we don't need end road elements
 			// Let's not create roadblocks inside other locations
 			//{count (CALLSM1("Location", "getLocationsAt", _roadPos)) == 0}	// There are no locations here
 		}) apply {
@@ -1165,19 +1171,19 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		while {count _roads_remaining > 0 and _itr < 4} do {
 			(_roads_remaining#0) params ["_valueMetric", "_dist", "_road"];
-			private _roadscon = (roadsConnectedto _road) apply { [position _x distance _pos, _x] };
+			private _roadscon = roadsConnectedto _road apply { [position _x distance _pos, _x] };
 			_roadscon sort DESCENDING;
 			if (count _roadscon > 0) then {
 				private _roadcon = _roadscon#0#1;
 				//private _dir = _roadcon getDir _road;
-				private _roadblock_pos = getPosASL _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
+				private _roadblock_pos = getPos _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
 					
 				_roadblockPositions pushBack _roadblock_pos;
 			};
 
 			_roads_remaining = _roads_remaining select {
-				( (getPos _road) distance (getPos (_x select 2)) > 300) &&
-				{((getPos _road) vectorDiff _pos) vectorCos ((getPos (_x select 2)) vectorDiff _pos) < 0.3}
+				( getPos _road distance2D getPos (_x select 2) > 300) &&
+				{(getPos _road vectorDiff _pos) vectorCos (getPos (_x select 2) vectorDiff _pos) < 0.3}
 			};
 			_itr = _itr + 1;
 		};
