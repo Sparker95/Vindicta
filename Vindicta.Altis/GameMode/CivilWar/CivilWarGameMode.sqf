@@ -229,28 +229,21 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Call to server to get the info
 			//CALLM2(gGameModeServer, "postMethodAsync", "update");
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["update"], ON_SERVER)
-			//REMOTE_EXEC_METHOD(gGameModeServer, "postMessageAsync", ["update"], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Flush Messages", {
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["flushMessageQueues"], ON_SERVER)
-			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
-			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Suspend", {
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["suspend" ARG ["Suspended manually from debug menu"]], ON_SERVER)
-			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
-			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Resume", {
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["resume"], ON_SERVER)
-			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
-			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 	ENDMETHOD;
 

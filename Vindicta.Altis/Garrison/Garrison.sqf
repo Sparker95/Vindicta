@@ -3337,7 +3337,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Create units from template
 		private _template = CALLM2(gGameMode, "getTemplate", _side, "");
 		private _count = CALLM2(_newGroup, "createUnitsFromTemplate", _template, _subcatID);
-		T_CALLM2("postMessageAsync", "addGroup", [_newGroup]);
+		T_CALLM2("postMethodAsync", "addGroup", [_newGroup]);
 		[_newGroup, _count]
 	ENDMETHOD;
 
@@ -3371,7 +3371,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		private _newUnit = NEW("Unit", [_template ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
 		// Create crew for the vehicle
 		CALLM1(_newUnit, "createDefaultCrew", _template);
-		T_CALLM2("postMessageAsync", "addGroup", [_newGroup]);
+		T_CALLM2("postMethodAsync", "addGroup", [_newGroup]);
 		_newGroup
 	ENDMETHOD;
 

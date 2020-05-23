@@ -1426,7 +1426,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_x params ["_min", "_max", "_groupTemplate", "_groupBehaviour"];
 			private _i = 0;
 			while{(_cInf > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
-				CALLM(_gar, "createAddInfGroup", [_side ARG _groupTemplate ARG _groupBehaviour])
+				CALLM3(_gar, "createAddInfGroup", _side, _groupTemplate, _groupBehaviour)
 					params ["_newGroup", "_unitCount"];
 				OOP_INFO_MSG("%1: Created inf group %2 with %3 units", [_gar ARG _newGroup ARG _unitCount]);
 				_cInf = _cInf - _unitCount;
@@ -1484,7 +1484,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			if(random 1 <= _chance) then {
 				private _i = 0;
 				while{(_cVehGround > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
-					private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+					private _newGroup = CALLM4(_gar, "createAddVehGroup", _side, T_VEH, _type, -1);
 					OOP_INFO_MSG("%1: Created armor group %2", [_gar ARG _newGroup]);
 					_cVehGround = _cVehGround - 1;
 					_i = _i + 1;
@@ -1496,28 +1496,30 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Static weapons
 		if (_cHMGGMG > 0) then {
-			// temp cap of amount of static guns
-			_cHMGGMG = (4 + random 5) min _cHMGGMG;
-			
-			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_STATIC]);
-			while {_cHMGGMG > 0} do {
-				// use GMG only if it's defined
-				private _tGMG = _template # T_VEH # T_VEH_stat_GMG_high;
-				private _variant = if !(isNil "_tGMG") then {
-					selectRandom [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]
-				} else {
-					T_VEH_stat_HMG_high
-				};
+			// Cap of amount of static guns
+			_cHMGGMG = CLAMP(_cHMGGMG, 0, 6);
 
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG _variant ARG -1 ARG _staticGroup]);
-				CALLM(_newUnit, "createDefaultCrew", [_template]);
+			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_STATIC]);
+			private _tGMG = _template # T_VEH # T_VEH_stat_GMG_high;
+			if !(isNil "_tGMG") then {
+				private _gmgs = 0;
+				while {_cHMGGMG > 3 && _gmgs < 2} do {
+					private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_stat_GMG_high ARG -1 ARG _staticGroup]);
+					CALLM(_newUnit, "createDefaultCrew", [_template]);
+					_cHMGGMG = _cHMGGMG - 1;
+					_gmgs = _gmgs + 1;
+				}
+			};
+			while {_cHMGGMG > 0} do {
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_stat_HMG_high ARG -1 ARG _staticGroup]);
+				CALLM1(_newUnit, "createDefaultCrew", _template);
 				_cHMGGMG = _cHMGGMG - 1;
 			};
 			OOP_INFO_MSG("%1: Added static group %2", [_gar ARG _staticGroup]);
 			if(canSuspend) then {
 				CALLM2(_gar, "postMethodSync", "addGroup", [_staticGroup]);
 			} else {
-				CALLM(_gar, "addGroup", [_staticGroup]);
+				CALLM1(_gar, "addGroup", _staticGroup);
 			};
 		};
 
@@ -1531,7 +1533,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
 				} else {
-					CALLM(_gar, "addUnit", [_newUnit]);
+					CALLM1(_gar, "addUnit", _newUnit);
 				};
 				OOP_INFO_MSG("%1: Added cargo box %2", [_gar ARG _newUnit]);
 				_cCargoBoxes = _cCargoBoxes - 1;
