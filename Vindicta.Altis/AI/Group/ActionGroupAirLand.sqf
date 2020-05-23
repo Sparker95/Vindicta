@@ -64,6 +64,8 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 				};
 			};
 			private _hG = T_GETV("hG");
+			// Needs to be a 3D vector not 2D, or both AGLToASL and wpLand throw errors...
+			_landingPos = VECTOR3(_landingPos); 
 			private _landWP = _hG addWaypoint [AGLToASL _landingPos, -1];
 			_hG setCurrentWaypoint _landWP;
 			[_hG, _landingPos] spawn BIS_fnc_wpLand;
