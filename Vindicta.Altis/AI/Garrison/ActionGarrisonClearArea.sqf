@@ -201,9 +201,9 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 			pr _groupAI = CALLM0(_x, "getAI");
 			// Vehicles move slow, inf move normal speed
 			pr _speedMode = if(CALLM0(_x, "getType") == GROUP_TYPE_VEH) then {
-				"NORMAL"
-			} else {
 				"LIMITED"
+			} else {
+				"NORMAL"
 			};
 			pr _args = [
 				"GoalGroupClearArea",
