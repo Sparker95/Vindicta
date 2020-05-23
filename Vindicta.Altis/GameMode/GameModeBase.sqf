@@ -142,7 +142,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("preInitAll", []);
 
 		#ifndef _SQF_VM
-		REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, NO_JIP);
+		if(IS_SERVER) then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, NO_JIP);
+		};
 		#endif
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
@@ -238,7 +240,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("postInitAll", []);
 
 		#ifndef _SQF_VM
-		REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
+		if(IS_SERVER) then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
+		};
 		#endif
 
 		PROFILE_SCOPE_START(GameModeEnd);
@@ -1853,7 +1857,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		uiNamespace setVariable ["vin_loadingScreenSubprogress", 0];
 
 		["vindicta_" + _id, _message] call BIS_fnc_startLoadingScreen;
-		//START_LOADING_SCREEN [_message];
 		private _display = uiNamespace getVariable ["vin_loadingScreen", displayNull];
 		if(!(_display isEqualTo displayNull)) then {
 			(_display displayCtrl 666) ctrlSetText _message;
@@ -1889,7 +1892,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		uiNamespace setVariable ["vin_loadingScreenSubprogress", 0];
 		CALLSM0("GameModeBase", "setLoadingProgress");
 		("vindicta_" + _id) call BIS_fnc_endLoadingScreen;
-		END_LOADING_SCREEN;
 	ENDMETHOD;
 
 	// Suspend the game.
