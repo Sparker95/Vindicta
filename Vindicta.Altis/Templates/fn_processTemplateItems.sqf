@@ -48,6 +48,9 @@ pr _grenades = [];
 // Explosives
 pr _explosives = [];
 
+// Headgear
+pr _headgears = [];
+
 // Vests
 pr _vests = [];
 
@@ -67,6 +70,7 @@ if (! isNil {_t select T_INV}) then {
 	//_handgunWeapons = +(_inv#T_INV_handgun_items);
 
 	_items = +(_inv#T_INV_items);
+	_headgears = +(_inv#T_INV_headgear);
 	_vests = +(_inv#T_INV_vests);
 	_backpacks = +(_inv#T_INV_backpacks);
 	_NVGs = +(_inv#T_INV_NVGs);
@@ -76,7 +80,7 @@ if (! isNil {_t select T_INV}) then {
 
 // Loadout Weapons
 // Each element is an array describing loadout weapons of a specific unit subcategory
-pr _loadoutWeapons = [ [[], []] ];
+pr _loadoutGear = [ [[], []] ];
 
 //#define DEBUG
 
@@ -207,6 +211,12 @@ _usableMagazines
 				};
 			} forEach ((assignedItems _hO) + (backpackItems _hO) + (vestItems _hO) + (uniformItems _hO));
 
+			// Process headgear
+			pr _headgear = headgear _hO;
+			if (_headgear != "") then {
+				_headgears pushBackUnique _headgear;
+			};
+
 			// Process vest
 			pr _vest = vest _hO;
 			if (_vest != "") then {
@@ -233,20 +243,20 @@ _usableMagazines
 		} forEach _classArray;
 	}; // if !isNil "_classArray"
 
-	pr _loadoutWeaponsThis = [_primaryWeaponsThisSubcat, _secondaryWeaponsThisSubcat];
-	_loadoutWeapons set [_subCatID, _loadoutWeaponsThis];
+	pr _loadoutGearThis = [_primaryWeaponsThisSubcat, _secondaryWeaponsThisSubcat, _headgears, _vests];
+	_loadoutGear set [_subCatID, _loadoutGearThis];
 
 	_subCatID = _subCatID + 1;
 };
 
 // Post-process loadout weapons of some unit types
 // We want these unit types to also be able to use rifleman's main weapon
-pr _riflemanWeapons = _loadoutWeapons#T_INF_rifleman#0;
-(_loadoutWeapons#T_INF_LAT#0) append _riflemanWeapons;
-(_loadoutWeapons#T_INF_AT#0) append _riflemanWeapons;
-(_loadoutWeapons#T_INF_AA#0) append _riflemanWeapons;
-(_loadoutWeapons#T_INF_medic#0) append _riflemanWeapons;
-(_loadoutWeapons#T_INF_engineer#0) append _riflemanWeapons;
+pr _riflemanWeapons = _loadoutGear#T_INF_rifleman#0;
+(_loadoutGear#T_INF_LAT#0) append _riflemanWeapons;
+(_loadoutGear#T_INF_AT#0) append _riflemanWeapons;
+(_loadoutGear#T_INF_AA#0) append _riflemanWeapons;
+(_loadoutGear#T_INF_medic#0) append _riflemanWeapons;
+(_loadoutGear#T_INF_engineer#0) append _riflemanWeapons;
 
 LOG_TEMPLATE ["Primary weapons:", _primaryWeapons];
 LOG_TEMPLATE ["  %1", _primaryWeapons];
@@ -271,6 +281,9 @@ LOG_TEMPLATE ["  %1", _grenades];
 
 LOG_TEMPLATE ["Explosives:"];
 LOG_TEMPLATE ["  %1", _explosives];
+
+LOG_TEMPLATE ["Headgear:"];
+LOG_TEMPLATE ["  %1", _headgears];
 
 LOG_TEMPLATE ["Vests:"];
 LOG_TEMPLATE ["  %1", _vests];
@@ -313,6 +326,7 @@ pr _arrayExport = [	_primary,
 					_handgun,
 					_handgunWeaponItems,
 					_items,
+					_headgears,
 					_vests,
 					_backpacks,
 					_NVGs,
@@ -370,5 +384,5 @@ if (_returnString) then {
 	_str
 } else {
 	// Otherwise we return an array
-	[_arrayExport, _loadoutWeapons]
+	[_arrayExport, _loadoutGear]
 };

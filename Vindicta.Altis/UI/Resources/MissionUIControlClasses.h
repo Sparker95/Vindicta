@@ -316,8 +316,8 @@ class MUI_LISTNBOX : MUI_BASE
 	autoScrollSpeed = -1; 
 	autoScrollDelay = 5; 
 	autoScrollRewind = 0;
-	disableOverflow = 0;
 	drawSideArrows = 0;
+	disableOverflow = 1;
 
 	idcLeft = -1; 
 	idcRight = -1; 

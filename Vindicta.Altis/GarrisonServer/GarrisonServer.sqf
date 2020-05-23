@@ -377,7 +377,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 	// Recruits a unit at this location from one of nearby cities
 	METHOD(recruitUnitAtLocation)
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side"), P_NUMBER("_subcatID"), P_ARRAY("_weapons"), P_OOP_OBJECT("_arsenalUnit")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side"), P_NUMBER("_subcatID"), P_ARRAY("_gear"), P_OOP_OBJECT("_arsenalUnit")];
 
 		OOP_INFO_1("RECRUIT UNIT AT LOCATION: %1", _this);
 
@@ -434,7 +434,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		private _template = CALLM1(gGameMode, "getTemplate", civilian);
 		//pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
 		// P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull]];
-		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _weapons];
+		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _gear];
 		pr _unit = NEW("Unit", _args);
 
 		// Add its new group to the garrison
@@ -446,50 +446,50 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		};
 
 		// Remove weapons from the arsenal
-		if (!IS_NULL_OBJECT(_arsenalUnit)) then {
-			if (IS_OOP_OBJECT(_arsenalUnit)) then {
-				pr _primary = _weapons select UNIT_WEAPONS_ID_PRIMARY;
-				pr _secondary = _weapons select UNIT_WEAPONS_ID_SECONDARY;
-				if (_primary != "") then {
-					CALLM2(_arsenalUnit, "limitedArsenalRemoveItem", _primary, 1);
-				};
-				if (_secondary != "") then {
-					CALLM2(_arsenalUnit, "limitedArsenalRemoveItem", _secondary, 1);
-				};
-			};
+		if (!IS_NULL_OBJECT(_arsenalUnit) && { IS_OOP_OBJECT(_arsenalUnit) }) then {
+			{
+				CALLM2(_arsenalUnit, "limitedArsenalRemoveItem", _x, 1);
+			} forEach (_gear select { _x != "" });
 		};
 
 		// Send msg back
 		pr _name = T_NAMES#T_INF#_subcatID;
 		pr _text = format ["We have recruited one %1", _name];
-		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "showServerResponse", [_text], _clientOwner, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "showServerResponse", [_text], _clientOwner, NO_JIP);
 
 		// Send weapon data again, to re-enable client's buttons
-		T_CALLM3("clientRequestRecruitWeaponsAtLocation", _clientOwner, _loc, _side);
+		T_CALLM3("clientRequestRecruitGearAtLocation", _clientOwner, _loc, _side);
 	ENDMETHOD;
 
-	METHOD(clientRequestRecruitWeaponsAtLocation)
+	METHOD(clientRequestRecruitGearAtLocation)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
+		// We remoteExec call this to ensure it is synchronized with arsenal changes that happening locally
+		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonServer", "_clientRequestRecruitGearAtLocation", [_clientOwner ARG _loc ARG _side], ON_SERVER, NO_JIP);
+	ENDMETHOD;
+
+	STATIC_METHOD(_clientRequestRecruitGearAtLocation)
+		params [P_THISCLASS, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
 		OOP_INFO_1("REQUEST RECRUIT WEAPONS AT LOCATION: %1", _this);
-
 		// Find an existing garrison here or create one
 		pr _gars = CALLM1(_loc, "getGarrisons", _side);
-		if ((count _gars) == 0) exitWith {
+		if (count _gars == 0) exitWith {
 			pr _args = [[], [], 0];
-			REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveData", _args, _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveData", _args, _clientOwner, NO_JIP);
 		};
 		
 		// Find units which have arsenal
 		pr _gar = _gars#0;
 		pr _arsenalUnits = CALLM0(_gar, "getUnits") select { CALLM0(_x, "limitedArsenalEnabled") };
-		pr _unitsAndWeapons = [];
+		pr _unitsAndGear = [];
 		{
 			pr _unit = _x;
 			pr _dataList = CALLM0(_unit, "limitedArsenalGetDataList");
 			pr _primary = _dataList call jn_fnc_arsenal_getPrimaryWeapons;
 			pr _secondary = _dataList call jn_fnc_arsenal_getSecondaryWeapons;
-			_unitsAndWeapons pushBack [_unit, +_primary, +_secondary];
+			pr _headgear = _dataList call jn_fnc_arsenal_getHeadgear;
+			pr _vests = _dataList call jn_fnc_arsenal_getVests;
+			_unitsAndGear pushBack [_unit, [+_primary, +_secondary, +_headgear, +_vests]];
 		} forEach _arsenalUnits;
 
 		// Find the amount of recruits available
@@ -497,9 +497,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
 		pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
 
-		pr _args = [_unitsAndWeapons, call t_fnc_getAllValidTemplateNames, _nRecruits];
+		pr _args = [_unitsAndGear, call t_fnc_getAllValidTemplateNames, _nRecruits];
 		OOP_INFO_1("  sending daga: %1", _args);
-		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveData", _args, _clientOwner, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveData", _args, _clientOwner, NO_JIP);
 	ENDMETHOD;
 
 	// Called from AttachToGarrisonDialog
@@ -509,7 +509,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Ensure this unit exists
 		if (!IS_OOP_OBJECT(_unit)) exitWith {
 			pr _args = [_unit, 0]; // Report wrong unit
-			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, NO_JIP);
 			OOP_ERROR_1("getUnitData: unit %1 does not exist!", _unit);
 		};
 
@@ -517,7 +517,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _gar = CALLM0(_unit, "getGarrison");
 		if (!IS_OOP_OBJECT(_gar) || {IS_NULL_OBJECT(_gar)}) exitWith {
 			pr _args = [_unit, 1]; // Report wrong garrison
-			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, NO_JIP);
 			OOP_ERROR_2("getUnitData: garrison %1 of unit %2 is not valid!", _gar, _unit);
 		};
 
@@ -527,7 +527,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		pr _args = [_unit, 2,	// 2 is an OK code
 					_catID, _gar, _garSide];
-		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, NO_JIP);
 
 	ENDMETHOD;
 
@@ -540,14 +540,14 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Ensure this unit exists
 		if (!IS_OOP_OBJECT(_unit)) exitWith {
 			pr _args = [_unit, 0]; // Report wrong unit
-			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, NO_JIP);
 			OOP_ERROR_1("attachUnit: unit %1 does not exist!", _unit);
 		};
 
 		// Ensure garrison is correct
 		if (!IS_OOP_OBJECT(_gar) || {IS_NULL_OBJECT(_gar)}) exitWith {
 			pr _args = [_unit, 3]; // Report wrong garrison
-			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, NO_JIP);
 			OOP_ERROR_1("attachUnit: garrison %1 is not valid!", _gar);
 		};
 
@@ -563,7 +563,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Report success to user
 		pr _args = [_unit, 2,	// 2 is an OK code
 					CALLM0(_unit, "getCategory"), _gar, CALLM0(_gar, "getSide")];
-		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, NO_JIP);
 
 	ENDMETHOD;
 
