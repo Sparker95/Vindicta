@@ -54,13 +54,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE_ATTR("tNameMilInd", [ATTR_SAVE]);
 	VARIABLE_ATTR("tNameMilEast", [ATTR_SAVE]);
 	VARIABLE_ATTR("tNamePolice", [ATTR_SAVE]);
-	VARIABLE_ATTR("tNameCivilian", [ATTR_SAVE_VER(16)]);
+	VARIABLE_ATTR("tNameCivilian", [ATTR_SAVE]);
 
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
-	VARIABLE_ATTR("savedPlayerInfoArray", [ATTR_SAVE_VER(11)]);
-	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE_VER(11)]);
+	VARIABLE_ATTR("savedPlayerInfoArray", [ATTR_SAVE]);
+	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE]);
+
+	VARIABLE_ATTR("savedMarkers", [ATTR_SAVE_VER(21)]);
 
 	VARIABLE("playerInfoArray");
 	VARIABLE("startSuspendTime");
@@ -115,6 +117,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("playerInfoArray", []);
 
 		T_SETV("savedSpecialGarrisons", []);
+		T_SETV("savedMarkers", []);
 
 	ENDMETHOD;
 
@@ -1112,25 +1115,28 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gGarrisonAmbient 			= gSpecialGarrisons#4;
 		gGarrisonAbandonedVehicles 	= gSpecialGarrisons#5;
 
-			diag_log "Special garrisons done";
+		diag_log "Special garrisons done";
 	ENDMETHOD;
 
 	METHOD(_createSpecialGarrisons)
 		params [P_THISOBJECT];
 
 		// Garrison objects to track players and player owned vehicles
-		gGarrisonPlayersWest = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG WEST]);
-		gGarrisonPlayersEast = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG EAST]);
-		gGarrisonPlayersInd = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG INDEPENDENT]);
-		gGarrisonPlayersCiv = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
-		gGarrisonAmbient = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
-		gGarrisonAbandonedVehicles = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonPlayersWest 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG WEST]);
+		gGarrisonPlayersEast 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG EAST]);
+		gGarrisonPlayersInd 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG INDEPENDENT]);
+		gGarrisonPlayersCiv 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonAmbient 			= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonAbandonedVehicles 	= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
 
-		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
-
-		// {
-		// 	CALLM2(_x, "postMethodAsync", "spawn", []);
-		// } forEach gSpecialGarrisons;
+		gSpecialGarrisons = [
+			gGarrisonPlayersWest,
+			gGarrisonPlayersEast,
+			gGarrisonPlayersInd,
+			gGarrisonPlayersCiv,
+			gGarrisonAmbient,
+			gGarrisonAbandonedVehicles
+		];
 	ENDMETHOD;
 
 	STATIC_METHOD(getPlayerGarrisonForSide)
@@ -1142,7 +1148,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			default { gGarrisonPlayersCiv }; // what?!
 		}
 	ENDMETHOD;
-	
+
 	fnc_getLocName = {
 		params["_name"];
 		private _names = "getText( _x >> 'name') == _name" configClasses ( configFile >> "CfgWorlds" >> worldName >> "Names" );
@@ -2128,6 +2134,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		T_CALLM1("_saveSpecialGarrisons", _storage);
 
+		// Player custom markers
+		private _userDefinedMarkers = allMapMarkers select {
+			_x find "_USER_DEFINED" == 0
+		} apply {
+			[_x] call BIS_fnc_markerToString 
+		};
+		T_SETV("savedMarkers", _userDefinedMarkers);
+
 		true
 	ENDMETHOD;
 
@@ -2159,16 +2173,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
+		T_SETV("savedMarkers", []);
+
 		CALLSM2("GameModeBase", "startLoadingScreen", "load", "Loading...");
 	ENDMETHOD;
 
 	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		FIX_LINE_NUMBERS()
-
-		// if(!isServer) exitWith { // What the fuck?
-		// 	OOP_ERROR_0("Game mode must be loaded on server only!");
-		// };
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
@@ -2272,6 +2284,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Special garrisons
 		T_CALLM1("_loadSpecialGarrisons", _storage);
+
+		// Player custom markers
+		{
+			_x call BIS_fnc_stringToMarker;
+		} forEach T_GETV("savedMarkers");
+		T_SETV("savedMarkers", []);
 
 		// Load commanders
 		private _toLoad = 3;

@@ -56,7 +56,7 @@ CLASS("MessageLoop", "Storable");
 	// Event handler ID
 				VARIABLE("eachFrameEHID");
 	// Bool, if true then message loop will be processing messages in per-frame handler.
-	/* save */	VARIABLE_ATTR("unscheduled", [ATTR_SAVE_VER(18)]);
+	/* save */	VARIABLE_ATTR("unscheduled", [ATTR_SAVE]);
 
 	//Constructor
 	//Spawn a script which will be checking messages

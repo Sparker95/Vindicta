@@ -26,9 +26,9 @@ CLASS("WorldModel", "Storable")
 	// This is the rawActivityGrid with post processing applied
 	VARIABLE_ATTR("activityGrid", [ATTR_SAVE]);
 	// Damage dealt to us only.
-	VARIABLE_ATTR("rawDamageGrid", [ATTR_SAVE_VER(13)]);
+	VARIABLE_ATTR("rawDamageGrid", [ATTR_SAVE]);
 	// This is the rawDamageGrid with post processing applied
-	VARIABLE_ATTR("damageGrid", [ATTR_SAVE_VER(13)]);
+	VARIABLE_ATTR("damageGrid", [ATTR_SAVE]);
 
 	VARIABLE("lastGridUpdate");
 
