@@ -176,6 +176,11 @@ CLASS("Notification", "")
 	STATIC_METHOD(createNotification)
 		params [P_THISCLASS, P_STRING("_imagePath"), P_DYNAMIC("_category"), P_STRING("_text"), P_DYNAMIC("_hint"), P_NUMBER("_duration"), P_STRING("_sound"), P_BOOL("_important")];
 
+		// Bail if no interface
+		if(!hasInterface) exitWith {
+			// Not a problem, just can't display anything with an interface
+		};
+
 		// Bail if not initialized
 		if (isNil {GETSV(_thisClass, "initDone")}) exitWith {
 			OOP_ERROR_0("Notification class not initialized!");
