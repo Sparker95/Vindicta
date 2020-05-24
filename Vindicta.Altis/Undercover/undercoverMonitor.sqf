@@ -303,15 +303,16 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				};
 
 				// check if unit is in vehicle
-				pr _bInVeh = false;
-				if (!(isNull objectParent _unit)) then { _bInVeh = true; };
+				pr _bInVeh = !(isNull objectParent _unit);
 
 				// check if vanilla or ACE unconscious
-				if ( _unit getVariable ["ACE_isUnconscious", false] OR (lifeState _unit == "INCAPACITATED")) then { T_CALLM("setState", [sINCAPACITATED]); _hintKeys pushback HK_INCAPACITATED; };		// ACE unconscious
-									
+				if ( _unit getVariable ["ACE_isUnconscious", false] OR (lifeState _unit == "INCAPACITATED")) then {
+					T_CALLM("setState", [sINCAPACITATED]); 
+					_hintKeys pushback HK_INCAPACITATED;
+				};
+
 				//FSM
 				switch (_state) do {
-
 					/*
 					--------------------------------------------------------------------------------------------------------------------------------------------
 					|	 U N D E R C O V E R  S T A T E  																									   |
@@ -325,22 +326,26 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							T_SETV("stateChanged", false);
 						}; // do once when state changed
 
-						if (
-						!(currentWeapon _unit in g_UM_civWeapons) 
-						|| currentWeapon _unit != "" 
-						|| primaryWeapon _unit != "" 
-						&& !(_bInVeh)) exitWith { 
-							_suspicionArr pushBack [1, "On foot & weapon"]; _hintKeys pushback HK_WEAPON;
+						if ((!(currentWeapon _unit in g_UM_civWeapons) || primaryWeapon _unit != "") && !_bInVeh) exitWith { 
+							_suspicionArr pushBack [1, "On foot & weapon"];
+							_hintKeys pushback HK_WEAPON;
+						};
+
+						if (currentWeapon _unit in g_UM_suspWeapons && !_bInVeh) then { 
+							_suspicionArr pushBack [0.3, "Suspicious item"];
 						};
 
 						pr _timeHostility = T_GETV("timeHostility");
-						if (time < _timeHostility) exitWith { _suspicionArr pushBack [1, "Hostility"]; _hintKeys pushback HK_HOSTILITY; };
+						if (time < _timeHostility) exitWith {
+							_suspicionArr pushBack [1, "Hostility"];
+							_hintKeys pushback HK_HOSTILITY;
+						};
 
 						// apply suspicion boosts
 						pr _timeBoost = T_GETV("timeBoost");
 						if (time < _timeBoost) then { 
 							pr _suspBoost = T_GETV("timeBoost");
-							_suspicionArr pushBack [(T_GETV("suspicionBoost")), "Suspicion boost"];
+							_suspicionArr pushBack [T_GETV("suspicionBoost"), "Suspicion boost"];
 						} else {
 							T_SETV("suspicionBoost", 0);
 						};
@@ -348,16 +353,18 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						// check if unit is in allowed area
 						pr _pos = getPos _unit;
 				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
-				 		if (_loc != "") then { 	
+				 		if (_loc != NULL_OBJECT) then {
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
 								//_hintKeys pushback HK_ALLOWEDAREA;
-			   					OOP_INFO_0("In allowed area");
+								OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
-								pr _multiplier = 1+2*_progress;
-								if (_bInVeh) then { _suspicionArr pushBack [1, "In military area in a vehicle"]; } else {
+								pr _multiplier = 1 + 2 * _progress;
+								if (_bInVeh) then {
+									_suspicionArr pushBack [1, "In military area in a vehicle"];
+								} else {
 									_suspicionArr pushBack [_multiplier*SUSP_MIL_LOCATION, "In military area"];
 								};
 								_hintKeys pushBack HK_MILAREA;
@@ -366,31 +373,39 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		};
 
 						switch (_bInVeh) do {
-
-							// ------------------------------------------- 
+							// -------------------------------------------
 							//  O N   F O O T 
 							// -------------------------------------------
 							case false: {
 								_unit setVariable [UNDERCOVER_EXPOSED, true, true];
 
-								if (animationState _unit in (T_GETV("undercoverAnims"))) exitWith { _suspicionArr pushBack [-1, "Surrender"]; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
-								
+								// Hotfix for ACE surrendering
+								if (animationState _unit in (T_GETV("undercoverAnims"))) exitWith {
+									_suspicionArr pushBack [-1, "Surrender"];
+									_hintKeys pushback HK_SURRENDER;
+								};
+
 								// disallow player using morphine on enemies 
 								if (animationState _unit == "ainvpknlmstpsnonwnondnon_medic1" || animationState _unit == "ainvppnemstpslaywnondnon_medicother" || animationState _unit == "ainvpknlmstpslaywnondnon_medicother") exitWith {
 									pr _nearUnits = nearestObjects [_unit, ["Man"], 12];
 									if (count _nearUnits > 1) then {
-										if (((side group (_nearUnits#1)) != (side group _unit)) && (side group (_nearUnits#1)) != civilian) then {
-											_suspicionArr pushBack [1, "Attempting to inject enemy some morphine?"]; _hintKeys pushback HK_MORPHINE;
+										if (side group (_nearUnits#1) != side group _unit && side group (_nearUnits#1) != civilian) then {
+											_suspicionArr pushBack [1, "Attempting to inject enemy some morphine?"];
+											_hintKeys pushback HK_MORPHINE;
 										};
 									};
 								};
 
 								pr _suspGear = T_GETV("suspGear");
-								if (_suspGear > 0) then { _hintKeys pushback HK_SUSPGEAR; };
+								if (_suspGear > 0) then {
+									_hintKeys pushback HK_SUSPGEAR;
+								};
 
 								// suspiciousness for movement speed
-								pr _suspSpeed = (vectorMagnitude velocity _unit) * 0.06;
-								if ( _suspSpeed > SUSP_SPEEDMAX ) then { _suspSpeed = SUSP_SPEEDMAX; };
+								pr _suspSpeed = vectorMagnitude velocity _unit * 0.06;
+								if ( _suspSpeed > SUSP_SPEEDMAX ) then {
+									_suspSpeed = SUSP_SPEEDMAX;
+								};
 
 								// suspiciousness for stance
 								pr _suspStance = 0;
@@ -433,7 +448,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								pr _ctrl = uinamespace getvariable "ACE_common_ctrlProgressBarTitle";
 								if (!(isNil "_ctrl")) then{
 									if (!(isNull _ctrl)) then {
-										if ((ctrlText _ctrl) == (localize "STR_ACE_VehicleLock_Action_LockpickInUse")) then {
+										if (ctrlText _ctrl == localize "STR_ACE_VehicleLock_Action_LockpickInUse") then {
 											_hintKeys pushBack HK_ILLEGAL;
 											_suspicionArr pushBack [SUSP_LOCKPICK, "Picking a vehicle lock"];
 										};
@@ -474,7 +489,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								};
 
 								pr _crewSuspMod = SUSP_VEH_CREW_MOD;
-								if ((count crew vehicle _unit) > 1) then {
+								if (count crew vehicle _unit > 1) then {
 									{
 										if (UNDERCOVER_IS_UNIT_EXPOSED(_x)) then { 
 											_crewSuspMod = _crewSuspMod + SUSP_VEH_CREW_MOD;
@@ -537,19 +552,19 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						};
 
 						// Conditions for exiting WANTED state
-						if ( ((position _unit) distance2D (getMarkerPos "markerWanted")) > (WANTED_CIRCLE_RADIUS/2)) exitWith { 
+						if ((position _unit) distance2D (getMarkerPos "markerWanted") > WANTED_CIRCLE_RADIUS / 2) exitWith { 
 							T_CALLM("setState", [sUNDERCOVER]);
 							deleteMarkerLocal "markerWanted";
 							OOP_INFO_0("No longer WANTED, reason: Left wanted marker radius.");
 						}; // left "wanted marker"
 
-						if ((_timeSeen - time) < TIME_UNSEEN_WANTED_EXIT) exitWith { 
+						if (_timeSeen - time < TIME_UNSEEN_WANTED_EXIT) exitWith { 
 							T_CALLM("setState", [sUNDERCOVER]);
 							deleteMarkerLocal "markerWanted";
 							OOP_INFO_0("No longer WANTED, reason: Unseen for long enough.");
 						}; // unseen for TIME_UNSEEN_WANTED_EXIT minutes
 
-						if ({alive _x} count units group _nearestEnemy == 0 ) exitWith { 
+						if ({ alive _x } count units group _nearestEnemy == 0 ) exitWith { 
 							T_CALLM("setState", [sUNDERCOVER]);
 							deleteMarkerLocal "markerWanted";
 							OOP_INFO_0("No longer WANTED, reason: Killed or lost last group that spotted unit.");
@@ -607,11 +622,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							// TODO: Sparker hide/show action behavior
 							pr _ID = [_unit] call fnc_UM_addActionUntieLocal;
 							T_SETV("untieActionID", _ID);
-							_unit setVariable ["timeArrested", time+10, true];
+							_unit setVariable ["timeArrested", time + 10, true];
 						}; // do once when state changed
 
 						// glitched out of arrest animation
-						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01" && time > (_unit getVariable "timeArrested")) then {
+						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01" && time > _unit getVariable "timeArrested") then {
 							T_SETV("bCaptive", false);
 							if (T_GETV("untieActionID") != -1) then { _unit removeAction T_GETV("untieActionID"); };
 							CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 1.0);
@@ -680,7 +695,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 				// set new camouflage coeffcient 
 				pr _camoCoeff =  T_GETV("camoCoeff"); // initial unit-based value
-				if (T_GETV("bGhillie")) then { _camoCoeffMod = _camoCoeffMod + CAMO_GHILLIE; };
+				if (T_GETV("bGhillie")) then {
+					_camoCoeffMod = _camoCoeffMod + CAMO_GHILLIE;
+				};
 				_camoCoeff = _camoCoeff * (1 - _camoCoeffMod);
 				_unit setUnitTrait ["camouflageCoef", _camoCoeff];
 
@@ -712,7 +729,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _unit = T_GETV("unit");
 
 				T_SETV("bSeen", true);
-				T_SETV("timeSeen", (time + TIME_SEEN));
+				T_SETV("timeSeen", time + TIME_SEEN);
 
 				// find closest enemy watching player
 				pr _grpDistances = [];

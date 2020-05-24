@@ -319,6 +319,7 @@ g_UM_suspWeapons = [
     "Rangefinder",
     "Laserdesignator",
     "Laserdesignator_02",
+    "ACE_Flashlight_Maglite_ML300L",
     "Laserdesignator_03"
 ];
 publicVariable "g_UM_suspWeapons";
