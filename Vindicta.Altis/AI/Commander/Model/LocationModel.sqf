@@ -102,14 +102,12 @@ CLASS("LocationModel", "ModelBase")
 		private _actual = T_GETV("actual");
 		
 		ASSERT_OBJECT_CLASS(_actual, "Location");
-		ASSERT_OBJECT_CLASS(_AICommander, "AICommander");
 
 		//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
 		private _world = T_GETV("world");
 
-		private _side = CALLM0(_AICommander, "getSide");
-		private _garrisonActuals = CALLM2(_actual, "getGarrisons", _side, [GARRISON_TYPE_GENERAL ARG GARRISON_TYPE_AIR]);
+		private _garrisonActuals = CALLM2(_actual, "getGarrisons", 0, [GARRISON_TYPE_GENERAL ARG GARRISON_TYPE_AIR]);
 		private _garrisonIds = [];
 		{
 			private _garrison = CALLM1(_world, "findGarrisonByActual", _x);
@@ -123,17 +121,18 @@ CLASS("LocationModel", "ModelBase")
 
 		// Sync intel about enemy efficiency here
 		//OOP_INFO_1("SYNC AICommander: %1", _AICommander);
-		//if (!IS_NULL_OBJECT(_AICommander)) then {
-		pr _intel = CALLM1(_AICommander, "getIntelAboutLocation", _actual);
-		//OOP_INFO_1("  Intel: %1", _intel);
-		if (IS_NULL_OBJECT(_intel)) then {
-			T_SETV("efficiency", +T_EFF_null);
-		} else {
-			pr _intelEff = GETV(_intel, "efficiency");
-			//OOP_INFO_1("  Intel eff: %1", _intelEff);
-			T_SETV("efficiency", +_intelEff);
+		if (!IS_NULL_OBJECT(_AICommander)) then {
+			ASSERT_OBJECT_CLASS(_AICommander, "AICommander");
+			pr _intel = CALLM1(_AICommander, "getIntelAboutLocation", _actual);
+			//OOP_INFO_1("  Intel: %1", _intel);
+			if (IS_NULL_OBJECT(_intel)) then {
+				T_SETV("efficiency", +T_EFF_null);
+			} else {
+				pr _intelEff = GETV(_intel, "efficiency");
+				//OOP_INFO_1("  Intel eff: %1", _intelEff);
+				T_SETV("efficiency", +_intelEff);
+			};
 		};
-		//};
 
 		// if(!(_garrisonActual isEqualTo "")) then {
 		// 	private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
