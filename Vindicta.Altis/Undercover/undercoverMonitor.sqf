@@ -67,6 +67,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("untieActionID");
 	VARIABLE("debugOverride"); 												// override make player captive for debug
 	VARIABLE("undercoverAnims");											// undercover animations
+	VARIABLE("speed");														// Unit speed, fades over time
 
 	// ------------ N E W ------------
 
@@ -113,6 +114,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			"AmovPercMstpSnonWnonDnon_Ease"
 		];
 		T_SETV("undercoverAnims", _undercoverAnims);
+
+		T_SETV("speed", 0);
 
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
@@ -402,10 +405,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								};
 
 								// suspiciousness for movement speed
-								pr _suspSpeed = vectorMagnitude velocity _unit * 0.06;
-								if ( _suspSpeed > SUSP_SPEEDMAX ) then {
-									_suspSpeed = SUSP_SPEEDMAX;
+								pr _currSpeed = vectorMagnitude velocity _unit;
+								pr _suspSpeed = switch true do {
+									case (_currSpeed < 2.5): { 0 }; // walking
+									case (_currSpeed < 5): { 0.2 }; // jogging
+									default { 0.4 };			// running
 								};
+								_suspSpeed = SATURATE(MAXIMUM(_suspSpeed, T_GETV("speed") - 0.05));
+								T_SETV("speed", _suspSpeed);
 
 								// suspiciousness for stance
 								pr _suspStance = 0;

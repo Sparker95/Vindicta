@@ -15,11 +15,12 @@ class UndercoverUI
 	movingEnable = false;
 	enableSimulation = true;
 	duration = 10000000;
-	
+
 	class ControlsBackground
 	{
 		
 	};
+
 	class Controls
 	{
 		class U_Suspicion_Text
@@ -37,24 +38,20 @@ class UndercoverUI
 			font = "PuristaSemibold";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.82);
 			shadow = 0;
-			
 		};
 		class U_Suspicion_StatusBar
 		{
 			type = 8;
 			idc = IDC_U_SUSPICION_STATUSBAR;
-			x = safeZoneX + safeZoneW * 0.44375;
-			y = safeZoneY + safeZoneH * 0.01203704;
-			w = safeZoneW * 0.1125;
-			h = safeZoneH * 0.00462963;
+			x = safeZoneX + safeZoneW * 0.44;
+			y = safeZoneY + safeZoneH * 0.012;
+			w = safeZoneW * 0.12;
+			h = safeZoneH * 0.006;
 			style = 0;
 			colorBar[] = {1,1,1,1};
 			colorFrame[] = {0.2,0.2,0.2,0.2};
 			texture = "#(argb,8,8,3)color(1,1,1,1)";
 			access = 0;
-			
 		};
-		
 	};
-	
 };
