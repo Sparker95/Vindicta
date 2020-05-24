@@ -82,5 +82,15 @@
 	"FIX_LINE_NUMBERS": {
 		"prefix": "FIX",
 		"body": ["FIX_LINE_NUMBERS()"]
+	},
+	"SAVEBREAK": {
+		"prefix": "// S",
+		"body": [
+			"// SAVEBREAK >>>",
+			"// ${1|Remove,Replace,Add|}, ${2:Reason}",
+			"$TM_SELECTED_TEXT$0",
+			"// <<< SAVEBREAK"
+		],
+		"description": "SAVEBREAK"
 	}
 }
