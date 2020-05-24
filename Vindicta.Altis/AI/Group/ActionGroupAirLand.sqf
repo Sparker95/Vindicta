@@ -38,7 +38,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 			private _loc = CALLM0(CALLM0(_group, "getGarrison"), "getLocation");
 			private _landingPos = if(_loc != NULL_OBJECT) then {
 				// If we are in a garrison at a location then land at a free helipad if possible
-				private _groupType = CALLM0(_group, "getGroupType");
+				private _groupType = CALLM0(_group, "getType");
 				CALLM0(_airUnit, "getMainData") params ["_catID", "_subcatID", "_className"];
 				CALLM4(_loc, "getSpawnPos", _catID, _subcatID, _className, _groupType) select 0
 			} else {

@@ -19,7 +19,7 @@ OOP_INFO_0("SPAWN");
 
 ASSERT_THREAD(_thisObject);
 
-if(T_CALLM("isDestroyed", [])) exitWith {
+if(T_CALLM0("isDestroyed")) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 	DUMP_CALLSTACK;
 };
@@ -44,15 +44,13 @@ pr _action = CALLM0(_AI, "getCurrentAction");
 if(_action != NULL_OBJECT) then { _action = CALLM0(_action, "getFrontSubaction"); };
 
 pr _spawningHandled = if (_action != NULL_OBJECT) then {
-	ASSERT_MSG(!_global, "Global garrison should not have an active action");
 	CALLM0(_action, "spawn");
 } else {
 	false
 };
 
+// Current action doesn't handle spawning
 if (!_spawningHandled) then {
-	// Current action doesn't handle spawning
-
 	private _loc = T_GETV("location");
 
 	// SAVEBREAK >>> Cleanup invalid units (T_INF units *must* have a group)

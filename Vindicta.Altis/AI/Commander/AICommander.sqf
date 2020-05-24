@@ -195,9 +195,9 @@ CLASS("AICommander", "AI")
 */
 	METHOD(process)
 		params [P_THISOBJECT];
-		
+
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
-		
+
 		// U P D A T E   S E N S O R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update sensors");
@@ -207,7 +207,7 @@ CLASS("AICommander", "AI")
 
 		// Update sensors
 		T_CALLM0("updateSensors");
-		
+
 		// U P D A T E   C L U S T E R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update clusters");
@@ -321,8 +321,13 @@ CLASS("AICommander", "AI")
 		T_SETV("msgLoop", _msgLoop);
 	ENDMETHOD;
 
+	public METHOD(getSide)
+		params [P_THISOBJECT];
+		T_GETV("side")
+	ENDMETHOD;
+	
 	/*
-	Method: (static)getCommanderAIOfSide
+	Method: (static)getAICommander
 	Returns AICommander object that commands given side
 	
 	Parameters: _side
@@ -2011,7 +2016,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		// Sync before update
-		CALLM(_world, "sync", [_thisObject]);
+		CALLM1(_world, "sync", _thisObject);
 
 		private _side = T_GETV("side");
 		private _activeActions = T_GETV("activeActions");
@@ -3117,7 +3122,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (generator %1) - - - - -", [_generatorMethodName]);
 
 		// Sync before planning
-		CALLM(_world, "sync", [_thisObject]);
+		CALLM1(_world, "sync", _thisObject);
 		// Update grids etc.
 		CALLM0(_world, "update");
 
@@ -3182,30 +3187,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_activeActions deleteAt (_activeActions find _action);
 		};
 	ENDMETHOD;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// = = = = = = = = = = = Radio = = = = = = = = = = = = =
 

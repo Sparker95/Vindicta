@@ -309,7 +309,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			private _loc = _x;
 			private _side = T_CALLM1("getLocationOwner", _loc);
-			CALLM1(_loc, "setSide", _side);
+
 			OOP_DEBUG_MSG("init loc %1 to side %2", [_loc ARG _side]);
 
 			private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
@@ -640,7 +640,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	/* protected virtual */ METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
-		GETV(_loc, "side")
+		CIVILIAN
 	ENDMETHOD;
 
 	// Returns template name for given side and faction
@@ -1208,7 +1208,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locSectorPos = getPos _locSector;
 			_locSectorPos set [2, 0];	// Nullify Z coordinate
 
-
 			#ifdef PARTIAL_MAP_POPULATION
 			_locSectorPos params ["_posX", "_posY"];
 			if (_posX > 6000 && _posY > 8000) then {
@@ -1217,36 +1216,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
-			private _locSide = _locSector getVariable ["Side", ""];
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
-
-			private _template = "";
-			private _side = "";
-
-			private _side = switch (_locSide) do{
-				case "civilian": { CIVILIAN };//might not need this
-				case "west": { WEST };
-				case "east": { EAST };
-				case "independant": { INDEPENDENT };
-				default { INDEPENDENT };
-			};
 
 			// Create a new location
 			private _args = [_locSectorPos, CIVILIAN]; // Location created by noone
 			private _loc = NEW_PUBLIC("Location", _args);
 			CALLM1(_loc, "setName", _locName);
-			CALLM1(_loc, "setSide", _side);
 			CALLM1(_loc, "setType", _locType);
 			CALLM1(_loc, "setBorder", _locBorder);
 			CALLM0(_loc, "findAllObjects");
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
+			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4 or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
 				// Find first building which is one of the police building types
-				private _possiblePoliceBuildings = (_posPolice nearObjects 200) select {_x isKindOf "House"} select {(typeOf _x) in location_bt_police};
+				private _possiblePoliceBuildings = (_posPolice nearObjects 200) select { _x isKindOf "House" } select { typeOf _x in location_bt_police };
 
 				if ((count _possiblePoliceBuildings) > 0) then {
 					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
@@ -1255,7 +1241,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					CALLM1(_policeStation, "setBorderCircle", 10);
 					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
 					CALLM0(_policeStation, "addSpawnPosFromBuildings");
-					CALLM1(_policeStation, "setSide", _side);
 					CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
 					CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
 

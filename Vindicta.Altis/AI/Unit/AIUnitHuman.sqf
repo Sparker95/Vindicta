@@ -127,7 +127,8 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		pr _unit = T_GETV("agent");
 		pr _grp = CALLM0(_unit, "getGroup");
 		pr _grpAI = CALLM0(_grp, "getAI");
-		pr _enabled = GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled");
+		// This shouldn't be possible once AI start is synchronized between group and units
+		pr _enabled = if(isNil "_grpAI" || {_grpAI == NULL_OBJECT} || {!IS_OOP_OBJECT(_grpAI)}) then { false } else { GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled") };
 		pr _wasEnabled = T_GETV("markersEnabled");
 		if(!_wasEnabled && _enabled) then {
 			T_CALLM0("_enableDebugMarkers");

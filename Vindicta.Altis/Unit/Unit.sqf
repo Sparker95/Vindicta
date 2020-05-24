@@ -247,8 +247,6 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_return
 	ENDMETHOD;
 
-
-
 	//                            C R E A T E   A I
 	/*
 	Method: createAI

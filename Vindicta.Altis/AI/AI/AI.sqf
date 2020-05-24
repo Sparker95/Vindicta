@@ -72,7 +72,9 @@ CLASS("AI", "MessageReceiverEx")
 		PROFILER_COUNTER_DEC("AI");
 
 		// Stop the AI if it is currently running
-		T_CALLM("stop", []);
+		if(T_GETV("timer") != NULL_OBJECT) then {
+			T_CALLM0("stop");
+		};
 
 		// Delete all sensors
 		pr _sensors = T_GETV("sensors");
@@ -301,7 +303,7 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD(start)
 		params [P_THISOBJECT];
 
-		if (T_GETV("timer") == "") then {
+		if (T_GETV("timer") == NULL_OBJECT) then {
 			// Starts the timer
 			private _msg = MESSAGE_NEW();
 			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
@@ -315,8 +317,9 @@ CLASS("AI", "MessageReceiverEx")
 
 			// Post a message to process immediately to accelerate start up
 			T_CALLM1("postMessage", +_msg);
+		} else {
+			OOP_ERROR_0("Timer is already created when start was called. Was it called multiple times?");
 		};
-
 		nil
 	ENDMETHOD;
 
@@ -335,9 +338,11 @@ CLASS("AI", "MessageReceiverEx")
 		T_CALLM0("removeFromProcessCategory");
 
 		pr _timer = T_GETV("timer");
-		if (_timer != "") then {
-			T_SETV("timer", "");
+		if (_timer != NULL_OBJECT) then {
+			T_SETV("timer", NULL_OBJECT);
 			DELETE(_timer);
+		} else {
+			OOP_ERROR_0("Timer is already deleted when stop was called. Was it called multiple times?");
 		};
 		nil
 	ENDMETHOD;

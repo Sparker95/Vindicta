@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 /*
 Class: AI.AIUnitInfantry
 
@@ -18,10 +18,6 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 
 	// Sentry position
 	VARIABLE("sentryPos");
-
-	#ifdef DEBUG_GOAL_MARKERS
-	VARIABLE("markersEnabled");
-	#endif
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];

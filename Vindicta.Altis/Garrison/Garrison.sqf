@@ -235,6 +235,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		if(T_GETV("active")) exitWith {
 			OOP_ERROR_0("This garrison is already activated");
 		};
+
 		// Set 'active' flag
 		T_SETV("active", true);
 
@@ -249,7 +250,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		params [P_THISOBJECT];
 
 		// Start AI object
-		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
+		CALLM1(T_GETV("AI"), "start", "AIGarrisonDespawned"); // Let's start the party! \o/
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
@@ -273,7 +274,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		params [P_THISOBJECT];
 
 		// Start AI object
-		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
+		CALLM1(T_GETV("AI"), "start", "AIGarrisonDespawned"); // Let's start the party! \o/
 
 		// Set 'active' flag
 		T_SETV("active", true);
@@ -284,7 +285,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		if(!_autoSpawn) then {
 			T_CALLM2("postMethodAsync", "spawn", [true]);
 		};
-		// T_CALLM1("enableAutoSpawn", true);
 		
 		T_SETV("outdated", true);
 
@@ -318,14 +318,14 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		// Detach from location if was attached to it
 		private _location = T_GETV("location");
-		if (!IS_NULL_OBJECT(_location)) then {
+		if (_location != NULL_OBJECT) then {
 			CALLM1(_location,"unregisterGarrison", _thisObject);
 		};
 
 		// Despawn if spawned
 		if(T_GETV("spawned")) then {
 			__MUTEX_UNLOCK;
-			T_CALLM("despawn", []);
+			T_CALLM0("despawn");
 			__MUTEX_LOCK;
 		};
 
@@ -359,8 +359,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		
 		// Delete our timer
 		pr _timer = T_GETV("timer");
-		if (_timer != "") then {
-			DELETE(T_GETV("timer"));
+		if (_timer != NULL_OBJECT) then {
+			DELETE(_timer);
 			T_SETV("timer", nil);
 		};
 

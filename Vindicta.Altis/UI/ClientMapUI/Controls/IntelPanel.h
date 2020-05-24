@@ -171,7 +171,6 @@ class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE
 
 class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE 
 {
-
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.236; 
 	y = safeZoneY + safeZoneH * 0.002; 
@@ -182,7 +181,6 @@ class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE
 
 class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
 {
-
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.357; 
 	y = safeZoneY + safeZoneH * 0.002; 
@@ -212,7 +210,6 @@ class CMUI_BUTTON_CONTACTREP : MUI_BUTTON_TXT
 	text = "SHOW CONTACT REPORTS"; 
 };
 
-
 // black background for buttons to fix ugly gap
 class CMUI_INTEL_BTNGRP_BG : MUI_BG_BLACKSOLID 
 {
@@ -230,6 +227,9 @@ class CMUI_INTEL_BTNGRP : MUI_GROUP
 	y = safeZoneY + safeZoneH * 0.070; 
 	w = safeZoneW * 0.233; 
 	h = safeZoneH * 0.028; 
+
+	class VScrollbar {};
+	class HScrollbar {};
 };
 
 // description box, larger background
@@ -253,6 +253,7 @@ class CMUI_INTEL_DESCRIPTION_FRAME : MUI_GROUP
 	y = safeZoneY + safeZoneH * 0.488; 
 	w = safeZoneW * 0.220; 
 	h = safeZoneH * 0.170; 
+
 	//text = "Information";
 	class Controls 
 	{
@@ -271,8 +272,6 @@ class CMUI_INTEL_DESCRIPTION_FRAME : MUI_GROUP
 		};
 	};
 };
-
-
 
 /*
 	RESPAWN CONTROLS

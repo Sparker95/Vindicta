@@ -35,7 +35,10 @@ FIX_LINE_NUMBERS()
 CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/* save */ 	VARIABLE_ATTR("type", [ATTR_SAVE]);						// String, location type
+	// SAVEBREAK >>>
+	// Remove "side" property: locations do not have intrinsic sides, only occupying forces
 	/* save */ 	VARIABLE_ATTR("side", [ATTR_SAVE]);						// Side, location side
+	// <<< SAVEBREAK
 	/* save */ 	VARIABLE_ATTR("name", [ATTR_SAVE]);						// String, location name
 	/* save */ 	VARIABLE_ATTR("children", [ATTR_SAVE]);					// Children of this location if it has any (e.g. police stations are children of cities)
 	/* save */ 	VARIABLE_ATTR("parent", [ATTR_SAVE]); 					// Parent of the Location if it has one (e.g. parent of police station is its containing city location)
@@ -94,7 +97,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if (isNil "gMessageLoopMain") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
-		T_SETV("side", CIVILIAN);
 		T_SETV_PUBLIC("name", "noname");
 		T_SETV_PUBLIC("garrisons", []);
 		T_SETV_PUBLIC("boundingRadius", 0);
@@ -195,11 +197,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			};
 		};
 
-	ENDMETHOD;
-
-	METHOD(setSide)
-		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
-		T_SETV("side", _side);
 	ENDMETHOD;
 
 	/*
