@@ -308,7 +308,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Detach from location if was attached to it
 		private _location = T_GETV("location");
 		if (_location != NULL_OBJECT) then {
-			CALLM1(_location,"unregisterGarrison", _thisObject);
+			CALLM1(_location, "unregisterGarrison", _thisObject);
 		};
 
 		// Despawn if spawned

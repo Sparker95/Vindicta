@@ -12,6 +12,7 @@
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "AI.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: AI
@@ -71,10 +72,8 @@ CLASS("AI", "MessageReceiverEx")
 
 		PROFILER_COUNTER_DEC("AI");
 
-		// Stop the AI if it is currently running
-		if(T_GETV("timer") != NULL_OBJECT) then {
-			T_CALLM0("stop");
-		};
+		// Stop the AI
+		T_CALLM0("stop");
 
 		// Delete all sensors
 		pr _sensors = T_GETV("sensors");
@@ -115,18 +114,9 @@ CLASS("AI", "MessageReceiverEx")
 		};
 	ENDMETHOD;
 
-
-
-
-
-
-
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- S E N S O R S -------------------------------------------
 	// ------------------------------------------------------------------------------------------------------
-
-
-
 
 	// ----------------------------------------------------------------------
 	// |                A D D   S E N S O R
@@ -300,7 +290,7 @@ CLASS("AI", "MessageReceiverEx")
 	Starts the AI brain with timer. If this AI doesn't use timer, but a process category, override this.
 	From now process method will be called periodically.
 	*/
-	METHOD(start)
+	virtual METHOD(start)
 		params [P_THISOBJECT];
 
 		if (T_GETV("timer") == NULL_OBJECT) then {
@@ -331,7 +321,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: stop
 	Stops the periodic call of process function.
 	*/
-	METHOD(stop)
+	virtual METHOD(stop)
 		params [P_THISOBJECT];
 		
 		// Delete this object from process category 
@@ -341,8 +331,6 @@ CLASS("AI", "MessageReceiverEx")
 		if (_timer != NULL_OBJECT) then {
 			T_SETV("timer", NULL_OBJECT);
 			DELETE(_timer);
-		} else {
-			OOP_ERROR_0("Timer is already deleted when stop was called. Was it called multiple times?");
 		};
 		nil
 	ENDMETHOD;
