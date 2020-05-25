@@ -48,21 +48,6 @@ class Vin_InGameUI
 			colorText[] = MUIC_WHITE;
 		};
 
-		class VIN_UndercoverHint : MUI_BASE 
-		{
-			IDC = IDC_U_SUSPICION_TEXT; 
-			x = safeZoneX + safeZoneW * 0.378; 
-			y = safeZoneY + safeZoneH * 0.023; 
-			w = safeZoneW * 0.242; 
-			h = safeZoneH * 0.020;  
-			text = "UNDERCOVER"; 
-			font = "PuristaSemibold";
-			sizeEx = TEXTSIZE_MED;
-			style = ST_CENTER;
-			shadow = 1;
-			colorText[] = MUIC_WHITE;
-		};
-
 		class VIN_UndercoverBar
 		{
 
@@ -77,7 +62,21 @@ class Vin_InGameUI
 			colorFrame[] = {0.2,0.2,0.2,0.2};
 			texture = "#(argb,8,8,3)color(1,1,1,1)";
 			access = 0;
+		};
 
+		class VIN_UndercoverHint : MUI_BASE 
+		{
+			IDC = IDC_U_SUSPICION_TEXT; 
+			x = safeZoneX + safeZoneW * 0.378; 
+			y = safeZoneY + safeZoneH * 0.023; 
+			w = safeZoneW * 0.242; 
+			h = safeZoneH * 0.020;  
+			text = "UNDERCOVER"; 
+			font = "PuristaSemibold";
+			sizeEx = TEXTSIZE_MED;
+			style = ST_CENTER;
+			shadow = 1;
+			colorText[] = MUIC_WHITE;
 		};
 
 		class VIN_ResourceDescr : MUI_BASE

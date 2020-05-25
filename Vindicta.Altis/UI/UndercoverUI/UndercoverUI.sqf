@@ -41,17 +41,18 @@ g_UM_Hints = [
 
 #define OOP_CLASS_NAME UndercoverUI
 CLASS("UndercoverUI", "")
-	
+	STATIC_VARIABLE("overtTime");
+	STATIC_VARIABLE("blink");
+
 	STATIC_METHOD(drawUI)
 		params [P_THISOBJECT, ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];
 
 			pr _textUI = "";
 			pr _bSuspicious = UNDERCOVER_IS_UNIT_SUSPICIOUS(_unit);
-			if (_suspicion > 1) then { _suspicion = 1; };
-			if (_suspicion < 0) then { _suspicion = 0; };
+			_suspicion = SATURATE(_suspicion);
 
 			// select correct hint to display
-			if ((count _hintKeys > 0)) then { 
+			if (count _hintKeys > 0) then { 
 				pr _hint = _hintKeys call BIS_fnc_greatestNum;
 				pr _hintID = g_UM_Hints find _hint;
 				if (_hintID != -1) then { _textUI = g_UM_Hints select (_hintID + 1); };
@@ -67,15 +68,42 @@ CLASS("UndercoverUI", "")
 			
 			pr _ui = uinamespace getVariable "p0_InGameUI_display";
 			if ( displayNull != _ui ) then {
-				(_ui displayCtrl IDC_U_SUSPICION_TEXT) ctrlSetText format ["%1", _textUI];
-				(_ui displayCtrl IDC_U_SUSPICION_STATUSBAR) progressSetPosition _suspicion;
-				(_ui displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlSetTextcolor _color;
-
-				(_ui displayCtrl IDC_U_SUSPICION_TEXT) ctrlCommit 0;
-				(_ui displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 1;
+				pr _text = _ui displayCtrl IDC_U_SUSPICION_TEXT;
+				pr _bar = _ui displayCtrl IDC_U_SUSPICION_STATUSBAR;
+				_text ctrlSetText format ["%1", _textUI];
+				
+				_bar progressSetPosition _suspicion;
+				_bar ctrlSetTextcolor _color;
+				// Set height based on suspiciousness
+				pr _isOvert = _suspicion == 1;
+				pr _overtTime = GETSV("UndercoverUI", "overtTime");
+				pr _size = ctrlPosition _bar;
+				switch true do {
+					case (_isOvert && _overtTime == -1): {
+						SETSV("UndercoverUI", "overtTime", time);
+						SETSV("UndercoverUI", "blink", true);
+						_size set [3, safeZoneH * 0.030];
+						_bar ctrlSetPosition _size;
+					};
+					case (!_isOvert || time - _overtTime > 5): {
+						_size set [3, safeZoneH * 0.003];
+						_bar ctrlSetPosition _size;
+						if(!_isOvert) then {
+							SETSV("UndercoverUI", "overtTime", -1);
+						};
+					};
+					case (_isOvert): {
+						pr _blink = GETSV("UndercoverUI", "blink");
+						SETSV("UndercoverUI", "blink", !_blink);
+						_size set [3, safeZoneH * ([0.03, 0.003] select _blink)];
+						_bar ctrlSetPosition _size;
+					};
+				};
+				_bar ctrlCommit 0;
+				_text ctrlCommit 0;
 			};
-		
 	ENDMETHOD;
-
-
 ENDCLASS;
+
+SETSV("UndercoverUI", "overtTime", -1);
+SETSV("UndercoverUI", "blink", true);
