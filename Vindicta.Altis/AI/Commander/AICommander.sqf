@@ -268,14 +268,14 @@ CLASS("AICommander", "AI")
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
 		} forEach (T_GETV("garrisons") select { CALLM0(_x, "isEmpty") && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
 
-		// Reassign abandonned AI groups to commander
+		// Reassign abandoned AI groups to commander
 		private _side = T_GETV("side");
 		private _playerGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _side);
 
 		// Find all arma groups without players in them
-		private _abandonnedGroups = [];
+		private _abandonedGroups = [];
 		{ // Get unique set of groups
-			_abandonnedGroups pushBackUnique _x;
+			_abandonedGroups pushBackUnique _x;
 		} forEach (CALLM0(_playerGarrison, "getUnits") apply {
 			CALLM0(_x, "getObjectHandle")
 		} select {
@@ -291,12 +291,12 @@ CLASS("AICommander", "AI")
 		});
 
 		// Return the groups to this commander
-		{ // forEach _abandonnedGroups;
+		{ // forEach _abandonedGroups;
 			private _args = [units _x];
 			if(count (_args#0) > 0) then {
 				CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG _args]);
 			};
-		} forEach _abandonnedGroups;
+		} forEach _abandonedGroups;
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");

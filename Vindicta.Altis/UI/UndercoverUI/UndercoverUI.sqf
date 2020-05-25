@@ -64,13 +64,13 @@ CLASS("UndercoverUI", "")
 			// clamp color, for visual reasons
 			pr _colorMult = linearConversion [0, 1, _suspicion, 0.35, 0.88, true];
 			pr _color = [1.8* _colorMult, 1.8 * (1 - _colorMult), 0, 1];
-			
+
 			pr _ui = uinamespace getVariable "p0_InGameUI_display";
 			if ( displayNull != _ui ) then {
 				pr _text = _ui displayCtrl IDC_U_SUSPICION_TEXT;
 				pr _bar = _ui displayCtrl IDC_U_SUSPICION_STATUSBAR;
 				_text ctrlSetText format ["%1", _textUI];
-				
+
 				_bar progressSetPosition _suspicion;
 				_bar ctrlSetTextcolor _color;
 

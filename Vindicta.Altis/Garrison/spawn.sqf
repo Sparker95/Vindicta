@@ -114,9 +114,7 @@ if (_action != NULL_OBJECT) then {
 
 // Change process category if it's active
 if (T_GETV("active")) then {
-	pr _msgLoop = T_CALLM0("getMessageLoop");
-	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
-	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonSpawned", _AI);
+	CALLM2(T_CALLM0("getMessageLoop"), "addProcessCategoryObject", "AIGarrisonSpawned", _AI);
 };
 
 // Call AI "process" method to accelerate decision taking

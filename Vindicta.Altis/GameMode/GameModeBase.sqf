@@ -383,7 +383,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		CALLM1(_gar, "setLocation", _loc);
 		CALLM1(_loc, "registerGarrison", _gar);
-		CALLM1(_gar, "enableAutoSpawn", true);
 	ENDMETHOD;
 
 	// Creates message loops
