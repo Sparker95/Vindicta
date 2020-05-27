@@ -256,12 +256,11 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	METHOD(removeUnits)
 		params [P_THISOBJECT, P_ARRAY("_unitsToRemove")];
 
-		OOP_INFO_1("REMOVE UNITs: %1", _unitsToRemove);
+		OOP_INFO_1("REMOVE UNITS: %1", _unitsToRemove);
 
 		pr _data = T_GETV("data");
-		pr _units = _data select GROUP_DATA_ID_UNITS;
 
-		// Notify group AI of this unit
+		// Notify group AI of these units being removed
 		if (T_CALLM0("isSpawned")) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != NULL_OBJECT) then {
@@ -269,7 +268,8 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			};
 		};
 
-		// Remove the unit from this group
+		// Remove the units from this group
+		pr _units = _data select GROUP_DATA_ID_UNITS;
 		{
 			pr _unit = _x;
 			pr _index = _units find _unit;
@@ -278,13 +278,42 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				OOP_ERROR_1("  group units: %1", _units);
 			};
 			_units deleteAt _index;
-			CALLM1(_unit, "setGroup", "");
+			CALLM1(_unit, "setGroup", NULL_OBJECT);
 		} forEach _unitsToRemove;
 
-		// Select a new leader if the removed unit is the current leader
+		// Select a new leader if one of the removed units is the current leader
 		if ((_data select GROUP_DATA_ID_LEADER) in _unitsToRemove) then {
 			T_CALLM0("_selectNextLeader");
 		};
+	ENDMETHOD;
+
+	METHOD(removeAllUnits)
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+		// We write a custom method for this (rather than calling removeUnits) as a few steps can be skipped when we know we are removing all units
+
+		OOP_INFO_0("REMOVE ALL UNITS");
+
+		pr _data = T_GETV("data");
+		pr _units = _data#GROUP_DATA_ID_UNITS;
+
+		// Notify group AI of these units being removed
+		if (T_CALLM0("isSpawned")) then {
+			pr _AI = _data#GROUP_DATA_ID_AI;
+			if (_AI != NULL_OBJECT) then {
+				CALLM3(_AI, "postMethodSync", "handleUnitsRemoved", [_units], true);
+			};
+		};
+
+		// Remove all units from this group
+		{
+			CALLM1(_x, "setGroup", NULL_OBJECT);
+		} forEach _units;
+
+		// Empty the units array
+		_units resize 0;
+
+		// Clear the leader as we removed all units
+		_data set [GROUP_DATA_ID_LEADER, NULL_OBJECT];
 	ENDMETHOD;
 
 	// Create new group handle if it doesn't exist

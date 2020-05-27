@@ -1474,7 +1474,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			__MUTEX_UNLOCK;
 			nil
 		};
-		
+
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 
 		ASSERT_THREAD(_thisObject);
@@ -1731,7 +1731,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: nil
 	*/
-	
 	METHOD(addGarrison)
 		params[P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
@@ -1745,18 +1744,15 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		if (_thisObject == _garrison) exitWith {
 			OOP_ERROR_0("Attempt to add garrison to itself");
 		};
- 
+
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			OOP_ERROR_0("addGarrison: this garrison is destroyed!");
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
 		};
-
 		if(IS_GARRISON_DESTROYED(_garrison)) exitWith {
-			OOP_ERROR_1("addGarrison: garrison is destroyed: %1", _garrison);
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
@@ -1765,26 +1761,26 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		ASSERT_THREAD(_thisObject);
 
 		OOP_INFO_3("ADD GARRISON: %1, garrison groups: %2, garrison units: %3", _garrison, CALLM0(_garrison, "getGroups"), CALLM0(_garrison, "getUnits"));
-		
+
 		// Move all groups
-		pr _groups = +CALLM0(_garrison, "getGroups");
+		private _groups = +CALLM0(_garrison, "getGroups");
 		{
 			T_CALLM1("addGroup", _x);
 		} forEach _groups;
-		
-		// Move remaining units
-		pr _units = +CALLM0(_garrison, "getUnits");
+
+		// Ambient garrisons do not use groups, so we need to remove the units from the groups, then clean them up
+		if(T_GETV("type") == GARRISON_TYPE_AMBIENT) then {
+			{
+				CALLM0(_x, "removeAllUnits");
+			} forEach _groups;
+			// Clean up the empty groups we left behind
+			T_CALLM0("deleteEmptyGroups");
+		};
+
+		// Move units
 		{
 			T_CALLM1("addUnit", _x);
-		} forEach _units;
-		
-		// // Delete the other garrison if needed
-		// if (_delete) then {
-		// 	// TODO: we need to work out how to do this properly.
-		// 	// DELETE(_garrison);
-		// 	// HACK: Just unregister with AICommander for now so the model gets cleaned up
-		// 	// CALLM0(_garrison, "destroy");
-		// };
+		} forEach +CALLM0(_garrison, "getUnits");
 
 		// Merge intel and known locations
 		pr _AI = T_GETV("AI");
@@ -1792,7 +1788,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		CALLM1(_AI, "copyIntelFrom", _otherAI);
 
 		__MUTEX_UNLOCK;
-		
+
 		nil
 	ENDMETHOD;
 
