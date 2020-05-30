@@ -62,6 +62,9 @@ Redefinitions of different functions which are not implemented on different plat
 #define ENABLE_SIMULATION_GLOBAL(obj, state)
 #define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled)
 
+#define DISTANCE_2D distance
+#define IS_SIMPLE_OBJECT isNull
+// #define 
 // ^^^ SQF-VM ^^^
 
 
@@ -109,6 +112,9 @@ Redefinitions of different functions which are not implemented on different plat
 #define SIMULATION_ENABLED(obj) simulationEnabled (obj)
 #define ENABLE_SIMULATION_GLOBAL(obj, state) (obj) enableSimulationGlobal (state);
 #define ENABLE_DYNAMIC_SIMULATION_SYSTEM(enabled) enableDynamicSimulationSystem enabled
+
+#define DISTANCE_2D distance2D
+#define IS_SIMPLE_OBJECT isSimpleObject
 
 #endif
 // ^^^ ARMA ^^^

@@ -7,7 +7,6 @@ Goal for a garrison to repair all its vehicles
 
 #define OOP_CLASS_NAME GoalGarrisonRepairAllVehicles
 CLASS("GoalGarrisonRepairAllVehicles", "Goal")
-	
 	// ----------------------------------------------------------------------
 	// |            C A L C U L A T E   R E L E V A N C E
 	// ----------------------------------------------------------------------

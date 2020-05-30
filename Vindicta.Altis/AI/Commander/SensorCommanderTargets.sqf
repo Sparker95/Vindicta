@@ -59,6 +59,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		params [P_THISOBJECT];
 		
 		pr _AI = T_GETV("AI");
+		pr _ourSide = GETV(_AI, "side");
 		pr _deletedTargets = T_GETV("deletedTargets");
 		pr _newTargets = T_GETV("newTargets");
 		pr _knownTargets = GETV(_AI, "targets");
@@ -427,8 +428,12 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		pr _sourceGarrison = STIMULUS_GET_SOURCE(_stimulus);
 		pr _AI = T_GETV("AI");
 		pr _knownTargets = GETV(_AI, "targets");
+		// We only care about known and resolved unit objects
+		pr _validStimulus = STIMULUS_GET_VALUE(_stimulus) select {
+			IS_OOP_OBJECT(_x select TARGET_ID_UNIT)
+		};
 		//pr _newTargets = T_GETV("newTargets");
-		{ // forEach (STIMULUS_GET_VALUE(_stimulus));
+		{// forEach _validStimulus
 			// Check if the target is already known
 			pr _unit = _x select TARGET_ID_UNIT;
 			/*
@@ -481,7 +486,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			};
 			#endif
 			*/
-		} forEach (STIMULUS_GET_VALUE(_stimulus));
+		} forEach _validStimulus;
 		
 	ENDMETHOD;
 	

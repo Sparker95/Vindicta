@@ -89,9 +89,9 @@ _t set [T_VALID, _isValid];
 // Process inventory items only if all classes are present
 if (_isValid) then {
 	private _result = [_t] call t_fnc_processTemplateItems;
-	_result params ["_templateItems", "_loadoutWeapons"];
+	_result params ["_templateItems", "_loadoutGear"];
 	_t set [T_INV, _templateItems];
-	_t set [T_LOADOUT_WEAPONS, _loadoutWeapons];
+	_t set [T_LOADOUT_GEAR, _loadoutGear];
 };
 #endif
 
@@ -102,7 +102,7 @@ if (_isValid) then {
 };
 t_allTemplates pushBack _tName;			// It will be publicVariable'd later
 
-diag_log format ["[Template] ^^ END Initializing template from file: %1", _filePath];
+// diag_log format ["[Template] ^^ END Initializing template from file: %1", _filePath];
 
 // Return the array
 _t

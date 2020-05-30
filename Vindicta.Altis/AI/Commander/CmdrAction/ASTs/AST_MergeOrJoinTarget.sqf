@@ -62,7 +62,11 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 
 		// If the detachment died then we return the appropriate state
 		if(CALLM0(_fromGarr, "isDead")) exitWith { 
+			#ifndef _SQF_VM
+			// We don't want this warning in auto-tests, its already being tested
 			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't merge to target", [_world ARG _action ARG LABEL(_fromGarr)]);
+			#endif
+			FIX_LINE_NUMBERS()
 			T_GETV("fromGarrDeadState")
 		};
 
@@ -78,7 +82,11 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 				ASSERT_OBJECT(_toGarr);
 				// Check if the target garrison is dead
 				_targetDead = if(CALLM0(_toGarr, "isDead") && (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) ) then {
+					#ifndef _SQF_VM
+					// We don't want this warning in auto-tests, its already being tested
 					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_toGarr)]);
+					#endif
+					FIX_LINE_NUMBERS()
 					true
 				} else {
 					// If target is alive then do the merge

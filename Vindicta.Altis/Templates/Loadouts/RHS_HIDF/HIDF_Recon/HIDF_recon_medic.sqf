@@ -12,7 +12,7 @@ this addVest _RandomVest;
 _RandomGoggles = selectRandom ["G_Bandanna_oli", "rhsusf_shemagh_grn", "rhsusf_shemagh2_grn", "rhsusf_shemagh_gogg_grn", "rhsusf_shemagh2_gogg_grn", "", ""];
 this addGoggles _RandomGoggles;
 this addHeadgear "rhsgref_helmet_pasgt_erdl_rhino";
-this forceAddUniform "rhs_uniform_bdu_erdl";
+this forceaddUniform "rhs_uniform_bdu_erdl";
 this addBackpack "B_AssaultPack_rgr";
 
 this addWeapon "rhs_weap_m4a1_carryhandle";

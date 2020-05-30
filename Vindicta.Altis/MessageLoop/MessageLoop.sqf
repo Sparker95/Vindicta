@@ -7,6 +7,8 @@
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Message\Message.hpp"
 #include "ProcessCategories.hpp"
+FIX_LINE_NUMBERS()
+
 /*
 Class: MessageLoop
 MessageLoop is a thread (a spawned script) which can have
@@ -54,7 +56,7 @@ CLASS("MessageLoop", "Storable");
 	// Event handler ID
 				VARIABLE("eachFrameEHID");
 	// Bool, if true then message loop will be processing messages in per-frame handler.
-	/* save */	VARIABLE_ATTR("unscheduled", [ATTR_SAVE_VER(18)]);
+	/* save */	VARIABLE_ATTR("unscheduled", [ATTR_SAVE]);
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -174,6 +176,7 @@ CLASS("MessageLoop", "Storable");
 		#ifdef DEBUG_MESSAGE_LOOP
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
+		FIX_LINE_NUMBERS()
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 
 		PROFILE_ADD_EXTRA_FIELD("message_source", _msg select MESSAGE_ID_SOURCE);
@@ -233,6 +236,7 @@ CLASS("MessageLoop", "Storable");
 				};
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	// Functions for process categories
@@ -253,6 +257,7 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	// Only for unscheduled msg loop
@@ -309,15 +314,29 @@ CLASS("MessageLoop", "Storable");
 
 			OOP_INFO_2("addProcessCategoryObject: %1 %2", _tag, _object);
 
-			// Find category with given tag
+			// Remove from any existing categories
 			pr _cats = T_GETV("processCategories");
-			pr _index = _cats findIf {(_x select __PC_ID_TAG) == _tag};
-			if (_index != -1) then {
-				pr _cat = _cats select _index;
-				pr _allObjects = _cat select __PC_ID_ALL_OBJECTS;
+			{
+				pr _allObjects = _x#__PC_ID_ALL_OBJECTS;
+				pr _index = _allObjects find _object;
+				if (_index != NOT_FOUND) then {
+					_x#__PC_ID_OBJECTS deleteAt _index;
+					_allObjects deleteAt _index;
+					// Delete from queue of high priority objects
+					pr _objsHigh = _x#__PC_ID_OBJECTS_URGENT;
+					_objsHigh deleteAt (_objsHigh findIf { _x#0 == _object });
+				};
+			} forEach _cats;
+
+			// Find category with given tag
+			pr _index = _cats findIf { _x#__PC_ID_TAG == _tag };
+			if (_index != NOT_FOUND) then {
+				pr _cat = _cats#_index;
+				pr _allObjects = _cat#__PC_ID_ALL_OBJECTS;
+
 				// Ensure we don't add same object twice
-				if (_allObjects find _object == -1) then {
-					pr _objs = _cat select __PC_ID_OBJECTS;
+				if (_allObjects find _object == NOT_FOUND) then {
+					pr _objs = _cat#__PC_ID_OBJECTS;
 					_objs pushBack __PC_OBJECT_NEW(_object, false);
 					_allObjects pushBack _object;
 				} else {
@@ -331,6 +350,7 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	METHOD(deleteProcessCategoryObject)
@@ -341,12 +361,12 @@ CLASS("MessageLoop", "Storable");
 
 			pr _cats = T_GETV("processCategories");
 			{
-				pr _allObjects = _x select __PC_ID_ALL_OBJECTS;
+				pr _allObjects = _x#__PC_ID_ALL_OBJECTS;
 				pr _index = _allObjects find _object;
-				pr _objs = _x select __PC_ID_OBJECTS;
+				pr _objs = _x#__PC_ID_OBJECTS;
 
 				#ifdef _SQF_VM
-				if (_index != -1) then {
+				if (_index != NOT_FOUND) then {
 				#endif
 
 					//diag_log format ["index: %1", _index];
@@ -354,8 +374,8 @@ CLASS("MessageLoop", "Storable");
 					_allObjects deleteAt _index;
 
 					// Delete from queue of high priority objects
-					pr _objsHigh = _x select __PC_ID_OBJECTS_URGENT;
-					_objsHigh deleteAt (_objsHigh findIf {(_x#0) == _object});
+					pr _objsHigh = _x#__PC_ID_OBJECTS_URGENT;
+					_objsHigh deleteAt (_objsHigh findIf {_x#0 == _object});
 
 					//true // No need to search any more
 
@@ -372,6 +392,7 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	// Adds this object to high priority queue of its process category
@@ -399,6 +420,7 @@ CLASS("MessageLoop", "Storable");
 				OOP_ERROR_1("setObjectUrgentPriority: object %1 is not found", _object);
 			};
 		};
+		nil
 	ENDMETHOD;
 
 	METHOD(lock)

@@ -228,6 +228,7 @@ CLASS("AI_GOAP", "AI")
 		private _className = GET_OBJECT_CLASS(_thisObject);
 		private __scopeProcess1 = createProfileScope ([format ["%1_process", _className]] call misc_fnc_createStaticString);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Halt here if requested for debug
 		if (_thisObject in g_AI_GOAP_haltArray) then {
@@ -411,12 +412,14 @@ CLASS("AI_GOAP", "AI")
 			#ifdef ASP_ENABLE
 			private __scopeProcessAction = createProfileScope "AI_GOAP_processCurrentAction";
 			#endif
+			FIX_LINE_NUMBERS()
 
 			pr _actionState = CALLM0(_currentAction, "process");
 
 			#ifdef ASP_ENABLE
 			__scopeProcessAction = nil;
 			#endif
+			FIX_LINE_NUMBERS()
 
 			CALLM1(_currentAction, "setInstant", false);
 
@@ -506,6 +509,7 @@ CLASS("AI_GOAP", "AI")
 		private _className = GET_OBJECT_CLASS(_thisObject);
 		private __scopeGetGoal = createProfileScope ([format ["%1_getMostRelevantGoal", _className]] call misc_fnc_createStaticString);
 		#endif
+		FIX_LINE_NUMBERS()
 		
 		// Get the list of goals available to this agent
 		pr _possibleGoals = T_CALLM0("getPossibleGoals");
@@ -1130,6 +1134,7 @@ CLASS("AI_GOAP", "AI")
 
 		([_currentWS, _goalWS] call ws_getPlannerCacheKey) + (str _possibleActions) + (str _goalParameters);
 	ENDMETHOD;
+	
 	
 	/* ------------------------------------------------------------------------------------------------------------
 		   ###                    ###    ##        ######    #######  ########  #### ######## ##     ## ##     ## 

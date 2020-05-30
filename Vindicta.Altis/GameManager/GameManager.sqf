@@ -36,7 +36,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	VARIABLE("saveID");				// saveID property of SaveGameHeader
 	VARIABLE("campaignStartDate");	// In-game date when the campaign was started
 	VARIABLE("templates");			// Array of templates currently used
-	VARIABLE("gameModeClassName");	// 
+	VARIABLE("gameModeClassName");
 	VARIABLE("lastAutoSave");
 	VARIABLE("lastAutoSaveCheck");
 
@@ -169,7 +169,8 @@ CLASS("GameManager", "MessageReceiverEx")
 					pr _newHeader = CALLM2(_storage, "load", _headerRef, true); // Create a new object
 					_allRecordNamesAndHeaders pushBack [_recordName, _newHeader];
 				} else {
-					OOP_ERROR_1("Save game header not found for %1", _recordName);
+					OOP_ERROR_1("Save game header not found for %1, removing invalid record", _recordName);
+					CALLM1(_storage, "eraseRecord", _recordName);
 				};
 			} else {
 				OOP_ERROR_1("Can't open record %1", _recordName);
@@ -192,15 +193,16 @@ CLASS("GameManager", "MessageReceiverEx")
 		pr _return = []; // Array with server's response
 		OOP_INFO_1("Checking %1 headers:", count _recordNamesAndHeaders);
 		pr _saveVersion = parseNumber (call misc_fnc_getSaveVersion);
+		pr _saveBreakVersion = parseNumber (call misc_fnc_getSaveBreakVersion);
 		{
 			_x params ["_recordName", "_header"];
 			OOP_INFO_2("  checking header: %1 of record: %2", _header, _recordName);
 
 			pr _errors = [];
 			pr _headerSaveVersion = parseNumber GETV(_header, "saveVersion");
-			if (_headerSaveVersion > _saveVersion) then {
+			if (_headerSaveVersion > _saveVersion || _headerSaveVersion < _saveBreakVersion) then {
 				_errors pushBack INCOMPATIBLE_SAVE_VERSION;
-				OOP_INFO_2("  incompatible save version: %1, current: %2", _headerSaveVersion, _saveVersion);
+				OOP_INFO_3("  incompatible save version: %1, current: %2, last compatible: %3", _headerSaveVersion, _saveVersion, _headerSaveVersion);
 				// No point checking further
 			} else {
 				if ((toLower GETV(_header, "worldName")) != (tolower worldName)) then {

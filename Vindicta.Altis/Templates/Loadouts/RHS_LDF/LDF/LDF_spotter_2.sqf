@@ -11,7 +11,7 @@ _RandomHeadgear = selectRandom ["rhssaf_booniehat_digital","rhssaf_bandana_digit
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["G_Bandanna_oli","G_Balaclava_oli","","",""];
 this addGoggles _RandomGoggles;
-this forceAddUniform "rhssaf_uniform_m10_digital_summer";
+this forceaddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital_rifleman_radio";
 this addBackpack "rhs_sidor";
 

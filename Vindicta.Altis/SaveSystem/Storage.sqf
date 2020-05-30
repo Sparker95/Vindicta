@@ -37,6 +37,7 @@ Base class for derived classes which perform saving and loading of variables els
 #ifndef _SQF_VM
 #define BROADCAST_PROGRESS
 #endif
+FIX_LINE_NUMBERS()
 
 // Variable needed for converting sides into strings and back
 gSideTags = SIDE_ARRAY apply {
@@ -66,6 +67,7 @@ gSideTags = SIDE_ARRAY apply {
 					#else
 					_x call storage_fnc_preStringifyArray;
 					#endif
+					FIX_LINE_NUMBERS()
 				};
 				case "SIDE": {
 					// Convert side to string
@@ -133,11 +135,12 @@ CLASS("Storage", "")
 		#endif
 
 		T_SETV("saveDataOutgoing", false);
-#ifndef _SQF_VM
+		#ifndef _SQF_VM
 		T_SETV("version", (parseNumber call misc_fnc_getVersion));
-#else
+		#else
 		T_SETV("version", 666);
-#endif
+		#endif
+		FIX_LINE_NUMBERS()
 	ENDMETHOD;
 
 	METHOD(delete)
@@ -170,7 +173,7 @@ CLASS("Storage", "")
 		T_SETV("savedObjects", objNull);
 		T_SETV("loadedObjects", objNull);
 		#endif
-
+		FIX_LINE_NUMBERS()
 	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -202,6 +205,7 @@ CLASS("Storage", "")
 				//diag_log format ["Save: %1", _this];
 				[format ["[Storage] Saving %1", _valueOrRef]] remoteExec ["systemChat"];
 				#endif
+				FIX_LINE_NUMBERS()
 
 				// Set flag
 				T_SETV("saveDataOutgoing", true);
@@ -274,7 +278,7 @@ CLASS("Storage", "")
 					// It's a basic type, convert it to string and save it
 					pr _array = [_value];							// Much easier to convert it to the array
 					_array = +_array;								// Then use our usual array conversion code
-					_array call storage_fnc_preStringifyArray;			// So that it can write values back
+					_array call storage_fnc_preStringifyArray;		// So that it can write values back
 					toFixed 7;
 					pr _valueStr = str _array;
 					toFixed -1;
@@ -318,6 +322,7 @@ CLASS("Storage", "")
 				//diag_log format ["Save: %1", _this];
 				[format ["[Storage] Loading %1", _ref]] remoteExec ["systemChat"];
 				#endif
+				FIX_LINE_NUMBERS()
 
 				// Check if it was a saved OOP object
 				pr _className = T_CALLM1("loadString", _ref + "_" + OOP_PARENT_STR);
@@ -342,6 +347,7 @@ CLASS("Storage", "")
 					#else
 					pr _serial = parseSimpleArray _serialStr;  // Fuck this, it does not understand SIDE values
 					#endif
+					FIX_LINE_NUMBERS()
 
 					// Convert some special strings into proper data types
 					_serial call storage_fnc_postParseArray;
@@ -410,6 +416,7 @@ CLASS("Storage", "")
 					#else
 					pr _array = parseSimpleArray _string;  // Fuck this, it does not understand SIDE values
 					#endif
+					FIX_LINE_NUMBERS()
 					_array call storage_fnc_postParseArray; // Again run our conversion code to convert special values
 					_array select 0
 				};
@@ -450,6 +457,7 @@ CLASS("Storage", "")
 		pr _hashmapSave = "Dummy" createVehicle [0, 0, 0];
 		pr _hashmapLoad = "Dummy" createVehicle [0, 0, 0];
 		#endif
+		FIX_LINE_NUMBERS()
 		T_SETV("savedObjects", _hashMapSave);
 		T_SETV("loadedObjects", _hashMapLoad);
 	ENDMETHOD;

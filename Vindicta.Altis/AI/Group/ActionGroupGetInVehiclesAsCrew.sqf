@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: ActionGroup.ActionGroupGetInVehiclesAsCrew
@@ -141,7 +142,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 			};
 		} forEach _vehiclesStdCrew;
 		
-		// Try to assign standard turrets
+		// Try to assign standard turrets and co-pilots
 		pr _turretsAI = [];
 
 		{// forEach _vehiclesStdCrew
@@ -164,7 +165,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 					_turretsAI pushback _turretAI;
 				};
-			} forEach _stdTurrets;
+			} forEach (_stdTurrets + _copilotTurrets);
 		} forEach _vehiclesStdCrew;
 
 		// Assign regroup goal to remaining inf

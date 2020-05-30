@@ -9,6 +9,7 @@
 #include "..\MessageTypes.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 
 /*
 Class: Unit
@@ -83,11 +84,11 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	_classID - ID of the class in the template array, or -1 to pick a random class name. Ignored if _hO is not null.
 	_group - the group object the unit will be added to. Vehicles can be added without a group.
 	_hO - object handle. If null, new unit wwill be created in despawned state. Otherwise new <Unit> object will be attached to this object handle.
-	_weapons - array with weapons to give to this unit, for format check Unit.hpp. Can be an empty array, then unit will have standard weapons from the config or loadout.
+	_gear - array with weapons to give to this unit, for format check Unit.hpp. Can be an empty array, then unit will have standard weapons from the config or loadout.
 	*/
 
 	METHOD(new)
-		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull], ["_weapons", []]];
+		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull], ["_gear", []]];
 
 		OOP_INFO_0("NEW UNIT");
 
@@ -113,20 +114,15 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
 			DUMP_CALLSTACK
 		};
+
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 
 		// If a random class was requested to be added
-		private _class = "";
-		if (isNull _hO) then {
-			//if(_classID == -1) then {
-			//	private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
-			//	_class = _classData select 0;
-			//} else {
-			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
-			//};
+		private _class = if (isNull _hO) then {
+			[_template, _catID, _subcatID, _classID] call t_fnc_select
 		} else {
-			_class = typeOf _hO;
+			typeOf _hO
 		};
 
 		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
@@ -135,7 +131,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _loadout = "";
 		if ([_class] call t_fnc_isLoadout) then {
 			_loadout = _class;
-			_class = _template select _catID select 0 select 0; // Default class name from the template
+			_class = _template # _catID # 0 # 0; // Default class name from the template
 		};
 
 		// Create the data array
@@ -146,7 +142,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_data set [UNIT_DATA_ID_GROUP, ""];
 		_data set [UNIT_DATA_ID_LOADOUT, _loadout];
-		_data set [UNIT_DATA_ID_WEAPONS, _weapons];
+		_data set [UNIT_DATA_ID_GEAR, _gear];
 		_data set [UNIT_DATA_ID_INVENTORY, []];
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
@@ -171,7 +167,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			T_CALLM0("initObjectVariables");
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
-			T_CALLM0("applyInfantryWeapons");
+			T_CALLM0("applyInfantryGear");
 
 			if (_catID == T_VEH) then {
 				T_CALLM0("updateVehicleLock");
@@ -254,8 +250,6 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_return
 	ENDMETHOD;
 
-
-
 	//                            C R E A T E   A I
 	/*
 	Method: createAI
@@ -276,6 +270,11 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		// Don't start the brain, because its process method will be called by
 		// its group's AI brain
 		pr _data = T_GETV("data");
+
+		if(_data # UNIT_DATA_ID_AI != NULL_OBJECT) exitWith {
+			OOP_ERROR_0("Unit AI is already created");
+		};
+
 		pr _AI = NEW(_AIClassName, [_thisObject]);
 		_data set [UNIT_DATA_ID_AI, _AI];
 
@@ -333,7 +332,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				} else {
 					false 
 				};
-				
+
 				if (_prevPosSafe) then {
 					_pos = _posATLPrev;
 				} else {
@@ -395,7 +394,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						};
 						[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 						_objectHandle allowFleeing 0;
-						
+
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						//_objectHandle disableAI "PATH";
@@ -406,19 +405,40 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						pr _groupType = CALLM0(_group, "getType");
 
 						// Give weapons to the unit (if he has special weapons)
-						T_CALLM0("applyInfantryWeapons");
+						T_CALLM0("applyInfantryGear");
+
+						// Global difficulty will effect AI between 0.2 and 0.8
+						private _effectiveDiff = if(side _groupHandle == CALLM0(gGameMode, "getEnemySide")) then {
+							vin_diff_global;
+						} else {
+							1 - vin_diff_global
+						};
+
+						// Difficulty on effects AI between 0.2 and 0.8, to make it more responsive.
+						// i.e. difficulty above 0.8 will give all AI skill 1, below 0.2 all AI skill 0
+						private _diffModifer = MAP_TO_RANGE(_effectiveDiff, 0.2, 0.8, 0, 1);
 
 						// Set unit skill
-						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_global * vin_aiskill_aimingAccuracy];	// Aiming and precision
-						_objectHandle setSkill ["aimingShake", vin_aiskill_global * vin_aiskill_aimingShake];
-						_objectHandle setSkill ["aimingSpeed", vin_aiskill_global * vin_aiskill_aimingSpeed];
-						_objectHandle setSkill ["commanding", 1];		// Everything else
-						_objectHandle setSkill ["courage", 0.5];
-						//_objectHandle setSkill ["endurance", 0.8];
-						_objectHandle setSkill ["general", 1];
-						_objectHandle setSkill ["reloadSpeed", 0.5];
-						_objectHandle setSkill ["spotDistance", vin_aiskill_global * vin_aiskill_spotDistance];
-						_objectHandle setSkill ["spotTime", vin_aiskill_global * vin_aiskill_spotTime];
+						// Aiming and precision
+						_objectHandle setSkill ["aimingAccuracy", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingAccuracy * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["aimingShake", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingShake * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["aimingSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingSpeed * vin_aiskill_global, 1)];
+						// Everything else
+						_objectHandle setSkill ["commanding", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["courage", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["general", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["reloadSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
+						_objectHandle setSkill ["spotDistance", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotDistance * vin_aiskill_global, 1)];
+						_objectHandle setSkill ["spotTime", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotTime * vin_aiskill_global, 1)];
+
+						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+						switch _subcatID do {
+							case T_INF_medic: 		{ _objectHandle setUnitTrait ["medic", true]; };
+							case T_INF_engineer: 	{ _objectHandle setUnitTrait ["engineer", true]; };
+							case T_INF_exp: 		{ _objectHandle setUnitTrait ["explosiveSpecialist", true]; };
+							case T_INF_sniper: 		{ _objectHandle setUnitTrait ["camouflageCoef", 0.5]; };
+							case T_INF_spotter: 	{ _objectHandle setUnitTrait ["camouflageCoef", 0.5]; };
+						};
 
 						// make it impossible to ace interact with this unit, may need better solution in the future
 						if (side _objectHandle != west) then {
@@ -435,13 +455,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
 						
-						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
-						pr _special = "CAN_COLLIDE";
-						/*
-						if ([_catID, _subcatID] in T_static) then {
-							_special = "CAN_COLLIDE";
+						// Just assuming that if we are over 25m high we are flying, doesn't mean its true...
+						pr _special = if(_subcatID in T_VEH_air && _pos#2 > 25) then {
+							"FLY"
+						} else {
+							"CAN_COLLIDE"
 						};
-						*/
 
 						_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 
@@ -496,7 +515,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 					case T_CARGO: {
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
-						
+
 						// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
 						pr _special = "CAN_COLLIDE";
 						/*
@@ -511,6 +530,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 							OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
 						};
+
+						// No damage for crates
+						_objectHandle allowDamage false;
 
 						// Disabling this as it can cause intersections as other vehicles aren't detected during createVehicle
 						// _objectHandle allowDamage false;
@@ -546,12 +568,16 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 						// Initialize limited arsenal
-						T_CALLM0("limitedArsenalOnSpawn");
-						
-						// I'll tell you what else: make it draggable so we can get it out of buildings!
-						[_objectHandle, true, [0, 2, 0.1], 0] remoteExec ["ace_dragging_fnc_setDraggable", 0, false];
+						if(T_CALLM0("limitedArsenalOnSpawn")) then {
+							// If its an arsenal then we disable carry and drag
+							[_objectHandle, false] remoteExec ["ace_dragging_fnc_setDraggable", 0, true];
+							[_objectHandle, false] remoteExec ["ace_dragging_fnc_setCarryable", 0, true];
+						} else {
+							// If it isn't an arsenal object then force it to be dragable. Arsenal can be moved using build UI only.
+							[_objectHandle, true, [0, 2, 0.1], 0, true] remoteExec ["ace_dragging_fnc_setDraggable", 0, true];
+						};
 
-						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?			
+						//T_CALLM1("createAI", "AIUnitVehicle");		// A box probably has no AI?
 						// Give intel to this unit
 						//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
 					};
@@ -692,9 +718,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
 			pr _ehid = [_hO, "Killed", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_KILLED_STR, nil];
-				_unit removeEventHandler ["Killed", _thisID];
-				_this call Unit_fnc_EH_Killed;
+				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
+					_unit setVariable [UNIT_EH_KILLED_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					// _unit removeEventHandler ["Killed", _thisID];
+					_this call Unit_fnc_EH_Killed;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
 		};
@@ -703,16 +732,26 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
-				_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
-				_unit removeEventHandler ["Respawn", _thisID];
-				_this call Unit_fnc_EH_Respawn;
+				if(!isNil {_unit getVariable UNIT_EH_RESPAWN_STR}) then {
+					_unit setVariable [UNIT_EH_RESPAWN_STR, nil];
+					// Cannot do this due to https://feedback.bistudio.com/T150628
+					//_unit removeEventHandler ["Respawn", _thisID];
+					_this call Unit_fnc_EH_Respawn;
+				};
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
+		};
+
+		// Rating (hopefully disabling the renegade system)
+		if (isNil {_hO getVariable UNIT_EH_HANDLE_RATING_STR}) then {
+			pr _ehid = [_hO, "HandleRating", { 0 }] call CBA_fnc_addBISEventHandler;
+			_hO setVariable [UNIT_EH_HANDLE_RATING_STR, _ehid];
 		};
 
 		// HandleDamage for infantry
 		// Disabled for now, let's see if it changed anything
 		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
+		/*
 		if ((_data select UNIT_DATA_ID_CAT == T_INF) &&	// Only to infantry
 			{owner _hO in [0, clientOwner]} &&			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 			{!(_hO isEqualTo player)}) then { 			// Ignore player
@@ -723,6 +762,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
+		*/
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
@@ -770,7 +810,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _data = T_GETV("data");
 
 		// Bail if not vehicle
-		if ((_data#UNIT_DATA_ID_CAT) != T_VEH) exitWith {};		
+		pr _catID = _data#UNIT_DATA_ID_CAT;
+		if ((_catID) != T_VEH) exitWith {};
+
+		// Bail if it's a static weapon
+		pr _subcatID = _data#UNIT_DATA_ID_SUBCAT;
+		if (_subcatID in T_VEH_static) exitWith {};
 
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 
@@ -1166,13 +1211,20 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					} forEach _TFARBetaclassNames;
 				};
 
+				// Add headgear
+				pr _nHeadgears = ceil (_nGuns * random [0.5, 1, 1.5]);
+				pr _headgear = _tInv#T_INV_headgear;
+				for "_i" from 0 to _nHeadgears do {
+					_hO addItemCargoGlobal [selectRandom _headgear, 1];
+				};
+
 				// Add vests
 				pr _nVests = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
 					_hO addItemCargoGlobal [selectRandom _vests, 1];
 				};
-
+	
 				// Add backpacks
 				pr _nBackpacks = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _backpacks = _tInv#T_INV_backpacks;
@@ -1305,9 +1357,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			// Stop AI, sensors, etc
 			pr _AI = _data select UNIT_DATA_ID_AI;
 			// Some units are brainless. Check if the unit had a brain.
-			if (_AI != "") then {
+			if (_AI != NULL_OBJECT) then {
 				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
-				_data set [UNIT_DATA_ID_AI, ""];
+				_data set [UNIT_DATA_ID_AI, NULL_OBJECT];
 			};
 
 			// Get the amount of actual build resources in inventory
@@ -1329,7 +1381,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			pr _posATL = getPosATL _objectHandle;
 			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
 			pr _gar = _data#UNIT_DATA_ID_GARRISON;
-			pr _loc = if (_gar != "") then {CALLM0(_gar, "getLocation")} else {""};
+			pr _loc = if (_gar != NULL_OBJECT) then { CALLM0(_gar, "getLocation") } else { NULL_OBJECT };
 			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
@@ -1341,7 +1393,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			};
 
 			//private _group = _data select UNIT_DATA_ID_GROUP;
-			//if (_group != "") then { CALLM(_group, "handleUnitDespawned", [_thisObject]) };
+			//if (_group != NULL_OBJECT) then { CALLM(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
 			OOP_ERROR_0("Already despawned");
@@ -1413,43 +1465,48 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Method: applyWeapons
 	Gives weapons to the unit from the weapons array of this unit
 	*/
-	METHOD(applyInfantryWeapons)
+	METHOD(applyInfantryGear)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 
 		// Bail if unit does not have special weapons
-		pr _weapons = _data select UNIT_DATA_ID_WEAPONS;
-		if (count _weapons == 0) exitWith {};
+		pr _gear = _data select UNIT_DATA_ID_GEAR;
+		if (count _gear == 0) exitWith {};
 
 		// Bail if unit is not spawned
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
 
-		// hopefully catch inventory wipe bug!
+		// Can't call this on player units
 		if(_hO in allPlayers) exitWith {
-			DUMP_CALLSTACK;
-			OOP_ERROR_MSG("PLAYERINVBUG: applyInfantryWeapons _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
-			// Broadcast notification
-			pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
+			OOP_ERROR_MSG("Can't call applyInfantryGear on player unit (%1)", [_this]);
 		};
 
 		// Remove all weapons
 		removeAllWeapons _hO;
 
-		// Remove all items from vest
-		pr _vest = vest _hO;
-		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
+		// Set headgear
+		removeHeadgear _hO;
+		pr _headgear = _gear#UNIT_GEAR_ID_HEADGEAR;
+		if(_headgear != "") then {
+			_hO addHeadgear _headgear;
+		};
+
+		// Set vest
 		removeVest _hO;
-		_hO addVest _vest;
-			
+		pr _vest = _gear#UNIT_GEAR_ID_VEST;
+		if(_vest != "") then {
+			_hO addVest _vest;
+		};
+
 		// Add main gun
-		pr _primary = _weapons#UNIT_WEAPONS_ID_PRIMARY;
+		pr _primary = _gear#UNIT_GEAR_ID_PRIMARY;
 		if (_primary != "") then {
 			pr _primaryMags = getArray (configfile >> "CfgWeapons" >> _primary >> "magazines");
 			pr _mag = _primaryMags select 0;
 			_hO addWeapon _primary;
 			for "_i" from 0 to 8 do { _hO addItemToVest _mag; };
+			for "_i" from 0 to 8 do { _hO addItemToUniform _mag; };
 			_hO addPrimaryWeaponItem _mag;
 
 			pr _muzzles = getArray(configFile >> "cfgWeapons" >> _primary >> "muzzles");
@@ -1463,6 +1520,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					if (count _muzzleMags > 0) then {
 						pr _mag = _muzzleMags select 0;
 						for "_i" from 0 to 8 do { _hO addItemToVest _mag; };
+						for "_i" from 0 to 8 do { _hO addItemToUniform _mag; };
 						_hO addPrimaryWeaponItem _mag;
 					};
 				};
@@ -1476,9 +1534,8 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _backpack = backpack _hO;
 
 		// Add secondary weapon
-		pr _secondary = _weapons#UNIT_WEAPONS_ID_SECONDARY;
+		pr _secondary = _gear#UNIT_GEAR_ID_SECONDARY;
 		if (_secondary != "") then {
-
 			// Soldiers with secondary weapon get backpack emptied
 			// Or are given a default backpack
 			if (_backpack == "") then { _backpack = "B_Kitbag_rgr"; }; // Default backpack
@@ -1495,7 +1552,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Force select primary weapon
 		// https://community.bistudio.com/wiki/selectWeapon  notes by MaestrO.fr and Dr_Eyeball
-		if ( (primaryWeapon _hO) != "") then
+		if (primaryWeapon _hO != "") then
 		{			
 			pr _type = primaryWeapon _hO;
 			// check for multiple muzzles (eg: GL)
@@ -1584,7 +1641,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(getGroup)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_GROUP
+		_data # UNIT_DATA_ID_GROUP
 	ENDMETHOD;
 
 
@@ -1598,7 +1655,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(getMainData)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
+		[_data # UNIT_DATA_ID_CAT, _data # UNIT_DATA_ID_SUBCAT, _data # UNIT_DATA_ID_CLASS_NAME]
 	ENDMETHOD;
 	
 	//                    G E T   E F F I C I E N C Y
@@ -1611,7 +1668,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(getEfficiency)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		T_efficiency select (_data select UNIT_DATA_ID_CAT) select (_data select UNIT_DATA_ID_SUBCAT)
+		T_efficiency # (_data # UNIT_DATA_ID_CAT) # (_data # UNIT_DATA_ID_SUBCAT)
 	ENDMETHOD;
 
 	//                        G E T   D A T A
@@ -1900,7 +1957,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isInfantry)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_INF
+		_data#UNIT_DATA_ID_CAT == T_INF
 	ENDMETHOD;
 
 	//                       I S   V E H I C L E
@@ -1913,7 +1970,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isVehicle)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_VEH
+		_data#UNIT_DATA_ID_CAT == T_VEH
 	ENDMETHOD;
 
 	//                         I S   D R O N E
@@ -1926,7 +1983,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isDrone)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_DRONE
+		_data#UNIT_DATA_ID_CAT == T_DRONE
 	ENDMETHOD;
 
 	/*
@@ -1938,9 +1995,21 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isCargo)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		_data select UNIT_DATA_ID_CAT == T_CARGO
+		_data#UNIT_DATA_ID_CAT == T_CARGO
 	ENDMETHOD;
-	
+
+	/*
+	Method: isAir
+	Returns true if given <Unit> is an air unit
+
+	Returns: Bool
+	*/
+	METHOD(isAir)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+		_data#UNIT_DATA_ID_CAT == T_VEH && { _data#UNIT_DATA_ID_SUBCAT in T_VEH_air }
+	ENDMETHOD;
+
 	//                         I S   S T A T I C
 	/*
 	Method: isStatic
@@ -1951,7 +2020,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	METHOD(isStatic)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
-		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
+		[_data#UNIT_DATA_ID_CAT, _data#UNIT_DATA_ID_SUBCAT] in T_static
 	ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2344,7 +2413,11 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 			// Make the object movable again for the Build UI
 			CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
-		};
+
+			true
+		} else {
+			false
+		}
 	ENDMETHOD;
 
 	METHOD(limitedArsenalOnDespawn)
@@ -2465,11 +2538,36 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		_serial set [UNIT_DATA_ID_AI, ""];
-		// SAVEBREAK DELETE >>> 
-		if(count _serial < UNIT_DATA_SIZE) then {
-			_serial set[UNIT_DATA_ID_INVENTORY, []];
+
+		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
+		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;
+		#ifndef _SQF_VM
+		if(!isClass (configFile >> "CfgVehicles" >> _class)) then {
+			private _garrison = _serial#UNIT_DATA_ID_GARRISON;
+			private _template = if(IS_NULL_OBJECT(_garrison)) then { "" } else { CALLM0(_garrison, "getTemplate") };
+			if(!(_template isEqualTo "")) then {
+				// Select a new random class/loadout
+				private _catID = _serial#UNIT_DATA_ID_CAT;
+				private _subcatID = _serial#UNIT_DATA_ID_SUBCAT;
+				private _newClass = [_template, _catID, _subcatID, -1] call t_fnc_select;
+
+				// Check if the class is actually a custom loadout
+				pr _loadout = "";
+				if ([_newClass] call t_fnc_isLoadout) then {
+					_loadout = _newClass;
+					_newClass = _template # _catID # 0 # 0; // Default class name from the template
+				};
+				_serial set [UNIT_DATA_ID_CLASS_NAME, _newClass];
+				_serial set [UNIT_DATA_ID_LOADOUT, _loadout];
+
+				OOP_WARNING_MSG("Class %1 no longer exists, using %2 instead", [_class ARG _newClass]);
+			} else {
+				OOP_ERROR_MSG("Class %1 no longer exists, and garrison template couldn't be found, so no automatic replacement can happen", [_class]);
+			};
 		};
-		// SAVEBREAK DELETE <<<
+		#endif
+		FIX_LINE_NUMBERS()
+
 		T_SETV("data", _serial);
 
 		true

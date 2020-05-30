@@ -13,6 +13,7 @@ Performs moving while in vehicle, supports waypoints.
 #ifndef BUILD_RELEASE
 // #define DEBUG_PF 
 #endif
+FIX_LINE_NUMBERS()
 
 #define pr private
 
@@ -137,7 +138,6 @@ CLASS("ActionUnitMove", "ActionUnit")
 		params [P_THISOBJECT];
 		
 		private _hO = T_GETV("hO");
-		private _pos = T_GETV("pos");
 
 		private _hG = group _hO;
 		private _existingWPs = waypoints _hG;
@@ -178,7 +178,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 			private _currWP = (_existingWPs#_existingWPIdx);
 			private _currWPPos = getWPPos _currWP;
 			private _newWPPos = +_currWPPos;
-			while{ count _remainingRoute > 0 && {_hO distance _newWPPos < MOVE_WP_DIST} } do {
+			while{ count _remainingRoute > 0 && { _hO distance _newWPPos < MOVE_WP_DIST } } do {
 				_newWPPos = _remainingRoute deleteAt 0;
 				// _currWPPos = if(count _remainingRoute > 0) then {
 				//  	_remainingRoute deleteAt 0
@@ -202,7 +202,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 			} else {
 				T_GETV("pos")
 			};
-			private _wp = _hG addWaypoint [ZERO_HEIGHT(_nextPos), 0];
+			private _wp = _hG addWaypoint [AGLToASL ZERO_HEIGHT(_nextPos), -1];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointCompletionRadius 0;
 			_wp setWaypointName MOVE_WP_NAME;

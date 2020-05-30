@@ -9,7 +9,7 @@ removeGoggles this;
 
 _RandomHeadgear = selectRandom ["rhs_tsh4","rhs_tsh4_bala","rhs_tsh4_ess","rhs_tsh4_ess_bala"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "rhssaf_uniform_m10_digital_summer";
+this forceaddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhs_vydra_3m";
 
 this addWeapon "rhs_weap_aks74u";

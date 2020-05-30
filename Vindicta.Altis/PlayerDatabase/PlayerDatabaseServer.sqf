@@ -17,17 +17,6 @@ Inherits from <DoubleKeyHashmap>.
 
 #define OOP_CLASS_NAME PlayerDatabaseServer
 CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
-
-	METHOD(new)
-		params [P_THISOBJECT];
-
-	ENDMETHOD;
-
-	METHOD(delete)
-		params [P_THISOBJECT];
-
-	ENDMETHOD;
-
 	/*
 	Method: set
 	Sets value associated with key0-key1 pair.
@@ -82,7 +71,7 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 			T_CALLM("_onPlayerConnectedFirstTime", _args);
 
 			
-		OOP_INFO_1("  NEW PLAYER", _clientOwner);
+			OOP_INFO_1("  NEW PLAYER", _clientOwner);
 
 		} else {
 			// This player has been here before
@@ -97,7 +86,7 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 				};
 			} forEach PDB_KEY_ALL;
 
-		OOP_INFO_1("  PLAYER HAS BEEN RECOGNIZED", _clientOwner);
+			OOP_INFO_1("  PLAYER HAS BEEN RECOGNIZED", _clientOwner);
 
 		};
 

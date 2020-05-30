@@ -19,6 +19,7 @@ CLASS("ActionGarrisonDefendActive", "ActionGarrisonDefend")
 		T_SETV("behaviour", "COMBAT");
 		T_SETV("speedMode", "FULL");
 		T_SETV("infantryFormation", "WEDGE");
+		T_SETV("air", 1);
 	ENDMETHOD;
 
 ENDCLASS;

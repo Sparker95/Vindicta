@@ -229,28 +229,21 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Call to server to get the info
 			//CALLM2(gGameModeServer, "postMethodAsync", "update");
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["update"], ON_SERVER)
-			//REMOTE_EXEC_METHOD(gGameModeServer, "postMessageAsync", ["update"], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Flush Messages", {
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["flushMessageQueues"], ON_SERVER)
-			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
-			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Suspend", {
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["suspend" ARG ["Suspended manually from debug menu"]], ON_SERVER)
-			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
-			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
 		["Game Mode", "Resume", {
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["resume"], ON_SERVER)
-			//CALLM2(gGameModeServer, "postMethodAsync", "flushMessageQueues");
-			//REMOTE_EXEC_METHOD(gGameModeServer, "flushMessageQueues", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 	ENDMETHOD;
 
@@ -275,7 +268,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		pr _restored = CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay ARG _restoreData ARG _restorePosition]);
 		if(!_restored) then {
 			// Select random player gear
-			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTemplate = CALLM1(gGameModeServer, "getTemplate", civilian);
 			private _templateClass = [_civTemplate, T_INF, T_INF_rifleman, -1] call t_fnc_select;
 			if ([_templateClass] call t_fnc_isLoadout) then {
 				[_newUnit, _templateClass] call t_fnc_setUnitLoadout;
@@ -931,7 +924,8 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				// Ensure that the found position is far enough from the location which is being reinforced
 				if (_spawnInPos distance2D _locPos > 900) then {
 					// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-					private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG LOCATION_TYPE_POLICE_STATION ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
+					private _args = [_side, _cInf, _cVehGround];
+					private _newGarrison = CALLM(gGameMode, "createPoliceGarrison", _args);
 					T_SETV_REF("reinfGarrison", _newGarrison);
 
 					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);

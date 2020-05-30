@@ -32,6 +32,8 @@
 // ----------------------------------------------------------------------
 // Zero the height component of a vector
 #define ZERO_HEIGHT(pos) ([(pos) select 0, (pos) select 1, 0])
+// Ensure a vector has 3 components
+#define VECTOR3(pos) (if(count (pos) == 2) then { pos + [0] } else { pos })
 
 // Clamp val_ between min_ and max_
 #define CLAMP(val_, min_, max_) ((min_) max (val_) min (max_))

@@ -39,7 +39,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 		// Check if there are enough humans to operate all the vehicles
 		pr _vehUnits = CALLM0(_gar, "getVehicleUnits");
-		CALLSM("Unit", "getRequiredCrew", [_vehUnits]) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];
+		CALLSM1("Unit", "getRequiredCrew", _vehUnits) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];
 
 		// Drivers
 		//pr _query = [[T_INF, -1]];
@@ -99,6 +99,10 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 			pr _allInfMounted = [_allGroups, WSP_GROUP_ALL_INFANTRY_MOUNTED, true] call pr0_fnc_accumulateGroupWSP;
 			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 
+			// Aggregate landed value
+			pr _allGroupsLanded = [_allGroups, WSP_GROUP_ALL_LANDED, true] call pr0_fnc_accumulateGroupWSP;
+			[_worldState, WSP_GAR_ALL_LANDED, _allGroupsLanded] call ws_setPropertyValue;
+
 			// Garrison position is average of group positions, if there are any
 			//pr _allGroups = _infGroups + _vehGroups;
 			if(count _allGroups > 0) then {
@@ -124,6 +128,9 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 			// All inf are considered mounted always
 			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, true] call ws_setPropertyValue;
+
+			// All groups are considered landed always
+			[_worldState, WSP_GAR_ALL_LANDED, true] call ws_setPropertyValue;
 		};
 
 		// Vehicle-related checks

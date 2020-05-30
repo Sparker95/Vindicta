@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 #define OOP_CLASS_NAME ActionUnitAmbientAnim
 CLASS("ActionUnitAmbientAnim", "ActionUnit")

@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 // Class: Garrison
 /*
 Method: spawn
@@ -19,7 +19,7 @@ OOP_INFO_0("SPAWN");
 
 ASSERT_THREAD(_thisObject);
 
-if(T_CALLM("isDestroyed", [])) exitWith {
+if(T_CALLM0("isDestroyed")) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 	DUMP_CALLSTACK;
 };
@@ -44,15 +44,13 @@ pr _action = CALLM0(_AI, "getCurrentAction");
 if(_action != NULL_OBJECT) then { _action = CALLM0(_action, "getFrontSubaction"); };
 
 pr _spawningHandled = if (_action != NULL_OBJECT) then {
-	ASSERT_MSG(!_global, "Global garrison should not have an active action");
 	CALLM0(_action, "spawn");
 } else {
 	false
 };
 
+// Current action doesn't handle spawning
 if (!_spawningHandled) then {
-	// Current action doesn't handle spawning
-
 	private _loc = T_GETV("location");
 
 	// SAVEBREAK >>> Cleanup invalid units (T_INF units *must* have a group)
@@ -68,7 +66,7 @@ if (!_spawningHandled) then {
 		OOP_INFO_1("Spawning groups: %1", _groups);
 		{
 			private _group = _x;
-			CALLM(_group, "spawnAtLocation", [_loc]);
+			CALLM1(_group, "spawnAtLocation", _loc);
 		} forEach _groups;
 
 		// Spawn single units
@@ -93,10 +91,10 @@ if (!_spawningHandled) then {
 		pr _garPos = T_CALLM0("getPos");
 		OOP_INFO_2("Spawning groups without location at pos %1: %2", _groups, _garPos);
 		{
-			CALLM2(_x, "spawnVehiclesOnRoad", [], _garPos);
+			CALLM1(_x, "spawnAtPos", _garPos);
 		} forEach _groups;
 
-		// Spawn single units
+		// Spawn single units (really shouldn't be any)
 		{
 			CALLM3(_x, "spawn", _garPos, 0, _global);
 		} forEach (_units select { CALLM0(_x, "getGroup") == NULL_OBJECT });
@@ -116,9 +114,7 @@ if (_action != NULL_OBJECT) then {
 
 // Change process category if it's active
 if (T_GETV("active")) then {
-	pr _msgLoop = T_CALLM0("getMessageLoop");
-	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
-	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonSpawned", _AI);
+	CALLM2(T_CALLM0("getMessageLoop"), "addProcessCategoryObject", "AIGarrisonSpawned", _AI);
 };
 
 // Call AI "process" method to accelerate decision taking

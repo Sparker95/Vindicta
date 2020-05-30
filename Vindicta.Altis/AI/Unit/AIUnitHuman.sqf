@@ -30,6 +30,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
 	#endif
+	FIX_LINE_NUMBERS()
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
@@ -77,6 +78,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_disableDebugMarkers");
 		#endif
+		FIX_LINE_NUMBERS()
 
 		T_CALLM0("removeFromProcessCategory");
 	ENDMETHOD;
@@ -242,7 +244,8 @@ CLASS("AIUnitHuman", "AIUnit")
 		pr _unit = T_GETV("agent");
 		pr _grp = CALLM0(_unit, "getGroup");
 		pr _grpAI = CALLM0(_grp, "getAI");
-		pr _enabled = GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled");
+		// This shouldn't be possible once AI start is synchronized between group and units
+		pr _enabled = if(isNil "_grpAI" || {_grpAI == NULL_OBJECT} || {!IS_OOP_OBJECT(_grpAI)}) then { false } else { GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled") };
 		pr _wasEnabled = T_GETV("markersEnabled");
 		if(!_wasEnabled && _enabled) then {
 			T_CALLM0("_enableDebugMarkers");
@@ -722,7 +725,6 @@ CLASS("AIUnitHuman", "AIUnit")
 				pr _driver = driver _hVeh;
 				_driver isEqualTo _hO
 			};
-
 			case VEHICLE_ROLE_TURRET : {
 				pr _turretPath = T_GETV("assignedTurretPath");
 				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x#3 isEqualTo _turretPath};
@@ -730,7 +732,6 @@ CLASS("AIUnitHuman", "AIUnit")
 				
 				_turretOperator isEqualTo _hO
 			};
-
 			case VEHICLE_ROLE_CARGO : {
 				/* FulLCrew output: Array - format:
 				0: <Object>unit
@@ -754,7 +755,6 @@ CLASS("AIUnitHuman", "AIUnit")
 					_turretOperator isEqualTo _hO
 				};
 			}; // case cargo
-
 			default {
 				false
 			};

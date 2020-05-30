@@ -9,7 +9,7 @@ removeGoggles this;
 
 _RandomHeadgear = selectRandom ["rhs_zsh7a","rhs_zsh7a_alt"];
 this addHeadgear _RandomHeadgear;
-this forceAddUniform "U_I_pilotCoveralls";
+this forceaddUniform "U_I_pilotCoveralls";
 
 this addWeapon "rhs_weap_tt33";
 this addHandgunItem "rhs_mag_762x25_8";

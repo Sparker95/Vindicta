@@ -2,6 +2,9 @@ OOP_Light_initialized = true;
 
 #include "OOP_Light.h"
 
+#define FIX_LINE_NUMBERS2(sharp) sharp##line __LINE__ __FILE__
+#define FIX_LINE_NUMBERS() FIX_LINE_NUMBERS2(#)
+
 /*
  * This file contains some functions for OOP_Light, mainly for asserting classess, objects and members.
  * Author: Sparker
@@ -22,6 +25,7 @@ if(isNil OOP_GVAR_STR(sessionID)) then {
 	OOP_GVAR(sessionID) = 0;
 };
 #endif
+FIX_LINE_NUMBERS()
 
 if(IS_SERVER) then {
 	gGameFreezeTime = 0;
@@ -38,7 +42,9 @@ OOP_error = {
 	private _msg = format ["[OOP] Error: file: %1, line: %2, %3", _file, _line, _text];
 	diag_log _msg;
 	DUMP_CALLSTACK;
+	halt;
 	#endif
+	FIX_LINE_NUMBERS()
 	// Doesn't really work :/
 	// try
 	// {
@@ -315,11 +321,13 @@ OOP_assert_class_member_access = {
 		if(!isNil "_thisClass") then { _thisClass } else { nil }
 	];
 	#endif
+	FIX_LINE_NUMBERS()
 	// If it isn't private or get only then we are fine
 	if(!_isPrivate and !_isGetOnly) exitWith { 
 		#ifdef DEBUG_OOP_ASSERT_FUNCS
 		diag_log "OK: !_isPrivate";
 		#endif
+		FIX_LINE_NUMBERS()
 		true 
 	};
 	// If it is both private and get-only then it is a declaration error, these are mutually exclusive
@@ -398,6 +406,7 @@ OOP_assert_static_member_access = {
 		false
 	};
 #endif
+FIX_LINE_NUMBERS()
 	private _isPrivate = [_classNameStr, _memNameStr, ATTR_PRIVATE] call OOP_static_member_has_attr;
 	private _isGetOnly = [_classNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_static_member_has_attr;
 	[_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly, _file, _line] call OOP_assert_class_member_access;
@@ -425,6 +434,7 @@ OOP_assert_member_access = {
 		if(!isNil "_thisClass") then { _thisClass } else { nil }
 	];
 	#endif
+	FIX_LINE_NUMBERS()
 
 	// EARLY OUT: If we are accessing from within the same object we have no access restrictions
 	if (!isNil "_thisObject" and {_thisObject isEqualTo _objNameStr}) exitWith { true };
@@ -434,12 +444,13 @@ OOP_assert_member_access = {
 
 	// Get the class of the object that owns the member
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-#ifndef _SQF_VM
+	#ifndef _SQF_VM
 	private _threadAffinity = [_objNameStr, _memNameStr, ATTR_THREAD_AFFINITY_ID] call OOP_member_get_attr_ex;
 	if((_threadAffinity isEqualType []) and {!([_objNameStr, _classNameStr, _memNameStr, _threadAffinity#1, _file, _line] call OOP_assert_is_in_required_thread)}) exitWith {
 		false
 	};
-#endif
+	#endif
+	FIX_LINE_NUMBERS()
 	private _thisClass = if(!isNil "_thisClass") then { 
 			_thisClass
 		} else {
@@ -625,10 +636,7 @@ gCommaNewLine = ",";
 #define DUMP_STR(string) (diag_log ("_json_line_ " + (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
 
 #endif
-
-
-
-
+FIX_LINE_NUMBERS()
 
 // Serializes a variable to json
 OOP_dumpVariableToJson = {
@@ -713,10 +721,6 @@ OOP_dumpAsJson = {
 	DUMP(endl + endl + endl);
 };
 
-
-
-
-
 // Dumps to JSON, but always to diag_log
 
 #ifdef _SQF_VM
@@ -724,6 +728,7 @@ OOP_dumpAsJson = {
 #else
 #define __TEXT text
 #endif
+FIX_LINE_NUMBERS()
 
 gComma = toString [44];
 #define CLEAR() 
@@ -832,12 +837,6 @@ OOP_objectCrashDump = {
 		};
 	};
 };
-
-
-
-
-
-
 
 // ---- Remote execution ----
 // A remote code wants to execute something on this machine
@@ -989,6 +988,7 @@ OOP_assign_default = { // todo implement namespace
 		[__FILE__, __LINE__, format ["destination and source classes don't match for objects %1 and %2", _destObject, _srcObject]] call OOP_error;
 	};
 	#endif
+	FIX_LINE_NUMBERS()
 
 	// Get member list and copy everything
 	private _memList = GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
@@ -1101,6 +1101,7 @@ OOP_deserialize = { // todo implement namespace
 	#ifdef OOP_ASSERT
 	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith {};
 	#endif
+	FIX_LINE_NUMBERS()
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
 
@@ -1127,6 +1128,7 @@ OOP_deserialize_attr = {
 	#ifdef OOP_ASSERT
 	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith {};
 	#endif
+	FIX_LINE_NUMBERS()
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	if(!_deserializeAllVariables) then {
@@ -1159,6 +1161,7 @@ OOP_deserialize_save = {
 	#ifdef OOP_ASSERT
 	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith { false };
 	#endif
+	FIX_LINE_NUMBERS()
 
 	// Select member variables we expect to find in this save version
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
@@ -1284,6 +1287,7 @@ OOP_getSessionCounter = {
 #ifndef _SQF_VM
 OOP_staticStringHashmap = [false] call CBA_fnc_createNamespace;
 #endif
+FIX_LINE_NUMBERS()
 
 OOP_createStaticString = {
 	params ["_str"];

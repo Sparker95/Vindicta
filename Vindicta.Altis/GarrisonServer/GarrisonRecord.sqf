@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 /*
 Class: GarrisonRecord
 Client-side representation of a garrison.
@@ -15,8 +16,9 @@ CLASS("GarrisonRecord", "")
 	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]);
 
 	// Generic properties
-	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("location", [ATTR_SERIALIZABLE]);
 
 	// Amount of build resources (number)
@@ -89,6 +91,7 @@ CLASS("GarrisonRecord", "")
 		// todo need to rethink it probably...
 		pr _AI = GETV(_gar, "AI");
 		T_SETV("pos", CALLM0(_AI, "getPos"));
+		T_SETV("type", GETV(_gar, "type"));
 		T_SETV("side", GETV(_gar, "side"));
 		T_SETV("composition", GETV(_gar, "compositionClassNames"));
 		T_SETV("cmdrActionRecordSerial", GETV(_AI, "cmdrActionRecordSerial"));
@@ -222,6 +225,7 @@ CLASS("GarrisonRecord", "")
 		pr _posChanged = ! (T_GETV("pos") isEqualTo GETV(_garRecord, "pos") );
 
 		__TCOPYVAR(_garRecord, "pos");
+		__TCOPYVAR(_garRecord, "type");
 		__TCOPYVAR(_garRecord, "side");
 		__TCOPYVAR(_garRecord, "location");
 		__TCOPYVAR(_garRecord, "composition");

@@ -10,7 +10,9 @@ CLASS("GoalGarrisonDefendActive", "Goal")
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Check if the garrison knows about any enemies
-		if (CALLM0(_AI, "isSpawned") && { CALLM0(_AI, "isAlerted") }) then {
+		if (CALLM0(_AI, "isSpawned") 
+		&& { CALLM0(_AI, "isAlerted") }
+		) then {
 			GET_STATIC_VAR(_thisClass, "relevance")
 		} else {
 			0

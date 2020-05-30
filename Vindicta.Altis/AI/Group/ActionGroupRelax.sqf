@@ -132,8 +132,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 
 		private _AI = T_GETV("AI");
 
-		while { count _freeUnits > 0 && count _allActivities > 0 } do
-		{
+		while { count _freeUnits > 0 && count _allActivities > 0 } do {
 			private _unit = _freeUnits deleteAt 0;
 			private _activity = _allActivities deleteAt 0;
 			_activity params ["_distance", "_goal", "_parameters"];

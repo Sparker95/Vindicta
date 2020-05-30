@@ -1,5 +1,3 @@
-//#define OOP_PROFILE
-//#define OOP_PROFILE_MIN_T 0.01
 #include "common.hpp"
 
 /*
@@ -45,9 +43,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Radio key, string, used for player to intercept intel
 	/* save */	VARIABLE_ATTR("radioKey", [ATTR_SAVE]);
 
-	VARIABLE("alertness");
-
-	VARIABLE("wasSpawned");
+	/* private float */ VARIABLE("alertness");
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("groupMarkersEnabled");
@@ -146,7 +142,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	METHOD(delete)
 		params [P_THISOBJECT];
-		
+
 		#ifdef DEBUG_GOAL_MARKERS
 		deleteMarker (_thisObject + MRK_GOAL);
 		deleteMarker (_thisObject + MRK_ARROW);
@@ -158,7 +154,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	override METHOD(start)
 		params [P_THISOBJECT, P_STRING("_category")];
 		T_CALLM1("addToProcessCategory", _category);
 	ENDMETHOD;
@@ -362,6 +358,13 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Add a "spawned" field to profiling output 
 		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
 		
+	ENDMETHOD;
+
+	// World state accessors
+
+	METHOD(isLanded)
+		params [P_THISOBJECT];
+		[T_GETV("worldState"), WSP_GAR_ALL_LANDED] call ws_getPropertyValue
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -719,15 +722,14 @@ CLASS("AIGarrison", "AI_GOAP")
 	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
-		//diag_log "AIGarrison postDeserialize";
-
 		// Call method of all base classes
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "postDeserialize", [_storage]);
+		T_CALLCM1("AI_GOAP", "postDeserialize", _storage);
 
 		// Restore sensors
 		T_CALLM0("_initSensors");
 
 		// Restore other variables
+		T_SETV("buildingsWithTargets", []);
 		T_SETV("lastBusyTime", GAME_TIME - AI_GARRISON_IDLE_TIME_THRESHOLD-1);
 
 		// Restore debug markers
@@ -752,33 +754,62 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// It should return the goals this garrison might be willing to achieve
 	METHOD(getPossibleGoals)
-		["GoalGarrisonRelax",
-		"GoalGarrisonRepairAllVehicles",
-		"GoalGarrisonDefendActive",
-		"GoalGarrisonDefendPassive",
-		"GoalGarrisonRebalanceVehicleGroups",
-		"GoalGarrisonAttackAssignedTargets"]
+		params [P_THISOBJECT];
+		switch GETV(T_GETV("agent"), "type") do {
+			case GARRISON_TYPE_GENERAL: {[
+				"GoalGarrisonAttackAssignedTargets",
+				"GoalGarrisonDefendActive",
+				"GoalGarrisonDefendPassive",
+				"GoalGarrisonRebalanceVehicleGroups",
+				"GoalGarrisonRelax",
+				"GoalGarrisonRepairAllVehicles"
+			]};
+			case GARRISON_TYPE_AIR: {[
+				"GoalGarrisonDefendActive",
+				"GoalGarrisonDefendPassive",
+				"GoalGarrisonRebalanceVehicleGroups",
+				"GoalGarrisonRelax",
+				"GoalGarrisonLand",
+				"GoalGarrisonAirRtB"
+			]};
+			case GARRISON_TYPE_PLAYER: {
+				[]
+			};
+		}
 	ENDMETHOD;
 
 	METHOD(getPossibleActions)
-		["ActionGarrisonDefendActive",
-		//"ActionGarrisonLoadCargo",
-		"ActionGarrisonMountCrew",
-		"ActionGarrisonMountInfantry",
-		"ActionGarrisonMoveDismounted",
-		//"ActionGarrisonMoveMountedToPosition",
-		//"ActionGarrisonMoveMountedToLocation",
-		"ActionGarrisonMoveCombined",
-		"ActionGarrisonMoveMounted",
-		//"ActionGarrisonMoveMountedCargo",
-		"ActionGarrisonRelax",
-		"ActionGarrisonRepairAllVehicles",
-		//"ActionGarrisonUnloadCurrentCargo",
-		"ActionGarrisonMergeVehicleGroups",
-		"ActionGarrisonSplitVehicleGroups",
-		"ActionGarrisonRebalanceGroups",
-		"ActionGarrisonClearArea",
-		"ActionGarrisonJoinLocation"]
+		params [P_THISOBJECT];
+		switch GETV(T_GETV("agent"), "type") do {
+			case GARRISON_TYPE_GENERAL: {[
+				"ActionGarrisonClearArea",
+				"ActionGarrisonJoinLocation",
+				"ActionGarrisonMergeVehicleGroups",
+				"ActionGarrisonMountCrew",
+				"ActionGarrisonMountInfantry",
+				"ActionGarrisonMoveCombined",
+				"ActionGarrisonMoveDismounted",
+				"ActionGarrisonMoveMounted",
+				"ActionGarrisonRebalanceGroups",
+				"ActionGarrisonRepairAllVehicles",
+				"ActionGarrisonSplitVehicleGroups"
+			]};
+			case GARRISON_TYPE_AIR: {[
+				"ActionGarrisonClearArea",
+				"ActionGarrisonJoinLocation",
+				"ActionGarrisonMergeVehicleGroups",
+				"ActionGarrisonMountCrew",
+				"ActionGarrisonMountInfantry",
+				"ActionGarrisonMoveDismounted",
+				"ActionGarrisonMoveMounted",
+				"ActionGarrisonRebalanceGroups",
+				"ActionGarrisonRepairAllVehicles",
+				"ActionGarrisonSplitVehicleGroups"
+			]};
+			case GARRISON_TYPE_PLAYER: {
+				[]
+			};
+		}
 	ENDMETHOD;
 
 	// Debug
@@ -791,8 +822,7 @@ CLASS("AIGarrison", "AI_GOAP")
 			"assignedTargetsRadius",
 			"awareOfAssignedTargets",
 			"cmdrActionRecordSerial",
-			"alertness",
-			"wasSpawned"
+			"alertness"
 		]
 	ENDMETHOD;
 

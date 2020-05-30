@@ -13,7 +13,7 @@ removeGoggles this;
 this addHeadgear "H_Cap_police";
 /*Uniform*/
 _RandomUniform = selectRandom ["APD_1", "APD_2"];
-this forceAddUniform _RandomUniform;
+this forceaddUniform _RandomUniform;
 /*Vest*/
 _RandomVest = selectRandom ["S_VHO_PB_3", "S_VHO_PB_3", "S_VHO_PB_3", "S_VHO_PB_3", "S_VHO_OV_BLK_1", "S_VHO_OV_BLK_2", "S_VHO_OV_BLK_3", "S_VHO_OV_BLK_4"];
 this addVest _RandomVest;

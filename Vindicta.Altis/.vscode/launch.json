@@ -24,6 +24,20 @@
             "request": "launch",
             "missionRoot": "${workspaceFolder:Mission Root}",
             "scriptPrefix": "${workspaceFolder:Project Root}\\vindicta.malden"
+        },
+        {
+            "name": "Connect Staszow",
+            "type": "sqf",
+            "request": "launch",
+            "missionRoot": "${workspaceFolder:Mission Root}",
+            "scriptPrefix": "${workspaceFolder:Project Root}\\vindicta.staszow"
+        },
+        {
+            "name": "Connect Takistan",
+            "type": "sqf",
+            "request": "launch",
+            "missionRoot": "${workspaceFolder:Mission Root}",
+            "scriptPrefix": "${workspaceFolder:Project Root}\\vindicta.takistan"
         }
     ]
 }

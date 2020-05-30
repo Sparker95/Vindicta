@@ -16,9 +16,6 @@
 Class: BuildUI
 Initializes the build menu UI, handles opening and closing, and handles the building itself
 
-sound place: 
-playSound ["3DEN_notificationDefault", false];
-
 Author: Billw
 Additional authors: Marvis, Sparker
 */
@@ -1112,7 +1109,6 @@ CLASS("BuildUI", "")
 
 	// STATIC_METHOD(createObject)
 	// 	params [P_THISCLASS];
-		
 	// ENDMETHOD;
 	
 	METHOD(dropHere)
@@ -1146,8 +1142,6 @@ CLASS("BuildUI", "")
 				pr _objConfigClassNameStr = configName _objClass; // "Tent1" and such
 				pr _className = getText (_objClass >> "className");
 				pr _buildRes = getNumber (_objClass >> "buildResource");
-				pr _catID = getNumber (_objClass >> "templateCatID");
-				pr _subcatID = getNumber (_objClass >> "templateSubcatID");
 
 				if (T_GETV("resourceSource") == __RESOURCE_SOURCE_INVENTORY) then {
 					// Check player's resources

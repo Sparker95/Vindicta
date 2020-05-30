@@ -173,7 +173,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 
 ["AST_SplitGarrison.apply(actual)", {
 
-	private _actual = NEW("Garrison", [WEST]);
+	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _group = NEW("Group", Test_group_args);
 	private _eff1 = +T_EFF_null;
 	private _comp1 = +T_comp_null;

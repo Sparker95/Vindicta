@@ -40,8 +40,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _intelClone = T_GETV("intelClone");
 		private _intel = NULL_OBJECT;
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
-		if(_intelNotCreated) then
-		{
+		if(_intelNotCreated) then {
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionReinforce", []);
 
@@ -228,7 +227,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
 
 		// How much to scale the score for distance to target
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
+		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtGarrPos);
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.

@@ -1,5 +1,11 @@
 #include "common.hpp"
 
+#ifdef _SQF_VM
+#undef DEBUG_AIR_QRF
+#endif
+
+FIX_LINE_NUMBERS()
+
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.QRFCmdrAction
 
@@ -9,7 +15,6 @@ to attack the cluster using the garrison.
 
 Parent: <AttackCmdrAction>
 */
-#define pr private
 
 #define OOP_CLASS_NAME QRFCmdrAction
 CLASS("QRFCmdrAction", "AttackCmdrAction")
@@ -45,8 +50,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Created lazily here on the first call to update it. This ensures we only
 		// create intel objects for actions that are active rather than merely proposed.
 		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
-		if(_intelNotCreated) then
-		{
+		if(_intelNotCreated) then {
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionAttack", []);
 
@@ -123,11 +127,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Set up flags for allocation algorithm
 		private _allocationFlags = [
-			  SPLIT_VALIDATE_ATTACK
-			, SPLIT_VALIDATE_CREW
+			SPLIT_VALIDATE_ATTACK,
+			SPLIT_VALIDATE_CREW
 		];
 
-		#ifdef DEBUG_BIG_QRF
+#ifdef DEBUG_BIG_QRF
 		// Make sure we allocate a lot of inf
 		_allocationFlags pushBack SPLIT_VALIDATE_CREW_EXT;
 
@@ -136,7 +140,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		_enemyEff set[T_EFF_medium, 6];
 		_enemyEff set[T_EFF_armor, 6];
 		_enemyEff set[T_EFF_crew, 24];
-		#else
+#else
 		private _enemyEff = +GETV(_tgtCluster, "efficiency");
 		// Scale enemy efficiency
 		private _scaleFactor = (CALLM1(_worldNow, "calcActivityMultiplier", _tgtClusterPos)) max 1.3;
@@ -144,23 +148,21 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		if ((_enemyEff#T_eff_soft) > 0) then {
 			_enemyEff set [T_EFF_soft, (_enemyEff#T_eff_soft) max 6];	// Set min amount of attack force
 		};
-		#endif
+#endif
 		FIX_LINE_NUMBERS()
 
 		// Bail if the garrison clearly can not destroy the enemy
-		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+		if (count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
+		private _srcType = GETV(_srcGarr, "type");
+
 		private _needTransport = false;
+
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
-		#ifndef _SQF_VM
-		pr _dist = _tgtClusterPos distance2D _srcGarrPos;
-		#else
-		pr _dist = _tgtClusterPos distance _srcGarrPos;
-		#endif
-		FIX_LINE_NUMBERS()
+		private _dist = _tgtClusterPos DISTANCE_2D _srcGarrPos;
 
 		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
@@ -168,18 +170,36 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		};
 
 		// Try to allocate units
-		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
-		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
-		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
-		pr _transportBlacklistMask = [];
-		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+		private _allocResult = switch _srcType do {
+#ifndef DEBUG_AIR_QRF
+			case GARRISON_TYPE_GENERAL: {
+				private _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+				private _transportBlacklistMask = [];
+				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask];
-		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+				CALLSM("GarrisonModel", "allocateUnits", _args)
+			};
+#endif
+			FIX_LINE_NUMBERS()
+			case GARRISON_TYPE_AIR: {
+				private _payloadWhitelistMask = T_comp_air_mask;
+				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+				private _transportBlacklistMask = [];
+				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+				CALLSM("GarrisonModel", "allocateUnits", _args)
+			};
+			default { [] };
+		};
 
 		// Bail if we have failed to allocate resources
-		if ((count _allocResult) == 0) exitWith {
-			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
+		if (count _allocResult == 0) exitWith {
+			// OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
@@ -188,7 +208,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Bail if remaining efficiency is below minimum level for this garrison
 		/*
 		// Disabled those for now, probably we want QRFs to be quite aggressive
-		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		private _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
 			T_CALLM1("setScore", ZERO_SCORE);
@@ -215,9 +235,31 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Take the sum of the attack part of the efficiency vector.
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
 
-		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]);
-		_distCoeff = _distCoeff ^ 1.5; // Make it decrease with distance faster
+		// Air units prefer to attack higher threat targets only
+		if(_srcType == GARRISON_TYPE_AIR) then {
+			// Air garrison likes to attack armor, and hates AA
+			// This equation will apply a weighting to the enemy efficiency and then calculate its modified strength.
+			// The ration of the original strength to modified is used as a coefficient to calculate our own adjusted strength.
+			// It means our adjusted strength goes up a lot against armor and down a lot against AA, resulting in scoring 
+			// doing the same.
+			//											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
+			#define AIR_GARRISON_EFF_PROFILE 			[0.25,	1.5,	3,		1,		1,		1,		1,		-3,		1,		1,		1,		1,		1,		1]
+			private _enemyStr = EFF_SUM(_enemyEff);
+			if(_enemyStr > 0) then {
+				private _modifiedEnemyEff = EFF_MUL(_enemyEff, AIR_GARRISON_EFF_PROFILE);
+				private _modifiedEnemyStr = EFF_SUM(_modifiedEnemyEff);
+				// We also apply a response curve to stop air units responding vs weak enemy, but preference them vs strong:
+				// Its called softplus Relu https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Softplus
+				// See this function at https://www.desmos.com/calculator/ptlmv3tdcf
+				#define AIR_RESPONSE_FN(_str) (1.45 * ln(1 + exp((_str) - 4.7)))
+				private _strengthScalar = AIR_RESPONSE_FN(_modifiedEnemyStr) / _enemyStr;
+				_detachEffStrength = _detachEffStrength * CLAMP_POSITIVE(_strengthScalar);
+			};
+		};
+
+		// Air units care about distance less than ground units (check https://www.desmos.com/calculator/pjs09xfxkm to determine good values)
+		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.4 } else { 1 };
+		private _distCoeff = CALLSM2("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtClusterPos, _fallOffRate);
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
@@ -350,7 +392,7 @@ REGISTER_DEBUG_MARKER_STYLE("QRFCmdrAction", "ColorRed", "mil_destroy");
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 	T_CALLM("updateScore", [_world ARG _future]);
 	private _finalScore = T_CALLM("getFinalScore", []);
-	diag_log format ["QRF action final score: %1", _finalScore];
+	//diag_log format ["QRF action final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	private _nowSimState = T_CALLM("applyToSim", [_world]);

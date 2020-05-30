@@ -602,7 +602,7 @@ REGISTER_DEBUG_MARKER_STYLE("PatrolCmdrAction", "ColorYellow", "mil_pickup");
 	T_CALLM("updateScore", [_world ARG _future]);
 
 	private _finalScore = T_CALLM("getFinalScore", []);
-	diag_log format ["Patrol final score: %1", _finalScore];
+	//diag_log format ["Patrol final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	// Apply to sim

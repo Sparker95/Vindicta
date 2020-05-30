@@ -192,7 +192,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 
 		// How much to scale the score for distance to target
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
+		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtLocPos);
 
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
 
@@ -296,7 +296,7 @@ REGISTER_DEBUG_MARKER_STYLE("TakeLocationCmdrAction", "ColorBlue", "mil_flag");
 	T_CALLM("updateScore", [_world ARG _future]);
 
 	private _finalScore = T_CALLM("getFinalScore", []);
-	diag_log format ["Take location final score: %1", _finalScore];
+	//diag_log format ["Take location final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	private _nowSimState = T_CALLM("applyToSim", [_world]);
@@ -341,7 +341,7 @@ REGISTER_DEBUG_MARKER_STYLE("TakeLocationCmdrAction", "ColorBlue", "mil_flag");
 	T_CALLM("updateScore", [_world ARG _future]);
 
 	private _finalScore = T_CALLM("getFinalScore", []);
-	diag_log format ["Take location final score: %1", _finalScore];
+	//diag_log format ["Take location final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	private _nowSimState = T_CALLM("applyToSim", [_world]);

@@ -48,7 +48,7 @@ T_DECLARE_CATEGORY(T_CARGO, 	3, 	 4)		[				T_FACTION_Guer, T_FACTION_Military, T
 T_DECLARE_CATEGORY(T_GROUP, 	4, 	14)		[				T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];
 T_NAME 						  = 5;			// Template name (internal)
 T_INV 						  = 6;			// All inventory items sorted by categories. Initialized by server.
-T_LOADOUT_WEAPONS 			  = 7;			// Unit loadout weapons. Used to check which weapons correspond to which unit type. Initialized by server.
+T_LOADOUT_GEAR 				  = 7;			// Unit loadout gear. Used to check which gear corresponds to which unit type. Initialized by server.
 T_FACTION 					  = 8;			// Faction
 T_REQUIRED_ADDONS 			  = 9;			// Addons which must be loaded on the server. It checks cfgPatches for these addons.
 T_MISSING_ADDONS 			  = 10;			// Missing addons on the server. Initialized by server.
@@ -187,15 +187,25 @@ T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_truck_medical,			36)		[T_FACTION_Guer, T_FACTIO
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_truck_fuel,			37)		[T_FACTION_Guer, T_FACTION_Military]; //Fuel truck
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_submarine,				38);	//Submarine
 
-//Vehicle subcategories sorted by required crew
+// Air vehicles
+T_VEH_heli				= [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_VEH_heli_attack];
+T_VEH_plane				= [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo, T_VEH_plane_unarmed, T_VEH_plane_VTOL];
+T_VEH_air				= T_VEH_heli + T_VEH_plane;
+
+// Ground vehicles
+T_VEH_ground			= [T_VEH_default, T_VEH_car_unarmed, T_VEH_car_armed, T_VEH_MRAP_unarmed, T_VEH_MRAP_HMG, T_VEH_MRAP_GMG, T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MRLS, T_VEH_SPA, T_VEH_SPAA, T_VEH_truck_inf, T_VEH_truck_cargo, T_VEH_truck_ammo, T_VEH_truck_repair, T_VEH_truck_medical, T_VEH_truck_fuel];
+
+// Static vehicles
+T_VEH_static 			= [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
+
+// Vehicles requiring specific crew
 T_VEH_need_basic_crew 	= [T_VEH_MRAP_HMG, T_VEH_MRAP_GMG, T_VEH_boat_armed]; //Vehicles that need a driver and a gunner, like MRAPs or boats
 T_VEH_need_crew 		= [T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MRLS, T_VEH_SPA, T_VEH_SPAA]; //Vehicles that need crew like T_INF_crew
 T_VEH_need_heli_crew 	= [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_VEH_heli_attack]; //Vehicles that need crew like T_INF_pilot_heli and T_INF_crew_heli
 T_VEH_need_plane_crew 	= [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo]; //Vehicles that need crew like T_INF_pilot
-T_VEH_static 			= [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
 
 // Vehicles which should be occupied when in combat
-T_VEH_combat 			= T_VEH_need_basic_crew + T_VEH_need_crew;
+T_VEH_combat 			= T_VEH_need_basic_crew + T_VEH_need_crew + T_VEH_need_heli_crew + T_VEH_need_plane_crew + T_VEH_static;
 
 // Ground vehicles with potential infantry transport capability
 T_VEH_ground_infantry_cargo =
@@ -324,7 +334,7 @@ T_PL_HMG_GMG_low = //Low GMGs and low HMGs, including drones
 	[T_DRONE, T_DRONE_stat_GMG_low]
 ];
 
-T_PL_helicopters = //ALl helicopters including drones
+T_PL_helicopters = //All helicopters including drones
 [
 	[T_VEH, T_VEH_heli_light],
 	[T_VEH, T_VEH_heli_heavy],
@@ -433,9 +443,10 @@ T_INV_secondary_items	= 3;
 T_INV_handgun			= 4;	// Array of [_weapon, _magazines]
 T_INV_handgun_items		= 5;
 T_INV_items				= 6;	// Array of item class names
-T_INV_vests				= 7;
-T_INV_backpacks			= 8;
-T_INV_NVGs				= 9;	// Night vision goggles
-T_INV_grenades			= 10;	// All kinds of grenades
-T_INV_explosives		= 11;	// Explosives
-T_INV_size				= 12;
+T_INV_headgear			= 7;
+T_INV_vests				= 8;
+T_INV_backpacks			= 9;
+T_INV_NVGs				= 10;	// Night vision goggles
+T_INV_grenades			= 11;	// All kinds of grenades
+T_INV_explosives		= 12;	// Explosives
+T_INV_size				= 13;

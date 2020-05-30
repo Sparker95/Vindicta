@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: ActionGroup.ActionGroupClearArea
@@ -67,19 +68,16 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_CALLM0("regroup");
 		T_CALLM0("clearWaypoints");
 
-		// Give some waypoints
 		private _hG = T_GETV("hG");
-		private _wp0 = _hG addWaypoint [_pos, _radius];
-		_wp0 setWaypointCompletionRadius 20;
-		_wp0 setWaypointType "SAD";
-		for "_i" from 0 to 8 do {
-			private _wp = _hG addWaypoint [_pos, _radius];
-			_wp setWaypointCompletionRadius 20;
+
+		// A random bunch of waypoints to get them to run around a bit
+		for "_i" from 0 to 10 do {
+			private _rpos = [[[_pos, _radius]], [], {!surfaceIsWater _this}] call BIS_fnc_randomPos;
+			private _wp = _hG addWaypoint [AGLToASL _rpos, -1];
 			_wp setWaypointType "SAD";
 		};
-		_hG setCurrentWaypoint [_hG, 0];
 
-		if(_isUrban || !_isInf) then {
+		if(!CALLM0(_group, "isAirGroup") && (_isUrban || !_isInf)) then {
 			// Try and move all waypoints on to nearby roads
 			{
 				pr _pos = getWPPos _x;
@@ -90,9 +88,11 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 			} forEach (waypoints _hG);
 		};
 
+		pr _wp0Pos = waypointPosition [_hG, 0];
 		// Create a cycle waypoint
-		pr _wpCycle = _hG addWaypoint [waypointPosition _wp0, 0];
+		pr _wpCycle = _hG addWaypoint [AGLToASL _wp0Pos, -1];
 		_wpCycle setWaypointType "CYCLE";
+		_hG setCurrentWaypoint [_hG, 0];
 
 		// Add goals to units
 		pr _inf = CALLM0(_group, "getInfantryUnits");
@@ -107,7 +107,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 		T_CALLM0("updateVehicleAssignments");
 
 		if(_instant) then {
-			T_CALLM1("teleport", waypointPosition _wp0);
+			T_CALLM1("teleport", _wp0Pos);
 		};
 
 		T_SETV("nextLookTime", GAME_TIME);
@@ -126,7 +126,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		private _state = T_CALLM0("activateIfInactive");
 
-		if(_state == ACTION_STATE_ACTIVE && {GAME_TIME > T_GETV("nextLookTime")}) then {
+		if(_state == ACTION_STATE_ACTIVE && { GAME_TIME > T_GETV("nextLookTime") }) then {
 			private _pos = T_GETV("pos");
 			private _radius = T_GETV("radius");
 			private _hG = T_GETV("hG");
@@ -151,7 +151,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 					private _tgt = selectRandom _tgts;
 					_x glanceAt _tgt;
 					_x lookAt _tgt;
-					_x commandWatch _tgt;
+					_x doWatch _tgt;
 				} foreach units _hG;
 
 				private _nextLookTime = GAME_TIME + random[5, 15, 30];
@@ -161,7 +161,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 					private _lookAtPos = position leader _hG getPos [random [15, 30, 50], direction vehicle leader _hG + random [-45, 0, 45]];// +  [[[position leader _hG, _radius]]] call BIS_fnc_randomPos;
 					_x glanceAt _lookAtPos;
 					_x lookAt _lookAtPos;
-					_x commandWatch _lookAtPos;
+					_x doWatch _lookAtPos;
 				} foreach units _hG;
 
 				private _nextLookTime = GAME_TIME + random[0, 5, 15];
@@ -169,36 +169,14 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 			};
 		};
 
-		// This action is terminal because it's never over right now
+		// This action doesn't return completed ever, it will run until the goal is made non-relevant or removed
 
-		// Delete all waypoints when we know about some enemies
 		private _hG = T_GETV("hG");
 
-		if (count waypoints _hG <= 1) then {
-			// Force reactivation
+		if (waypointType (waypoints _hG select currentWaypoint _hG) != "SAD") then {
+			// Force reactivation to regenerate the waypoints
 			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
-
-		// This doesn't really improve behavior...
-		// if (behaviour leader _hG == "COMBAT") then {
-		// 	if (!T_GETV("inCombat")) then {
-		// 		// Delete waypoints once, let them chose what to do on their own
-		// 		T_CALLM0("clearWaypoints");
-		// 		OOP_INFO_0("Deleted waypoints");
-		// 		T_SETV("inCombat", true);
-		// 	};
-		// 	private _enemySides = [east, west, independent] select { !([side _hG, _x] call BIS_fnc_sideIsFriendly) };
-		// 	private _enemies = leader _hG targetsQuery [objNull, sideUnknown, "", position leader _hG, 0/*TARGET_AGE_TO_REVEAL*/] select {
-		// 		_x#2 in _enemySides
-		// 	};
-		// } else {
-		// 	if (T_GETV("inCombat") || count waypoints _hG <= 1) then {
-		// 		T_SETV("inCombat", false);
-		// 		// Force reactivation
-		// 		T_SETV("state", ACTION_STATE_INACTIVE);
-		// 	};
-		// };
-		//ACTION_STATE_ACTIVE
 
 		// Return the current state
 		T_GETV("state")

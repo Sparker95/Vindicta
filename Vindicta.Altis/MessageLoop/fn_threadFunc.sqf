@@ -8,6 +8,7 @@
 #include "..\Message\Message.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "ProcessCategories.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 The thread function of the MessageLoop.
@@ -31,11 +32,13 @@ It checks for messages in the loop and calls handleMessages of objects.
 private _nextTickTime = PROCESS_TIME + 5;
 private _nextProcessLogTime = PROCESS_TIME + 5;
 #endif
+FIX_LINE_NUMBERS()
 
 #ifdef PROCESS_CATEGORIES_DEBUG
 private _execTimeArray = [];
 private _execTimeFilteredArray = [];
 #endif
+FIX_LINE_NUMBERS()
 
 // Disable flags for release build by force
 
@@ -44,6 +47,7 @@ private _execTimeFilteredArray = [];
 #undef THREAD_FUNC_DEBUG
 #undef PROCESS_CATEGORIES_DEBUG
 #endif
+FIX_LINE_NUMBERS()
 
 
 params [P_THISOBJECT];
@@ -59,6 +63,7 @@ private _sleepInterval = T_GETV("sleepInterval");
 #ifdef _SQF_VM // Don't want to run this in VM testing mode
 if(true) exitWith {};
 #endif
+FIX_LINE_NUMBERS()
 
 private _name = T_GETV("name");
 
@@ -68,19 +73,20 @@ while {true} do {
 
 	// Log queue length, post a delay test message
 	#ifdef THREAD_FUNC_DEBUG
-	if(_nextTickTime != 0 and _nextTickTime < PROCESS_TIME) then {
+	if(_nextTickTime != 0 && _nextTickTime < PROCESS_TIME) then {
 		_nextTickTime = 0;
 		private _str = format ["{ ""name"": ""%1"", ""queue_len"": %2 }", _name, count _msgQueue];
 		OOP_DEBUG_MSG(_str, []);
 		_msgQueue pushBack ["__debugtick", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, PROCESS_TIME];
 	};
 	#endif
+	FIX_LINE_NUMBERS()
 
 	private _loadingScreenStarted = false;
 
 	//Do we have anything in the queue?
 
-	if ( (count _msgQueue) > 0 ) then {
+	if ( count _msgQueue > 0 ) then {
 
 		// Lock mutex
 		MUTEX_LOCK(_mutex);
@@ -90,14 +96,15 @@ while {true} do {
 
 		// Start loading screen if we have no interface and there are too messages
 		#ifndef _SQF_VM
-		if ( (!HAS_INTERFACE) && ( (count _msgQueue) > _countMessagesMax)) then {
+		if (!HAS_INTERFACE && count _msgQueue > _countMessagesMax) then {
 			startLoadingScreen ["Msg loop"];
 			_loadingScreenStarted = true;
 			OOP_INFO_2("Start loading screen: %1, message queue is too big: %2", T_GETV("name"), count _msgQueue);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
-		while { (count _msgQueue) > 0 && _countMessages < _countMessagesMax } do {
+		while { count _msgQueue > 0 && _countMessages < _countMessagesMax } do {
 			//Get a message from the front of the queue
 			pr _msg = 0;
 			CRITICAL_SECTION {
@@ -117,8 +124,7 @@ while {true} do {
 				_nextTickTime = PROCESS_TIME + 5;
 			} else {
 			#endif
-
-
+			FIX_LINE_NUMBERS()
 
 			private _msgID = _msg#MESSAGE_ID_SOURCE_ID;
 			//Get destination object
@@ -145,6 +151,7 @@ while {true} do {
 				private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4, ""data"": %5} }", _name, _type, _objectClass, _profileTime, str (_msg#MESSAGE_ID_DATA)];
 				OOP_DEBUG_MSG(_str, []);
 				#endif
+				FIX_LINE_NUMBERS()
 
 				if (isNil "_result") then {_result = 0;};
 				// Were we asked to mark the message as processed?
@@ -165,6 +172,7 @@ while {true} do {
 			#ifdef THREAD_FUNC_DEBUG
 			};
 			#endif
+			FIX_LINE_NUMBERS()
 
 			_countMessages = _countMessages + 1;
 		};
@@ -218,17 +226,18 @@ while {true} do {
 
 			// Start loading screen if we are processing above max interval
 			#ifndef _SQF_VM
-			if ( (!HAS_INTERFACE) && _categoryAboveMaxInterval) then {
+			if ( !HAS_INTERFACE && _categoryAboveMaxInterval) then {
 				startLoadingScreen ["Msg loop"];
 				_loadingScreenStarted = true;
 				OOP_DEBUG_4("Start loading screen: %1, process category %2 is above max threshold: %3 > %4", T_GETV("name"), _cat select __PC_ID_TAG, _intervalAveragePerObject, _intervalMax);
 			};
 			#endif
+			FIX_LINE_NUMBERS()
 
-			if ( ( (_fractionsCurrent#_i <= _fractionsRequired#_i)											// Process next object from this category if current update frequency fraction is below required level
+			if ( ( _fractionsCurrent#_i <= _fractionsRequired#_i									// Process next object from this category if current update frequency fraction is below required level
 																	|| _categoryAboveMaxInterval )	// ... OR if current update interval is beyond the required maximum set interval
-				&& (_countObjects > 0)																		// ... but don't process anything if there are no objects in this category
-				&& (_intervalAveragePerObject > _intervalMin) ) then {												// ... but don't process anything if update interval is smaller than the minimum set level
+				&& _countObjects > 0																// ... but don't process anything if there are no objects in this category
+				&& _intervalAveragePerObject > _intervalMin ) then {								// ... but don't process anything if update interval is smaller than the minimum set level
 
 				// Find first object in the array with objects that should be processed
 				pr _objectID = _cat#__PC_ID_NEXT_OBJECT_ID;
@@ -238,7 +247,7 @@ while {true} do {
 				// Find the first next object that we should process 
 				while {_nObjectsChecked < _countObjects} do {
 					_objectID = (_objectID+1) mod _countObjects; // Increase the ID of the next object to check
-					if ( PROCESS_CATEGORY_TIME - (_objects#_objectID#1) > _intervalMin ) exitWith { _found = true; }; // There is an object which hasn't been processed for quite long time
+					if ( PROCESS_CATEGORY_TIME - _objects#_objectID#1 > _intervalMin ) exitWith { _found = true; }; // There is an object which hasn't been processed for quite long time
 					_nObjectsChecked = _nObjectsChecked + 1;
 				};
 				
@@ -284,6 +293,7 @@ while {true} do {
 					_cat set [__PC_ID_ALL_PROCESS_INTERVAL, _timeDiff];
 					_cat set [__PC_ID_ALL_PROCESS_LAST_TIMESTAMP, _timeStart];
 					#endif
+					FIX_LINE_NUMBERS()
 				};
 
 				// Update next ID
@@ -343,6 +353,7 @@ while {true} do {
 			_nextProcessLogTime = PROCESS_TIME + 5;
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		// Unlock the mutex
 		MUTEX_UNLOCK(_mutex);

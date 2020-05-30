@@ -14,6 +14,7 @@
 #include "..\worldFactTypes.hpp"
 #include "..\parameterTags.hpp"
 #include "..\..\Group\Group.hpp"
+#include "..\..\Garrison\Garrison.hpp"
 #include "..\..\Unit\Unit.hpp"
 #include "..\AI\AI.hpp"
 #include "..\targetStruct.hpp"

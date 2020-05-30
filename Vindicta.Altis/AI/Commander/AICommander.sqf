@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 // Class: AI.AICommander
 // AI class for the commander.
 
@@ -29,7 +29,8 @@ CLASS("AICommander", "AI")
 	/* save */	VARIABLE_ATTR("targetClusters", [ATTR_SAVE]);	// Array with target clusters
 	/* save */	VARIABLE_ATTR("nextClusterID", [ATTR_SAVE]);	// A unique cluster ID generator
 	
-	/* save */	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED ARG ATTR_SAVE]);
+	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED]);
+	/* save */	VARIABLE_ATTR("cmdrStrategyClassSave", [ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("worldModel", [ATTR_SAVE]);
 
 	// External reinforcements
@@ -194,9 +195,9 @@ CLASS("AICommander", "AI")
 */
 	METHOD(process)
 		params [P_THISOBJECT];
-		
+
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
-		
+
 		// U P D A T E   S E N S O R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update sensors");
@@ -206,7 +207,7 @@ CLASS("AICommander", "AI")
 
 		// Update sensors
 		T_CALLM0("updateSensors");
-		
+
 		// U P D A T E   C L U S T E R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update clusters");
@@ -267,14 +268,14 @@ CLASS("AICommander", "AI")
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
 		} forEach (T_GETV("garrisons") select { CALLM0(_x, "isEmpty") && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
 
-		// Reassign abandonned AI groups to commander
+		// Reassign abandoned AI groups to commander
 		private _side = T_GETV("side");
 		private _playerGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _side);
 
 		// Find all arma groups without players in them
-		private _abandonnedGroups = [];
+		private _abandonedGroups = [];
 		{ // Get unique set of groups
-			_abandonnedGroups pushBackUnique _x;
+			_abandonedGroups pushBackUnique _x;
 		} forEach (CALLM0(_playerGarrison, "getUnits") apply {
 			CALLM0(_x, "getObjectHandle")
 		} select {
@@ -290,12 +291,12 @@ CLASS("AICommander", "AI")
 		});
 
 		// Return the groups to this commander
-		{ // forEach _abandonnedGroups;
+		{ // forEach _abandonedGroups;
 			private _args = [units _x];
 			if(count (_args#0) > 0) then {
 				CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG _args]);
 			};
-		} forEach _abandonnedGroups;
+		} forEach _abandonedGroups;
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
@@ -320,8 +321,13 @@ CLASS("AICommander", "AI")
 		T_SETV("msgLoop", _msgLoop);
 	ENDMETHOD;
 
+	public METHOD(getSide)
+		params [P_THISOBJECT];
+		T_GETV("side")
+	ENDMETHOD;
+	
 	/*
-	Method: (static)getCommanderAIOfSide
+	Method: (static)getAICommander
 	Returns AICommander object that commands given side
 	
 	Parameters: _side
@@ -344,7 +350,7 @@ CLASS("AICommander", "AI")
 				if(!isNil "gAICommanderInd") then { _cmdr = gAICommanderInd };
 			};
 			default {
-				OOP_WARNING_1("AICommander of side %1 does not exist", _side);
+				// Its fine, return null
 			};
 		};
 		_cmdr
@@ -528,7 +534,7 @@ CLASS("AICommander", "AI")
 		CALLM0(gMessageLoopMain, "lock");
 
 		ASSERT_OBJECT_CLASS(_loc, "Location");
-		
+
 		// Try to find friendly garrisons there first
 		// Otherwise try to find any garrisons there
 		pr _isFriendly = false;
@@ -1508,7 +1514,7 @@ CLASS("AICommander", "AI")
 		pr _side = T_GETV("side");
 
 		// Create a new garrison and register it
-		pr _gar = NEW("Garrison", [_side ARG _pos]);
+		pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG _side ARG _pos]);
 		// Create some infantry group
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
 
@@ -1535,7 +1541,7 @@ CLASS("AICommander", "AI")
 		} else {
 			pr _locPos = CALLM0(_loc, "getPos");
 			// Create a new garrison and register it
-			pr _gar = NEW("Garrison", [_side ARG _locPos]);
+			pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG _side ARG _locPos]);
 			CALLM0(_gar, "activate");
 			CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 			_gar
@@ -1735,18 +1741,19 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		ASSERT_THREAD(_thisObject);
 
-		// Create a new garrison
-		pr _pos = CALLM0(_garSrcRef, "getPos");
-		pr _faction = CALLM0(_garSrcRef, "getFaction");
 
 		// Get all the units except statics and cargo
 		private _combatUnits = (CALLM0(_garSrcRef, "getUnits") select { !CALLM0(_x, "isStatic") && {!CALLM0(_x, "isCargo")} });
 
 		// Take the units
 		if(count _combatUnits > 0) then {
-			pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
-			pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
+			// Create a new garrison
+			// We don't want them to be too much clustered at the same place (if they are already spawned it will update this value automatically anyway)
+			private _posNew = CALLM0(_garSrcRef, "getPos") getPos [50, random 360];
+			private _newGarr = CALLSM2("Garrison", "newFrom", _garSrcRef, _posNew);
+
 			CALLM2(_newGarr, "postMethodSync", "takeUnits", [_garSrcRef ARG _combatUnits]);
+
 			// Activate the new garrison
 			// it will register itself here as well
 			CALLM0(_newGarr, "activate");
@@ -1766,7 +1773,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Get the garrison model associated with this _garSrcRef
 		private _worldModel = T_GETV("worldModel");
-		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garSrcRef);
+		private _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garSrcRef);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
 			OOP_ERROR_1("splitGarrisonFromComposition: No model of garrison %1", _garSrcRef);
 			// send data back to client owner...
@@ -1774,13 +1781,12 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		};
 
 		// Create a new garrison
-		pr _pos = CALLM0(_garSrcRef, "getPos");
-		pr _faction = CALLM0(_garSrcRef, "getFaction");
-		pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
-		pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
+		// We don't want them to be too much clustered at the same place (if they are already spawned it will update this value automatically anyway)
+		private _posNew = CALLM0(_garSrcRef, "getPos") getPos [50, random 360];
+		private _newGarr = CALLSM2("Garrison", "newFrom", _garSrcRef, _posNew);
 
 		// Move units
-		pr _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromCompositionClassNames", [_garSrcRef ARG _comp]);
+		private _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromCompositionClassNames", [_garSrcRef ARG _comp]);
 
 		// Activate the new garrison
 		// it will register itself here as well
@@ -1842,8 +1848,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM2(_loc, "processObjectsInArea", "House", true);
 		CALLM1(gGameMode, "initLocationGameModeData", _loc);
 
-		// Create the garrison
-		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+		// Create the garrisons, player one for our stuff, general one for recruited fighters
+		// TODO add the player garrison, it requires some way to move vehicles between player and general garrison etc.
+		// pr _gar = NEW("Garrison", [GARRISON_TYPE_PLAYER ARG T_GETV("side") ARG _pos]);
+		// CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+		// CALLM0(_gar, "activate");
+
+		pr _gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG T_GETV("side") ARG _pos]);
 		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
 		CALLM0(_gar, "activate");
 
@@ -1860,21 +1871,23 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_OBJECT("_hBuildResSrc"), P_NUMBER("_buildResAmount")];
 
 		// Check if we already own it
-		pr _garsFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
+		private _garsFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
 		if (count _garsFriendly > 0) exitWith {
-			pr _args = ["We already own this place!"];
+			private _args = ["We already own this place!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
 		// Check if there are still much enemy forces here
-		pr _thisSide = T_GETV("side");
+		private _thisSide = T_GETV("side");
 		CALLM0(gMessageLoopMain, "lock");
 
 		private _enemyGarrisons = CALLM0(_loc, "getGarrisons") select {
-			pr _side = CALLM0(_x, "getSide");
-			_side != _thisSide && _side != CIVILIAN
+			!(CALLM0(_x, "getSide") in [_thisSide, CIVILIAN])
 		};
-		pr _enemies = 0;
+		private _spawned = _enemyGarrisons findIf {
+			!(CALLM0(_x, "getSide") in [_thisSide, CIVILIAN])
+		};
+		private _enemies = 0;
 		{
 			_enemies = _enemies + _x;
 		} forEach (_enemyGarrisons apply {
@@ -1884,13 +1897,20 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Bail if this place is still occupied by too many enemy
 		if (_enemies > 4) exitWith {
-			pr _args = ["We can't capture this place because too many enemies still remain alive in the area!"];
+			private _args = ["We can't capture this place because too many enemies still remain alive in the area!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
 		// Create new empty garrison for the location
-		pr _pos = CALLM0(_loc, "getPos");
-		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+		private _pos = CALLM0(_loc, "getPos");
+
+		// Make a new garrison
+		private _faction = "";
+		private _templateName = "";
+		private _spawned = true; // Start spawned always, client can't claim location unless player is there anyway...
+		private _home = _loc;
+		private _args = [GARRISON_TYPE_GENERAL, _thisSide, _pos, _faction, _templateName, _spawned, _home];
+		private _gar = NEW("Garrison", _args);
 
 		// Kick out the enemy garrisons (and claim their empty vehicles and cargo)
 		{
@@ -1925,7 +1945,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		//T_CALLM1("updateLocationData", _loc);
 
 		// Send a success message to player
-		pr _args = ["Now we own this place!"];
+		private _args = ["Now we own this place!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 
 	ENDMETHOD;
@@ -1996,7 +2016,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		// Sync before update
-		CALLM(_world, "sync", [_thisObject]);
+		CALLM1(_world, "sync", _thisObject);
 
 		private _side = T_GETV("side");
 		private _activeActions = T_GETV("activeActions");
@@ -2042,15 +2062,22 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
-			// TODO: We should be able to redirect for QRFs. Perhaps it 
 			(GETV(_x, "side") == _side) and
-			{ !CALLM0(_x, "isBusy") } and
-			// Need officers for offensive actions
-			{ CALLM0(_x, "countOfficers") >= 1 } and 
+			{ !CALLM0(_x, "isBusy") } and 
 			{
-				// Must have at least a minimum strength of twice min efficiency
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
-				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+				(
+					GETV(_x, "type") == GARRISON_TYPE_GENERAL and 
+					// General garrison needs officers for offensive actions
+					{ CALLM0(_x, "countOfficers") >= 1 } and 
+					{
+						// Must have at least a minimum strength
+						private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+						EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+					}
+				) or {
+					// Consider all air garrisons
+					GETV(_x, "type") == GARRISON_TYPE_AIR
+				}
 			}
 		};
 
@@ -2238,7 +2265,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
 		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
 
-	Returns: Array of <CmdrAction.Actions.SupplyCmdrAction>
+	Returns: Array of <CmdrAction.Actions.SupplyConvoyCmdrAction>
 	*/
 	/* private */ METHOD(generateSupplyActions)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
@@ -2279,9 +2306,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				{
 					GETV(_loc, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]
 				}
-			} and
+			}
 			// And have an officer (we only want to set supplies )
-			{ CALLM0(_x, "countOfficers") > 0 }
+			&& { CALLM0(_x, "countOfficers") > 0 }
 		};
 
 		private _actions = [];
@@ -2616,6 +2643,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		_actions
 	ENDMETHOD;
+	
+	#define VEHICLE_STOCK_FN(_progress, _rate) (0 max (_rate * (_progress ^ _rate)))
 
 	/*
 	Method: updateExternalReinforcement
@@ -2642,9 +2671,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Pick an airfield we own
 		private _side = T_GETV("side");
 		private _model = T_GETV("worldModel");
-		
+
 		private _reinfLocations = CALLM0(_model, "getLocations") select {
-			private _garModel = CALLM(_x, "getGarrison", [_side]);
+			private _garModel = CALLM1(_x, "getGarrison", _side);
 			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT)
 			&& {!IS_NULL_OBJECT(_garModel)}
 			&& {private _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")}
@@ -2712,10 +2741,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		{
 			private _type = CALLM0(_x, "getType");
 			private _add = 0;
-			if (_type == LOCATION_TYPE_AIRPORT) then { _add = 6+10*_progressScaled; };
-			if (_type == LOCATION_TYPE_OUTPOST) then { _add = 1+3*_progressScaled; };
-			if (_type == LOCATION_TYPE_BASE) then { _add = 4+5*_progressScaled; };
-			if (_type == LOCATION_TYPE_CITY) then { _add = 1 + 1*_progressScaled; };
+			if (_type == LOCATION_TYPE_AIRPORT) then { _add = 6 + 10 * _progressScaled; };
+			if (_type == LOCATION_TYPE_OUTPOST) then { _add = 1 + 3 * _progressScaled; };
+			if (_type == LOCATION_TYPE_BASE) 	then { _add = 4 + 5 * _progressScaled; };
+			if (_type == LOCATION_TYPE_CITY) 	then { _add = 1 + 1 * _progressScaled; };
 			_armorRequiredAll = _armorRequiredAll + _add;
 		} forEach _desiredLocations;
 
@@ -2733,22 +2762,89 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// [_name, _loc, _garrison, _infSpace, _vicSpace]
+		// Locations that we can reinforce with ground units
 		private _reinfInfo = _reinfLocations apply {
 			private _locModel = _x;
-			private _garModel = CALLM(_locModel, "getGarrison", [_side]);
 			private _loc = GETV(_locModel, "actual");
-			private _gar = GETV(_garModel, "actual");
-			private _nInf = CALLM0(_gar, "countInfantryUnits");
-			private _query = +T_PL_tracked_wheeled; // All tracked and wheeled vehicles
-			private _nVeh = CALLM1(_gar, "countUnits", _query);
+			private _generalGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_GENERAL);
+			if(count _generalGarrisons > 0) then {
+				private _nInf = 0; 
+				private _nVeh = 0;
+				// We want to include all garrisons that consider this location home, not just the one at the location currently
+				// (i.e. QRFs, attacks, convoys etc, that may return again)
+				{
+					_nInf = _nInf + CALLM0(_x, "countInfantryUnits");
+					_nVeh = _nVeh + CALLM1(_x, "countUnits", T_PL_tracked_wheeled); // All tracked and wheeled vehicles
+				} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_GENERAL);
+				[
+					CALLM0(_loc, "getDisplayName"),
+					_loc,
+					_generalGarrisons # 0,
+					CMDR_MAX_INF_AIRFIELD - _nInf,
+					_nVehMax - _nVeh
+				]
+			} else {
+				[]
+			};
+		} select {
+			!(_x isEqualTo [])
+		};
+
+		// Locations that we can reinforce with air units
+		private _airReinfInfo = _reinfLocations select {
+			GETV(_x, "type") == LOCATION_TYPE_AIRPORT
+		} apply {
+			private _loc = GETV(_x, "actual");
+
+			private _airGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_AIR);
+
+			// Create air garrison if it doesn't exist, we already have a 
+			private _airGarr = if(count _airGarrisons == 0) then {
+				private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
+				private _args = [GARRISON_TYPE_AIR, _side, [], "military", _templateName];
+				private _gar = NEW("Garrison", _args);
+				CALLM1(_gar, "setLocation", _loc);
+				CALLM0(_gar, "activate");
+				_gar
+			} else {
+				_airGarrisons # 0
+			};
+
+			private _nHeli = 0;
+			private _nPlane = 0;
+
+			// We want to include all garrisons that consider this location home, not just the one at the location currently
+			// (i.e. QRFs, attacks, convoys etc, that may return again)
+			{
+				_nHeli = _nHeli + CALLM1(_x, "countUnits", T_PL_helicopters);
+				_nPlane = _nPlane + CALLM1(_x, "countUnits", T_PL_planes);
+			} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_AIR);
+
+			private _nHeliSpace = CALLM0(_loc, "getCapacityHeli");
+			private _nPlaneSpace = CALLM0(_loc, "getCapacityPlane");
+			private _nHeliMax = ceil (_nHeliSpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
+			private _nPlaneMax = ceil (_nPlaneSpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
 			[
-				CALLM0(_loc, "getDisplayName"),
-				_loc,
-				_gar,
-				CMDR_MAX_INF_AIRFIELD - _nInf,
-				_nVehMax - _nVeh
+				_airGarr,
+				CLAMP(_nHeliMax, 0, _nHeliSpace) - _nHeli,
+				CLAMP(_nPlaneMax, 0, _nPlaneSpace) - _nPlane
 			]
 		};
+
+		// Add air
+		{
+			_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
+			for "_i" from 0 to _nHelisRequired - 1 do {
+				private _type = T_VEH_heli_attack;
+				// selectRandomWeighted [
+				// 	T_VEH_heli_light,	1,
+				// 	T_VEH_heli_heavy,	1,
+				// 	T_VEH_heli_attack,	1
+				// ];
+				private _newGroup = CALLM4(_airGar, "createAddVehGroup", _side, T_VEH, _type, -1);
+				OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
+			};
+		} forEach _airReinfInfo;
 
 		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
 
@@ -3026,7 +3122,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (generator %1) - - - - -", [_generatorMethodName]);
 
 		// Sync before planning
-		CALLM(_world, "sync", [_thisObject]);
+		CALLM1(_world, "sync", _thisObject);
 		// Update grids etc.
 		CALLM0(_world, "update");
 
@@ -3091,29 +3187,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_activeActions deleteAt (_activeActions find _action);
 		};
 	ENDMETHOD;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	// = = = = = = = = = = = Radio = = = = = = = = = = = = =
@@ -3272,21 +3345,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowKeys", _args, _clientOwner, false);
 	ENDMETHOD;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	// = = = = = = = = = = = = = = Roadblocks and dynamic locations = = = = = = = = = = = = = =
 
 	// Adds a position for commander to consider create a roadblock at
@@ -3295,23 +3353,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		T_GETV("newRoadblockPositions") pushBack (+_pos);
 	ENDMETHOD;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// - - - - - - - STORAGE - - - - - - -
 
@@ -3322,9 +3363,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _db = T_GETV("intelDB");
 		CALLM1(_storage, "save", _db);
 
-		// Save strategy
-		pr _strategy = T_GETV("cmdrStrategy");
-		CALLM1(_storage, "save", _strategy);
+		// Save strategy class name only
+		T_SETV("cmdrStrategyClassSave", OBJECT_PARENT_CLASS_STR(T_GETV("cmdrStrategy")));
 
 		// Save world model
 		pr _model = T_GETV("worldModel");
@@ -3350,7 +3390,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		true
 	ENDMETHOD;
-
 
 	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
@@ -3408,7 +3447,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Load our garrisons
 		{
 			pr _gar = _x;
-			//diag_log format ["Loading garrison: %1", _gar];
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
@@ -3416,13 +3454,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _model = T_GETV("worldModel");
 		CALLM1(_storage, "load", _model);
 
-		// Load strategy
-		pr _strategy = T_GETV("cmdrStrategy");
-		CALLM1(_storage, "load", _strategy);
-
-		// SAVEBREAK -- we should just save the strategy name, not the whole object (strategy is just some constant values)
 		// Recreate the cmdr strategy object
-		private _strategy = NEW(OBJECT_PARENT_CLASS_STR(_strategy), []);
+		private _strategy = NEW(T_GETV("cmdrStrategyClassSave"), []);
 		T_SETV_REF("cmdrStrategy", _strategy);
 
 		// Load actions

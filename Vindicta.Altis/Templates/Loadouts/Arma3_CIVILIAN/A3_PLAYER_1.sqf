@@ -29,8 +29,9 @@ private _gunsAndAmmo = [
 	["hgun_PDW2000_F", 			"30Rnd_9x21_Mag", 		false],	0.1
 ];
 
+private _ownedDLCs = getDLCs 1;
 // Apex
-if(isDLCAvailable 395180) then {
+if(395180 in _ownedDLCs) then {
 	_uniforms = _uniforms + [
 		"U_I_C_Soldier_Bandit_5_F",
 		"U_I_C_Soldier_Bandit_3_F",
@@ -52,7 +53,7 @@ if(isDLCAvailable 395180) then {
 };
 
 // Contact
-if(isDLCAvailable 1021790) then {
+if(1021790 in _ownedDLCs) then {
 	_uniforms = _uniforms + [
 		"U_C_Uniform_Farmer_01_F",
 		"U_C_E_LooterJacket_01_F",
@@ -73,7 +74,7 @@ if(isDLCAvailable 1021790) then {
 };
 
 // Laws of War
-if(isDLCAvailable 1021790) then {
+if(1021790 in _ownedDLCs) then {
 	_uniforms = _uniforms + [
 		"U_C_Mechanic_01_F"
 	];

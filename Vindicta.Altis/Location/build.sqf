@@ -4,6 +4,7 @@
 #include "..\common.h"
 #include "Location.hpp"
 #include "..\Group\Group.hpp"
+#include "..\Garrison\Garrison.hpp"
 
 // Class: Location
 /*
@@ -29,8 +30,11 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 
 	// Find the nearest road
 	pr _roads = (_pos nearRoads 300) apply {[_x distance2D _pos, _x]};
-	_roads sort true; // Ascending
-	pr _road = _roads select 0 select 1;
+	if(count _roads == 0) exitWith {
+		OOP_WARNING_1("No roads found within 300m of this roadblock at %1?!", _pos);
+	};
+	_roads sort ASCENDING; // Ascending
+	pr _road = _roads#0#1;
 	pr _roadPos = getPos _road;
 	pr _roadWidth = [_road, 0.2, 20] call misc_fnc_getRoadWidth;
 

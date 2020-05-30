@@ -116,7 +116,7 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 // ["LocationModel.new(actual)", {
-// 	private _actual = NEW("Garrison", [WEST]);
+// 	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 // 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 // 	private _location = NEW("LocationModel", [_world] + [_actual]);
 // 	private _class = OBJECT_PARENT_CLASS_STR(_location);

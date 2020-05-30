@@ -11,6 +11,7 @@
 #include "PlayerMonitor.hpp"
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Intel\Intel.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: PlayerMonitor
@@ -159,13 +160,10 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				T_SETV("currentLocation", _loc);
 
 				// Check if the location has any garrisons we know about
-				pr _gars = CALLM0(_loc, "getGarrisons");
 				pr _garRecord = "";
-				CRITICAL_SECTION { // We want a critical section here because garrison record can be easily deleted at any point
-					_gars findIf {
-						_garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _x);
-						_garRecord != ""
-					};
+				// We want a critical section here because garrison record can be easily deleted at any point
+				CRITICAL_SECTION {
+					_garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecordForLocation", _loc);
 					T_SETV("currentGarrisonRecord", _garRecord);
 					if (_garRecord != "") then {
 						pr _gar = CALLM0(_garRecord, "getGarrison");

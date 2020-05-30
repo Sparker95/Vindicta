@@ -17,7 +17,7 @@
 		"prefix": "CLASS",
 		"body": [
 			"CLASS(\"$1\", \"$2\")",
-			"\tMETHOD(\"new\") {",
+			"\tMETHOD(new)",
 			"\t\tparams [P_THISOBJECT];",
 			"\t\t$0",
 			"\tENDMETHOD;",
@@ -30,12 +30,19 @@
 		"body": [
 			"VARIABLE(\"$0\");"
 		],
+		"description": "New OOP Light STATIC_VARIABLE"
+	},
+	"STATIC_VARIABLE": {
+		"prefix": "STATIC_VARIABLE",
+		"body": [
+			"STATIC_VARIABLE(\"$0\");"
+		],
 		"description": "New OOP Light VARIABLE"
 	},
 	"METHOD": {
 		"prefix": "METHOD",
 		"body": [
-			"METHOD(\"$1\") {",
+			"METHOD($1)",
 			"\tparams [P_THISOBJECT];",
 			"\t$0",
 			"ENDMETHOD;",
@@ -46,7 +53,7 @@
 	"STATIC_METHOD": {
 		"prefix": "STATIC_METHOD",
 		"body": [
-			"STATIC_METHOD(\"$1\") {",
+			"STATIC_METHOD($1)",
 			"\tparams [P_THISCLASS];",
 			"\t$0",
 			"ENDMETHOD;",
@@ -72,11 +79,25 @@
 			"$0",
 			"",
 			"Parameters:",
-			"	_first - type, description",
+			"/t_first - type, description",
 			"",
 			"Returns: nil",
 			"*/"
 		],
 		"description": "Document a function"
+	},
+	"FIX_LINE_NUMBERS": {
+		"prefix": "FIX",
+		"body": ["FIX_LINE_NUMBERS()"]
+	},
+	"SAVEBREAK": {
+		"prefix": "// S",
+		"body": [
+			"// SAVEBREAK >>>",
+			"// ${1|Remove,Replace,Add|}, ${2:Reason}",
+			"$TM_SELECTED_TEXT$0",
+			"// <<< SAVEBREAK"
+		],
+		"description": "SAVEBREAK"
 	}
 }

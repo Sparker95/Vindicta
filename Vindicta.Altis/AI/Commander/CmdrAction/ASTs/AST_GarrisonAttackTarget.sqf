@@ -139,6 +139,15 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		}
 	ENDMETHOD;
 
+	public override METHOD(cancel)
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+		if(GETV(_world, "type") == WORLD_TYPE_REAL && T_GETV("clearing")) then {
+			private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
+			ASSERT_OBJECT(_garr);
+			CALLM0(_garr, "cancelClearAreaActual");
+		};
+	ENDMETHOD;
+
 	/* private */ METHOD(isTargetDead)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 

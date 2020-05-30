@@ -4,6 +4,9 @@ misc_fnc_getTurrets = compile preprocessFileLineNumbers "Misc\fn_getTurrets.sqf"
 misc_fnc_currentWeaponSilenced = compile preprocessFileLineNumbers "Misc\fn_currentWeaponSilenced.sqf";
 misc_fnc_getCargoInfantryCapacity = compile preprocessFileLineNumbers "Misc\fn_getCargoInfantryCapacity.sqf";
 misc_fnc_vectorMoreOrEqual = compile preprocessFileLineNumbers "Misc\fn_vectorMoreOrEqual.sqf";
+#ifndef _SQF_VM
+gBBoxCache = [false] call CBA_fnc_createNamespace;
+#endif
 misc_fnc_boundingBoxReal = compile preprocessFileLineNumbers "Misc\fn_boundingBoxReal.sqf";
 misc_fnc_getVehicleWidth = compile preprocessFileLineNumbers "Misc\fn_getVehicleWidth.sqf";
 misc_fnc_isVehicleFlipped = compile preprocessFileLineNumbers "Misc\fn_isVehicleFlipped.sqf";
@@ -25,6 +28,7 @@ misc_fnc_getVehiclesInBuilding = compile preprocessFileLineNumbers "Misc\fn_getV
 
 misc_fnc_getVersion = compile preprocessFileLineNumbers "Misc\fn_getVersion.sqf";
 misc_fnc_getSaveVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveVersion.sqf";
+misc_fnc_getSaveBreakVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveBreakVersion.sqf";
 
 misc_fnc_isAdminLocal = compile preprocessFileLineNumbers "Misc\fn_isAdminLocal.sqf";
 
@@ -32,3 +36,5 @@ misc_fnc_isAdminLocal = compile preprocessFileLineNumbers "Misc\fn_isAdminLocal.
 gStaticStringHashmap = [false] call CBA_fnc_createNamespace;
 #endif
 misc_fnc_createStaticString = compile preprocessFileLineNumbers "Misc\fn_createStaticString.sqf";
+
+misc_fnc_findSafeSpawnPos = compile preprocessFileLineNumbers "Misc\fn_findSafeSpawnPos.sqf";

@@ -12,6 +12,7 @@
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "AI.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: AI
@@ -71,8 +72,8 @@ CLASS("AI", "MessageReceiverEx")
 
 		PROFILER_COUNTER_DEC("AI");
 
-		// Stop the AI if it is currently running
-		T_CALLM("stop", []);
+		// Stop the AI
+		T_CALLM0("stop");
 
 		// Delete all sensors
 		pr _sensors = T_GETV("sensors");
@@ -113,18 +114,9 @@ CLASS("AI", "MessageReceiverEx")
 		};
 	ENDMETHOD;
 
-
-
-
-
-
-
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- S E N S O R S -------------------------------------------
 	// ------------------------------------------------------------------------------------------------------
-
-
-
 
 	// ----------------------------------------------------------------------
 	// |                A D D   S E N S O R
@@ -170,6 +162,7 @@ CLASS("AI", "MessageReceiverEx")
 		private _className = GET_OBJECT_CLASS(_thisObject);
 		private __scopeUpdateSensors = createProfileScope ([format ["%1_updateSensors", _className]] call misc_fnc_createStaticString);
 		#endif
+		FIX_LINE_NUMBERS()
 
 		pr _sensors = T_GETV("sensors");
 		//OOP_INFO_1("Updating sensors: %1", _sensors);
@@ -297,10 +290,10 @@ CLASS("AI", "MessageReceiverEx")
 	Starts the AI brain with timer. If this AI doesn't use timer, but a process category, override this.
 	From now process method will be called periodically.
 	*/
-	METHOD(start)
+	virtual METHOD(start)
 		params [P_THISOBJECT];
 
-		if (T_GETV("timer") == "") then {
+		if (T_GETV("timer") == NULL_OBJECT) then {
 			// Starts the timer
 			private _msg = MESSAGE_NEW();
 			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
@@ -314,8 +307,9 @@ CLASS("AI", "MessageReceiverEx")
 
 			// Post a message to process immediately to accelerate start up
 			T_CALLM1("postMessage", +_msg);
+		} else {
+			OOP_ERROR_0("Timer is already created when start was called. Was it called multiple times?");
 		};
-
 		nil
 	ENDMETHOD;
 
@@ -327,15 +321,15 @@ CLASS("AI", "MessageReceiverEx")
 	Method: stop
 	Stops the periodic call of process function.
 	*/
-	METHOD(stop)
+	virtual METHOD(stop)
 		params [P_THISOBJECT];
 		
 		// Delete this object from process category 
 		T_CALLM0("removeFromProcessCategory");
 
 		pr _timer = T_GETV("timer");
-		if (_timer != "") then {
-			T_SETV("timer", "");
+		if (_timer != NULL_OBJECT) then {
+			T_SETV("timer", NULL_OBJECT);
 			DELETE(_timer);
 		};
 		nil
