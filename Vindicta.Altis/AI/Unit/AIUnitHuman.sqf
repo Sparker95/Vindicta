@@ -397,32 +397,6 @@ CLASS("AIUnitHuman", "AIUnit")
 	ENDMETHOD;
 	
 	/*
-	Method: assignAsGunner
-	Disabled for now! Use assignAsTurret instead.
-	
-	Parameters: _veh
-	
-	_veh - string, vehicle <Unit>
-	
-	Returns: nil
-	*/
-	/*
-	METHOD(assignAsGunner)
-		params [P_THISOBJECT, P_OOP_OBJECT("_veh") ];
-		
-		// Unassign this inf unit from its current vehicle
-		T_CALLM0("unassignVehicle");
-		
-		pr _vehAI = CALLM0(_veh, "getAI");
-		SETV(_vehAI, "assignedGunner", _thisObject);
-		T_SETV("assignedVehicle", _veh);
-		T_SETV("assignedVehicleRole", VEHICLE_ROLE_GUNNER);
-		T_SETV("assignedCargoIndex", nil);
-		T_SETV("assignedTurretPath", nil);
-	ENDMETHOD;
-	*/
-	
-	/*
 	Method: assignAsTurret
 	
 	Parameters: _veh, _turretPath
@@ -582,7 +556,6 @@ CLASS("AIUnitHuman", "AIUnit")
 				}; // empty and person turret
 				
 				pr _freeSeats = _freeCargoSeats + _freeFFVSeats;
-				pr _chosenCargoSeat = T_GETV("chosenCargoSeat");
 				
 				// Choose a new cargo seat
 				if (count _freeSeats == 0) then {
@@ -596,13 +569,11 @@ CLASS("AIUnitHuman", "AIUnit")
 					pr _chosenSeat = selectRandom _freeSeats;
 					_chosenSeat params ["_seatUnit", "_seatRole", "_seatCargoIndex", "_seatTurretPath"]; //, "_seatPersonTurret"];
 					if (_seatRole == "cargo") then {
-						T_SETV("chosenCargoSeat", _seatCargoIndex);
 						pr _success = CALLM2(_AI, "assignAsCargoIndex", _unitVeh, _seatCargoIndex);
 						
 						// Return
 						_success
 					} else {
-						T_SETV("chosenCargoSeat", _seatTurretPath);
 						pr _success = CALLM2(_AI, "assignAsTurret", _unitVeh, _seatTurretPath);
 						
 						// Return
@@ -732,7 +703,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		};
 	ENDMETHOD;
 	
-		/*
+	/*
 	Method: getAssignedVehicle
 	Returns assigned vehicle or "" if the unit is not assigned to a vehicle
 	
@@ -748,6 +719,24 @@ CLASS("AIUnitHuman", "AIUnit")
 		if (isNil "_veh") exitWith { NULL_OBJECT };
 		
 		_veh
+	ENDMETHOD;
+
+	/*
+	Returns vehicle, vehicle role, cargo index, turret path
+	
+	Returns: [_cargoIndex, _turretPath]
+	_cargoIndex - index or -1
+	_turretPath - turret path or []
+	*/
+	METHOD(getAssignedVehicleParameters)
+		params [P_THISOBJECT];
+		pr _vehRole = T_CALLM0("getAssignedVehicleRole");
+		pr _cargoIndex = T_GETV("assignedCargoIndex");
+		if (isNil "_cargoIndex") then {_cargoIndex = -1;};
+		pr _turretPath = T_GETV("assignedTurretPath");
+		if (isNil "_turretPath") then {_turretPath = [];};
+
+		return [_cargoIndex, _turretPath];
 	ENDMETHOD;
 
 	// Enables or disables vehicle usage world state property

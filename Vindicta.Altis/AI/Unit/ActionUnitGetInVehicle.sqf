@@ -21,9 +21,6 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	VARIABLE("vehRole");
 	VARIABLE("turretPath");
 
-	// Cargo index or turret path array
-	VARIABLE("chosenCargoSeat");
-
 	// Time when unit is expected to get into vehicle
 	VARIABLE("ETA");
 
@@ -97,18 +94,6 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					objNull
 				};
 			};
-			/*
-			case "GUNNER" : {
-				pr _gunner = gunner _hVeh;
-				if (!(isNull _gunner) && !(_gunner isEqualTo _hO)) then {
-					// Return
-					true
-				} else {
-					// Return
-					false
-				};
-			};
-			*/
 			case "TURRET" : {
 				pr _turretPath = T_GETV("turretPath");
 				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x#3 isEqualTo _turretPath};
@@ -129,9 +114,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				3: <Array>turretPath
 				4: <Boolean>personTurret */
 				
-				pr _chosenCargoSeat = T_GETV("chosenCargoSeat");
-				if (_chosenCargoSeat isEqualType 0) then { // If it's a cargo index
-					pr _cargoIndex = _chosenCargoSeat;
+				pr _assignedParameters = CALLM0(_ai, "getAssignedVehicleParameters");
+				_assignedParameters params ["_cargoIndex", "_turretPath"];
+
+				if (_cargoIndex != -1) then { // If it's a cargo index
 					pr _cargoSeat = (fullCrew [_hVeh, "cargo", true]) select {_x#2 isEqualTo _cargoIndex};
 					pr _cargoOperator = _cargoSeat#0#0;
 					if (!isNil "_cargoOperator" && { alive _cargoOperator && !(_cargoOperator isEqualTo _hO) }) then {
@@ -142,7 +128,6 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						objNull
 					};
 				} else { // If it's an FFV turret path
-					pr _turretPath = _chosenCargoSeat;
 					pr _turretSeat = (fullCrew [_hVeh, "Turret", true]) select {_x#3 isEqualTo _turretPath};
 					pr _turretOperator = _turretSeat#0#0;
 					if (!isNil "_turretOperator" && {alive _turretOperator && !(_turretOperator isEqualTo _hO)}) then {
@@ -156,7 +141,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			}; // case
 			
 			default {
-				diag_log format ["[ActionUnitGetInVehicle] Error: unknown vehicle role: %1", _vehRole];
+				OOP_ERROR_1("Unknown vehicle role: %1", _vehRole);
 				objNull
 			};
 		}; // switch
