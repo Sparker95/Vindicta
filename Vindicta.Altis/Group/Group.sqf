@@ -1140,15 +1140,6 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_GETV("data") select GROUP_DATA_ID_AI
 	ENDMETHOD;
 
-	Returns: String, <AIGroup>
-	*/
-	METHOD(getAI)
-		params [P_THISOBJECT];
-
-		pr _data = T_GETV("data");
-		_data select GROUP_DATA_ID_AI
-	ENDMETHOD;
-
 	//                          G E T   S U B A G E N T S
 	/*
 	Method: getSubagents

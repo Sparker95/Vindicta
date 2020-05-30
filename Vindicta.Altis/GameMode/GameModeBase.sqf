@@ -1075,22 +1075,26 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log "Special garrisons done";
 	ENDMETHOD;
 
+
 	METHOD(_createSpecialGarrisons)
 		params [P_THISOBJECT];
 
 		// Garrison objects to track players and player owned vehicles
-		gGarrisonPlayersWest = NEW("Garrison", [WEST]);
-		gGarrisonPlayersEast = NEW("Garrison", [EAST]);
-		gGarrisonPlayersInd = NEW("Garrison", [INDEPENDENT]);
-		gGarrisonPlayersCiv = NEW("Garrison", [CIVILIAN]);
-		gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
-		gGarrisonAbandonedVehicles = NEW("Garrison", [CIVILIAN]);
+		gGarrisonPlayersWest 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG WEST]);
+		gGarrisonPlayersEast 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG EAST]);
+		gGarrisonPlayersInd 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG INDEPENDENT]);
+		gGarrisonPlayersCiv 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonAmbient 			= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonAbandonedVehicles 	= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
 
-		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
-
-		{
-			CALLM2(_x, "postMethodAsync", "spawn", []);
-		} forEach gSpecialGarrisons;
+		gSpecialGarrisons = [
+			gGarrisonPlayersWest,
+			gGarrisonPlayersEast,
+			gGarrisonPlayersInd,
+			gGarrisonPlayersCiv,
+			gGarrisonAmbient,
+			gGarrisonAbandonedVehicles
+		];
 	ENDMETHOD;
 
 	STATIC_METHOD(getPlayerGarrisonForSide)

@@ -34,8 +34,6 @@ CLASS("Goal", "")
 	METHOD(delete)
 		params [P_THISOBJECT];
 	ENDMETHOD;
-
-	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |          G E T   P O S S I B L E   P A R A M E T E R S             |

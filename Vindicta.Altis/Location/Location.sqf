@@ -188,8 +188,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityCiv", _capacityCiv);
 	ENDMETHOD;
 
-	ENDMETHOD;
-
 	/*
 	Method: addChild
 	Adds a child location to this location (also sets the childs parent).

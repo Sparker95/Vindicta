@@ -149,7 +149,7 @@ private _s = WSP_GAR_COUNT;
 											]]	call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveAir", 					[
 											TAG_MOVE_RADIUS
-											]]	call AI_misc_fnc_setActionParametersFromGoal;
+											]]	call AI_misc_fnc_setActionParametersFromGoalOptional;
 
 // ---------------- ActionGarrisonDefend
 ["ActionGarrisonDefend", _s,				[]]	call AI_misc_fnc_setActionPreconditions;
