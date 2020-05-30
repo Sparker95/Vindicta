@@ -72,115 +72,6 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	ENDMETHOD;
 
 	/*
-	Method: assignVehicle
-	Description
-	
-	Access: private
-	
-	Returns: bool
-	*/
-	METHOD(assignVehicle)
-		params [P_THISOBJECT];
-		
-		pr _vehRole = T_GETV("vehRole");
-		pr _AI = T_GETV("AI");
-		pr _unitVeh = T_GETV("unitVeh");
-		
-		OOP_INFO_2("Assigning vehicle: %1, role: %2", _unitVeh, _vehRole);
-		
-		switch (_vehRole) do {	
-		/*
-		[[hemttD,"driver",-1,[],false],
-		[B Alpha 1-1:5,"cargo",0,[],false],[B Alpha 1-1:4,"cargo",1,[],false],[B Alpha 1-1:6,"cargo",2,[],false],[B Alpha 1-1:2,"Turret",7,[0],true],[B Alpha 1-1:3,"Turret",15,[1],true]]
-		
-		[[B Alpha 1-1:5,"cargo",0,[],false],[B Alpha 1-1:4,"cargo",1,[],false],[B Alpha 1-1:6,"cargo",2,[],false],[<NULL-object>,"cargo",3,[],false],[<NULL-object>,"cargo",4,[],false],[<NULL-object>,"cargo",5,[],false],[<NULL-object>,"cargo",6,[],false],[<NULL-object>,"cargo",8,[],false],[<NULL-object>,"cargo",9,[],false],[<NULL-object>,"cargo",10,[],false],[<NULL-object>,"cargo",11,[],false],[<NULL-object>,"cargo",12,[],false],[<NULL-object>,"cargo",13,[],false],[<NULL-object>,"cargo",14,[],false],[<NULL-object>,"cargo",16,[],false]]
-		
-		[[B Alpha 1-1:5,"cargo",0,[],false],[B Alpha 1-1:4,"cargo",1,[],false],[B Alpha 1-1:6,"cargo",2,[],false],[<NULL-object>,"cargo",3,[],false],[<NULL-object>,"cargo",4,[],false],[<NULL-object>,"cargo",5,[],false],[<NULL-object>,"cargo",6,[],false],[<NULL-object>,"cargo",8,[],false],[<NULL-object>,"cargo",9,[],false],[<NULL-object>,"cargo",10,[],false],[<NULL-object>,"cargo",11,[],false],[<NULL-object>,"cargo",12,[],false],[<NULL-object>,"cargo",13,[],false],[<NULL-object>,"cargo",14,[],false],[<NULL-object>,"cargo",16,[],false]]
-		*/
-			case "DRIVER": {
-				pr _success = CALLM1(_AI, "assignAsDriver", _unitVeh);
-				
-				// Return
-				_success
-			};
-			/*
-			case "GUNNER" : {
-				CALLM1(_AI, "assignAsGunner", _unitVeh);
-				
-				// Return
-				true
-			};
-			*/
-			case "TURRET" : {
-				pr _turretPath = T_GETV("turretPath");
-				pr _success = CALLM2(_AI, "assignAsTurret", _unitVeh, _turretPath);
-				
-				// Return
-				_success
-			};
-			case "CARGO" : {
-				/* FulLCrew output: Array - format:
-				0: <Object>unit
-				1: <String>role
-				2: <Number>cargoIndex (see note in description)
-				3: <Array>turretPath
-				4: <Boolean>personTurret */
-				
-				pr _hVeh = T_GETV("hVeh");
-				pr _hO = T_GETV("hO");
-				pr _vehAI = CALLM0(_unitVeh, "getAI");
-				pr _unit = GETV(T_GETV("AI"), "agent");
-				
-				pr _freeCargoSeats = (fullCrew [_hVeh, "cargo", true]) select {
-					pr _assignedPassenger = CALLM1(_vehAI, "getAssignedCargo", _x select 2);
-					( (!alive (_x select 0)) ||
-					  ((_x select 0) isEqualTo _hO) ) &&
-					  ( _assignedPassenger == "" || _assignedPassenger == _unit)
-				};
-				
-				pr _freeFFVSeats = (fullCrew [_hVeh, "Turret", true]) select {
-					pr _assignedTurret = CALLM1(_vehAI, "getAssignedTurret", _x select 3);
-					( (!alive (_x select 0)) || ((_x select 0) isEqualTo _hO)) && (_x select 4) && (_assignedTurret == "" || _assignedTurret == _unit)
-				}; // empty and person turret
-				
-				pr _freeSeats = _freeCargoSeats + _freeFFVSeats;
-				pr _chosenCargoSeat = T_GETV("chosenCargoSeat");
-				
-				// Choose a new cargo seat
-				if (count _freeSeats == 0) then {
-					// No room for this soldier in the vehicle
-					// Mission failed
-					// We are dooomed!
-					// https://www.youtube.com/watch?v=5vSUV1nii5k
-					// Return
-					false
-				} else { // if count free seats == 0
-					pr _chosenSeat = selectRandom _freeSeats;
-					_chosenSeat params ["_seatUnit", "_seatRole", "_seatCargoIndex", "_seatTurretPath"]; //, "_seatPersonTurret"];
-					if (_seatRole == "cargo") then {
-						T_SETV("chosenCargoSeat", _seatCargoIndex);
-						pr _success = CALLM2(_AI, "assignAsCargoIndex", _unitVeh, _seatCargoIndex);
-						
-						// Return
-						_success
-					} else {
-						T_SETV("chosenCargoSeat", _seatTurretPath);
-						pr _success = CALLM2(_AI, "assignAsTurret", _unitVeh, _seatTurretPath);
-						
-						// Return
-						_success
-					};
-				}; // else
-			}; // case
-			
-			default {
-				diag_log format ["[ActionUnitGetInVehicle] Error: unknown vehicle role: %1", _vehRole];
-			};
-		}; // switch
-		
-	ENDMETHOD;
-
-	/*
 	Method: seatOccupiedByAnother
 	Returns handle to current occupier of the desired seat, if it isn't us
 	
@@ -278,6 +169,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 
 		pr _hO = T_GETV("hO");
 		pr _hVeh = T_GETV("hVeh");
+		pr _AI = T_GETV("ai");
 
 		// Insta-fail if vehicle is destroyed
 		if (!alive _hVeh) exitWith {
@@ -287,7 +179,10 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		};
 
 		// Assign vehicle
-		pr _success = T_CALLM0("assignVehicle");
+		pr _vehRole = T_GETV("vehRole");
+		pr _turretPath = T_GETV("turretPath");
+		pr _unitVeh = T_GETV("unitVeh");
+		pr _success = CALLM3(_ai, "_assignVehicle", _vehRole, _turretPath, _unitVeh);
 		if (_success) then {
 			OOP_INFO_0("ACTIVATEd successfully");
 			// If we were just spawned, just teleport into the vehicle
@@ -426,17 +321,3 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	ENDMETHOD;
 
 ENDCLASS;
-
-/*
-Code to test it quickly:
-
-// setVeh
-veh = cursorObject getVariable "unit";
-
-
-// GetIn
-_unit = cursorObject;
-_parameters = [["vehicle", veh], ["vehicleRole", "CARGO"], ["turretPath", 0]];
-
-newAction = [_unit, "ActionUnitGetInVehicle", _parameters, 1] call AI_misc_fnc_forceUnitAction;
-*/

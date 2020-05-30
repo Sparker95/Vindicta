@@ -523,6 +523,98 @@ CLASS("AIUnitHuman", "AIUnit")
 	ENDMETHOD;
 
 	/*
+	Method: assignVehicle
+	Description
+	
+	Access: private, used by unit actions and goals.
+	
+	Returns: bool
+	*/
+	METHOD(_assignVehicle)
+		params [P_THISOBJECT, P_STRING("_vehRole"), P_ARRAY("_turretPath"), P_OOP_OBJECT("_unitVeh")];
+		
+		OOP_INFO_2("Assigning vehicle: %1, role: %2", _unitVeh, _vehRole);
+
+		pr _hVeh = CALLM0(_unitVeh, "getObjectHandle");
+		pr _hO = T_GETV("hO");
+		pr _vehAI = CALLM0(_unitVeh, "getAI");
+		pr _unit = T_GETV("agent");
+
+		switch (_vehRole) do {	
+		/*
+		[[hemttD,"driver",-1,[],false],
+		[B Alpha 1-1:5,"cargo",0,[],false],[B Alpha 1-1:4,"cargo",1,[],false],[B Alpha 1-1:6,"cargo",2,[],false],[B Alpha 1-1:2,"Turret",7,[0],true],[B Alpha 1-1:3,"Turret",15,[1],true]]
+		
+		[[B Alpha 1-1:5,"cargo",0,[],false],[B Alpha 1-1:4,"cargo",1,[],false],[B Alpha 1-1:6,"cargo",2,[],false],[<NULL-object>,"cargo",3,[],false],[<NULL-object>,"cargo",4,[],false],[<NULL-object>,"cargo",5,[],false],[<NULL-object>,"cargo",6,[],false],[<NULL-object>,"cargo",8,[],false],[<NULL-object>,"cargo",9,[],false],[<NULL-object>,"cargo",10,[],false],[<NULL-object>,"cargo",11,[],false],[<NULL-object>,"cargo",12,[],false],[<NULL-object>,"cargo",13,[],false],[<NULL-object>,"cargo",14,[],false],[<NULL-object>,"cargo",16,[],false]]
+		
+		[[B Alpha 1-1:5,"cargo",0,[],false],[B Alpha 1-1:4,"cargo",1,[],false],[B Alpha 1-1:6,"cargo",2,[],false],[<NULL-object>,"cargo",3,[],false],[<NULL-object>,"cargo",4,[],false],[<NULL-object>,"cargo",5,[],false],[<NULL-object>,"cargo",6,[],false],[<NULL-object>,"cargo",8,[],false],[<NULL-object>,"cargo",9,[],false],[<NULL-object>,"cargo",10,[],false],[<NULL-object>,"cargo",11,[],false],[<NULL-object>,"cargo",12,[],false],[<NULL-object>,"cargo",13,[],false],[<NULL-object>,"cargo",14,[],false],[<NULL-object>,"cargo",16,[],false]]
+		*/
+			case "DRIVER": {
+				pr _success = CALLM1(_AI, "assignAsDriver", _unitVeh);
+				
+				// Return
+				_success
+			};
+			case "TURRET" : {
+				pr _success = T_CALLM2("assignAsTurret", _unitVeh, _turretPath);
+				
+				// Return
+				_success
+			};
+			case "CARGO" : {
+				/* FulLCrew output: Array - format:
+				0: <Object>unit
+				1: <String>role
+				2: <Number>cargoIndex (see note in description)
+				3: <Array>turretPath
+				4: <Boolean>personTurret */
+				
+				pr _freeCargoSeats = (fullCrew [_hVeh, "cargo", true]) select {
+					pr _assignedPassenger = CALLM1(_vehAI, "getAssignedCargo", _x select 2);
+					( (!alive (_x select 0)) ||
+					  ((_x select 0) isEqualTo _hO) ) &&
+					  ( _assignedPassenger == "" || _assignedPassenger == _unit)
+				};
+				
+				pr _freeFFVSeats = (fullCrew [_hVeh, "Turret", true]) select {
+					pr _assignedTurret = CALLM1(_vehAI, "getAssignedTurret", _x select 3);
+					( (!alive (_x select 0)) || ((_x select 0) isEqualTo _hO)) && (_x select 4) && (_assignedTurret == "" || _assignedTurret == _unit)
+				}; // empty and person turret
+				
+				pr _freeSeats = _freeCargoSeats + _freeFFVSeats;
+				pr _chosenCargoSeat = T_GETV("chosenCargoSeat");
+				
+				// Choose a new cargo seat
+				if (count _freeSeats == 0) then {
+					// No room for this soldier in the vehicle
+					// Mission failed
+					// We are dooomed!
+					// https://www.youtube.com/watch?v=5vSUV1nii5k
+					// Return
+					false
+				} else { // if count free seats == 0
+					pr _chosenSeat = selectRandom _freeSeats;
+					_chosenSeat params ["_seatUnit", "_seatRole", "_seatCargoIndex", "_seatTurretPath"]; //, "_seatPersonTurret"];
+					if (_seatRole == "cargo") then {
+						T_SETV("chosenCargoSeat", _seatCargoIndex);
+						pr _success = CALLM2(_AI, "assignAsCargoIndex", _unitVeh, _seatCargoIndex);
+						
+						// Return
+						_success
+					} else {
+						T_SETV("chosenCargoSeat", _seatTurretPath);
+						pr _success = CALLM2(_AI, "assignAsTurret", _unitVeh, _seatTurretPath);
+						
+						// Return
+						_success
+					};
+				}; // else
+			}; // case
+		}; // switch
+		
+	ENDMETHOD;
+
+	/*
 	Method: executeVehicleAssignment
 	Runs ARMA assignAs* commands on this unit.
 	

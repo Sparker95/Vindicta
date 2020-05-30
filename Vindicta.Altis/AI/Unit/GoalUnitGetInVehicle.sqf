@@ -26,11 +26,14 @@ CLASS("GoalUnitGetInVehicle", "Goal")
 		// when in combat
 		_goalParameters pushBack [TAG_MOVE_RADIUS, 25];
 
-		// todo implement handling of vehicle world state property
-		// todo for this we must move vehicle assignment out of action
-		pr _ws = GETV(_ai, "worldState");
-		WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, false);
-		WS_SET(_ws, WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE, false);
+		// Assign vehicle now
+		pr _unitVeh = GET_PARAMETER_VALUE(_goalParameters, TAG_TARGET_VEHICLE_UNIT);
+		pr _vehRole = GET_PARAMETER_VALUE(_goalParameters, TAG_VEHICLE_ROLE);
+		pr _turretPath = GET_PARAMETER_VALUE_DEFAULT(_goalParameters, TAG_TURRET_PATH, []);
+		CALLM3(_ai, "_assignVehicle", _vehRole, _turretPath, _unitVeh);
+
+		// Force update of vehicle world state property
+		CALLM0(_ai, "updateVehicleWSP");
 	ENDMETHOD;
 
 ENDCLASS;
