@@ -190,11 +190,11 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		OOP_INFO_4("EH_GetOut: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
 		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
-			OOP_ERROR_1("EH_GetOut: vehicle doesn't have a Unit object (%1)", _this);
+			OOP_INFO_1("EH_GetOut: vehicle doesn't have a Unit object (%1)", _this);
 		};
 
 		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
-			OOP_ERROR_1("EH_GetOut: unit doesn't have a Unit object (%1)", _this);
+			OOP_INFO_1("EH_GetOut: unit doesn't have a Unit object (%1)", _this);
 		};
 
 		pr _data = GETV(_unitVeh, "data");
@@ -204,8 +204,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		} else {
 			OOP_ERROR_2("EH_GetOut: vehicle is not attached to a garrison: %1, %2", _unitVeh, _data);
 		};
-
 	ENDMETHOD;
+
 	METHOD(EH_aceCargoLoaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 

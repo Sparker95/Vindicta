@@ -901,7 +901,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			// We need some way to reinforce police generally probably?
 			private _garrisons = CALLM1(_policeStation, "getGarrisons", ENEMY_SIDE);
 			// We only want to reinforce police stations still under our control
-			if (  (count _garrisons > 0) and  { CALLM0(_garrisons select 0, "countInfantryUnits") <= 4 } ) then {
+			if (count _garrisons > 0 and  { CALLM0(_garrisons#0, "countInfantryUnits") <= 4 }) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				// If we liberated the city then we spawn police on our own side!
 				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
@@ -914,7 +914,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				private _playerBlacklistAreas = playableUnits apply { [getPos _x, 1000] };
 				private _maxDistance = 2500;
 				private _spawnInPos = +_locPos;
-				while{(_spawnInPos distance2D _locPos <= 900) && _maxDistance <= 4500} do {
+				while { _spawnInPos distance2D _locPos <= 900 && _maxDistance <= 4500 } do {
 					_spawnInPos = [_locPos, 1000, _maxDistance, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
 					// This function returns 2D vector for some reason
 					if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
@@ -929,7 +929,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 					T_SETV_REF("reinfGarrison", _newGarrison);
 
 					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
-					CALLM0(_newGarrison, "activateOutOfThread");
+					CALLM0(_newGarrison, "activate");
 					private _AI = CALLM0(_newGarrison, "getAI");
 					// Send the garrison to join the police station location
 					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation], [TAG_MOVE_RADIUS, 100]], _thisObject];

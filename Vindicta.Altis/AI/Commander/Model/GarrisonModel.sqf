@@ -383,7 +383,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Register it at the commander (do it after adding the units so the sync is correct)
 		#ifndef _SQF_VM
-		private _newGarr = CALLM0(_newGarrActual, "activate");
+		private _newGarr = CALLM0(_newGarrActual, "activateCmdrThread");
 		#else
 		private _newGarr = NEW("GarrisonModel", [_world ARG _newGarrActual]);
 		#endif

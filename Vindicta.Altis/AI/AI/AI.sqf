@@ -101,7 +101,7 @@ CLASS("AI", "MessageReceiverEx")
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
 			case AI_MESSAGE_PROCESS: {
-				T_CALLM("process", []);
+				T_CALLM0("process");
 				true
 			};
 

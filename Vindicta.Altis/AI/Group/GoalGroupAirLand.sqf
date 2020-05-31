@@ -8,7 +8,7 @@ CLASS("GoalGroupAirLand", "Goal")
 		// By default only land automatically when at a location
 		private _group = GETV(_AI, "agent");
 		private _garr = CALLM0(_group, "getGarrison");
-		if(CALLM0(_garr, "getLocation") != NULL_OBJECT && !CALLM0(_AI, "isLanded")) then {
+		if(_garr != NULL_OBJECT && { CALLM0(_garr, "getLocation") != NULL_OBJECT } && { !CALLM0(_AI, "isLanded") }) then {
 			GETSV("GoalGroupAirLand", "relevance")
 		} else {
 			0

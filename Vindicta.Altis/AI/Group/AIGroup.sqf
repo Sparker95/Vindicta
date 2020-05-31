@@ -81,6 +81,8 @@ CLASS("AIGroup", "AI_GOAP")
 	METHOD(process)
 		params [P_THISOBJECT];
 
+		ASSERT_MSG(!canSuspend, "AIGroup process should be called in unscheduled only!");
+
 		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("unitMarkersEnabled")) then {
 			pr _unused = "";

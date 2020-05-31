@@ -127,7 +127,7 @@ CLASS("RecruitTab", "DialogTabBase")
 			pr _items = if(_subcatid == -1) then {
 				[]
 			} else {
-				[_available#_forEachIndex#_subcatid, GEAR_SORTBY#_forEachIndex] call pr0_fnc_sortBy;
+				[_available#_forEachIndex#_subcatid, GEAR_SORTBY#_forEachIndex, DESCENDING] call vin_fnc_sortBy;
 			};
 			pr _allowNone = if(_subcatid == -1) then { false } else { !(GEAR_REQUIRED#_forEachIndex) };
 			pr _selHistory = _selHistories#_forEachIndex;

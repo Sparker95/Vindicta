@@ -38,10 +38,7 @@ MsgRcvr_fnc_setMsgDone = {
 				_rqArrayElement set [0, 1]; 		// Set the flag that the message has been processed
 			};
 			if(count _rqArrayElement > 3) then {
-				_rqArrayElement#3 params ["_methodNameOrCode", "_params", "_messageReceiver"];
-				if(IS_OOP_OBJECT(_messageReceiver)) then {
-					CALLM2(_messageReceiver, "postMethodAsync", _methodNameOrCode, _params + [_result]);
-				};
+				CALL_CONTINUATION(_rqArrayElement#3, _result);
 			};
 			//diag_log format [" --- Message receiver has acknowledged message: %1,  msgID: %2", _dest, _msgID];
 		} else {

@@ -126,9 +126,17 @@ CLASS("AIUnitHuman", "AI_GOAP")
 
 		pr _unit = T_GETV("agent");
 		pr _grp = CALLM0(_unit, "getGroup");
-		pr _grpAI = CALLM0(_grp, "getAI");
-		// This shouldn't be possible once AI start is synchronized between group and units
-		pr _enabled = if(isNil "_grpAI" || {_grpAI == NULL_OBJECT} || {!IS_OOP_OBJECT(_grpAI)}) then { false } else { GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled") };
+		pr _enabled = if(_grp != NULL_OBJECT) then {
+			pr _grpAI = CALLM0(_grp, "getAI");
+			// This shouldn't be possible once AI start is synchronized between group and units
+			if(isNil "_grpAI" || {_grpAI == NULL_OBJECT} || {!IS_OOP_OBJECT(_grpAI)}) then {
+				false
+			} else {
+				GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled")
+			};
+		} else {
+			false
+		};
 		pr _wasEnabled = T_GETV("markersEnabled");
 		if(!_wasEnabled && _enabled) then {
 			T_CALLM0("_enableDebugMarkers");
@@ -199,6 +207,8 @@ CLASS("AIUnitHuman", "AI_GOAP")
 
 	METHOD(process)
 		params [P_THISOBJECT];
+
+		ASSERT_MSG(!canSuspend, "AIUnitHuman process should be called in unscheduled only!");
 
 		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("markersEnabled")) then {

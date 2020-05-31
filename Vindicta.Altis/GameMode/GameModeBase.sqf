@@ -149,6 +149,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, NO_JIP);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop manager
@@ -247,6 +248,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		PROFILE_SCOPE_START(GameModeEnd);
 	ENDMETHOD;
@@ -320,7 +322,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				{
 					private _gar = _x;
 					OOP_DEBUG_MSG("Creating garrison %1 for location %2 (%3)", [_gar ARG _loc ARG _side]);
-					CALLM1(_gar, "setLocation", _loc);
+					CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 					// CALLM1(_loc, "registerGarrison", _gar); // I think it's not needed? setLocation should register it as well
 					CALLM0(_gar, "activate");
 				} forEach T_CALLM2("initGarrisons", _loc, _side);
@@ -382,7 +384,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM(_gar, "addUnit", [_newUnit]);
 		};
 		CALLM1(_gar, "setLocation", _loc);
-		CALLM1(_loc, "registerGarrison", _gar);
+		CALLM0(_gar, "activate");
+
+		//CALLM1(_loc, "registerGarrison", _gar);
 	ENDMETHOD;
 
 	// Creates message loops
@@ -497,6 +501,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						};
 					};
 					#endif
+					FIX_LINE_NUMBERS()
+
 					_recovery = true;
 				};
 			};
@@ -1136,6 +1142,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			gGarrisonAmbient,
 			gGarrisonAbandonedVehicles
 		];
+
+		{
+			CALLM0(_x, "activate");
+		} forEach gSpecialGarrisons;
 	ENDMETHOD;
 
 	STATIC_METHOD(getPlayerGarrisonForSide)
@@ -2301,45 +2311,48 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM3("GameModeBase", "setLoadingProgress", "Updating locations...", 0, 5);
 		CALLSM0("Location", "postLoad");
 
-		// Cleanup dirty garrisons etc.
-		CALLSM3("GameModeBase", "setLoadingProgress", "Cleaning broken garrisons...", 2, 5);
-		// Cleanup broken garrisons
-		private _nonSpecialGarrisons = GETSV("Garrison", "all") - gSpecialGarrisons;
-		private _brokenCivilianGarrisons = _nonSpecialGarrisons select {
-			// Civilian garrisons should be at a location only, and autoSpawn if they are of certain types
-			GETV(_x, "side") == civilian && { GETV(_x, "location") == NULL_OBJECT || { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
-		};
-		private _brokenMilitaryGarrisons = _nonSpecialGarrisons select {
-			// Non civilian garrisons should be at a location or position, and autoSpawn if they are of certain types
-			GETV(_x, "side") != civilian && 
-			{ GETV(_x, "location") == NULL_OBJECT && CALLM0(_x, "getPos") isEqualTo [0,0,0]
-			|| { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
-		};
+		// SAVEBREAK >>>
+		// Remove, Hopefully not needed
+		// // Cleanup dirty garrisons etc.
+		// CALLSM3("GameModeBase", "setLoadingProgress", "Cleaning broken garrisons...", 2, 5);
+		// // Cleanup broken garrisons
+		// private _nonSpecialGarrisons = GETSV("Garrison", "all") - gSpecialGarrisons;
+		// private _brokenCivilianGarrisons = _nonSpecialGarrisons select {
+		// 	// Civilian garrisons should be at a location only, and autoSpawn if they are of certain types
+		// 	GETV(_x, "side") == civilian && { GETV(_x, "location") == NULL_OBJECT || { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
+		// };
+		// private _brokenMilitaryGarrisons = _nonSpecialGarrisons select {
+		// 	// Non civilian garrisons should be at a location or position, and autoSpawn if they are of certain types
+		// 	GETV(_x, "side") != civilian && 
+		// 	{ GETV(_x, "location") == NULL_OBJECT && CALLM0(_x, "getPos") isEqualTo [0,0,0]
+		// 	|| { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
+		// };
 
-		// Delete the units, the garrisons should get cleaned up automatically
-		{
-			private _gar = _x;
-			{
-				DELETE(_x);
-			} forEach GETV(_gar, "units");
-		} forEach (_brokenCivilianGarrisons + _brokenMilitaryGarrisons);
+		// // Delete the units, the garrisons should get cleaned up automatically
+		// {
+		// 	private _gar = _x;
+		// 	{
+		// 		DELETE(_x);
+		// 	} forEach GETV(_gar, "units");
+		// } forEach (_brokenCivilianGarrisons + _brokenMilitaryGarrisons);
 
-		private _brokenSpecialGarrisonUnits = gSpecialGarrisons apply {
-			GETV(_x, "units") select {
-				// groups aren't allowed in special garrisons!
-				!IS_NULL_OBJECT(CALLM0(_x, "getGroup")) || 
-				// inf isn't allowed in special garrisons (on load, players are in it obviously after load)
-				CALLM0(_x, "isInfantry")
-			}
-		};
+		// private _brokenSpecialGarrisonUnits = gSpecialGarrisons apply {
+		// 	GETV(_x, "units") select {
+		// 		// groups aren't allowed in special garrisons!
+		// 		!IS_NULL_OBJECT(CALLM0(_x, "getGroup")) || 
+		// 		// inf isn't allowed in special garrisons (on load, players are in it obviously after load)
+		// 		CALLM0(_x, "isInfantry")
+		// 	}
+		// };
 
-		// Delete the units in broken garrisons
-		{
-			private _units = _x;
-			{
-				DELETE(_x);
-			} forEach _units;
-		} forEach _brokenSpecialGarrisonUnits;
+		// // Delete the units in broken garrisons
+		// {
+		// 	private _units = _x;
+		// 	{
+		// 		DELETE(_x);
+		// 	} forEach _units;
+		// } forEach _brokenSpecialGarrisonUnits;
+		// <<< SAVEBREAK
 
 		// Delete editor's special objects, after all initialization is complete
 		//CALLSM0("Location", "deleteEditorAllowedAreaMarkers");

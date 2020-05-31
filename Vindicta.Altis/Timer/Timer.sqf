@@ -36,9 +36,8 @@ CLASS("Timer", "");
 	_timerService - the TimerService object this timer will be attached to
 	_unscheduled - Bool, if true the timer service will call the method directly in unscheduled manner instead of calling "postMessage" 
 	*/
-
 	METHOD(new)
-		params [P_THISOBJECT, P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService"), P_BOOL("_unscheduled")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_messageReceiver"), ["_interval", 1, [1]], P_ARRAY("_message"), P_OOP_OBJECT("_timerService"), P_BOOL("_unscheduled"), P_BOOL("_suspended")];
 		//diag_log format ["[Timer::New] _this: %1", _this];
 		// Fill the data array
 		private _data = TIMER_DATA_DEFAULT;
@@ -52,10 +51,24 @@ CLASS("Timer", "");
 		_data set [TIMER_DATA_ID_MESSAGE_LOOP, _msgLoop];
 		T_SETV("data", _data);
 		//diag_log format ["[Timer] Info: %1 data: %2, _msgLoop: %3", _thisObject, _data, _msgLoop];
-		// Add this timer to the timer service
-		CALLM(_timerService, "addTimer", [_thisObject]);
+		if (!_suspended) then {
+			T_CALLM0("start");
+		};
 	ENDMETHOD;
 
+	// Add this timer to the timer service
+	METHOD(start)
+		params [P_THISOBJECT];
+		private _timerService = T_GETV("data") select TIMER_DATA_ID_TIMER_SERVICE;
+		CALLM1(_timerService, "addTimer", _thisObject);
+	ENDMETHOD;
+
+	// Remove this timer from the timer service
+	METHOD(stop)
+		params [P_THISOBJECT];
+		private _timerService = T_GETV("data") select TIMER_DATA_ID_TIMER_SERVICE;
+		CALLM1(_timerService, "removeTimer", _thisObject);
+	ENDMETHOD;
 
 	// |                            D E L E T E                             |
 	/*
@@ -66,11 +79,8 @@ CLASS("Timer", "");
 	*/
 	METHOD(delete)
 		params [P_THISOBJECT];
-		private _data = T_GETV("data");
-		private _timerService = _data select TIMER_DATA_ID_TIMER_SERVICE;
-		CALLM(_timerService, "removeTimer", [_thisObject]);
+		T_CALLM0("stop");
 	ENDMETHOD;
-
 
 	// |                       S E T   I N T E R V A L                      |
 	/*

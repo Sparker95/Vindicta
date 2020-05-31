@@ -112,14 +112,11 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_TYPE, _methodNameOrCode];
 		_msg set [MESSAGE_ID_DATA, _params]; // Array to return data to, method parameters
-		private _return = T_CALLM2("postMessage", _msg, _returnMsgIDOrContinuation);
+		return T_CALLM2("postMessage", _msg, _returnMsgIDOrContinuation);
 #else
 		// What shall we do for async fire and forget?
-		private _return = -1;
+		return -1;
 #endif
-
-		// Return the message ID (if it was requested)
-		_return
 	ENDMETHOD;
 
 	/*
@@ -142,13 +139,16 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		_msg set [MESSAGE_ID_TYPE, _methodNameOrCode];
 		_msg set [MESSAGE_ID_DATA, _methodParams];
 		private _msgID = T_CALLM("postMessage", [_msg ARG true]);
-		pr _return = T_CALLM("waitUntilMessageDone", [_msgID]);
+		// Return whatever was returned by this object
+		return T_CALLM("waitUntilMessageDone", [_msgID]);
 #else
 		// In testing just call the function synchronously
-		pr _return = if(_methodNameOrCode isEqualType "") then { T_CALLM(_methodNameOrCode, _methodParams) } else { _methodParams call _methodNameOrCode };
+		if(_methodNameOrCode isEqualType "") then {
+			return T_CALLM(_methodNameOrCode, _methodParams)
+		} else {
+			return _methodParams call _methodNameOrCode
+		};
 #endif
-		// Return whatever was returned by this object
-		_return
 	ENDMETHOD;
 	
 	// - - - - REFERENCE COUNTER - - - -
@@ -165,17 +165,16 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		params [P_THISOBJECT];
 		pr _mustDelete = false;
 		
-		// Start critical section
-		CRITICAL_SECTION_START
-		pr _refCount = T_GETV("refCount");
-		_refCount = _refCount - 1;
-		if(_refCount <= 0) then {
-			_mustDelete = true;
-		} else {
-			T_SETV("refCount", _refCount);
+		CRITICAL_SECTION {
+			pr _refCount = T_GETV("refCount");
+			_refCount = _refCount - 1;
+			if(_refCount <= 0) then {
+				_mustDelete = true;
+			} else {
+				T_SETV("refCount", _refCount);
+			};
 		};
-		CRITICAL_SECTION_END
-		
+
 		// If refcount is zero, delete the object outside of critical section, because child classes might need to synchronize with other threads
 		if (_mustDelete) then {
 			DELETE(_thisObject);

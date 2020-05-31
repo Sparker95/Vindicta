@@ -1347,7 +1347,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-		if (!(isNull _objectHandle)) then { //If it's been spawned before
+		if (!isNull _objectHandle) then { //If it's been spawned before
 			// Stop AI, sensors, etc
 			pr _AI = _data select UNIT_DATA_ID_AI;
 			// Some units are brainless. Check if the unit had a brain.
@@ -1371,13 +1371,15 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			// Deinitialize the limited arsenal
 			T_CALLM0("limitedArsenalOnDespawn");
 
-			// Set the pos, vector dir and up, location
+			// Set the pos, vector dir and up
 			pr _posATL = getPosATL _objectHandle;
+			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
 			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
+			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
+
+			// Set the location
 			pr _gar = _data#UNIT_DATA_ID_GARRISON;
 			pr _loc = if (_gar != NULL_OBJECT) then { CALLM0(_gar, "getLocation") } else { NULL_OBJECT };
-			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
-			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
 
 			// If we are releasing the handle then we don't actually delete the unit!

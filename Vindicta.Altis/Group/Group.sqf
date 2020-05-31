@@ -74,7 +74,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		// Delete the group from its garrison
 		pr _gar = _data select GROUP_DATA_ID_GARRISON;
-		if (_gar != "") then {
+		if (_gar != NULL_OBJECT) then {
 			CALLM1(_gar, "removeGroup", _thisObject);
 		};
 
@@ -896,47 +896,53 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Parameters: _pos
 
 	_pos - position
+	_global - if true then the units will be spawned at their saved positions
 
 	Returns: nil
 	*/
 	METHOD(spawnAtPos)
-		params [P_THISOBJECT, P_ARRAY("_pos")];
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_BOOL("_global")];
 
 		OOP_INFO_1("SPAWN AT POS: %1", _pos);
 
 		pr _data = T_GETV("data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
-			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
 			pr _groupHandle = T_CALLM0("_createGroupHandle");
 			
 			_groupHandle setBehaviour "SAFE";
 			
-			// Handle vehicles first
-			pr _vehUnits = T_CALLM0("getVehicleUnits");
-			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
-			{
-				CALLM0(_x, "getMainData") params ["_cat", "_subcat", "_className"];
-				pr _posAndDir = if(_cat == T_VEH && _subcat in T_VEH_ground) then {
-					CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300)
-				} else {
-					CALLSM3("Location", "findSafePos", _pos, _className, 300)
-				};
-				CALLM(_x, "spawn", _posAndDir);
-			} forEach _vehUnits;
+			if(_global) then {
+				pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+				{
+					CALLM3(_x, "spawn", _pos, 0, _global);
+				} forEach _groupUnits;
+			} else {
+				// Handle vehicles first
+				pr _vehUnits = T_CALLM0("getVehicleUnits");
+				{
+					CALLM0(_x, "getMainData") params ["_cat", "_subcat", "_className"];
+					pr _posAndDir = if(_cat == T_VEH && _subcat in T_VEH_ground) then {
+						CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300)
+					} else {
+						CALLSM3("Location", "findSafePos", _pos, _className, 300)
+					};
+					CALLM(_x, "spawn", _posAndDir);
+				} forEach _vehUnits;
 
-			// Handle infantry
-			pr _infUnits = T_CALLM0("getInfantryUnits");
-			// Get position around which infantry will be spawning
-			pr _infSpawnPos = _pos;
-			{
-				pr _pos = _infSpawnPos getPos [random 15, random 360]; // Just put them anywhere
-				CALLM2(_x, "spawn", _pos, 0);
-			} forEach _infUnits;
+				// Handle infantry
+				pr _infUnits = T_CALLM0("getInfantryUnits");
 
+				// Get position around which infantry will be spawning
+				pr _infSpawnPos = _pos;
+				{
+					pr _pos = _infSpawnPos getPos [random 15, random 360]; // Just put them anywhere
+					CALLM2(_x, "spawn", _pos, 0);
+				} forEach _infUnits;
 
-			// todo Handle drones??
-			
+				// todo Handle drones??
+			};
+
 			// Select leader
 			T_CALLM0("_selectLeaderOnSpawn");
 
@@ -972,9 +978,9 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
 			pr _groupHandle = T_CALLM0("_createGroupHandle");
-			
+
 			_groupHandle setBehaviour "SAFE";
-			
+
 			// Handle infantry
 			pr _infUnits = T_CALLM0("getInfantryUnits");
 
@@ -1036,7 +1042,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			} forEach _vehiclesToCrew;
 
 			// todo Handle drones??
-			
+
 			// Select leader
 			T_CALLM0("_selectLeaderOnSpawn");
 
@@ -1064,7 +1070,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		OOP_INFO_0("DESPAWN");
 
 		pr _data = T_GETV("data");
-		if ((_data select GROUP_DATA_ID_SPAWNED)) then {
+		if (_data select GROUP_DATA_ID_SPAWNED) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != NULL_OBJECT) then {
 				// Switch off their brain
