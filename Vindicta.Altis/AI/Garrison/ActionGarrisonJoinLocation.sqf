@@ -82,25 +82,5 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	
 	// procedural preconditions
 	// POS world state property comes from action parameters
-	
-	/*
-	STATIC_METHOD(getPreconditions)
-		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
-
-		pr _loc = CALLSM2("Action", "getParameterValue", _actionParameters, TAG_LOCATION);
-		pr _radius = CALLSM3("Action", "getParameterValue", _actionParameters, TAG_MOVE_RADIUS, 50);
-		pr _pos = CALLM0(_loc, "getPos");
-		pr _roads = _pos nearRoads _radius;
-		pr _movePos = if(count _roads > 0) then {
-			position selectRandom _roads
-		} else {
-			[_pos, 0, _radius, 5, 0, 0.4, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos
-		};
-		pr _ws = [WSP_GAR_COUNT] call ws_new;
-		[_ws, WSP_GAR_POSITION, _movePos] call ws_setPropertyValue;
-
-		_ws
-	ENDMETHOD;
-	*/
 
 ENDCLASS;
