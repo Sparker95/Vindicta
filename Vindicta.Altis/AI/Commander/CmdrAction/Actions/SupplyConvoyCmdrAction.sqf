@@ -519,13 +519,14 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 
 		// How much to scale the score for distance to target
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
+
+		private _dist = _srcGarrPos distance _tgtGarrPos;
+		// Prefer distance of 7km for convoys, so offset distance by that before calculating falloff score
+		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _dist - 7000);
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
-
-		private _dist = _srcGarrPos distance _tgtGarrPos;
 
 		// CALCULATE START DATE
 		// Work out time to start based on amount of supplies we mustering and distance we are travelling.

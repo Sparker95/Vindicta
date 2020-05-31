@@ -121,6 +121,16 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		// This is an async message, either vehicle or unit could have been deleted by now... this is a bit of a problem.
+		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the synchronous part of the handler.
+		if(isNull _unit) exitWith {
+			OOP_WARNING_1("EH_GetIn: unit handle is null (%1)", _this);
+		};
+
+		if(isNull _vehicle) exitWith {
+			OOP_WARNING_1("EH_GetIn: vehicle handle is null (%1)", _this);
+		};
+
 		// Is this object an instance of Unit class?
 		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
 		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
@@ -128,11 +138,11 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		OOP_INFO_4("EH_GetIn: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
 		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
-			OOP_ERROR_0("EH_GetIn: vehicle doesn't have a Unit object!");
+			OOP_ERROR_1("EH_GetIn: vehicle doesn't have a Unit object (%1)", _this);
 		};
 
 		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
-			OOP_ERROR_0("EH_GetIn: unit doesn't have a Unit object!");
+			OOP_ERROR_1("EH_GetIn: unit doesn't have a Unit object (%1)", _this);
 		};
 
 		pr _data = GETV(_unitVeh, "data");
@@ -164,7 +174,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		// This is an async message, either vehicle or unit could have been deleted by now... this is a bit of a problem.
-		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the asynchronous part of the handler.
+		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the synchronous part of the handler.
 		if(isNull _unit) exitWith {
 			OOP_WARNING_1("EH_GetOut: unit handle is null (%1)", _this);
 		};
@@ -180,11 +190,11 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		OOP_INFO_4("EH_GetOut: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
 		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
-			OOP_ERROR_0("EH_GetOut: vehicle doesn't have a Unit object!");
+			OOP_ERROR_1("EH_GetOut: vehicle doesn't have a Unit object (%1)", _this);
 		};
 
 		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
-			OOP_ERROR_0("EH_GetOut: unit doesn't have a Unit object!");
+			OOP_ERROR_1("EH_GetOut: unit doesn't have a Unit object (%1)", _this);
 		};
 
 		pr _data = GETV(_unitVeh, "data");

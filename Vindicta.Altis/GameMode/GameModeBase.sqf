@@ -54,13 +54,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE_ATTR("tNameMilInd", [ATTR_SAVE]);
 	VARIABLE_ATTR("tNameMilEast", [ATTR_SAVE]);
 	VARIABLE_ATTR("tNamePolice", [ATTR_SAVE]);
-	VARIABLE_ATTR("tNameCivilian", [ATTR_SAVE_VER(16)]);
+	VARIABLE_ATTR("tNameCivilian", [ATTR_SAVE]);
 
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
-	VARIABLE_ATTR("savedPlayerInfoArray", [ATTR_SAVE_VER(11)]);
-	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE_VER(11)]);
+	VARIABLE_ATTR("savedPlayerInfoArray", [ATTR_SAVE]);
+	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE]);
+
+	VARIABLE_ATTR("savedMarkers", [ATTR_SAVE_VER(21)]);
 
 	VARIABLE("playerInfoArray");
 	VARIABLE("startSuspendTime");
@@ -115,6 +117,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("playerInfoArray", []);
 
 		T_SETV("savedSpecialGarrisons", []);
+		T_SETV("savedMarkers", []);
 
 	ENDMETHOD;
 
@@ -142,7 +145,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("preInitAll", []);
 
 		#ifndef _SQF_VM
-		REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, NO_JIP);
+		if(IS_SERVER) then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, NO_JIP);
+		};
 		#endif
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
@@ -238,7 +243,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("postInitAll", []);
 
 		#ifndef _SQF_VM
-		REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
+		if(IS_SERVER) then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
+		};
 		#endif
 
 		PROFILE_SCOPE_START(GameModeEnd);
@@ -302,7 +309,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			private _loc = _x;
 			private _side = T_CALLM1("getLocationOwner", _loc);
-			CALLM1(_loc, "setSide", _side);
+
 			OOP_DEBUG_MSG("init loc %1 to side %2", [_loc ARG _side]);
 
 			private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
@@ -376,7 +383,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		CALLM1(_gar, "setLocation", _loc);
 		CALLM1(_loc, "registerGarrison", _gar);
-		CALLM1(_gar, "enableAutoSpawn", true);
 	ENDMETHOD;
 
 	// Creates message loops
@@ -633,7 +639,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	/* protected virtual */ METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
-		GETV(_loc, "side")
+		CIVILIAN
 	ENDMETHOD;
 
 	// Returns template name for given side and faction
@@ -1108,25 +1114,28 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gGarrisonAmbient 			= gSpecialGarrisons#4;
 		gGarrisonAbandonedVehicles 	= gSpecialGarrisons#5;
 
-			diag_log "Special garrisons done";
+		diag_log "Special garrisons done";
 	ENDMETHOD;
 
 	METHOD(_createSpecialGarrisons)
 		params [P_THISOBJECT];
 
 		// Garrison objects to track players and player owned vehicles
-		gGarrisonPlayersWest = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG WEST]);
-		gGarrisonPlayersEast = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG EAST]);
-		gGarrisonPlayersInd = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG INDEPENDENT]);
-		gGarrisonPlayersCiv = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
-		gGarrisonAmbient = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
-		gGarrisonAbandonedVehicles = NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonPlayersWest 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG WEST]);
+		gGarrisonPlayersEast 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG EAST]);
+		gGarrisonPlayersInd 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG INDEPENDENT]);
+		gGarrisonPlayersCiv 		= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonAmbient 			= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
+		gGarrisonAbandonedVehicles 	= NEW("Garrison", [GARRISON_TYPE_AMBIENT ARG CIVILIAN]);
 
-		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
-
-		// {
-		// 	CALLM2(_x, "postMethodAsync", "spawn", []);
-		// } forEach gSpecialGarrisons;
+		gSpecialGarrisons = [
+			gGarrisonPlayersWest,
+			gGarrisonPlayersEast,
+			gGarrisonPlayersInd,
+			gGarrisonPlayersCiv,
+			gGarrisonAmbient,
+			gGarrisonAbandonedVehicles
+		];
 	ENDMETHOD;
 
 	STATIC_METHOD(getPlayerGarrisonForSide)
@@ -1138,7 +1147,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			default { gGarrisonPlayersCiv }; // what?!
 		}
 	ENDMETHOD;
-	
+
 	fnc_getLocName = {
 		params["_name"];
 		private _names = "getText( _x >> 'name') == _name" configClasses ( configFile >> "CfgWorlds" >> worldName >> "Names" );
@@ -1198,7 +1207,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locSectorPos = getPos _locSector;
 			_locSectorPos set [2, 0];	// Nullify Z coordinate
 
-
 			#ifdef PARTIAL_MAP_POPULATION
 			_locSectorPos params ["_posX", "_posY"];
 			if (_posX > 6000 && _posY > 8000) then {
@@ -1207,36 +1215,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
-			private _locSide = _locSector getVariable ["Side", ""];
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
-
-			private _template = "";
-			private _side = "";
-
-			private _side = switch (_locSide) do{
-				case "civilian": { CIVILIAN };//might not need this
-				case "west": { WEST };
-				case "east": { EAST };
-				case "independant": { INDEPENDENT };
-				default { INDEPENDENT };
-			};
 
 			// Create a new location
 			private _args = [_locSectorPos, CIVILIAN]; // Location created by noone
 			private _loc = NEW_PUBLIC("Location", _args);
 			CALLM1(_loc, "setName", _locName);
-			CALLM1(_loc, "setSide", _side);
 			CALLM1(_loc, "setType", _locType);
 			CALLM1(_loc, "setBorder", _locBorder);
 			CALLM0(_loc, "findAllObjects");
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and ((random 10 < 4) or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
+			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4 or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
 				// Find first building which is one of the police building types
-				private _possiblePoliceBuildings = (_posPolice nearObjects 200) select {_x isKindOf "House"} select {(typeOf _x) in location_bt_police};
+				private _possiblePoliceBuildings = (_posPolice nearObjects 200) select { _x isKindOf "House" } select { typeOf _x in location_bt_police };
 
 				if ((count _possiblePoliceBuildings) > 0) then {
 					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
@@ -1245,7 +1240,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					CALLM1(_policeStation, "setBorderCircle", 10);
 					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
 					CALLM0(_policeStation, "addSpawnPosFromBuildings");
-					CALLM1(_policeStation, "setSide", _side);
 					CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
 					CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
 
@@ -1308,8 +1302,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Check if this position is far enough from other positions
 			OOP_INFO_1("Checking roadblock position: %1", _newPos);
-			private _id0 = _roadblockPositionsAroundLocations findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700)};
-			private _id1 = _predefinedRoadblockPositions findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700) };
+			private _id0 = _roadblockPositionsAroundLocations findIf { !(_x isEqualTo _newPos) && (_x distance2D _newPos < 700)};
+			private _id1 = _predefinedRoadblockPositions findIf { !(_x isEqualTo _newPos) && (_x distance2D _newPos < 700) };
 			if ( (_id0 == NOT_FOUND) && (_id1 == NOT_FOUND) ) then {
 				_i = _i + 1;
 				OOP_INFO_0("  OK");
@@ -1331,7 +1325,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		{ // foreach _roadblockPositionsFinal
 			private _pos = _x;
-
+			private _roads = (_pos nearRoads 300) apply {[_x distance2D _pos, _x]};
+			if(count _roads == 0) then {
+				diag_log format ["Roadblock at %1 doesn't have nearby roads?!", _pos];
+			};
 			// Reveal positions to commanders
 			{
 				CALLM1(_x, "addRoadblockPosition", _pos);
@@ -1413,7 +1410,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_x params ["_min", "_max", "_groupTemplate", "_groupBehaviour"];
 			private _i = 0;
 			while{(_cInf > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
-				CALLM(_gar, "createAddInfGroup", [_side ARG _groupTemplate ARG _groupBehaviour])
+				CALLM3(_gar, "createAddInfGroup", _side, _groupTemplate, _groupBehaviour)
 					params ["_newGroup", "_unitCount"];
 				OOP_INFO_MSG("%1: Created inf group %2 with %3 units", [_gar ARG _newGroup ARG _unitCount]);
 				_cInf = _cInf - _unitCount;
@@ -1471,7 +1468,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			if(random 1 <= _chance) then {
 				private _i = 0;
 				while{(_cVehGround > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
-					private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+					private _newGroup = CALLM4(_gar, "createAddVehGroup", _side, T_VEH, _type, -1);
 					OOP_INFO_MSG("%1: Created armor group %2", [_gar ARG _newGroup]);
 					_cVehGround = _cVehGround - 1;
 					_i = _i + 1;
@@ -1483,28 +1480,30 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Static weapons
 		if (_cHMGGMG > 0) then {
-			// temp cap of amount of static guns
-			_cHMGGMG = (4 + random 5) min _cHMGGMG;
-			
-			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_STATIC]);
-			while {_cHMGGMG > 0} do {
-				// use GMG only if it's defined
-				private _tGMG = _template # T_VEH # T_VEH_stat_GMG_high;
-				private _variant = if !(isNil "_tGMG") then {
-					selectRandom [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high]
-				} else {
-					T_VEH_stat_HMG_high
-				};
+			// Cap of amount of static guns
+			_cHMGGMG = CLAMP(_cHMGGMG, 0, 6);
 
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG _variant ARG -1 ARG _staticGroup]);
-				CALLM(_newUnit, "createDefaultCrew", [_template]);
+			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_STATIC]);
+			private _tGMG = _template # T_VEH # T_VEH_stat_GMG_high;
+			if !(isNil "_tGMG") then {
+				private _gmgs = 0;
+				while {_cHMGGMG > 3 && _gmgs < 2} do {
+					private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_stat_GMG_high ARG -1 ARG _staticGroup]);
+					CALLM(_newUnit, "createDefaultCrew", [_template]);
+					_cHMGGMG = _cHMGGMG - 1;
+					_gmgs = _gmgs + 1;
+				}
+			};
+			while {_cHMGGMG > 0} do {
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_stat_HMG_high ARG -1 ARG _staticGroup]);
+				CALLM1(_newUnit, "createDefaultCrew", _template);
 				_cHMGGMG = _cHMGGMG - 1;
 			};
 			OOP_INFO_MSG("%1: Added static group %2", [_gar ARG _staticGroup]);
 			if(canSuspend) then {
 				CALLM2(_gar, "postMethodSync", "addGroup", [_staticGroup]);
 			} else {
-				CALLM(_gar, "addGroup", [_staticGroup]);
+				CALLM1(_gar, "addGroup", _staticGroup);
 			};
 		};
 
@@ -1518,7 +1517,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
 				} else {
-					CALLM(_gar, "addUnit", [_newUnit]);
+					CALLM1(_gar, "addUnit", _newUnit);
 				};
 				OOP_INFO_MSG("%1: Added cargo box %2", [_gar ARG _newUnit]);
 				_cCargoBoxes = _cCargoBoxes - 1;
@@ -1850,7 +1849,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		uiNamespace setVariable ["vin_loadingScreenSubprogress", 0];
 
 		["vindicta_" + _id, _message] call BIS_fnc_startLoadingScreen;
-		//START_LOADING_SCREEN [_message];
 		private _display = uiNamespace getVariable ["vin_loadingScreen", displayNull];
 		if(!(_display isEqualTo displayNull)) then {
 			(_display displayCtrl 666) ctrlSetText _message;
@@ -1886,7 +1884,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		uiNamespace setVariable ["vin_loadingScreenSubprogress", 0];
 		CALLSM0("GameModeBase", "setLoadingProgress");
 		("vindicta_" + _id) call BIS_fnc_endLoadingScreen;
-		END_LOADING_SCREEN;
 	ENDMETHOD;
 
 	// Suspend the game.
@@ -2123,6 +2120,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		T_CALLM1("_saveSpecialGarrisons", _storage);
 
+		// Player custom markers
+		private _userDefinedMarkers = allMapMarkers select {
+			_x find "_USER_DEFINED" == 0
+		} apply {
+			[_x] call BIS_fnc_markerToString 
+		};
+		T_SETV("savedMarkers", _userDefinedMarkers);
+
 		true
 	ENDMETHOD;
 
@@ -2154,16 +2159,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
+		T_SETV("savedMarkers", []);
+
 		CALLSM2("GameModeBase", "startLoadingScreen", "load", "Loading...");
 	ENDMETHOD;
 
 	/* override */ METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		FIX_LINE_NUMBERS()
-
-		// if(!isServer) exitWith { // What the fuck?
-		// 	OOP_ERROR_0("Game mode must be loaded on server only!");
-		// };
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
@@ -2267,6 +2270,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Special garrisons
 		T_CALLM1("_loadSpecialGarrisons", _storage);
+
+		// Player custom markers
+		{
+			_x call BIS_fnc_stringToMarker;
+		} forEach T_GETV("savedMarkers");
+		T_SETV("savedMarkers", []);
 
 		// Load commanders
 		private _toLoad = 3;

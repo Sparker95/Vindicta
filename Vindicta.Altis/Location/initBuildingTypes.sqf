@@ -527,16 +527,6 @@ location_bt_helipad =
 	"Land_HelipadSquare_F"
 ];
 
-// Helipads
-location_bt_helipad =
-[
-	"Land_HelipadCircle_F",
-	"Land_HelipadCivil_F",
-	"Land_HelipadEmpty_F",
-	"Land_HelipadRescue_F",
-	"Land_HelipadSquare_F"
-];
-
 /*
 _newdir = direction b + 180;
 (vehicle player) setDir _newDir;

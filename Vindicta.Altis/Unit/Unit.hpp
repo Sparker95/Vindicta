@@ -15,7 +15,7 @@
 #define UNIT_DATA_ID_VECTOR_DIR_UP	13
 #define UNIT_DATA_ID_LOCATION		14
 
-#define UNIT_DATA_ID_WEAPONS		15
+#define UNIT_DATA_ID_GEAR		15
 
 #define UNIT_DATA_ID_INVENTORY		16
 #define UNIT_DATA_SIZE				17
@@ -28,9 +28,11 @@
 //Class name of Unit class, in case I need to rename it everywhere
 #define UNIT_CLASS_NAME "Unit"
 
-// Structure of unit's weapons
-#define UNIT_WEAPONS_ID_PRIMARY		0
-#define UNIT_WEAPONS_ID_SECONDARY	1
+// Structure of unit's gear
+#define UNIT_GEAR_ID_PRIMARY		0
+#define UNIT_GEAR_ID_SECONDARY		1
+#define UNIT_GEAR_ID_HEADGEAR		2
+#define UNIT_GEAR_ID_VEST			3
 
 // String names of public variables set on units
 #define UNIT_VAR_NAME_STR "__u"

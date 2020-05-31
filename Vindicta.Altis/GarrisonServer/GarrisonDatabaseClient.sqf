@@ -170,7 +170,7 @@ CLASS("GarrisonDatabaseClient", "")
 			// Remove record of current location
 			if(GETV(_garRecordExisting, "type") == GARRISON_TYPE_GENERAL) then {
 				pr _prevLoc = GETV(_garRecordExisting, "location");
-				if(_prevLoc != NULL_OBJECT) then { T_GETV("locMap") setVariable [_prevLoc, nil]; };
+				if(_prevLoc != NULL_OBJECT) then { GETV(_object, "locMap") setVariable [_prevLoc, nil]; };
 			};
 
 			CALLM1(_garRecordExisting, "clientUpdate", _garRecord);
@@ -179,7 +179,7 @@ CLASS("GarrisonDatabaseClient", "")
 			// Add record of new location (it might not have changed, but whatever)
 			if(GETV(_garRecordExisting, "type") == GARRISON_TYPE_GENERAL) then {
 				pr _newLoc = GETV(_garRecordExisting, "location");
-				if(_newLoc != NULL_OBJECT) then { T_GETV("locMap") setVariable [_newLoc, _garRecordExisting]; };
+				if(_newLoc != NULL_OBJECT) then { GETV(_object, "locMap") setVariable [_newLoc, _garRecordExisting]; };
 			};
 		};
 	ENDMETHOD;

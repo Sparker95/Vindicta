@@ -148,14 +148,18 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("ActionGroupArrest: Terminating.");
-		
+
 		// Delete given goals
 		pr _arrestingUnit = T_GETV("arrestingUnit");
 		if(_arrestingUnit != NULL_OBJECT) then {
 			pr _AI = T_GETV("AI");
 			pr _unitGoal = T_GETV("unitGoal");
-			pr _unitAI = CALLM0(_arrestingUnit, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", _unitGoal, _AI);
+			if(IS_OOP_OBJECT(_arrestingUnit)) then {
+				pr _unitAI = CALLM0(_arrestingUnit, "getAI");
+				if(IS_OOP_OBJECT(_unitAI)) then {
+					CALLM2(_unitAI, "deleteExternalGoal", _unitGoal, _AI);
+				};
+			};
 
 			T_CALLM0("regroup");
 		};

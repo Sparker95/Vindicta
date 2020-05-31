@@ -35,7 +35,10 @@ FIX_LINE_NUMBERS()
 CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/* save */ 	VARIABLE_ATTR("type", [ATTR_SAVE]);						// String, location type
+	// SAVEBREAK >>>
+	// Remove "side" property: locations do not have intrinsic sides, only occupying forces
 	/* save */ 	VARIABLE_ATTR("side", [ATTR_SAVE]);						// Side, location side
+	// <<< SAVEBREAK
 	/* save */ 	VARIABLE_ATTR("name", [ATTR_SAVE]);						// String, location name
 	/* save */ 	VARIABLE_ATTR("children", [ATTR_SAVE]);					// Children of this location if it has any (e.g. police stations are children of cities)
 	/* save */ 	VARIABLE_ATTR("parent", [ATTR_SAVE]); 					// Parent of the Location if it has one (e.g. parent of police station is its containing city location)
@@ -55,7 +58,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
 				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
-				VARIABLE_ATTR("buildProgress", [ATTR_SAVE_VER(12)]);	// How much of the location is built from 0 to 1
+				VARIABLE_ATTR("buildProgress", [ATTR_SAVE]);			// How much of the location is built from 0 to 1
 				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
 				VARIABLE("buildableObjects");							// Objects that will be constructed
 	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]);				// Custom object that the game mode can use to store info about this location
@@ -94,7 +97,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if (isNil "gMessageLoopMain") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
-		T_SETV("side", CIVILIAN);
 		T_SETV_PUBLIC("name", "noname");
 		T_SETV_PUBLIC("garrisons", []);
 		T_SETV_PUBLIC("boundingRadius", 0);
@@ -195,11 +197,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			};
 		};
 
-	ENDMETHOD;
-
-	METHOD(setSide)
-		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
-		T_SETV("side", _side);
 	ENDMETHOD;
 
 	/*
@@ -359,6 +356,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					};
 				};
 
+				// Process buildings, objects with anim markers, and shooting targets
+				if (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }) then {
+					T_CALLM3("addObject", _object, _object in _terrainObjects, true);
+					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
+				};
+
 				// // Process objects with anim markers
 				// private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
 				// if(_animMarkersIdx != NOT_FOUND) then {
@@ -382,10 +385,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments: _hObject
 	*/
 	METHOD(addObject)
-		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
+		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject"), P_BOOL("_autoSimple")];
 
 		// Convert to simple object if required
-		if(!_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
+		if(_autoSimple && !_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
 			_hObject = [_hObject] call BIS_fnc_replaceWithSimpleObject;
 		};
 
@@ -1146,10 +1149,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Get near roads and sort them far to near, taking width into account
 		private _roads_remaining = ((_pos nearRoads 1500) select {
-			pr _roadPos = getPosASL _x;
-			(_roadPos distance _pos > 400) &&			// Pos is far enough
-			((count (_x nearRoads 20)) < 3) &&	// Not too many roads because it might mean a crossroad
-			(count (roadsConnectedTo _x) == 2)			// Connected to two roads, we don't need end road elements
+			pr _roadPos = getPos _x;
+			_roadPos distance2D _pos > 400 &&			// Pos is far enough
+			count (_x nearRoads 20) < 3 &&				// Not too many roads because it might mean a crossroad
+			count (roadsConnectedTo _x) == 2			// Connected to two roads, we don't need end road elements
 			// Let's not create roadblocks inside other locations
 			//{count (CALLSM1("Location", "getLocationsAt", _roadPos)) == 0}	// There are no locations here
 		}) apply {
@@ -1165,19 +1168,19 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		while {count _roads_remaining > 0 and _itr < 4} do {
 			(_roads_remaining#0) params ["_valueMetric", "_dist", "_road"];
-			private _roadscon = (roadsConnectedto _road) apply { [position _x distance _pos, _x] };
+			private _roadscon = roadsConnectedto _road apply { [position _x distance _pos, _x] };
 			_roadscon sort DESCENDING;
 			if (count _roadscon > 0) then {
 				private _roadcon = _roadscon#0#1;
 				//private _dir = _roadcon getDir _road;
-				private _roadblock_pos = getPosASL _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
+				private _roadblock_pos = getPos _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
 					
 				_roadblockPositions pushBack _roadblock_pos;
 			};
 
 			_roads_remaining = _roads_remaining select {
-				( (getPos _road) distance (getPos (_x select 2)) > 300) &&
-				{((getPos _road) vectorDiff _pos) vectorCos ((getPos (_x select 2)) vectorDiff _pos) < 0.3}
+				( getPos _road distance2D getPos (_x select 2) > 300) &&
+				{(getPos _road vectorDiff _pos) vectorCos (getPos (_x select 2) vectorDiff _pos) < 0.3}
 			};
 			_itr = _itr + 1;
 		};

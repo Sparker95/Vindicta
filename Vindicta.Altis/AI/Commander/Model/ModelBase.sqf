@@ -40,16 +40,10 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_DYNAMIC("_actual")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-		//OOP_INFO_0("NEW");
-
 		T_SETV("id", MODEL_HANDLE_INVALID);
 		T_SETV("world", _world);
 		T_SETV("actual", _actual);
-		//if(!isNil "_actual") then {
-			T_SETV("label", str _actual);
-		//} else {
-			//T_SETV("label", "<undefined>");
-		//};
+		T_SETV("label", str _actual);
 	ENDMETHOD;
 
 	/*
@@ -60,8 +54,7 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	*/
 	METHOD(isActual)
 		params [P_THISOBJECT];
-		private _world = T_GETV("world");
-		CALLM0(_world, "isReal");
+		CALLM0(T_GETV("world"), "isReal");
 	ENDMETHOD;
 
 	/*

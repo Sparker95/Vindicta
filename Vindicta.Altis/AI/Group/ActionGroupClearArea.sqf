@@ -65,7 +65,8 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		// A random bunch of waypoints to get them to run around a bit
 		for "_i" from 0 to 10 do {
-			private _wp = _hG addWaypoint [AGLToASL (_pos getPos [random _radius, random 360]), -1];
+			private _rpos = [[[_pos, _radius]], [], {!surfaceIsWater _this}] call BIS_fnc_randomPos;
+			private _wp = _hG addWaypoint [AGLToASL _rpos, -1];
 			_wp setWaypointType "SAD";
 		};
 

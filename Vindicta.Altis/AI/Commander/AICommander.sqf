@@ -195,9 +195,9 @@ CLASS("AICommander", "AI")
 */
 	METHOD(process)
 		params [P_THISOBJECT];
-		
+
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
-		
+
 		// U P D A T E   S E N S O R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update sensors");
@@ -207,7 +207,7 @@ CLASS("AICommander", "AI")
 
 		// Update sensors
 		T_CALLM0("updateSensors");
-		
+
 		// U P D A T E   C L U S T E R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update clusters");
@@ -268,14 +268,14 @@ CLASS("AICommander", "AI")
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
 		} forEach (T_GETV("garrisons") select { CALLM0(_x, "isEmpty") && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
 
-		// Reassign abandonned AI groups to commander
+		// Reassign abandoned AI groups to commander
 		private _side = T_GETV("side");
 		private _playerGarrison = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _side);
 
 		// Find all arma groups without players in them
-		private _abandonnedGroups = [];
+		private _abandonedGroups = [];
 		{ // Get unique set of groups
-			_abandonnedGroups pushBackUnique _x;
+			_abandonedGroups pushBackUnique _x;
 		} forEach (CALLM0(_playerGarrison, "getUnits") apply {
 			CALLM0(_x, "getObjectHandle")
 		} select {
@@ -291,12 +291,12 @@ CLASS("AICommander", "AI")
 		});
 
 		// Return the groups to this commander
-		{ // forEach _abandonnedGroups;
+		{ // forEach _abandonedGroups;
 			private _args = [units _x];
 			if(count (_args#0) > 0) then {
 				CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG _args]);
 			};
-		} forEach _abandonnedGroups;
+		} forEach _abandonedGroups;
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
@@ -321,8 +321,13 @@ CLASS("AICommander", "AI")
 		T_SETV("msgLoop", _msgLoop);
 	ENDMETHOD;
 
+	public METHOD(getSide)
+		params [P_THISOBJECT];
+		T_GETV("side")
+	ENDMETHOD;
+	
 	/*
-	Method: (static)getCommanderAIOfSide
+	Method: (static)getAICommander
 	Returns AICommander object that commands given side
 	
 	Parameters: _side
@@ -2011,7 +2016,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		// Sync before update
-		CALLM(_world, "sync", [_thisObject]);
+		CALLM1(_world, "sync", _thisObject);
 
 		private _side = T_GETV("side");
 		private _activeActions = T_GETV("activeActions");
@@ -2301,9 +2306,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				{
 					GETV(_loc, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]
 				}
-			} and
+			}
 			// And have an officer (we only want to set supplies )
-			{ CALLM0(_x, "countOfficers") > 0 }
+			&& { CALLM0(_x, "countOfficers") > 0 }
 		};
 
 		private _actions = [];
@@ -2830,13 +2835,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		{
 			_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
 			for "_i" from 0 to _nHelisRequired - 1 do {
-				private _type = T_VEH_heli_attack; 
+				private _type = T_VEH_heli_attack;
 				// selectRandomWeighted [
 				// 	T_VEH_heli_light,	1,
 				// 	T_VEH_heli_heavy,	1,
 				// 	T_VEH_heli_attack,	1
 				// ];
-				private _newGroup = CALLM(_airGar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+				private _newGroup = CALLM4(_airGar, "createAddVehGroup", _side, T_VEH, _type, -1);
 				OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
 			};
 		} forEach _airReinfInfo;
@@ -3117,7 +3122,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (generator %1) - - - - -", [_generatorMethodName]);
 
 		// Sync before planning
-		CALLM(_world, "sync", [_thisObject]);
+		CALLM1(_world, "sync", _thisObject);
 		// Update grids etc.
 		CALLM0(_world, "update");
 
@@ -3182,30 +3187,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_activeActions deleteAt (_activeActions find _action);
 		};
 	ENDMETHOD;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// = = = = = = = = = = = Radio = = = = = = = = = = = = =
 

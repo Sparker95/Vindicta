@@ -192,7 +192,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 
 		// How much to scale the score for distance to target
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
+		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtLocPos);
 
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
 

@@ -231,59 +231,12 @@
         {
             "label": "Preprocess with SQF-VM",
             "type": "process",
-            "command": "../tools/SQF-VM/sqfvm.exe",
-            "args": [
-                "-a",
-                "--no-execute-print",
-                "--load",
-                ".",
-                "-E",
-                "${file}",
-                "--disable-macro-warnings"
-            ],
+            "command": "../tools/preproc.bat",
+            "args": [ "${file}" ],
             "options": {
                 "cwd": "${workspaceRoot}/Vindicta.Altis"
             },
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "clear": true,
-                "focus": true,
-                "group": "SQF-VM"
-            },
-            "problemMatcher": [
-                {
-                    "owner": "sqf",
-                    "fileLocation": "absolute",
-                    "pattern": [
-                        {
-                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
-                            "line": 2,
-                            "column": 3,
-                            "severity": 1,
-                            "file": 4,
-                            "message": 5
-                        }
-                    ]
-                },
-                {
-                    "owner": "sqf",
-                    "fileLocation": [
-                        "relative",
-                        "${workspaceRoot}/Vindicta.Altis"
-                    ],
-                    "pattern": [
-                        {
-                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
-                            "line": 2,
-                            "column": 3,
-                            "severity": 1,
-                            "file": 4,
-                            "message": 5
-                        }
-                    ]
-                }
-            ]
+            "group": "build"
         },
         {
             "label": "Pretty print with SQF-VM (not working)",

@@ -41,7 +41,7 @@ CLASS("ActionGarrisonLand", "ActionGarrisonBehaviour")
 		};
 
 		private _state = T_CALLM0("activateIfInactive");
-		if(CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", T_GETV("groups"), "GoalGroupAirLand", T_GETV("_AI"))) then {
+		if(CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", T_GETV("groups"), "GoalGroupAirLand", T_GETV("AI"))) then {
 			_state = ACTION_STATE_COMPLETED;
 		};
 		T_SETV("state", _state);

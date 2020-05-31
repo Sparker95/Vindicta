@@ -57,7 +57,7 @@ CLASS("DirectAttackCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END,				// If we timeout then RTB
 				_garrIdVar, 						// Id of the garrison doing the attacking
 				_targetVar, 						// Target to attack (cluster or garrison supported)
-				T_CALLM1("createVariable", 250)];					// Move radius
+				T_CALLM1("createVariable", 250)];	// Move radius
 		private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
 
 		[_assignAST, _attackAST]

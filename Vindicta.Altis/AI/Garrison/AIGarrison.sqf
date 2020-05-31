@@ -117,12 +117,12 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Register at stimulus manager
 		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
-		
+
 	ENDMETHOD;
-	
+
 	METHOD(delete)
 		params [P_THISOBJECT];
-		
+
 		#ifdef DEBUG_GOAL_MARKERS
 		deleteMarker (_thisObject + MRK_GOAL);
 		deleteMarker (_thisObject + MRK_ARROW);
@@ -134,7 +134,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	override METHOD(start)
 		params [P_THISOBJECT, P_STRING("_category")];
 		T_CALLM1("addToProcessCategory", _category);
 	ENDMETHOD;
@@ -703,7 +703,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "postDeserialize", [_storage]);
+		T_CALLCM1("AI_GOAP", "postDeserialize", _storage);
 
 		// Restore sensors
 		T_CALLM0("_initSensors");

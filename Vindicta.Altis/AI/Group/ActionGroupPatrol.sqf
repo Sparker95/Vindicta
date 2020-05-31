@@ -67,9 +67,15 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 			} else {
 				// Generate some random patrol waypoints
 				pr _angle = 0;
-				while {_angle < 360} do {
-					pr _newPos = (leader _hG) getPos [100 + random 40, _angle];
-					_waypoints pushBack _newPos;
+				pr _leaderPos = leader _hG;
+				while { _angle < 360 } do {
+					pr _newPos = _leaderPos getPos [100 + random 40, _angle];
+					while { surfaceIsWater _newPos && _newPos distance2D _leaderPos > 50 } do {
+						_newPos = _leaderPos getPos [(_newPos distance2D _leaderPos) * 0.75, _angle];
+					};
+					if(!surfaceIsWater _newPos) then {
+						_waypoints pushBack _newPos;
+					};
 					_angle = _angle + 30;
 				};
 			};

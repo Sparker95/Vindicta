@@ -42,6 +42,7 @@ OOP_error = {
 	private _msg = format ["[OOP] Error: file: %1, line: %2, %3", _file, _line, _text];
 	diag_log _msg;
 	DUMP_CALLSTACK;
+	halt;
 	#endif
 	FIX_LINE_NUMBERS()
 	// Doesn't really work :/

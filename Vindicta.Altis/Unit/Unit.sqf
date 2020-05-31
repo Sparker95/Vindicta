@@ -84,11 +84,11 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	_classID - ID of the class in the template array, or -1 to pick a random class name. Ignored if _hO is not null.
 	_group - the group object the unit will be added to. Vehicles can be added without a group.
 	_hO - object handle. If null, new unit wwill be created in despawned state. Otherwise new <Unit> object will be attached to this object handle.
-	_weapons - array with weapons to give to this unit, for format check Unit.hpp. Can be an empty array, then unit will have standard weapons from the config or loadout.
+	_gear - array with weapons to give to this unit, for format check Unit.hpp. Can be an empty array, then unit will have standard weapons from the config or loadout.
 	*/
 
 	METHOD(new)
-		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull], ["_weapons", []]];
+		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group"), ["_hO", objNull], ["_gear", []]];
 
 		OOP_INFO_0("NEW UNIT");
 
@@ -142,7 +142,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_data set [UNIT_DATA_ID_GROUP, ""];
 		_data set [UNIT_DATA_ID_LOADOUT, _loadout];
-		_data set [UNIT_DATA_ID_WEAPONS, _weapons];
+		_data set [UNIT_DATA_ID_GEAR, _gear];
 		_data set [UNIT_DATA_ID_INVENTORY, []];
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
@@ -164,7 +164,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			T_CALLM0("initObjectVariables");
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
-			T_CALLM0("applyInfantryWeapons");
+			T_CALLM0("applyInfantryGear");
 
 			if (_catID == T_VEH) then {
 				T_CALLM0("updateVehicleLock");
@@ -246,8 +246,6 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		_return
 	ENDMETHOD;
-
-
 
 	//                            C R E A T E   A I
 	/*
@@ -404,7 +402,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						pr _groupType = CALLM0(_group, "getType");
 
 						// Give weapons to the unit (if he has special weapons)
-						T_CALLM0("applyInfantryWeapons");
+						T_CALLM0("applyInfantryGear");
 
 						// Global difficulty will effect AI between 0.2 and 0.8
 						private _effectiveDiff = if(side _groupHandle == CALLM0(gGameMode, "getEnemySide")) then {
@@ -1207,13 +1205,20 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					} forEach _TFARBetaclassNames;
 				};
 
+				// Add headgear
+				pr _nHeadgears = ceil (_nGuns * random [0.5, 1, 1.5]);
+				pr _headgear = _tInv#T_INV_headgear;
+				for "_i" from 0 to _nHeadgears do {
+					_hO addItemCargoGlobal [selectRandom _headgear, 1];
+				};
+
 				// Add vests
 				pr _nVests = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _vests = _tInv#T_INV_vests;
 				for "_i" from 0 to _nVests do {
 					_hO addItemCargoGlobal [selectRandom _vests, 1];
 				};
-
+	
 				// Add backpacks
 				pr _nBackpacks = ceil (_nGuns * random [0.5, 1, 1.5]);
 				pr _backpacks = _tInv#T_INV_backpacks;
@@ -1454,45 +1459,48 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Method: applyWeapons
 	Gives weapons to the unit from the weapons array of this unit
 	*/
-	METHOD(applyInfantryWeapons)
+	METHOD(applyInfantryGear)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 
 		// Bail if unit does not have special weapons
-		pr _weapons = _data select UNIT_DATA_ID_WEAPONS;
-		if (count _weapons == 0) exitWith {};
+		pr _gear = _data select UNIT_DATA_ID_GEAR;
+		if (count _gear == 0) exitWith {};
 
 		// Bail if unit is not spawned
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
 
-		// hopefully catch inventory wipe bug!
+		// Can't call this on player units
 		if(_hO in allPlayers) exitWith {
-			DUMP_CALLSTACK;
-			OOP_ERROR_MSG("PLAYERINVBUG: applyInfantryWeapons _this:%1, _data:%2, _hO:%3", [_this ARG _data ARG _hO]);
-			// Broadcast notification
-			pr _msg = format["%1 just avoided the inventory clear bug, please send your .rpt to the developers so we can fix it!", name _hO];
-			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_msg], ON_CLIENTS, NO_JIP);
+			OOP_ERROR_MSG("Can't call applyInfantryGear on player unit (%1)", [_this]);
 		};
 
 		// Remove all weapons
 		removeAllWeapons _hO;
 
-		// Remove all items from vest
-		pr _vest = vest _hO;
-		if (_vest == "") then {
-			_vest = "V_Chestrig_oli";
-		}; // Default vest
+		// Set headgear
+		removeHeadgear _hO;
+		pr _headgear = _gear#UNIT_GEAR_ID_HEADGEAR;
+		if(_headgear != "") then {
+			_hO addHeadgear _headgear;
+		};
+
+		// Set vest
 		removeVest _hO;
-		_hO addVest _vest;
-			
+		pr _vest = _gear#UNIT_GEAR_ID_VEST;
+		if(_vest != "") then {
+			_hO addVest _vest;
+		};
+
 		// Add main gun
-		pr _primary = _weapons#UNIT_WEAPONS_ID_PRIMARY;
+		pr _primary = _gear#UNIT_GEAR_ID_PRIMARY;
 		if (_primary != "") then {
 			pr _primaryMags = getArray (configfile >> "CfgWeapons" >> _primary >> "magazines");
 			pr _mag = _primaryMags select 0;
 			_hO addWeapon _primary;
 			for "_i" from 0 to 8 do { _hO addItemToVest _mag; };
+			for "_i" from 0 to 8 do { _hO addItemToUniform _mag; };
 			_hO addPrimaryWeaponItem _mag;
 
 			pr _muzzles = getArray(configFile >> "cfgWeapons" >> _primary >> "muzzles");
@@ -1506,6 +1514,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					if (count _muzzleMags > 0) then {
 						pr _mag = _muzzleMags select 0;
 						for "_i" from 0 to 8 do { _hO addItemToVest _mag; };
+						for "_i" from 0 to 8 do { _hO addItemToUniform _mag; };
 						_hO addPrimaryWeaponItem _mag;
 					};
 				};
@@ -1519,9 +1528,8 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _backpack = backpack _hO;
 
 		// Add secondary weapon
-		pr _secondary = _weapons#UNIT_WEAPONS_ID_SECONDARY;
+		pr _secondary = _gear#UNIT_GEAR_ID_SECONDARY;
 		if (_secondary != "") then {
-
 			// Soldiers with secondary weapon get backpack emptied
 			// Or are given a default backpack
 			if (_backpack == "") then { _backpack = "B_Kitbag_rgr"; }; // Default backpack
@@ -1538,7 +1546,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Force select primary weapon
 		// https://community.bistudio.com/wiki/selectWeapon  notes by MaestrO.fr and Dr_Eyeball
-		if ( (primaryWeapon _hO) != "") then
+		if (primaryWeapon _hO != "") then
 		{			
 			pr _type = primaryWeapon _hO;
 			// check for multiple muzzles (eg: GL)

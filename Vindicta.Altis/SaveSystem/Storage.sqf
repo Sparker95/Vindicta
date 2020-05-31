@@ -278,7 +278,7 @@ CLASS("Storage", "")
 					// It's a basic type, convert it to string and save it
 					pr _array = [_value];							// Much easier to convert it to the array
 					_array = +_array;								// Then use our usual array conversion code
-					_array call storage_fnc_preStringifyArray;			// So that it can write values back
+					_array call storage_fnc_preStringifyArray;		// So that it can write values back
 					toFixed 7;
 					pr _valueStr = str _array;
 					toFixed -1;

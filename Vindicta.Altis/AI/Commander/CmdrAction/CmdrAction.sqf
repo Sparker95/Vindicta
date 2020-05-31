@@ -563,17 +563,16 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	See https://www.desmos.com/calculator/pjs09xfxkm
 	
 	Parameters:
-		_from - Position, distance to calculate from
-		_to - Position, distance to calculate to
+		_distance - Number, distance to generate falloff for, can be positive or negative, in meters
 		_k - Number, optional, factor that scales falloff amount, see description for examples.
 	
 	Returns: Number, value in 0 to 1 range representing the falloff that should be applied for the specified positions.
 	*/
 	STATIC_METHOD(calcDistanceFalloff)
-		params [P_THISCLASS, P_POSITION("_from"), P_POSITION("_to"), "_k"];
+		params [P_THISCLASS, P_NUMBER("_distance"), "_k"];
 		private _kf = if(isNil "_k") then { 1 } else { _k };
 		// See https://www.desmos.com/calculator/pjs09xfxkm
-		private _distScaled = 0.0005 * (_from distance _to) * _kf;
+		private _distScaled = 0.0005 * _distance * _kf;
 		(1 / (1 + _distScaled * _distScaled))
 	ENDMETHOD;
 
