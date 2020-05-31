@@ -30,7 +30,7 @@ private _s = WSP_GAR_COUNT;
 ["GoalGarrisonRelax", _s,					[]]	call AI_misc_fnc_setGoalEffects;
 // Parameters: TAG_G_POS, TAG_MOVE_RADIUS
 ["GoalGarrisonMove", _s,					[
-											[WSP_GAR_POSITION, TAG_G_POS, true]
+											[WSP_GAR_AT_TARGET_POS, true]
 											]]	call AI_misc_fnc_setGoalEffects;
 //["GoalGarrisonMove", _s,					[[WSP_GAR_ALL_CREW_MOUNTED, true]]] call AI_misc_fnc_setGoalEffects;
 ["GoalGarrisonRepairAllVehicles", _s,		[
@@ -45,8 +45,7 @@ private _s = WSP_GAR_COUNT;
 											]]	call AI_misc_fnc_setGoalEffects;
 ["GoalGarrisonAttackAssignedTargets", _s,	[]]	call AI_misc_fnc_setGoalEffects; // Effects are procedural
 ["GoalGarrisonClearArea", _s,				[
-											[WSP_GAR_CLEARING_AREA, TAG_G_POS, true],
-											[WSP_GAR_POSITION, TAG_G_POS, true]
+											[WSP_GAR_HAS_INTERACTED, true]
 											]]	call AI_misc_fnc_setGoalEffects;
 ["GoalGarrisonJoinLocation", _s,			[
 											[WSP_GAR_LOCATION, TAG_LOCATION, true]
@@ -100,8 +99,8 @@ private _s = WSP_GAR_COUNT;
 											[WSP_GAR_ALL_INFANTRY_MOUNTED,				true]
 											]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveMounted", _s,			[
-											[WSP_GAR_POSITION, TAG_POS,					true],
-											[WSP_GAR_VEHICLES_POSITION, TAG_POS,		true]
+											[WSP_GAR_AT_TARGET_POS, true],
+											[WSP_GAR_AT_TARGET_POS, true]
 											]]	call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveMounted", 				[
 											TAG_MOVE_RADIUS
@@ -116,8 +115,8 @@ private _s = WSP_GAR_COUNT;
 											[WSP_GAR_ALL_CREW_MOUNTED,					true]
 											]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveCombined", _s,			[
-											[WSP_GAR_POSITION, TAG_POS,					true],
-											[WSP_GAR_VEHICLES_POSITION, TAG_POS,		true]
+											[WSP_GAR_AT_TARGET_POS, true],
+											[WSP_GAR_VEHICLES_AT_TARGET_POS, true]
 											]]	call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveCombined", 				[
 											TAG_MOVE_RADIUS
@@ -127,7 +126,7 @@ private _s = WSP_GAR_COUNT;
 											[WSP_GAR_GROUPS_BALANCED,					true]
 											]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveDismounted", _s,		[
-											[WSP_GAR_POSITION, TAG_POS,					true]
+											[WSP_GAR_AT_TARGET_POS,					true]
 											]]	call AI_misc_fnc_setActionEffects;
 ["ActionGarrisonMoveDismounted",			[
 											TAG_MOVE_RADIUS
@@ -144,8 +143,8 @@ private _s = WSP_GAR_COUNT;
 											[WSP_GAR_ALL_INFANTRY_MOUNTED,				true]
 											]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveAir", _s,				[
-											[WSP_GAR_POSITION, TAG_POS,					true],
-											[WSP_GAR_VEHICLES_POSITION, TAG_POS,		true]
+											[WSP_GAR_AT_TARGET_POS, true],
+											[WSP_GAR_VEHICLES_AT_TARGET_POS, true]
 											]]	call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveAir", 					[
 											TAG_MOVE_RADIUS
@@ -182,8 +181,9 @@ private _s = WSP_GAR_COUNT;
 											// TODO: introduce more refined group composition WSPs
 											// [WSP_GAR_GROUPS_BALANCED, true],
 											[WSP_GAR_ALL_INFANTRY_MOUNTED,				false],
-											[WSP_GAR_ALL_CREW_MOUNTED,					true]
-											]]	call AI_misc_fnc_setActionPreconditions; // These are procedural, just must set them anyway
+											[WSP_GAR_ALL_CREW_MOUNTED,					true],
+											[WSP_GAR_AT_TARGET_POS, true],
+											]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonClearArea", _s,				[
 											[WSP_GAR_CLEARING_AREA,	TAG_POS,			true]
 											]]	call AI_misc_fnc_setActionEffects;
