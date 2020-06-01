@@ -21,11 +21,11 @@ this addWeapon "rhsusf_weap_m9";
 this addHandgunItem "rhsusf_mag_15Rnd_9x19_JHP";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "rhs_grenade_m15_mag";
 this addItemToUniform "B_IR_Grenade";
-for "_i" from 1 to 4 do {this addItemToVest "rhs_grenade_mkiiia1_mag";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_15Rnd_9x19_JHP";};
+this addItemToUniform "rhs_grenade_anm8_mag";
 for "_i" from 1 to 4 do {this addItemToVest "rhsusf_20Rnd_762x51_m993_Mag";};
-this addItemToVest "rhsusf_mag_15Rnd_9x19_JHP";
+this addItemToVest "rhs_grenade_m15_mag";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "rhsusf_ANPVS_14";
