@@ -14,7 +14,6 @@ this addHeadgear _RandomHeadgear;
 this forceaddUniform "FGN_AAF_M93_Lizard";
 _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard_Rifleman_Radio","FGN_AAF_M99Vest_Khaki_Rifleman_Radio"];
 this addVest _RandomVest;
-this addBackpack "rhs_sidor";
 
 this addWeapon "rhs_weap_m70b3n";
 this addPrimaryWeaponItem "rhs_acc_pbs1";
@@ -28,12 +27,11 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
+this addItemToUniform "rhs_grenade_anm8_mag";
 this addItemToVest "rhs_grenade_mki_mag";
-this addItemToVest "rhs_grenade_anm8_mag";
-this addItemToVest "rhs_grenade_mkii_mag";
+for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_762x39mm_U";};
-for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

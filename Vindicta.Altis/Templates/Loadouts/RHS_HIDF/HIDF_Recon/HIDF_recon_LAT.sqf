@@ -14,8 +14,7 @@ this addGoggles _RandomGoggles;
 this addHeadgear "rhsgref_helmet_pasgt_erdl_rhino";
 this forceaddUniform "rhs_uniform_bdu_erdl";
 
-this addWeapon "rhs_weap_m14_ris_fiberglass";
-this addPrimaryWeaponItem "rhsusf_acc_RX01_NoFilter";
+this addWeapon "rhs_weap_m14_socom";
 this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_m993_Mag";
 this addWeapon "rhs_weap_m72a7";
 this addWeapon "rhsusf_weap_m9";

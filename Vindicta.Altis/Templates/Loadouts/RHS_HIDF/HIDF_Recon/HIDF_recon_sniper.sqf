@@ -14,10 +14,9 @@ this addGoggles _RandomGoggles;
 this addHeadgear "rhsgref_helmet_pasgt_erdl_rhino";
 this forceaddUniform "rhs_uniform_bdu_erdl";
 
-this addWeapon "rhs_weap_m14_rail_fiberglass";
+this addWeapon "rhs_weap_m14_socom_rail";
 this addPrimaryWeaponItem "optic_KHS_blk";
 this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_m993_Mag";
-this addPrimaryWeaponItem "rhsusf_acc_m14_bipod";
 this addWeapon "rhsusf_weap_m9";
 this addHandgunItem "rhsusf_mag_15Rnd_9x19_JHP";
 this addWeapon "Binocular";
