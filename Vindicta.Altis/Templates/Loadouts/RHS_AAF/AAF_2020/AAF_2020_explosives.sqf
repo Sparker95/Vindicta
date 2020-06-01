@@ -25,6 +25,5 @@ for "_i" from 1 to 2 do {this addItemToBackpack "rhs_charge_tnt_x2_mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this addItemToBackpack "SatchelCharge_Remote_Mag";
 for "_i" from 1 to 4 do {this addItemToBackpack "rhsgref_30rnd_556x45_m21";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_grenade_m15_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

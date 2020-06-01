@@ -25,7 +25,7 @@ this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_FMJ";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_rdg2_white";
-this addItemToVest "rhs_mag_nspd";
+this addItemToVest "rhs_mag_nspn_red";
 for "_i" from 1 to 10 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";

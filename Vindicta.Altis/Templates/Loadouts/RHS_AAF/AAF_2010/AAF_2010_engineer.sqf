@@ -14,7 +14,6 @@ this addGoggles _RandomGoggles;
 this forceaddUniform "FGN_AAF_M93_Lizard";
 _RandomVest = selectRandom ["FGN_AAF_M99Vest_Lizard","FGN_AAF_M99Vest_Khaki"];
 this addVest _RandomVest;
-
 this addBackpack "FGN_AAF_TacticalBackpack_Lizard";
 
 this addWeapon "FGN_AAF_Mossberg590A1";
@@ -23,7 +22,8 @@ this addPrimaryWeaponItem "rhs_mag_fakeMuzzle1";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "rhsusf_8Rnd_00Buck";};
-for "_i" from 1 to 2 do {this addItemToVest "rhsusf_8Rnd_Slug";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
+for "_i" from 1 to 4 do {this addItemToVest "rhsusf_8Rnd_Slug";};
+this addItemToBackpack "ToolKit";
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_an_m14_th3";};
 this addItemToBackpack "ToolKit";
 this linkItem "ItemWatch";

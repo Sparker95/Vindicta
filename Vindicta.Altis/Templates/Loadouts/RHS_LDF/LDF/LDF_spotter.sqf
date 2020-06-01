@@ -9,7 +9,7 @@ removeGoggles this;
 
 _RandomHeadgear = selectRandom ["rhssaf_booniehat_digital","rhssaf_bandana_digital","rhsusf_Bowman","rhsusf_bowman_cap"];
 this addHeadgear _RandomHeadgear;
-_RandomGoggles = selectRandom ["G_Bandanna_oli","G_Balaclava_oli","","",""];
+_RandomGoggles = selectRandom ["G_Bandanna_oli","G_Balaclava_oli",""];
 this addGoggles _RandomGoggles;
 this forceaddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital_rifleman_radio";
@@ -25,12 +25,13 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "rhs_pdu4";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "rhs_mag_nspn_red";
+for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
 this addItemToVest "rhs_mag_rdg2_white";
-this addItemToVest "rhs_mag_nspd";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_20rnd_9x39mm_SP5";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_20rnd_9x39mm_SP6";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_9x18_8_57N181S";};
-for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgn";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgo";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

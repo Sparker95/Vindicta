@@ -16,8 +16,10 @@ this addHeadgear _RandomHeadgear;
 this forceaddUniform "FGN_AAF_M93_Lizard";
 this addBackpack "rhs_rpg_empty";
 
-this addWeapon "rhs_weap_m4a1_carryhandle";
+this addWeapon "rhs_weap_m4a1";
 this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "rhsusf_acc_compm4";
+this addPrimaryWeaponItem "rhsusf_acc_SFMB556";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855_Stanag";
 this addWeapon "rhs_weap_rpg7";
 this addSecondaryWeaponItem "rhs_rpg7_type69_airburst_mag";
@@ -26,7 +28,8 @@ this addHandgunItem "rhs_mag_762x25_8";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_762x25_8";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mki_mag";};
+this addItemToVest "rhs_grenade_mki_mag";
+this addItemToVest "rhs_grenade_anm8_mag";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkiiia1_mag";};
 for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855_Stanag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_type69_airburst_mag";};

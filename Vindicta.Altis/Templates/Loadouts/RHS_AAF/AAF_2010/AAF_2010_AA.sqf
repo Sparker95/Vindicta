@@ -24,6 +24,5 @@ this addSecondaryWeaponItem "rhs_mag_9k38_rocket";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_762x39mm";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 this addItemToBackpack "rhs_mag_9k38_rocket";
 this linkItem "ItemWatch";

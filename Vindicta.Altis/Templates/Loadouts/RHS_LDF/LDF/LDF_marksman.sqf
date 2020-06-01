@@ -20,7 +20,7 @@ this addPrimaryWeaponItem "rhs_acc_pso1m2";
 this addPrimaryWeaponItem "rhs_10Rnd_762x54mmR_7N1";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "rhs_acc_1pn93_1";
-for "_i" from 1 to 8 do {this addItemToVest "rhs_10Rnd_762x54mmR_7N1";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
+this addItemToUniform "rhs_acc_1pn34";
+for "_i" from 1 to 10 do {this addItemToVest "rhs_10Rnd_762x54mmR_7N1";};
+this addHeadgear "rhssaf_helmet_m97_digital_black_ess";
 this linkItem "ItemWatch";

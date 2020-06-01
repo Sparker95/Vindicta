@@ -19,6 +19,7 @@ this addBackpack "FGN_AAF_TacticalBackpack_Lizard";
 this addWeapon "rhs_weap_m70ab2";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_762x39mm";};
