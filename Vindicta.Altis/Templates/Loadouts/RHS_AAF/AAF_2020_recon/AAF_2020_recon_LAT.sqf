@@ -16,7 +16,7 @@ this addGoggles _RandomGoggles;
 this forceaddUniform "rhs_uniform_gorka_1_a";
 
 this addWeapon "rhs_weap_m4a1_blockII_bk";
-this addPrimaryWeaponItem "rhsusf_acc_rotex5_grey";
+this addPrimaryWeaponItem "rhsusf_acc_nt4_black";
 _RandomSight = selectRandom ["rhsusf_acc_eotech_xps3", "rhsusf_acc_g33_xps3", "rhsusf_acc_su230", "rhsusf_acc_su230_mrds"];
 this addPrimaryWeaponItem _RandomSight;
 _RandomGrip = selectRandom ["rhsusf_acc_grip1", "rhsusf_acc_grip2", "rhsusf_acc_kac_grip", "", ""];
@@ -31,10 +31,10 @@ this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "optic_NVS";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
+this addItemToUniform "I_IR_Grenade";
+this addItemToVest "optic_NVS";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_mk3a2";};
-this addItemToVest "I_IR_Grenade";
 for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855A1_Stanag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

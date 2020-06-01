@@ -31,14 +31,14 @@ this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "optic_NVS";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk3a2";};
-this addItemToVest "I_IR_Grenade";
+this addItemToUniform "I_IR_Grenade";
+this addItemToVest "optic_NVS";
+for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_mk3a2";};
 for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855A1_Stanag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_charge_tnt_x2_mag";};
 this addItemToBackpack "SatchelCharge_Remote_Mag";
-for "_i" from 1 to 4 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
+for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";

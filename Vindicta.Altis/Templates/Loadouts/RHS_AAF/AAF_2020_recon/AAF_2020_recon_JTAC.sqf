@@ -17,7 +17,7 @@ this forceaddUniform "rhs_uniform_gorka_1_a";
 this addBackpack "FGN_AAF_Bergen_Radio_Type07";
 
 this addWeapon "rhs_weap_m4a1_blockII_M203_bk";
-this addPrimaryWeaponItem "rhsusf_acc_rotex5_grey";
+this addPrimaryWeaponItem "rhsusf_acc_nt4_black";
 _RandomSight = selectRandom ["rhsusf_acc_eotech_xps3", "rhsusf_acc_g33_xps3", "rhsusf_acc_su230", "rhsusf_acc_su230_mrds"];
 this addPrimaryWeaponItem _RandomSight;
 _RandomGrip = selectRandom ["rhsusf_acc_grip1", "rhsusf_acc_grip2", "rhsusf_acc_kac_grip", "", ""];
@@ -33,13 +33,14 @@ this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "rhs_pdu4";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "optic_NVS";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_anm8_mag";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk3a2";};
-this addItemToVest "I_IR_Grenade";
+this addItemToUniform "I_IR_Grenade";
+this addItemToVest "optic_NVS";
+this addItemToVest "rhs_grenade_anm8_mag";
+for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_mk3a2";};
 for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855A1_Stanag";};
-for "_i" from 1 to 10 do {this addItemToBackpack "rhs_mag_M433_HEDP";};
+this addItemToVest "rhs_grenade_m15_mag";
+for "_i" from 1 to 9 do {this addItemToBackpack "rhs_mag_M433_HEDP";};
 for "_i" from 1 to 2 do {this addItemToBackpack "1Rnd_SmokeGreen_Grenade_shell";};
 for "_i" from 1 to 2 do {this addItemToBackpack "UGL_FlareRed_F";};
 for "_i" from 1 to 2 do {this addItemToBackpack "UGL_FlareGreen_F";};
