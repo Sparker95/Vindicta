@@ -25,8 +25,6 @@ this addWeapon "Binocular";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_10Rnd_STD_50BMG_M33";};
-this linkItem "ItemMap";
-this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";

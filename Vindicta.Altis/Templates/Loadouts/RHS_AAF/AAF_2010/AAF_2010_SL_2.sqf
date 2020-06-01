@@ -34,6 +34,7 @@ for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm_tracer";};
 this addItemToVest "rhs_grenade_mki_mag";
 this addItemToBackpack "rhs_acc_1pn93_1";
 this addItemToBackpack "rhs_grenade_anm8_mag";
+for "_i" from 1 to 4 do {this addItemToBackpack "rhs_mag_nspd";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

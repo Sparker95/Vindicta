@@ -22,7 +22,7 @@ this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_f1";};
 this addItemToVest "rhsgref_mag_rkg3em";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_plum_AK";};
 this addItemToBackpack "rhs_rpg7_PG7VR_mag";
