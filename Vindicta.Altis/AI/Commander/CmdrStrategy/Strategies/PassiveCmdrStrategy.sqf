@@ -25,7 +25,7 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 		T_SETV("takeLocCityCoeff", 0);
 	ENDMETHOD;
 
-	/* virtual */ METHOD(getQRFScore)
+	public override METHOD(getQRFScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -38,7 +38,7 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 		APPLY_SCORE_STRATEGY(_defaultScore, 0)
 	ENDMETHOD;
 
-	/* virtual */ METHOD(getReinforceScore)
+	public override METHOD(getReinforceScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -51,7 +51,7 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 		APPLY_SCORE_STRATEGY(_defaultScore, 0)
 	ENDMETHOD;
 
-	/* virtual */ METHOD(getTakeLocationScore)
+	public override METHOD(getTakeLocationScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),

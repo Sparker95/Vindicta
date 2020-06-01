@@ -3,7 +3,7 @@
 #define OOP_CLASS_NAME ActionUnitFlee
 CLASS("ActionUnitFlee", "ActionUnit")
 	
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 		
 		private _unit = T_GETV("hO");
@@ -29,7 +29,7 @@ CLASS("ActionUnitFlee", "ActionUnit")
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
 		ACTION_STATE_COMPLETED

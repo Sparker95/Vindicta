@@ -21,7 +21,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// Set behaviour
@@ -40,7 +40,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("failIfEmpty");
@@ -147,7 +147,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} forEach _freeUnits;
 	ENDMETHOD;
 
-	/* public virtual */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_CALLCM1("ActionGroup", "handleUnitsRemoved", _units);
 		// Remove the specified units from the active units list, their goals have already been removed by the AI
@@ -158,7 +158,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} forEach _units;
 	ENDMETHOD;
 
-	METHOD(clearCompleteGoals)
+	protected METHOD(clearCompleteGoals)
 		params [P_THISOBJECT];
 		private _activeUnits = T_GETV("activeUnits");
 		private _AI = T_GETV("AI");
@@ -177,6 +177,4 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} forEach (+_activeUnits);
 		
 	ENDMETHOD;
-	
-
 ENDCLASS;

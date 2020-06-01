@@ -67,10 +67,10 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		T_CALLM0("removeFromProcessCategory");
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "AILow");
-	ENDMETHOD
+	ENDMETHOD;
 
 	METHOD(_enableDebugMarkers)
 		params [P_THISOBJECT];
@@ -205,7 +205,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 
 	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		ASSERT_MSG(!canSuspend, "AIUnitHuman process should be called in unscheduled only!");
@@ -217,7 +217,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		#endif
 		FIX_LINE_NUMBERS()
 
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+		CALLCM("AI_GOAP", _thisObject, "process", []);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
@@ -626,7 +626,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopGroupAI
 	ENDMETHOD;
 
@@ -635,13 +635,13 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		[]
 	ENDMETHOD;
 
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+	public override METHOD(setUrgentPriorityOnAddGoal)
 		true
 	ENDMETHOD;
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD(getDebugUIVariableNames)
+	public override METHOD(getDebugUIVariableNames)
 		[
 			"hO",
 			"assignedVehicle",

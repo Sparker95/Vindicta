@@ -49,4 +49,4 @@ pr _wsGoal = [WSP_GAR_COUNT] call ws_new;
 // Run A*
 //P_THISCLASS, P_ARRAY("_currentWS"), P_ARRAY("_goalWS"), P_ARRAY("_possibleActions"), P_ARRAY("_goalParameters"), ["_AI", "ASTAR_ERROR_NO_AI"]
 pr _args = [_wsCurrent, _wsGoal, _actions, [["g_cargo", "thisBox"]]];
-CALL_STATIC_METHOD("AI", "planActions", _args);
+CALLSM("AI", "planActions", _args);

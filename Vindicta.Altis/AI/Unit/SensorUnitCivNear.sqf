@@ -16,7 +16,7 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(doComplexCheck)
+	protected override METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		
 		
@@ -39,7 +39,7 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 	// | Creates a world fact specific to this sensor
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT,["_stimulus",[],[[]] ] ];
 		pr _AI = T_GETV("AI");
 		pr _value = STIMULUS_GET_VALUE(_stimulus);
@@ -80,7 +80,7 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNIT_CIV_NEAR]
 	ENDMETHOD;
 

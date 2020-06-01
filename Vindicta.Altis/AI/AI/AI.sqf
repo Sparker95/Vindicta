@@ -87,7 +87,7 @@ CLASS("AI", "MessageReceiverEx")
 	// | Must be called every update interval
 	// ----------------------------------------------------------------------
 
-	METHOD(process)
+	public virtual METHOD(process)
 		params [P_THISOBJECT];
 	ENDMETHOD;
 
@@ -96,7 +96,7 @@ CLASS("AI", "MessageReceiverEx")
 	// |
 	// ----------------------------------------------------------------------
 
-	METHOD(handleMessageEx) //Derived classes must implement this method
+	public override METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
@@ -290,7 +290,7 @@ CLASS("AI", "MessageReceiverEx")
 	Starts the AI brain with timer. If this AI doesn't use timer, but a process category, override this.
 	From now process method will be called periodically.
 	*/
-	virtual METHOD(start)
+	public virtual METHOD(start)
 		params [P_THISOBJECT];
 
 		if (T_GETV("timer") == NULL_OBJECT) then {
@@ -321,7 +321,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: stop
 	Stops the periodic call of process function.
 	*/
-	virtual METHOD(stop)
+	public virtual METHOD(stop)
 		params [P_THISOBJECT];
 		
 		// Delete this object from process category 
@@ -351,7 +351,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD(setProcessInterval)
+	public METHOD(setProcessInterval)
 		params [P_THISOBJECT, ["_interval", 5, [5]]];
 		T_SETV("processInterval", _interval);
 
@@ -366,7 +366,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: addToProcessCategory
 	Adds this object to process category of its message loop.
 	*/
-	METHOD(addToProcessCategory)
+	public METHOD(addToProcessCategory)
 		params [P_THISOBJECT, P_STRING("_tag")];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM2(_msgLoop, "addProcessCategoryObject", _tag, _thisObject);
@@ -376,7 +376,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: setUrgentPriority
 	Sets this object as high priority in its message loop
 	*/
-	METHOD(setUrgentPriority)
+	public METHOD(setUrgentPriority)
 		params [P_THISOBJECT];
 		OOP_INFO_0("setUrgentPriority");
 		pr _msgLoop = T_CALLM0("getMessageLoop");
@@ -388,7 +388,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	Removes this object from all process categories
 	*/
-	METHOD(removeFromProcessCategory)
+	public METHOD(removeFromProcessCategory)
 		params [P_THISOBJECT];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
@@ -396,13 +396,13 @@ CLASS("AI", "MessageReceiverEx")
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		//diag_log "AI postDeserialize";
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		// Set reasonable default values
 		T_SETV("timer", "");

@@ -11,7 +11,7 @@ All members of this group will move to their assigned sentry positions.
 CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
@@ -47,7 +47,7 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");
@@ -70,13 +70,13 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 		_state
 	ENDMETHOD;
 	
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		//OOP_INFO_1("Unit removed: %1", _unit);
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		// Delete external goals

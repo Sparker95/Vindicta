@@ -30,10 +30,10 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 	Returns: nil
 	*/
 
-	METHOD(set)
+	public override METHOD(set)
 		params [P_THISOBJECT, P_STRING("_uid"), P_STRING("_key"), "_value"];
 		pr _args = [_uid, _key, _value];
-		CALL_CLASS_METHOD("DoubleKeyHashmap", _thisObject, "set", _args); // classNameStr, objNameStr, methodNameStr, extraParams
+		T_CALLCM("DoubleKeyHashmap", "set", _args); // classNameStr, objNameStr, methodNameStr, extraParams
 
 		// Broadcast data to this client
 	ENDMETHOD;

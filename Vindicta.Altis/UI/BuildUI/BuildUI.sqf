@@ -867,7 +867,7 @@ CLASS("BuildUI", "")
 
 		// Create it somewhere safe before moving it to position
 		pr _newObj = _type createVehicleLocal [0, 0, 1000];
-		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
+		CALLSM2("BuildUI", "setObjectMovable", _newObj, true);
 		_newObj setVariable ["build_ui_newObject", true];
 		_newObj enableSimulation false;
 
@@ -898,13 +898,13 @@ CLASS("BuildUI", "")
 		if(count _activeObject == 0 or {cursorObject != (_activeObject select 0)}) then {
 
 			if(count _activeObject > 0) then {
-				//CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
+				//CALLSM1("BuildUI", "restoreSelectionObject", _activeObject);
 				_activeObject = [];
 				T_SETV("activeObject", _activeObject);
 			};
 
-			if(CALL_STATIC_METHOD_1("BuildUI", "isObjectMovable", cursorObject)) then {
-				_activeObject = CALL_STATIC_METHOD_1("BuildUI", "createSelectionObject", cursorObject);
+			if(CALLSM1("BuildUI", "isObjectMovable", cursorObject)) then {
+				_activeObject = CALLSM1("BuildUI", "createSelectionObject", cursorObject);
 				_activeObject params ["_obj", "_pos", "_dir", "_up"];
 				T_SETV("activeObject", _activeObject);
 				//cursorObject setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
@@ -1001,7 +1001,7 @@ CLASS("BuildUI", "")
 
 		private _activeObject = T_GETV("activeObject");
 		if(count _activeObject > 0) then {
-			CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
+			CALLSM1("BuildUI", "restoreSelectionObject", _activeObject);
 			T_SETV("activeObject", []);
 		};
 
@@ -1058,7 +1058,7 @@ CLASS("BuildUI", "")
 
 		pr _movingObjects = +_selectedObjects;
 		if (count _activeObject > 0) then {
-			CALL_STATIC_METHOD_2("BuildUI", "addSelection", _movingObjects, _activeObject);
+			CALLSM2("BuildUI", "addSelection", _movingObjects, _activeObject);
 		};
 		if (count _movingObjects == 0) exitWith { false };
 
@@ -1320,5 +1320,5 @@ build_UI_setObjectMovable = {
 	ASSERT_GLOBAL_OBJECT(g_BuildUI);
 	params ["_obj", "_val"];
 	OOP_INFO_2("'build_UI_setObjectMovable' method called with %1, %2", _obj, _val);
-	CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _obj, _val);
+	CALLSM2("BuildUI", "setObjectMovable", _obj, _val);
 };

@@ -51,10 +51,10 @@ CLASS("StorageProfileNamespace", "Storage")
 		T_SETV("allVariables", []);
 	ENDMETHOD;
 
-	/* override */ METHOD(open)
+	public override METHOD(open)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
-		CALL_CLASS_METHOD("Storage", _thisObject, "open", [_recordName]);
+		CALLCM("Storage", _thisObject, "open", [_recordName]);
 
 		_recordName = toLower _recordName;
 
@@ -114,10 +114,10 @@ CLASS("StorageProfileNamespace", "Storage")
 	ENDMETHOD;
 
 	// Must close the file or whatever
-	/* override */ METHOD(close)
+	public override METHOD(close)
 		params [P_THISOBJECT];
 
-		CALL_CLASS_METHOD("Storage", _thisObject, "close", []);
+		CALLCM("Storage", _thisObject, "close", []);
 
 		// Bail if not open
 		if (!T_GETV("bOpen")) exitWith {};
@@ -136,13 +136,13 @@ CLASS("StorageProfileNamespace", "Storage")
 	ENDMETHOD;
 
 	// Must return true if the object is ready to save/load data
-	/* override */ METHOD(isOpen)
+	public override METHOD(isOpen)
 		params [P_THISOBJECT];
 		T_GETV("bOpen");
 	ENDMETHOD;
 
 	// Saves variable, returns true on success
-	/* override */ METHOD(saveString)
+	public override METHOD(saveString)
 		//diag_log format ["Save string: %1", _this];
 
 		params [P_THISOBJECT, P_STRING("_varName"), P_STRING("_value")];
@@ -166,7 +166,7 @@ CLASS("StorageProfileNamespace", "Storage")
 	ENDMETHOD;
 
 	// Loads variable, returns the value it has read
-	/* override */ METHOD(loadString)
+	public override METHOD(loadString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 
 		#ifdef OOP_ASSERT
@@ -179,13 +179,13 @@ CLASS("StorageProfileNamespace", "Storage")
 		T_CALLM1("_loadString", _varName);
 	ENDMETHOD;
 
-	/* private */ METHOD(_loadString)
+	METHOD(_loadString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 		__PNS getVariable __NS_VAR_NAME(T_GETV("currentPrefix"), _varName)
 	ENDMETHOD;
 
 	// Erases variable (loadVariable must return nil afterwards)
-	/* virtual */ METHOD(eraseString)
+	public override METHOD(eraseString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 
 		#ifdef OOP_ASSERT
@@ -199,7 +199,7 @@ CLASS("StorageProfileNamespace", "Storage")
 	ENDMETHOD;
 
 	// Must returns true if a record with given record name already exists
-	/* override */ METHOD(recordExists)
+	public override METHOD(recordExists)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		_recordName = toLower _recordName;
 		pr _entry = T_CALLM1("_findRecordTableEntry", _recordName);
@@ -207,13 +207,13 @@ CLASS("StorageProfileNamespace", "Storage")
 	ENDMETHOD;
 
 	// Must return array of all record names which exist in this storage
-	/* override */ METHOD(getAllRecords)
+	public override METHOD(getAllRecords)
 		params [P_THISOBJECT];
 		pr _recordTable = T_CALLM0("_loadRecordTable");
 		_recordTable apply {_x#RECORD_ID_NAME};
 	ENDMETHOD;
 
-	/* override */ METHOD(eraseRecord)
+	public override METHOD(eraseRecord)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		OOP_INFO_1("ERASE RECORD: %1", _recordName);

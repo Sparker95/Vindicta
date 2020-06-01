@@ -9,7 +9,7 @@ Class: ActionGarrison.ActionGarrisonSurrender
 #define OOP_CLASS_NAME ActionGarrisonSurrender
 CLASS("ActionGarrisonSurrender", "ActionGarrison")
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -31,7 +31,7 @@ CLASS("ActionGarrisonSurrender", "ActionGarrison")
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned

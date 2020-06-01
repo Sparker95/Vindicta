@@ -24,7 +24,7 @@ CLASS("AlmostEmptyGameMode", "GameModeBase")
 	ENDMETHOD;
 	
 	// Initialize just a few outposts
-	/* protected virtual */ METHOD(getLocationOwner)
+	protected override METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		OOP_DEBUG_MSG("%1", [_loc]);
 
@@ -52,17 +52,17 @@ CLASS("AlmostEmptyGameMode", "GameModeBase")
 		};
 	ENDMETHOD;
 
-	METHOD(getRecruitCount)
+	protected override METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		100
 	ENDMETHOD;
 
-	METHOD(getRecruitmentRadius)
+	protected override METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		10000
 	ENDMETHOD;
 
-	METHOD(initLocationGameModeData)
+	protected override METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		private _type = CALLM0(_loc, "getType");
 		private _data = NEW("AlmostEmptyLocationData", [_loc]);
@@ -80,14 +80,14 @@ CLASS("AlmostEmptyGameMode", "GameModeBase")
 		CALLM0(_loc, "getGameModeData")
 	ENDMETHOD;
 
-	METHOD(initServerOnly)
+	protected override server METHOD(initServerOnly)
 		params [P_THISOBJECT];
 				
 		// Create LocationGameModeData objects for all locations
 		{
 			private _loc = _x;
 			T_CALLM1("initLocationGameModeData", _loc);
-		} forEach GET_STATIC_VAR("Location", "all");
+		} forEach GETSV("Location", "all");
 	ENDMETHOD;
 
 ENDCLASS;
@@ -99,7 +99,7 @@ CLASS("AlmostEmptyLocationData", "LocationGameModeData")
 		params [P_THISOBJECT];
 	ENDMETHOD;
 
-	/* virtual override */ METHOD(updatePlayerRespawn)
+	public override METHOD(updatePlayerRespawn)
 		params [P_THISOBJECT];
 
 		pr _loc = T_GETV("location");

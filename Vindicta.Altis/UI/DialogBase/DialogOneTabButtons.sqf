@@ -72,7 +72,7 @@ CLASS("DialogOneTabButtons", "DialogBase")
 
 	// Called when user clicks on button
 	// Button ID is passed, 0 is leftmost button
-	/* virtual */ METHOD(onButtonClick)
+	protected virtual METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_1("Button was clicked: %1", _ID);
@@ -162,7 +162,7 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 
 	ENDMETHOD;
 
-	/* override */ METHOD(resize)
+	 protected override METHOD(resize)
 		params [P_THISOBJECT, P_NUMBER("_width"), P_NUMBER("_height")];
 
 		OOP_INFO_0("RESIZE");

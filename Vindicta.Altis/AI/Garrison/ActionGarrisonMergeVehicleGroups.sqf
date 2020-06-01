@@ -11,7 +11,7 @@ This action also moves ungrouped vehicles into the common vehicle group.
 #define OOP_CLASS_NAME ActionGarrisonMergeVehicleGroups
 CLASS("ActionGarrisonMergeVehicleGroups", "ActionGarrison")
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");

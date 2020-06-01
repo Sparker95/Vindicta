@@ -78,10 +78,10 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "AILow");
-	ENDMETHOD
+	ENDMETHOD;
 
 	/*
 	Method: addCargoUnit
@@ -305,7 +305,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 
 	Returns: Array with goal class names
 	*/
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		[]
 	ENDMETHOD;
 
@@ -318,7 +318,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 
 	Returns: Array with action class names
 	*/
-	METHOD(getPossibleActions)
+	public override METHOD(getPossibleActions)
 		[]
 	ENDMETHOD;
 	
@@ -328,13 +328,13 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopGroupAI
 	ENDMETHOD;
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD(getDebugUIVariableNames)
+	public override METHOD(getDebugUIVariableNames)
 		[
 			"cargo",
 			"assignedDriver",

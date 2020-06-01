@@ -339,8 +339,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		_state
 	ENDMETHOD;
 
-	
-	protected override METHOD(spawn)
+	public override METHOD(spawn)
 		params [P_THISOBJECT];
 
 		// Custom air spawning

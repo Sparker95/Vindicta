@@ -50,7 +50,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: nil
 	*/
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE; // Message type is the function name
 		private _return = nil;
@@ -80,7 +80,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: you can return whatever you need from here to later retrieve it by waitUntilMessageDone.
 	*/
-	METHOD(handleMessageEx)
+	public virtual METHOD(handleMessageEx)
 		params [P_THISOBJECT , P_ARRAY("_msg") ];
 		diag_log format ["[MessageReceiverEx] handleMessageEx: %1", [_msg]];
 		false
@@ -106,7 +106,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 	*/
 	//
 	// Returns: the ID of the posted message
-	METHOD(postMethodAsync)
+	public METHOD(postMethodAsync)
 		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], P_ARRAY("_params"), ["_returnMsgIDOrContinuation", false, [false, []]]];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
@@ -132,7 +132,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: whatever was returned by this object
 	*/
-	METHOD(postMethodSync)
+	public METHOD(postMethodSync)
 		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], P_ARRAY("_methodParams") ];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
@@ -153,18 +153,18 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 	
 	// - - - - REFERENCE COUNTER - - - -
 	
-	 METHOD(ref)
-	 	params [P_THISOBJECT];
-	 	CRITICAL_SECTION_START
-		T_SETV("refCount", T_GETV("refCount") + 1);
-		CRITICAL_SECTION_END
-		nil // return this to make SQF happy (= operator returns nothing, not nil)
+	METHOD(ref)
+		params [P_THISOBJECT];
+		CRITICAL_SECTION {
+			T_SETV("refCount", T_GETV("refCount") + 1);
+		};
+		nil // return this to make SQF happy (isNil returns nothing, not nil)
 	ENDMETHOD;
 
 	METHOD(unref)
 		params [P_THISOBJECT];
 		pr _mustDelete = false;
-		
+
 		CRITICAL_SECTION {
 			pr _refCount = T_GETV("refCount");
 			_refCount = _refCount - 1;
@@ -179,17 +179,17 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		if (_mustDelete) then {
 			DELETE(_thisObject);
 		};
-		
+
 		nil
 	ENDMETHOD;
 
 	// - - - - - STORAGE - - - - - -
 	
-	/* virtual */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiver", _thisObject, "postDeserialize", [_storage]);
+		T_CALLCM1("MessageReceiver", "postDeserialize", _storage);
 
 		true
 	ENDMETHOD;

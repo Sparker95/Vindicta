@@ -14,7 +14,7 @@ CLASS("ActionGroupStayInVehicles", "ActionGroup")
 	// ------------ N E W ------------
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		// Return ACTIVE state
@@ -23,7 +23,7 @@ CLASS("ActionGroupStayInVehicles", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		pr _state = T_CALLM0("activateIfInactive");
@@ -38,7 +38,7 @@ CLASS("ActionGroupStayInVehicles", "ActionGroup")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
 	ENDMETHOD;

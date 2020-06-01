@@ -14,7 +14,7 @@ CLASS("EmptyGameMode", "GameModeBase")
 
 	ENDMETHOD;
 		
-	/* protected virtual */ METHOD(getLocationOwner)
+	protected override METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		CIVILIAN
 	ENDMETHOD;

@@ -52,7 +52,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		OOP_INFO_1("%1", _this);
 
 		// Is this object an instance of Unit class?
-		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
+		private _unit = CALLSM("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
 		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
 			T_CALLM2("UnitKilled", _unit, _killer);
@@ -97,7 +97,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	STATIC_METHOD(KillUnit)
 		params [P_THISCLASS, P_OBJECT("_objectHandle")];
 		// Is this object an instance of Unit class?
-		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
+		private _unit = CALLSM("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
 			DELETE(_unit);
 		};
@@ -132,8 +132,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 
 		// Is this object an instance of Unit class?
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
-		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitInf = CALLSM("Unit", "getUnitFromObjectHandle", [_unit]);
 
 		OOP_INFO_4("EH_GetIn: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
@@ -184,8 +184,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 
 		// Is this object an instance of Unit class?
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
-		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitInf = CALLSM("Unit", "getUnitFromObjectHandle", [_unit]);
 
 		OOP_INFO_4("EH_GetOut: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
@@ -209,8 +209,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	METHOD(EH_aceCargoLoaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
-		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
 
 		OOP_INFO_3("EH_aceCargoLoaded: _this: %1, _unitItem: %2, _unitVeh: %3", _this, _item, _vehicle);
 
@@ -234,8 +234,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	METHOD(EH_aceCargoUnloaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
-		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
 
 		OOP_INFO_3("EH_aceCargoUnloaded: _this: %1, _unitItem: %2, _unitVeh: %3", _this, _item, _vehicle);
 
@@ -271,7 +271,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopMain
 	ENDMETHOD;
 
@@ -279,7 +279,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
-		CALL_STATIC_METHOD(_className, _methodName, _parameters);
+		CALLSM(_className, _methodName, _parameters);
 	ENDMETHOD;
 
 ENDCLASS;

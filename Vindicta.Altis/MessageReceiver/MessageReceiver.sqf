@@ -97,7 +97,7 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: <MessageLoop> object
 	*/
-	METHOD(getMessageLoop)
+	public virtual METHOD(getMessageLoop)
 		""
 	ENDMETHOD;
 
@@ -119,7 +119,7 @@ CLASS("MessageReceiver", "Storable")
 	}
 	---
 	*/
-	METHOD(handleMessage) //Derived classes must implement this method
+	public virtual METHOD(handleMessage) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		// Please leave your message ...
 		diag_log format ["[MessageReceiver] handleMessage: %1", _msg];
@@ -149,7 +149,7 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: Number, message ID if _returnMsgID is true, MESSAGE_ID_INVALID otherwise.
 	*/
-	METHOD(postMessage)
+	public METHOD(postMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg"), ["_returnMsgIDOrContinuation", false, [false, []]]];
 
 		OOP_INFO_1("postMessage: %1", _msg);
@@ -215,7 +215,7 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: Bool
 	*/
-	STATIC_METHOD(messageDone)
+	public STATIC_METHOD(messageDone)
 		params ["_thisClass", "_msgID"];
 
 		// Bail if provided a negative number
@@ -249,7 +249,7 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: whatever was returned by handleMessage of the messageReceiver that was processing the message
 	*/
-	METHOD(waitUntilMessageDone)
+	public METHOD(waitUntilMessageDone)
 		params [P_THISOBJECT, P_NUMBER("_msgID") ];
 
 		// Bail if provided a negative number
@@ -349,7 +349,7 @@ CLASS("MessageReceiver", "Storable")
 	// For safety this should be called in the thread that owns the object
 	// Don't override this in inherited classes!
 	// Returns true/falls depending on success
-	/* private */ METHOD(setOwner)
+	METHOD(setOwner)
 		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 
 		// Bail if this machine doesn't own this object
@@ -444,7 +444,7 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: nil
 	*/
-	/* private */ STATIC_METHOD(receiveOwnership)
+	STATIC_METHOD(receiveOwnership)
 		params [ P_STRING("_objNameStr"), P_OOP_OBJECT("_objParent"), P_NUMBER("_uniqueID"), ["_serialData", 0]];
 
 		diag_log format ["Receive ownership was called: %1", _this];
@@ -476,7 +476,7 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: anything you need which can be sent over network.
 	*/
-	/* virtual */ METHOD(serialize)
+	protected virtual METHOD(serialize)
 		params [P_THISOBJECT];
 		diag_log format ["[MessageReceiver:serialize] Error: method serialize is not implemented for %1!", _thisObject];
 
@@ -492,7 +492,7 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: nil
 	*/
-	/* virtual */ METHOD(deserialize)
+	protected virtual METHOD(deserialize)
 		params [P_THISOBJECT, "_serialData"];
 		diag_log format ["[MessageReceiver:serialize] Error: method deserialize is not implemented for %1!", _thisObject];
 	ENDMETHOD;
@@ -511,17 +511,14 @@ CLASS("MessageReceiver", "Storable")
 
 	Returns: Bool
 	*/
-	/* virtual */ METHOD(transferOwnership)
+	protected virtual METHOD(transferOwnership)
 		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 		diag_log format ["[MessageReceiver:transferOwnership] Error: method transferOwnership is not implemented for %1!", _thisObject];
 		false
 	ENDMETHOD;
 
-
-
 	// Storage methods
-
-	METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Must broadcast public variables
@@ -533,14 +530,14 @@ CLASS("MessageReceiver", "Storable")
 		true
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(saveStaticVariables)
+	public STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 
 		pr _value = +g_rqArray;
 		CALLM2(_storage, "save", "MessageReceiver_rqArray", _value);
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(loadStaticVariables)
+	public STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 
 		g_rqArray = CALLM1(_storage, "load", "MessageReceiver_rqArray");

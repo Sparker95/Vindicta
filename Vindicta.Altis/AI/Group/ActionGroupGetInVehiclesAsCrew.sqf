@@ -75,7 +75,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 	// logic to run when the goal is activated
 	// _unitsIgnore - units to ignore in assignment. For instance if this unit was destroyed.
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLM0("clearUnitGoals");
@@ -182,7 +182,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -214,7 +214,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		_state
 	ENDMETHOD;
 
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
 		
@@ -225,7 +225,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		} forEach _units;
 	ENDMETHOD;
 
-	METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;

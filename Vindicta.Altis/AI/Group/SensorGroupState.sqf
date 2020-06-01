@@ -23,7 +23,7 @@ CLASS("SensorGroupState", "SensorGroup")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
@@ -141,7 +141,7 @@ CLASS("SensorGroupState", "SensorGroup")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
 	ENDMETHOD;
 	

@@ -54,7 +54,7 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 		T_SETV("buildRes", _buildRes);
 	ENDMETHOD;
 
-	METHOD(apply)
+	public override METHOD(apply)
 
 		params [P_THISOBJECT, P_STRING("_world")];
 

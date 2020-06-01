@@ -73,7 +73,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 #endif
 	ENDMETHOD;
 
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -175,7 +175,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	ENDMETHOD;
 	
 	// Make a debug label from our properties
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -237,7 +237,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");

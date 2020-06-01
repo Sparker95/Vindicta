@@ -72,7 +72,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* protected override */ METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_SETV("ready", false);
@@ -189,7 +189,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// Logic to run each update-step
-	/* protected override */ METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -285,13 +285,13 @@ CLASS("ActionGroupMove", "ActionGroup")
 		_state
 	ENDMETHOD;
 
-	/* protected override */ METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Reactivate, as we need to reassign goals
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Turn off vehicle sirens for removed units
@@ -306,7 +306,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	/* protected override */ METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Turn off vehicle sirens, and reset speed limits
@@ -322,7 +322,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	//Gets the maximum separation between vehicles in convoy
-	/* private */ METHOD(getMaxSeparation)
+	METHOD(getMaxSeparation)
 		params [P_THISOBJECT];
 
 		private _group = T_GETV("group");
@@ -345,7 +345,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	//Gets the maximum separation between following groups
-	/* private */ METHOD(getMaxFollowSeparation)
+	METHOD(getMaxFollowSeparation)
 		params [P_THISOBJECT];
 
 		private _followingGroups = T_GETV("followingGroups") apply { CALLM0(_x, "getGroupHandle") };

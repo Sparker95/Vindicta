@@ -532,7 +532,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 
 	// Called from base class update function, regardless of if the mission is active,
 	// because we might need to cleanup some missions that were ongoing.
-	/* protected override */ METHOD(updateExisting)
+	protected override METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_BOOL("_active")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -553,7 +553,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 	ENDMETHOD;
 	
 	// Called from base class update function, when the mission is active
-	/* protected virtual */ METHOD(spawnNew)
+	protected override METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 

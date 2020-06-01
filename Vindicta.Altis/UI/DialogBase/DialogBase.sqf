@@ -217,7 +217,7 @@ CLASS("DialogBase", "")
 	ENDMETHOD;
 
 	// Performs one-time resize of controls according to dialog content size
-	METHOD(resize)
+	protected virtual METHOD(resize)
 		params [P_THISOBJECT, P_NUMBER("_contentw"), P_NUMBER("_contenth")];
 
 		pr _multitab = T_GETV("multiTab");

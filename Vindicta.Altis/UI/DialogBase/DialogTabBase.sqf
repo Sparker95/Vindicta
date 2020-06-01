@@ -155,20 +155,20 @@ CLASS("DialogTabBase", "")
 
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
-	/* virtual */ METHOD(beforeDelete)
+	public virtual METHOD(beforeDelete)
 		params [P_THISOBJECT];
 	ENDMETHOD;
 
 	// Called when Dialog.resize is called
 	// Derived classes can implement this if they need to resize themselves
 	// The main control of the tab (group) is resized separately, no need to resize it
-	/* virtual */ METHOD(resize)
+	protected virtual METHOD(resize)
 		params [P_THISOBJECT, P_NUMBER("_width"), P_NUMBER("_height")];
 	ENDMETHOD;
 
 	// Method for showing various responses from the server
 	// By default it outputs the text to the hint bar at the bottom
-	/* virtual */ STATIC_METHOD(showServerResponse)
+	public STATIC_METHOD(showServerResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 		pr _instance = CALLSM0(_thisClass, "getInstance");
 		if (!isNil "_instance") then {
@@ -183,7 +183,7 @@ CLASS("DialogTabBase", "")
 	// Typically there is only one instance of each tab on the screen
 	// So there is a method to get the OOP object handle
 	// By default it reads the "instance" static variable of the current class
-	/* virtual */ STATIC_METHOD(getInstance)
+	public STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		pr _instance = GETSV(_thisClass, "instance");
 		if (isNil "_instance") exitWith {NULL_OBJECT};

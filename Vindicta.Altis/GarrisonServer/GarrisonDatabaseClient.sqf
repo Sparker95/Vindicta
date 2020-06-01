@@ -108,7 +108,7 @@ CLASS("GarrisonDatabaseClient", "")
 			// Check if there is an action record
 			if (_actionRecord != "") then {
 				// Check if the action record has a garrison reference
-				pr _recordDstGarRef = FORCE_GET_MEM(_actionRecord, "dstGarRef");
+				pr _recordDstGarRef = _GETV(_actionRecord, "dstGarRef");
 				if (isNil "_recordDstGarRef") then {
 					false
 				} else {

@@ -109,7 +109,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		} forEach _activeCivs;
 	ENDMETHOD;
 
-	/* protected override */ METHOD(updateExisting)
+	protected override METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -121,7 +121,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		} forEach (_activeCivs select { !alive _x });
 	ENDMETHOD;
 
-	/* protected override */ METHOD(spawnNew)
+	protected override METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 

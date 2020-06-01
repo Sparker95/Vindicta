@@ -13,7 +13,7 @@ CLASS("GoalGarrisonAttackAssignedTargets", "Goal")
 
 		// Return active relevance when we see assigned targets
 		if (GETV(_AI, "awareOfAssignedTargets") && CALLM0(_AI, "isSpawned")) then {
-			pr _intrinsicRelevance = GET_STATIC_VAR(_thisClass, "relevance");
+			pr _intrinsicRelevance = GETSV(_thisClass, "relevance");
 			 // Return relevance
 			_intrinsicRelevance
 		} else {

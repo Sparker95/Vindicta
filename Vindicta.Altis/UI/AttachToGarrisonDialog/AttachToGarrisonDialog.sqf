@@ -82,7 +82,7 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 		gAttachToGarrisonDialog = nil;
 	ENDMETHOD;
 
-	METHOD(onButtonClick)
+	protected override METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_0("ON BUTTON CLICK");

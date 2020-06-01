@@ -175,7 +175,7 @@ CLASS("TimerService", "")
 							private _msgID = _x select TIMER_DATA_ID_MESSAGE_ID;
 							
 							// Check if the previous message has been handled (we don't want to overflood the receiver with the same messages)
-							if (CALL_STATIC_METHOD("MessageReceiver", "messageDone", [_msgID])) then {
+							if (CALLSM("MessageReceiver", "messageDone", [_msgID])) then {
 								//diag_log format ["[TimerService::threadFunc] Info: posting a message"];
 								// Post a new message
 								// todo inline the MessageReceiver::postMessage it some time later!

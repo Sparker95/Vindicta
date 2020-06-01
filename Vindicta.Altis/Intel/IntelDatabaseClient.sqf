@@ -18,12 +18,12 @@ Author: Sparker 07.05.2019
 #define OOP_CLASS_NAME IntelDatabaseClient
 CLASS("IntelDatabaseClient", "IntelDatabase")
 
-	METHOD(addIntel)
+	public override METHOD(addIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 			// Call base class method
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "addIntel", [_item]);
+			CALLCM("IntelDatabase", _thisObject, "addIntel", [_item]);
 
 			// Add the new data to client's UI
 			CALLM0(_item, "clientAdd"); // Register in the client's UI
@@ -31,22 +31,22 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 	ENDMETHOD;
 
 
-	METHOD(updateIntel)
+	public override METHOD(updateIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
 			CALLM1(_itemDst, "clientUpdate", _itemSrc);
 
 			// Call base class method
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "updateIntel", [_itemDst ARG _itemSrc]); // It will copy values
+			CALLCM("IntelDatabase", _thisObject, "updateIntel", [_itemDst ARG _itemSrc]); // It will copy values
 		};
 	ENDMETHOD;
 
-	METHOD(removeIntel)
+	public override METHOD(removeIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]);
+			CALLCM("IntelDatabase", _thisObject, "removeIntel", [_item]);
 
 			CALLM0(_item, "clientRemove");
 		};
@@ -62,7 +62,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 	Returns: nil
 	*/
-	STATIC_METHOD(updateIntelClient)
+	public STATIC_METHOD(updateIntelClient)
 		CRITICAL_SECTION {
 			params [P_THISCLASS, P_ARRAY("_serialIntel")];
 
@@ -136,7 +136,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 	Returns: nil
 	*/
-	STATIC_METHOD(removeIntelClient)
+	public STATIC_METHOD(removeIntelClient)
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 
 		pr _intelLocal = CALLM1(gIntelDatabaseClient, "getIntelFromSource", _intel);
