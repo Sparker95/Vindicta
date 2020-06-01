@@ -18,8 +18,6 @@ this addHandgunItem "rhs_mag_762x25_8";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_762x25_8";};
 this addItemToVest "rhs_grenade_anm8_mag";
-this addItemToVest "rhs_grenade_mki_mag";
-this addItemToVest "rhs_mag_nspn_green";
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

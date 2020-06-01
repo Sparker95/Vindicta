@@ -20,6 +20,7 @@ this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 _RandomSight = selectRandom ["rhs_acc_pkas", ""];
 this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_grenade_anm8_mag";

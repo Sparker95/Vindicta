@@ -25,10 +25,7 @@ this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
-this addItemToVest "rhs_grenade_mki_mag";
-this addItemToVest "rhs_grenade_anm8_mag";
+for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
 for "_i" from 1 to 6 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
 for "_i" from 1 to 4 do {this addItemToVest "rhsusf_5Rnd_762x51_m62_Mag";};
 this linkItem "ItemMap";

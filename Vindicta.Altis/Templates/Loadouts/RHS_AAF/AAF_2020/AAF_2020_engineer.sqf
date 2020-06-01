@@ -24,6 +24,5 @@ for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_an_m14_th3";};
 this addItemToBackpack "ToolKit";
 for "_i" from 1 to 4 do {this addItemToBackpack "rhsusf_8Rnd_00Buck";};
 for "_i" from 1 to 4 do {this addItemToBackpack "rhsusf_8Rnd_Slug";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_grenade_m15_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

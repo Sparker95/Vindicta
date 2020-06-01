@@ -18,6 +18,7 @@ this addPrimaryWeaponItem "rhsusf_acc_M952V";
 this addPrimaryWeaponItem "rhs_mag_20Rnd_556x45_M196_Stanag_Tracer_Red";
 this addWeapon "rhsusf_weap_m1911a1";
 this addHandgunItem "rhsusf_mag_7x45acp_MHP";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_7x45acp_MHP";};
