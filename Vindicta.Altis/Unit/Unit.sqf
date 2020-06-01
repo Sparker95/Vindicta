@@ -150,7 +150,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		T_SETV("data", _data);
 
 		// Push the new object into the array with all units
-		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
+		private _allArray = GETSV(UNIT_CLASS_NAME, "all");
 		_allArray pushBack _thisObject;
 
 		// Add this unit to a group
@@ -205,7 +205,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 
 		//Remove this unit from array with all units
-		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
+		private _allArray = GETSV(UNIT_CLASS_NAME, "all");
 		_allArray deleteAt (_allArray find _thisObject);
 
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -2242,7 +2242,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: []
 	*/
-	METHOD(getSubagents)
+	public override METHOD(getSubagents)
 		[] // A single unit has no subagents
 	ENDMETHOD;
 
@@ -2253,7 +2253,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: <AIUnit>
 	*/
-	METHOD(getAI)
+	public override METHOD(getAI)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_AI
@@ -2408,7 +2408,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			[_hO, _dataList] call jn_fnc_arsenal_initPersistent;
 
 			// Make the object movable again for the Build UI
-			CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
+			CALLSM2("BuildUI", "setObjectMovable", _hO, true);
 
 			true
 		} else {
@@ -2480,7 +2480,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD(serializeForStorage)
+	 public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 
 		// Need to do this before copying "data"
@@ -2528,7 +2528,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_data 
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	 public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		_serial set [UNIT_DATA_ID_OWNER, 2]; // Server
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
@@ -2584,7 +2584,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 ENDCLASS;
 
 if (isNil {GETSV("Unit", "all")} ) then {
-	SET_STATIC_MEM("Unit", "all", []);
+	SETSV("Unit", "all", []);
 };
 
 #ifdef _SQF_VM

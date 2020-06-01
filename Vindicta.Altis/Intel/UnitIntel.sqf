@@ -222,7 +222,7 @@ CLASS("UnitIntel", "")
 		//diag_log "--- initPlayer";
 
 		//player removeAllEventHandlers "InventoryOpened";
-		if (! GET_STATIC_VAR(_thisClass, "eventHandlerAdded") || !isMultiplayer) then { // In singleplayer event handler doesn't get magically on respawn transfered :/
+		if (! GETSV(_thisClass, "eventHandlerAdded") || !isMultiplayer) then { // In singleplayer event handler doesn't get magically on respawn transfered :/
 
 			//diag_log "--- adding event handler";
 
@@ -318,7 +318,7 @@ CLASS("UnitIntel", "")
 			}];
 			player setVariable ["UnitIntel_take_EH", _ehid];
 
-			SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", true);
+			SETSV("UnitIntel", "eventHandlerAdded", true);
 		};
 		
 	ENDMETHOD;
@@ -383,4 +383,4 @@ CLASS("UnitIntel", "")
 
 ENDCLASS;
 
-SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", false);
+SETSV("UnitIntel", "eventHandlerAdded", false);

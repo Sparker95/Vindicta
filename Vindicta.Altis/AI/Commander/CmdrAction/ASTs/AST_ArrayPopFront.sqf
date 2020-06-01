@@ -46,7 +46,7 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 		T_SETV("resultVar", _resultVar);
 	ENDMETHOD;
 
-	/* override */ METHOD(apply)
+	 public override METHOD(apply)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world") ];
 
 		private _array = +T_GET_AST_VAR("arrayVar");

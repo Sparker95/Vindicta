@@ -30,4 +30,4 @@ CLASS("MyClass", "MyClassParent");
 
 ENDCLASS;
 
-SET_STATIC_VAR("MyClass", "myStaticVariable", 0);
+SETSV("MyClass", "myStaticVariable", 0);

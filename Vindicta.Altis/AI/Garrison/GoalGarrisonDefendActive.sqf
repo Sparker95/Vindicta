@@ -13,7 +13,7 @@ CLASS("GoalGarrisonDefendActive", "Goal")
 		if (CALLM0(_AI, "isSpawned") 
 		&& { CALLM0(_AI, "isAlerted") }
 		) then {
-			GET_STATIC_VAR(_thisClass, "relevance")
+			GETSV(_thisClass, "relevance")
 		} else {
 			0
 		};

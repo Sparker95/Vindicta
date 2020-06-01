@@ -39,7 +39,7 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 		
 	ENDMETHOD;
 	
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		// Bail if dest unit is destroyed or whatever

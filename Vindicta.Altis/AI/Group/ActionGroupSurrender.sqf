@@ -8,7 +8,7 @@ Class: ActionGroup.ActionGroupSurrender
 CLASS("ActionGroupSurrender", "ActionGroup")
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		private _AI = T_GETV("AI");
@@ -30,7 +30,7 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 	ENDMETHOD;
 
 	// Logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");

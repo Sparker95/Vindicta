@@ -840,7 +840,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	// - - - - Misc methods - - - -
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopGameManager
 	ENDMETHOD;
 

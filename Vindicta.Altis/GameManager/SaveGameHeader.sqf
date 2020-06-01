@@ -44,12 +44,12 @@ CLASS("SaveGameHeader", "Storable")
 	// STORAGE
 	
 	// Save all varaibles
-	/* override */ METHOD(serializeForStorage)
+	 public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	 public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true

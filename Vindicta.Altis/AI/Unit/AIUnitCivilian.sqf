@@ -12,14 +12,14 @@ Author: Sparker 12.11.2018
 CLASS("AIUnitCivilian", "AI_GOAP")
 
 	//                        G E T   P O S S I B L E   G O A L S
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		["GoalUnitSalute","GoalUnitScareAway"]
 	ENDMETHOD;
 
 	//                      G E T   P O S S I B L E   A C T I O N S
 	/*
 	*/
-	METHOD(getPossibleActions)
+	public override METHOD(getPossibleActions)
 		["ActionUnitSalute","ActionUnitScareAway"]
 	ENDMETHOD;
 

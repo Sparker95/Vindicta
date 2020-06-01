@@ -39,7 +39,7 @@ CLASS("ActionUnitScareAway", "Action")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 		
 		OOP_DEBUG_0("active: Unit is pissed off!");
@@ -72,7 +72,7 @@ CLASS("ActionUnitScareAway", "Action")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		diag_log "scare away process was called!";
@@ -129,7 +129,7 @@ CLASS("ActionUnitScareAway", "Action")
 	ENDMETHOD;
 	
 	// logic to run when the goal is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		diag_log "Terminating scaring civilian!";

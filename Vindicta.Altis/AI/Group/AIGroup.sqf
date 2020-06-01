@@ -73,12 +73,12 @@ CLASS("AIGroup", "AI_GOAP")
 		#endif
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "AIGroup");
-	ENDMETHOD
+	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		ASSERT_MSG(!canSuspend, "AIGroup process should be called in unscheduled only!");
@@ -89,7 +89,7 @@ CLASS("AIGroup", "AI_GOAP")
 		};
 		#endif
 
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+		CALLCM("AI_GOAP", _thisObject, "process", []);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
@@ -118,7 +118,7 @@ CLASS("AIGroup", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopGroupAI
 	ENDMETHOD;
 	
@@ -186,7 +186,7 @@ CLASS("AIGroup", "AI_GOAP")
 
 	Returns: Array with goal class names
 	*/
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		if(CALLM0(T_GETV("agent"), "isAirGroup")) then {
 			["GoalGroupAirLand", "GoalGroupAirMaintain"]
@@ -206,11 +206,11 @@ CLASS("AIGroup", "AI_GOAP")
 
 	Returns: Array with action class names
 	*/
-	METHOD(getPossibleActions)
+	public override METHOD(getPossibleActions)
 		[]
 	ENDMETHOD;
 
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+	public override METHOD(setUrgentPriorityOnAddGoal)
 		true
 	ENDMETHOD;
 
@@ -364,7 +364,7 @@ CLASS("AIGroup", "AI_GOAP")
 
 	ENDMETHOD;
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD(getDebugUIVariableNames)
+	public override METHOD(getDebugUIVariableNames)
 		[
 			"suspTarget"
 		]

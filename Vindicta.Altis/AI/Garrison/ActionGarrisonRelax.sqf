@@ -18,7 +18,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 	*/
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -150,7 +150,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned

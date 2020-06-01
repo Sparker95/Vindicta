@@ -12,13 +12,13 @@ This class contains virtual methods a GOAP agent must implement.
 #define OOP_CLASS_NAME GOAP_Agent
 CLASS("GOAP_Agent", "")
 
-	/* virtual */ METHOD(getAI)
+	public virtual METHOD(getAI)
 		params [P_THISOBJECT];
 		OOP_ERROR("getAI is not implemented!");
 		NULL_OBJECT
 	ENDMETHOD;
 
-	/* virtual */ METHOD(getSubagents)
+	public virtual METHOD(getSubagents)
 		params [P_THISOBJECT];
 		OOP_ERROR("getSubagents is not implemented!");
 		[]

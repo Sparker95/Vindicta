@@ -29,7 +29,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 		
 		//diag_log "UPDATE";
@@ -79,7 +79,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				//systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, GAME_TIME];
 				
 				// Report to the AICommander of the side that observes this location
-				private _AICommander = CALL_STATIC_METHOD("AICommander", "getAICommander", [_s]);
+				private _AICommander = CALLSM("AICommander", "getAICommander", [_s]);
 				if (!IS_NULL_OBJECT(_AICommander) && _loc != "") then {
 				
 					//OOP_INFO_1("Reporting to AICommander: %1", _AICommander);
@@ -104,7 +104,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
 	ENDMETHOD;
 	

@@ -46,7 +46,7 @@ pr _garrisonDist = if(_side != CIVILIAN) then {
 	} apply {
 		CALLM0(_x, "getPos") distance _thisPos
 	};
-	//CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM0(_x, "getPos") distance _thisPos}
+	//CALLSM("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM0(_x, "getPos") distance _thisPos}
 } else {
 	[]
 };

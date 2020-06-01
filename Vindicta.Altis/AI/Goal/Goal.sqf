@@ -44,7 +44,7 @@ CLASS("Goal", "")
 
 	/* virtual */ STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		pr _intrinsicRelevance = GET_STATIC_VAR(_thisClass, "relevance");
+		pr _intrinsicRelevance = GETSV(_thisClass, "relevance");
 		 // Return relevance
 		_intrinsicRelevance
 	ENDMETHOD;
@@ -58,7 +58,7 @@ CLASS("Goal", "")
 	/* virtual */ STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		// Return predefined action from the database
-		pr _actionClass = GET_STATIC_VAR(_thisClass, "predefinedAction");
+		pr _actionClass = GETSV(_thisClass, "predefinedAction");
 		if (!(isNil "_actionClass")) then {
 			if (!(_actionClass == "")) then {
 				// Also pass the parameter from the goal to the action
@@ -93,7 +93,7 @@ CLASS("Goal", "")
 		};
 
 		// Return effects from the database
-		pr _effects = GET_STATIC_VAR(_thisClass, "effects");
+		pr _effects = GETSV(_thisClass, "effects");
 		_effects = +_effects;
 
 		// If the parameters were specified, try to apply them to the effects
@@ -131,4 +131,4 @@ CLASS("Goal", "")
 
 ENDCLASS;
 
-SET_STATIC_VAR("Goal", "effects", []);
+SETSV("Goal", "effects", []);

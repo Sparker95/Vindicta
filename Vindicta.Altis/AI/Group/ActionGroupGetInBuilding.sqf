@@ -31,7 +31,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		OOP_INFO_0("ACTIVATE");
@@ -105,7 +105,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -141,19 +141,19 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		_state
 	ENDMETHOD;
 	
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Let them go, we don't care
 	ENDMETHOD;
 
-	METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT];
 		// We must replan everything
 		T_SETV("state", ACTION_STATE_REPLAN);
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		// Delete external goals

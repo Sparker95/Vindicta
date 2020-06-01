@@ -63,7 +63,7 @@ CLASS("ActionStateTransition", "Storable")
 	
 	Returns: Boolean, true if this AST can apply a transition from _state
 	*/
-	METHOD(isValidFromState)
+	public METHOD(isValidFromState)
 		params [P_THISOBJECT, P_NUMBER("_state")];
 		private _states = T_GETV("fromStates");
 		(_state in _states) or (CMDR_ACTION_STATE_ALL in _states)
@@ -80,7 +80,7 @@ CLASS("ActionStateTransition", "Storable")
 	
 	Returns: <CMDR_ACTION_STATE>, new state (might not have changed)
 	*/
-	STATIC_METHOD(selectAndApply)
+	public STATIC_METHOD(selectAndApply)
 		params [P_THISCLASS, P_OOP_OBJECT("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
 
 		if(_state == CMDR_ACTION_STATE_END) exitWith { _state };
@@ -126,7 +126,7 @@ CLASS("ActionStateTransition", "Storable")
 	Returns: a transition which can be run from the current _state, or NULL_OBJECT
 	*/
 
-	STATIC_METHOD(selectTransition)
+	public STATIC_METHOD(selectTransition)
 		params [P_THISCLASS, P_OOP_OBJECT("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
 
 		if(_state == CMDR_ACTION_STATE_END) exitWith { NULL_OBJECT };
@@ -163,7 +163,7 @@ CLASS("ActionStateTransition", "Storable")
 
 	Returns: Boolean, if the AST is allowed to be applied now, defaults to true
 	*/
-	/* virtual */ METHOD(isAvailable) 
+	public virtual METHOD(isAvailable) 
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		true
 	ENDMETHOD;
@@ -179,7 +179,7 @@ CLASS("ActionStateTransition", "Storable")
 	Return: <CMDR_ACTION_STATE>, the new state, or <CMDR_ACTION_STATE_NONE> to stay in the 
 	current state (can be used for transitions that take time).
 	*/
-	/* virtual */ METHOD(apply) 
+	public virtual METHOD(apply) 
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		FAILURE("apply method must be implemented when deriving from ActionStateTransition");
 	ENDMETHOD;
@@ -194,7 +194,7 @@ CLASS("ActionStateTransition", "Storable")
 	Return: <CMDR_ACTION_STATE>, the new state, or <CMDR_ACTION_STATE_NONE> to stay in the 
 	current state (can be used for transitions that take time).
 	*/
-	/* virtual */ METHOD(cancel)
+	public virtual METHOD(cancel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 	ENDMETHOD;
 
@@ -220,12 +220,12 @@ CLASS("TestASTBase", "ActionStateTransition")
 			T_SETV("successState", CMDR_ACTION_STATE_END);
 		ENDMETHOD;
 
-		/* virtual */ METHOD(isAvailable) 
+		public override METHOD(isAvailable) 
 			params [P_THISOBJECT, P_STRING("_world")];
 			true
 		ENDMETHOD;
 
-		/* virtual */ METHOD(apply) 
+		public override METHOD(apply) 
 			params [P_THISOBJECT, P_STRING("_world")];
 			T_GETV("successState")
 		ENDMETHOD;

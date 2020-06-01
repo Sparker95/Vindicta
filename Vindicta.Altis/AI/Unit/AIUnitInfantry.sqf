@@ -31,7 +31,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "AIInfantry");
 	ENDMETHOD;
@@ -70,18 +70,18 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 	ENDMETHOD;
 
 	//                        G E T   P O S S I B L E   G O A L S
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		//["GoalUnitSalute","GoalUnitScareAway"]
 		["GoalUnitScareAway"]
 	ENDMETHOD;
 
 	//                      G E T   P O S S I B L E   A C T I O N S
-	METHOD(getPossibleActions)
+	public override METHOD(getPossibleActions)
 		//["ActionUnitSalute","ActionUnitScareAway"] // This is only for A* planner, which is not used for this AI type
 		[]
 	ENDMETHOD;
 
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+	public override METHOD(setUrgentPriorityOnAddGoal)
 		true
 	ENDMETHOD;
 

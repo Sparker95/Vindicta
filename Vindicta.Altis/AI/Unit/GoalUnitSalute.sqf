@@ -33,7 +33,7 @@ CLASS("GoalUnitSalute", "Goal")
 		if ((WF_GET_RELEVANCE(_wf)) == 0) exitWith {0};
 		
 		diag_log format ["[GoalUnitSalute] high relevance for AI: %1", _AI];
-		GET_STATIC_VAR("GoalUnitSalute", "relevance")
+		GETSV("GoalUnitSalute", "relevance")
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------

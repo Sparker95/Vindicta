@@ -54,7 +54,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 #endif
 	ENDMETHOD;
 
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -134,7 +134,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		[_splitAST, _assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -192,7 +192,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");

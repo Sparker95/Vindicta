@@ -47,7 +47,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 		
 		// Unpack the group handle
@@ -231,7 +231,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
 	ENDMETHOD;
 	
@@ -240,7 +240,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_TARGETS, STIMULUS_TYPE_FORGET_TARGETS]
 	ENDMETHOD;
 	
@@ -249,7 +249,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		switch (STIMULUS_GET_TYPE(_stimulus)) do {

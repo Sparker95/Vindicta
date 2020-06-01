@@ -66,11 +66,11 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
 	ENDMETHOD;
 
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS");

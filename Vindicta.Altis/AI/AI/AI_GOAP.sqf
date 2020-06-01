@@ -143,7 +143,7 @@ CLASS("AI_GOAP", "AI")
 	// | Must be called every update interval
 	// ----------------------------------------------------------------------
 	
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT, P_BOOL("_spawning")];
 		
 		#ifdef ASP_ENABLE
@@ -263,7 +263,7 @@ CLASS("AI_GOAP", "AI")
 					
 					// Get desired world state
 					pr _args = [/* AI */ _thisObject, _goalParameters];
-					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
+					pr _wsGoal = CALLSM(_goalClassName, "getEffects", _args);
 					
 					// Get actions this agent can do
 					pr _possActions = T_CALLM0("getPossibleActions");
@@ -271,7 +271,7 @@ CLASS("AI_GOAP", "AI")
 					// Run the A* planner to generate a plan
 					pr _args = [T_GETV("worldState"), _wsGoal, _possActions, _goalParameters, _thisObject];
 
-					CALL_STATIC_METHOD("AI_GOAP", "planActions", _args) params ["_foundPlan", "_actionPlan"];
+					CALLSM("AI_GOAP", "planActions", _args) params ["_foundPlan", "_actionPlan"];
 					
 					// Did the planner succeed?
 					if (_foundPlan) then {
@@ -439,7 +439,7 @@ CLASS("AI_GOAP", "AI")
 				pr _goalClassName = _x select 0;
 				pr _bias = _x select 1;
 				pr _parameters = _x select 2;
-				pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject ARG _parameters]);
+				pr _relevance = CALLSM(_goalClassName, "calculateRelevance", [_thisObject ARG _parameters]);
 				//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
 				_relevance = _relevance + _bias;
 				
@@ -536,7 +536,7 @@ CLASS("AI_GOAP", "AI")
 	Returning true from this will cause this AI to be marked as high priority when external goal is added.
 	Override in derived classes!
 	*/
-	/* virtual */ METHOD(setUrgentPriorityOnAddGoal)
+	public virtual METHOD(setUrgentPriorityOnAddGoal)
 		false
 	ENDMETHOD;
 	
@@ -986,7 +986,7 @@ CLASS("AI_GOAP", "AI")
 
 	Override in derived classes!!
 	*/
-	/* virtual */ METHOD(getPossibleGoals)
+	public virtual METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		OOP_ERROR_0("getPossibleGoals is not implemented!");
 		0 // Will cause error
@@ -998,7 +998,7 @@ CLASS("AI_GOAP", "AI")
 	Returns: Array with action class names
 	Override in derived classes!!
 	*/
-	/* virtual */ METHOD(getPossibleActions)
+	public virtual METHOD(getPossibleActions)
 		params [P_THISOBJECT];
 		OOP_ERROR_0("getPossibleActions is not implemented!");
 		0 // Will cause error
@@ -1097,12 +1097,12 @@ CLASS("AI_GOAP", "AI")
 				OOP_INFO_1("[AI:AStar] Info: Step: %1,  Open set:", _count);
 				// Print the open and closed set
 				{
-					pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_x]);
+					pr _nodeString = CALLSM("AI_GOAP", "AStarNodeToString", [_x]);
 					OOP_INFO_0("[AI:AStar]  " + _nodeString);
 				} forEach _openSet;
 				
 				// Print the selected node
-				pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_node]);
+				pr _nodeString = CALLSM("AI_GOAP", "AStarNodeToString", [_node]);
 				OOP_INFO_1("[AI:AStar] Info: Analyzing node: %1", _nodeString);
 			#endif
 			FIX_LINE_NUMBERS()
@@ -1162,12 +1162,12 @@ CLASS("AI_GOAP", "AI")
 			{ // forEach _availableActions;
 				pr _action = _x;
 				//OOP_INFO_1("Analyzing action: %1", _action);
-				pr _effects = GET_STATIC_VAR(_x, "effects");
+				pr _effects = GETSV(_x, "effects");
 				pr _args = [[], []]; //
 				
 				// At this point we get static preconditions because action parameters are unknown
 				// Properties that will be overwritten by getPreconditions must be set to some values to resolve conflicts!
-				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
+				pr _preconditions = GETSV(_x, "preconditions");
 				// Safety check
 				pr _connected = if (!isNil "_preconditions") then { [_preconditions, _effects, _nodeWS] call ws_isActionSuitable; } else {
 					false;
@@ -1177,7 +1177,7 @@ CLASS("AI_GOAP", "AI")
 				if (_connected) then {
 				
 					// Array with parameters for this action we are currently considering
-					pr _parameters = GET_STATIC_VAR(_x, "parameters");
+					pr _parameters = GETSV(_x, "parameters");
 					if (isNil "_parameters") then {_parameters = [];} else {
 						_parameters = +_parameters; // Make a deep copy
 					};
@@ -1236,7 +1236,7 @@ CLASS("AI_GOAP", "AI")
 						[_WSBeforeAction, _effects] call ws_substract;
 						// Fully resolve preconditions since we now know all the parameters of this action
 						pr _args = [_goalParameters, _parameters]; //
-						pr _preconditions = CALL_STATIC_METHOD(_x, "getPreconditions", _args);
+						pr _preconditions = CALLSM(_x, "getPreconditions", _args);
 						[_WSBeforeAction, _preconditions] call ws_add;
 						
 						// Check if this world state is in close set already
@@ -1261,7 +1261,7 @@ CLASS("AI_GOAP", "AI")
 							// Calculate G value
 							// G = G(_node) + cost of this action
 							pr _args = [_AI, _parameters];
-							pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
+							pr _cost = CALLSM(_x, "getCost", _args);
 							pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
 							_n set [ASTAR_NODE_ID_G, _g];
 							
@@ -1289,7 +1289,7 @@ CLASS("AI_GOAP", "AI")
 								
 								// Print debug text: neighbour node
 								#ifdef ASTAR_DEBUG
-									pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_n]);
+									pr _nodeString = CALLSM("AI_GOAP", "AStarNodeToString", [_n]);
 									OOP_INFO_0("[AI:AStar]  New node:            " + _nodeString);
 								#endif
 								FIX_LINE_NUMBERS()
@@ -1313,7 +1313,7 @@ CLASS("AI_GOAP", "AI")
 									
 									// Print debug text
 									#ifdef ASTAR_DEBUG
-										pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
+										pr _nodeString = CALLSM("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
 										//        "  Found in close set:  "
 										OOP_INFO_1("[AI:AStar]  Updated in open set: %1", _nodeString);
 									#endif
@@ -1322,7 +1322,7 @@ CLASS("AI_GOAP", "AI")
 									
 									// Print debug text
 									#ifdef ASTAR_DEBUG
-										pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
+										pr _nodeString = CALLSM("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
 										OOP_INFO_1("[AI:AStar]  Found in open set:   %1", _nodeString);
 									#endif
 									FIX_LINE_NUMBERS()
@@ -1382,13 +1382,13 @@ CLASS("AI_GOAP", "AI")
 	
 	
 	// - - - - - - STORAGE - - - - -
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		//diag_log "AI_GOAP postDeserialize";
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("AI", _thisObject, "postDeserialize", [_storage]);
 
 		// Restore variables
 		T_SETV("currentAction", "");
@@ -1470,7 +1470,7 @@ CLASS("AI_GOAP", "AI")
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	// Override to show debug data in debug UI for specific class
-	/* virtual */ METHOD(getDebugUIVariableNames)
+	public virtual METHOD(getDebugUIVariableNames)
 		[]
 	ENDMETHOD;
 

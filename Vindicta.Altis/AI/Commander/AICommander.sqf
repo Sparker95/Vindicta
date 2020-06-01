@@ -193,7 +193,7 @@ CLASS("AICommander", "AI")
 88           88     `8b    Y8a.    .a8P    Y8a.    .a8P  88          Y8a     a8P  Y8a     a8P  
 88           88      `8b    `"Y8888Y"'      `"Y8888Y"'   88888888888  "Y88888P"    "Y88888P"   
 */
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
@@ -318,7 +318,7 @@ CLASS("AICommander", "AI")
 	// |                    G E T   M E S S A G E   L O O P
 	// ----------------------------------------------------------------------
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		params [P_THISOBJECT];
 		
 		T_GETV("msgLoop");
@@ -377,7 +377,7 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD(getCmdrStrategy)
 		params [P_THISCLASS, P_SIDE("_side")];
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			ASSERT_THREAD(_thisObject);
 			T_GETV("cmdrStrategy")
@@ -412,7 +412,7 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD(setCmdrStrategyForSide)
 		params [P_THISCLASS, P_SIDE("_side"), P_OOP_OBJECT("_strategy")];
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "setCmdrStrategy", [_strategy]);
 		} else {
@@ -1282,7 +1282,7 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD(addActivity)
 		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
 
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_addActivity", [_pos ARG _activity]);
 		};
@@ -1338,7 +1338,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM0(_gar, "getSide");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM1("_registerGarrison", _gar);
@@ -1364,7 +1364,7 @@ CLASS("AICommander", "AI")
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 
 		private _side = CALLM0(_gar, "getSide");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			return T_CALLM3("postMethodAsync", "_registerGarrison", [_gar], _continuation)
@@ -1411,7 +1411,7 @@ CLASS("AICommander", "AI")
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 
 		private _side = CALLM0(_gar, "getSide");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar ARG _destroy]);
 		} else {
@@ -1456,7 +1456,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 
 		private _intelDB = T_GETV("intelDB");
 		private _intelClone = CALLM(_intelDB, "addIntelClone", [_intel]);
@@ -1474,12 +1474,12 @@ CLASS("AICommander", "AI")
 
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 		// Notify enemy commanders that this intel has been destroyed
 		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 		{
 			pr _enemySide = _x;
-			private _AI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_enemySide]);
+			private _AI = CALLSM("AICommander", "getAICommander", [_enemySide]);
 			private _db = GETV(_AI, "intelDB");
 			// Check if this DB has an intel which has _intel as source
 			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
@@ -1506,12 +1506,12 @@ CLASS("AICommander", "AI")
 
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _thisObject = CALLSM("AICommander", "getAICommander", [_side]);
 		// Notify enemy commanders that this intel has been destroyed
 		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 		{
 			pr _enemySide = _x;
-			private _AI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_enemySide]);
+			private _AI = CALLSM("AICommander", "getAICommander", [_enemySide]);
 			private _db = GETV(_AI, "intelDB");
 			// Check if this DB has an intel which has _intel as source
 			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
@@ -3374,7 +3374,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 	// - - - - - - - STORAGE - - - - - - -
 
-	/* override */ METHOD(preSerialize)
+	 public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Save intel database
@@ -3409,12 +3409,12 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		FIX_LINE_NUMBERS()
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("AI", _thisObject, "postDeserialize", [_storage]);
 
 		// GameMode must re-enable it
 		T_SETV("planningEnabled", false);

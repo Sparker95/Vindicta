@@ -12,12 +12,12 @@ These functions help initialize various properties of goals and actions from a s
 
 AI_misc_fnc_setGoalIntrinsicRelevance = {
 	params [P_STRING("_goalClass"), P_NUMBER("_relevance")];
-	SET_STATIC_VAR(_goalClass, "relevance", _relevance);
+	SETSV(_goalClass, "relevance", _relevance);
 };
 
 AI_misc_fnc_setGoalPredefinedAction = {
 	params [P_STRING("_goalClass"), P_STRING("_actionClass")];
-	SET_STATIC_VAR(_goalClass, "predefinedAction", _actionClass);
+	SETSV(_goalClass, "predefinedAction", _actionClass);
 };
 
 AI_misc_fnc_setGoalEffects = {
@@ -41,7 +41,7 @@ AI_misc_fnc_setGoalEffects = {
 	} forEach _effectsArray;
 	
 	// Set static variable for the goal
-	SET_STATIC_VAR(_goalClass, "effects", _ws);
+	SETSV(_goalClass, "effects", _ws);
 };
 
 AI_misc_fnc_setActionEffects = {
@@ -65,7 +65,7 @@ AI_misc_fnc_setActionEffects = {
 	} forEach _effectsArray;
 	
 	// Set static variable for the goal
-	SET_STATIC_VAR(_actionClass, "effects", _ws);
+	SETSV(_actionClass, "effects", _ws);
 };
 
 AI_misc_fnc_setActionPreconditions = {
@@ -89,7 +89,7 @@ AI_misc_fnc_setActionPreconditions = {
 	} forEach _preconditionsArray;
 	
 	// Set static variable for the goal
-	SET_STATIC_VAR(_actionClass, "preconditions", _ws);
+	SETSV(_actionClass, "preconditions", _ws);
 };
 
 AI_misc_fnc_setActionParametersFromGoal = {
@@ -98,30 +98,30 @@ AI_misc_fnc_setActionParametersFromGoal = {
 	{
 		_parameters pushBack [_x, nil];
 	} forEach _goalParameterTagsArray;
-	SET_STATIC_VAR(_actionClass, "parameters", _parameters);
+	SETSV(_actionClass, "parameters", _parameters);
 };
 
 AI_misc_fnc_setActionPrecedence = {
 	params [P_STRING("_actionClass"), P_NUMBER("_precedence") ];
-	SET_STATIC_VAR(_actionClass, "precedence", _precedence);
+	SETSV(_actionClass, "precedence", _precedence);
 };
 
 AI_misc_fnc_setActionNonInstant = {
 	params [P_STRING("_actionClass")];
-	SET_STATIC_VAR(_actionClass, "nonInstant", true);
+	SETSV(_actionClass, "nonInstant", true);
 };
 
 AI_misc_fnc_setActionCost = {
 	params [P_STRING("_actionClass"), P_NUMBER("_cost")];
 	
 	// Set the static variable
-	SET_STATIC_VAR(_actionClass, "cost", _cost);
+	SETSV(_actionClass, "cost", _cost);
 };
 
 AI_misc_fnc_setActionCostAndPrecedence = {
 	params [P_STRING("_actionClass"), P_NUMBER("_cost"), P_NUMBER("_precedence")];
 	
 	// Set the static variable
-	SET_STATIC_VAR(_actionClass, "cost", _cost);
-	SET_STATIC_VAR(_actionClass, "precedence", _precedence);
+	SETSV(_actionClass, "cost", _cost);
+	SETSV(_actionClass, "precedence", _precedence);
 };

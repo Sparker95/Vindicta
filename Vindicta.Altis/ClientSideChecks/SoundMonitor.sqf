@@ -21,10 +21,6 @@ Author: Sparker 7 November 2019
 #define __HIT_ACC_VAR_NAME "__hitAccumulator"
 #define __HIT_MAX_VAR_NAME "__hitMax"
 
-// I hate typing
-#define _SETV setVariable
-#define _GETV getVariable
-
 #define UPDATE_INTERVAL 16
 
 #define OOP_CLASS_NAME SoundMonitor
@@ -58,8 +54,8 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 		// Init variables on unit
 		// We could store stuff in OOP object instead of unit object
 		// But let's store it in unit object directly to save us some microseconds
-		_unit _SETV [__HIT_ACC_VAR_NAME, 0];
-		_unit _SETV [__HIT_MAX_VAR_NAME, 0];
+		_unit setVariable [__HIT_ACC_VAR_NAME, 0];
+		_unit setVariable [__HIT_MAX_VAR_NAME, 0];
 
 		// Add fired event handler
 		pr _ehid = _unit addEventHandler ["FiredMan", GET_METHOD("SoundMonitor", "EHFiredMan")];
@@ -82,11 +78,11 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
 	ENDMETHOD;
 
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS");
@@ -105,11 +101,11 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 
 		// Do the processing
 		CRITICAL_SECTION {
-			pr _hitAcc = _unit _GETV __HIT_ACC_VAR_NAME;
+			pr _hitAcc = _unit getVariable __HIT_ACC_VAR_NAME;
 			if (!_silenced) then {
 				if (_hitAcc > 0) then {
 
-					pr _hitMax = _unit _GETV __HIT_MAX_VAR_NAME;
+					pr _hitMax = _unit getVariable __HIT_MAX_VAR_NAME;
 
 					OOP_INFO_3("PROCESS: hitAcc: %1, hitPerSecond: %2, hit max: %3", _hitAcc, _hitAcc/UPDATE_INTERVAL, _hitMax);
 
@@ -129,13 +125,13 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 					CALLM2(gStimulusManagerGarrison, "postMethodAsync", "handleStimulus", [_stim]);
 
 					// Reset the counters
-					_unit _SETV [__HIT_MAX_VAR_NAME, 0];
-					_unit _SETV [__HIT_ACC_VAR_NAME, 0];
+					_unit setVariable [__HIT_MAX_VAR_NAME, 0];
+					_unit setVariable [__HIT_ACC_VAR_NAME, 0];
 				};
 			} else {
 				// Reset the counters
-				_unit _SETV [__HIT_MAX_VAR_NAME, 0];
-				_unit _SETV [__HIT_ACC_VAR_NAME, 0];
+				_unit setVariable [__HIT_MAX_VAR_NAME, 0];
+				_unit setVariable [__HIT_ACC_VAR_NAME, 0];
 			};
 		};
 
@@ -161,16 +157,16 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 		// todo improve this, because hit value is 0 for smoge grenades in grenade launcher and maybe for other things
 		if(_hit > 0 && _weapon != "Put") then
 		{
-			pr _hitMax = _unit _GETV __HIT_MAX_VAR_NAME;
-			pr _hitAcc = _unit _GETV __HIT_ACC_VAR_NAME;
+			pr _hitMax = _unit getVariable __HIT_MAX_VAR_NAME;
+			pr _hitAcc = _unit getVariable __HIT_ACC_VAR_NAME;
 
 			// Hit accumulator
-			_unit _SETV [__HIT_ACC_VAR_NAME, _hitAcc + _hit];
-			//_unit _SETV [__HIT_ACC_VAR_NAME, _hitAcc + 1]; // Temporary overwriting it to 1, so that any gunshot produces same sensor stimulation
+			_unit setVariable [__HIT_ACC_VAR_NAME, _hitAcc + _hit];
+			//_unit setVariable [__HIT_ACC_VAR_NAME, _hitAcc + 1]; // Temporary overwriting it to 1, so that any gunshot produces same sensor stimulation
 
 			// Maximum hit value during this time interval between process calls
 			if (_hit > _hitMax) then {
-				_unit _SETV [__HIT_MAX_VAR_NAME, _hit];
+				_unit setVariable [__HIT_MAX_VAR_NAME, _hit];
 			};
 		};
 	ENDMETHOD;

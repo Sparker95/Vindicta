@@ -224,7 +224,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(activate)
+	public METHOD(activate)
 		params [P_THISOBJECT];
 
 		if(T_GETV("active")) exitWith {
@@ -234,11 +234,11 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// If the garrison type is correct, and there is an appropriate AI commander, then register with it
 		if(
 			T_GETV("type") in GARRISON_TYPES_CMDR && 
-			{ CALL_STATIC_METHOD("AICommander", "getAICommander", [T_GETV("side")]) != NULL_OBJECT }
+			{ CALLSM("AICommander", "getAICommander", [T_GETV("side")]) != NULL_OBJECT }
 		) then {
 			// Once registered with AICommander, _activate will be called in our thread (this ensures a strict order of initialization)
 			private _continuation = ["_activate", [], _thisObject];
-			CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject ARG _continuation]);
+			CALLSM("AICommander", "registerGarrison", [_thisObject ARG _continuation]);
 		} else {
 			// No commander, just activate
 			T_CALLM1("postMethodAsync", "_activate");
@@ -257,7 +257,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: GarrisonModel
 	*/
-	METHOD(activateCmdrThread)
+	public METHOD(activateCmdrThread)
 		params [P_THISOBJECT];
 
 		if(T_GETV("active")) exitWith {
@@ -267,9 +267,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		private _garrModel = if(
 			T_GETV("type") in GARRISON_TYPES_CMDR &&
-			{ CALL_STATIC_METHOD("AICommander", "getAICommander", [T_GETV("side")]) != NULL_OBJECT }
+			{ CALLSM("AICommander", "getAICommander", [T_GETV("side")]) != NULL_OBJECT }
 		) then {
-			CALL_STATIC_METHOD("AICommander", "registerGarrisonCmdrThread", [_thisObject])
+			CALLSM("AICommander", "registerGarrisonCmdrThread", [_thisObject])
 		} else {
 			NULL_OBJECT
 		};
@@ -317,7 +317,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	destroyed state (isDestroyed returns true, isAlive returns false), removes
 	all units and groups, deletes the timer and AI components.
 	*/
-	METHOD(destroy)
+	public METHOD(destroy)
 		params [P_THISOBJECT, P_BOOL_DEFAULT_TRUE("_unregisterFromCmdr")];
 
 		OOP_INFO_0("DESTROY GARRISON");
@@ -390,7 +390,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		if(_unregisterFromCmdr) then {
 			// Unregister with the owning commander, do it last because it will cause an unref
-			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
+			CALLSM("AICommander", "unregisterGarrison", [_thisObject]);
 		};
 
 		T_SETV("effMobile", []);
@@ -411,7 +411,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Is this Garrison ready to be used?
 	*/
-	METHOD(isAlive)
+	public METHOD(isAlive)
 		params [P_THISOBJECT];
 		// No mutex lock because this is expected to be atomic
 		!IS_GARRISON_DESTROYED(_thisObject)
@@ -423,26 +423,26 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Is this Garrison ready to be used?
 	*/
-	METHOD(isDestroyed)
+	public METHOD(isDestroyed)
 		params [P_THISOBJECT];
 		// No mutex lock because this is expected to be atomic
 	 	IS_GARRISON_DESTROYED(_thisObject)
 	ENDMETHOD;
 
 
-	METHOD(runLocked)
+	public METHOD(runLocked)
 		params [P_THISOBJECT, P_OOP_OBJECT("_obj"), P_STRING("_funcName"), P_ARRAY("_args")];
 		__MUTEX_LOCK;
 		CALLM(_obj, _funcName, _args);
 		__MUTEX_UNLOCK;
 	ENDMETHOD;
 
-	METHOD(lock)
+	public METHOD(lock)
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 	ENDMETHOD;
 
-	METHOD(unlock)
+	public METHOD(unlock)
 		params [P_THISOBJECT];
 		__MUTEX_UNLOCK;
 	ENDMETHOD;
@@ -458,7 +458,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array with <Garrison> objects
 	*/
-	STATIC_METHOD(getAllActive)
+	public STATIC_METHOD(getAllActive)
 		params [P_THISCLASS, P_ARRAY("_sidesInclude"), P_ARRAY("_sidesExclude")];
 		
 		if (count _sidesInclude == 0 and count _sidesExclude == 0) then {
@@ -483,7 +483,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array with <Garrison> objects
 	*/
-	STATIC_METHOD(getAllNotEmpty)
+	public STATIC_METHOD(getAllNotEmpty)
 		params [P_THISCLASS, P_ARRAY("_sidesInclude"), P_ARRAY("_sidesExclude")];
 		
 		if (count _sidesInclude == 0 and count _sidesExclude == 0) then {
@@ -504,7 +504,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns absolutely all garrison objects
 	*/
-	STATIC_METHOD(getAll)
+	public STATIC_METHOD(getAll)
 		params [P_THISCLASS];
 		GETSV("Garrison", "all")
 	ENDMETHOD;
@@ -516,7 +516,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: <MessageLoop>
 	*/
 	// Returns the message loop this object is attached to
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		MESSAGE_LOOP
 	ENDMETHOD;
 
@@ -524,7 +524,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// |                           P R O C E S S                            |
 	// | THIS IS RUN UNSCHEDULED											|
 	// ----------------------------------------------------------------------
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -581,7 +581,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// private _thisPos = T_CALLM("getPos", []);
 		// // private _side = T_GETV("side");
 		// // Get nearest other garrison
-		// pr _nearGarrisons = CALL_STATIC_METHOD("Garrison", "getAllNotEmpty", [[] ARG []]) select {
+		// pr _nearGarrisons = CALLSM("Garrison", "getAllNotEmpty", [[] ARG []]) select {
 		// 	!CALLM0(_x, "isOnlyEmptyVehicles")
 		// } apply {
 		// 	[CALLM0(_x, "getPos") distance _thisPos, _x]
@@ -622,7 +622,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Parameters: _faction
 	_faction - string
 	*/
-	METHOD(setFaction)
+	public METHOD(setFaction)
 		params [P_THISOBJECT, P_STRING("_faction")];
 		T_SETV("faction", _faction);
 	ENDMETHOD;
@@ -632,7 +632,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Parameters: _name
 	_name - string
 	*/
-	METHOD(setName)
+	public METHOD(setName)
 		params [P_THISOBJECT, P_STRING("_name")];
 		T_SETV("name", _name);
 	ENDMETHOD;
@@ -645,7 +645,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	_location - <Location>
 	*/
-	METHOD(setLocation)
+	public METHOD(setLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 
 		__MUTEX_LOCK;
@@ -711,7 +711,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	_home - <Location>
 	*/
-	METHOD(setHome)
+	public METHOD(setHome)
 		params [P_THISOBJECT, P_OOP_OBJECT("_home")];
 
 		__MUTEX_LOCK;
@@ -727,7 +727,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		
 	ENDMETHOD;
 	
-	METHOD(detachFromLocation)
+	public METHOD(detachFromLocation)
 		params [P_THISOBJECT];
 
 		ASSERT_THREAD(_thisObject);
@@ -770,7 +770,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	_pos - position
 	*/
-	METHOD(setPos)
+	public METHOD(setPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 
 		ASSERT_THREAD(_thisObject);
@@ -802,7 +802,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Method: getFaction
 	Returns: faction - string
 	*/
-	METHOD(getFaction)
+	public METHOD(getFaction)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("faction", "")
 	ENDMETHOD;
@@ -814,7 +814,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Side
 	*/
-	METHOD(getSide)
+	public METHOD(getSide)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("side", sideUnknown)
 	ENDMETHOD;
@@ -826,7 +826,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: string
 	*/
-	METHOD(getType)
+	public METHOD(getType)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("type", "")
 	ENDMETHOD;
@@ -838,7 +838,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: <Location>
 	*/
-	METHOD(getLocation)
+	public METHOD(getLocation)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("location", NULL_OBJECT)
 	ENDMETHOD;
@@ -850,7 +850,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: <Location>
 	*/
-	METHOD(getHome)
+	public METHOD(getHome)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("home", NULL_OBJECT)
 	ENDMETHOD;
@@ -862,7 +862,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of <Group> objects.
 	*/
-	METHOD(getGroups)
+	public METHOD(getGroups)
 		params [P_THISOBJECT];
 		+SAFE_ACCESSOR("groups", [])
 	ENDMETHOD;
@@ -874,7 +874,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of <Unit> objects.
 	*/
-	METHOD(getUnits)
+	public METHOD(getUnits)
 		params [P_THISOBJECT];
 		+SAFE_ACCESSOR("units", [])
 	ENDMETHOD;
@@ -886,7 +886,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getInfantryUnits)
+	public METHOD(getInfantryUnits)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isInfantry") }
 	ENDMETHOD;
@@ -898,7 +898,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of officers.
 	*/
-	METHOD(getOfficerUnits)
+	public METHOD(getOfficerUnits)
 		params [P_THISOBJECT];
 		T_CALLM1("findUnits", [[T_INF ARG T_INF_officer]]);
 	ENDMETHOD;
@@ -910,7 +910,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getVehicleUnits)
+	public METHOD(getVehicleUnits)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isVehicle") }
 	ENDMETHOD;
@@ -922,7 +922,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getDroneUnits)
+	public METHOD(getDroneUnits)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isDrone") }
 	ENDMETHOD;
@@ -934,7 +934,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getCargoUnits)
+	public METHOD(getCargoUnits)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("units", []) select { CALLM0(_x, "isCargo") }
 	ENDMETHOD;
@@ -944,7 +944,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: number
 	*/
-	METHOD(getBuildResources)
+	public METHOD(getBuildResources)
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
 		private _buildRes = T_GETV("buildResources");
@@ -1043,7 +1043,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_CALLM0("updateBuildResources");
 	ENDMETHOD;
 
-	METHOD(assignCargo)
+	public METHOD(assignCargo)
 		params [P_THISOBJECT, P_ARRAY("_cargo")];
 		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
 		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
@@ -1054,7 +1054,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		} forEach _cargoVehicles;
 	ENDMETHOD;
 
-	METHOD(clearCargo)
+	public METHOD(clearCargo)
 		params [P_THISOBJECT];
 		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
 		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
@@ -1073,7 +1073,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array
 	*/
-	METHOD(getPos)
+	public METHOD(getPos)
 		params [P_THISOBJECT];
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
@@ -1090,7 +1090,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Bool
 	*/
-	METHOD(isEmpty)
+	public METHOD(isEmpty)
 		params [P_THISOBJECT];
 		count SAFE_ACCESSOR("units", []) == 0
 	ENDMETHOD;
@@ -1102,7 +1102,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Bool
 	*/
-	METHOD(isOnlyEmptyVehicles)
+	public METHOD(isOnlyEmptyVehicles)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("countInf", []) == 0
 	ENDMETHOD;
@@ -1114,7 +1114,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Bool
 	*/
-	METHOD(isSpawned)
+	public METHOD(isSpawned)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("spawned", false)
 	ENDMETHOD;
@@ -1131,7 +1131,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array with <Group> objects.
 	*/
-	METHOD(findGroupsByType)
+	public METHOD(findGroupsByType)
 		params [P_THISOBJECT, ["_types", 0, [0, []]]];
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -2826,7 +2826,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: [].
 	*/
-	METHOD(getSubagents)
+	public override METHOD(getSubagents)
 		[]
 	ENDMETHOD;
 
@@ -2837,7 +2837,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of <Unit> objects.
 	*/
-	METHOD(getAI)
+	public override METHOD(getAI)
 		params [P_THISOBJECT];
 		SAFE_ACCESSOR("AI", NULL_OBJECT)
 	ENDMETHOD;
@@ -2901,7 +2901,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				// {
 				// 	CALLM1(_newGroup, "addUnit", _x);
 				// } forEach (units _group apply { 
-				// 	CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]) 
+				// 	CALLSM("Unit", "getUnitFromObjectHandle", [_objectHandle]) 
 				// } select {
 				// 	!IS_NULL_OBJECT(_x)
 				// });
@@ -3344,7 +3344,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	// ======================================= FILES ==============================================
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx
-	METHOD_FILE(handleMessageEx, "Garrison\handleMessageEx.sqf");
+	public override METHOD_FILE(handleMessageEx, "Garrison\handleMessageEx.sqf");
 
 	// Spawns the whole garrison
 	METHOD_FILE(spawn, "Garrison\spawn.sqf");
@@ -3473,7 +3473,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		// Get units that need reassigning to player garrison
 		private _unitsNeedReassigning = _nonPlayerUnits apply {
-			[CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x]), _x]
+			[CALLSM("Unit", "getUnitFromObjectHandle", [_x]), _x]
 		} select {
 			!IS_NULL_OBJECT(_x select 0) && {CALLM0(_x select 0, "getGarrison") != _playerGarrison}
 		} apply {
@@ -3533,7 +3533,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		// Get the units OOP objects
 		private _units = _unitHandles apply {
-			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
+			CALLSM("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
 			!IS_NULL_OBJECT(_x) && {!(CALLM0(_x, "getGarrison") isEqualTo _tgtGarrison)} 
 		};
@@ -3573,7 +3573,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		// Get the units OOP objects
 		private _unitObjects = _unitHandles apply {
-			CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_x])
+			CALLSM("Unit", "getUnitFromObjectHandle", [_x])
 		} select {
 			!IS_NULL_OBJECT(_x) && {_x in _ourUnits}
 		};
@@ -3629,7 +3629,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -
-	/* override */ METHOD(preSerialize)
+	 public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Save all units (except players)
@@ -3664,7 +3664,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_GETV("side") != CIVILIAN && T_GETV("type") in GARRISON_TYPES_AI
 	ENDMETHOD;
 	
-	/* virtual */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes

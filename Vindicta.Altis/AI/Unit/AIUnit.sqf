@@ -42,7 +42,7 @@ CLASS("AIUnit", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopGroupAI
 	ENDMETHOD;
 

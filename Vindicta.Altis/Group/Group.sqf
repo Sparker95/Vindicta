@@ -100,7 +100,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: <MessageLoop>
 	*/
 	// Returns the message loop this object is attached to
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopMain
 	ENDMETHOD;
 
@@ -1170,7 +1170,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: String, <AIGroup>
 	*/
-	METHOD(getAI)
+	public override METHOD(getAI)
 		params [P_THISOBJECT];
 		T_GETV("data") select GROUP_DATA_ID_AI
 	ENDMETHOD;
@@ -1185,7 +1185,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: array of units.
 	*/
-	METHOD(getSubagents)
+	public override METHOD(getSubagents)
 		params [P_THISOBJECT];
 		// All units can have AI
 		T_GETV("data") select GROUP_DATA_ID_UNITS;
@@ -1200,7 +1200,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	See <MessageReceiver.serialize>
 	*/
 	// Must return a single value which can be deserialized to restore value of an object
-	METHOD(serialize)
+	protected override METHOD(serialize)
 		params [P_THISOBJECT];
 
 		diag_log "[Group:serialize] was called!";
@@ -1225,7 +1225,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	See <MessageReceiver.deserialize>
 	*/
 	// Takes the output of deserialize and restores values of an object
-	METHOD(deserialize)
+	protected override METHOD(deserialize)
 		params [P_THISOBJECT, "_serialData"];
 
 		diag_log "[Group:deserialize] was called!";
@@ -1261,7 +1261,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Method: transferOwnership
 	See <MessageReceiver.transferOwnership>
 	*/
-	METHOD(transferOwnership)
+	protected override METHOD(transferOwnership)
 		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 
 		diag_log "[Group:transferOwnership] was called!";
@@ -1375,7 +1375,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 
 	// - - - - - - - STORAGE - - - - - - - -
-	METHOD(preSerialize)
+	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save units which we own
@@ -1389,7 +1389,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(serializeForStorage)
+	 public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		
 		pr _data = +T_GETV("data");
@@ -1401,7 +1401,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		_data
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	 public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		
 		_serial set [GROUP_DATA_ID_GROUP_HANDLE, grpNull];
@@ -1414,11 +1414,11 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		pr _data = T_GETV("data");
 

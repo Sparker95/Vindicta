@@ -21,7 +21,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _AI = T_GETV("AI");
@@ -92,7 +92,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned
@@ -119,7 +119,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		// Bail if not spawned
@@ -140,7 +140,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 	
 
 
-	METHOD(handleGroupsAdded)
+	public override METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		{
@@ -150,7 +150,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 		nil
 	ENDMETHOD;
 
-	METHOD(handleGroupsRemoved)
+	public override METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		{
@@ -160,7 +160,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 		nil
 	ENDMETHOD;
 	
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 			// Fail if either broken vehicle or repair unit is in the array with removed units
@@ -173,7 +173,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 		nil
 	ENDMETHOD;
 
-	METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 			
 		nil

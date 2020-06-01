@@ -37,7 +37,7 @@ CLASS("ActionGroup", "Action")
 		T_SETV("replanOnCompositionChange", true);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		T_CALLM0("clearUnitGoals");
@@ -92,7 +92,7 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: nil
 	*/
-	/* public virtual */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Replan by default
 		if(T_GETV("replanOnCompositionChange")) then {
@@ -113,7 +113,7 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: nil
 	*/
-	/* public virtual */ METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Replan by default
 		if(T_GETV("replanOnCompositionChange")) then {
@@ -121,7 +121,7 @@ CLASS("ActionGroup", "Action")
 		};
 	ENDMETHOD;
 
-	/* protected */ METHOD(applyGroupBehaviour)
+	protected METHOD(applyGroupBehaviour)
 		params [P_THISOBJECT, ["_defaultFormation", "WEDGE"], ["_defaultBehaviour", "AWARE"], ["_defaultCombatMode", "YELLOW"], ["_defaultSpeedMode", "NORMAL"]];
 
 		private _hG = T_GETV("hG");
@@ -135,14 +135,14 @@ CLASS("ActionGroup", "Action")
 		_hG setSpeedMode ([_speedMode, _defaultSpeedMode] select (_speedMode isEqualTo ""));
 	ENDMETHOD;
 
-	/* protected */ METHOD(clearWaypoints)
+	protected METHOD(clearWaypoints)
 		params [P_THISOBJECT];
 
 		private _hG = T_GETV("hG");
 		CALLSM1("Action", "_clearWaypoints", _hG);
 	ENDMETHOD;
 
-	/* protected */ METHOD(regroup)
+	protected METHOD(regroup)
 		params [P_THISOBJECT];
 
 		private _hG = T_GETV("hG");
@@ -150,7 +150,7 @@ CLASS("ActionGroup", "Action")
 	ENDMETHOD;
 
 	// // We override this to toggle off the "new" flag in the AIGroup
-	// /* protected override */ METHOD(activateIfInactive)
+	// protected override METHOD(activateIfInactive)
 	// 	params [P_THISOBJECT];
 	// 	private _state = T_GETV("state");
 	// 	if (_state == ACTION_STATE_INACTIVE) then {
@@ -162,7 +162,7 @@ CLASS("ActionGroup", "Action")
 	// 	_state
 	// ENDMETHOD;
 
-	/* protected */ METHOD(teleport)
+	protected METHOD(teleport)
 		params [P_THISOBJECT, P_POSITION("_pos"), ["_units", 0, [0, []]]];
 
 		if(_units isEqualTo 0) then {
@@ -171,8 +171,7 @@ CLASS("ActionGroup", "Action")
 		CALLSM2("Action", "_teleport", _units, _pos);
 	ENDMETHOD;
 
-
-	/* protected */ METHOD(clearUnitGoals)
+	protected METHOD(clearUnitGoals)
 		params [P_THISOBJECT, ["_goals", [""], ["", []]], ["_units", 0, [0, []]]];
 
 		if(_units isEqualTo 0) then {
@@ -188,7 +187,7 @@ CLASS("ActionGroup", "Action")
 		} forEach _units;
 	ENDMETHOD;
 
-	METHOD(updateVehicleAssignments)
+	protected METHOD(updateVehicleAssignments)
 		params [P_THISOBJECT];
 
 		private _group = T_GETV("group");

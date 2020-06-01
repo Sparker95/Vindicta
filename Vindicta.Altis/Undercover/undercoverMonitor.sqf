@@ -265,14 +265,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
 	ENDMETHOD;
 
 
 	// ------------ H A N D L E  M E S S A G E ------------
 
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		params [P_THISOBJECT , ["_msg", [], [[] ]]];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 
@@ -355,7 +355,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	
 						// check if unit is in allowed area
 						pr _pos = getPos _unit;
-				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
+				 		pr _loc = CALLSM("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
 				 		if (_loc != NULL_OBJECT) then {
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
@@ -711,7 +711,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				// update normal UI
 				#ifndef DEBUG_UNDERCOVER_MONITOR
 				_args = [_unit, _suspicion, _hintKeys];
-				CALL_STATIC_METHOD("UndercoverUI", "drawUI", _args); // draw UI
+				CALLSM("UndercoverUI", "drawUI", _args); // draw UI
 				#endif
 				FIX_LINE_NUMBERS()
 

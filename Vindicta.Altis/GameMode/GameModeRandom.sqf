@@ -14,7 +14,7 @@ CLASS("GameModeRandom", "GameModeBase")
 
 	ENDMETHOD;
 		
-	/* protected virtual */ METHOD(getLocationOwner)
+	protected override METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		OOP_DEBUG_MSG("%1", [_loc]);
 		private _type = GETV(_loc, "type");

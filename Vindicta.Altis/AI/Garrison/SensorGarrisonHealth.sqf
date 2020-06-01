@@ -16,7 +16,7 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 		
 		// Bail if not spawned
@@ -68,7 +68,7 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");

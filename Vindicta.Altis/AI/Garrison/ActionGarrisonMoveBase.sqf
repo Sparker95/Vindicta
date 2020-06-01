@@ -180,7 +180,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	protected override METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
@@ -307,7 +307,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			_vr
 		};
 		private _side = CALLM0(_gar, "getSide");
-		private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		private _cmdr = CALLSM("AICommander", "getAICommander", [_side]);
 
 		private _threatCostFn = {
 			params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
@@ -337,8 +337,8 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			};
 		} forEach _units;
 	ENDMETHOD;
-	
-	protected override METHOD(spawn)
+
+	public override METHOD(spawn)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");

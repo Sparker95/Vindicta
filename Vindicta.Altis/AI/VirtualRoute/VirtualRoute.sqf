@@ -218,7 +218,7 @@ CLASS("VirtualRoute", "")
 	Method: start
 	Start moving during process calls.
 	*/
-	METHOD(start)
+	public METHOD(start)
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", false);
@@ -229,7 +229,7 @@ CLASS("VirtualRoute", "")
 	Method: stop
 	Stop moving during process calls.
 	*/
-	METHOD(stop)
+	public METHOD(stop)
 		params [P_THISOBJECT];
 
 		T_SETV("stopped", true);
@@ -240,7 +240,7 @@ CLASS("VirtualRoute", "")
 	Method: process
 	Update position, moving along route. Only moves if started.
 	*/
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 		
 		private _failed = T_GETV("failed");
