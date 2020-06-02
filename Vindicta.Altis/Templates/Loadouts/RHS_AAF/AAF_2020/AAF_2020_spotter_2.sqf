@@ -25,6 +25,7 @@ this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "I_IR_Grenade";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
 this addItemToVest "rhs_grenade_mki_mag";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};

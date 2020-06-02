@@ -25,6 +25,7 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "I_E_IR_Grenade";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
 for "_i" from 1 to 10 do {this addItemToVest "rhs_10Rnd_762x54mmR_7N14";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_zarya2";};
