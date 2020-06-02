@@ -15,8 +15,8 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tRHS_AAF_2020"]; // 							Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Altis Armed Forces units. 2020 variant. Uses RHS and AAF2017."]; // 			Template display description
-_array set [T_DISPLAY_NAME, "RHS AAF 2020 Custom"]; // 				Template display name
+_array set [T_DESCRIPTION, "Altis Armed Forces units for Altis. 2020 variant. Uses RHS and AAF2017."]; // 			Template display description
+_array set [T_DISPLAY_NAME, "RHS Altis Armed Forces (2020)"]; // 				Template display name
 _array set [T_FACTION, T_FACTION_military]; // 				Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
 								"FGN_AAF_Troops",	// AAF 2017
