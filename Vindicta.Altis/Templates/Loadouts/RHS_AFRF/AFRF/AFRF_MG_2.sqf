@@ -12,6 +12,7 @@ this addHeadgear _RandomHeadgear;
 _RandomVest = selectRandom ["rhs_6b23_digi_rifleman","rhs_6b23_digi_6sh92","rhs_6b23_digi_6sh92_spetsnaz2"];
 this addVest _RandomVest;
 this addBackpack "rhs_assault_umbts";
+this forceaddUniform "rhs_uniform_emr_patchless";
 
 this addWeapon "rhs_weap_ak74m";
 this addPrimaryWeaponItem "rhs_acc_dtk";
