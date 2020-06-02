@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_HIDF"];
-_array set [T_DESCRIPTION, "Horizon Islands Defence Forces. Uses RHS."];
-_array set [T_DISPLAY_NAME, "RHS HIDF Custom"];
+_array set [T_DESCRIPTION, "Horizon Islands Defence Forces for Tanoa. Uses RHS."];
+_array set [T_DISPLAY_NAME, "RHS Horizon Islands Defence Forces"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 								"rhsusf_c_troops",

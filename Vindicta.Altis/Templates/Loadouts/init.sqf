@@ -54,6 +54,9 @@ call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_LDF\LDF_Recon\i
 call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_POLICE\Police\init.sqf";
 //Arma3_CIVILIAN
 call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_CIVILIAN\init.sqf";
+//RHS_AFRF
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AFRF\AFRF\init.sqf";
+call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AFRF\AFRF_recon\init.sqf";
 //AAF_2010
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_2010\init.sqf";
 call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_2010_recon\init.sqf";

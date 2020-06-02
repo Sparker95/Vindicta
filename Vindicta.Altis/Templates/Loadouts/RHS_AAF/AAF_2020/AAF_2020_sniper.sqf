@@ -24,7 +24,8 @@ this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 8 do {this addItemToVest "rhs_5Rnd_338lapua_t5000";};
+this addItemToUniform "I_IR_Grenade";
+for "_i" from 1 to 15 do {this addItemToVest "rhs_5Rnd_338lapua_t5000";};
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
