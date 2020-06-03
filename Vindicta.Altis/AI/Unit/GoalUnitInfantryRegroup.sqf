@@ -14,7 +14,7 @@ CLASS("GoalUnitInfantryRegroup", "Goal")
 		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
 		CALLM1(_ai, "setAllowVehicleWSP", false);
 
-		// We will have to move to leader
+		// We will have to move to leader, so prepare move coordinates
 		pr _unit = GETV(_ai, "agent");
 		pr _group = CALLM0(_unit, "getGroup");
 		pr _leaderUnit = CALLM0(_group, "getLeader");

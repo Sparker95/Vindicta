@@ -193,6 +193,9 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 						_vectorDiffNorm set [2, 0.1]; 				// Discard vertical difference
 						pr _vectorPush = _vectorDiffNorm vectorMultiply _pushDistance;
 						_hO setPos (_currentPos vectorAdd _vectorPush);
+
+						// Order move to target again
+						CALLM0(_ai, "orderMoveToTarget");
 					};
 				};
 			};

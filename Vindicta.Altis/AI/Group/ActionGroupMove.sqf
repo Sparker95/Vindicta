@@ -300,7 +300,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 				T_SETV("speedLimit", _speedLimit);
 				vehicle leader _hG limitSpeed _speedLimit;
 			} else {
-				if(T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION) then {
+				private _nUnits = count units _hG;
+				private _infantrySeparation = T_CALLM0("getInfantrySeparation");
+				if((T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION) ||
+					_infantrySeparation > ((_nUnits * 6) max 35)) then {
 					// Set reduced group speed
 					private _speedMode = T_GETV("speedMode");
 					CALLM1(_ai, "setSpeedMode", "LIMITED");
@@ -399,5 +402,22 @@ CLASS("ActionGroupMove", "ActionGroup")
 			_lastUnitPrevGroup = _otherUnitsByDistance#0;
 		} forEach _followingGroups;
 		_dMax
+	ENDMETHOD;
+
+	// Gets max distance between leader and any of its subordinates
+	/* private */ METHOD(getInfantrySeparation)
+		params [P_THISOBJECT];
+
+		private _hG = T_GETV("hG");
+		private _leader = leader _hG;
+		private _distances = ((units _hG) - [_leader]) apply {_x distance _leader};
+		
+		// Bail if noone is following
+		if (count _distances == 0) exitWith {
+			return 0;
+		};
+
+		private _maxDistance = selectMax _distances;
+		return _maxDistance;
 	ENDMETHOD;
 ENDCLASS;
