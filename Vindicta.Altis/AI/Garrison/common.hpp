@@ -12,6 +12,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "..\WorldState\WorldState.hpp"
 #include "..\parameterTags.hpp"
 #include "..\..\Group\Group.hpp"
 #include "..\..\Garrison\Garrison.hpp"

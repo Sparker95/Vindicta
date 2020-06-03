@@ -68,5 +68,8 @@
 #define TAG_TARGET_SHOOT_LEG "g_targetShootLeg"
 #define TAG_TARGET_STAND_IDLE "g_targetStandIdle"
 
+// Garrison interaction targets
+#define TAG_POS_CLEAR_AREA "g_targetClearArea"
+
 
 #define TAG_ONLY_COMBAT_VEHICLES "g_onlyCombat"

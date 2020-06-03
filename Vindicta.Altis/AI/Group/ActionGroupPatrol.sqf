@@ -176,20 +176,10 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	METHOD(terminate)
 		params [P_THISOBJECT];
 		
-		pr _hG = T_GETV("hG");
-		
+		T_CALLCM0("ActionGroup", "terminate");
+
 		// Delete all waypoints
 		T_CALLM0("clearWaypoints");
-
-				
-		// Delete given goals
-		pr _AI = T_GETV("AI");
-		pr _group = GETV(_AI, "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
-		} forEach _units;
 		
 	ENDMETHOD;
 

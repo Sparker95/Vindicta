@@ -79,4 +79,9 @@ CLASS("ActionGroupFollow", "ActionGroup")
 		_state
 	ENDMETHOD;
 
+	METHOD(terminate)
+		params [P_THISOBJECT];
+		T_CALLCM0("ActionGroup", "terminate");
+	ENDMETHOD;
+
 ENDCLASS;

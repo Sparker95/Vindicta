@@ -24,10 +24,10 @@ CLASS("AIGarrison", "AI_GOAP")
 	/* save */	VARIABLE_ATTR("awareOfAssignedTargets", [ATTR_SAVE]);
 
 	// Variables for moving somewhere
-	VARIABLE("pos");			// Own position
-	VARIABLE("vehiclesPos");	// Position of our vehicles
-	VARIABLE("moveTargetPos");
-	VARIABLE("moveRadius");		// Radius for movement completion
+	/* save */	VARIABLE_ATTR("pos", [ATTR_SAVE]);			// Own position
+	/* save */	VARIABLE_ATTR("vehiclesPos", [ATTR_SAVE]);	// Position of our vehicles
+	/* save */	VARIABLE_ATTR("moveTargetPos", [ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("moveRadius", [ATTR_SAVE]);		// Radius for movement completion
 
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
@@ -486,15 +486,11 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD(handleLocationChanged)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
-		// Set location world state property
-		pr _ws = T_GETV("worldState");
-		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
-
 		// If we now are attached to a location
 		if (_loc != "") then {
 			// Set position world state property
 			pr _pos = CALLM0(_loc, "getPos");
-			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+			T_CALLM1("setPos", _pos);
 			
 			// Now we know about this location
 			T_CALLM1("addKnownFriendlyLocation", _loc);
@@ -823,16 +819,16 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _ws = T_GETV("worldState");
 		pr _moveRadius = T_GETV("moveRadius");
 
-		pr _value0 = (T_GETV("pos") distance2D _target) <= _moveRadius;
+		pr _value0 = (T_GETV("pos") distance2D _targetPos) <= _moveRadius;
 		WS_SET(_ws, WSP_GAR_AT_TARGET_POS, _value0);
 
-		pr _value1 = (T_GETV("vehiclesPos") distance2D _target) <= _moveRadius;
+		pr _value1 = (T_GETV("vehiclesPos") distance2D _targetPos) <= _moveRadius;
 		WS_SET(_ws, WSP_GAR_VEHICLES_AT_TARGET_POS, _value1);
 
 	ENDMETHOD;
 
 	// Sets move target position
-	METHOD(setMoveTarget)
+	METHOD(setMoveTargetPos)
 		params [P_THISOBJECT, P_ARRAY("_targetPos")];
 		T_SETV("moveTargetPos", _targetPos);
 	ENDMETHOD;

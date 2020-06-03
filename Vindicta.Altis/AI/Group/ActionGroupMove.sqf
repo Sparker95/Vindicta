@@ -337,6 +337,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	/* protected override */ METHOD(terminate)
 		params [P_THISOBJECT];
 
+		T_CALLCM0("ActionGroup", "terminate");
 		// Turn off vehicle sirens, and reset speed limits
 		{
 			private _t = CALLM0(CALLM0(_x, "getGarrison"), "getTemplate");
@@ -346,7 +347,6 @@ CLASS("ActionGroupMove", "ActionGroup")
 		} forEach CALLM0(T_GETV("group"), "getVehicleUnits");
 
 		T_CALLM0("clearWaypoints");
-		T_CALLM1("clearUnitGoals", ["GoalUnitFollow" ARG "GoalUnitMove"]);
 	ENDMETHOD;
 
 	//Gets the maximum separation between vehicles in convoy

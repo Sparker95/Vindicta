@@ -158,26 +158,5 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		// We must replan everything
 		T_SETV("state", ACTION_STATE_REPLAN);
 	ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	METHOD(terminate)
-		params [P_THISOBJECT];
-		
-		// Delete external goals
-		pr _group = T_GETV("group");
-		pr _units = CALLM0(_group, "getUnits");
-		pr _AI = T_GETV("AI");
-		{ // foreach units
-			pr _unit = _x;
-			pr _unitAI = CALLM0(_unit, "getAI");
-
-			if (_unitAI != "") then { // Sanity check
-				// Remove goals from this AI
-				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", _AI);
-				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMoveBuilding", _AI);
-			};
-		} forEach _units;
-		
-	ENDMETHOD;
 
 ENDCLASS;

@@ -8,6 +8,13 @@ Goal for a garrison to go destroy some enemies
 #define OOP_CLASS_NAME GoalGarrisonClearArea
 CLASS("GoalGarrisonClearArea", "Goal")
 
+	STATIC_METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS_CLEAR_AREA, [[]]] ],	// Required parameters
+			[ [TAG_CLEAR_RADIUS, [0]], [TAG_DURATION_SECONDS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	// Gets called when an external goal of this class is added to AI
 	STATIC_METHOD(onGoalAdded)
 		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
@@ -18,6 +25,26 @@ CLASS("GoalGarrisonClearArea", "Goal")
 		pr _radius = CALLSM("Action", "getParameterValue", [_parameters ARG TAG_CLEAR_RADIUS]);
 		SETV(_AI, "assignedTargetsPos", _pos);
 		SETV(_AI, "assignedTargetsRadius", _radius);
+	ENDMETHOD;
+
+	STATIC_METHOD(onGoalChosen)
+		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
+
+		pr _targetPos = GET_PARAMETER_VALUE(_goalParameters, TAG_POS_CLEAR_AREA);
+		pr _clearRadius = GET_PARAMETER_VALUE_DEFAULT(_goalParameters, TAG_CLEAR_RADIUS, 100);
+
+		pr _moveRadius = (_clearRadius + 250) min 400;
+		_goalParameters pushBack [TAG_MOVE_RADIUS, _moveRadius];
+		_goalParameters pushBack [TAG_POS, _targetPos];
+
+		CALLM1(_ai, "setMoveTargetPos", _targetPos);
+		CALLM1(_ai, "setMoveTargetRadius", _moveRadius);
+		CALLM0(_ai, "updatePositionWSP");
+
+		// Reset 'has interacted' WSP
+		pr _ws = GETV(_ai, "worldState");
+		WS_SET(_ws, WSP_GAR_HAS_INTERACTED, false);
+
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is removed from an AI

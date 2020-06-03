@@ -186,6 +186,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 	METHOD(terminate)
 		params [P_THISOBJECT];
 
+		T_CALLCM0("ActionGroup", "terminate");
 		T_CALLM0("clearWaypoints");
 		T_CALLCM0("ActionGroup", "terminate");
 

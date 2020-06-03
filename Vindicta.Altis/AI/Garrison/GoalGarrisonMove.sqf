@@ -8,21 +8,25 @@ Goal for a garrison to move somewhere
 #define OOP_CLASS_NAME GoalGarrisonMove
 CLASS("GoalGarrisonMove", "Goal")
 
-	// ----------------------------------------------------------------------
-	// |            C A L C U L A T E   R E L E V A N C E
-	// ----------------------------------------------------------------------
-	// Calculates desireability to choose this goal for a given _AI
-	// Inherited classes must implement this
-	
-	/*
-	STATIC_METHOD(calculateRelevance)
-		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
-		
-		// Return relevance
-		GOAL_RELEVANCE_GARRISON_MOVE
+	STATIC_METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, [[]]] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]], [TAG_MAX_SPEED_KMH, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
+	STATIC_METHOD(onGoalChosen)
+		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
+
+		pr _targetPos = GET_PARAMETER_VALUE(_goalParameters, TAG_POS);
+		pr _moveRadius = GET_PARAMETER_VALUE_DEFAULT(_goalParameters, TAG_MOVE_RADIUS, 200);
+
+		// Set move pos and verify if we need to move there
+		CALLM1(_ai, "setMoveTargetPos", _targetPos);
+		CALLM1(_ai, "setMoveTargetRadius", _moveRadius);
+		CALLM0(_ai, "updatePositionWSP");
 
 	ENDMETHOD;
-	*/
 
 	// Must use this method to get the move radius if we are moving to a location
 	STATIC_METHOD(getLocationMoveRadius)

@@ -78,25 +78,6 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		//OOP_INFO_1("Unit removed: %1", _unit);
 	ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	METHOD(terminate)
-		params [P_THISOBJECT];
-		
-		// Delete external goals
-		pr _group = GETV(T_GETV("AI"), "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{ // foreach units
-			pr _unit = _x;
-			pr _unitAI = CALLM0(_unit, "getAI");
-
-			if (_unitAI != "") then { // Sanity check
-				// Remove similar external goals from this AI
-				CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMove", "");
-			};
-		} forEach _units;
-		
-	ENDMETHOD;
 
 ENDCLASS;
 

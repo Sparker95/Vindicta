@@ -1,6 +1,8 @@
 #include "common.hpp"
 FIX_LINE_NUMBERS()
 
+#define pr private
+
 #define OOP_CLASS_NAME ActionGarrisonMoveBase
 CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
@@ -40,11 +42,20 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		// Unpack radius
 		private _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, -1);
 		if (_radius == -1) then {
-			_radius = CALLSM1("GoalGarrisonMove", "getLocationMoveRadius", _loc);
-			T_SETV("radius", _radius);
+			if (!IS_NULL_OBJECT(_loc)) then {
+				_radius = CALLSM1("GoalGarrisonMove", "getLocationMoveRadius", _loc);
+				T_SETV("radius", _radius);
+			} else {
+				T_SETV("radius", 200);
+			}
 		} else {
 			T_SETV("radius", _radius);
 		};
+
+		// Set move target
+		CALLM1(_ai, "setMoveTargetPos", T_GETV("pos"));
+		CALLM1(_ai, "setMoveTargetRadius", T_GETV("radius"));
+		CALLM0(_ai, "updatePositionWSP");
 
 		private _maxSpeed = CALLSM3("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH, 100);
 		T_SETV("maxSpeed", _maxSpeed);
@@ -103,11 +114,14 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		// No instant move for this action we track unspawned progress already, and groups should be formed up and 
 		// mounted already before it is called.
 		private _args = ["GoalGroupMove", 0, [
-			[TAG_POS, _pos],
-			[TAG_MOVE_RADIUS, _radius],
-			[TAG_ROUTE, _route],
-			[TAG_FOLLOWERS, _followGroups],
-			[TAG_MAX_SPEED_KMH, T_GETV("maxSpeed")]
+			[TAG_POS,			_pos],
+			[TAG_MOVE_RADIUS,	_radius],
+			[TAG_ROUTE,			_route],
+			[TAG_FOLLOWERS,		_followGroups] /*,
+			[TAG_MAX_SPEED_KMH,	T_GETV("maxSpeed")],
+			[TAG_BEHAVIOUR,		"AWARE"],
+			[TAG_SPEED_MODE,	"NORMAL"],
+			[TAG_COMBAT_MODE,	"GREEN"]*/
 		], _AI];
 		private _leadGroupAI = CALLM0(_leadGroup, "getAI");
 		CALLM2(_leadGroupAI, "postMethodAsync", "addExternalGoal", _args);
@@ -118,8 +132,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _prevGroup = _leadGroup;
 		{
 			private _args = ["GoalGroupFollow", 0, [
-				[TAG_TARGET, CALLM0(_prevGroup, "getGroupHandle")],
-				[TAG_MAX_SPEED_KMH, T_GETV("maxSpeed")]
+				[TAG_TARGET, CALLM0(_prevGroup, "getGroupHandle")]
 			], _AI];
 			private _groupAI = CALLM0(_x, "getAI");
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
@@ -198,7 +211,9 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _posDest = T_GETV("pos");
 
 		// Succeed the action if the garrison is close enough to its destination
-		if (_garPos distance2D _posDest <= T_GETV("radius")) exitWith {
+		// !! We check it from world state
+		pr _ws = GETV(_ai, "worldState");
+		if (WS_GET(_ws, WSP_GAR_AT_TARGET_POS)) exitWith {
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};

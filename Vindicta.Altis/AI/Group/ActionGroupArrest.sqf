@@ -159,6 +159,8 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 		//OOP_INFO_0("ActionGroupArrest: Terminating.");
 
+		T_CALLCM0("ActionGroup", "terminate");
+
 		// Delete given goals
 		pr _arrestingUnit = T_GETV("arrestingUnit");
 		if(_arrestingUnit != NULL_OBJECT) then {

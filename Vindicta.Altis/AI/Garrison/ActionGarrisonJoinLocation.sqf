@@ -79,8 +79,5 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	// 	params [P_THISOBJECT];
 		
 	// ENDMETHOD;
-	
-	// procedural preconditions
-	// POS world state property comes from action parameters
 
 ENDCLASS;
