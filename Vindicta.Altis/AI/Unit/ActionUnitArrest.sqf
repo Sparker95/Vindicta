@@ -49,7 +49,7 @@ CLASS("ActionUnitArrest", "Action")
 		
 		pr _captor = T_GETV("objectHandle");
 		_captor lockWP false;
-		_captor setSpeedMode "NORMAL";
+		_captor forceSpeed (_captor getSpeed "NORMAL");
 
 		//OOP_INFO_0("ActionUnitArrest: ACTIVATE");
 		// Set state
@@ -167,7 +167,7 @@ CLASS("ActionUnitArrest", "Action")
 								};
 								
 								[_captor, _sentence,2] call pr0_fnc_dialogue_createSentence;
-								_captor setSpeedMode "FULL";
+								_captor forceSpeed (_captor getSpeed "NORMAL");
 							};
 						};
 					};
@@ -340,7 +340,7 @@ CLASS("ActionUnitArrest", "Action")
 		_captor doWatch objNull;
 		_captor lookAt objNull;
 		_captor lockWP false;
-		_captor setSpeedMode "LIMITED";
+		_captor forceSpeed (_captor getSpeed "SLOW");
 		
 	ENDMETHOD;
 

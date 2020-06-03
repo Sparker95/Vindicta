@@ -69,7 +69,7 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		//aim at target
 		_oh doTarget _target;
-		group _oh setSpeedMode "LIMITED";
+		_oh forceSpeed (_oh getSpeed "SLOW");
 		//might what to move this to Action base class
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		
@@ -153,7 +153,7 @@ CLASS("ActionUnitScareAway", "Action")
 			_oh lookAt objNull; // Stop looking at your target
 			_oh doFollow (leader group _oh); // Regroup
 			group _oh setBehaviour "SAFE";
-			group _oh setSpeedMode "NORMAL";
+			_oh forceSpeed (_oh getSpeed "NORMAL");
 			pr _laserT = GETV(_thisObject,"warningShotTarget");
 			detach _laserT;
 			deleteVehicle _laserT;

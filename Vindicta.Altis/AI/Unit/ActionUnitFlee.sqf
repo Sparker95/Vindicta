@@ -50,7 +50,6 @@ CLASS("ActionUnitFlee", "ActionUnit")
 			_hO forceSpeed -1;
 		};
 
-		//_hO setSpeedMode "FULL";
 		_hO setBehaviour "CARELESS";
 
 		//_hO switchMove selectRandom _panicAnimsErectAndKneeled;

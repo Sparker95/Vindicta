@@ -225,6 +225,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 		};
 
 		private _hG = T_GETV("hG");
+		private _ai = T_GETV("ai");
 		private _pos = T_GETV("pos");
 		private _radius = T_GETV("radius");
 
@@ -301,11 +302,12 @@ CLASS("ActionGroupMove", "ActionGroup")
 				if(T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION) then {
 					// Set reduced group speed
 					private _speedMode = T_GETV("speedMode");
-					_hG setSpeedMode "LIMITED";
+					CALLM1(_ai, "setSpeedMode", "LIMITED");
 				} else {
 					// Restore default group speed
 					private _speedMode = T_GETV("speedMode");
-					_hG setSpeedMode ([_speedMode, "NORMAL"] select (_speedMode isEqualTo ""));
+					private _newSpeedMode = [_speedMode, "NORMAL"] select (_speedMode isEqualTo "");
+					CALLM1(_ai, "setSpeedMode", _newSpeedMode);
 				};
 			};
 		};

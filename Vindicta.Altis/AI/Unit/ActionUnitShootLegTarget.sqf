@@ -51,7 +51,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _posUnit = getPos _oh;
 
 		_oh reveal _target;
-		_oh setSpeedMode "FULL";
+		_oh forceSpeed (-1);
 		_oh setBehaviour "CARELESS";
 		
 		T_SETV("state", ACTION_STATE_ACTIVE);

@@ -108,70 +108,6 @@ CLASS("AIGroup", "AI_GOAP")
 		[T_GETV("worldState"), WSP_GROUP_ALL_VEHICLES_REPAIRED] call ws_getPropertyValue
 	ENDMETHOD;
 
-	// ----------------------------------------------------------------------
-	// |                    G E T   M E S S A G E   L O O P
-	// | The group AI resides in its own thread
-	// ----------------------------------------------------------------------
-	
-	METHOD(getMessageLoop)
-		gMessageLoopGroupAI
-	ENDMETHOD;
-	
-	/*
-	Method: handleUnitsRemoved
-	Handles what happens when units get removed from their group, for instance when they gets destroyed.
-	Currently it deletes goals from units that have been given by this AI object and calls handleUnitsRemoved of the current action.
-	
-	Access: internal
-	
-	Parameters: _units
-	
-	_units - Array of <Unit> objects
-	
-	Returns: nil
-	*/
-	METHOD(handleUnitsRemoved)
-		params [P_THISOBJECT, P_ARRAY("_units")];
-
-		OOP_INFO_1("handleUnitsRemoved: %1", _units);
-
-		// Delete goals that have been given by this object
-		{
-			CALLM0(_x, "resetRecursive");
-		} forEach (_units apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
-
-		// Call handleUnitsRemoved of the current action, if it exists
-		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != NULL_OBJECT) then {
-			CALLM1(_currentAction, "handleUnitsRemoved", _units);
-		};
-	ENDMETHOD;
-	
-	/*
-	Method: handleUnitsAdded
-	Handles what happens when units get added to a group.
-	Currently it calles handleUnitAdded of the current action.
-	
-	Access: internal
-	
-	Parameters: _unit
-	
-	_units - Array of <Unit> objects
-	
-	Returns: nil
-	*/
-	METHOD(handleUnitsAdded)
-		params [P_THISOBJECT, P_ARRAY("_units")];
-		
-		OOP_INFO_1("handleUnitsAdded: %1", _units);
-		
-		// Call handleUnitAdded of the current action, if it exists
-		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != NULL_OBJECT) then {
-			CALLM1(_currentAction, "handleUnitsAdded", _units);
-		};
-	ENDMETHOD;
-
 	//                        G E T   P O S S I B L E   G O A L S
 	/*
 	Method: getPossibleGoals
@@ -189,24 +125,6 @@ CLASS("AIGroup", "AI_GOAP")
 			//["GoalGroupRelax"]
 			["GoalGroupUnflipVehicles", "GoalGroupArrest"]
 		};
-	ENDMETHOD;
-
-
-	//                      G E T   P O S S I B L E   A C T I O N S
-	/*
-	Method: getPossibleActions
-	Returns the list of actions this agent can use for planning.
-
-	Access: Used by AI class
-
-	Returns: Array with action class names
-	*/
-	METHOD(getPossibleActions)
-		[]
-	ENDMETHOD;
-
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
-		true
 	ENDMETHOD;
 
 	// Debug
@@ -359,23 +277,6 @@ CLASS("AIGroup", "AI_GOAP")
 
 	ENDMETHOD;
 
-	METHOD(process)
-		params [P_THISOBJECT];
-
-		#ifdef DEBUG_GOAL_MARKERS
-		if(T_GETV("unitMarkersEnabled")) then {
-			pr _unused = "";
-		};
-		#endif
-
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
-
-		#ifdef DEBUG_GOAL_MARKERS
-		T_CALLM0("_updateDebugMarkers");
-		#endif
-	ENDMETHOD;
-	FIX_LINE_NUMBERS()
-
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The group AI resides in its own thread
@@ -440,21 +341,6 @@ CLASS("AIGroup", "AI_GOAP")
 		};
 	ENDMETHOD;
 
-	//                        G E T   P O S S I B L E   G O A L S
-	/*
-	Method: getPossibleGoals
-	Returns the list of goals this agent evaluates on its own.
-
-	Access: Used by AI class
-
-	Returns: Array with goal class names
-	*/
-	METHOD(getPossibleGoals)
-		//["GoalGroupRelax"]
-		["GoalGroupUnflipVehicles", "GoalGroupArrest"]
-	ENDMETHOD;
-
-
 	//                      G E T   P O S S I B L E   A C T I O N S
 	/*
 	Method: getPossibleActions
@@ -479,6 +365,49 @@ CLASS("AIGroup", "AI_GOAP")
 		[
 			"suspTarget"
 		]
+	ENDMETHOD;
+
+	/*
+	Sets speed mode of group.
+	For infantry and vehicle groups it is done differently.
+	*/
+	METHOD(setSpeedMode)
+		params [P_THISOBJECT, P_STRING("_speedMode")];
+
+		pr _group = T_GETV("agent");
+		pr _hGroup = CALLM0(_group, "getGroupHandle");
+
+		pr _groupType = CALLM0(_group, "getType");
+		if (_groupType == GROUP_TYPE_INF) then {
+			pr _leader = CALLM0(_group, "getLeader");
+			pr _hLeader = CALLM0(_leader, "getObjectHandle");
+
+			// Get speed in format of getSpeed command: https://community.bistudio.com/wiki/getSpeed
+			pr _speedEnumLeader = switch (_speedMode) do {
+				case "LIMITED": {
+					"SLOW"
+				};
+				case "NORMAL": {
+					"NORMAL"
+				};
+				case "FULL": {
+					"FAST"
+				};
+				default {"NORMAL"};
+			};
+			pr _speedLeader = _hLeader getSpeed _speedEnumLeader;
+
+			// Set speed for units
+			// Units are allowed to move at full speed
+			{
+				_x forceSpeed -1;
+			} forEach (units _hGroup) - [_hLeader];
+
+			// Set leader's speed
+			_hLeader forceSpeed _speedLeader;
+		} else {
+			_hGroup setSpeedMode _speedMode;
+		};
 	ENDMETHOD;
 	
 ENDCLASS;
