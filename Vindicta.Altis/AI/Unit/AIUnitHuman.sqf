@@ -902,23 +902,6 @@ CLASS("AIUnitHuman", "AIUnit")
 		};		
 	ENDMETHOD;
 
-	// Use either of these setTarget... methods below to specify the target for movement
-	/*
-	METHOD(setTargetPosAGL)
-		params [P_THISOBJECT, P_POSITION("_pos")];
-		T_SETV("moveTarget", _pos);
-	ENDMETHOD;
-
-	METHOD(setTargetObject)
-		params [P_THISOBJECT, P_OBJECT("_obj")];
-		T_SETV("moveTarget", _obj);
-	ENDMETHOD;
-
-	// Target is OOP object which has getObjectHandle method
-	METHOD(setTargetUnit)
-		params [P_THISOBJECT, P_OOP_OBJECT("_obj")];
-		T_SETV("moveTarget", _obj);
-	ENDMETHOD;*/
 
 	// For object, unit, position
 	METHOD(setMoveTarget)

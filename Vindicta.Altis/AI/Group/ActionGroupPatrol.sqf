@@ -149,7 +149,9 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
+			private _parameters = [[TAG_INSTANT, _instant]];
+			private _args = ["GoalUnitInfantryRegroup", 0, _parameters, _AI, true, false, true]; // Will be always active, even when completed
+			CALLM(_unitAI, "addExternalGoal", _args);
 		} forEach _units;
 
 		// Set state

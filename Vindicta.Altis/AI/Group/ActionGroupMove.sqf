@@ -203,7 +203,8 @@ CLASS("ActionGroupMove", "ActionGroup")
 			{
 				private _ai = CALLM0(_x, "getAI");
 				private _parameters = [[TAG_INSTANT, _instant]];
-				CALLM4(_ai, "addExternalGoal", "GoalUnitInfantryRegroup", 0, _parameters, _AI);
+				private _args = ["GoalUnitInfantryRegroup", 0, _parameters, _AI, true, false, true]; // Will be always active, even when completed
+				CALLM(_ai, "addExternalGoal", _args);
 			} forEach (_infUnits - [_leader]);
 		};
 

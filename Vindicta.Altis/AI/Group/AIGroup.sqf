@@ -377,6 +377,8 @@ CLASS("AIGroup", "AI_GOAP")
 		pr _group = T_GETV("agent");
 		pr _hGroup = CALLM0(_group, "getGroupHandle");
 
+		_hGroup setSpeedMode _speedMode;
+
 		pr _groupType = CALLM0(_group, "getType");
 		if (_groupType == GROUP_TYPE_INF) then {
 			pr _leader = CALLM0(_group, "getLeader");
@@ -405,8 +407,6 @@ CLASS("AIGroup", "AI_GOAP")
 
 			// Set leader's speed
 			_hLeader forceSpeed _speedLeader;
-		} else {
-			_hGroup setSpeedMode _speedMode;
 		};
 	ENDMETHOD;
 	

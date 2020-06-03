@@ -107,7 +107,8 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 // ------------------- ActionUnitInfantryRegroup
 ["ActionUnitInfantryRegroup", _s, [
 								[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false],
-								[WSP_UNIT_HUMAN_AT_VEHICLE, false]
+								[WSP_UNIT_HUMAN_AT_VEHICLE, false],
+								[WSP_UNIT_HUMAN_AT_TARGET_POS, true]
 								]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitInfantryRegroup", _s, [[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true]]] call AI_misc_fnc_setActionEffects;
 
