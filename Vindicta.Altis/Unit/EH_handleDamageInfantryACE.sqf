@@ -12,7 +12,7 @@ Fires on the owner of the unit.
 */
 
 // Enables damage logging
-#define DEBUG_DAMAGE
+//#define DEBUG_DAMAGE
 
 #define pr private
 
@@ -51,7 +51,7 @@ pr _ret = if ((_sideUnit == _sideSource || isNull _source) && {_projectile == ""
 	#ifdef DEBUG_DAMAGE
 	diag_log "[Dmg] Damage ignored!";
 	#endif
-	
+
 	0;
 } else {
 
