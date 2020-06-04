@@ -43,8 +43,10 @@ private _s = WSP_GAR_COUNT;
 ["GoalGarrisonDefendPassive", _s,			[
 											[WSP_GAR_AWARE_OF_ENEMY, false]
 											]]	call AI_misc_fnc_setGoalEffects;
-["GoalGarrisonAttackAssignedTargets", _s,	[]]	call AI_misc_fnc_setGoalEffects; // Effects are procedural
 ["GoalGarrisonClearArea", _s,				[
+											[WSP_GAR_HAS_INTERACTED, true]
+											]]	call AI_misc_fnc_setGoalEffects;
+["GoalGarrisonAttackAssignedTargets", _s,	[
 											[WSP_GAR_HAS_INTERACTED, true]
 											]]	call AI_misc_fnc_setGoalEffects;
 ["GoalGarrisonJoinLocation", _s,			[

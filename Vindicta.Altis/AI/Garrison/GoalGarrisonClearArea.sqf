@@ -21,8 +21,8 @@ CLASS("GoalGarrisonClearArea", "Goal")
 
 		// Set variables in AI object so that garrison can identify targets associated with this goal
 		// [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _moveRadius], [TAG_CLEAR_RADIUS, _clearRadius], [TAG_DURATION_SECONDS, _timeOutSeconds]];
-		pr _pos = CALLSM("Action", "getParameterValue", [_parameters ARG TAG_G_POS]);
-		pr _radius = CALLSM("Action", "getParameterValue", [_parameters ARG TAG_CLEAR_RADIUS]);
+		pr _pos = GET_PARAMETER_VALUE(_parameters, TAG_POS_CLEAR_AREA);
+		pr _radius = GET_PARAMETER_VALUE_DEFAULT(_parameters, TAG_CLEAR_RADIUS, 300);
 		SETV(_AI, "assignedTargetsPos", _pos);
 		SETV(_AI, "assignedTargetsRadius", _radius);
 	ENDMETHOD;

@@ -118,7 +118,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 			if(!CALLM0(_group, "isAirGroup")) then {
 				{
 					// Set the speed of all vehicles to unlimited
-					_x limitSpeed 666666;
+					_x limitSpeed -1;
 					_x setConvoySeparation SEPARATION;
 					//_x forceFollowRoad true;
 				} forEach (_vehicles apply {CALLM0(_x, "getObjectHandle")});

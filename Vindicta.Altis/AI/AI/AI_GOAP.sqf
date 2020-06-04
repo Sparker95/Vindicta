@@ -343,6 +343,12 @@ CLASS("AI_GOAP", "AI")
 					pr _args = [/* AI */ _thisObject, _goalParameters];
 					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
 
+					#ifdef OOP_ASSERT
+					if ((_wsGoal call ws_countExistingProperties) == 0) then {
+						OOP_ERROR_0("Goal world state is empty!");
+					};
+					#endif
+
 					// Make a copy of original parameters
 					// Goal might add something to them
 					pr _goalParametersCopy = +_goalParameters;
@@ -370,8 +376,24 @@ CLASS("AI_GOAP", "AI")
 					
 					// Did the planner succeed?
 					if (_foundPlan) then {
-						// Unpack the plan
-						_newAction = T_CALLM4("createActionsFromPlan", _actionPlan, _wsGoal, _goalParametersCopy, _spawning);
+						if (count _actionPlan > 0) then {
+							// Unpack the plan
+							_newAction = T_CALLM4("createActionsFromPlan", _actionPlan, _wsGoal, _goalParametersCopy, _spawning);
+						} else {
+							// The generated plan is empty but valid
+							// It means we don't need to do anything
+							OOP_WARNING_2("Generated plan is empty but valid: goal: %1, goal parameters: %2", _goalClassName, _goalParametersCopy);
+							OOP_WARNING_1("Current WS: %1", [_wsCurr] call ws_toString);
+							OOP_WARNING_1("Goal WS: %1", [_wsGoal] call ws_toString);
+
+							// Mark the current action as complete
+							pr _goalsExternal = T_GETV("goalsExternal");
+							pr _index = _goalsExternal findIf { _goalClassName == _x#0 && _goalSourceAI == _x#3 };
+							if (_index != -1) then {
+								pr _arrayElement = _goalsExternal#_index;
+								_arrayElement set [4, ACTION_STATE_COMPLETED];
+							};
+						};
 					} else {
 						// Terminate the current action (if it exists)
 						//T_CALLM0("deleteCurrentAction");

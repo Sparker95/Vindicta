@@ -41,6 +41,9 @@ CLASS("ActionUnitFollow", "ActionUnit")
 		_hO stop false;
 		_hO doFollow _hTarget;
 
+		// Allow driver to drive as fast as he needs to
+		_hO forceSpeed -1;
+
 		// Get unit index in drivers list to determine expected distance we should be from the leader
 		private _expectedDistance = if(vehicle _hO != _hO) then {
 			private _index = 1 max (units group _hO select { vehicle _x != _x && { driver vehicle _x == _x } } find { _hO });

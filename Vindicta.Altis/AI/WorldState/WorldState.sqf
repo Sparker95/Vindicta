@@ -124,6 +124,14 @@ ws_propertyExistsAndEquals = {
 	(!(isNil "_prop")) && {_prop isEqualTo _value};
 };
 
+/*
+Returns amount of world state properties which exist (are not nil)
+*/
+ws_countExistingProperties = {
+	pr _properties = _this select WS_ID_WSP;
+	pr _num = {!(isNil "_x")} count _properties;
+	_num;
+};
 
 /*
 Method: ws_setPropertyOrigin
