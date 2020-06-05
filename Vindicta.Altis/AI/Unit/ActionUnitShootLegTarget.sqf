@@ -53,7 +53,10 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		_oh reveal _target;
 		_oh forceSpeed (-1);
 		_oh setBehaviour "CARELESS";
-		
+
+		pr _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", _target);
+
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
@@ -140,4 +143,12 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 			ACTION_STATE_ACTIVE
 		};
 	ENDMETHOD;
+
+	// logic to run when the goal is satisfied
+	METHOD(terminate)
+		params [P_THISOBJECT];
+		pr _ai = T_GETV("AI");
+		SETV(_ai, "interactionObject", objNull);
+	ENDMETHOD;
+
 ENDCLASS;

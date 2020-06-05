@@ -69,6 +69,19 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		private _hO = T_GETV("hO");
 		private _target = T_GETV("target");
 
+		private _ai = T_GETV("AI");
+		if (_target isEqualType objNull) then {
+			SETV(_ai, "interactionObject", _target);
+		} else {
+			SETV(_ai, "interactionObject", _hO);		// Interacting with self
+		};
+
+		// Fail if occupied
+		if (_target isEqualType objNull && {_target getVariable ["vin_occupied", false]}) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED;
+		};
+
 		private _targetPos = switch true do {
 			case (_target isEqualTo []): {
 				position _hO
@@ -153,7 +166,10 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		_state
 	ENDMETHOD;
 
-	// METHOD(terminate)
-	// 	params [P_THISOBJECT];
-	// ENDMETHOD;
+	 METHOD(terminate)
+	 	params [P_THISOBJECT];
+		
+		private _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", objNull);
+	 ENDMETHOD;
 ENDCLASS;

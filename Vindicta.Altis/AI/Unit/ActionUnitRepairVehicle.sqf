@@ -38,6 +38,9 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		pr _hVeh = T_GETV("hVeh");
 		
 		_hO action ["repairVehicle", _hVeh];
+
+		pr _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", _hVeh);
 		
 		T_SETV("timeActivated", GAME_TIME);
 		
@@ -75,10 +78,11 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	/*
 	METHOD(terminate)
 		params [P_THISOBJECT];
+
+		pr _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", objNull);
 	ENDMETHOD;
-	*/
 	
 ENDCLASS;

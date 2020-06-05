@@ -345,12 +345,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					};
 				};
 
-				// Process buildings, objects with anim markers, and shooting targets
-				if (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }) then {
-					T_CALLM3("addObject", _object, _object in _terrainObjects, true);
-					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
-				};
-
 				// // Process objects with anim markers
 				// private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
 				// if(_animMarkersIdx != NOT_FOUND) then {

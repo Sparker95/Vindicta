@@ -36,6 +36,11 @@ CLASS("ActionUnitInfantryStandIdle", "ActionUnit")
 		T_SETV("timeComplete", T_GETV("duration") + GAME_TIME);
 		
 		pr _ai = T_GETV("ai");
+
+		// Currently interacting with self
+		pr _hO = T_GETV("hO");
+		SETV(_ai, "interactionObject", _hO);
+
 		CALLM0(_ai, "stopMoveToTarget"); // Orders unit to stop
 
 		// Return ACTIVE state
@@ -60,10 +65,11 @@ CLASS("ActionUnitInfantryStandIdle", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	/*
 	METHOD(terminate)
 		params [P_THISOBJECT];
+
+		pr _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", objNull);
 	ENDMETHOD;
-	*/
 	
 ENDCLASS;

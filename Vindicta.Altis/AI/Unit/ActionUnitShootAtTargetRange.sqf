@@ -49,6 +49,8 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 
 		private _target = T_GETV("target");
 		_target setVariable ["vin_occupied", true];
+		private _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", _target);
 
 		private _positions = CALLSM1("ActionUnitShootAtTargetRange", "getShootingPos", _target);
 		
@@ -164,6 +166,9 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		// Mark the target as free for use
 		private _target = T_GETV("target");
 		_target setVariable ["vin_occupied", false];
+
+		private _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", objNull);
 
 		// Terminate the script
 		private _spawnHandle = T_GETV("spawnHandle");

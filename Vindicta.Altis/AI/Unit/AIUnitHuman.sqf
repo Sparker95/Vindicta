@@ -27,6 +27,9 @@ CLASS("AIUnitHuman", "AIUnit")
 	VARIABLE("stuckDuration");
 	VARIABLE("timeLastProcess");
 
+	// Current object we are interacting with, set by varius interaction actions
+	VARIABLE("interactionObject");
+
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
 	#endif
@@ -64,7 +67,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_SETV("orderedToMove", false);
 		T_SETV("timeLastProcess", time);
 
-		//T_SETV("worldState", _ws);
+		T_SETV("interactionObject", objNull);
 	ENDMETHOD;
 	
 	METHOD(delete)
@@ -1064,7 +1067,8 @@ CLASS("AIUnitHuman", "AIUnit")
 			"orderedToMove",
 			"prevPos",
 			"stuckDuration",
-			"timeLastProcess"
+			"timeLastProcess",
+			"interactionObject"
 		]
 	ENDMETHOD;
 

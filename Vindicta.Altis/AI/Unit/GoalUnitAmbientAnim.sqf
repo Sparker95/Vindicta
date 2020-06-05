@@ -10,6 +10,32 @@ CLASS("GoalUnitAmbientAnim", "Goal")
 		]
 	ENDMETHOD;
 
+	STATIC_METHOD(calculateRelevance)
+		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
+		
+		
+
+
+	ENDMETHOD;
+
+	STATIC_METHOD(calculateRelevance)
+		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
+		// Goal is not relevant if the target is occupied
+		private _target = GET_PARAMETER_VALUE(_parameters, TAG_TARGET_AMBIENT_ANIM);
+		private _targetOccupied = _target getVariable ["vin_occupied", false];
+		private _currentObject = GETV(_ai, "interactionObject");
+		if (_target isEqualType objNull) then {
+			if (	_currentObject isEqualTo _target || !_targetOccupied) then {
+				GET_STATIC_VAR(_thisClass, "relevance");
+			} else {
+				0;
+			};
+		} else {
+			GET_STATIC_VAR(_thisClass, "relevance");
+		};
+	ENDMETHOD;
+
 	STATIC_METHOD(onGoalChosen)
 		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
 

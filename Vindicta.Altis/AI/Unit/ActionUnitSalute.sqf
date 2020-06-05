@@ -62,6 +62,8 @@ CLASS("ActionUnitSalute", "Action")
 		_oh disableAI "MOVE";
 		_oh action ["salute", _oh];
 		_oh doWatch _target;
+
+		SETV(_ai, "interactionObject", _target);
 		
 		diag_log "Started saluting!";
 		
@@ -143,6 +145,9 @@ CLASS("ActionUnitSalute", "Action")
 			};
 		};
 		
+		pr _ai = T_GETV("AI");
+		SETV(_ai, "interactionObject", objNull);
+
 		//T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;
 

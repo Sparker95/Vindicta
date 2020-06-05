@@ -73,6 +73,8 @@ CLASS("ActionUnitScareAway", "Action")
 		//might what to move this to Action base class
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		
+		SETV(_ai, "interactionObject", _target);
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
@@ -141,9 +143,6 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		diag_log "Terminating scaring civilian!";
 		
-		
-		
-		
 		// Stop scaring if we are
 		pr _state = T_GETV("state");
 		if (_state == ACTION_STATE_ACTIVE) then {
@@ -158,6 +157,9 @@ CLASS("ActionUnitScareAway", "Action")
 			detach _laserT;
 			deleteVehicle _laserT;
 		};
+
+		pr _ai = T_GETV("AI");
+		SETV(_ai, "interactionObject", objNull);
 		
 	ENDMETHOD;
 
