@@ -465,8 +465,18 @@ CLASS("AI_GOAP", "AI")
 				CRITICAL_SECTION {
 					pr _index = _goalsExternal findIf { _goalClassName == _x#0 && _goalSourceAI == _x#3 };
 					if (_index != -1) then {
+						// Set state of that goal
 						pr _arrayElement = _goalsExternal#_index;
 						_arrayElement set [4, _actionState];
+
+						// If TAG_INSTANT was passed with the goal, set it to false
+						// Because instant flag can only be used once
+						// Or maybe it's even better to delete that parameter completely from array?
+						pr _goalParameters = _arrayElement#2;
+						pr _instantTagId = _goalParameters findIf {_x#0 == TAG_INSTANT;};
+						if (_instantTagId != -1) then {
+							(_goalParameters#_instantTagID) set [1, false]; // Set value to false 
+						};
 					} else {
 						//OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
 					};
