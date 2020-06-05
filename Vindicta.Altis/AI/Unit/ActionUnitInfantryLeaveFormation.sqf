@@ -22,6 +22,11 @@ CLASS("ActionUnitInfantryLeaveFormation", "ActionUnit")
 	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		// Set state
 		T_SETV("state", ACTION_STATE_COMPLETED);
 		

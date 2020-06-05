@@ -382,9 +382,9 @@ CLASS("AI_GOAP", "AI")
 						} else {
 							// The generated plan is empty but valid
 							// It means we don't need to do anything
-							OOP_WARNING_2("Generated plan is empty but valid: goal: %1, goal parameters: %2", _goalClassName, _goalParametersCopy);
-							OOP_WARNING_1("Current WS: %1", [_wsCurr] call ws_toString);
-							OOP_WARNING_1("Goal WS: %1", [_wsGoal] call ws_toString);
+							OOP_INFO_2("Generated plan is empty but valid: goal: %1, goal parameters: %2", _goalClassName, _goalParametersCopy);
+							OOP_INFO_1("Current WS: %1", [_wsCurrent] call ws_toString);
+							OOP_INFO_1("Goal WS: %1", [_wsGoal] call ws_toString);
 
 							// Mark the current action as complete
 							pr _goalsExternal = T_GETV("goalsExternal");
@@ -1249,7 +1249,13 @@ CLASS("AI_GOAP", "AI")
 			OOP_INFO_0("[AI:AStar] Info: No search required we are already at our goal!");
 			#endif
 			FIX_LINE_NUMBERS()
-			[true, []]
+
+			pr _retValue = [true, []];
+
+			// Add it to cache anyway
+			gAIPlannerCache setVariable [_cacheKey, +_retValue];
+
+			_retValue;
 		};
 
 		// Set of nodes already evaluated

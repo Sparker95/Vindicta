@@ -105,6 +105,11 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 	METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		// Handle AI just spawned state
 		private _AI = T_GETV("AI");
 		if (_instant) then {

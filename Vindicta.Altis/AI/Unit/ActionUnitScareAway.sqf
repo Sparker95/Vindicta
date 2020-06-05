@@ -75,6 +75,11 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		SETV(_ai, "interactionObject", _target);
 
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		

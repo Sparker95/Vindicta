@@ -52,6 +52,10 @@ CLASS("ActionUnitFollow", "ActionUnit")
 			30
 		};
 
+		// Set world state property
+		private _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true);
+
 		T_SETV("expectedDistance", _expectedDistance);
 		T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD);
 		T_SETV("lastPos", position _hO);

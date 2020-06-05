@@ -78,3 +78,6 @@
 // Agents
 #define SET_AGENT_FLAG(obj) obj setVariable ["vin_isAgent", true]
 #define GET_AGENT_FLAG(obj) obj getVariable ["vin_isAgent", false]
+
+// private keyword
+#define pr private

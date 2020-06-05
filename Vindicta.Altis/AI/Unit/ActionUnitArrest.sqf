@@ -51,6 +51,11 @@ CLASS("ActionUnitArrest", "Action")
 		_captor lockWP false;
 		_captor forceSpeed (_captor getSpeed "NORMAL");
 
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		//OOP_INFO_0("ActionUnitArrest: ACTIVATE");
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);

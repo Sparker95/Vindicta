@@ -76,6 +76,11 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 			SETV(_ai, "interactionObject", _hO);		// Interacting with self
 		};
 
+		// We are not in formation any more
+		// Reset world state property
+		private _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		// Fail if occupied
 		if (_target isEqualType objNull && {_target getVariable ["vin_occupied", false]}) exitWith {
 			T_SETV("state", ACTION_STATE_FAILED);

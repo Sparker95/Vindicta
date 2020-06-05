@@ -138,6 +138,11 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 
 		T_SETV("spawnHandle", _handle);
 
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
