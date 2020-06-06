@@ -149,7 +149,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV_PUBLIC("alarmDisabled", false);
 
 		//Push the new object into the array with all locations
-		private _allArray = GET_STATIC_VAR("Location", "all");
+		private _allArray = GETSV("Location", "all");
 		_allArray pushBack _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
 
@@ -708,7 +708,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		//Remove this unit from array with all units
-		private _allArray = GET_STATIC_VAR("Location", "all");
+		private _allArray = GETSV("Location", "all");
 		_allArray deleteAt (_allArray find _thisObject);
 		PUBLIC_STATIC_VAR("Location", "all");
 
@@ -733,7 +733,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: Array of location objects
 	*/
 	STATIC_METHOD(getAll)
-		private _all = GET_STATIC_VAR("Location", "all");
+		private _all = GETSV("Location", "all");
 		private _return = +_all;
 		_return
 	ENDMETHOD;
@@ -821,7 +821,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 
 	// |                  G E T   M E S S A G E   L O O P
-	METHOD(getMessageLoop) //Derived classes must implement this method
+	public override METHOD(getMessageLoop) //Derived classes must implement this method
 		gMessageLoopMain
 	ENDMETHOD;
 
@@ -1472,7 +1472,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// File-based methods
 
 	// Handles messages
-	METHOD_FILE(handleMessageEx, "Location\handleMessageEx.sqf");
+	public override METHOD_FILE(handleMessageEx, "Location\handleMessageEx.sqf");
 
 	// Sets border parameters
 	METHOD_FILE(updateWaypoints, "Location\updateWaypoints.sqf");
@@ -1522,7 +1522,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD_FILE(isInAllowedArea, "Location\isInAllowedArea.sqf");
 
 	// Handle PROCESS message
-	METHOD_FILE(process, "Location\process.sqf");
+	public METHOD_FILE(process, "Location\process.sqf");
 
 	// Spawns the location
 	METHOD_FILE(spawn, "Location\spawn.sqf");
@@ -1683,7 +1683,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	STATIC_METHOD(nearLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GET_STATIC_VAR("Location", "all") select {
+		GETSV("Location", "all") select {
 			GETV(_x, "pos") distance2D _pos < _radius
 		}
 	ENDMETHOD;
@@ -1698,7 +1698,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	STATIC_METHOD(overlappingLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GET_STATIC_VAR("Location", "all") select {
+		GETSV("Location", "all") select {
 			GETV(_x, "pos") distance2D _pos < _radius + GETV(_x, "boundingRadius")
 		}
 	ENDMETHOD;
@@ -1862,7 +1862,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// - - - - - - S T O R A G E - - - - - -
 
-	/* override */ METHOD(preSerialize)
+	 public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save objects which we own
@@ -1896,11 +1896,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 
 	// Must return true on success
-	/* override */ METHOD(postSerialize)
+	 public override METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
 
 		// Erase temporary variables
 		T_SETV("savedObjects", []);
@@ -1910,11 +1910,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// These methods must return true on success
 	
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		// Set default values of variables whic hwere not saved
 		T_SETV("hasPlayers", false);
@@ -2059,7 +2059,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 ENDCLASS;
 
 if (isNil {GETSV("Location", "all")}) then {
-	SET_STATIC_VAR("Location", "all", []);
+	SETSV("Location", "all", []);
 };
 
 #ifndef _SQF_VM

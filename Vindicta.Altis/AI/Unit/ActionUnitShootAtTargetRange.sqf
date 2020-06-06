@@ -44,7 +44,7 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		[_shootingPosition, _safePosition];
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _target = T_GETV("target");
@@ -148,7 +148,7 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _state = T_CALLM0("activateIfInactive");
@@ -165,7 +165,7 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		_state
 	ENDMETHOD;
 
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Mark the target as free for use

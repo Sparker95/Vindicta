@@ -21,7 +21,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		T_SETV("instantOverride", false);
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// We need to save instant flag here as this action can need to reactivate multiple times to find a free seat
@@ -117,7 +117,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 
 	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -192,7 +192,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		_state
 	ENDMETHOD;
 
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
 
@@ -203,7 +203,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		} forEach _units;
 	ENDMETHOD;
 
-	METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units") ];
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;

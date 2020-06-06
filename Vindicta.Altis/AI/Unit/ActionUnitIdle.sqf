@@ -3,7 +3,7 @@
 #define OOP_CLASS_NAME ActionUnitIdle
 CLASS("ActionUnitIdle", "ActionUnit")
 
-	VARIABLE("timeToComplete")
+	VARIABLE("timeToComplete");
 
 	METHOD(getPossibleParameters)
 		[
@@ -20,7 +20,7 @@ CLASS("ActionUnitIdle", "ActionUnit")
 		T_SETV("timeToComplete", GAME_TIME + _duration);
 	ENDMETHOD;
 
-	/* override */ METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		if(GAME_TIME > T_GETV("timeToComplete")) then {
 			ACTION_STATE_COMPLETED

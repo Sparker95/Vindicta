@@ -19,11 +19,11 @@ Author: Sparker 05.08.2018
 #define OOP_CLASS_NAME ActionCompositeSerial
 CLASS("ActionCompositeSerial", "ActionComposite")
 
-	/* public override */ METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state != ACTION_STATE_FAILED) then {
-			_state = T_CALLM("processSubactions", []);
+			_state = T_CALLM0("processSubactions");
 		};
 		T_SETV("state", _state);
 		
@@ -38,7 +38,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	
 	Returns: Number, current state of the front most action, one of <ACTION_STATE>
 	*/
-	/* private */ METHOD(processSubactions)
+	METHOD(processSubactions)
 		params [P_THISOBJECT];
 		private _subactions = T_GETV("subactions");
 		
@@ -67,7 +67,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		_state
 	ENDMETHOD;
 
-	/* protected override */ METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		pr _subactions = T_GETV("subactions");
 		
@@ -78,11 +78,11 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		};
 	ENDMETHOD;
 
-	/* public override */ METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 
 		// Forward the message to base class Action message handler
-		private _msgHandled = CALL_CLASS_METHOD("Action", _thisObject, "handleMessage", [_msg]);
+		private _msgHandled = CALLCM("Action", _thisObject, "handleMessage", [_msg]);
 		// Did the default handler handle the message?
 		if (!_msgHandled) then {
 			// Forward the message to the frond subaction
@@ -112,25 +112,25 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		_msgHandled
 	ENDMETHOD;
 
-	/* public override */ METHOD(handleGroupsAdded)
+	public override METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleGroupsAdded", _groups);
 	ENDMETHOD;
 
-	/* public override */ METHOD(handleGroupsRemoved)
+	public override METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleGroupsRemoved", _groups);
 	ENDMETHOD;
 
-	/* public override */ METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleUnitsAdded", _units);
 	ENDMETHOD;
 
-	/* public override */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		private _subactions = T_GETV("subactions");
 		CALLM1(_subactions select 0, "handleUnitsRemoved", _units);

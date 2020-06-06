@@ -18,10 +18,8 @@ this addWeapon "rhs_weap_m3a1";
 this addPrimaryWeaponItem "rhsgref_30rnd_1143x23_M1T_SMG";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_m67";};
 for "_i" from 1 to 2 do {this addItemToVest "rhsgref_30rnd_1143x23_M1T_SMG";};
 for "_i" from 1 to 2 do {this addItemToVest "rhsgref_30rnd_1143x23_M1T_2mag_SMG";};
 this addItemToBackpack "ToolKit";
-for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
-for "_i" from 1 to 4 do {this addItemToBackpack "rhs_grenade_m15_mag";};
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_an_m14_th3";};
 this linkItem "ItemWatch";

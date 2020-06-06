@@ -27,12 +27,14 @@ this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mki_mag";};
+this addItemToVest "rhs_grenade_mki_mag";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkiiia1_mag";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_20Rnd_762x51_m80a1_fnfal";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_20Rnd_762x51_m62_fnfal";};
+this addItemToVest "rhs_grenade_anm8_mag";
 this addItemToBackpack "rhsgref_acc_l1a1_anpvs2";
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_20Rnd_762x51_m80a1_fnfal";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_20Rnd_762x51_m62_fnfal";};
+this addItemToBackpack "rhs_mag_20Rnd_762x51_m80a1_fnfal";
+this addItemToBackpack "rhs_mag_20Rnd_762x51_m62_fnfal";
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_grenade_mkiiia1_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

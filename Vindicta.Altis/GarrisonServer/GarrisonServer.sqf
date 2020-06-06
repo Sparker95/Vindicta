@@ -81,7 +81,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 	// We only receive messages from timer now, so we don't care about the message type
 	// - - - - Processing of garrisons - - - - -
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 
 		// Broadcast update messages
@@ -202,7 +202,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 
 	// GarrisonServer is attached to the main message loop
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopMain
 	ENDMETHOD;
 
@@ -278,7 +278,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			};
 		};
 
-		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
+		CALLSM2("BuildUI", "setObjectMovable", _hO, true);
 
 		// Add the built object to the location
 		pr _loc = CALLM0(_gar, "getLocation");
@@ -329,7 +329,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// TODO add category template ID check. Right now it's only arsenal though
 		// check if it's an arsenal box 
-		pr _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_object]);
+		pr _unit = CALLSM("Unit", "getUnitFromObjectHandle", [_object]);
 		pr _isLimitedArsenal = CALLM0(_unit, "limitedArsenalEnabled");
 		if (isNil "_isLimitedArsenal") then { _isLimitedArsenal = false; };
 
@@ -356,7 +356,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		//_newObj setVehiclePosition [_pos, [], 0, "CAN_COLLIDE"];
 		_newObj setVectorDirAndUp [_vecDir, _surfaceVectorUp];
 
-		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
+		CALLSM2("BuildUI", "setObjectMovable", _newObj, true);
 
 		// Add the built object to the location
 		pr _loc = CALLM0(_gar, "getLocation");
@@ -406,8 +406,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			pr _locPos = CALLM0(_loc, "getPos");
 			// Create a new garrison and register it
 			_gar = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG _side ARG _locPos]);
-			CALLM0(_gar, "activate");
 			CALLM1(_gar, "setLocation", _loc);
+			CALLM0(_gar, "activate");
 			_activate = true;
 			_gar
 		};

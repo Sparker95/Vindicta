@@ -20,9 +20,9 @@ this addPrimaryWeaponItem "rhs_acc_dtk1983";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 this addWeapon "rhs_weap_igla";
+this addPrimaryWeaponItem "rhs_mag_9k38_rocket";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_plum_AK";};
 this addItemToBackpack "rhs_mag_9k38_rocket";
 this linkItem "ItemWatch";

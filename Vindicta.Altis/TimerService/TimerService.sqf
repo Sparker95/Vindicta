@@ -90,9 +90,7 @@ CLASS("TimerService", "")
 	*/
 	METHOD(addTimer)
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
-		private _timers = T_GETV("timers");
-		private _timerDereferenced = CALLM0(_timer, "getDataArray");
-		_timers pushBackUnique _timerDereferenced;
+		T_GETV("timers") pushBackUnique CALLM0(_timer, "getDataArray");
 	ENDMETHOD;
 	
 	// |                      R E M O V E   T I M E R                       |
@@ -112,19 +110,13 @@ CLASS("TimerService", "")
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		CRITICAL_SECTION {
 			private _timers = T_GETV("timers");
-			private _timerDereferenced = CALLM0(_timer, "getDataArray");
-			
-			// Check if the timer exists in the array
-			private _index = _timers find _timerDereferenced;
-			if (_index == -1) exitWith {
-				diag_log format ["[TimerService::removeTimer] Error: timer not found: %1", _timerDereferenced];
+			// This could be done in one line, but SQF-VM complains about index out of bounds
+			private _index = _timers find CALLM0(_timer, "getDataArray");
+			if(_index != NOT_FOUND) then {
+				_timers deleteAt _index;
 			};
-			
-			// Such a timer has been found, delete it
-			_timers deleteAt _index;
-			//T_SETV("timers", _timers);
 		};
-		0
+		nil
 	ENDMETHOD;
 
 	METHOD(suspend)
@@ -183,7 +175,7 @@ CLASS("TimerService", "")
 							private _msgID = _x select TIMER_DATA_ID_MESSAGE_ID;
 							
 							// Check if the previous message has been handled (we don't want to overflood the receiver with the same messages)
-							if (CALL_STATIC_METHOD("MessageReceiver", "messageDone", [_msgID])) then {
+							if (CALLSM("MessageReceiver", "messageDone", [_msgID])) then {
 								//diag_log format ["[TimerService::threadFunc] Info: posting a message"];
 								// Post a new message
 								// todo inline the MessageReceiver::postMessage it some time later!

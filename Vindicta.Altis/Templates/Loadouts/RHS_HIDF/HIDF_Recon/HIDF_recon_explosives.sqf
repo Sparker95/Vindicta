@@ -15,18 +15,18 @@ this addHeadgear "rhsgref_helmet_pasgt_erdl_rhino";
 this forceaddUniform "rhs_uniform_bdu_erdl";
 this addBackpack "B_AssaultPack_rgr";
 
-this addWeapon "rhs_weap_m3a1_specops";
-this addPrimaryWeaponItem "rhsgref_acc_RX01_NoFilter_camo";
-this addPrimaryWeaponItem "rhsgref_30rnd_1143x23_M1T_2mag_SMG";
+this addWeapon "rhs_weap_m14_socom";
+this addPrimaryWeaponItem "rhsusf_acc_m14_flashsuppresor";
+this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_m993_Mag";
 this addWeapon "rhsusf_weap_m9";
 this addHandgunItem "rhsusf_mag_15Rnd_9x19_JHP";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "B_IR_Grenade";
-this addItemToUniform "rhs_grenade_m15_mag";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkiiia1_mag";};
-for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_15Rnd_9x19_JHP";};
-for "_i" from 1 to 4 do {this addItemToVest "rhsgref_30rnd_1143x23_M1T_2mag_SMG";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_15Rnd_9x19_JHP";};
+this addItemToUniform "rhs_grenade_anm8_mag";
+for "_i" from 1 to 4 do {this addItemToVest "rhsusf_20Rnd_762x51_m993_Mag";};
+this addItemToVest "rhs_grenade_m15_mag";
 this addItemToBackpack "SatchelCharge_Remote_Mag";
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_an_m14_th3";};

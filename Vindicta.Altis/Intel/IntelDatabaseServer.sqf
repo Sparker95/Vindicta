@@ -19,13 +19,13 @@ OOP_INFO_0("Compiling IntelDatabaseServer");
 #define OOP_CLASS_NAME IntelDatabaseServer
 CLASS("IntelDatabaseServer", "IntelDatabase")
 
-	METHOD(addIntel)
+	public override METHOD(addIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 			//OOP_INFO_1("ADD INTEL: %1", _item);
 
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "addIntel", [_item]);
+			CALLCM("IntelDatabase", _thisObject, "addIntel", [_item]);
 
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_item);
@@ -37,11 +37,11 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 	ENDMETHOD;
 
 
-	METHOD(updateIntel)
+	public override METHOD(updateIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "updateIntel", [_itemDst ARG _itemSrc]); // It will copy values
+			CALLCM("IntelDatabase", _thisObject, "updateIntel", [_itemDst ARG _itemSrc]); // It will copy values
 
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_itemDst);
@@ -52,11 +52,11 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 		};
 	ENDMETHOD;
 
-	METHOD(removeIntel)
+	public override METHOD(removeIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]);
+			CALLCM("IntelDatabase", _thisObject, "removeIntel", [_item]);
 
 			// Broadcast that intel was removed to existing clients
 			private _side = T_GETV("side");

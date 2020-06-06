@@ -14,7 +14,7 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(doComplexCheck)
+	protected override METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		pr _AI = T_GETV("AI");
 		pr _agent = GETV(_AI, "agent");
@@ -35,7 +35,7 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 	// | Creates a world fact specific to this sensor
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT];
 		pr _AI = T_GETV("AI");
 		
@@ -60,7 +60,7 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNIT_SALUTE]
 	ENDMETHOD;
 

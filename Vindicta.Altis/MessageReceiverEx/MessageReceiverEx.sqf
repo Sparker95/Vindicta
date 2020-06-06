@@ -50,7 +50,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: nil
 	*/
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE; // Message type is the function name
 		private _return = nil;
@@ -80,7 +80,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: you can return whatever you need from here to later retrieve it by waitUntilMessageDone.
 	*/
-	METHOD(handleMessageEx)
+	public virtual METHOD(handleMessageEx)
 		params [P_THISOBJECT , P_ARRAY("_msg") ];
 		diag_log format ["[MessageReceiverEx] handleMessageEx: %1", [_msg]];
 		false
@@ -106,20 +106,17 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 	*/
 	//
 	// Returns: the ID of the posted message
-	METHOD(postMethodAsync)
+	public METHOD(postMethodAsync)
 		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], P_ARRAY("_params"), ["_returnMsgIDOrContinuation", false, [false, []]]];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_TYPE, _methodNameOrCode];
 		_msg set [MESSAGE_ID_DATA, _params]; // Array to return data to, method parameters
-		private _return = T_CALLM2("postMessage", _msg, _returnMsgIDOrContinuation);
+		return T_CALLM2("postMessage", _msg, _returnMsgIDOrContinuation);
 #else
 		// What shall we do for async fire and forget?
-		private _return = -1;
+		return -1;
 #endif
-
-		// Return the message ID (if it was requested)
-		_return
 	ENDMETHOD;
 
 	/*
@@ -135,62 +132,64 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Returns: whatever was returned by this object
 	*/
-	METHOD(postMethodSync)
+	public METHOD(postMethodSync)
 		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], P_ARRAY("_methodParams") ];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_TYPE, _methodNameOrCode];
 		_msg set [MESSAGE_ID_DATA, _methodParams];
 		private _msgID = T_CALLM("postMessage", [_msg ARG true]);
-		pr _return = T_CALLM("waitUntilMessageDone", [_msgID]);
+		// Return whatever was returned by this object
+		return T_CALLM("waitUntilMessageDone", [_msgID]);
 #else
 		// In testing just call the function synchronously
-		pr _return = if(_methodNameOrCode isEqualType "") then { T_CALLM(_methodNameOrCode, _methodParams) } else { _methodParams call _methodNameOrCode };
+		if(_methodNameOrCode isEqualType "") then {
+			return T_CALLM(_methodNameOrCode, _methodParams)
+		} else {
+			return _methodParams call _methodNameOrCode
+		};
 #endif
-		// Return whatever was returned by this object
-		_return
 	ENDMETHOD;
 	
 	// - - - - REFERENCE COUNTER - - - -
 	
-	 METHOD(ref)
-	 	params [P_THISOBJECT];
-	 	CRITICAL_SECTION_START
-		T_SETV("refCount", T_GETV("refCount") + 1);
-		CRITICAL_SECTION_END
-		nil // return this to make SQF happy (= operator returns nothing, not nil)
+	METHOD(ref)
+		params [P_THISOBJECT];
+		CRITICAL_SECTION {
+			T_SETV("refCount", T_GETV("refCount") + 1);
+		};
+		nil // return this to make SQF happy (isNil returns nothing, not nil)
 	ENDMETHOD;
 
 	METHOD(unref)
 		params [P_THISOBJECT];
 		pr _mustDelete = false;
-		
-		// Start critical section
-		CRITICAL_SECTION_START
-		pr _refCount = T_GETV("refCount");
-		_refCount = _refCount - 1;
-		if(_refCount <= 0) then {
-			_mustDelete = true;
-		} else {
-			T_SETV("refCount", _refCount);
+
+		CRITICAL_SECTION {
+			pr _refCount = T_GETV("refCount");
+			_refCount = _refCount - 1;
+			if(_refCount <= 0) then {
+				_mustDelete = true;
+			} else {
+				T_SETV("refCount", _refCount);
+			};
 		};
-		CRITICAL_SECTION_END
-		
+
 		// If refcount is zero, delete the object outside of critical section, because child classes might need to synchronize with other threads
 		if (_mustDelete) then {
 			DELETE(_thisObject);
 		};
-		
+
 		nil
 	ENDMETHOD;
 
 	// - - - - - STORAGE - - - - - -
 	
-	/* virtual */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiver", _thisObject, "postDeserialize", [_storage]);
+		T_CALLCM1("MessageReceiver", "postDeserialize", _storage);
 
 		true
 	ENDMETHOD;

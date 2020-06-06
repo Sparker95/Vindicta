@@ -25,7 +25,6 @@ this addSecondaryWeaponItem "rhs_rpg7_PG7VL_mag";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_762x39mm";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 this addItemToBackpack "rhs_rpg7_PG7VR_mag";
 this addItemToBackpack "rhs_rpg7_PG7VL_mag";
 this addItemToBackpack "rhs_rpg7_OG7V_mag";

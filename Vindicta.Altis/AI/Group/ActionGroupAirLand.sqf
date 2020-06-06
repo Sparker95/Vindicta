@@ -26,7 +26,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 		T_SETV("vehicle", NULL_OBJECT);
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -81,7 +81,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("failIfEmpty");
@@ -104,7 +104,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		T_CALLM0("clearWaypoints");

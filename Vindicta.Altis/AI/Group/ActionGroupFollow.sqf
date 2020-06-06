@@ -28,7 +28,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 		T_SETV("nextWaypointUpdateTime", GAME_TIME + WAYPOINT_UPDATE_INTERVAL);
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _group = T_GETV("group");
@@ -51,7 +51,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {

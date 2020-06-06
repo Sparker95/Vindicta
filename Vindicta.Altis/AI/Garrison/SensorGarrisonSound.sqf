@@ -39,7 +39,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 		T_SETV("soundSources", []);
 	ENDMETHOD;
 
-	METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned
@@ -126,7 +126,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("HANDLE STIMULUS: %1", _stimulus);
@@ -161,7 +161,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_SOUND]
 	ENDMETHOD;
 	
@@ -170,7 +170,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	METHOD(doComplexCheck)
+	protected override METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Bail if not spawned
@@ -193,7 +193,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
 	ENDMETHOD;

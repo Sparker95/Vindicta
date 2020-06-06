@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_AFRF"];
-_array set [T_DESCRIPTION, "Russian Armed Forces. Uses RHS."];
-_array set [T_DISPLAY_NAME, "RHS AFRF"];
+_array set [T_DESCRIPTION, "Armed Forces of the Russian Federation. Uses RHS."];
+_array set [T_DISPLAY_NAME, "RHS Russian Armed Forces"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhs_c_troops",		// RHSAFRF
@@ -21,39 +21,38 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_default, ["rhs_msv_emr_rifleman"]];
 
-_inf set [T_INF_SL, ["rhs_msv_emr_sergeant"]];
-_inf set [T_INF_TL, ["rhs_msv_emr_efreitor", "rhs_msv_emr_junior_sergeant"]];
-_inf set [T_INF_officer, ["rhs_msv_emr_officer", "rhs_msv_emr_officer_armored"]];
-_inf set [T_INF_GL, ["rhs_msv_emr_grenadier"]];
-_inf set [T_INF_rifleman, ["rhs_msv_emr_rifleman"]];
-_inf set [T_INF_marksman, ["rhs_msv_emr_marksman"]];
-_inf set [T_INF_sniper, ["rhs_msv_emr_marksman"]];
-_inf set [T_INF_spotter, ["rhs_msv_emr_marksman"]];
-_inf set [T_INF_exp, ["rhs_msv_emr_engineer"]];
-_inf set [T_INF_ammo, ["rhs_msv_emr_machinegunner_assistant", "rhs_msv_emr_strelok_rpg_assist"]];
-_inf set [T_INF_LAT, ["rhs_msv_emr_LAT", "rhs_msv_emr_RShG2"]];
-_inf set [T_INF_AT, ["rhs_msv_emr_at", "rhs_msv_emr_grenadier_rpg"]];
-_inf set [T_INF_AA, ["rhs_msv_emr_aa"]];
-_inf set [T_INF_LMG, ["rhs_msv_emr_arifleman"]];
-_inf set [T_INF_HMG, ["rhs_msv_emr_machinegunner"]];
-_inf set [T_INF_medic, ["rhs_msv_emr_medic"]];
-_inf set [T_INF_engineer, ["rhs_msv_emr_engineer"]];
-_inf set [T_INF_crew, ["rhs_msv_emr_crew", "rhs_msv_emr_combatcrew", "rhs_msv_emr_armoredcrew", "rhs_msv_emr_crew_commander"]];
-_inf set [T_INF_crew_heli, ["rhs_pilot_transport_heli"]];
-_inf set [T_INF_pilot, ["rhs_pilot"]];
-_inf set [T_INF_pilot_heli, ["rhs_pilot_combat_heli"]];
+_inf set [T_INF_SL, ["RHS_AFRF_SL","RHS_AFRF_SL_2"]];
+_inf set [T_INF_TL, ["RHS_AFRF_TL", "RHS_AFRF_TL_2"]];
+_inf set [T_INF_officer, ["RHS_AFRF_officer"]];
+_inf set [T_INF_GL, ["RHS_AFRF_grenadier"]];
+_inf set [T_INF_rifleman, ["RHS_AFRF_rifleman"]];
+_inf set [T_INF_marksman, ["RHS_AFRF_marksman"]];
+_inf set [T_INF_sniper, ["RHS_AFRF_sniper"]];
+_inf set [T_INF_spotter, ["RHS_AFRF_spotter"]];
+_inf set [T_INF_exp, ["RHS_AFRF_explosives"]];
+_inf set [T_INF_ammo, ["RHS_AFRF_AT_2", "RHS_AFRF_MG_2"]];
+_inf set [T_INF_LAT, ["RHS_AFRF_LAT", "RHS_AFRF_LAT_2"]];
+_inf set [T_INF_AT, ["RHS_AFRF_AT"]];
+_inf set [T_INF_AA, ["RHS_AFRF_AA"]];
+_inf set [T_INF_LMG, ["RHS_AFRF_LMG"]];
+_inf set [T_INF_HMG, ["RHS_AFRF_MG"]];
+_inf set [T_INF_medic, ["RHS_AFRF_medic"]];
+_inf set [T_INF_engineer, ["RHS_AFRF_engineer"]];
+_inf set [T_INF_crew, ["RHS_AFRF_crew"]]; 
+_inf set [T_INF_crew_heli, ["RHS_AFRF_helicrew"]];
+_inf set [T_INF_pilot, ["RHS_AFRF_pilot"]];
+_inf set [T_INF_pilot_heli, ["RHS_AFRF_helipilot"]];
 //_inf set [T_INF_survivor, [""]];
 //_inf set [T_INF_unarmed, [""]];
 
 // Recon
-_inf set [T_INF_recon_TL, ["rhs_vmf_recon_sergeant", "rhs_vmf_recon_efreitor"]];
-_inf set [T_INF_recon_rifleman, ["rhs_vmf_recon_rifleman", "rhs_vmf_recon_rifleman_asval", "rhs_vmf_recon_rifleman_l", "rhs_vmf_recon_machinegunner_assistant"]];
-_inf set [T_INF_recon_medic, ["rhs_vmf_recon_medic"]];
-_inf set [T_INF_recon_exp, ["rhs_vmf_recon_grenadier", "rhs_vmf_recon_grenadier_scout"]];
-_inf set [T_INF_recon_LAT, ["rhs_vmf_recon_rifleman_lat"]];
-//_inf set [T_INF_recon_LMG, ["rhs_vmf_recon_arifleman", "rhs_vmf_recon_arifleman_scout"]]; // There is no T_INF_recon_LMG right now
-_inf set [T_INF_recon_marksman, ["rhs_vmf_recon_marksman", "rhs_vmf_recon_marksman_vss"]];
-_inf set [T_INF_recon_JTAC, ["rhs_vmf_recon_rifleman_scout", "rhs_vmf_recon_rifleman_scout_akm"]];
+_inf set [T_INF_recon_TL, ["RHS_AFRF_recon_TL"]];
+_inf set [T_INF_recon_rifleman, ["RHS_AFRF_recon_rifleman"]];
+_inf set [T_INF_recon_medic, ["RHS_AFRF_recon_medic"]];
+_inf set [T_INF_recon_exp, ["RHS_AFRF_recon_explosives"]];
+_inf set [T_INF_recon_LAT, ["RHS_AFRF_recon_LAT"]];
+_inf set [T_INF_recon_marksman, ["RHS_AFRF_recon_sniper"]];
+_inf set [T_INF_recon_JTAC, ["RHS_AFRF_recon_JTAC"]];
 
 
 // Divers, still vanilla

@@ -17,6 +17,7 @@ this addBackpack "B_TacticalPack_rgr";
 this addWeapon "rhs_weap_m16a4_carryhandle";
 this addPrimaryWeaponItem "rhsusf_acc_M952V";
 this addPrimaryWeaponItem "rhs_mag_20Rnd_556x45_M193_Stanag";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_m67";};

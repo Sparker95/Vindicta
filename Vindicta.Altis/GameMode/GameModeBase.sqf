@@ -132,7 +132,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Called in init.sqf. Do NOT override this, implement the various specialized virtual functions
 	// below it instead.
-	METHOD(init)
+	public METHOD(init)
 		params [P_THISOBJECT, P_ARRAY("_extraParams")];
 
 		PROFILE_SCOPE_START(GameModeInit);
@@ -153,6 +153,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "startLoadingScreen", ["init" ARG "Initializing..."], ON_ALL, NO_JIP);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop manager
@@ -188,19 +189,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				PUBLIC_VARIABLE "gGarrisonServer";
 
 				T_CALLM0("_createSpecialGarrisons");
-				T_CALLM("initCommanders", []);
+				T_CALLM0("initCommanders");
 				#ifndef _SQF_VM
-				T_CALLM("initLocations", []);
-				T_CALLM("initSideStats", []);
-				T_CALLM("initMissionEventHandlers", []);
-				T_CALLM("startCommanders", []);
+				T_CALLM0("initLocations");
+				T_CALLM0("initSideStats");
+				T_CALLM0("initMissionEventHandlers");
+				T_CALLM0("startCommanders");
 				#endif
 				FIX_LINE_NUMBERS()
-				T_CALLM("populateLocations", []);
-				T_CALLM("initServerOnly", []);
+				T_CALLM0("populateLocations");
+				T_CALLM0("initServerOnly");
 
 				// Call our first process event immediately, to help things "settle" before we show them to the player.
-				T_CALLM("process", []);
+				T_CALLM0("process");
 			};
 
 			// Init dynamic simulation
@@ -251,13 +252,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			REMOTE_EXEC_CALL_STATIC_METHOD("GameModeBase", "endLoadingScreen", ["init"], ON_ALL, NO_JIP);
 		};
 		#endif
+		FIX_LINE_NUMBERS()
 
 		PROFILE_SCOPE_START(GameModeEnd);
 	ENDMETHOD;
 	
 	// Called regularly in its own thread to update gameplay
 	// states, mechanics etc. implemented by the Game Mode.
-	/* private */ METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 
 		// Suspend/resume the game on dedicated
@@ -304,7 +306,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Add garrisons to locations based where specified.
 	// Behaviour is controlled by virtual functions "getLocationOwner" and "initGarrison",
 	// or you can override the entire function.
-	/* protected virtual */METHOD(populateLocations)
+	protected virtual METHOD(populateLocations)
 		params [P_THISOBJECT];
 
 		// Create initial garrisons
@@ -316,7 +318,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			OOP_DEBUG_MSG("init loc %1 to side %2", [_loc ARG _side]);
 
-			private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+			private _cmdr = CALLSM("AICommander", "getAICommander", [_side]);
 			if(!IS_NULL_OBJECT(_cmdr)) then {
 				CALLM1(_cmdr, "registerLocation", _loc);
 
@@ -324,7 +326,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				{
 					private _gar = _x;
 					OOP_DEBUG_MSG("Creating garrison %1 for location %2 (%3)", [_gar ARG _loc ARG _side]);
-					CALLM1(_gar, "setLocation", _loc);
+					CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 					// CALLM1(_loc, "registerGarrison", _gar); // I think it's not needed? setLocation should register it as well
 					CALLM0(_gar, "activate");
 				} forEach T_CALLM2("initGarrisons", _loc, _side);
@@ -369,7 +371,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
 
 			CALLM0(_loc, "initBuildProgress");
-		} forEach GET_STATIC_VAR("Location", "all");
+		} forEach GETSV("Location", "all");
 	ENDMETHOD;
 
 	// Creates a civilian garrison at a city location
@@ -386,7 +388,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM(_gar, "addUnit", [_newUnit]);
 		};
 		CALLM1(_gar, "setLocation", _loc);
-		CALLM1(_loc, "registerGarrison", _gar);
+		CALLM0(_gar, "activate");
+
+		//CALLM1(_loc, "registerGarrison", _gar);
 	ENDMETHOD;
 
 	// Creates message loops
@@ -501,6 +505,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						};
 					};
 					#endif
+					FIX_LINE_NUMBERS()
+
 					_recovery = true;
 				};
 			};
@@ -587,33 +593,33 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// -------------------------------------------------------------------------
 	// These are the customization points for game mode setups, implement them
 	// in derived classes.
-	/* protected virtual */ METHOD(preInitAll)
+	protected virtual METHOD(preInitAll)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(initServerOrHC)
+	protected virtual METHOD(initServerOrHC)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(initServerOnly)
+	protected virtual server METHOD(initServerOnly)
 		params [P_THISOBJECT];
 
 		T_CALLM0("postLoadServerOnly");
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(initClientOrHCOnly)
+	protected virtual METHOD(initClientOrHCOnly)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(initHCOnly)
+	protected virtual METHOD(initHCOnly)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(initClientOnly)
+	protected virtual client METHOD(initClientOnly)
 		params [P_THISOBJECT];
 		// Request saved inventory
 		#ifndef _SQF_VM
@@ -626,12 +632,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM0("undercoverMonitor", "staticInit");
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(postInitAll)
+	protected virtual METHOD(postInitAll)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(postLoadServerOnly)
+	protected virtual METHOD(postLoadServerOnly)
 		params [P_THISOBJECT];
 
 		// Add undercover items from Civ faction
@@ -641,13 +647,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(getLocationOwner)
+	protected virtual METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		GETV(_loc, "side")
 	ENDMETHOD;
 
 	// Returns template name for given side and faction
-	/* public virtual */ METHOD(getTemplateName)
+	public virtual  METHOD(getTemplateName)
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
@@ -666,13 +672,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Returns template for given side and faction
-	/* public virtual */METHOD(getTemplate)
+	public virtual METHOD(getTemplate)
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 		private _templateName = T_CALLM2("getTemplateName", _side, _faction);
 		[_templateName] call t_fnc_getTemplate
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(initGarrisons)
+	protected virtual METHOD(initGarrisons)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
 		private _locationType = GETV(_loc, "type");
@@ -704,7 +710,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Override this to do stuff when player spawns
 	// Call the method of base class(that is, this class)
-	/* protected virtual */METHOD(playerSpawn)
+	protected virtual METHOD(playerSpawn)
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		OOP_INFO_1("PLAYER SPAWN: %1", _this);
@@ -871,11 +877,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Action to disable alarm in police stations
 		pr0_fnc_canDisableAlarm = {
-			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			private _loc = CALLSM("Location", "getLocationAtPos", [position player]);
 			_loc != NULL_OBJECT && { CALLM0(_loc, "getType") == LOCATION_TYPE_POLICE_STATION } && { !CALLM0(_loc, "isAlarmDisabled") }
 		};
 		pr0_fnc_disableAlarm = {
-			private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [position player]);
+			private _loc = CALLSM("Location", "getLocationAtPos", [position player]);
 			if(_loc != NULL_OBJECT) then {
 				CALLM1(_loc, "setAlarmDisabled", true);
 			};
@@ -900,7 +906,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _dataWasRestored = if(!(_restoreData isEqualTo [])) then {
 			[_newUnit, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
 			// Clear player gear immediately on this client
-			CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]]);
+			CALLSM("ClientMapUI", "setPlayerRestoreData", [[]]);
 			// Tell the server to clear it as well, which will also update the client (just to make sure)
 			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "clearPlayerInfo", [_newUnit], ON_SERVER);
 			true
@@ -914,7 +920,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Player death event handler in SP
 	// SP is special in this regard, because there is no respawn, so we must make it ourselves, yay \o/
-	/* protected virtual */ METHOD(singlePlayerKilled)
+	protected virtual METHOD(singlePlayerKilled)
 		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
 
 		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
@@ -949,58 +955,58 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Override this to perform periodic game mode updates
-	/* protected virtual */METHOD(update)
+	protected virtual METHOD(update)
 		params [P_THISOBJECT];
 	ENDMETHOD;
 
 	// Override this to perform actions when a location spawns
-	/* protected virtual */METHOD(locationSpawned)
+	protected virtual METHOD(locationSpawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	ENDMETHOD;
 
 	// Override this to perform actions when a location despawns
-	/* protected virtual */METHOD(locationDespawned)
+	protected virtual METHOD(locationDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	ENDMETHOD;
 
 	// Override this to perform actions when a unit is killed
-	/* protected virtual */METHOD(unitDestroyed)
+	protected virtual METHOD(unitDestroyed)
 		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
 	ENDMETHOD;
 
 	// Override this to create gameModeData of a location
-	/* protected virtual */	METHOD(initLocationGameModeData)
+	protected virtual METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 	ENDMETHOD;
 
 	// Game-mode specific functions
 	// Must be here for common interface
 	// Returns an array of cities where we can recruit from
-	/* protected virtual */ METHOD(getRecruitCities)
+	protected virtual METHOD(getRecruitCities)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		[]
 	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
-	/* protected virtual */ METHOD(getRecruitCount)
+	protected virtual METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		0
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(getRecruitmentRadius)
+	protected virtual METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		0
 	ENDMETHOD;
 
 	// Must return a value 0...1 to drive some AICommander logic
-	/* protected virtual */ METHOD(getCampaignProgress)
+	protected virtual METHOD(getCampaignProgress)
 		0.5
 	ENDMETHOD;
 
 	// Not all game modes need all commanders
 	// By default all commanders are started and perform planning
 	// This can be overriden in this method
-	/* virtual */ METHOD(startCommanders)
+	protected virtual METHOD(startCommanders)
 		_this spawn {
 			params [P_THISOBJECT];
 			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
@@ -1016,7 +1022,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// -------------------------------------------------------------------------
 	// |                        S E R V E R   O N L Y                          |
 	// -------------------------------------------------------------------------
-	/* private */ METHOD(initCommanders)
+	METHOD(initCommanders)
 		params [P_THISOBJECT];
 
 		// Independent
@@ -1094,6 +1100,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			gGarrisonAmbient,
 			gGarrisonAbandonedVehicles
 		];
+
+		{
+			CALLM0(_x, "activate");
+		} forEach gSpecialGarrisons;
 	ENDMETHOD;
 
 	STATIC_METHOD(getPlayerGarrisonForSide)
@@ -1255,7 +1265,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{ // forEach _locationsForRoadblocks;
 			_x params ["_pos", "_side"];
 			// TODO: improve this later
-			private _positionsAroundLocation = CALL_STATIC_METHOD("Location", "findRoadblocks", [_pos]);
+			private _positionsAroundLocation = CALLSM("Location", "findRoadblocks", [_pos]);
 			_roadblockPositionsAroundLocations append _positionsAroundLocation;
 			OOP_INFO_2("Roadblock positions around %1 : %2", _pos, _positionsAroundLocation);
 			// Iterate all positions and remove those which are very close to each other
@@ -1603,7 +1613,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Create SideStats
-	/* private */ METHOD(initSideStats)
+	METHOD(initSideStats)
 		params [P_THISOBJECT];
 		
 		private _args = [EAST, 5];
@@ -1613,7 +1623,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// create MissionEventHandlers
-	/* private */ METHOD(initMissionEventHandlers)
+	METHOD(initMissionEventHandlers)
 		params [P_THISOBJECT];
 		call compile preprocessFileLineNumbers "Init\initMissionEH.sqf";
 	ENDMETHOD;
@@ -1647,11 +1657,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Returns the side of player faction
-	/* public virtual */ METHOD(getPlayerSide)
+	public virtual METHOD(getPlayerSide)
 		WEST
 	ENDMETHOD;
 
-	/* public virtual */ METHOD(getEnemySide)
+	public virtual METHOD(getEnemySide)
 		independent
 	ENDMETHOD;
 
@@ -1700,7 +1710,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					};
 				};
 			};
-		} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE] });
+		} forEach (GETSV("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE] });
 	ENDMETHOD;
 
 	// Registers location here
@@ -1710,7 +1720,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_GETV("locations") pushBackUnique _loc;
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopGameMode;
 	ENDMETHOD;
 
@@ -2017,7 +2027,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		}
 	ENDMETHOD;
 	
-	/* override */ METHOD(preSerialize)
+	 public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		T_CALLM1("suspend", "Saving...");
@@ -2100,11 +2110,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(postSerialize)
+	 public override METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
 
 		// Unlock all message loops
 		{
@@ -2122,18 +2132,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(preDeserialize)
+	 public override METHOD(preDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		T_SETV("savedMarkers", []);
 
 		CALLSM2("GameModeBase", "startLoadingScreen", "load", "Loading...");
 	ENDMETHOD;
 
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		FIX_LINE_NUMBERS()
 
@@ -2142,7 +2152,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		// Set default values if they weren't loaded due to older save version
 		private _savedPlayerInfoArray = T_GETV("savedPlayerInfoArray");
@@ -2270,45 +2280,48 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM3("GameModeBase", "setLoadingProgress", "Updating locations...", 0, 5);
 		CALLSM0("Location", "postLoad");
 
-		// Cleanup dirty garrisons etc.
-		CALLSM3("GameModeBase", "setLoadingProgress", "Cleaning broken garrisons...", 2, 5);
-		// Cleanup broken garrisons
-		private _nonSpecialGarrisons = GETSV("Garrison", "all") - gSpecialGarrisons;
-		private _brokenCivilianGarrisons = _nonSpecialGarrisons select {
-			// Civilian garrisons should be at a location only, and autoSpawn if they are of certain types
-			GETV(_x, "side") == civilian && { GETV(_x, "location") == NULL_OBJECT || { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
-		};
-		private _brokenMilitaryGarrisons = _nonSpecialGarrisons select {
-			// Non civilian garrisons should be at a location or position, and autoSpawn if they are of certain types
-			GETV(_x, "side") != civilian && 
-			{ GETV(_x, "location") == NULL_OBJECT && CALLM0(_x, "getPos") isEqualTo [0,0,0]
-			|| { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
-		};
+		// SAVEBREAK >>>
+		// Remove, Hopefully not needed
+		// // Cleanup dirty garrisons etc.
+		// CALLSM3("GameModeBase", "setLoadingProgress", "Cleaning broken garrisons...", 2, 5);
+		// // Cleanup broken garrisons
+		// private _nonSpecialGarrisons = GETSV("Garrison", "all") - gSpecialGarrisons;
+		// private _brokenCivilianGarrisons = _nonSpecialGarrisons select {
+		// 	// Civilian garrisons should be at a location only, and autoSpawn if they are of certain types
+		// 	GETV(_x, "side") == civilian && { GETV(_x, "location") == NULL_OBJECT || { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
+		// };
+		// private _brokenMilitaryGarrisons = _nonSpecialGarrisons select {
+		// 	// Non civilian garrisons should be at a location or position, and autoSpawn if they are of certain types
+		// 	GETV(_x, "side") != civilian && 
+		// 	{ GETV(_x, "location") == NULL_OBJECT && CALLM0(_x, "getPos") isEqualTo [0,0,0]
+		// 	|| { !((GETV(_x, "type") in GARRISON_TYPES_AUTOSPAWN) isEqualTo GETV(_x, "autoSpawn")) } }
+		// };
 
-		// Delete the units, the garrisons should get cleaned up automatically
-		{
-			private _gar = _x;
-			{
-				DELETE(_x);
-			} forEach GETV(_gar, "units");
-		} forEach (_brokenCivilianGarrisons + _brokenMilitaryGarrisons);
+		// // Delete the units, the garrisons should get cleaned up automatically
+		// {
+		// 	private _gar = _x;
+		// 	{
+		// 		DELETE(_x);
+		// 	} forEach GETV(_gar, "units");
+		// } forEach (_brokenCivilianGarrisons + _brokenMilitaryGarrisons);
 
-		private _brokenSpecialGarrisonUnits = gSpecialGarrisons apply {
-			GETV(_x, "units") select {
-				// groups aren't allowed in special garrisons!
-				!IS_NULL_OBJECT(CALLM0(_x, "getGroup")) || 
-				// inf isn't allowed in special garrisons (on load, players are in it obviously after load)
-				CALLM0(_x, "isInfantry")
-			}
-		};
+		// private _brokenSpecialGarrisonUnits = gSpecialGarrisons apply {
+		// 	GETV(_x, "units") select {
+		// 		// groups aren't allowed in special garrisons!
+		// 		!IS_NULL_OBJECT(CALLM0(_x, "getGroup")) || 
+		// 		// inf isn't allowed in special garrisons (on load, players are in it obviously after load)
+		// 		CALLM0(_x, "isInfantry")
+		// 	}
+		// };
 
-		// Delete the units in broken garrisons
-		{
-			private _units = _x;
-			{
-				DELETE(_x);
-			} forEach _units;
-		} forEach _brokenSpecialGarrisonUnits;
+		// // Delete the units in broken garrisons
+		// {
+		// 	private _units = _x;
+		// 	{
+		// 		DELETE(_x);
+		// 	} forEach _units;
+		// } forEach _brokenSpecialGarrisonUnits;
+		// <<< SAVEBREAK
 
 		// Delete editor's special objects, after all initialization is complete
 		//CALLSM0("Location", "deleteEditorAllowedAreaMarkers");

@@ -31,7 +31,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 		
 		pr _hO = T_GETV("hO");
@@ -57,7 +57,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		pr _state = T_CALLM0("activateIfInactive");
@@ -83,7 +83,8 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	/*
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		pr _ai = T_GETV("ai");

@@ -10,7 +10,7 @@ Class: ActionUnit.ActionUnitSurrender
 CLASS("ActionUnitSurrender", "ActionUnit")
 		
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
@@ -29,14 +29,14 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
 		
 		ACTION_STATE_COMPLETED
 	ENDMETHOD;
 
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// TODO: when side system will be done need to check if unit is friendly or ennemy

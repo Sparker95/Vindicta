@@ -14,20 +14,19 @@ this addGoggles _RandomGoggles;
 this addHeadgear "rhsgref_helmet_pasgt_erdl_rhino";
 this forceaddUniform "rhs_uniform_bdu_erdl";
 
-this addWeapon "rhs_weap_m14_rail_fiberglass";
+this addWeapon "rhs_weap_m14_socom_rail";
 this addPrimaryWeaponItem "optic_KHS_blk";
 this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_m993_Mag";
-this addPrimaryWeaponItem "rhsusf_acc_m14_bipod";
 this addWeapon "rhsusf_weap_m9";
 this addHandgunItem "rhsusf_mag_15Rnd_9x19_JHP";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "B_IR_Grenade";
-this addItemToUniform "rhs_grenade_m15_mag";
-for "_i" from 1 to 4 do {this addItemToVest "rhs_grenade_mkiiia1_mag";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_15Rnd_9x19_JHP";};
+this addItemToUniform "rhs_grenade_anm8_mag";
 for "_i" from 1 to 4 do {this addItemToVest "rhsusf_20Rnd_762x51_m993_Mag";};
-this addItemToVest "rhsusf_mag_15Rnd_9x19_JHP";
+this addItemToVest "rhs_grenade_m15_mag";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "rhsusf_ANPVS_14";

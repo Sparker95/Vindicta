@@ -51,15 +51,15 @@ CLASS("SnekSegment", "")
 	ENDMETHOD;
 	
 	// Initial drawing of segment
-	/* virtual */ METHOD(draw)
+	public virtual METHOD(draw)
 	ENDMETHOD;
 	
 	// Deletion of segment from display
-	/* virtual */ METHOD(undraw)
+	public virtual METHOD(undraw)
 	ENDMETHOD;
 	
 	// Setting position of segment
-	/* virtual */ METHOD(setPos)
+	public virtual METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 	ENDMETHOD;
 	
@@ -68,7 +68,7 @@ ENDCLASS;
 #define OOP_CLASS_NAME SnekTail
 CLASS("SnekTail", "SnekSegment")
 	
-	METHOD(draw)
+	public override METHOD(draw)
 		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
@@ -81,12 +81,12 @@ CLASS("SnekTail", "SnekSegment")
 		_mrk setMarkerAlphaLocal 1;
 	ENDMETHOD;
 	
-	METHOD(undraw)
+	public override METHOD(undraw)
 		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
 	ENDMETHOD;
 	
-	METHOD(setPos)
+	public override METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
@@ -111,7 +111,7 @@ CLASS("SnekHead", "SnekSegment")
 		T_SETV("direction", _direction);
 	ENDMETHOD;
 	
-	METHOD(draw)
+	public override METHOD(draw)
 		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
@@ -141,14 +141,14 @@ CLASS("SnekHead", "SnekSegment")
 		
 	ENDMETHOD;
 	
-	METHOD(undraw)
+	public override METHOD(undraw)
 		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
 		deleteMarkerLocal (_thisObject + "_left");
 		deleteMarkerLocal (_thisObject + "_right");
 	ENDMETHOD;
 	
-	METHOD(setPos)
+	public override METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
@@ -569,7 +569,7 @@ CLASS("MapMarkerSnek", "MapMarker")
 	ENDMETHOD;
 
 
-	METHOD(onDraw)
+	public override METHOD(onDraw)
 
 	ENDMETHOD;
 

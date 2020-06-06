@@ -11,7 +11,7 @@ CLASS("GoalGarrisonDefendPassive", "Goal")
 		
 		// Check if the garrison knows about any enemies
 		if (CALLM0(_AI, "isSpawned") && { CALLM0(_AI, "isVigilant") }) then {
-			GET_STATIC_VAR(_thisClass, "relevance")
+			GETSV(_thisClass, "relevance")
 		} else {
 			0
 		};

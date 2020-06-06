@@ -63,7 +63,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		};
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _hO = T_GETV("hO");
@@ -152,7 +152,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _state = T_CALLM0("activateIfInactive");

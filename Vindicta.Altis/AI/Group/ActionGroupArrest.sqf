@@ -36,7 +36,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 		
 		//OOP_INFO_0("ActionGroupArrest: Activated.");
@@ -115,7 +115,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		pr _state = T_CALLM0("activateIfInactive");
@@ -143,18 +143,18 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	ENDMETHOD;
 
 	// Handle unit being killed/removed from group during action
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_FAILED);
 	ENDMETHOD;
 
-	METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_REPLAN);
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("ActionGroupArrest: Terminating.");

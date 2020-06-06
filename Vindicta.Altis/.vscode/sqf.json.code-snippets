@@ -79,7 +79,7 @@
 			"$0",
 			"",
 			"Parameters:",
-			"/t_first - type, description",
+			"\t_first - type, description",
 			"",
 			"Returns: nil",
 			"*/"
@@ -99,5 +99,42 @@
 			"// <<< SAVEBREAK"
 		],
 		"description": "SAVEBREAK"
+	},
+	"forEach": {
+		"prefix": "forEach",
+		"body": [
+			"{// forEach ${1:collection}",
+			"\t$0",
+			"} forEach ${1:collection};"
+		],
+		"description": "forEach"
+	},
+	"switchtrue": {
+		"prefix": "switch",
+		"body": [
+			"switch true do {",
+			"\tcase $0: {",
+			"\t};",
+			"};"
+		],
+		"description": "switch true"
+	},
+	"for": {
+		"prefix": "for",
+		"body": [
+			"for \"_${1:loopVariable}\" from ${2:fromValue} to ${3:toValue} do {",
+			"\t$0",
+			"};"
+		],
+		"description": "for"
+	},
+	"while": {
+		"prefix": "while",
+		"body": [
+			"while { ${1:condition} } do {",
+			"\t$0",
+			"};"
+		],
+		"description": "while"
 	}
 }

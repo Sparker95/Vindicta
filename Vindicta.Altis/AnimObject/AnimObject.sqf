@@ -154,7 +154,7 @@ CLASS("AnimObject", "")
 	// | [_posOffset, _completionRadius]
 	// ----------------------------------------------------------------------
 
-	METHOD(getPointMoveOffset)
+	public virtual METHOD(getPointMoveOffset)
 		params [P_THISOBJECT, P_NUMBER("_pointID") ];
 		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
@@ -168,7 +168,7 @@ CLASS("AnimObject", "")
 	// | Inherited classes must implement this.
 	// | Return value: [_pos, _dir, _animation, _animationOut, _walkOutDir, _walkOutDistance]
 	// ----------------------------------------------------------------------
-	METHOD(getPointDataInternal)
+	public virtual METHOD(getPointDataInternal)
 		params [P_THISOBJECT, P_NUMBER("_pointID")];
 		private _animations = T_GETV("animations");
 		private _animationsOut = T_GETV("animationsOut");

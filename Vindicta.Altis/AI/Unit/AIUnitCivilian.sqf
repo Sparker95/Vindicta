@@ -61,7 +61,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	ENDMETHOD;
 
 	//                        G E T   P O S S I B L E   G O A L S
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		[
 			"GoalCivilianPanicNearest",
 			"GoalCivilianPanicAway"
@@ -69,7 +69,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	ENDMETHOD;
 
 	//                      G E T   P O S S I B L E   A C T I O N S
-	METHOD(getPossibleActions)
+	public override METHOD(getPossibleActions)
 		[
 			"ActionUnitInfantryMove",
 			"ActionUnitFlee",
@@ -80,7 +80,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	ENDMETHOD;
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD(getDebugUIVariableNames)
+	public override METHOD(getDebugUIVariableNames)
 		[
 			"hO",
 			"assignedVehicle",

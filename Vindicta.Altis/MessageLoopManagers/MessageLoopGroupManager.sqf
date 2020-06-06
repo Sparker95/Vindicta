@@ -46,7 +46,7 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 	METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
-		CALL_STATIC_METHOD(_className, _methodName, _parameters);
+		CALLSM(_className, _methodName, _parameters);
 	ENDMETHOD;
 
 ENDCLASS;

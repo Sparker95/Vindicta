@@ -42,7 +42,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 		
 	ENDMETHOD;
 	
-	METHOD(getMessageLoop) //Derived classes must implement this method if they need to receive messages
+	public override METHOD(getMessageLoop) //Derived classes must implement this method if they need to receive messages
 		T_GETV("msgLoop");
 	ENDMETHOD;
 	
@@ -50,7 +50,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// |                            P R O C E S S
 	// ----------------------------------------------------------------------
 	
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 		
 	ENDMETHOD;
@@ -133,7 +133,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// | 
 	// ----------------------------------------------------------------------
 	
-	METHOD(handleMessageEx) //Derived classes must implement this method
+	public override METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {

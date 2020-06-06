@@ -52,7 +52,7 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	
 	Returns: Boolean, true if this is a real model, false if it is a sim one.
 	*/
-	METHOD(isActual)
+	public METHOD(isActual)
 		params [P_THISOBJECT];
 		CALLM0(T_GETV("world"), "isReal");
 	ENDMETHOD;
@@ -67,7 +67,7 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	
 	Returns: <ModelBase>, concrete type is same as this object type.
 	*/
-	/* virtual */ METHOD(simCopy)
+	public virtual METHOD(simCopy)
 		params [P_THISOBJECT, P_OOP_OBJECT("_targetWorldModel")];
 		FAILURE("simCopy method must be implemented when deriving from ModelBase");
 	ENDMETHOD;
@@ -82,45 +82,45 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	Sync this model from its actual object, if it is a real model. 
 	Must be implemented by derived classes.
 	*/
-	/* virtual */ METHOD(sync)
+	public virtual METHOD(sync)
 		params [P_THISOBJECT];
 		FAILURE("sync method must be implemented when deriving from ModelBase");
 	ENDMETHOD;
 
-	/*
-	Method: update
-	Not used?
-	*/
-	METHOD(update)
-		params [P_THISOBJECT];
-		T_CALLM("sync", []);
-		// private _world = T_GETV("world");
-		// // If we have an assigned owner state then ???
-		// if(_world isEqualType "") then {
+	// /*
+	// Method: update
+	// Not used?
+	// */
+	// METHOD(update)
+	// 	params [P_THISOBJECT];
+	// 	T_CALLM0("sync");
+	// 	// private _world = T_GETV("world");
+	// 	// // If we have an assigned owner state then ???
+	// 	// if(_world isEqualType "") then {
 
-		// }
+	// 	// }
 
-		// TODO: Probably don't even have order in here so we can remove it.
-		// // Update order? Yes, action shouldn't do it, orders are owned by garrison
-		// private _order = T_GETV("order");
+	// 	// TODO: Probably don't even have order in here so we can remove it.
+	// 	// // Update order? Yes, action shouldn't do it, orders are owned by garrison
+	// 	// private _order = T_GETV("order");
 
-		// if(_order isEqualType "") then {
-		// 	CALLM(_order, "update", [_thisObject]);
-		// };
+	// 	// if(_order isEqualType "") then {
+	// 	// 	CALLM(_order, "update", [_thisObject]);
+	// 	// };
 
-		// TODO: What else does update even do? Actual simulation at some point, but for 
-		// now the Action applyImmediate will be all we use.
-	ENDMETHOD;
+	// 	// TODO: What else does update even do? Actual simulation at some point, but for 
+	// 	// now the Action applyImmediate will be all we use.
+	// ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -
 
 	// Serialize all variables of this and all parent and derived classes
-	/* override */ METHOD(serializeForStorage)
+	 public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	 public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true

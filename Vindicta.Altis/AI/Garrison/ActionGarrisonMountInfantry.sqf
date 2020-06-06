@@ -24,7 +24,7 @@ CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* private override */METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _AI = T_GETV("AI");
@@ -51,7 +51,7 @@ CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	/* public override */ METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		pr _gar = T_GETV("gar");

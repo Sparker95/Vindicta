@@ -474,7 +474,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	ENDMETHOD;
 #endif
 
-	/* protected override */ METHOD(updateExisting)
+	protected override METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -558,7 +558,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 
 	ENDMETHOD;
 
-	/* protected override */ METHOD(spawnNew)
+	protected override METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 

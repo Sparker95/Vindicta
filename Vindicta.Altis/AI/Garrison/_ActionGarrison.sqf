@@ -26,7 +26,7 @@ CLASS("ActionGarrison", "Action")
 		T_SETV("replanOnCompositionChange", true);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// If we aren't spawned there shouldn't be any group goals
@@ -36,7 +36,7 @@ CLASS("ActionGarrison", "Action")
 		T_CALLM0("clearGroupGoals");
 	ENDMETHOD;
 
-	/* protected */ METHOD(clearGroupGoals)
+	protected METHOD(clearGroupGoals)
 		params [P_THISOBJECT, ["_goals", [""], [[]]], ["_groups", 0, [0, []]]];
 
 		if(_groups isEqualTo 0) then {
@@ -59,7 +59,7 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Bool. Return true if you have handled spawning here. If you return false, Garrison.spawn will perform spawning on its own.
 	*/
-	/* protected virtual */ METHOD(spawn)
+	public virtual METHOD(spawn)
 		params [P_THISOBJECT];
 		false
 	ENDMETHOD;
@@ -70,7 +70,7 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Nothing.
 	*/
-	/* protected virtual */ METHOD(onGarrisonSpawned)
+	public virtual METHOD(onGarrisonSpawned)
 		params [P_THISOBJECT];
 
 		// Reactivate by default
@@ -85,7 +85,7 @@ CLASS("ActionGarrison", "Action")
 	
 	Returns: Nothing.
 	*/
-	/* protected virtual */ METHOD(onGarrisonDespawned)
+	public virtual METHOD(onGarrisonDespawned)
 		params [P_THISOBJECT];
 
 		// Reactivate by default
@@ -96,7 +96,7 @@ CLASS("ActionGarrison", "Action")
 
 	
 	// Handle units/groups added/removed
-	/* protected virtual */ METHOD(handleGroupsAdded)
+	public override METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 
 		// Replan by default
@@ -105,7 +105,7 @@ CLASS("ActionGarrison", "Action")
 		};
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(handleGroupsRemoved)
+	public override METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 
 		// Replan by default
@@ -114,7 +114,7 @@ CLASS("ActionGarrison", "Action")
 		};
 	ENDMETHOD;
 	
-	/* protected virtual */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Replan by default
@@ -123,7 +123,7 @@ CLASS("ActionGarrison", "Action")
 		};
 	ENDMETHOD;
 	
-	/* protected virtual */ METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Replan by default

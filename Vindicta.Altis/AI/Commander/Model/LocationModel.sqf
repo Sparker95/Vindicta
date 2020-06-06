@@ -64,7 +64,7 @@ CLASS("LocationModel", "ModelBase")
 		CALLM1(_world, "addLocation", _thisObject);
 	ENDMETHOD;
 
-	METHOD(simCopy)
+	public override METHOD(simCopy)
 		params [P_THISOBJECT, P_OOP_OBJECT("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
 
@@ -94,7 +94,7 @@ CLASS("LocationModel", "ModelBase")
 		_copy
 	ENDMETHOD;
 
-	METHOD(sync)
+	public override METHOD(sync)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
 		ASSERT_MSG(T_CALLM0("isActual"), "Only sync actual models");

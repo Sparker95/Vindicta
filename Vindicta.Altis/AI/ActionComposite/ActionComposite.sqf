@@ -36,7 +36,7 @@ CLASS("ActionComposite", "Action")
 		T_CALLM0("deleteAllSubactions");
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(setInstant)
+	protected override METHOD(setInstant)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLCM1("Action", "setInstant", _instant);
@@ -57,7 +57,7 @@ CLASS("ActionComposite", "Action")
 	Returns: <Action> or ""
 	*/
 	
-	METHOD(getFrontSubaction)
+	public override METHOD(getFrontSubaction)
 		params [P_THISOBJECT];
 
 		private _sa = T_GETV("subactions");
@@ -67,10 +67,7 @@ CLASS("ActionComposite", "Action")
 			_sa select 0
 		};
 	ENDMETHOD;
-	
-	// Serial and Parallel composite actions implement this method differently
-	/*virtual*/ METHOD(processSubactions)	ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |            A D D   S U B A C T I O N   T O   F R O N T        
 	// ----------------------------------------------------------------------
@@ -84,7 +81,7 @@ CLASS("ActionComposite", "Action")
 	
 	Returns: nil
 	*/
-	METHOD(addSubactionToFront)
+	public override METHOD(addSubactionToFront)
 		params [P_THISOBJECT, P_OOP_OBJECT("_subaction")];
 
 		private _subactions = T_GETV("subactions");
@@ -106,7 +103,7 @@ CLASS("ActionComposite", "Action")
 	
 	Returns: nil
 	*/
-	METHOD(addSubactionToBack)
+	public override METHOD(addSubactionToBack)
 		params [P_THISOBJECT, P_OOP_OBJECT("_subaction")];
 
 		private _subactions = T_GETV("subactions");
@@ -122,7 +119,7 @@ CLASS("ActionComposite", "Action")
 	
 	Returns: Array of actions
 	*/
-	METHOD(getSubactions)
+	public override METHOD(getSubactions)
 		params [P_THISOBJECT];
 
 		T_GETV("subactions")

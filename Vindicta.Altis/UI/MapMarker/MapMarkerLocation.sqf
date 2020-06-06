@@ -106,7 +106,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 		T_CALLM0("update");
 	ENDMETHOD;
 
-	METHOD(select)
+	public override METHOD(select)
 		params [P_THISOBJECT, P_BOOL("_selected")];
 
 		// Reset notification if we have selected it
@@ -118,7 +118,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 		T_CALLM0("update");
 
 		// Call the base class method
-		CALL_CLASS_METHOD("MapMarker", _thisObject, "select", [_selected]);
+		CALLCM("MapMarker", _thisObject, "select", [_selected]);
 	ENDMETHOD;
 
 	// Updates markers according to various states
@@ -202,11 +202,11 @@ CLASS("MapMarkerLocation", "MapMarker")
 	ENDMETHOD;
 
 	// Shows or hides this map marker entirely
-	METHOD(show)
+	public override METHOD(show)
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		// Call base class method (it sets the shown variable value)
-		CALL_CLASS_METHOD("MapMarker", _thisObject, "show", [_show]);
+		CALLCM("MapMarker", _thisObject, "show", [_show]);
 
 		// Update marker properties
 		T_CALLM0("update");
@@ -225,11 +225,11 @@ CLASS("MapMarkerLocation", "MapMarker")
 	ENDMETHOD;
 
 	// Overwrite the base class method
-	METHOD(setPos)
+	public override METHOD(setPos)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		// Call base class method
-		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
+		CALLCM("MapMarker", _thisObject, "setPos", [_pos]);
 
 		// Update the accuracy marker
 		T_CALLM0("updateAccuracyRadiusMarker");
@@ -326,7 +326,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 		};
 	ENDMETHOD;
 
-	METHOD(onDraw)
+	public override METHOD(onDraw)
 		//if (true) exitWith {};
 		params [P_THISOBJECT, "_control"];
 
@@ -392,7 +392,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD(onMouseEnter)
+	public override METHOD(onMouseEnter)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
 		//T_SETV("selected", true);
@@ -404,7 +404,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD(onMouseLeave)
+	public override METHOD(onMouseLeave)
 		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
 		//T_SETV("selected", false);
@@ -421,7 +421,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonDown)
+	public override METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 
@@ -435,7 +435,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 				T_CALLM1("setNotification", false);
 			};
 
-			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
+			pr _selectedMarkers = GETSV(CLASS_NAME, "selectedMarkers");
 			_selectedMarkers pushBackUnique _thisObject;
 			T_SETV("selected", true);
 
@@ -447,10 +447,10 @@ CLASS("MapMarkerLocation", "MapMarker")
 			// If only this marker is selected now
 			if (count _selectedMarkers == 1) then {
 				pr _intel = T_GETV("intel");
-				CALL_STATIC_METHOD("ClientMapUI", "onMapMarkerMouseButtonDown", [_thisObject ARG _intel]);
+				CALLSM("ClientMapUI", "onMapMarkerMouseButtonDown", [_thisObject ARG _intel]);
 			} else {
 				// Deselect everything
-				CALL_STATIC_METHOD("ClientMapUI", "onMapMarkerMouseButtonDown", ["" ARG ""]);
+				CALLSM("ClientMapUI", "onMapMarkerMouseButtonDown", ["" ARG ""]);
 			};
 		};
 	ENDMETHOD;
@@ -466,7 +466,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonUp)
+	public override METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	ENDMETHOD;
@@ -481,7 +481,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonClick)
+	public override METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
@@ -490,7 +490,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 	STATIC_METHOD(deselectAllMarkers)
 		params ["_thisClass"];
 
-		pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
+		pr _selectedMarkers = GETSV(CLASS_NAME, "selectedMarkers");
 		{
 			SETV(_x, "selected", false);
 			if (GETV(_x, "radius") != 0) then {
@@ -498,7 +498,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 			};
 		} forEach _selectedMarkers;
 
-		SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
+		SETSV(CLASS_NAME, "selectedMarkers", []);
 	ENDMETHOD;
 
 	STATIC_METHOD(onMouseClickElsewhere)
@@ -516,14 +516,14 @@ CLASS("MapMarkerLocation", "MapMarker")
 		params ["_thisClass", ["_enable", false, [false]]];
 		{
 			CALLM1(_x, "setNotification", _enable);
-		} forEach GET_STATIC_VAR(_thisClass, "all");
+		} forEach GETSV(_thisClass, "all");
 	ENDMETHOD;
 
 ENDCLASS;
 
 if(isNil {GETSV(CLASS_NAME, "all")} ) then {
-	SET_STATIC_VAR(CLASS_NAME, "all", []);
-	SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
+	SETSV(CLASS_NAME, "all", []);
+	SETSV(CLASS_NAME, "allSelected", []);
 };
 
 #ifndef _SQF_VM
@@ -531,14 +531,14 @@ if(isNil {GETSV(CLASS_NAME, "all")} ) then {
 /*
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
-	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
+	CALLSM(CLASS_NAME, "onMouseClickElsewhere", _this);
 }] call BIS_fnc_addScriptedEventHandler;
 */
 
 /*
 [missionNamespace, "MapMarker_MouseButtonClick_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
-	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
+	CALLSM(CLASS_NAME, "onMouseClickElsewhere", _this);
 }] call BIS_fnc_addScriptedEventHandler;
 */
 

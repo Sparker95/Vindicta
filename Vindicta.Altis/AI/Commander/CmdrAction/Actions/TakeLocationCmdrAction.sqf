@@ -35,7 +35,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION ARG _tgtLocId]);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(updateIntel)
+	protected override METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -68,7 +68,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 
-			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			private _intelClone = CALLSM("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
@@ -80,7 +80,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		};
 	ENDMETHOD;
 
-	/* override */ METHOD(updateScore)
+	public override METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -196,7 +196,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
 
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _strategy = CALLSM("AICommander", "getCmdrStrategy", [_side]);
 		
 		private _scoreResource = _detachEffStrength * _distCoeff;
 		private _scorePriority = CALLM(_strategy, "getLocationDesirability", [_worldNow ARG _tgtLoc ARG _side]);
@@ -244,7 +244,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD(getRecordSerial)
+	public override METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record

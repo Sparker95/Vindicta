@@ -352,8 +352,8 @@ CLASS("ClientMapUI", "")
 			params ["_control", "_xPos", "_yPos", "_mouseOver"];
 
 			pr _args = [_control, _xPos, _yPos];
-			pr _markerCurrent = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
-			pr _markerPrev = GET_STATIC_VAR(CLASS_NAME, "markerUnderCursor");
+			pr _markerCurrent = CALLSM(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _markerPrev = GETSV(CLASS_NAME, "markerUnderCursor");
 
 			// Did something change?
 			if (_markerPrev != _markerCurrent) then {
@@ -368,7 +368,7 @@ CLASS("ClientMapUI", "")
 				};
 
 				// Update the variable
-				SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
+				SETSV(CLASS_NAME, "markerUnderCursor", _markerCurrent)
 			};
 		}];
 		*/
@@ -632,8 +632,8 @@ CLASS("ClientMapUI", "")
 		Parameters: None
 
 		old code backup:
-		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
-		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		//pr _markersUnderCursor = 	CALLSM("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
+		//							CALLSM("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 
 	*/
 	METHOD(updateHintTextFromContext)
@@ -1505,7 +1505,7 @@ CLASS("ClientMapUI", "")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonDown)
+	public METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 		OOP_INFO_1("ON MOUSE BUTTON DOWN: %1", _this);
@@ -1523,8 +1523,8 @@ CLASS("ClientMapUI", "")
 		We click on a location marker, No location markers have been selected before
 		*/
 
-		pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
-		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		pr _garrisonsUnderCursor = CALLSM("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		pr _locationsUnderCursor = CALLSM("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 
 		// Try to prioritize location marker
 		pr _markersUnderCursor = _locationsUnderCursor + _garrisonsUnderCursor;
@@ -1755,12 +1755,12 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 
-	METHOD(onMouseButtonUp)
+	public METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 	ENDMETHOD;
 
-	METHOD(onMouseButtonClick)
+	public METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 	ENDMETHOD;
@@ -1990,7 +1990,7 @@ CLASS("ClientMapUI", "")
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	METHOD(onMouseEnter)
+	public METHOD(onMouseEnter)
 		params [P_THISOBJECT, "_ctrl"];
 
 		pr _mapDisplay = findDisplay 12;
@@ -2058,9 +2058,9 @@ CLASS("ClientMapUI", "")
 	METHOD(onMapMouseMoving)
 		params [P_THISOBJECT, "_control", "_xPos", "_yPos", "_mouseOver"];
 
-		//pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]); // Let's not do it for garrison markers yet, ok?
+		//pr _garrisonsUnderCursor = CALLSM("MapMarkerGarrison", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]); // Let's not do it for garrison markers yet, ok?
 		pr _garrisonsUnderCursor = [];
-		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]);
+		pr _locationsUnderCursor = CALLSM("MapMarkerLocation", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]);
 		pr _markersUnderCursor = _garrisonsUnderCursor + _locationsUnderCursor;
 
 		// Previous markers under cursor

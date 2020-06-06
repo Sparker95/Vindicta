@@ -18,7 +18,7 @@ OOP_INFO_0("DESPAWN");
 
 ASSERT_THREAD(_thisObject);
 
-if(T_CALLM("isDestroyed", [])) exitWith {
+if(T_CALLM0("isDestroyed")) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 	DUMP_CALLSTACK;
 };
@@ -33,7 +33,7 @@ if (!_spawned) exitWith {
 T_SETV("spawned", false);
 
 private _units = T_GETV("units");
-private _groups = (T_GETV("groups"));
+private _groups = T_GETV("groups");
 private _groupsCopy = +_groups;
 
 // Stop group AIs, but don't delete them
@@ -54,8 +54,7 @@ while {_i < count _groups} do
 // Despawn groups, delete empty groups
 OOP_INFO_1("Despawning groups: %1", _groups);
 private _i = 0;
-while {_i < count _groups} do
-{
+while {_i < count _groups} do {
 	private _group = _groups select _i;
 	CALLM0(_group, "despawn");
 	
@@ -97,8 +96,8 @@ if (_action != "") then {
 //CALLM1(_AI, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
 
 // Change process category if active
-if (T_GETV("active")) then {
-	CALLM2(T_CALLM0("getMessageLoop"), "addProcessCategoryObject", "AIGarrisonDespawned", _AI);
+if (T_CALLM0("hasAI")) then {
+	CALLM1(_AI, "addToProcessCategory", "AIGarrisonDespawned");
 };
 
 0

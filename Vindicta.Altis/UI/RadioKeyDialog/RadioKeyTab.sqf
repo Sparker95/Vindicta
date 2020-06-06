@@ -38,7 +38,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		SETSV("RadioKeyTab", "instance", nil);
 	ENDMETHOD;
 
-	METHOD(getInstance)
+	public STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		pr _inst = GETSV(_thisClass, "instance");
 		if (isNil "_inst") then {

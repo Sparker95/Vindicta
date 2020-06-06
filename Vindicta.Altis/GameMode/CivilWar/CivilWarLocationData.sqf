@@ -20,7 +20,7 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		T_SETV_PUBLIC("ownerSide", CIVILIAN);
 	ENDMETHOD;
 	
-	/* virtual override server */ METHOD(updatePlayerRespawn)
+	public override METHOD(updatePlayerRespawn)
 		params [P_THISOBJECT];
 
 		pr _loc = T_GETV("location");
@@ -75,13 +75,13 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS
 	ENDMETHOD;
 
-	METHOD(forceEnablePlayerRespawn)
+	public METHOD(forceEnablePlayerRespawn)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 		T_SETV("forceEnablePlayerRespawn", _enable);
 	ENDMETHOD;
 
 	// Overrides the location name
-	/* public virtual client */ METHOD(getDisplayColor)
+	public virtual client METHOD(getDisplayColor)
 		params [P_THISOBJECT];
 		switch T_GETV("ownerSide") do {
 			case FRIENDLY_SIDE: {
@@ -96,7 +96,7 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		}
 	ENDMETHOD;
 
-	/* virtual override client */ METHOD(getMapInfoEntries)
+	public override client METHOD(getMapInfoEntries)
 		private _return = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -118,11 +118,11 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 	ENDMETHOD;
 
 	// STORAGE
-	/* override server */ METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("LocationGameModeData", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("LocationGameModeData", _thisObject, "postDeserialize", [_storage]);
 		T_SETV_PUBLIC("ownerSide", CIVILIAN);
 
 		true

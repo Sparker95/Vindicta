@@ -44,7 +44,7 @@ CLASS("ActionUnitArrest", "Action")
 		T_SETV("screamTime", 0);
 	ENDMETHOD;
 	
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 		
 		pr _captor = T_GETV("objectHandle");
@@ -64,7 +64,7 @@ CLASS("ActionUnitArrest", "Action")
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 	
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM("activateIfInactive", []);
@@ -337,7 +337,7 @@ CLASS("ActionUnitArrest", "Action")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		terminate T_GETV("spawnHandle");

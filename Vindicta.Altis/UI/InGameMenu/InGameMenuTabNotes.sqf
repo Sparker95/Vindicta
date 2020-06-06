@@ -40,7 +40,7 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
-	/* virtual */ METHOD(beforeDelete)
+	 public override METHOD(beforeDelete)
 		params [P_THISOBJECT];
 
 		// We want to save the text to restore it next time this tab is open

@@ -121,11 +121,11 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
 	ENDMETHOD;
 
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS");

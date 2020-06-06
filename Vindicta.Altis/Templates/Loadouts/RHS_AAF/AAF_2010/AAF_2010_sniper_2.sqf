@@ -26,10 +26,7 @@ this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
-this addItemToVest "rhs_grenade_anm8_mag";
-this addItemToVest "rhs_grenade_mkii_mag";
-this addItemToVest "rhs_grenade_mki_mag";
-for "_i" from 1 to 6 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
-for "_i" from 1 to 4 do {this addItemToVest "rhsusf_5Rnd_762x51_m62_Mag";};
+for "_i" from 1 to 10 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
+for "_i" from 1 to 6 do {this addItemToVest "rhsusf_5Rnd_762x51_m62_Mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

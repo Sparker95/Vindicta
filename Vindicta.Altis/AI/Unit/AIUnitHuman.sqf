@@ -86,7 +86,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_CALLM0("removeFromProcessCategory");
 	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT, P_BOOL("_spawning")];
 
 		#ifdef DEBUG_GOAL_MARKERS
@@ -125,7 +125,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	FIX_LINE_NUMBERS()
 
 
-	/* override */ METHOD(onGoalChosen)
+	public override METHOD(onGoalChosen)
 		params [P_THISOBJECT, P_ARRAY("_goalParameters")];
 
 		pr _moveTarget = 0;
@@ -246,9 +246,17 @@ CLASS("AIUnitHuman", "AIUnit")
 
 		pr _unit = T_GETV("agent");
 		pr _grp = CALLM0(_unit, "getGroup");
-		pr _grpAI = CALLM0(_grp, "getAI");
-		// This shouldn't be possible once AI start is synchronized between group and units
-		pr _enabled = if(isNil "_grpAI" || {_grpAI == NULL_OBJECT} || {!IS_OOP_OBJECT(_grpAI)}) then { false } else { GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled") };
+		pr _enabled = if(_grp != NULL_OBJECT) then {
+			pr _grpAI = CALLM0(_grp, "getAI");
+			// This shouldn't be possible once AI start is synchronized between group and units
+			if(isNil "_grpAI" || {_grpAI == NULL_OBJECT} || {!IS_OOP_OBJECT(_grpAI)}) then {
+				false
+			} else {
+				GETV(_grpAI, "unitMarkersEnabled") && GETV(_grpAI, "markersEnabled")
+			};
+		} else {
+			false
+		};
 		pr _wasEnabled = T_GETV("markersEnabled");
 		if(!_wasEnabled && _enabled) then {
 			T_CALLM0("_enableDebugMarkers");
@@ -1048,13 +1056,13 @@ CLASS("AIUnitHuman", "AIUnit")
 		[]
 	ENDMETHOD;
 
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+	public override METHOD(setUrgentPriorityOnAddGoal)
 		true
 	ENDMETHOD;
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD(getDebugUIVariableNames)
+	public override METHOD(getDebugUIVariableNames)
 		[
 			"hO",
 			"assignedVehicle",

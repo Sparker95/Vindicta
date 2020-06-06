@@ -24,7 +24,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		pr _AI = T_GETV("AI");
@@ -77,7 +77,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNITS_DESTROYED]
 	ENDMETHOD;
 	
@@ -87,7 +87,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
 	ENDMETHOD;
 

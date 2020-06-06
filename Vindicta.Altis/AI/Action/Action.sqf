@@ -133,12 +133,12 @@ CLASS("Action", "MessageReceiverEx")
 	// | Must implement this since we inherit from MessageReceiver          |
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		params [P_THISOBJECT];
 		CALLM0(T_GETV("AI"), "getMessageLoop");
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(setInstant)
+	protected virtual METHOD(setInstant)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		T_SETV("instant", _instant);
 	ENDMETHOD;
@@ -271,7 +271,7 @@ CLASS("Action", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD(handleMessageEx) //Derived classes must implement this method
+	public override METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE;
 		private _msgHandled = false;
@@ -312,7 +312,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
-	/* virtual */ METHOD(activateIfInactive)
+	protected METHOD(activateIfInactive)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_INACTIVE) then {
@@ -333,7 +333,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
-	METHOD(reactivateIfFailed)
+	protected METHOD(reactivateIfFailed)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_FAILED) then {
@@ -354,7 +354,7 @@ CLASS("Action", "MessageReceiverEx")
 		_instant - The action should be completed instantly
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD(activate)
+	protected virtual METHOD(activate)
 		params [P_THISOBJECT];
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -368,7 +368,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD(process)
+	public virtual METHOD(process)
 		params [P_THISOBJECT];
 		private _state = T_CALLM0("activateIfInactive");
 		_state
@@ -380,7 +380,8 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD(terminate)ENDMETHOD;
+	public virtual METHOD(terminate)
+	ENDMETHOD;
 	
 	/*
 	Method: addSubactionToFront
@@ -390,7 +391,9 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD(addSubactionToFront) diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!"; ENDMETHOD;
+	public virtual METHOD(addSubactionToFront)
+		diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!";
+	ENDMETHOD;
 	
 	/*
 	Method: addSubactionToFront
@@ -400,7 +403,9 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD(addSubactionToBack) diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!"; ENDMETHOD;
+	public virtual METHOD(addSubactionToBack)
+		diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!";
+	ENDMETHOD;
 	
 	/*
 	Method: getSubactions
@@ -409,7 +414,9 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: []
 	*/
-	/* virtual */ METHOD(getSubactions) [] ENDMETHOD;
+	public virtual METHOD(getSubactions)
+		[]
+	ENDMETHOD;
 	
 	
 	/*
@@ -419,7 +426,7 @@ CLASS("Action", "MessageReceiverEx")
 	Returns: _thisObject
 	*/
 	
-	METHOD(getFrontSubaction)
+	public virtual METHOD(getFrontSubaction)
 		params [P_THISOBJECT];
 		_thisObject
 	ENDMETHOD;
@@ -436,7 +443,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in completed state, false otherwise
 	*/
-	METHOD(isCompleted)
+	public METHOD(isCompleted)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_COMPLETED
 	ENDMETHOD;
@@ -446,7 +453,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in active state, false otherwise
 	*/
-	METHOD(isActive)
+	public METHOD(isActive)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_ACTIVE
 	ENDMETHOD;
@@ -456,7 +463,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in inactive state, false otherwise
 	*/
-	METHOD(isInactive)
+	public METHOD(isInactive)
 		params [P_THISOBJECT];
 		(T_GETV("state")) == ACTION_STATE_INACTIVE
 	ENDMETHOD;
@@ -466,7 +473,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in failed state, false otherwise
 	*/
-	METHOD(isFailed)
+	public METHOD(isFailed)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_FAILED
 	ENDMETHOD;
@@ -503,10 +510,11 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: <WorldState>
 	*/
-	STATIC_METHOD(getPreconditions)
+	public STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 
-		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
+		pr _wsPre = GETSV(_thisClass, "preconditions");
+		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
 		_wsPre
 	ENDMETHOD;
 
@@ -523,10 +531,10 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number
 	*/
-	STATIC_METHOD(getPrecedence)
+	public STATIC_METHOD(getPrecedence)
 		params [P_THISCLASS];
 		
-		pr _precedence = GET_STATIC_VAR(_thisClass, "precedence");
+		pr _precedence = GETSV(_thisClass, "precedence");
 		
 		if (isNil "_precedence") then {
 			0
@@ -535,10 +543,10 @@ CLASS("Action", "MessageReceiverEx")
 		};
 	ENDMETHOD;
 	
-	STATIC_METHOD(isNonInstant)
+	public STATIC_METHOD(isNonInstant)
 		params [P_THISCLASS];
 		
-		pr _nonInstant = GET_STATIC_VAR(_thisClass, "nonInstant");
+		pr _nonInstant = GETSV(_thisClass, "nonInstant");
 		
 		if (isNil "_nonInstant") then {
 			false
@@ -560,7 +568,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: anything
 	*/
-	STATIC_METHOD(getParameterValue)
+	public STATIC_METHOD(getParameterValue)
 		params [P_THISCLASS, P_ARRAY("_parameters"), ["_tag", "", ["", 0]], P_DYNAMIC("_default")];
 		private _index = _parameters findif { _x select 0 == _tag };
 		private _val = if(_index == NOT_FOUND) then { _default } else { (_parameters#_index)#1 };
@@ -574,7 +582,7 @@ CLASS("Action", "MessageReceiverEx")
 	ENDMETHOD;
 	
 	// Merge _additional parameters into _base parameters, leaving any existing values unchanged
-	STATIC_METHOD(mergeParameterValues)
+	public STATIC_METHOD(mergeParameterValues)
 		params [P_THISCLASS, P_ARRAY("_base"), P_ARRAY("_additional")];
 		{
 			_x params ["_tag", "_value"];
@@ -602,7 +610,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsAdded)
+	public virtual METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
@@ -620,7 +628,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsRemoved)
+	public virtual METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
@@ -639,7 +647,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsRemoved)
+	public virtual METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
@@ -657,7 +665,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsAdded)
+	public virtual METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
@@ -771,7 +779,7 @@ CLASS("Action", "MessageReceiverEx")
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	// Override to show debug data in debug UI for specific class
-	/* virtual */ METHOD(getDebugUIVariableNames)
+	public virtual METHOD(getDebugUIVariableNames)
 		[]
 	ENDMETHOD;
 

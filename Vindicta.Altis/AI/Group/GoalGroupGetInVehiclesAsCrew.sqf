@@ -26,7 +26,7 @@ CLASS("GoalGroupGetInVehiclesAsCrew", "GoalGroup")
 	// 		(	(!_allHaveTurretOperators)	&& _enoughHumansToTurret )) then {
 	// 	//if(!_isBalanced) then {
 	// 		//OOP_INFO_0("High relevance!");
-	// 		GET_STATIC_VAR(_thisClass, "relevance");
+	// 		GETSV(_thisClass, "relevance");
 	// 	} else {
 	// 		//OOP_INFO_0("Low relevance!");
 	// 		0

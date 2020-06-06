@@ -23,7 +23,7 @@ this addWeapon "rhs_pdu4";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
 this addItemToVest "rhs_mag_rdg2_white";
-this addItemToVest "rhs_mag_nspd";
+this addItemToVest "rhs_mag_nspn_red";
 for "_i" from 1 to 5 do {this addItemToVest "20Rnd_762x51_Mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "APERSTripMine_Wire_Mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};

@@ -197,7 +197,7 @@ CLASS("MessageLoop", "Storable");
 	}
 	*/
 	/*
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		// For now it returns false (message not handled)
 		false
 	ENDMETHOD;
@@ -473,7 +473,7 @@ CLASS("MessageLoop", "Storable");
 
 	// STORAGE
 
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		T_SETV("mutex", MUTEX_NEW());

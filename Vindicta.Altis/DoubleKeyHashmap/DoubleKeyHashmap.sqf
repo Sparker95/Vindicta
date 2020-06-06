@@ -55,7 +55,7 @@ CLASS("DoubleKeyHashmap", "")
 	Returns: nil
 	*/
 
-	METHOD(set)
+	public virtual METHOD(set)
 		params [P_THISOBJECT, P_STRING("_k0"), P_STRING("_k1"), "_value"];
 		T_GETV("ns") setVariable [_k0 + __SEP__ + _k1, _value];
 	ENDMETHOD;

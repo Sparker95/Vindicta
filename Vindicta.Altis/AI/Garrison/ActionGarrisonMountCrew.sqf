@@ -27,7 +27,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _gar = T_GETV("gar");
@@ -56,7 +56,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		// Check if spawned

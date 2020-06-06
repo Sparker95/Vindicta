@@ -122,7 +122,7 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
-	/* virtual */ METHOD(beforeDelete)
+	 public override METHOD(beforeDelete)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;

@@ -26,7 +26,7 @@ CLASS("GoalGroupUnflipVehicles", "GoalGroup")
 		if (	([_ws, WSP_GROUP_ALL_VEHICLES_UPRIGHT, false] call ws_propertyExistsAndEquals) &&
 				((behaviour (leader _hG)) != "COMBAT") &&
 				(_groupType == GROUP_TYPE_VEH)) then {
-			GET_STATIC_VAR(_thisClass, "relevance");
+			GETSV(_thisClass, "relevance");
 		} else {
 			0
 		};

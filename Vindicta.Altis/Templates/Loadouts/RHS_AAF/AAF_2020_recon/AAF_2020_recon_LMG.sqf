@@ -29,11 +29,13 @@ this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "optic_NVS";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk3a2";};
-this addItemToVest "I_IR_Grenade";
+this addItemToUniform "I_IR_Grenade";
+this addItemToVest "optic_NVS";
+for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_mk3a2";};
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_100Rnd_556x45_mixed_soft_pouch_coyote";};
+this addItemToVest "rhs_grenade_anm8_mag";
+this addItemToVest "rhs_grenade_m15_mag";
 for "_i" from 1 to 2 do {this addItemToBackpack "rhsusf_200Rnd_556x45_mixed_soft_pouch_coyote";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

@@ -43,7 +43,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		T_SETV("target", _target);
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 		
 		pr _oh = T_GETV("objectHandle");
@@ -67,7 +67,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("activateIfInactive");

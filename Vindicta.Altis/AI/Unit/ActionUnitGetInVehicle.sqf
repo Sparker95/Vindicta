@@ -55,7 +55,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		// Is _veh an object handle or a Unit?
 		if (_veh isEqualType objNull) then {
 			T_SETV("hVeh", _veh);
-			pr _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_veh]);
+			pr _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_veh]);
 			T_SETV("unitVeh", _unitVeh);
 		} else {
 			T_SETV("unitVeh", _veh);
@@ -149,7 +149,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		pr _hO = T_GETV("hO");
@@ -197,7 +197,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
@@ -293,7 +293,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the goal is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// If the action is active, unassign the unit from the vehicle

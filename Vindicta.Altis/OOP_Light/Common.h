@@ -71,7 +71,9 @@ Some generic macros
 
 // Can be used to mark a return statement, doesn't have any functionality
 #define return 
-#define public 
-#define protected 
-#define virtual 
-#define override  
+#define public +["public"]
+#define protected +["protected"]
+#define virtual +["virtual"]
+#define override +["override"]
+#define server +["server"]
+#define client +["client"]

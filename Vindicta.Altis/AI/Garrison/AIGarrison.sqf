@@ -152,7 +152,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	ENDMETHOD;
 
-	override METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT, P_STRING("_category")];
 		T_CALLM1("addToProcessCategory", _category);
 	ENDMETHOD;
@@ -293,7 +293,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_CALLM1("addSensor", _sensorSound);
 	ENDMETHOD;
 	
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT, P_BOOL("_accelerate")];
 		
 		pr _gar = T_GETV("agent");
@@ -311,7 +311,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", T_CALLM0("isSpawned"), _accelerate);
 		if (CALLM0(_gar, "countInfantryUnits") > 0) then {
-			CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
+			CALLCM("AI_GOAP", _thisObject, "process", [_accelerate]);
 
 			// Update the "busy" timer
 			pr _currentGoal = T_GETV("currentGoal");
@@ -373,7 +373,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	// | The garrison AI resides in the same thread as the garrison
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopMain
 	ENDMETHOD;
 
@@ -516,13 +516,13 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _worldState = T_GETV("worldState");
 		
 		// Find medics
-		pr _medics = [_gar, [[T_INF, T_INF_medic], [T_INF, T_INF_recon_medic]]] call GETM(_gar, "findUnits");
-		pr _medicAvailable = (count _medics) > 0;
+		pr _medics = CALLM1(_gar, "findUnits", [[T_INF ARG T_INF_medic] ARG [T_INF ARG T_INF_recon_medic]]);
+		pr _medicAvailable = count _medics > 0;
 		[_worldState, WSP_GAR_MEDIC_AVAILABLE, _medicAvailable] call ws_setPropertyValue;
 		
 		// Find engineers
-		pr _engineers = [_gar, [[T_INF, T_INF_engineer]]] call GETM(_gar, "findUnits");
-		pr _engineerAvailable = (count _engineers) > 0;
+		pr _engineers = CALLM1(_gar, "findUnits", [[T_INF ARG T_INF_engineer]]);
+		pr _engineerAvailable = count _engineers > 0;
 		[_worldState, WSP_GAR_ENGINEER_AVAILABLE, _engineerAvailable] call ws_setPropertyValue;
 		
 		// Do we have vehicles ?
@@ -715,7 +715,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// - - - - - - STORAGE - - - - - -
 
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -749,7 +749,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 
 	// It should return the goals this garrison might be willing to achieve
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		switch GETV(T_GETV("agent"), "type") do {
 			case GARRISON_TYPE_GENERAL: {[
@@ -774,7 +774,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		}
 	ENDMETHOD;
 
-	METHOD(getPossibleActions)
+	public override METHOD(getPossibleActions)
 		params [P_THISOBJECT];
 		switch GETV(T_GETV("agent"), "type") do {
 			case GARRISON_TYPE_GENERAL: {[
@@ -841,7 +841,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Debug
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD(getDebugUIVariableNames)
+	public override METHOD(getDebugUIVariableNames)
 		[
 			"buildingsWithTargets",
 			"assignedTargetsPos",

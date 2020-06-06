@@ -22,9 +22,9 @@ FIX_LINE_NUMBERS()
 // GarrisonModel_getThread = {
 // 	params ["_garrisonModel"];
 // 	// Can't use normal accessor because it would cause an infinite loop!
-// 	private _side = FORCE_GET_MEM(_garrisonModel, "side");
+// 	private _side = _GETV(_garrisonModel, "side");
 // 	if(!isNil "_side") then {
-// 		private _AICommander = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+// 		private _AICommander = CALLSM("AICommander", "getAICommander", [_side]);
 // 		if(!IS_NULL_OBJECT(_AICommander)) then {
 // 			GETV(CALLM0(_AICommander, "getMessageLoop"), "scriptHandle")
 // 		} else {
@@ -110,7 +110,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_CALLM0("killed");
 	ENDMETHOD;
 
-	METHOD(simCopy)
+	public override METHOD(simCopy)
 		params [P_THISOBJECT, P_OOP_OBJECT("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
 
@@ -180,7 +180,7 @@ CLASS("GarrisonModel", "ModelBase")
 		};
 	ENDMETHOD;
 	
-	METHOD(sync)
+	public override METHOD(sync)
 		params [P_THISOBJECT];
 		ASSERT_MSG(T_CALLM0("isActual"), "Only sync actual models");
 		private _actual = T_GETV("actual");
@@ -383,7 +383,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Register it at the commander (do it after adding the units so the sync is correct)
 		#ifndef _SQF_VM
-		private _newGarr = CALLM0(_newGarrActual, "activate");
+		private _newGarr = CALLM0(_newGarrActual, "activateCmdrThread");
 		#else
 		private _newGarr = NEW("GarrisonModel", [_world ARG _newGarrActual]);
 		#endif

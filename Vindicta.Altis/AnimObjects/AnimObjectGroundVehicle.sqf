@@ -28,7 +28,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 
 		T_SETV("pointCount", 6);
 
-		private _animations = GET_STATIC_VAR("AnimObjectGroundVehicle", "animations");
+		private _animations = GETSV("AnimObjectGroundVehicle", "animations");
 		T_SETV("animations", _animations);
 	ENDMETHOD;
 
@@ -38,7 +38,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// | Inherited classes must implement this.
 	// | Returns [_offset, _animation, _direction]
 	// ----------------------------------------------------------------------
-	METHOD(getPointDataInternal)
+	public override METHOD(getPointDataInternal)
 		params [P_THISOBJECT, P_NUMBER("_pointID")];
 		private _animations = T_GETV("animations");
 		private _points = T_GETV("points");
@@ -61,7 +61,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// |  Internal function to get the position where the unit must move to, in model coordinates
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
-	METHOD(getPointMoveOffset)
+	public override METHOD(getPointMoveOffset)
 		params [P_THISOBJECT, P_NUMBER("_pointID") ];
 		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
@@ -71,4 +71,4 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 ENDCLASS;
 
 private _animations = ["InBaseMoves_repairVehiclePne", "InBaseMoves_assemblingVehicleErc", "InBaseMoves_repairVehicleKnl"];
-SET_STATIC_VAR("AnimObjectGroundVehicle", "animations", _animations);
+SETSV("AnimObjectGroundVehicle", "animations", _animations);

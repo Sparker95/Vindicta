@@ -23,7 +23,6 @@ this addPrimaryWeaponItem "rhsusf_acc_saw_bipod";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_100Rnd_556x45_M855_mixed_soft_pouch_coyote";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhsusf_200Rnd_556x45_M855_mixed_soft_pouch_coyote";};
 this linkItem "ItemWatch";

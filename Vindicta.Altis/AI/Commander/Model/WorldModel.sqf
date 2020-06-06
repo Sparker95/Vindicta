@@ -105,7 +105,7 @@ CLASS("WorldModel", "Storable")
 	// |                       C O P Y / U P D A T E                        |
 	// ----------------------------------------------------------------------
 
-	METHOD(simCopy)
+	public METHOD(simCopy)
 		params [P_THISOBJECT, P_NUMBER("_type")];
 		ASSERT_MSG(_type == WORLD_TYPE_SIM_NOW or _type == WORLD_TYPE_SIM_FUTURE, "_type must be a sim world type.");
 
@@ -126,7 +126,7 @@ CLASS("WorldModel", "Storable")
 		_worldCopy
 	ENDMETHOD;
 
-	METHOD(sync)
+	public METHOD(sync)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
 		{ CALLM0(_x, "sync"); } forEach T_CALLM0("getAliveGarrisons");
@@ -134,7 +134,7 @@ CLASS("WorldModel", "Storable")
 		{ CALLM0(_x, "sync"); } forEach T_CALLM0("getAliveClusters");
 	ENDMETHOD;
 
-	METHOD(update)
+	public METHOD(update)
 		params [P_THISOBJECT];
 
 		// Update grids
@@ -758,7 +758,7 @@ CLASS("WorldModel", "Storable")
 
 
 	// - - - - - - - STORAGE - - - - - - - - -
-	/* override */ METHOD(preSerialize)
+	 public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save our models
@@ -777,7 +777,7 @@ CLASS("WorldModel", "Storable")
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(postDeserialize)
+	 public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Load our models

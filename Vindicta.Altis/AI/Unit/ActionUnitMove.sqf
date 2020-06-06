@@ -63,7 +63,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// Handle AI just spawned state
@@ -217,7 +217,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
@@ -320,7 +320,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the goal is about to be terminated
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Delete waypoints

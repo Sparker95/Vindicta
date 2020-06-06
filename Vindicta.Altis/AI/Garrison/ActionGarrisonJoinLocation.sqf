@@ -35,7 +35,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
@@ -64,7 +64,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	ENDMETHOD;
 	
 	// // logic to run each update-step
-	// METHOD(process)
+	// public override METHOD(process)
 	// 	params [P_THISOBJECT];
 		
 	// 	pr _state = T_CALLM0("activateIfInactive");

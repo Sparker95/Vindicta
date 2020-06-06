@@ -56,7 +56,7 @@ CLASS("Sensor", "")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public virtual METHOD(update)
 		// Do nothing by default
 	ENDMETHOD;
 	
@@ -66,7 +66,7 @@ CLASS("Sensor", "")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getUpdateInterval)
+	public virtual METHOD(getUpdateInterval)
 		//params [P_THISOBJECT];
 		0
 	ENDMETHOD;
@@ -76,7 +76,7 @@ CLASS("Sensor", "")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public virtual METHOD(getStimulusTypes)
 		[]
 	ENDMETHOD;
 	

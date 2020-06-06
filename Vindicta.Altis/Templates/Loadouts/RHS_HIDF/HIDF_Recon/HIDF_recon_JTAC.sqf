@@ -25,13 +25,13 @@ this addHandgunItem "rhsusf_mag_15Rnd_9x19_JHP";
 this addWeapon "rhsusf_bino_lerca_1200_tan";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "rhs_grenade_m15_mag";
 this addItemToUniform "B_IR_Grenade";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkiiia1_mag";};
-this addItemToVest "rhsusf_mag_15Rnd_9x19_JHP";
+for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_15Rnd_9x19_JHP";};
+this addItemToUniform "rhs_grenade_anm8_mag";
 for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_M433_HEDP";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_M397_HET";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855_Stanag";};
+this addItemToVest "rhs_grenade_m15_mag";
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_m714_White";};
 for "_i" from 1 to 6 do {this addItemToBackpack "rhs_mag_M585_white";};
 this addItemToBackpack "rhs_mag_m662_red";

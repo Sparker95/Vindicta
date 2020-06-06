@@ -31,7 +31,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		T_SETV("air", 0.25);
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -157,7 +157,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned

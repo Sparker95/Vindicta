@@ -79,7 +79,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* protected override */ METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_SETV("ready", false);
@@ -131,7 +131,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 			// Sort infantry units by distance to the selected leader
 			private _followers = CALLM0(_group, "getInfantryUnits") - [_leader];
-			private _sortedFollowers =  [_followers, { CALLM0(_x, "getPos") distance2D _vehLeadPos }, ASCENDING] call pr0_fnc_sortBy;
+			private _sortedFollowers =  [_followers, { CALLM0(_x, "getPos") distance2D _vehLeadPos }, ASCENDING] call vin_fnc_sortBy;
 
 			// Apply the sorting, this will also assign the _leader as the group leader
 			CALLM3(_group, "postMethodAsync", "sort", [[_leader] + _sortedFollowers], _continuation);
@@ -218,7 +218,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// Logic to run each update-step
-	/* protected override */ METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -319,13 +319,13 @@ CLASS("ActionGroupMove", "ActionGroup")
 		_state
 	ENDMETHOD;
 
-	/* protected override */ METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Reactivate, as we need to reassign goals
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Turn off vehicle sirens for removed units
@@ -340,7 +340,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	/* protected override */ METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		T_CALLCM0("ActionGroup", "terminate");
@@ -356,7 +356,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	//Gets the maximum separation between vehicles in convoy
-	/* private */ METHOD(getMaxSeparation)
+	METHOD(getMaxSeparation)
 		params [P_THISOBJECT];
 
 		private _group = T_GETV("group");
@@ -368,7 +368,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		private _vehLead = vehicle leader CALLM0(_group, "getGroupHandle");
 		// Sort vehicles by distance from lead vehicle
-		_allVehicles = [_allVehicles, { _x distance2D _vehLead }, ASCENDING] call pr0_fnc_sortBy;
+		_allVehicles = [_allVehicles, { _x distance2D _vehLead }, ASCENDING] call vin_fnc_sortBy;
 		private _dMax = 0;
 		private _prev = _allVehicles deleteAt 0;
 		{
@@ -379,7 +379,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	//Gets the maximum separation between following groups
-	/* private */ METHOD(getMaxFollowSeparation)
+	METHOD(getMaxFollowSeparation)
 		params [P_THISOBJECT];
 
 		private _followingGroups = T_GETV("followingGroups") apply { CALLM0(_x, "getGroupHandle") };
@@ -390,15 +390,15 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _hG = T_GETV("hG");
 
 		// Sort following groups by distance from this group
-		_followingGroups = [_followingGroups, { leader _x distance2D leader _hG }, ASCENDING] call pr0_fnc_sortBy;
+		_followingGroups = [_followingGroups, { leader _x distance2D leader _hG }, ASCENDING] call vin_fnc_sortBy;
 		private _dMax = 0;
-		private _unitsByDistance = [ units _hG, { _x distance2D leader _hG }, DESCENDING] call pr0_fnc_sortBy;
+		private _unitsByDistance = [ units _hG, { _x distance2D leader _hG }, DESCENDING] call vin_fnc_sortBy;
 		private _lastUnitPrevGroup = _unitsByDistance#0;
 		{
 			private _followGrp = _x;
 			// Distance from last unit in previous group to leader of this group
 			_dMax = MAXIMUM(leader _followGrp distance2D _lastUnitPrevGroup, _dMax);
-			private _otherUnitsByDistance = [ units _followGrp, { _x distance2D _lastUnitPrevGroup }, DESCENDING] call pr0_fnc_sortBy;
+			private _otherUnitsByDistance = [ units _followGrp, { _x distance2D _lastUnitPrevGroup }, DESCENDING] call vin_fnc_sortBy;
 			_lastUnitPrevGroup = _otherUnitsByDistance#0;
 		} forEach _followingGroups;
 		_dMax

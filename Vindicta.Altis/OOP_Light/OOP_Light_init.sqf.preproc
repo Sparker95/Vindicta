@@ -1,0 +1,2913 @@
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf
+OOP_Light_initialized = true;
+
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\config\global_config.hpp
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\config\global_config.hpp
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\config\user_local_config.hpp
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\config\user_local_config.hpp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 1 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\config\global_config.hpp
+
+#line 1 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h
+
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\Common.h
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\Common.h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 3 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\Platform.h
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\Platform.h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 58 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Log.h
+#line 0 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Log.h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 919 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light.h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 3 c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(isNil format["o_%1", "sessionID"]) then {
+	o_sessionID = 0;
+};
+
+#line 28 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+if(true) then {
+	gGameFreezeTime = 0;
+	isNil "gGameFreezeTime";
+};
+
+
+OOP_error = {
+	params["_file", "_line", "_text"];
+	
+	
+	throw _text;
+	
+
+
+
+
+
+	#line 47 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+};
+
+
+OOP_error_memberNotFound = {
+	params ["_file", "_line", "_classNameStr", "_memNameStr"];
+	private _errorText = format ["class '%1' has no member named '%2'", _classNameStr, _memNameStr];
+	[_file, _line, _errorText] call OOP_error;
+};
+
+
+OOP_error_methodNotFound = {
+	params ["_file", "_line", "_classNameStr", "_methodNameStr"];
+	private _errorText = format ["class '%1' has no method named '%2'", _classNameStr, _methodNameStr];
+	[_file, _line, _errorText] call OOP_error;
+};
+
+
+OOP_error_notObject = {
+	params ["_file", "_line", "_objNameStr"];
+	private _errorText = format ["'%1' is not an object (parent class not found)", _objNameStr];
+	[_file, _line, _errorText] call OOP_error;
+};
+
+
+OOP_error_notClass = {
+	params ["_file", "_line", "_classNameStr"];
+	private _errorText = "";
+	if (isNil "_classNameStr") then {
+		private _errorText = format ["class name is nil"];
+		[_file, _line, _errorText] call OOP_error;
+	} else {
+		private _errorText = format ["class '%1' is not defined", _classNameStr];
+		[_file, _line, _errorText] call OOP_error;
+	};
+};
+
+
+OOP_error_wrongClass = {
+	params ["_file", "_line", "_objNameStr", "_classNameStr", "_expectedClassNameStr"];
+	private _errorText = format ["class of object %1 is %2, expected: %3", _objNameStr, _classNameStr, _expectedClassNameStr];
+	[_file, _line, _errorText] call OOP_error;
+};
+
+
+OOP_assert_class = {
+	params["_classNameStr", "_file", "_line"];
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "staticMemList")) );
+	
+	if(isNil "_memList") then {
+		[_file, _line, _classNameStr] call OOP_error_notClass;
+		false;
+	} else {
+		true;
+	};
+};
+
+
+OOP_assert_objectClass = {
+	params["_objNameStr", "_expectedClassNameStr", "_file", "_line"];
+
+	if(!(_objNameStr isEqualType "")) exitWith {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		false;
+	};
+
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	
+	if(isNil "_classNameStr") then {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		false;
+	} else {
+		private _parents = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "parents")) );
+		if (_expectedClassNameStr in _parents || _classNameStr == _expectedClassNameStr) then {
+			true 
+		} else {
+			[_file, _line, _objNameStr, _classNameStr, _expectedClassNameStr] call OOP_error_wrongClass;
+			false
+		};
+	};
+};
+
+
+OOP_assert_object = {
+	params["_objNameStr", "_file", "_line"];
+
+	if(!(_objNameStr isEqualType "")) exitWith {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		false;
+	};
+
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	
+	if(isNil "_classNameStr") then {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		false;
+	} else {
+		true;
+	};
+};
+
+
+OOP_assert_staticMember = {
+	params["_classNameStr", "_memNameStr", "_file", "_line"];
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "staticMemList")) );
+	
+	if(isNil "_memList") exitWith {
+		[_file, _line, _classNameStr] call OOP_error_notClass;
+		false;
+	};
+	
+	private _valid = (_memList findIf { _x#0 == _memNameStr }) != -1;
+	if(!_valid) then {
+		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
+	};
+	
+	_valid
+};
+
+
+OOP_assert_member = {
+	params["_objNameStr", "_memNameStr", "_file", "_line"];
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	
+	if(isNil "_classNameStr") exitWith {
+		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	private _valid = _memIdx != -1;
+	if(!_valid) then {
+		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
+	};
+	
+	_valid
+};
+
+OOP_static_member_has_attr = {
+	params["_classNameStr", "_memNameStr", "_attr"];
+	
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "staticMemList")) );
+	
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	
+	private _allAttr = (_memList select _memIdx)#1;
+	(_attr in _allAttr)
+};
+
+OOP_member_has_attr = {
+	params["_objNameStr", "_memNameStr", "_attr"];
+	
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	
+	private _allAttr = (_memList select _memIdx)#1;
+	(_attr in _allAttr)
+};
+
+
+OOP_static_member_get_attr_ex = {
+	params["_classNameStr", "_memNameStr", "_attr"];
+	
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "staticMemList")) );
+	
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	if(_memIdx == -1) then {
+		diag_log format["OOP_static_member_get_attr_ex: _this = %1, _memList = %2", _this, _memList];
+	};
+	
+	private _allAttr = (_memList select _memIdx)#1;
+	private _idx = _allAttr findIf { _x isEqualType [] and {_x#0 == _attr} };
+	if(_idx == -1) then {
+		false
+	} else {
+		_allAttr select _idx
+	}
+};
+
+
+OOP_member_get_attr_ex = {
+	params["_objNameStr", "_memNameStr", "_attr"];
+	
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	
+	private _allAttr = (_memList select _memIdx)#1;
+
+	private _idx = _allAttr findIf { _x isEqualType [] and {_x#0 == _attr} };
+	if(_idx == -1) then {
+		false
+	} else {
+		_allAttr#_idx
+	}
+};
+
+
+OOP_assert_member_is_ref = {
+	params["_objNameStr", "_memNameStr", "_file", "_line"];
+	private _valid = [_objNameStr, _memNameStr, _file, _line] call OOP_assert_member;
+	if(!_valid) exitWith { false };
+	if(!([_objNameStr, _memNameStr, 		1] call OOP_member_has_attr)) exitWith {
+		private _errorText = format ["%1.%2 doesn't have ATTR_REFCOUNTED attribute but is being accessed by a REF function.", _objNameStr, _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
+	true;
+};
+
+
+OOP_assert_member_is_not_ref = {
+	params["_objNameStr", "_memNameStr", "_file", "_line"];
+	private _valid = [_objNameStr, _memNameStr, _file, _line] call OOP_assert_member;
+	if(!_valid) exitWith { false };
+	if(([_objNameStr, _memNameStr, 		1] call OOP_member_has_attr)) exitWith {
+		private _errorText = format ["%1.%2 has ATTR_REFCOUNTED attribute but is being accessed via a non REF function.", _objNameStr, _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
+	true;
+};
+
+
+
+OOP_are_in_same_class_heirarchy = {
+	params ["_classNameStr"];
+	
+	if(isNil "_thisClass") exitWith { false	};
+	
+	if(_thisClass isEqualTo _classNameStr) exitWith { true };
+	
+	_classNameStr in 				( missionNameSpace getVariable ("o_" + (_thisClass) + "_spm_" + (  "parents")) )
+};
+
+OOP_assert_class_member_access = {
+	params ["_classNameStr", "_memNameStr", "_isGet", "_isPrivate", "_isGetOnly", "_file", "_line"];
+
+	
+
+
+
+
+
+	#line 318 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+	
+	if(!_isPrivate and !_isGetOnly) exitWith { 
+		
+
+
+		#line 324 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+		true 
+	};
+	
+	if(_isPrivate and _isGetOnly) exitWith {
+		private _errorText = format ["%1.%2 is marked private AND get-only, but they are intended to be mutually exclusive (get-only implies private set and public get)", _classNameStr, _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		false
+	};
+
+	
+	
+	
+
+	private _inSameHeirarchy = [_classNameStr] call OOP_are_in_same_class_heirarchy;
+	
+	if(_inSameHeirarchy) exitWith { true };
+	
+	
+	if(!_isGet and _isGetOnly) exitWith {
+		private _errorText = format ["%1.%2 is get-only outside of its own class heirarchy", _classNameStr, _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		false
+	};
+	
+	if(!_isPrivate) exitWith { true };
+
+	
+
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private _errorText = format ["%1.%2 is unreachable (private)", _classNameStr, _memNameStr];
+	[_file, _line, _errorText] call OOP_error;
+	false
+};
+
+OOP_assert_is_in_required_thread = {
+	params ["_objOrClass", "_classNameStr", "_memNameStr", "_threadAffinityFn", "_file", "_line"];
+	private _requiredThread = [_objOrClass] call _threadAffinityFn;
+	if(!isNil "_thisScript" and !isNil "_requiredThread" and  {!(_requiredThread isEqualTo _thisScript)}) exitWith {
+		private _errorText = format ["%1.%2 is accessed from the wrong thread, expected '%3' got '%4'", _classNameStr, _memNameStr, _requiredThread, _thisScript];
+		[_file, _line, _errorText] call OOP_error;
+		false
+	};
+	true
+};
+
+OOP_assert_static_member_access = {
+	params ["_classNameStr", "_memNameStr", "_isGet", "_file", "_line"];
+	
+
+
+
+
+
+
+#line 403 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+	private _isPrivate = [_classNameStr, _memNameStr, 		3] call OOP_static_member_has_attr;
+	private _isGetOnly = [_classNameStr, _memNameStr, 5] call OOP_static_member_has_attr;
+	[_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly, _file, _line] call OOP_assert_class_member_access;
+};
+
+OOP_assert_get_static_member_access = { 
+	params ["_classNameStr", "_memNameStr", "_file", "_line"];
+	[_classNameStr, _memNameStr, true, _file, _line] call OOP_assert_static_member_access;
+};
+OOP_assert_set_static_member_access = { 
+	params ["_classNameStr", "_memNameStr", "_file", "_line"];
+	
+	
+	
+	[_classNameStr, _memNameStr, false, _file, _line] call OOP_assert_static_member_access;
+};
+
+OOP_assert_member_access = {
+	params ["_objNameStr", "_memNameStr", "_isGet", "_file", "_line"];
+
+	
+
+
+
+
+
+
+	#line 431 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+	
+	if (!isNil "_thisObject" and {_thisObject isEqualTo _objNameStr}) exitWith { true };
+
+	private _isPrivate = [_objNameStr, _memNameStr, 		3] call OOP_member_has_attr;
+	private _isGetOnly = [_objNameStr, _memNameStr, 5] call OOP_member_has_attr;
+
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	
+
+
+
+
+
+	#line 447 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+	private _thisClass = if(!isNil "_thisClass") then { 
+			_thisClass
+		} else {
+			if (!isNil "_thisObject") then { 
+				(							( missionNameSpace getVariable ((_thisObject) + "_" +   "oop_parent") )) 
+			} else {
+				nil
+			}
+		};
+	[_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly, _file, _line] call OOP_assert_class_member_access;
+};
+
+OOP_assert_get_member_access = {
+	params ["_objNameStr", "_memNameStr", "_file", "_line"];
+	[_objNameStr, _memNameStr, true, _file, _line] call OOP_assert_member_access;
+};
+OOP_assert_set_member_access = { 
+	params ["_objNameStr", "_memNameStr", "_file", "_line"];
+	[_objNameStr, _memNameStr, false, _file, _line] call OOP_assert_member_access;
+};
+
+
+OOP_assert_method = {
+	params["_classNameStr", "_methodNameStr", "_file", "_line"];
+
+	if (isNil "_classNameStr") exitWith {
+		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
+
+	
+	private _methodList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "methodList")) );
+	
+	if(isNil "_methodList") exitWith {
+		[_file, _line, _classNameStr] call OOP_error_notClass;
+		false;
+	};
+	
+	private _valid = _methodNameStr in _methodList;
+	if(!_valid) then {
+		[_file, _line, _classNameStr, _methodNameStr] call OOP_error_methodNotFound;
+	};
+	
+	_valid
+};
+
+OOP_validate_override = {
+	params ["_classNameStr", "_methodName", "_attribs"];
+
+	
+	private _oop_parents = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "parents")) );
+	private _exists = _methodName in _oop_methodList;
+	if(_exists) then {
+		
+		
+		private _idx = _oop_parents findIf {
+			_methodName in 				( missionNameSpace getVariable ("o_" + (_baseClassNameStr) + "_spm_" + (  "ownMethodList")) )
+		};
+		private _parent = _oop_parents#_idx;
+		
+		if !("override" in _attribs) then {
+			private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 is hiding definition in %3: use 'virtual' and 'override' attributes to declare virtual methods",  _classNameStr,  _methodName,  _parent]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+		} else {
+			private _otherAttribs = missionNamespace getVariable [((_parent) + "_fncattr_" + ( _methodName)), []];
+			if !("virtual" in _otherAttribs) then {
+				private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 is overriding non-virtual method in %3: use 'virtual' and 'override' attributes to declare virtual methods",  _classNameStr,  _methodName,  _parent]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+			};
+			if ("public" in _attribs && !("public" in _otherAttribs)) then {
+				private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 is declared as public, whereas method it overrides %3.%2 is not: overriding methods must have the same visiblity",  _classNameStr,  _methodName,  _parent]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+			};
+			if ("protected" in _attribs && !("protected" in _otherAttribs)) then {
+				private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 is declared as protected, whereas method it overrides %3.%2 is not: overriding methods must have the same visiblity",  _classNameStr,  _methodName,  _parent]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+			};
+		};
+	};
+};
+
+OOP_set_method_attr = {
+	params ["_classNameStr", "_methodName", "_attribs", [_static, false]];
+	missionNamespace setVariable [((_classNameStr) + "_fncattr_" + ( _methodName)), _attribs];
+
+	
+	if (_methodName in _oop_newMethodList) then {
+		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 declared more than once",  _classNameStr,  _methodName]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+	};
+
+	
+	if (_static && ("virtual" in _attribs || "override" in _attribs)) then {
+		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 declared as 'virtual' or 'override': static functions cannot be either",  _classNameStr,  _methodName]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+	};
+	if ("virtual" in _attribs && "override" in _attribs) then {
+		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 declared as 'virtual' and 'override': use one only, or neither",  _classNameStr,  _methodName]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+	};
+	if ("virtual" in _attribs && !("public" in _attribs || "protected" in _attribs)) then {
+		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 declared as 'virtual' and 'private': this makes no sense, a method must be visible to derived classes for them to override it",  _classNameStr,  _methodName]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+	};
+	if ("server" in _attribs && "client" in _attribs) then {
+		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 declared as 'server' and 'client': use neither if you want to declare a method as callable on both server and client",  _classNameStr,  _methodName]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+	};
+	if ("public" in _attribs && "protected" in _attribs) then {
+		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["%1.%2 declared as 'public' and 'protected': use one only, or neither if you want to declare a method as private",  _classNameStr,  _methodName]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+	};
+
+	if(!_static) then {
+		[_classNameStr, _methodName, _attribs] call OOP_validate_override;
+	};
+};
+
+OOP_assert_method_std_call = {
+	params ["_objNameStr", "_methodNameStr"];
+	
+	
+};
+OOP_assert_method_this_call = {
+	params ["_methodNameStr"];
+
+};
+OOP_assert_method_static_call = {
+	params ["_classNameStr", "_methodNameStr"];
+
+};
+OOP_assert_method_class_call = {
+	params ["_classNameStr", "_objNameStr", "_methodNameStr"];
+
+};
+OOP_assert_method_this_class_call = {
+	params ["_classNameStr", "_methodNameStr"];
+
+};
+
+
+
+OOP_dumpAllVariables = {
+	params [["_thisObject", ""]];
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_thisObject) + "_" +   "oop_parent") ));
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	diag_log format ["[OOP]: Basic variable dump of %1: %2", _thisObject, _memList];
+	{
+		_x params ["_memName", "_memAttr"];
+		private _varValue = 		( if([_thisObject,  _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 590] call OOP_assert_member) then { 						[_thisObject,   _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 590] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    _memName) ) 		}else{nil} );
+		if (isNil "_varValue") then {
+			diag_log format ["  %1.%2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
+		} else {
+			diag_log format ["  %1.%2: %3", _thisObject, _memName, _varValue];
+		};
+	} forEach _memList;
+};
+
+
+
+
+OOP_dumpAllVariablesRecursive = {
+	params [["_thisObject", ""], ["_maxDepth", 100], ["_indentNum", 0, [0]], ["_objsDumpedAlready", []]];
+
+	
+
+	
+	_objsDumpedAlready pushBack _thisObject;
+
+	
+	private _strIndent = format ["L-%1 ", (str _indentNum)];
+	if (_indentNum > 0) then {
+		for "_i" from 0 to (_indentNum-1) do {
+			_strIndent = _strIndent + "|  ";
+		};
+	};
+
+	
+	if (_indentNum > _maxDepth) exitWith {
+		
+	};
+
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_thisObject) + "_" +   "oop_parent") ));
+
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+
+	diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1: %2", _thisObject, _memList]));
+	{
+		_x params ["_memName", "_memAttr"];
+		private _varValue = 		( if([_thisObject,  _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 632] call OOP_assert_member) then { 						[_thisObject,   _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 632] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    _memName) ) 		}else{nil} );
+		[_thisObject, _memName, _varValue, _indentNum, _objsDumpedAlready, -1, _maxDepth] call OOP_dumpObjectVariable;
+	} forEach _memList;
+};
+
+
+OOP_dumpObjectVariable = {
+	params [["_thisObject", ""], "_memName", "_varValue", "_indentNum", "_objsDumpedAlready", "_elementID", "_maxDepth"];
+	private _strIndent = format ["L-%1 ", (str _indentNum)];
+	if (_indentNum > 0) then {
+		for "_i" from 0 to (_indentNum-1) do {
+			_strIndent = _strIndent + "|  ";
+		};
+	};
+	
+	private _header = if (_elementID != -1) then {
+		format ["element %1", _elementID];
+	} else {
+		_memName;
+	};
+
+	if (isNil "_varValue") then {
+		diag_log (_strIndent + format ["%1: %2", _header, "<nil> (isNil = true)"]);
+	} else {
+		
+		private _typeName = typeName _varValue;
+		switch (_typeName) do {
+			case "STRING": {
+				if((! (isNil {(							( missionNameSpace getVariable ((_varValue) + "_" +   "oop_parent") ))}))) then {
+					if (toLower _varValue in _objsDumpedAlready) then {
+						diag_log (_strIndent + format ["%1: (OOP Object): %2 (dumped already)", _header, _varValue]);
+					} else {
+						if (_indentNum + 1 > _maxDepth) then {
+						 	
+							diag_log (_strIndent + format ["%1: (OOP Object): %2 (ignored, max depth reached)", _header, _varValue]);
+						} else {
+							diag_log (_strIndent + format ["%1: (OOP Object): %2", _header, _varValue]);
+							_objsDumpedAlready pushBack (toLower _varValue);
+							[_varValue, _maxDepth, _indentNum + 1, _objsDumpedAlready] call OOP_dumpAllVariablesRecursive;
+						};
+					};
+				} else {
+					diag_log (_strIndent + format ["%1: (%2) %3", _header, _typeName, _varValue]);
+				};
+			};
+			case "ARRAY": {
+				diag_log (_strIndent + format ["%1: array of %2 elements:", _header, count _varValue]);
+				{
+					[_thisObject, _header, _x, _indentNum + 1, _objsDumpedAlready, _forEachIndex, _maxDepth] call OOP_dumpObjectVariable;
+				} forEach _varValue;
+			};
+			default {
+				diag_log (_strIndent + format ["%1: (%2) %3", _header, _typeName, _varValue]);
+			};
+		};
+	};
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+gCommaNewLine = ",";
+
+
+
+
+
+
+
+#line 711 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+
+OOP_dumpVariableToJson = {
+	params [["_value", nil], ["_recursive", false, [false]], ["_depth", 0, [0]], ["_objectsDumped", [], [[]]]];
+	
+	switch (typeName _value) do {
+		case "STRING": {
+			if((! (isNil {(							( missionNameSpace getVariable ((_value) + "_" +   "oop_parent") ))}))) then {
+				
+				if ((tolower _value) in _objectsDumped) then {
+					
+					(diag_log ("_json_line_ " + (("""" + (((((_value) splitString "\") joinString "\") splitString '"') joinString '\"')) + """")));
+				} else {
+					_objectsDumped pushBack (tolower _value); 
+					[_value, _recursive, _depth + 1, _objectsDumped] call OOP_objectToJson;
+				};
+			} else {
+				(diag_log ("_json_line_ " + (("""" + (((((_value) splitString "\") joinString "\") splitString '"') joinString '\"')) + """")));
+			};
+		};
+		case "ARRAY": {
+			(diag_log ("_json_line_ " + "["));
+			{ 
+				if(_forEachIndex != 0) then { (diag_log ("_json_line_ " + gCommaNewLine)) };
+				[_x, _recursive, _depth] call OOP_dumpVariableToJson;
+			} forEach _value;
+			(diag_log ("_json_line_ " + "]"));
+		};
+		case "SCALAR";
+		case "BOOL": { (diag_log ("_json_line_ " + str _value)) };
+		
+		default { (diag_log ("_json_line_ " + (("""" + (((((str _value) splitString "\") joinString "\") splitString '"') joinString '\"')) + """"))) };
+	};
+};
+
+
+OOP_objectToJson = {
+	params [["_thisObject", ""], ["_recursive", false, [false]], ["_depth", 0, [0]], ["_objectsDumped", [], [[]]]];
+
+	
+	_objectsDumped pushBack (tolower _thisObject);
+
+	if(_depth > 3) exitWith { (diag_log ("_json_line_ " + str "!recursion limit reached!")) };
+
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_thisObject) + "_" +   "oop_parent") ));
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	
+	(diag_log ("_json_line_ " + "{"));
+
+	
+	private _str = format ['"_id": "%1"', _thisObject];
+	(diag_log ("_json_line_ " + _str));
+
+	
+	{
+		_x params ["_memName", "_memAttr"];
+		
+		(diag_log ("_json_line_ " + gCommaNewLine));
+
+		private _varValue = 		( if([_thisObject,  _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 773] call OOP_assert_member) then { 						[_thisObject,   _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 773] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    _memName) ) 		}else{nil} );
+		if (isNil "_varValue") then {
+			private _str = format['"%1": "<nil>"', _memName];
+			(diag_log ("_json_line_ " + _str));
+		} else {
+			private _str = format['"%1":', _memName];
+			(diag_log ("_json_line_ " + _str));
+			[_varValue, _recursive, _depth, _objectsDumped] call OOP_dumpVariableToJson;
+			
+		};
+	} forEach _memList;
+
+	(diag_log ("_json_line_ " + "}"));
+};
+
+
+OOP_dumpAsJson = {
+	diag_log "DEBUG: Dumping variable as json";
+	;
+	[_this] call OOP_dumpVariableToJson;
+	(diag_log ("_json_line_ " + endl + endl + endl));
+};
+
+
+
+
+
+
+
+
+#line 803 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+gComma = toString [44];
+
+
+
+
+
+OOP_dumpVariableToJson_diagLog = {
+	params [["_value", nil], ["_depth", 0, [0]], ["_maxDepth", 0, [0]], ["_objectsDumped", [], [[]]]];
+	
+	switch (typeName _value) do {
+		case "STRING": {
+			if((! (isNil {(							( missionNameSpace getVariable ((_value) + "_" +   "oop_parent") ))}))) then {
+				
+				if (((tolower _value) in _objectsDumped) || (_depth > (_maxDepth-1))) then {
+					
+					(diag_log  ("_json_line_ " + (("""" + (((((_value select [0, 1024]) splitString "\") joinString "\") splitString '"') joinString '\"')) + """")));
+				} else {
+					_objectsDumped pushBack (tolower _value); 
+					[_value, _depth + 1, _maxDepth, _objectsDumped] call OOP_objectToJson_diagLog;
+				};
+			} else {
+				(diag_log  ("_json_line_ " + (("""" + (((((_value select [0, 1024]) splitString "\") joinString "\") splitString '"') joinString '\"')) + """")));
+			};
+		};
+		case "ARRAY": {
+			(diag_log  ("_json_line_ " + "["));
+			{ 
+				if(_forEachIndex != 0) then { (diag_log  ("_json_line_ " + gComma)) };
+				[_x, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
+			} forEach _value;
+			(diag_log  ("_json_line_ " + "]"));
+		};
+		case "SCALAR";
+		case "BOOL": { (diag_log  ("_json_line_ " + str _value)) };
+		
+		default { (diag_log  ("_json_line_ " + (("""" + (((((str _value select [0, 1024]) splitString "\") joinString "\") splitString '"') joinString '\"')) + """"))) };
+	};
+};
+
+
+OOP_objectToJson_diagLog = {
+	params [["_thisObject", ""], ["_depth", 0, [0]], ["_maxDepth", 0, [0]], ["_objectsDumped", [], [[]]]];
+
+	
+	_objectsDumped pushBack (tolower _thisObject);
+
+	
+	private _classNameStr = (							( missionNameSpace getVariable ((_thisObject) + "_" +   "oop_parent") ));
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	
+	(diag_log  ("_json_line_ " + "{"));
+
+	
+	private _str = format ['"_id": "%1"', _thisObject];
+	(diag_log  ("_json_line_ " + _str));
+
+	
+	{
+		_x params ["_memName", "_memAttr"];
+		
+		(diag_log  ("_json_line_ " + gComma));
+
+		private _varValue = 		( if([_thisObject,  _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 868] call OOP_assert_member) then { 						[_thisObject,   _memName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 868] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    _memName) ) 		}else{nil} );
+		if (isNil "_varValue") then {
+			private _str = format['"%1": "<nil>"', _memName];
+			(diag_log  ("_json_line_ " + _str));
+		} else {
+			private _str = format['"%1":', _memName];
+			(diag_log  ("_json_line_ " + _str));
+			[_varValue, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
+			
+		};
+	} forEach _memList;
+
+	(diag_log  ("_json_line_ " + "}"));
+};
+
+
+OOP_objectCrashDump = {
+	params [["_thisObject", ""], ["_madDepth", 0, [0]]];
+
+	
+	_nul = isNil {
+		diag_log format ["[OOP] Starting object crash dump of: %1", _thisObject];
+
+		
+		if ((! (isNil {(							( missionNameSpace getVariable ((_thisObject) + "_" +   "oop_parent") ))}))) then {
+			
+			diag_log "_json_line_ _json_start_";
+
+			
+			diag_log "_json_line_ [";
+
+			
+			[_thisObject, 0, _madDepth] call OOP_objectToJson_diagLog; 
+
+			
+			diag_log "_json_line_ ]";
+
+			
+			diag_log "_json_line_ _json_end_";
+		} else {
+			diag_log format ["[OOP] Error: %1 is not an object", _thisObject];
+		};
+	};
+};
+
+
+
+
+
+OOP_callFromRemote = {
+	params[["_object", "", [""]], ["_methodNameStr", "", [""]], ["_params", [], [[]]]];
+	
+				(([_object] +  _params) call 					(if ([_object,   _methodNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 920] call OOP_assert_method_std_call) then { 		( if([(							( missionNameSpace getVariable ((_object) + "_" +   "oop_parent") )),    _methodNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 920] call OOP_assert_method) then { 							( missionNameSpace getVariable (((							( missionNameSpace getVariable ((_object) + "_" +   "oop_parent") ))) + "_fnc_" + (     _methodNameStr)) ) 		}else{nil} ) } else { nil }));
+};
+
+
+
+OOP_callStaticMethodFromRemote = {
+	params [["_classNameStr", "", [""]], ["_methodNameStr", "", [""]], ["_args", [], [[]]]];
+			(([_classNameStr] +  _args) call 				(if ([_classNameStr,   _methodNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 927] call OOP_assert_method_static_call) then { 		( if([_classNameStr,    _methodNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 927] call OOP_assert_method) then { 							( missionNameSpace getVariable ((_classNameStr) + "_fnc_" + (     _methodNameStr)) ) 		}else{nil} ) } else { nil }));
+};
+
+OOP_init_class = {
+	params [["_oop_classNameStr", "", [""]], ["_baseClassNames", "", ["", []]]];
+			missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "nextID")),  [0]];
+	private _oop_memList = [];
+	private _oop_staticMemList = [];
+	private _oop_methodList = [];
+	
+	private _parentClassNames = switch true do {
+		case (_baseClassNames isEqualTo ""): { [] };
+		case (_baseClassNames isEqualType ""): { [_baseClassNames] };
+		default { _baseClassNames };
+	};
+	private _oop_parents = [];
+	{
+		private _baseClassNameStr = _x;
+		if (!([_baseClassNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 945] call OOP_assert_class)) then {
+			private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr];
+					private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Failure: %1",  _msg]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 		diag_log "callstack"; 		throw ["c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 947, _msg];
+		};
+		{ _oop_parents pushBackUnique _x; } forEach 				( missionNameSpace getVariable ("o_" + (_baseClassNameStr) + "_spm_" + (  "parents")) );
+		_oop_parents pushBackUnique _baseClassNameStr;
+		{ _oop_memList pushBackUnique _x; } forEach 				( missionNameSpace getVariable ("o_" + (_baseClassNameStr) + "_spm_" + (  "memList")) );
+		{ _oop_staticMemList pushBackUnique _x; } forEach 				( missionNameSpace getVariable ("o_" + (_baseClassNameStr) + "_spm_" + (  "staticMemList")) );
+		private _oop_addedMethodList = [];
+		{ _oop_methodList pushBackUnique _x; _oop_addedMethodList pushBackUnique _x; } forEach 				( missionNameSpace getVariable ("o_" + (_baseClassNameStr) + "_spm_" + (  "methodList")) );
+		private _oop_topParent = _oop_parents select ((count _oop_parents) - 1);
+		{ private _oop_methodCode = 				( missionNameSpace getVariable ((_oop_topParent) + "_fnc_" + (  _x)) );
+						missionNameSpace setVariable [((classNameStr) + "_fnc_" + (  _x)),  _oop_methodCode];
+			_oop_methodCode = 				( missionNameSpace getVariable ((_oop_topParent) + "_fnc_" + (  ("inner_" + _x))) );
+			if (!isNil "_oop_methodCode") then { 			missionNameSpace setVariable [((classNameStr) + "_fnc_" + (  ("inner_" + _x))),  _oop_methodCode]; };
+		} forEach (_oop_addedMethodList - ["new", "delete", "copy"]);
+	} forEach _parentClassNames;
+			missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "parents")),  _oop_parents];
+			missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")),  _oop_memList];
+			missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "staticMemList")),  _oop_staticMemList];
+			missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "methodList")),  _oop_methodList];
+			missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "namespace")),  missionNameSpace];
+	
+	private _oop_newMethodList = [];
+			missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "ownMethodList")),  _oop_newMethodList];
+	 [_oop_memList, _oop_staticMemList, _oop_methodList, _oop_newMethodList];
+};
+
+
+OOP_new = {
+	params ["_classNameStr", "_extraParams"];
+
+	if (!([_classNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 977] call OOP_assert_class)) exitWith {format ["ERROR_NO_CLASS_%1", _classNameStr]};;
+
+	private _oop_nextID = -1;
+	_oop_nul = isNil {
+		_oop_nextID = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "nextID")) );
+		if (isNil "_oop_nextID") then { 
+					missionNameSpace setVariable [("o_" + (_classNameStr) + "_spm_" + (  "nextID")),  [0]];	_oop_nextID = [0];
+		};
+		_oop_nextID = (_oop_nextID call { 	private _this = +_this; 	private _c = count _this; 	private _nfound = true; 	for "_i" from 0 to (_c-1) do { 		private _num = _this select _i; 		if (_num < 999999) exitWith { 			_this set [_i, _num + 1]; 			_nfound = false; 		}; 		_this set [_i, 0]; 	}; 	if (_nfound) then {	_this pushBack 1; }; 	_this });
+				missionNameSpace setVariable [("o_" + (_classNameStr) + "_spm_" + (  "nextID")),  _oop_nextID];
+	};
+	
+	private _objNameStr =  (format ["o_%1_c%2_s%3_n%4", _classNameStr, 0, o_sessionID,  _oop_nextID]);
+
+						missionNameSpace setVariable [((_objNameStr) + "_" +   "oop_parent"),  _classNameStr];
+	private _oop_parents = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "parents")) );
+	private _oop_i = 0;
+	private _oop_parentCount = count _oop_parents;
+	while { _oop_i < _oop_parentCount } do {
+		([_objNameStr] + _extraParams) call 		( if([_oop_parents#_oop_i,  "new", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 996] call OOP_assert_method) then { 							( missionNameSpace getVariable ((_oop_parents#_oop_i) + "_fnc_" + (   "new")) ) 		}else{nil} );
+		_oop_i = _oop_i + 1;
+	};
+				(([_objNameStr] +  _extraParams) call 					(if ([_objNameStr,   "new", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 999] call OOP_assert_method_std_call) then { 		( if([(							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") )),    "new", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 999] call OOP_assert_method) then { 							( missionNameSpace getVariable (((							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ))) + "_fnc_" + (     "new")) ) 		}else{nil} ) } else { nil }));
+
+	;
+
+	_objNameStr
+};
+
+
+OOP_new_public = { 
+	params ["_classNameStr", "_extraParams"];
+
+	if (!([_classNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1010] call OOP_assert_class)) exitWith {format ["ERROR_NO_CLASS_%1", _classNameStr]};;
+
+	private _oop_nextID = -1;
+	_oop_nul = isNil {
+		_oop_nextID = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "nextID")) );
+		if (isNil "_oop_nextID") then { 
+					missionNameSpace setVariable [("o_" + (_classNameStr) + "_spm_" + (  "nextID")),  [0]]; _oop_nextID = [0];
+		};
+		_oop_nextID = (_oop_nextID call { 	private _this = +_this; 	private _c = count _this; 	private _nfound = true; 	for "_i" from 0 to (_c-1) do { 		private _num = _this select _i; 		if (_num < 999999) exitWith { 			_this set [_i, _num + 1]; 			_nfound = false; 		}; 		_this set [_i, 0]; 	}; 	if (_nfound) then {	_this pushBack 1; }; 	_this });
+				missionNameSpace setVariable [("o_" + (_classNameStr) + "_spm_" + (  "nextID")),  _oop_nextID];
+	};
+	private _objNameStr =  (format ["o_%1_c%2_s%3_n%4", _classNameStr, 0, o_sessionID,  _oop_nextID]);
+						missionNameSpace setVariable [((_objNameStr) + "_" +   "oop_parent"),  _classNameStr];
+			if([_objNameStr,  "oop_parent", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1023] call OOP_assert_member) then { 			 		};
+						missionNameSpace setVariable [((_objNameStr) + "_" +   "oop_public"),  1];
+			if([_objNameStr,  "oop_public", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1025] call OOP_assert_member) then { 			 		};
+	private _oop_parents = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "parents")) );
+	private _oop_i = 0;
+	private _oop_parentCount = count _oop_parents;
+	while {_oop_i < _oop_parentCount} do {
+		([_objNameStr] + _extraParams) call 		( if([(_oop_parents select _oop_i),  "new", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1030] call OOP_assert_method) then { 							( missionNameSpace getVariable (((_oop_parents select _oop_i)) + "_fnc_" + (   "new")) ) 		}else{nil} );
+		_oop_i = _oop_i + 1;
+	};
+				(([_objNameStr] +  _extraParams) call 					(if ([_objNameStr,   "new", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1033] call OOP_assert_method_std_call) then { 		( if([(							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") )),    "new", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1033] call OOP_assert_method) then { 							( missionNameSpace getVariable (((							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ))) + "_fnc_" + (     "new")) ) 		}else{nil} ) } else { nil }));
+
+	;
+
+	_objNameStr
+};
+
+
+OOP_clone = { 
+	params ["_objNameStr"];
+
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	if (!([_classNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1045] call OOP_assert_class)) exitWith {format ["ERROR_NO_CLASS_%1", _classNameStr]};;
+
+	
+	private _oop_nextID = -1;
+	_oop_nul = isNil {
+		_oop_nextID = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "nextID")) );
+		if (isNil "_oop_nextID") then { 
+					missionNameSpace setVariable [("o_" + (_classNameStr) + "_spm_" + (  "nextID")),  [0]]; _oop_nextID = [0];
+		};
+		_oop_nextID = (_oop_nextID call { 	private _this = +_this; 	private _c = count _this; 	private _nfound = true; 	for "_i" from 0 to (_c-1) do { 		private _num = _this select _i; 		if (_num < 999999) exitWith { 			_this set [_i, _num + 1]; 			_nfound = false; 		}; 		_this set [_i, 0]; 	}; 	if (_nfound) then {	_this pushBack 1; }; 	_this });
+				missionNameSpace setVariable [("o_" + (_classNameStr) + "_spm_" + (  "nextID")),  _oop_nextID];
+	};
+
+	private _newObjNameStr =  (format ["o_%1_c%2_s%3_n%4", _classNameStr, 0, o_sessionID,  _oop_nextID]);
+
+						missionNameSpace setVariable [((_newObjNameStr) + "_" +   "oop_parent"),  _classNameStr];
+	
+				(([_newObjNameStr] +  [_objNameStr]) call 					(if ([_newObjNameStr,   "copy", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1062] call OOP_assert_method_std_call) then { 		( if([(							( missionNameSpace getVariable ((_newObjNameStr) + "_" +   "oop_parent") )),    "copy", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1062] call OOP_assert_method) then { 							( missionNameSpace getVariable (((							( missionNameSpace getVariable ((_newObjNameStr) + "_" +   "oop_parent") ))) + "_fnc_" + (     "copy")) ) 		}else{nil} ) } else { nil }));
+
+	;
+
+	_newObjNameStr
+};
+
+
+OOP_clone_default = { 
+	params [["_thisObject", ""], "_srcObject"];
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	{
+		_x params ["_varName"]; 
+		private _value = 							( missionNameSpace getVariable ((_srcObject) + "_" +   _varName) );
+		if (!isNil "_value") then {
+			
+			if (_value isEqualType []) then {
+									missionNameSpace setVariable [((_thisObject) + "_" +   _varName),  +_value];
+			} else {
+									missionNameSpace setVariable [((_thisObject) + "_" +   _varName),  _value];
+			};
+		};
+	} forEach _memList;
+
+	;
+};
+
+
+
+
+OOP_assign_default = { 
+	params ["_destObject", "_srcObject", ["_copyNil", true], '_attrRequired'];
+
+	private _destClassNameStr = (							( missionNameSpace getVariable ((_destObject) + "_" +   "oop_parent") ));
+	private _srcClassNameStr = (							( missionNameSpace getVariable ((_srcObject) + "_" +   "oop_parent") ));
+
+	
+	
+	if (_destClassNameStr != _srcClassNameStr) exitWith {
+		["c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1102, format ["destination and source classes don't match for objects %1 and %2", _destObject, _srcObject]] call OOP_error;
+	};
+	
+	#line 1105 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_destClassNameStr) + "_spm_" + (  "memList")) );
+	if(!isNil "_attrRequired") then {
+		_memList = _memList select {
+			_x params ["_varName", "_attributes"];
+			_attrRequired in _attributes
+		};
+	};
+
+	{
+		_x params ["_varName"]; 
+		private _value = 							( missionNameSpace getVariable ((_srcObject) + "_" +   _varName) );
+		if (!isNil "_value") then {
+			
+			if (_value isEqualType []) then {
+									missionNameSpace setVariable [((_destObject) + "_" +   _varName),  +_value];
+			} else {
+									missionNameSpace setVariable [((_destObject) + "_" +   _varName),  _value];
+			};
+		} else {
+			if (_copyNil) then {
+									missionNameSpace setVariable [((_destObject) + "_" +   _varName),  nil];
+			};
+		};
+	} forEach _memList;
+};
+
+
+OOP_serialize = { 
+	params ["_objNameStr"];
+
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "serialMemList")) );
+
+	private _array = [];
+	_array pushBack _classNameStr;
+	_array pushBack _objNameStr;
+
+	{
+		_x params ["_varName"];
+		_array append [		( if([_objNameStr,  _varName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1149] call OOP_assert_member) then { 						[_objNameStr,   _varName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1149] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_objNameStr) + "_" +    _varName) ) 		}else{nil} )];
+	} forEach _memList;
+
+	_array
+};
+
+
+OOP_serialize_attr = { 
+	params ["_objNameStr", "_attr", ["_serializeAllVariables", false]];
+
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	if (!_serializeAllVariables) then {
+		_memList = _memList select {
+			_x params ["_varName", "_attributes"];
+			_attributes findIf {
+				(_x isEqualType 0 && {_x == _attr}) ||
+				{_x isEqualType [] && {_x#0 == _attr}}
+			} != -1
+		};
+	};
+
+	private _array = [];
+	_array pushBack _classNameStr;
+	_array pushBack _objNameStr;
+
+	{
+		_x params ["_varName"];
+		_array append [		( if([_objNameStr,  _varName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1178] call OOP_assert_member) then { 						[_objNameStr,   _varName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1178] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_objNameStr) + "_" +    _varName) ) 		}else{nil} )];
+	} forEach _memList;
+
+	_array
+};
+
+OOP_serialize_save = {
+	params ["_objNameStr"];
+
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) ) select {
+		_x params ["_varName", "_attributes"];
+		(_attributes findIf {
+			(_x isEqualTo 			7) ||
+			{_x isEqualType [] && {_x#0 == 			7}}
+		}) != -1
+	};
+
+	private _array = [];
+	_array pushBack _classNameStr;
+	_array pushBack _objNameStr;
+
+	{
+		_x params ["_varName"];
+		_array append [		( if([_objNameStr,  _varName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1203] call OOP_assert_member) then { 						[_objNameStr,   _varName, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1203] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_objNameStr) + "_" +    _varName) ) 		}else{nil} )];
+	} forEach _memList;
+
+	_array
+};
+
+
+OOP_deserialize = { 
+	params ["_objNameStr", "_array"];
+
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+
+	
+	if (! ([_objNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1216] call OOP_assert_object)) exitWith {};
+	
+	#line 1218 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "serialMemList")) );
+
+	private _iVarName = 0;
+
+	for "_i" from 2 to ((count _array) - 1) do {
+		private _value = _array select _i;
+		(_memList select _iVarName) params ["_varName"];
+		if (!(isNil "_value")) then {
+								missionNameSpace setVariable [((_objNameStr) + "_" +   _varName),  _value];
+		} else {
+								missionNameSpace setVariable [((_objNameStr) + "_" +   _varName),  nil];
+		};
+		_iVarName = _iVarName + 1;
+	};
+};
+
+
+OOP_deserialize_attr = {
+	params ["_objNameStr", "_array", "_attr", ["_deserializeAllVariables", false]];
+
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+
+	
+	if (! ([_objNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1243] call OOP_assert_object)) exitWith {};
+	
+	#line 1245 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) );
+	if(!_deserializeAllVariables) then {
+		_memList = _memList select {
+			
+			_attr in (_x#1)
+		};
+	};
+
+	private _iVarName = 0;
+
+	for "_i" from 2 to ((count _array) - 1) do {
+		private _value = _array select _i;
+		(_memList select _iVarName) params ["_varName"];
+		if(!(isNil "_value")) then {
+								missionNameSpace setVariable [((_objNameStr) + "_" +   _varName),  _value];
+		} else {
+								missionNameSpace setVariable [((_objNameStr) + "_" +   _varName),  nil];
+		};
+		_iVarName = _iVarName + 1;
+	};
+};
+
+
+OOP_deserialize_save = {
+	params ["_objNameStr", "_array", ["_version", 666]];
+
+	private _classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+
+	
+	if (! ([_objNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1276] call OOP_assert_object)) exitWith { false };
+	
+	#line 1278 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+	
+	private _memList = 				( missionNameSpace getVariable ("o_" + (_classNameStr) + "_spm_" + (  "memList")) ) select {
+		_x params ["_varName", "_attributes"];
+		(_attributes findIf {
+			(_x isEqualType 0 && {_x == 			7}) ||
+			
+			{_x isEqualType [] && {_x#0 == 			7 && _x#1 <= _version}}
+		}) != -1
+	};
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	if((count _array - 2) != count _memList) exitWith {
+		
+		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Saved object is invalid, saved array %1 doesn't match expected member list %2",  _array,  _memList]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt";
+		diag_log _array;
+		diag_log _memList;
+		false
+	};
+	private _iVarName = 0;
+	for "_i" from 2 to ((count _array) - 1) do {
+		private _value = _array#_i;
+		(_memList#(_i - 2)) params ["_varName"];
+		if(!(isNil "_value")) then {
+								missionNameSpace setVariable [((_objNameStr) + "_" +   _varName),  _value];
+		} else {
+								missionNameSpace setVariable [((_objNameStr) + "_" +   _varName),  nil];
+		};
+	};
+	true
+};
+
+OOP_deref_var = { 
+	params ["_objNameStr", "_memName", "_memAttr"];
+	if(		1 in _memAttr) then {
+		private _memObj = 							( missionNameSpace getVariable ((_objNameStr) + "_" +   _memName) );
+		switch(typeName _memObj) do {
+			case "STRING": {
+										([_memObj] call 					(if ([_memObj,   "unref", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1334] call OOP_assert_method_std_call) then { 		( if([(							( missionNameSpace getVariable ((_memObj) + "_" +   "oop_parent") )),    "unref", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1334] call OOP_assert_method) then { 							( missionNameSpace getVariable (((							( missionNameSpace getVariable ((_memObj) + "_" +   "oop_parent") ))) + "_fnc_" + (     "unref")) ) 		}else{nil} ) } else { nil }));
+			};
+			
+			
+			
+			
+			
+			
+			
+			
+		};
+	};
+};
+
+
+OOP_delete = {
+	params ["_objNameStr"];
+
+	if (!([_objNameStr, "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1352] call OOP_assert_object)) exitWith {};;
+
+	private _oop_classNameStr = (							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ));
+	private _oop_parents = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "parents")) );
+	private _oop_parentCount = count _oop_parents;
+	private _oop_i = _oop_parentCount - 1;
+	private _oop_namespace = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "namespace")) );
+
+							([_objNameStr] call 					(if ([_objNameStr,   "delete", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1360] call OOP_assert_method_std_call) then { 		( if([(							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") )),    "delete", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1360] call OOP_assert_method) then { 							( missionNameSpace getVariable (((							( missionNameSpace getVariable ((_objNameStr) + "_" +   "oop_parent") ))) + "_fnc_" + (     "delete")) ) 		}else{nil} ) } else { nil }));
+	while {_oop_i > -1} do {
+		[_objNameStr] call 		( if([(_oop_parents select _oop_i),  "delete", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1362] call OOP_assert_method) then { 							( missionNameSpace getVariable (((_oop_parents select _oop_i)) + "_fnc_" + (   "delete")) ) 		}else{nil} );
+		_oop_i = _oop_i - 1;
+	};
+
+	private _isPublic = (! (isNil {		( if([_objNameStr,  "oop_public", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1366] call OOP_assert_member) then { 						[_objNameStr,   "oop_public", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1366] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_objNameStr) + "_" +    "oop_public") ) 		}else{nil} )} ) );
+	private _oop_memList = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) );
+	
+	if (_isPublic) then {
+		{ 
+			
+			_x params ["_memName", "_memAttr"];
+			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
+								missionNameSpace setVariable [((_objNameStr) + "_" +   _memName),  nil];
+					if([_objNameStr,  "oop_parent", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1375] call OOP_assert_member) then { 			 		};
+		} forEach (_oop_memList+["oop_public"]);
+	} else {
+		{
+			
+			_x params ["_memName", "_memAttr"];
+			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
+						_oop_namespace setVariable [(( _objNameStr) + "_" +   _memName),  nil];
+		} forEach (_oop_memList - ["oop_parent"]);
+							missionNameSpace setVariable [((_objNameStr) + "_" +   "oop_parent"),  nil];
+	};
+
+	;
+};
+
+
+OOP_setSessionCounter = {
+	params [["_value", 0, [0]]];
+	o_sessionID = _value;
+};
+
+OOP_getSessionCounter = {
+	o_sessionID
+};
+
+
+
+
+
+#line 1404 "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf"
+
+OOP_createStaticString = {
+	params ["_str"];
+	private _strFound = OOP_staticStringHashmap getVariable [_str, ""];
+	if (_strFound == "") then {
+		OOP_staticStringHashmap setVariable [_str, _str];
+		_str
+	} else {
+		_strFound
+	};
+};
+
+
+
+
+
+
+
+
+
+
+	if ("RefCounted" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "RefCounted"]; }; 	; 	call { 		(["RefCounted",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+		if(!(("refCount") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("refCount") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "refCount"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["refCount",  [			7]];
+
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+		
+		
+				if([_thisObject,  "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1433] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1433] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "refCount"),    0] 		};
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "ref", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "ref";  		_oop_newMethodList pushBackUnique "ref"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "ref")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "ref"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+		isNil {
+			private _refCount = 		( if([_thisObject,  "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1439] call OOP_assert_member) then { 						[_thisObject,   "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1439] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    "refCount") ) 		}else{nil} );
+			_refCount = _refCount + 1;
+			
+					if([_thisObject,  "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1442] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1442] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "refCount"),    _refCount] 		};
+		};
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "unref", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "unref";  		_oop_newMethodList pushBackUnique "unref"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "unref")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "unref"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+		isNil {
+			private _refCount = 		( if([_thisObject,  "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1449] call OOP_assert_member) then { 						[_thisObject,   "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1449] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    "refCount") ) 		}else{nil} );
+			_refCount = _refCount - 1;
+			
+			if(_refCount <= 0) then {
+				
+				([_thisObject] call OOP_delete);
+			} else {
+						if([_thisObject,  "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1456] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "refCount", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1456] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "refCount"),    _refCount] 		};
+			};
+		};
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+
+
+
+
+	if ("AttrTestBase1" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "AttrTestBase1"]; }; 	; 	call { 		(["AttrTestBase1",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+		if(!(("var_default") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var_default") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var_default"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var_default",  []];
+		if(!(("var_private") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var_private") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var_private"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var_private",  [		3]];
+		if(!(("var_get_only") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var_get_only") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var_get_only"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var_get_only",  [5]];
+
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+				if([_thisObject,  "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1474] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1474] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var_default"),    true] 		};
+				if([_thisObject,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1475] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1475] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var_private"),    true] 		};
+				if([_thisObject,  "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1476] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1476] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var_get_only"),    true] 		};
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "validDefaultAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validDefaultAccessTest";  		_oop_newMethodList pushBackUnique "validDefaultAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validDefaultAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validDefaultAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+				if([_thisObject,  "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1481] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1481] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var_default"),    true] 		};
+				( if([_thisObject,  "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1482] call OOP_assert_member) then { 						[_thisObject,   "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1482] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    "var_default") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+	
+			+[] call { [_oop_classNameStr, "validPrivateAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validPrivateAccessTest";  		_oop_newMethodList pushBackUnique "validPrivateAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validPrivateAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validPrivateAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+				if([_thisObject,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1487] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1487] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var_private"),    true] 		};
+				( if([_thisObject,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1488] call OOP_assert_member) then { 						[_thisObject,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1488] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    "var_private") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+		
+			+[] call { [_oop_classNameStr, "validGetOnlyAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validGetOnlyAccessTest";  		_oop_newMethodList pushBackUnique "validGetOnlyAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validGetOnlyAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validGetOnlyAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+				if([_thisObject,  "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1493] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1493] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var_get_only"),    true] 		};
+				( if([_thisObject,  "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1494] call OOP_assert_member) then { 						[_thisObject,   "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1494] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_thisObject) + "_" +    "var_get_only") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "validStaticPrivateAccessTest", _this, true] call OOP_set_method_attr }; }; 		; 		_oop_methodList pushBackUnique "validStaticPrivateAccessTest"; 		_oop_newMethodList pushBackUnique "validStaticPrivateAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validStaticPrivateAccessTest")), { 			private _thisObject = nil; 			private _thisClass = _this select 0; 			private _methodNameStr = "validStaticPrivateAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call {
+		params [["_thisClass", ""], ["_obj", "", [""]]];
+				( if([_obj,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1499] call OOP_assert_member) then { 						[_obj,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1499] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_obj) + "_" +    "var_private") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+	
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+	if ("AttrTestDerived1" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "AttrTestDerived1"]; }; 	; 	call { 		(["AttrTestDerived1",  "AttrTestBase1"] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+		
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+	
+			+[] call { [_oop_classNameStr, "validDerviedDefaultAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validDerviedDefaultAccessTest";  		_oop_newMethodList pushBackUnique "validDerviedDefaultAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validDerviedDefaultAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validDerviedDefaultAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""], ["_base", "", [""]]];
+				if([_base,  "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1513] call OOP_assert_member_is_not_ref) then { 						[_base,   "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1513] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_base) + "_" +    "var_default"),   true] 		};
+				( if([_base,  "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1514] call OOP_assert_member) then { 						[_base,   "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1514] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_base) + "_" +    "var_default") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+	
+			+[] call { [_oop_classNameStr, "validDerviedPrivateAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validDerviedPrivateAccessTest";  		_oop_newMethodList pushBackUnique "validDerviedPrivateAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validDerviedPrivateAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validDerviedPrivateAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""], ["_base", "", [""]]];
+				if([_base,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1519] call OOP_assert_member_is_not_ref) then { 						[_base,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1519] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_base) + "_" +    "var_private"),   true] 		};
+				( if([_base,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1520] call OOP_assert_member) then { 						[_base,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1520] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_base) + "_" +    "var_private") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+		
+			+[] call { [_oop_classNameStr, "validDerviedGetOnlyAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validDerviedGetOnlyAccessTest";  		_oop_newMethodList pushBackUnique "validDerviedGetOnlyAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validDerviedGetOnlyAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validDerviedGetOnlyAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""], ["_base", "", [""]]];
+				if([_base,  "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1525] call OOP_assert_member_is_not_ref) then { 						[_base,   "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1525] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_base) + "_" +    "var_get_only"),   true] 		};
+				( if([_base,  "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1526] call OOP_assert_member) then { 						[_base,   "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1526] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_base) + "_" +    "var_get_only") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+	if ("AttrTestNotDerived1" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "AttrTestNotDerived1"]; }; 	; 	call { 		(["AttrTestNotDerived1",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+	
+			+[] call { [_oop_classNameStr, "validNonDerivedDefaultAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validNonDerivedDefaultAccessTest";  		_oop_newMethodList pushBackUnique "validNonDerivedDefaultAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validNonDerivedDefaultAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validNonDerivedDefaultAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""], ["_base", "", [""]]];
+				if([_base,  "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1538] call OOP_assert_member_is_not_ref) then { 						[_base,   "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1538] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_base) + "_" +    "var_default"),   true] 		};
+				( if([_base,  "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1539] call OOP_assert_member) then { 						[_base,   "var_default", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1539] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_base) + "_" +    "var_default") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+	
+			+[] call { [_oop_classNameStr, "invalidNonDerivedPrivateAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "invalidNonDerivedPrivateAccessTest";  		_oop_newMethodList pushBackUnique "invalidNonDerivedPrivateAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "invalidNonDerivedPrivateAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "invalidNonDerivedPrivateAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""], ["_base", "", [""]]];
+				if([_base,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1544] call OOP_assert_member_is_not_ref) then { 						[_base,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1544] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_base) + "_" +    "var_private"),   true] 		};
+				( if([_base,  "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1545] call OOP_assert_member) then { 						[_base,   "var_private", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1545] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_base) + "_" +    "var_private") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+		
+			+[] call { [_oop_classNameStr, "validNonDerivedGetOnlyAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "validNonDerivedGetOnlyAccessTest";  		_oop_newMethodList pushBackUnique "validNonDerivedGetOnlyAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "validNonDerivedGetOnlyAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "validNonDerivedGetOnlyAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""], ["_base", "", [""]]];
+				( if([_base,  "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1550] call OOP_assert_member) then { 						[_base,   "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1550] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_base) + "_" +    "var_get_only") ) 		}else{nil} )
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "invalidNonDerivedGetOnlyAccessTest", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "invalidNonDerivedGetOnlyAccessTest";  		_oop_newMethodList pushBackUnique "invalidNonDerivedGetOnlyAccessTest"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "invalidNonDerivedGetOnlyAccessTest")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "invalidNonDerivedGetOnlyAccessTest"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""], ["_base", "", [""]]];
+				if([_base,  "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1555] call OOP_assert_member_is_not_ref) then { 						[_base,   "var_get_only", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1555] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_base) + "_" +    "var_get_only"),   true] 		}
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+
+
+	if ("mi_a" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "mi_a"]; }; 	; 	call { 		(["mi_a",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "getValue", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "getValue";  		_oop_newMethodList pushBackUnique "getValue"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "getValue")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "getValue"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			"A"}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+	if ("mi_b" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "mi_b"]; }; 	; 	call { 		(["mi_b",  "mi_a"] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "getValue", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "getValue";  		_oop_newMethodList pushBackUnique "getValue"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "getValue")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "getValue"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			"B"}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+	if ("mi_c" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "mi_c"]; }; 	; 	call { 		(["mi_c",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+
+			+[] call { [_oop_classNameStr, "getAnotherValue", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "getAnotherValue";  		_oop_newMethodList pushBackUnique "getAnotherValue"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "getAnotherValue")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "getAnotherValue"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			"anotherValue"}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+	if ("mi_d" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "mi_d"]; }; 	; 	call { 		(["mi_d",  ["mi_b" , "mi_c"]] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+["OOP Multiple Inheritence", {
+	private _thisObject = (["mi_d",  []] call OOP_new);
+
+
+	private _parents = 				( missionNameSpace getVariable ("o_" + ("mi_d") + "_spm_" + (  "parents")) );
+	
+
+	["Proper inheritence classes", _parents isEqualTo ["mi_a","mi_b","mi_c"]] call test_Assert;
+
+	
+
+	private _value = T_CALLM0("getValue");
+	private _anotherValue = T_CALLM0("getAnotherValue");
+
+	
+
+	["Test 1", T_CALLM0("getValue") == "B"] call test_Assert;
+	["Test 2", T_CALLM0("getAnotherValue") == "anotherValue"] call test_Assert;
+
+	true
+}] call test_AddTest;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	if ("JsonTestVarObj" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "JsonTestVarObj"]; }; 	; 	call { 		(["JsonTestVarObj",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+		if(!(("var1") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var1") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var1"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var1",  []];
+		if(!(("var2") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var2") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var2"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var2",  []];
+
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+				if([_thisObject,  "var1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1659] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1659] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var1"),    666] 		};
+				if([_thisObject,  "var2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1660] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "var2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1660] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "var2"),    "String!"] 		};
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+	if ("JsonTest1" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "JsonTest1"]; }; 	; 	call { 		(["JsonTest1",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+		if(!(("varBool") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("varBool") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "varBool"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["varBool",  []];
+		if(!(("varString") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("varString") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "varString"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["varString",  []];
+		if(!(("varNumber") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("varNumber") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "varNumber"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["varNumber",  []];
+		if(!(("varArray") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("varArray") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "varArray"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["varArray",  []];
+		if(!(("varObject") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("varObject") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "varObject"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["varObject",  []];
+		if(!(("varOOPObject") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("varOOPObject") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "varOOPObject"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["varOOPObject",  []];
+		if(!(("varUnset") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("varUnset") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "varUnset"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["varUnset",  []];
+
+			+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			
+		params [["_thisObject", ""]];
+				if([_thisObject,  "varBool", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1676] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "varBool", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1676] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "varBool"),    true] 		};
+				if([_thisObject,  "varString", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1677] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "varString", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1677] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "varString"),    "a string"] 		};
+				if([_thisObject,  "varNumber", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1678] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "varNumber", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1678] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "varNumber"),    667] 		};
+				if([_thisObject,  "varArray", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1679] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "varArray", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1679] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "varArray"),    [0 , 1 , 2]] 		};
+		private _grp = createGroup civilian;
+				if([_thisObject,  "varObject", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1681] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "varObject", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1681] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "varObject"),    _grp] 		};
+		private _oopObj = (["JsonTestVarObj",  []] call OOP_new);
+				if([_thisObject,  "varOOPObject", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1683] call OOP_assert_member_is_not_ref) then { 						[_thisObject,   "varOOPObject", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1683] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_thisObject) + "_" +    "varOOPObject"),    _oopObj] 		};
+	}}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	if ("serAttrTest" == "UnknownClassName") then { diag_log format ["[OOP] Error: class %1 has no macro OOP_CLASS_NAME defined!", "serAttrTest"]; }; 	; 	call { 		(["serAttrTest",  ""] call OOP_init_class) 			params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; 		; 				+[] call { [_oop_classNameStr, "new", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "new";  		_oop_newMethodList pushBackUnique "new"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "new")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "new"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "delete", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "delete";  		_oop_newMethodList pushBackUnique "delete"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "delete")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "delete"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "copy", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "copy";  		_oop_newMethodList pushBackUnique "copy"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "copy")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "copy"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_clone_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 				+[] call { [_oop_classNameStr, "assign", _this] call OOP_set_method_attr }; 		; 		_oop_methodList pushBackUnique "assign";  		_oop_newMethodList pushBackUnique "assign"; 		missionNamespace setVariable [((_oop_classNameStr) + "_fnc_" + ( "assign")), { 			private _thisClass = nil; 			private _thisObject = _this select 0; 			private _methodNameStr = "assign"; 			private _objOrClass = _this select 0; 			; 			; 			private _result = ([0] apply { _this call { 			 _this call OOP_assign_default }}) select 0;			; 			; 			if !(isNil "_result") then { _result } else { nil } 		} ]; 			if(!(("oop_parent") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_parent") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_parent"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_parent",  []]; 			if(!(("oop_public") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("oop_public") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "oop_public"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["oop_public",  []];
+		if(!(("var_0") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var_0") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var_0"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var_0",  [	2 , 			7]];
+		if(!(("var_1") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var_1") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var_1"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var_1",  [	2]];
+		if(!(("var_2") in ["oop_parent", "oop_public"]) && (_oop_memList findIf { (_x select 0) isEqualTo ("var_2") } != -1)) then { 		private _o_str = format ["[%1.%2] ERROR: %3", if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }, if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}, format ["Class %1 is hiding variable '%2' in parent",  _oop_classNameStr,  "var_2"]]; diag_log  _o_str; diag_log _o_str; ; diag_log "halt"; 	}; 	_oop_memList pushBackUnique ["var_2",  [[7,1]]];
+ 		; 		private _serialVariables = 				( missionNameSpace getVariable ("o_" + (_oop_classNameStr) + "_spm_" + (  "memList")) ); 		_serialVariables = _serialVariables select { 			_x params ["_varName", "_attributes"]; 				2 in _attributes 		}; 				missionNameSpace setVariable [("o_" + (_oop_classNameStr) + "_spm_" + (  "serialMemList")),  _serialVariables]; 	};
+
+["OOP Serialize by attribute", {
+	private _obj = (["serAttrTest",  []] call OOP_new);
+	
+			if([_obj,  "var_0", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1714] call OOP_assert_member_is_not_ref) then { 						[_obj,   "var_0", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1714] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_obj) + "_" +    "var_0"),   0] 		};
+			if([_obj,  "var_1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1715] call OOP_assert_member_is_not_ref) then { 						[_obj,   "var_1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1715] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_obj) + "_" +    "var_1"),   1] 		};
+			if([_obj,  "var_2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1716] call OOP_assert_member_is_not_ref) then { 						[_obj,   "var_2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1716] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_obj) + "_" +    "var_2"),   2] 		};
+	
+	private _objSerial = ([_obj] call OOP_serialize_save);
+
+	
+
+			if([_obj,  "var_0", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1722] call OOP_assert_member_is_not_ref) then { 						[_obj,   "var_0", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1722] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_obj) + "_" +    "var_0"),   4] 		};
+			if([_obj,  "var_1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1723] call OOP_assert_member_is_not_ref) then { 						[_obj,   "var_1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1723] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_obj) + "_" +    "var_1"),   5] 		};
+			if([_obj,  "var_2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1724] call OOP_assert_member_is_not_ref) then { 						[_obj,   "var_2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1724] call OOP_assert_set_member_access; 								missionNameSpace setVariable [((_obj) + "_" +    "var_2"),   6] 		};
+
+	([_obj,  _objSerial,  1] call OOP_deserialize_save);
+
+	["test var 0", 		( if([_obj,  "var_0", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1728] call OOP_assert_member) then { 						[_obj,   "var_0", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1728] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_obj) + "_" +    "var_0") ) 		}else{nil} ) == 0] call test_Assert;
+	["test var 1", 		( if([_obj,  "var_1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1729] call OOP_assert_member) then { 						[_obj,   "var_1", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1729] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_obj) + "_" +    "var_1") ) 		}else{nil} ) == 5] call test_Assert;
+	["test var 2", 		( if([_obj,  "var_2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1730] call OOP_assert_member) then { 						[_obj,   "var_2", "c:\Users\billw\Documents\Arma 3\mpmissions\Vindicta\Vindicta.Altis\OOP_Light\OOP_Light_init.sqf", 1730] call OOP_assert_get_member_access; 										( missionNameSpace getVariable ((_obj) + "_" +    "var_2") ) 		}else{nil} ) == 2] call test_Assert;
+
+}] call test_AddTest;
+
+
+[WORK]	<EMPTY>	
+
