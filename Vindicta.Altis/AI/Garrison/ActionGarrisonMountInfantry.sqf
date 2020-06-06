@@ -9,7 +9,7 @@ All infantry mounts vehicles as passengers
 CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 	VARIABLE("mount");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
 			[ [TAG_MOUNT, [false]] ]	// Optional parameters

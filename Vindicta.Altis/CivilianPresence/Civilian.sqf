@@ -66,12 +66,12 @@ CLASS("Civilian", "GOAP_Agent")
 		deleteVehicle _hO;
 	ENDMETHOD;
 
-	/* override */ METHOD(getAI)
+	public override METHOD(getAI)
 		params [P_THISOBJECT];
 		T_GETV("AI")
 	ENDMETHOD;
 
-	/* override */ METHOD(getSubagents)
+	public override METHOD(getSubagents)
 		params [P_THISOBJECT];
 		[]
 	ENDMETHOD;

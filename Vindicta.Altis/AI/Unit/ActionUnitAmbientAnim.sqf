@@ -10,7 +10,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 	VARIABLE("spawnHandle");
 	VARIABLE("savedInventory");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_AMBIENT_ANIM, [[], objNull]] ],	// Required parameters
 			[ [TAG_DURATION_SECONDS, [0]], [TAG_ANIM, [""]] ]	// Optional parameters
@@ -171,7 +171,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		_state
 	ENDMETHOD;
 
-	 METHOD(terminate)
+	 public override METHOD(terminate)
 	 	params [P_THISOBJECT];
 		
 		private _ai = T_GETV("ai");

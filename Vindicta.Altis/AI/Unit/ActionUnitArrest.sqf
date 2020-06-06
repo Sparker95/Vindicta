@@ -21,7 +21,7 @@ CLASS("ActionUnitArrest", "Action")
 	VARIABLE("spawnHandle");
 	VARIABLE("screamTime");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_ARREST, [objNull]] ],	// Required parameters
 			[  ]	// Optional parameters

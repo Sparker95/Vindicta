@@ -14,7 +14,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	VARIABLE("followGroups");
 	VARIABLE("maxSpeed");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			// We allow only unit OOP objects as target
 			[ [TAG_POS, [[]]] ],	// Required parameters

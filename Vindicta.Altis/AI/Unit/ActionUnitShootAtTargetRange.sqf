@@ -8,7 +8,7 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 	VARIABLE("spawnHandle");
 	VARIABLE("safePosition");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_SHOOT_RANGE, [objNull] ] ],	// Required parameters
 			[ [TAG_DURATION_SECONDS, [0]]]	// Optional parameters

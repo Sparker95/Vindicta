@@ -24,7 +24,7 @@ CLASS("MyGoal", "Goal")
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
-	/* virtual */ STATIC_METHOD(createPredefinedAction)
+	public virtual STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		

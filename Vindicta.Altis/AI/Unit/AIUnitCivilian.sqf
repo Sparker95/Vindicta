@@ -55,7 +55,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		nil
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "MiscLowPriority");
 	ENDMETHOD;

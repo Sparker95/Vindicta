@@ -24,7 +24,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	// Time when unit is expected to get into vehicle
 	VARIABLE("ETA");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			// We allow only unit OOP objects as target
 			[ [TAG_TARGET_VEHICLE_UNIT, [NULL_OBJECT]],  [TAG_VEHICLE_ROLE, [""]] ],	// Required parameters

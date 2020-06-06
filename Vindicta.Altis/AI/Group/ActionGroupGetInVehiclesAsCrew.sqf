@@ -17,7 +17,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	VARIABLE("activeUnits");
 	VARIABLE("onlyCombat");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
 			[ [TAG_ONLY_COMBAT_VEHICLES, [false]] ]	// Optional parameters

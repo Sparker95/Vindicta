@@ -27,12 +27,12 @@ CLASS("GoalUnitAmbientAnim", "Goal")
 		private _currentObject = GETV(_ai, "interactionObject");
 		if (_target isEqualType objNull) then {
 			if (	_currentObject isEqualTo _target || !_targetOccupied) then {
-				GET_STATIC_VAR(_thisClass, "relevance");
+				GETSV(_thisClass, "relevance");
 			} else {
 				0;
 			};
 		} else {
-			GET_STATIC_VAR(_thisClass, "relevance");
+			GETSV(_thisClass, "relevance");
 		};
 	ENDMETHOD;
 

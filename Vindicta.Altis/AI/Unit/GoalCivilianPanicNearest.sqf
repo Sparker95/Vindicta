@@ -14,7 +14,7 @@ CLASS("GoalCivilianPanicNearest", "Goal")
 
 		// Panic if in danger
 		if (GETV(_AI, "danger")) then {
-			GET_STATIC_VAR(_thisClass, "relevance");
+			GETSV(_thisClass, "relevance");
 		} else {
 			0
 		};

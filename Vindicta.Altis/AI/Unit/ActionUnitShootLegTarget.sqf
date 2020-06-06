@@ -20,7 +20,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	VARIABLE("isHandleSpawned");
 	VARIABLE("startSpawnedTime");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_SHOOT_LEG, [objNull] ] ],	// Required parameters
 			[ ]	// Optional parameters
@@ -150,7 +150,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	ENDMETHOD;
 
 	// logic to run when the goal is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		pr _ai = T_GETV("AI");
 		SETV(_ai, "interactionObject", objNull);

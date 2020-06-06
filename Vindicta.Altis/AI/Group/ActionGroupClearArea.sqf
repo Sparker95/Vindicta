@@ -16,7 +16,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 	VARIABLE("inCombat");
 	VARIABLE("nextLookTime");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_POS, [objNull]], [TAG_CLEAR_RADIUS, [0]] ],	// Required parameters
 			[  ]	// Optional parameters

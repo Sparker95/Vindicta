@@ -19,7 +19,7 @@ CLASS("GoalCivilianPanicAway", "Goal")
 			pr _nearMen = (_hO nearobjects ["CAManBase", 6]) - [_hO];
 
 			if (count _nearMen > 0) then {
-				GET_STATIC_VAR(_thisClass, "relevance");
+				GETSV(_thisClass, "relevance");
 			} else {
 				0
 			};

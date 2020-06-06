@@ -2047,11 +2047,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 	
 
-	/* override */ STATIC_METHOD(saveStaticVariables)
+	STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(loadStaticVariables)
+	STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		SETSV("Location", "all", []);
 	ENDMETHOD;

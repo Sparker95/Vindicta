@@ -16,7 +16,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 	VARIABLE("hBuilding");
 	VARIABLE("timeComplete");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET, [objNull]]],	// Required parameters
 			[  ]	// Optional parameters

@@ -164,7 +164,7 @@ CLASS("AI_GOAP", "AI")
 	Returning true from this will cause this AI to be marked as high priority when external goal is added.
 	Override in derived classes!
 	*/
-	/* virtual */ METHOD(setUrgentPriorityOnAddGoal)
+	public virtual METHOD(setUrgentPriorityOnAddGoal)
 		false
 	ENDMETHOD;
 
@@ -174,7 +174,7 @@ CLASS("AI_GOAP", "AI")
 	Returns the list of goals this AI evaluates on its own.
 	Override in derived classes!!
 	*/
-	/* virtual */ METHOD(getPossibleGoals)
+	public virtual METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		OOP_ERROR_0("getPossibleGoals is not implemented!");
 		0 // Will cause error
@@ -186,7 +186,7 @@ CLASS("AI_GOAP", "AI")
 	Returns: Array with action class names
 	Override in derived classes!!
 	*/
-	/* virtual */ METHOD(getPossibleActions)
+	public virtual METHOD(getPossibleActions)
 		params [P_THISOBJECT];
 		OOP_ERROR_0("getPossibleActions is not implemented!");
 		0 // Will cause error
@@ -194,7 +194,7 @@ CLASS("AI_GOAP", "AI")
 
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	// Override to show debug data in debug UI for specific class
-	/* virtual */ METHOD(getDebugUIVariableNames)
+	public virtual METHOD(getDebugUIVariableNames)
 		[]
 	ENDMETHOD;
 
@@ -205,7 +205,7 @@ CLASS("AI_GOAP", "AI")
 	Passed goal parameters array is a copy of actual goal parameters.
 	Returns: nothing
 	*/
-	/* virtual */ METHOD(onGoalChosen)
+	public virtual METHOD(onGoalChosen)
 		//params [P_THISOBJECT, P_ARRAY("_goalParameters")];
 	ENDMETHOD;
 

@@ -36,7 +36,7 @@ CLASS("ActionGroupFlee", "ActionGroup")
 		ACTION_STATE_COMPLETED
 	ENDMETHOD;
 
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		T_CALLCM0("ActionGroup", "terminate");
 	ENDMETHOD;

@@ -9,7 +9,7 @@ Goal for a group to get in their vehicles as crew.
 #define OOP_CLASS_NAME GoalGroupGetInVehiclesAsCrew
 CLASS("GoalGroupGetInVehiclesAsCrew", "GoalGroup")
 
-	// /* virtual */ STATIC_METHOD(calculateRelevance)
+	// public virtual STATIC_METHOD(calculateRelevance)
 	// 	params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 	// 	pr _ws = GETV(_AI, "worldState");

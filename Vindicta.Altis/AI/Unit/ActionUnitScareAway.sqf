@@ -16,7 +16,7 @@ CLASS("ActionUnitScareAway", "Action")
 	VARIABLE("step");
 	VARIABLE("warningShotTarget");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_SCARE_AWAY, [objNull] ] ],	// Required parameters
 			[ ]	// Optional parameters

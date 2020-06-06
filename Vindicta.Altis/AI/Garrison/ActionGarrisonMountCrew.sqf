@@ -10,7 +10,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	
 	VARIABLE("mount"); // Bool, true for mounting, false for dismounting
 	
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
 			[ [TAG_MOUNT, [false]] ]	// Optional parameters

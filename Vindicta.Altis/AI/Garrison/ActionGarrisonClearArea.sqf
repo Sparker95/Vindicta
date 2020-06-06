@@ -15,7 +15,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	VARIABLE("overwatchGroups");
 	VARIABLE("sweepGroups");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			// We allow only unit OOP objects as target
 			[ [TAG_POS_CLEAR_AREA, [[]]] ],	// Required parameters

@@ -7,7 +7,7 @@ CLASS("ActionUnitFlee", "ActionUnit")
 
 	VARIABLE("pos");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
 			[ [TAG_POS, [[]]] ]	// Optional parameters

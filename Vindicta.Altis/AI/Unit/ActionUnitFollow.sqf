@@ -14,7 +14,7 @@ CLASS("ActionUnitFollow", "ActionUnit")
 	VARIABLE("stuckCounter");
 	VARIABLE("hTarget");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
 			[ [TAG_TARGET_OBJECT, objNull] ]	// Optional parameters

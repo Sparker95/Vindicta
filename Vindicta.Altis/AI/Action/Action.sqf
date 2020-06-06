@@ -184,7 +184,7 @@ CLASS("Action", "MessageReceiverEx")
 		tag - string
 		type - some value against which isEqualType will be used
 	*/
-	METHOD(getPossibleParameters)
+	public virtual METHOD(getPossibleParameters)
 		[
 			[],	// Required parameters
 			[]	// Optional parameters
@@ -202,7 +202,7 @@ CLASS("Action", "MessageReceiverEx")
 		tag - string
 		type - some value against which isEqualType will be used
 	*/
-	METHOD(getCommonParameters)
+	public virtual METHOD(getCommonParameters)
 		[
 			[],	// Required parameters
 			[ [TAG_INSTANT, [false]] ]	// Optional parameters

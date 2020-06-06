@@ -26,7 +26,7 @@ CLASS("ActionUnitSalute", "Action")
 	// ------------ N E W ------------
 	// _target - whom to salute to
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_SALUTE, [NULL_OBJECT] ] ],	// Required parameters
 			[ ]	// Optional parameters

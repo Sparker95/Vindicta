@@ -524,7 +524,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 
 #ifdef SABOTEUR_CIVILIANS_TESTING
 	// Make it always active mission if we are testing
-	/* override */ METHOD(isActive)
+	public override METHOD(isActive)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		true
 	ENDMETHOD;

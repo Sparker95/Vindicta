@@ -11,7 +11,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 
 	VARIABLE("route");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
 			[ [TAG_ROUTE, [[]] ] ]	// Optional parameters

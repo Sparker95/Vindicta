@@ -37,14 +37,14 @@ CLASS("ActionGroup", "Action")
 		T_SETV("replanOnCompositionChange", true);
 	ENDMETHOD;
 
-	METHOD(getCommonParameters)
+	public override METHOD(getCommonParameters)
 		[
 			[],	// Required parameters
 			[ [TAG_BEHAVIOUR, [""]], [TAG_COMBAT_MODE, [""]], [TAG_FORMATION, [""]], [TAG_SPEED_MODE, [""]], [TAG_INSTANT, [false]] ]	// Optional parameters
 		]
 	ENDMETHOD;
 
-	/* protected override */ METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		T_CALLM0("clearUnitGoals");

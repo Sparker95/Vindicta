@@ -272,15 +272,15 @@ CLASS("CivPresence", "")
 	STATIC_METHOD(setMultiplierUser)
 		params [P_THISCLASS, P_NUMBER("_value")];
 		vin_CivPresence_multiplierUser = _value;
-	ENDMETHOD
+	ENDMETHOD;
 
 	STATIC_METHOD(setMultiplierSystem)
 		params [P_THISCLASS, P_NUMBER("_value")];
 		vin_CivPresence_multiplierSystem = _value;
-	ENDMETHOD
+	ENDMETHOD;
 
 	// updates target amount of civilians - based on different rules
-	/* private */ METHOD(commitSettings)
+	METHOD(commitSettings)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("commitSettings");

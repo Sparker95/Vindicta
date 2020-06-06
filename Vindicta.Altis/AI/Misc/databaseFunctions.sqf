@@ -101,7 +101,7 @@ AI_misc_fnc_setActionParametersFromGoalRequired = {
 	{
 		_parameters pushBack [_x, _x, ORIGIN_GOAL_PARAMETER];
 	} forEach _goalParameterTagsArray;
-	SET_STATIC_VAR(_actionClass, "parametersFromGoal", _parameters);
+	SETSV(_actionClass, "parametersFromGoal", _parameters);
 };
 
 AI_misc_fnc_setActionParametersFromGoalOptional = {
@@ -110,7 +110,7 @@ AI_misc_fnc_setActionParametersFromGoalOptional = {
 	{
 		_parameters pushBack [_x, _x, ORIGIN_GOAL_PARAMETER];
 	} forEach _goalParameterTagsArray;
-	SETSV(_actionClass, "parameters", _parameters);
+	SETSV(_actionClass, "parametersFromGoalOptional", _parameters);
 };
 
 AI_misc_fnc_setActionPrecedence = {

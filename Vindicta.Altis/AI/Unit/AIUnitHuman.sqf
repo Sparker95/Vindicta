@@ -114,7 +114,7 @@ CLASS("AIUnitHuman", "AIUnit")
 			};
 		};
 
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_spawning]);
+		CALLCM("AI_GOAP", _thisObject, "process", [_spawning]);
 
 		T_SETV("timeLastProcess", time);
 
@@ -187,10 +187,10 @@ CLASS("AIUnitHuman", "AIUnit")
 	ENDMETHOD;
 	
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "MiscLowPriority");
-	ENDMETHOD
+	ENDMETHOD;
 
 	METHOD(_enableDebugMarkers)
 		params [P_THISOBJECT];
@@ -1047,12 +1047,12 @@ CLASS("AIUnitHuman", "AIUnit")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopUnscheduled
 	ENDMETHOD;
 
 	// Common interface
-	/* virtual */ METHOD(getCargoUnits)
+	public virtual METHOD(getCargoUnits)
 		[]
 	ENDMETHOD;
 

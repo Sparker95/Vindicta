@@ -8,7 +8,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	VARIABLE("radius");
 	VARIABLE("nextLookTime");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_POS, [[]]] ],	// Required parameters
 			[ [TAG_CLEAR_RADIUS, [0]] ]	// Optional parameters

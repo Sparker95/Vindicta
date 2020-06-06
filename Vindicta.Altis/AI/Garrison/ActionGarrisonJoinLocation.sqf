@@ -15,7 +15,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	VARIABLE("locPos");
 	VARIABLE("radius");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			// We allow only unit OOP objects as target
 			[ [TAG_LOCATION, [NULL_OBJECT]] ],	// Required parameters

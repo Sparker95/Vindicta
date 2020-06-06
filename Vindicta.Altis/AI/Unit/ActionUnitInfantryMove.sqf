@@ -15,7 +15,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 	VARIABLE("teleport"); // If true, unit will be teleported if ETA is exceeded
 	VARIABLE("distRemaining"); // Remaining distance to go
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_MOVE_TARGET, [objNull, NULL_OBJECT, []] ] ],	// Required parameters
 			[ [TAG_MOVE_RADIUS, [0]], [TAG_TELEPORT, [false]], [TAG_BUILDING_POS_ID, [0]]  ]	// Optional parameters
@@ -102,7 +102,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 
 	FIX_LINE_NUMBERS()
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// We are not in formation any more
@@ -141,7 +141,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 	FIX_LINE_NUMBERS()
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		private _state = T_CALLM0("activateIfInactive");
@@ -211,7 +211,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		pr _ai = T_GETV("ai");
@@ -226,7 +226,7 @@ CLASS("ActionUnitInfantryMove", "ActionUnit")
 		};
 	ENDMETHOD;
 
-	METHOD(getDebugUIVariableNames)
+	public override METHOD(getDebugUIVariableNames)
 			[	"targetPos",
 				"moveRadius",
 				"teleport",

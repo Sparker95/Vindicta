@@ -81,7 +81,7 @@ CLASS("AIUnitVehicle", "AIUnit")
 	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "MiscLowPriority");
-	ENDMETHOD
+	ENDMETHOD;
 
 	/*
 	Method: addCargoUnit
@@ -103,7 +103,7 @@ CLASS("AIUnitVehicle", "AIUnit")
 	/*
 	Method: getCargo
 	*/
-	/* override */ METHOD(getCargoUnits)
+	public METHOD(getCargoUnits)
 		params [P_THISOBJECT];
 		+T_GETV("cargo")
 	ENDMETHOD;

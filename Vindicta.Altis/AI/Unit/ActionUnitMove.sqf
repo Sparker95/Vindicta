@@ -33,7 +33,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 	VARIABLE("pathingFailedCounter");	// How many times pathfinding has failed in a row, reset on success
 	VARIABLE("pathingFailing");			// Set in the PathCalculated handler based on the result of the last pathfind operation
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_POS, [[]] ] ],	// Required parameters
 			[ [TAG_MOVE_RADIUS, [0]], [TAG_ROUTE, [[]]] ]	// Optional parameters

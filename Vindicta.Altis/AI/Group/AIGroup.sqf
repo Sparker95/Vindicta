@@ -284,7 +284,7 @@ CLASS("AIGroup", "AI_GOAP")
 	// | The group AI resides in its own thread
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopUnscheduled
 	ENDMETHOD;
 	
@@ -352,11 +352,11 @@ CLASS("AIGroup", "AI_GOAP")
 
 	Returns: Array with action class names
 	*/
-	METHOD(getPossibleActions)
+	public override METHOD(getPossibleActions)
 		[]
 	ENDMETHOD;
 
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+	public override METHOD(setUrgentPriorityOnAddGoal)
 		true
 	ENDMETHOD;
 

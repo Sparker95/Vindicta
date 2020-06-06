@@ -5,7 +5,7 @@ CLASS("ActionUnitIdle", "ActionUnit")
 
 	VARIABLE("timeToComplete");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_DURATION_SECONDS, [0]] ],	// Required parameters
 			[  ]	// Optional parameters

@@ -11,7 +11,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	VARIABLE("nearPos");
 	VARIABLE("maxDistance");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
 			[ [TAG_POS, [[]]], [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters

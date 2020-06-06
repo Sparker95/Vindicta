@@ -2575,13 +2575,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		true
 	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD(saveStaticVariables)
+	public STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = GETSV("Unit", "all");
 		CALLM2(_storage, "save", "Unit_all", +_all);
 	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD(loadStaticVariables)
+	public STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = CALLM1(_storage, "load", "Unit_all");
 		SETSV("Unit", "all", +_all);

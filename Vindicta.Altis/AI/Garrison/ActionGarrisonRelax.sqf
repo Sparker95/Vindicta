@@ -163,7 +163,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 		_state
 	ENDMETHOD;
 
-	/* override */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Do nothing

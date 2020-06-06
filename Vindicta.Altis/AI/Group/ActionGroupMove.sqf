@@ -38,7 +38,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	VARIABLE("leader");
 	VARIABLE("followers");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_POS, [[]]], [TAG_MOVE_RADIUS, [0]] ],	// Required parameters
 			[ [TAG_FOLLOWERS, [[]]], [TAG_ROUTE, [[]]], [TAG_MAX_SPEED_KMH, [0]] ]	// Optional parameters

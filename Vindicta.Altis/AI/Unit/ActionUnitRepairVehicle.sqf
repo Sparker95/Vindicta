@@ -15,7 +15,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	VARIABLE("hVeh");
 	VARIABLE("timeActivated");
 	
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET_REPAIR, [objNull] ] ],	// Required parameters
 			[ ]	// Optional parameters
@@ -83,7 +83,6 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	/*
 	public override METHOD(terminate)
 		params [P_THISOBJECT];
 

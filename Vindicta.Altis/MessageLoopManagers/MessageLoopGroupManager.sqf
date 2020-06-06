@@ -38,7 +38,7 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 		0
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopUnscheduled
 	ENDMETHOD;
 

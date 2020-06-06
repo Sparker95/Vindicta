@@ -107,7 +107,6 @@ private _s = WSP_GAR_COUNT;
 ["ActionGarrisonMoveMounted", 				[
 											TAG_POS
 											]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
-["ActionGarrisonMoveDismounted", 			[TAG_MOVE_RADIUS]] call AI_misc_fnc_setActionParametersFromGoalOptional;
 // ---------------- ActionGarrisonMoveCombined
 ["ActionGarrisonMoveCombined", _s,			[
 											[WSP_GAR_HAS_VEHICLES, 						true],

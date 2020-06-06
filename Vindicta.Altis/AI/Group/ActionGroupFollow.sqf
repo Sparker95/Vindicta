@@ -12,7 +12,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 	VARIABLE("hGroupToFollow");
 	VARIABLE("nextWaypointUpdateTime");
 
-	METHOD(getPossibleParameters)
+	public override METHOD(getPossibleParameters)
 		[
 			[ [TAG_TARGET, [grpNull]]],	// Required parameters
 			[  ]	// Optional parameters
@@ -97,7 +97,7 @@ CLASS("ActionGroupFollow", "ActionGroup")
 		_state
 	ENDMETHOD;
 
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		T_CALLCM0("ActionGroup", "terminate");
 	ENDMETHOD;
