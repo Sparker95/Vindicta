@@ -1501,13 +1501,8 @@ CLASS("AI_GOAP", "AI")
 								_openSet pushBack _n;
 								
 								// Print debug text: neighbour node
-<<<<<<< HEAD
 								#ifdef DEBUG_GOAP
-									pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_n]);
-=======
-								#ifdef ASTAR_DEBUG
 									pr _nodeString = CALLSM("AI_GOAP", "AStarNodeToString", [_n]);
->>>>>>> development
 									OOP_INFO_0("[AI:AStar]  New node:            " + _nodeString);
 								#endif
 								FIX_LINE_NUMBERS()
