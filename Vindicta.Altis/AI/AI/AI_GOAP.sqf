@@ -292,9 +292,8 @@ CLASS("AI_GOAP", "AI")
 			// Check if the new goal is the same as the current goal
 			pr _currentGoal = T_GETV("currentGoal");
 			pr _currentGoalParameters = T_GETV( "currentGoalParameters");
-			if (_currentGoal == _goalClassName &&
-				_currentGoalParameters isEqualTo _goalParameters
-				// || _goalActionState == ACTION_STATE_COMPLETED // If we have already completed it, no need to do it again
+			if (_currentGoal == _goalClassName
+				// && _currentGoalParameters isEqualTo _goalParameters // Disabled for now, because it causes a goal restart after first process of goal with instant tag, because value changes from true to false
 			) then {
 				// We have the same goal. Do nothing.
 				OOP_INFO_2("PROCESS: SAME GOAL: %1, %2", _currentGoal, _currentGoalParameters);

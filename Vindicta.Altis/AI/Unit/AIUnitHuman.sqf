@@ -173,7 +173,7 @@ CLASS("AIUnitHuman", "AIUnit")
 			// Provide move radius from goal if it exists
 			pr _moveRadius = GET_PARAMETER_VALUE_DEFAULT(_goalParameters, TAG_MOVE_RADIUS, -1);
 			if (_moveRadius == -1) then {
-				T_CALLM1("setMoveTargetRadius", 2);	// Action can override it anyway
+				T_CALLM1("setMoveTargetRadius", 2.2);	// Action can override it anyway
 			} else {
 				T_CALLM1("setMoveTargetRadius", _moveRadius);
 			};

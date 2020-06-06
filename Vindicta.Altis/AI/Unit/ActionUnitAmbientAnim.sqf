@@ -32,39 +32,10 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		T_SETV("savedInventory", []);
 	ENDMETHOD;
 
-	METHOD(delete)
-		params [P_THISOBJECT];
-		
-		// Mark the target as free for use
-		private _target = T_GETV("target");
-		if(_target isEqualType objNull) then {
-			_target setVariable ["vin_occupied", false];
-		};
-
-		// Terminate the script
-		private _spawnHandle = T_GETV("spawnHandle");
-		if(!isNull _spawnHandle) then {
-			terminate _spawnHandle;
-		};
-
-		// Reset the unit
-		private _hO = T_GETV("hO");
-		if(!isNull _hO) then {
-			//[hO, vin_fnc_ambientAnim__terminate] remoteExec ["call"];
-
-			_hO call vin_fnc_ambientAnim__terminate;
-
-			private _savedInventory = T_GETV("savedInventory");
-			if(!(_savedInventory isEqualTo [])) then {
-				_hO setUnitLoadout _savedInventory;
-			};
-			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_loadInventory;
-			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_deleteInventory;
-		};
-	ENDMETHOD;
-
 	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
+
+		OOP_INFO_0("ACTIVATE");
 
 		private _hO = T_GETV("hO");
 		private _target = T_GETV("target");
@@ -83,6 +54,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 
 		// Fail if occupied
 		if (_target isEqualType objNull && {_target getVariable ["vin_occupied", false]}) exitWith {
+			OOP_INFO_0("Failed: target is occupied");
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED;
 		};
@@ -110,22 +82,29 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		private _anims = T_GETV("anims");
 
 		T_SETV("savedInventory", getUnitLoadout _hO);
+
+		// Do these things here, to keep all in sync
+		// If it's in spawned code, We don't know if vin_fnc_ambientAnim
+		// has already run by the time we terminate the action 
+		doStop _hO;
+		_hO setPos _targetPos;
+		//[_hO, [_hO, "vin_savedInventory"], [], false ] call BIS_fnc_saveInventory;
+		//[[_hO, selectRandom _anims, "ASIS", _target], vin_fnc_ambientAnim] remoteExec ["call"];
+		[_hO, selectRandom _anims, _target] call vin_fnc_ambientAnim;
+
 		private _spawnHandle = [_hO, _target, _targetPos, _duration, _anims] spawn {
 			params ["_hO", "_target", "_targetPos", "_duration", "_anims"];
 
+			/*
+			// Makes no sense any more, because movement is precondition ot this action
 			private _moveTimeOut = GAME_TIME + 120;
 			waitUntil {
 				sleep 0.1;
 				_hO distance _targetPos <= 3 || GAME_TIME > _moveTimeOut
 			};
-			doStop _hO;
-			_hO setPos _targetPos;
-
+			*/
+			
 			private _endTime = GAME_TIME + _duration;
-
-			//[_hO, [_hO, "vin_savedInventory"], [], false ] call BIS_fnc_saveInventory;
-			//[[_hO, selectRandom _anims, "ASIS", _target], vin_fnc_ambientAnim] remoteExec ["call"];
-			[_hO, selectRandom _anims, _target] call vin_fnc_ambientAnim;
 
 			waitUntil {
 				sleep 0.1;
@@ -140,7 +119,6 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 					|| { _hO call BIS_fnc_enemyDetected }
 			};
 			//[_hO, vin_fnc_ambientAnim__terminate] remoteExec ["call"];
-			_hO call vin_fnc_ambientAnim__terminate;
 			//[_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_loadInventory;
 			//[_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_deleteInventory;
 		};
@@ -155,12 +133,13 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 	public override METHOD(process)
 		params [P_THISOBJECT];
 
+		OOP_INFO_0("PROCESS");
+
 		private _state = T_CALLM0("activateIfInactive");
 		if(_state == ACTION_STATE_ACTIVE) then {
 			if (scriptDone T_GETV("spawnHandle")) then {
-
+				OOP_INFO_0("Script is done, action completed");
 				CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
-
 				_state = ACTION_STATE_COMPLETED;
 			} else {
 				_state = ACTION_STATE_ACTIVE;
@@ -174,6 +153,35 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 	 public override METHOD(terminate)
 	 	params [P_THISOBJECT];
 		
+		OOP_INFO_0("TERMINATE");
+
+		// Mark the target as free for use
+		private _target = T_GETV("target");
+		if(_target isEqualType objNull) then {
+			_target setVariable ["vin_occupied", false];
+		};
+
+		// Terminate the script
+		private _spawnHandle = T_GETV("spawnHandle");
+		if(!isNull _spawnHandle) then {
+			terminate _spawnHandle;
+		};
+
+		// Reset the unit
+		private _hO = T_GETV("hO");
+		if(!isNull _hO) then {
+			//[hO, vin_fnc_ambientAnim__terminate] remoteExec ["call"];
+
+			_hO call vin_fnc_ambientAnim__terminate;
+
+			private _savedInventory = T_GETV("savedInventory");
+			if(!(_savedInventory isEqualTo [])) then {
+				_hO setUnitLoadout _savedInventory;
+			};
+			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_loadInventory;
+			// [_hO, [_hO, "vin_savedInventory"]] call BIS_fnc_deleteInventory;
+		};
+
 		private _ai = T_GETV("ai");
 		SETV(_ai, "interactionObject", objNull);
 	 ENDMETHOD;
