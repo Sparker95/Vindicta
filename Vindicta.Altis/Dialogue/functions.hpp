@@ -5,8 +5,8 @@ class pr0_dialogue {
 		class dialogue_createConversation {};
 		class dialogue_createSentence {};
 		class dialogue_createHint {};
-
 		class dialogue_registerDataSet {};
+		class dialogue_preinit { preinit = 1; };
 	};
 
 	class hud {

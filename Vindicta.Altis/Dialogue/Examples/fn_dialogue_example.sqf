@@ -41,8 +41,8 @@ private _array2 = [
 			[TYPE_QUESTION, "What is 1+1?",2],
 			[TYPE_ANSWER, "2", "math_good"],
 			[TYPE_ANSWER, "4", "math_bad"],
-			[TYPE_EVENT_WALKED_AWAY, "math_WALKED_AWAY"],
-			[TYPE_EVENT_OUT_OF_TIME, "math_OUT_OF_TIME"]
+			[TYPE_ON_WALKED_AWAY, {}, "math_WALKED_AWAY"],
+			[TYPE_ON_OUT_OF_TIME, {}, "math_OUT_OF_TIME"]
 		]
 	}],
 	["math_WALKED_AWAY",{
@@ -76,4 +76,4 @@ private _array2 = [
 ["main", _array1] call pr0_fnc_dialogue_registerDataSet;
 ["math", _array2] call pr0_fnc_dialogue_registerDataSet;
 
-[player, cursorObject, "main", "intro",{}] call pr0_fnc_dialogue_createConversation;
+[player, cursorObject, "math", "math_intro",{}] call pr0_fnc_dialogue_createConversation;

@@ -21,3 +21,4 @@
 #include "unitHumanWorldStateProperties.hpp"
 #include "vehicleRoles.hpp"
 #include "..\goalRelevance.hpp"
+#include "..\..\MessageReceiver\MessageReceiver.hpp"

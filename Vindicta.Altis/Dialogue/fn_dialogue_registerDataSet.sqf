@@ -3,21 +3,17 @@
 //most run locally
 
 params[["_id","",[""]],["_array",[],[[]]]];
+
+// Convert to lowercase
 _id = toLower _id;
 
-private _cur = missionNamespace getVariable ["dialogue_dialogueSets", []];
-private _found = false;
-{
-	if(_x#0 isEqualTo _id)exitWith{
-		_found = true;
-		_cur set [_forEachindex,[_id,_array]];
-		diag_log format ["ERROR DATASET ALL READY REGISTERED: %1",_id];
-	};
-}forEach _cur;
+private _value = pr0_dialogue_sets getVariable _id;
 
-if(!_found)then{
-	_cur pushBack [_id,_array];
-	missionNamespace setVariable ["dialogue_dialogueSets", _cur];
+// Add to hashmap
+pr0_dialogue_sets setVariable [_id, _array];
+
+// If this dataset was already found, make an error
+// However register it anyway, we might use it for debug
+if (!isNil "_value") then {
+	diag_log format ["[Dialogue]: Error: dataset is already registered: %1",_id];
 };
-
-

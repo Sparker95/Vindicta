@@ -163,8 +163,8 @@ CLASS("CivPresenceMgr", "")
 
 		pr _cellSize = T_GETV("cellSize");
 
-		//pr _objects = allPlayers;
-		pr _objects = allUnits select {side group _x == WEST};
+		pr _objects = allPlayers;
+		//pr _objects = allUnits select {side group _x == WEST};
 		pr _ws2 = WORLD_SIZE/2;
 		pr _area = [[_ws2, _ws2, 0], _ws2, _ws2, 0, true, -1]; // center, a, b, angle, rectangle, z
 		_objects = _objects select {_x inArea _area};

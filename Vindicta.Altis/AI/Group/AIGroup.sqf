@@ -78,7 +78,8 @@ CLASS("AIGroup", "AI_GOAP")
 	public override METHOD(process)
 		params [P_THISOBJECT];
 
-		ASSERT_MSG(!canSuspend, "AIGroup process should be called in unscheduled only!");
+		// Assert threading
+		ASSERT_UNSCHEDULED(_thisObject);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("unitMarkersEnabled")) then {

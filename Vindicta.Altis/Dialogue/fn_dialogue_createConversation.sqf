@@ -36,17 +36,14 @@ if(isnull _unit_2)then {_unit_2 = _unit_1};
 if(_dialogueSet_ids isEqualType "")then{_dialogueSet_ids = [_dialogueSet_ids]};
 
 //search for dateSets that are going to be used
-private _dialogueSets_registered = missionNamespace getVariable ["dialogue_dialogueSets",[]];
 private _dialogueSets = [];
 {
-	_X params [["_dialogueSet_id_unit","",[""]]];
-	{
-		_x params ["_dialogueSet_id_registered","_dialogueSet_array"];
-		if(tolower _dialogueSet_id_unit isEqualto tolower _dialogueSet_id_registered)exitWith{
-			_dialogueSets pushBack _dialogueSet_array;
-		};
-	}forEach _dialogueSets_registered;
-
+	_x params [["_id","",[""]]];
+	_id = toLower _id;
+	private _value = pr0_dialogue_sets getVariable _id;
+	if (!isNil "_value") then {
+		_dialogueSets pushBack _value;
+	};
 }forEach _dialogueSet_ids;
 
 //find all default events in datasets

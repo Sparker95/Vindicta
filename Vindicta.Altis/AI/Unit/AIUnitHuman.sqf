@@ -89,6 +89,9 @@ CLASS("AIUnitHuman", "AIUnit")
 	public override METHOD(process)
 		params [P_THISOBJECT, P_BOOL("_spawning")];
 
+		// Assert threading
+		ASSERT_UNSCHEDULED(_thisObject);
+
 		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("markersEnabled")) then {
 			pr _unused = "";
