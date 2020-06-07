@@ -24,8 +24,11 @@ this addHandgunItem "rhs_mag_9x18_8_57N181S";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "rhs_acc_perst1ik_ris";
+this addItemToUniform "I_E_IR_Grenade";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
 for "_i" from 1 to 6 do {this addItemToVest "rhs_10rnd_9x39mm_SP5";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_10rnd_9x39mm_SP6";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
+this linkItem "NVGoggles_OPFOR";
