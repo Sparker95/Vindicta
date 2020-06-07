@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomVest = selectRandom ["FGN_AAF_CIRAS_GL","FGN_AAF_CIRAS_GL_Belt","FGN_AAF_CIRAS_GL_Belt_CamB"];
+_RandomVest = selectRandom ["FGN_AAF_CIRAS_PSgt","FGN_AAF_CIRAS_PSgt_Belt","FGN_AAF_CIRAS_PSgt_CamB"];
 this addVest _RandomVest;
 _RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut","rhsusf_opscore_mar_ut_pelt"];
 this addHeadgear _RandomHeadgear;
