@@ -15,8 +15,8 @@ this forceaddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhsgref_otv_digi";
 this addBackpack "rhs_sidor";
 
-this addWeapon "rhs_weap_ak74_2";
-this addPrimaryWeaponItem "rhs_acc_ak5";
+this addWeapon "rhs_weap_ak105";
+this addPrimaryWeaponItem "rhs_acc_pgs64";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 this addWeapon "rhs_weap_rshg2";

@@ -17,7 +17,7 @@ this addVest "rhssaf_vest_md12_digital";
 this addWeapon "rhs_weap_ak103_zenitco01";
 this addPrimaryWeaponItem "rhs_acc_dtk4screws";
 this addPrimaryWeaponItem "rhs_acc_perst1ik";
-this addPrimaryWeaponItem "rhsusf_acc_mrds_fwd";
+this addPrimaryWeaponItem "rhsusf_acc_T1_low_fwd_ak";
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm_polymer_U";
 this addPrimaryWeaponItem "rhsusf_acc_kac_grip";
 this addWeapon "rhs_weap_rshg2";
