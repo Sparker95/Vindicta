@@ -3,7 +3,7 @@
 #define pr private
 
 #define OOP_CLASS_NAME GoalCivilianWander
-CLASS("GoalCivilianWander", "Goal")
+CLASS("GoalCivilianWander", "GoalUnit")
 
 	STATIC_METHOD(onGoalChosen)
 		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
@@ -28,6 +28,12 @@ CLASS("GoalCivilianWander", "Goal")
 		CALLM1(_ai, "setMoveTarget", _pos);
 		CALLM1(_ai, "setMoveTargetRadius", 5);
 		CALLM0(_ai, "updatePositionWSP");
+	ENDMETHOD;
+
+	// Must return a bool, true or false, if unit can talk while doing this goal
+	// Default is false;
+	STATIC_METHOD(canTalk)
+		true;
 	ENDMETHOD;
 
 ENDCLASS;

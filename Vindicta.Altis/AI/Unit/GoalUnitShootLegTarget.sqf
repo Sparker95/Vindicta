@@ -7,7 +7,7 @@ Class: Goal.GoalUnitShootLegTarget
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitShootLegTarget
-CLASS("GoalUnitShootLegTarget", "Goal")
+CLASS("GoalUnitShootLegTarget", "GoalUnit")
 
 	STATIC_METHOD(getPossibleParameters)
 		[

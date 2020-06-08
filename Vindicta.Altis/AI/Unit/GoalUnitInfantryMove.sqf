@@ -7,7 +7,7 @@ Author: Sparker
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitInfantryMove
-CLASS("GoalUnitInfantryMove", "Goal")
+CLASS("GoalUnitInfantryMove", "GoalUnit")
 
 	STATIC_METHOD(getPossibleParameters)
 		[
@@ -42,6 +42,12 @@ CLASS("GoalUnitInfantryMove", "Goal")
 
 		// Update world state properties
 		T_CALLM0("updatePositionWSP");
+	ENDMETHOD;
+
+	// Must return a bool, true or false, if unit can talk while doing this goal
+	// Default is false;
+	STATIC_METHOD(canTalk)
+		true;
 	ENDMETHOD;
 
 ENDCLASS;

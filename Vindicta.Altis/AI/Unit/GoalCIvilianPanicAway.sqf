@@ -7,7 +7,7 @@ Unit will try to run to a spot far away from here
 */
 
 #define OOP_CLASS_NAME GoalCivilianPanicAway
-CLASS("GoalCivilianPanicAway", "Goal")
+CLASS("GoalCivilianPanicAway", "GoalUnit")
 
 	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];

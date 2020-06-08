@@ -7,7 +7,7 @@ Unit will try to hide in some nearby spot
 */
 
 #define OOP_CLASS_NAME GoalCivilianPanicNearest
-CLASS("GoalCivilianPanicNearest", "Goal")
+CLASS("GoalCivilianPanicNearest", "GoalUnit")
 
 	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];

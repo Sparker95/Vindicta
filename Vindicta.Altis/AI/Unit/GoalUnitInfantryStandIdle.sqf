@@ -7,7 +7,7 @@ Class: Goal.GoalUnitInfantryStandIdle
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitInfantryStandIdle
-CLASS("GoalUnitInfantryStandIdle", "Goal")
+CLASS("GoalUnitInfantryStandIdle", "GoalUnit")
 
 	STATIC_METHOD(getPossibleParameters)
 		[
@@ -22,6 +22,12 @@ CLASS("GoalUnitInfantryStandIdle", "Goal")
 		// Vehicle usage is forbidden
 		CALLM1(_ai, "setAllowVehicleWSP", false);
 
+	ENDMETHOD;
+
+	// Must return a bool, true or false, if unit can talk while doing this goal
+	// Default is false;
+	STATIC_METHOD(canTalk)
+		true;
 	ENDMETHOD;
 
 ENDCLASS;

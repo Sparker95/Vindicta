@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 #define OOP_CLASS_NAME GoalUnitFollow
-CLASS("GoalUnitFollow", "Goal")
+CLASS("GoalUnitFollow", "GoalUnit")
 
 	STATIC_METHOD(getPossibleParameters)
 		[

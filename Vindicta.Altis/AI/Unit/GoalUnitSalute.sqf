@@ -10,7 +10,7 @@ Author: Sparker 24.11.2018
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitSalute
-CLASS("GoalUnitSalute", "Goal")
+CLASS("GoalUnitSalute", "GoalUnit")
 
 	STATIC_METHOD(getPossibleParameters)
 		[

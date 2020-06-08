@@ -7,7 +7,7 @@ Author: Sparker
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitGetInVehicle
-CLASS("GoalUnitGetInVehicle", "Goal")
+CLASS("GoalUnitGetInVehicle", "GoalUnit")
 
 	STATIC_METHOD(getPossibleParameters)
 		[

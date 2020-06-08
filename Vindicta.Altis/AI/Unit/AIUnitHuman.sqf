@@ -30,6 +30,9 @@ CLASS("AIUnitHuman", "AIUnit")
 	// Current object we are interacting with, set by varius interaction actions
 	VARIABLE("interactionObject");
 
+	// Object this bot is currently talking to, or objNull if he isn't
+	VARIABLE("talkObject");
+
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
 	#endif
@@ -68,6 +71,8 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_SETV("timeLastProcess", time);
 
 		T_SETV("interactionObject", objNull);
+
+		T_SETV("talkObject", objNull);
 	ENDMETHOD;
 	
 	METHOD(delete)
@@ -98,6 +103,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		};	
 		#endif
 
+		pr _hO = T_GETV("hO");
 		pr _deltaTime = time - T_GETV("timeLastProcess");
 
 		// === Update world state properties
@@ -1045,11 +1051,6 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_SETV("stuckDuration", 0); // Reset stuck timer
 	ENDMETHOD;
 
-	// ----------------------------------------------------------------------
-	// |                    G E T   M E S S A G E   L O O P
-	// | The group AI resides in its own thread
-	// ----------------------------------------------------------------------
-	
 	public override METHOD(getMessageLoop)
 		gMessageLoopUnscheduled
 	ENDMETHOD;
@@ -1061,6 +1062,32 @@ CLASS("AIUnitHuman", "AIUnit")
 
 	public override METHOD(setUrgentPriorityOnAddGoal)
 		true
+	ENDMETHOD;
+
+	/*
+	Returns true/false whether the unit can start a new conversation
+	*/
+	public METHOD(canStartNewConversation)
+		params [P_THISOBJECT];
+
+		pr _hO = T_GETV("hO");
+
+		// Check if we can talk in general
+
+		// Check behaviour
+		pr _canTalkBehaviour = ((behaviour _hO) in ["CARELESS", "SAFE", "AWARE"]);
+
+		// Check if current goal allows talking
+		pr _canTalkGoal = true;
+		pr _currentGoal = T_GETV("currentGoal");
+		if (_currentGoal != "") then {
+			_canTalkGoal = CALLSM0(_currentGoal, "canTalk");
+		};
+
+		pr _talkobj = T_GETV("talkObject");
+		// We can start a new conversation if we can talk in general
+		// and if we are not talking to anyone right now
+		(isNull _talkObj) && _canTalkBehaviour && _canTalkGoal;
 	ENDMETHOD;
 
 	// Debug

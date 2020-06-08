@@ -10,7 +10,7 @@ parameters: "vehicle" - <Unit> of the vehicle that needs repairs
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitRepairVehicle
-CLASS("GoalUnitRepairVehicle", "Goal")
+CLASS("GoalUnitRepairVehicle", "GoalUnit")
 
 	STATIC_METHOD(getPossibleParameters)
 		[
@@ -24,6 +24,12 @@ CLASS("GoalUnitRepairVehicle", "Goal")
 
 		// Vehicle usage is forbidden
 		CALLM1(_ai, "setAllowVehicleWSP", false);
+	ENDMETHOD;
+
+	// Must return a bool, true or false, if unit can talk while doing this goal
+	// Default is false;
+	STATIC_METHOD(canTalk)
+		true;
 	ENDMETHOD;
 
 ENDCLASS;
