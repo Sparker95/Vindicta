@@ -9,7 +9,7 @@ Goal for a garrison to go destroy some enemies
 CLASS("GoalGarrisonClearArea", "Goal")
 
 	// Gets called when an external goal of this class is added to AI
-	STATIC_METHOD(onGoalAdded)
+	public STATIC_METHOD(onGoalAdded)
 		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		// Set variables in AI object so that garrison can identify targets associated with this goal
@@ -21,7 +21,7 @@ CLASS("GoalGarrisonClearArea", "Goal")
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is removed from an AI
-	STATIC_METHOD(onGoalDeleted)
+	public STATIC_METHOD(onGoalDeleted)
 		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		SETV(_AI, "assignedTargetsPos", [0 ARG 0 ARG 0]);

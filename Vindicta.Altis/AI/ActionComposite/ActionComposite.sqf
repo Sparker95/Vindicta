@@ -36,7 +36,7 @@ CLASS("ActionComposite", "Action")
 		T_CALLM0("deleteAllSubactions");
 	ENDMETHOD;
 	
-	protected override METHOD(setInstant)
+	public override METHOD(setInstant)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLCM1("Action", "setInstant", _instant);

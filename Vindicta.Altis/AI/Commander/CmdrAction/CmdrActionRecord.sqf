@@ -31,7 +31,7 @@ Parent: none
 #define OOP_CLASS_NAME CmdrActionRecord
 CLASS("CmdrActionRecord", "")
 	
-	STATIC_METHOD(getText)
+	public STATIC_METHOD(getText)
 		params [P_THISCLASS];
 		OOP_ERROR_0("getText must be called on final classes!");
 		"<Base class>"
@@ -53,7 +53,7 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 	VARIABLE_ATTR("dstGarRef", [ATTR_SERIALIZABLE]);
 
 	// Returns position, location position or garrison position, !! ON CLIENT !!
-	METHOD(getPos)
+	public client METHOD(getPos)
 		params [P_THISOBJECT];
 
 		pr _pos = T_GETV("pos");
@@ -81,7 +81,7 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 		[]
 	ENDMETHOD;
 
-	STATIC_METHOD(getText)
+	public client STATIC_METHOD(getText)
 		params [P_THISCLASS];
 		OOP_ERROR_0("getText must be called on final classes!");
 		"<Directed base class>"
@@ -92,7 +92,7 @@ ENDCLASS;
 // Done
 #define OOP_CLASS_NAME MoveCmdrActionRecord
 CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD(getText)
+	public client STATIC_METHOD(getText)
 		"MOVE"
 	ENDMETHOD;
 ENDCLASS;
@@ -100,7 +100,7 @@ ENDCLASS;
 // Done
 #define OOP_CLASS_NAME TakeLocationCmdrActionRecord
 CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD(getText)
+	public client STATIC_METHOD(getText)
 		"CAPTURE"
 	ENDMETHOD;
 ENDCLASS;
@@ -108,7 +108,7 @@ ENDCLASS;
 // Done
 #define OOP_CLASS_NAME AttackCmdrActionRecord
 CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD(getText)
+	public client STATIC_METHOD(getText)
 		"ATTACK"
 	ENDMETHOD;
 ENDCLASS;
@@ -116,7 +116,7 @@ ENDCLASS;
 // Done
 #define OOP_CLASS_NAME ReinforceCmdrActionRecord
 CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD(getText)
+	public client STATIC_METHOD(getText)
 		"REINFORCE"
 	ENDMETHOD;
 ENDCLASS;
@@ -124,7 +124,7 @@ ENDCLASS;
 // Done
 #define OOP_CLASS_NAME SupplyConvoyCmdrActionRecord
 CLASS("SupplyConvoyCmdrActionRecord", "DirectedCmdrActionRecord")
-	STATIC_METHOD(getText)
+	public client STATIC_METHOD(getText)
 		"SUPPLY"
 	ENDMETHOD;
 ENDCLASS;
@@ -144,8 +144,7 @@ ENDCLASS;
 // todo
 #define OOP_CLASS_NAME PatrolCmdrActionRecord
 CLASS("PatrolCmdrActionRecord", "CmdrActionRecord")
-
-	STATIC_METHOD(getText)
+	public client STATIC_METHOD(getText)
 		"Patrol"
 	ENDMETHOD;
 ENDCLASS;

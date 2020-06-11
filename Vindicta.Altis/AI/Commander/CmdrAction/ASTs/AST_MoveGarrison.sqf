@@ -146,6 +146,7 @@ ENDCLASS;
 #define CMDR_ACTION_STATE_FAILED_TARGET_DEAD CMDR_ACTION_STATE_CUSTOM+2
 
 ["AST_MoveGarrison.new", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_MoveGarrison", 
 		[_action]+
@@ -164,6 +165,7 @@ ENDCLASS;
 
 AST_MoveGarrison_test_fn = {
 	params ["_world", "_garrison", "_target"];
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_MoveGarrison", 
 		[_action]+

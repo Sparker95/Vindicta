@@ -254,7 +254,7 @@ CLASS("AIDebugUI", "")
 	ENDMETHOD;
 
 	// Called from "Draw3D" event handler
-	METHOD(onDraw)
+	public event METHOD(onDraw)
 		params [P_THISOBJECT];
 
 		T_CALLM0("update");
@@ -320,12 +320,12 @@ CLASS("AIDebugUI", "")
 
 	// Not used any more
 	/*
-	METHOD(onObjectSelectionChanged)
+	public event METHOD(onObjectSelectionChanged)
 		params [P_THISOBJECT, P_OBJECT("_object")];
 		OOP_INFO_1("Object selection changed: %1", _object);
 	ENDMETHOD;
 
-	METHOD(onGroupSelectionChanged)
+	public event METHOD(onGroupSelectionChanged)
 		params [P_THISOBJECT, P_GROUP("_group")];
 		OOP_INFO_1("Group selection changed: %1", _group);
 	ENDMETHOD;
@@ -367,7 +367,7 @@ CLASS("AIDebugUI", "")
 
 
 	// ================ Curator open/close event handlers ==================
-	STATIC_METHOD(onCuratorOpen)
+	public event STATIC_METHOD(onCuratorOpen)
 		params [P_THISCLASS];
 
 		if (call misc_fnc_isAdminLocal) then {	// Only for admin!
@@ -398,7 +398,7 @@ CLASS("AIDebugUI", "")
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(onCuratorClose)
+	public event STATIC_METHOD(onCuratorClose)
 		params [P_THISCLASS];
 		CALLSM0("AIDebugUI", "deleteInstance");
 	ENDMETHOD;
@@ -407,7 +407,7 @@ CLASS("AIDebugUI", "")
 
 
 	// Performs initialization of debug UI, must be called once when mission is loaded
-	STATIC_METHOD(staticInit)
+	public STATIC_METHOD(staticInit)
 		params [P_THISCLASS];
 
 		OOP_INFO_0("STATIC INIT");
@@ -559,28 +559,28 @@ CLASS("AIDebugPanel", "")
 		uiNamespace sv [_thisObject + "buttonHalt", nil];
 	ENDMETHOD;
 
-	METHOD(getGroupPanel)
+	public METHOD(getGroupPanel)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "group")
 	ENDMETHOD;
 
-	METHOD(getTreeView)
+	public METHOD(getTreeView)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "tree")
 	ENDMETHOD;
 
-	METHOD(getEditAI)
+	public METHOD(getEditAI)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "editAI")
 	ENDMETHOD;
 
-	METHOD(getButtonHalt)
+	public METHOD(getButtonHalt)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "buttonHalt")
 	ENDMETHOD;
 
 	// Clears all UI fields
-	METHOD(clearData)
+	public METHOD(clearData)
 		params [P_THISOBJECT];
 		
 		T_SETV("ai", NULL_OBJECT);
@@ -593,7 +593,7 @@ CLASS("AIDebugPanel", "")
 	ENDMETHOD;
 
 	// Updates data of this panel from data array (AIDebugUI.receiveData format)
-	METHOD(updateData)
+	public METHOD(updateData)
 		params [P_THISOBJECT, P_ARRAY("_data")];
 
 		pr _edit = T_CALLM0("getEditAI");
@@ -689,7 +689,7 @@ CLASS("AIDebugPanel", "")
 
 	ENDMETHOD;
 
-	METHOD(resetTreeView)
+	public METHOD(resetTreeView)
 		params [P_THISOBJECT];
 		pr _tree = T_CALLM0("getTreeView");
 		tvClear _tree;

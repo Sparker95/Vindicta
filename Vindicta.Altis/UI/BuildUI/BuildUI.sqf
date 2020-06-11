@@ -225,7 +225,7 @@ CLASS("BuildUI", "")
 		// Also for when they leave camp area.
 	ENDMETHOD;
 
-	STATIC_METHOD(getInstanceOpenUI)
+	public STATIC_METHOD(getInstanceOpenUI)
 		params [P_THISOBJECT, P_NUMBER("_source")];
 		pr _thisObject = g_BuildUI;
 		if (isNil "_thisObject") exitWith {};
@@ -339,7 +339,7 @@ CLASS("BuildUI", "")
 		// pr _newRotation = _rotation + _rate;
 	ENDMETHOD;
 
-	METHOD(onKeyHandler)
+	public event METHOD(onKeyHandler)
 		params [P_THISOBJECT, "_dikCode", "_shiftState", "_ctrlState", "_altState"];
 
 		switch (_dikCode) do { // keyname _dikCode is language dependent!!

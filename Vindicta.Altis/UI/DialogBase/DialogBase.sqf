@@ -165,7 +165,7 @@ CLASS("DialogBase", "")
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(getInstance)
+	public STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		pr _inst = GETSV(_thisClass, "instance");
 		if (isNil "_inst") exitWith {NULL_OBJECT};
@@ -175,43 +175,43 @@ CLASS("DialogBase", "")
 	// = = = = = = = = = = = = = = = = = = = = =
 
 	// Adds an event handler which will run in the destructor of this dialog
-	METHOD(onDelete)
+	public METHOD(onDelete)
 		params [P_THISOBJECT, P_CODE("_code")];
 		T_SETV("onDeleteCode", _code);
 	ENDMETHOD;
 
-	METHOD(enableMultiTab)
+	public METHOD(enableMultiTab)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 		T_SETV("multiTab", _enable);
 		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
 		T_CALLM0("redraw");
 	ENDMETHOD;
 
-	METHOD(setContentSize)
+	public METHOD(setContentSize)
 		params [P_THISOBJECT, P_NUMBER("_contentw"), P_NUMBER("_contenth")];
 		T_SETV("contentW", _contentw);
 		T_SETV("contentH", _contenth);
 		T_CALLM2("resize", _contentw, _contenth);
 	ENDMETHOD;
 
-	METHOD(setHeadlineText)
+	public METHOD(setHeadlineText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _ctrl = T_CALLM0("getDisplay") displayCtrl IDC_DIALOG_BASE_STATIC_HEADLINE;
 		_ctrl ctrlSetText toUpper(_text);
 	ENDMETHOD;
 
-	METHOD(setHintText)
+	public METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _ctrl = T_CALLM0("getDisplay") displayCtrl IDC_DIALOG_BASE_STATIC_HINTS;
 		_ctrl ctrlSetText _text;
 	ENDMETHOD;
 
-	METHOD(getDisplay)
+	public METHOD(getDisplay)
 		params [P_THISOBJECT];
 		uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull]
 	ENDMETHOD;
 
-	METHOD(getContentSize)
+	public METHOD(getContentSize)
 		params [P_THISOBJECT];
 		[T_GETV("contentW"), T_GETV("contentH")]
 	ENDMETHOD;
@@ -311,7 +311,7 @@ CLASS("DialogBase", "")
 	ENDMETHOD;
 
 	// Returns new tab ID
-	METHOD(addTab)
+	public METHOD(addTab)
 		params [P_THISOBJECT, P_STRING("_tabClass"), P_STRING("_tabText")];
 
 		pr _display = T_CALLM0("getDisplay");
@@ -355,7 +355,7 @@ CLASS("DialogBase", "")
 		_buttonID
 	ENDMETHOD;
 
-	METHOD(onButtonTab)
+	public event METHOD(onButtonTab)
 		params [P_THISOBJECT, P_NUMBER("_tabID")];
 
 		OOP_INFO_1("ON BUTTON TAB: %1", _tabID);
@@ -363,7 +363,7 @@ CLASS("DialogBase", "")
 	ENDMETHOD;
 
 	// Sets the current tab
-	METHOD(setCurrentTab)
+	public METHOD(setCurrentTab)
 		params [P_THISOBJECT, P_NUMBER("_tabID")];
 
 		pr _tabs = T_GETV("tabs");
@@ -395,13 +395,13 @@ CLASS("DialogBase", "")
 
 	Returns current tab object
 	*/
-	METHOD(getCurrentTab)
+	public METHOD(getCurrentTab)
 		params [P_THISOBJECT];
 
 		T_GETV("currentTabObj");
 	ENDMETHOD;
 
-	METHOD(close)
+	public virtual METHOD(close)
 		params [P_THISOBJECT];
 		OOP_INFO_0("CLOSING");
 		T_CALLM0("deleteOnNextFrame");
@@ -410,13 +410,13 @@ CLASS("DialogBase", "")
 
 	// Overridable methods
 	// Derived classes can override these
-	METHOD(onButtonClose)
+	public virtual event METHOD(onButtonClose)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON CLOSE");
 		T_CALLM0("close");
 	ENDMETHOD;
 
-	METHOD(onButtonQuestion)
+	public virtual event METHOD(onButtonQuestion)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON QUESTION");
 	ENDMETHOD;

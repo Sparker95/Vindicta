@@ -21,7 +21,7 @@ Logging functionality
 #define ADE_ASSERT assert 
 #else
 #define DUMP_CALLSTACK diag_log "callstack"
-#define ADE_HALT diag_log "halt"
+#define ADE_HALT
 #define ADE_ASSERT
 #endif
 

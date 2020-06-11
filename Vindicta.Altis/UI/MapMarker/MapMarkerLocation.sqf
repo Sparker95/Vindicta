@@ -97,7 +97,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 	ENDMETHOD;
 
 	// Sets the "mouse over" state of this object
-	METHOD(setMouseOver)
+	public METHOD(setMouseOver)
 		params [P_THISOBJECT, P_BOOL("_mouseOver")];
 
 		OOP_INFO_1("SET MOUSE OVER: %1", _mouseOver);
@@ -212,14 +212,14 @@ CLASS("MapMarkerLocation", "MapMarker")
 		T_CALLM0("update");
 	ENDMETHOD;
 
-	METHOD(setNotification)
+	public METHOD(setNotification)
 		params [P_THISOBJECT, ["_enable", false, [false]]];
 
 		T_SETV("notification", _enable);
 		T_CALLM0("update");
 	ENDMETHOD;
 
-	METHOD(getIntel)
+	public METHOD(getIntel)
 		params [P_THISOBJECT];
 		T_GETV("intel")
 	ENDMETHOD;
@@ -242,7 +242,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 	ENDMETHOD;
 
 	// Same as setColor but gets both an array and string
-	METHOD(setColorEx)
+	public METHOD(setColorEx)
 		params [P_THISOBJECT, P_ARRAY("_colorRGBA"), P_STRING("_colorString")];
 		T_SETV("color", _colorRGBA);
 
@@ -251,7 +251,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 		_mrkName setMarkerColorLocal _colorString;
 	ENDMETHOD;
 
-	METHOD(setAccuracyRadius)
+	public METHOD(setAccuracyRadius)
 		params [P_THISOBJECT, "_radius"];
 
 		T_SETV("radius", _radius);
@@ -259,7 +259,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 	ENDMETHOD;
 
 	// One of location types defined in location.hpp
-	METHOD(setType)
+	public METHOD(setType)
 		params [P_THISOBJECT, P_STRING("_type")];
 
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
@@ -326,7 +326,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 		};
 	ENDMETHOD;
 
-	public override METHOD(onDraw)
+	public override event METHOD(onDraw)
 		//if (true) exitWith {};
 		params [P_THISOBJECT, "_control"];
 
@@ -392,7 +392,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	public override METHOD(onMouseEnter)
+	public override event METHOD(onMouseEnter)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
 		//T_SETV("selected", true);
@@ -404,7 +404,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	public override METHOD(onMouseLeave)
+	public override event METHOD(onMouseLeave)
 		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
 		//T_SETV("selected", false);
@@ -421,7 +421,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	public override METHOD(onMouseButtonDown)
+	public override event METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 
@@ -466,7 +466,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	public override METHOD(onMouseButtonUp)
+	public override event METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	ENDMETHOD;
@@ -481,13 +481,13 @@ CLASS("MapMarkerLocation", "MapMarker")
 
 	Returns: nil
 	*/
-	public override METHOD(onMouseButtonClick)
+	public override event METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
 	ENDMETHOD;
 
-	STATIC_METHOD(deselectAllMarkers)
+	public STATIC_METHOD(deselectAllMarkers)
 		params ["_thisClass"];
 
 		pr _selectedMarkers = GETSV(CLASS_NAME, "selectedMarkers");
@@ -501,7 +501,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 		SETSV(CLASS_NAME, "selectedMarkers", []);
 	ENDMETHOD;
 
-	STATIC_METHOD(onMouseClickElsewhere)
+	public event STATIC_METHOD(onMouseClickElsewhere)
 		params ["_thisClass", "_button", "_shift", "_ctrl", "_alt"];
 
 		if (_button == 0) then {
@@ -512,7 +512,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 	ENDMETHOD;
 
 	// Enables/disabled notification dots on all icons
-	STATIC_METHOD(setAllNotifications)
+	public STATIC_METHOD(setAllNotifications)
 		params ["_thisClass", ["_enable", false, [false]]];
 		{
 			CALLM1(_x, "setNotification", _enable);

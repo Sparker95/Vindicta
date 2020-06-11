@@ -52,13 +52,13 @@ CLASS("DialogOneTabButtons", "DialogBase")
 	ENDMETHOD;
 
 	// Call this to set text of this dialog
-	METHOD(setText)
+	public METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _tab = T_CALLM0("getCurrentTab");
 		CALLM1(_tab, "setText", _text);
 	ENDMETHOD;
 
-	METHOD(createButtons)
+	public METHOD(createButtons)
 		params [P_THISOBJECT, P_ARRAY("_buttonTexts")];
 
 		OOP_INFO_1("CREATE BUTTONS: %1", _buttonTexts);
@@ -72,7 +72,7 @@ CLASS("DialogOneTabButtons", "DialogBase")
 
 	// Called when user clicks on button
 	// Button ID is passed, 0 is leftmost button
-	protected virtual METHOD(onButtonClick)
+	public virtual METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_1("Button was clicked: %1", _ID);
@@ -81,7 +81,7 @@ CLASS("DialogOneTabButtons", "DialogBase")
 	ENDMETHOD;
 
 	// Returns button control with given ID
-	METHOD(getButtonControl)
+	protected METHOD(getButtonControl)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 		pr _tag = format ["TAG_BUTTON_%1", _ID];
 		pr _tab = T_CALLM0("getCurrentTab");
@@ -89,7 +89,7 @@ CLASS("DialogOneTabButtons", "DialogBase")
 	ENDMETHOD;
 
 	// Adds code which will be executed when button with given ID is pushed
-	METHOD(addButtonClickHandler)
+	protected METHOD(addButtonClickHandler)
 		params [P_THISOBJECT, P_NUMBER("_ID"), P_CODE("_code")];
 		pr _ctrl = T_CALLM1("getButtonControl", _ID);
 		if (! (isNull _ctrl)) then {
@@ -121,7 +121,7 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 
 	ENDMETHOD;
 
-	METHOD(createButtons)
+	public METHOD(createButtons)
 		params [P_THISOBJECT, P_ARRAY("_buttonTexts")];
 
 		OOP_INFO_1("CREATE BUTTONS: %1", _buttonTexts);
@@ -144,7 +144,7 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 		// Buttons will be resized separately
 	ENDMETHOD;
 
-	METHOD(setText)
+	public METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text"), P_BOOL_DEFAULT_TRUE("_fitTextHeight")];
 
 		pr _ctrl = T_CALLM1("findControl", "TAG_TEXT");
@@ -162,7 +162,7 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 
 	ENDMETHOD;
 
-	 protected override METHOD(resize)
+	 public override METHOD(resize)
 		params [P_THISOBJECT, P_NUMBER("_width"), P_NUMBER("_height")];
 
 		OOP_INFO_0("RESIZE");

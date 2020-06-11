@@ -203,7 +203,7 @@ CLASS("VirtualRoute", "")
 		};
 	ENDMETHOD;
 
-	METHOD(waitUntilCalculated)
+	public METHOD(waitUntilCalculated)
 		params [P_THISOBJECT];
 		// Make sure calculation is terminated. If it isn't then we must have run it async, so we should be 
 		// able to wait for it I guess?
@@ -316,7 +316,7 @@ CLASS("VirtualRoute", "")
 	Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...].
 	First array element corresponds to the lead vehicle.
 	*/
-	METHOD(getConvoyPositions)
+	public METHOD(getConvoyPositions)
 		params [
 			P_THISOBJECT,
 			"_number",
@@ -434,7 +434,7 @@ CLASS("VirtualRoute", "")
 	Method: clearAllDebugDraw
 	Clear debug markers for all routes.
 	*/
-	STATIC_METHOD(clearAllDebugDraw)
+	public STATIC_METHOD(clearAllDebugDraw)
 		["gps_route_"] call gps_test_fn_clear_markers;
 		["gps_waypoint_"] call gps_test_fn_clear_markers;
 	ENDMETHOD;
@@ -443,7 +443,7 @@ CLASS("VirtualRoute", "")
 	Method: getPos
 	Returns: current position
 	*/
-	METHOD(getPos)
+	public METHOD(getPos)
 		params [P_THISOBJECT];
 		T_GETV("pos")
 	ENDMETHOD;
@@ -452,7 +452,7 @@ CLASS("VirtualRoute", "")
 	Method: sets the current position to the nearest position along the route.
 	Returns: nothing
 	*/
-	METHOD(setPos)
+	public METHOD(setPos)
 		params [P_THISOBJECT, P_ARRAY("_pos") ];
 
 		if (T_GETV("calculated")) then {
@@ -497,7 +497,7 @@ CLASS("VirtualRoute", "")
 	Method: getAIWaypoints
 	Returns: array of waypoints for AI navigation, taking account the current position
 	*/
-	METHOD(getAIWaypoints)
+	public METHOD(getAIWaypoints)
 		params [P_THISOBJECT];
 		T_GETV("waypoints")
 	ENDMETHOD;

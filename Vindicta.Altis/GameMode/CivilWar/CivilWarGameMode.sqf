@@ -132,7 +132,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Overrides GameModeBase, we do a bunch of custom setup here for this game mode
-	protected override METHOD(initServerOnly)
+	protected override server METHOD(initServerOnly)
 		params [P_THISOBJECT];
 
 		// Call base
@@ -242,7 +242,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to give the player some starter gear and holster their weapon for them.
-	protected override METHOD(playerSpawn)
+	public override METHOD(playerSpawn)
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		// Bail if player has joined one of the not supported sides
@@ -522,7 +522,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		_sum
 	ENDMETHOD;
 
-	protected override METHOD(getCampaignProgress)
+	public override METHOD(getCampaignProgress)
 		params [P_THISOBJECT];
 		#ifdef DEBUG_END_GAME
 		0.9
@@ -542,7 +542,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 
 	// STORAGE
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes

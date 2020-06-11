@@ -23,7 +23,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_Killed)
+	public METHOD(EH_Killed)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_killer"), P_OBJECT("_instigator"), P_BOOL("_useEffects")];
 		T_CALLM3("UnitObjectKilled", _objectHandle, objNull, _killer);
 	ENDMETHOD;
@@ -39,12 +39,12 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_Respawn)
+	public METHOD(EH_Respawn)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle")];
 		T_CALLM2("UnitObjectKilled", _objectHandle, _corpseHandle);
 	ENDMETHOD;
 
-	METHOD(UnitObjectKilled)
+	public METHOD(UnitObjectKilled)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle"), P_OBJECT("_killer")];
 
 		ASSERT_THREAD(_thisObject);
@@ -61,7 +61,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	ENDMETHOD;
 
-	METHOD(UnitKilled)
+	public METHOD(UnitKilled)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_OBJECT("_killer")];
 
 		pr _data = GETV(_unit, "data");
@@ -94,7 +94,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(KillUnit)
+	public STATIC_METHOD(KillUnit)
 		params [P_THISCLASS, P_OBJECT("_objectHandle")];
 		// Is this object an instance of Unit class?
 		private _unit = CALLSM("Unit", "getUnitFromObjectHandle", [_objectHandle]);
@@ -114,7 +114,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_GetIn)
+	public METHOD(EH_GetIn)
 		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetIn: %1", _this);
@@ -166,7 +166,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_GetOut)
+	public METHOD(EH_GetOut)
 		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetOut: %1", _this);
@@ -206,7 +206,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	ENDMETHOD;
 
-	METHOD(EH_aceCargoLoaded)
+	public METHOD(EH_aceCargoLoaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
 		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
@@ -231,7 +231,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		
 	ENDMETHOD;
 
-	METHOD(EH_aceCargoUnloaded)
+	public METHOD(EH_aceCargoUnloaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
 		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
@@ -262,7 +262,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(deleteObject)
+	public METHOD(deleteObject)
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
 		if (IS_OOP_OBJECT(_objectRef)) then {
 			DELETE(_objectRef);
@@ -276,7 +276,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	ENDMETHOD;
 
 	// We use that to call some static methods in the main thread
-	METHOD(callStaticMethodInThread)
+	public METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
 		CALLSM(_className, _methodName, _parameters);

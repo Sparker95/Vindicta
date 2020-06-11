@@ -47,7 +47,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 	Returns: nil
 	*/
 	
-	METHOD(setSentryPos)
+	public METHOD(setSentryPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		T_SETV("sentryPos", _pos);
 	ENDMETHOD;
@@ -59,7 +59,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 	Returns: position or [] if no position was assigned
 	*/
 	
-	METHOD(getSentryPos)
+	public METHOD(getSentryPos)
 		params [P_THISOBJECT];
 		pr _pos = T_GETV("sentryPos");
 		if (isNil "_pos") then {

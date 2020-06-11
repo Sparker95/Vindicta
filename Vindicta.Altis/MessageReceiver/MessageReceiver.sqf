@@ -349,7 +349,7 @@ CLASS("MessageReceiver", "Storable")
 	// For safety this should be called in the thread that owns the object
 	// Don't override this in inherited classes!
 	// Returns true/falls depending on success
-	METHOD(setOwner)
+	public METHOD(setOwner)
 		params [P_THISOBJECT, P_NUMBER("_newOwner") ];
 
 		// Bail if this machine doesn't own this object

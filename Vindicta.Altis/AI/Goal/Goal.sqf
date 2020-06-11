@@ -42,7 +42,7 @@ CLASS("Goal", "")
 	// Inherited classes must implement this
 	// By default returns instrinsic goal relevance
 
-	/* virtual */ STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _intrinsicRelevance = GETSV(_thisClass, "relevance");
 		 // Return relevance
@@ -55,7 +55,7 @@ CLASS("Goal", "")
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 
-	/* virtual */ STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		// Return predefined action from the database
 		pr _actionClass = GETSV(_thisClass, "predefinedAction");
@@ -85,7 +85,7 @@ CLASS("Goal", "")
 	// "HealYourself" goal can return a standard world state effect from database, thus doesn't need to reimplement this method
 	// "GoToNearestCover" can't derive its effect from parameter and is not static, but is supplied by internal logic, therefore this goal must implement this method
 
-	/* virtual */ STATIC_METHOD(getEffects)
+	public STATIC_METHOD(getEffects)
 		pr _paramsGood = params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		if (!_paramsGood) then {
@@ -120,12 +120,12 @@ CLASS("Goal", "")
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is added to AI
-	STATIC_METHOD(onGoalAdded)
+	public STATIC_METHOD(onGoalAdded)
 		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is removed from an AI
-	STATIC_METHOD(onGoalDeleted)
+	public STATIC_METHOD(onGoalDeleted)
 		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 	ENDMETHOD;
 

@@ -86,7 +86,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	/*
 	Method: addCargoUnit
 	*/
-	METHOD(addCargoUnit)
+	public METHOD(addCargoUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		T_GETV("cargo") pushBackUnique _cargoUnit;
 	ENDMETHOD;
@@ -94,7 +94,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	/*
 	Method: removeCargoUnit
 	*/
-	METHOD(removeCargoUnit)
+	public METHOD(removeCargoUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		pr _cargoUnits = T_GETV("cargo");
 		_cargoUnits deleteAt (_cargoUnits find _cargoUnit);
@@ -118,7 +118,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(unassignUnit)
+	public METHOD(unassignUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
@@ -170,7 +170,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/
-	METHOD(getAssignedDriver)
+	public METHOD(getAssignedDriver)
 		params [P_THISOBJECT];
 		
 		pr _driver = T_GETV("assignedDriver");
@@ -192,7 +192,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/
-	METHOD(getAssignedTurret)
+	public METHOD(getAssignedTurret)
 		params [P_THISOBJECT, P_ARRAY("_turretPath") ];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		
@@ -212,7 +212,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns Array of <Unit> assigned to all turrets.
 	Returns: Array of <Unit>
 	*/
-	METHOD(getAssignedTurrets)
+	public METHOD(getAssignedTurrets)
 		params [P_THISOBJECT];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		// Turret array is not initialized, therefore no turrets were assigned
@@ -229,7 +229,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/	
-	METHOD(getAssignedCargo)
+	public METHOD(getAssignedCargo)
 		params [P_THISOBJECT, P_NUMBER("_cargoIndex") ];
 		pr _assignedCargo = T_GETV("assignedCargo");
 		
@@ -256,7 +256,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: Array of <Unit>s
 	*/
-	METHOD(getAssignedUnits)
+	public METHOD(getAssignedUnits)
 		params [P_THISOBJECT, ["_returnDriver", true], ["_returnTurrets", true], ["_returnCargo", true] ];
 		
 		pr _ret = [];
@@ -278,7 +278,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		_ret
 	ENDMETHOD;
 
-	METHOD(getFreeCargoSeats)
+	public METHOD(getFreeCargoSeats)
 		params [P_THISOBJECT, P_ARRAY("_ignoreUnits")];
 
 		pr _hVeh = CALLM0(T_GETV("agent"), "getObjectHandle");

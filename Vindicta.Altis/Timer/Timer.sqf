@@ -57,14 +57,14 @@ CLASS("Timer", "");
 	ENDMETHOD;
 
 	// Add this timer to the timer service
-	METHOD(start)
+	public METHOD(start)
 		params [P_THISOBJECT];
 		private _timerService = T_GETV("data") select TIMER_DATA_ID_TIMER_SERVICE;
 		CALLM1(_timerService, "addTimer", _thisObject);
 	ENDMETHOD;
 
 	// Remove this timer from the timer service
-	METHOD(stop)
+	public METHOD(stop)
 		params [P_THISOBJECT];
 		private _timerService = T_GETV("data") select TIMER_DATA_ID_TIMER_SERVICE;
 		CALLM1(_timerService, "removeTimer", _thisObject);
@@ -93,7 +93,7 @@ CLASS("Timer", "");
 
 	Returns: nil
 	*/
-	METHOD(setInterval)
+	public METHOD(setInterval)
 		params [P_THISOBJECT, ["_interval", 1, [0]]];
 		private _data = T_GETV("data");
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
@@ -112,7 +112,7 @@ CLASS("Timer", "");
 
 	Returns: Array, see Timer.hpp
 	*/
-	METHOD(getDataArray)
+	public METHOD(getDataArray)
 		params [P_THISOBJECT];
 		T_GETV("data")
 	ENDMETHOD;

@@ -54,7 +54,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		T_SETV("detachedGarrIdVar", _detachedGarrIdVar);
 	ENDMETHOD;
 
-	 public override METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -108,6 +108,7 @@ ENDCLASS;
 #define CMDR_ACTION_STATE_FAILED CMDR_ACTION_STATE_CUSTOM+1
 
 ["AST_SplitGarrison.new", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_SplitGarrison", 
 		[_action]+
@@ -125,6 +126,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["AST_SplitGarrison.apply(sim)", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 
@@ -172,6 +174,7 @@ Test_group_args = [WEST, 0]; // Side, group type
 Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 
 ["AST_SplitGarrison.apply(actual)", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 
 	private _actual = NEW("Garrison", [GARRISON_TYPE_GENERAL ARG WEST]);
 	private _group = NEW("Group", Test_group_args);

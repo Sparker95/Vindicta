@@ -81,11 +81,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 	ENDMETHOD;
 
-	METHOD(getRouteTargets)
-		params [P_THISOBJECT];
-		T_GET_AST_VAR("routeTargetsVar")
-	ENDMETHOD;
-	
 	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 

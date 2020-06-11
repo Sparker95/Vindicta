@@ -65,7 +65,7 @@ CLASS("DialogTabBase", "")
 	Method: getControl
 	Returns the control of this tab, previously set by setControl
 	*/
-	METHOD(getControl)
+	public METHOD(getControl)
 		params [P_THISOBJECT];
 		uiNamespace getVariable [_thisObject+__CONTROL_SUFFIX, controlNull];
 	ENDMETHOD;
@@ -77,7 +77,7 @@ CLASS("DialogTabBase", "")
 
 	Parameters: 
 	*/
-	METHOD(setControl)
+	public METHOD(setControl)
 		params [P_THISOBJECT, ["_control", controlNull, [controlNull]]];
 
 		pr _ctrl = uiNamespace getVariable [_thisObject+__CONTROL_SUFFIX, controlNull];
@@ -86,18 +86,18 @@ CLASS("DialogTabBase", "")
 		uiNamespace setVariable [_thisObject+__CONTROL_SUFFIX, _control];
 	ENDMETHOD;
 
-	METHOD(getDisplay)
+	public METHOD(getDisplay)
 		params [P_THISOBJECT];
 		CALLM0(T_GETV("dialogObj"), "getDisplay")
 	ENDMETHOD;
 
-	METHOD(getDialogObject)
+	public METHOD(getDialogObject)
 		params [P_THISOBJECT];
 		T_GETV("dialogObj")
 	ENDMETHOD;
 
 	// Finds a control by its class name or tag assigned by createControl
-	METHOD(findControl)
+	public METHOD(findControl)
 		params [P_THISOBJECT, P_STRING("_className")];
 		pr _display = T_CALLM0("getDisplay");
 		OOP_INFO_1("FIND CONTROL: %1", _className);
@@ -114,7 +114,7 @@ CLASS("DialogTabBase", "")
 		};
 	ENDMETHOD;
 
-	METHOD(createControl)
+	protected METHOD(createControl)
 		params [P_THISOBJECT, P_STRING("_className"), ["_idc", -1, [0]], ["_controlsGroup", controlNull, [controlNull]], P_STRING("_tag")];
 
 		OOP_INFO_1("CREATE CONTROL: %1", _this);
@@ -139,7 +139,7 @@ CLASS("DialogTabBase", "")
 	ENDMETHOD;
 	
 	// Adds an event handler which will call some method of this object
-	METHOD(controlAddEventHandler)
+	protected METHOD(controlAddEventHandler)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_type"), P_STRING("_methodName")];
 
 		pr _ctrl = T_CALLM1("findControl", _className);
@@ -162,7 +162,7 @@ CLASS("DialogTabBase", "")
 	// Called when Dialog.resize is called
 	// Derived classes can implement this if they need to resize themselves
 	// The main control of the tab (group) is resized separately, no need to resize it
-	protected virtual METHOD(resize)
+	public virtual METHOD(resize)
 		params [P_THISOBJECT, P_NUMBER("_width"), P_NUMBER("_height")];
 	ENDMETHOD;
 

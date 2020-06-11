@@ -263,7 +263,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 	ENDMETHOD;
 	
 	// Returns true if everyone is in vehicles
-	METHOD(isEveryoneInVehicle)
+	protected METHOD(isEveryoneInVehicle)
 		params [P_THISOBJECT];
 		private _AI = T_GETV("AI");
 		private _ws = GETV(_AI, "worldState");

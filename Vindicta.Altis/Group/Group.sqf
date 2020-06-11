@@ -116,7 +116,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: bool - true if the unit was moved
 	*/
-	METHOD(addUnit)
+	public METHOD(addUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		T_CALLM1("addUnits", [_unit]) > 0
 	ENDMETHOD;
@@ -132,7 +132,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: number of units added
 	*/
-	METHOD(addUnits)
+	public METHOD(addUnits)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		OOP_INFO_1("ADD UNITS: %1", _units);
@@ -214,7 +214,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: nil
 	*/
 
-	METHOD(addGroup)
+	public METHOD(addGroup)
 		params [P_THISOBJECT, P_OOP_OBJECT("_group"), ["_delete", false]];
 
 		OOP_INFO_1("ADD GROUP: %1", _group);
@@ -248,12 +248,12 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(removeUnit)
+	public METHOD(removeUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		T_CALLM1("removeUnits", [_unit]);
 	ENDMETHOD;
 
-	METHOD(removeUnits)
+	public METHOD(removeUnits)
 		params [P_THISOBJECT, P_ARRAY("_unitsToRemove")];
 
 		OOP_INFO_1("REMOVE UNITS: %1", _unitsToRemove);
@@ -287,7 +287,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		};
 	ENDMETHOD;
 
-	METHOD(removeAllUnits)
+	public METHOD(removeAllUnits)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		// We write a custom method for this (rather than calling removeUnits) as a few steps can be skipped when we know we are removing all units
 
@@ -379,7 +379,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getUnits)
+	public METHOD(getUnits)
 		params [P_THISOBJECT];
 		+(T_GETV("data") # GROUP_DATA_ID_UNITS);
 	ENDMETHOD;
@@ -391,7 +391,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getInfantryUnits)
+	public METHOD(getInfantryUnits)
 		params [P_THISOBJECT];
 		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isInfantry") }
 	ENDMETHOD;
@@ -403,7 +403,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getVehicleUnits)
+	public METHOD(getVehicleUnits)
 		params [P_THISOBJECT];
 		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isVehicle") }
 	ENDMETHOD;
@@ -415,7 +415,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getDroneUnits)
+	public METHOD(getDroneUnits)
 		params [P_THISOBJECT];
 		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isDrone") }
 	ENDMETHOD;
@@ -426,7 +426,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units.
 	*/
-	METHOD(getAirUnits)
+	public METHOD(getAirUnits)
 		params [P_THISOBJECT];
 		(T_GETV("data") # GROUP_DATA_ID_UNITS) select { CALLM0(_x, "isAir") }
 	ENDMETHOD;
@@ -438,7 +438,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number, group type. See <GROUP_TYPE>,
 	*/
-	METHOD(getType)
+	public METHOD(getType)
 		params [P_THISOBJECT];
 		T_GETV("data") # GROUP_DATA_ID_TYPE
 	ENDMETHOD;
@@ -450,7 +450,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Side
 	*/
-	METHOD(getSide)
+	public METHOD(getSide)
 		params [P_THISOBJECT];
 		T_GETV("data") # GROUP_DATA_ID_SIDE
 	ENDMETHOD;
@@ -462,7 +462,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: group handle.
 	*/
-	METHOD(getGroupHandle)
+	public METHOD(getGroupHandle)
 		params [P_THISOBJECT];
 		T_GETV("data") # GROUP_DATA_ID_GROUP_HANDLE
 	ENDMETHOD;
@@ -475,12 +475,12 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: <Unit> object
 	*/
-	METHOD(getLeader)
+	public METHOD(getLeader)
 		params [P_THISOBJECT];
 		T_GETV("data") # GROUP_DATA_ID_LEADER
 	ENDMETHOD;
 
-	METHOD(getPos)
+	public METHOD(getPos)
 		params [P_THISOBJECT];
 		if(!T_CALLM0("isSpawned")) exitWith {
 			private _garrison = T_CALLM0("getGarrison");
@@ -506,7 +506,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: <Group> or ""
 	*/
-	STATIC_METHOD(getGroupFromGroupHandle)
+	public STATIC_METHOD(getGroupFromGroupHandle)
 		params [P_THISCLASS, P_GROUP("_groupHandle") ];
 		_groupHandle getVariable [GROUP_VAR_NAME_STR, ""]
 	ENDMETHOD;
@@ -515,7 +515,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Method: setLeader
 	Sets the leader of this group to a specified Unit. The Unit must belong to this group.
 	*/
-	METHOD(setLeader)
+	public METHOD(setLeader)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		pr _data = T_GETV("data");
@@ -604,7 +604,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(setGarrison)
+	public METHOD(setGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison") ];
 		private _data = T_GETV("data");
 		_data set [GROUP_DATA_ID_GARRISON, _garrison];
@@ -621,7 +621,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: String, <Garrison>
 	*/
-	METHOD(getGarrison)
+	public METHOD(getGarrison)
 		params [P_THISOBJECT];
 		T_GETV("data") select GROUP_DATA_ID_GARRISON
 	ENDMETHOD;
@@ -634,7 +634,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Bool
 	*/
-	METHOD(isSpawned)
+	public METHOD(isSpawned)
 		params [P_THISOBJECT];
 		T_GETV("data") select GROUP_DATA_ID_SPAWNED
 	ENDMETHOD;
@@ -646,7 +646,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Bool
 	*/
-	METHOD(isEmpty)
+	public METHOD(isEmpty)
 		params [P_THISOBJECT];
 		count (T_GETV("data") select GROUP_DATA_ID_UNITS) == 0
 	ENDMETHOD;
@@ -657,7 +657,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Bool
 	*/
-	METHOD(isAirGroup)
+	public METHOD(isAirGroup)
 		params [P_THISOBJECT];
 		count T_CALLM0("getAirUnits") > 0
 	ENDMETHOD;
@@ -668,7 +668,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Bool
 	*/
-	METHOD(isLanded)
+	public METHOD(isLanded)
 		params [P_THISOBJECT];
 		private _AI = T_CALLM0("getAI");
 		_AI == NULL_OBJECT || { CALLM0(_AI, "isLanded") }
@@ -687,7 +687,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(handleUnitRemoved)
+	public METHOD(handleUnitRemoved)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		diag_log format ["[Group::handleUnitRemoved] Info: %1", _unit];
@@ -702,7 +702,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(handleUnitDespawned)
+	public METHOD(handleUnitDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit") ];
 	ENDMETHOD;
 
@@ -713,7 +713,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(handleUnitSpawned)
+	public METHOD(handleUnitSpawned)
 		params [P_THISOBJECT, "_unit"];
 	ENDMETHOD;
 
@@ -762,7 +762,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(spawnAtLocation)
+	public METHOD(spawnAtLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		OOP_INFO_1("SPAWN AT LOCATION: %1", _loc);
@@ -810,7 +810,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(spawnVehiclesOnRoad)
+	public METHOD(spawnVehiclesOnRoad)
 		params [P_THISOBJECT, P_ARRAY("_posAndDir"), P_ARRAY("_startPos")];
 
 		OOP_INFO_2("SPAWN VEHICLES ON ROAD: _posAndDir: %1, _startPos: %2", _posAndDir, _startPos);
@@ -900,7 +900,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(spawnAtPos)
+	public METHOD(spawnAtPos)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_BOOL("_global")];
 
 		OOP_INFO_1("SPAWN AT POS: %1", _pos);
@@ -968,7 +968,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(spawnInAir)
+	public METHOD(spawnInAir)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		OOP_INFO_1("SPAWN IN AIR: %1", _pos);
@@ -1064,7 +1064,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(despawn)
+	public METHOD(despawn)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DESPAWN");
@@ -1117,7 +1117,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(sort)
+	public METHOD(sort)
 		params [P_THISOBJECT, P_ARRAY("_unitsSorted")];
 
 		pr _data = T_GETV("data");
@@ -1325,7 +1325,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number, amount of created units.
 	*/
-	METHOD(createUnitsFromTemplate)
+	public METHOD(createUnitsFromTemplate)
 		params [P_THISOBJECT, P_ARRAY("_template"), P_NUMBER("_subcatID")];
 		private _groupData = [_template, _subcatID, -1] call t_fnc_selectGroup;
 
@@ -1348,7 +1348,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 
-	METHOD(getRequiredCrew)
+	public METHOD(getRequiredCrew)
 		params [P_THISOBJECT];
 
 		pr _units = T_GETV("data") select GROUP_DATA_ID_UNITS;
@@ -1389,7 +1389,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		true
 	ENDMETHOD;
 
-	 public override METHOD(serializeForStorage)
+	public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		
 		pr _data = +T_GETV("data");
@@ -1401,7 +1401,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		_data
 	ENDMETHOD;
 
-	 public override METHOD(deserializeFromStorage)
+	public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		
 		_serial set [GROUP_DATA_ID_GROUP_HANDLE, grpNull];
@@ -1414,7 +1414,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		true
 	ENDMETHOD;
 
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
