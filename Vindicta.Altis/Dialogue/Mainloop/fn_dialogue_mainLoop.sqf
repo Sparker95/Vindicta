@@ -39,7 +39,7 @@ if(_node_id isEqualTo "")exitWith{
 private _node_arrays = [];
 {	
 	private _dialogueSet = _x;
-	{
+	{ // forEach _dialogueSet;
 		_x params [["_node_id_x",""]];
 		
 		scopeName "_dialogueSet";
@@ -79,7 +79,7 @@ if(count _node_arrays == 0)exitWith{
 	breakOut "mainloop";
 };
 
-//we can skip if it if it will be overwriten
+//we can skip it if it will be overwriten
 private _overwrite_found = 0;
 {
 	_x params ["_node_type"];
@@ -105,7 +105,7 @@ private _events = +_default_events;//we dont want to overwrite the default event
 private _end_scripts_new = [];
 
 //loop the nodes
-for "_i" from _overwrite_found to count _node_arrays -1 do{
+for "_i" from _overwrite_found to (count _node_arrays) -1 do{
 	(_node_arrays#_i) params ["_node_type","_action_array"];
 	
 	//loop the node and fill the arrays defined above

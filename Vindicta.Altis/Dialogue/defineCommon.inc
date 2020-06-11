@@ -3,7 +3,7 @@
 
 
 //---------------------------------
-//      Converstion types
+//      Node types
 //---------------------------------
 
 #define TYPE_CREATE 0
@@ -11,7 +11,7 @@
 #define TYPE_INHERIT 2
 
 //---------------------------------
-//      Node types
+//      Action types
 //---------------------------------
 
 #define TYPE_SENTENCE 10
@@ -37,7 +37,7 @@
 
 
 //---------------------------------
-//      settings
+//      Settings
 //---------------------------------
 
 #define STRING_ICON_UP_ARROW "\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa"
