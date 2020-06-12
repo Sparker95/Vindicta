@@ -9,7 +9,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LAF"];
 _array set [T_DESCRIPTION, "Livonian Armed Forces for Livonia. Uses BLUEFOR equipment from RHS and AAF2017."];
-_array set [T_DISPLAY_NAME, "RHS Livonian Armed Forces (bluefor)"];
+_array set [T_DISPLAY_NAME, "RHS Livonian Armed Forces (blufor)"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 								"rhs_c_troops",		// RHS AFRF
