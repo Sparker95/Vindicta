@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LDF"];
-_array set [T_DESCRIPTION, "Livonian Defense Forces for Livonia. Uses RHS."];
-_array set [T_DISPLAY_NAME, "RHS Livonian Defense Forces"];
+_array set [T_DESCRIPTION, "Livonian Defense Forces for Livonia. Uses OPFOR equipment from RHS."];
+_array set [T_DISPLAY_NAME, "RHS Livonian Defense Forces (redfor)"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 								"rhs_c_troops",		// RHS AFRF
@@ -97,7 +97,7 @@ _veh set [T_VEH_heli_heavy, ["rhsgref_cdf_reg_Mi17Sh"]];
 //_veh set [T_VEH_heli_cargo, [""]];
 _veh set [T_VEH_heli_attack, ["rhsgref_cdf_Mi24D", "rhsgref_cdf_Mi24D_early"]];
 
-_veh set [T_VEH_plane_attack, ["rhsgref_cdf_su25", "rhs_l39_cdf"]];
+_veh set [T_VEH_plane_attack, ["rhsgref_cdf_su25"]];
 _veh set [T_VEH_plane_fighter, ["rhsgref_cdf_mig29s"]];
 //_veh set [T_VEH_plane_cargo, [""]];
 _veh set [T_VEH_plane_unarmed, ["RHS_AN2"]];
