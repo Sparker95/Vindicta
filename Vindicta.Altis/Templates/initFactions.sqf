@@ -48,6 +48,7 @@
 
 // Police factions
 ["Templates\Factions\POLICE.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\POLICE_DLC.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF_ranger.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF_NATO_police.sqf", 			T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;

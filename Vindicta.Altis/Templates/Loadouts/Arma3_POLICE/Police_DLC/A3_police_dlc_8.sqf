@@ -21,16 +21,15 @@ this addVest _RandomVest;
 /*Backpack*/
 
 /*Weapon*/
-this addWeapon "hgun_Pistol_heavy_02_F";
+this addWeapon "hgun_Pistol_01_F";
 /*WeaponItem*/
-this addHandgunItem "acc_flashlight_pistol";
-this addHandgunItem "6Rnd_45ACP_Cylinder";
+this addHandgunItem "10Rnd_9x21_Mag";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "6Rnd_45ACP_Cylinder";};
-this addItemToUniform "ACE_Chemlight_HiBlue";
-for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_blue";};
+for "_i" from 1 to 5 do {this addItemToUniform "10Rnd_9x21_Mag";};
+for "_i" from 1 to 2 do {this addItemToVest "ACE_Chemlight_HiBlue";};
+for "_i" from 1 to 4 do {this addItemToVest "Chemlight_blue";};
 
 /*Items*/
 this linkItem "ItemMap";
@@ -38,4 +37,4 @@ this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 
-[this,"Default","male01gre"] call BIS_fnc_setIdentity;
+[this,"Default","male03gre"] call BIS_fnc_setIdentity;

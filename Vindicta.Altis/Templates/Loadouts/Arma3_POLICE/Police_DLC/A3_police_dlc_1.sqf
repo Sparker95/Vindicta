@@ -10,29 +10,31 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-this addHeadgear "H_Beret_gen_F";
+_RandomHeadgear = selectRandom ["H_MilCap_blue", "H_MilCap_blue", "H_Cap_police", "H_Cap_police", "H_Cap_police", "H_PASGT_basic_blue_F"];
+this addHeadgear _RandomHeadgear;
 /*Uniform*/
-this forceAddUniform "U_B_GEN_Commander_F";
+_RandomUniform = selectRandom ["U_B_GEN_Commander_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F"];
+this forceAddUniform _RandomUniform;
 /*Vest*/
-this addVest "V_TacVest_blk_POLICE";
+_RandomVest = selectRandom ["V_TacVest_blk_POLICE", "V_TacVest_blk_POLICE", "V_TacVest_blk_POLICE", "V_TacVest_blk_POLICE", "V_TacVestIR_blk", "V_TacVestIR_blk", "V_Chestrig_blk"];
+this addVest _RandomVest;
 /*Backpack*/
 
 /*Weapon*/
-this addWeapon "arifle_TRG20_F";
+this addWeapon "SMG_05_F";
 this addWeapon "hgun_Pistol_heavy_02_F";
 /*WeaponItem*/
 this addPrimaryWeaponItem "acc_flashlight";
-_RandomPrimaryWeaponItem = selectRandom ["optic_ACO_grn", "optic_Holosight", "optic_Holosight_blk_F"];
+_RandomPrimaryWeaponItem = selectRandom ["optic_Yorris", "optic_Holosight_smg_blk_F", "", "", ""];
 this addPrimaryWeaponItem _RandomPrimaryWeaponItem;
-this addPrimaryWeaponItem "30Rnd_556x45_Stanag";
+this addPrimaryWeaponItem "30Rnd_9x21_Mag_SMG_02";
 this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "6Rnd_45ACP_Cylinder";
 
 /*Items*/
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "6Rnd_45ACP_Cylinder";};
-this addItemToUniform "ACE_M84";
-for "_i" from 1 to 2 do {this addItemToVest "30Rnd_556x45_Stanag";};
+for "_i" from 1 to 2 do {this addItemToVest "30Rnd_9x21_Mag_SMG_02";};
 this addItemToUniform "ACE_Chemlight_HiBlue";
 for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_blue";};
 
@@ -42,4 +44,4 @@ this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 
-[this,"Default","male04gre"] call BIS_fnc_setIdentity;
+[this,"Default","male01gre"] call BIS_fnc_setIdentity;

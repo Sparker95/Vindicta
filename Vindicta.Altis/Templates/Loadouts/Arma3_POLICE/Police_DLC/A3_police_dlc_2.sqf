@@ -10,7 +10,7 @@ removeHeadgear this;
 removeGoggles this;
 
 /*Helmet*/
-_RandomHeadgear = selectRandom [ "H_MilCap_blue", "H_Cap_police", "H_Cap_police"];
+_RandomHeadgear = selectRandom ["H_MilCap_blue", "H_MilCap_blue", "H_Cap_police", "H_Cap_police", "H_Cap_police", "H_PASGT_basic_blue_F"];
 this addHeadgear _RandomHeadgear;
 /*Uniform*/
 _RandomUniform = selectRandom ["U_B_GEN_Commander_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F", "U_B_GEN_Soldier_F"];
@@ -21,20 +21,19 @@ this addVest _RandomVest;
 /*Backpack*/
 
 /*Weapon*/
-this addWeapon "SMG_05_F";
-this addWeapon "hgun_Pistol_heavy_02_F";
+this addWeapon "hgun_PDW2000_F";
+this addWeapon "hgun_ACPC2_F";
 /*WeaponItem*/
 this addPrimaryWeaponItem "acc_flashlight";
 _RandomPrimaryWeaponItem = selectRandom ["optic_Yorris", "optic_Holosight_smg_blk_F", "", "", ""];
 this addPrimaryWeaponItem _RandomPrimaryWeaponItem;
-this addPrimaryWeaponItem "30Rnd_9x21_Mag_SMG_02";
+this addPrimaryWeaponItem "30Rnd_9x21_Mag";
 this addHandgunItem "acc_flashlight_pistol";
-this addHandgunItem "6Rnd_45ACP_Cylinder";
+this addHandgunItem "9Rnd_45ACP_Mag";
 
 /*Items*/
-this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToVest "6Rnd_45ACP_Cylinder";};
-for "_i" from 1 to 2 do {this addItemToVest "30Rnd_9x21_Mag_SMG_02";};
+for "_i" from 1 to 2 do {this addItemToVest "9Rnd_45ACP_Mag";};
+for "_i" from 1 to 2 do {this addItemToVest "30Rnd_9x21_Mag";};
 this addItemToUniform "ACE_Chemlight_HiBlue";
 for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_blue";};
 
@@ -44,4 +43,4 @@ this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 
-[this,"Default","male01gre"] call BIS_fnc_setIdentity;
+[this,"Default","male02gre"] call BIS_fnc_setIdentity;

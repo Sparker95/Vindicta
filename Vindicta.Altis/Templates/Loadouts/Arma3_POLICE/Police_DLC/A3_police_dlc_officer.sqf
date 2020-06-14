@@ -18,13 +18,13 @@ this addVest "V_TacVest_blk_POLICE";
 /*Backpack*/
 
 /*Weapon*/
-this addWeapon "arifle_TRG20_F";
+this addWeapon "arifle_MSBS65_black_F";
 this addWeapon "hgun_Pistol_heavy_02_F";
 /*WeaponItem*/
 this addPrimaryWeaponItem "acc_flashlight";
 _RandomPrimaryWeaponItem = selectRandom ["optic_ACO_grn", "optic_Holosight", "optic_Holosight_blk_F"];
 this addPrimaryWeaponItem _RandomPrimaryWeaponItem;
-this addPrimaryWeaponItem "30Rnd_556x45_Stanag";
+this addPrimaryWeaponItem "30Rnd_65x39_caseless_msbs_mag";
 this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "6Rnd_45ACP_Cylinder";
 
@@ -32,7 +32,7 @@ this addHandgunItem "6Rnd_45ACP_Cylinder";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "6Rnd_45ACP_Cylinder";};
 this addItemToUniform "ACE_M84";
-for "_i" from 1 to 2 do {this addItemToVest "30Rnd_556x45_Stanag";};
+for "_i" from 1 to 2 do {this addItemToVest "30Rnd_65x39_caseless_msbs_mag";};
 this addItemToUniform "ACE_Chemlight_HiBlue";
 for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_blue";};
 
