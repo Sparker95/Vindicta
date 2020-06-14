@@ -3,6 +3,7 @@
 /*
 Dialogue class.
 Manages a conversation between two characters, one of which is player.
+Authors: Sparker and Jeroen.
 */
 
 #define OOP_CLASS_NAME Dialogue
@@ -40,6 +41,10 @@ CLASS("Dialogue", "")
 	METHOD(new)
 		params [P_THISOBJECT, P_ARRAY("_nodes"), P_OBJECT("_unit0"),
 					P_OBJECT("_unit1"), P_NUMBER("_clientID")];
+
+		if (!isServer) exitWith {
+			OOP_ERROR_0("Dialogue must be created at server.");
+		};
 
 		T_SETV("nodes", _nodes);
 		T_SETV("remoteClientID", _clientID);

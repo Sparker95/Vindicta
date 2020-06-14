@@ -131,7 +131,10 @@ if!(_speaker isequalto player)then{
 		_ctrl_icon ctrlSetStructuredText parseText format [
 			"<t font='RobotoCondensed' align = 'center' size = '1'><t color = '#FFFFFF'>"+
 			"<img image='%2'/><t color = '%1' shadow = '2'>%3<t size = '1'>%4</t>",
-			_color_unit,STRING_ICON_UP_ARROW,_breaks,["Unknown",name _speaker]select (player knowsAbout _speaker == 4)
+			_color_unit,
+			STRING_ICON_UP_ARROW,
+			_breaks,
+			["Unknown",name _speaker]select (player knowsAbout _speaker == 4)
 		];
 		
 	}forEach _ctrl_icons_sorted;

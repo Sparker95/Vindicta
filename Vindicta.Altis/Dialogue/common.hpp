@@ -4,3 +4,4 @@
 #define OFSTREAM_FILE "Dialogue.rpt"
 #include "..\common.h"
 #include "Dialogue.hpp"
+#include "DialogueClient.hpp"
