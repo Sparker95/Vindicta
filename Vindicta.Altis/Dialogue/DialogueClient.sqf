@@ -193,11 +193,11 @@ CLASS("DialogueClient", "")
 			pr _speaker = _ctrlIcon getVariable "_speaker";
 			
 			pr _relDir = player getRelDir _speaker;
-			pr _xOffset = 0.4*safeZoneW*(sin _relDir);
-			pr _yOffset = 0.05*safeZoneH*(cos _relDir);
+			pr _xOffset = 0.45*safeZoneW*(sin _relDir);
+			pr _yOffset = -0.05*safeZoneH*(cos _relDir);
 
 			_ctrlIcon ctrlsetposition [
-										_xOffset + DIALOGUE_POINTER_AREA_X + 0.5*DIALOGUE_POINTER_WIDTH,
+										_xOffset + DIALOGUE_POINTER_AREA_X - 0.5*DIALOGUE_POINTER_WIDTH,
 										_yOffset + DIALOGUE_POINTER_AREA_Y];
 			_ctrlIcon ctrlCommit 0;
 		} forEach _controls;
@@ -215,7 +215,7 @@ CLASS("DialogueClient", "")
 		pr _ctrlGroup = T_GETV("ctrlGroup") select 0;
 
 		pr _ctrlLine = (findDisplay 46) ctrlCreate ["RscTextMulti", -1, _ctrlGroup];
-		_ctrlLine ctrlsetBackgroundColor [0, 0, 0, 0.3];
+		_ctrlLine ctrlsetBackgroundColor [0, 0, 0, 0.3]; // can use for debug
 		_ctrlLine ctrlSetTextColor [1, 1, 1, 1];
 		_ctrlLine ctrlSetFontHeight 0.05;
 
@@ -262,11 +262,12 @@ CLASS("DialogueClient", "")
 
 		disableSerialization;
 
-		OOP_INFO_1("_createPointerControl: %1", _speaker);
+		OOP_INFO_1("createPointerControl: %1", _speaker);
 
-		_ctrlIcon = _display ctrlCreate ["rscstructuredtext", -1, _hud];
+		_ctrlIcon = (findDisplay 46) ctrlCreate ["rscstructuredtext", -1];
 		// Initially it is created outside of view, its position will be updated later
 		_ctrlIcon ctrlSetPosition [666, 0, DIALOGUE_POINTER_WIDTH, DIALOGUE_POINTER_HEIGHT];
+		_ctrlIcon ctrlSetBackgroundColor [0, 0.5, 0, 0.4];
 		_ctrlIcon ctrlCommit 0;
 		_ctrlIcon setVariable ["_speaker", _speaker];
 
@@ -279,14 +280,16 @@ CLASS("DialogueClient", "")
 		*/
 
 		private _color_unit = CALLSM1("DialogueClient", "getUnitColor", _speaker);
-		_ctrl_icon ctrlSetStructuredText parseText format [
+		_ctrlIcon ctrlSetStructuredText (parseText format [
 			"<t font='RobotoCondensed' align = 'center' size = '1'><t color = '#FFFFFF'>"+
 			"<img image='%2'/><t color = '%1' shadow = '2'>%3<t size = '1'>%4</t>",
 			_color_unit,
 			"\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa",
-			"", // It might contain line breaks (not sure if they are needed yet)
+			"<br/>", // It might contain line breaks (not sure if they are needed yet)
 			CALLSM1("DialogueClient", "getUnitName", _speaker)
-		];
+		]);
+
+		OOP_INFO_1("  created pointer control: %1", _ctrlIcon);
 		
 		T_GETV("pointerControls") pushBack _ctrlIcon;
 	ENDMETHOD;

@@ -11,7 +11,7 @@
 #define DIALOGUE_BOX_Y		(safezoney + 0.86*safezoneh - DIALOGUE_BOX_HEIGHT)
 
 // Area of pointers
-#define DIALOGUE_POINTER_AREA_X	(safeZoneX + 0.5*safeZoneW)
+#define DIALOGUE_POINTER_AREA_X	0.5
 #define DIALOGUE_POINTER_AREA_Y (safeZoneY + 0.9*safeZoneH)
 
 // Pointer icon size

@@ -16,3 +16,4 @@ if (isNull _object) then {
 	_object = player;
 };
 CALLM3(_instance, "_createLineControl", _text, LINE_TYPE_SENTENCE, _object);
+CALLM1(_instance, "_createPointerControl", _object);
