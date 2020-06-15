@@ -128,4 +128,8 @@ call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseClient.sqf"
 // Initialize the GarrisonServer
 call compile preprocessFileLineNumbers "GarrisonServer\initClasses.sqf";
 
+// Initialize dialogue
+call compile preprocessFileLineNumbers "Dialogue\Dialogue.sqf";
+call compile preprocessFileLineNumbers "Dialogue\DialogueClient.sqf";
+
 diag_log "[initModules] Done!";

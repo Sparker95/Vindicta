@@ -39,6 +39,8 @@ CLASS("DialogueClient", "")
 	METHOD(new)
 		params [P_THISOBJECT];
 
+		disableSerialization;
+
 		if (!hasInterface) exitWith {
 			OOP_ERROR_0("DialogueClient must be created on client");
 		};
@@ -53,12 +55,26 @@ CLASS("DialogueClient", "")
 		// Create the group control
 		pr _ctrlGroup = (finddisplay 46) ctrlCreate ["RscControlsGroup", -1];
 		T_SETV("ctrlGroup", [_ctrlGroup]); // Put it into array so arma doesn't complain
+		_ctrlGroup ctrlSetPosition [
+			DIALOGUE_BOX_X,
+			DIALOGUE_BOX_Y,
+			DIALOGUE_BOX_WIDTH,
+			DIALOGUE_BOX_HEIGHT
+		];
+		_ctrlGroup ctrlCommit 0;
+
+		// Test group background
+		pr _ctrlTest = (findDIsplay 46) ctrlCreate ["RscText", 123123, _ctrlGroup];
+		_ctrlTest ctrlSetPosition [0, 0, DIALOGUE_BOX_WIDTH-0.001, DIALOGUE_BOX_HEIGHT-0.001];
+		_ctrlTest ctrlSetBackgroundColor [0.2, 0, 0, 0.3];
+		_ctrlTest ctrlCommit 0;
 
 		// Create the compass
 
 		// Create the per frame handler
 		pr _id = addMissionEventHandler ["Draw3D", {
 			pr _instance = CALLSM0("DialogueClient", "getInstance");
+			//OOP_INFO_1("draw3d, instance: %1", _instance);
 			CALLM0(_instance, "onEachFrame");
 		}];
 		T_SETV("ehID", _id);
@@ -77,24 +93,30 @@ CLASS("DialogueClient", "")
 		ctrlDelete _ctrlGroup;
 
 		// Remove mission event handler
-		removeMissionEventHandler ["onEachFrame", T_GETV("ehID")];
+		removeMissionEventHandler ["Draw3D", T_GETV("ehID")];
 	ENDMETHOD;
 
 	// Called on each frame
-	public METHOD(onEachFrame) {
+	public METHOD(onEachFrame)
 		params [P_THISOBJECT];
+
+		//OOP_INFO_0("onEachFrame");
 
 		T_CALLM0("updateLines");
 		T_CALLM0("updatePointers");
-	} ENDMETHOD;
+	ENDMETHOD;
 
 	// Deletes old sentences,
 	// updates positions of existing sentences
 	METHOD(updateLines)
 		params [P_THISOBJECT];
+
+		//OOP_INFO_0("updateLines");
+
 		// Delete sentences which are not needed any more
 		pr _lineControlsToDelete = [];
 		pr _lineControls = T_GETV("lineControls");
+		//OOP_INFO_1("  line count: %1", count _lineControls);
 		{
 			pr _type = _x getVariable "_type";
 			if (_type == LINE_TYPE_SENTENCE) then {
@@ -106,6 +128,7 @@ CLASS("DialogueClient", "")
 			};
 		} forEach _lineControls;
 		{
+			OOP_INFO_1("deleted timed out line: %1", _x getVariable "_text");
 			_lineControls deleteAt (_lineControls find _x);
 			ctrlDelete _x;
 		} forEach _lineControlsToDelete;
@@ -117,13 +140,13 @@ CLASS("DialogueClient", "")
 			pr _posy = DIALOGUE_BOX_HEIGHT - DIALOGUE_GAP;
 			for "_i" from (count _lineControls - 1) to 0 step -1 do {
 				pr _ctrl = _lineControls select _i;
-				_posy = _posy - CONTROL_HEIGHT(_ctrl);
+				_posy = _posy - CONTROL_HEIGHT(_ctrl) - DIALOGUE_LINE_GAP;
 
 				if (_posy < DIALOGUE_GAP) then {
 					// Delete this control if it's outside of the group box
 					_lineControlsToDelete pushBack _ctrl;
 				} else {
-					#ifdnef _SQF_VM
+					#ifndef _SQF_VM
 					_ctrl ctrlSetPositionY _posy;
 					#endif
 					_ctrl ctrlCommit 0;
@@ -131,6 +154,7 @@ CLASS("DialogueClient", "")
 			};
 			// Delete lines which were marked for deletion
 			{
+				OOP_INFO_1("deleted line out of group box: %1", _x getVariable "_text");
 				_lineControls deleteAt (_lineControls find _x);
 				ctrlDelete _x;
 			} forEach _lineControlsToDelete;
@@ -160,6 +184,7 @@ CLASS("DialogueClient", "")
 		} forEach _controls;
 		{
 			_controls deleteAt (_controls find _x);
+			ctrlDelete _x;
 		} forEach _controlsToDelete;
 
 		// Update positions of controls
@@ -183,33 +208,36 @@ CLASS("DialogueClient", "")
 	METHOD(_createLineControl)
 		params [P_THISOBJECT, P_STRING("_text"), P_NUMBER("_type"), P_OBJECT("_speaker")];
 
+		disableSerialization;
+
+		OOP_INFO_2("createLineControl: %1: %2", _speaker, _text);
+
 		pr _ctrlGroup = T_GETV("ctrlGroup") select 0;
 
-		pr _ctrlLine = _display ctrlCreate ["rscstructuredtext", -1, _ctrlGroup];
-		//_ctrlLine ctrlsetBackgroundColor [0, 0, 0, 0.6];
+		pr _ctrlLine = (findDisplay 46) ctrlCreate ["RscTextMulti", -1, _ctrlGroup];
+		_ctrlLine ctrlsetBackgroundColor [0, 0, 0, 0.3];
+		_ctrlLine ctrlSetTextColor [1, 1, 1, 1];
+		_ctrlLine ctrlSetFontHeight 0.05;
 
 		// Resolve only width and height now, position is updated elsewhere
-		_ctrlLine ctrlSetPosition [0, 0, DIALOGUE_BOX_WIDTH-2*DIALOGUE_GAP, SENTENCE_TEXT_SIZE];
+		_ctrlLine ctrlSetPosition [DIALOGUE_GAP, 0, DIALOGUE_BOX_WIDTH-2*DIALOGUE_GAP, 0.1];
+		_ctrlLine ctrlCommit 0;
 
 		// Create structured text
-		private _structuredText = if(player isEqualTo _speaker) then {
-			parseText format ["<t font='RobotoCondensed' align = 'right' size = '1.00'><t color = '#FFA300'>%1",_sentence];
+		if(player isEqualTo _speaker) then {
+			_ctrlLine ctrlSetText (format ["- %1", _text]);
 		}else{//some unit is talking to player
-			private _color_unit = CALLSM1("DialogueClient", "getUnitColor", _speaker);
-			parseText format [
-				"<t font='RobotoCondensed' align = 'left' size = '1.00'><t color = '%1' shadow = '2'>%2:</t> <t color = '#ffffff'>%3",
-				_color_unit, //get color
-				name _speaker,
-				_sentence
-			];
+			_ctrlLine ctrlSetText (format ["%1: %2", CALLSM1("DialogueClient", "getUnitName", _speaker), _text]);
 		};
 
 		// Set text and calculate height
-		_ctrlLine ctrlSetStructuredText _structuredText;
 		pr _height = ctrlTextHeight _ctrlLine;
+		//_height = 0.1;
 		#ifndef _SQF_VM
 		_ctrlLine ctrlSetPositionH _height;
 		#endif
+		_ctrlLine ctrlCommit 0;
+		OOP_INFO_1("  set line height: %1", _height);
 
 		private _removeTime = if (_type == LINE_TYPE_SENTENCE) then {
 			time + SENTENCE_DURATION(_text) + 10.0;
@@ -219,9 +247,12 @@ CLASS("DialogueClient", "")
 		_ctrlLine setVariable ["_removeTime",_removeTime];
 		_ctrlLine setVariable ["_speaker", _speaker];
 		_ctrlLine setVariable ["_type", _type];
+		_ctrlLine setVariable ["_text", _text];
 
-		T_GETV("lineControls") pushBack _ctrlLine;
+		OOP_INFO_1("  createdControl: %1", _ctrlLine);
 
+		pr _lineControls = T_GETV("lineControls");
+		_lineControls pushBack _ctrlLine;
 
 	ENDMETHOD;
 
@@ -229,6 +260,9 @@ CLASS("DialogueClient", "")
 	METHOD(_createPointerControl)
 		params [P_THISOBJECT, P_OBJECT("_speaker")];
 
+		disableSerialization;
+
+		OOP_INFO_1("_createPointerControl: %1", _speaker);
 
 		_ctrlIcon = _display ctrlCreate ["rscstructuredtext", -1, _hud];
 		// Initially it is created outside of view, its position will be updated later
@@ -251,7 +285,7 @@ CLASS("DialogueClient", "")
 			_color_unit,
 			"\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa",
 			"", // It might contain line breaks (not sure if they are needed yet)
-			name _speaker
+			CALLSM1("DialogueClient", "getUnitName", _speaker)
 		];
 		
 		T_GETV("pointerControls") pushBack _ctrlIcon;
@@ -274,12 +308,13 @@ CLASS("DialogueClient", "")
 		params [P_THISCLASS];
 
 		pr _instance = GETSV(_thisClass, "instance");
+		//OOP_INFO_1("getInstance: %1", _instance);
 		if (IS_NULL_OBJECT(_instance)) then {
 			_instance = NEW("DialogueClient", []);
-			SETSV(_thisClass, "instance", _instnace);
+			SETSV(_thisClass, "instance", _instance);
 		};
 
-		_instnace;
+		_instance;
 	ENDMETHOD;
 
 	// Returns text color depending on unit side
@@ -313,8 +348,23 @@ CLASS("DialogueClient", "")
 
 	ENDMETHOD;
 
+	STATIC_METHOD(getUnitName)
+		params [P_THISOBJECT, P_OBJECT("_unit")];
+		if (isNull _unit) exitWith {"..."};
+
+		pr _name = name _unit;
+		if ("Error" in _name) then { // todo someone might actually have that name
+			_name = getText (configFile >> "cfgVehicles" >> typeof _unit >> "displayName");
+			if (_name == "") then {
+				_name = "Object";
+			};
+		};
+
+		_name;
+	ENDMETHOD;
+
 ENDCLASS;
 
-if (isNil GETSV("DialogueClient", "instnace")) then {
+if (isNil {GETSV("DialogueClient", "instance")}) then {
 	SETSV("DialogueClient", "instance", NULL_OBJECT);
 };
