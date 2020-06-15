@@ -18,7 +18,12 @@
 #define FIND_NODE(nodes, tag) (nodes findIf {(_x select NODE_ID_TAG) == tag})
 
 // Dialogue distance
+// Dialogue continues while distance is below this
 #define DIALOGUE_DISTANCE 8.0
+
+// Hearing distance
+// We can hear sentences if we are closer than this distance
+#define SENTENCE_HEAR_DISTANCE 12.0 
 
 // Talker IDs
 #define TALKER_0		0

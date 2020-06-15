@@ -363,4 +363,29 @@ CLASS("Dialogue", "")
 		T_GETV("state") == DIALOGUE_STATE_END;
 	ENDMETHOD;
 
+	/*
+	=====================================================================
+	= PUBLIC API BELOW
+	=====================================================================
+	*/
+
+	/*
+	Call this on server or on client when an object says something aloud and you want nearby players can hear that.
+
+	Parameters:
+	_dialogueRef - reference to dialogue OOP object, or NULL_OBJECT if sentence does not originate from a dialogue.
+		(for instance if unit says something not from dialogue).
+	_talker - object which is saying the sentence.
+	_text - text to say.
+	*/
+	public STATIC_METHOD(objectSaySentence)
+		params [P_THISOBJECT, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_talker"), P_STRING("_text")];
+
+		// We only care to transmit it to players
+		pr _playersNearby = allPlayers select { (_x distance _talker) < SENTENCE_HEAR_DISTANCE};
+		// REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP)
+		pr _params = [_dialogueRef, _talker, _text];
+		REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "onObjectSaySentence", _params, _playersNearby, false);
+	ENDMETHOD;
+
 ENDCLASS;

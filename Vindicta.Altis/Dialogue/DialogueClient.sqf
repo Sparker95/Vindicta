@@ -17,7 +17,9 @@ CLASS("DialogueClient", "")
 	// Client can be connecte to a server-hosted dialogue object
 	VARIABLE("connected");
 	// Ref to server-hosted dialogue
-	VARIABLE("serverDialogueRef");
+	VARIABLE("remoteDialogueRef");
+	// Arma object handle, object player is currently talking to, if connected
+	VARIABLE("objectTalkTo");
 
 	// True when client is shown options
 	VARIABLE("optionsShown");
@@ -45,7 +47,8 @@ CLASS("DialogueClient", "")
 			OOP_ERROR_0("DialogueClient must be created on client");
 		};
 
-		T_SETV("serverDialogueRef", NULL_OBJECT);
+		T_SETV("remoteDialogueRef", NULL_OBJECT);
+		T_SETV("objectTalkTo", objNull);
 		T_SETV("connected", false);
 		T_SETV("optionsShown", false);
 		T_SETV("options", []);
@@ -294,16 +297,46 @@ CLASS("DialogueClient", "")
 		T_GETV("pointerControls") pushBack _ctrlIcon;
 	ENDMETHOD;
 
-	// Creates a sentence locally
-	public METHOD(createSentence)
-		params [P_THISOBJECT, P_OBJECT("_unit"), P_STRING("_text")];
+	// Creates a sentence and a compass pointer locally
+	METHOD(_createSentence)
+		params [P_THISOBJECT, P_OBJECT("_object"), P_STRING("_text")];
 
-
+		T_CALLM3("_createLineControl", _text, LINE_TYPE_SENTENCE, _object);
+		T_CALLM1("_createPointerControl", _object);
 
 	ENDMETHOD;
 
-	public METHOD(createOptions)
+	METHOD(_createOptions)
 		params [P_THISOBJECT, P_ARRAY("_options")];
+	ENDMETHOD;
+
+	METHOD(_onObjectSaySentence)
+		params [P_THISCLASS, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_object"), P_STRING("_text")];
+
+		pr _say = false;
+		if (T_GETV("connected")) then {
+			// If we are connected to a dialogue,
+			// We only care about sentences said by the unit we are talking to
+			if (_dialogueRef isEqualTo T_GETV("remoteDialogueRef")) then {
+				_say = true;
+			} else {
+				// Just ignore it
+			};
+		} else {
+			_say = true;
+		};
+
+		if (_say) then {
+			T_CALLM2("_createSentence", _object, _text);
+		};
+
+	ENDMETHOD;
+
+	// Called remotely on client when some unit nearby says something
+	public STATIC_METHOD(onObjectSaySentence)
+		params [P_THISCLASS, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_object"), P_STRING("_text")];
+		pr _instance = CALLSM(_thisClass, "getInstance");
+		CALLM3(_instance, "_onObjectSaySentence", _dialogueRef, _object, _text);
 	ENDMETHOD;
 
 	// Returns class instance, creates one if it's not created yet.
