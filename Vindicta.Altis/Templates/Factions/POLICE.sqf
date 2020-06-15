@@ -16,7 +16,7 @@ _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tPolice"]; 									//Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Vanilla police. Requires only Apex DLC."]; 	//Template display description
-_array set [T_DISPLAY_NAME, "Arma 3 Police (A)"]; 						//Template display name
+_array set [T_DISPLAY_NAME, "Arma 3 Police"]; 						//Template display name
 _array set [T_FACTION, T_FACTION_Police]; 							//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; 				//Addons required to play this template
 
@@ -42,9 +42,9 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 					//Make an array full of nil
 _inf set [T_INF_default, ["B_GEN_Soldier_F"]];	//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["Arma3_police_officer", 0.50, "Arma3_police_16", 0.75, "Arma3_police_15", 0.75, "Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_11", 1, "Arma3_police_12", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
-_inf set [T_INF_TL, ["Arma3_police_officer", 0.50, "Arma3_police_16", 0.75, "Arma3_police_15", 0.75, "Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_11", 1, "Arma3_police_12", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
-_inf set [T_INF_officer, ["Arma3_police_officer", 0.50, "Arma3_police_16", 0.75, "Arma3_police_15", 0.75, "Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_11", 1, "Arma3_police_12", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
+_inf set [T_INF_SL, ["Arma3_police_officer", 0.50, "Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_12", 0.75, "Arma3_police_11", 0.75, "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_11", 1, "Arma3_police_12", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
+_inf set [T_INF_TL, ["Arma3_police_officer", 0.50, "Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_12", 0.75, "Arma3_police_11", 0.75, "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_11", 1, "Arma3_police_12", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
+_inf set [T_INF_officer, ["Arma3_police_officer", 0.50, "Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_12", 0.75, "Arma3_police_11", 0.75, "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_11", 1, "Arma3_police_12", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
