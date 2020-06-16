@@ -103,7 +103,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	/*
 	Method: getCargo
 	*/
-	/* override */ METHOD(getCargoUnits)
+	public virtual METHOD(getCargoUnits)
 		params [P_THISOBJECT];
 		+T_GETV("cargo")
 	ENDMETHOD;

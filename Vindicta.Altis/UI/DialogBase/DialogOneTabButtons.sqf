@@ -219,7 +219,7 @@ CLASS("TabTextWithButtons", "DialogTabBase")
 
 	// private function, don't touch it
 	// use dialog's onButtonClick instead
-	METHOD(_onButton)
+	public event METHOD(_onButton)
 		params [P_THISOBJECT, "_ctrl"];
 
 		// Get ID of the button

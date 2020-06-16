@@ -76,7 +76,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Creates gameModeData of a location
-	protected override METHOD(initLocationGameModeData)
+	public override METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		private _type = CALLM0(_loc, "getType");
 		switch (_type) do {
@@ -441,7 +441,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to spawn missions etc in some locations
-	protected override METHOD(locationSpawned)
+	public override METHOD(locationSpawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
 		private _activeCities = T_GETV("activeCities");
@@ -452,7 +452,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to despawn missions etc in some locations
-	protected override METHOD(locationDespawned)
+	public override METHOD(locationDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
 		private _activeCities = T_GETV("activeCities");
@@ -463,7 +463,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Gets called in the main thread!
-	protected override METHOD(unitDestroyed)
+	public override METHOD(unitDestroyed)
 		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
 		pr _valueToAdd = 0;
 		if (_catID == T_INF) then {
@@ -490,13 +490,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
-	protected override METHOD(getRecruitmentRadius)
+	public override METHOD(getRecruitmentRadius)
 		params [P_THISOBJECT];
 		2000
 	ENDMETHOD;
 
 	// Returns an array of cities where we can recruit from
-	protected override METHOD(getRecruitCities)
+	public override METHOD(getRecruitCities)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		private _radius = T_CALLM0("getRecruitmentRadius");
 
@@ -510,7 +510,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
-	protected override METHOD(getRecruitCount)
+	public override METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 
 		private _sum = 0;

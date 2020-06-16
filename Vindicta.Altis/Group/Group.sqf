@@ -317,7 +317,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	ENDMETHOD;
 
 	// Create new group handle if it doesn't exist
-	/* private */ METHOD(_createGroupHandle)
+	METHOD(_createGroupHandle)
 		pr _groupHandle = grpNull;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
@@ -336,7 +336,7 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		_groupHandle
 	ENDMETHOD;
 
-	/* public */ METHOD(rectifyGroupHandle)
+	public METHOD(rectifyGroupHandle)
 		params [P_THISOBJECT];
 
 		pr _data = T_GETV("data");

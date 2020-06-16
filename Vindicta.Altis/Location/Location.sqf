@@ -384,7 +384,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	
 	Arguments: _hObject
 	*/
-	METHOD(addObject)
+	public METHOD(addObject)
 		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject"), P_BOOL("_autoSimple")];
 
 		// Convert to simple object if required

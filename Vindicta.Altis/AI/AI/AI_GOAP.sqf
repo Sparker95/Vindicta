@@ -377,7 +377,7 @@ CLASS("AI_GOAP", "AI")
 		T_CALLM0("deleteExternalGoal");
 	ENDMETHOD;
 
-	METHOD(resetRecursive)
+	public METHOD(resetRecursive)
 		params [P_THISOBJECT];
 		T_CALLM0("reset");
 		// Reset subagents

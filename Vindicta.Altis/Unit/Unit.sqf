@@ -850,13 +850,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	/* private */ METHOD(clearInventory)
+	public METHOD(clearInventory)
 		params [P_THISOBJECT];
 		private _emptyInventory = [[],[],[],[]];
 		T_CALLM1("setInventory", _emptyInventory);
 	ENDMETHOD;
 
-	/* private */ METHOD(addToInventory)
+	public METHOD(addToInventory)
 		params [P_THISOBJECT, P_ARRAY("_inventory")];
 
 		private _data = T_GETV("data");
@@ -890,7 +890,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	/* private */ METHOD(restoreInventory)
+	METHOD(restoreInventory)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 
@@ -913,7 +913,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		}
 	ENDMETHOD;
 
-	/* private */ METHOD(_setRealInventory)
+	METHOD(_setRealInventory)
 		params [P_THISOBJECT, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 
 		if(_hO in allPlayers) exitWith {
@@ -933,7 +933,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		CALLSM2("Unit", "_addToRealInventory", _hO, _inventory);
 	ENDMETHOD;
 	
-	/* private */ STATIC_METHOD(_addToRealInventory)
+	STATIC_METHOD(_addToRealInventory)
 		params [P_THISCLASS, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 		//weapons
 		{

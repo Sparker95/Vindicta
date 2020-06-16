@@ -1006,40 +1006,40 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Override this to perform actions when a location spawns
-	protected virtual METHOD(locationSpawned)
+	public virtual METHOD(locationSpawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	ENDMETHOD;
 
 	// Override this to perform actions when a location despawns
-	protected virtual METHOD(locationDespawned)
+	public virtual METHOD(locationDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	ENDMETHOD;
 
 	// Override this to perform actions when a unit is killed
-	protected virtual METHOD(unitDestroyed)
+	public virtual METHOD(unitDestroyed)
 		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
 	ENDMETHOD;
 
 	// Override this to create gameModeData of a location
-	protected virtual METHOD(initLocationGameModeData)
+	public virtual METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 	ENDMETHOD;
 
 	// Game-mode specific functions
 	// Must be here for common interface
 	// Returns an array of cities where we can recruit from
-	protected virtual METHOD(getRecruitCities)
+	public virtual METHOD(getRecruitCities)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		[]
 	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
-	protected virtual METHOD(getRecruitCount)
+	public virtual METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		0
 	ENDMETHOD;
 
-	protected virtual METHOD(getRecruitmentRadius)
+	public virtual METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		0
 	ENDMETHOD;
@@ -1966,6 +1966,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(gGameSuspended == 0) then {
 			// Free all the units we previously froze
 			_thisObject spawn {
+				SCOPE_ACCESS_MIMIC("GameModeBase");
+
 				private _thisObject = _this;
 
 				// Wait for the suspend command to complate or we might have problems

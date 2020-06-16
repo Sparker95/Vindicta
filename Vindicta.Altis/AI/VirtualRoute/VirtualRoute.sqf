@@ -115,6 +115,7 @@ CLASS("VirtualRoute", "")
 
 		// Function that calculates the route
 		pr _calcRoute = {
+			SCOPE_ACCESS_MIMIC("VirtualRoute");
 			params [P_THISOBJECT];
 
 			private _from = T_GETV("from");
@@ -172,7 +173,7 @@ CLASS("VirtualRoute", "")
 				
 #ifndef RELEASE_BUILD
 				if(_debugDraw) then {
-					T_CALLM("debugDraw", []);
+					T_CALLM0("debugDraw");
 				};
 #endif
 				FIX_LINE_NUMBERS()

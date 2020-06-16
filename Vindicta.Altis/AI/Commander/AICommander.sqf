@@ -1030,10 +1030,13 @@ CLASS("AICommander", "AI")
 	ENDMETHOD;
 	
 	// Generates a new target cluster ID
-	METHOD(getNewTargetClusterID)
+	public METHOD(getNewTargetClusterID)
 		params [P_THISOBJECT];
-		pr _nextID = T_GETV("nextClusterID");
-		T_SETV("nextClusterID", _nextID + 1);
+		pr _nextID = -1;
+		CRITICAL_SECTION {
+			_nextID = T_GETV("nextClusterID");
+			T_SETV("nextClusterID", _nextID + 1);
+		};
 		_nextID
 	ENDMETHOD;
 		

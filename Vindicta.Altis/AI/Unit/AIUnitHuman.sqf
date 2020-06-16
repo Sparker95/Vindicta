@@ -631,7 +631,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	ENDMETHOD;
 
 	// Common interface
-	/* virtual */ METHOD(getCargoUnits)
+	public virtual METHOD(getCargoUnits)
 		[]
 	ENDMETHOD;
 

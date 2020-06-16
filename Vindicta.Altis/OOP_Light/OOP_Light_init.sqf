@@ -485,7 +485,7 @@ OOP_assert_method_call = {
 	// private _idx = _file find "Vindicta.Altis";
 	// _file = _file select [_idx + count "Vindicta.Altis"];
 	// _file = "." + _file;
-	
+
 	// assert thread
 	if(attr(thread) in _attribs && {isNil ("__ignoreThreadAffinity" + _class)}) then {
 		private _properThread = isNil "_thisScript" || {GETV(CALLM0(_obj, "getMessageLoop"), "scriptHandle") isEqualTo _thisScript} || {!canSuspend};

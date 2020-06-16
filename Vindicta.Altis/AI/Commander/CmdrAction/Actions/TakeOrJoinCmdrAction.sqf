@@ -286,7 +286,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 
-	METHOD(updateIntelFromDetachment)
+	protected virtual METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
