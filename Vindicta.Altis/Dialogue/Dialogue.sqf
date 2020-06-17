@@ -56,6 +56,7 @@ CLASS("Dialogue", "")
 		T_SETV("timeLastProcess", -1); // Means it wasn't updated yet
 		T_SETV("timeSentenceEnd", 0);
 		T_SETV("handlingEvent", false);
+		T_SETV("state", DIALOGUE_STATE_RUN);
 
 		// Send request to client
 		if (_clientID != -1) then {
@@ -68,12 +69,6 @@ CLASS("Dialogue", "")
 		params [P_THISOBJECT];
 
 		T_CALLM0("terminate");
-		
-		// Inform client about disconnection
-		pr _clientID = T_GETV("remoteClientID");
-		if (_clientID != -1) then {
-			REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "disconnect", [_thisObject], _clientID, false);
-		};
 	ENDMETHOD;
 
 	// Must be called periodically, up to once per frame
@@ -82,6 +77,7 @@ CLASS("Dialogue", "")
 
 		// Bail if dialogue is over
 		pr _state = T_GETV("state");
+		//OOP_INFO_1("process  state: %1", _state);
 		if (_state == DIALOGUE_STATE_END) exitWith {};
 
 		// Calculate delta-time
@@ -126,12 +122,13 @@ CLASS("Dialogue", "")
 		// Select the rest of the array (omit type and tag)
 		pr _nodeTail = _node select [2, 100];
 
+		//OOP_INFO_2("Node: %1, type: %2", _node, _type);
+
 		switch (_type) do {
 
 			// Show sentence
 			case NODE_TYPE_OPTION;
 			case NODE_TYPE_SENTENCE: {
-				T_CALLM1("nodeSentence", _nodeTail);
 				_nodeTail params [P_NUMBER("_talker"), P_STRING("_text")];
 
 				switch (_state) do {
@@ -154,12 +151,12 @@ CLASS("Dialogue", "")
 						T_SETV("state", DIALOGUE_STATE_WAIT_SENTENCE_END);
 
 						// Transmit data to nearby listeners
-						CALLSM3("Dialogue", "objectSaySentence", _thisObject, _talker, _text);
+						CALLSM3("Dialogue", "objectSaySentence", _thisObject, _talkObject, _text);
 					};
 
 					// Wait until this sentence is over
 					case DIALOGUE_STATE_WAIT_SENTENCE_END: {
-						if (time > T_GETV("timeSensenceEnd")) then {
+						if (time > T_GETV("timeSentenceEnd")) then {
 
 							OOP_INFO_1("Process: END node: option/sentence: %1", _node);
 
@@ -174,6 +171,7 @@ CLASS("Dialogue", "")
 							T_SETV("nodeID", _nodeID + 1);
 						} else {
 							// Wait for this sentence to end...
+							//OOP_INFO_1("Waiting for sentence to end: %1 s left", T_GETV("timeSentenceEnd") - time);
 						};
 					};
 
@@ -371,14 +369,6 @@ CLASS("Dialogue", "")
 		_id;
 	ENDMETHOD;
 
-	// Sets current node to a node with given tag
-	METHOD(goto)
-		params [P_THISOBJECT, P_STRING("_tag")];
-		pr _id = T_CALLM1("findNode", _tag);
-		T_SETV("nodeID", _id);
-		T_SETV("state", DIALOGUE_STATE_RUN);
-	ENDMETHOD;
-
 	// Handles a critical event - that is event which can lead to termination
 	// of the dialogue.
 	// It tries to jump to an event handler node if it's found, otherwise it ends the dialogue
@@ -437,6 +427,25 @@ CLASS("Dialogue", "")
 		T_SETV("state", DIALOGUE_STATE_END);
 	ENDMETHOD;
 
+	// Remotely executed on server by client when client selects an option
+	public METHOD(selectOption)
+		params [P_THISOBJECT, P_NUMBER("_optionID")];
+
+		OOP_INFO_1("selectOption: %1", _optionID);
+
+		if (T_GETV("state") == DIALOGUE_STATE_WAIT_OPTION) then {
+			pr _nodes = T_GETV("nodes");
+			pr _node = _nodes select T_GETV("nodeID");
+			_node params [P_STRING("_type"), P_STRING("_tag"), P_ARRAY("_optionTagArray")];
+			_optionID = _optionID % (count _optionTagArray); // We want to be safe with ID
+			pr _nextTag = _optionTagArray#_optionID;
+			T_CALLM1("goto", _nextTag);
+			T_SETV("state", DIALOGUE_STATE_RUN);
+		} else {
+			OOP_ERROR_0("selectOption called called while not waiting for option selection");
+		};
+	ENDMETHOD;
+
 	/*
 	=====================================================================
 	= PUBLIC API BELOW
@@ -464,6 +473,18 @@ CLASS("Dialogue", "")
 			pr _params = [_dialogueRef, _talker, _text];
 			REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "onObjectSaySentence", _params, _playersNearby, false);
 		};
+	ENDMETHOD;
+
+	/*
+	Sets current node to a node with given tag.
+	You can use it to jump to a specific node.
+	*/
+	METHOD(goto)
+		params [P_THISOBJECT, P_STRING("_tag")];
+		pr _id = T_CALLM1("findNode", _tag);
+		OOP_INFO_2("goto: %1, id: %2", _tag, _id);
+		T_SETV("nodeID", _id);
+		T_SETV("state", DIALOGUE_STATE_RUN);
 	ENDMETHOD;
 
 ENDCLASS;

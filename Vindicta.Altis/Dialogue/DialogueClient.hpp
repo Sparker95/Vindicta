@@ -34,3 +34,6 @@
 #define CONTROL_HEIGHT(ctrl) ((ctrlPosition ctrl) select 3)
 #define CONTROL_POS_X(ctrl) ((ctrlPosition ctrl) select 0)
 #define CONTROL_POS_Y(ctrl) ((ctrlPosition ctrl) select 1)
+
+// Enables coloured backgrounds for control elements for easier layour
+//#define DIALOGUE_LAYOUT_DEBUG

@@ -38,6 +38,9 @@ CLASS("DialogueClient", "")
 	// Mission event handler ID
 	VARIABLE("ehID");
 
+	// Event handler for keyboard
+	VARIABLE("keyboardEHID");
+
 	METHOD(new)
 		params [P_THISOBJECT];
 
@@ -67,11 +70,14 @@ CLASS("DialogueClient", "")
 		_ctrlGroup ctrlCommit 0;
 
 		// Test group background
-		pr _ctrlTest = (findDIsplay 46) ctrlCreate ["RscText", 123123, _ctrlGroup];
-		_ctrlTest ctrlSetPosition [0, 0, DIALOGUE_BOX_WIDTH-0.001, DIALOGUE_BOX_HEIGHT-0.001];
-		_ctrlTest ctrlSetBackgroundColor [0.2, 0, 0, 0.3];
-		_ctrlTest ctrlCommit 0;
-
+		pr _ctrlBackground = (findDIsplay 46) ctrlCreate ["RscText", 123123, _ctrlGroup];
+		_ctrlBackground ctrlSetPosition [0, 0, DIALOGUE_BOX_WIDTH-0.001, DIALOGUE_BOX_HEIGHT-0.001];
+		#ifdef DIALOGUE_LAYOUT_DEBUG
+		_ctrlBackground ctrlSetBackgroundColor [0.2, 0, 0, 0.3];
+		#else
+		_ctrlBackground ctrlSetBackgroundColor [0, 0, 0, 0];
+		#endif
+		_ctrlBackground ctrlCommit 0;
 		// Create the compass
 
 		// Create the per frame handler
@@ -81,6 +87,25 @@ CLASS("DialogueClient", "")
 			CALLM0(_instance, "onEachFrame");
 		}];
 		T_SETV("ehID", _id);
+
+		// Add keyboard event handler
+		private _keyDownEvent = (finddisplay 46) displayAddEventHandler ["KeyDown", { 
+			params ["_display", "_key", "_shift", "_ctrl", "_alt"];
+
+			pr _thisObject = CALLSM0("DialogueClient", "getInstance");
+			if (T_GETV("optionsShown")) then {
+				pr _optionID = _key - 2; // key '1' has code 2
+				if (_optionID >= 0 && _optionID <= 9) then {
+					T_CALLM1("_selectOption", _optionID);
+					true;	//disable default key events (commanding menu)
+				} else {
+					false;
+				};
+			} else {
+				false;
+			};
+		}];
+		T_SETV("keyboardEHID", _keyDownEvent);
 	ENDMETHOD;
 
 	METHOD(delete)
@@ -97,6 +122,9 @@ CLASS("DialogueClient", "")
 
 		// Remove mission event handler
 		removeMissionEventHandler ["Draw3D", T_GETV("ehID")];
+
+		// Remove keyboard event handler
+		(findDisplay 46) displayRemoveEventHandler  ["KeyDown", T_GETV("keyboardEHID")];
 	ENDMETHOD;
 
 	// Returns class instance, creates one if it's not created yet.
@@ -170,7 +198,7 @@ CLASS("DialogueClient", "")
 			pr _posy = DIALOGUE_BOX_HEIGHT - DIALOGUE_GAP;
 			for "_i" from (count _lineControls - 1) to 0 step -1 do {
 				pr _ctrl = _lineControls select _i;
-				_posy = _posy - CONTROL_HEIGHT(_ctrl) - DIALOGUE_LINE_GAP;
+				_posy = _posy - CONTROL_HEIGHT(_ctrl); // - DIALOGUE_LINE_GAP;
 
 				if (_posy < DIALOGUE_GAP) then {
 					// Delete this control if it's outside of the group box
@@ -259,7 +287,11 @@ CLASS("DialogueClient", "")
 		pr _ctrlGroup = T_GETV("ctrlGroup") select 0;
 
 		pr _ctrlLine = (findDisplay 46) ctrlCreate ["RscTextMulti", -1, _ctrlGroup];
-		_ctrlLine ctrlsetBackgroundColor [0, 0, 0, 0.3]; // can use for debug
+		//#ifdef DIALOGUE_LAYOUT_DEBUG
+		_ctrlLine ctrlsetBackgroundColor [0, 0, 0, 0.55]; // can use for debug
+		//#else
+		//_ctrlLine ctrlsetBackgroundColor [0, 0, 0, 0];
+		//#endif
 		_ctrlLine ctrlSetTextColor [1, 1, 1, 1];
 		_ctrlLine ctrlSetFontHeight 0.05;
 
@@ -267,15 +299,20 @@ CLASS("DialogueClient", "")
 		_ctrlLine ctrlSetPosition [DIALOGUE_GAP, 0, DIALOGUE_BOX_WIDTH-2*DIALOGUE_GAP, 0.1];
 		_ctrlLine ctrlCommit 0;
 
-		// Create structured text
-		if(player isEqualTo _speaker) then {
-			_ctrlLine ctrlSetText (format ["- %1", _text]);
-		}else{//some unit is talking to player
-			_ctrlLine ctrlSetText (format ["%1: %2", CALLSM1("DialogueClient", "getUnitName", _speaker), _text]);
+		// Resolve text for control
+		pr _textForControl = if (_type == LINE_TYPE_OPTION) then {
+			_text;
+		} else {
+			if(player isEqualTo _speaker) then {
+				format ["- %1", _text];
+			}else{//some unit is talking to player
+				format ["%1: %2", CALLSM1("DialogueClient", "getUnitName", _speaker), _text];
+			};
 		};
+		_ctrlLine ctrlSetText _textForControl;
 
 		// Set text and calculate height
-		pr _height = ctrlTextHeight _ctrlLine;
+		pr _height = (ctrlTextHeight _ctrlLine) + DIALOGUE_LINE_GAP + (safeZoneH*0.001);
 		//_height = 0.1;
 		#ifndef _SQF_VM
 		_ctrlLine ctrlSetPositionH _height;
@@ -284,7 +321,7 @@ CLASS("DialogueClient", "")
 		OOP_INFO_1("  set line height: %1", _height);
 
 		private _removeTime = if (_type == LINE_TYPE_SENTENCE) then {
-			time + SENTENCE_DURATION(_text) + 10.0;
+			time + SENTENCE_DURATION(_text) + 5.0;
 		} else {
 			-1; // If it's an option then we don't care about time
 		};
@@ -311,7 +348,11 @@ CLASS("DialogueClient", "")
 		_ctrlIcon = (findDisplay 46) ctrlCreate ["rscstructuredtext", -1];
 		// Initially it is created outside of view, its position will be updated later
 		_ctrlIcon ctrlSetPosition [666, 0, DIALOGUE_POINTER_WIDTH, DIALOGUE_POINTER_HEIGHT];
+		#ifdef DIALOGUE_LAYOUT_DEBUG
 		_ctrlIcon ctrlSetBackgroundColor [0, 0.5, 0, 0.4];
+		#else
+		_ctrlIcon ctrlSetBackgroundColor [0, 0, 0, 0];
+		#endif
 		_ctrlIcon ctrlCommit 0;
 		_ctrlIcon setVariable ["_speaker", _speaker];
 
@@ -338,12 +379,12 @@ CLASS("DialogueClient", "")
 	METHOD(_createSentence)
 		params [P_THISOBJECT, P_OBJECT("_object"), P_STRING("_text")];
 
-		OOP_INFO_1("createSentence: %1", _this);
+		OOP_INFO_1("_createSentence: %1", _this);
 
 		// Evaluate if we need to create the pointer control
 		// Array of current speakers
 		pr _speakersCurrent = T_GETV("lineControls") apply {_x getVariable "_speaker"};
-		if (!(_object in _speakersCurrent)) then {
+		if (!(_object in _speakersCurrent) && !(_object isEqualTo player)) then {
 			T_CALLM1("_createPointerControl", _object);
 		};
 
@@ -365,21 +406,40 @@ CLASS("DialogueClient", "")
 		T_CALLM0("_deleteAllLines");
 
 		// Create lines for options
+		pr _optionTags = [];
 		{
 			_x params ["_optionTag", "_optionText"];
+			_optionTags pushBack _optionTag;
 			OOP_INFO_1("create option: %1", _x);
 			_optionText = format ["%1: %2", _forEachIndex + 1, _optionText];
 			T_CALLM3("_createLineControl", _optionText, LINE_TYPE_OPTION, T_GETV("objectTalkTo"));
 		} forEach _options;
 
 		T_SETV("optionsShown", true);
+		T_SETV("options", _optionTags);
 	ENDMETHOD;
 
 	public STATIC_METHOD(createOptions)
-		params [P_THISOBJECT, P_ARRAY("_options")];
+		params [P_THISCLASS, P_ARRAY("_options")];
 		OOP_INFO_1("createOptions: %1", _options);
 		pr _instance = CALLSM0(_thisClass, "getInstance");
 		CALLM1(_instance, "_createOptions", _options);
+	ENDMETHOD;
+
+	METHOD(_selectOption)
+		params [P_THISOBJECT, P_NUMBER("_optionID")];
+		OOP_INFO_1("_selectOption: %1", _optionID);
+		pr _options = T_GETV("options"); // Array with tags
+		OOP_INFO_1("  current options: %1", _options);
+		if ((_optionID >= 0) && (_optionID <= (count _options - 1))) then {
+			pr _selectedTag = _options#_optionID;
+			OOP_INFO_1("  selected tag: %1", _selectedTag);
+			T_CALLM0("_deleteOptions");
+			// Send data to server
+			REMOTE_EXEC_CALL_METHOD(T_GETV("remoteDialogueRef"), "selectOption", [_optionID], ON_SERVER);
+		} else {
+			OOP_INFO_0("  option ID out of range");
+		};
 	ENDMETHOD;
 
 	// Undoes what _createOptions does
@@ -488,7 +548,7 @@ CLASS("DialogueClient", "")
 	ENDMETHOD;
 
 	STATIC_METHOD(getUnitName)
-		params [P_THISOBJECT, P_OBJECT("_unit")];
+		params [P_THISCLASS, P_OBJECT("_unit")];
 		if (isNull _unit) exitWith {"..."};
 
 		pr _name = name _unit;

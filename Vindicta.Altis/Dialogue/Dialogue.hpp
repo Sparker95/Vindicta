@@ -10,8 +10,8 @@
 #define DIALOGUE_STATE_WAIT_OPTION			3
 
 // Time it takes to say this sentence
-//#define SENTENCE_DURATION(SENTENCE) (count (SENTENCE) / 40.0 + 0.7)
-#define SENTENCE_DURATION(SENTENCE) 3
+#define SENTENCE_DURATION(SENTENCE) (count (SENTENCE) / 30.0 + 0.7)
+//#define SENTENCE_DURATION(SENTENCE) 0.5
 
 // Macro to find node with given tag
 // Returns -1 if not found
