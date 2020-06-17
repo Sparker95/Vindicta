@@ -99,14 +99,36 @@ CLASS("DialogueClient", "")
 		removeMissionEventHandler ["Draw3D", T_GETV("ehID")];
 	ENDMETHOD;
 
+	// Returns class instance, creates one if it's not created yet.
+	STATIC_METHOD(getInstance)
+		params [P_THISCLASS];
+
+		pr _instance = GETSV(_thisClass, "instance");
+		//OOP_INFO_1("getInstance: %1", _instance);
+		if (IS_NULL_OBJECT(_instance)) then {
+			_instance = NEW("DialogueClient", []);
+			SETSV(_thisClass, "instance", _instance);
+		};
+
+		_instance;
+	ENDMETHOD;
+
 	// Called on each frame
 	public METHOD(onEachFrame)
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("onEachFrame");
 
-		T_CALLM0("updateLines");
-		T_CALLM0("updatePointers");
+		pr _lines = T_GETV("lineControls");
+		pr _pointers = T_GETV("pointerControls");
+		pr _ctrlGroup = T_GETV("ctrlGroup") select 0;
+		if (count _pointers > 0 || count _lines > 0) then {
+			_ctrlGroup ctrlShow true;
+			T_CALLM0("updateLines");
+			T_CALLM0("updatePointers");
+		} else {
+			_ctrlGroup ctrlShow false;
+		};
 	ENDMETHOD;
 
 	// Deletes old sentences,
@@ -126,6 +148,11 @@ CLASS("DialogueClient", "")
 				// Check if time of this sentence is over
 				pr _removeTime = _x getVariable "_removeTime";
 				if (time >= _removeTime) then {	// Time out
+					_lineControlsToDelete pushBack _x;
+				};
+			} else {
+				// Options never expire
+				if (!T_GETV("optionsShown")) then {
 					_lineControlsToDelete pushBack _x;
 				};
 			};
@@ -190,19 +217,33 @@ CLASS("DialogueClient", "")
 			ctrlDelete _x;
 		} forEach _controlsToDelete;
 
-		// Update positions of controls
+		// Update positions and text of controls
 		{
 			pr _ctrlIcon = _x;
 			pr _speaker = _ctrlIcon getVariable "_speaker";
 			
 			pr _relDir = player getRelDir _speaker;
 			pr _xOffset = 0.45*safeZoneW*(sin _relDir);
-			pr _yOffset = -0.05*safeZoneH*(cos _relDir);
+			pr _yOffset = -0.04*safeZoneH*(cos _relDir);
 
 			_ctrlIcon ctrlsetposition [
 										_xOffset + DIALOGUE_POINTER_AREA_X - 0.5*DIALOGUE_POINTER_WIDTH,
 										_yOffset + DIALOGUE_POINTER_AREA_Y];
 			_ctrlIcon ctrlCommit 0;
+
+			// Set text
+			pr _imgPath = if ( (_relDir > 270) || (_relDir < 90) ) then {
+				"\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa"
+			} else {
+				"\a3\ui_f\data\IGUI\Cfg\Actions\arrow_down_gs.paa"
+			};
+			_ctrlIcon ctrlSetStructuredText (parseText format [
+				"<t font='RobotoCondensed' align = 'center' size = '1'><t color = '#FFFFFF'><img image='%2'/><t color = '%1' shadow = '2'>%3<t size = '1'>%4</t>",
+				_ctrlIcon getVariable "_unitColor",	// Precalculated
+				_imgPath,
+				"<br/>", // In case we need variable amount of line breaks
+				_ctrlIcon getVariable "_unitName"	// Precalculated
+			]);
 		} forEach _controls;
 	ENDMETHOD;
 
@@ -282,15 +323,11 @@ CLASS("DialogueClient", "")
 		};
 		*/
 
+		// Evaluate color and unit name
 		private _color_unit = CALLSM1("DialogueClient", "getUnitColor", _speaker);
-		_ctrlIcon ctrlSetStructuredText (parseText format [
-			"<t font='RobotoCondensed' align = 'center' size = '1'><t color = '#FFFFFF'>"+
-			"<img image='%2'/><t color = '%1' shadow = '2'>%3<t size = '1'>%4</t>",
-			_color_unit,
-			"\a3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa",
-			"<br/>", // It might contain line breaks (not sure if they are needed yet)
-			CALLSM1("DialogueClient", "getUnitName", _speaker)
-		]);
+		_ctrlIcon setVariable ["_unitColor", _color_unit];
+		private _unitName = CALLSM1("DialogueClient", "getUnitName", _speaker);
+		_ctrlIcon setVariable ["_unitName", _unitName];
 
 		OOP_INFO_1("  created pointer control: %1", _ctrlIcon);
 		
@@ -301,17 +338,88 @@ CLASS("DialogueClient", "")
 	METHOD(_createSentence)
 		params [P_THISOBJECT, P_OBJECT("_object"), P_STRING("_text")];
 
+		OOP_INFO_1("createSentence: %1", _this);
+
+		// Evaluate if we need to create the pointer control
+		// Array of current speakers
+		pr _speakersCurrent = T_GETV("lineControls") apply {_x getVariable "_speaker"};
+		if (!(_object in _speakersCurrent)) then {
+			T_CALLM1("_createPointerControl", _object);
+		};
+
 		T_CALLM3("_createLineControl", _text, LINE_TYPE_SENTENCE, _object);
-		T_CALLM1("_createPointerControl", _object);
 
 	ENDMETHOD;
+
+
+
+
+	// ==== OPTIONS
 
 	METHOD(_createOptions)
 		params [P_THISOBJECT, P_ARRAY("_options")];
+
+		OOP_INFO_1("_createOptions: %1", _options);
+
+		// Delete all lines
+		T_CALLM0("_deleteAllLines");
+
+		// Create lines for options
+		{
+			_x params ["_optionTag", "_optionText"];
+			OOP_INFO_1("create option: %1", _x);
+			_optionText = format ["%1: %2", _forEachIndex + 1, _optionText];
+			T_CALLM3("_createLineControl", _optionText, LINE_TYPE_OPTION, T_GETV("objectTalkTo")];
+		} forEach _options;
+
+		T_SETV("optionsShown", true);
 	ENDMETHOD;
 
+	public STATIC_METHOD(createOptions)
+		params [P_THISOBJECT, P_ARRAY("_options")];
+		OOP_INFO_1("createOptions: %1", _options);
+		pr _instance = CALLSM0(_thisClass, "getInstance");
+		CALLM1(_instance, "_createOptions", _options);
+	ENDMETHOD;
+
+	// Undoes what _createOptions does
+	METHOD(_deleteOptions)
+		params [P_THISOBJECT];
+		T_CALLM0("_deleteOptionLines");
+		T_SETV("optionsShown", false);
+	ENDMETHOD;
+
+	// Deletes all lines which have option type
+	METHOD(_deleteOptionLines)
+		params [P_THISOBJECT];
+
+		// Delete sentences which are not needed any more
+		pr _lineControls = T_GETV("lineControls");
+		pr _lineControlsToDelete = _lineControls select {
+			(_x getVariable "_type") == LINE_TYPE_OPTION;
+		};
+		{
+			_lineControls deleteAt (_lineControls find _x);
+			ctrlDelete _x;
+		} forEach _lineControlsToDelete;
+		_lineControlsToDelete = [];
+
+	ENDMETHOD;
+
+	// Deletes all line controls
+	METHOD(_deleteAllLines)
+		params [P_THISOBJECT];
+
+		{
+			ctrlDelete _x;
+		} forEach T_GETV("lineControls");
+		T_SETV("lineControls", []);
+	ENDMETHOD;
+
+	// ==== NEARBY OBJECT TALK HANDLER
+
 	METHOD(_onObjectSaySentence)
-		params [P_THISCLASS, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_object"), P_STRING("_text")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_object"), P_STRING("_text")];
 
 		pr _say = false;
 		if (T_GETV("connected")) then {
@@ -326,6 +434,8 @@ CLASS("DialogueClient", "")
 			_say = true;
 		};
 
+		OOP_INFO_1("  sentence will be created: %1", _say);
+
 		if (_say) then {
 			T_CALLM2("_createSentence", _object, _text);
 		};
@@ -335,23 +445,16 @@ CLASS("DialogueClient", "")
 	// Called remotely on client when some unit nearby says something
 	public STATIC_METHOD(onObjectSaySentence)
 		params [P_THISCLASS, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_object"), P_STRING("_text")];
-		pr _instance = CALLSM(_thisClass, "getInstance");
+
+		OOP_INFO_1("onObjectSaySentence: %1", _this);
+
+		pr _instance = CALLSM0(_thisClass, "getInstance");
 		CALLM3(_instance, "_onObjectSaySentence", _dialogueRef, _object, _text);
 	ENDMETHOD;
 
-	// Returns class instance, creates one if it's not created yet.
-	STATIC_METHOD(getInstance)
-		params [P_THISCLASS];
 
-		pr _instance = GETSV(_thisClass, "instance");
-		//OOP_INFO_1("getInstance: %1", _instance);
-		if (IS_NULL_OBJECT(_instance)) then {
-			_instance = NEW("DialogueClient", []);
-			SETSV(_thisClass, "instance", _instance);
-		};
 
-		_instance;
-	ENDMETHOD;
+	// ==== UTILITY FUNCTIONS
 
 	// Returns text color depending on unit side
 	STATIC_METHOD(getUnitColor)
@@ -397,6 +500,75 @@ CLASS("DialogueClient", "")
 		};
 
 		_name;
+	ENDMETHOD;
+
+
+	// ==== CONNECTION  ====
+	/*
+	DialogueClient object must connect to a Dialogue object hosted by the server for a conversation to operate.
+	Usual procedure is as follows:
+	- Client wants to have a dialogue with an NPC
+	- Server creates Dialogue object
+	- Dialogue -> DialogueClient: requestConnect
+	- DialogueClient -> Dialogue: acceptConnect or rejectConnect
+	*/
+
+	METHOD(_requestConnect)
+		params [P_THISOBJECT, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_object")];
+
+		OOP_INFO_1("_requestConnect: %1", _this);
+
+		if (T_GETV("connected")) then {
+			// If already connected, reject connection
+			REMOTE_EXEC_CALL_METHOD(_dialogueRef, "rejectConnect", [], ON_SERVER);
+		} else {
+			T_SETV("connected", true);
+			T_SETV("remoteDialogueRef", _dialogueRef);
+			T_SETV("objectTalkTo", _object);
+			REMOTE_EXEC_CALL_METHOD(_dialogueRef, "acceptConnect", [], ON_SERVER);
+		};
+	ENDMETHOD;
+
+	METHOD(_disconnect)
+		params [P_THISOBJECT, P_OOP_OBJECT("_dialogueRef")];
+
+		OOP_INFO_1("_disconnect: %1", _this);
+
+		if (T_GETV("connected") && (T_GETV("remoteDialogueRef") == _dialogueRef)) then {
+			T_SETV("connected", false);
+			T_SETV("remoteDialogueRef", NULL_OBJECT);
+			T_SETV("objectTalkTo", objNull);
+
+			// Shown options only make sense if we are connected
+			// Therefore we must delete shown options
+			T_CALLM0("_deleteOptions");
+		} else {
+			// Do nothing if disconnected already
+		};
+	ENDMETHOD;
+
+	/*
+	Remotely executed on client by the server.
+	*/
+	public STATIC_METHOD(requestConnect)
+		params [P_THISCLASS, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_object")];
+
+		OOP_INFO_1("requestConnect: %1", _this);
+
+		pr _instance = CALLSM0(_thisClass, "getInstance");
+		CALLM2(_instance, "_requestConnect", _dialogueRef, _object);
+	ENDMETHOD;
+
+	/*
+	Remotely executed on client by the server if connection must be terminated.
+	*/
+	public STATIC_METHOD(disconnect)
+		params [P_THISCLASS, P_OOP_OBJECT("_dialogueRef")];
+
+		OOP_INFO_1("disconnect: %1", _this);
+
+		pr _instance = CALLSM0(_thisClass, "getInstance");
+		CALLM1(_instance, "_disconnect", _dialogueRef);
 	ENDMETHOD;
 
 ENDCLASS;

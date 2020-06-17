@@ -15,7 +15,7 @@
 #define DIALOGUE_POINTER_AREA_Y (safeZoneY + 0.9*safeZoneH)
 
 // Pointer icon size
-#define DIALOGUE_POINTER_WIDTH 0.2
+#define DIALOGUE_POINTER_WIDTH 0.4
 #define DIALOGUE_POINTER_HEIGHT 0.2
 
 // Gap used for various calculations

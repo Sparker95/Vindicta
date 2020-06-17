@@ -56,13 +56,24 @@ CLASS("Dialogue", "")
 		T_SETV("timeLastProcess", -1); // Means it wasn't updated yet
 		T_SETV("timeSentenceEnd", 0);
 		T_SETV("handlingEvent", false);
+
+		// Send request to client
+		if (_clientID != -1) then {
+			pr _args = [_thisObject, _unit0];
+			REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "requestConnect", _args, _clientID, false);
+		};
 	ENDMETHOD;
 
 	METHOD(delete)
 		params [P_THISOBJECT];
 
 		T_CALLM0("terminate");
-		// todo send message to client
+		
+		// Inform client about disconnection
+		pr _clientID = T_GETV("remoteClientID");
+		if (_clientID != -1) then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "disconnect", [_thisObject], _clientID, false);
+		};
 	ENDMETHOD;
 
 	// Must be called periodically, up to once per frame
@@ -85,11 +96,13 @@ CLASS("Dialogue", "")
 
 		if (!T_GETV("handlingEvent")) then {
 			// Check if someone is not alive of null
-			if (!(alive _unit0) || !(alive _uni1)) then {
+			if (!(alive _unit0) || !(alive _unit1)) then {
+				OOP_INFO_0("Critical event: a unit is not alive");
 				T_CALLM1("_handleCriticalEvent", NODE_TAG_EVENT_NOT_ALIVE);
 			} else {
 				// Check if units are far away
 				if ((_unit0 distance _unit1) > DIALOGUE_DISTANCE) then {
+					OOP_INFO_0("Critical event: units are far away");
 					T_CALLM1("_handleCriticalEvent", NODE_TAG_EVENT_AWAY);
 				};
 			};
@@ -101,6 +114,7 @@ CLASS("Dialogue", "")
 
 		// Bail if we have reached the end of the node array
 		if (_nodeID >= (count _nodes) || _nodeID < 0) exitWith {
+			OOP_INFO_1("Node ID exceeded limit: %1, ending dialogue", _nodeID);
 			T_SETV("state", DIALOGUE_STATE_END);
 		};
 
@@ -123,9 +137,7 @@ CLASS("Dialogue", "")
 				switch (_state) do {
 					// Start this sentence
 					case DIALOGUE_STATE_RUN: {
-						// todo link with UI
-
-
+						OOP_INFO_1("Process: node: option/sentence: %1", _node);
 						// Start lip animation
 						pr _talkObject = T_GETV("unit0");
 						if (_talker == TALKER_1) then {
@@ -140,11 +152,17 @@ CLASS("Dialogue", "")
 
 						// Set state
 						T_SETV("state", DIALOGUE_STATE_WAIT_SENTENCE_END);
+
+						// Transmit data to nearby listeners
+						CALLSM("Dialogue", "objectSaySentence", _thisObject, _talker, _text);
 					};
 
 					// Wait until this sentence is over
 					case DIALOGUE_STATE_WAIT_SENTENCE_END: {
 						if (time > T_GETV("timeSensenceEnd")) then {
+
+							OOP_INFO_1("Process: END node: option/sentence: %1", _node);
+
 							// Stop lip animation
 							[T_GETV("unit0"), false] remoteExecCall ["setRandomLip", 0];
 							[T_GETV("unit1"), false] remoteExecCall ["setRandomLip", 0];
@@ -176,9 +194,12 @@ CLASS("Dialogue", "")
 				} else {
 					pr _do = true;
 
+					OOP_INFO_1("Process: node: jump/jumpif: %1", _node);
+
 					// If it's an 'if' node, also call method to evaluate the statement
 					if (_methodName != "") then {
 						pr _callResult = CALLM(_thisObject, _methodName, _arguments);
+						OOP_INFO_2("Called method %1, result: %2", _methodName, _callResult);
 						if (!_callResult) then { _do = false; };
 					};
 
@@ -200,9 +221,12 @@ CLASS("Dialogue", "")
 				} else {
 					pr _do = true;
 
+					OOP_INFO_1("Process: node: call/callif: %1", _node);
+
 					// If it's an 'if' node, also call method to evaluate the statement
 					if (_methodName != "") then {
 						pr _callResult = CALLM(_thisObject, _methodName, _arguments);
+						OOP_INFO_2("Called method %1, result: %2", _methodName, _callResult);
 						if (!_callResult) then { _do = false; };
 					};
 
@@ -221,13 +245,16 @@ CLASS("Dialogue", "")
 					OOP_ERROR_2("Invalid state: %1, node: %2", _state, _node);
 					_error = true;					
 				} else {
+					OOP_INFO_0("Process: node: return: %1", _node);
 					pr _stack = T_GETV("callStack");
 					if (count _stack == 0) then {
+						OOP_INFO_0("Nowhere to return to, ending dialogue");
 						// If there is nothing else in the stack then we should end the dialogue
 						T_SETV("state", DIALOGUE_STATE_END);
 					} else {
 						// Pop node tag from the stack and go there
 						pr _idReturn = _stack deleteAt ((count _stack) - 1);
+						OOP_INFO_1("Returning to node id: %1: %2", _idReturn, _nodes select _idReturn);
 						T_SETV("nodeID", _idReturn);
 					};
 				};
@@ -236,38 +263,49 @@ CLASS("Dialogue", "")
 
 			// Show options to client
 			case NODE_TYPE_OPTIONS: {
-				_nodeTail params [P_ARRAY("_optionsArray")];
+				_nodeTail params [P_ARRAY("_optionTagArray")];
 
 				switch (_state) do {
 
 					// Make an array of data to send to client
 					case DIALOGUE_STATE_RUN: {
-						// It will contain the text of each option and tag
-						pr _clientData = [];
-						pr _error = false;
-						{
-							pr _nodeID = T_CALLM1("findNode", _x);
-							pr _nodeOpt = _nodes#_nodeID;
-							if (_nodeOpt#NODE_ID_TYPE != NODE_TYPE_OPTION) then {
-								OOP_ERROR_1("Node %1 has wrong type, expected OPTION", _nodeID);
-								_error = true;
-							} else {
-								_clientData pushBack [_x, _nodeOpt#3];
-							};
-						} forEach _optionsArray;
 
-						if (count _clientData > 0 && !_error) then {
-							// Send data to client
+						OOP_INFO_1("Process: node: options: %1", _node);
 
-							// todo
-
-							// Now we are waiting for client's response
-							T_SETV("state", DIALOGUE_STATE_WAIT_OPTION);
-						} else {
-							// Raise error
-							OOP_ERROR_1("Could not find option nodes for tag %1", _tag);
+						// Options only make sense if a remote client ID is specified
+						if (T_GETV("remoteClientID") == -1) then {
+							OOP_ERROR_1("Options node encountered but remote client id is missing: %1", _node);
 							_error = true;
 						};
+
+						// It will contain the text of each option and tag
+						if (!_error) then {
+							pr _options = [];
+							{
+								pr _nodeID = T_CALLM1("findNode", _x);
+								pr _nodeOpt = _nodes#_nodeID;
+								if (_nodeOpt#NODE_ID_TYPE != NODE_TYPE_OPTION) then {
+									OOP_ERROR_1("Node %1 has wrong type, expected OPTION", _nodeID);
+									_error = true;
+								} else {
+									pr _optionTag = _x;
+									_options pushBack [_x, _nodeOpt#3]; // [tag, text] of the option node
+								};
+							} forEach _optionTagArray;
+
+							if (count _options > 0 && !_error) then {
+								// Send data to client
+								REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "createOptions", [_options], T_GETV("remoteClientID"), false);
+								
+								// Now we are waiting for client's response
+								T_SETV("state", DIALOGUE_STATE_WAIT_OPTION);
+							} else {
+								// Raise error
+								OOP_ERROR_1("Could not resolve option nodes for tag %1", _tag);
+								_error = true;
+							};
+						};
+
 					};
 
 					// We are still waiting for user to choose the option
@@ -291,6 +329,7 @@ CLASS("Dialogue", "")
 					OOP_ERROR_2("Invalid state: %1, node: %2", _state, _node);
 					_error = true;					
 				} else {
+					OOP_INFO_1("Process: node: call method: %1", _node);
 					// Call method
 					CALLM(_thisObject, _method, _arguments);
 					// Go to next node
@@ -298,6 +337,16 @@ CLASS("Dialogue", "")
 				};
 			};
 
+			// End dialogue
+			case NODE_TYPE_END: {
+				if (_state != DIALOGUE_STATE_RUN) then {
+					OOP_ERROR_2("Invalid state: %1, node: %2", _state, _node);
+					_error = true;					
+				} else {
+					OOP_INFO_0("Process: node: end");
+					T_SETV("state", DIALOGUE_STATE_END);
+				};
+			};
 
 			default {
 				OOP_ERROR_1("Unknown node type: %1", _type);
@@ -306,6 +355,7 @@ CLASS("Dialogue", "")
 
 		// Find out what to do now
 		if (_error) then {
+			OOP_INFO_1("Error happened, ending dialogue");
 			T_SETV("state", DIALOGUE_STATE_END);
 		};
 
@@ -337,7 +387,7 @@ CLASS("Dialogue", "")
 		pr _nodes = T_GETV("nodes");
 		pr _nodeID = FIND_NODE(_nodes, _tag);
 		if (_nodeID == -1) then {
-			// Just terminate this
+			// Terminate this
 			T_SETV("state", DIALOGUE_STATE_END);
 		} else {
 			// Jump to that node
@@ -349,11 +399,16 @@ CLASS("Dialogue", "")
 	// Called before dialogue is deleted
 	METHOD(terminate)
 		params [P_THISOBJECT];
+		
 		// Force-stop lip animations
 		[T_GETV("unit0"), false] remoteExecCall ["setRandomLip", 0];
 		[T_GETV("unit1"), false] remoteExecCall ["setRandomLip", 0];
+		
 		// Send data to client
-		// todo
+		pr _clientID = T_GETV("remoteClientID");
+		if (_clientID != -1) then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "disconnect", [_thisObject], _clientID, false);
+		};
 	ENDMETHOD;
 
 	// Returns true if the dialogue has ended, because of any reason
@@ -361,6 +416,25 @@ CLASS("Dialogue", "")
 	METHOD(hasEnded)
 		params [P_THISOBJECT];
 		T_GETV("state") == DIALOGUE_STATE_END;
+	ENDMETHOD;
+
+	// ===== Connection
+	// See description of connection procedure in DialogueClient.sqf
+
+	// Remotely executed on server by client when client has accepted connection
+	public METHOD(acceptConnect)
+		params [P_THISOBJECT];
+		OOP_INFO_0("acceptConnect");
+	ENDMETHOD;
+
+	// Remotely executed on server by client when client has rejected connection
+	public METHOD(rejectConnect)
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("rejectConnect");
+
+		// Just terminate this
+		T_SETV("state", DIALOGUE_STATE_END);
 	ENDMETHOD;
 
 	/*
@@ -381,11 +455,15 @@ CLASS("Dialogue", "")
 	public STATIC_METHOD(objectSaySentence)
 		params [P_THISOBJECT, P_OOP_OBJECT("_dialogueRef"), P_OBJECT("_talker"), P_STRING("_text")];
 
+		OOP_INFO_1("objectSaySentence: %1", _this);
+
 		// We only care to transmit it to players
 		pr _playersNearby = allPlayers select { (_x distance _talker) < SENTENCE_HEAR_DISTANCE};
-		// REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP)
-		pr _params = [_dialogueRef, _talker, _text];
-		REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "onObjectSaySentence", _params, _playersNearby, false);
+		if (count _playersNearby > 0) then {
+			// REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP)
+			pr _params = [_dialogueRef, _talker, _text];
+			REMOTE_EXEC_CALL_STATIC_METHOD("DialogueClient", "onObjectSaySentence", _params, _playersNearby, false);
+		};
 	ENDMETHOD;
 
 ENDCLASS;

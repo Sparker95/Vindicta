@@ -954,7 +954,11 @@ OOP_objectCrashDump = {
 OOP_callFromRemote = {
 	params[P_OOP_OBJECT("_object"), P_STRING("_methodNameStr"), ["_params", [], [[]]]];
 	//diag_log format [" --- OOP_callFromRemote: %1", _this];
-	CALLM(_object, _methodNameStr, _params);
+	if (IS_OOP_OBJECT(_object)) then {
+		CALLM(_object, _methodNameStr, _params);
+	} else {
+		diag_log format ["[OOP] Error: callFromRemote: object ref is invalid: %1, method: %2, parameters: %3", _object, _methodNameStr, _params];
+	};
 };
 
 // If assertion is enabled, this gets called on remote machine when we call a static method on it
