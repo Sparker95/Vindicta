@@ -369,7 +369,7 @@ CLASS("DialogueClient", "")
 			_x params ["_optionTag", "_optionText"];
 			OOP_INFO_1("create option: %1", _x);
 			_optionText = format ["%1: %2", _forEachIndex + 1, _optionText];
-			T_CALLM3("_createLineControl", _optionText, LINE_TYPE_OPTION, T_GETV("objectTalkTo")];
+			T_CALLM3("_createLineControl", _optionText, LINE_TYPE_OPTION, T_GETV("objectTalkTo"));
 		} forEach _options;
 
 		T_SETV("optionsShown", true);

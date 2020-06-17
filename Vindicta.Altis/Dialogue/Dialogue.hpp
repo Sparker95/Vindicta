@@ -60,7 +60,7 @@
 // Calls method of this dialogue object
 #define NODE_TYPE_CALL_METHOD "CALLM"
 // Ends this dialogue
-#define NODE_TYPE_END "END";
+#define NODE_TYPE_END "END"
 
 // === PUBLIC MACROS BELOW ===
 

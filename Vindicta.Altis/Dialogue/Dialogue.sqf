@@ -154,7 +154,7 @@ CLASS("Dialogue", "")
 						T_SETV("state", DIALOGUE_STATE_WAIT_SENTENCE_END);
 
 						// Transmit data to nearby listeners
-						CALLSM("Dialogue", "objectSaySentence", _thisObject, _talker, _text);
+						CALLSM3("Dialogue", "objectSaySentence", _thisObject, _talker, _text);
 					};
 
 					// Wait until this sentence is over
@@ -245,7 +245,7 @@ CLASS("Dialogue", "")
 					OOP_ERROR_2("Invalid state: %1, node: %2", _state, _node);
 					_error = true;					
 				} else {
-					OOP_INFO_0("Process: node: return: %1", _node);
+					OOP_INFO_1("Process: node: return: %1", _node);
 					pr _stack = T_GETV("callStack");
 					if (count _stack == 0) then {
 						OOP_INFO_0("Nowhere to return to, ending dialogue");
@@ -254,7 +254,7 @@ CLASS("Dialogue", "")
 					} else {
 						// Pop node tag from the stack and go there
 						pr _idReturn = _stack deleteAt ((count _stack) - 1);
-						OOP_INFO_1("Returning to node id: %1: %2", _idReturn, _nodes select _idReturn);
+						OOP_INFO_2("Returning to node id: %1: %2", _idReturn, _nodes select _idReturn);
 						T_SETV("nodeID", _idReturn);
 					};
 				};
@@ -355,7 +355,7 @@ CLASS("Dialogue", "")
 
 		// Find out what to do now
 		if (_error) then {
-			OOP_INFO_1("Error happened, ending dialogue");
+			OOP_INFO_0("Error while processing one of nodes, ending dialogue");
 			T_SETV("state", DIALOGUE_STATE_END);
 		};
 
