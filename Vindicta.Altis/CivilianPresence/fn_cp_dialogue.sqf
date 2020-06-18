@@ -1,6 +1,6 @@
 #include "..\CivilianPresence\common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
-#include "..\Dialogue\defineCommon.inc"
+//#include "..\Dialogue\defineCommon.inc"
 
 
 /* _civ variables local 

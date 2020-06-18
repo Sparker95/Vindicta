@@ -3,6 +3,11 @@
 /*
 Dialogue class.
 Manages a conversation between two characters, one of which is player.
+
+This is a base class for all dialogues. Specific dialogue variants must be implemented
+as classes derived from this class.
+You must override getNodes method when implementing own dialogue class.
+
 Authors: Sparker and Jeroen.
 */
 
@@ -39,14 +44,13 @@ CLASS("Dialogue", "")
 	VARIABLE("unit1"); // AI or player
 
 	METHOD(new)
-		params [P_THISOBJECT, P_ARRAY("_nodes"), P_OBJECT("_unit0"),
+		params [P_THISOBJECT, P_OBJECT("_unit0"),
 					P_OBJECT("_unit1"), P_NUMBER("_clientID")];
 
 		if (!isServer) exitWith {
 			OOP_ERROR_0("Dialogue must be created at server.");
 		};
 
-		T_SETV("nodes", _nodes);
 		T_SETV("remoteClientID", _clientID);
 		T_SETV("unit0", _unit0);
 		T_SETV("unit1", _unit1);
@@ -57,6 +61,14 @@ CLASS("Dialogue", "")
 		T_SETV("timeSentenceEnd", 0);
 		T_SETV("handlingEvent", false);
 		T_SETV("state", DIALOGUE_STATE_RUN);
+
+		// Call virtual method to get nodes
+		pr _nodes = T_CALLM2("getNodes", _unit0, _unit1);
+		if (isNil "_nodes" || {count _nodes == 0}) then {
+			OOP_ERROR_0("Node array is nil or empty");
+			_nodes = [];
+		};
+		T_SETV("nodes", _nodes);
 
 		// Send request to client
 		if (_clientID != -1) then {
@@ -204,6 +216,9 @@ CLASS("Dialogue", "")
 					if (_do) then {
 						pr _stack = T_GETV("callStack");
 						T_CALLM1("goto", _tagNext);
+					} else {
+						// Skip this node otherwise
+						T_SETV("nodeID", _nodeID + 1);
 					};
 				};
 			};
@@ -231,7 +246,10 @@ CLASS("Dialogue", "")
 					if (_do) then {
 						pr _stack = T_GETV("callStack");
 						_stack pushBack (_nodeID+1); // We will return to next node
-						T_CALLM1("goto", _tagNext);
+						T_CALLM1("goto", _tagCall);
+					} else {
+						// Skip this node otherwise
+						T_SETV("nodeID", _nodeID + 1);
 					};
 				};
 			};
@@ -485,6 +503,16 @@ CLASS("Dialogue", "")
 		OOP_INFO_2("goto: %1, id: %2", _tag, _id);
 		T_SETV("nodeID", _id);
 		T_SETV("state", DIALOGUE_STATE_RUN);
+	ENDMETHOD;
+
+	/*
+	Must be implemented in derived classes.
+	Returns an array of nodes for this dialogue class.
+	_unit0, _unit1 - same as in constructor.
+	*/
+	protected virtual METHOD(getNodes)
+		params [P_THISOBJECT, P_OBJECT("_unit0"), P_OBJECT("_unit1")];
+		[]
 	ENDMETHOD;
 
 ENDCLASS;

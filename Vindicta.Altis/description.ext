@@ -90,8 +90,6 @@ class Params {
 
 class CfgFunctions {
 
-    #include "Dialogue\functions.hpp"
-
     class pr0
     {
         #include "CivilianPresence\functions.hpp"
