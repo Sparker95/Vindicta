@@ -470,6 +470,39 @@ CLASS("Dialogue", "")
 			OOP_ERROR_0("selectOption called called while not waiting for option selection");
 		};
 	ENDMETHOD;
+	
+	// Remotely executed on server by client when client wants to talk to a unit
+	// Performs checks and causes AI to start a dialogue
+	public STATIC_METHOD(requestStartNewDialogue)
+		params [P_THISOBJECT, P_OBJECT("_unitNPC"), P_OBJECT("_unitPlayer"), P_NUMBER("_playerOwner")];
+
+		// Bail if not run on server
+		if (!isServer) exitWith {
+			OOP_ERROR_0("requestStartNewDialogue must be run on server");
+		};
+
+		// Bail if either objects are not alive
+		if (!(alive _unitNPC) || !(alive _unitPlayer)) exitWith {};
+
+		// Check if unit is free for talk
+		private _objCivilian = CALLSM1("Civilian", "getCivilianFromObjectHandle");
+		private _objUnit = CALLSM1("Unit", "getUnitFromObjectHandle");
+
+		private _aiHuman = NULL_OBJECT;
+		
+		if (!IS_NULL_OBJECT(_objCivilian)) then {
+			_aiHuman = CALLM0(_objCivilian, "getAI");
+		};
+
+		if (!IS_NULL_OBJECT(_objUnit)) then {
+			_aiHuman = CALLM0(_objUnit, "getAI");
+		};
+
+		// Bail if trying to talk not with an invalid AI
+		if (IS_NULL_OBJECT(_aiHuman)) exitWith {};
+
+		CALLM3(_aiHuman, "startNewDialogue", _unitPlayer, _playerOwner, "DialogueTest");
+	ENDMETHOD;
 
 	/*
 	=====================================================================

@@ -32,6 +32,8 @@ CLASS("AIUnitHuman", "AIUnit")
 
 	// Object this bot is currently talking to, or objNull if he isn't
 	VARIABLE("talkObject");
+	// Ref to dialogue this unit is currently hosting, or NULL_OBJECT
+	VARIABLE("dialogue");
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
@@ -72,7 +74,9 @@ CLASS("AIUnitHuman", "AIUnit")
 
 		T_SETV("interactionObject", objNull);
 
+		// Dialogue
 		T_SETV("talkObject", objNull);
+		T_SETV("dialogue", NULL_OBJECT);
 	ENDMETHOD;
 	
 	METHOD(delete)
@@ -120,6 +124,18 @@ CLASS("AIUnitHuman", "AIUnit")
 			} else {
 				T_SETV("stuckDuration", 0);
 				T_SETV("prevPos", getPos _hO);
+			};
+		};
+
+		// Process the dialogue if we have it
+		pr _dlg = T_GETV("dialogue");
+		if (!IS_NULL_OBJECT(_dlg)) then {
+			CALLM0(_dlg, "process");
+			// If dialogue has ended, delete it
+			if (CALLM0(_dlg, "hasEnded")) then {
+				DELETE(_dlg);
+				T_SETV("dialogue", NULL_OBJECT);
+				T_SETV("talkObject", objNull);
 			};
 		};
 
@@ -1067,7 +1083,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	/*
 	Returns true/false whether the unit can start a new conversation
 	*/
-	public METHOD(canStartNewConversation)
+	public METHOD(canStartNewDialogue)
 		params [P_THISOBJECT];
 
 		pr _hO = T_GETV("hO");
@@ -1084,10 +1100,37 @@ CLASS("AIUnitHuman", "AIUnit")
 			_canTalkGoal = CALLSM0(_currentGoal, "canTalk");
 		};
 
-		pr _talkobj = T_GETV("talkObject");
+		pr _talkObj = T_GETV("talkObject");
+		pr _dlg = T_GETV("dialogue");
 		// We can start a new conversation if we can talk in general
 		// and if we are not talking to anyone right now
-		(isNull _talkObj) && _canTalkBehaviour && _canTalkGoal;
+		(isNull _talkObj) &&  IS_NULL_OBJECT(_dlg) && _canTalkBehaviour && _canTalkGoal;
+	ENDMETHOD;
+
+	// Starts a new conversation
+	public METHOD(startNewDialogue)
+		params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID"), P_STRING("_dlgClassName")];
+
+		pr _hO = T_GETV("hO");
+
+		// Bail if not alive
+		if (!alive _hO) exitWith {};
+
+		if (T_CALLM0("canStartNewDialogue")) then {
+
+			// If another dialogue exists already, delete it
+			// Although it shouldn't happen, it's better to ensure it
+			pr _dlg = T_GETV("dialogue");
+			if (!IS_NULL_OBJECT(_dlg)) then {
+				DELETE(_dlg);
+			};
+
+			pr _newDlg = NEW(_dlgClassName, _hO, _unitTalkTo, _remoteClientID);
+			T_SETV("dialogue", _newDlg);
+			T_SETV("talkObject", _unitTalkTo);
+		} else {
+
+		};
 	ENDMETHOD;
 
 	// Debug

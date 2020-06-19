@@ -35,7 +35,7 @@ if (_unit isKindOf "CAManBase") then {
 	if (IS_NULL_OBJECT(_aiHuman)) then {
 		false;
 	} else {
-		CALLM0(_aiHuman, "canStartNewConversation");
+		CALLM0(_aiHuman, "canStartNewDialogue");
 	};
 } else {
 	// WTF
