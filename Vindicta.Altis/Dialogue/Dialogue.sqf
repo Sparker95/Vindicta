@@ -139,9 +139,10 @@ CLASS("Dialogue", "")
 		switch (_type) do {
 
 			// Show sentence
+			case NODE_TYPE_SENTENCE_METHOD;
 			case NODE_TYPE_OPTION;
 			case NODE_TYPE_SENTENCE: {
-				_nodeTail params [P_NUMBER("_talker"), P_STRING("_text")];
+				_nodeTail params [P_NUMBER("_talker"), P_STRING("_text"), P_STRING("_methodName")];
 
 				switch (_state) do {
 					// Start this sentence
@@ -153,6 +154,12 @@ CLASS("Dialogue", "")
 							_talkObject = T_GETV("unit1");
 						};
 						[_talkObject, true] remoteExecCall ["setRandomLip", 0];
+
+						// Call method if a method must provide text
+						if (_methodName != "") then {
+							OOP_INFO_1("  calling method to get text: %1", _methodName);
+							_text = T_CALLM0(_methodName);
+						};
 
 						// Calculate time when the sentence ends
 						pr _duration = SENTENCE_DURATION(_text);

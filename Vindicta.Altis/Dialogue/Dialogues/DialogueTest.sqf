@@ -12,7 +12,7 @@ CLASS("DialogueTest", "Dialogue")
 			NODE_SENTENCE("", TALKER_PLAYER, "Hello I am player"),
 			NODE_SENTENCE("main", TALKER_NPC, "Can I help you with something?"),
 			
-			NODE_OPTIONS("", ["opt_weather" ARG "opt_news" ARG "opt_bye" ARG "opt_testJumpIf" ARG "opt_testCall" ARG "opt_testCallMethod"]),
+			NODE_OPTIONS("", ["opt_weather" ARG "opt_news" ARG "opt_bye" ARG "opt_testJumpIf" ARG "opt_testCall" ARG "opt_testCallMethod" ARG "opt_testSentMethod"]),
 
 			NODE_OPTION("opt_weather", "Could you tell me the weather forecast?"),
 			NODE_SENTENCE("", TALKER_NPC, "It's raining whole day"),
@@ -53,6 +53,11 @@ CLASS("DialogueTest", "Dialogue")
 			NODE_SENTENCE("fail_tooFar", TALKER_NPC, "You are too far! Try again!"),
 			NODE_JUMP("", "main"),
 
+			// Test NODE_SENTENCE_METHOD
+			NODE_OPTION("opt_testSentMethod", "Test NODE_SENTENCE_METHOD"),
+			NODE_SENTENCE_METHOD("", TALKER_NPC, "getDynamicText"),	// It will call a method getDynamicText to get the actual sentence
+			NODE_JUMP("", "main"),
+
 			// Test subroutine
 			// After nodes are executed, it should return back to where it was called from
 			NODE_SENTENCE("node_testSrt", TALKER_NPC, "One"),
@@ -77,6 +82,11 @@ CLASS("DialogueTest", "Dialogue")
 	METHOD(isTooFar)
 		params [P_THISOBJECT];
 		(T_GETV("unit0") distance T_GETV("unit1")) > 5;
+	ENDMETHOD;
+
+	METHOD(getDynamicText)
+		params [P_THISOBJECT];
+		format ["We are located at %1, random number: %2", mapGridPosition T_GETV("unit0"), random 3];
 	ENDMETHOD;
 
 ENDCLASS;

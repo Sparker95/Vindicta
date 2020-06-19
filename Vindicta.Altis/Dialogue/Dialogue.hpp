@@ -43,6 +43,8 @@
 // Node types
 // Someone says something
 #define NODE_TYPE_SENTENCE	"SENT"
+// Someone says something, text resolved from method name
+#define NODE_TYPE_SENTENCE_METHOD "SENT_METHOD"
 // Unconditional jump to another node
 #define NODE_TYPE_JUMP		"JUMP"
 // Unconditional jump to another node and push current address to stack
@@ -65,16 +67,17 @@
 // === PUBLIC MACROS BELOW ===
 
 // Macros for nodes
-#define NODE_SENTENCE(tag, talker, text)			[NODE_TYPE_SENTENCE,	tag,	talker,			text]
-#define NODE_JUMP(tag, tagNext)						[NODE_TYPE_JUMP,		tag,	tagNext]
-#define NODE_JUMP_IF(tag, tagNext, method, args)	[NODE_TYPE_JUMP_IF,		tag,	tagNext, method, args]
-#define NODE_CALL(tag, tagNext)						[NODE_TYPE_CALL,		tag,	tagNext]
-#define NODE_CALL_IF(tag, tagNext,  method, args)	[NODE_TYPE_CALL_IF,		tag,	tagNext, method, args]
-#define NODE_OPTIONS(tag, optionsArray)				[NODE_TYPE_OPTIONS,		tag,	optionsArray]
-#define NODE_OPTION(tag, text)						[NODE_TYPE_OPTION,		tag,	TALKER_PLAYER,	text]
-#define NODE_CALL_METHOD(tag, method, args)			[NODE_TYPE_CALL_METHOD,	tag,	method, args]
-#define NODE_RETURN(tag)							[NODE_TYPE_RETURN,		tag]
-#define NODE_END(tag)								[NODE_TYPE_END, tag]
+#define NODE_SENTENCE(tag, talker, text)				[NODE_TYPE_SENTENCE,	tag,	talker,			text]
+#define NODE_SENTENCE_METHOD(tag, talker, method)		[NODE_TYPE_SENTENCE_METHOD,	tag,	talker,			"", method]
+#define NODE_JUMP(tag, tagNext)							[NODE_TYPE_JUMP,		tag,	tagNext]
+#define NODE_JUMP_IF(tag, tagNext, method, args)		[NODE_TYPE_JUMP_IF,		tag,	tagNext, method, args]
+#define NODE_CALL(tag, tagNext)							[NODE_TYPE_CALL,		tag,	tagNext]
+#define NODE_CALL_IF(tag, tagNext,  method, args)		[NODE_TYPE_CALL_IF,		tag,	tagNext, method, args]
+#define NODE_OPTIONS(tag, optionsArray)					[NODE_TYPE_OPTIONS,		tag,	optionsArray]
+#define NODE_OPTION(tag, text)							[NODE_TYPE_OPTION,		tag,	TALKER_PLAYER,	text]
+#define NODE_CALL_METHOD(tag, method, args)				[NODE_TYPE_CALL_METHOD,	tag,	method, args]
+#define NODE_RETURN(tag)								[NODE_TYPE_RETURN,		tag]
+#define NODE_END(tag)									[NODE_TYPE_END, tag]
 
 // Event node tags
 #define NODE_TAG_EVENT_AWAY			"EVENT_AWAY"
