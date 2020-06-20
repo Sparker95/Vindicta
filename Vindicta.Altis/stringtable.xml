@@ -5,24 +5,30 @@
 			<Key ID="STR_JNC_ACT_SELECT">
 				<Original>Select</Original>
 				<German>Auswählen</German>
+				<Chinesesimp>选择</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_ACT_CANCEL">
 				<Original>Cancel</Original>
 				<German>Abbrechen</German>
+				<Chinesesimp>取消</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_HINT">
 				<Original>Select an object</Original>
 				<German>Objekt auswählen</German>
+				<Chinesesimp>选择一个物体</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_NO_OBJECT">
 				<Original>Not looking at anything</Original>
 				<German>Nichts ausgewählt</German>
+				<Chinesesimp>你没面向任何东西</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_TARGET_HINT">
 				<Original>Loading to inventory in %1</Original>
+				<Chinesesimp>把装备装载至%1</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_MODIFIER_HINT">
 				<Original>Shift and Ctrl keys change how many items you move at once</Original>
+				<Chinesesimp>Shift和Ctrl可以改变每次移动东西的数量</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -31,31 +37,39 @@
 			<Key ID="STR_JNA_ACT_OPEN">
 				<Original>Arsenal</Original>
 				<German>Arsenal</German>
+				<Chinesesimp>军火库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
 				<Original>Arsenal to external Inventory</Original>
 				<German>In Fahrzeug laden</German>
+				<Chinesesimp>将军火库拿出至额外装备</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
 				<Original>Select something with an inventory to load into</Original>
+				<Chinesesimp>选择一个可以存放装备的物体</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD">
 				<Original>External Inventory to Arsenal</Original>
 				<German>Fahrzeug entladen</German>
+				<Chinesesimp>把额外装备放进军火库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD_DESC">
 				<Original>Please select an object with an inventory, or another Arsenal to load from</Original>
+				<Chinesesimp>请选择一个有储存空间的物体，或者另一个军火库来读取</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
 				<Original>Not looking at an object</Original>
+				<Chinesesimp>你没面向任何东西</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
 				<Original>Object too far away</Original>
 				<German>Objekt zu weit entfernt</German>
+				<Chinesesimp>物体太远</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
 				<Original>Object does not have any inventory or Arsenal</Original>
 				<German>Objekt hat kein Inventar oder Fahrzeug</German>
+				<Chinesesimp>物体没有任何储存空间或不是一个军火库</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -64,18 +78,22 @@
 			<Key ID="STR_JNG_ACT_OPEN">
 				<Original>Open garage</Original>
 				<German>Garage öffnen</German>
+				<Chinesesimp>打开车库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNG_ACT_STOREVEHICLE">
 				<Original>Garage Vehicle</Original>
 				<German>Fahrzeug verstauen</German>
+				<Chinesesimp>存放车辆</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR1">
 				<Original>Vehicle too far away</Original>
 				<German>Fahrzeug zu weit entfernt</German>
+				<Chinesesimp>车辆距离太远</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR2">
 				<Original>Not looking at a vehicle</Original>
 				<German>Kein Fahrzeug ausgewählt</German>
+				<Chinesesimp>没有面向车辆</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -84,18 +102,22 @@
 			<Key ID="STR_JN_FUEL_ACT_REFUEL">
 				<Original>Refuel</Original>
 				<German>Betanken</German>
+				<Chinesesimp>加油</Chinesesimp>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_REFUELOPTION">
 				<Original>Refuel cargo or tank</Original>
 				<German>Tank oder Ladung betanken</German>
+				<Chinesesimp>加油车或加油箱</Chinesesimp>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELTANK">
 				<Original>Tank</Original>
 				<German>Tank</German>
+				<Chinesesimp>油箱</Chinesesimp>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELCARGO">
 				<Original>Cargo</Original>
 				<German>Ladung</German>
+				<Chinesesimp>加油车</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -104,6 +126,7 @@
 			<Key ID="STR_JN_AMMO_ACT_REARM">
 				<Original>Rearm</Original>
 				<German>Neubewaffnen</German>
+				<Chinesesimp>整备</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -112,6 +135,7 @@
 			<Key ID="STR_JN_REPAIR_ACT_REPAIR">
 				<Original>Repair</Original>
 				<German>Reparieren</German>
+				<Chinesesimp>维修</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -123,23 +147,28 @@
 			<Key ID="STR_UM_OVERT">
 				<Original>OVERT</Original>
 				<German>FEINDLICH</German>
+				<Chinesesimp>公开</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_SUSPICIOUS">
 				<Original>SUSPICIOUS</Original>
 				<German>VERDÄCHTIG</German>
+				<Chinesesimp>可疑</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_UNDERCOVER">
 				<Original>UNDERCOVER</Original>
 				<German>ZIVIL</German>
+				<Chinesesimp>卧底</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_COMPROMISED">
 				<Original>COMPROMISED</Original>
 				<German>AUFGEFLOGEN</German>
+				<Chinesesimp>暴露</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Hints">
 			<Key ID="STR_UM_HINT_WEAPON">
 				<Original>OVERT: WEAPON</Original>
+				<Chinesesimp>公开：武器</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_DOWNED">
 				<Original>INCAPACITATED</Original>
@@ -161,33 +190,43 @@
 			</Key>
 			<Key ID="STR_UM_HINT_CLOSINGIN">
 				<Original>THEY ARE GOING TO SPOT YOU!</Original>
+				<Chinesesimp>他们会发现你的！</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPBEHAVIOR">
 				<Original>SUSPICIOUS BEHAVIOUR</Original>
+				<Chinesesimp>可疑行为</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_OFFROAD">
 				<Original>TOO FAR FROM ROADS</Original>
+				<Chinesesimp>离马路太远</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_ALLOWEDAREA">
 				<Original>THIS AREA IS BEING WATCHED! STAY ON THE ROAD!</Original>
+				<Chinesesimp>这个区域被监视了！呆在马路上！</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_MILAREA">
 				<Original>MILITARY AREA</Original>
+				<Chinesesimp>军事区域</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
+				<Chinesesimp>俘虏</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_MORPHINE">
 				<Original>INJECTING SOME MORPHINE?</Original>
+				<Chinesesimp>打一点吗啡？</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_ILLEGAL">
 				<Original>ILLEGAL ACTION</Original>
+				<Chinesesimp>违法动作</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
+				<Chinesesimp>接触存货</Chinesesimp>
 			</Key>	
 			<Key ID="STR_UM_HINT_COMPROMISEDVIC">
 				<Original>COMPROMISED VEHICLE</Original>
+				<Chinesesimp>已暴露车辆</Chinesesimp>
 			</Key>																
 		</Container>	
 	</Package>
@@ -471,17 +510,21 @@
 		<Container name="Load">
 			<Key ID="STR_Vindicta_GameManager_Load_Loading">
 				<Original>LOADING</Original>
+				<Chinesesimp>加载中</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Complete">
 				<Original>LOAD COMPLETE</Original>
+				<Chinesesimp>加载完成</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Failed">
 				<Original>LOAD FAILED</Original>
+				<Chinesesimp>加载失败</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Autoload">
 			<Key ID="STR_Vindicta_GameManager_Autoload">
 				<Original>Auto load</Original>
+				<Chinesesimp>自动加载</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Disabled">
 				<Original>Currently disabled, enable in CBA settings</Original>
