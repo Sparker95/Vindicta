@@ -28,7 +28,7 @@ BI Forum thread: https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-
 
 Our Discord: https://discord.gg/rDhxKBp
 
-GitHub Page: https://vindicta-team.github.io/Vindicta-Docs/
+Guide: https://vindicta-team.github.io/Vindicta-Docs/
 
 ## Technical implementation
 * Most of the code is being developed with OOP-Light (https://github.com/Sparker95/OOP-Light), a custom OOP implementation for SQF.
