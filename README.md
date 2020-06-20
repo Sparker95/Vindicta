@@ -24,9 +24,11 @@ The project is in 'Alpha' stage. Most of the features are implemented.
 ## Links
 Steam WorkShop download: https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
 
-BI Forum thread:https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
+BI Forum thread: https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
 
 Our Discord: https://discord.gg/rDhxKBp
+
+Guide: https://vindicta-team.github.io/Vindicta-Docs/
 
 ## Technical implementation
 * Most of the code is being developed with OOP-Light (https://github.com/Sparker95/OOP-Light), a custom OOP implementation for SQF.
