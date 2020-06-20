@@ -8,7 +8,6 @@ You should download the mission from steam workshop. **The GitHub releases are s
 https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
 
 **For running on your dedicated server, install the folder you download from Workshop as a mod.**
-https://vindicta-team.github.io/Vindicta-Docs/
 
 ## Key features
 * Multi-level AI (commander, garrison, group, unit level) which can plan ahead and execute different tasks (attacks on spotted targets/locations, sending reinforcements, dispatching patrols, managing its logistics)
@@ -25,9 +24,11 @@ The project is in 'Alpha' stage. Most of the features are implemented.
 ## Links
 Steam WorkShop download: https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
 
-BI Forum thread:https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
+BI Forum thread: https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
 
 Our Discord: https://discord.gg/rDhxKBp
+
+GitHub Page: https://vindicta-team.github.io/Vindicta-Docs/
 
 ## Technical implementation
 * Most of the code is being developed with OOP-Light (https://github.com/Sparker95/OOP-Light), a custom OOP implementation for SQF.
