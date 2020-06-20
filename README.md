@@ -8,7 +8,6 @@ You should download the mission from steam workshop. **The GitHub releases are s
 https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
 
 **For running on your dedicated server, install the folder you download from Workshop as a mod.**
-https://vindicta-team.github.io/Vindicta-Docs/
 
 ## Key features
 * Multi-level AI (commander, garrison, group, unit level) which can plan ahead and execute different tasks (attacks on spotted targets/locations, sending reinforcements, dispatching patrols, managing its logistics)
