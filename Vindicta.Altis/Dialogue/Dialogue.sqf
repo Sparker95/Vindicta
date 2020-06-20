@@ -466,6 +466,9 @@ CLASS("Dialogue", "")
 			pr _nextTag = _optionTagArray#_optionID;
 			T_CALLM1("goto", _nextTag);
 			T_SETV("state", DIALOGUE_STATE_RUN);
+
+			// Process this right now to accelerate the response
+			T_CALLM0("process");
 		} else {
 			OOP_ERROR_0("selectOption called called while not waiting for option selection");
 		};
@@ -476,17 +479,21 @@ CLASS("Dialogue", "")
 	public STATIC_METHOD(requestStartNewDialogue)
 		params [P_THISOBJECT, P_OBJECT("_unitNPC"), P_OBJECT("_unitPlayer"), P_NUMBER("_playerOwner")];
 
+		OOP_INFO_1("requestStartNewDialogue: %1", _this);
+
 		// Bail if not run on server
 		if (!isServer) exitWith {
 			OOP_ERROR_0("requestStartNewDialogue must be run on server");
 		};
 
 		// Bail if either objects are not alive
-		if (!(alive _unitNPC) || !(alive _unitPlayer)) exitWith {};
+		if (!(alive _unitNPC) || !(alive _unitPlayer)) exitWith {
+			OOP_INFO_0("  Unit or player is not alive");
+		};
 
 		// Check if unit is free for talk
-		private _objCivilian = CALLSM1("Civilian", "getCivilianFromObjectHandle");
-		private _objUnit = CALLSM1("Unit", "getUnitFromObjectHandle");
+		private _objCivilian = CALLSM1("Civilian", "getCivilianFromObjectHandle", _unitNPC);
+		private _objUnit = CALLSM1("Unit", "getUnitFromObjectHandle", _unitNPC);
 
 		private _aiHuman = NULL_OBJECT;
 		
@@ -498,8 +505,10 @@ CLASS("Dialogue", "")
 			_aiHuman = CALLM0(_objUnit, "getAI");
 		};
 
-		// Bail if trying to talk not with an invalid AI
-		if (IS_NULL_OBJECT(_aiHuman)) exitWith {};
+		// Bail if trying to talk with an invalid AI
+		if (IS_NULL_OBJECT(_aiHuman)) exitWith {
+			OOP_INFO_0("  Unit has no AI, can't create dialogue");
+		};
 
 		CALLM3(_aiHuman, "startNewDialogue", _unitPlayer, _playerOwner, "DialogueTest");
 	ENDMETHOD;

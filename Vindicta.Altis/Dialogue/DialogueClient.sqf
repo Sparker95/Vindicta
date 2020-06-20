@@ -250,7 +250,7 @@ CLASS("DialogueClient", "")
 			pr _ctrlIcon = _x;
 			pr _speaker = _ctrlIcon getVariable "_speaker";
 			
-			pr _relDir = player getRelDir _speaker;
+			pr _relDir = player getRelDir (getPosWorldVisual _speaker);
 			pr _xOffset = 0.45*safeZoneW*(sin _relDir);
 			pr _yOffset = -0.04*safeZoneH*(cos _relDir);
 
@@ -630,6 +630,65 @@ CLASS("DialogueClient", "")
 		pr _instance = CALLSM0(_thisClass, "getInstance");
 		CALLM1(_instance, "_disconnect", _dialogueRef);
 	ENDMETHOD;
+
+
+
+
+
+	// ==== Player actions
+
+	// Condition for talk action
+	DialogueClient_fnc_talkActionCondition = {
+		pr _co = cursorObject;
+
+		// Bail if not looking at anything
+		if (isNull _co) exitWith {false;};
+
+		// Bail if unconscious or anything like that
+		// todo
+
+		// Bail if target is not man
+		if (!(_co isKindOf "CAManBase")) exitWith {false;};
+
+		// Bail if target is too far
+		if ((player distance _co) > 4.5) exitWith {false;};
+
+		// Check if player is talking already
+		pr _instance = CALLSM0("DialogueClient", "getInstance");
+
+		// We can start a new dialogue if not talking to anyone right now
+		pr _return = !GETV(_instance, "connected");
+
+		_return;
+	};
+
+	// Initializes action to talk to bots for player
+	STATIC_METHOD(initPlayerAction)
+		params [P_THISCLASS];
+
+		// Script to run when action is activated
+		private _scriptRun = {
+			params ["_target", "_caller", "_actionId", "_arguments"];
+
+			pr _args = [cursorObject, player, clientOwner];
+			REMOTE_EXEC_CALL_STATIC_METHOD("Dialogue", "requestStartNewDialogue", _args, ON_SERVER, false);
+		};
+
+		player addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
+			_scriptRun, // Script
+			0, // Arguments
+			9000, // Priority
+			true, // ShowWindow
+			false, //hideOnUse
+			"", //shortcut
+			"call DialogueClient_fnc_talkActionCondition;", //condition
+			-1, //radius
+			false, //unconscious
+			"", //selection
+			"" // memory point
+		];
+	ENDMETHOD;
+
 
 ENDCLASS;
 

@@ -76,7 +76,8 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 	//                        G E T   P O S S I B L E   G O A L S
 	public override METHOD(getPossibleGoals)
 		//["GoalUnitSalute","GoalUnitScareAway"]
-		["GoalUnitScareAway"]
+		["GoalUnitScareAway",
+		"GoalUnitDialogue"]
 	ENDMETHOD;
 
 	//                      G E T   P O S S I B L E   A C T I O N S
@@ -101,7 +102,8 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 		"ActionUnitShootAtTargetRange",
 		"ActionUnitInfantryStandIdle",
 		//"ActionUnitShootLegTarget", 
-		"ActionUnitSurrender"
+		"ActionUnitSurrender",
+		"ActionUnitDialogue"
 		//"ActionUnitVehicleUnflip"
 		]
 	ENDMETHOD;

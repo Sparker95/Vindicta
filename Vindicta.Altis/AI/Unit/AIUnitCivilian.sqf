@@ -64,7 +64,8 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	public override METHOD(getPossibleGoals)
 		[
 			"GoalCivilianPanicNearest",
-			"GoalCivilianPanicAway"
+			"GoalCivilianPanicAway",
+			"GoalUnitDialogue"
 		]
 	ENDMETHOD;
 
@@ -75,7 +76,8 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 			"ActionUnitFlee",
 			"ActionUnitDismountCurrentVehicle",
 			"ActionUnitAmbientAnim",
-			"ActionUnitInfantryStandIdle"
+			"ActionUnitInfantryStandIdle",
+			"ActionUnitDialogue"
 		]
 	ENDMETHOD;
 

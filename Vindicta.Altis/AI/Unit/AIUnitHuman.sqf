@@ -87,6 +87,12 @@ CLASS("AIUnitHuman", "AIUnit")
 		// Unassign this unit from its assigned vehicle
 		T_CALLM0("unassignVehicle");
 
+		// Delete dialogue if it exists
+		pr _dlg = T_GETV("dialogue");
+		if (!IS_NULL_OBJECT(_dlg)) then {
+			DELETE(_dlg);
+		};
+
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_disableDebugMarkers");
 		#endif
@@ -136,6 +142,19 @@ CLASS("AIUnitHuman", "AIUnit")
 				DELETE(_dlg);
 				T_SETV("dialogue", NULL_OBJECT);
 				T_SETV("talkObject", objNull);
+			} else {
+				// Check if we can talk
+				// If we can't any more, end this dialogue
+				pr _canTalk = T_CALLM0("canTalk");
+				if (!_canTalk) then {
+					DELETE(_dlg);
+					T_SETV("dialogue", NULL_OBJECT);
+					T_SETV("talkObject", objNull);
+
+					// Say a phrase why we can't talk any longer
+					pr _text = selectRandom g_phrasesCantTalkAnyMore;
+					CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
+				};
 			};
 		};
 
@@ -166,7 +185,8 @@ CLASS("AIUnitHuman", "AIUnit")
 							TAG_TARGET_SCARE_AWAY,
 							TAG_TARGET_AMBIENT_ANIM,
 							TAG_TARGET_STAND_IDLE,
-							TAG_TARGET_VEHICLE_UNIT
+							TAG_TARGET_VEHICLE_UNIT,
+							TAG_TARGET_DIALOGUE
 							//TAG_TARGET_SHOOT_RANGE,	// no we don't walk straight to shooting range target to shoot it
 							//TAG_TARGET_SHOOT_LEG		// no we don't need to walk to someone to shoot him
 							]) then {
@@ -185,7 +205,8 @@ CLASS("AIUnitHuman", "AIUnit")
 					TAG_TARGET_AMBIENT_ANIM,
 					TAG_TARGET_SHOOT_RANGE,
 					TAG_TARGET_SHOOT_LEG,
-					TAG_TARGET_STAND_IDLE
+					TAG_TARGET_STAND_IDLE,
+					TAG_TARGET_DIALOGUE
 			]) then {
 				T_CALLM1("setHasInteractedWSP", false);
 			};
@@ -1080,56 +1101,92 @@ CLASS("AIUnitHuman", "AIUnit")
 		true
 	ENDMETHOD;
 
+	// Performs genetic checks if a bot can talk (behaviour, alive, vehicle, ...)
+	METHOD(canTalk)
+		params [P_THISOBJECT];
+
+		pr _hO = T_GETV("hO");
+
+		// Check if we are on foot
+		#define __CAN_TALK_ON_FOOT ((vehicle _hO) isEqualTo _hO)
+
+		// Check behaviour
+		#define __CAN_TALK_BEHAVIOUR ((behaviour _hO) in ["CARELESS", "SAFE", "AWARE"])
+
+		OOP_INFO_3("canTalk: alive: %1, onFoot: %2, behaviour: %3", alive _hO, __CAN_TALK_ON_FOOT, __CAN_TALK_BEHAVIOUR);
+
+		(alive _hO) && {__CAN_TALK_ON_FOOT} && {__CAN_TALK_BEHAVIOUR};
+	ENDMETHOD;
+
 	/*
 	Returns true/false whether the unit can start a new conversation
 	*/
 	public METHOD(canStartNewDialogue)
 		params [P_THISOBJECT];
 
+		OOP_INFO_0("canStartNewDialogue");
+
 		pr _hO = T_GETV("hO");
 
-		// Check if we can talk in general
-
-		// Check behaviour
-		pr _canTalkBehaviour = ((behaviour _hO) in ["CARELESS", "SAFE", "AWARE"]);
+		pr _canTalk = T_CALLM0("canTalk");
 
 		// Check if current goal allows talking
-		pr _canTalkGoal = true;
+		pr _canTalkGoal = true; // If we have no goal then we can talk
 		pr _currentGoal = T_GETV("currentGoal");
 		if (_currentGoal != "") then {
 			_canTalkGoal = CALLSM0(_currentGoal, "canTalk");
+			OOP_INFO_1("  can talk goal: %1", _canTalkGoal);
 		};
 
 		pr _talkObj = T_GETV("talkObject");
 		pr _dlg = T_GETV("dialogue");
 		// We can start a new conversation if we can talk in general
 		// and if we are not talking to anyone right now
-		(isNull _talkObj) &&  IS_NULL_OBJECT(_dlg) && _canTalkBehaviour && _canTalkGoal;
+		pr _return = (isNull _talkObj) &&  IS_NULL_OBJECT(_dlg) && _canTalk;
+
+		OOP_INFO_1("  return: %1", _return);
+
+		_return;
 	ENDMETHOD;
 
 	// Starts a new conversation
 	public METHOD(startNewDialogue)
 		params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID"), P_STRING("_dlgClassName")];
 
+		OOP_INFO_1("startNewDialogue: %1", _this);
+
 		pr _hO = T_GETV("hO");
 
 		// Bail if not alive
-		if (!alive _hO) exitWith {};
+		if (!alive _hO) exitWith {
+			OOP_INFO_0("  NPC is not alive");
+		};
 
 		if (T_CALLM0("canStartNewDialogue")) then {
+
+			OOP_INFO_0("  NPC can start dialogue");
 
 			// If another dialogue exists already, delete it
 			// Although it shouldn't happen, it's better to ensure it
 			pr _dlg = T_GETV("dialogue");
 			if (!IS_NULL_OBJECT(_dlg)) then {
+				OOP_INFO_1("  deleting old dialogue: %1", _dlg);
 				DELETE(_dlg);
 			};
 
-			pr _newDlg = NEW(_dlgClassName, _hO, _unitTalkTo, _remoteClientID);
+			pr _args = [_hO, _unitTalkTo, _remoteClientID];
+			pr _newDlg = NEW(_dlgClassName, _args);
+			OOP_INFO_1("  created dialogue: %1", _newDlg);
 			T_SETV("dialogue", _newDlg);
 			T_SETV("talkObject", _unitTalkTo);
-		} else {
 
+			// Call process to accelerate response
+			T_CALLM0("process");
+		} else {
+			// If the bot can't talk, he will say a phrase
+			OOP_INFO_0("  NPC is busy");
+			pr _text = selectRandom g_phrasesCantTalkBusy;
+			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 		};
 	ENDMETHOD;
 

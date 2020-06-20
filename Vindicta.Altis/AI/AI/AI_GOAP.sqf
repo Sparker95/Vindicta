@@ -31,13 +31,12 @@ Author: Sparker 07.11.2018
 
 #ifdef ENABLE_LOG_GOAP
 // Will output to .rpt which goals each AI is choosing from
-//#define DEBUG_POSSIBLE_GOALS
+#define DEBUG_POSSIBLE_GOALS
 pr0_fnc_logAction = {
 	params ["_AI", "_msg", "_prev", "_new"];
 	if(_prev isEqualTo _new) exitWith {};
 	private _ownerAndPath = switch GET_OBJECT_CLASS(_AI) do {
 		case "AIUnit";
-		case "AIUnitCivilian";
 		case "AIUnitInfantry";
 		case "AIUnitVehicle": {
 			private _unit = GETV(_AI, "agent");
@@ -45,6 +44,10 @@ pr0_fnc_logAction = {
 			private _garrison = CALLM0(_unit, "getGarrison");
 			//format["%1>%2>%3", _garrison, _group, _unit]
 			[CALLM0(_garrison, "getAI"), format["%1>%2", CALLM0(_group, "getAI"), _AI]]
+		};
+		case "AIUnitCivilian": {
+			private _unit = GETV(_AI, "agent");
+			[_AI, ""]
 		};
 		case "AIGroup": {
 			private _group = GETV(_AI, "agent");
@@ -1474,6 +1477,7 @@ CLASS("AI_GOAP", "AI")
 							// Calculate G value
 							// G = G(_node) + cost of this action
 							pr _cost = GETSV(_x, "cost");
+							ASSERT_MSG(!(isNil "_cost"), "Action cost is nil!");
 							pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
 							_n set [ASTAR_NODE_ID_G, _g];
 							

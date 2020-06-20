@@ -9,5 +9,5 @@ CLASS("GoalUnit", "Goal")
 	STATIC_METHOD(canTalk)
 		false;
 	ENDMETHOD;
-	
+
 ENDCLASS;

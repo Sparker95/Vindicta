@@ -899,6 +899,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
+		// Add action to talk to bots
+		CALLSM0("DialogueClient", "initPlayerAction");
+
 		// Give player a lockpick
 		_newUnit addItemToUniform "ACE_key_lockpick";
 

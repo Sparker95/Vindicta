@@ -67,6 +67,7 @@
 #define TAG_TARGET_SHOOT_RANGE	"g_targetShootRange"
 #define TAG_TARGET_SHOOT_LEG "g_targetShootLeg"
 #define TAG_TARGET_STAND_IDLE "g_targetStandIdle"
+#define TAG_TARGET_DIALOGUE "g_targetDialogue"
 
 // Garrison interaction targets
 #define TAG_POS_CLEAR_AREA "g_targetClearArea"
