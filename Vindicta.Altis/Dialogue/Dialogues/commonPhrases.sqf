@@ -19,3 +19,23 @@ g_phrasesCantTalkAnyMore = [
 	"I have no more time for this, sorry.",
 	"I must go now."
 ];
+
+g_phrasesCivilianCantTalkScared = [
+	"Don't hurt me!",
+	"Please don't hurt me!",
+	"I'm so scared!",
+	"Please don't shoot me!",
+	"No! Please! Don't shoot me!",
+	"I won't tell anyone I saw you! I swear!",
+	"I am not armed! Don't shoot!"
+];
+
+g_phasesCivilianPanic = [
+	"Oh my god!", "Damn!", "Damn it!", "Nooo!",
+	"Oh no!",
+	"Fuck!", "Oh fuck!", "Fucking hell!", "Fuck this shit!",
+	"I'm out of here!", "Shit shit shit!",
+	"Someone help me!", "Help me, anyone!",
+	"Police! Police! Help me!", "Someone, call the police!", "Someone, call the cops!", "Police! Help me!",
+	"This is horrible!", "This is insane!"
+];

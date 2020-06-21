@@ -5,6 +5,13 @@
 #define OOP_CLASS_NAME GoalCivilianWander
 CLASS("GoalCivilianWander", "GoalUnit")
 
+	STATIC_METHOD(getPossibleParameters)
+		[
+			[ [TAG_MOVE_TARGET, [[], objNull, NULL_OBJECT]] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	STATIC_METHOD(onGoalChosen)
 		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
 
@@ -16,6 +23,7 @@ CLASS("GoalCivilianWander", "GoalUnit")
 		_hO forcespeed -1;
 		_hO forceWalk true;
 		_hO setUnitPosWeak "UP";
+		_hO setBehaviour "SAFE";
 		//_hO switchAction "Default";
 
 		// Select a random waypoint, create action to move there

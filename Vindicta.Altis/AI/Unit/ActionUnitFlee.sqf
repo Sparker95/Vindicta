@@ -2,6 +2,11 @@
 
 #define pr private
 
+/*
+This action orders the unit to run to a given destination in panic.
+Standard AIUnitHuman movement methods are not used here, movement is handled differently here.
+*/
+
 #define OOP_CLASS_NAME ActionUnitFlee
 CLASS("ActionUnitFlee", "ActionUnit")
 
@@ -10,14 +15,14 @@ CLASS("ActionUnitFlee", "ActionUnit")
 	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
-			[ [TAG_POS, [[]]] ]	// Optional parameters
+			[ [TAG_MOVE_TARGET, [[]]], [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
 		]
 	ENDMETHOD;
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_ai"), P_ARRAY("_parameters")];
 
-		pr _pos = CALLSM3("Action", "getParameterValue", _parameters, TAG_POS, [0 ARG 0 ARG 0]);
+		pr _pos = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_TARGET, [0 ARG 0 ARG 0]);
 		T_SETV("pos", _pos);
 	ENDMETHOD;
 
@@ -38,6 +43,9 @@ CLASS("ActionUnitFlee", "ActionUnit")
 
 		//doStop _hO;
 		//_hO spawn misc_fnc_actionDropAllWeapons; // this can sleep so we should spawn it
+
+		pr _ai = T_GETV("AI");
+		CALLM0(_ai, "stopMoveToTarget"); // Stop standard movement, we handle it ourselves in this action
 
 		_hO forceWalk false;
 		_hO setUnitPosWeak "UP";

@@ -250,7 +250,9 @@ CLASS("DialogueClient", "")
 			pr _ctrlIcon = _x;
 			pr _speaker = _ctrlIcon getVariable "_speaker";
 			
+			#ifndef _SQF_VM
 			pr _relDir = player getRelDir (getPosWorldVisual _speaker);
+			#endif
 			pr _xOffset = 0.45*safeZoneW*(sin _relDir);
 			pr _yOffset = -0.04*safeZoneH*(cos _relDir);
 
@@ -646,6 +648,9 @@ CLASS("DialogueClient", "")
 
 		// Bail if unconscious or anything like that
 		// todo
+
+		// Bail if target is not alive or unconscious
+		if (!alive _co || {lifestate _co == "INCAPACITATED"}) exitWith {false;};
 
 		// Bail if target is not man
 		if (!(_co isKindOf "CAManBase")) exitWith {false;};

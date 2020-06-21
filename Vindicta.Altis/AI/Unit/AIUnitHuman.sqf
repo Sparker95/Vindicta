@@ -1113,9 +1113,24 @@ CLASS("AIUnitHuman", "AIUnit")
 		// Check behaviour
 		#define __CAN_TALK_BEHAVIOUR ((behaviour _hO) in ["CARELESS", "SAFE", "AWARE"])
 
+		// Check life state
+		#define __CAN_TALK_LIFE_STATE (lifeState _hO != "INCAPACITATED")
+
 		OOP_INFO_3("canTalk: alive: %1, onFoot: %2, behaviour: %3", alive _hO, __CAN_TALK_ON_FOOT, __CAN_TALK_BEHAVIOUR);
 
-		(alive _hO) && {__CAN_TALK_ON_FOOT} && {__CAN_TALK_BEHAVIOUR};
+		(alive _hO) && {__CAN_TALK_LIFE_STATE} && {__CAN_TALK_ON_FOOT} && {__CAN_TALK_BEHAVIOUR};
+	ENDMETHOD;
+
+	/*
+	Can be overriden in derived classes.
+	Here we can resolve more specific situations if the unit can talk or not,
+	for instance danger and other conditions.
+	Returning true will cause standard dialogue handling to run.
+	Returning false will cause the dialogue to be not created.
+	*/
+	protected virtual METHOD(handleStartNewDialogue)
+		//params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID"), P_STRING("_dlgClassName")];
+		true;
 	ENDMETHOD;
 
 	/*
@@ -1142,7 +1157,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		pr _dlg = T_GETV("dialogue");
 		// We can start a new conversation if we can talk in general
 		// and if we are not talking to anyone right now
-		pr _return = (isNull _talkObj) &&  IS_NULL_OBJECT(_dlg) && _canTalk;
+		pr _return = (isNull _talkObj) &&  {IS_NULL_OBJECT(_dlg)} && {_canTalkGoal} && {_canTalk};
 
 		OOP_INFO_1("  return: %1", _return);
 
@@ -1161,6 +1176,10 @@ CLASS("AIUnitHuman", "AIUnit")
 		if (!alive _hO) exitWith {
 			OOP_INFO_0("  NPC is not alive");
 		};
+
+		// Call class-specific dialogue handling
+		pr _stdDlgHandling = T_CALLM3("handleStartNewDialogue", _unitTalkTo, _remoteClientID, _dlgClassName);
+		if (!_stdDlgHandling) exitWith {false};
 
 		if (T_CALLM0("canStartNewDialogue")) then {
 

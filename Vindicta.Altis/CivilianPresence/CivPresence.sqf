@@ -428,7 +428,7 @@ CLASS("CivPresence", "")
 		pr _positions = T_GETV("buildingPosAGL") apply {[_x distance _pos, _x]};
 		_positions sort ASCENDING;
 		pr _id = (floor random 4) min (count _positions);
-		_positions#_id#_1;
+		_positions#_id#1;
 	ENDMETHOD;
 
 	METHOD(getFarthestSafeSpot)
@@ -436,7 +436,7 @@ CLASS("CivPresence", "")
 		pr _positions = T_GETV("buildingPosAGL") apply {[_x distance _pos, _x]};
 		_positions sort DESCENDING;
 		pr _id = (floor random 4) min (count _positions);
-		_positions#_id#_1;
+		_positions#_id#1;
 	ENDMETHOD;
 
 	METHOD(getSafeSpot)

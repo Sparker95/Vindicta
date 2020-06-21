@@ -9,11 +9,19 @@ Unit will try to hide in some nearby spot
 #define OOP_CLASS_NAME GoalCivilianPanicNearest
 CLASS("GoalCivilianPanicNearest", "GoalUnit")
 
+	STATIC_METHOD(getPossibleParameters)
+		[
+			[ [TAG_MOVE_TARGET, [[], objNull, NULL_OBJECT]] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		// Panic if in danger
-		if (GETV(_AI, "danger")) then {
+		pr _ws = GETV(_ai, "worldState");
+		if (WS_GET(_ws, WSP_UNIT_HUMAN_IN_DANGER)) then {
 			GETSV(_thisClass, "relevance");
 		} else {
 			0
@@ -31,7 +39,16 @@ CLASS("GoalCivilianPanicNearest", "GoalUnit")
 		pr _cp = GETV(_AI, "civPresence");
 		pr _pos = CALLM1(_cp, "getNearestSafeSpot", getPos _hO);
 		
-		_goalParameters pushBack [TAG_POS, _pos];
+		_goalParameters pushBack [TAG_MOVE_TARGET, _pos];
+		_goalParameters pushBack [TAG_MOVE_RADIUS, 5];
+
+		CALLM1(_ai, "setMoveTarget", _pos);
+		CALLM1(_ai, "setMoveTargetRadius", 5);
+		CALLM0(_ai, "updatePositionWSP");
+
+		// Say something
+		pr _text = selectRandom g_phasesCivilianPanic;
+		CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 
 	ENDMETHOD;
 

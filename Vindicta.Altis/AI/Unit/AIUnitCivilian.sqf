@@ -10,11 +10,15 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
+// Danger duration in seconds
+// If bot has no danger for more than this amount of time, he considers himself safe again
+#define DANGER_DURATION 60.0
+
 #define OOP_CLASS_NAME AIUnitCivilian
 CLASS("AIUnitCivilian", "AIUnitHuman")
 
 	// This guy feels in danger
-	VARIABLE("danger");
+	VARIABLE("lastDangerTime");
 
 	// Civilian presence module
 	VARIABLE("civPresence");
@@ -24,8 +28,8 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 
 		ASSERT_OBJECT_CLASS(_civPresence, "CivPresence");
 		
-		T_SETV("danger", false);
 		T_SETV("civPresence", _civPresence);
+		T_SETV("lastDangerTime", 0);
 
 		pr _hO = CALLM0(_agent, "getObjectHandle");
 
@@ -48,7 +52,9 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		// Bail of no AI
 		if (IS_NULL_OBJECT(_ai)) exitWith { nil };
 
-		SETV(_ai, "danger", true);
+		pr _ws = GETV(_ai, "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_IN_DANGER, true);
+		SETV(_ai, "lastDangerTime", time);
 		CALLM0(_ai, "setUrgentPriority");
 
 		// Return nothing if this EH is stacked, we don't override anything
@@ -58,6 +64,39 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "MiscLowPriority");
+	ENDMETHOD;
+
+	public override METHOD(process)
+		params [P_THISOBJECT];
+
+		// Handle DANGER world state property
+		// Reset danger after we've been in danger for too long
+		pr _ws = T_GETV("worldState");
+		if (WS_GET(_ws, WSP_UNIT_HUMAN_IN_DANGER)) then {
+			if (time - T_GETV("lastDangerTime") > DANGER_DURATION) then {
+				WS_SET(_ws, WSP_UNIT_HUMAN_IN_DANGER, false);
+			};
+		};
+
+		CALLCM("AIUnitHuman", _thisObject, "process", [_spawning]);
+	ENDMETHOD;
+
+
+	// Custom dialogue handling
+	protected override METHOD(handleStartNewDialogue)
+		params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID"), P_STRING("_dlgClassName")];
+
+		// Check if civilian is very scared
+		pr _worldState = T_GETV("worldState");
+		pr _danger = WS_GET(_worldState, WSP_UNIT_HUMAN_IN_DANGER);
+
+		if (_danger) exitWith {
+			pr _text = selectRandom g_phrasesCivilianCantTalkScared;
+			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
+			false;
+		};
+
+		true;
 	ENDMETHOD;
 
 	//                        G E T   P O S S I B L E   G O A L S
@@ -96,7 +135,6 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 			"prevPos",
 			"stuckDuration",
 			"timeLastProcess",
-			"danger",
 			"civPresence"
 		]
 	ENDMETHOD;

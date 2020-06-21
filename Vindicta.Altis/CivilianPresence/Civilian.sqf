@@ -45,6 +45,9 @@ CLASS("Civilian", "GOAP_Agent")
 					T_SETV("AI", NULL_OBJECT);
 				};
 			};
+
+			// Add to arma's remains collector
+			addToRemainsCollector [_hO];
 		}];
 		
 		// Start AI

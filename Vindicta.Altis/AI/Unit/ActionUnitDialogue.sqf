@@ -25,7 +25,7 @@ CLASS("ActionUnitDialogue", "ActionUnit")
 		T_SETV("target", _target);
 	ENDMETHOD;
 
-	protected override METHOD(activateIfInactive)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("ai");

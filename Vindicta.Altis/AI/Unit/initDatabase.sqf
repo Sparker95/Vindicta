@@ -39,7 +39,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 // ---------------- Goal effects
 ["GoalUnitArrest", _s, [[WSP_UNIT_HUMAN_HAS_INTERACTED, true]]] call AI_misc_fnc_setGoalEffects;
 ["GoalUnitDismountCurrentVehicle", _s, [[WSP_UNIT_HUMAN_AT_VEHICLE, false]]] call AI_misc_fnc_setGoalEffects;
-["GoalUnitFlee", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setGoalEffects;
+["GoalUnitFlee", _s, [[WSP_UNIT_HUMAN_IN_DANGER, false]]] call AI_misc_fnc_setGoalEffects;
 ["GoalUnitFollow", _s, [[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true]]] call AI_misc_fnc_setGoalEffects;
 ["GoalUnitGetInVehicle", _s, [
 	[WSP_UNIT_HUMAN_AT_VEHICLE, true],
@@ -86,9 +86,10 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 
 // ------------------- ActionUnitFlee
 ["ActionUnitFlee",_s,  [[WSP_UNIT_HUMAN_AT_VEHICLE, false],
-					[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
+						[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitFlee",_s,  [[WSP_UNIT_HUMAN_IN_DANGER, false]]] call AI_misc_fnc_setActionEffects;
-["ActionUnitFlee", [TAG_POS]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
+["ActionUnitFlee", [TAG_MOVE_TARGET]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
+["ActionUnitFlee", [TAG_MOVE_RADIUS]]	call AI_misc_fnc_setActionParametersFromGoalOptional;
 
 // ------------------- ActionUnitFollow
 // Used only when in vehicle!
