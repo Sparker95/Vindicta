@@ -53,6 +53,14 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		if (IS_NULL_OBJECT(_ai)) exitWith { nil };
 
 		pr _ws = GETV(_ai, "worldState");
+		pr _dangerCurrent = WS_GET(_ws, WSP_UNIT_HUMAN_IN_DANGER);
+
+		// Say something if we were not in danger but switched to danger
+		if (!_dangerCurrent) then {
+			pr _text = selectRandom g_phasesCivilianPanic;
+			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
+		};
+
 		WS_SET(_ws, WSP_UNIT_HUMAN_IN_DANGER, true);
 		SETV(_ai, "lastDangerTime", time);
 		CALLM0(_ai, "setUrgentPriority");
@@ -81,6 +89,10 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		CALLCM("AIUnitHuman", _thisObject, "process", [_spawning]);
 	ENDMETHOD;
 
+	protected override METHOD(getDialogueClassName)
+		params [P_THISOBJECT];
+		"DialogueCivilian";
+	ENDMETHOD;
 
 	// Custom dialogue handling
 	protected override METHOD(handleStartNewDialogue)

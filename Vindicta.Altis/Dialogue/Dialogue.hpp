@@ -10,7 +10,7 @@
 #define DIALOGUE_STATE_WAIT_OPTION			3
 
 // Time it takes to say this sentence
-#define SENTENCE_DURATION(SENTENCE) (count (SENTENCE) / 30.0 + 0.7)
+#define SENTENCE_DURATION(SENTENCE) (count (SENTENCE) / 50.0 + 0.7)
 //#define SENTENCE_DURATION(SENTENCE) 0.5
 
 // Macro to find node with given tag
@@ -78,6 +78,10 @@
 #define NODE_CALL_METHOD(tag, method, args)				[NODE_TYPE_CALL_METHOD,	tag,	method, args]
 #define NODE_RETURN(tag)								[NODE_TYPE_RETURN,		tag]
 #define NODE_END(tag)									[NODE_TYPE_END, tag]
+
+// Setters for various values
+#define NODE_SET_TAG(node, tag)	node set [1, tag]
+#define NODE_SET_TEXT(node, text) node set [3, text]
 
 // Event node tags
 #define NODE_TAG_EVENT_AWAY			"EVENT_AWAY"

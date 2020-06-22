@@ -93,6 +93,12 @@ CLASS("ActionUnitFlee", "ActionUnit")
 		// Always active
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
+
+	public override METHOD(terminate)
+		params [P_THISOBJECT];
+		pr _hO = T_GETV("hO");
+		doStop _hO;
+	ENDMETHOD;
 ENDCLASS;
 
 // List of moves

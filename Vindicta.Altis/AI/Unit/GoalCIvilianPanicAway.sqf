@@ -52,10 +52,6 @@ CLASS("GoalCivilianPanicAway", "GoalUnit")
 		CALLM1(_ai, "setMoveTarget", _pos);
 		CALLM1(_ai, "setMoveTargetRadius", 7);
 		CALLM0(_ai, "updatePositionWSP");
-
-		// Say something
-		pr _text = selectRandom g_phasesCivilianPanic;
-		CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 	ENDMETHOD;
 
 ENDCLASS;

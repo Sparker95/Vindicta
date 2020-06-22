@@ -1113,12 +1113,15 @@ CLASS("AIUnitHuman", "AIUnit")
 		// Check behaviour
 		#define __CAN_TALK_BEHAVIOUR ((behaviour _hO) in ["CARELESS", "SAFE", "AWARE"])
 
+		// Check danger world state property
+		#define __CAN_TALK_DANGER !WS_GET(T_GETV("worldState"), WSP_UNIT_HUMAN_IN_DANGER)
+
 		// Check life state
 		#define __CAN_TALK_LIFE_STATE (lifeState _hO != "INCAPACITATED")
 
-		OOP_INFO_3("canTalk: alive: %1, onFoot: %2, behaviour: %3", alive _hO, __CAN_TALK_ON_FOOT, __CAN_TALK_BEHAVIOUR);
+		OOP_INFO_4("canTalk: alive: %1, onFoot: %2, behaviour: %3, danger: %4", alive _hO, __CAN_TALK_ON_FOOT, __CAN_TALK_BEHAVIOUR, __CAN_TALK_DANGER);
 
-		(alive _hO) && {__CAN_TALK_LIFE_STATE} && {__CAN_TALK_ON_FOOT} && {__CAN_TALK_BEHAVIOUR};
+		(alive _hO) && {__CAN_TALK_LIFE_STATE} && {__CAN_TALK_ON_FOOT} && {__CAN_TALK_BEHAVIOUR} && {__CAN_TALK_DANGER};
 	ENDMETHOD;
 
 	/*
@@ -1131,6 +1134,15 @@ CLASS("AIUnitHuman", "AIUnit")
 	protected virtual METHOD(handleStartNewDialogue)
 		//params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID"), P_STRING("_dlgClassName")];
 		true;
+	ENDMETHOD;
+
+	/*
+	Virtual method which must be overriden in derived classes to return the class name of dialogue
+	which this unit will host when player tries to talk to him.
+	*/
+	protected virtual METHOD(getDialogueClassName)
+		params [P_THISOBJECT];
+		"DialogueTest";
 	ENDMETHOD;
 
 	/*
@@ -1166,7 +1178,7 @@ CLASS("AIUnitHuman", "AIUnit")
 
 	// Starts a new conversation
 	public METHOD(startNewDialogue)
-		params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID"), P_STRING("_dlgClassName")];
+		params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID")];
 
 		OOP_INFO_1("startNewDialogue: %1", _this);
 
@@ -1176,6 +1188,9 @@ CLASS("AIUnitHuman", "AIUnit")
 		if (!alive _hO) exitWith {
 			OOP_INFO_0("  NPC is not alive");
 		};
+
+		// Resolve dialogue class name
+		pr _dlgClassName = T_CALLM0("getDialogueClassName");
 
 		// Call class-specific dialogue handling
 		pr _stdDlgHandling = T_CALLM3("handleStartNewDialogue", _unitTalkTo, _remoteClientID, _dlgClassName);

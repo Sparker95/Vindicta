@@ -142,7 +142,7 @@ CLASS("Dialogue", "")
 			case NODE_TYPE_SENTENCE_METHOD;
 			case NODE_TYPE_OPTION;
 			case NODE_TYPE_SENTENCE: {
-				_nodeTail params [P_NUMBER("_talker"), P_STRING("_text"), P_STRING("_methodName")];
+				_nodeTail params [P_NUMBER("_talker"), P_DYNAMIC("_text"), P_STRING("_methodName")];
 
 				switch (_state) do {
 					// Start this sentence
@@ -159,6 +159,12 @@ CLASS("Dialogue", "")
 						if (_methodName != "") then {
 							OOP_INFO_1("  calling method to get text: %1", _methodName);
 							_text = T_CALLM0(_methodName);
+						} else {
+							// If method name wasn't provided, then we have either _text = some string
+							// Or an array of strings
+							if (_text isEqualType []) then {
+								_text = selectRandom _text;
+							};
 						};
 
 						// Calculate time when the sentence ends
@@ -312,7 +318,14 @@ CLASS("Dialogue", "")
 									_error = true;
 								} else {
 									pr _optionTag = _x;
-									_options pushBack [_x, _nodeOpt#3]; // [tag, text] of the option node
+									pr _optionText = _nodeOpt#3;
+									if (_optionText isEqualType []) then {
+										_optionText = selectRandom _optionText;
+										// We replace array with different sentences with a single sentence selected right now
+										// So that the actual sentence said later matches ot the one displayed to player
+										NODE_SET_TEXT(_nodeOpt, _optionText);
+									};
+									_options pushBack [_x, _optionText]; // [tag, text] of the option node
 								};
 							} forEach _optionTagArray;
 
@@ -510,7 +523,11 @@ CLASS("Dialogue", "")
 			OOP_INFO_0("  Unit has no AI, can't create dialogue");
 		};
 
-		CALLM3(_aiHuman, "startNewDialogue", _unitPlayer, _playerOwner, "DialogueTest");
+		// Player will say something
+		pr _text = selectRandom g_phrasesPlayerStartDialogue;
+		CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _unitPlayer, _text);
+
+		CALLM2(_aiHuman, "startNewDialogue", _unitPlayer, _playerOwner);
 	ENDMETHOD;
 
 	/*
