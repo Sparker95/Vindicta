@@ -57,7 +57,7 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 		};
 
 		// Regroup
-		_hO doFollow leader _hO;
+		_hO doFollow (leader group _hO);
 
 		// Set world state property
 		pr _ws = GETV(T_GETV("ai"), "worldState");

@@ -26,6 +26,10 @@ CLASS("AIGroup", "AI_GOAP")
 	// Points of interest for this group to investigate
 	VARIABLE("pointsOfInterest");
 
+	// Variables for ambient escord goal
+	VARIABLE("escortEndTime");
+	VARIABLE("escortObject");
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
@@ -56,6 +60,9 @@ CLASS("AIGroup", "AI_GOAP")
 		T_SETV("worldState", _ws);
 
 		T_SETV("pointsOfInterest", []);
+
+		T_SETV("escortObject", objNull);
+		T_SETV("escortEndTime", 0);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
@@ -91,6 +98,13 @@ CLASS("AIGroup", "AI_GOAP")
 			pr _unused = "";
 		};
 		#endif
+
+		// Escord object
+		if (! isNull T_GETV("escortObject")) then {
+			if (GAME_TIME > T_GETV("escortEndTime")) then {
+				T_SETV("escortObject", objNull);
+			};
+		};
 
 		CALLCM("AI_GOAP", _thisObject, "process", []);
 
@@ -131,7 +145,7 @@ CLASS("AIGroup", "AI_GOAP")
 			["GoalGroupAirLand", "GoalGroupAirMaintain"]
 		} else {
 			//["GoalGroupRelax"]
-			["GoalGroupUnflipVehicles", "GoalGroupArrest", "GoalGroupInvestigatePointOfInterest"]
+			["GoalGroupUnflipVehicles", "GoalGroupArrest", "GoalGroupInvestigatePointOfInterest", "GoalGroupEscort"]
 		};
 	ENDMETHOD;
 
@@ -427,4 +441,11 @@ CLASS("AIGroup", "AI_GOAP")
 		T_GETV("pointsOfInterest") pushBack _pos;
 	ENDMETHOD;
 	
+	// Sets an escort target
+	METHOD(setEscortTarget)
+		params [P_THISOBJECT, P_OBJECT("_target"), P_NUMBER("_duration")];
+		T_SETV("escortObject", _target);
+		T_SETV("escortEndTime", GAME_TIME + _duration);
+	ENDMETHOD;
+
 ENDCLASS;

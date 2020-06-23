@@ -19,7 +19,7 @@ CLASS("GoalUnitInfantryRegroup", "GoalUnit")
 		pr _group = CALLM0(_unit, "getGroup");
 		pr _leaderUnit = CALLM0(_group, "getLeader");
 		pr _hLeader = CALLM0(_leaderUnit, "getObjectHandle");
-		pr _moveRadius = 60;
+		pr _moveRadius = 40;
 
 		_goalParameters pushBack [TAG_MOVE_TARGET, _hLeader];
 		_goalParameters pushBack [TAG_MOVE_RADIUS, _moveRadius];

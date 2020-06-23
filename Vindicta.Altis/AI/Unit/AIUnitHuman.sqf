@@ -1089,10 +1089,15 @@ CLASS("AIUnitHuman", "AIUnit")
 		doStop _hO;
 		T_SETV("orderedToMove", false);
 		T_SETV("stuckDuration", 0); // Reset stuck timer
+
+		// Set world state property
+		// After this is issued, we are no longer following leader
+		pr _ws = T_GETV("worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
 	ENDMETHOD;
 
 	public override METHOD(getMessageLoop)
-		gMessageLoopUnscheduled
+		gMessageLoopUnscheduled;
 	ENDMETHOD;
 
 	// Common interface

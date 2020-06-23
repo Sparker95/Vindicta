@@ -312,12 +312,27 @@ CLASS("Dialogue", "")
 							pr _options = [];
 							{
 								pr _nodeID = T_CALLM1("findNode", _x);
-								pr _nodeOpt = _nodes#_nodeID;
-								if (_nodeOpt#NODE_ID_TYPE != NODE_TYPE_OPTION) then {
-									OOP_ERROR_1("Node %1 has wrong type, expected OPTION", _nodeID);
+
+								if (_nodeID == -1) then {
+									OOP_ERROR_1("Node with tag %1 was not found", _x);
 									_error = true;
-								} else {
-									pr _optionTag = _x;
+								};
+
+								pr _nodeOpt = _nodes#_nodeID;
+
+								// If the node with this tag isn't an option type,
+								// Scan till we find first node with option type
+								while {_nodeOpt#NODE_ID_TYPE != NODE_TYPE_OPTION && !_error} do {
+									_nodeID = _nodeID + 1;
+									if (_nodeID >= count _nodes) then {
+										OOP_ERROR_1("Couldn't find an option node after tag: %1", _x);
+										_error = true;
+									} else {
+										_nodeOpt = _nodes#_nodeID;
+									};
+								};
+								
+								if (!_error) then {
 									pr _optionText = _nodeOpt#3;
 									if (_optionText isEqualType []) then {
 										_optionText = selectRandom _optionText;

@@ -13,6 +13,7 @@
 #define TAG_LOCATION "g_location"
 #define TAG_ROUTE "g_route"
 #define TAG_CLEAR_RADIUS "g_clearRadius"
+#define TAG_FOLLOW_RADIUS "g_followRadius"
 
 // VEHICLE
 #define TAG_TARGET_VEHICLE_UNIT "g_vehTarget"

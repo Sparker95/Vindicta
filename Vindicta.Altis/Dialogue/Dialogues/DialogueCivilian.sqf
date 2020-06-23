@@ -41,7 +41,14 @@ CLASS("DialogueCivilian", "Dialogue")
 			"Damn that's horrible!",  "I am shocked to hear this!",
 			"You are so right!", "That's horrible!", "We should put an end to this!",
 			"Yes! The truth must be exposed!", "Oh really, they don't tell that on TV!",
-			"Damn I've never heard of it on the local radio!"
+			"Damn I've never heard of it on the local radio!",
+			// Written by Jasperdoit:
+			"You're straight up spitting facts there mate! It's about time somebody puts a stop to that, and I for one am up for it!",
+			"You're right, they really are corrupt. Lets get to work on some change around here!",
+			"They definitely have some stick up their ass, let's show them who the real boss is!",
+			"Well there is one solution, and it involves guns and liberation. I'm up for it if you ask me!",
+			"I might know a way to fix their attitude! Its about time I get involved in this!",
+			"The less control they have, the better! Count me in!"
 		];
 
 		pr _phrasesScare = [

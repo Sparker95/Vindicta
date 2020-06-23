@@ -4,12 +4,12 @@
 #define OOP_CLASS_NAME DialoguePolice
 CLASS("DialoguePolice", "Dialogue")
 
-	// We can incite civilian only once during the dialogue
-	VARIABLE("incited");
+	// Bearing where the player pointed at
+	VARIABLE("bearing");
 
 	METHOD(new)
 		params [P_THISOBJECT];
-		T_SETV("incited", false);
+		T_SETV("bearing", 0);
 	ENDMETHOD;
 
 	protected override METHOD(getNodes)
@@ -38,46 +38,58 @@ CLASS("DialoguePolice", "Dialogue")
 			"Thank you. We will do something about it."
 		];
 
+		pr _activities = [
+			"Some man is giving out leaflets.",
+			"Someone is making a political speech.",
+			"I think there is a political meeting over there.",
+			"I heard people talk about weapons.",
+			"Some guys are loading strange boxes into their car."
+		];
+
 		pr _array = [
 			//NODE_SENTENCE("", TALKER_PLAYER, g_phrasesPlayerStartDialogue),
 			NODE_SENTENCE("", TALKER_NPC, _sentenceOfficerHello),
 			
 			// Options: 
-			NODE_OPTIONS("options", ["opt_reportActivity" ARG "opt_bye"]),
+			NODE_OPTIONS("options", ["opt_wherePoliceStation" ARG "opt_reportActivity" ARG "opt_bye"]),
+
+			// Option: ask where is the police station
+			NODE_OPTION("opt_wherePoliceStation", "Where is the police station?"),
+			NODE_SENTENCE_METHOD("", TALKER_NPC, "sentencePoliceStation"),
+			NODE_SENTENCE("", TALKER_PLAYER, "Thanks!"),
+			NODE_JUMP("", "anythingElse"),
 
 			// Option: report activity to officer
 			NODE_OPTION("opt_reportActivity", "I want to report terrorist activity nearby!"),
 			NODE_SENTENCE("", TALKER_NPC, "What do you know?!"),
 			NODE_OPTIONS("", ["opt_report0" ARG "opt_report1" ARG "opt_report2" ARG "opt_report3" ARG "opt_report4"]),
 
-			NODE_OPTION("opt_report0", "Some man is giving out leaflets."),
-			NODE_JUMP("", "reportPos"),
-			NODE_OPTION("opt_report1", "Someone is making a political speech."),
-			NODE_JUMP("", "reportPos"),
-			NODE_OPTION("opt_report2", "I think there is a political meeting over there."),
-			NODE_JUMP("", "reportPos"),
-			NODE_OPTION("opt_report3", "I heard people talk about weapons."),
-			NODE_JUMP("", "reportPos"),
-			NODE_OPTION("opt_report4", "Some guys are loading strange boxes into their car."),
-			NODE_JUMP("", "reportPos"),
+			NODE_OPTION("opt_report0", _activities select 0), NODE_JUMP("", "reportPos"),
+			NODE_OPTION("opt_report1", _activities select 1), NODE_JUMP("", "reportPos"),
+			NODE_OPTION("opt_report2", _activities select 2), NODE_JUMP("", "reportPos"),
+			NODE_OPTION("opt_report3", _activities select 3), NODE_JUMP("", "reportPos"),
+			NODE_OPTION("opt_report4", _activities select 4), NODE_JUMP("", "reportPos"),
 
 			NODE_SENTENCE("reportPos", TALKER_NPC, "Where did you see it?"),
-			NODE_OPTIONS("", ["opt_tellBearing"]),
+			NODE_OPTIONS("", ["opt_tellBearing" ARG "opt_followMe"]),
 
-			NODE_OPTION("opt_tellBearing", "Where I am looking at. A few city blocks this way."),
-			NODE_CALL_METHOD("", "playPlayerGesture", []), // Player points with his arm somewhere
-			NODE_CALL_METHOD("", "reportActivity", []),
-			NODE_SENTENCE("", TALKER_NPC, _sentenceThanksForReport),
-			NODE_END(""),
-			
-			
+				NODE_CALL_METHOD("opt_tellBearing", "playPlayerGesture", []), // Player points with his arm somewhere
+				NODE_OPTION("", "Where I am looking at. A few hundred of meters this way."),
+				NODE_CALL_METHOD("", "reportActivity", []),
+				NODE_SENTENCE("", TALKER_NPC, _sentenceThanksForReport),
+				NODE_END(""),
+
+				NODE_OPTION("opt_followMe", "Follow me, I will show you!"),
+				NODE_SENTENCE("", TALKER_NPC, "This sounds strange. Let's go, show me the way!"),			
+				NODE_CALL_METHOD("", "follow", []),
+				NODE_END(""),
 
 			// Option: leave
 			NODE_OPTION("opt_bye", "Bye! I must leave now."),
 			NODE_SENTENCE("", TALKER_NPC, _sentenceOfficerBye),
 			NODE_END(""),
 
-			// Genertic 'Anything else?' reply after the end of some option branch
+			// Generic 'Anything else?' reply after the end of some option branch
 			NODE_SENTENCE("anythingElse", TALKER_NPC, "Anything else?"),
 			NODE_JUMP("", "options") // Go back to options
 		];
@@ -85,8 +97,15 @@ CLASS("DialoguePolice", "Dialogue")
 		_array;
 	ENDMETHOD;
 
+	// Player will point with finger
+	// At this moment his bearing is recorded
 	METHOD(playPlayerGesture)
 		params [P_THISOBJECT];
+
+		pr _player = T_GETV("unit1");
+		pr _bearing = direction _player;
+		T_SETV("bearing", _bearing);
+		OOP_INFO_1("Recorded bearing: %1", _bearing);
 
 		// Play action for player
 		"ace_gestures_point" remoteExecCall ["ace_gestures_fnc_playSignal", T_GETV("remoteClientID")];
@@ -98,7 +117,7 @@ CLASS("DialoguePolice", "Dialogue")
 
 		pr _dist = 300;
 		pr _player = T_GETV("unit1");
-		pr _bearing = direction _player;
+		pr _bearing = T_GETV("bearing");
 		pr _pos = _player getPos [_dist, _bearing];
 		OOP_INFO_1("Adding point of interest: %1", _pos);
 		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", T_GETV("unit0"));
@@ -106,6 +125,34 @@ CLASS("DialoguePolice", "Dialogue")
 		pr _groupAI = CALLM0(_group, "getAI");
 		ASSERT_MSG(!IS_NULL_OBJECT(_groupAI), "Group AI is not null");
 		CALLM1(_groupAI, "addPointOfInterest", _pos);
+		CALLM2(_groupAI, "setEscortTarget", objNull, 0);
+	ENDMETHOD;
+
+	// Police officer tells where his police station is
+	METHOD(sentencePoliceStation)
+		params [P_THISOBJECT];
+		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", T_GETV("unit0"));
+		pr _garrison = CALLM0(_unit, "getGarrison");
+		pr _loc = CALLM0(_garrison, "getLocation");
+		if (IS_NULL_OBJECT(_loc)) then {
+			"I don't know.";
+		} else {
+			pr _locPos = CALLM0(_loc, "getPos");
+			pr _bearing = T_GETV("unit0") getDir _locPos;
+			pr _bearingString = _bearing call misc_fnc_bearingString;
+			pr _distance = T_GETV("unit0") distance2D _locPos;
+			_distance = 10 * (round (_distance / 10));
+			format ["It is %1 meters %2 from here.", _distance, _bearingString];
+		};
+	ENDMETHOD;
+
+	METHOD(follow)
+		params [P_THISOBJECT];
+		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", T_GETV("unit0"));
+		pr _group = CALLM0(_unit, "getGroup");
+		pr _groupAI = CALLM0(_group, "getAI");
+		ASSERT_MSG(!IS_NULL_OBJECT(_groupAI), "Group AI is not null");
+		CALLM2(_groupAI, "setEscortTarget", T_GETV("unit1"), 5*60); // object, duration
 	ENDMETHOD;
 
 ENDCLASS;
