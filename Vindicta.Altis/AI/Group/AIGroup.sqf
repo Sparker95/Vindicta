@@ -23,6 +23,9 @@ CLASS("AIGroup", "AI_GOAP")
 	VARIABLE("unitMarkersEnabled");
 	#endif
 
+	// Points of interest for this group to investigate
+	VARIABLE("pointsOfInterest");
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
@@ -51,6 +54,8 @@ CLASS("AIGroup", "AI_GOAP")
 		// [_ws, WSP_GROUP_DRIVERS_ASSIGNED, false] call ws_setPropertyValue;
 		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, false] call ws_setPropertyValue;
 		T_SETV("worldState", _ws);
+
+		T_SETV("pointsOfInterest", []);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
@@ -126,7 +131,7 @@ CLASS("AIGroup", "AI_GOAP")
 			["GoalGroupAirLand", "GoalGroupAirMaintain"]
 		} else {
 			//["GoalGroupRelax"]
-			["GoalGroupUnflipVehicles", "GoalGroupArrest"]
+			["GoalGroupUnflipVehicles", "GoalGroupArrest", "GoalGroupInvestigatePointOfInterest"]
 		};
 	ENDMETHOD;
 
@@ -414,6 +419,12 @@ CLASS("AIGroup", "AI_GOAP")
 		} else {
 			_hGroup setSpeedMode _speedMode;
 		};
+	ENDMETHOD;
+
+	// Adds a point of interest
+	METHOD(addPointOfInterest)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		T_GETV("pointsOfInterest") pushBack _pos;
 	ENDMETHOD;
 	
 ENDCLASS;

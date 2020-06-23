@@ -232,7 +232,17 @@ CLASS("Goal", "")
 
 	// Gets called if plan generation is failed
 	STATIC_METHOD(onPlanFailed)
-		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")]
+		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+	ENDMETHOD;
+
+	// Called when this goal was reached (action has returned ACTION_STATE_COMPLETED)
+	STATIC_METHOD(onGoalCompleted)
+		// params [P_THISCLASS, P_OOP_OBJECT("_AI")];
+	ENDMETHOD;
+
+	// Called when this goal was failed (action has returned ACTION_STATE_FAILED)
+	STATIC_METHOD(onGoalFailed)
+		// params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 	ENDMETHOD;
 
 ENDCLASS;

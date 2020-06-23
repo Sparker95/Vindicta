@@ -46,7 +46,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 	[WSP_UNIT_HUMAN_AT_ASSIGNED_VEHICLE_ROLE, true]]] call AI_misc_fnc_setGoalEffects;
 ["GoalUnitIdle", _s, []] call AI_misc_fnc_setGoalEffects;
 ["GoalUnitInfantryMove", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setGoalEffects;
-["GoalUnitInfantryRegroup", _s, [[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true]]] call AI_misc_fnc_setGoalEffects;
+["GoalUnitInfantryRegroup", _s, [[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true], [WSP_UNIT_HUMAN_AT_TARGET_POS, true] ]] call AI_misc_fnc_setGoalEffects;
 ["GoalUnitMove", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setGoalEffects;
 //["GoalUnitNothing", _s, []] call AI_misc_fnc_setGoalEffects;
 ["GoalUnitRepairVehicle", _s, [[WSP_UNIT_HUMAN_HAS_INTERACTED, true]]] call AI_misc_fnc_setGoalEffects;

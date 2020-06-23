@@ -1083,6 +1083,9 @@ CLASS("AIUnitHuman", "AIUnit")
 	METHOD(stopMoveToTarget)
 		params [P_THISOBJECT];
 		pr _hO = T_GETV("hO");
+		if (GET_AGENT_FLAG(_hO)) then {
+			_hO setDestination [ getPos _hO,"LEADER PLANNED",true]; // Doesn't want to stop otherwise sometimes
+		};
 		doStop _hO;
 		T_SETV("orderedToMove", false);
 		T_SETV("stuckDuration", 0); // Reset stuck timer

@@ -73,6 +73,18 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 		};
 	ENDMETHOD;
 
+	protected override METHOD(getDialogueClassName)
+		params [P_THISOBJECT];
+		pr _unit = T_GETV("agent");
+		pr _gar = CALLM0(_unit, "getGarrison");
+		pr _faction = CALLM0(_gar, "getFaction");
+		if (_faction == "police") then {
+			"DialoguePolice";
+		} else {
+			"DialogueMilitary";
+		};
+	ENDMETHOD;
+
 	//                        G E T   P O S S I B L E   G O A L S
 	public override METHOD(getPossibleGoals)
 		//["GoalUnitSalute","GoalUnitScareAway"]

@@ -1,3 +1,4 @@
+/*
 class cp {
 	file = "civilianPresence";
 	class cp_init {};
@@ -17,3 +18,4 @@ class cp {
 
 	class cp_arrestUnit {};
 };
+*/

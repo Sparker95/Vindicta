@@ -487,9 +487,15 @@ CLASS("AI_GOAP", "AI")
 
 			if(_actionState in [ACTION_STATE_COMPLETED, ACTION_STATE_FAILED, ACTION_STATE_REPLAN]) then {
 				T_CALLM0("deleteCurrentAction");
+				pr _goalClassName = T_GETV("currentGoal");
 				T_SETV("currentGoal", NULL_OBJECT);
 				T_SETV("currentGoalSource", NULL_OBJECT);
 				T_SETV("currentGoalParameters", []);
+
+				switch (_actionState) do {
+					case ACTION_STATE_COMPLETED: { CALLSM1(_goalClassName, "onGoalCompleted", _thisObject); };
+					case ACTION_STATE_FAILED: { CALLSM1(_goalClassName, "onGoalFailed", _thisObject); };
+				};
 			};
 		};
 
