@@ -15,7 +15,7 @@ CLASS("GoalGarrisonMove", "Goal")
 	// Inherited classes must implement this
 	
 	/*
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Return relevance
@@ -25,7 +25,7 @@ CLASS("GoalGarrisonMove", "Goal")
 	*/
 
 	// Must use this method to get the move radius if we are moving to a location
-	STATIC_METHOD(getLocationMoveRadius)
+	public STATIC_METHOD(getLocationMoveRadius)
 		params [P_THISCLASS, P_OOP_OBJECT("_loc")];
 
 		pr _border = CALLM0(_loc, "getBorder"); // [center, a, b, angle, isRectangle, c]

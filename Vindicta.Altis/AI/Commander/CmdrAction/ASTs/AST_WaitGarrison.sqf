@@ -44,7 +44,7 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 		T_SETV("waitUntilDateVar", _waitUntilDateVar);
 	ENDMETHOD;
 
-	 public override METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 

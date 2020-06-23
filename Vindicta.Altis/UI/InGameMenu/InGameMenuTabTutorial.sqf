@@ -76,7 +76,7 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 	ENDMETHOD;
 
 
-	METHOD(onListboxSelChanged)
+	public event METHOD(onListboxSelChanged)
 		params [P_THISOBJECT];
 
 		pr _listnbox = T_CALLM1("findControl", "TAB_TUT_LISTBOX");
@@ -85,7 +85,7 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 
 	ENDMETHOD;
 
-	METHOD(onButtonNext)
+	public event METHOD(onButtonNext)
 		params [P_THISOBJECT];
 
 		// get current listbox index
@@ -103,7 +103,7 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 	ENDMETHOD;
 
 
-	METHOD(onButtonPrevious)
+	public event METHOD(onButtonPrevious)
 		params [P_THISOBJECT];
 
 		// get current listbox index
@@ -122,7 +122,7 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
-	 public override METHOD(beforeDelete)
+	public override METHOD(beforeDelete)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;

@@ -64,7 +64,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// This method is called at preinit (see https://community.bistudio.com/wiki/Initialization_Order)
-	METHOD(preInit)
+	public METHOD(preInit)
 		params [P_THISOBJECT];
 
 		// Create various objects not related to a particular mission
@@ -128,7 +128,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// This method is called from init.sqf (see https://community.bistudio.com/wiki/Initialization_Order)
-	METHOD(init)
+	public METHOD(init)
 		params [P_THISOBJECT];
 
 		// This must be done after modules are initialized at least, preferably as late as possible in init order.
@@ -139,7 +139,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	
 	// - - - - - Getters for game state - - - - -
 
-	METHOD(isGameModeInitialized)
+	public METHOD(isGameModeInitialized)
 		params [P_THISOBJECT];
 		T_GETV("gameModeInitialized")
 	ENDMETHOD;
@@ -565,7 +565,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	// FUNCTIONS CALLED BY CLIENT
 
 	// Called by client when he needs to get data on all the saved games
-	METHOD(clientRequestAllSavedGames)
+	public server METHOD(clientRequestAllSavedGames)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
 
 		// Read headers of all records
@@ -591,18 +591,18 @@ CLASS("GameManager", "MessageReceiverEx")
 		} forEach _recordNamesAndHeaders;
 	ENDMETHOD;
 
-	METHOD(clientSaveGame)
+	public server METHOD(clientSaveGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
 		T_CALLM0("saveGame");
 		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
 	ENDMETHOD;
 
-	METHOD(serverSaveGameRecovery)
+	public server METHOD(serverSaveGameRecovery)
 		params [P_THISOBJECT];
 		T_CALLM1("saveGame", SAVE_TYPE_RECOVERY);
 	ENDMETHOD;
 
-	METHOD(clientOverwriteSavedGame)
+	public server METHOD(clientOverwriteSavedGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
 
 		OOP_INFO_1("CLIENT OVERWRITE SAVED GAME: %1", _recordName);
@@ -612,13 +612,13 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
 	ENDMETHOD;
 
-	METHOD(clientDeleteSavedGame)
+	public server METHOD(clientDeleteSavedGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
 		T_CALLM1("deleteSavedGame", _recordName);
 		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
 	ENDMETHOD;
 
-	METHOD(clientLoadSavedGame)
+	public server METHOD(clientLoadSavedGame)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
 
 		OOP_INFO_1("CLIENT LOAD SAVED GAME: %1", _recordName);
@@ -631,7 +631,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	// Initializes a new campaign and a new game mode on server (does NOT load a saved game, but creates a new one!)
 	// todo: initialization parameters
-	METHOD(initCampaignServer)
+	public METHOD(initCampaignServer)
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_className"),
 				P_ARRAY("_gameModeParameters"), P_STRING("_campaignName"),
 				P_ARRAY("_templatesVerify")];
@@ -695,7 +695,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Must be run on client to initialize the game mode
-	METHOD(initGameModeClient)
+	public client METHOD(initGameModeClient)
 		params [P_THISOBJECT, P_STRING("_className")];
 
 		if (!T_GETV("gameModeInitialized")) then {
@@ -718,7 +718,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 	ENDMETHOD;
 
-	METHOD(staticInitGameModeClient)
+	public client METHOD(staticInitGameModeClient)
 		params [P_THISCLASS, P_STRING("_className")];
 		pr _instance = CALLSM0("GameManager", "getInstance");
 		CALLM2(_instance, "postMethodAsync", "initGameModeClient", [_className]);
@@ -792,7 +792,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		["autosavewarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 	};
 
-	METHOD(checkPeriodicAutoSave)
+	public METHOD(checkPeriodicAutoSave)
 		params [P_THISOBJECT];
 
 		if(!vin_autoSave_enabled || vin_autoSave_interval == 0) exitWith { 
@@ -831,7 +831,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_SETV("lastAutoSave", TIME_NOW);
 	ENDMETHOD;
 
-	METHOD(checkEmptyAutoSave)
+	public METHOD(checkEmptyAutoSave)
 		params [P_THISOBJECT];
 		if(!vin_autoSave_enabled || !vin_autoSave_onEmpty) exitWith { };
 		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
@@ -844,7 +844,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		gMessageLoopGameManager
 	ENDMETHOD;
 
-	STATIC_METHOD(getInstance)
+	public STATIC_METHOD(getInstance)
 		gGameManager
 	ENDMETHOD;
 

@@ -12,7 +12,7 @@ TAG_TARGET - object handle of the target to shoot
 #define OOP_CLASS_NAME GoalUnitShootLegTarget
 CLASS("GoalUnitShootLegTarget", "Goal")
 
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _args = [_AI, _parameters];

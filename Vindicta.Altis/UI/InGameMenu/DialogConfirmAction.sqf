@@ -34,7 +34,7 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 		T_SETV("codeNo", _codeNo);
 	ENDMETHOD;
 
-	 protected override METHOD(onButtonClick)
+	public override METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_1("Button was clicked: %1", _ID);

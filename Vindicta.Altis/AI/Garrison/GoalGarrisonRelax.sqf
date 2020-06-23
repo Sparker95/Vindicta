@@ -6,7 +6,7 @@
 #define OOP_CLASS_NAME GoalGarrisonRelax
 CLASS("GoalGarrisonRelax", "Goal")
 
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// What is the garrison alert level?
@@ -17,7 +17,7 @@ CLASS("GoalGarrisonRelax", "Goal")
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _ws = GETV(_AI, "worldState");

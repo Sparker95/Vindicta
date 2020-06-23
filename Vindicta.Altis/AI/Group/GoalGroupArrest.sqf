@@ -11,7 +11,7 @@ Author: Marvis 09.05.2019
 #define OOP_CLASS_NAME GoalGroupArrest
 CLASS("GoalGroupArrest", "Goal")
 
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		pr _group = GETV(_AI, "agent");
@@ -31,7 +31,7 @@ CLASS("GoalGroupArrest", "Goal")
 
 	ENDMETHOD;
 
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		//OOP_INFO_0("GoalGroupArrest: Creating predefined action.");

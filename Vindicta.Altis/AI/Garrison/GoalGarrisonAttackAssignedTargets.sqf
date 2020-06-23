@@ -8,7 +8,7 @@ Goal for a garrison to go destroy some enemies
 #define OOP_CLASS_NAME GoalGarrisonAttackAssignedTargets
 CLASS("GoalGarrisonAttackAssignedTargets", "Goal")
 
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		// Return active relevance when we see assigned targets
@@ -21,7 +21,7 @@ CLASS("GoalGarrisonAttackAssignedTargets", "Goal")
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(getEffects)
+	public STATIC_METHOD(getEffects)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		pr _pos = GETV(_AI, "assignedTargetsPos");

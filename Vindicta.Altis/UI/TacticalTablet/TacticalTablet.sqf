@@ -140,7 +140,7 @@ CLASS("TacticalTablet", "")
 	ENDMETHOD;
 	*/
 
-	STATIC_METHOD(getInstance)
+	public STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		GETSV("TacticalTablet", "instance");
 	ENDMETHOD;
@@ -152,7 +152,7 @@ CLASS("TacticalTablet", "")
 		uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull]
 	ENDMETHOD;
 
-	METHOD(setText)
+	public METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _display = T_CALLM0("getDisplay");
 		pr _ctrl = [_display, "TABLET_DISPLAY_TEXT"] call ui_fnc_findControl;
@@ -160,19 +160,19 @@ CLASS("TacticalTablet", "")
 		T_SETV("text", _text);
 	ENDMETHOD;
 
-	METHOD(appendText)
+	public METHOD(appendText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _textNew = T_GETV("text") + _text;
 		T_CALLM1("setText", _textNew);
 	ENDMETHOD;
 
 	// Appends text but with delay
-	METHOD(appendTextDelay)
+	public METHOD(appendTextDelay)
 		params [P_THISOBJECT, P_STRING("_text"), P_NUMBER("_delay")];
 		T_GETV("eventQueue") pushBack (__EVENT_NEW("append", _text, _delay));
 	ENDMETHOD;
 
-	STATIC_METHOD(staticAppendTextDelay)
+	public STATIC_METHOD(staticAppendTextDelay)
 		params [P_THISCLASS, P_STRING("_text"), P_NUMBER("_delay")];
 		pr _inst = CALLSM0("TacticalTablet", "getInstance");
 		if (!IS_NULL_OBJECT(_inst)) then {
@@ -181,12 +181,12 @@ CLASS("TacticalTablet", "")
 	ENDMETHOD;
 
 	// Sets text but with delay
-	METHOD(setTextDelay)
+	public METHOD(setTextDelay)
 		params [P_THISOBJECT, P_STRING("_text"), P_NUMBER("_delay")];
 		T_GETV("eventQueue") pushBack (__EVENT_NEW("set", _text, _delay));
 	ENDMETHOD;
 
-	METHOD(onEachFrame)
+	public event METHOD(onEachFrame)
 		params [P_THISOBJECT];
 
 		// Process events in the queue

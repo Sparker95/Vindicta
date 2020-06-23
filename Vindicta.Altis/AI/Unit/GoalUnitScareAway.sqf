@@ -17,7 +17,7 @@ CLASS("GoalUnitScareAway", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 			
 		// We want to scare away a unit if there is one near by
@@ -40,7 +40,7 @@ CLASS("GoalUnitScareAway", "Goal")
 	// create an Action and return it.
 	// Otherwise it must return ""
 	
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		diag_log "createPredefinedAction";

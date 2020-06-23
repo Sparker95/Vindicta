@@ -9,9 +9,9 @@ if(IS_SERVER) then {
 };
 
 CRITICAL_SECTION {
-		gGameMode = NEW(gGameModeName, []);
+	gGameMode = NEW(gGameModeName, []);
 
-		systemChat format["Initializing game mode %1", GETV(gGameMode, "name")];
-		CALLM0(gGameMode, "init");
-		systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
+	systemChat format["Initializing game mode %1", GETV(gGameMode, "name")];
+	CALLM0(gGameMode, "init");
+	systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
 };

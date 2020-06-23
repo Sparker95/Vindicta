@@ -148,7 +148,7 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 	ENDMETHOD;
 
 	// Called when we select something new in the combo box
-	METHOD(onCbSelChanged)
+	public event METHOD(onCbSelChanged)
 		params [P_THISOBJECT];
 		OOP_INFO_0("CB SEL CHANGED");
 		T_CALLM0("updateDescription");
@@ -198,13 +198,13 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 		} forEach [_enemyTemplateName, _policeTemplateName, _civilianTemplateName];
 	ENDMETHOD;
 
-	METHOD(onButtonRnd)
+	public event METHOD(onButtonRnd)
 		params [P_THISOBJECT];
 		pr _editCampaignName = T_CALLM1("findControl", "TAB_GMINIT_EDIT_CAMPAIGN_NAME");
 		_editCampaignName ctrlSetText (selectRandom (call compile preprocessFileLineNumbers "Templates\campaignNames.sqf"));
 	ENDMETHOD;
 	
-	METHOD(onButtonStart)
+	public event METHOD(onButtonStart)
 		params [P_THISOBJECT];
 
 		// Validate inputs

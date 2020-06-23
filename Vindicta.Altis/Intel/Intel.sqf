@@ -206,12 +206,12 @@ CLASS("Intel", "Storable")
 	So we just serialize/deserialize all their variables for saving.
 	*/
 
-	 public override METHOD(serializeForStorage)
+	public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
 	ENDMETHOD;
 
-	 public override METHOD(deserializeFromStorage)
+	public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true

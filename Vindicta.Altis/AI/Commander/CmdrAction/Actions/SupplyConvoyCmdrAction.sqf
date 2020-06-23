@@ -106,11 +106,6 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;
 
-	METHOD(getRouteTargets)
-		params [P_THISOBJECT];
-		T_GET_AST_VAR("routeTargetsVar")
-	ENDMETHOD;
-
 	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
@@ -294,7 +289,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 
-	METHOD(updateIntelFromDetachment)
+	protected virtual METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");

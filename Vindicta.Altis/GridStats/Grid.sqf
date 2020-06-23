@@ -74,7 +74,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Array
 	*/
-	METHOD(getGridArray)
+	public METHOD(getGridArray)
 		params [P_THISOBJECT];
 		T_GETV("gridArray")
 	ENDMETHOD;
@@ -85,7 +85,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number
 	*/
-	METHOD(getCellSize)
+	public METHOD(getCellSize)
 		params [P_THISOBJECT];
 		T_GETV("cellSize")
 	ENDMETHOD;
@@ -94,7 +94,7 @@ CLASS("Grid", "Storable");
 	Method: getGridSize
 	Returns grid size - integer number, amount of cells in this grid
 	*/
-	METHOD(getGridSize)
+	public METHOD(getGridSize)
 		params [P_THISOBJECT];
 		T_GETV("gridSize");
 	ENDMETHOD;
@@ -111,7 +111,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: nil
 	*/
-	METHOD(setValueAll)
+	public METHOD(setValueAll)
 		params [P_THISOBJECT, ["_value", 0, GRID_ELEMENT_TYPES]];
 		
 		pr _gridArray = T_GETV("gridArray");
@@ -135,7 +135,7 @@ CLASS("Grid", "Storable");
 	Returns: nil
 	*/
 	
-	METHOD(setValue)
+	public METHOD(setValue)
 		params [P_THISOBJECT, P_ARRAY("_pos"), ["_value", 0, GRID_ELEMENT_TYPES]];
 	
 		_pos params ["_x", "_y"];
@@ -162,7 +162,7 @@ CLASS("Grid", "Storable");
 	Returns: new value of the element.
 	*/
 	
-	METHOD(addValue)
+	public METHOD(addValue)
 		params [P_THISOBJECT, P_ARRAY("_pos"), ["_value", 0, [0, []]]];
 	
 		_pos params ["_x", "_y"];
@@ -195,7 +195,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Bool
 	*/
-	METHOD(findValue)
+	public METHOD(findValue)
 		params [P_THISOBJECT, ["_value", 0, GRID_ELEMENT_TYPES]];
 
 		pr _gridArray = T_GETV("gridArray");
@@ -207,7 +207,7 @@ CLASS("Grid", "Storable");
 		_index != -1
 	ENDMETHOD;
 
-	METHOD(applyRect)
+	public METHOD(applyRect)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_CODE("_fnApplyRect")];
 
 		_pos params ["_x", "_y"];
@@ -233,7 +233,7 @@ CLASS("Grid", "Storable");
 		};
 	ENDMETHOD;
 
-	METHOD(applyCircle)
+	public METHOD(applyCircle)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius"), P_CODE("_fnApplyCircle")];
 
 		private _gridArray = T_GETV("gridArray");
@@ -257,7 +257,7 @@ CLASS("Grid", "Storable");
 	ENDMETHOD;
 
 	// Set value to max of the current and new values
-	METHOD(maxRect)
+	public METHOD(maxRect)
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), ["_value", 0, [0, []]]];
 		private _fnMax =
 			if(_value isEqualType 0) then {
@@ -279,7 +279,7 @@ CLASS("Grid", "Storable");
 	ENDMETHOD;
 
 	// Set value to max of the current and new values in a circle
-	METHOD(maxCircle)
+	public METHOD(maxCircle)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_ARRAY("_radius"), ["_value", 0, [0, []]]];
 		private _fnMax =
 			if(_value isEqualType 0) then {
@@ -310,7 +310,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number, value of the element.
 	*/
-	METHOD(getValue)
+	public METHOD(getValue)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		_pos params ["_x", "_y"];
@@ -332,7 +332,7 @@ CLASS("Grid", "Storable");
 
 	If not, default value is returned.
 	*/
-	METHOD(getValueSafe)
+	public METHOD(getValueSafe)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		_pos params ["_x", "_y"];
@@ -367,7 +367,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number or Array, max value found within the circle
 	*/
-	METHOD(getMaxValueCircle)
+	public METHOD(getMaxValueCircle)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
 
 		private _defaultValue = T_GETV("defaultValue");
@@ -394,7 +394,7 @@ CLASS("Grid", "Storable");
 	ENDMETHOD;
 
 	// Gets max value at square area centered at _pos as having full width of 2*_halfSize
-	METHOD(getMaxValueSquareNumber)
+	public METHOD(getMaxValueSquareNumber)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfSize")];
 		
 		_pos params ["_x", "_y"];
@@ -431,7 +431,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Number or Array, total value found within the circle
 	*/
-	METHOD(getValueCircleSum)
+	public METHOD(getValueCircleSum)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
 
 		private _defaultValue = T_GETV("defaultValue");
@@ -458,7 +458,7 @@ CLASS("Grid", "Storable");
 	ENDMETHOD;
 
 	// Gets sum value at square area centered at _pos as having full width of 2*_halfSize
-	METHOD(getValueSquareSum)
+	public METHOD(getValueSquareSum)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfSize")];
 		
 		_pos params ["_x", "_y"];
@@ -485,7 +485,7 @@ CLASS("Grid", "Storable");
 	ENDMETHOD;
 	// - - - - - Image processing - - - -
 
-	METHOD(apply)
+	public METHOD(apply)
 		params [P_THISOBJECT, P_CODE("_fn"), P_ARRAY("_args")];
 
 		private _gridArray = T_GETV("gridArray");
@@ -511,7 +511,7 @@ CLASS("Grid", "Storable");
 		};
 	ENDMETHOD;
 
-	METHOD(fade)
+	public METHOD(fade)
 		params [P_THISOBJECT, P_NUMBER("_factor")];
 		private _defaultValue = T_GETV("defaultValue");
 		private _fadeFn =
@@ -539,7 +539,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: Nothing
 	*/
-	METHOD(filter)
+	public METHOD(filter)
 		params [P_THISOBJECT, P_ARRAY("_kernel")];
 
 		pr _kSize = count _kernel;
@@ -605,7 +605,7 @@ CLASS("Grid", "Storable");
 		nil
 	ENDMETHOD;
 
-	METHOD(smooth5x5)
+	public METHOD(smooth5x5)
 		params [P_THISOBJECT];
 		private _kernel = [
 			[1 / 273, 4 / 273, 7 / 273, 4 / 273, 1 / 273],
@@ -632,7 +632,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: nil
 	*/
-	METHOD(plot)
+	public METHOD(plot)
 		params [P_THISOBJECT, 
 			["_scale", 1, [1]], 
 			["_plotZero", false, [false]], 
@@ -708,7 +708,7 @@ CLASS("Grid", "Storable");
 	Returns: nil
 	*/
 	
-	METHOD(unplot)
+	public METHOD(unplot)
 		params [P_THISOBJECT];
 		
 		pr _array = T_GETV("gridArray");
@@ -734,7 +734,7 @@ CLASS("Grid", "Storable");
 	Returns: nil
 	*/
 	
-	METHOD(plotCell)
+	public METHOD(plotCell)
 		params [P_THISOBJECT, P_ARRAY("_pos"), ["_scale", 1, [1]], ["_plotZero", false]];
 		
 		_pos params ["_x", "_y"];
@@ -862,7 +862,7 @@ CLASS("Grid", "Storable");
 	
 	Returns: reference to this grid.
 	*/	
-	METHOD(copyFrom)
+	public METHOD(copyFrom)
 		params [P_THISOBJECT, P_OOP_OBJECT("_grid")];
 
 		pr _gridArray = T_GETV("gridArray");
@@ -885,12 +885,12 @@ CLASS("Grid", "Storable");
 	// - - - - - STORAGE - - - - - -
 
 	// This is perfectly storable, we just serialize everything
-	 public override METHOD(serializeForStorage)
+	public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
 	ENDMETHOD;
 
-	 public override METHOD(deserializeFromStorage)
+	public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true

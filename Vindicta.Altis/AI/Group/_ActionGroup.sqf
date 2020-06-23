@@ -49,7 +49,7 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: action state
 	*/
-	METHOD(failIfEmpty)
+	protected METHOD(failIfEmpty)
 		params [P_THISOBJECT];
 
 		if (CALLM0(T_GETV("group"), "isEmpty")) then {
@@ -67,7 +67,7 @@ CLASS("ActionGroup", "Action")
 	
 	Returns: action state
 	*/
-	METHOD(failIfNoInfantry)
+	protected METHOD(failIfNoInfantry)
 		params [P_THISOBJECT];
 		
 		if ((count CALLM0(T_GETV("group"), "getInfantryUnits")) == 0) then {

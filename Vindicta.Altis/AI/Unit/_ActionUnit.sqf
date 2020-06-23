@@ -15,26 +15,26 @@ CLASS("ActionUnit", "Action")
 		T_SETV("hO", _oh);
 	ENDMETHOD;
 
-	METHOD(clearWaypoints)
+	protected METHOD(clearWaypoints)
 		params [P_THISOBJECT];
 		private _hO = T_GETV("hO");
 		CALLSM1("Action", "_clearWaypoints", group _hO);
 	ENDMETHOD;
 
-	METHOD(regroup)
+	protected METHOD(regroup)
 		params [P_THISOBJECT];
 		private _hO = T_GETV("hO");
 		CALLSM1("Action", "_regroup", group _hO);
 	ENDMETHOD;
 
-	METHOD(teleport)
+	protected METHOD(teleport)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		private _AI = T_GETV("AI");
 		private _unit = GETV(_AI, "agent");
 		CALLSM2("Action", "_teleport", [_unit], _pos);
 	ENDMETHOD;
 	
-	METHOD(teleportGroup)
+	protected METHOD(teleportGroup)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		private _AI = T_GETV("AI");
 		private _unit = GETV(_AI, "agent");
@@ -43,7 +43,7 @@ CLASS("ActionUnit", "Action")
 		CALLSM2("Action", "_teleport", _units, _pos);
 	ENDMETHOD;
 
-	METHOD(bumpVehicle)
+	protected METHOD(bumpVehicle)
 		params [P_THISOBJECT, P_OBJECT("_hVeh"), P_NUMBER("_amount")];
 		private _pushdir = 0;
 		if(_amount <= 0) then { _amount = 5; };

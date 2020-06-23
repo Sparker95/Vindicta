@@ -75,7 +75,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	// procedural preconditions
 	// POS world state property comes from action parameters
 	
-	STATIC_METHOD(getPreconditions)
+	public STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 
 		pr _loc = CALLSM2("Action", "getParameterValue", _actionParameters, TAG_LOCATION);

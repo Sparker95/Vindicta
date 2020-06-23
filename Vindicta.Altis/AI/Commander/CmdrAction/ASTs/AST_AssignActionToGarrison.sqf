@@ -39,7 +39,7 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 		T_SETV("garrIdVar", _garrIdVar);
 	ENDMETHOD;
 
-	 public override METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
@@ -57,6 +57,7 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 ["AST_AssignActionToGarrison.new", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_AssignActionToGarrison", 
 		[_action]+
@@ -71,6 +72,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["AST_AssignActionToGarrison.apply", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _action = NEW("CmdrAction", []);

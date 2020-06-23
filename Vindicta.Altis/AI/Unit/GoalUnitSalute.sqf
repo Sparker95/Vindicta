@@ -18,7 +18,7 @@ CLASS("GoalUnitSalute", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// We want to salute if there is a fact that we have been saluted by someone
@@ -43,7 +43,7 @@ CLASS("GoalUnitSalute", "Goal")
 	// create an Action and return it.
 	// Otherwise it must return ""
 	
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		// Find the unit to salute to from the world fact

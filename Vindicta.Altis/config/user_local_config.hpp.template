@@ -24,6 +24,8 @@
 //#define OOP_ASSERT
 // Enable oop class member access violation asserts (warning: they are slow, useful for validating the code is not violating encapsulation of classes)
 //#define OOP_ASSERT_ACCESS
+// Enable oop method call attribute asserts
+//#define OOP_ASSERT_METHOD_CALL
 
 // --------------------- PROFILING ---------------------
 // Enable Profiling

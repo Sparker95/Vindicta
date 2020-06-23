@@ -9,7 +9,7 @@ Base class for human AI. Has vehicle assignment functionality.
 #define MRK_GOAL	"_goal"
 #define MRK_ARROW	"_arrow"
 
-#define OOP_CLASS_NAME AIUnitInfantry
+#define OOP_CLASS_NAME AIUnitHuman
 CLASS("AIUnitHuman", "AI_GOAP")
 
 	// Object handle of the unit
@@ -232,7 +232,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(unassignVehicle)
+	public METHOD(unassignVehicle)
 		params [P_THISOBJECT];
 
 		OOP_INFO_1("unassigning vehicle of %1", _thisObject);
@@ -270,7 +270,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	
 	Returns: true if assignment was successful, false otherwise
 	*/
-	METHOD(assignAsDriver)
+	public METHOD(assignAsDriver)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh")];
 
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
@@ -319,7 +319,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	Returns: nil
 	*/
 	/*
-	METHOD(assignAsGunner)
+	protected METHOD(assignAsGunner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh") ];
 		
 		// Unassign this inf unit from its current vehicle
@@ -344,7 +344,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	
 	Returns: true if assignment was successful, false otherwise
 	*/
-	METHOD(assignAsTurret)
+	public METHOD(assignAsTurret)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh"), P_ARRAY("_turretPath")];
 		
 		OOP_INFO_3("Assigning %1 as a TURRET %2 of %3", _thisObject, _turretPath, _veh);
@@ -394,7 +394,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	
 	Returns: true if assignment was successful, false otherwise
 	*/
-	METHOD(assignAsCargoIndex)
+	public METHOD(assignAsCargoIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_veh"), P_NUMBER("_cargoIndex")];
 		
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
@@ -440,7 +440,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(executeVehicleAssignment)
+	public METHOD(executeVehicleAssignment)
 		params [P_THISOBJECT];
 		pr _veh = T_GETV("assignedVehicle");
 		if (!isNil "_veh") then {
@@ -478,7 +478,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	Returns: bool, true if the moveIn* command was executed
 	*/
 	
-	METHOD(moveInAssignedVehicle)
+	public METHOD(moveInAssignedVehicle)
 		params [P_THISOBJECT];
 		pr _veh = T_GETV("assignedVehicle");
 		if (!isNil "_veh") then {
@@ -527,7 +527,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	Returns: "DRIVER", "TURRET", "CARGO" or "" if the unit is not assigned anywhere
 	*/
 	
-	METHOD(getAssignedVehicleRole)
+	public METHOD(getAssignedVehicleRole)
 		params [P_THISOBJECT];
 		
 		pr _vehRole = T_GETV("assignedVehicleRole");
@@ -559,7 +559,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	Returns: vehicle's <Unit> object or "" if the unit is not assigned anywhere
 	*/
 	
-	METHOD(getAssignedVehicle)
+	public METHOD(getAssignedVehicle)
 		params [P_THISOBJECT];
 		
 		pr _veh = T_GETV("assignedVehicle");
@@ -570,7 +570,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 		_veh
 	ENDMETHOD;
 	
-	METHOD(isAtAssignedSeat)
+	public METHOD(isAtAssignedSeat)
 		params [P_THISOBJECT];
 		
 		pr _assignedVehicleRole = T_GETV("assignedVehicleRole");
@@ -631,7 +631,7 @@ CLASS("AIUnitHuman", "AI_GOAP")
 	ENDMETHOD;
 
 	// Common interface
-	/* virtual */ METHOD(getCargoUnits)
+	public virtual METHOD(getCargoUnits)
 		[]
 	ENDMETHOD;
 

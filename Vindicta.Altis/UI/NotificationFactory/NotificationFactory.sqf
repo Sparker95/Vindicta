@@ -35,7 +35,7 @@ Has methods specialized for customization of our typical notification types
 CLASS("NotificationFactory", "")
 
 	// Intel about locations we have discovered
-	STATIC_METHOD(createIntelLocation)
+	public STATIC_METHOD(createIntelLocation)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "UAV_01";
@@ -47,7 +47,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Intel about commander actions
-	STATIC_METHOD(createIntelCommanderAction)
+	public STATIC_METHOD(createIntelCommanderAction)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text")];
 
 		private _sound = "UAV_02";
@@ -59,7 +59,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Intel about commander actions
-	STATIC_METHOD(createIntelCommanderActionReminder)
+	public STATIC_METHOD(createIntelCommanderActionReminder)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text")];
 
 		private _sound = "Topic_Done";
@@ -72,7 +72,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Resource notification
-	STATIC_METHOD(createResourceNotification)
+	public STATIC_METHOD(createResourceNotification)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "defaultNotification";
@@ -83,7 +83,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Player location notification
-	STATIC_METHOD(createLocationNotification)
+	public STATIC_METHOD(createLocationNotification)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "defaultNotification";
@@ -94,7 +94,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Player garrison notification
-	STATIC_METHOD(createGarrisonNotification)
+	public STATIC_METHOD(createGarrisonNotification)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "defaultNotification";
@@ -105,7 +105,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Gets called when we find a new cryptokey we didn't have yet
-	STATIC_METHOD(createRadioCryptokey)
+	public STATIC_METHOD(createRadioCryptokey)
 		params [P_THISOBJECT, P_STRING("_key")];
 
 		private _sound = "UAV_03";
@@ -119,7 +119,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// System notification
-	STATIC_METHOD(createSystem)
+	public STATIC_METHOD(createSystem)
 		params [P_THISOBJECT, P_STRING("_text"), P_STRING("_picture")];
 
 		private _sound = "beep_target";
@@ -134,7 +134,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 	
 	// Hint notification
-	STATIC_METHOD(createHint)
+	public STATIC_METHOD(createHint)
 		params [P_THISOBJECT, P_STRING("_category"), P_STRING("_text"), P_STRING("_hint")];
 
 		private _sound = "hint";
@@ -145,7 +145,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Critical notification
-	STATIC_METHOD(createCritical)
+	public STATIC_METHOD(createCritical)
 		params [P_THISOBJECT, P_STRING("_text")];
 
 		private _sound = "defaultNotification";
@@ -158,7 +158,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Basic UI notification
-	STATIC_METHOD(createBasicUI)
+	public STATIC_METHOD(createBasicUI)
 		params [P_THISOBJECT, P_NUMBER("_type"), P_STRING("_text"), P_STRING("_hint")];
 
 		// todo we can make success/failure/info types, with different sounds and pictures! Marvis??
@@ -171,7 +171,7 @@ CLASS("NotificationFactory", "")
 	ENDMETHOD;
 
 	// Intel about us spotting something
-	STATIC_METHOD(createSpottedTargets)
+	public STATIC_METHOD(createSpottedTargets)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		private _sound = "UAV_04";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\binoculars_ca.paa";

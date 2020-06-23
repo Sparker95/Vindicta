@@ -60,7 +60,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// | Handles a stimulus when it is created
 	// ----------------------------------------------------------------------
 	
-	METHOD(handleStimulus)
+	public METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("Handle stimulus: %1", _stimulus);
@@ -113,13 +113,13 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	// | Adds/removes the AI to the list of AIs handles by this stimulus manager
 	// ----------------------------------------------------------------------
 	
-	METHOD(addSensingAI)
+	public METHOD(addSensingAI)
 		params [P_THISOBJECT, ["_AI", "ERROR_NO_AI", [""]] ];
 		pr _sensingAIs = T_GETV("sensingAIs");
 		_SensingAIs pushBackUnique _AI;
 	ENDMETHOD;
 	
-	METHOD(removeSensingAI)
+	public METHOD(removeSensingAI)
 		params [P_THISOBJECT, ["_AI", "ERROR_NO_AI", [""]] ];
 		pr _sensingAIs = T_GETV("sensingAIs");
 		pr _ID = _sensingAIs find _AI;

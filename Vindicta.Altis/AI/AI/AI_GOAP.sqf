@@ -377,7 +377,7 @@ CLASS("AI_GOAP", "AI")
 		T_CALLM0("deleteExternalGoal");
 	ENDMETHOD;
 
-	METHOD(resetRecursive)
+	public METHOD(resetRecursive)
 		params [P_THISOBJECT];
 		T_CALLM0("reset");
 		// Reset subagents
@@ -485,7 +485,7 @@ CLASS("AI_GOAP", "AI")
 	Returns: nil
 	*/
 	
-	METHOD(addExternalGoal)
+	public METHOD(addExternalGoal)
 		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_NUMBER("_bias"), P_ARRAY("_parameters"), P_OOP_OBJECT("_sourceAI"), ["_deleteSimilarGoals", true], ["_callProcess", false]];
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
@@ -555,7 +555,7 @@ CLASS("AI_GOAP", "AI")
 
 	Returns: nil
 	*/
-	METHOD(deleteExternalGoal)
+	public METHOD(deleteExternalGoal)
 		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 
 		CRITICAL_SECTION {
@@ -596,7 +596,7 @@ CLASS("AI_GOAP", "AI")
 
 	Returns: nil
 	*/
-	METHOD(deleteExternalGoalRequired)
+	public METHOD(deleteExternalGoalRequired)
 		params [P_THISOBJECT, P_STRING("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 
 		CRITICAL_SECTION {
@@ -643,7 +643,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Number, one of <ACTION_STATE>
 	*/
-	METHOD(getExternalGoalActionState)
+	public METHOD(getExternalGoalActionState)
 		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 
 		pr _return = -1;
@@ -676,7 +676,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/
-	METHOD(hasExternalGoal)
+	public METHOD(hasExternalGoal)
 		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 
 		pr _return = false;
@@ -708,7 +708,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/	
-	STATIC_METHOD(anyAgentHasExternalGoal)
+	public STATIC_METHOD(anyAgentHasExternalGoal)
 		params [P_THISCLASS, P_ARRAY("_agents"), P_OOP_OBJECT("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 		(_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
@@ -728,7 +728,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/	
-	STATIC_METHOD(allAgentsHaveExternalGoal)
+	public STATIC_METHOD(allAgentsHaveExternalGoal)
 		params [P_THISCLASS, P_ARRAY("_agents"), P_STRING("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 		(_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
@@ -749,7 +749,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Array with goal parameters passed to it, or [] if this goal was not found.
 	*/
-	METHOD(getExternalGoalParameters)
+	public METHOD(getExternalGoalParameters)
 		params [P_THISOBJECT, P_OOP_OBJECT("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 
 		pr _return = [];
@@ -784,7 +784,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/
-	STATIC_METHOD(allAgentsCompletedExternalGoal)
+	public STATIC_METHOD(allAgentsCompletedExternalGoal)
 		params [P_THISCLASS, P_ARRAY("_agents"), P_STRING("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 		CALLSM4("AI_GOAP", "allAgentsHaveExternalGoalState", _agents, [ACTION_STATE_COMPLETED ARG -1], _goalClassName, _goalSourceAI)
 		// OOP_INFO_2("allAgentsCompletedExternalGoal: %1, Source: %2", _goalClassName, _goalSourceAI);
@@ -814,7 +814,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/
-	STATIC_METHOD(allAgentsHaveExternalGoalState)
+	public STATIC_METHOD(allAgentsHaveExternalGoalState)
 		params [P_THISCLASS, P_ARRAY("_agents"), P_ARRAY("_desiredStates"), P_STRING("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 		_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
@@ -836,7 +836,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/
-	STATIC_METHOD(anyAgentsHaveExternalGoalState)
+	public STATIC_METHOD(anyAgentsHaveExternalGoalState)
 		params [P_THISCLASS, P_ARRAY("_agents"), P_ARRAY("_desiredStates"), P_STRING("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 		_agents findIf {
 			pr _AI = CALLM0(_x, "getAI");
@@ -857,7 +857,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/
-	STATIC_METHOD(allAgentsCompletedExternalGoalRequired)
+	public STATIC_METHOD(allAgentsCompletedExternalGoalRequired)
 		params [P_THISCLASS, P_ARRAY("_agents"), P_STRING("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 		CALLSM4("AI_GOAP", "allAgentsHaveExternalGoalState", _agents, [ACTION_STATE_COMPLETED], _goalClassName, _goalSourceAI)
 	ENDMETHOD;
@@ -874,7 +874,7 @@ CLASS("AI_GOAP", "AI")
 	
 	Returns: Bool
 	*/	
-	STATIC_METHOD(anyAgentFailedExternalGoal)
+	public STATIC_METHOD(anyAgentFailedExternalGoal)
 		params [P_THISCLASS, P_ARRAY("_agents"), P_OOP_OBJECT("_goalClassName"), P_OOP_OBJECT("_goalSourceAI")];
 		CALLSM4("AI_GOAP", "anyAgentsHaveExternalGoalState", _agents, [ACTION_STATE_FAILED], _goalClassName, _goalSourceAI)
 	ENDMETHOD;
@@ -910,7 +910,7 @@ CLASS("AI_GOAP", "AI")
 	// ----------------------------------------------------------------------
 	
 
-	METHOD(getCurrentAction)
+	public METHOD(getCurrentAction)
 		params [P_THISOBJECT];
 		T_GETV("currentAction")
 	ENDMETHOD;
@@ -1382,7 +1382,7 @@ CLASS("AI_GOAP", "AI")
 	
 	
 	// - - - - - - STORAGE - - - - -
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		//diag_log "AI_GOAP postDeserialize";
@@ -1474,7 +1474,7 @@ CLASS("AI_GOAP", "AI")
 		[]
 	ENDMETHOD;
 
-	STATIC_METHOD(getObjectDebugUIData)
+	public STATIC_METHOD(getObjectDebugUIData)
 		params [P_THISCLASS, P_OBJECT("_object")];
 
 		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
@@ -1492,7 +1492,7 @@ CLASS("AI_GOAP", "AI")
 		_a // Return
 	ENDMETHOD;
 
-	STATIC_METHOD(getGroupDebugUIData)
+	public STATIC_METHOD(getGroupDebugUIData)
 		params [P_THISCLASS, P_GROUP("_group")];
 
 		pr _groupFound = CALLSM1("Group", "getGroupFromGroupHandle", _group);
@@ -1511,7 +1511,7 @@ CLASS("AI_GOAP", "AI")
 	ENDMETHOD;
 
 	// Takes object as parameter, returns object's garrison's data
-	STATIC_METHOD(getGarrisonDebugUIDataFromObject)
+	public STATIC_METHOD(getGarrisonDebugUIDataFromObject)
 		params [P_THISCLASS, P_OBJECT("_object")];
 
 		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
@@ -1532,7 +1532,7 @@ CLASS("AI_GOAP", "AI")
 	ENDMETHOD;
 
 	// Remote-executed on server from client
-	STATIC_METHOD(requestDebugUIData)
+	public STATIC_METHOD(requestDebugUIData)
 		params [P_THISCLASS, P_NUMBER("_clientOwner"), P_NUMBER("_requestType"), P_DYNAMIC("_target")];
 
 		pr _data = switch (_requestType) do {
@@ -1553,7 +1553,7 @@ CLASS("AI_GOAP", "AI")
 	ENDMETHOD;
 
 	// Client has requested to halt this AI
-	STATIC_METHOD(requestHaltAI)
+	public STATIC_METHOD(requestHaltAI)
 		params [P_THISCLASS, P_OOP_OBJECT("_ai")];
 		if (!IS_NULL_OBJECT(_ai)) then {
 			if (IS_OOP_OBJECT(_ai)) then{
