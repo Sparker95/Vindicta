@@ -22,3 +22,4 @@
 #include "vehicleRoles.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\..\MessageReceiver\MessageReceiver.hpp"
+#include "AIUnit.hpp"

@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include "..\AI\Unit\AIunit.hpp"
 
 /*
 Dialogue class.
@@ -520,18 +521,7 @@ CLASS("Dialogue", "")
 		};
 
 		// Check if unit is free for talk
-		private _objCivilian = CALLSM1("Civilian", "getCivilianFromObjectHandle", _unitNPC);
-		private _objUnit = CALLSM1("Unit", "getUnitFromObjectHandle", _unitNPC);
-
-		private _aiHuman = NULL_OBJECT;
-		
-		if (!IS_NULL_OBJECT(_objCivilian)) then {
-			_aiHuman = CALLM0(_objCivilian, "getAI");
-		};
-
-		if (!IS_NULL_OBJECT(_objUnit)) then {
-			_aiHuman = CALLM0(_objUnit, "getAI");
-		};
+		private _aiHuman = GET_AI_FROM_OBJECT_HANDLE(_unitNPC);
 
 		// Bail if trying to talk with an invalid AI
 		if (IS_NULL_OBJECT(_aiHuman)) exitWith {

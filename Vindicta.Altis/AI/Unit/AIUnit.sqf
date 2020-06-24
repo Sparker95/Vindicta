@@ -21,6 +21,14 @@ CLASS("AIUnit", "AI_GOAP")
 		pr _hO = CALLM0(_agent, "getObjectHandle");
 		T_SETV("hO", _hO);
 
+		_hO setVariable [AI_UNIT_VAR_NAME, _thisObject];
+
+	ENDMETHOD;
+
+	METHOD(delete)
+		params [P_THISOBJECT];
+		pr _hO = T_GETV("hO");
+		_hO setVariable [AI_UNIT_VAR_NAME, nil];
 	ENDMETHOD;
 
 ENDCLASS;

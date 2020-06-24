@@ -144,7 +144,7 @@ CLASS("AIUnitHuman", "AIUnit")
 				T_SETV("stuckDuration", _stuckTimer + _deltaTime);
 			} else {
 				T_SETV("stuckDuration", 0);
-				T_SETV("prevPos", getPos _hO);
+				T_SETV("prevPos", ASLtoAGL (getPosASL _hO));
 			};
 		};
 
@@ -1030,7 +1030,7 @@ CLASS("AIUnitHuman", "AIUnit")
 			pr _buildingPosID = T_GETV("moveBuildingPosID");
 			pr _return = if (_buildingPosID == -1) then {	// If target is not building
 				OOP_INFO_1("getMoveTargetPosAGL returning object pos: %1", getPos _target);
-				getPos _target;
+				ASLtoAGL (getPosASL _target);
 			} else {
 				pr _actualPosition = _target buildingPos _buildingPosID;
 				OOP_INFO_1("getMoveTargetPosAGL returning building pos: %1", _actualPosition);
@@ -1093,7 +1093,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		if (!(_destPos isEqualTo [0,0,0])) then {
 			pr _hO = T_GETV("hO");
 			if (GET_AGENT_FLAG(_hO)) then {
-				_hO setDestination [_destPos,"LEADER PLANNED",true];
+				_hO setDestination [_destPos, "LEADER DIRECT",true]; // "LEADER DIRECT" seems to be the most reliable
 			} else {
 				_hO doMove _destPos;
 			};
@@ -1107,7 +1107,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		params [P_THISOBJECT];
 		pr _hO = T_GETV("hO");
 		if (GET_AGENT_FLAG(_hO)) then {
-			_hO setDestination [ getPos _hO,"LEADER PLANNED",true]; // Doesn't want to stop otherwise sometimes
+			_hO setDestination [ getPos _hO,"LEADER DIRECT",true]; // Doesn't want to stop otherwise sometimes
 		};
 		doStop _hO;
 		T_SETV("orderedToMove", false);
@@ -1274,6 +1274,21 @@ CLASS("AIUnitHuman", "AIUnit")
 			T_SETV("dangerLevel", _dangerLevel);
 			T_SETV("dangerRadius", _radius);
 		};
+	ENDMETHOD;
+
+	// Adds car horn danger source
+	STATIC_METHOD(addCarHornDanger)
+		params [P_THISCLASS, P_OBJECT("_car"), P_ARRAY("_units")];
+
+		if (isNull _car) exitWith {};
+		
+		{
+			pr _ai = GET_AI_FROM_OBJECT_HANDLE(_x);
+			if (!IS_NULL_OBJECT(_ai)) then {
+				// params [P_THISOBJECT, P_DYNAMIC("_dangerSrc"), P_NUMBER("_radius"), P_NUMBER("_duration"), P_NUMBER("_dangerLevel")];
+				CALLM4(_ai, "addDangerSource", _car, 15, 5, 10);
+			};
+		} forEach _units;
 	ENDMETHOD;
 
 	// Debug

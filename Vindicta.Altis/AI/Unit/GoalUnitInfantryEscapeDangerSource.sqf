@@ -28,7 +28,7 @@ CLASS("GoalUnitInfantryEscapeDangerSource", "GoalUnit")
 
 		// We will have to move to some position, so prepare move coordinates
 		pr _radius = GETV(_ai, "dangerRadius");
-		pr _moveRadius = 3;
+		pr _moveRadius = 0.1;
 		pr _dangerSrc = GETV(_ai, "dangerSource");
 		pr _hO = GETV(_ai, "hO");
 		pr _escapePos = 0;
@@ -43,7 +43,8 @@ CLASS("GoalUnitInfantryEscapeDangerSource", "GoalUnit")
 			} else {
 				_bearing = (direction _dangerSrc) - 60;
 			};
-			_escapePos = _hO getPos [10, _bearing];	// Run from current position! Not from danger!
+			_escapePos = _hO getPos [4.5, _bearing];	// Run from current position! Not from danger!
+			_hO setDir _bearing;
 		} else {
 			// Bearing from danger src to this bot
 			// We will try to move in that direction away from danger
@@ -55,7 +56,8 @@ CLASS("GoalUnitInfantryEscapeDangerSource", "GoalUnit")
 		_hO forceSpeed -1;
 		_hO forceWalk false;
 
-		//"Sign_Arrow_Green_F" createVehicle (_escapePos); 
+    	//pr _arrow = createVehicle ["Sign_Arrow_Green_F", _escapePos, [], 0, "CAN_COLLIDE"];
+		//_arrow spawn {sleep 2; deleteVehicle _this;}; 
 
 		_goalParameters pushBack [TAG_MOVE_TARGET, _escapePos];
 		_goalParameters pushBack [TAG_MOVE_RADIUS, _moveRadius];
