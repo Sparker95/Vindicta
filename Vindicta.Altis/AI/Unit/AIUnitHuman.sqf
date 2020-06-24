@@ -1093,7 +1093,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		if (!(_destPos isEqualTo [0,0,0])) then {
 			pr _hO = T_GETV("hO");
 			if (GET_AGENT_FLAG(_hO)) then {
-				_hO setDestination [_destPos, "LEADER DIRECT",true]; // "LEADER DIRECT" seems to be the most reliable
+				_hO setDestination [_destPos, "FORMATION PLANNED" ,true]; // "FORMATION PLANNED" seems to be give good results.
 			} else {
 				_hO doMove _destPos;
 			};
