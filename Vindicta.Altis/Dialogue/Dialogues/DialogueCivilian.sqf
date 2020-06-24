@@ -1,5 +1,6 @@
 #include "..\common.hpp"
 #include "..\..\Location\Location.hpp"
+#include "..\..\AI\Commander\LocationData.hpp"
 
 // Test dialogue class
 
@@ -117,7 +118,7 @@ CLASS("DialogueCivilian", "Dialogue")
 		private _locsNear = _locs select {
 			pr _type = CALLM0(_x, "getType");
 			pr _dist = CALLM0(_x, "getPos") distance _unit;
-			(_dist < 3500) &&
+			(_dist < 90000) &&
 			(_type != LOCATION_TYPE_CITY)
 		};
 
@@ -127,7 +128,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			pr _type = CALLM0(_x, "getType");
 			pr _dist = CALLM0(_x, "getPos") distance _unit;
 			// Civilian can't tell about everything, but they surely know about police stations and locations which are very close
-			(_dist < 800) &&
+			(_dist < 90000) &&
 			{!(_type in [LOCATION_TYPE_CAMP, LOCATION_TYPE_RESPAWN])} && // Array of types the civilian can't know about
 			{
 				(random 10 < 5) ||
@@ -224,6 +225,8 @@ CLASS("DialogueCivilian", "Dialogue")
 	METHOD(revealLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), P_STRING("_type"), P_NUMBER("_distance")];
 
+		OOP_INFO_1("revealLocation: %1", _this);
+
 		// Also reveal the location to player's side
 		private _updateLevel = -6;
 		private _accuracyRadius = 0;
@@ -248,7 +251,7 @@ CLASS("DialogueCivilian", "Dialogue")
 		if (_updateLevel != -6) then {
 			//diag_log format ["    adding to database"];
 			private _commander = CALLSM1("AICommander", "getAICommander", playerSide);
-			CALLM2(_commander, "postMethodAsync", "updateLocationData", [_x ARG _updateLevel ARG sideUnknown ARG false ARG false ARG _accuracyRadius]);
+			CALLM2(_commander, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false ARG false ARG _accuracyRadius]);
 		};
 	ENDMETHOD;
 
