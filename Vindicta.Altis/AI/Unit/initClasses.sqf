@@ -54,6 +54,7 @@ call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDialogue.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianWander.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianPanicNearest.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianPanicAway.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryEscapeDangerSource.sqf";
 
 call compile preprocessFileLineNumbers "AI\Unit\_SensorUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\_SensorUnitStimulatable.sqf";

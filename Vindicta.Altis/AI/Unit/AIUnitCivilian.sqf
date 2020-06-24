@@ -116,7 +116,8 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		[
 			"GoalCivilianPanicNearest",
 			"GoalCivilianPanicAway",
-			"GoalUnitDialogue"
+			"GoalUnitDialogue",
+			"GoalUnitInfantryEscapeDangerSource"
 		]
 	ENDMETHOD;
 
@@ -136,6 +137,10 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	public override METHOD(getDebugUIVariableNames)
 		[
 			"hO",
+			"dangerSource",
+			"dangerTimeEnd",
+			"dangerLevel",
+			"dangerRadius",
 			"assignedVehicle",
 			"assignedVehicleRole",
 			"assignedCargoIndex",

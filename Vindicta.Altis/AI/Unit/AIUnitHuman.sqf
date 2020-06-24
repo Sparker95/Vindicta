@@ -35,6 +35,14 @@ CLASS("AIUnitHuman", "AIUnit")
 	// Ref to dialogue this unit is currently hosting, or NULL_OBJECT
 	VARIABLE("dialogue");
 
+	// Current object or position which represents danger
+	// IF there is no danger source, this is nil
+	VARIABLE("dangerSource");
+	VARIABLE("dangerTimeEnd");	// Time when the duration of this danger ends
+	VARIABLE("dangerLevel");	// Number, current danger level
+	VARIABLE("dangerRadius");	// Radius we must be away from this danger src
+
+
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
 	#endif
@@ -77,6 +85,13 @@ CLASS("AIUnitHuman", "AIUnit")
 		// Dialogue
 		T_SETV("talkObject", objNull);
 		T_SETV("dialogue", NULL_OBJECT);
+
+		// Danger source
+		T_SETV("dangerSource", nil);
+		T_SETV("dangerLevel", 0);
+		T_SETV("dangerTimeEnd", 0);
+		T_SETV("dangerRadius", 0);
+
 	ENDMETHOD;
 	
 	METHOD(delete)
@@ -155,6 +170,14 @@ CLASS("AIUnitHuman", "AIUnit")
 					pr _text = selectRandom g_phrasesCantTalkAnyMore;
 					CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 				};
+			};
+		};
+
+		// Process danger
+		if (!isNil {T_GETV("dangerSource")}) then {
+			if (time > T_GETV("dangerTimeEnd")) then {
+				T_SETV("dangerSource", nil);
+				T_SETV("dangerLevel", 0);
 			};
 		};
 
@@ -1232,11 +1255,36 @@ CLASS("AIUnitHuman", "AIUnit")
 		};
 	ENDMETHOD;
 
+	// Adds danger source
+	// In fact the bot can process only one at a time
+	// If passed danger level is below the current danger level, it wil lbe ignored
+	METHOD(addDangerSource)
+		params [P_THISOBJECT, P_DYNAMIC("_dangerSrc"), P_NUMBER("_radius"), P_NUMBER("_duration"), P_NUMBER("_dangerLevel")];
+
+		OOP_INFO_1("addDangerSource: %1", _this);
+
+		// Ignore if the new danger level is below the current one
+		// Ignore if we are already out of danger radius
+		if (_dangerLevel > T_GETV("dangerLevel") &&
+			{(T_GETV("hO") distance _dangerSrc) < _radius}
+			) then {
+			OOP_INFO_0("  added");
+			T_SETV("dangerSource", _dangerSrc);
+			T_SETV("dangerTimeEnd", time + _duration);
+			T_SETV("dangerLevel", _dangerLevel);
+			T_SETV("dangerRadius", _radius);
+		};
+	ENDMETHOD;
+
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	public override METHOD(getDebugUIVariableNames)
 		[
 			"hO",
+			"dangerSource",
+			"dangerTimeEnd",
+			"dangerLevel",
+			"dangerRadius",
 			"assignedVehicle",
 			"assignedVehicleRole",
 			"assignedCargoIndex",

@@ -9,6 +9,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 // ---------------- Goal relevance values and effects
 // The actual relevance returned by goal can be different from the one which is set below
 ["GoalUnitFlee",							100	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitInfantryEscapeDangerSource",		70	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalCivilianPanicAway",					65	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalCivilianPanicNearest",				60	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitDismountCurrentVehicle",			50	] call AI_misc_fnc_setGoalIntrinsicRelevance;
@@ -63,6 +64,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 ["GoalCivilianWander", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setGoalEffects;
 ["GoalCivilianPanicNearest", _s, [[WSP_UNIT_HUMAN_IN_DANGER, false]]] call AI_misc_fnc_setGoalEffects;
 ["GoalCivilianPanicAway", _s, [[WSP_UNIT_HUMAN_IN_DANGER, false]]] call AI_misc_fnc_setGoalEffects;
+["GoalUnitInfantryEscapeDangerSource", _s, [[WSP_UNIT_HUMAN_AT_TARGET_POS, true]]] call AI_misc_fnc_setGoalEffects;
 
 
 // ---------------- Actions
