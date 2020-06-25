@@ -264,6 +264,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			if(T_CALLM1("isInBorder", _object)) then
 			{
 				private _type = typeOf _object;
+				private _modelName = (getModelInfo _object) select 0;
 
 				switch true do {
 					// A truck's position defined the position for tracked and wheeled vehicles
@@ -339,22 +340,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
 					};
 					// Process buildings, objects with anim markers, and shooting targets
-					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
+					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
 						T_CALLM2("addObject", _object, _object in _terrainObjects);
 						OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 					};
 				};
-
-				// // Process objects with anim markers
-				// private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
-				// if(_animMarkersIdx != NOT_FOUND) then {
-				// 	T_CALLM1("addObject", _object);
-				// };
-
-				// // Process shooting targets
-				// if(_type in gShootingTargetTypes) then {
-				// 	T_CALLM1("addObject", _object);
-				// };
 			};
 		} forEach _allObjects;
 
@@ -403,6 +393,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Check how it affects the location's infantry capacity
 		private _type = typeOf _hObject;
+		private _modelName = (getModelInfo _hObject) select 0;
 		private _index = location_b_capacity findIf {_type in _x#0};
 		private _cap = 0;
 		if (_index != -1) then {
@@ -438,7 +429,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Process it for ambient anims
-		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
+		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _modelName; };
 		if(_animMarkersIdx != NOT_FOUND) then {
 			(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
 			private _ambientAnimObjects = T_GETV("ambientAnimObjects");

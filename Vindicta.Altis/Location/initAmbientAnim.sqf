@@ -3,3 +3,11 @@ gAmbientAnimSets = _animSetNames apply { [ _x, ((_x call BIS_fnc_ambientAnimGetP
 gObjectAnimMarkers = call compile preprocessFileLineNumbers "Location\objectAnimMarkers.sqf";
 gShootingTargetTypes = ["TargetP_Inf_F", "TargetP_Inf_Acc2_F", "TargetP_Inf_Acc1_F", "TargetP_Inf2_F", "TargetP_Inf2_Acc2_F", "TargetP_Inf2_Acc1_F", "TargetP_Inf3_F", "TargetP_Inf3_Acc2_F", "TargetP_Inf3_Acc1_F", "TargetP_Inf4_F", "TargetP_Inf4_Acc2_F", "TargetP_Inf4_Acc1_F", "TargetP_HVT1_F", "TargetP_HVT2_F", "Target_F", "Land_Target_Oval_F"];
 gObjectMakeSimple = call compile preprocessFileLineNumbers "Location\objectMakeSimple.sqf";
+
+// Post-process gObjectAnimMarkers, replace class name with model path
+{
+	private _modelPath = getText (configFile >> "cfgVehicles" >> (_x#0) >> "model");
+	private _modelPathSplit = _modelPath splitString "\";
+	private _modelName = _modelPathSplit select (count _modelPathSplit - 1);
+	_x set [0, _modelName];
+} forEach gObjectAnimMarkers;

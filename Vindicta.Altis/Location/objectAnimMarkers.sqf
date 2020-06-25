@@ -169,14 +169,18 @@
 ["Land_Calvary_02_V1_F",[[[0,-0.95,-0.84],350.543,"STAND"]]],["Land_TouristShelter_01_F",[[[0.37,0.27,-1.16],330.445,"STAND"]]],
 ["Land_Calvary_02_V2_F",[[[0,-0.95,-0.84],350.543,"STAND"]]],
 ["Land_BusStop_01_shelter_F",[[[-0.03,0.74,-0.28],180,"SIT3"],[[-0.95,0.69,-0.28],180,"SIT3"],[[1.05,0.62,-0.25],180,"SIT3"]]],
-["Land_StallWater_F",[[[-0.15,-0.85,0.11],205.128,"SIT_U2"]]],
+//["Land_StallWater_F",[[[-0.15,-0.85,0.11],205.128,"SIT_U2"]]], // Doesn't always point the good way
 ["Land_Water_source_F",[[[-0.12,-1.01,-1.14],338.951,"STAND"]]],
 ["Land_BusStop_02_shelter_F",[[[-0.53,0.97,-0.36],189.13,"SIT3"],[[0.63,0.99,-0.32],189.13,"SIT3"]]],
 ["Land_WoodenShelter_01_F",[[[-1.78,-1.55,-1.11],181.84,"LEAN"],[[1.7,-1.46,-1.11],181.84,"LEAN"]]],
 ["Land_Atm_02_F",[[[-0.21,-0.55,-1.28],350.543,"STAND"]]],
 ["Land_ATM_01_malden_F",[[[-0.31,-0.92,-1.28],350.543,"STAND"]]],
 ["Land_ATM_02_malden_F",[[[-0.31,-0.43,-1.29],350.543,"STAND"]]],
-["Land_Atm_01_F",[[[-0.26,-0.92,-1.28],350.543,"STAND"]]]
+["Land_Atm_01_F",[[[-0.26,-0.92,-1.28],350.543,"STAND"]]],
+["Land_PhoneBooth_02_F",[[[0,-0.45,-1.05],350.543,"STAND"]]],
+["Land_PhoneBooth_01_F",[[[0,-0.45,-1.05],350.543,"STAND"]]],
+["Land_PhoneBooth_02_malden_F",[[[0,-0.45,-1.05],350.543,"STAND"]]],
+["Land_PhoneBooth_01_malden_F",[[[0,-0.45,-1.05],350.543,"STAND"]]]
 ]
 
 // Use MarkupMission.Malden to do add more of these configs

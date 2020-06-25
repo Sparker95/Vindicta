@@ -45,6 +45,9 @@ CLASS("CivPresence", "")
 	VARIABLE("waypointsAGL");
 	VARIABLE("spawnPointsAGL");
 
+	// Array of ambient animation objects
+	VARIABLE("ambientAnimObjects");
+
 	// Array of Civilian-derived OOP objects
 	VARIABLE("civilians");
 
@@ -64,6 +67,7 @@ CLASS("CivPresence", "")
 
 		// Rectangular marker for area
 		_pos params ["_x", "_y"];
+		private _radius = sqrt (_a^2 + _b^2);
 		pr _mrkName = format ["%1_debug_%2_%3", _thisObject, floor _x, floor _y];
 		pr _mrk = createMarkerLocal [_mrkName, _pos];
 		_mrk setMarkerShapeLocal "RECTANGLE";
@@ -82,7 +86,7 @@ CLASS("CivPresence", "")
 		_mrk setMarkerAlphaLocal 1.0;
 		_mrk setMarkerTypeLocal "mil_dot";
 		_mrk setMarkerSizeLocal [0.3, 0.3];
-		_mrk setMarkerText "idle";
+		_mrk setMarkerTextLocal "idle";
 		T_SETV("debugMarkerText", _mrk);
 
 		/*
@@ -107,6 +111,25 @@ CLASS("CivPresence", "")
 		pr _nHouses = {count (_x buildingPos -1) > 0} count (_pos nearObjects ["House", _radius]);
 		T_SETV("nHouses", _nHouses);
 
+		// Process ambient animation objects
+		pr _animObjects =  (nearestObjects [[_x, _y], [], sqrt (_halfWidthx^2 + _halfWidthy^2), true]) select
+			{_x inArea _area} select
+			{pr _modelName = (getModelInfo _x) select 0; diag_log _x; gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND;};
+		OOP_INFO_1("Added %1 ambient animation objects", count _animObjects);
+
+		{
+			// Marker with text
+			_mrkName = format ["%1_%2", _thisObject, str _x];
+			pr _mrk = createMarkerLocal [_mrkName, (getPos _x)];
+			_mrk setMarkerShapeLocal "ICON";
+			_mrk setMarkerBrushLocal "SolidFull";
+			_mrk setMarkerColorLocal "ColorRed";
+			_mrk setMarkerAlphaLocal 1.0;
+			_mrk setMarkerTypeLocal "mil_dot";
+			//_mrk setMarkerSizeLocal [0.3, 0.3];
+			_mrk setMarkerTextLocal (str _x);
+		} forEach _animObjects;
+
 		T_SETV("enabled", false);
 		T_SETV("targetAmount", 0);
 		T_SETV("currentAmount", 0);
@@ -115,6 +138,7 @@ CLASS("CivPresence", "")
 		T_SETV("waypointsAGL", _waypoints);
 		T_SETV("spawnPointsAGL", _buildingPositions + _waypoints);
 		T_SETV("civilians", []);
+		T_SETV("ambientAnimObjects", _animObjects);
 
 	ENDMETHOD;
 
