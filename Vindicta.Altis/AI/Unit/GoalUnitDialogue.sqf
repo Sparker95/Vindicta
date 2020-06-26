@@ -28,6 +28,11 @@ CLASS("GoalUnitDialogue", "GoalUnit")
 		pr _dlg = GETV(_AI, "dialogue");
 		if (IS_NULL_OBJECT(_dlg) || {isNull GETV(_AI, "talkObject")}) exitWith {0;};
 
+		// Check if current goal is sitting on a bench or something similar
+		// If it is so, we don't need to actiate this goal
+		// Because we can most likely already talk while doing the animation
+		if (GETV(_ai, "currentGoal") == "GoalUnitAmbientAnim") exitWith {0;};
+
 		// Perform generic checks
 		pr _canTalk = CALLM0(_AI, "canTalk");
 		if (!_canTalk) exitWith {0};

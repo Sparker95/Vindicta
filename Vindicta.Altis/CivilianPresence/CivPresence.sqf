@@ -114,7 +114,7 @@ CLASS("CivPresence", "")
 		// Process ambient animation objects
 		pr _animObjects =  (nearestObjects [[_x, _y], [], sqrt (_halfWidthx^2 + _halfWidthy^2), true]) select
 			{_x inArea _area} select
-			{pr _modelName = (getModelInfo _x) select 0; diag_log _x; gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND;};
+			{! isNil {_x getVariable "vin_anim"}};
 		OOP_INFO_1("Added %1 ambient animation objects", count _animObjects);
 
 		{
@@ -399,19 +399,33 @@ CLASS("CivPresence", "")
 	METHOD(_tryCreateUnit)
 		params [P_THISOBJECT];
 
-		private _pos = selectRandom T_GETV("spawnPointsAGL");
+		private _ambientAnimObjects = T_GETV("ambientAnimObjects") select {!(_x getVariable ["vin_occupied", false])};
+		private _animObject = objNull;
+		if (count _ambientAnimObjects > 0 && (random 10 > 3)) then {
+			_animObject = selectRandom _ambientAnimObjects;
+		};
+
+		private _pos = if (isNull _animObject) then {
+			selectRandom T_GETV("spawnPointsAGL");
+		} else {
+			ASLtoAGL (getPosASL _animObject);
+		};
 		private _posASL = (AGLToASL _pos) vectorAdd [0,0,1.5];
 
 		//check if any player can see the point of creation
-		private _seenBy = allPlayers findIf {_x distance _pos < 35 || {(_x distance _pos < 150 && {([_x,"VIEW"] checkVisibility [eyePos _x, _posASL]) > 0.5})}};
-		if (_seenBy != -1) exitWith {false};
+		//private _seenBy = allPlayers findIf {_x distance _pos < 35 || {(_x distance _pos < 150 && {([_x,"VIEW"] checkVisibility [eyePos _x, _posASL]) > 0.5})}};
+		//if (_seenBy != -1) exitWith {false};
 
 		pr _className = "C_Man_3_enoch_F";
 		pr _oop_civ = T_CALLM2("_createAmbientCivilian", _pos, _className);
 
 		// Give goal to the civilian
 		pr _ai = CALLM0(_oop_civ, "getAI");
-		pr _args = ["GoalCivilianWander", 0, [], NULL_OBJECT, true, false, true]; // repetitive goal!
+		pr _args = if (isNull _animObject) then {
+			["GoalCivilianWander", 0, [], NULL_OBJECT, true, false, true]; // repetitive goal!
+		} else {
+			["GoalUnitAmbientAnim", 0, [[TAG_TARGET_AMBIENT_ANIM, _animObject], [TAG_INSTANCE, true]], NULL_OBJECT, true, false, false]
+		};
 		CALLM(_ai, "addExternalGoal", _args);
 
 		// Register it here, increase counters

@@ -236,8 +236,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _locPos = T_GETV("pos");
 
 		#ifndef _SQF_VM
-		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius] select { typeOf _x != "" };
-		private _objects = nearestObjects [_locPos, [], _radius] select { typeOf _x != "" };
+		// Lots of objects from the map have typeOf "" unfortunately (thanks to arma)
+		// But we must scan them anyway
+		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
+		private _objects = nearestObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
 		private _allObjects = +_terrainObjects;
 		{
 			_allObjects pushBackUnique _x;
@@ -449,6 +451,19 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_mrk hideObjectGlobal true;
 				_ambientAnimObjects pushBack _mrk;
 			} forEach _animMarkers;
+
+			// Add marker for debug
+			/*
+			_mrkName = format ["%1_%2", _thisObject, str _hObject];
+			pr _mrk = createMarkerLocal [_mrkName, (getPos _hObject)];
+			_mrk setMarkerShapeLocal "ICON";
+			_mrk setMarkerBrushLocal "SolidFull";
+			_mrk setMarkerColorLocal "ColorRed";
+			_mrk setMarkerAlphaLocal 1.0;
+			_mrk setMarkerTypeLocal "mil_dot";
+			//_mrk setMarkerSizeLocal [0.3, 0.3];
+			_mrk setMarkerTextLocal (str _hObject);
+			*/
 		};
 
 		// Process target range objects
