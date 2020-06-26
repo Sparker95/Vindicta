@@ -43,8 +43,10 @@ CLASS("GoalUnitInfantryEscapeDangerSource", "GoalUnit")
 			} else {
 				_bearing = (direction _dangerSrc) - 60;
 			};
-			_escapePos = _hO getPos [4.5, _bearing];	// Run from current position! Not from danger!
+			pr _vehSpeedms = vectorMagnitude velocity _dangerSrc;
+			pr _escapeDistance = 4.5 + 0.3*_vehSpeedms;
 			_hO setDir _bearing;
+			_escapePos = _hO getPos [_escapeDistance, _bearing];	// Run from current position! Not from danger!
 		} else {
 			// Bearing from danger src to this bot
 			// We will try to move in that direction away from danger
