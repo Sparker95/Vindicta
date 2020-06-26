@@ -1173,7 +1173,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Locations which will be processed for potential roadblock positions around them
 		private _locationsForRoadblocks = [];
 
-		private _civPresenceMgr = NEW("CivPresenceMgr", [100]);
+		private _civPresenceMgr = NEW("CivPresenceMgr", [100 ARG T_GETV("tNameCivilian")]);
 
 		{ // forEach (entities "Vindicta_LocationSector");
 			private _locSector = _x;

@@ -23,8 +23,14 @@ CLASS("CivPresenceMgr", "")
 
 	VARIABLE("capacityMult"); // Global cpacity multiplier for all cells
 
+	// Class name of unit to be used if a loadout is chosen
+	VARIABLE("defaultCivType");
+
+	// Array with class names or loadouts for unarmed civilians
+	VARIABLE("unarmedCivTypes");
+
 	METHOD(new)
-		params [P_THISOBJECT, P_NUMBER("_cellSize")];
+		params [P_THISOBJECT, P_NUMBER("_cellSize"), P_STRING("_tCivilian")];
 
 		private _gridSize = ceil(WORLD_SIZE / _cellSize); //Size of the grid measured in squares
 		T_SETV("gridSize", _gridSize);
@@ -46,6 +52,11 @@ CLASS("CivPresenceMgr", "")
 		T_SETV("initialized", false);
 		T_SETV("activeCells", []);
 		T_SETV("capacityMult", 1.0);
+
+		// Prepare class names from template
+		pr _t = [_tCivilian] call t_fnc_getTemplate;
+		T_SETV("defaultCivType", (_t#T_INF#T_INF_default#0)); // Not a loadout!
+		T_SETV("unarmedCivTypes", +(_t#T_INF#T_INF_unarmed));
 	ENDMETHOD;
 
 	METHOD(setCapacityMultiplier)
@@ -135,6 +146,7 @@ CLASS("CivPresenceMgr", "")
 					pr _cp = CALLSM("CivPresence", "tryCreateInstance", _args);
 					if (!IS_NULL_OBJECT(_cp)) then {
 						_columnArray set [_ly, _cp];	// Register it in grid
+						CALLM2(_cp, "setUnitTypes", T_GETV("defaultCivType"), T_GETV("unarmedCivTypes"));
 						OOP_INFO_2("  created object at: [%1, %2]", _lx, _ly);
 					} else {
 						_columnArray set [_ly, NULL_OBJECT];

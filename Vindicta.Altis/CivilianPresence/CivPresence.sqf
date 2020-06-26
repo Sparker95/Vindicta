@@ -51,13 +51,19 @@ CLASS("CivPresence", "")
 	// Array of Civilian-derived OOP objects
 	VARIABLE("civilians");
 
+	// -- These are set by CivPresenceMgr
+	// Class name of unit to be used if a loadout is chosen
+	VARIABLE("defaultCivType");
+	// Array with class names or loadouts for unarmed civilians
+	VARIABLE("unarmedCivTypes");
+
 	// Marker for debug
 	VARIABLE("debugMarkerArea");
 	VARIABLE("debugMarkerText");
 
 	// 
 	/* private */ METHOD(new)
-		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy"), P_ARRAY("_buildingPositions"), P_ARRAY("_waypoints")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy"), P_ARRAY("_buildingPositions"), P_ARRAY("_waypoints"), P_ARRAY("_animObjects")];
 
 		pr _area = [_pos, _halfWidthx, _halfWidthy, 0, true]; // pos, a, b, angle, rectangle
 		T_SETV("area", _area);
@@ -111,25 +117,6 @@ CLASS("CivPresence", "")
 		pr _nHouses = {count (_x buildingPos -1) > 0} count (_pos nearObjects ["House", _radius]);
 		T_SETV("nHouses", _nHouses);
 
-		// Process ambient animation objects
-		pr _animObjects =  (nearestObjects [[_x, _y], [], sqrt (_halfWidthx^2 + _halfWidthy^2), true]) select
-			{_x inArea _area} select
-			{! isNil {_x getVariable "vin_anim"}};
-		OOP_INFO_1("Added %1 ambient animation objects", count _animObjects);
-
-		{
-			// Marker with text
-			_mrkName = format ["%1_%2", _thisObject, str _x];
-			pr _mrk = createMarkerLocal [_mrkName, (getPos _x)];
-			_mrk setMarkerShapeLocal "ICON";
-			_mrk setMarkerBrushLocal "SolidFull";
-			_mrk setMarkerColorLocal "ColorRed";
-			_mrk setMarkerAlphaLocal 1.0;
-			_mrk setMarkerTypeLocal "mil_dot";
-			//_mrk setMarkerSizeLocal [0.3, 0.3];
-			_mrk setMarkerTextLocal (str _x);
-		} forEach _animObjects;
-
 		T_SETV("enabled", false);
 		T_SETV("targetAmount", 0);
 		T_SETV("currentAmount", 0);
@@ -139,6 +126,8 @@ CLASS("CivPresence", "")
 		T_SETV("spawnPointsAGL", _buildingPositions + _waypoints);
 		T_SETV("civilians", []);
 		T_SETV("ambientAnimObjects", _animObjects);
+		T_SETV("defaultCivType", "");
+		T_SETV("unarmedCivTypes", []);
 
 	ENDMETHOD;
 
@@ -150,6 +139,12 @@ CLASS("CivPresence", "")
 		deleteMarkerLocal T_GETV("debugMarkerArea");
 		deleteMarkerLocal T_GETV("debugMarkerText");
 		#endif
+	ENDMETHOD;
+
+	public METHOD(setUnitTypes)
+		params [P_THISOBJECT, P_STRING("_defaultCivClassName"), P_ARRAY("_unarmedCivClassnames")];
+		T_SETV("defaultCivType", _defaultCivClassName);
+		T_SETV("unarmedCivTypes", _unarmedCivClassnames);
 	ENDMETHOD;
 
 	#ifdef DEBUG_CIV_PRESENCE
@@ -176,7 +171,7 @@ CLASS("CivPresence", "")
 	ENDMETHOD;
 	#endif
 
-	// Creates an object here, returns object or nULL_OBJECT if it cant't be created here
+	// Creates an object here, returns object or NULL_OBJECT if it cant't be created here
 	METHOD(tryCreateInstance)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy")];
 
@@ -192,7 +187,7 @@ CLASS("CivPresence", "")
 		// in meters, average distance between spawn/way points
 		private _area = [_pos, _halfWidthx, _halfWidthy, 0, true]; // pos, a, b, angle, rectangle
 		_area params ["_pos", "_a", "_b"];
-		private _res = 20; // (_a max _b) / 2; // Resolution of the scan
+		private _res = 14; // (_a max _b) / 2; // Resolution of the scan
 		private _nCellsXHalf = ceil(_a/_res); // Amount of cells - one dimension
 		private _nCellsYHalf = ceil(_b/_res);
 
@@ -241,14 +236,33 @@ CLASS("CivPresence", "")
 			};//for loop _y
 		};
 
-		OOP_INFO_2("  building positions: %1, waypoints: %2", count _buildingPositions, count _waypoints);
+		// Process ambient animation objects
+		pr _animObjects =  (nearestObjects [[_pos#0, _pos#1], [], sqrt (_halfWidthx^2 + _halfWidthy^2), true]) select
+			{_x inArea _area} select
+			{! isNil {_x getVariable "vin_anim"}};
+		OOP_INFO_1("Found %1 ambient animation objects", count _animObjects);
+
+		{
+			// Marker with text
+			_mrkName = format ["%1_%2", _thisObject, str _x];
+			pr _mrk = createMarkerLocal [_mrkName, (getPos _x)];
+			_mrk setMarkerShapeLocal "ICON";
+			_mrk setMarkerBrushLocal "SolidFull";
+			_mrk setMarkerColorLocal "ColorRed";
+			_mrk setMarkerAlphaLocal 1.0;
+			_mrk setMarkerTypeLocal "mil_dot";
+			//_mrk setMarkerSizeLocal [0.3, 0.3];
+			_mrk setMarkerTextLocal (str _x);
+		} forEach _animObjects;
+
+		OOP_INFO_3("  building positions: %1, waypoints: %2, ambient animations: %3", count _buildingPositions, count _waypoints, count _animobjects);
 
 		// Does it make sense to create it here?
-		pr _success = ((count _buildingPositions) > 0) && ((count _waypoints) > 1);
+		pr _success = ( ((count _buildingPositions) > 0) || (count _animObjects > 2)) && ((count _waypoints) > 1);
 		pr _instance = NULL_OBJECT;
 		if (_success) then {			
 
-			pr _args = [_pos, _halfWidthX, _halfWidthY, _buildingPositions, _waypoints];
+			pr _args = [_pos, _halfWidthX, _halfWidthY, _buildingPositions, _waypoints, _animObjects];
 			_instance = NEW("CivPresence", _args);
 		};
 
@@ -315,9 +329,10 @@ CLASS("CivPresence", "")
 			pr _area_m2 = 4*(_area#1)*(_area#2);
 			pr _capHouses = N_CIVS_PER_HOUSE*T_GETV("nHouses");
 			pr _capArea = MAX_DENSITY*_area_m2;
-			_val =  ceil ( vin_CivPresence_multiplierUser*vin_CivPresence_multiplierSystem* (_capHouses min _capArea) );
+			pr _nAnimObjects = count T_GETV("ambientAnimObjects");
+			_val =  ceil ( vin_CivPresence_multiplierUser*vin_CivPresence_multiplierSystem* ((_capHouses max _nAnimObjects) min _capArea) );
 
-			OOP_INFO_5(" area: %1, area m^2: %2, capHouses: %3, capArea: %4, targetAmount: %5", _area, _area_m2, _capHouses, _capArea, _val);
+			OOP_INFO_5(" area: %1, capHouses: %2, nAnims: %3, capArea: %4, targetAmount: %5", _area, _capHouses, _nAnimObjects, _capArea, _val);
 		};
 		T_SETV("targetAmount", _val);
 
@@ -385,9 +400,23 @@ CLASS("CivPresence", "")
 	// Creates an ambient civ
 	// Returns a ref to OOP Civilian object
 	METHOD(_createAmbientCivilian)
-		params [P_THISOBJECT, P_POSITION("_pos"), P_STRING("_className")];
+		params [P_THISOBJECT, P_POSITION("_pos")];
+
+		OOP_INFO_1("_createAmbientCivilian: %1", _pos);
+
+		private _className = selectRandom T_GETV("unarmedCivTypes");
+		private _loadout = "";
+		if (_className call t_fnc_isLoadout) then {
+			OOP_INFO_0("  detected loadout");
+			_loadout = _className;
+			_className = T_GETV("defaultCivType");
+		};
 
 		pr _hO = createAgent [_className, _pos, [], 0, "CAN_COLLIDE"];
+		if (_loadout != "") then {
+			OOP_INFO_1("  setting loadout: %1", _loadout);
+			[_hO, _loadout] call t_fnc_setUnitLoadout;
+		};
 		SET_AGENT_FLAG(_hO);
 		pr _oop_civ = NEW("Civilian", [_hO ARG _thisObject]);	// Create OOP object associated with it
 		
@@ -416,8 +445,7 @@ CLASS("CivPresence", "")
 		//private _seenBy = allPlayers findIf {_x distance _pos < 35 || {(_x distance _pos < 150 && {([_x,"VIEW"] checkVisibility [eyePos _x, _posASL]) > 0.5})}};
 		//if (_seenBy != -1) exitWith {false};
 
-		pr _className = "C_Man_3_enoch_F";
-		pr _oop_civ = T_CALLM2("_createAmbientCivilian", _pos, _className);
+		pr _oop_civ = T_CALLM1("_createAmbientCivilian", _pos);
 
 		// Give goal to the civilian
 		pr _ai = CALLM0(_oop_civ, "getAI");
