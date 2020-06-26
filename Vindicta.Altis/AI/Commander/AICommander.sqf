@@ -2773,7 +2773,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 		FIX_LINE_NUMBERS()
 
-		private _progressScaled = _progress * MAP_GAMMA(vin_diff_global, _progress);
+		private _progressScaled = MAP_GAMMA(vin_diff_global, _progress);
 		OOP_INFO_2("  Campaign progess: %1, scaled by difficulty setting: %2", _progress, _progressScaled);
 		{
 			private _type = CALLM0(_x, "getType");
