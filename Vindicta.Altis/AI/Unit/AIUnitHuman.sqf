@@ -1277,8 +1277,8 @@ CLASS("AIUnitHuman", "AIUnit")
 	ENDMETHOD;
 
 	// Adds car horn danger source
-	STATIC_METHOD(addCarHornDanger)
-		params [P_THISCLASS, P_OBJECT("_car"), P_ARRAY("_units")];
+	STATIC_METHOD(addCarCollisionDanger)
+		params [P_THISCLASS, P_OBJECT("_car"), P_ARRAY("_units"), ["_radius", 15]];
 
 		if (isNull _car) exitWith {};
 		
@@ -1286,7 +1286,7 @@ CLASS("AIUnitHuman", "AIUnit")
 			pr _ai = GET_AI_FROM_OBJECT_HANDLE(_x);
 			if (!IS_NULL_OBJECT(_ai)) then {
 				// params [P_THISOBJECT, P_DYNAMIC("_dangerSrc"), P_NUMBER("_radius"), P_NUMBER("_duration"), P_NUMBER("_dangerLevel")];
-				CALLM4(_ai, "addDangerSource", _car, 15, 5, 10);
+				CALLM4(_ai, "addDangerSource", _car, _radius, 5, 10);
 				CALLM0(_ai, "setUrgentPriority"); // Will cause this bot to be processed ASAP
 			};
 		} forEach _units;

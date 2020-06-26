@@ -55,6 +55,13 @@ CLASS("GoalUnitInfantryEscapeDangerSource", "GoalUnit")
 		// Set unlimited speed
 		_hO forceSpeed -1;
 		_hO forceWalk false;
+		pr _hGroup = group _hO;
+		if (!isNull _hGroup) then {
+			if ((behaviour _hO) in ["SAFE", "CARELESS"]) then {
+				_hGroup setBehaviour "AWARE";	// todo I wish we could change behaviour of only one unit but well, arma :/
+			};
+			_hGroup setSpeedMode "NORMAL";
+		};
 
     	//pr _arrow = createVehicle ["Sign_Arrow_Green_F", _escapePos, [], 0, "CAN_COLLIDE"];
 		//_arrow spawn {sleep 2; deleteVehicle _this;}; 

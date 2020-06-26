@@ -104,7 +104,7 @@ vin_carHornMouseDownHandler = {
 		//systemChat format ["Beep Beep! %1", time];
 		//diag_log format ["Nearby men: %1", _nearMen];
 		pr _args = [vehicle player, _nearMen];
-		REMOTE_EXEC_CALL_STATIC_METHOD("AIUnitHuman", "addCarHornDanger", _args, ON_SERVER, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("AIUnitHuman", "addCarCollisionDanger", _args, ON_SERVER, false);
 		//call compile preprocessFileLineNumbers "temp.sqf";
 	};
 };

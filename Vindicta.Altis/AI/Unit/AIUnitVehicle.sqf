@@ -130,13 +130,14 @@ CLASS("AIUnitVehicle", "AIUnit")
 			private _dirRelOffset = (_velocityModelNorm#0) atan2 (_velocityModelNorm#1);
 			private _halfWidth = 3.5;
 			private _velocityMagnitude = vectorMagnitude _velocityModel;
-			private _timeToImpact = 1.8;
+			private _timeToImpact = 2;
 			private _halfHeight = 0.5*_timeToImpact*_velocityMagnitude + 5;
-			thisTrigger setTriggerArea [_halfWidth max 3, _halfHeight max 4, 0, true, 4];
+			thisTrigger setTriggerArea [_halfWidth max 3, _halfHeight max 3, 0, true, 4];
 			thisTrigger attachTo [_veh, _velocityModelNorm vectorMultiply _halfHeight];
 			private _units = thisList select {_x isKindOf "CAManBase"};
 			if (count _units > 0) then {
-				CALLSM2("AIUnitHuman", "addCarHornDanger", _veh, _units);
+				systemChat format ["Units in trigger: %1", _units];
+				CALLSM3("AIUnitHuman", "addCarCollisionDanger", _veh, _units, 100);
 			};
 
 			// Set update interval depending on velocity
