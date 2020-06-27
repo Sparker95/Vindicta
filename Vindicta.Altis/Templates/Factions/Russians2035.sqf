@@ -64,7 +64,7 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["min_rf_gaz_2330"]];
 
 _veh set [T_VEH_car_unarmed, ["min_rf_gaz_2330"]];
-_veh set [T_VEH_car_armed, ["min_rf_gaz_2330_HMG", "rhsgref_nat_uaz_dshkm", "rhsgref_nat_uaz_ags"]];
+_veh set [T_VEH_car_armed, ["min_rf_gaz_2330_HMG"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["min_rf_gaz_2330"]];
 _veh set [T_VEH_MRAP_HMG, ["min_rf_gaz_2330_HMG"]];
