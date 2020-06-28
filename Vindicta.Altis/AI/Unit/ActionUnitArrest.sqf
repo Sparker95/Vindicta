@@ -49,7 +49,7 @@ CLASS("ActionUnitArrest", "Action")
 		
 		pr _captor = T_GETV("objectHandle");
 		_captor lockWP false;
-		_captor forceSpeed (_captor getSpeed "NORMAL");
+		_captor forceSpeed -1;
 
 		// We are not in formation any more
 		// Reset world state property
@@ -87,6 +87,14 @@ CLASS("ActionUnitArrest", "Action")
 			T_SETV("stateMachine", 3);
 		};
 		
+		// Notify the target bot if we are close enough
+		pr _targetAI = GET_AI_FROM_OBJECT_HANDLE(_target);
+		if (!IS_NULL_OBJECT(_targetAI)) then {
+			if ((_captor distance _target) < 25) then {
+				CALLM1(_targetAI, "setInDangerWSP", true);
+			};
+		};
+
 		scopename "switch";
 		switch (T_GETV("stateMachine")) do {
 
@@ -126,8 +134,8 @@ CLASS("ActionUnitArrest", "Action")
 							_captor doWatch _target;
 							_pos_arrest = getpos _target;
 
-							if (getpos _target distance getpos _captor > 30) then { sleep 3;};
-							sleep 1;
+							if (getpos _target distance getpos _captor > 30) then { sleep 1;};
+							sleep 0.5;
 
 							_isMoving = !(_pos_arrest distance getpos _target < 0.1);
 							_target setVariable ["isMoving", _isMoving];
@@ -156,14 +164,14 @@ CLASS("ActionUnitArrest", "Action")
 								
 								pr _sentence = "Hey you, stop here.";
 								if (selectRandom [true,false]) then { 
-									_captor say "stop";
+									//_captor say "stop";
 									_sentence = selectRandom [
 									"STOP! Get on the fucking ground!",
 									"STOP! Get down on the ground!",
 									"DO NOT MOVE! Get down on the ground!"
 									];
 								} else {
-									_captor say "halt";
+									//_captor say "halt";
 									_sentence = selectRandom [
 									"HALT! Get on the fucking ground!",
 									"HALT! Get down on the ground!",
@@ -171,8 +179,8 @@ CLASS("ActionUnitArrest", "Action")
 									];
 								};
 								
-								[_captor, _sentence,2] call pr0_fnc_dialogue_createSentence;
-								_captor forceSpeed (_captor getSpeed "NORMAL");
+								CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _captor, _sentence);
+								_captor forceSpeed -1;
 							};
 						};
 					};
@@ -238,9 +246,6 @@ CLASS("ActionUnitArrest", "Action")
 							_animationDone
 						}; // end waitUntil
 					}; // end spawn script
-						
-					//[_captor,"So who do whe have here?"] call pr0_fnc_dialogue_createSentence;
-					// arrest player by sending a message to unit's undercoverMonitor				
 					
 					T_SETV("spawnHandle", _handle);
 				} else {
@@ -289,22 +294,12 @@ CLASS("ActionUnitArrest", "Action")
 		params [P_THISCLASS, P_OBJECT("_target")];
 
 		// If it's a civilian presence target...
-		if ([_target] call pr0_fnc_cp_isUnitCreatedByCP) then {
-			[_target, true] call pr0_fnc_cp_arrestUnit;
+		pr _ai = GET_AI_FROM_OBJECT_HANDLE(_target);
+		if (!IS_NULL_OBJECT(_ai)) then {
+			CALLM1(_ai, "setArrest", true);
 		} else {
 			// Otherwise it's a player
 			_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
-
-			if (!isPlayer _target) then {
-				// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
-				_target disableAI "MOVE"; // Disable AI Movement
-				_target disableAI "AUTOTARGET"; // Disable AI Autotarget
-				_target disableAI "ANIM"; // Disable AI Behavioural Scripts
-				_target allowFleeing 0; // Disable AI Fleeing
-				_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
-			};
-		
-			_target setVariable ["timeArrested", GAME_TIME + 10];
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
 		};
 	ENDMETHOD;
@@ -326,7 +321,7 @@ CLASS("ActionUnitArrest", "Action")
 				"OPEN FIRE!"
 			];
 
-			[_captor, _sentence,1.5] call pr0_fnc_dialogue_createSentence;
+			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _captor, _sentence);
 
 			pr _args = [_target, 3.0];
 			REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
@@ -345,7 +340,9 @@ CLASS("ActionUnitArrest", "Action")
 		_captor doWatch objNull;
 		_captor lookAt objNull;
 		_captor lockWP false;
-		_captor forceSpeed (_captor getSpeed "SLOW");
+		_captor forceSpeed -1;
+		doStop _captor;
+
 		
 	ENDMETHOD;
 

@@ -69,6 +69,14 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		nil
 	ENDMETHOD;
 
+	// Sets WSP_UNIT_HUMAN_IN_DANGER
+	// Default value is true!
+	public override METHOD(setInDangerWSP)
+		params [P_THISOBJECT, ["_value", true, [true]]];
+		CALLCM("AIUnitHuman", _thisObject, "setInDangerWSP", [_value]);
+		T_SETV("lastDangerTime", time);
+	ENDMETHOD;
+
 	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "MiscLowPriority");
@@ -114,6 +122,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	//                        G E T   P O S S I B L E   G O A L S
 	public override METHOD(getPossibleGoals)
 		[
+			"GoalUnitArrested",
 			"GoalCivilianPanicNearest",
 			"GoalCivilianPanicAway",
 			"GoalUnitDialogue",

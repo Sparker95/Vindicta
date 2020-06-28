@@ -16,7 +16,7 @@ Author: Sparker 12.11.2018
 CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
-	VARIABLE("suspTarget");	// "suspicious" players collected by SensorGroupTargets
+	VARIABLE("suspTarget");	// "suspicious" targers collected by SensorGroupTargets
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
@@ -38,7 +38,7 @@ CLASS("AIGroup", "AI_GOAP")
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 
-		T_SETV("suspTarget", nil);
+		T_SETV("suspTarget", objNull);
 
 		// Initialize sensors
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
@@ -446,6 +446,15 @@ CLASS("AIGroup", "AI_GOAP")
 		params [P_THISOBJECT, P_OBJECT("_target"), P_NUMBER("_duration")];
 		T_SETV("escortObject", _target);
 		T_SETV("escortEndTime", GAME_TIME + _duration);
+	ENDMETHOD;
+
+	public override METHOD(getDebugUIVariableNames)
+		[
+			"suspTarget",
+			"pointsOfInterest",
+			"escortEndTime",
+			"escortObject"
+		];
 	ENDMETHOD;
 
 ENDCLASS;

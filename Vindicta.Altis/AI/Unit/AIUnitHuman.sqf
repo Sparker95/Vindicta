@@ -42,6 +42,8 @@ CLASS("AIUnitHuman", "AIUnit")
 	VARIABLE("dangerLevel");	// Number, current danger level
 	VARIABLE("dangerRadius");	// Radius we must be away from this danger src
 
+	// Bool, true when arrested
+	VARIABLE("arrested");
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
@@ -91,6 +93,9 @@ CLASS("AIUnitHuman", "AIUnit")
 		T_SETV("dangerLevel", 0);
 		T_SETV("dangerTimeEnd", 0);
 		T_SETV("dangerRadius", 0);
+
+		// Arrested
+		T_SETV("arrested", false);
 
 	ENDMETHOD;
 	
@@ -820,7 +825,7 @@ CLASS("AIUnitHuman", "AIUnit")
 	ENDMETHOD;
 
 	// Enables or disables vehicle usage world state property
-	METHOD(setAllowVehicleWSP)
+	public METHOD(setAllowVehicleWSP)
 		params [P_THISOBJECT, P_BOOL("_value")];
 		pr _ws = T_GETV("worldState");
 		WS_SET(_ws, WSP_UNIT_HUMAN_VEHICLE_ALLOWED, _value);
@@ -828,10 +833,18 @@ CLASS("AIUnitHuman", "AIUnit")
 
 	// Sets WSP_UNIT_HUMAN_HAS_INTERACTED to some value
 	// Default value is true!
-	METHOD(setHasInteractedWSP)
+	public METHOD(setHasInteractedWSP)
 		params [P_THISOBJECT, ["_value", true, [true]]];
 		pr _ws = T_GETV("worldState");
 		WS_SET(_ws, WSP_UNIT_HUMAN_HAS_INTERACTED, _value);
+	ENDMETHOD;
+
+	// Sets WSP_UNIT_HUMAN_IN_DANGER
+	// Default value is true!
+	public virtual METHOD(setInDangerWSP)
+		params [P_THISOBJECT, ["_value", true, [true]]];
+		pr _ws = T_GETV("worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_IN_DANGER, _value);
 	ENDMETHOD;
 
 	// Updates vehicle world state properties
@@ -1290,6 +1303,28 @@ CLASS("AIUnitHuman", "AIUnit")
 				CALLM0(_ai, "setUrgentPriority"); // Will cause this bot to be processed ASAP
 			};
 		} forEach _units;
+	ENDMETHOD;
+
+
+
+	// Perform arrest of this human, or let him free
+	public METHOD(setArrest)
+		params [P_THISOBJECT, P_BOOL("_arrested")];
+		pr _hO = T_GETV("hO");
+		if (_arrested) then {		
+			_hO playMoveNow "acts_aidlpsitmstpssurwnondnon01";
+			_hO disableAI "MOVE"; // Disable AI Movement
+			_hO disableAI "AUTOTARGET"; // Disable AI Autotarget
+			_hO disableAI "ANIM"; // Disable AI Behavioural Scripts
+			_hO allowFleeing 0; // Disable AI Fleeing
+			SET_ARRESTED_FLAG(_hO);
+			T_SETV("arrested", true);
+		} else {
+			_hO enableAI "ALL";
+			_hO switchMove "acts_aidlpsitmstpssurwnondnon_out"; // Stand up
+			RESET_ARRESTED_FLAG(_hO);
+			T_SETV("arrested", false);
+		};
 	ENDMETHOD;
 
 	// Debug

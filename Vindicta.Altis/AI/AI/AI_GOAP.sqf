@@ -564,6 +564,12 @@ CLASS("AI_GOAP", "AI")
 		FIX_LINE_NUMBERS()
 		{
 			pr _goalState = _x select 4;
+
+			// Instantly find it if it has a TAG_INSTANT set to true
+			pr _goalParameters = _x select 2;
+			if (_goalParameters findIf {(_x#0 == TAG_INSTANT) && {_x#1}} != -1) exitWith {
+				_mostRelevantGoal = _x;
+			};
 			
 			// Sanity check if goal state is nil because action didn't return it...
 			if (isNil "_goalState") then {

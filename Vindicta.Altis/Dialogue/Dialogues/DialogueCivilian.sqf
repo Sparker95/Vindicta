@@ -118,7 +118,7 @@ CLASS("DialogueCivilian", "Dialogue")
 		private _locsNear = _locs select {
 			pr _type = CALLM0(_x, "getType");
 			pr _dist = CALLM0(_x, "getPos") distance _unit;
-			(_dist < 90000) &&
+			(_dist < 4000) &&
 			(_type != LOCATION_TYPE_CITY)
 		};
 
@@ -128,8 +128,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			pr _type = CALLM0(_x, "getType");
 			pr _dist = CALLM0(_x, "getPos") distance _unit;
 			// Civilian can't tell about everything, but they surely know about police stations and locations which are very close
-			(_dist < 90000) &&
-			{!(_type in [LOCATION_TYPE_CAMP, LOCATION_TYPE_RESPAWN])} && // Array of types the civilian can't know about
+			(!(_type in [LOCATION_TYPE_CAMP, LOCATION_TYPE_RESPAWN])) && // Array of types the civilian can't know about
 			{
 				(random 10 < 5) ||
 				{_type == LOCATION_TYPE_POLICE_STATION}

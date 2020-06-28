@@ -23,7 +23,7 @@ CLASS("GoalGroupArrest", "GoalGroup")
 		if (behaviour leader _hG == "COMBAT") exitWith { 0 };
 		
 		pr _suspTarget = GETV(_AI, "suspTarget");
-		if (!isNil "_suspTarget" && {!IS_ARRESTED_UNCONSCIOUS_DEAD(_suspTarget)}) then {
+		if (!isNull _suspTarget && {!IS_ARRESTED_UNCONSCIOUS_DEAD(_suspTarget)}) then {
 			GETSV("GoalGroupArrest", "relevance");
 		} else {
 			0

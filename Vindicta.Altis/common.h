@@ -79,5 +79,11 @@
 #define SET_AGENT_FLAG(obj) obj setVariable ["vin_isAgent", true]
 #define GET_AGENT_FLAG(obj) obj getVariable ["vin_isAgent", false]
 
+// Arrested variable name
+// Shared between bots and players
+#define SET_ARRESTED_FLAG(obj) obj setVariable ["vin_arrested", true, true]
+#define RESET_ARRESTED_FLAG(obj) obj setVariable ["vin_arrested", false, true]
+#define GET_ARRESTED_FLAG(obj) (obj getVariable ["vin_arrested", false])
+
 // private keyword
 #define pr private

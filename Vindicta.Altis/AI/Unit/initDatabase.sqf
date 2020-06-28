@@ -8,6 +8,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 
 // ---------------- Goal relevance values and effects
 // The actual relevance returned by goal can be different from the one which is set below
+["GoalUnitArrested",						9000] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitFlee",							100	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitInfantryEscapeDangerSource",		70	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalCivilianPanicAway",					65	] call AI_misc_fnc_setGoalIntrinsicRelevance;
@@ -149,7 +150,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 ["ActionUnitRepairVehicle", [TAG_TARGET_REPAIR]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
 
 ["ActionUnitArrest", _s, [[WSP_UNIT_HUMAN_AT_VEHICLE, false],
-						[WSP_UNIT_HUMAN_AT_TARGET_POS, true],
+						//[WSP_UNIT_HUMAN_AT_TARGET_POS, true], // For now it performs movement itself
 						[WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionUnitArrest", _s, [[WSP_UNIT_HUMAN_HAS_INTERACTED, true]]] call AI_misc_fnc_setActionEffects;
 ["ActionUnitArrest", [TAG_TARGET_ARREST]]	call AI_misc_fnc_setActionParametersFromGoalRequired;
@@ -206,6 +207,7 @@ private _s = WSP_UNIT_HUMAN_COUNT;
 // ---------------- Predefined actions of goals
 ["GoalUnitNothing",							"ActionUnitNothing"					] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitVehicleUnflip",					"ActionUnitVehicleUnflip"			] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalUnitArrested",						"ActionUnitArrested"				] call AI_misc_fnc_setGoalPredefinedAction;
 
 
 // ---------------- Action costs

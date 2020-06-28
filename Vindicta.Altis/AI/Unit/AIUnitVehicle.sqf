@@ -120,7 +120,7 @@ CLASS("AIUnitVehicle", "AIUnit")
 		thisList (Array) - array of all detected entities 
 		*/
 
-		OOP_INFO_1("triggerCondition: %1", thisTrigger);
+		//OOP_INFO_1("triggerCondition: %1", thisTrigger);
 
 		if (this && (time > (thisTrigger getVariable "timeNextUpdate")) ) then {
 			OOP_INFO_1("  updating trigger parameters: %1", thisTrigger);

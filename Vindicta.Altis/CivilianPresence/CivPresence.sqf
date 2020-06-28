@@ -1,4 +1,5 @@
 #include "common.h"
+#include "..\Undercover\UndercoverMonitor.hpp"
 
 /*
 Civilian presense module for a specific small area (hundreds of meters, but can be different)
@@ -420,6 +421,8 @@ CLASS("CivPresence", "")
 		SET_AGENT_FLAG(_hO);
 		pr _oop_civ = NEW("Civilian", [_hO ARG _thisObject]);	// Create OOP object associated with it
 		
+		UNDERCOVER_SET_UNIT_SUSPICIOUS(_hO, true);
+
 		_oop_civ // Return
 	ENDMETHOD;
 
