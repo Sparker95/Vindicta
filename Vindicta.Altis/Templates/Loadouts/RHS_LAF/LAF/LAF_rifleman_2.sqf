@@ -17,7 +17,7 @@ this forceaddUniform "rhsgref_uniform_olive";
 this addWeapon "rhs_weap_m16a4_carryhandle";
 _RandomSight = selectRandom ["rhsusf_acc_ACOG_USMC", ""];
 this addPrimaryWeaponItem _RandomSight;
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855A1_Stanag";
 
 this addItemToUniform "FirstAidKit";

@@ -16,7 +16,7 @@ this forceaddUniform "rhsgref_uniform_olive";
 this addBackpack "FGN_AAF_Fieldpack_M81";
 
 this addWeapon "rhs_weap_m4a1_carryhandle_m203";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 _RandomSight = selectRandom ["rhsusf_acc_compm4", ""];
 this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_mag_M433_HEDP";

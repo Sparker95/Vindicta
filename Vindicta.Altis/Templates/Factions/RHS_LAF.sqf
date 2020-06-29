@@ -79,7 +79,7 @@ _veh set [T_VEH_MRAP_GMG, ["rhsusf_m1240a1_m2_usarmy_wd"]];
 _veh set [T_VEH_IFV, ["RHS_M2A2_wd", "RHS_M2A2_BUSKI_WD"]];
 _veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_d", "rhsusf_stryker_m1126_mk19_d", "rhsusf_stryker_m1127_m2_d"]];
 _veh set [T_VEH_MBT, ["rhsusf_m1a1fep_od", "rhsusf_m1a1hc_wd"]];
-_veh set [T_VEH_MRLS, ["rhsusf_M142_usarmy_WD"]];
+_veh set [T_VEH_MRLS, ["rhsusf_M142_usmc_WD"]];
 _veh set [T_VEH_SPA, ["rhsusf_m109_usarmy"]];
 _veh set [T_VEH_SPAA, ["RHS_M6_wd"]];
 
