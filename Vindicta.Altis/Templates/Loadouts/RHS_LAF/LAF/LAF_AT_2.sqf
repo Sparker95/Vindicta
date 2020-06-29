@@ -15,7 +15,7 @@ this addVest "FGN_AAF_M99Vest_M81";
 this forceaddUniform "rhsgref_uniform_olive";
 
 this addWeapon "rhs_weap_m4a1_carryhandle";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855A1_Stanag";
 this addWeapon "launch_NLAW_F";
 this addSecondaryWeaponItem "NLAW_F";

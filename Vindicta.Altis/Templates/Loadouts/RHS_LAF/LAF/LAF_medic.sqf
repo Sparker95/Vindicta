@@ -16,7 +16,7 @@ this forceaddUniform "rhsgref_uniform_olive";
 this addBackpack "rhs_medic_bag";
 
 this addWeapon "rhs_weap_m4a1_carryhandle";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855A1_Stanag";
 
 for "_i" from 1 to 4 do {this addItemToUniform "FirstAidKit";};

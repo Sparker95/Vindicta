@@ -14,7 +14,7 @@ this addVest "rhssaf_vest_md98_woodland";
 this addHeadgear "H_Beret_02";
 
 this addWeapon "SMG_02_F";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 this addPrimaryWeaponItem "rhsusf_acc_mrds";
 this addPrimaryWeaponItem "30Rnd_9x21_Mag_SMG_02";
 this addWeapon "rhsusf_weap_m1911a1";
