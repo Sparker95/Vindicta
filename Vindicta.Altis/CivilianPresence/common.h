@@ -15,3 +15,6 @@
 
 // Each house will contribute this amount of active civilians
 #define N_CIVS_PER_HOUSE 1.0
+
+// Look ahead time for player position interpolation
+#define TIME_INTERPOLATE 7

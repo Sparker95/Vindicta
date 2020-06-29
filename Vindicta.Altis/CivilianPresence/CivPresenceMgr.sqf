@@ -183,7 +183,7 @@ CLASS("CivPresenceMgr", "")
 
 		// Calculate cells occupied by objects
 		pr _occupiedCells = _objects apply {
-			pr _pos = getPosASL _x;
+			pr _pos = (getPosASL _x) vectorAdd ((velocity vehicle _x) vectorMultiply TIME_INTERPOLATE);
 			[floor ((_pos#0)/_cellSize), floor ((_pos#1)/_cellSize)]
 		};
 

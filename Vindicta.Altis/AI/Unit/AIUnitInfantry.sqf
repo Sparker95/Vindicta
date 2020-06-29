@@ -89,7 +89,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 	public override METHOD(getPossibleGoals)
 		//["GoalUnitSalute","GoalUnitScareAway"]
 		[
-			"GoalUnitScareAway",
+			//"GoalUnitScareAway",
 			"GoalUnitDialogue",
 			"GoalUnitInfantryEscapeDangerSource"
 		]
