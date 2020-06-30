@@ -91,7 +91,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				
 				if (_o isKindOf "Man") then {
 					// It's a Man
-					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o) && {!GET_ARRESTED_FLAG(_x)}) then {
+					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o) && {!GET_ARRESTED_FLAG(_o)}) then {
 						_suspiciousTargets pushBack _x;
 					};
 

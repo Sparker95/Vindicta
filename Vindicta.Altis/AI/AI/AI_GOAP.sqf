@@ -568,6 +568,7 @@ CLASS("AI_GOAP", "AI")
 			// Instantly find it if it has a TAG_INSTANT set to true
 			pr _goalParameters = _x select 2;
 			if (_goalParameters findIf {(_x#0 == TAG_INSTANT) && {_x#1}} != -1) exitWith {
+				_relevanceMax = 99999;
 				_mostRelevantGoal = _x;
 			};
 			

@@ -328,7 +328,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
 						if(_ambientAnimIdx != NOT_FOUND) then {
 							private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
-							private _mrk = createVehicle ["Sign_Pointer_Cyan_F", getPos _object, [], 0, "CAN_COLLIDE"];
+							private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal getPos _object;
 							_mrk setDir getDir _object;
 							_mrk setVariable ["vin_defaultAnims", [_anim]];
 							_mrk hideObjectGlobal true;
@@ -437,7 +437,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _ambientAnimObjects = T_GETV("ambientAnimObjects");
 			{
 				_x params ["_relPos", "_relDir", "_anim"]; 
-				private _mrk = createVehicle ["Sign_Pointer_Cyan_F", [0,0,0], [], 0, "CAN_COLLIDE"];
+				private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal [0,0,0];
 				if(_isTerrainObject) then {
 					_mrk setPos (_hObject modelToWorldVisual _relPos);
 					_mrk setDir (getDir _hObject + _relDir);
@@ -507,8 +507,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		{
 			private _object = _x;
-			private _objectName = str _object;
-			private _modelName = _objectName select [(_objectName find ": ") + 2];
+			private _modelName = (getModelInfo _object)#0;
 			if(!(_object in _objects) && {T_CALLM1("isInBorder", _object)} && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
 			{
 				private _pos = getPosATL _object;
