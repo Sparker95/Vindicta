@@ -1705,17 +1705,8 @@ CLASS("AI_GOAP", "AI")
 		_a
 	ENDMETHOD;
 
-<<<<<<< HEAD
-	STATIC_METHOD(getObjectDebugUIData)
-=======
-	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	// Override to show debug data in debug UI for specific class
-	public virtual METHOD(getDebugUIVariableNames)
-		[]
-	ENDMETHOD;
-
 	public STATIC_METHOD(getObjectDebugUIData)
->>>>>>> development
+
 		params [P_THISCLASS, P_OBJECT("_object")];
 
 		pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _object);
