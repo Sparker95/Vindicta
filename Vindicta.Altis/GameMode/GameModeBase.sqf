@@ -53,6 +53,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Locations
 	VARIABLE_ATTR("locations", [ATTR_SAVE]);
 
+	// Civilian presence manager
+	VARIABLE("civPresenceMgr"); // We don't save it, but rebuild on load
+
 	// Template names
 	VARIABLE_ATTR("tNameMilWest", [ATTR_SAVE]);
 	VARIABLE_ATTR("tNameMilInd", [ATTR_SAVE]);
@@ -1174,6 +1177,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _locationsForRoadblocks = [];
 
 		private _civPresenceMgr = NEW("CivPresenceMgr", [100 ARG T_GETV("tNameCivilian")]);
+		T_SETV("civPresenceMgr", _civPresenceMgr);
 
 		{ // forEach (entities "Vindicta_LocationSector");
 			private _locSector = _x;
@@ -2238,6 +2242,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Group message loop manager
 		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
+		// Recreate civilian presence manager
+		private _civPresenceMgr = NEW("CivPresenceMgr", [100 ARG T_GETV("tNameCivilian")]);
+		T_SETV("civPresenceMgr", _civPresenceMgr);
+
 		// Load locations
 		private _toLoad = count T_GETV("locations");
 		{
@@ -2248,7 +2256,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CRITICAL_SECTION {
 				CALLM1(_storage, "load", _loc);
 			};
+			if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
+				pr _border = CALLM0(_loc, "getBorder");
+				CALLM1(_civPresenceMgr, "markAreaForInitialization", _border);
+			};
+
 		} forEach T_GETV("locations");
+
+		// Initialize civ presence grid
+		CALLM0(_civPresenceMgr, "createCivPresenceObjects");
+		CALLM0(_civPresenceMgr, "start");
 
 		// Special garrisons
 		T_CALLM1("_loadSpecialGarrisons", _storage);
