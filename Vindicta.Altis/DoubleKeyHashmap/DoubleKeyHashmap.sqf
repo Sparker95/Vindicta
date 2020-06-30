@@ -72,7 +72,7 @@ CLASS("DoubleKeyHashmap", "")
 	Returns: value
 	*/
 
-	METHOD(get)
+	public METHOD(get)
 		params [P_THISOBJECT, P_STRING("_k0"), P_STRING("_k1")];
 		T_GETV("ns") getVariable _k0 + __SEP__ + _k1
 	ENDMETHOD;
@@ -86,7 +86,7 @@ CLASS("DoubleKeyHashmap", "")
 	Returns: Array of strings
 	*/
 
-	METHOD(getAllSecondaryKeys)
+	public METHOD(getAllSecondaryKeys)
 		params [P_THISOBJECT, P_STRING("_k0")];
 
 		pr _ns = T_GETV("ns");

@@ -1,0 +1,40 @@
+removeAllWeapons this;
+removeAllItems this;
+removeAllAssignedItems this;
+removeUniform this;
+removeVest this;
+removeBackpack this;
+removeHeadgear this;
+removeGoggles this;
+
+this addHeadgear "rhsgref_helmet_pasgt_flecktarn";
+_RandomGoggles = selectRandom ["G_Balaclava_blk", "G_Bandanna_blk"];
+this addGoggles _RandomGoggles;
+this forceAddUniform "rhsgref_uniform_gorka_1_f";
+this addVest "V_TacVestIR_blk";
+this addBackpack "B_TacticalPack_blk";
+
+this addWeapon "rhs_weap_SCARH_CQC";
+_RandomSight = selectRandom ["rhsusf_acc_eotech_xps3", "rhsusf_acc_g33_xps3"];
+this addPrimaryWeaponItem _RandomSight;
+_RandomGrip = selectRandom ["rhsusf_acc_grip2","rhsusf_acc_grip1", ""];
+this addPrimaryWeaponItem _RandomGrip;
+this addPrimaryWeaponItem "rhsusf_acc_aac_762sd_silencer";
+this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
+this addPrimaryWeaponItem "rhs_mag_20Rnd_SCAR_762x51_m61_ap_bk";
+this addWeapon "rhsusf_weap_glock17g4";
+this addHandgunItem "rhsusf_acc_omega9k";
+this addHandgunItem "acc_flashlight_pistol";
+this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
+
+this addItemToUniform "FirstAidKit";
+this addItemToUniform "B_IR_Grenade";
+for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_20Rnd_SCAR_762x51_m61_ap_bk";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk84";};
+this addItemToVest "rhs_mag_an_m8hc";
+for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
+this addItemToBackpack "Medikit";
+for "_i" from 1 to 10 do {this addItemToBackpack "FirstAidKit";};
+this linkItem "ItemWatch";
+this linkItem "ItemRadio";
+this linkItem "rhsusf_ANPVS_15";

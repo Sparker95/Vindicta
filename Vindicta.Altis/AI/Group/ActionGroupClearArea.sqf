@@ -50,6 +50,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		pr _groupType = CALLM0(_group, "getType");
 		pr _isInf = _groupType == GROUP_TYPE_INF;
+		pr _isAir = CALLM0(_group, "isAirGroup");
 
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");
@@ -70,22 +71,25 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		private _hG = T_GETV("hG");
 
-		// A random bunch of waypoints to get them to run around a bit
+		// A random bunch of waypoints to get them to move around a bit
 		for "_i" from 0 to 10 do {
-			private _rpos = [[[_pos, _radius]], [], {!surfaceIsWater _this}] call BIS_fnc_randomPos;
-			private _wp = _hG addWaypoint [AGLToASL _rpos, -1];
-			_wp setWaypointType "SAD";
+			private _rpos = [[[_pos, _radius]], [], {_isAir || !surfaceIsWater _this}] call BIS_fnc_randomPos;
+			// BIS_fnc_randomPos returns [0,0] if it couldn't find anywhere, so we ignore these points
+			if(count _rpos == 3) then {
+				private _wp = _hG addWaypoint [AGLToASL _rpos, -1];
+				_wp setWaypointType "SAD";
+			};
 		};
 
-		if(!CALLM0(_group, "isAirGroup") && (_isUrban || !_isInf)) then {
-			// Try and move all waypoints on to nearby roads
+		if(!_isAir && (_isUrban || !_isInf)) then {
+			// Try and move all waypoints on to nearby roads for urban areas or ground vehicles
 			{
 				pr _pos = getWPPos _x;
 				pr _nearestRoad = [_pos, 50] call BIS_fnc_nearestRoad;
 				if(!isNull _nearestRoad) then {
 					_x setWPPos position _nearestRoad;
 				};
-			} forEach (waypoints _hG);
+			} forEach waypoints _hG;
 		};
 
 		pr _wp0Pos = waypointPosition [_hG, 0];

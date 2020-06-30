@@ -46,7 +46,7 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 		T_SETV("resultVar", _resultVar);
 	ENDMETHOD;
 
-	 public override METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world") ];
 
 		private _array = +T_GET_AST_VAR("arrayVar");
@@ -72,6 +72,7 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 ["AST_ArrayPopFront.new", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _action = NEW("CmdrAction", []);
 	private _args = [_action ARG [0] ARG 1 ARG 2 ARG 3 ARG CALLM1(_action, "createVariable", [])];
 	private _ast = NEW("AST_ArrayPopFront", _args);
@@ -81,6 +82,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["AST_ArrayPopFront.apply", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _array = [0, 1];
 	private _action = NEW("CmdrAction", []);
 	private _arrayVar = CALLM1(_action, "createVariable", _array);

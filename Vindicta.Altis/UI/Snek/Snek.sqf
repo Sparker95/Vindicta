@@ -247,7 +247,7 @@ CLASS("Snek", "")
 	VARIABLE("pickups");
 	
 	// Call start to start the game
-	STATIC_METHOD(start)
+	public STATIC_METHOD(start)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("start");
@@ -265,7 +265,7 @@ CLASS("Snek", "")
 	ENDMETHOD;
 
 	// Call stop to stop the game	
-	STATIC_METHOD(stop)
+	public STATIC_METHOD(stop)
 	
 		OOP_INFO_0("stop");
 	
@@ -279,7 +279,7 @@ CLASS("Snek", "")
 	ENDMETHOD;
 
 	// Returns true if the game is running
-	STATIC_METHOD(isRunning)
+	public STATIC_METHOD(isRunning)
 
 		GETSV("Snek", "snek") != ""
 
@@ -387,7 +387,7 @@ CLASS("Snek", "")
 		_pickups pushBack _pickup;
 	ENDMETHOD;
 	
-	METHOD(onKeyDown)
+	public event METHOD(onKeyDown)
 		params [P_THISOBJECT, "_params"];
 		
 		OOP_INFO_1("On key down: %1", _this);
@@ -426,7 +426,7 @@ CLASS("Snek", "")
 		
 	ENDMETHOD;
 	
-	METHOD(onKeyUp)
+	public event METHOD(onKeyUp)
 		params [P_THISOBJECT, "_params"];
 		
 		_params params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
@@ -438,7 +438,7 @@ CLASS("Snek", "")
 		
 	ENDMETHOD;
 	
-	METHOD(onTimer)
+	public event METHOD(onTimer)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ON TIMER");
@@ -558,7 +558,7 @@ CLASS("MapMarkerSnek", "MapMarker")
 		T_CALLM1("setPos", _pos);
 	ENDMETHOD;
 
-	METHOD(onMouseButtonClick)
+	public event METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		
 		if (CALLSM0("Snek", "isRunning")) then {
@@ -569,7 +569,7 @@ CLASS("MapMarkerSnek", "MapMarker")
 	ENDMETHOD;
 
 
-	public override METHOD(onDraw)
+	public override event METHOD(onDraw)
 
 	ENDMETHOD;
 

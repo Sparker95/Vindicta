@@ -142,12 +142,12 @@ CLASS("LocationModel", "ModelBase")
 		// };
 	ENDMETHOD;
 
-	METHOD(isEmpty)
+	public METHOD(isEmpty)
 		params [P_THISOBJECT];
 		count T_GETV("garrisonIds") == 0
 	ENDMETHOD;
 
-	METHOD(addGarrison)
+	public METHOD(addGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		ASSERT_MSG(GETV(_garrison, "locationId") == MODEL_HANDLE_INVALID, "Garrison is already assigned to another location");
@@ -159,7 +159,7 @@ CLASS("LocationModel", "ModelBase")
 		_garrisonIds pushBack _garrisonId;
 	ENDMETHOD;
 
-	METHOD(getGarrison)
+	public METHOD(getGarrison)
 		params [P_THISOBJECT, P_SIDE("_side")];
 
 		private _world = T_GETV("world");
@@ -173,7 +173,7 @@ CLASS("LocationModel", "ModelBase")
 		_foundGarr
 	ENDMETHOD;
 
-	METHOD(removeGarrison)
+	public METHOD(removeGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		ASSERT_MSG(GETV(_garrison, "locationId") == T_GETV("id"), "Garrison is not assigned to this location");

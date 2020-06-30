@@ -138,7 +138,7 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 		0
 	ENDMETHOD;
 
-	STATIC_METHOD(EHFiredMan)
+	public STATIC_METHOD(EHFiredMan)
 		// Note the absence of P_THISCLASS in params
 		params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_vehicle"];
 		

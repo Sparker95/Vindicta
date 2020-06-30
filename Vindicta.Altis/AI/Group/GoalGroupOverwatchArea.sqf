@@ -4,7 +4,7 @@
 // Goal for a group to over watch area.
 #define OOP_CLASS_NAME GoalGroupOverwatchArea
 CLASS("GoalGroupOverwatchArea", "GoalGroup")
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _group = GETV(_AI, "agent");

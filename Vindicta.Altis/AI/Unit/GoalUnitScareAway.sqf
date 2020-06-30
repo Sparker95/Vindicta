@@ -24,7 +24,7 @@ CLASS("GoalUnitScareAway", "GoalUnit")
 	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 			
 		// We want to scare away a unit if there is one near by

@@ -33,7 +33,7 @@ CLASS("MyGoal", "Goal")
 	// ----------------------------------------------------------------------
 	// Calculates desireability to choose this goal for a given _AI
 	// If this method is not overwritten, it will return a static relevance
-	STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 	ENDMETHOD;

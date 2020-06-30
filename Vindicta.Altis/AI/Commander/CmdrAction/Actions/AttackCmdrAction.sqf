@@ -218,7 +218,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		_world - <Model.WorldModel>, the world model being used, should be the real world as we don't create intel for sim worlds.
 		_intel - <Intel.IntelCommanderActionAttack>, the intel object to populate with info about the detachment performing the attack.
 	*/
-	/* protected */ METHOD(updateIntelFromDetachment)
+	protected virtual METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");

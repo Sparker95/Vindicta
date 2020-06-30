@@ -50,7 +50,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		T_SETV("targetVar", _targetVar);
 	ENDMETHOD;
 
-	 public override METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -147,6 +147,7 @@ ENDCLASS;
 #define CMDR_ACTION_STATE_FAILED_TARGET_DEAD CMDR_ACTION_STATE_CUSTOM+2
 
 ["AST_MergeOrJoinTarget.new", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_MergeOrJoinTarget", 
 		[_action]+
@@ -163,6 +164,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 AST_MergeOrJoinTarget_test_fn = {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	params ["_world", "_garrison", "_target"];
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_MergeOrJoinTarget", 

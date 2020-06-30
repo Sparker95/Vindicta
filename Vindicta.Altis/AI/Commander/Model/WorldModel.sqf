@@ -96,7 +96,7 @@ CLASS("WorldModel", "Storable")
 		};
 	ENDMETHOD;
 
-	METHOD(isReal)
+	public METHOD(isReal)
 		params [P_THISOBJECT];
 		T_GETV("type") == WORLD_TYPE_REAL
 	ENDMETHOD;
@@ -196,7 +196,7 @@ CLASS("WorldModel", "Storable")
 		// Update location desireability
 	ENDMETHOD;
 
-	METHOD(getThreat) // thread-safe
+	public METHOD(getThreat) // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		private _threat = 0;
@@ -210,7 +210,7 @@ CLASS("WorldModel", "Storable")
 		_threat
 	ENDMETHOD;
 
-	METHOD(addDamage)
+	public METHOD(addDamage)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
 		private _rawActivityGrid = T_GETV("rawActivityGrid");
 
@@ -223,7 +223,7 @@ CLASS("WorldModel", "Storable")
 		CALLM2(_rawDamageGrid, "addValue", _pos, DAMAGE_SCALE*_value);
 	ENDMETHOD;
 
-	METHOD(getDamage) // thread-safe
+	public METHOD(getDamage) // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
 
 		private _damage = 0;
@@ -234,20 +234,20 @@ CLASS("WorldModel", "Storable")
 		_damage
 	ENDMETHOD;
 
-	METHOD(getDamageScore)
+	public METHOD(getDamageScore)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius")];
 		private _rawDamage = T_CALLM2("getDamage", _pos, _radius);
 		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 		__DAMAGE_FUNCTION(_rawDamage, _campaignProgress)
 	ENDMETHOD;
 
-	METHOD(addActivity)
+	public METHOD(addActivity)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
 		private _rawActivityGrid = T_GETV("rawActivityGrid");
 		CALLM2(_rawActivityGrid, "addValue", _pos, _activity);
 	ENDMETHOD;
 
-	METHOD(getActivity) // thread-safe
+	public METHOD(getActivity) // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
 
 		private _activity = 0;
@@ -273,7 +273,7 @@ CLASS("WorldModel", "Storable")
 	// |                G A R R I S O N   F U N C T I O N S                 |
 	// ----------------------------------------------------------------------
 
-	METHOD(addGarrison)
+	public METHOD(addGarrison)
 		params [P_THISOBJECT, P_STRING("_garrison")];
 
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
@@ -285,7 +285,7 @@ CLASS("WorldModel", "Storable")
 		_idx
 	ENDMETHOD;
 
-	METHOD(removeGarrison)
+	public METHOD(removeGarrison)
 		params [P_THISOBJECT, P_STRING("_garrison")];
 
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
@@ -304,13 +304,13 @@ CLASS("WorldModel", "Storable")
 		// _idx
 	ENDMETHOD;
 
-	METHOD(getGarrison)
+	public METHOD(getGarrison)
 		params [P_THISOBJECT, P_NUMBER("_id")];
 		private _garrisons = T_GETV("garrisons");
 		_garrisons select _id
 	ENDMETHOD;
 
-	METHOD(findGarrisonByActual)
+	public METHOD(findGarrisonByActual)
 		params [P_THISOBJECT, P_STRING("_actual")];
 
 		ASSERT_OBJECT_CLASS(_actual, "Garrison");
@@ -322,7 +322,7 @@ CLASS("WorldModel", "Storable")
 		_garrisons select _idx
 	ENDMETHOD;
 
-	METHOD(findOrAddGarrisonByActual)
+	public METHOD(findOrAddGarrisonByActual)
 		params [P_THISOBJECT, P_STRING("_actual")];
 
 		ASSERT_OBJECT_CLASS(_actual, "Garrison");
@@ -338,7 +338,7 @@ CLASS("WorldModel", "Storable")
 		}
 	ENDMETHOD;
 
-	METHOD(garrisonKilled)
+	public METHOD(garrisonKilled)
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		// If we are a sim world then we need to perform updates that would otherwise be
 		// handled externally, in this case detaching a dead garrison from its outpost
@@ -348,7 +348,7 @@ CLASS("WorldModel", "Storable")
 	ENDMETHOD;
 
 	// TODO: Optimize this
-	METHOD(getAliveGarrisons)
+	public METHOD(getAliveGarrisons)
 		params [P_THISOBJECT, P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
 
 		private _garrisons = T_GETV("garrisons")
@@ -367,7 +367,7 @@ CLASS("WorldModel", "Storable")
 		};
 	ENDMETHOD;
 
-	METHOD(getNearestGarrisons)
+	public METHOD(getNearestGarrisons)
 		params [P_THISOBJECT, P_POSITION("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
@@ -389,7 +389,7 @@ CLASS("WorldModel", "Storable")
 	// |                L O C A T I O N   F U N C T I O N S                 |
 	// ----------------------------------------------------------------------
 
-	METHOD(addLocation)
+	public METHOD(addLocation)
 		params [P_THISOBJECT, P_STRING("_location")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
 
@@ -401,13 +401,13 @@ CLASS("WorldModel", "Storable")
 		_idx
 	ENDMETHOD;
 
-	METHOD(getLocation)
+	public METHOD(getLocation)
 		params [P_THISOBJECT, P_NUMBER("_id")];
 
 		T_GETV("locations") select _id
 	ENDMETHOD;
 
-	METHOD(getLocations)
+	public METHOD(getLocations)
 		params [P_THISOBJECT, P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
 		if(count _includeTypes == 0 and count _excludeTypes == 0) then {
@@ -421,7 +421,7 @@ CLASS("WorldModel", "Storable")
 		};
 	ENDMETHOD;
 
-	METHOD(findLocationByActual)
+	public METHOD(findLocationByActual)
 		params [P_THISOBJECT, P_STRING("_actual")];
 		ASSERT_OBJECT_CLASS(_actual, "Location");
 
@@ -433,7 +433,7 @@ CLASS("WorldModel", "Storable")
 		_locations select _idx
 	ENDMETHOD;
 
-	METHOD(findOrAddLocationByActual)
+	public METHOD(findOrAddLocationByActual)
 		params [P_THISOBJECT, P_STRING("_actual")];
 		ASSERT_OBJECT_CLASS(_actual, "Location");
 
@@ -449,7 +449,7 @@ CLASS("WorldModel", "Storable")
 		}
 	ENDMETHOD;
 
-	METHOD(getNearestLocations)
+	public METHOD(getNearestLocations)
 		params [P_THISOBJECT, P_POSITION("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
 		//private _locations = T_GETV("locations");
@@ -469,7 +469,7 @@ CLASS("WorldModel", "Storable")
 	// |               C L U S T E R   F U ... N C T I O N S                |
 	// ----------------------------------------------------------------------
 
-	METHOD(addCluster)
+	public METHOD(addCluster)
 		params [P_THISOBJECT, P_STRING("_cluster")];
 		ASSERT_OBJECT_CLASS(_cluster, "ClusterModel");
 		ASSERT_MSG(GETV(_cluster, "id") == MODEL_HANDLE_INVALID, "ClusterModel is already attached to a WorldModel");
@@ -483,12 +483,12 @@ CLASS("WorldModel", "Storable")
 		_idx
 	ENDMETHOD;
 
-	METHOD(getCluster)
+	public METHOD(getCluster)
 		params [P_THISOBJECT, P_NUMBER("_id")];
 		T_GETV("clusters") select _id
 	ENDMETHOD;
 
-	METHOD(findClusterByActual)
+	public METHOD(findClusterByActual)
 		params [P_THISOBJECT, P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
 
@@ -500,7 +500,7 @@ CLASS("WorldModel", "Storable")
 		_clusters select _idx
 	ENDMETHOD;
 
-	METHOD(findOrAddClusterByActual)
+	public METHOD(findOrAddClusterByActual)
 		params [P_THISOBJECT, P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
 
@@ -516,12 +516,12 @@ CLASS("WorldModel", "Storable")
 		}
 	ENDMETHOD;
 
-	METHOD(getAliveClusters)
+	public METHOD(getAliveClusters)
 		params [P_THISOBJECT];
 		T_GETV("clusters") select { !CALLM0(_x, "isDead") }
 	ENDMETHOD;
 
-	METHOD(getNearestClusters)
+	public METHOD(getNearestClusters)
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist")];
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
@@ -541,7 +541,7 @@ CLASS("WorldModel", "Storable")
 
 	// This updates a ClusterModel to point directly to a new Actual cluster.
 	// This allows us to retarget actions onto new clusters when they merge or split.
-	METHOD(retargetClusterByActual)
+	public METHOD(retargetClusterByActual)
 		params [P_THISOBJECT, P_ARRAY("_origActual"), P_ARRAY("_newActual")];
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_origActual);
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_newActual);
@@ -554,7 +554,7 @@ CLASS("WorldModel", "Storable")
 		OOP_DEBUG_MSG("Cluster %1 retargetted to %2", [LABEL(_cluster) ARG _newActual]);
 	ENDMETHOD;
 
-	METHOD(deleteClusterByActual)
+	public METHOD(deleteClusterByActual)
 		params [P_THISOBJECT, P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
 
@@ -569,7 +569,7 @@ CLASS("WorldModel", "Storable")
 	// |                   S C O R I N G   T O O L K I T                    |
 	// ----------------------------------------------------------------------
 
-	METHOD(resetScoringCache)
+	public METHOD(resetScoringCache)
 		params [P_THISOBJECT];
 		private _garrisons = T_GETV("garrisons");
 		//private _cache = [];
@@ -579,7 +579,7 @@ CLASS("WorldModel", "Storable")
 		//T_SETV("reinforceRequiredScoreCache", _cache);
 	ENDMETHOD;
 	
-	METHOD(getGlobalEff)
+	public METHOD(getGlobalEff)
 		params [P_THISOBJECT];
 		private _cachedGlobalEff = T_GETV("cachedGlobalEff");
 		if(isNil "_cachedGlobalEff") exitWith {
@@ -593,7 +593,7 @@ CLASS("WorldModel", "Storable")
 		_cachedGlobalEff
 	ENDMETHOD;
 	
-	METHOD(getGlobalEffDesired)
+	public METHOD(getGlobalEffDesired)
 		params [P_THISOBJECT];
 		private _cachedGlobalEffDesired = T_GETV("cachedGlobalEffDesired");
 		if(isNil "_cachedGlobalEffDesired") exitWith {
@@ -608,7 +608,7 @@ CLASS("WorldModel", "Storable")
 		_cachedGlobalEffDesired
 	ENDMETHOD;
 	
-	METHOD(getGlobalEffDeficit)
+	public METHOD(getGlobalEffDeficit)
 		params [P_THISOBJECT];
 		private _total = T_CALLM0("getGlobalEff");
 		private _desired = T_CALLM0("getGlobalEffDesired");
@@ -624,7 +624,7 @@ CLASS("WorldModel", "Storable")
 	#define __FORCE_MUL(act) (ln (0.005 * (act) + 1) + 1.003^((act) - 40))
 
 	// Returns same multiplier as in getDesiredEff 
-	METHOD(calcActivityMultiplier)
+	public METHOD(calcActivityMultiplier)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		private _activity = T_CALLM2("getActivity", _pos, 750);
 		private _forceMul = __FORCE_MUL(_activity); // 
@@ -632,7 +632,7 @@ CLASS("WorldModel", "Storable")
 	ENDMETHOD;
 
 	// Get desired efficiency of forces at a particular location.
-	METHOD(getDesiredEff)
+	public METHOD(getDesiredEff)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		private _threatGrid = T_GETV("threatGrid");
@@ -704,7 +704,7 @@ CLASS("WorldModel", "Storable")
 	ENDMETHOD;
 
 	// How much over desired efficiency is the garrison? Negative for under.
-	METHOD(getOverDesiredEff)
+	public METHOD(getOverDesiredEff)
 		params [P_THISOBJECT, P_STRING("_garr")];
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
 
@@ -716,7 +716,7 @@ CLASS("WorldModel", "Storable")
 	ENDMETHOD;
 
 	// How much over desired efficiency is the garrison, scaled. Negative for under.
-	METHOD(getOverDesiredEffScaled)
+	public METHOD(getOverDesiredEffScaled)
 		params [P_THISOBJECT, P_STRING("_garr"), P_NUMBER("_scalar")];
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
 
@@ -731,7 +731,7 @@ CLASS("WorldModel", "Storable")
 	ENDMETHOD;
 
 	// A scoring factor for how much a garrison desires reinforcement
-	METHOD(getReinforceRequiredScore)
+	public METHOD(getReinforceRequiredScore)
 		params [P_THISOBJECT, P_STRING("_garr")];
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
 		//private _reinforceRequiredScoreCache = T_GETV("reinforceRequiredScoreCache");
@@ -758,7 +758,7 @@ CLASS("WorldModel", "Storable")
 
 
 	// - - - - - - - STORAGE - - - - - - - - -
-	 public override METHOD(preSerialize)
+	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save our models
@@ -777,7 +777,7 @@ CLASS("WorldModel", "Storable")
 		true
 	ENDMETHOD;
 
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Load our models

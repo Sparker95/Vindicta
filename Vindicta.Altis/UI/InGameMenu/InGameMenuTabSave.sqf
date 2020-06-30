@@ -127,7 +127,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		T_CALLM0("updateListbox");
 	ENDMETHOD;
 
-	STATIC_METHOD(staticReceiveRecordData)
+	public STATIC_METHOD(staticReceiveRecordData)
 		params [P_THISOBJECT, P_ARRAY("_recordData")];
 		pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
 		if (!IS_NULL_OBJECT(_instance)) then {
@@ -196,7 +196,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		CALLM0(gInGameMenu, "close");
 	ENDMETHOD;
 
-	METHOD(onButtonNewSave)
+	public event METHOD(onButtonNewSave)
 		params [P_THISOBJECT];
 
 		// Bail if game mode is not initialized (although the button should be disabled, right?)
@@ -226,7 +226,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		CALLM0(gInGameMenu, "close");
 	ENDMETHOD;
 
-	METHOD(onButtonOverwriteSavedGame)
+	public event METHOD(onButtonOverwriteSavedGame)
 		params [P_THISOBJECT];
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 		if (_index == -1) exitWith {};
@@ -258,7 +258,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		CALLM0(gInGameMenu, "close");
 	ENDMETHOD;
 
-	METHOD(onButtonLoadSavedGame)
+	public event METHOD(onButtonLoadSavedGame)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("ON BUTTON LOAD SAVED GAME");
@@ -301,8 +301,6 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		NEW("DialogConfirmAction", _args);
 	ENDMETHOD;
 
-
-
 	METHOD(_deleteSavedGame)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		OOP_INFO_1("Sending request to delete saved game: %1", _recordName);
@@ -310,7 +308,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientDeleteSavedGame", _args);
 	ENDMETHOD;
 
-	METHOD(onButtonDeleteSavedGame)
+	public event METHOD(onButtonDeleteSavedGame)
 		params [P_THISOBJECT];
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 		if (_index == -1) exitWith {};
@@ -329,12 +327,9 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 			},
 			[], {}];
 		NEW("DialogConfirmAction", _args);
-
 	ENDMETHOD;
 
-
-
-	METHOD(onListboxSelChanged)
+	public event METHOD(onListboxSelChanged)
 		params [P_THISOBJECT];
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 

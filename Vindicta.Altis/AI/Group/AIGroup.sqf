@@ -115,17 +115,17 @@ CLASS("AIGroup", "AI_GOAP")
 	FIX_LINE_NUMBERS()
 
 	// World state accessors
-	METHOD(isLanded)
+	public METHOD(isLanded)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GROUP_ALL_LANDED] call ws_getPropertyValue
 	ENDMETHOD;
 
-	METHOD(isVehiclesUpright)
+	public METHOD(isVehiclesUpright)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GROUP_ALL_VEHICLES_UPRIGHT] call ws_getPropertyValue
 	ENDMETHOD;
 
-	METHOD(isVehiclesRepaired)
+	public METHOD(isVehiclesRepaired)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GROUP_ALL_VEHICLES_REPAIRED] call ws_getPropertyValue
 	ENDMETHOD;
@@ -321,7 +321,7 @@ CLASS("AIGroup", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsRemoved)
+	public METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		OOP_INFO_1("handleUnitsRemoved: %1", _units);
@@ -351,7 +351,7 @@ CLASS("AIGroup", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsAdded)
+	public METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		OOP_INFO_1("handleUnitsAdded: %1", _units);

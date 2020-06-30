@@ -55,7 +55,7 @@ CLASS("PersonalInventory", "")
 	ENDMETHOD;
 
 	// Returns [_data, _dataExists]
-	METHOD(getInventoryData)
+	public METHOD(getInventoryData)
 		pr _returnData = 0;
 		pr _returnDataExists = false;
 		CRITICAL_SECTION {
@@ -84,7 +84,7 @@ CLASS("PersonalInventory", "")
 		[_returnData, _returnDataExists]
 	ENDMETHOD;
 
-	METHOD(setInventoryData)
+	public METHOD(setInventoryData)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_className"), P_NUMBER("_ID"), "_inventoryData"];
 			
@@ -116,7 +116,7 @@ CLASS("PersonalInventory", "")
 
 
 	/*
-	METHOD(resetInventoryData)
+	public METHOD(resetInventoryData)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_className"), P_NUMBER("_ID")];
 		
@@ -141,7 +141,7 @@ CLASS("PersonalInventory", "")
 	ENDMETHOD;
 	*/
 
-	METHOD(getInventoryClassIDs)
+	public METHOD(getInventoryClassIDs)
 		pr _return = [];
 
 		CRITICAL_SECTION {
@@ -191,7 +191,7 @@ CLASS("PersonalInventory", "")
 	ENDMETHOD;
 
 	// Returns the counter for this inventory class
-	METHOD(getInventoryClassCounter)
+	public METHOD(getInventoryClassCounter)
 		pr _return = -1;
 
 		CRITICAL_SECTION {
@@ -214,7 +214,7 @@ CLASS("PersonalInventory", "")
 	ENDMETHOD;
 
 	// Returns base class name and ID from a full class name
-	STATIC_METHOD(getBaseClassAndID)
+	public STATIC_METHOD(getBaseClassAndID)
 		params [P_THISCLASS, P_STRING("_fullClass")];
 		_array = toArray _fullClass;
 		private _count = count _array;

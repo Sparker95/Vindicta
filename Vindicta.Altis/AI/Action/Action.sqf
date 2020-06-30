@@ -138,7 +138,7 @@ CLASS("Action", "MessageReceiverEx")
 		CALLM0(T_GETV("AI"), "getMessageLoop");
 	ENDMETHOD;
 
-	protected virtual METHOD(setInstant)
+	public virtual METHOD(setInstant)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		T_SETV("instant", _instant);
 	ENDMETHOD;
@@ -158,7 +158,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(setAutonomous)
+	public METHOD(setAutonomous)
 		params [P_THISOBJECT, ["_timerPeriod", 1, [1]] ];
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
@@ -672,7 +672,7 @@ CLASS("Action", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Helper functions
-	STATIC_METHOD(_clearWaypoints)
+	protected STATIC_METHOD(_clearWaypoints)
 		params [P_THISCLASS, P_GROUP("_hG")];
 		// Add a dummy waypoint as deleting all waypoints results in a dummy one being created later which messes
 		// with waypoint ordering
@@ -696,7 +696,7 @@ CLASS("Action", "MessageReceiverEx")
 
 	ENDMETHOD;
 	
-	STATIC_METHOD(_regroup)
+	protected STATIC_METHOD(_regroup)
 		params [P_THISCLASS, P_GROUP("_hG")];
 		if(isNull _hG) exitWith {
 			// No group
@@ -704,7 +704,7 @@ CLASS("Action", "MessageReceiverEx")
 		{ _x stop false; _x doFollow leader _hG; } forEach units _hG;
 	ENDMETHOD;
 
-	STATIC_METHOD(_teleport)
+	protected STATIC_METHOD(_teleport)
 		params [P_THISCLASS, P_ARRAY("_units"), P_POSITION("_pos")];
 		
 		{

@@ -221,13 +221,13 @@ CLASS("Goal", "")
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is added to AI
-	STATIC_METHOD(onGoalAdded)
-		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+	public STATIC_METHOD(onGoalAdded)
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 	ENDMETHOD;
 
 	// Gets called when an external goal of this class is removed from an AI
-	STATIC_METHOD(onGoalDeleted)
-		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+	public STATIC_METHOD(onGoalDeleted)
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 	ENDMETHOD;
 
 	// Gets called if plan generation is failed

@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.ReinforceCmdrAction

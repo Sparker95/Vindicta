@@ -28,7 +28,7 @@ _inf set [T_INF_GL, ["RHS_AFRF_grenadier"]];
 _inf set [T_INF_rifleman, ["RHS_AFRF_rifleman"]];
 _inf set [T_INF_marksman, ["RHS_AFRF_marksman"]];
 _inf set [T_INF_sniper, ["RHS_AFRF_sniper"]];
-_inf set [T_INF_spotter, ["RHS_AFRF_spotter"]];
+_inf set [T_INF_spotter, ["RHS_AFRF_spotter", "RHS_AFRF_spotter_2"]];
 _inf set [T_INF_exp, ["RHS_AFRF_explosives"]];
 _inf set [T_INF_ammo, ["RHS_AFRF_AT_2", "RHS_AFRF_MG_2"]];
 _inf set [T_INF_LAT, ["RHS_AFRF_LAT", "RHS_AFRF_LAT_2"]];

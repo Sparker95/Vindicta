@@ -363,7 +363,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// World state accessors
 
-	METHOD(isLanded)
+	public METHOD(isLanded)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GAR_ALL_LANDED] call ws_getPropertyValue
 	ENDMETHOD;
@@ -387,7 +387,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsAdded)
+	public METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _action = T_GETV("currentAction");
@@ -411,7 +411,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsRemoved)
+	public METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		// Delete goals that have been given by this object
@@ -443,7 +443,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsRemoved)
+	public METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Delete goals given by this object
@@ -471,7 +471,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsAdded)
+	public METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		// Notify the current action
@@ -483,7 +483,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	ENDMETHOD;
 	
 	
-	METHOD(handleLocationChanged)
+	public METHOD(handleLocationChanged)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
 		// If we now are attached to a location
@@ -509,7 +509,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// Updates world state properties related to composition of the garrison
 	// Here we have checks that must be run only when new units/groups are added or removed
-	METHOD(updateComposition)
+	public METHOD(updateComposition)
 		params [P_THISOBJECT];
 		
 		pr _gar = T_GETV("agent");
@@ -532,14 +532,14 @@ CLASS("AIGarrison", "AI_GOAP")
 	ENDMETHOD;
 
 	// Returns spawned state of attached garrison
-	METHOD(isSpawned)
+	public METHOD(isSpawned)
 		params [P_THISOBJECT];
 		//CALLM0(T_GETV("agent"), "isSpawned")
 		GETV(T_GETV("agent"), "spawned")
 	ENDMETHOD;
 
 	// Sets the position
-	METHOD(setPos)
+	public METHOD(setPos)
 		params [P_THISOBJECT, "_pos"];
 		
 		OOP_INFO_1("SET POS AI: %1", _pos);
@@ -555,27 +555,27 @@ CLASS("AIGarrison", "AI_GOAP")
 	ENDMETHOD;
 
 	// Gets the position
-	METHOD(getPos)
+	public METHOD(getPos)
 		params [P_THISOBJECT];
 		+T_GETV("pos");
 	ENDMETHOD;
 	// Gets called after the garrison is spawned
 	// Not used right now
 	/*
-	METHOD(onGarrisonSpawned)
+	public METHOD(onGarrisonSpawned)
 		params [P_THISOBJECT];
 
 	ENDMETHOD;
 
 	// Gets called after the garrison is spawned
-	METHOD(onGarrisonDespawned)
+	public METHOD(onGarrisonDespawned)
 
 	ENDMETHOD;
 	*/
 
 	// This is postMethodAsync'd from GarrisonModel.setAction, to synchronize the current action this garrison is doing
 	// _actionSerial can also be [], meaning there is no current action
-	METHOD(setCmdrActionSerial)
+	public METHOD(setCmdrActionSerial)
 		params [P_THISOBJECT, P_ARRAY("_actionSerial")];
 		T_SETV("cmdrActionRecordSerial", _actionSerial);
 
@@ -584,7 +584,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	ENDMETHOD;
 
 	// Intel stuff
-	METHOD(addGeneralIntel)
+	public METHOD(addGeneralIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 		T_GETV("intelGeneral") pushBackUnique _item;
 
@@ -592,13 +592,13 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
 	ENDMETHOD;
 
-	METHOD(getAllGeneralIntel)
+	public METHOD(getAllGeneralIntel)
 		params [P_THISOBJECT];
 		+T_GETV("intelGeneral")
 	ENDMETHOD;
 	
 
-	METHOD(setPersonalIntel)
+	public METHOD(setPersonalIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		OOP_INFO_1(" SET PERSONAL INTEL: %1", _item);
@@ -609,7 +609,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
 	ENDMETHOD;
 
-	METHOD(addKnownFriendlyLocation)
+	public METHOD(addKnownFriendlyLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		T_GETV("knownFriendlyLocations") pushBackUnique _loc;
 
@@ -619,7 +619,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// Copies intel from another AIGarrison by adding intel items and locations to this object
 	// Should call it when garrisons are being split if we want them to inherit intel
-	METHOD(copyIntelFrom)
+	public METHOD(copyIntelFrom)
 		params [P_THISOBJECT, P_OOP_OBJECT("_otherAI")];
 
 		pr _intelGeneral = T_GETV("intelGeneral");
@@ -646,7 +646,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	ENDMETHOD;
 
 	// Gets the radio key corresponding to the current position
-	METHOD(updateRadioKey)
+	public METHOD(updateRadioKey)
 		params [P_THISOBJECT];
 		pr _side = CALLM0(T_GETV("agent"), "getSide"); // Garrison's side
 		pr _AICommander = CALLSM1("AICommander", "getAICommander", _side);
@@ -659,7 +659,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 	ENDMETHOD;
 
-	METHOD(getAlertness)
+	public METHOD(getAlertness)
 		params [P_THISOBJECT];
 		private _alertness = T_GETV("alertness");
 		if(isNil "_alertness") then {
@@ -678,19 +678,19 @@ CLASS("AIGarrison", "AI_GOAP")
 		_alertness
 	ENDMETHOD;
 
-	METHOD(isAlerted)
+	public METHOD(isAlerted)
 		params [P_THISOBJECT];
 		[ T_GETV("worldState"), WSP_GAR_AWARE_OF_ENEMY, true ] call ws_propertyExistsAndEquals
 	ENDMETHOD;
 
-	METHOD(isVigilant)
+	public METHOD(isVigilant)
 		params [P_THISOBJECT];
 		T_CALLM0("isAlerted") || { T_CALLM0("getAlertness") > 0.1 }
 	ENDMETHOD;
 
 	// Returns a serialized UnitIntelData object
 	// Typically we are going to assign the returned value to personal inventory
-	METHOD(getUnitIntelDataSerial)
+	public METHOD(getUnitIntelDataSerial)
 		params [P_THISOBJECT];
 
 		pr _temp = NEW("UnitIntelData", []);
@@ -715,7 +715,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// - - - - - - STORAGE - - - - - -
 
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes

@@ -3,7 +3,7 @@
 // Class with predefined actions in initDatabase.sqf
 #define OOP_CLASS_NAME GoalGroupMove
 CLASS("GoalGroupMove", "GoalGroup")
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _group = GETV(_AI, "agent");

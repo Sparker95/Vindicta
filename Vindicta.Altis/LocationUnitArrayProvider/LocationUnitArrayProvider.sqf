@@ -85,7 +85,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
 	Returns: Array with object handles of objects that can spawn locations of given side
 	*/
-	METHOD(getUnitArray)
+	public METHOD(getUnitArray)
 		params [P_THISOBJECT, ["_side", WEST, [WEST]] ];
 		switch (_side) do {
 			case WEST: {T_GETV("spawnWest")};

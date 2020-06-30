@@ -32,7 +32,7 @@ CLASS("GarbageCollector", "")
 
 	Returns: nil
 	*/
-	METHOD(addUnit)
+	public METHOD(addUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		pr _hO = CALLM0(_unit, "getObjectHandle");

@@ -206,6 +206,7 @@ CLASS("ActionUnitArrest", "Action")
 					pr _handle = [_captor, _target] spawn {
 						params ["_captor", "_target"];
 						waitUntil {
+							SCOPE_ACCESS_MIMIC("ActionUnitArrest");
 							
 							_animationDone = false;
 							_pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
@@ -234,7 +235,6 @@ CLASS("ActionUnitArrest", "Action")
 
 								_captor playMove _animation;
 								_animationDone = true;
-								
 								// only perform arrest if unit IS actually close enough, prevent magic hands
 								if (getPos _captor distance getPos _target < MIN_ARREST_DIST) then {
 									CALLSM1("ActionUnitArrest", "performArrest", _target);

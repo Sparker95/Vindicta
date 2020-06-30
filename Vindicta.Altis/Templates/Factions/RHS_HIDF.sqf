@@ -70,7 +70,7 @@ _veh set [T_VEH_car_armed, ["rhsgref_hidf_m1025_m2", "rhsgref_hidf_m1025_mk19"]]
 //cars are in MRAP until cars are added
 _veh set [T_VEH_MRAP_unarmed, ["rhsgref_hidf_m1025", "rhsgref_hidf_M998_2dr_fulltop", "rhsgref_hidf_M998_2dr_halftop", "rhsgref_hidf_M998_2dr", "rhsgref_hidf_M998_4dr_fulltop", "rhsgref_hidf_M998_4dr_halftop", "rhsgref_hidf_m998_4dr"]];
 _veh set [T_VEH_MRAP_HMG, ["rhsgref_hidf_m1025_m2"]];
-_veh set [T_VEH_MRAP_GMG, ["rhsusf_M1117_O", "rhsusf_M1117_W", "rhsgref_hidf_m1025_mk19"]];
+_veh set [T_VEH_MRAP_GMG, ["rhsgref_hidf_m1025_mk19"]];
 
 //_veh set [T_VEH_IFV, [""]];
 _veh set [T_VEH_APC, ["rhsgref_hidf_m113a3_unarmed", "rhsgref_hidf_m113a3_mk19", "rhsgref_hidf_m113a3_m2"]];
@@ -106,11 +106,11 @@ _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 _veh set [T_VEH_personal, ["I_E_Quadbike_01_F","rhsusf_mrzr4_w"]];
 
 _veh set [T_VEH_truck_inf, ["rhsusf_M1078A1P2_WD_fmtv_usarmy", "rhsusf_M1083A1P2_WD_fmtv_usarmy"]];
-_veh set [T_VEH_truck_cargo, ["rhsusf_M1078A1P2_WD_flatbed_fmtv_usarmy", "rhsusf_M1083A1P2_WD_flatbed_fmtv_usarmy","rhsusf_M1084A1R_SOV_M2_D_fmtv_socom"]];
-_veh set [T_VEH_truck_ammo, ["rhsusf_M977A4_AMMO_usarmy_wd", "rhsusf_M1078A1R_SOV_M2_D_fmtv_socom"]];
-_veh set [T_VEH_truck_repair, ["rhsusf_M977A4_REPAIR_usarmy_wd", "rhsusf_M1078A1R_SOV_M2_D_fmtv_socom"]];
+_veh set [T_VEH_truck_cargo, ["rhsusf_M1078A1P2_WD_flatbed_fmtv_usarmy", "rhsusf_M1083A1P2_WD_flatbed_fmtv_usarmy"]];
+_veh set [T_VEH_truck_ammo, ["rhsusf_M977A4_AMMO_usarmy_wd"]];
+_veh set [T_VEH_truck_repair, ["rhsusf_M977A4_REPAIR_usarmy_wd"]];
 _veh set [T_VEH_truck_medical , ["rhsusf_m113_usarmy_medical", "rhsusf_M1085A1P2_B_WD_Medical_fmtv_usarmy"]];
-_veh set [T_VEH_truck_fuel, ["rhsusf_M978A4_usarmy_wd", "rhsusf_M1078A1R_SOV_M2_D_fmtv_socom"]];
+_veh set [T_VEH_truck_fuel, ["rhsusf_M978A4_usarmy_wd"]];
 
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 

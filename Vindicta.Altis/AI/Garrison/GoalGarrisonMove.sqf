@@ -8,14 +8,14 @@ Goal for a garrison to move somewhere
 #define OOP_CLASS_NAME GoalGarrisonMove
 CLASS("GoalGarrisonMove", "Goal")
 
-	STATIC_METHOD(getPossibleParameters)
+	public STATIC_METHOD(getPossibleParameters)
 		[
 			[ [TAG_POS, [[]]] ],	// Required parameters
 			[ [TAG_MOVE_RADIUS, [0]], [TAG_MAX_SPEED_KMH, [0]] ]	// Optional parameters
 		]
 	ENDMETHOD;
 
-	STATIC_METHOD(onGoalChosen)
+	public STATIC_METHOD(onGoalChosen)
 		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
 
 		pr _targetPos = GET_PARAMETER_VALUE(_goalParameters, TAG_POS);
@@ -25,11 +25,10 @@ CLASS("GoalGarrisonMove", "Goal")
 		CALLM1(_ai, "setMoveTargetPos", _targetPos);
 		CALLM1(_ai, "setMoveTargetRadius", _moveRadius);
 		CALLM0(_ai, "updatePositionWSP");
-
 	ENDMETHOD;
 
 	// Must use this method to get the move radius if we are moving to a location
-	STATIC_METHOD(getLocationMoveRadius)
+	public STATIC_METHOD(getLocationMoveRadius)
 		params [P_THISCLASS, P_OOP_OBJECT("_loc")];
 
 		pr _border = CALLM0(_loc, "getBorder"); // [center, a, b, angle, isRectangle, c]

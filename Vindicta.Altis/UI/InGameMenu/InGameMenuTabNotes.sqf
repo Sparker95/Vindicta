@@ -40,7 +40,7 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
-	 public override METHOD(beforeDelete)
+	public override METHOD(beforeDelete)
 		params [P_THISOBJECT];
 
 		// We want to save the text to restore it next time this tab is open
@@ -52,7 +52,7 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 	ENDMETHOD;
 
 	// Appends text to the currently open tab or to the static variable
-	STATIC_METHOD(staticAppendText)
+	public STATIC_METHOD(staticAppendText)
 		params [P_THISCLASS, P_STRING("_text")];
 
 		pr _instance = GETSV("InGameMenuTabNotes", "instance");

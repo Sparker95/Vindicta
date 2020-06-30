@@ -470,12 +470,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		#ifndef _SQF_VM
 		// Start a periodic check which will restart message loops if needed
-		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+		[{
+			SCOPE_IGNORE_ACCESS(GameModeBase);
+			CALLM0(_this#0, "_checkMessageLoops")
+		}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
 		#endif
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;
 
-	METHOD(_checkMessageLoops)
+	public event METHOD(_checkMessageLoops)
 		params [P_THISOBJECT];
 
 		private _recovery = false;
@@ -713,7 +716,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Override this to do stuff when player spawns
 	// Call the method of base class(that is, this class)
-	protected virtual METHOD(playerSpawn)
+	public virtual METHOD(playerSpawn)
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		OOP_INFO_1("PLAYER SPAWN: %1", _this);
@@ -966,46 +969,46 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Override this to perform actions when a location spawns
-	protected virtual METHOD(locationSpawned)
+	public virtual METHOD(locationSpawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	ENDMETHOD;
 
 	// Override this to perform actions when a location despawns
-	protected virtual METHOD(locationDespawned)
+	public virtual METHOD(locationDespawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	ENDMETHOD;
 
 	// Override this to perform actions when a unit is killed
-	protected virtual METHOD(unitDestroyed)
+	public virtual METHOD(unitDestroyed)
 		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
 	ENDMETHOD;
 
 	// Override this to create gameModeData of a location
-	protected virtual METHOD(initLocationGameModeData)
+	public virtual METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 	ENDMETHOD;
 
 	// Game-mode specific functions
 	// Must be here for common interface
 	// Returns an array of cities where we can recruit from
-	protected virtual METHOD(getRecruitCities)
+	public virtual METHOD(getRecruitCities)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		[]
 	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
-	protected virtual METHOD(getRecruitCount)
+	public virtual METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		0
 	ENDMETHOD;
 
-	protected virtual METHOD(getRecruitmentRadius)
+	public virtual METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		0
 	ENDMETHOD;
 
 	// Must return a value 0...1 to drive some AICommander logic
-	protected virtual METHOD(getCampaignProgress)
+	public virtual METHOD(getCampaignProgress)
 		0.5
 	ENDMETHOD;
 
@@ -1112,7 +1115,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach gSpecialGarrisons;
 	ENDMETHOD;
 
-	STATIC_METHOD(getPlayerGarrisonForSide)
+	public STATIC_METHOD(getPlayerGarrisonForSide)
 		params [P_THISCLASS, P_SIDE("_side")];
 		switch(_side) do {
 			case WEST: { gGarrisonPlayersWest };
@@ -1722,7 +1725,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Registers location here
 	// All locations must be registered at game mode so that it can save/load them
-	METHOD(registerLocation)
+	public METHOD(registerLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		T_GETV("locations") pushBackUnique _loc;
 	ENDMETHOD;
@@ -1763,7 +1766,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		["delete", _inventoryObj] call OO_INVENTORY;
 	};
 
-	METHOD(savePlayerInfo)
+	public server METHOD(savePlayerInfo)
 		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_player"), P_STRING("_name")];
 		private _playerInfo = T_CALLM4("_savePlayerInfoTo", T_GETV("playerInfoArray"), _uid, _player, _name);
 		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
@@ -1783,7 +1786,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		_playerInfo
 	ENDMETHOD;
 
-	METHOD(syncPlayerInfo)
+	public server METHOD(syncPlayerInfo)
 		params [P_THISOBJECT, P_OBJECT("_player")];
 		private _playerInfoArray = T_GETV("playerInfoArray");
 		private _uid = getPlayerUID _player;
@@ -1799,7 +1802,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		[_playerInfo, { gPlayerRestoreData = _this }] remoteExecCall ["call", owner _player, NO_JIP];
 	ENDMETHOD;
 
-	METHOD(clearPlayerInfo)
+	public server METHOD(clearPlayerInfo)
 		params [P_THISOBJECT, P_OBJECT("_player")];
 		private _playerInfoArray = T_GETV("playerInfoArray");
 		private _uid = getPlayerUID _player;
@@ -1827,7 +1830,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		}
 	ENDMETHOD;
 
-	STATIC_METHOD(startLoadingScreen)
+	public STATIC_METHOD(startLoadingScreen)
 		params [P_THISCLASS, P_STRING("_id"), P_STRING("_message")];
 
 		uiNamespace setVariable ["vin_loadingScreenTitle", _message];
@@ -1844,7 +1847,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM0("GameModeBase", "setLoadingProgress");
 	ENDMETHOD;
 
-	STATIC_METHOD(setLoadingProgress)
+	public STATIC_METHOD(setLoadingProgress)
 		params [P_THISCLASS, P_STRING("_message"), P_NUMBER("_amount"), P_NUMBER("_total")];
 		PROGRESS_LOADING_SCREEN 0;
 		private _subprogress = if(_total == 0) then {
@@ -1863,7 +1866,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(endLoadingScreen)
+	public STATIC_METHOD(endLoadingScreen)
 		params [P_THISCLASS, P_STRING("_id")];
 		uiNamespace setVariable ["vin_loadingScreenTitle", ''];
 		uiNamespace setVariable ["vin_loadingScreenSubtitle", ''];
@@ -1873,7 +1876,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Suspend the game.
-	METHOD(suspend)
+	public server METHOD(suspend)
 		params [P_THISOBJECT, P_STRING("_message"), P_NUMBER_DEFAULT("_timeout", 120)];
 
 		if(!IS_SERVER) exitWith {
@@ -1923,7 +1926,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Resume game after suspend
-	METHOD(resume)
+	public server METHOD(resume)
 		params [P_THISOBJECT];
 
 		if(!IS_SERVER) exitWith {
@@ -1939,6 +1942,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(gGameSuspended == 0) then {
 			// Free all the units we previously froze
 			_thisObject spawn {
+				SCOPE_ACCESS_MIMIC("GameModeBase");
+
 				private _thisObject = _this;
 
 				// Wait for the suspend command to complate or we might have problems
@@ -2034,7 +2039,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		}
 	ENDMETHOD;
 	
-	 public override METHOD(preSerialize)
+	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		T_CALLM1("suspend", "Saving...");
@@ -2117,7 +2122,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		true
 	ENDMETHOD;
 
-	 public override METHOD(postSerialize)
+	public override METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -2139,7 +2144,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		true
 	ENDMETHOD;
 
-	 public override METHOD(preDeserialize)
+	public override METHOD(preDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -2150,7 +2155,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM2("GameModeBase", "startLoadingScreen", "load", "Loading...");
 	ENDMETHOD;
 
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		FIX_LINE_NUMBERS()
 

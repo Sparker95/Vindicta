@@ -190,7 +190,7 @@ OOP_assert_member = {
 	};
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
-		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
+		private _errorText = format ["class name is nil. Attempt to access member: %1 . %2", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
@@ -280,7 +280,7 @@ OOP_assert_member_is_ref = {
 	private _valid = [_objNameStr, _memNameStr, _file, _line] call OOP_assert_member;
 	if(!_valid) exitWith { false };
 	if(!([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
-		private _errorText = format ["%1.%2 doesn't have ATTR_REFCOUNTED attribute but is being accessed by a REF function.", _objNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 doesn't have ATTR_REFCOUNTED attribute but is being accessed by a REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
@@ -293,7 +293,7 @@ OOP_assert_member_is_not_ref = {
 	private _valid = [_objNameStr, _memNameStr, _file, _line] call OOP_assert_member;
 	if(!_valid) exitWith { false };
 	if(([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
-		private _errorText = format ["%1.%2 has ATTR_REFCOUNTED attribute but is being accessed via a non REF function.", _objNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 has ATTR_REFCOUNTED attribute but is being accessed via a non REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
@@ -332,7 +332,7 @@ OOP_assert_class_member_access = {
 	};
 	// If it is both private and get-only then it is a declaration error, these are mutually exclusive
 	if(_isPrivate and _isGetOnly) exitWith {
-		private _errorText = format ["%1.%2 is marked private AND get-only, but they are intended to be mutually exclusive (get-only implies private set and public get)", _classNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 is marked private AND get-only, but they are intended to be mutually exclusive (get-only implies private set and public get)", _classNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false
 	};
@@ -347,7 +347,7 @@ OOP_assert_class_member_access = {
 	// At this point we know we are accessing from outside the class heirarchy
 	// Check we aren't attempting to set a get-only variable
 	if(!_isGet and _isGetOnly) exitWith {
-		private _errorText = format ["%1.%2 is get-only outside of its own class heirarchy", _classNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 is get-only outside of its own class heirarchy", _classNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false
 	};
@@ -366,7 +366,7 @@ OOP_assert_class_member_access = {
 
 	// // If we aren't in a class function at all then private would by violated.
 	// if(_isPrivate and {isNil "_thisClass"}) exitWith {
-	// 	private _errorText = format ["%1.%2 is unreachable (private)", _classNameStr, _memNameStr];
+	// 	private _errorText = format ["%1 . %2 is unreachable (private)", _classNameStr, _memNameStr];
 	// 	[_file, _line, _errorText] call OOP_error;
 	// 	false
 	// };
@@ -381,7 +381,7 @@ OOP_assert_class_member_access = {
 	// 	#endif
 	// 	true 
 	// };
-	private _errorText = format ["%1.%2 is unreachable (private)", _classNameStr, _memNameStr];
+	private _errorText = format ["%1 . %2 is unreachable (private)", _classNameStr, _memNameStr];
 	[_file, _line, _errorText] call OOP_error;
 	false
 };
@@ -390,7 +390,7 @@ OOP_assert_is_in_required_thread = {
 	params ["_objOrClass", "_classNameStr", "_memNameStr", "_threadAffinityFn", "_file", "_line"];
 	private _requiredThread = [_objOrClass] call _threadAffinityFn;
 	if(!isNil "_thisScript" and !isNil "_requiredThread" and  {!(_requiredThread isEqualTo _thisScript)}) exitWith {
-		private _errorText = format ["%1.%2 is accessed from the wrong thread, expected '%3' got '%4'", _classNameStr, _memNameStr, _requiredThread, _thisScript];
+		private _errorText = format ["%1 . %2 is accessed from the wrong thread, expected '%3' got '%4'", _classNameStr, _memNameStr, _requiredThread, _thisScript];
 		[_file, _line, _errorText] call OOP_error;
 		false
 	};
@@ -472,9 +472,58 @@ OOP_assert_set_member_access = {
 	[_objNameStr, _memNameStr, false, _file, _line] call OOP_assert_member_access;
 };
 
+#define SPECIAL_METHODS ["new", "delete", "copy", "assign", "ref", "unref"]
+OOP_assert_method_call = {
+	params ["_class", "_method", "_obj", "_file", "_line"];
+
+	// Find the attributes for the method in the most base class
+	// TODO: optimize this by copying declared class and attributes for functions into derived classes
+	private _classes = _GET_SPECIAL_MEM(_class, PARENTS_STR) + [_class];
+	private _idx = _classes findIf { _method in _GET_SPECIAL_MEM(_x, OWN_METHOD_LIST_STR) };
+	private _methodClass = _classes#_idx;
+	private _attribs = missionNamespace getVariable [CLASS_METHOD_ATTR_STR(_methodClass, _method), []];
+	private _scopeClasses = if(isNil "__classScope") then { [] } else { _GET_SPECIAL_MEM(__classScope, PARENTS_STR) + [__classScope] };
+
+	// Ignore special methods
+	if(_method in SPECIAL_METHODS) exitWith {};
+
+	// // Get relative file path. I thought it would fix vscode terminal links with spaces in them, but it doesn't...
+	// private _idx = _file find "Vindicta.Altis";
+	// _file = _file select [_idx + count "Vindicta.Altis"];
+	// _file = "." + _file;
+
+	// assert thread
+	if(attr(thread) in _attribs && {isNil ("__ignoreThreadAffinity" + _class)}) then {
+		private _properThread = isNil "_thisScript" || {GETV(CALLM0(_obj, "getMessageLoop"), "scriptHandle") isEqualTo _thisScript} || {!canSuspend};
+		if(!_properThread) then {
+			OOP_ERROR_4("%1 . %2 is called in wrong thread (%3:%4)", _class, _method, _file, _line);
+		};
+	};
+
+	// assert access
+	if(attr(protected) in _attribs && {!(_methodClass in _scopeClasses)} && {isNil ("__ignoreAccess" + _methodClass)}) exitWith {
+		OOP_ERROR_4("%1 . %2 is protected, and can only be called from its own class, or inherited classes (%3:%4)", _methodClass, _method, _file, _line);
+		//diag_log [_this, _classes, _methodClass, _attribs, __classScope];
+	};
+
+	// We ignore access for MessageReceiver, we need to check it in the postMethod functions instead as they know about the calling scope
+	if(!(attr(public) in _attribs || attr(protected) in _attribs) && {isNil "__classScope" || {!(_methodClass isEqualTo __classScope) && !(__classScope in ["MessageReceiver", "MessageReceiverEx"])}} && {isNil ("__ignoreAccess" + _methodClass)}) exitWith {
+		OOP_ERROR_4("%1 . %2 is private, and can only be called from its own class (%3:%4)", _methodClass, _method, _file, _line);
+		//diag_log [_this, _classes, _methodClass, _attribs, __classScope];
+	};
+
+	// assert server / client
+	if(attr(server) in _attribs && !IS_SERVER) exitWith {
+		OOP_ERROR_4("%1 . %2 can only be called on the server (%3:%4)", _methodClass, _method, _file, _line);
+	};
+	if(attr(client) in _attribs && !HAS_INTERFACE) exitWith {
+		OOP_ERROR_4("%1 . %2 can only be called on the client (%3:%4)", _methodClass, _method, _file, _line);
+	};
+};
+
 //Check method and print error if it's not found
 OOP_assert_method = {
-	params["_classNameStr", "_methodNameStr", "_file", "_line"];
+	params["_class", "_method", "_obj", "_file", "_line"];
 
 	if (isNil "_methodNameStr") exitWith {
 		private _errorText = "method name is nil";
@@ -489,128 +538,136 @@ OOP_assert_method = {
 	};
 
 	//Get static member list of this class
-	private _methodList = _GET_SPECIAL_MEM(_classNameStr, METHOD_LIST_STR);
-	//Check if it's a class
+	private _methodList = _GET_SPECIAL_MEM(_class, METHOD_LIST_STR);
+	// Check if it's a class
 	if(isNil "_methodList") exitWith {
-		[_file, _line, _classNameStr] call OOP_error_notClass;
+		[_file, _line, _class] call OOP_error_notClass;
 		false;
 	};
+
 	//Check method
-	private _valid = _methodNameStr in _methodList;
+	private _valid = _method in _methodList;
 	if(!_valid) then {
-		[_file, _line, _classNameStr, _methodNameStr] call OOP_error_methodNotFound;
+		[_file, _line, _class, _method] call OOP_error_methodNotFound;
 	};
+
+	#ifdef OOP_ASSERT_METHOD_CALL
+	[_class, _method, _obj, _file, _line] call OOP_assert_method_call;
+	#endif
+
 	//Return value
 	_valid
 };
 
-OOP_validate_override = {
-	params ["_classNameStr", "_methodName", "_attribs"];
+OOP_set_method_attr = {
+	params ["_class", "_method", "_attribs", ["_static", false]];
+	missionNamespace setVariable [CLASS_METHOD_ATTR_STR(_class, _method), +_attribs];
 
-	// Method defined in a base class
-	private _oop_parents = _GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
-	private _exists = _methodName in _oop_methodList;
-	if(_exists) then {
-		// Parents are ordered from least derived to most, so first one found will be first parent that defined the function.
-		// (Hopefully the same function isn't defined in multiple parents...)
-		private _idx = _oop_parents findIf {
-			_methodName in _GET_SPECIAL_MEM(_x, OWN_METHOD_LIST_STR)
-		};
-		private _parent = _oop_parents#_idx;
-		// Must use override keyword if the method already exists
-		if !("override" in _attribs) then {
-			OOP_ERROR_3("%1.%2 is hiding definition in %3: use 'virtual' and 'override' attributes to declare virtual methods", _classNameStr, _methodName, _parent);
-		} else {
-			private _otherAttribs = missionNamespace getVariable [CLASS_METHOD_ATTR_STR(_parent, _methodName), []];
-			if !("virtual" in _otherAttribs) exitWith {
-				OOP_ERROR_3("%1.%2 is overriding non-virtual method in %3: use 'virtual' and 'override' attributes to declare virtual methods", _classNameStr, _methodName, _parent);
-			};
-			private _otherAccess = _otherAttribs arrayIntersect ["public", "protected"];
-			if(count _otherAccess == 0) exitWith {
-				OOP_ERROR_3("%1.%2 is overriding %3.%2 which does not have appropriate access attributes ('public', 'protected')", _parent, _methodName, _parent);
-			};
-			if (!(_otherAccess#0 in _attribs)) then {
-				OOP_ERROR_3("%1.%2 overriding %3.%2 with different access attributes: overriding methods must have the same access", _classNameStr, _methodName, _parent);
-			};
-		};
-	} else {
-		if("override" in _attribs) then {
-			OOP_ERROR_2("%1.%2 has 'override' but no base class contains a method with the same name", _classNameStr, _methodName);
+	if(_method in SPECIAL_METHODS) exitWith {
+		if(count _attribs != 0) then {
+			OOP_ERROR_3("%1 . %2 must not use any attributes (using %3)", _class, _method, _attribs);
 		};
 	};
-};
 
-OOP_set_method_attr = {
-	params ["_classNameStr", "_methodName", "_attribs", ["_static", false]];
-	missionNamespace setVariable [CLASS_METHOD_ATTR_STR(_classNameStr, _methodName), _attribs];
-
-	if(_methodName in ["new", "delete", "copy", "assign"]) exitWith {
-		if(count _attribs != 0) then {
-			OOP_ERROR_3("%1.%2 must not use any attributes (using %3)", _classNameStr, _methodName, _attribs);
-		};
+	// Check for duplicate attributes
+	private _attribsUnique = [];
+	{ _attribsUnique pushBackUnique _x } forEach _attribs;
+	if(count _attribsUnique != count _attribs) exitWith {
+		OOP_ERROR_2("%1 . %2 declares some attributes more than once", _class, _method);
 	};
 
 	// Method already defined in this class
-	if (_methodName in _oop_newMethodList) then {
-		OOP_ERROR_2("%1.%2 declared more than once", _classNameStr, _methodName);
+	if (_method in _oop_newMethodList) exitWith {
+		OOP_ERROR_2("%1 . %2 declared more than once", _class, _method);
 	};
 
 	// Accessibility
-	if ("public" in _attribs && "protected" in _attribs) then {
-		OOP_ERROR_2("%1.%2 declared as 'public' and 'protected': use one only, or neither if you want to declare a method as private", _classNameStr, _methodName);
+	private _public = attr(public) in _attribs;
+	private _protected = attr(protected) in _attribs;
+	if (_public && _protected) exitWith {
+		OOP_ERROR_2("%1 . %2 declared as 'public' and 'protected': use one only, or neither if you want to declare a method as private", _class, _method);
 	};
-	if("public" in _attribs && {_attribs#0 != "public"}) then {
-		OOP_ERROR_2("%1.%2 'public' must be first method attribute", _classNameStr, _methodName);
+	if(_public && {_attribs#0 != attr(public)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'public' must be first method attribute", _class, _method);
 	};
-	if("protected" in _attribs && {_attribs#0 != "protected"}) then {
-		OOP_ERROR_2("%1.%2 'protected' must be first method attribute", _classNameStr, _methodName);
+	if(_protected && {_attribs#0 != attr(protected)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'protected' must be first method attribute", _class, _method);
 	};
+
+	_attribs = _attribs - [attr(public), attr(protected)];
+
+	// virtual / override
+	private _virtual = attr(virtual) in _attribs;
+	private _override = attr(override) in _attribs;
+	if (_static && (_virtual || _override)) then {
+		OOP_ERROR_2("%1 . %2 declared as 'virtual' or 'override': static functions cannot be either", _class, _method);
+	};
+	if (_virtual && _override) then {
+		OOP_ERROR_2("%1 . %2 declared as 'virtual' and 'override': use one only, or neither", _class, _method);
+	};
+	if(_virtual && {_attribs#0 != attr(virtual)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'virtual' must be specified after 'public'/'protected' but before 'server'/'client'", _class, _method);
+	};
+	if(_override && {_attribs#0 != attr(override)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'override' must be specified after 'public'/'protected' but before 'server'/'client'", _class, _method);
+	};
+	if (_virtual && !(_public || _protected)) then {
+		OOP_ERROR_2("%1 . %2 declared as 'virtual' but not 'public' or 'protected': this makes no sense, a virtual method must be visible to derived classes for them to override it", _class, _method);
+	};
+
+	private _exists = _method in _oop_methodList;
+	if(!_exists && _override) exitWith {
+		OOP_ERROR_2("%1 . %2 specifies 'override' but no base class contains a method with the same name", _class, _method);
+	};
+
+	if(_exists && !_static) then {
+		// Parents are ordered from least derived to most, so first one found will be first parent that defined the function.
+		// (Hopefully the same function isn't defined in multiple parents...)
+		private _oop_parents = _GET_SPECIAL_MEM(_class, PARENTS_STR);
+		private _idx = _oop_parents findIf { _method in _GET_SPECIAL_MEM(_x, OWN_METHOD_LIST_STR) };
+		private _parent = _oop_parents#_idx;
+		// Must use override keyword if the method already exists
+		if !(_override) then {
+			OOP_ERROR_3("%1 . %2 is hiding definition in %3: use 'virtual' and 'override' attributes to declare virtual methods", _class, _method, _parent);
+		} else {
+			private _otherAttribs = missionNamespace getVariable [CLASS_METHOD_ATTR_STR(_parent, _method), []];
+			if !(attr(virtual) in _otherAttribs) exitWith {
+				OOP_ERROR_3("%1 . %2 is overriding non-virtual method in %3: use 'virtual' and 'override' attributes to declare virtual methods", _class, _method, _parent);
+			};
+			private _otherPublic = attr(public) in _otherAttribs;
+			private _otherProtected = attr(protected) in _otherAttribs;
+			if(!_otherPublic && !_otherProtected) exitWith {
+				OOP_ERROR_3("%1 . %2 is overriding %3.%2 which does not have appropriate access attributes ('public', 'protected')", _parent, _method, _parent);
+			};
+			if (_public && !_otherPublic || _protected && !_otherProtected) exitWith {
+				OOP_ERROR_3("%1 . %2 overriding %3.%2 with different access attributes: overriding methods must have the same access", _class, _method, _parent);
+			};
+		};
+	};
+	_attribs = _attribs - [attr(virtual), attr(override)];
+
 	// Environment
-	if ("server" in _attribs && "client" in _attribs) then {
-		OOP_ERROR_2("%1.%2 declared as 'server' and 'client': use neither if you want to declare a method as callable on both server and client", _classNameStr, _methodName);
+	private _server = attr(server) in _attribs;
+	private _client = attr(client) in _attribs;
+	if (_server && _client) then {
+		OOP_ERROR_2("%1 . %2 declared as 'server' and 'client': use neither if you want to declare a method as callable on both server and client", _class, _method);
 	};
-	if("server" in _attribs && {_attribs#(count _attribs - 1) != "server"}) then {
-		OOP_ERROR_2("%1.%2 'server' must be last method attribute", _classNameStr, _methodName);
+	if(_server && {_attribs#0 != attr(server)}) then {
+		OOP_ERROR_2("%1 . %2 'server' must be specified after 'virtual'/'override' but before 'thread'", _class, _method);
 	};
-	if("client" in _attribs && {_attribs#(count _attribs - 1) != "client"}) then {
-		OOP_ERROR_2("%1.%2 'client' must be last method attribute", _classNameStr, _methodName);
+	if(_client && {_attribs#0 != attr(client)}) then {
+		OOP_ERROR_2("%1 . %2 'client' must be specified after 'virtual'/'override' but before 'thread'", _class, _method);
 	};
-	// Invalid combinations of attributes
-	if (_static && ("virtual" in _attribs || "override" in _attribs)) then {
-		OOP_ERROR_2("%1.%2 declared as 'virtual' or 'override': static functions cannot be either", _classNameStr, _methodName);
-	};
-	if ("virtual" in _attribs && "override" in _attribs) then {
-		OOP_ERROR_2("%1.%2 declared as 'virtual' and 'override': use one only, or neither", _classNameStr, _methodName);
-	};
-	if ("virtual" in _attribs && !("public" in _attribs || "protected" in _attribs)) then {
-		OOP_ERROR_2("%1.%2 declared as 'virtual' but not 'public' or 'protected': this makes no sense, a virtual method must be visible to derived classes for them to override it", _classNameStr, _methodName);
-	};
+	_attribs = _attribs - [attr(server), attr(client)];
 
-	if(!_static) then {
-		[_classNameStr, _methodName, _attribs] call OOP_validate_override;
+	// Thread affinity
+	private _thread = attr(thread) in _attribs;
+	if(_thread && _static) exitWith {
+		OOP_ERROR_2("%1 . %2 is static and declared as 'thread': static methods cannot use 'thread' affinity attribute", _class, _method);
 	};
-};
-
-OOP_assert_method_std_call = {
-	params ["_objNameStr", "_methodNameStr"];
-	// assert access
-	// assert server / client
-};
-OOP_assert_method_this_call = {
-	params ["_methodNameStr"];
-
-};
-OOP_assert_method_static_call = {
-	params ["_classNameStr", "_methodNameStr"];
-
-};
-OOP_assert_method_class_call = {
-	params ["_classNameStr", "_objNameStr", "_methodNameStr"];
-
-};
-OOP_assert_method_this_class_call = {
-	params ["_classNameStr", "_methodNameStr"];
-
+	if(_thread && {_attribs#0 != attr(thread)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'thread' must be last method attribute", _class, _method);
+	};
 };
 
 
@@ -618,17 +675,17 @@ OOP_assert_method_this_class_call = {
 OOP_dumpAllVariables = {
 	params [P_THISOBJECT];
 	// Get object's class
-	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
-	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_class, MEM_LIST_STR);
 	diag_log format ["[OOP]: Basic variable dump of %1: %2", _thisObject, _memList];
 	{
 		_x params ["_memName", "_memAttr"];
 		private _varValue = T_GETV(_memName);
 		if (isNil "_varValue") then {
-			diag_log format ["  %1.%2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
+			diag_log format ["  %1 . %2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
 		} else {
-			diag_log format ["  %1.%2: %3", _thisObject, _memName, _varValue];
+			diag_log format ["  %1 . %2: %3", _thisObject, _memName, _varValue];
 		};
 	} forEach _memList;
 };
@@ -1624,7 +1681,7 @@ CLASS("mi_c", "")
 	METHOD(new)
 	ENDMETHOD;
 
-	METHOD(getAnotherValue)
+	public METHOD(getAnotherValue)
 		"anotherValue"
 	ENDMETHOD;
 ENDCLASS;

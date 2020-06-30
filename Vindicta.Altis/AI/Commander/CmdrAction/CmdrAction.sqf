@@ -143,7 +143,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:
 		_garrison - <Model.GarrisonModel>
 	*/
-	protected METHOD(registerGarrison)
+	public METHOD(registerGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		private _garrisons = T_GETV("garrisons");
@@ -158,7 +158,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	Parameters:
 		_garrison - <Model.GarrisonModel>
 	*/
-	protected METHOD(unregisterGarrison)
+	public METHOD(unregisterGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		private _garrisons = T_GETV("garrisons");
@@ -237,9 +237,9 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	ENDMETHOD;
 
 	/*
-	Method: (protected) setPersonalGarrisonIntel
+	Method: (public) setPersonalGarrisonIntel
 	*/
-	protected METHOD(setPersonalGarrisonIntel)
+	public METHOD(setPersonalGarrisonIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 
@@ -351,7 +351,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 	ENDMETHOD;
 
-	protected METHOD(getFinalScore)
+	public METHOD(getFinalScore)
 		params [P_THISOBJECT];
 		private _scorePriority = T_GETV("scorePriority");
 		private _scoreResource = T_GETV("scoreResource");
@@ -383,7 +383,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	ENDMETHOD;
 
 	// Push the values of all registered variables.
-	METHOD(pushVariables)
+	protected METHOD(pushVariables)
 		params [P_THISOBJECT];
 		private _variables = T_GETV("variables");
 		private _variablesStack = T_GETV("variablesStack");
@@ -394,7 +394,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	ENDMETHOD;
 
 	// Pop the values of all registered variables.
-	METHOD(popVariables)
+	protected METHOD(popVariables)
 		params [P_THISOBJECT];
 		private _variables = T_GETV("variables");
 		private _variablesStack = T_GETV("variablesStack");
@@ -619,7 +619,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		true
 	ENDMETHOD;
 
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Load intel clone
@@ -665,9 +665,8 @@ if(isNil "gActionDebugMarkerStyle") then {
 ["AST_VAR", {
 
 	#define OOP_CLASS_NAME ActionASTVarTest
-CLASS("ActionASTVarTest", "CmdrAction")
-
-		METHOD(testVars)
+	CLASS("ActionASTVarTest", "CmdrAction")
+		public METHOD(testVars)
 			params [P_THISOBJECT];
 
 			private _var = T_CALLM1("createVariable", -1);
@@ -678,7 +677,6 @@ CLASS("ActionASTVarTest", "CmdrAction")
 			["SET_AST_VAR", GET_AST_VAR(_thisObject, _var) == 1] call test_Assert;
 			["AST_VAR share value works", GET_AST_VAR(_thisObject, _var2) == 1] call test_Assert;
 		ENDMETHOD;
-
 	ENDCLASS;
 
 	private _testObj = NEW("ActionASTVarTest", []);
@@ -786,6 +784,7 @@ CLASS("AST_TestVariable", "ActionStateTransition")
 }] call test_AddTest;
 
 ["CmdrAction.createVariable, pushVariables, popVariables", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _thisObject = NEW("CmdrAction", []);
 
 	private _var = T_CALLM("createVariable", [0]);
@@ -817,6 +816,7 @@ CLASS("AST_TestVariable", "ActionStateTransition")
 }] call test_AddTest;
 
 ["CmdrAction.applyToSim", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _action = NEW("CmdrAction", []);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
