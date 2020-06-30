@@ -25,12 +25,24 @@ Author: Sparker
 
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
 Unit_fnc_EH_Respawn = compile preprocessFileLineNumbers "Unit\EH_Respawn.sqf";
-Unit_fnc_EH_handleDamageInfantry = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantry.sqf";
-Unit_fnc_EH_handleDamageVehicle = compile preprocessFileLineNumbers "Unit\EH_handleDamageVehicle.sqf";
+Unit_fnc_EH_handleDamageInfantryACE = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantryACE.sqf";
+Unit_fnc_EH_handleDamageInfantryStd = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantryStd.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
 Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoUnloaded.sqf";
+
+// Check that ACE damage event handler is present and was not changed
+// We need this to both have ACE damage handler and prevent bots from murdering themselves because they can not drive
+if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
+	if (isNil "ace_medical_engine_fnc_handleDamage") then {
+		diag_log "  ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ";
+		diag_log " ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !";
+		diag_log "! ! ! Error: ACE function ace_medical_engine_fnc_handleDamage is not found. Did it change?  ! !";
+		diag_log " ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !";
+		diag_log "  ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ";
+	};
+};
 
 // Add CBA ACE event handlers
 #ifndef _SQF_VM
@@ -750,20 +762,28 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 
 		// HandleDamage for infantry
-		// Disabled for now, let's see if it changed anything
-		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
-		/*
 		if ((_data select UNIT_DATA_ID_CAT == T_INF) &&	// Only to infantry
 			{owner _hO in [0, clientOwner]} &&			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 			{!(_hO isEqualTo player)}) then { 			// Ignore player
+
 			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
-				_hO removeAllEventHandlers "handleDamage";
-				pr _ehid = _hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
-				//diag_log format ["Added damage event handler: %1", _thisObject];
-				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
+				// If ACE is loaded
+				if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
+					pr _aceEH = _hO getVariable ["ace_medical_handledamageehid", -1];
+					if (_aceEH != -1) then {
+						_hO removeEventHandler ["handleDamage", _aceEH];
+					} else {
+						OOP_ERROR_0("ACE event handler ace_medical_handledamageehid was not found, did it change?");
+					};
+					pr _ehid = _hO addEventHandler ["handleDamage", {_this call Unit_fnc_EH_handleDamageInfantryACE}];
+					_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
+				} else {
+					// If ACE is not loaded
+					pr _ehid = _hO addEventHandler ["handleDamage", {_this call Unit_fnc_EH_handleDamageInfantryStd}];
+					_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
+				};
 			};
 		};
-		*/
 
 		// HandleDamage for vehicles
 		if ((_data select UNIT_DATA_ID_CAT == T_VEH) &&
