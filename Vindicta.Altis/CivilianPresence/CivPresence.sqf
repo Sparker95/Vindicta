@@ -243,6 +243,7 @@ CLASS("CivPresence", "")
 			{! isNil {_x getVariable "vin_anim"}};
 		OOP_INFO_1("Found %1 ambient animation objects", count _animObjects);
 
+		#ifdef DEBUG_CIV_PRESENCE
 		{
 			// Marker with text
 			_mrkName = format ["%1_%2", _thisObject, str _x];
@@ -255,6 +256,7 @@ CLASS("CivPresence", "")
 			//_mrk setMarkerSizeLocal [0.3, 0.3];
 			_mrk setMarkerTextLocal (str _x);
 		} forEach _animObjects;
+		#endif
 
 		OOP_INFO_3("  building positions: %1, waypoints: %2, ambient animations: %3", count _buildingPositions, count _waypoints, count _animobjects);
 

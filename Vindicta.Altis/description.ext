@@ -92,7 +92,6 @@ class CfgFunctions {
 
     class pr0
     {
-        #include "CivilianPresence\functions.hpp"
         #include "Common\functions.hpp"
     };
 	
