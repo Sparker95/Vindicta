@@ -423,7 +423,9 @@ CLASS("CivPresence", "")
 		SET_AGENT_FLAG(_hO);
 		pr _oop_civ = NEW("Civilian", [_hO ARG _thisObject]);	// Create OOP object associated with it
 		
-		UNDERCOVER_SET_UNIT_SUSPICIOUS(_hO, true);
+		if (random 10 <= 3) then {
+			UNDERCOVER_SET_UNIT_SUSPICIOUS(_hO, true);
+		};
 
 		_oop_civ // Return
 	ENDMETHOD;
