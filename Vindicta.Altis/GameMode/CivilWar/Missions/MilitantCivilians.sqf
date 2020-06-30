@@ -586,7 +586,8 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			private _radius = GETV(_city, "boundingRadius");
 
 			/// Use the civ types specified in the presence module
-			private _civTypes = missionNameSpace getVariable ["pr0_cp_unitTypes", []];
+			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTypes = _civTemplate select T_INF select T_INF_default;
 
 			// Separate groups for each civilian so they can do their own thing
 			for "_i" from 0 to (_deficit-1) do {
@@ -594,7 +595,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				private _tmpGroup = createGroup civilian;
 				private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
 				// Lets apply our civ settings from selected faction template
-				private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+				
 				private _templateClass = [_civTemplate, T_INF, T_INF_survivor, -1] call t_fnc_select;
 				if ([_templateClass] call t_fnc_isLoadout) then {
 					[_civie, _templateClass] call t_fnc_setUnitLoadout;
