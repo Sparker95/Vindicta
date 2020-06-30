@@ -5,7 +5,7 @@ Class: Goal.GoalUnitSurrender
 */
 
 #define OOP_CLASS_NAME GoalUnitSurrender
-CLASS("GoalUnitSurrender", "Goal")
+CLASS("GoalUnitSurrender", "GoalUnit")
 
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
@@ -13,7 +13,7 @@ CLASS("GoalUnitSurrender", "Goal")
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
 	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
-	STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		
 		private _objectHandle = GETV(_AI, "hO");
@@ -32,6 +32,12 @@ CLASS("GoalUnitSurrender", "Goal")
 			private _action = NEW("ActionUnitSurrender", [_AI]);
 			_action
 		}
+	ENDMETHOD;
+
+	// Must return a bool, true or false, if unit can talk while doing this goal
+	// Default is false;
+	STATIC_METHOD(canTalk)
+		true;
 	ENDMETHOD;
 
 ENDCLASS;

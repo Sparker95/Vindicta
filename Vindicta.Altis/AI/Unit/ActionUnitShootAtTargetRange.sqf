@@ -8,10 +8,17 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 	VARIABLE("spawnHandle");
 	VARIABLE("safePosition");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SHOOT_RANGE, [objNull] ] ],	// Required parameters
+			[ [TAG_DURATION_SECONDS, [0]]]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SHOOT_RANGE);
 		T_SETV("target", _target);
 		private _defaultDuration = selectRandom [5, 10, 20] * 60;
 		private _duration = CALLSM3("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS, _defaultDuration);
@@ -19,22 +26,41 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		T_SETV("spawnHandle", scriptNull);
 	ENDMETHOD;
 
+	// Returns [_shootingPosition, _safePosition]
+	STATIC_METHOD(getShootingPos)
+		params [P_THISCLASS, P_OBJECT("_target")];
+
+		private _distDir = _target getVariable ["vin_target_range", []];
+
+		if (count _distDir == 0) exitWith {
+			OOP_ERROR_2("Target %1 at %2 does not have correct vin_target_range array (should be [distance, direction])", _target, getPos _target);
+			[];
+		};
+
+		_distDir params ["_dist", "_dir"];
+		private _shootingPosition = _target getRelPos [_dist, _dir];
+		private _safePosition = _target getRelPos [_dist * 1.2, _dir];
+
+		[_shootingPosition, _safePosition];
+	ENDMETHOD;
+
 	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _target = T_GETV("target");
 		_target setVariable ["vin_occupied", true];
+		private _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", _target);
 
-		private _distDir = _target getVariable ["vin_target_range", []];
-
-		if(!(_distDir isEqualTypeArray [0,0])) exitWith {
-			OOP_ERROR_1("Target %1 does not have correct vin_target_range array (should be [distance, direction])", _target);
+		private _positions = CALLSM1("ActionUnitShootAtTargetRange", "getShootingPos", _target);
+		
+		if ((count _positions) == 0) exitWith {
+			OOP_ERROR_0("Failed, position was not provided.");
 			T_SETV("state", ACTION_STATE_FAILED);
-			ACTION_STATE_FAILED
+			ACTION_STATE_FAILED;
 		};
-		_distDir params ["_dist", "_dir"];
-		private _shootingPosition = _target getRelPos [_dist, _dir];
-		private _safePosition = _target getRelPos [_dist * 1.2, _dir];
+
+		_positions params ["_shootingPosition", "_safePosition"];
 		T_SETV("safePosition", _safePosition);
 		private _duration = T_GETV("duration");
 		private _hO = T_GETV("hO");
@@ -112,6 +138,11 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 
 		T_SETV("spawnHandle", _handle);
 
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
@@ -123,6 +154,7 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		private _state = T_CALLM0("activateIfInactive");
 		if(_state == ACTION_STATE_ACTIVE) then {
 			if (scriptDone T_GETV("spawnHandle")) then {
+				CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 				_state = ACTION_STATE_COMPLETED;
 			} else {
 				_state = ACTION_STATE_ACTIVE;
@@ -139,6 +171,9 @@ CLASS("ActionUnitShootAtTargetRange", "ActionUnit")
 		// Mark the target as free for use
 		private _target = T_GETV("target");
 		_target setVariable ["vin_occupied", false];
+
+		private _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", objNull);
 
 		// Terminate the script
 		private _spawnHandle = T_GETV("spawnHandle");

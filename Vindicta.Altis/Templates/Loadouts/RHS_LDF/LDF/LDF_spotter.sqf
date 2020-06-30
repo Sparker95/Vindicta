@@ -26,6 +26,8 @@ this addWeapon "rhs_pdu4";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_mag_nspn_red";
+this addItemToUniform "rhs_acc_perst1ik_ris";
+this addItemToUniform "I_E_IR_Grenade";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};
 this addItemToVest "rhs_mag_rdg2_white";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_20rnd_9x39mm_SP5";};
@@ -36,3 +38,4 @@ this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
+this linkItem "NVGoggles_OPFOR";

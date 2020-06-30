@@ -185,7 +185,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	// - - - - - STORAGE - - - - - -
 	
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes

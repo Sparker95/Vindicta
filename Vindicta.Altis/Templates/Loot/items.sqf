@@ -117,7 +117,7 @@ t_ACEMiscItems = [
 					//["ACE_SpraypaintGreen",5],
 					["ACE_EntrenchingTool",8],
 					["ACE_Tripod",1],
-					//["ACE_Vector",6],
+					["ACE_Vector",2],
 					//["ACE_Yardage450",4],
 					//["ACE_IR_Strobe_Item",12],
 					["ACE_CableTie",12],

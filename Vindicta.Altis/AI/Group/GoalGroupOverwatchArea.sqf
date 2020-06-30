@@ -3,8 +3,8 @@
 // Group will find a place with line of sight, fullfilling required distance, elevation and gradient requirements.
 // Goal for a group to over watch area.
 #define OOP_CLASS_NAME GoalGroupOverwatchArea
-CLASS("GoalGroupOverwatchArea", "Goal")
-	STATIC_METHOD(createPredefinedAction)
+CLASS("GoalGroupOverwatchArea", "GoalGroup")
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		private _group = GETV(_AI, "agent");
@@ -46,7 +46,7 @@ CLASS("GoalGroupOverwatchArea", "Goal")
 		if(_isVehicle) then {
 			// Mount vehicles
 			private _actionGetInParams = [
-				["onlyCombat", true] // Only combat vehicle operators must stay in vehicles
+				[TAG_ONLY_COMBAT_VEHICLES, true] // Only combat vehicle operators must stay in vehicles
 			];
 			CALLSM2("Action", "mergeParameterValues", _actionGetInParams, _parameters);
 			private _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _actionGetInParams]);

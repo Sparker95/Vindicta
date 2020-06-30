@@ -20,7 +20,7 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 	ENDMETHOD;
 
 	// Gives goals to groups to attack enemy buildings
-	METHOD(attackEnemyBuildings)
+	protected METHOD(attackEnemyBuildings)
 		params [P_THISOBJECT, ["_groups", 0, [0, []]]];
 
 		pr _AI = T_GETV("AI");

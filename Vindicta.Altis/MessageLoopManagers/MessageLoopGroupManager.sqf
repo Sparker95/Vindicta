@@ -17,7 +17,7 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(deleteObject)
+	public METHOD(deleteObject)
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
 		if (IS_OOP_OBJECT(_objectRef)) then {
 			DELETE(_objectRef);
@@ -27,7 +27,7 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 		0
 	ENDMETHOD;
 
-	METHOD(stopAIobject)
+	public METHOD(stopAIobject)
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
 
 		if (IS_OOP_OBJECT(_objectRef)) then {
@@ -39,13 +39,14 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 	ENDMETHOD;
 
 	public override METHOD(getMessageLoop)
-		gMessageLoopGroupAI
+		gMessageLoopUnscheduled
 	ENDMETHOD;
 
 	// We use that to call some static methods in the main thread
-	METHOD(callStaticMethodInThread)
+	public METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
+		SCOPE_ACCESS_MIMIC(_className);
 		CALLSM(_className, _methodName, _parameters);
 	ENDMETHOD;
 

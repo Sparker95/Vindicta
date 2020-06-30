@@ -13,7 +13,8 @@ _array set [T_DISPLAY_NAME, "RHS Russian Armed Forces"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhs_c_troops",		// RHSAFRF
-	"rhsusf_c_troops"	// RHSUSAF
+	"rhsusf_c_troops",	// RHSUSAF
+	"rhsgref_c_troops" //RHSGREF due to BRDMs, UAZ with DSHKMs not existing in base AFRF
 ]];
 
 //==== Infantry ====
@@ -28,7 +29,7 @@ _inf set [T_INF_GL, ["RHS_AFRF_grenadier"]];
 _inf set [T_INF_rifleman, ["RHS_AFRF_rifleman"]];
 _inf set [T_INF_marksman, ["RHS_AFRF_marksman"]];
 _inf set [T_INF_sniper, ["RHS_AFRF_sniper"]];
-_inf set [T_INF_spotter, ["RHS_AFRF_spotter"]];
+_inf set [T_INF_spotter, ["RHS_AFRF_spotter", "RHS_AFRF_spotter_2"]];
 _inf set [T_INF_exp, ["RHS_AFRF_explosives"]];
 _inf set [T_INF_ammo, ["RHS_AFRF_AT_2", "RHS_AFRF_MG_2"]];
 _inf set [T_INF_LAT, ["RHS_AFRF_LAT", "RHS_AFRF_LAT_2"]];

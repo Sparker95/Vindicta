@@ -43,7 +43,7 @@ CLASS("InGameUI", "")
 		OOP_ERROR_0("ARE YOU SURE THAT YOU WANT TO DELETE THAT?");
 	ENDMETHOD;
 
-	METHOD(setLocationText)
+	public METHOD(setLocationText)
 		params [P_THISOBJECT, P_STRING("_text"), P_COLOR("_color")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
 		if(_text == "") then {
@@ -57,7 +57,7 @@ CLASS("InGameUI", "")
 		};
 	ENDMETHOD;
 
-	METHOD(setBuildResourcesAmount)
+	public METHOD(setBuildResourcesAmount)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
 
@@ -73,7 +73,7 @@ CLASS("InGameUI", "")
 	ENDMETHOD;
 
 /*
-	METHOD(setLocationCapacityInf)
+	public METHOD(setLocationCapacityInf)
 		params [P_THISOBJECT, P_NUMBER("_capacity")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
 		if (_capacity < 0) then {

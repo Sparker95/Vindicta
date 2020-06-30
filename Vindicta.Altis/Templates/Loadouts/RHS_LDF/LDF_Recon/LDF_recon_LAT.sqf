@@ -29,7 +29,7 @@ this addItemToVest "rhs_mag_rgo";
 this addItemToVest "rhs_mag_rgn";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_zarya2";};
 this addItemToBackpack "rhs_rpg7_TBG7V_mag";
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_PG7VM_mag";};
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_PG7V_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";

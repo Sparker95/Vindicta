@@ -14,9 +14,16 @@ CLASS("ActionUnitFollow", "ActionUnit")
 	VARIABLE("stuckCounter");
 	VARIABLE("hTarget");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_TARGET_OBJECT, objNull] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		private _hTarget = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET, objNull);
+		private _hTarget = CALLSM3("Action", "getParameterValue", _parameters, TAG_TARGET_OBJECT, objNull);
 		T_SETV("hTarget", _hTarget);
 	ENDMETHOD;
 	
@@ -34,6 +41,9 @@ CLASS("ActionUnitFollow", "ActionUnit")
 		_hO stop false;
 		_hO doFollow _hTarget;
 
+		// Allow driver to drive as fast as he needs to
+		_hO forceSpeed -1;
+
 		// Get unit index in drivers list to determine expected distance we should be from the leader
 		private _expectedDistance = if(vehicle _hO != _hO) then {
 			private _index = 1 max (units group _hO select { vehicle _x != _x && { driver vehicle _x == _x } } find { _hO });
@@ -41,6 +51,10 @@ CLASS("ActionUnitFollow", "ActionUnit")
 		} else {
 			30
 		};
+
+		// Set world state property
+		private _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true);
 
 		T_SETV("expectedDistance", _expectedDistance);
 		T_SETV("stuckTimer", GAME_TIME + TIMER_STUCK_THRESHOLD);

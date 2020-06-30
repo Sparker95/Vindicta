@@ -15,13 +15,20 @@ CLASS("ActionUnitScareAway", "Action")
 	VARIABLE("objectHandle");
 	VARIABLE("step");
 	VARIABLE("warningShotTarget");
+
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SCARE_AWAY, [objNull] ] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
 	
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		T_SETV("step",0);
 
-		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		private _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SCARE_AWAY);
 		
 		pr _laserT = createVehicle ["LaserTargetW", [0,0,0], [], 0, "NONE"];
 		_laserT attachto [_target, [0, 0, 3]];
@@ -62,10 +69,17 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		//aim at target
 		_oh doTarget _target;
-		group _oh setSpeedMode "LIMITED";
+		_oh forceSpeed (_oh getSpeed "SLOW");
 		//might what to move this to Action base class
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		
+		SETV(_ai, "interactionObject", _target);
+
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
@@ -94,7 +108,7 @@ CLASS("ActionUnitScareAway", "Action")
 		_wf = CALLM(_AI, "findWorldFact", [_wf]);
 		
 		if(isnil "_wf" || {_oh distance _target > 10})exitWith{
-			T_CALLM("terminate", []);
+			CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -134,9 +148,6 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		diag_log "Terminating scaring civilian!";
 		
-		
-		
-		
 		// Stop scaring if we are
 		pr _state = T_GETV("state");
 		if (_state == ACTION_STATE_ACTIVE) then {
@@ -146,11 +157,14 @@ CLASS("ActionUnitScareAway", "Action")
 			_oh lookAt objNull; // Stop looking at your target
 			_oh doFollow (leader group _oh); // Regroup
 			group _oh setBehaviour "SAFE";
-			group _oh setSpeedMode "NORMAL";
+			_oh forceSpeed (_oh getSpeed "NORMAL");
 			pr _laserT = GETV(_thisObject,"warningShotTarget");
 			detach _laserT;
 			deleteVehicle _laserT;
 		};
+
+		pr _ai = T_GETV("AI");
+		SETV(_ai, "interactionObject", objNull);
 		
 	ENDMETHOD;
 

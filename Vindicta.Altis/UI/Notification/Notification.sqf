@@ -173,7 +173,7 @@ CLASS("Notification", "")
 
 	Parameters: (string)_category, (string)_text, (string)_hint, (number)_duration (in seconds)
 	*/
-	STATIC_METHOD(createNotification)
+	public STATIC_METHOD(createNotification)
 		params [P_THISCLASS, P_STRING("_imagePath"), P_DYNAMIC("_category"), P_STRING("_text"), P_DYNAMIC("_hint"), P_NUMBER("_duration"), P_STRING("_sound"), P_BOOL("_important")];
 
 		// Bail if no interface
@@ -197,7 +197,7 @@ CLASS("Notification", "")
 		SETSV("Notification", "queueModified", TIME_NOW);
 	ENDMETHOD;
 
-	STATIC_METHOD(onEachFrame)
+	public event STATIC_METHOD(onEachFrame)
 		params [P_THISCLASS];
 
 		pr _objects = GETSV(_thisClass, "objects");
@@ -322,7 +322,7 @@ CLASS("Notification", "")
 
 	Parameters: none
 	*/
-	STATIC_METHOD(staticInit)
+	public STATIC_METHOD(staticInit)
 		params [P_THISCLASS];
 
 		// Bail if initialized already

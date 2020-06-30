@@ -14,6 +14,9 @@
 #define UNDERCOVER_IS_TARGET(unit) unit getVariable [UNDERCOVER_TARGET, false]
 #define UNDERCOVER_GET_VIC_COMPROMISED(obj) obj getVariable [UNDERCOVER_VIC_COMPROMISED, -1]
 
+// Macro for setting suspicious value
+#define UNDERCOVER_SET_UNIT_SUSPICIOUS(unit, susp) unit setVariable [UNDERCOVER_SUSPICIOUS, susp, true]
+
 // suspicion values for various actions
 #define SUSPICIOUS 0.5								// Suspiciousness at which unit passes "suspicious" threshold
 #define OVERT 1.0									// Suspiciousness at which unit is overt

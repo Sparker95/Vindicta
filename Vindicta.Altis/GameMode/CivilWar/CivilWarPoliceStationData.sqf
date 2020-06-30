@@ -17,7 +17,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
 	ENDMETHOD;
 
-	METHOD(update)
+	public METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_policeStation"), P_NUMBER("_cityState")];
 		ASSERT_OBJECT_CLASS(_policeStation, "Location");
 

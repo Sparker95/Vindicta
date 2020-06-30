@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_LDF_ranger"];
-_array set [T_DESCRIPTION, "Livonian forest rangers. Uses RHS."];
-_array set [T_DISPLAY_NAME, "RHS LDF Rangers Custom"];
+_array set [T_DESCRIPTION, "Livonian forest rangers as police for Livonia. Uses RHS."];
+_array set [T_DISPLAY_NAME, "RHS Livonian Forest Rangers"];
 _array set [T_FACTION, T_FACTION_Police];
 _array set [T_REQUIRED_ADDONS, [							
 								"rhs_c_troops",		// RHS AFRF
@@ -51,8 +51,8 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_DEFAULT, ["I_E_Offroad_01_F"]]; //TODO: change skin to forest ranger
-_veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F", "I_E_Offroad_01_comms_F", "I_E_Offroad_01_covered_F"]];
+_veh set [T_VEH_DEFAULT, ["rhsgref_nat_uaz"]];
+_veh set [T_VEH_car_unarmed, ["rhsgref_nat_uaz", "rhsgref_nat_uaz_open"]];
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);

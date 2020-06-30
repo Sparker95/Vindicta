@@ -525,7 +525,7 @@ CLASS("IntelDatabase", "Storable");
 
 	// - - - - STORAGE - - - - -
 
-	 public override METHOD(preSerialize)
+	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save all intel objects we have
@@ -540,13 +540,13 @@ CLASS("IntelDatabase", "Storable");
 		true
 	ENDMETHOD;
 
-	 public override METHOD(postSerialize)
+	public override METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		T_SETV("savedItems", nil);	// Erase the temporary variable
 		true
 	ENDMETHOD;
 
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Reinitialize all our hashmaps

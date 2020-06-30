@@ -33,7 +33,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		};
 	ENDMETHOD;
 
-	METHOD(spawned)
+	public METHOD(spawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -52,7 +52,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		_ambientMissions pushBack NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED ARG CITY_STATE_IN_REVOLT]]);
 	ENDMETHOD;
 
-	METHOD(despawned)
+	public METHOD(despawned)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -65,7 +65,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		T_SETV("ambientMissions", []);
 	ENDMETHOD;
 
-	METHOD(update)
+	public METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_NUMBER("_dt")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 		private _state = T_GETV("state");

@@ -14,13 +14,13 @@ CLASS("GOAP_Agent", "")
 
 	public virtual METHOD(getAI)
 		params [P_THISOBJECT];
-		OOP_ERROR("getAI is not implemented!");
+		OOP_ERROR_0("getAI is not implemented!");
 		NULL_OBJECT
 	ENDMETHOD;
 
 	public virtual METHOD(getSubagents)
 		params [P_THISOBJECT];
-		OOP_ERROR("getSubagents is not implemented!");
+		OOP_ERROR_0("getSubagents is not implemented!");
 		[]
 	ENDMETHOD;
 

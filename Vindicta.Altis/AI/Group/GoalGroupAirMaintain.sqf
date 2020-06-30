@@ -1,8 +1,8 @@
 #include "common.hpp"
 
 #define OOP_CLASS_NAME GoalGroupAirMaintain
-CLASS("GoalGroupAirMaintain", "Goal")
-	/* override */ STATIC_METHOD(calculateRelevance)
+CLASS("GoalGroupAirMaintain", "GoalGroup")
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		// By default only land automatically when at a location

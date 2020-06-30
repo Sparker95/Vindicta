@@ -1,4 +1,4 @@
-#include "..\..\common.h"
+#include "common.hpp"
 
 /*
 Goal for a group to get in their vehicles as crew.
@@ -7,9 +7,9 @@ Goal for a group to get in their vehicles as crew.
 #define pr private
 
 #define OOP_CLASS_NAME GoalGroupGetInVehiclesAsCrew
-CLASS("GoalGroupGetInVehiclesAsCrew", "Goal")
+CLASS("GoalGroupGetInVehiclesAsCrew", "GoalGroup")
 
-	// /* virtual */ STATIC_METHOD(calculateRelevance)
+	// public virtual STATIC_METHOD(calculateRelevance)
 	// 	params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 	// 	pr _ws = GETV(_AI, "worldState");

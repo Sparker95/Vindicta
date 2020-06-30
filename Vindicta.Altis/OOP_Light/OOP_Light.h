@@ -264,7 +264,11 @@
 			_PUBLIC_STATIC_VAR(classNameStr, memNameStr) \
 		}
 	#define GET_METHOD(classNameStr, methodNameStr) \
-		( if([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method) then { \
+		( if([classNameStr, methodNameStr, "", __FILE__, __LINE__] call OOP_assert_method) then { \
+			_GET_METHOD(classNameStr, methodNameStr) \
+		}else{nil} )
+	#define GET_METHOD_OBJ(classNameStr, methodNameStr, objectNameStr) \
+		( if([classNameStr, methodNameStr, objectNameStr, __FILE__, __LINE__] call OOP_assert_method) then { \
 			_GET_METHOD(classNameStr, methodNameStr) \
 		}else{nil} )
 #else
@@ -276,6 +280,7 @@
 	#define PUBLIC_VAR(objNameStr, memNameStr) _PUBLIC_VAR(objNameStr, memNameStr)
 	#define PUBLIC_STATIC_VAR(classNameStr, memNameStr) _PUBLIC_STATIC_VAR(classNameStr, memNameStr)
 	#define GET_METHOD(classNameStr, methodNameStr) _GET_METHOD(classNameStr, methodNameStr)
+	#define GET_METHOD_OBJ(classNameStr, methodNameStr, objectNameStr) _GET_METHOD(classNameStr, methodNameStr)
 #endif
 
 #define SET_VAR_PUBLIC(a, b, c) 				SETV(a, b, c); PUBLIC_VAR(a, b)
@@ -303,25 +308,25 @@
 //Same performance for small functions
 //#define CALLM(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
 
-#ifdef OOP_ASSERT
-	#define GET_METHOD_STD(objNameStr, methodNameStr) 					(call {[objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_std_call; GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)})
-	#define GET_METHOD_THIS(methodNameStr) 								(call {[methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_call; GET_METHOD(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr)})
-	#define GET_METHOD_STATIC(classNameStr, methodNameStr) 				(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_static_call; GET_METHOD(classNameStr, methodNameStr)})
-	#define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	(call {[classNameStr, objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_class_call; GET_METHOD(classNameStr, methodNameStr)})
-	#define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_class_call; GET_METHOD(classNameStr, methodNameStr)})
+// #ifdef OOP_METHOD_CALL_ASSERT
+// 	#define GET_METHOD_STD(objNameStr, methodNameStr) 					(call {[OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)})
+// 	#define GET_METHOD_THIS(methodNameStr) 								(call {[OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr)})
+// 	#define GET_METHOD_STATIC(classNameStr, methodNameStr) 				(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(classNameStr, methodNameStr)})
+// 	#define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(classNameStr, methodNameStr)})
+// 	#define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(classNameStr, methodNameStr)})
 
-	// #define GET_METHOD_STD(objNameStr, methodNameStr) 					(if ([objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_std_call) then { GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr) } else { nil })
-	// #define GET_METHOD_THIS(methodNameStr) 								(if ([methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_call) then { GET_METHOD(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr) } else { nil })
-	// #define GET_METHOD_STATIC(classNameStr, methodNameStr) 				(if ([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_static_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
-	// #define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	(if ([classNameStr, objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_class_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
-	// #define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			(if ([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_class_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
-#else
-	#define GET_METHOD_STD(objNameStr, methodNameStr) 					GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-	#define GET_METHOD_THIS(methodNameStr) 								GET_METHOD(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr)
-	#define GET_METHOD_STATIC(classNameStr, methodNameStr) 				GET_METHOD(classNameStr, methodNameStr)
-	#define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	GET_METHOD(classNameStr, methodNameStr)
-	#define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			GET_METHOD(classNameStr, methodNameStr)
-#endif
+// 	// #define GET_METHOD_STD(objNameStr, methodNameStr) 					(if ([objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_std_call) then { GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr) } else { nil })
+// 	// #define GET_METHOD_THIS(methodNameStr) 								(if ([methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_call) then { GET_METHOD(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr) } else { nil })
+// 	// #define GET_METHOD_STATIC(classNameStr, methodNameStr) 				(if ([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_static_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
+// 	// #define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	(if ([classNameStr, objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_class_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
+// 	// #define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			(if ([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_class_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
+// #else
+#define GET_METHOD_STD(objNameStr, methodNameStr) 					GET_METHOD_OBJ(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr, objNameStr)
+#define GET_METHOD_THIS(methodNameStr) 								GET_METHOD_OBJ(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr, _thisObject)
+#define GET_METHOD_STATIC(classNameStr, methodNameStr) 				GET_METHOD(classNameStr, methodNameStr)
+#define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	GET_METHOD_OBJ(classNameStr, methodNameStr, objNameStr)
+#define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			GET_METHOD_OBJ(classNameStr, methodNameStr, _thisObject)
+//#endif
 
 // Standard call
 #define CALLM(objNameStr, methodNameStr, extraParams) 			(([objNameStr] + extraParams) call GET_METHOD_STD(objNameStr, methodNameStr))
@@ -500,6 +505,13 @@
 #define _OOP_FUNCTION_WRAPPERS
 #endif
 
+#ifdef OOP_ASSERT_METHOD_CALL
+#define _OOP_FUNCTION_WRAPPERS
+#define OOP_METHOD_CALL_ASSERT_HEADER private __classScope = QUOTE(OOP_CLASS_NAME)
+#else
+#define OOP_METHOD_CALL_ASSERT_HEADER
+#endif
+
 // Enable function wrappers if access assertions are enabled
 #ifdef OOP_TRACE_FUNCTIONS
 #define OOP_DEBUG
@@ -541,7 +553,7 @@
 
 #ifdef _OOP_FUNCTION_WRAPPERS
 	#define METHOD(methodNameStr) \
-		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr; }; \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr);  \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -550,10 +562,11 @@
 			private _thisObject = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call { \
-			ASP_CREATE_PROFILE_SCOPE(OOP_CLASS_NAME, methodNameStr)
+			ASP_CREATE_PROFILE_SCOPE(OOP_CLASS_NAME,methodNameStr)
 
 	#define ENDMETHOD }}) select 0;\
 			OOP_TRACE_EXIT_FUNCTION; \
@@ -562,7 +575,7 @@
 		} ]
 
 	#define METHOD_FILE(methodNameStr, path) \
-		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr; }; \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -572,6 +585,7 @@
 			private _thisObject = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(QUOTE(methodNameStr))); \
@@ -582,7 +596,7 @@
 		}]
 
 	#define STATIC_METHOD(methodNameStr) \
-		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this, true] call OOP_set_method_attr; }; \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this, true] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -591,6 +605,7 @@
 			private _thisClass = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call {
@@ -606,6 +621,7 @@
 			private _thisClass = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(QUOTE(methodNameStr))); \

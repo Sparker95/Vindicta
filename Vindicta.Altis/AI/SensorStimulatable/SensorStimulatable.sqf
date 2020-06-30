@@ -36,7 +36,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// |                            S T I M U L A T E
 	// ----------------------------------------------------------------------
 	
-	/* private */ METHOD(stimulate)
+	public METHOD(stimulate)
 		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		
 		// Do sensor-specific complex check
@@ -72,7 +72,7 @@ CLASS("SensorStimulatable", "Sensor")
 	protected virtual METHOD(doComplexCheck)
 		//params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		// Return true by default
-		true				
+		true
 	ENDMETHOD;
 
 ENDCLASS;

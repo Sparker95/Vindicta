@@ -12,7 +12,7 @@ this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["rhs_scarf","","",""];
 this addGoggles _RandomGoggles;
 this forceaddUniform "FGN_AAF_M10_Type07_Summer";
-this addVest "V_EOD_olive_F";
+this addVest "FGN_AAF_BallisticVest_Coyote";
 this addBackpack "FGN_AAF_Bergen_Engineer_Type07";
 
 this addWeapon "rhs_weap_m21s";

@@ -4,8 +4,8 @@ call compile preprocessFileLineNumbers "AI\Unit\AIUnitHuman.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitInfantry.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitCivilian.sqf";
+
 call compile preprocessFileLineNumbers "AI\Unit\_ActionUnit.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\_ActionUnitInfantryMoveBase.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitDismountCurrentVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitFlee.sqf";
@@ -13,10 +13,10 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitFollow.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitGetInVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitIdle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMove.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveBuilding.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryMoveToUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryRegroup.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryLeaveFormation.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitMove.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitMoveMounted.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitNothing.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitRepairVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSalute.sqf";
@@ -26,6 +26,11 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitShootAtTargetRange.sqf
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitShootLegTarget.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitVehicleUnflip.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitInfantryStandIdle.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitDialogue.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitArrested.sqf";
+
+call compile preprocessFileLineNumbers "AI\Unit\_GoalUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDismountCurrentVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitFlee.sqf";
@@ -33,7 +38,6 @@ call compile preprocessFileLineNumbers "AI\Unit\GoalUnitFollow.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitGetInVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitIdle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryMove.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryMoveBuilding.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryRegroup.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitMove.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitNothing.sqf";
@@ -45,6 +49,14 @@ call compile preprocessFileLineNumbers "AI\Unit\GoalUnitShootAtTargetRange.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitShootLegTarget.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitVehicleUnflip.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryStandIdle.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDialogue.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitArrested.sqf";
+
+call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianWander.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianPanicNearest.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalCivilianPanicAway.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitInfantryEscapeDangerSource.sqf";
 
 call compile preprocessFileLineNumbers "AI\Unit\_SensorUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\_SensorUnitStimulatable.sqf";

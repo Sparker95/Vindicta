@@ -5,10 +5,17 @@ Some generic macros
 // Wraps contents in quotes
 #define QUOTE(smth) #smth
 
-// Macro for global OOP variables
+//Macro for global OOP variables
 #define OOP_GVAR(var) o_##var
 #define OOP_GVAR_STR(var) format["o_%1", #var]
 
+// Unpacking a _thisObject variable into a private _variable
+// So if we have private _var = GET_VAR(_thisObject, "var"), this macros can help
+#define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, QUOTE(varName))
+
+// Macro for global OOP variables
+#define OOP_GVAR(var) o_##var
+#define OOP_GVAR_STR(var) format["o_%1", #var]
 // ---------------------------------------------------
 // |         T H R E A D I N G    U T I L S          |
 // ---------------------------------------------------
@@ -64,9 +71,19 @@ Some generic macros
 
 // Can be used to mark a return statement, doesn't have any functionality
 #define return 
-#define public +["public"]
-#define protected +["protected"]
-#define virtual +["virtual"]
-#define override +["override"]
-#define server +["server"]
-#define client +["client"]
+
+// METHOD attributes
+#define public 			+["public"]
+#define protected 		+["protected"]
+#define virtual 		+["virtual"]
+#define override 		+["override"]
+#define server 			+["server"]		// Only called on server
+#define client 			+["client"]		// Only called on client
+#define thread 			+["thread"]		// Only called in this objects thread
+#define event 			//+["event"]		// Only called in event handlers
+// This little macro just extracts the string from the attribute for use when searching the attribute array
+#define attr(n) ((n) select 0)
+// This macro suspends thread affinity asserts within the scope it is defined (and all child scopes)
+#define SCOPE_IGNORE_THREAD_AFFINITY(class) private __ignoreThreadAffinity##class = true
+#define SCOPE_IGNORE_ACCESS(class) private __ignoreAccess##class = true
+#define SCOPE_ACCESS_MIMIC(classStr) __classScope = classStr

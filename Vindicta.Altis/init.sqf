@@ -12,7 +12,10 @@ if (isServer) then {
         while {true} do {  
             {  
                 _x addCuratorEditableObjects [allUnits, true];
+                sleep 1;
                 _x addCuratorEditableObjects [vehicles, true];
+                sleep 1;
+                _x addCuratorEditableObjects [agents apply {agent _x} select {_x isKindOf "Man"}, true]; 
                 sleep 10;
             } forEach allCurators;
         };

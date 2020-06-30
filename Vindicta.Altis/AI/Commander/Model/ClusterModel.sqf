@@ -98,12 +98,12 @@ CLASS("ClusterModel", "ModelBase")
 	ENDMETHOD;
 
 	// Cluster is empty (not necessarily killed, could be merged to another cluster etc.)
-	METHOD(killed)
+	public METHOD(killed)
 		params [P_THISOBJECT];
 		T_SETV("efficiency", +EFF_ZERO);
 	ENDMETHOD;
 	
-	METHOD(isDead)
+	public METHOD(isDead)
 		params [P_THISOBJECT];
 		private _efficiency = T_GETV("efficiency");
 		_efficiency isEqualTo EFF_ZERO 

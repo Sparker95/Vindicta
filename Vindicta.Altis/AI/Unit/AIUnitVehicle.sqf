@@ -9,7 +9,7 @@ Author: Sparker 12.11.2018
 #define pr private
 
 #define OOP_CLASS_NAME AIUnitVehicle
-CLASS("AIUnitVehicle", "AI_GOAP")
+CLASS("AIUnitVehicle", "AIUnit")
 
 	// Array with units which are loaded into cargo space of this unit (through ace cargo system currently).
 	// Doesn't list infantry units sitting on cargo infantry seats!! 
@@ -20,17 +20,23 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	VARIABLE("assignedCargo"); // Array of [unit, cargo index]
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
 
+	// Trigger
+	VARIABLE("trigger");
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 		
 		ASSERT_OBJECT_CLASS(_agent, "Unit");
 		
 		// Make sure that the needed MessageLoop exists
-		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
+		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 		
 		// Initialize sensors
 		
 		//T_SETV("worldState", _ws);
+
+		// Create trigger to warn bots about incoming vehicle
+		T_CALLM0("initTrigger");
 
 		T_SETV("cargo", []);
 	ENDMETHOD;
@@ -75,18 +81,113 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 				};
 			} forEach _turrets;
 		};
+
+		pr _trigger = T_GETV("trigger");
+		if (!isNull _trigger) then {
+			deleteVehicle _trigger;
+		};
 		
+	ENDMETHOD;
+
+	// Initializes trigger which warns other bots of this incoming vehicle
+	METHOD(initTrigger)
+		params [P_THISOBJECT];
+		pr _hO = T_GETV("hO");
+		if (_hO isKindOf "Car" || {_hO isKindOf "Tank"}) then {
+			_trg = createTrigger ["emptyDetector", getPos player, false];
+			T_SETV("trigger", _trg);
+			_trg setTriggerArea [10, 10, 0, true, 5];
+			_trg setVariable ["timeNextUpdate", time];
+			private _condition = format ["call %1", CLASS_METHOD_NAME_STR("AIUnitVehicle", "triggerCondition")];
+			_trg setTriggerStatements [_condition, "", ""];
+			_trgActivation = ["ANY", "PRESENT", true];
+			_trg setTriggerActivation _trgActivation;
+			_trg attachTo [_hO, [0, 0, 0]];
+			//_trg setTriggerInterval 0.5; // Determined by the vehicle update rate anyway
+			T_SETV("trigger", _trg);
+		} else {
+			T_SETV("trigger", objNull);
+		};
+
+	ENDMETHOD;
+
+	// Updates size of attached trigger
+	STATIC_METHOD(triggerCondition)
+
+		/*
+	    this (Boolean) - detection event
+		thisTrigger (Object) - trigger instance
+		thisList (Array) - array of all detected entities 
+		*/
+
+		//OOP_INFO_1("triggerCondition: %1", thisTrigger);
+
+		if (this && (time > (thisTrigger getVariable "timeNextUpdate")) ) then {
+			OOP_INFO_1("  updating trigger parameters: %1", thisTrigger);
+			private _veh = attachedTo thisTrigger;
+			private _velocityModel = velocityModelSpace _veh;
+			private _velocityModelNorm = vectorNormalized _velocityModel;
+			private _dirRelOffset = (_velocityModelNorm#0) atan2 (_velocityModelNorm#1);
+			private _halfWidth = abs (boundingboxreal (_veh)#0#0) + 0.8;
+			private _velocityMagnitude = vectorMagnitude _velocityModel;
+			private _timeToImpact = 2;
+			private _halfHeight = 0.5*_timeToImpact*_velocityMagnitude + 2;
+			thisTrigger setTriggerArea [_halfWidth max 1, _halfHeight max 3, _dirRelOffset + direction _veh, true, 4];
+			//private _triggerAttachOffset = [0, _halfHeight, 0];
+			private _triggerAttachOffset = _velocityModelNorm vectorMultiply _halfHeight;
+			thisTrigger attachTo [_veh, _triggerAttachOffset];
+			//thisTrigger attachTo [_veh, [0, 0, 0]];
+			private _units = thisList select {_x isKindOf "CAManBase"};
+			if (count _units > 0) then {
+				//systemChat format ["Units in trigger: %1, time: %2", _units, time];
+				CALLSM3("AIUnitHuman", "addCarCollisionDanger", _veh, _units, 100);
+			};
+
+			// Debug markers
+			/*
+			private _arrow = thisTrigger getVariable ["helperArrow", objNull];
+			if (isNull _arrow) then {
+				_arrow = createVehicle ["Sign_Arrow_F", [0,0,0], [], 0, "CAN_COLLIDE"];
+				thisTrigger setVariable ["helperArrow", _arrow];
+			};
+			_arrow attachTo [_veh, _triggerAttachOffset];
+			*/
+
+			// Set update interval depending on velocity
+			if ((count (crew _veh)) == 0) then {
+				thisTrigger setVariable ["timeNextUpdate", time + 5];
+			} else {
+				thisTrigger setVariable ["timeNextUpdate", time + 0.35];
+			};
+		};
+
+		this;
 	ENDMETHOD;
 
 	public override METHOD(start)
 		params [P_THISOBJECT];
-		T_CALLM1("addToProcessCategory", "AILow");
+		T_CALLM1("addToProcessCategory", "MiscLowPriority");
+	ENDMETHOD;
+
+	public override METHOD(process)
+		params [P_THISOBJECT];
+
+		// Update our trigger area
+		pr _trg = T_GETV("trigger");
+		if (!isNull _trg) then {
+			this = true;
+			thisTrigger = _trg;
+			thisList = list _trg;
+			CALLSM0("AIUnitVehicle", "triggerCondition");
+		};
+
+		CALLCM("AI_GOAP", _thisObject, "process", [_spawning]);
 	ENDMETHOD;
 
 	/*
 	Method: addCargoUnit
 	*/
-	METHOD(addCargoUnit)
+	public METHOD(addCargoUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		T_GETV("cargo") pushBackUnique _cargoUnit;
 	ENDMETHOD;
@@ -94,7 +195,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	/*
 	Method: removeCargoUnit
 	*/
-	METHOD(removeCargoUnit)
+	public METHOD(removeCargoUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		pr _cargoUnits = T_GETV("cargo");
 		_cargoUnits deleteAt (_cargoUnits find _cargoUnit);
@@ -103,7 +204,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	/*
 	Method: getCargo
 	*/
-	/* override */ METHOD(getCargoUnits)
+	public virtual METHOD(getCargoUnits)
 		params [P_THISOBJECT];
 		+T_GETV("cargo")
 	ENDMETHOD;
@@ -118,7 +219,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: nil
 	*/
-	METHOD(unassignUnit)
+	public METHOD(unassignUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
@@ -170,7 +271,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/
-	METHOD(getAssignedDriver)
+	public METHOD(getAssignedDriver)
 		params [P_THISOBJECT];
 		
 		pr _driver = T_GETV("assignedDriver");
@@ -192,7 +293,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/
-	METHOD(getAssignedTurret)
+	public METHOD(getAssignedTurret)
 		params [P_THISOBJECT, P_ARRAY("_turretPath") ];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		
@@ -212,7 +313,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	Returns Array of <Unit> assigned to all turrets.
 	Returns: Array of <Unit>
 	*/
-	METHOD(getAssignedTurrets)
+	public METHOD(getAssignedTurrets)
 		params [P_THISOBJECT];
 		pr _assignedTurrets = T_GETV("assignedTurrets");
 		// Turret array is not initialized, therefore no turrets were assigned
@@ -229,7 +330,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: <Unit> or ""
 	*/	
-	METHOD(getAssignedCargo)
+	public METHOD(getAssignedCargo)
 		params [P_THISOBJECT, P_NUMBER("_cargoIndex") ];
 		pr _assignedCargo = T_GETV("assignedCargo");
 		
@@ -256,7 +357,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	
 	Returns: Array of <Unit>s
 	*/
-	METHOD(getAssignedUnits)
+	public METHOD(getAssignedUnits)
 		params [P_THISOBJECT, ["_returnDriver", true], ["_returnTurrets", true], ["_returnCargo", true] ];
 		
 		pr _ret = [];
@@ -278,7 +379,7 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		_ret
 	ENDMETHOD;
 
-	METHOD(getFreeCargoSeats)
+	public METHOD(getFreeCargoSeats)
 		params [P_THISOBJECT, P_ARRAY("_ignoreUnits")];
 
 		pr _hVeh = CALLM0(T_GETV("agent"), "getObjectHandle");
@@ -329,13 +430,14 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	// ----------------------------------------------------------------------
 	
 	public override METHOD(getMessageLoop)
-		gMessageLoopGroupAI
+		gMessageLoopUnscheduled
 	ENDMETHOD;
 
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	public override METHOD(getDebugUIVariableNames)
 		[
+			"hO",
 			"cargo",
 			"assignedDriver",
 			"assignedCargo",

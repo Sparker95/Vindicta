@@ -52,17 +52,17 @@ CLASS("AlmostEmptyGameMode", "GameModeBase")
 		};
 	ENDMETHOD;
 
-	protected override METHOD(getRecruitCount)
+	public override METHOD(getRecruitCount)
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		100
 	ENDMETHOD;
 
-	protected override METHOD(getRecruitmentRadius)
+	public override METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		10000
 	ENDMETHOD;
 
-	protected override METHOD(initLocationGameModeData)
+	public override METHOD(initLocationGameModeData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		private _type = CALLM0(_loc, "getType");
 		private _data = NEW("AlmostEmptyLocationData", [_loc]);

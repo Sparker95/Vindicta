@@ -6,6 +6,7 @@
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\..\common.h"
 #include "..\..\AI\Action\Action.hpp"
+#include "..\..\AI\Unit\unitHumanWorldStateProperties.hpp"
 #include "..\..\AI\Group\groupWorldStateProperties.hpp"
 #include "..\..\AI\Garrison\garrisonWorldStateProperties.hpp"
 #include "..\..\AI\WorldState\WorldStateProperty.hpp"
@@ -30,6 +31,7 @@
 			"_agent", \
 			"_agentClass", \
 			"_ai", \
+			"_aiClass", \
 			"_worldState", \
 			"_goal", \
 			"_goalParameters", \
@@ -254,7 +256,7 @@ CLASS("AIDebugUI", "")
 	ENDMETHOD;
 
 	// Called from "Draw3D" event handler
-	METHOD(onDraw)
+	public event METHOD(onDraw)
 		params [P_THISOBJECT];
 
 		T_CALLM0("update");
@@ -270,17 +272,20 @@ CLASS("AIDebugUI", "")
 
 			// If AI data for this unit/group exists
 			if (!isNil "_data") then {
-				_goal = _data#5;
+				_goal = _data#6;
 				pr _lastUpdateTime = _x getVariable AI_DEBUG_DATA_LAST_RX_TIME_NAME;
 				//OOP_INFO_1("Last update time: %1", _lastUpdateTime);
 				_text = "No Goal";
 				// If this AI has a goal
 				if (_goal != "") then {
+					_text = _goal;
+					/*
 					if (_x isEqualType objNull) then {
 						_text = _goal select [8, 32]; // We want to remove "GoalUnit" at string start
 					} else {
 						_text = _goal select [9, 32]; // Remove "GoalGroup"
 					};
+					*/
 				};
 
 				// If we haven't received updates on this unit for some time, display a warning
@@ -320,12 +325,12 @@ CLASS("AIDebugUI", "")
 
 	// Not used any more
 	/*
-	METHOD(onObjectSelectionChanged)
+	public event METHOD(onObjectSelectionChanged)
 		params [P_THISOBJECT, P_OBJECT("_object")];
 		OOP_INFO_1("Object selection changed: %1", _object);
 	ENDMETHOD;
 
-	METHOD(onGroupSelectionChanged)
+	public event METHOD(onGroupSelectionChanged)
 		params [P_THISOBJECT, P_GROUP("_group")];
 		OOP_INFO_1("Group selection changed: %1", _group);
 	ENDMETHOD;
@@ -367,7 +372,7 @@ CLASS("AIDebugUI", "")
 
 
 	// ================ Curator open/close event handlers ==================
-	STATIC_METHOD(onCuratorOpen)
+	public event STATIC_METHOD(onCuratorOpen)
 		params [P_THISCLASS];
 
 		if (call misc_fnc_isAdminLocal) then {	// Only for admin!
@@ -398,7 +403,7 @@ CLASS("AIDebugUI", "")
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(onCuratorClose)
+	public event STATIC_METHOD(onCuratorClose)
 		params [P_THISCLASS];
 		CALLSM0("AIDebugUI", "deleteInstance");
 	ENDMETHOD;
@@ -407,7 +412,7 @@ CLASS("AIDebugUI", "")
 
 
 	// Performs initialization of debug UI, must be called once when mission is loaded
-	STATIC_METHOD(staticInit)
+	public STATIC_METHOD(staticInit)
 		params [P_THISCLASS];
 
 		OOP_INFO_0("STATIC INIT");
@@ -559,28 +564,28 @@ CLASS("AIDebugPanel", "")
 		uiNamespace sv [_thisObject + "buttonHalt", nil];
 	ENDMETHOD;
 
-	METHOD(getGroupPanel)
+	public METHOD(getGroupPanel)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "group")
 	ENDMETHOD;
 
-	METHOD(getTreeView)
+	public METHOD(getTreeView)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "tree")
 	ENDMETHOD;
 
-	METHOD(getEditAI)
+	public METHOD(getEditAI)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "editAI")
 	ENDMETHOD;
 
-	METHOD(getButtonHalt)
+	public METHOD(getButtonHalt)
 		params [P_THISOBJECT];
 		uiNamespace gv (_thisObject + "buttonHalt")
 	ENDMETHOD;
 
 	// Clears all UI fields
-	METHOD(clearData)
+	public METHOD(clearData)
 		params [P_THISOBJECT];
 		
 		T_SETV("ai", NULL_OBJECT);
@@ -593,7 +598,7 @@ CLASS("AIDebugPanel", "")
 	ENDMETHOD;
 
 	// Updates data of this panel from data array (AIDebugUI.receiveData format)
-	METHOD(updateData)
+	public METHOD(updateData)
 		params [P_THISOBJECT, P_ARRAY("_data")];
 
 		pr _edit = T_CALLM0("getEditAI");
@@ -623,12 +628,13 @@ CLASS("AIDebugPanel", "")
 
 		// World state
 		_tree tvSetText [[_id], "World State: ..."];
-		if (_agentClass != "Unit") then {				// Units have no world state currently
-			pr _wsNames = switch (_agentClass) do {		// Names of world state properties
-				//case "Unit": {["nothing"]};
-				case "Group": {WSP_GROUP_NAMES};
-				case "Garrison": {WSP_GARRISON_NAMES};
-				//default {["wtf", "2123"]};
+		if (! (_agentClass in [/*"Unit", "Civilian"*/])) then {				// Units have no world state currently
+			pr _wsNames = switch (_aiClass) do {		// Names of world state properties
+				case "AIUnitInfantry";
+				case "AIUnitCivilian": {WSP_UNIT_HUMAN_NAMES};
+				case "AIGroup": {WSP_GROUP_NAMES};
+				case "AIGarrison": {WSP_GARRISON_NAMES};
+				default {["error", "error", "error", "error"]};
 			};
 			//diag_log format ["World state names: %1, _agentClass: %2", _wsNames, _agentClass];
 			// Clear previous data first
@@ -637,11 +643,11 @@ CLASS("AIDebugPanel", "")
 				_tree tvDelete [_id, 0];
 			};
 			// Fill world state properties
-			_worldState params ["_props", "_types"];
+			_worldState params ["_props"];
 			for "_i" from 0 to ((count _props) - 1) do {
 				
 				pr _valueStr = "";
-				if ((_types#_i) == WSP_TYPE_DOES_NOT_EXIST) then {
+				if (isNil {_props#_i}) then {
 					_valueStr = "<does not exist>";
 				} else {
 					_valueStr = str (_props#_i);
@@ -689,7 +695,7 @@ CLASS("AIDebugPanel", "")
 
 	ENDMETHOD;
 
-	METHOD(resetTreeView)
+	public METHOD(resetTreeView)
 		params [P_THISOBJECT];
 		pr _tree = T_CALLM0("getTreeView");
 		tvClear _tree;

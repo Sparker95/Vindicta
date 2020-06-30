@@ -100,7 +100,7 @@ CLASS("MapMarker", "")
 	Returns: nil
 	*/
 
-	public virtual METHOD(onDraw)
+	public virtual event METHOD(onDraw)
 		params [P_THISOBJECT, "_control"];
 
 		pr _pos = T_GETV("pos");
@@ -179,7 +179,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	public virtual METHOD(onMouseEnter)
+	public virtual event METHOD(onMouseEnter)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
 	ENDMETHOD;
@@ -190,7 +190,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	public virtual METHOD(onMouseLeave)
+	public virtual event METHOD(onMouseLeave)
 		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
 	ENDMETHOD;
@@ -206,7 +206,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	public virtual METHOD(onMouseButtonDown)
+	public virtual event METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	ENDMETHOD;
@@ -222,7 +222,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	public virtual METHOD(onMouseButtonUp)
+	public virtual event METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	ENDMETHOD;
@@ -237,7 +237,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	public virtual METHOD(onMouseButtonClick)
+	public virtual event METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 	ENDMETHOD;

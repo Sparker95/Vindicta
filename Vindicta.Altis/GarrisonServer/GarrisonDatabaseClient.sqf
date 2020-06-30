@@ -43,7 +43,7 @@ CLASS("GarrisonDatabaseClient", "")
 		_ns call CBA_fnc_deleteNamespace;
 	ENDMETHOD;
 
-	METHOD(addGarrisonRecord)
+	public client METHOD(addGarrisonRecord)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		OOP_INFO_1("ADD GARRISON RECORD: %1", _garRecord);
@@ -60,7 +60,7 @@ CLASS("GarrisonDatabaseClient", "")
 		T_GETV("allRecords") pushBack _garRecord;
 	ENDMETHOD;
 
-	METHOD(deleteGarrisonRecord)
+	public client METHOD(deleteGarrisonRecord)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		OOP_INFO_1("DELETE GARRISON RECORD: %1", _garRecord);
@@ -80,14 +80,14 @@ CLASS("GarrisonDatabaseClient", "")
 	ENDMETHOD;
 
 	// Returns garrison record associated with this garrison reference
-	METHOD(getGarrisonRecord)
+	public client METHOD(getGarrisonRecord)
 		params [P_THISOBJECT, P_STRING("_garRef")];
 
 		T_GETV("refMap") getVariable [_garRef, NULL_OBJECT]
 	ENDMETHOD;
 
 	// Returns garrison record associated with this garrison reference
-	METHOD(getGarrisonRecordForLocation)
+	public client METHOD(getGarrisonRecordForLocation)
 		params [P_THISOBJECT, P_STRING("_location")];
 		if(_location == NULL_OBJECT) then {
 			NULL_OBJECT
@@ -97,7 +97,7 @@ CLASS("GarrisonDatabaseClient", "")
 	ENDMETHOD;
 
 	// Returns an array of existing records which are pointing at the specified _garRef
-	METHOD(getLinkedGarrisonRecords)
+	public client METHOD(getLinkedGarrisonRecords)
 		params [P_THISOBJECT, "_garRef"];
 		//OOP_INFO_1("GET LINKED GARRISON RECORDS: %1", _garRef);
 		pr _allRecords = T_GETV("allRecords");
@@ -123,7 +123,7 @@ CLASS("GarrisonDatabaseClient", "")
 	ENDMETHOD;
 
 	// - - - - - - Remotely executed static methods (by GarrisonServer) - - - - - - 
-	STATIC_METHOD(destroy)
+	public client STATIC_METHOD(destroy)
 		params [P_THISCLASS, P_STRING("_garRef")];
 		_thisClass = "GarrisonDatabaseClient";
 
@@ -144,7 +144,7 @@ CLASS("GarrisonDatabaseClient", "")
 	ENDMETHOD;
 
 	// Receives a serialized GarrisonRecord from the GarrisonServer
-	STATIC_METHOD(update)
+	public client STATIC_METHOD(update)
 		params [P_THISCLASS, P_ARRAY("_recordSerial")];
 		_thisClass = "GarrisonDatabaseClient";
 

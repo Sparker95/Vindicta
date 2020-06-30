@@ -59,20 +59,5 @@ CLASS("ActionGroupNothing", "ActionGroup")
 		T_SETV("state", _state);
 		_state
 	ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	public override METHOD(terminate)
-		params [P_THISOBJECT];
-		
-		// Delete given goals
-		pr _AI = T_GETV("AI");
-		pr _group = GETV(_AI, "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitNothing", "");
-		} forEach _units;
-		
-	ENDMETHOD;
 
 ENDCLASS;

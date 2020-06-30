@@ -24,6 +24,8 @@
 //#define OOP_ASSERT
 // Enable oop class member access violation asserts (warning: they are slow, useful for validating the code is not violating encapsulation of classes)
 //#define OOP_ASSERT_ACCESS
+// Enable oop method call attribute asserts
+//#define OOP_ASSERT_METHOD_CALL
 
 // --------------------- PROFILING ---------------------
 // Enable Profiling
@@ -52,6 +54,9 @@
 
 // Log all AIGarrison GOAP activity to separate files
 //#define ENABLE_LOG_GOAP
+
+// Prints useful debug info about A* GOAP planner
+//#define DEBUG_GOAP
 
 // Show commander debug marker on map with current commander activity (at bottom left)
 //#define DEBUG_COMMANDER
@@ -98,3 +103,26 @@
 
 // Set campaign progress to 0.9
 //#define DEBUG_END_GAME
+
+// Show garrison and group AI debug markers
+//#define DEBUG_GOAL_MARKERS
+
+// Write debug logging for the unit allocator
+//#define UNIT_ALLOCATOR_DEBUG
+
+// Show civilian presence markup
+//#define DEBUG_CIVILIAN_PRESENCE
+
+// Enable Profiling
+//#define OOP_PROFILE
+// Don't set it above 0.002 or so! Or even above 0.004! diag_tickTime precision is only 0.001 and degrades as the game runs
+//#define OOP_PROFILE_MIN_T 0.002
+
+// This is an interesting flag
+// It disables GameMode init, GameManager init, for faster loading and testing
+//#define GAME_MODE_DISABLE
+
+// Defined only in this file
+// Means that we are in the editor
+//#define EDITOR_PREVIEW
+

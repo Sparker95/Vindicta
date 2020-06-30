@@ -43,7 +43,7 @@ g_UM_Hints = [
 CLASS("UndercoverUI", "")
 	STATIC_VARIABLE("prevSuspicion");
 
-	STATIC_METHOD(drawUI)
+	public STATIC_METHOD(drawUI)
 		params [P_THISOBJECT, ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];
 
 			pr _textUI = "";

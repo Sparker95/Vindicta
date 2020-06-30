@@ -93,7 +93,7 @@ CLASS("RecruitTab", "DialogTabBase")
 		SETSV(__CLASS_NAME, "instance", nil);
 	ENDMETHOD;
 
-	METHOD(onListboxSelChanged)
+	public event METHOD(onListboxSelChanged)
 		params [P_THISOBJECT];
 
 		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
@@ -177,7 +177,7 @@ CLASS("RecruitTab", "DialogTabBase")
 		_ctrl lnbSetCurSelRow _bestIdx;
 	ENDMETHOD;
 
-	METHOD(onButtonRecruit)
+	public event METHOD(onButtonRecruit)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ON BUTTON RECRUIT");
@@ -341,7 +341,7 @@ CLASS("RecruitTab", "DialogTabBase")
 		T_CALLM1("_recruitSelectionChanged", _selectedIdx);
 	ENDMETHOD;
 
-	STATIC_METHOD(receiveData)
+	public STATIC_METHOD(receiveData)
 		params [P_THISCLASS, P_ARRAY("_unitsAndGear"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
 
 		OOP_INFO_0("RECEIVE WEAPON DATA:");

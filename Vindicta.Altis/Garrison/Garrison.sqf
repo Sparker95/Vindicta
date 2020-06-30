@@ -169,7 +169,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	ENDMETHOD;
 
 	// Create a new garrison from an existing one, copying relevant state
-	STATIC_METHOD(newFrom)
+	public STATIC_METHOD(newFrom)
 		params [P_THISCLASS, P_OOP_OBJECT("_other"), P_POSITION("_posOverride")];
 
 		// Make a new garrison
@@ -279,8 +279,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		_garrModel
 	ENDMETHOD;
 
-	// internal
-	METHOD(_activate)
+	// internal, needs to be public to work as a continuation
+	public thread METHOD(_activate)
 		params [P_THISOBJECT];
 
 		ASSERT_THREAD(_thisObject);
@@ -317,7 +317,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	destroyed state (isDestroyed returns true, isAlive returns false), removes
 	all units and groups, deletes the timer and AI components.
 	*/
-	public METHOD(destroy)
+	public thread METHOD(destroy)
 		params [P_THISOBJECT, P_BOOL_DEFAULT_TRUE("_unregisterFromCmdr")];
 
 		OOP_INFO_0("DESTROY GARRISON");
@@ -524,7 +524,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// |                           P R O C E S S                            |
 	// | THIS IS RUN UNSCHEDULED											|
 	// ----------------------------------------------------------------------
-	public METHOD(process)
+	public thread METHOD(process)
 		params [P_THISOBJECT];
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -645,7 +645,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	_location - <Location>
 	*/
-	public METHOD(setLocation)
+	public thread METHOD(setLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 
 		__MUTEX_LOCK;
@@ -711,7 +711,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	_home - <Location>
 	*/
-	public METHOD(setHome)
+	public thread METHOD(setHome)
 		params [P_THISOBJECT, P_OOP_OBJECT("_home")];
 
 		__MUTEX_LOCK;
@@ -727,7 +727,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		
 	ENDMETHOD;
 	
-	public METHOD(detachFromLocation)
+	public thread METHOD(detachFromLocation)
 		params [P_THISOBJECT];
 
 		ASSERT_THREAD(_thisObject);
@@ -770,7 +770,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	_pos - position
 	*/
-	public METHOD(setPos)
+	public thread METHOD(setPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 
 		ASSERT_THREAD(_thisObject);
@@ -986,27 +986,27 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 	ENDMETHOD;
 
-	METHOD(addBuildResources)
-		params [P_THISOBJECT, P_NUMBER("_value")];
+	// METHOD(addBuildResources)
+	// 	params [P_THISOBJECT, P_NUMBER("_value")];
 
-		// Bail if number is negative
-		if (_value <= 0) exitWith {};
+	// 	// Bail if number is negative
+	// 	if (_value <= 0) exitWith {};
 		
-		// Find units which can have build resources
-		private _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+	// 	// Find units which can have build resources
+	// 	private _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
 
-		// Bail if there are no units which can have build resources
-		if (count _units == 0) exitWith {};
+	// 	// Bail if there are no units which can have build resources
+	// 	if (count _units == 0) exitWith {};
 
-		private _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
-		{
-			CALLM1(_x, "addBuildResources", _valuePerUnit);
-		} forEach _units;
+	// 	private _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
+	// 	{
+	// 		CALLM1(_x, "addBuildResources", _valuePerUnit);
+	// 	} forEach _units;
 
-		T_CALLM0("updateBuildResources");
-	ENDMETHOD;
+	// 	T_CALLM0("updateBuildResources");
+	// ENDMETHOD;
 
-	METHOD(removeBuildResources)
+	public thread METHOD(removeBuildResources)
 		params [P_THISOBJECT, P_NUMBER("_valueToRemove")];
 
 		// Bail if number is negative
@@ -1043,7 +1043,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		T_CALLM0("updateBuildResources");
 	ENDMETHOD;
 
-	public METHOD(assignCargo)
+	public thread METHOD(assignCargo)
 		params [P_THISOBJECT, P_ARRAY("_cargo")];
 		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
 		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
@@ -1054,7 +1054,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		} forEach _cargoVehicles;
 	ENDMETHOD;
 
-	public METHOD(clearCargo)
+	public thread METHOD(clearCargo)
 		params [P_THISOBJECT];
 		// Assign cargo to T_VEH_Cargo vehicles of the type specified, of the amount specified
 		private _cargoVehicles = T_CALLM1("findUnits", [[T_VEH ARG T_VEH_truck_ammo]]);
@@ -1157,7 +1157,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Method: countAllUnits
 	Returns: total number of units in this garrison.
 	*/
-	METHOD(countAllUnits)
+	public METHOD(countAllUnits)
 		params [P_THISOBJECT];
 		count SAFE_ACCESSOR("units", [])
 	ENDMETHOD;
@@ -1170,7 +1170,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	_vehicleCategories - Array of vehicle categories, defaults to T_VEH_ground_infantry_cargo
 	Returns: number of seats available.
 	*/
-	METHOD(getTransportCapacity)
+	public METHOD(getTransportCapacity)
 		params [P_THISOBJECT, P_ARRAY("_vehicleCategories")];
 
 		SAFE_ACCESSOR("effTotal", T_EFF_null) # T_EFF_transport
@@ -1222,7 +1222,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	/* async */ METHOD(addUnit)
+	public thread METHOD(addUnit)
 		params[P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 
@@ -1330,7 +1330,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(assignUnits)
+	public thread METHOD(assignUnits)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Remove the units from thier group
 		{
@@ -1355,7 +1355,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(takeUnits)
+	public thread METHOD(takeUnits)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		private _inf = _units select { CALLM0(_x, "getCategory") == T_INF };
@@ -1441,7 +1441,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(addUnits)
+	public thread METHOD(addUnits)
 		params[P_THISOBJECT, P_ARRAY("_units")];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
@@ -1468,7 +1468,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(captureUnit)
+	public thread METHOD(captureUnit)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 
 		OOP_INFO_1("CAPTURE UNIT: %1", _unit);
@@ -1500,7 +1500,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	/* async */ METHOD(removeUnit)
+	public thread METHOD(removeUnit)
 		params[P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 		// Assert that the unit is valid (this function is called via message queue and as such the unit can become invalid)
@@ -1570,7 +1570,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	/* async */ METHOD(addGroup)
+	public thread METHOD(addGroup)
 		params[P_THISOBJECT, P_OOP_OBJECT("_group")];
 
 		ASSERT_OBJECT_CLASS(_group, "Group");
@@ -1693,7 +1693,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(removeGroup)
+	public thread METHOD(removeGroup)
 		params[P_THISOBJECT, P_OOP_OBJECT("_group")];
 		ASSERT_OBJECT_CLASS(_group, "Group");
 
@@ -1768,7 +1768,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: nil
 	*/
 
-	METHOD(deleteEmptyGroups)
+	public thread METHOD(deleteEmptyGroups)
 		params [P_THISOBJECT];
 
 		ASSERT_THREAD(_thisObject);
@@ -1799,7 +1799,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: nil
 	*/
-	METHOD(addGarrison)
+	public thread METHOD(addGarrison)
 		params[P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
 
@@ -1862,7 +1862,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: nil
 	*/
-	METHOD(captureGarrison)
+	public thread METHOD(captureGarrison)
 		params[P_THISOBJECT, P_OOP_OBJECT("_garrison"), P_BOOL_DEFAULT_TRUE("_destroy")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
 
@@ -1945,7 +1945,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: Bool, true if move was performed properly
 	*/
-	METHOD(addUnitsAndGroups)
+	public thread METHOD(addUnitsAndGroups)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_units"), P_ARRAY("_groupsAndUnits")];
 		ASSERT_OBJECT_CLASS(_garSrc, "Garrison");
 
@@ -2078,7 +2078,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: Number, amount of unsatisfied matches. 0 if all composition elements were matched.
 	*/
-	METHOD(addUnitsFromCompositionClassNames)
+	public thread METHOD(addUnitsFromCompositionClassNames)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
 
 		OOP_INFO_1("ADD UNITS FROM COMPOSITION: %1", _this);
@@ -2193,7 +2193,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: Bool, true if transfer was successfull.
 	*/
-	METHOD(addUnitsFromCompositionNumbers)
+	public thread METHOD(addUnitsFromCompositionNumbers)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
 
 		OOP_INFO_1("ADD UNITS FROM COMPOSITION NUMBERS: %1", _this);
@@ -2312,7 +2312,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: [_nDrivers, _nTurrets]
 	*/
 
-	METHOD(getRequiredCrew)
+	public METHOD(getRequiredCrew)
 		params [P_THISOBJECT];
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
@@ -2328,7 +2328,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	It merges any existing non-static vehicle groups, and moves any non-static vehicles
 	not in vehicle groups into the one vehicle group.
 	*/
-	METHOD(mergeVehicleGroups)
+	public thread METHOD(mergeVehicleGroups)
 		params [P_THISOBJECT];
 
 		ASSERT_THREAD(_thisObject);
@@ -2386,7 +2386,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Method: splitVehicleGroups
 	Splits all existing vehicle groups so that each group contains only one vehicle and its crew.
 	*/
-	METHOD(splitVehicleGroups)
+	public thread METHOD(splitVehicleGroups)
 		params [P_THISOBJECT];
 
 		ASSERT_THREAD(_thisObject);
@@ -2459,7 +2459,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// Method: rebalanceGroups
 	// Attempt to fully rebalance groups.
 	// All vehicle groups will be assigned crew, remaining inf will be split into regular groups.
-	METHOD(rebalanceGroups)
+	public thread METHOD(rebalanceGroups)
 		params [P_THISOBJECT];
 		
 		// ===== Ensure all vehicles are manned first =====
@@ -2638,7 +2638,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: nil
 	*/
-	METHOD(increaseCounters)
+	thread METHOD(increaseCounters)
 		params [P_THISOBJECT, "_catID", "_subCatID", "_className"];
 		
 		__MUTEX_LOCK;
@@ -2690,7 +2690,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: nil
 	*/
-	METHOD(_recalculateCounters)
+	thread METHOD(_recalculateCounters)
 		params [P_THISOBJECT];
 
 		T_SETV("effTotal", +T_EFF_null);
@@ -2724,7 +2724,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	Returns: nil
 	*/
-	METHOD(decreaseCounters)
+	thread METHOD(decreaseCounters)
 		params [P_THISOBJECT, "_catID", "_subCatID", "_className"];
 		
 		__MUTEX_LOCK;
@@ -2775,7 +2775,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: Efficiency vector
 	*/
 	
-	METHOD(getEfficiencyMobile)
+	public METHOD(getEfficiencyMobile)
 		params [P_THISOBJECT];
 		+SAFE_ACCESSOR("effMobile", T_EFF_null)
 	ENDMETHOD;
@@ -2787,12 +2787,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: Efficiency vector
 	*/
 	
-	METHOD(getEfficiencyTotal)
+	public METHOD(getEfficiencyTotal)
 		params [P_THISOBJECT];
 		+SAFE_ACCESSOR("effTotal", T_EFF_null)
 	ENDMETHOD;
 
-	METHOD(getCompositionClassNames)
+	public METHOD(getCompositionClassNames)
 		params [P_THISOBJECT];
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
@@ -2807,7 +2807,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		+T_GETV("compositionClassNames")
 	ENDMETHOD;
 
-	METHOD(getCompositionNumbers)
+	public METHOD(getCompositionNumbers)
 		params [P_THISOBJECT];
 		+SAFE_ACCESSOR("compositionNumbers", [0] call comp_fnc_new)
 	ENDMETHOD;
@@ -2848,7 +2848,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
-	METHOD(handleGroupRemoved)
+	public thread METHOD(handleGroupRemoved)
 	ENDMETHOD;
 
 
@@ -2861,7 +2861,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(handleUnitKilled)
+	public thread METHOD(handleUnitKilled)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 
@@ -2944,7 +2944,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: nil
 	*/
 
-	METHOD(handleGetInVehicle)
+	public thread METHOD(handleGetInVehicle)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unitVeh"), P_OOP_OBJECT("_unitInf")];
 		ASSERT_OBJECT_CLASS(_unitVeh, "Unit");
 		ASSERT_OBJECT_CLASS(_unitInf, "Unit");
@@ -3032,7 +3032,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(handleGetOutVehicle)
+	public thread METHOD(handleGetOutVehicle)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unitVeh"), P_OOP_OBJECT("_unitInf")];
 		ASSERT_OBJECT_CLASS(_unitVeh, "Unit");
 		ASSERT_OBJECT_CLASS(_unitInf, "Unit");
@@ -3129,7 +3129,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: nil
 	*/
-	METHOD(handleCargoLoaded)
+	public thread METHOD(handleCargoLoaded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unitCargo"), P_OOP_OBJECT("_unitVeh")];
 
 		ASSERT_OBJECT_CLASS(_unitCargo, "Unit");
@@ -3171,7 +3171,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		__MUTEX_UNLOCK;
 	ENDMETHOD;
 
-	METHOD(handleCargoUnloaded)
+	public thread METHOD(handleCargoUnloaded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unitCargo"), P_OOP_OBJECT("_unitVeh")];
 
 		ASSERT_OBJECT_CLASS(_unitCargo, "Unit");
@@ -3204,7 +3204,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Array of units <Unit> class
 	*/
-	METHOD(findUnits)
+	public METHOD(findUnits)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 
 		__MUTEX_LOCK;
@@ -3244,7 +3244,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Returns: Array of units <Unit> class
 	*/
 	// Todo: optimize this
-	METHOD(countUnits)
+	public METHOD(countUnits)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		// findUnits will do asserts and locks for us
 		count T_CALLM1("findUnits", _query)
@@ -3256,7 +3256,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number
 	*/
-	METHOD(countInfantryUnits)
+	public METHOD(countInfantryUnits)
 		params [P_THISOBJECT];
 		T_GETV("countInf")
 	ENDMETHOD;
@@ -3267,7 +3267,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number
 	*/
-	METHOD(countConsciousInfantryUnits)
+	public METHOD(countConsciousInfantryUnits)
 		params [P_THISOBJECT];
 		{ CALLM0(_x, "isConscious") } count T_CALLM0("getInfantryUnits")
 	ENDMETHOD;
@@ -3278,7 +3278,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number
 	*/
-	METHOD(countOfficers)
+	public METHOD(countOfficers)
 		params [P_THISOBJECT];
 		count T_CALLM0("getOfficerUnits");
 	ENDMETHOD;
@@ -3289,7 +3289,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number
 	*/
-	METHOD(countVehicleUnits)
+	public METHOD(countVehicleUnits)
 		params [P_THISOBJECT];
 		T_GETV("countVeh")
 	ENDMETHOD;
@@ -3300,7 +3300,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number
 	*/
-	METHOD(countDroneUnits)
+	public METHOD(countDroneUnits)
 		params [P_THISOBJECT];
 		T_GETV("countDrone")
 	ENDMETHOD;
@@ -3311,7 +3311,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Returns: Number
 	*/
-	METHOD(countCargoUnits)
+	public METHOD(countCargoUnits)
 		params [P_THISOBJECT];
 		T_GETV("countCargo")
 	ENDMETHOD;
@@ -3322,7 +3322,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	Parameters: _gar - another garrison
 	*/
-	METHOD(copyIntelFrom)
+	public METHOD(copyIntelFrom)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		pr _AI = T_GETV("AI");
 		pr _otherAI = GETV(_gar, "AI");
@@ -3333,7 +3333,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	Method: updateSpawnedUnitsIntel
 	Updates intel of units if this garrison is spawned
 	*/
-	METHOD(updateUnitsIntel)
+	public METHOD(updateUnitsIntel)
 		params [P_THISOBJECT];
 		if (T_GETV("spawned")) then {
 			{
@@ -3347,15 +3347,15 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	public override METHOD_FILE(handleMessageEx, "Garrison\handleMessageEx.sqf");
 
 	// Spawns the whole garrison
-	METHOD_FILE(spawn, "Garrison\spawn.sqf");
+	public thread METHOD_FILE(spawn, "Garrison\spawn.sqf");
 
 	// Despawns the whole garrison
-	METHOD_FILE(despawn, "Garrison\despawn.sqf");
+	public thread METHOD_FILE(despawn, "Garrison\despawn.sqf");
 
 	// Update spawn state of the garrison
-	METHOD_FILE(updateSpawnState, "Garrison\updateSpawnState.sqf");
+	thread METHOD_FILE(updateSpawnState, "Garrison\updateSpawnState.sqf");
 
-	METHOD(createAddInfGroup)
+	public thread METHOD(createAddInfGroup)
 		params [P_THISOBJECT, "_side", "_subcatID", ["_type", GROUP_TYPE_INF]];
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -3371,7 +3371,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		[_newGroup, _count]
 	ENDMETHOD;
 
-	METHOD(createAddInfGroupInThread)
+	public thread METHOD(createAddInfGroupInThread)
 		params [P_THISOBJECT, "_side", "_subcatID", ["_type", GROUP_TYPE_INF]];
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -3388,7 +3388,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		[_newGroup, _count]
 	ENDMETHOD;
 
-	METHOD(createAddVehGroup)
+	public thread METHOD(createAddVehGroup)
 		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -3405,7 +3405,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		_newGroup
 	ENDMETHOD;
 
-	METHOD(createAddVehGroupInThread)
+	public thread METHOD(createAddVehGroupInThread)
 		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
@@ -3427,14 +3427,14 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	// Updates spawn state of garrisons close to the provided position
 	// Public, thread-safe
-	STATIC_METHOD(updateSpawnStateOfGarrisonsNearPos)
+	public STATIC_METHOD(updateSpawnStateOfGarrisonsNearPos)
 		params [P_THISCLASS, P_POSITION("_pos")];
 		pr _args = ["Garrison", "_updateSpawnStateOfGarrisonsNearPos", [_pos]];
 		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
 	ENDMETHOD;
 
 	// Private, thread-unsafe
-	STATIC_METHOD(_updateSpawnStateOfGarrisonsNearPos)
+	public STATIC_METHOD(_updateSpawnStateOfGarrisonsNearPos)
 		params [P_THISCLASS, P_POSITION("_pos")];
 
 		pr _gars = GETSV("Garrison", "all");
@@ -3453,7 +3453,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		} forEach _garsToCheck;
 	ENDMETHOD;
 
-	STATIC_METHOD(updatePlayerGroup)
+	public STATIC_METHOD(updatePlayerGroup)
 		params [P_THISCLASS, P_OBJECT("_player")];
 		pr _args = ["Garrison", "_updatePlayerGroup", [_player]];
 		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
@@ -3503,7 +3503,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 	ENDMETHOD;
 	
-	STATIC_METHOD(addUnitsToPlayerGroup)
+	public STATIC_METHOD(addUnitsToPlayerGroup)
 		params [P_THISCLASS, P_OBJECT("_player"), P_ARRAY("_unitHandles")];
 
 		pr _args = ["Garrison", "_addUnitsToPlayerGroup", [_player, _unitHandles]];
@@ -3562,7 +3562,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// 	CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
 	// ENDMETHOD;
 
-	METHOD(makeGarrisonFromUnits)
+	public thread METHOD(makeGarrisonFromUnits)
 		params [P_THISOBJECT, P_ARRAY("_unitHandles"), P_STRING_DEFAULT("_type", GARRISON_TYPE_GENERAL)];
 
 		if(count _unitHandles == 0) exitWith {
@@ -3618,18 +3618,18 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
 	ENDMETHOD;
 
-	METHOD(getTemplateName)
+	public METHOD(getTemplateName)
 		params [P_THISOBJECT];
 		T_GETV("templateName")
 	ENDMETHOD;
 
-	METHOD(getTemplate)
+	public METHOD(getTemplate)
 		params [P_THISOBJECT];
 		[T_GETV("templateName")] call t_fnc_getTemplate
 	ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -
-	 public override METHOD(preSerialize)
+	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Save all units (except players)
@@ -3659,12 +3659,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		true
 	ENDMETHOD;
 
-	METHOD(hasAI)
+	public METHOD(hasAI)
 		params [P_THISOBJECT];
 		T_GETV("side") != CIVILIAN && T_GETV("type") in GARRISON_TYPES_AI
 	ENDMETHOD;
 	
-	 public override METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -3751,11 +3751,11 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		true
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(saveStaticVariables)
+	STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(loadStaticVariables)
+	STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		SETSV("Garrison", "all", []);
 	ENDMETHOD;

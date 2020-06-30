@@ -88,7 +88,7 @@ CLASS("TimerService", "")
 	
 	Returns: nil
 	*/
-	METHOD(addTimer)
+	public METHOD(addTimer)
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		T_GETV("timers") pushBackUnique CALLM0(_timer, "getDataArray");
 	ENDMETHOD;
@@ -106,7 +106,7 @@ CLASS("TimerService", "")
 	
 	Returns: nil
 	*/
-	METHOD(removeTimer)
+	public METHOD(removeTimer)
 		params [P_THISOBJECT, P_OOP_OBJECT("_timer")];
 		CRITICAL_SECTION {
 			private _timers = T_GETV("timers");
@@ -119,14 +119,14 @@ CLASS("TimerService", "")
 		nil
 	ENDMETHOD;
 
-	METHOD(suspend)
+	public METHOD(suspend)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			T_SETV("suspended", T_GETV("suspended") + 1);
 		};
 	ENDMETHOD;
 	
-	METHOD(resume)
+	public METHOD(resume)
 		params [P_THISOBJECT];
 		CRITICAL_SECTION {
 			T_SETV("suspended", T_GETV("suspended") - 1);

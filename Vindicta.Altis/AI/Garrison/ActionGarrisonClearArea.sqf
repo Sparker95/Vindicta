@@ -15,10 +15,18 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 	VARIABLE("overwatchGroups");
 	VARIABLE("sweepGroups");
 
+	public override METHOD(getPossibleParameters)
+		[
+			// We allow only unit OOP objects as target
+			[ [TAG_POS_CLEAR_AREA, [[]]] ],	// Required parameters
+			[ [TAG_CLEAR_RADIUS, [0]], [TAG_DURATION_SECONDS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
+		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS_CLEAR_AREA);
 		T_SETV("pos", _pos);
 
 		pr _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS, 100);
