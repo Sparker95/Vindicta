@@ -11,6 +11,13 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	VARIABLE("nearPos");
 	VARIABLE("maxDistance");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_POS, [[]]], [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		T_SETV("activeUnits", []);
@@ -83,7 +90,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist, "GoalUnitAmbientAnim", [
-				[TAG_TARGET, _x]
+				[TAG_TARGET_AMBIENT_ANIM, _x]
 			]]
 		};
 
@@ -92,7 +99,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist,"GoalUnitShootAtTargetRange", [
-				[TAG_TARGET, _x]
+				[TAG_TARGET_SHOOT_RANGE, _x]
 			]]
 		};
 
@@ -107,9 +114,10 @@ CLASS("ActionGroupRelax", "ActionGroup")
 				_allBuildingPosIDs set [_i, _i];
 			};
 			_freeBuildingLocs append ((_allBuildingPosIDs - (_building getVariable "vin_occupied_positions")) apply {
-				[_dist, "GoalUnitInfantryMoveBuilding", [
-					[TAG_TARGET, _building],
-					[TAG_BUILDING_POS_ID, _x]
+				[_dist, "GoalUnitInfantryStandIdle", [
+					[TAG_TARGET_STAND_IDLE, _building],
+					[TAG_BUILDING_POS_ID, _x],
+					[TAG_DURATION_SECONDS, 99999999] // Stay here forever!
 				]]
 			});
 		} forEach _buildings;
@@ -130,21 +138,20 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			_activity params ["_distance", "_goal", "_parameters"];
 			_activeUnits pushBackUnique [_unit, _goal];
 			private _unitAI = CALLM0(_unit, "getAI");
-			private _fullParams = _parameters + [[TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, selectRandom [5, 10, 20] * 60]];
+			private _fullParams = _parameters + [[TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, (selectRandom [5, 10, 20]) * 60]];
 			CALLM4(_unitAI, "addExternalGoal", _goal, 0, _fullParams, _AI);
 		};
 
-		{// forEach _freeUnits
-			private _unit = _x;
-			private _unitAI = CALLM0(_unit, "getAI");
-			private _params = [[TAG_POS, _nearPos], [TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, selectRandom [5, 10, 20] * 60]];
-			if(!(_nearPos isEqualTo []) && { _nearPos distance2D CALLM0(_unit, "getPos") > _maxDistance }) then {
-				// Can't use unit move goal as it uses waypoint which applies to group, so just order move instead
-				CALLM0(_unit, "getObjectHandle") doMove (_nearPos getPos [random _maxDistance, random 360]);
-			};
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitIdle", 0, _params, _AI);
-			_activeUnits pushBackUnique [_unit, "GoalUnitIdle"];
-		} forEach _freeUnits;
+		if !(_nearPos isEqualTo []) then {
+			{
+				private _unit = _x;
+				private _unitAI = CALLM0(_unit, "getAI");
+				private _randomOffset = [-10 + random 20, -10 + random 20, 0];
+				private _params = [[TAG_TARGET_STAND_IDLE, _nearPos vectorAdd _randomOffset], [TAG_INSTANT, _instant], [TAG_DURATION_SECONDS, (selectRandom [5, 10, 20]) * 60 ]];
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryStandIdle", 0, _params, _AI);
+				_activeUnits pushBackUnique [_unit, "GoalUnitInfantryStandIdle"];
+			} forEach _freeUnits;
+		};
 	ENDMETHOD;
 
 	public override METHOD(handleUnitsRemoved)

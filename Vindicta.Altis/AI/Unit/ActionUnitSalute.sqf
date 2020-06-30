@@ -25,11 +25,18 @@ CLASS("ActionUnitSalute", "Action")
 	
 	// ------------ N E W ------------
 	// _target - whom to salute to
+
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SALUTE, [NULL_OBJECT] ] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
 	
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SALUTE);
 		T_SETV("target", _target);
 
 		pr _agent = GETV(_AI, "agent"); // cache the object handle
@@ -55,9 +62,16 @@ CLASS("ActionUnitSalute", "Action")
 		_oh disableAI "MOVE";
 		_oh action ["salute", _oh];
 		_oh doWatch _target;
+
+		SETV(_ai, "interactionObject", _target);
 		
 		diag_log "Started saluting!";
 		
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		
@@ -103,6 +117,7 @@ CLASS("ActionUnitSalute", "Action")
 		// If time has expired, terminate
 		diag_log "salute time expired!";
 		T_CALLM("terminate", []);
+		CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 		T_SETV("state", ACTION_STATE_COMPLETED);
 		ACTION_STATE_COMPLETED
 	ENDMETHOD;
@@ -135,6 +150,9 @@ CLASS("ActionUnitSalute", "Action")
 			};
 		};
 		
+		pr _ai = T_GETV("AI");
+		SETV(_ai, "interactionObject", objNull);
+
 		//T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;
 

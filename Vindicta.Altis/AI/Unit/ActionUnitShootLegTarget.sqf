@@ -20,6 +20,13 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	VARIABLE("isHandleSpawned");
 	VARIABLE("startSpawnedTime");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SHOOT_LEG, [objNull] ] ],	// Required parameters
+			[ ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -27,7 +34,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _oh = CALLM0(_a, "getObjectHandle");
 		pr _count = _oh ammo primaryWeapon _oh;
 
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_SHOOT_LEG);
 
 		T_SETV("isHandleSpawned", 0);
 		T_SETV("spawnHandle", scriptNull);
@@ -44,9 +51,17 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _posUnit = getPos _oh;
 
 		_oh reveal _target;
-		_oh setSpeedMode "FULL";
+		_oh forceSpeed (-1);
 		_oh setBehaviour "CARELESS";
-		
+
+		pr _ai = T_GETV("ai");
+		SETV(_ai, "interactionObject", _target);
+
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
+
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
@@ -65,6 +80,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _count = _oh ammo primaryWeapon _oh;
 
 		if (_count < _oldCount - 1) exitWith {
+			CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -74,6 +90,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _posTarget = getPos _target;
 
 		if (IS_ARRESTED_UNCONSCIOUS_DEAD(_target)) exitWith {
+			CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -120,6 +137,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 				ACTION_STATE_ACTIVE
 			} else {				
 				if (scriptDone T_GETV("spawnHandle")) then {
+					CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 					ACTION_STATE_COMPLETED
 				} else {
 					ACTION_STATE_ACTIVE
@@ -130,4 +148,12 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 			ACTION_STATE_ACTIVE
 		};
 	ENDMETHOD;
+
+	// logic to run when the goal is satisfied
+	public override METHOD(terminate)
+		params [P_THISOBJECT];
+		pr _ai = T_GETV("AI");
+		SETV(_ai, "interactionObject", objNull);
+	ENDMETHOD;
+
 ENDCLASS;

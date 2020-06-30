@@ -23,6 +23,12 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Bool, set to true if garrison is aware of any targets in the 'assigned targets' area
 	/* save */	VARIABLE_ATTR("awareOfAssignedTargets", [ATTR_SAVE]);
 
+	// Variables for moving somewhere
+	/* save */	VARIABLE_ATTR("pos", [ATTR_SAVE]);			// Own position
+	/* save */	VARIABLE_ATTR("vehiclesPos", [ATTR_SAVE]);	// Position of our vehicles
+	/* save */	VARIABLE_ATTR("moveTargetPos", [ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("moveRadius", [ATTR_SAVE]);		// Radius for movement completion
+
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
 	VARIABLE("sensorObserved");
@@ -60,22 +66,30 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
-		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLES_CAN_MOVE, true] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_HUMANS_HEALED, true] call ws_setPropertyValue;
 		[_ws, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+		// Handling of vehicles and crew
+		[_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_VEHICLES_HAVE_CREW_ASSIGNED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENGINEER_AVAILABLE, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_MEDIC_AVAILABLE, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENOUGH_HUMANS_TO_DRIVE_ALL_VEHICLES, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENOUGH_HUMANS_TO_TURRET_ALL_VEHICLES, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS, false] call ws_setPropertyValue;
+		// Misc
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_GROUPS_BALANCED, false] call ws_setPropertyValue;
-		[_ws, WSP_GAR_CLEARING_AREA, [0, 0, 0]] call ws_setPropertyValue;
+		[_ws, WSP_GAR_HAS_INTERACTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_HAS_VEHICLES, false] call ws_setPropertyValue;
-		// Location
-		pr _loc = CALLM0(_agent, "getLocation");
-		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
-		// Position
-		pr _pos = if (_loc != "") then {
-			CALLM0(_loc, "getPos");
-		} else {
-			[0, 0, 0];
-		};
-		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+		// Positions
+		[_ws, WSP_GAR_AT_TARGET_POS, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_VEHICLES_AT_TARGET_POS, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_AT_TARGET_LOCATION, false] call ws_setPropertyValue;
 		
 		T_SETV("worldState", _ws);
 		T_SETV("targets", []);
@@ -88,10 +102,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Update composition
 		T_CALLM0("updateComposition");
 		
-		// Set process interval
-		// Makes no sense any more since it's processed in thread's process categories
-		//T_CALLM1("setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
-		
 		// Commander action record serial
 		T_SETV("cmdrActionRecordSerial", []);
 
@@ -100,12 +110,20 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("knownFriendlyLocations", []); // Array with locations about which this garrison knows
 
 		// Test to make all garrisons 'know' about some locations
+		// Can be used for debuggin
 		/*
 		pr _allLocs = CALLSM0("Location", "getAll");
 		for "_i" from 0 to 4 do {
 			T_GETV("knownFriendlyLocations") pushBackUnique (selectRandom _allLocs);
 		};
 		*/
+
+		// Initialize move target
+		pr _posNull = [0,0,0]; // Something completely not here
+		T_SETV("pos", +_posNull);
+		T_SETV("vehiclesPos", +_posNull);
+		T_SETV("moveTargetPos", +_posNull);
+		T_SETV("moveRadius", -1);
 
 		// Get radio key from AICommander
 		T_CALLM0("updateRadioKey");
@@ -117,9 +135,9 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Register at stimulus manager
 		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
-
+		
 	ENDMETHOD;
-
+	
 	METHOD(delete)
 		params [P_THISOBJECT];
 
@@ -286,6 +304,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 #endif
 		FIX_LINE_NUMBERS()
+
+		// Update position world state properties
+		T_CALLM0("updatePositionWSP");
 
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", T_CALLM0("isSpawned"), _accelerate);
@@ -465,15 +486,11 @@ CLASS("AIGarrison", "AI_GOAP")
 	public METHOD(handleLocationChanged)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 
-		// Set location world state property
-		pr _ws = T_GETV("worldState");
-		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
-
 		// If we now are attached to a location
 		if (_loc != "") then {
 			// Set position world state property
 			pr _pos = CALLM0(_loc, "getPos");
-			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+			T_CALLM1("setPos", _pos);
 			
 			// Now we know about this location
 			T_CALLM1("addKnownFriendlyLocation", _loc);
@@ -526,8 +543,8 @@ CLASS("AIGarrison", "AI_GOAP")
 		params [P_THISOBJECT, "_pos"];
 		
 		OOP_INFO_1("SET POS AI: %1", _pos);
-		pr _ws = T_GETV("worldState");
-		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+
+		T_SETV("pos", +_pos);
 
 		// Update our radio key, if someone has forced a position change on us
 		T_CALLM0("updateRadioKey");
@@ -540,8 +557,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Gets the position
 	public METHOD(getPos)
 		params [P_THISOBJECT];
-		pr _ws = T_GETV("worldState");
-		[_ws, WSP_GAR_POSITION] call ws_getPropertyValue;
+		+T_GETV("pos");
 	ENDMETHOD;
 	// Gets called after the garrison is spawned
 	// Not used right now
@@ -790,6 +806,36 @@ CLASS("AIGarrison", "AI_GOAP")
 				[]
 			};
 		}
+	ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                   Position world state property update
+	// ----------------------------------------------------------------------
+
+	METHOD(updatePositionWSP)
+		params [P_THISOBJECT];
+
+		pr _targetPos = T_GETV("moveTargetPos");
+		pr _ws = T_GETV("worldState");
+		pr _moveRadius = T_GETV("moveRadius");
+
+		pr _value0 = (T_GETV("pos") distance2D _targetPos) <= _moveRadius;
+		WS_SET(_ws, WSP_GAR_AT_TARGET_POS, _value0);
+
+		pr _value1 = (T_GETV("vehiclesPos") distance2D _targetPos) <= _moveRadius;
+		WS_SET(_ws, WSP_GAR_VEHICLES_AT_TARGET_POS, _value1);
+
+	ENDMETHOD;
+
+	// Sets move target position
+	METHOD(setMoveTargetPos)
+		params [P_THISOBJECT, P_ARRAY("_targetPos")];
+		T_SETV("moveTargetPos", _targetPos);
+	ENDMETHOD;
+
+	METHOD(setMoveTargetRadius)
+		params [P_THISOBJECT, P_NUMBER("_radius")];
+		T_SETV("moveRadius", _radius);
 	ENDMETHOD;
 
 	// Debug

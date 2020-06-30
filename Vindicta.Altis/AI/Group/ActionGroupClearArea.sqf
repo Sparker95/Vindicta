@@ -16,6 +16,13 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 	VARIABLE("inCombat");
 	VARIABLE("nextLookTime");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, [objNull]], [TAG_CLEAR_RADIUS, [0]] ],	// Required parameters
+			[  ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -183,6 +190,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
+		T_CALLCM0("ActionGroup", "terminate");
 		T_CALLM0("clearWaypoints");
 		T_CALLCM0("ActionGroup", "terminate");
 

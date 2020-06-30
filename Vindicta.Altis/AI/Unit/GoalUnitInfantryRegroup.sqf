@@ -8,28 +8,31 @@ Unit will dismount his vehicle and start following his leader
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitInfantryRegroup
-CLASS("GoalUnitInfantryRegroup", "Goal")
+CLASS("GoalUnitInfantryRegroup", "GoalUnit")
 
-	/* virtual */ STATIC_METHOD(createPredefinedAction)
-		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+	STATIC_METHOD(onGoalChosen)
+		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
+		CALLM1(_ai, "setAllowVehicleWSP", false);
 
-		pr _hO = GETV(_AI, "hO");
+		// We will have to move to leader, so prepare move coordinates
+		pr _unit = GETV(_ai, "agent");
+		pr _group = CALLM0(_unit, "getGroup");
+		pr _leaderUnit = CALLM0(_group, "getLeader");
+		pr _hLeader = CALLM0(_leaderUnit, "getObjectHandle");
+		pr _moveRadius = 40;
 
-		// Check if the unit has been assigned to any vehicle
-		pr _vehicle = CALLM0(_AI, "getAssignedVehicle");
+		_goalParameters pushBack [TAG_MOVE_TARGET, _hLeader];
+		_goalParameters pushBack [TAG_MOVE_RADIUS, _moveRadius];
 
-		if (_vehicle != NULL_OBJECT || !(vehicle _hO isEqualTo _hO)) then {
-			pr _actionSerial = NEW("ActionCompositeSerial", [_AI]);
-			pr _actionDismount = NEW("ActionUnitDismountCurrentVehicle", [_AI ARG _parameters]);
-			CALLM1(_actionSerial, "addSubactionToBack", _actionDismount);
-			pr _actionRegroup = NEW("ActionUnitInfantryRegroup", [_AI ARG _parameters]);
-			CALLM1(_actionSerial, "addSubactionToBack", _actionRegroup);
-			_actionSerial
-		} else {
-			pr _action = NEW("ActionUnitInfantryRegroup", [_AI ARG _parameters]);
-			_action
-		};
+		CALLM1(_ai, "setMoveTarget", _hLeader);
+		CALLM1(_ai, "setMoveTargetRadius", _moveRadius);
+		CALLM0(_ai, "updatePositionWSP");
+	ENDMETHOD;
 
+	// Must return a bool, true or false, if unit can talk while doing this goal
+	// Default is false;
+	STATIC_METHOD(canTalk)
+		true;
 	ENDMETHOD;
 
 ENDCLASS;

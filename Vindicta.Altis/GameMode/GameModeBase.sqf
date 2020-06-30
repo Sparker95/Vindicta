@@ -5,10 +5,14 @@
 // This way we can process data more often instead of processing it less often and in larget batches
 #define TIMER_SERVICE_RESOLUTION 0.0
 
+// Debug flag, will limit generation or locations to a small area
+//#define __SMALL_MAP
+FIX_LINE_NUMBERS()
+
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
 
-#define ALL_MESSAGE_LOOPS_AND_TIMEOUTS ([["messageLoopGameMode", 10], ["messageLoopCommanderEast", 150], ["messageLoopCommanderWest", 150], ["messageLoopCommanderInd", 150], ["messageLoopMain", 30], ["messageLoopGroupAI", 10]])
-#define ALL_MESSAGE_LOOPS (["messageLoopGameMode", "messageLoopCommanderEast", "messageLoopCommanderWest", "messageLoopCommanderInd", "messageLoopMain", "messageLoopGroupAI"])
+#define ALL_MESSAGE_LOOPS_AND_TIMEOUTS ([["messageLoopGameMode", 10], ["messageLoopCommanderEast", 150], ["messageLoopCommanderWest", 150], ["messageLoopCommanderInd", 150], ["messageLoopMain", 30], ["messageLoopUnscheduled", 10]])
+#define ALL_MESSAGE_LOOPS (["messageLoopGameMode", "messageLoopCommanderEast", "messageLoopCommanderWest", "messageLoopCommanderInd", "messageLoopMain", "messageLoopUnscheduled"])
 
 #ifndef _SQF_VM
 #define CHAT_MSG(msg) [msg] remoteExec ["systemChat", ON_CLIENTS, NO_JIP]; diag_log msg
@@ -35,7 +39,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Message loops
 	// Must keep references to them to help with saving
 	VARIABLE_ATTR("messageLoopMain", [ATTR_SAVE]);
-	VARIABLE_ATTR("messageLoopGroupAI", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopUnscheduled", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopGameMode", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopCommanderInd", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopCommanderWest", [ATTR_SAVE]);
@@ -48,6 +52,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Locations
 	VARIABLE_ATTR("locations", [ATTR_SAVE]);
+
+	// Civilian presence manager
+	VARIABLE("civPresenceMgr"); // We don't save it, but rebuild on load
 
 	// Template names
 	VARIABLE_ATTR("tNameMilWest", [ATTR_SAVE]);
@@ -82,7 +89,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("lastSpawn", GAME_TIME);
 
 		T_SETV("messageLoopMain", NULL_OBJECT);
-		T_SETV("messageLoopGroupAI", NULL_OBJECT);
+		T_SETV("messageLoopUnscheduled", NULL_OBJECT);
 		T_SETV("messageLoopGameMode", NULL_OBJECT);
 		T_SETV("messageLoopCommanderInd", NULL_OBJECT);
 		T_SETV("messageLoopCommanderWest", NULL_OBJECT);
@@ -401,10 +408,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 
 			// Message loop for group AI
-			if (isNil "gMessageLoopGroupAI") then {
-				private _args = ["Group AI", 128, 0, true]; // Unscheduled!
-				gMessageLoopGroupAI = NEW("MessageLoop", _args);
-				T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
+			if (isNil "gMessageLoopUnscheduled") then {
+				private _args = ["Unscheduled", 128, 0, true]; // Unscheduled!
+				gMessageLoopUnscheduled = NEW("MessageLoop", _args);
+				T_SETV("messageLoopUnscheduled", gMessageLoopUnscheduled);
 			};
 		};
 
@@ -450,10 +457,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(gMessageLoopMain, "setMaxMessagesInSeries", MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES);
 		};
 
-		if (!IS_NULL_OBJECT(T_GETV("messageLoopGroupAI"))) then {
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIGroup" ARG 1 ARG 0 ARG 4]); // Interval, minObjPerFrame, maxObjPerFrame
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AIInfantry" ARG 0.2 ARG 1 ARG 2]); // Interval, minObjPerFrame, maxObjPerFrame
-			CALLM(gMessageLoopGroupAI, "addProcessCategoryUnscheduled", ["AILow" ARG 3 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
+		if (!IS_NULL_OBJECT(T_GETV("messageLoopUnscheduled"))) then {
+			CALLM(gMessageLoopUnscheduled, "addProcessCategoryUnscheduled", ["AIGroup" ARG 1 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopUnscheduled, "addProcessCategoryUnscheduled", ["AIInfantry" ARG 0.2 ARG 1 ARG 2]); // Interval, minObjPerFrame, maxObjPerFrame
+			CALLM(gMessageLoopUnscheduled, "addProcessCategoryUnscheduled", ["MiscLowPriority" ARG 1 ARG 0 ARG 1]); // Interval, minObjPerFrame, maxObjPerFrame
 		};
 
 		if(!IS_NULL_OBJECT(T_GETV("messageLoopGameMode"))) then {
@@ -509,7 +516,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					_recovery = true;
 				};
 			};
-		} forEach ["messageLoopMain", "messageLoopGroupAI", "messageLoopGameMode",
+		} forEach ["messageLoopMain", "messageLoopUnscheduled", "messageLoopGameMode",
 					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
 
 		if (!_recovery) then {
@@ -648,7 +655,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	protected virtual METHOD(getLocationOwner)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
-		CIVILIAN
+		GETV(_loc, "side")
 	ENDMETHOD;
 
 	// Returns template name for given side and faction
@@ -744,54 +751,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 		};
 
-		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
-						{
-							private _civ = [7] call pr0_fnc_coneTarget;
-							if(!isNull _civ) then {
-								[_civ, 'talk'] spawn CivPresence_fnc_talkTo;
-							};
-						}, // Script
-						0, // Arguments
-						9000, // Priority
-						true, // ShowWindow
-						false, //hideOnUse
-						"", //shortcut
-						"call pr0_fnc_talkCond", //condition
-						7, //radius
-						false, //unconscious
-						"", //selection
-						""]; //memoryPoint
-
-		_newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.paa' size='1' color = '#FFA300'/>") + ("<t size='1' color = '#FFA300'> Ask about intel</t>")), // title
-						{
-							private _civ = [7] call pr0_fnc_coneTarget;
-							if(!isNull _civ) then {
-								[_civ, 'intel'] spawn CivPresence_fnc_talkTo;
-							};
-						}, // Script
-						0, // Arguments
-						8999, // Priority
-						true, // ShowWindow
-						false, //hideOnUse
-						"", //shortcut
-						"call pr0_fnc_talkCond", //condition
-						7, //radius
-						false, //unconscious
-						"", //selection
-						""]; //memoryPoint
-
-		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Incite</t>")), // title
-						"[cursorTarget, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
-						0, // Arguments
-						8998, // Priority
-						true, // ShowWindow
-						false, //hideOnUse
-						"", //shortcut
-						"call pr0_fnc_talkCond", //condition
-						7, //radius
-						false, //unconscious
-						"", //selection
-						""]; //memoryPoint
 
 		// Init the UnitIntel on player
 		CALLSM0("UnitIntel", "initPlayer");
@@ -946,6 +905,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
+		// Add action to talk to bots
+		CALLSM0("DialogueClient", "initPlayerAction");
+
 		// Give player a lockpick
 		_newUnit addItemToUniform "ACE_key_lockpick";
 
@@ -961,6 +923,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			false
 		};
 
+		// !!! We must return value from here
 		_dataWasRestored
 	ENDMETHOD;
 
@@ -1126,6 +1089,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log "Special garrisons done";
 	ENDMETHOD;
 
+
 	METHOD(_createSpecialGarrisons)
 		params [P_THISOBJECT];
 
@@ -1160,7 +1124,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			default { gGarrisonPlayersCiv }; // what?!
 		}
 	ENDMETHOD;
-
+	
 	fnc_getLocName = {
 		params["_name"];
 		private _names = "getText( _x >> 'name') == _name" configClasses ( configFile >> "CfgWorlds" >> worldName >> "Names" );
@@ -1214,6 +1178,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Locations which will be processed for potential roadblock positions around them
 		private _locationsForRoadblocks = [];
+
+		private _civPresenceMgr = NEW("CivPresenceMgr", [100 ARG T_GETV("tNameCivilian")]);
+		T_SETV("civPresenceMgr", _civPresenceMgr);
 
 		{ // forEach (entities "Vindicta_LocationSector");
 			private _locSector = _x;
@@ -1280,6 +1247,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			};
 
+			// Mark city area for civ presence
+			if (_locType == LOCATION_TYPE_CITY) then {
+				CALLM1(_civPresenceMgr, "markAreaForInitialization", [_locSectorPos] + _locBorder);
+			};
+
 			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
 				_predefinedRoadblockPositions pushBack _locSectorPos;
 			} else {
@@ -1293,6 +1265,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#endif
 			FIX_LINE_NUMBERS()
 		} forEach (entities "Vindicta_LocationSector");
+
+		// Initialize civ presence grid
+		CALLM0(_civPresenceMgr, "createCivPresenceObjects");
+		CALLM0(_civPresenceMgr, "start");
 
 		// Process locations for roadblocks
 		private _roadblockPositionsAroundLocations = [];
@@ -2230,7 +2206,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Set global variables
 		gMessageLoopMain = T_GETV("messageLoopMain");
-		gMessageLoopGroupAI = T_GETV("messageLoopGroupAI");
+		gMessageLoopUnscheduled = T_GETV("messageLoopUnscheduled");
 		gMessageLoopGameMode = T_GETV("messageLoopGameMode");
 		gMessageLoopCommanderInd = T_GETV("messageLoopCommanderInd");
 		gMessageLoopCommanderWest = T_GETV("messageLoopCommanderWest");
@@ -2271,6 +2247,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Group message loop manager
 		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
+		// Recreate civilian presence manager
+		private _civPresenceMgr = NEW("CivPresenceMgr", [100 ARG T_GETV("tNameCivilian")]);
+		T_SETV("civPresenceMgr", _civPresenceMgr);
+
 		// Load locations
 		private _toLoad = count T_GETV("locations");
 		{
@@ -2281,7 +2261,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CRITICAL_SECTION {
 				CALLM1(_storage, "load", _loc);
 			};
+			if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
+				pr _border = CALLM0(_loc, "getBorder");
+				CALLM1(_civPresenceMgr, "markAreaForInitialization", _border);
+			};
+
 		} forEach T_GETV("locations");
+
+		// Initialize civ presence grid
+		CALLM0(_civPresenceMgr, "createCivPresenceObjects");
+		CALLM0(_civPresenceMgr, "start");
 
 		// Special garrisons
 		T_CALLM1("_loadSpecialGarrisons", _storage);

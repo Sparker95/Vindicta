@@ -1887,7 +1887,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Send a success message to player
 		pr _args = ["We have successfully created a location here!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
-
+		
 	ENDMETHOD;
 
 	public server METHOD(clientClaimLocation)
@@ -2068,7 +2068,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_INFO_MSG(_str, []);
 		#endif
 	ENDMETHOD;
-
+	
 	/*
 	Method: (private) generateAttackActions
 	Generate a list of possible/reasonable attack actions that could be performed. It will exclude ones that 
@@ -3225,6 +3225,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_activeActions deleteAt (_activeActions find _action);
 		};
 	ENDMETHOD;
+
 
 	// = = = = = = = = = = = Radio = = = = = = = = = = = = =
 

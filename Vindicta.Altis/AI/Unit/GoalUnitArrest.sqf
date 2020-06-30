@@ -7,15 +7,21 @@ Author: Marvis 09.05.2019
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitArrest
-CLASS("GoalUnitArrest", "Goal")
+CLASS("GoalUnitArrest", "GoalUnit")
 
-	public STATIC_METHOD(createPredefinedAction)
-		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+	STATIC_METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_ARREST, [objNull]] ],	// Required parameters
+			[]	// Optional parameters
+		]
+	ENDMETHOD;
 
-		pr _action = NEW("ActionUnitArrest", [_AI ARG _parameters]);
-	
-		_action
+	STATIC_METHOD(onGoalChosen)
+		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
 
+		// Vehicle usage is forbidden
+		CALLM1(_ai, "setAllowVehicleWSP", false);
+		
 	ENDMETHOD;
 
 ENDCLASS;

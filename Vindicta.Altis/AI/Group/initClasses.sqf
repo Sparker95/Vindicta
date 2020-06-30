@@ -19,6 +19,7 @@ call compile preprocessFileLineNumbers "AI\Group\ActionGroupStayInVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupUnflipVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupWatchPosition.sqf";
+call compile preprocessFileLineNumbers "AI\Group\_GoalGroup.sqf";
 
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupAirLand.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupAirMaintain.sqf";
@@ -39,6 +40,8 @@ call compile preprocessFileLineNumbers "AI\Group\GoalGroupStayInVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupUnflipVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupOverwatchArea.sqf";
+call compile preprocessFileLineNumbers "AI\Group\GoalGroupInvestigatePointOfInterest.sqf";
+call compile preprocessFileLineNumbers "AI\Group\GoalGroupEscort.sqf";
 call compile preprocessFileLineNumbers "AI\Group\_SensorGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\_SensorGroupStimulatable.sqf";
 call compile preprocessFileLineNumbers "AI\Group\SensorGroupState.sqf";

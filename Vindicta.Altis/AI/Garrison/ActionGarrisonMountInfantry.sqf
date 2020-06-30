@@ -9,6 +9,13 @@ All infantry mounts vehicles as passengers
 CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 	VARIABLE("mount");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_MOUNT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -28,7 +35,7 @@ CLASS("ActionGarrisonMountInfantry", "ActionGarrison")
 
 		// Do we need to mount or dismount?
 		pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInGarrisonVehiclesAsCargo"] select T_GETV("mount");
-		pr _args = [_goalClassName, 0, [[TAG_INSTANT, _instant]], _AI];
+		pr _args = [_goalClassName, 0, [[TAG_INSTANT, _instant], [TAG_BEHAVIOUR, "AWARE"], [TAG_COMBAT_MODE, "GREEN"], [TAG_SPEED_MODE, "NORMAL"] ], _AI];
 
 		// Give goals to these groups
 		{

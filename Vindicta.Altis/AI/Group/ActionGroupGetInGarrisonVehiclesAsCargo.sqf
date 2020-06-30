@@ -28,6 +28,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		_instant = T_GETV("instantOverride") || _instant;
 		T_SETV("instantOverride", _instant);
 
+		T_CALLM0("applyGroupBehaviour");
+
 		T_CALLM0("clearUnitGoals");
 		T_CALLM0("regroup");
 
@@ -38,7 +40,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		pr _unitsInf = CALLM0(_group, "getInfantryUnits") select {
 			pr _unitAI = CALLM0(_x, "getAI");
 			// Not assigned to cargo, or not in assigned cargo spot
-			CALLM0(_unitAI, "getAssignedVehicleRole") != "CARGO" || { !CALLM0(_unitAI, "isAtAssignedSeat") }
+			CALLM0(_unitAI, "getAssignedVehicleRole") != "CARGO" || { !CALLM0(_unitAI, "getAtAssignedVehicleAndSeat") }
 		};
 
 		// Succeed instantly if there are no infantry
@@ -88,8 +90,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 			};
 			pr _unitAI = CALLM0(_unit, "getAI");
 			pr _args = [
-				["vehicle", _veh],
-				["vehicleRole", "CARGO"],
+				[TAG_TARGET_VEHICLE_UNIT, _veh],
+				[TAG_VEHICLE_ROLE, "CARGO"],
 				[TAG_INSTANT, _instant]
 			];
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);

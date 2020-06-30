@@ -26,6 +26,7 @@ Author: Sparker
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
 Unit_fnc_EH_Respawn = compile preprocessFileLineNumbers "Unit\EH_Respawn.sqf";
 Unit_fnc_EH_handleDamageInfantry = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantry.sqf";
+Unit_fnc_EH_handleDamageVehicle = compile preprocessFileLineNumbers "Unit\EH_handleDamageVehicle.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
@@ -160,7 +161,10 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
-			//_hO enableWeaponDisassembly false; // Disable weapon disassmbly
+			// Don't uncomment this until weapon disassembly is supported
+			// I am looking at you Marvis, don't
+			// Just do not
+			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
 			T_CALLM0("initObjectVariables");
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
@@ -496,7 +500,10 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						// 	};
 						// };
 
-						//_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
+						// Don't uncomment this until weapon disassembly is supported
+						// I am looking at you Marvis, don't
+						// Just do not
+						_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						T_CALLM1("createAI", "AIUnitVehicle");
@@ -757,6 +764,18 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			};
 		};
 		*/
+
+		// HandleDamage for vehicles
+		if ((_data select UNIT_DATA_ID_CAT == T_VEH) &&
+			{owner _hO in [0, clientOwner]}) then {			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
+
+			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
+				_hO removeAllEventHandlers "handleDamage";
+				pr _ehid = _hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageVehicle];
+				//diag_log format ["Added damage event handler: %1", _thisObject];
+				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
+			};
+		};
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
@@ -2569,13 +2588,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		true
 	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD(saveStaticVariables)
+	public STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = GETSV("Unit", "all");
 		CALLM2(_storage, "save", "Unit_all", +_all);
 	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD(loadStaticVariables)
+	public STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = CALLM1(_storage, "load", "Unit_all");
 		SETSV("Unit", "all", +_all);

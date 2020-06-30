@@ -68,20 +68,5 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 		};
 
 	ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	public override METHOD(terminate)
-		params [P_THISOBJECT];
-		
-		// Delete given goals
-		private _AI = T_GETV("AI");
-		private _group = GETV(_AI, "agent");
-		private _inf = CALLM0(_group, "getInfantryUnits");
-		{
-			private _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
-		} forEach _inf;
-		
-	ENDMETHOD;
 
 ENDCLASS;
