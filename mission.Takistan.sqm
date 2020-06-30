@@ -30,7 +30,6 @@ binarizationWanted=0;
 addons[]=
 {
 	"A3_Characters_F",
-	"ace_nouniformrestrictions",
 	"ace_explosives",
 	"A3_Ui_F",
 	"vindicta_module_location",
@@ -56,7 +55,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=21;
+		items=20;
 		class Item0
 		{
 			className="A3_Characters_F";
@@ -66,122 +65,115 @@ class AddonsMetaData
 		};
 		class Item1
 		{
-			className="ace_nouniformrestrictions";
-			name="ACE3 - No Uniform Restrictions";
-			author="ACE-Team";
-			url="http://ace3mod.com/";
-		};
-		class Item2
-		{
 			className="ace_explosives";
 			name="ACE3 - Explosives";
 			author="ACE-Team";
 			url="http://ace3mod.com/";
 		};
-		class Item3
+		class Item2
 		{
 			className="A3_Ui_F";
 			name="Arma 3 - User Interface";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item4
+		class Item3
 		{
 			className="vindicta_module_location";
 			name="vindicta - Module_Location";
 		};
-		class Item5
+		class Item4
 		{
 			className="A3_Supplies_F_Heli";
 			name="Arma 3 Helicopters - Ammoboxes and Supplies";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item6
+		class Item5
 		{
 			className="ace_cargo";
 			name="ACE3 - Cargo";
 			author="ACE-Team";
 			url="http://ace3mod.com/";
 		};
-		class Item7
+		class Item6
 		{
 			className="A3_Soft_F_Beta";
 			name="Arma 3 Beta - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item8
+		class Item7
 		{
 			className="A3_Soft_F_Exp";
 			name="Arma 3 Apex - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item9
+		class Item8
 		{
 			className="A3_Modules_F";
 			name="Arma 3 Alpha - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item10
+		class Item9
 		{
 			className="CUP_CAStructures_E_Mil";
 			name="CUP_CAStructures_E_Mil";
 		};
-		class Item11
+		class Item10
 		{
 			className="CUP_CAMisc_E_WF";
 			name="CUP_CAMisc_E_WF";
 		};
-		class Item12
+		class Item11
 		{
 			className="A3_Structures_F";
 			name="Arma 3 - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item13
+		class Item12
 		{
 			className="CUP_StandaloneTerrains_Core_Faction";
 			name="CUP_StandaloneTerrains_Core_Faction";
 		};
-		class Item14
+		class Item13
 		{
 			className="A3_Structures_F_Enoch_Military";
 			name="Arma 3 Contact Platform - Military Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item15
+		class Item14
 		{
 			className="CUP_CAStructures_E_HouseL";
 			name="CUP_CAStructures_E_HouseL";
 		};
-		class Item16
+		class Item15
 		{
 			className="CUP_CAStructures_E_HouseK";
 			name="CUP_CAStructures_E_HouseK";
 		};
-		class Item17
+		class Item16
 		{
 			className="CUP_Misc_e_Config";
 			name="CUP_Misc_e_Config";
 		};
-		class Item18
+		class Item17
 		{
 			className="A3_Static_F";
 			name="Arma 3 Alpha - Turrets";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item19
+		class Item18
 		{
 			className="CUP_CAStructures_E_HouseA_A_Minaret";
 			name="CUP_CAStructures_E_HouseA_A_Minaret";
 		};
-		class Item20
+		class Item19
 		{
 			className="CUP_CAStructures_E_HouseC";
 			name="CUP_CAStructures_E_HouseC";
