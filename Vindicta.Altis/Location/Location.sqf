@@ -360,11 +360,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments: _hObject
 	*/
 	public METHOD(addObject)
-		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject"), P_BOOL("_autoSimple")];
+		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
-		// Convert to simple object if required
-		if(_autoSimple && !_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
-			_hObject = [_hObject] call BIS_fnc_replaceWithSimpleObject;
+		private _type = typeOf _hObject;
+
+		// Disable object simulation if needed
+		if((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) == "thingX"}) then {
+			_hObject enableSimulationGlobal false;
 		};
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
@@ -394,7 +396,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if(_alreadyRegistered) exitWith {};
 
 		// Check how it affects the location's infantry capacity
-		private _type = typeOf _hObject;
 		private _modelName = (getModelInfo _hObject) select 0;
 		private _index = location_b_capacity findIf {_type in _x#0};
 		private _cap = 0;
