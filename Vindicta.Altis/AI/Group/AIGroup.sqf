@@ -380,15 +380,6 @@ CLASS("AIGroup", "AI_GOAP")
 		true
 	ENDMETHOD;
 
-	// Debug
-
-	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	public override METHOD(getDebugUIVariableNames)
-		[
-			"suspTarget"
-		]
-	ENDMETHOD;
-
 	/*
 	Sets speed mode of group.
 	For infantry and vehicle groups it is done differently.

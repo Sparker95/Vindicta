@@ -525,14 +525,14 @@ OOP_assert_method_call = {
 OOP_assert_method = {
 	params["_class", "_method", "_obj", "_file", "_line"];
 
-	if (isNil "_methodNameStr") exitWith {
+	if (isNil "_method") exitWith {
 		private _errorText = "method name is nil";
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
 
-	if (isNil "_classNameStr") exitWith {
-		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
+	if (isNil "_class") exitWith {
+		private _errorText = format ["class name is nil. Attempt to call method: %1", _method];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
