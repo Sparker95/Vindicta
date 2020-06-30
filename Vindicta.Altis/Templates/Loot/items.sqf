@@ -35,7 +35,7 @@ t_TFARBackpacks_0912 = [
 					"tf_rt1523g_fabric", //"Belongs" to BluFor
 					"tf_rt1523g_green", //"Belongs" to BluFor
 					"tf_rt1523g_rhs", //"Belongs" to BluFor
-					"tf_rt1523g_sage", //"Belongs" to BluFor	
+					"tf_rt1523g_sage", //"Belongs" to BluFor
 					"tf_rt1523g_big_rhs", //"Belongs" to BluFor
 					"tf_anarc210" //, //"Belongs" to BluFor
 					//"tf_anprc152" //"Belongs" to BluFor
@@ -66,7 +66,7 @@ t_TFARBackpacks_0100 = [
 					"TFAR_rt1523g_fabric", //"Belongs" to BluFor
 					"TFAR_rt1523g_green", //"Belongs" to BluFor
 					"TFAR_rt1523g_rhs", //"Belongs" to BluFor
-					"TFAR_rt1523g_sage", //"Belongs" to BluFor	
+					"TFAR_rt1523g_sage", //"Belongs" to BluFor
 					"TFAR_rt1523g_big_rhs", //"Belongs" to BluFor
 					"TFAR_anarc210" //"Belongs" to BluFor
 					//"TFAR_anprc152" //"Belongs" to BluFor
@@ -136,55 +136,56 @@ t_ACEMiscItems = [
 					["ACE_ATragMX",6],
 					["ACE_RangeCard",6],
 					["ACE_HandFlare_White", 30], // Flares
-					["ACE_key_lockpick", 20]	// Lockpick
+					["ACE_key_lockpick", 20],	// Lockpick
+					["ACE_Banana", 1]
 				];
 
 // ACE medical items for vehicles
 t_ACEMedicalItems_vehicles = [
-                ["ACE_fieldDressing", 10],
-                ["ACE_packingBandage", 10],
-                ["ACE_elasticBandage", 10],
-                ["ACE_tourniquet", 5],
-                ["ACE_splint", 2],
-                ["ACE_morphine", 4],
-                ["ACE_adenosine", 3],
-                ["ACE_epinephrine", 3],
-                //["ACE_plasmaIV", 1],
-                //["ACE_plasmaIV_500", 1],
-                //["ACE_plasmaIV_250", 0],
-                //["ACE_salineIV", 1],
-                //["ACE_salineIV_500", 1],
-                //["ACE_salineIV_250", 10],
-                //["ACE_bloodIV", 10],
-                //["ACE_bloodIV_500", 8],
-                //["ACE_bloodIV_250", 10],
-                ["ACE_quikClot", 5]
-                //["ACE_personalAidKit", 3],
-                //["ACE_surgicalKit", 1] //,
-                //["ACE_bodyBag", 0]
-                ];
+					["ACE_fieldDressing", 10],
+					["ACE_packingBandage", 10],
+					["ACE_elasticBandage", 10],
+					["ACE_tourniquet", 5],
+					["ACE_splint", 2],
+					["ACE_morphine", 4],
+					["ACE_adenosine", 3],
+					["ACE_epinephrine", 3],
+					//["ACE_plasmaIV", 1],
+					//["ACE_plasmaIV_500", 1],
+					//["ACE_plasmaIV_250", 0],
+					//["ACE_salineIV", 1],
+					//["ACE_salineIV_500", 1],
+					//["ACE_salineIV_250", 10],
+					//["ACE_bloodIV", 10],
+					//["ACE_bloodIV_500", 8],
+					//["ACE_bloodIV_250", 10],
+					["ACE_quikClot", 5]
+					//["ACE_personalAidKit", 3],
+					//["ACE_surgicalKit", 1] //,
+					//["ACE_bodyBag", 0]
+				];
 
 // ACE medical items for cargo boxes
 t_ACEMedicalItems_cargo = [
-                ["ACE_fieldDressing", 100],
-                ["ACE_packingBandage", 100],
-                ["ACE_elasticBandage", 100],
-                ["ACE_tourniquet", 40],
-                ["ACE_splint", 30],
-                ["ACE_morphine", 40],
-                ["ACE_adenosine", 20],
-                ["ACE_epinephrine", 40],
-                //["ACE_plasmaIV", 1],
-                //["ACE_plasmaIV_500", 10],
-                //["ACE_plasmaIV_250", 20],
-                //["ACE_salineIV", 1],
-                //["ACE_salineIV_500", 10],
-               // ["ACE_salineIV_250", 20],
-                ["ACE_bloodIV", 40],
-                ["ACE_bloodIV_500", 40],
-                ["ACE_bloodIV_250",  20],
-                ["ACE_quikClot", 40],
-                ["ACE_personalAidKit", 10],
-                ["ACE_surgicalKit", 10]
-                //["ACE_bodyBag", 0]
-                ];
+					["ACE_fieldDressing", 100],
+					["ACE_packingBandage", 100],
+					["ACE_elasticBandage", 100],
+					["ACE_tourniquet", 40],
+					["ACE_splint", 30],
+					["ACE_morphine", 40],
+					["ACE_adenosine", 20],
+					["ACE_epinephrine", 40],
+					//["ACE_plasmaIV", 1],
+					//["ACE_plasmaIV_500", 10],
+					//["ACE_plasmaIV_250", 20],
+					//["ACE_salineIV", 1],
+					//["ACE_salineIV_500", 10],
+					// ["ACE_salineIV_250", 20],
+					["ACE_bloodIV", 40],
+					["ACE_bloodIV_500", 40],
+					["ACE_bloodIV_250",  20],
+					["ACE_quikClot", 40],
+					["ACE_personalAidKit", 10],
+					["ACE_surgicalKit", 10]
+					//["ACE_bodyBag", 0]
+				];
