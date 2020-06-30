@@ -43,7 +43,7 @@ CLASS("AnimObject", "")
 	// |                                                                    |
 	// | Returns true if there are any free points left                     |
 	// ----------------------------------------------------------------------
-	METHOD(isFree)
+	public METHOD(isFree)
 		params [P_THISOBJECT];
 		private _pointCount = T_GETV("pointCount");
 		private _units = T_GETV("units");
@@ -61,7 +61,7 @@ CLASS("AnimObject", "")
 	// |  [_pointID, _movePosOffset]
 	// |   _movePosOffset - position in MODEL coordinates
 	// ----------------------------------------------------------------------
-	METHOD(getFreePoint)
+	public METHOD(getFreePoint)
 		params [P_THISOBJECT];
 		private _units = T_GETV("units");
 		private _pointCountM1 = T_GETV("pointCount") - 1;
@@ -91,7 +91,7 @@ CLASS("AnimObject", "")
 	// |                                                                    |
 	// | Returns true if the point with given ID is free                    |
 	// ----------------------------------------------------------------------
-	METHOD(isPointFree)
+	public METHOD(isPointFree)
 		params [P_THISOBJECT, P_NUMBER("_pointID")];
 		private _units = T_GETV("units");
 		private _return = ( (_units select _pointID) == "");
@@ -105,7 +105,7 @@ CLASS("AnimObject", "")
 	// | Return value: [_offset, _animation, _dir, _walkOutDir, _walkOutDistance] or [] if the point is occupied
 	// | _offset, _dir - offset position and direction in MODEL coordinates
 	// ----------------------------------------------------------------------
-	METHOD(getPointData)
+	public METHOD(getPointData)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_NUMBER("_pointID")];
 		private _units = T_GETV("units");
 
@@ -124,7 +124,7 @@ CLASS("AnimObject", "")
 	// |
 	// | Notifies the AnimObject that the position is now not occupied any more
 	// ----------------------------------------------------------------------
-	METHOD(pointIsFree)
+	public METHOD(pointIsFree)
 		params [P_THISOBJECT, P_NUMBER("_pointID") ];
 		private _units = T_GETV("units");
 		_units set [_pointID, ""];
@@ -133,7 +133,7 @@ CLASS("AnimObject", "")
 	// ----------------------------------------------------------------------------
 	// |                    G E T   O B J E C T
 	// ----------------------------------------------------------------------------
-	METHOD(getObject)
+	public METHOD(getObject)
 		params [P_THISOBJECT ];
 		T_GETV("object")
 	ENDMETHOD;
@@ -154,7 +154,7 @@ CLASS("AnimObject", "")
 	// | [_posOffset, _completionRadius]
 	// ----------------------------------------------------------------------
 
-	METHOD(getPointMoveOffset)
+	public virtual METHOD(getPointMoveOffset)
 		params [P_THISOBJECT, P_NUMBER("_pointID") ];
 		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
@@ -168,7 +168,7 @@ CLASS("AnimObject", "")
 	// | Inherited classes must implement this.
 	// | Return value: [_pos, _dir, _animation, _animationOut, _walkOutDir, _walkOutDistance]
 	// ----------------------------------------------------------------------
-	METHOD(getPointDataInternal)
+	public virtual METHOD(getPointDataInternal)
 		params [P_THISOBJECT, P_NUMBER("_pointID")];
 		private _animations = T_GETV("animations");
 		private _animationsOut = T_GETV("animationsOut");

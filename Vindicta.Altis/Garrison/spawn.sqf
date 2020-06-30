@@ -13,13 +13,13 @@ Returns: nil
 
 #define pr private
 
-params [P_THISOBJECT, P_BOOL("_global"), P_BOOL("_instantAction")];
+params [P_THISOBJECT, P_BOOL("_instantAction")];
 
 OOP_INFO_0("SPAWN");
 
 ASSERT_THREAD(_thisObject);
 
-if(T_CALLM("isDestroyed", [])) exitWith {
+if(T_CALLM0("isDestroyed")) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 	DUMP_CALLSTACK;
 };
@@ -44,23 +44,14 @@ pr _action = CALLM0(_AI, "getCurrentAction");
 if(_action != NULL_OBJECT) then { _action = CALLM0(_action, "getFrontSubaction"); };
 
 pr _spawningHandled = if (_action != NULL_OBJECT) then {
-	ASSERT_MSG(!_global, "Global garrison should not have an active action");
 	CALLM0(_action, "spawn");
 } else {
 	false
 };
 
+// Current action doesn't handle spawning
 if (!_spawningHandled) then {
-	// Current action doesn't handle spawning
-
 	private _loc = T_GETV("location");
-
-	// SAVEBREAK >>> Cleanup invalid units (T_INF units *must* have a group)
-	// This might just be a bug not a savebreak
-	{
-		T_CALLM1("removeUnit", _x);
-	} forEach (_units select { CALLM0(_x, "getGroup") == NULL_OBJECT && CALLM0(_x, "getCategory") == T_INF });
-	// <<< SAVEBREAK
 
 	if (_loc != NULL_OBJECT) then {
 		// If there is a location, spawn at it
@@ -90,13 +81,16 @@ if (!_spawningHandled) then {
 		} forEach _units;
 	} else {
 		// Otherwise spawn everything around some road
-		pr _garPos = T_CALLM0("getPos");
+		private _garPos = T_CALLM0("getPos");
+		// Otherwise spawn everything around garrison position
+		private _global = T_GETV("type") == GARRISON_TYPE_AMBIENT;
+
 		OOP_INFO_2("Spawning groups without location at pos %1: %2", _groups, _garPos);
 		{
-			CALLM1(_x, "spawnAtPos", _garPos);
+			CALLM2(_x, "spawnAtPos", _garPos, _global);
 		} forEach _groups;
 
-		// Spawn single units (really shouldn't be any)
+		// Spawn single units
 		{
 			CALLM3(_x, "spawn", _garPos, 0, _global);
 		} forEach (_units select { CALLM0(_x, "getGroup") == NULL_OBJECT });
@@ -115,14 +109,11 @@ if (_action != NULL_OBJECT) then {
 //CALLM1(_AI, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_SPAWNED);
 
 // Change process category if it's active
-if (T_GETV("active")) then {
-	pr _msgLoop = T_CALLM0("getMessageLoop");
-	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
-	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonSpawned", _AI);
+if (T_CALLM0("hasAI")) then {
+	CALLM1(_AI, "addToProcessCategory", "AIGarrisonSpawned");
+	// Call AI "process" method to accelerate decision taking
+	// Pass the _accelerate flag to update sensors sooner, and allow instant completion of some actions
+	CALLM1(_AI, "process", _instantAction);
 };
-
-// Call AI "process" method to accelerate decision taking
-// Pass the _accelerate flag to update sensors sooner, and allow instant completion of some actions
-CALLM1(_AI, "process", _instantAction);
 
 0

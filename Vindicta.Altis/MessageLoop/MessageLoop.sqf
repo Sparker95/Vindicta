@@ -56,7 +56,7 @@ CLASS("MessageLoop", "Storable");
 	// Event handler ID
 				VARIABLE("eachFrameEHID");
 	// Bool, if true then message loop will be processing messages in per-frame handler.
-	/* save */	VARIABLE_ATTR("unscheduled", [ATTR_SAVE_VER(18)]);
+	/* save */	VARIABLE_ATTR("unscheduled", [ATTR_SAVE]);
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -144,7 +144,7 @@ CLASS("MessageLoop", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(setName)
+	public METHOD(setName)
 		params [P_THISOBJECT, P_STRING("_name")];
 		T_SETV("name", _name);
 	ENDMETHOD;
@@ -155,7 +155,7 @@ CLASS("MessageLoop", "Storable");
 	before switching to processing its process categories.
 	When thread is created, its default value is N_MESSAGES_IN_SERIES_DEFAULT.
 	*/
-	METHOD(setMaxMessagesInSeries)
+	public METHOD(setMaxMessagesInSeries)
 		params [P_THISOBJECT, ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 	ENDMETHOD;
@@ -172,10 +172,11 @@ CLASS("MessageLoop", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(postMessage)
+	public METHOD(postMessage)
 		#ifdef DEBUG_MESSAGE_LOOP
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
+		FIX_LINE_NUMBERS()
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 
 		PROFILE_ADD_EXTRA_FIELD("message_source", _msg select MESSAGE_ID_SOURCE);
@@ -196,7 +197,7 @@ CLASS("MessageLoop", "Storable");
 	}
 	*/
 	/*
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		// For now it returns false (message not handled)
 		false
 	ENDMETHOD;
@@ -216,7 +217,7 @@ CLASS("MessageLoop", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(deleteReceiverMessages)
+	public METHOD(deleteReceiverMessages)
 		params [P_THISOBJECT, P_OOP_OBJECT("_msgReceiver") ];
 		CRITICAL_SECTION {
 			private _msgQueue = T_GETV("msgQueue");
@@ -240,7 +241,7 @@ CLASS("MessageLoop", "Storable");
 
 	// Functions for process categories
 
-	METHOD(addProcessCategory)
+	public METHOD(addProcessCategory)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
 
@@ -260,7 +261,7 @@ CLASS("MessageLoop", "Storable");
 	ENDMETHOD;
 
 	// Only for unscheduled msg loop
-	METHOD(addProcessCategoryUnscheduled)
+	public METHOD(addProcessCategoryUnscheduled)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), ["_interval", 1, [0]], ["_minObjPerFrame", 0, [0]], ["_maxObjPerFrame", 100, [0]]];
 
@@ -278,7 +279,6 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
-		nil
 	ENDMETHOD;
 
 	// Only relevant for scheduled process categories
@@ -308,21 +308,35 @@ CLASS("MessageLoop", "Storable");
 		};
 	ENDMETHOD;
 
-	METHOD(addProcessCategoryObject)
+	public METHOD(addProcessCategoryObject)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_tag"), P_OOP_OBJECT("_object")];
 
 			OOP_INFO_2("addProcessCategoryObject: %1 %2", _tag, _object);
 
-			// Find category with given tag
+			// Remove from any existing categories
 			pr _cats = T_GETV("processCategories");
-			pr _index = _cats findIf {(_x select __PC_ID_TAG) == _tag};
-			if (_index != -1) then {
-				pr _cat = _cats select _index;
-				pr _allObjects = _cat select __PC_ID_ALL_OBJECTS;
+			{
+				pr _allObjects = _x#__PC_ID_ALL_OBJECTS;
+				pr _index = _allObjects find _object;
+				if (_index != NOT_FOUND) then {
+					_x#__PC_ID_OBJECTS deleteAt _index;
+					_allObjects deleteAt _index;
+					// Delete from queue of high priority objects
+					pr _objsHigh = _x#__PC_ID_OBJECTS_URGENT;
+					_objsHigh deleteAt (_objsHigh findIf { _x#0 == _object });
+				};
+			} forEach _cats;
+
+			// Find category with given tag
+			pr _index = _cats findIf { _x#__PC_ID_TAG == _tag };
+			if (_index != NOT_FOUND) then {
+				pr _cat = _cats#_index;
+				pr _allObjects = _cat#__PC_ID_ALL_OBJECTS;
+
 				// Ensure we don't add same object twice
-				if (_allObjects find _object == -1) then {
-					pr _objs = _cat select __PC_ID_OBJECTS;
+				if (_allObjects find _object == NOT_FOUND) then {
+					pr _objs = _cat#__PC_ID_OBJECTS;
 					_objs pushBack __PC_OBJECT_NEW(_object, false);
 					_allObjects pushBack _object;
 				} else {
@@ -339,7 +353,7 @@ CLASS("MessageLoop", "Storable");
 		nil
 	ENDMETHOD;
 
-	METHOD(deleteProcessCategoryObject)
+	public METHOD(deleteProcessCategoryObject)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
 
@@ -347,12 +361,12 @@ CLASS("MessageLoop", "Storable");
 
 			pr _cats = T_GETV("processCategories");
 			{
-				pr _allObjects = _x select __PC_ID_ALL_OBJECTS;
+				pr _allObjects = _x#__PC_ID_ALL_OBJECTS;
 				pr _index = _allObjects find _object;
-				pr _objs = _x select __PC_ID_OBJECTS;
+				pr _objs = _x#__PC_ID_OBJECTS;
 
 				#ifdef _SQF_VM
-				if (_index != -1) then {
+				if (_index != NOT_FOUND) then {
 				#endif
 
 					//diag_log format ["index: %1", _index];
@@ -360,8 +374,8 @@ CLASS("MessageLoop", "Storable");
 					_allObjects deleteAt _index;
 
 					// Delete from queue of high priority objects
-					pr _objsHigh = _x select __PC_ID_OBJECTS_URGENT;
-					_objsHigh deleteAt (_objsHigh findIf {(_x#0) == _object});
+					pr _objsHigh = _x#__PC_ID_OBJECTS_URGENT;
+					_objsHigh deleteAt (_objsHigh findIf {_x#0 == _object});
 
 					//true // No need to search any more
 
@@ -382,7 +396,7 @@ CLASS("MessageLoop", "Storable");
 	ENDMETHOD;
 
 	// Adds this object to high priority queue of its process category
-	METHOD(setObjectUrgentPriority)
+	public METHOD(setObjectUrgentPriority)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
 
@@ -409,19 +423,19 @@ CLASS("MessageLoop", "Storable");
 		nil
 	ENDMETHOD;
 
-	METHOD(lock)
+	public METHOD(lock)
 		params [P_THISOBJECT];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_LOCK(_mutex);
 	ENDMETHOD;
 
-	METHOD(tryLockTimeout)
+	public METHOD(tryLockTimeout)
 		params [P_THISOBJECT, P_NUMBER("_timeout")];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_TRY_LOCK_TIMEOUT(_mutex, _timeout);
 	ENDMETHOD;
 
-	METHOD(unlock)
+	public METHOD(unlock)
 		params [P_THISOBJECT];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_UNLOCK(_mutex);
@@ -429,7 +443,7 @@ CLASS("MessageLoop", "Storable");
 
 	// Returns true if message loop is running
 	// That is, it has not crashed
-	METHOD(isRunning)
+	public METHOD(isRunning)
 		params [P_THISOBJECT];
 		if (T_GETV("unscheduled")) then {
 			true // Always running
@@ -441,7 +455,7 @@ CLASS("MessageLoop", "Storable");
 
 	// Same as above, inverted
 	// Returns true if it has crashed
-	METHOD(isNotRunning)
+	public METHOD(isNotRunning)
 		params [P_THISOBJECT];
 		if (T_GETV("unscheduled")) then {
 			false // Always running
@@ -451,7 +465,7 @@ CLASS("MessageLoop", "Storable");
 		};
 	ENDMETHOD;
 
-	METHOD(getLength)
+	public METHOD(getLength)
 		params [P_THISOBJECT];
 		private _msgQueue = T_GETV("msgQueue");
 		count _msgQueue
@@ -459,7 +473,7 @@ CLASS("MessageLoop", "Storable");
 
 	// STORAGE
 
-	/* override */ METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		T_SETV("mutex", MUTEX_NEW());

@@ -26,7 +26,7 @@ CLASS("AmbientMission", "")
 	
 	Returns: Boolean, whether the mission should be active for the city specified.
 	*/
-	METHOD(isActive)
+	public METHOD(isActive)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		private _states = T_GETV("states");
 		private _cityData = GETV(_city, "gameModeData");
@@ -41,7 +41,7 @@ CLASS("AmbientMission", "")
 	
 	_city - Location, the city we want to update for.
 	*/
-	METHOD(update)
+	public METHOD(update)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 
 		private _active = T_CALLM("isActive", [_city]);
@@ -61,7 +61,7 @@ CLASS("AmbientMission", "")
 	
 	_city - Location, the city we want to update for.
 	*/
-	/* protected virtual */ METHOD(updateExisting)
+	protected virtual METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 	ENDMETHOD;
 
@@ -74,7 +74,7 @@ CLASS("AmbientMission", "")
 	
 	_city - Location, the city we want to (maybe) spawn new missions for.
 	*/
-	/* protected virtual */ METHOD(spawnNew)
+	protected virtual METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 	ENDMETHOD;
 	

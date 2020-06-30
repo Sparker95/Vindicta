@@ -38,3 +38,5 @@ gStaticStringHashmap = [false] call CBA_fnc_createNamespace;
 misc_fnc_createStaticString = compile preprocessFileLineNumbers "Misc\fn_createStaticString.sqf";
 
 misc_fnc_findSafeSpawnPos = compile preprocessFileLineNumbers "Misc\fn_findSafeSpawnPos.sqf";
+
+misc_fnc_bearingString = compile preprocessFileLineNumbers "Misc\fn_bearingString.sqf";

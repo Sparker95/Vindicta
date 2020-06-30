@@ -11,6 +11,13 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 
 	VARIABLE("route");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_ROUTE, [[]] ] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -21,7 +28,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _hG = T_GETV("hG");
@@ -67,9 +74,15 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 			} else {
 				// Generate some random patrol waypoints
 				pr _angle = 0;
-				while {_angle < 360} do {
-					pr _newPos = (leader _hG) getPos [100 + random 40, _angle];
-					_waypoints pushBack _newPos;
+				pr _leaderPos = leader _hG;
+				while { _angle < 360 } do {
+					pr _newPos = _leaderPos getPos [100 + random 40, _angle];
+					while { surfaceIsWater _newPos && _newPos distance2D _leaderPos > 50 } do {
+						_newPos = _leaderPos getPos [(_newPos distance2D _leaderPos) * 0.75, _angle];
+					};
+					if(!surfaceIsWater _newPos) then {
+						_waypoints pushBack _newPos;
+					};
 					_angle = _angle + 30;
 				};
 			};
@@ -136,7 +149,9 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
+			private _parameters = [[TAG_INSTANT, _instant]];
+			private _args = ["GoalUnitInfantryRegroup", 0, _parameters, _AI, true, false, true]; // Will be always active, even when completed
+			CALLM(_unitAI, "addExternalGoal", _args);
 		} forEach _units;
 
 		// Set state
@@ -148,7 +163,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		T_CALLM0("failIfEmpty");
@@ -160,23 +175,13 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	ENDMETHOD;
 	
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
-		pr _hG = T_GETV("hG");
-		
+		T_CALLCM0("ActionGroup", "terminate");
+
 		// Delete all waypoints
 		T_CALLM0("clearWaypoints");
-
-				
-		// Delete given goals
-		pr _AI = T_GETV("AI");
-		pr _group = GETV(_AI, "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
-		} forEach _units;
 		
 	ENDMETHOD;
 

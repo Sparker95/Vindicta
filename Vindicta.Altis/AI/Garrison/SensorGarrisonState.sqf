@@ -29,7 +29,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 
 		pr _AI = T_GETV("AI");
@@ -113,7 +113,6 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 				_pos = _pos vectorMultiply (1 / count _allGroups);
 				_pos = ZERO_HEIGHT(_pos);
 				CALLM1(_AI, "setPos", _pos);
-				// [_worldState, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 			};
 		} else {
 			// When unspawned the group specific states related to units can be assumed based on unit counts
@@ -181,7 +180,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		params [P_THISOBJECT];
 		pr _gar = T_GETV("gar");
 		// If garrison is not spawned, run the check less often

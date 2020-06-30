@@ -16,7 +16,7 @@ CLASS("AnimObjectBench", "AnimObject")
 	METHOD(new)
 		params [P_THISOBJECT];
 
-		private _args = GET_STATIC_VAR(THIS_CLASS_NAME, "points");
+		private _args = GETSV(THIS_CLASS_NAME, "points");
 		T_SETV("points", _args);
 
 		private _args = ["", ""];
@@ -24,7 +24,7 @@ CLASS("AnimObjectBench", "AnimObject")
 
 		T_SETV("pointCount", 2);
 
-		private _animations = GET_STATIC_VAR(THIS_CLASS_NAME, "animations");
+		private _animations = GETSV(THIS_CLASS_NAME, "animations");
 		T_SETV("animations", _animations);
 	ENDMETHOD;
 
@@ -34,7 +34,7 @@ CLASS("AnimObjectBench", "AnimObject")
 	// | Inherited classes must implement this.
 	// | Returns [_offset, _animation, _direction]
 	// ----------------------------------------------------------------------
-	METHOD(getPointDataInternal)
+	public override METHOD(getPointDataInternal)
 		params [P_THISOBJECT, P_NUMBER("_pointID")];
 		private _animations = T_GETV("animations");
 		private _points = T_GETV("points");
@@ -50,7 +50,7 @@ CLASS("AnimObjectBench", "AnimObject")
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
 
-	METHOD(getPointMoveOffset)
+	public override METHOD(getPointMoveOffset)
 		params [P_THISOBJECT, P_NUMBER("_pointID") ];
 		private _points = T_GETV("points");
 		private _pointOffset = _points select _pointID;
@@ -67,7 +67,7 @@ private _animations = ["HubSittingChairA_idle1", "HubSittingChairA_idle2", "HubS
 						 "HubSittingChairC_idle1", "HubSittingChairC_idle2", "HubSittingChairC_idle3",
 						 "InBaseMoves_SittingRifle1", "InBaseMoves_SittingRifle2"
 						 ];
-SET_STATIC_VAR(THIS_CLASS_NAME, "animations", _animations);
+SETSV(THIS_CLASS_NAME, "animations", _animations);
 
 private _points = [[0.5, -0.08, -1], [-0.5, -0.08, -1]];
-SET_STATIC_VAR(THIS_CLASS_NAME, "points", _points);
+SETSV(THIS_CLASS_NAME, "points", _points);

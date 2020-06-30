@@ -23,7 +23,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_Killed)
+	public METHOD(EH_Killed)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_killer"), P_OBJECT("_instigator"), P_BOOL("_useEffects")];
 		T_CALLM3("UnitObjectKilled", _objectHandle, objNull, _killer);
 	ENDMETHOD;
@@ -39,12 +39,12 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_Respawn)
+	public METHOD(EH_Respawn)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle")];
 		T_CALLM2("UnitObjectKilled", _objectHandle, _corpseHandle);
 	ENDMETHOD;
 
-	METHOD(UnitObjectKilled)
+	public METHOD(UnitObjectKilled)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_corpseHandle"), P_OBJECT("_killer")];
 
 		ASSERT_THREAD(_thisObject);
@@ -52,7 +52,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		OOP_INFO_1("%1", _this);
 
 		// Is this object an instance of Unit class?
-		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
+		private _unit = CALLSM("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
 		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
 			T_CALLM2("UnitKilled", _unit, _killer);
@@ -61,7 +61,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	ENDMETHOD;
 
-	METHOD(UnitKilled)
+	public METHOD(UnitKilled)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_OBJECT("_killer")];
 
 		pr _data = GETV(_unit, "data");
@@ -94,10 +94,10 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(KillUnit)
+	public STATIC_METHOD(KillUnit)
 		params [P_THISCLASS, P_OBJECT("_objectHandle")];
 		// Is this object an instance of Unit class?
-		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
+		private _unit = CALLSM("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 		if (!IS_NULL_OBJECT(_unit) && IS_OOP_OBJECT(_unit)) then {
 			DELETE(_unit);
 		};
@@ -114,25 +114,35 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_GetIn)
+	public METHOD(EH_GetIn)
 		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetIn: %1", _this);
 
 		ASSERT_THREAD(_thisObject);
 
+		// This is an async message, either vehicle or unit could have been deleted by now... this is a bit of a problem.
+		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the synchronous part of the handler.
+		if(isNull _unit) exitWith {
+			OOP_WARNING_1("EH_GetIn: unit handle is null (%1)", _this);
+		};
+
+		if(isNull _vehicle) exitWith {
+			OOP_WARNING_1("EH_GetIn: vehicle handle is null (%1)", _this);
+		};
+
 		// Is this object an instance of Unit class?
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
-		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitInf = CALLSM("Unit", "getUnitFromObjectHandle", [_unit]);
 
 		OOP_INFO_4("EH_GetIn: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
 		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
-			OOP_ERROR_0("EH_GetIn: vehicle doesn't have a Unit object!");
+			OOP_ERROR_1("EH_GetIn: vehicle doesn't have a Unit object (%1)", _this);
 		};
 
 		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
-			OOP_ERROR_0("EH_GetIn: unit doesn't have a Unit object!");
+			OOP_ERROR_1("EH_GetIn: unit doesn't have a Unit object (%1)", _this);
 		};
 
 		pr _data = GETV(_unitVeh, "data");
@@ -156,7 +166,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(EH_GetOut)
+	public METHOD(EH_GetOut)
 		params [P_THISOBJECT, "_vehicle", "_role", "_unit", "_turret"];
 
 		OOP_INFO_1("EH_GetOut: %1", _this);
@@ -164,7 +174,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		// This is an async message, either vehicle or unit could have been deleted by now... this is a bit of a problem.
-		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the asynchronous part of the handler.
+		// TODO: fix this somehow? Really we need to get the Unit OOP objects in the synchronous part of the handler.
 		if(isNull _unit) exitWith {
 			OOP_WARNING_1("EH_GetOut: unit handle is null (%1)", _this);
 		};
@@ -174,17 +184,17 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 
 		// Is this object an instance of Unit class?
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
-		private _unitInf = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_unit]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitInf = CALLSM("Unit", "getUnitFromObjectHandle", [_unit]);
 
 		OOP_INFO_4("EH_GetOut: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
 		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
-			OOP_ERROR_0("EH_GetOut: vehicle doesn't have a Unit object!");
+			OOP_INFO_1("EH_GetOut: vehicle doesn't have a Unit object (%1)", _this);
 		};
 
 		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
-			OOP_ERROR_0("EH_GetOut: unit doesn't have a Unit object!");
+			OOP_INFO_1("EH_GetOut: unit doesn't have a Unit object (%1)", _this);
 		};
 
 		pr _data = GETV(_unitVeh, "data");
@@ -194,13 +204,13 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		} else {
 			OOP_ERROR_2("EH_GetOut: vehicle is not attached to a garrison: %1, %2", _unitVeh, _data);
 		};
-
 	ENDMETHOD;
-	METHOD(EH_aceCargoLoaded)
+
+	public METHOD(EH_aceCargoLoaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
-		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
 
 		OOP_INFO_3("EH_aceCargoLoaded: _this: %1, _unitItem: %2, _unitVeh: %3", _this, _item, _vehicle);
 
@@ -221,11 +231,11 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		
 	ENDMETHOD;
 
-	METHOD(EH_aceCargoUnloaded)
+	public METHOD(EH_aceCargoUnloaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
-		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
-		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
+		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
 
 		OOP_INFO_3("EH_aceCargoUnloaded: _this: %1, _unitItem: %2, _unitVeh: %3", _this, _item, _vehicle);
 
@@ -252,7 +262,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD(deleteObject)
+	public METHOD(deleteObject)
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
 		if (IS_OOP_OBJECT(_objectRef)) then {
 			DELETE(_objectRef);
@@ -261,15 +271,15 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		};
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMessageLoopMain
 	ENDMETHOD;
 
 	// We use that to call some static methods in the main thread
-	METHOD(callStaticMethodInThread)
+	public METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
-		CALL_STATIC_METHOD(_className, _methodName, _parameters);
+		CALLSM(_className, _methodName, _parameters);
 	ENDMETHOD;
 
 ENDCLASS;

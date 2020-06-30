@@ -57,7 +57,6 @@
 // Include platform-dependant redefinitions
 #include "Platform.h"
 
-
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
 // ----------------------------------------------------------------------
@@ -123,8 +122,6 @@
 #define ASP_CREATE_PROFILE_SCOPE(className,methodName)
 #endif
 
-
-
 // ----------------------------------------------------------------------
 // |                 I N T E R N A L   S T R I N G S                    |
 // ----------------------------------------------------------------------
@@ -134,6 +131,7 @@
 #define SPECIAL_SEPARATOR "_spm_"
 #define STATIC_SEPARATOR "_stm_"
 #define METHOD_SEPARATOR "_fnc_"
+#define METHOD_ATTR_SEPARATOR "_fncattr_"
 #define INNER_PREFIX "inner_"
 #define GLOBAL_SEPARATOR "global_"
 
@@ -150,6 +148,9 @@
 //String name of a method
 #define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) ((classNameStr) + METHOD_SEPARATOR + (methodNameStr))
 
+//String name of method attributes
+#define CLASS_METHOD_ATTR_STR(classNameStr, methodNameStr) ((classNameStr) + METHOD_ATTR_SEPARATOR + (methodNameStr))
+
 //String name of a special member
 #define CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + (classNameStr) + SPECIAL_SEPARATOR + (memNameStr))
 
@@ -157,7 +158,7 @@
 #define OBJECT_MEM_NAME_STR(objNameStr, memNameStr) ((objNameStr) + "_" + memNameStr)
 
 //Gets parent class of an object
-#define OBJECT_PARENT_CLASS_STR(objNameStr) (FORCE_GET_MEM(objNameStr, OOP_PARENT_STR))
+#define OBJECT_PARENT_CLASS_STR(objNameStr) (_GETV(objNameStr, OOP_PARENT_STR))
 
 //String name of an inner method
 #define INNER_METHOD_NAME_STR(methodNameStr) (INNER_PREFIX + methodNameStr)
@@ -168,6 +169,7 @@
 #define STATIC_MEM_LIST_STR "staticMemList"
 #define SERIAL_MEM_LIST_STR "serialMemList"
 #define METHOD_LIST_STR "methodList"
+#define OWN_METHOD_LIST_STR "ownMethodList"
 #define PARENTS_STR "parents"
 #define OOP_PARENT_STR "oop_parent"
 #define OOP_PUBLIC_STR "oop_public"
@@ -183,9 +185,9 @@
 // |          I N T E R N A L   A C C E S S   M E M B E R S             |
 // ----------------------------------------------------------------------
 
-#define FORCE_SET_MEM(objNameStr, memNameStr, value) NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
-#define FORCE_SET_MEM_NS(ns, objNameStr, memNameStr, value) ns setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
-#define FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
+#define _SETV(objNameStr, memNameStr, value) 					NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
+#define _SETV_NS(ns, objNameStr, memNameStr, value) 			ns setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
+#define _SETV_REF(objNameStr, memNameStr, value) \
 	isNil { \
 		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), NULL_OBJECT]; \
 		if (!IS_NULL_OBJECT(_oldVal)) then { UNREF(_oldVal); }; \
@@ -193,180 +195,174 @@
 		NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value] \
 	}
 
-#define FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) NAMESPACE setVariable [CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr), value]
-#define FORCE_SET_METHOD(classNameStr, methodNameStr, code) missionNamespace setVariable [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), code]
-#define FORCE_GET_MEM(objNameStr, memNameStr) ( NAMESPACE getVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr) )
-#define FORCE_GET_STATIC_MEM(classNameStr, memNameStr) ( NAMESPACE getVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) )
-#define FORCE_GET_METHOD(classNameStr, methodNameStr) ( missionNamespace getVariable CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) )
+#define _SETSV(classNameStr, memNameStr, value) 				NAMESPACE setVariable [CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr), value]
+#define _SET_METHOD(classNameStr, methodNameStr, code) 			NAMESPACE setVariable [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), code]
+#define _GETV(objNameStr, memNameStr) 							( NAMESPACE getVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr) )
+#define _GETSV(classNameStr, memNameStr) 						( NAMESPACE getVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) )
+#define _GET_METHOD(classNameStr, methodNameStr) 				( NAMESPACE getVariable CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) )
 
 #ifndef _SQF_VM
-#define FORCE_PUBLIC_MEM(objNameStr, memNameStr) publicVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr)
-#define FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr) publicVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr)
+#define _PUBLIC_VAR(objNameStr, memNameStr) 					publicVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr)
+#define _PUBLIC_STATIC_VAR(classNameStr, memNameStr) 			publicVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr)
 #else
-#define FORCE_PUBLIC_MEM(objNameStr, memNameStr)
-#define FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr)
+#define _PUBLIC_VAR(objNameStr, memNameStr)
+#define _PUBLIC_STATIC_VAR(classNameStr, memNameStr)
 #endif
 
 //Special members don't use run time checks
-#define SET_SPECIAL_MEM(classNameStr, memNameStr, value) missionNamespace setVariable [CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr), value]
-#define GET_SPECIAL_MEM(classNameStr, memNameStr) ( missionNamespace getVariable CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) )
+#define _SET_SPECIAL_MEM(classNameStr, memNameStr, value) 		NAMESPACE setVariable [CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr), value]
+#define _GET_SPECIAL_MEM(classNameStr, memNameStr) 				( NAMESPACE getVariable CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) )
 
 // -----------------------------------------------------
 // |           A C C E S S   M E M B E R S             |
 // -----------------------------------------------------
 
 #ifdef OOP_ASSERT_ACCESS
-#define ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr) 			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_member_access
-#define ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr) 	[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_static_member_access
-#define ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr) 			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_member_access
-#define ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr)	[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_static_member_access
+	#define _ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr) 			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_member_access
+	#define _ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr) 	[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_static_member_access
+	#define _ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr) 			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_member_access
+	#define _ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr)	[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_static_member_access
 #else
-#define ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr) 			
-#define ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr) 	
-#define ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr) 			
-#define ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr)	
+	#define _ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr) 			
+	#define _ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr) 	
+	#define _ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr) 			
+	#define _ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr)	
 #endif
 
 #ifdef OOP_ASSERT
-	#define SET_MEM(objNameStr, memNameStr, value) \
+	#define SETV(objNameStr, memNameStr, value) \
 		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_not_ref) then { \
-			ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr); \
-			FORCE_SET_MEM(objNameStr, memNameStr, value) \
+			_ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr); \
+			_SETV(objNameStr, memNameStr, value) \
 		}
-	#define SET_MEM_REF(objNameStr, memNameStr, value) \
+	#define SETV_REF(objNameStr, memNameStr, value) \
 		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_ref) then { \
-			ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr); \
-			FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
+			_ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr); \
+			_SETV_REF(objNameStr, memNameStr, value) \
 		}
-	#define SET_STATIC_MEM(classNameStr, memNameStr, value) \
+	#define SETSV(classNameStr, memNameStr, value) \
 		if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
-			ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr); \
-			FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) \
+			_ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr); \
+			_SETSV(classNameStr, memNameStr, value) \
 		}
-	#define GET_MEM(objNameStr, memNameStr) \
+	#define GETV(objNameStr, memNameStr) \
 		( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then { \
-			ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr); \
-			FORCE_GET_MEM(objNameStr, memNameStr) \
+			_ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr); \
+			_GETV(objNameStr, memNameStr) \
 		}else{nil} )
-	#define GET_STATIC_MEM(classNameStr, memNameStr) \
+	#define GETSV(classNameStr, memNameStr) \
 		( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
-			ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr); \
-			FORCE_GET_STATIC_MEM(classNameStr, memNameStr) \
+			_ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr); \
+			_GETSV(classNameStr, memNameStr) \
 		}else{nil} )
-	#define GET_METHOD(classNameStr, methodNameStr) \
-		( if([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method) then { \
-			FORCE_GET_METHOD(classNameStr, methodNameStr) \
-		}else{nil} )
-	#define PUBLIC_MEM(objNameStr, memNameStr) \
+	#define PUBLIC_VAR(objNameStr, memNameStr) \
 		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then { \
-			FORCE_PUBLIC_MEM(objNameStr, memNameStr) \
+			_PUBLIC_VAR(objNameStr, memNameStr) \
 		}
-	#define PUBLIC_STATIC_MEM(classNameStr, memNameStr) \
+	#define PUBLIC_STATIC_VAR(classNameStr, memNameStr) \
 		if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
-			FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr) \
+			_PUBLIC_STATIC_VAR(classNameStr, memNameStr) \
 		}
+	#define GET_METHOD(classNameStr, methodNameStr) \
+		( if([classNameStr, methodNameStr, "", __FILE__, __LINE__] call OOP_assert_method) then { \
+			_GET_METHOD(classNameStr, methodNameStr) \
+		}else{nil} )
+	#define GET_METHOD_OBJ(classNameStr, methodNameStr, objectNameStr) \
+		( if([classNameStr, methodNameStr, objectNameStr, __FILE__, __LINE__] call OOP_assert_method) then { \
+			_GET_METHOD(classNameStr, methodNameStr) \
+		}else{nil} )
 #else
-	#define SET_MEM(objNameStr, memNameStr, value) FORCE_SET_MEM(objNameStr, memNameStr, value)
-	#define SET_MEM_REF(objNameStr, memNameStr, value) FORCE_SET_MEM_REF(objNameStr, memNameStr, value)
-	#define SET_STATIC_MEM(classNameStr, memNameStr, value) FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value)
-	#define GET_MEM(objNameStr, memNameStr) FORCE_GET_MEM(objNameStr, memNameStr)
-	#define GET_STATIC_MEM(classNameStr, memNameStr) FORCE_GET_STATIC_MEM(classNameStr, memNameStr)
-	#define GET_METHOD(classNameStr, methodNameStr) FORCE_GET_METHOD(classNameStr, methodNameStr)
-	#define PUBLIC_MEM(objNameStr, memNameStr) FORCE_PUBLIC_MEM(objNameStr, memNameStr)
-	#define PUBLIC_STATIC_MEM(classNameStr, memNameStr) FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr)
+	#define SETV(objNameStr, memNameStr, value) _SETV(objNameStr, memNameStr, value)
+	#define SETV_REF(objNameStr, memNameStr, value) _SETV_REF(objNameStr, memNameStr, value)
+	#define SETSV(classNameStr, memNameStr, value) _SETSV(classNameStr, memNameStr, value)
+	#define GETV(objNameStr, memNameStr) _GETV(objNameStr, memNameStr)
+	#define GETSV(classNameStr, memNameStr) _GETSV(classNameStr, memNameStr)
+	#define PUBLIC_VAR(objNameStr, memNameStr) _PUBLIC_VAR(objNameStr, memNameStr)
+	#define PUBLIC_STATIC_VAR(classNameStr, memNameStr) _PUBLIC_STATIC_VAR(classNameStr, memNameStr)
+	#define GET_METHOD(classNameStr, methodNameStr) _GET_METHOD(classNameStr, methodNameStr)
+	#define GET_METHOD_OBJ(classNameStr, methodNameStr, objectNameStr) _GET_METHOD(classNameStr, methodNameStr)
 #endif
 
-#define SET_VAR(a, b, c) SET_MEM(a, b, c)
-#define SET_VAR_REF(a, b, c) SET_MEM_REF(a, b, c)
-#define SET_STATIC_VAR(a, b, c) SET_STATIC_MEM(a, b, c)
-#define GET_VAR(a, b) GET_MEM(a, b)
-#define GET_STATIC_VAR(a, b) GET_STATIC_MEM(a, b)
-#define PUBLIC_VAR(a, b) PUBLIC_MEM(a, b)
-#define PUBLIC_STATIC_VAR(a, b) PUBLIC_STATIC_MEM(a, b)
-#define SET_VAR_PUBLIC(a, b, c) SET_VAR(a, b, c); PUBLIC_VAR(a, b)
-
-// Shortened variants of macros
-#define SETV(a, b, c) SET_VAR(a, b, c)
-#define SETV_REF(a, b, c) SET_VAR_REF(a, b, c)
-#define SETSV(a, b, c) SET_STATIC_VAR(a, b, c)
-#define GETV(a, b) GET_VAR(a, b)
-#define GETSV(a, b) GET_STATIC_VAR(a, b)
-#define PVAR(a, b) PUBLIC_VAR(a, b)
+#define SET_VAR_PUBLIC(a, b, c) 				SETV(a, b, c); PUBLIC_VAR(a, b)
 
 // Getting/setting variables of _thisObject
-#define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
-#define T_SETV_REF(varNameStr, varValue) SET_VAR_REF(_thisObject, varNameStr, varValue)
-#define T_PUBLIC_VAR(varNameStr) PUBLIC_VAR(_thisObject, varNameStr)
-#define T_SETV_PUBLIC(varNameStr, varValue) SET_VAR_PUBLIC(_thisObject, varNameStr, varValue)
-#define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
+#define T_SETV(varNameStr, varValue) 			SETV(_thisObject, varNameStr, varValue)
+#define T_SETV_REF(varNameStr, varValue) 		SETV_REF(_thisObject, varNameStr, varValue)
+#define T_PUBLIC_VAR(varNameStr) 				PUBLIC_VAR(_thisObject, varNameStr)
+#define T_SETV_PUBLIC(varNameStr, varValue) 	SET_VAR_PUBLIC(_thisObject, varNameStr, varValue)
+#define T_GETV(varNameStr) 						GETV(_thisObject, varNameStr)
 
 // Returns object class name
-#define GET_OBJECT_CLASS(objNameStr) OBJECT_PARENT_CLASS_STR(objNameStr)
+#define GET_OBJECT_CLASS(objNameStr) 			OBJECT_PARENT_CLASS_STR(objNameStr)
 
 // Returns true if reference passed is pointing at a valid object 
-#define IS_OOP_OBJECT(objNameStr) (! (isNil {GET_OBJECT_CLASS(objNameStr)}))
+#define IS_OOP_OBJECT(objNameStr) 				(! (isNil {GET_OBJECT_CLASS(objNameStr)}))
 
 // Returns variable names of this class
-#define GET_CLASS_MEMBERS(classNameStr) GET_SPECIAL_MEM(classNameStr, MEM_LIST_STR)
+#define GET_CLASS_MEMBERS(classNameStr) 		_GET_SPECIAL_MEM(classNameStr, MEM_LIST_STR)
 
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |
 // -----------------------------------------------------
 
-#define GETM(objNameStr, methodNameStr) GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-
 //Same performance for small functions
-//#define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
-#define CALL_METHOD(objNameStr, methodNameStr, extraParams) (([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
-#define CALL_METHOD_0(objNameStr, methodNameStr) (([objNameStr]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
-#define CALL_METHOD_1(objNameStr, methodNameStr, a) (([objNameStr, a]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
-#define CALL_METHOD_2(objNameStr, methodNameStr, a, b) (([objNameStr, a, b]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
-#define CALL_METHOD_3(objNameStr, methodNameStr, a, b, c) (([objNameStr, a, b, c]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
-#define CALL_METHOD_4(objNameStr, methodNameStr, a, b, c, d) (([objNameStr, a, b, c, d]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+//#define CALLM(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
 
-#define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) (([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr))
+// #ifdef OOP_METHOD_CALL_ASSERT
+// 	#define GET_METHOD_STD(objNameStr, methodNameStr) 					(call {[OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)})
+// 	#define GET_METHOD_THIS(methodNameStr) 								(call {[OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr)})
+// 	#define GET_METHOD_STATIC(classNameStr, methodNameStr) 				(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(classNameStr, methodNameStr)})
+// 	#define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(classNameStr, methodNameStr)})
+// 	#define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			(call {[classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_call; GET_METHOD(classNameStr, methodNameStr)})
 
-#define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (([classNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr))
-#define CALL_STATIC_METHOD_0(classNameStr, methodNameStr) ([classNameStr] call GET_METHOD(classNameStr, methodNameStr))
-#define CALL_STATIC_METHOD_1(classNameStr, methodNameStr, a) (([classNameStr, a]) call GET_METHOD(classNameStr, methodNameStr))
-#define CALL_STATIC_METHOD_2(classNameStr, methodNameStr, a, b) (([classNameStr, a, b]) call GET_METHOD(classNameStr, methodNameStr))
-#define CALL_STATIC_METHOD_3(classNameStr, methodNameStr, a, b, c) (([classNameStr, a, b, c]) call GET_METHOD(classNameStr, methodNameStr))
-#define CALL_STATIC_METHOD_4(classNameStr, methodNameStr, a, b, c, d) (([classNameStr, a, b, c, d]) call GET_METHOD(classNameStr, methodNameStr))
+// 	// #define GET_METHOD_STD(objNameStr, methodNameStr) 					(if ([objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_std_call) then { GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr) } else { nil })
+// 	// #define GET_METHOD_THIS(methodNameStr) 								(if ([methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_call) then { GET_METHOD(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr) } else { nil })
+// 	// #define GET_METHOD_STATIC(classNameStr, methodNameStr) 				(if ([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_static_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
+// 	// #define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	(if ([classNameStr, objNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_class_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
+// 	// #define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			(if ([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method_this_class_call) then { GET_METHOD(classNameStr, methodNameStr) } else { nil })
+// #else
+#define GET_METHOD_STD(objNameStr, methodNameStr) 					GET_METHOD_OBJ(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr, objNameStr)
+#define GET_METHOD_THIS(methodNameStr) 								GET_METHOD_OBJ(OBJECT_PARENT_CLASS_STR(_thisObject), methodNameStr, _thisObject)
+#define GET_METHOD_STATIC(classNameStr, methodNameStr) 				GET_METHOD(classNameStr, methodNameStr)
+#define GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr) 	GET_METHOD_OBJ(classNameStr, methodNameStr, objNameStr)
+#define GET_METHOD_THIS_CLASS(classNameStr, methodNameStr) 			GET_METHOD_OBJ(classNameStr, methodNameStr, _thisObject)
+//#endif
 
-// Shortened variants of macros
-#define CALLM(a, b, c) CALL_METHOD(a, b, c)
-#define CALLCM(a, b, c, d) CALL_CLASS_METHOD(a, b, c, d)
-#define CALLSM(a, b, c) CALL_STATIC_METHOD(a, b, c)
+// Standard call
+#define CALLM(objNameStr, methodNameStr, extraParams) 			(([objNameStr] + extraParams) call GET_METHOD_STD(objNameStr, methodNameStr))
+#define CALLM0(objNameStr, methodNameStr) 						([objNameStr] call GET_METHOD_STD(objNameStr, methodNameStr))
+#define CALLM1(objNameStr, methodNameStr, a) 					([objNameStr, a] call GET_METHOD_STD(objNameStr, methodNameStr))
+#define CALLM2(objNameStr, methodNameStr, a, b) 				([objNameStr, a, b] call GET_METHOD_STD(objNameStr, methodNameStr))
+#define CALLM3(objNameStr, methodNameStr, a, b, c) 				([objNameStr, a, b, c] call GET_METHOD_STD(objNameStr, methodNameStr))
+#define CALLM4(objNameStr, methodNameStr, a, b, c, d) 			([objNameStr, a, b, c, d] call GET_METHOD_STD(objNameStr, methodNameStr))
 
-// Macros for multiple variables
-#define CALLM0(a, b) CALL_METHOD_0(a, b)
-#define CALLM1(a, b, c) CALL_METHOD_1(a, b, c)
-#define CALLM2(a, b, c, d) CALL_METHOD_2(a, b, c, d)
-#define CALLM3(a, b, c, d, e) CALL_METHOD_3(a, b, c, d, e)
-#define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
+// This call
+#define T_CALLM(methodNameStr, extraParams) 					(([_thisObject] + extraParams) call GET_METHOD_THIS(methodNameStr))
+#define T_CALLM0(methodNameStr) 								([_thisObject] call GET_METHOD_THIS(methodNameStr))
+#define T_CALLM1(methodNameStr, a) 								([_thisObject, a] call GET_METHOD_THIS(methodNameStr))
+#define T_CALLM2(methodNameStr, a, b) 							([_thisObject, a, b] call GET_METHOD_THIS(methodNameStr))
+#define T_CALLM3(methodNameStr, a, b, c) 						([_thisObject, a, b, c] call GET_METHOD_THIS(methodNameStr))
+#define T_CALLM4(methodNameStr, a, b, c, d) 					([_thisObject, a, b, c, d] call GET_METHOD_THIS(methodNameStr))
 
-// Macros for calls to this
-#define T_CALLM(a, b) CALL_METHOD(_thisObject, a, b)
-#define T_CALLM0(a) CALL_METHOD_0(_thisObject, a)
-#define T_CALLM1(a, b) CALL_METHOD_1(_thisObject, a, b)
-#define T_CALLM2(a, b, c) CALL_METHOD_2(_thisObject, a, b, c)
-#define T_CALLM3(a, b, c, d) CALL_METHOD_3(_thisObject, a, b, c, d)
-#define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
+// Static call
+#define CALLSM(classNameStr, methodNameStr, extraParams) 		(([classNameStr] + extraParams) call GET_METHOD_STATIC(classNameStr, methodNameStr))
+#define CALLSM0(classNameStr, methodNameStr)					([classNameStr] call GET_METHOD_STATIC(classNameStr, methodNameStr))
+#define CALLSM1(classNameStr, methodNameStr, a) 				(([classNameStr, a]) call GET_METHOD_STATIC(classNameStr, methodNameStr))
+#define CALLSM2(classNameStr, methodNameStr, a, b) 				(([classNameStr, a, b]) call GET_METHOD_STATIC(classNameStr, methodNameStr))
+#define CALLSM3(classNameStr, methodNameStr, a, b, c) 			(([classNameStr, a, b, c]) call GET_METHOD_STATIC(classNameStr, methodNameStr))
+#define CALLSM4(classNameStr, methodNameStr, a, b, c, d) 		(([classNameStr, a, b, c, d]) call GET_METHOD_STATIC(classNameStr, methodNameStr))
+
+// Call class method (used for calling base class usually)
+#define CALLCM(classNameStr, objNameStr, methodNameStr, extraParams) (([objNameStr] + extraParams) call GET_METHOD_CLASS(classNameStr, objNameStr, methodNameStr))
 
 // Call an overidden method from the overriding method.
-#define T_CALLCM (classNameStr, methodNameStr, extraParams) 	([_thisObject]+extraParams 		call GET_METHOD(classNameStr, methodNameStr))
-#define T_CALLCM0(classNameStr, methodNameStr) 					([_thisObject] 					call GET_METHOD(classNameStr, methodNameStr))
-#define T_CALLCM1(classNameStr, methodNameStr, a) 				([_thisObject, a] 				call GET_METHOD(classNameStr, methodNameStr))
-#define T_CALLCM2(classNameStr, methodNameStr, a, b) 			([_thisObject, a, b] 			call GET_METHOD(classNameStr, methodNameStr))
-#define T_CALLCM3(classNameStr, methodNameStr, a, b, c) 		([_thisObject, a, b, c] 		call GET_METHOD(classNameStr, methodNameStr))
-#define T_CALLCM4(classNameStr, methodNameStr, a, b, c, d) 		([_thisObject, a, b, c, d] 		call GET_METHOD(classNameStr, methodNameStr))
-#define T_CALLCM5(classNameStr, methodNameStr, a, b, c, d, e) 	([_thisObject, a, b, c, d, e] 	call GET_METHOD(classNameStr, methodNameStr))
-
-#define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
-#define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
-#define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_2(a, b, c, d)
-#define CALLSM3(a, b, c, d, e) CALL_STATIC_METHOD_3(a, b, c, d, e)
-#define CALLSM4(a, b, c, d, e, f) CALL_STATIC_METHOD_4(a, b, c, d, e, f)
+#define T_CALLCM(classNameStr, methodNameStr, extraParams) 		([_thisObject]+extraParams 		call GET_METHOD_THIS_CLASS(classNameStr, methodNameStr))
+#define T_CALLCM0(classNameStr, methodNameStr) 					([_thisObject] 					call GET_METHOD_THIS_CLASS(classNameStr, methodNameStr))
+#define T_CALLCM1(classNameStr, methodNameStr, a) 				([_thisObject, a] 				call GET_METHOD_THIS_CLASS(classNameStr, methodNameStr))
+#define T_CALLCM2(classNameStr, methodNameStr, a, b) 			([_thisObject, a, b] 			call GET_METHOD_THIS_CLASS(classNameStr, methodNameStr))
+#define T_CALLCM3(classNameStr, methodNameStr, a, b, c) 		([_thisObject, a, b, c] 		call GET_METHOD_THIS_CLASS(classNameStr, methodNameStr))
+#define T_CALLCM4(classNameStr, methodNameStr, a, b, c, d) 		([_thisObject, a, b, c, d] 		call GET_METHOD_THIS_CLASS(classNameStr, methodNameStr))
+#define T_CALLCM5(classNameStr, methodNameStr, a, b, c, d, e) 	([_thisObject, a, b, c, d, e] 	call GET_METHOD_THIS_CLASS(classNameStr, methodNameStr))
 
 // Remote executions
 #define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, extraParams, targets) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]
@@ -385,7 +381,6 @@
 #else
 #define CLEAR_REMOTE_EXEC_JIP(JIP) remoteExec ["", JIP]
 #endif
-
 
 // ----------------------------------------
 // |         A T T R I B U T E S          |
@@ -459,7 +454,7 @@
 	#define OOP_FUNC_HEADER_PROFILE \
 		private _profileTStart = diag_tickTime; \
 		private _class = if(isNil "_thisClass") then { if(isNil "_thisObject") then { "(unknown)" } else { OBJECT_PARENT_CLASS_STR(_thisObject) } } else { _thisClass }; \
-		private _profileTag = if(_class != "(unknown)") then { FORCE_GET_STATIC_MEM(_class, "profile__tag") } else { "" }; \
+		private _profileTag = if(_class != "(unknown)") then { _GETSV(_class, "profile__tag") } else { "" }; \
 		private _scopeKey = if(isNil "_profileTag" or isNil "_thisObject") then { \
 			_class \
 		} else { \
@@ -510,6 +505,13 @@
 #define _OOP_FUNCTION_WRAPPERS
 #endif
 
+#ifdef OOP_ASSERT_METHOD_CALL
+#define _OOP_FUNCTION_WRAPPERS
+#define OOP_METHOD_CALL_ASSERT_HEADER private __classScope = QUOTE(OOP_CLASS_NAME)
+#else
+#define OOP_METHOD_CALL_ASSERT_HEADER
+#endif
+
 // Enable function wrappers if access assertions are enabled
 #ifdef OOP_TRACE_FUNCTIONS
 #define OOP_DEBUG
@@ -538,8 +540,20 @@
 // If some enabled functionality requires function wrappers we set them here. If you want to conditionally add more stuff to the wrapped functions
 // (e.g. additional asserts, parameter manipulation etc.) then define them as macros and then include them in the wrapped blocks in the same manner
 // that OOP_PROFILE does.
+
+// OOP_assert_standard_call = {
+// 	params ["_obj", "_fn"];
+// 	private _attributes = missionNamespace getVariable [CLASS_METHOD_ATTR_STR(OBJECT_PARENT_CLASS_STR(_obj), _fn), []];
+// 	ASSERT_MSG("public" in attributes, "Cannot call function outside of class methods");
+// 	ASSERT_MSG(isServer || !("server" in attributes), "Can only call function on server");
+// 	// etc...
+// };
+// #define CALLM0(obj, fn) ([obj, QUOTE(fn)] call OOP_assert_standard_call; CALLM0(obj, fn))
+// #define T_CALLM0(fn) ([_thisObject, QUOTE(fn)] call OOP_assert_this_call; CALLM0(_thisObject, fn))
+
 #ifdef _OOP_FUNCTION_WRAPPERS
 	#define METHOD(methodNameStr) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr);  \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -548,6 +562,7 @@
 			private _thisObject = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call { \
@@ -560,6 +575,7 @@
 		} ]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -569,6 +585,7 @@
 			private _thisObject = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(QUOTE(methodNameStr))); \
@@ -579,6 +596,7 @@
 		}]
 
 	#define STATIC_METHOD(methodNameStr) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this, true] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -587,11 +605,13 @@
 			private _thisClass = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call {
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this, true] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -601,6 +621,7 @@
 			private _thisClass = _this select 0; \
 			private _methodNameStr = QUOTE(methodNameStr); \
 			private _objOrClass = _this select 0; \
+			OOP_METHOD_CALL_ASSERT_HEADER; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(QUOTE(methodNameStr))); \
@@ -611,6 +632,7 @@
 		}]
 #else
 	#define METHOD(methodNameStr) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -620,12 +642,14 @@
 	#define ENDMETHOD }]
 
 	#define METHOD_FILE(methodNameStr, path) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, QUOTE(methodNameStr)), compile preprocessFileLineNumbers path]
 
 	#define STATIC_METHOD(methodNameStr) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this, true] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -633,6 +657,7 @@
 		ASP_CREATE_PROFILE_SCOPE(OOP_CLASS_NAME,methodNameStr)
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		+[] call { [_oop_classNameStr, QUOTE(methodNameStr), _this, true] call OOP_set_method_attr }; \
 		LOG_METHOD(QUOTE(methodNameStr)); \
 		_oop_methodList pushBackUnique QUOTE(methodNameStr); \
 		_oop_newMethodList pushBackUnique QUOTE(methodNameStr); \
@@ -687,44 +712,10 @@
 	LOG_CLASS_BEGIN(class, base); \
 	call { \
 		private _oop_classNameStr = classNameStr; \
-		SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
-		private _oop_memList = []; \
-		private _oop_staticMemList = []; \
-		private _oop_parents = []; \
-		private _oop_methodList = []; \
-		private _oop_newMethodList = []; \
-		private _parentClassNames = if(baseClassNames isEqualType "") then {[baseClassNames]} else {baseClassNames}; \
-		if (count _parentClassNames > 0) then { \
-			{ \
-				private _baseClassNameStr = _x; \
-				if (_baseClassNameStr != "") then { \
-					if (!([_baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
-						private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
-						FAILURE(_msg); \
-					}; \
-					{_oop_parents pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, PARENTS_STR); \
-					_oop_parents pushBackUnique _baseClassNameStr; \
-					{ _oop_memList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, MEM_LIST_STR); \
-					{ _oop_staticMemList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, STATIC_MEM_LIST_STR); \
-					private _oop_addedMethodList = []; \
-					{ _oop_methodList pushBackUnique _x; _oop_addedMethodList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR); \
-					private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
-					{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
-						FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
-						_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
-						if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
-					} forEach (_oop_addedMethodList - ["new", "delete", "copy"]); \
-				}; \
-			} forEach _parentClassNames; \
-		}; \
-		SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
-		SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList); \
-		SET_SPECIAL_MEM(_oop_classNameStr, STATIC_MEM_LIST_STR, _oop_staticMemList); \
-		SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
-		SET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR, NAMESPACE); \
+		([_oop_classNameStr, baseClassNames] call OOP_init_class) params ["_oop_memList", "_oop_staticMemList", "_oop_methodList", "_oop_newMethodList"]; \
 		PROFILER_COUNTER_INIT(_oop_classNameStr); \
-		METHOD(new)ENDMETHOD; \
-		METHOD(delete)ENDMETHOD; \
+		METHOD(new) ENDMETHOD; \
+		METHOD(delete) ENDMETHOD; \
 		METHOD(copy) _this call OOP_clone_default ENDMETHOD; \
 		METHOD(assign) _this call OOP_assign_default ENDMETHOD; \
 		VARIABLE(OOP_PARENT_STR); \
@@ -742,14 +733,14 @@
 //  */
 
 #define ENDCLASS  \
-LOG_CLASS_END(_oop_classNameStr); \
-private _serialVariables = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
-_serialVariables = _serialVariables select { \
-	_x params ["_varName", "_attributes"]; \
-	ATTR_SERIALIZABLE in _attributes \
-}; \
-SET_SPECIAL_MEM(_oop_classNameStr, SERIAL_MEM_LIST_STR, _serialVariables); \
-}
+		LOG_CLASS_END(_oop_classNameStr); \
+		private _serialVariables = _GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
+		_serialVariables = _serialVariables select { \
+			_x params ["_varName", "_attributes"]; \
+			ATTR_SERIALIZABLE in _attributes \
+		}; \
+		_SET_SPECIAL_MEM(_oop_classNameStr, SERIAL_MEM_LIST_STR, _serialVariables); \
+	}
 
 // ----------------------------------------------------------------------
 // |        C O N S T R U C T O R  O F   E X I S T I N G   O B J E C T  |
@@ -761,13 +752,13 @@ SET_SPECIAL_MEM(_oop_classNameStr, SERIAL_MEM_LIST_STR, _serialVariables); \
 //  */
 
 #define NEW_EXISTING(classNameStr, objNameStr) [] call { \
-FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
+_SETV(objNameStr, OOP_PARENT_STR, classNameStr); \
 objNameStr \
 }
 
 #define NEW_PUBLIC_EXISTING(classNameStr, objNameStr) [] call { \
-FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
-FORCE_SET_MEM(objNameStr, OOP_PUBLIC_STR, 1); \
+_SETV(objNameStr, OOP_PARENT_STR, classNameStr); \
+_SETV(objNameStr, OOP_PUBLIC_STR, 1); \
 PUBLIC_VAR(objNameStr, OOP_PUBLIC_STR); \
 PUBLIC_VAR(objNameStr, OOP_PARENT_STR); \
 objNameStr \
@@ -835,7 +826,7 @@ objNameStr \
 // |             A S S I G N              |
 // ----------------------------------------
 
-#define ASSIGN(destObjNameStr, srcObjNameStr) CALL_METHOD(destObjNameStr, "assign", [srcObjNameStr])
+#define ASSIGN(destObjNameStr, srcObjNameStr) CALLM(destObjNameStr, "assign", [srcObjNameStr])
 
 // ----------------------------------------
 // |             U P D A T E              |
@@ -928,7 +919,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #endif
 
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC
-#define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )
+#define IS_PUBLIC(objNameStr) (! (isNil {GETV(objNameStr, OOP_PUBLIC_STR)} ) )
 
 
 // ----------------------------------------------------

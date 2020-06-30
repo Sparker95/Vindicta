@@ -40,6 +40,7 @@ Redefinitions of different functions which are not implemented on different plat
 #define IS_HEADLESSCLIENT false
 #define IS_MULTIPLAYER false
 #define PUBLIC_VARIABLE isNil
+#define WORLD_SIZE 20000
 
 #define IS_LOCAL_ADMIN true
 #define IS_ADMIN_ON_DEDI true
@@ -91,6 +92,7 @@ Redefinitions of different functions which are not implemented on different plat
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
 #define IS_MULTIPLAYER isMultiplayer
 #define PUBLIC_VARIABLE publicVariable
+#define WORLD_SIZE worldSize
 
 #define IS_LOCAL_ADMIN (call BIS_fnc_admin != 0)
 #define IS_ADMIN_ON_DEDI (IS_DEDICATED && { HUMAN_PLAYERS findIf { admin owner _x != 0 } != NOT_FOUND })

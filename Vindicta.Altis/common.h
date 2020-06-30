@@ -32,6 +32,8 @@
 // ----------------------------------------------------------------------
 // Zero the height component of a vector
 #define ZERO_HEIGHT(pos) ([(pos) select 0, (pos) select 1, 0])
+// Ensure a vector has 3 components
+#define VECTOR3(pos) (if(count (pos) == 2) then { pos + [0] } else { pos })
 
 // Clamp val_ between min_ and max_
 #define CLAMP(val_, min_, max_) ((min_) max (val_) min (max_))
@@ -71,3 +73,17 @@
 #define ON_CLIENTS	([0, -2] select IS_DEDICATED)
 #define NO_JIP 		false
 #define ALWAYS_JIP	true
+
+
+// Agents
+#define SET_AGENT_FLAG(obj) obj setVariable ["vin_isAgent", true]
+#define GET_AGENT_FLAG(obj) obj getVariable ["vin_isAgent", false]
+
+// Arrested variable name
+// Shared between bots and players
+#define SET_ARRESTED_FLAG(obj) obj setVariable ["vin_arrested", true, true]
+#define RESET_ARRESTED_FLAG(obj) obj setVariable ["vin_arrested", false, true]
+#define GET_ARRESTED_FLAG(obj) (obj getVariable ["vin_arrested", false])
+
+// private keyword
+#define pr private

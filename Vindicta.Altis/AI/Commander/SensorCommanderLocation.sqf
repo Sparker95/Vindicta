@@ -24,7 +24,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 		
 	ENDMETHOD;
@@ -34,7 +34,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
 	ENDMETHOD;
 	
@@ -43,7 +43,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_LOCATION]
 	ENDMETHOD;
 	
@@ -52,7 +52,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		OOP_INFO_1("Received location data: %1", _stimulus);

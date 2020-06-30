@@ -28,10 +28,6 @@ if (_spawned) exitWith {
 // Set spawned flag
 T_SETV("spawned", true);
 
-
-//spawn civilians
-T_GETV("cpModule") call CivPresence_fnc_spawn;
-
 //force immediate spawn update of the garrison
 {
 	CALLM2(_x, "postMethodAsync", "updateSpawnState", []);

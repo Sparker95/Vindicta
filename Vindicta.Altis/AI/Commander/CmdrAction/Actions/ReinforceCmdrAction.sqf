@@ -1,4 +1,5 @@
 #include "common.hpp"
+FIX_LINE_NUMBERS()
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.ReinforceCmdrAction
@@ -32,7 +33,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(updateIntel)
+	protected override METHOD(updateIntel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -70,7 +71,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 
-			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			_intelClone = CALLSM("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
@@ -92,7 +93,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		};
 	ENDMETHOD;
 
-	/* override */ METHOD(updateScore)
+	public override METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -227,7 +228,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
 
 		// How much to scale the score for distance to target
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
+		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtGarrPos);
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.
@@ -273,7 +274,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _strategy = CALLSM("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getReinforceScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _effAllocated]);
 		T_CALLM("setScore", [_score]);
@@ -292,7 +293,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD(getRecordSerial)
+	public override METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record

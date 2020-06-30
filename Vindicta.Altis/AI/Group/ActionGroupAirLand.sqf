@@ -26,7 +26,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 		T_SETV("vehicle", NULL_OBJECT);
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -38,7 +38,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 			private _loc = CALLM0(CALLM0(_group, "getGarrison"), "getLocation");
 			private _landingPos = if(_loc != NULL_OBJECT) then {
 				// If we are in a garrison at a location then land at a free helipad if possible
-				private _groupType = CALLM0(_group, "getGroupType");
+				private _groupType = CALLM0(_group, "getType");
 				CALLM0(_airUnit, "getMainData") params ["_catID", "_subcatID", "_className"];
 				CALLM4(_loc, "getSpawnPos", _catID, _subcatID, _className, _groupType) select 0
 			} else {
@@ -64,6 +64,8 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 				};
 			};
 			private _hG = T_GETV("hG");
+			// Needs to be a 3D vector not 2D, or both AGLToASL and wpLand throw errors...
+			_landingPos = VECTOR3(_landingPos); 
 			private _landWP = _hG addWaypoint [AGLToASL _landingPos, -1];
 			_hG setCurrentWaypoint _landWP;
 			[_hG, _landingPos] spawn BIS_fnc_wpLand;
@@ -79,7 +81,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		T_CALLM0("failIfEmpty");
@@ -102,7 +104,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		T_CALLM0("clearWaypoints");

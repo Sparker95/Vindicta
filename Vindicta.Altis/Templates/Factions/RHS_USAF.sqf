@@ -65,12 +65,12 @@ _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["rhsusf_m1025_w"]];
 
-_veh set [T_VEH_car_unarmed, [ "rhsusf_m1240a1_usarmy_wd", "rhsusf_m1025_w", "rhsusf_m998_w_4dr", "rhsusf_m998_w_4dr_halftop", "rhsusf_m998_w_4dr_fulltop", "rhsusf_m998_w_2dr", "rhsusf_m998_w_2dr_halftop", "rhsusf_m998_w_2dr_fulltop"]];
-_veh set [T_VEH_car_armed, ["rhsusf_m966_w", "rhsusf_m1025_w_mk19", "rhsusf_m1025_w_m2", "rhsusf_m1240a1_m2crows_usarmy_wd", "rhsusf_m1240a1_m2_usarmy_wd","rhsusf_m1240a1_m240_usarmy_wd"]];
+_veh set [T_VEH_car_unarmed, ["rhsusf_m1025_w", "rhsusf_m998_w_4dr", "rhsusf_m998_w_4dr_halftop", "rhsusf_m998_w_4dr_fulltop", "rhsusf_m998_w_2dr", "rhsusf_m998_w_2dr_halftop", "rhsusf_m998_w_2dr_fulltop"]];
+_veh set [T_VEH_car_armed, ["rhsusf_m966_w", "rhsusf_m1025_w_mk19", "rhsusf_m1025_w_m2"]];
 
-_veh set [T_VEH_MRAP_unarmed, ["rhsusf_M1239_socom_wd", "rhsusf_M1238A1_socom_wd", "rhsusf_M1232_usarmy_wd", "rhsusf_M1220_usarmy_wd"]];
-_veh set [T_VEH_MRAP_HMG, ["rhsusf_M1238A1_M2_socom_wd", "rhsusf_M1239_M2_socom_wd", "rhsusf_M1239_M2_Deploy_socom_wd", "rhsusf_M1232_M2_usarmy_wd", "rhsusf_M1237_M2_usarmy_wd", "rhsusf_M1220_M153_M2_usarmy_wd", "rhsusf_M1220_M2_usarmy_wd", "rhsusf_M1230_M2_usarmy_wd"]];
-_veh set [T_VEH_MRAP_GMG, ["rhsusf_M1239_MK19_socom_wd", "rhsusf_M1239_MK19_Deploy_socom_wd", "rhsusf_M1238A1_Mk19_socom_wd", "rhsusf_M1232_MK19_usarmy_wd", "rhsusf_M1237_MK19_usarmy_wd", "rhsusf_M1220_M153_MK19_usarmy_wd", "rhsusf_M1220_MK19_usarmy_wd", "rhsusf_M1230_MK19_usarmy_wd"]];
+_veh set [T_VEH_MRAP_unarmed, ["rhsusf_m1240a1_usarmy_wd", "rhsusf_M1232_usarmy_wd"]];
+_veh set [T_VEH_MRAP_HMG, ["rhsusf_m1240a1_m2crows_usarmy_wd", "rhsusf_m1240a1_m2_usarmy_wd", "rhsusf_m1240a1_m240_usarmy_wd", "rhsusf_M1232_M2_usarmy_wd", "rhsusf_M1237_M2_usarmy_wd"]];
+_veh set [T_VEH_MRAP_GMG, ["rhsusf_M1232_MK19_usarmy_wd", "rhsusf_M1237_MK19_usarmy_wd", "rhsusf_m1240a1_mk19crows_usarmy_wd", "rhsusf_m1240a1_mk19_usarmy_wd"]];
 
 _veh set [T_VEH_IFV, ["RHS_M2A3_wd", "RHS_M2A3_BUSKI_wd", "RHS_M2A3_BUSKIII_wd", "RHS_M2A2_wd", "RHS_M2A2_BUSKI_WD"]];
 _veh set [T_VEH_APC, ["rhsusf_stryker_m1126_m2_d", "rhsusf_stryker_m1126_mk19_d", "rhsusf_stryker_m1127_m2_d", "rhsusf_stryker_m1132_m2_d", "rhsusf_stryker_m1134_d"]];

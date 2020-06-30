@@ -41,17 +41,17 @@ g_UM_Hints = [
 
 #define OOP_CLASS_NAME UndercoverUI
 CLASS("UndercoverUI", "")
-	
-	STATIC_METHOD(drawUI)
+	STATIC_VARIABLE("prevSuspicion");
+
+	public STATIC_METHOD(drawUI)
 		params [P_THISOBJECT, ["_unit", 0], ["_suspicion", 0], ["_hintKeys", 0]];
 
 			pr _textUI = "";
 			pr _bSuspicious = UNDERCOVER_IS_UNIT_SUSPICIOUS(_unit);
-			if (_suspicion > 1) then { _suspicion = 1; };
-			if (_suspicion < 0) then { _suspicion = 0; };
+			_suspicion = SATURATE(_suspicion);
 
 			// select correct hint to display
-			if ((count _hintKeys > 0)) then { 
+			if (count _hintKeys > 0) then { 
 				pr _hint = _hintKeys call BIS_fnc_greatestNum;
 				pr _hintID = g_UM_Hints find _hint;
 				if (_hintID != -1) then { _textUI = g_UM_Hints select (_hintID + 1); };
@@ -64,17 +64,47 @@ CLASS("UndercoverUI", "")
 			// clamp color, for visual reasons
 			pr _colorMult = linearConversion [0, 1, _suspicion, 0.35, 0.88, true];
 			pr _color = [1.8* _colorMult, 1.8 * (1 - _colorMult), 0, 1];
-			
-			if ( displayNull != (uinamespace getVariable "p0_InGameUI_display") ) then {
-				((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlSetText format ["%1", _textUI];
-	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) progressSetPosition _suspicion;
-	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlSetTextcolor _color;
 
-	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlCommit 0;
-	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 1;
-	  		};
-		
+			pr _ui = uinamespace getVariable "p0_InGameUI_display";
+			if ( displayNull != _ui ) then {
+				pr _text = _ui displayCtrl IDC_U_SUSPICION_TEXT;
+				pr _bar = _ui displayCtrl IDC_U_SUSPICION_STATUSBAR;
+				_text ctrlSetText format ["%1", _textUI];
+
+				_bar progressSetPosition _suspicion;
+				_bar ctrlSetTextcolor _color;
+
+				// Set height based on suspiciousness
+				pr _prevSuspicion = GETSV("UndercoverUI", "prevSuspicion");
+				SETSV("UndercoverUI", "prevSuspicion", _suspicion);
+				if(_prevSuspicion != _suspicion) then {
+					switch true do {
+						case (_suspicion == 1 || _prevSuspicion == 1): {
+							pr _size = ctrlPosition _bar;
+							_size set [3, safeZoneH * 0.030];
+							_bar ctrlSetPosition _size;
+							_bar ctrlCommit 0;
+							_size set [3, safeZoneH * 0.003];
+							_bar ctrlSetPosition _size;
+							_bar ctrlCommit 1;
+						};
+						case (_suspicion >= 0.5 && _prevSuspicion < 0.5): {
+							pr _size = ctrlPosition _bar;
+							_size set [3, safeZoneH * 0.015];
+							_bar ctrlSetPosition _size;
+							_bar ctrlCommit 0;
+							_size set [3, safeZoneH * 0.003];
+							_bar ctrlSetPosition _size;
+							_bar ctrlCommit 1;
+						};
+					};
+				};
+
+				_bar ctrlCommit 0;
+				_text ctrlCommit 0;
+			};
 	ENDMETHOD;
-
-
 ENDCLASS;
+
+SETSV("UndercoverUI", "prevSuspicion", -1);
+//SETSV("UndercoverUI", "blink", true);

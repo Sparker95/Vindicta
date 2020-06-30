@@ -25,3 +25,6 @@ gDebugActionStateText = [
 	"FAILED",
 	"REPLAN"
 ];
+
+#define GET_PARAMETER_VALUE(array, tag) CALLSM2("Action", "getParameterValue", array, tag)
+#define GET_PARAMETER_VALUE_DEFAULT(array, tag, defaultValue) CALLSM3("Action", "getParameterValue", array, tag, defaultValue)

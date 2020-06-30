@@ -121,11 +121,11 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
 	ENDMETHOD;
 
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS");
@@ -195,7 +195,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			if (_co getVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, false]) then {	// If target is a civilian created by civ presence
 				if (!(weaponLowered _unit) && {currentWeapon _unit != ""}) then {			// If we have a gun and it's not lowered
 					if ((_co distance _unit) < 10) then {									// If civilian is close to us
-						[_co, _unit] call CivPresence_fnc_aimAtCivilian;
+						[_co, _unit] call pr0_fnc_cp_aimAtCivilian;
 					};
 				};
 			};
@@ -220,7 +220,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_SETV("prevPos", getPosASL _unit);
 	ENDMETHOD;
 
-	METHOD(processUI)
+	public METHOD(processUI)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS UI");
@@ -251,7 +251,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		};
 	ENDMETHOD;
 
-	METHOD(processLowFreq)
+	public METHOD(processLowFreq)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("PROCESS LOW FREQ");
@@ -396,27 +396,27 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		*/
 	ENDMETHOD;
 
-	METHOD(getCurrentLocations)
+	public METHOD(getCurrentLocations)
 		params [P_THISOBJECT];
 		T_GETV("currentLocations")
 	ENDMETHOD;
 
-	METHOD(getNearLocations)
+	public METHOD(getNearLocations)
 		params [P_THISOBJECT];
 		T_GETV("nearLocations")
 	ENDMETHOD;
 
-	METHOD(getCurrentGarrison)
+	public METHOD(getCurrentGarrison)
 		params [P_THISOBJECT];
 		T_GETV("currentGarrison")
 	ENDMETHOD;
 
-	METHOD(isAtFriendlyLocation)
+	public METHOD(isAtFriendlyLocation)
 		params [P_THISOBJECT];
 		T_GETV("atFriendlyLocation")
 	ENDMETHOD;
 
-	STATIC_METHOD(canUnitBuildAtLocation)
+	public STATIC_METHOD(canUnitBuildAtLocation)
 		params [P_THISCLASS, "_unit"];
 		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
 		if (!isNil "_thisObject") then {
@@ -426,12 +426,12 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(canUnitBuildFromInventory)
+	public STATIC_METHOD(canUnitBuildFromInventory)
 		params [P_THISCLASS, "_unit"];
 		
 	ENDMETHOD;
 
-	STATIC_METHOD(isUnitAtFriendlyLocation)
+	public STATIC_METHOD(isUnitAtFriendlyLocation)
 		params [P_THISCLASS, "_unit"];
 		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
 		if (!isNil "_thisObject") then {

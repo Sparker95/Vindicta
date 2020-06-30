@@ -13,7 +13,7 @@ CLASS("ActionGroupNothing", "ActionGroup")
 	// ------------ N E W ------------
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		// Set behaviour
@@ -39,7 +39,7 @@ CLASS("ActionGroupNothing", "ActionGroup")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		//T_CALLM0("failIfEmpty");
@@ -58,21 +58,6 @@ CLASS("ActionGroupNothing", "ActionGroup")
 		// Return the current state
 		T_SETV("state", _state);
 		_state
-	ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	METHOD(terminate)
-		params [P_THISOBJECT];
-		
-		// Delete given goals
-		pr _AI = T_GETV("AI");
-		pr _group = GETV(_AI, "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitNothing", "");
-		} forEach _units;
-		
 	ENDMETHOD;
 
 ENDCLASS;

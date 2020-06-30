@@ -13,9 +13,8 @@
 ["Templates\Factions\RHS_AAF_2020.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF_2010.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_LAF.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_HIDF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_MNAF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_LDF_NATO.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AFRF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_USAF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_CDF.sqf",						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
@@ -29,6 +28,7 @@
 ["Templates\Factions\3CB_TNA_B.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\3CB_TNA_O.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\Russians2035.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\DAF_Tan.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\BWA.sqf", 							T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GM_WestGer.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_BWMOD_BW_Fleck.sqf", 			T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
@@ -50,7 +50,6 @@
 ["Templates\Factions\POLICE.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF_ranger.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_LDF_NATO_police.sqf", 			T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_APD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CUP_RUS_Police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\WW2_Heer_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
@@ -63,3 +62,6 @@
 ["Templates\Factions\3CB_TPD_O.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\3CB_CPD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\Expansion_Police.sqf",				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\3CB_TPD_O.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\DSI.sqf", 							T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\AT.sqf", 							T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;

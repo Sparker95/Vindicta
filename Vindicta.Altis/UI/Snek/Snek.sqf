@@ -51,15 +51,15 @@ CLASS("SnekSegment", "")
 	ENDMETHOD;
 	
 	// Initial drawing of segment
-	/* virtual */ METHOD(draw)
+	public virtual METHOD(draw)
 	ENDMETHOD;
 	
 	// Deletion of segment from display
-	/* virtual */ METHOD(undraw)
+	public virtual METHOD(undraw)
 	ENDMETHOD;
 	
 	// Setting position of segment
-	/* virtual */ METHOD(setPos)
+	public virtual METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 	ENDMETHOD;
 	
@@ -68,7 +68,7 @@ ENDCLASS;
 #define OOP_CLASS_NAME SnekTail
 CLASS("SnekTail", "SnekSegment")
 	
-	METHOD(draw)
+	public override METHOD(draw)
 		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
@@ -81,12 +81,12 @@ CLASS("SnekTail", "SnekSegment")
 		_mrk setMarkerAlphaLocal 1;
 	ENDMETHOD;
 	
-	METHOD(undraw)
+	public override METHOD(undraw)
 		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
 	ENDMETHOD;
 	
-	METHOD(setPos)
+	public override METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
@@ -111,7 +111,7 @@ CLASS("SnekHead", "SnekSegment")
 		T_SETV("direction", _direction);
 	ENDMETHOD;
 	
-	METHOD(draw)
+	public override METHOD(draw)
 		params [P_THISOBJECT];
 		pr _x = T_GETV("x");
 		pr _y = T_GETV("y");
@@ -141,14 +141,14 @@ CLASS("SnekHead", "SnekSegment")
 		
 	ENDMETHOD;
 	
-	METHOD(undraw)
+	public override METHOD(undraw)
 		params [P_THISOBJECT];
 		deleteMarkerLocal _thisObject;
 		deleteMarkerLocal (_thisObject + "_left");
 		deleteMarkerLocal (_thisObject + "_right");
 	ENDMETHOD;
 	
-	METHOD(setPos)
+	public override METHOD(setPos)
 		params [P_THISOBJECT, P_NUMBER("_x"), P_NUMBER("_y")];
 		T_SETV("x", _x);
 		T_SETV("y", _y);
@@ -247,7 +247,7 @@ CLASS("Snek", "")
 	VARIABLE("pickups");
 	
 	// Call start to start the game
-	STATIC_METHOD(start)
+	public STATIC_METHOD(start)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("start");
@@ -265,7 +265,7 @@ CLASS("Snek", "")
 	ENDMETHOD;
 
 	// Call stop to stop the game	
-	STATIC_METHOD(stop)
+	public STATIC_METHOD(stop)
 	
 		OOP_INFO_0("stop");
 	
@@ -279,7 +279,7 @@ CLASS("Snek", "")
 	ENDMETHOD;
 
 	// Returns true if the game is running
-	STATIC_METHOD(isRunning)
+	public STATIC_METHOD(isRunning)
 
 		GETSV("Snek", "snek") != ""
 
@@ -387,7 +387,7 @@ CLASS("Snek", "")
 		_pickups pushBack _pickup;
 	ENDMETHOD;
 	
-	METHOD(onKeyDown)
+	public event METHOD(onKeyDown)
 		params [P_THISOBJECT, "_params"];
 		
 		OOP_INFO_1("On key down: %1", _this);
@@ -426,7 +426,7 @@ CLASS("Snek", "")
 		
 	ENDMETHOD;
 	
-	METHOD(onKeyUp)
+	public event METHOD(onKeyUp)
 		params [P_THISOBJECT, "_params"];
 		
 		_params params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
@@ -438,7 +438,7 @@ CLASS("Snek", "")
 		
 	ENDMETHOD;
 	
-	METHOD(onTimer)
+	public event METHOD(onTimer)
 		params [P_THISOBJECT];
 		
 		OOP_INFO_0("ON TIMER");
@@ -558,7 +558,7 @@ CLASS("MapMarkerSnek", "MapMarker")
 		T_CALLM1("setPos", _pos);
 	ENDMETHOD;
 
-	METHOD(onMouseButtonClick)
+	public event METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		
 		if (CALLSM0("Snek", "isRunning")) then {
@@ -569,7 +569,7 @@ CLASS("MapMarkerSnek", "MapMarker")
 	ENDMETHOD;
 
 
-	METHOD(onDraw)
+	public override event METHOD(onDraw)
 
 	ENDMETHOD;
 

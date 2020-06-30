@@ -12,7 +12,7 @@ this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["rhs_scarf","","",""];
 this addGoggles _RandomGoggles;
 this forceaddUniform "FGN_AAF_M10_Type07_Summer";
-this addVest "V_EOD_olive_F";
+this addVest "FGN_AAF_BallisticVest_Coyote";
 this addBackpack "FGN_AAF_Bergen_Engineer_Type07";
 
 this addWeapon "rhs_weap_m21s";
@@ -25,6 +25,5 @@ for "_i" from 1 to 2 do {this addItemToBackpack "rhs_charge_tnt_x2_mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
 this addItemToBackpack "SatchelCharge_Remote_Mag";
 for "_i" from 1 to 4 do {this addItemToBackpack "rhsgref_30rnd_556x45_m21";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_grenade_m15_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

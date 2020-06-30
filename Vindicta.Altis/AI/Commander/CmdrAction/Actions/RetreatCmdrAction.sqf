@@ -36,7 +36,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 #endif
 	ENDMETHOD;
 
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -113,7 +113,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		[_assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -140,7 +140,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		format ["%1 %2%3 -> %4%5", _thisObject, LABEL(_srcGarr), _srcEff, _targetName, _timeToStart]
 	ENDMETHOD;
 
-/* protected override */ METHOD(updateIntel)
+protected override METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -189,7 +189,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
 		if(_intelNotCreated) then {
-			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			_intelClone = CALLSM("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 		} else {
 			CALLM0(_intelClone, "updateInDb");
@@ -201,7 +201,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");

@@ -21,7 +21,7 @@ Logging functionality
 #define ADE_ASSERT assert 
 #else
 #define DUMP_CALLSTACK diag_log "callstack"
-#define ADE_HALT diag_log "halt"
+#define ADE_HALT
 #define ADE_ASSERT
 #endif
 
@@ -105,15 +105,23 @@ Logging functionality
 #define OOP_WARNING_5(str, a, b, c, d, e)
 #endif
 
+
+#ifdef _SQF_VM
+// Disable this for errors in SQF-VM or we get them all twice
+#define _WRITE_DIAG_LOG(msg) 
+#else
+#define _WRITE_DIAG_LOG(msg) diag_log msg
+#endif
+
 #ifdef OOP_ERROR
-#define OOP_ERROR_MSG(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_0(str) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_1(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_2(str, a, b) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
-#define OOP_ERROR_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_MSG(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_0(str) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_1(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_2(str, a, b) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
+#define OOP_ERROR_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str); _WRITE_DIAG_LOG(_o_str); WRITE_CRITICAL(_o_str); ADE_HALT
 #else
 #define OOP_ERROR_MSG(str, a)
 #define OOP_ERROR_0(str)

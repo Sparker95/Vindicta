@@ -14,13 +14,17 @@
 #define UNDERCOVER_IS_TARGET(unit) unit getVariable [UNDERCOVER_TARGET, false]
 #define UNDERCOVER_GET_VIC_COMPROMISED(obj) obj getVariable [UNDERCOVER_VIC_COMPROMISED, -1]
 
+// Macro for setting suspicious value
+#define UNDERCOVER_SET_UNIT_SUSPICIOUS(unit, susp) unit setVariable [UNDERCOVER_SUSPICIOUS, susp, true]
+
 // suspicion values for various actions
 #define SUSPICIOUS 0.5								// Suspiciousness at which unit passes "suspicious" threshold
 #define OVERT 1.0									// Suspiciousness at which unit is overt
 #define SUSP_MIL_LOCATION 0.4						// Suspiciousness for being at a military location
 #define SUSP_CROUCH 0.1								// Suspiciousness gained crouching
 #define SUSP_PRONE 0.2								// Suspiciousness gained prone
-#define SUSP_SPEEDMAX 0.2							// Max suspiciousness gained for movement speed
+#define SUSP_SPEEDMIN 0.1							// Min suspiciousness gained for movement speed
+#define SUSP_SPEEDMAX 0.4							// Max suspiciousness gained for movement speed
 #define SUSP_NOROADS 80								// Distance that is too far from roads to not be suspicious
 #define SUSP_OFFROAD 0.3							// Suspiciousness gained for being too far from roads
 #define SUSP_LOCKPICK 0.8							// Suspiciousness gained for picking a vehicle lock

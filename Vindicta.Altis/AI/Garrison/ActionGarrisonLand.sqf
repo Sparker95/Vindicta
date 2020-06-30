@@ -11,7 +11,7 @@ CLASS("ActionGarrisonLand", "ActionGarrisonBehaviour")
 	ENDMETHOD;
 	
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -31,7 +31,7 @@ CLASS("ActionGarrisonLand", "ActionGarrisonBehaviour")
 		ACTION_STATE_ACTIVE
 	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _gar = T_GETV("gar");
@@ -41,7 +41,7 @@ CLASS("ActionGarrisonLand", "ActionGarrisonBehaviour")
 		};
 
 		private _state = T_CALLM0("activateIfInactive");
-		if(CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", T_GETV("groups"), "GoalGroupAirLand", T_GETV("_AI"))) then {
+		if(CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", T_GETV("groups"), "GoalGroupAirLand", T_GETV("AI"))) then {
 			_state = ACTION_STATE_COMPLETED;
 		};
 		T_SETV("state", _state);

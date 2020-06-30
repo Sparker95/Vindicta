@@ -1,9 +1,9 @@
 #include "common.hpp"
 
 /*
-AI class for the group
+Base AI class for all unit-level bots (vehicles and infantry and civilians)
 
-Author: Sparker 12.11.2018
+Author: Sparker
 */
 
 #define pr private
@@ -11,44 +11,24 @@ Author: Sparker 12.11.2018
 #define OOP_CLASS_NAME AIUnit
 CLASS("AIUnit", "AI_GOAP")
 
+	// Object handle of the unit
+	VARIABLE("hO");
+
 	METHOD(new)
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
 
-		// Make sure that the needed MessageLoop exists
-		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
+		// Set variables
+		pr _hO = CALLM0(_agent, "getObjectHandle");
+		T_SETV("hO", _hO);
 
-		// Initialize the world state
-		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
-		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
+		_hO setVariable [AI_UNIT_VAR_NAME, _thisObject];
 
-		// Initialize sensors
-		pr _sensorSalute = NEW("SensorUnitSalute", [_thisObject]);
-		T_CALLM("addSensor", [_sensorSalute]);
-
-		pr _sensorCivNear = NEW("SensorUnitCivNear", [_thisObject]);
-		T_CALLM("addSensor", [_sensorCivNear]);
-
-		//T_SETV("worldState", _ws);
-		T_CALLM1("addToProcessCategory", "AIUnit");
 	ENDMETHOD;
 
 	METHOD(delete)
 		params [P_THISOBJECT];
-		T_CALLM0("removeFromProcessCategory");
-	ENDMETHOD;
-
-	// ----------------------------------------------------------------------
-	// |                    G E T   M E S S A G E   L O O P
-	// | The group AI resides in its own thread
-	// ----------------------------------------------------------------------
-
-	METHOD(getMessageLoop)
-		gMessageLoopGroupAI
-	ENDMETHOD;
-
-	// Common interface
-	/* virtual */ METHOD(getCargoUnits)
-		[]
+		pr _hO = T_GETV("hO");
+		_hO setVariable [AI_UNIT_VAR_NAME, nil];
 	ENDMETHOD;
 
 ENDCLASS;

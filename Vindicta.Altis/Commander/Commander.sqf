@@ -12,15 +12,15 @@ It just implements methods needed for an AI object to function.
 CLASS("Commander", "")
 
 	
-	METHOD(getSubagents)
+	public virtual METHOD(getSubagents)
 		[]
 	ENDMETHOD;
 	
-	METHOD(getPossibleGoals)
+	public virtual METHOD(getPossibleGoals)
 		[]
 	ENDMETHOD;
 	
-	METHOD(getPossibleActions)
+	public virtual METHOD(getPossibleActions)
 		[]
 	ENDMETHOD;
 

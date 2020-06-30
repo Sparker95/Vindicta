@@ -59,7 +59,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		T_SETV("clearing", false);
 	ENDMETHOD;
 
-	/* override */ METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -148,7 +148,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		};
 	ENDMETHOD;
 
-	/* private */ METHOD(isTargetDead)
+	METHOD(isTargetDead)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
@@ -186,7 +186,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 
 	ENDMETHOD;
 
-	/* private */ METHOD(getTargetRadius)
+	METHOD(getTargetRadius)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
@@ -210,7 +210,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 	ENDMETHOD;
 
 	// Simulate the death of the target (for FUTURE sim worlds).
-	/* private */ METHOD(simKillTarget)
+	METHOD(simKillTarget)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
@@ -246,6 +246,7 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 ["AST_GarrisonAttackTarget.new", {
+	SCOPE_IGNORE_ACCESS(CmdrAction);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_GarrisonAttackTarget", 
 		[_action]+

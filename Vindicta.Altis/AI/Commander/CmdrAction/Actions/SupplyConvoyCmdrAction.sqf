@@ -106,12 +106,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;
 
-	METHOD(getRouteTargets)
-		params [P_THISOBJECT];
-		T_GET_AST_VAR("routeTargetsVar")
-	ENDMETHOD;
-
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -256,7 +251,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		_asts
 	ENDMETHOD;
 
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -294,7 +289,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 
-	METHOD(updateIntelFromDetachment)
+	protected virtual METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
@@ -317,7 +312,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -351,7 +346,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		// };
 	ENDMETHOD;
 
-	/* protected override */ METHOD(updateIntel)
+	protected override METHOD(updateIntel)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -406,7 +401,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 
-			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			_intelClone = CALLSM("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
@@ -430,7 +425,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 
-	/* override */ METHOD(updateScore)
+	public override METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -519,13 +514,14 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 
 		// How much to scale the score for distance to target
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
+
+		private _dist = _srcGarrPos distance _tgtGarrPos;
+		// Prefer distance of 7km for convoys, so offset distance by that before calculating falloff score
+		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _dist - 7000);
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
-
-		private _dist = _srcGarrPos distance _tgtGarrPos;
 
 		// CALCULATE START DATE
 		// Work out time to start based on amount of supplies we mustering and distance we are travelling.
@@ -558,7 +554,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _strategy = CALLSM("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(1, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getSupplyScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _effAllocated ARG _type ARG _amount]);
 		T_CALLM("setScore", [_score]);
@@ -582,7 +578,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD(getRecordSerial)
+	public override METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record

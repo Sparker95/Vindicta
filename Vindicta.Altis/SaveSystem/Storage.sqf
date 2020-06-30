@@ -155,7 +155,7 @@ CLASS("Storage", "")
 	ENDMETHOD;
 
 	// Clears hashmaps of object references
-	/* private */ METHOD(_clearObjectMaps)
+	METHOD(_clearObjectMaps)
 		params [P_THISOBJECT];
 
 		#ifndef _SQF_VM
@@ -196,7 +196,7 @@ CLASS("Storage", "")
 
 	Returns: true if value was saved successfully
 	*/
-	/* public */	METHOD(save)
+	public METHOD(save)
 		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
 		private _result = nil;
 		//CRITICAL_SECTION {
@@ -278,7 +278,7 @@ CLASS("Storage", "")
 					// It's a basic type, convert it to string and save it
 					pr _array = [_value];							// Much easier to convert it to the array
 					_array = +_array;								// Then use our usual array conversion code
-					_array call storage_fnc_preStringifyArray;			// So that it can write values back
+					_array call storage_fnc_preStringifyArray;		// So that it can write values back
 					toFixed 7;
 					pr _valueStr = str _array;
 					toFixed -1;
@@ -307,7 +307,7 @@ CLASS("Storage", "")
 	object ref or NULL_OBJECT on failure, if an OOP object ref is passed
 	value, if general variable name is passed
 	*/
-	/* public */	METHOD(load)
+	public METHOD(load)
 		params [P_THISOBJECT, P_DYNAMIC("_ref"), P_BOOL("_createNewObject"), P_NUMBER("_specificVersion")];
 		private _result = nil;
 		//CRITICAL_SECTION {
@@ -445,7 +445,7 @@ CLASS("Storage", "")
 	// It should also prohibit opening same record twice
 	// Returns nothing
 	// ! ! ! Must be called by inherited classes ! ! !
-	/* virtual */ METHOD(open)
+	public virtual METHOD(open)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		// Set up hashmaps
@@ -464,7 +464,7 @@ CLASS("Storage", "")
 
 	// Must close the file or whatever
 	// ! ! ! Must be called by inherited classes ! ! !
-	/* virtual */ METHOD(close)
+	public virtual METHOD(close)
 		params [P_THISOBJECT];
 
 		// Clear hashmaps
@@ -482,23 +482,23 @@ CLASS("Storage", "")
 	*/
 
 	// Saves variable
-	/* virtual */ METHOD(saveString)
+	public virtual METHOD(saveString)
 		params [P_THISOBJECT, P_STRING("_varName"), P_STRING("_value")];
 	ENDMETHOD;
 
 	// Loads variable, returns the value it has read
-	/* virtual */ METHOD(loadString)
+	public virtual METHOD(loadString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 		0
 	ENDMETHOD;
 
 	// Erases variable (loadVariable must return nil afterwards)
-	/* virtual */ METHOD(eraseString)
+	public virtual METHOD(eraseString)
 		params [P_THISOBJECT, P_STRING("_varName")];
 	ENDMETHOD;
 
 	// Must return true if the object is ready to save/load data
-	/* virtual */ METHOD(isOpen)
+	public virtual METHOD(isOpen)
 		params [P_THISOBJECT];
 		false
 	ENDMETHOD;
@@ -510,19 +510,19 @@ CLASS("Storage", "")
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Must returns true if a record with given record name already exists
-	/* virtual */ METHOD(recordExists)
+	public virtual METHOD(recordExists)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		false
 	ENDMETHOD;
 
 	// Must erase all variables of this record. Must return true on success.
-	/* virtual */ METHOD(eraseRecord)
+	public virtual METHOD(eraseRecord)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		true
 	ENDMETHOD;
 
 	// Must return array of all record names which exist in this storage
-	/* virtual */ METHOD(getAllRecords)
+	public virtual METHOD(getAllRecords)
 		params [P_THISOBJECT];
 		[]
 	ENDMETHOD;

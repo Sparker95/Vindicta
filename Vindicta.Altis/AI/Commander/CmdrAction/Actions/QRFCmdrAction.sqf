@@ -40,7 +40,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	ENDMETHOD;
 
 	// Create the intel object for this action
-	/* protected override */ METHOD(updateIntel)
+	protected override METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -77,7 +77,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 			
-			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			private _intelClone = CALLSM("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
@@ -100,7 +100,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	ENDMETHOD;
 
 	// Update score for this action
-	/* override */ METHOD(updateScore)
+	public override METHOD(updateScore)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -259,7 +259,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Air units care about distance less than ground units (check https://www.desmos.com/calculator/pjs09xfxkm to determine good values)
 		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.4 } else { 1 };
-		private _distCoeff = CALLSM3("CmdrAction", "calcDistanceFalloff", _srcGarrPos, _tgtClusterPos, _fallOffRate);
+		private _distCoeff = CALLSM2("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtClusterPos, _fallOffRate);
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff;
@@ -275,7 +275,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
 		private _side = GETV(_srcGarr, "side");
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _strategy = CALLSM("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getQRFScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtCluster ARG _effAllocated]);
 		T_CALLM("setScore", [_score]);
@@ -336,7 +336,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD(getRecordSerial)
+	public override METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record

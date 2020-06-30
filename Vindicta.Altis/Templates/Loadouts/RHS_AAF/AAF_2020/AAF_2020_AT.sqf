@@ -25,7 +25,6 @@ this addSecondaryWeaponItem "MRAWS_HEAT_F";
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
 for "_i" from 1 to 4 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 this addItemToBackpack "MRAWS_HEAT_F";
 this addItemToBackpack "MRAWS_HEAT55_F";
 this addItemToBackpack "MRAWS_HE_F";

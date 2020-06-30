@@ -35,7 +35,10 @@ FIX_LINE_NUMBERS()
 CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/* save */ 	VARIABLE_ATTR("type", [ATTR_SAVE]);						// String, location type
+	// SAVEBREAK >>>
+	// Remove "side" property: locations do not have intrinsic sides, only occupying forces
 	/* save */ 	VARIABLE_ATTR("side", [ATTR_SAVE]);						// Side, location side
+	// <<< SAVEBREAK
 	/* save */ 	VARIABLE_ATTR("name", [ATTR_SAVE]);						// String, location name
 	/* save */ 	VARIABLE_ATTR("children", [ATTR_SAVE]);					// Children of this location if it has any (e.g. police stations are children of cities)
 	/* save */ 	VARIABLE_ATTR("parent", [ATTR_SAVE]); 					// Parent of the Location if it has one (e.g. parent of police station is its containing city location)
@@ -53,9 +56,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("capacityInf"); 								// Infantry capacity
 				VARIABLE("capacityHeli"); 								// Helicopter capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
-				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
-				VARIABLE_ATTR("buildProgress", [ATTR_SAVE_VER(12)]);	// How much of the location is built from 0 to 1
+				VARIABLE_ATTR("buildProgress", [ATTR_SAVE]);			// How much of the location is built from 0 to 1
 				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
 				VARIABLE("buildableObjects");							// Objects that will be constructed
 	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]);				// Custom object that the game mode can use to store info about this location
@@ -94,7 +96,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if (isNil "gMessageLoopMain") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
-		T_SETV("side", CIVILIAN);
 		T_SETV_PUBLIC("name", "noname");
 		T_SETV_PUBLIC("garrisons", []);
 		T_SETV_PUBLIC("boundingRadius", 0);
@@ -110,7 +111,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityHeli", 0);
 		T_SETV_PUBLIC("capacityHeli", 0);
 		T_SETV("capacityCiv", 0);
-		T_SETV("cpModule",objnull);
 		T_SETV_PUBLIC("isBuilt", false);
 		T_SETV("lastBuildProgressTime", 0);
 		T_SETV_PUBLIC("buildProgress", 0);
@@ -149,7 +149,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV_PUBLIC("alarmDisabled", false);
 
 		//Push the new object into the array with all locations
-		private _allArray = GET_STATIC_VAR("Location", "all");
+		private _allArray = GETSV("Location", "all");
 		_allArray pushBack _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
 
@@ -172,34 +172,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: nil
 	*/
-	METHOD(setName)
+	public METHOD(setName)
 		params [P_THISOBJECT, P_STRING("_name")];
 		T_SETV_PUBLIC("name", _name);
 	ENDMETHOD;
 
-	METHOD(setCapacityInf)
+	public METHOD(setCapacityInf)
 		params [P_THISOBJECT, P_NUMBER("_capacityInf")];
 		T_SETV("capacityInf", _capacityInf);
 		T_SETV_PUBLIC("capacityInf", _capacityInf);
 	ENDMETHOD;
 
-	METHOD(setCapacityCiv)
+	public METHOD(setCapacityCiv)
 		params [P_THISOBJECT, P_NUMBER("_capacityCiv")];
 		T_SETV("capacityCiv", _capacityCiv);
-		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY && _capacityCiv > 0)then{
-			private _cpModule = [+T_GETV("pos"), T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
-			if(!isNull _cpModule) then {
-				T_SETV("cpModule",_cpModule);
-			} else {
-				T_SETV("cpModule", objNull);
-			};
-		};
-
-	ENDMETHOD;
-
-	METHOD(setSide)
-		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
-		T_SETV("side", _side);
 	ENDMETHOD;
 
 	/*
@@ -207,7 +193,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Adds a child location to this location (also sets the childs parent).
 	Child must not belong to another location already.
 	*/
-	METHOD(addChild)
+	public METHOD(addChild)
 		params [P_THISOBJECT, P_OOP_OBJECT("_childLocation")];
 		ASSERT_OBJECT_CLASS(_childLocation, "Location");
 		ASSERT_MSG(IS_NULL_OBJECT(GETV(_childLocation, "parent")), "Location is already assigned to another parent");
@@ -222,7 +208,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Finds all relevant objects in the locations area, and records them.
 	This includes allowed areas, vehicle spawn points and buildings
 	*/
-	METHOD(findAllObjects)
+	public METHOD(findAllObjects)
 		params [P_THISOBJECT];
 
 		OOP_DEBUG_1("findAllObjects for %1", T_GETV("name"));
@@ -250,8 +236,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _locPos = T_GETV("pos");
 
 		#ifndef _SQF_VM
-		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius] select { typeOf _x != "" };
-		private _objects = nearestObjects [_locPos, [], _radius] select { typeOf _x != "" };
+		// Lots of objects from the map have typeOf "" unfortunately (thanks to arma)
+		// But we must scan them anyway
+		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
+		private _objects = nearestObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
 		private _allObjects = +_terrainObjects;
 		{
 			_allObjects pushBackUnique _x;
@@ -278,6 +266,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			if(T_CALLM1("isInBorder", _object)) then
 			{
 				private _type = typeOf _object;
+				private _modelName = (getModelInfo _object) select 0;
 
 				switch true do {
 					// A truck's position defined the position for tracked and wheeled vehicles
@@ -339,7 +328,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
 						if(_ambientAnimIdx != NOT_FOUND) then {
 							private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
-							private _mrk = createVehicle ["Sign_Pointer_Cyan_F", getPos _object, [], 0, "CAN_COLLIDE"];
+							private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal getPos _object;
 							_mrk setDir getDir _object;
 							_mrk setVariable ["vin_defaultAnims", [_anim]];
 							_mrk hideObjectGlobal true;
@@ -353,22 +342,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
 					};
 					// Process buildings, objects with anim markers, and shooting targets
-					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
+					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
 						T_CALLM2("addObject", _object, _object in _terrainObjects);
 						OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 					};
 				};
-
-				// // Process objects with anim markers
-				// private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
-				// if(_animMarkersIdx != NOT_FOUND) then {
-				// 	T_CALLM1("addObject", _object);
-				// };
-
-				// // Process shooting targets
-				// if(_type in gShootingTargetTypes) then {
-				// 	T_CALLM1("addObject", _object);
-				// };
 			};
 		} forEach _allObjects;
 
@@ -381,12 +359,14 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	
 	Arguments: _hObject
 	*/
-	METHOD(addObject)
+	public METHOD(addObject)
 		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
-		// Convert to simple object if required
-		if(!_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
-			_hObject = [_hObject] call BIS_fnc_replaceWithSimpleObject;
+		private _type = typeOf _hObject;
+
+		// Disable object simulation if needed
+		if((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) == "thingX"}) then {
+			_hObject enableSimulationGlobal false;
 		};
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
@@ -416,7 +396,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if(_alreadyRegistered) exitWith {};
 
 		// Check how it affects the location's infantry capacity
-		private _type = typeOf _hObject;
+		private _modelName = (getModelInfo _hObject) select 0;
 		private _index = location_b_capacity findIf {_type in _x#0};
 		private _cap = 0;
 		if (_index != -1) then {
@@ -452,13 +432,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Process it for ambient anims
-		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
+		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _modelName; };
 		if(_animMarkersIdx != NOT_FOUND) then {
 			(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
 			private _ambientAnimObjects = T_GETV("ambientAnimObjects");
 			{
 				_x params ["_relPos", "_relDir", "_anim"]; 
-				private _mrk = createVehicle ["Sign_Pointer_Cyan_F", [0,0,0], [], 0, "CAN_COLLIDE"];
+				private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal [0,0,0];
 				if(_isTerrainObject) then {
 					_mrk setPos (_hObject modelToWorldVisual _relPos);
 					_mrk setDir (getDir _hObject + _relDir);
@@ -472,6 +452,19 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_mrk hideObjectGlobal true;
 				_ambientAnimObjects pushBack _mrk;
 			} forEach _animMarkers;
+
+			// Add marker for debug
+			/*
+			_mrkName = format ["%1_%2", _thisObject, str _hObject];
+			pr _mrk = createMarkerLocal [_mrkName, (getPos _hObject)];
+			_mrk setMarkerShapeLocal "ICON";
+			_mrk setMarkerBrushLocal "SolidFull";
+			_mrk setMarkerColorLocal "ColorRed";
+			_mrk setMarkerAlphaLocal 1.0;
+			_mrk setMarkerTypeLocal "mil_dot";
+			//_mrk setMarkerSizeLocal [0.3, 0.3];
+			_mrk setMarkerTextLocal (str _hObject);
+			*/
 		};
 
 		// Process target range objects
@@ -496,7 +489,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		group _hObject deleteGroupWhenEmpty true;
 	ENDMETHOD;
 
-	// Add a building in the area that can be built, but starts off hidden (military base structures mostly)
 	METHOD(findBuildables)
 		params [P_THISOBJECT];
 
@@ -516,8 +508,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		{
 			private _object = _x;
-			private _objectName = str _object;
-			private _modelName = _objectName select [(_objectName find ": ") + 2];
+			private _modelName = (getModelInfo _object)#0;
 			if(!(_object in _objects) && {T_CALLM1("isInBorder", _object)} && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
 			{
 				private _pos = getPosATL _object;
@@ -546,20 +537,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		OOP_INFO_2("Buildables for %1: %2", T_GETV("name"), _sortedBuildables);
 	ENDMETHOD;
 
-	METHOD(isEnemy)
+	public METHOD(isEnemy)
 		params [P_THISOBJECT];
 		private _enemySide = CALLM0(gGameMode, "getEnemySide");
 		(count T_CALLM1("getGarrisons", _enemySide)) > 0
 	ENDMETHOD;
 
-	METHOD(isPlayer)
+	public METHOD(isPlayer)
 		params [P_THISOBJECT];
 		private _playerSide = CALLM0(gGameMode, "getPlayerSide");
 		(count T_CALLM1("getGarrisons", _playerSide)) > 0
 	ENDMETHOD;
 
 	// Initialize build progress from garrisons that are present, call on campaign creation
-	METHOD(initBuildProgress)
+	public METHOD(initBuildProgress)
 		params [P_THISOBJECT];
 		if !(T_GETV("type") in LOCATIONS_BUILD_PROGRESS) exitWith {};
 		if(T_CALLM0("isEnemy")) then {
@@ -657,7 +648,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	ENDMETHOD;
 	
-	METHOD(debugAddBuildProgress)
+	public METHOD(debugAddBuildProgress)
 		params [P_THISOBJECT, P_NUMBER("_amount")];
 		private _buildProgress = T_GETV("buildProgress");
 		_buildProgress = 0 max (_buildProgress + _amount) min 1;
@@ -722,7 +713,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		//Remove this unit from array with all units
-		private _allArray = GET_STATIC_VAR("Location", "all");
+		private _allArray = GETSV("Location", "all");
 		_allArray deleteAt (_allArray find _thisObject);
 		PUBLIC_STATIC_VAR("Location", "all");
 
@@ -746,8 +737,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Array of location objects
 	*/
-	STATIC_METHOD(getAll)
-		private _all = GET_STATIC_VAR("Location", "all");
+	public STATIC_METHOD(getAll)
+		private _all = GETSV("Location", "all");
 		private _return = +_all;
 		_return
 	ENDMETHOD;
@@ -760,7 +751,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Array, position
 	*/
-	METHOD(getPos)
+	public METHOD(getPos)
 		params [P_THISOBJECT];
 		T_GETV("pos")
 	ENDMETHOD;
@@ -773,7 +764,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: bool
 	*/
-	METHOD(isSpawned)
+	public METHOD(isSpawned)
 		params [P_THISOBJECT];
 		T_GETV("spawned")
 	ENDMETHOD;
@@ -785,7 +776,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Bool
 	*/
-	METHOD(hasPlayers)
+	public METHOD(hasPlayers)
 		params [P_THISOBJECT];
 		T_GETV("hasPlayers")
 	ENDMETHOD;
@@ -796,7 +787,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: array<Side>
 	*/
-	METHOD(getPlayerSides)
+	public METHOD(getPlayerSides)
 		params [P_THISOBJECT];
 		T_GETV("hasPlayerSides")
 	ENDMETHOD;
@@ -808,7 +799,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Array of positions
 	*/
-	METHOD(getPatrolWaypoints)
+	public METHOD(getPatrolWaypoints)
 		params [P_THISOBJECT];
 		if(T_GETV("useParentPatrolWaypoints")) then {
 			private _parent = T_GETV("parent");
@@ -824,7 +815,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		}
 	ENDMETHOD;
 
-	METHOD(getPatrolRoutes)
+	public METHOD(getPatrolRoutes)
 		params [P_THISOBJECT];
 		if(T_GETV("useParentPatrolWaypoints")) then {
 			private _parent = T_GETV("parent");
@@ -835,16 +826,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 
 	// |                  G E T   M E S S A G E   L O O P
-	METHOD(getMessageLoop) //Derived classes must implement this method
+	public override METHOD(getMessageLoop) //Derived classes must implement this method
 		gMessageLoopMain
 	ENDMETHOD;
 
-	METHOD(isAlarmDisabled)
+	public METHOD(isAlarmDisabled)
 		params [P_THISOBJECT];
 		T_GETV("alarmDisabled")
 	ENDMETHOD;
 
-	METHOD(setAlarmDisabled)
+	public METHOD(setAlarmDisabled)
 		params [P_THISOBJECT, P_BOOL("_disabled")];
 		T_SETV_PUBLIC("alarmDisabled", _disabled);
 	ENDMETHOD;
@@ -852,7 +843,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	METHOD(registerGarrison)
+	public METHOD(registerGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		
 		pr _gars = T_GETV("garrisons");
@@ -884,7 +875,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV_PUBLIC("wasOccupied", true);
 	ENDMETHOD;
 
-	METHOD(unregisterGarrison)
+	public METHOD(unregisterGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 		
 		pr _gars = T_GETV("garrisons");
@@ -901,7 +892,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	ENDMETHOD;
 
-	METHOD(getGarrisons)
+	public METHOD(getGarrisons)
 		params [P_THISOBJECT, P_DYNAMIC_DEFAULT("_sides", 0), P_DYNAMIC_DEFAULT("_types", GARRISON_TYPE_GENERAL)];
 		if(_types isEqualType GARRISON_TYPE_GENERAL) then {
 			_types = [_types];
@@ -917,7 +908,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 
 	// Get all garrisons that consider this location home
-	METHOD(getHomeGarrisons)
+	public METHOD(getHomeGarrisons)
 		params [P_THISOBJECT, P_DYNAMIC_DEFAULT("_sides", 0), P_DYNAMIC_DEFAULT("_types", GARRISON_TYPE_GENERAL)];
 		if(_types isEqualType GARRISON_TYPE_GENERAL) then {
 			_types = [_types];
@@ -933,12 +924,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	ENDMETHOD;
 
-	METHOD(hasGarrisons)
+	public METHOD(hasGarrisons)
 		params [P_THISOBJECT, P_DYNAMIC_DEFAULT("_sides", 0), P_DYNAMIC_DEFAULT("_types", GARRISON_TYPE_GENERAL)];
 		count T_CALLM2("getGarrisons", _sides, _types) > 0
 	ENDMETHOD;
 
-	METHOD(getGarrisonsRecursive)
+	public METHOD(getGarrisonsRecursive)
 		params [P_THISOBJECT, P_DYNAMIC_DEFAULT("_sides", 0), P_DYNAMIC_DEFAULT("_types", GARRISON_TYPE_GENERAL)];
 		private _myGarrisons = T_CALLM2("getGarrisons", _sides, _types);
 		{
@@ -953,7 +944,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: String
 	*/
-	METHOD(getType)
+	public METHOD(getType)
 		params [P_THISOBJECT];
 		T_GETV("type")
 	ENDMETHOD;
@@ -964,7 +955,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: String
 	*/
-	STATIC_METHOD(getTypeString)
+	public STATIC_METHOD(getTypeString)
 		params [P_THISCLASS, "_type"];
 		switch (_type) do {
 			case LOCATION_TYPE_OUTPOST: {"Outpost"};
@@ -986,7 +977,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: String
 	*/
-	METHOD(getName)
+	public METHOD(getName)
 		params [P_THISOBJECT];
 		T_GETV("name")
 	ENDMETHOD;
@@ -996,7 +987,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns a display name to show in UIs. Format is: <type> <name>, like "Camp Potato".
 	*/
-	METHOD(getDisplayName)
+	public METHOD(getDisplayName)
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
 		if(_gmdata != NULL_OBJECT) then {
@@ -1011,7 +1002,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns a display color to show in UIs. Format is: [r,g,b,a].
 	*/
-	METHOD(getDisplayColor)
+	public METHOD(getDisplayColor)
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
 		if(_gmdata != NULL_OBJECT) then {
@@ -1028,7 +1019,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Returns: Side, or Civilian if there is no garrison
 	*/
 	/*
-	METHOD(getSide)
+	public METHOD(getSide)
 		params [P_THISOBJECT];
 		pr _gar = T_GETV("garrisonMilMain");
 		if (_gar == "") then {
@@ -1045,7 +1036,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Integer
 	*/
-	METHOD(getCapacityInf)
+	public METHOD(getCapacityInf)
 		params [P_THISOBJECT];
 		T_GETV("capacityInf")
 	ENDMETHOD;
@@ -1056,7 +1047,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Integer
 	*/
-	METHOD(getCapacityHeli)
+	public METHOD(getCapacityHeli)
 		params [P_THISOBJECT];
 		count T_GETV("helipads")
 	ENDMETHOD;
@@ -1067,7 +1058,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Integer
 	*/
-	METHOD(getCapacityPlane)
+	public METHOD(getCapacityPlane)
 		params [P_THISOBJECT];
 		0
 	ENDMETHOD;
@@ -1078,7 +1069,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Integer
 	*/
-	METHOD(getCapacityCiv)
+	public METHOD(getCapacityCiv)
 		params [P_THISOBJECT];
 		T_GETV("capacityCiv")
 	ENDMETHOD;
@@ -1087,7 +1078,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: getOpenBuildings
 	Returns an array of object handles of buildings in which AI infantry can enter (they must return buildingPos positions)
 	*/
-	METHOD(getOpenBuildings)
+	public METHOD(getOpenBuildings)
 		params [P_THISOBJECT];
 		T_GETV("buildingsOpen") select { damage _x < 0.98 && !isObjectHidden _x }
 	ENDMETHOD;
@@ -1096,7 +1087,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: getAmbientAnimObjects
 	Returns an array of object handles marking ambient animations
 	*/
-	METHOD(getAmbientAnimObjects)
+	public METHOD(getAmbientAnimObjects)
 		params [P_THISOBJECT];
 		T_GETV("ambientAnimObjects") select { !isObjectHidden (_x getVariable ["vin_parent", objNull]) }
 	ENDMETHOD;
@@ -1105,7 +1096,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: getTargetRangeObjects
 	Returns an array of object handles for shooting range targets
 	*/
-	METHOD(getTargetRangeObjects)
+	public METHOD(getTargetRangeObjects)
 		params [P_THISOBJECT];
 		T_GETV("targetRangeObjects") select { !isObjectHidden _x }
 	ENDMETHOD;
@@ -1114,7 +1105,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: getGameModeData
 	Returns gameModeData object
 	*/
-	METHOD(getGameModeData)
+	public METHOD(getGameModeData)
 		params [P_THISOBJECT];
 		T_GETV("gameModeData")
 	ENDMETHOD;
@@ -1123,7 +1114,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: hasRadio
 	Returns true if this location has any object of the radio object types
 	*/
-	METHOD(hasRadio)
+	public METHOD(hasRadio)
 		params [P_THISOBJECT];
 		T_GETV("hasRadio")
 	ENDMETHOD;
@@ -1132,12 +1123,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: wasOccupied
 	Returns value of wasOccupied variable.
 	*/
-	METHOD(wasOccupied)
+	public METHOD(wasOccupied)
 		params [P_THISOBJECT];
 		T_GETV("wasOccupied")
 	ENDMETHOD;
 
-	STATIC_METHOD(findRoadblocks)
+	public STATIC_METHOD(findRoadblocks)
 		params [P_THISCLASS, P_POSITION("_pos")];
 
 		//private _pos = T_CALLM("getPos", []);
@@ -1146,10 +1137,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Get near roads and sort them far to near, taking width into account
 		private _roads_remaining = ((_pos nearRoads 1500) select {
-			pr _roadPos = getPosASL _x;
-			(_roadPos distance _pos > 400) &&			// Pos is far enough
-			((count (_x nearRoads 20)) < 3) &&	// Not too many roads because it might mean a crossroad
-			(count (roadsConnectedTo _x) == 2)			// Connected to two roads, we don't need end road elements
+			pr _roadPos = getPos _x;
+			_roadPos distance2D _pos > 400 &&			// Pos is far enough
+			count (_x nearRoads 20) < 3 &&				// Not too many roads because it might mean a crossroad
+			count (roadsConnectedTo _x) == 2			// Connected to two roads, we don't need end road elements
 			// Let's not create roadblocks inside other locations
 			//{count (CALLSM1("Location", "getLocationsAt", _roadPos)) == 0}	// There are no locations here
 		}) apply {
@@ -1165,19 +1156,19 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		while {count _roads_remaining > 0 and _itr < 4} do {
 			(_roads_remaining#0) params ["_valueMetric", "_dist", "_road"];
-			private _roadscon = (roadsConnectedto _road) apply { [position _x distance _pos, _x] };
+			private _roadscon = roadsConnectedto _road apply { [position _x distance _pos, _x] };
 			_roadscon sort DESCENDING;
 			if (count _roadscon > 0) then {
 				private _roadcon = _roadscon#0#1;
 				//private _dir = _roadcon getDir _road;
-				private _roadblock_pos = getPosASL _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
+				private _roadblock_pos = getPos _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
 					
 				_roadblockPositions pushBack _roadblock_pos;
 			};
 
 			_roads_remaining = _roads_remaining select {
-				( (getPos _road) distance (getPos (_x select 2)) > 300) &&
-				{((getPos _road) vectorDiff _pos) vectorCos ((getPos (_x select 2)) vectorDiff _pos) < 0.3}
+				( getPos _road distance2D getPos (_x select 2) > 300) &&
+				{(getPos _road vectorDiff _pos) vectorCos (getPos (_x select 2) vectorDiff _pos) < 0.3}
 			};
 			_itr = _itr + 1;
 		};
@@ -1191,7 +1182,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: [center, a, b, angle, isRectangle, c]
 	*/
-	METHOD(getBorder)
+	public METHOD(getBorder)
 		params [P_THISOBJECT];
 		T_GETV("border")
 	ENDMETHOD;
@@ -1202,7 +1193,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: number
 	*/
-	METHOD(getBoundingRadius)
+	public METHOD(getBoundingRadius)
 		params [P_THISOBJECT];
 		T_GETV("boundingRadius")
 	ENDMETHOD;
@@ -1217,7 +1208,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: nil
 	*/
-	METHOD(setType)
+	public METHOD(setType)
 		params [P_THISOBJECT, P_STRING("_type")];
 		T_SETV_PUBLIC("type", _type);
 
@@ -1284,7 +1275,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	#define ROAD_DIR_LIMIT 15
 
-	STATIC_METHOD(findSafePosOnRoad)
+	public STATIC_METHOD(findSafePosOnRoad)
 		params [P_THISCLASS, P_POSITION("_startPos"), P_STRING("_className"), P_NUMBER("_maxRange")];
 
 		// Try to find a safe position on a road for this vehicle
@@ -1365,7 +1356,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: [_pos, _dir]
 	*/
-	STATIC_METHOD(findSafePos)
+	public STATIC_METHOD(findSafePos)
 		params [P_THISCLASS, P_POSITION("_startPos"), P_STRING("_className"), P_NUMBER("_maxRadius")];
 
 		private _found = false;
@@ -1399,7 +1390,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: Integer
 	*/
-	METHOD(countAvailableUnits)
+	public METHOD(countAvailableUnits)
 		params [P_THISOBJECT, P_SIDE("_side") ];
 
 		// TODO: Yeah we need mutex here!
@@ -1419,7 +1410,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments:
 	_radius
 	*/
-	METHOD(setBorderCircle)
+	public METHOD(setBorderCircle)
 		params [P_THISOBJECT, P_NUMBER("_radius")];
 		T_CALLM1("setBorder", [_radius ARG _radius ARG 0 ARG false]);
 	ENDMETHOD;
@@ -1431,7 +1422,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments:
 	_data - [radiusA, radiusB, angle, isRectangle]
 	*/
-	METHOD(setBorder)
+	public METHOD(setBorder)
 		params [P_THISOBJECT, ["_data", [50, 50, 0, false], [[]]] ];
 
 		_data params ["_a", "_b", "_dir", "_isRectangle"];
@@ -1447,7 +1438,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_CALLM0("updateCivCapacity");
 	ENDMETHOD;
 
-	METHOD(updateCivCapacity)
+	public METHOD(updateCivCapacity)
 		params [P_THISOBJECT];
 		private _locCapacityCiv = if(T_GETV("type") == LOCATION_TYPE_CITY) then {
 			private _baseRadius = 300; // Radius at which it 
@@ -1477,7 +1468,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	
 
 	// How many civilian cars ought we to spawn in this location (we assume its an appropriate location)
-	METHOD(getMaxCivilianVehicles)
+	public METHOD(getMaxCivilianVehicles)
 		params [P_THISOBJECT];
 		private _radius = T_GETV("boundingRadius");
 		CLAMP(0.03 * _radius, 3, 25)
@@ -1486,13 +1477,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// File-based methods
 
 	// Handles messages
-	METHOD_FILE(handleMessageEx, "Location\handleMessageEx.sqf");
+	public override METHOD_FILE(handleMessageEx, "Location\handleMessageEx.sqf");
 
 	// Sets border parameters
 	METHOD_FILE(updateWaypoints, "Location\updateWaypoints.sqf");
 
 	// Checks if given position is inside the border
-	METHOD_FILE(isInBorder, "Location\isInBorder.sqf");
+	public METHOD_FILE(isInBorder, "Location\isInBorder.sqf");
 
 	// Adds a spawn position
 	METHOD_FILE(addSpawnPos, "Location\addSpawnPos.sqf");
@@ -1505,38 +1496,38 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD_FILE(calculateInfantryCapacity, "Location\calculateInfantryCapacity.sqf");
 
 	// Gets a spawn position to spawn some unit
-	METHOD_FILE(getSpawnPos, "Location\getSpawnPos.sqf");
+	public METHOD_FILE(getSpawnPos, "Location\getSpawnPos.sqf");
 
 	// Returns a random position within border
-	METHOD_FILE(getRandomPos, "Location\getRandomPos.sqf");
+	public METHOD_FILE(getRandomPos, "Location\getRandomPos.sqf");
 
 	// Returns how many units of this type and group type this location can hold
-	METHOD_FILE(getUnitCapacity, "Location\getUnitCapacity.sqf");
+	public METHOD_FILE(getUnitCapacity, "Location\getUnitCapacity.sqf");
 
 	// Checks if given position is safe to spawn a vehicle here
-	STATIC_METHOD_FILE(isPosSafe, "Location\isPosSafe.sqf");
+	public STATIC_METHOD_FILE(isPosSafe, "Location\isPosSafe.sqf");
 
 	// Checks if given position is even safer to spawn a vehicle here (conservative, doesn't allow spawning 
 	// in buildings etc.)
-	STATIC_METHOD_FILE(isPosEvenSafer, "Location\isPosEvenSafer.sqf");
+	public STATIC_METHOD_FILE(isPosEvenSafer, "Location\isPosEvenSafer.sqf");
 
 	// Returns the nearest location to given position and distance to it
-	STATIC_METHOD_FILE(getNearestLocation, "Location\getNearestLocation.sqf");
+	public STATIC_METHOD_FILE(getNearestLocation, "Location\getNearestLocation.sqf");
 
 	// Returns location that has its border overlapping given position
-	STATIC_METHOD_FILE(getLocationAtPos, "Location\getLocationAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationAtPos, "Location\getLocationAtPos.sqf");
 
 	// Returns an array of locations that have their border overlapping given position
-	STATIC_METHOD_FILE(getLocationsAtPos, "Location\getLocationsAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationsAtPos, "Location\getLocationsAtPos.sqf");
 
 	// Adds an allowed area
 	METHOD_FILE(addAllowedArea, "Location\addAllowedArea.sqf");
 
 	// Checks if player is in any of the allowed areas
-	METHOD_FILE(isInAllowedArea, "Location\isInAllowedArea.sqf");
+	public METHOD_FILE(isInAllowedArea, "Location\isInAllowedArea.sqf");
 
 	// Handle PROCESS message
-	METHOD_FILE(process, "Location\process.sqf");
+	public METHOD_FILE(process, "Location\process.sqf");
 
 	// Spawns the location
 	METHOD_FILE(spawn, "Location\spawn.sqf");
@@ -1551,7 +1542,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: isBuilt
 	Getter for isBuilt
 	*/
-	METHOD(isBuilt)
+	public METHOD(isBuilt)
 		params [P_THISOBJECT]; T_GETV("isBuilt")
 	ENDMETHOD;
 
@@ -1560,7 +1551,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	
 	Parameters: _side, _enable
 	*/
-	METHOD(enablePlayerRespawn)
+	public METHOD(enablePlayerRespawn)
 		params [P_THISOBJECT, P_SIDE("_side"), P_BOOL("_enable")];
 
 		pr _markName = switch (_side) do {
@@ -1610,7 +1601,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns true if player respawn is enabled for this side
 	*/
-	METHOD(playerRespawnEnabled)
+	public METHOD(playerRespawnEnabled)
 		params [P_THISOBJECT, P_SIDE("_side")];
 
 		// Always true for respawn type of location
@@ -1624,7 +1615,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns respawn pos for players
 	*/
-	METHOD(getPlayerRespawnPos)
+	public METHOD(getPlayerRespawnPos)
 		params [P_THISOBJECT];
 
 		T_GETV("playerRespawnPos");
@@ -1635,7 +1626,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Parameters: _filter - String, each object will be tested with isKindOf command against this filter
 	Returns: nothing
 	*/
-	METHOD(processObjectsInArea)
+	public METHOD(processObjectsInArea)
 		params [P_THISOBJECT, ["_filter", "House", [""]], ["_addSpecialObjects", false, [false]]];
 
 		// Setup location's spawn positions
@@ -1679,7 +1670,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: addSpawnPosFromBuildings
 	Iterates its buildings and adds spawn positions from them
 	*/
-	METHOD(addSpawnPosFromBuildings)
+	public METHOD(addSpawnPosFromBuildings)
 		params [P_THISOBJECT];
 		pr _buildings = T_GETV("buildingsOpen");
 		{
@@ -1695,9 +1686,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: nil
 	*/
-	STATIC_METHOD(nearLocations)
+	public STATIC_METHOD(nearLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GET_STATIC_VAR("Location", "all") select {
+		GETSV("Location", "all") select {
 			GETV(_x, "pos") distance2D _pos < _radius
 		}
 	ENDMETHOD;
@@ -1710,9 +1701,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	Returns: nil
 	*/
-	STATIC_METHOD(overlappingLocations)
+	public STATIC_METHOD(overlappingLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GET_STATIC_VAR("Location", "all") select {
+		GETSV("Location", "all") select {
 			GETV(_x, "pos") distance2D _pos < _radius + GETV(_x, "boundingRadius")
 		}
 	ENDMETHOD;
@@ -1720,15 +1711,14 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// Runs "process" of locations within certain distance from the point
 	// Actually it only checks cities and roadblocks now, because other locations don't need to have "process" method to be called on them
 	// Public, thread-safe
-	STATIC_METHOD(processLocationsNearPos)
+	public STATIC_METHOD(processLocationsNearPos)
 		params [P_THISCLASS, P_POSITION("_pos")];
 		
 		pr _args = ["Location", "_processLocationsNearPos", [_pos]];
 		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
 	ENDMETHOD;
 
-	// Private, thread-unsafe
-	STATIC_METHOD(_processLocationsNearPos)
+	public STATIC_METHOD(_processLocationsNearPos)
 		params [P_THISCLASS, P_POSITION("_pos")];
 		pr _locs = CALLSM2("Location", "overlappingLocations", _pos, 2000);
 		//  select { // todo arbitrary number for now
@@ -1739,8 +1729,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLM0(_x, "process");
 		} forEach _locs;
 	ENDMETHOD;
-
-
 
 	// Initalization of different objects
 	STATIC_METHOD(initMedicalObject)
@@ -1842,7 +1830,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		REMOTE_EXEC_CALL_STATIC_METHOD("Location", "initRadioObjectAction", [_object], 0, _JIPID); // global, JIP
 	ENDMETHOD;
 
-	STATIC_METHOD(initRadioObjectAction)
+	public STATIC_METHOD(initRadioObjectAction)
 		params [P_THISCLASS, P_OBJECT("_object")];
 
 		OOP_INFO_1("INIT RADIO OBJECT ACTION: %1", _object);
@@ -1867,7 +1855,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			""]; //memoryPoint
 	ENDMETHOD;
 
-	STATIC_METHOD(deleteEditorAllowedAreaMarkers)
+	public STATIC_METHOD(deleteEditorAllowedAreaMarkers)
 		params [P_THISCLASS];
 		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
 		{_x setMarkerAlpha 0;} forEach _allowedAreas;
@@ -1876,7 +1864,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// - - - - - - S T O R A G E - - - - - -
 
-	/* override */ METHOD(preSerialize)
+	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save objects which we own
@@ -1910,11 +1898,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 
 	// Must return true on success
-	/* override */ METHOD(postSerialize)
+	public override METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
 
 		// Erase temporary variables
 		T_SETV("savedObjects", []);
@@ -1924,11 +1912,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// These methods must return true on success
 	
-	/* override */ METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		// Set default values of variables whic hwere not saved
 		T_SETV("hasPlayers", false);
@@ -2044,7 +2032,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		true
 	ENDMETHOD;
 
-	STATIC_METHOD(postLoad)
+	public STATIC_METHOD(postLoad)
 		params [P_THISCLASS];
 
 		{
@@ -2061,11 +2049,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 	
 
-	/* override */ STATIC_METHOD(saveStaticVariables)
+	STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(loadStaticVariables)
+	STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		SETSV("Location", "all", []);
 	ENDMETHOD;
@@ -2073,7 +2061,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 ENDCLASS;
 
 if (isNil {GETSV("Location", "all")}) then {
-	SET_STATIC_VAR("Location", "all", []);
+	SETSV("Location", "all", []);
 };
 
 #ifndef _SQF_VM

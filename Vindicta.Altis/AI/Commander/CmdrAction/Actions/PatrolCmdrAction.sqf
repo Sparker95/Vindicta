@@ -81,12 +81,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 	ENDMETHOD;
 
-	METHOD(getRouteTargets)
-		params [P_THISOBJECT];
-		T_GET_AST_VAR("routeTargetsVar")
-	ENDMETHOD;
-	
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -188,7 +183,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		[_splitAST, _assignAST, _nextWaypointAST, _moveWaypointsAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -222,7 +217,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 
-	/* protected override */ METHOD(updateIntel)
+	protected override METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -286,7 +281,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
 		if(_intelNotCreated) then {
-			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			_intelClone = CALLSM("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
@@ -320,7 +315,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -355,7 +350,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// };
 	ENDMETHOD;
 	
-	/* override */ METHOD(updateScore)
+	public override METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -494,7 +489,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
 		private _side = GETV(_srcGarr, "side");
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _strategy = CALLSM("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getPatrolScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _routeTargets ARG _effAllocated]);
 		T_CALLM("setScore", [_score]);
@@ -540,7 +535,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 	Parameters:	
 		_world - <Model.WorldModel>, real world model that is being used.
 	*/
-	/* virtual override */ METHOD(getRecordSerial)
+	public override METHOD(getRecordSerial)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record

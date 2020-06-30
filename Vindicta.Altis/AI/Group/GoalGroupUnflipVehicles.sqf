@@ -7,7 +7,7 @@ Goal for a group to unflip their vehicles.
 #define pr private
 
 #define OOP_CLASS_NAME GoalGroupUnflipVehicles
-CLASS("GoalGroupUnflipVehicles", "Goal")
+CLASS("GoalGroupUnflipVehicles", "GoalGroup")
 
 
 	// ----------------------------------------------------------------------
@@ -15,7 +15,7 @@ CLASS("GoalGroupUnflipVehicles", "Goal")
 	// ----------------------------------------------------------------------
 	// Calculates desireability to choose this goal for a given _AI
 
-	/* virtual */ STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		pr _group = GETV(_AI, "agent");
@@ -26,7 +26,7 @@ CLASS("GoalGroupUnflipVehicles", "Goal")
 		if (	([_ws, WSP_GROUP_ALL_VEHICLES_UPRIGHT, false] call ws_propertyExistsAndEquals) &&
 				((behaviour (leader _hG)) != "COMBAT") &&
 				(_groupType == GROUP_TYPE_VEH)) then {
-			GET_STATIC_VAR(_thisClass, "relevance");
+			GETSV(_thisClass, "relevance");
 		} else {
 			0
 		};

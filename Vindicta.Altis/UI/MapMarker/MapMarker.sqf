@@ -59,11 +59,11 @@ CLASS("MapMarker", "")
 
 		// Add it to the array of the final class
 		pr _thisClass = GET_OBJECT_CLASS(_thisObject);
-		pr _all = GET_STATIC_VAR(_thisClass, "all");
+		pr _all = GETSV(_thisClass, "all");
 		_all pushBackUnique _thisObject;
 
 		// Add it to the array of base class
-		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
+		pr _all = GETSV(CLASS_NAME, "all");
 		_all pushBackUnique _thisObject;
 	ENDMETHOD;
 
@@ -72,14 +72,14 @@ CLASS("MapMarker", "")
 
 		// Remove from the all array of the final class
 		pr _thisClass = GET_OBJECT_CLASS(_thisObject);
-		pr _all = GET_STATIC_VAR(_thisClass, "all");
+		pr _all = GETSV(_thisClass, "all");
 		_all deleteAt (_all find _thisObject);
 
 		// Remove from the all array of the base class
-		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
+		pr _all = GETSV(CLASS_NAME, "all");
 		_all deleteAt (_all find _thisObject);
 
-		pr _allSelected = GET_STATIC_VAR(_thisClass, "allSelected");
+		pr _allSelected = GETSV(_thisClass, "allSelected");
 		_allSelected deleteAt (_allSelected find _thisObject);
 	ENDMETHOD;
 
@@ -100,7 +100,7 @@ CLASS("MapMarker", "")
 	Returns: nil
 	*/
 
-	METHOD(onDraw)
+	public virtual event METHOD(onDraw)
 		params [P_THISOBJECT, "_control"];
 
 		pr _pos = T_GETV("pos");
@@ -126,7 +126,7 @@ CLASS("MapMarker", "")
 	_pos - Array, [x, y]
 	Returns: nil
 	*/
-	METHOD(setPos)
+	public virtual METHOD(setPos)
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		T_SETV("pos", _pos);
 	ENDMETHOD;
@@ -141,7 +141,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	METHOD(select)
+	public virtual METHOD(select)
 		params [P_THISOBJECT, ["_select", true]];
 
 		OOP_INFO_1("SELECT: %1", _select);
@@ -167,7 +167,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	METHOD(show)
+	public virtual METHOD(show)
 		params [P_THISOBJECT, ["_show", true]];
 
 		T_SETV("shown", _show);
@@ -179,7 +179,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	METHOD(onMouseEnter)
+	public virtual event METHOD(onMouseEnter)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ENTER");
 	ENDMETHOD;
@@ -190,7 +190,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	METHOD(onMouseLeave)
+	public virtual event METHOD(onMouseLeave)
 		params [P_THISOBJECT];
 		OOP_INFO_0("LEAVE");
 	ENDMETHOD;
@@ -206,7 +206,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonDown)
+	public virtual event METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	ENDMETHOD;
@@ -222,7 +222,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonUp)
+	public virtual event METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	ENDMETHOD;
@@ -237,7 +237,7 @@ CLASS("MapMarker", "")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonClick)
+	public virtual event METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 	ENDMETHOD;
@@ -255,9 +255,9 @@ CLASS("MapMarker", "")
 
 	Returns: <MapMarker> or ""
 	*/
-	STATIC_METHOD(getMarkerUnderCursor)
+	public STATIC_METHOD(getMarkerUnderCursor)
 		params ["_thisClass", "_mapControl", "_xCursorPosUI", "_yCursorPosUI"];
-		pr _all = GET_STATIC_VAR(_thisClass, "all");
+		pr _all = GETSV(_thisClass, "all");
 
 		// Loop through all markers and find if the cursor is hovering over any of them
 		pr _index = _all findIf {
@@ -294,9 +294,9 @@ CLASS("MapMarker", "")
 
 	Returns: array of MapMarker objects.
 	*/
-	STATIC_METHOD(getMarkersUnderCursor)
+	public STATIC_METHOD(getMarkersUnderCursor)
 		params ["_thisClass", "_mapControl", "_xCursorPosUI", "_yCursorPosUI"];
-		pr _all = GET_STATIC_VAR(_thisClass, "all");
+		pr _all = GETSV(_thisClass, "all");
 
 		// Loop through all markers and find if the cursor is hovering over any of them
 		_all select {
@@ -319,7 +319,7 @@ CLASS("MapMarker", "")
 	Method: (static)getAll
 	Returns an array of all map markers of this class.
 	*/
-	STATIC_METHOD(getAll)
+	public STATIC_METHOD(getAll)
 		params [P_THISCLASS];
 		GETSV(_thisClass, "all");
 	ENDMETHOD;
@@ -328,7 +328,7 @@ CLASS("MapMarker", "")
 	Method: (static)getAllSelected
 	Returns an array of all selected map markers of this class
 	*/
-	STATIC_METHOD(getAllSelected)
+	public STATIC_METHOD(getAllSelected)
 		params [P_THISCLASS];
 		GETSV(_thisClass, "allSelected") select {GETV(_x, "shown")}; // Return only markers which are shown
 	ENDMETHOD;
@@ -336,14 +336,14 @@ CLASS("MapMarker", "")
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "all", []);
-SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
+SETSV(CLASS_NAME, "all", []);
+SETSV(CLASS_NAME, "allSelected", []);
 
 MapMarker_EH_Draw = {
 	params ["_control"];
 	{
 		CALLM1(_x, "onDraw", _control);
-	} forEach GET_STATIC_VAR(CLASS_NAME, "all");
+	} forEach GETSV(CLASS_NAME, "all");
 };
 
 #ifndef _SQF_VM
@@ -363,7 +363,7 @@ if (hasInterface) then {
 			params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 			pr _args = [_displayorcontrol, _xPos, _yPos];
-			pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _marker = CALLSM(CLASS_NAME, "getMarkerUnderCursor", _args);
 
 			// Call event handler
 			if (_marker != "") then {
@@ -379,7 +379,7 @@ if (hasInterface) then {
 			diag_log format ["Map MouseButtonDown: %1 %2", [_xPos, _yPos], _displayorcontrol ctrlMapScreenToWorld [_xPos, _yPos]];
 
 			pr _args = [_displayorcontrol, _xPos, _yPos];
-			pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _marker = CALLSM(CLASS_NAME, "getMarkerUnderCursor", _args);
 			diag_log format ["Marker under cursor: %1", _marker];
 
 			// Call event handler
@@ -393,7 +393,7 @@ if (hasInterface) then {
 			params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 			pr _args = [_displayorcontrol, _xPos, _yPos];
-			pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _marker = CALLSM(CLASS_NAME, "getMarkerUnderCursor", _args);
 
 			// Call event handler
 			if (_marker != "") then {
@@ -408,8 +408,8 @@ if (hasInterface) then {
 			params ["_control", "_xPos", "_yPos", "_mouseOver"];
 
 			pr _args = [_control, _xPos, _yPos];
-			pr _markerCurrent = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
-			pr _markerPrev = GET_STATIC_VAR(CLASS_NAME, "markerUnderCursor");
+			pr _markerCurrent = CALLSM(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _markerPrev = GETSV(CLASS_NAME, "markerUnderCursor");
 
 			// Did something change?
 			if (_markerPrev != _markerCurrent) then {
@@ -424,7 +424,7 @@ if (hasInterface) then {
 				};
 
 				// Update the variable
-				SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
+				SETSV(CLASS_NAME, "markerUnderCursor", _markerCurrent)
 			};
 		}];
 		*/

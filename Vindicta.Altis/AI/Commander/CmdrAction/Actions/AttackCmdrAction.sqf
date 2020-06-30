@@ -73,7 +73,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 #endif
 	ENDMETHOD;
 
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -175,7 +175,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	ENDMETHOD;
 	
 	// Make a debug label from our properties
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -218,7 +218,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		_world - <Model.WorldModel>, the world model being used, should be the real world as we don't create intel for sim worlds.
 		_intel - <Intel.IntelCommanderActionAttack>, the intel object to populate with info about the detachment performing the attack.
 	*/
-	/* protected */ METHOD(updateIntelFromDetachment)
+	protected virtual METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
@@ -237,7 +237,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");

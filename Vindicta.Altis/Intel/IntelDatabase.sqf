@@ -42,7 +42,7 @@ CLASS("IntelDatabase", "Storable");
 	ENDMETHOD;
 
 	// Initializes hashmaps
-	/* private */ METHOD(_initHashmaps)
+	METHOD(_initHashmaps)
 		params [P_THISOBJECT];
 				
 		#ifndef _SQF_VM
@@ -69,7 +69,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(addIntel)
+	public virtual METHOD(addIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -113,7 +113,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(updateIntel)
+	public virtual METHOD(updateIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
@@ -145,7 +145,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: Bool, true if the item was updated, false if the item with given source doesn't exist in this database.
 	*/
-	METHOD(updateIntelFromSource)
+	public METHOD(updateIntelFromSource)
 		pr _return = false;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_srcItem")];
@@ -176,7 +176,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: clone of _item that can be used in further updateIntelFromClone operations.
 	*/
-	METHOD(addIntelClone)
+	public METHOD(addIntelClone)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		pr _clone = CLONE(_item);
@@ -215,7 +215,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(updateIntelFromClone)
+	public METHOD(updateIntelFromClone)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -239,7 +239,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(removeIntelForClone)
+	public METHOD(removeIntelForClone)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -280,8 +280,8 @@ CLASS("IntelDatabase", "Storable");
 				pr _dbItem = _x;
 				pr _index = _memList findIf {
 					_x params ["_varName"];
-					pr _queryValue = FORCE_GET_MEM(_queryItem, _varName);
-					pr _dbValue = FORCE_GET_MEM(_dbItem, _varName);
+					pr _queryValue = _GETV(_queryItem, _varName);
+					pr _dbValue = _GETV(_dbItem, _varName);
 					!(isNil "_queryValue") && !([_queryValue] isEqualTo [_dbValue]) // Variable exists in query and is not equal to the var in db, or var in db is nil
 				};
 				//pr _valueprint = if (_index != -1) then {_memList select _index} else {"nothing"};
@@ -319,8 +319,8 @@ CLASS("IntelDatabase", "Storable");
 				pr _dbItem = _x;
 				_memList findIf {
 					_x params ["_varName"];
-					pr _queryValue = FORCE_GET_MEM(_queryItem, _varName);
-					pr _dbValue = FORCE_GET_MEM(_dbItem, _varName);
+					pr _queryValue = _GETV(_queryItem, _varName);
+					pr _dbValue = _GETV(_dbItem, _varName);
 					!(isNil "_queryValue") && !([_queryValue] isEqualTo [_dbValue]) // Variable exists in query and is not equal to the var in db, or var in db is nil
 				} == -1 // We didn't find mismatched variables that exist in query
 			};
@@ -340,7 +340,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: Bool
 	*/
-	METHOD(isIntelAdded)
+	public METHOD(isIntelAdded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		!isNil {T_GETV("items") getVariable _item}
@@ -356,7 +356,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: Bool
 	*/
-	METHOD(isIntelAddedFromSource)
+	public METHOD(isIntelAddedFromSource)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		!isNil { T_GETV("linkedItems") getVariable _item }
@@ -372,7 +372,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: <Intel> object or "" if such there is no object sourced by the passed object
 	*/
-	METHOD(getIntelFromSource)
+	public METHOD(getIntelFromSource)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		pr _return = T_GETV("linkedItems") getVariable [_item, ""];
@@ -388,7 +388,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: array of items
 	*/
-	METHOD(getAllIntel)
+	public METHOD(getAllIntel)
 		params [P_THISOBJECT];
 		pr _items = T_GETV("items");
 		// If we nil a variable in hashmap, allvariables hashmap still returns this variable name!
@@ -406,7 +406,7 @@ CLASS("IntelDatabase", "Storable");
 
 	Returns: nil
 	*/
-	METHOD(removeIntel)
+	public virtual METHOD(removeIntel)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
@@ -434,7 +434,7 @@ CLASS("IntelDatabase", "Storable");
 
 	// = = = = = = = = = I N D E X   M E T H O D S = = = = = = = = = =
 
-	METHOD(addToIndex)
+	public METHOD(addToIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_STRING("_varName"), P_STRING("_varValue")];
 
 		pr _variablesHashmap = T_GETV("variables");
@@ -467,7 +467,7 @@ CLASS("IntelDatabase", "Storable");
 
 	ENDMETHOD;
 
-	METHOD(removeFromIndex)
+	public METHOD(removeFromIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_STRING("_varName"), "_varValue"];
 
 		pr _variablesHashmap = T_GETV("variables");
@@ -496,7 +496,7 @@ CLASS("IntelDatabase", "Storable");
 
 	ENDMETHOD;
 
-	METHOD(getFromIndex)
+	public METHOD(getFromIndex)
 		params [P_THISOBJECT, P_STRING("_varName"), "_varValue"];
 
 		pr _variablesHashmap = T_GETV("variables");
@@ -525,7 +525,7 @@ CLASS("IntelDatabase", "Storable");
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD(preSerialize)
+	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Save all intel objects we have
@@ -540,13 +540,13 @@ CLASS("IntelDatabase", "Storable");
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(postSerialize)
+	public override METHOD(postSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		T_SETV("savedItems", nil);	// Erase the temporary variable
 		true
 	ENDMETHOD;
 
-	/* override */ METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Reinitialize all our hashmaps

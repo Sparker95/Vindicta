@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+FIX_LINE_NUMBERS()
 /*
 Class: AI.AIUnitInfantry
 
@@ -35,7 +35,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "AIInfantry");
 	ENDMETHOD;
@@ -51,7 +51,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 	Returns: nil
 	*/
 	
-	METHOD(setSentryPos)
+	public METHOD(setSentryPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		T_SETV("sentryPos", _pos);
 	ENDMETHOD;
@@ -63,7 +63,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 	Returns: position or [] if no position was assigned
 	*/
 	
-	METHOD(getSentryPos)
+	public METHOD(getSentryPos)
 		params [P_THISOBJECT];
 		pr _pos = T_GETV("sentryPos");
 		if (isNil "_pos") then {
@@ -73,19 +73,57 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 		};
 	ENDMETHOD;
 
+	protected override METHOD(getDialogueClassName)
+		params [P_THISOBJECT];
+		pr _unit = T_GETV("agent");
+		pr _gar = CALLM0(_unit, "getGarrison");
+		pr _faction = CALLM0(_gar, "getFaction");
+		if (_faction == "police") then {
+			"DialoguePolice";
+		} else {
+			"DialogueMilitary";
+		};
+	ENDMETHOD;
+
 	//                        G E T   P O S S I B L E   G O A L S
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		//["GoalUnitSalute","GoalUnitScareAway"]
-		["GoalUnitScareAway"]
+		[
+			//"GoalUnitScareAway",
+			"GoalUnitDialogue",
+			"GoalUnitInfantryEscapeDangerSource"
+		]
 	ENDMETHOD;
 
 	//                      G E T   P O S S I B L E   A C T I O N S
-	METHOD(getPossibleActions)
-		//["ActionUnitSalute","ActionUnitScareAway"] // This is only for A* planner, which is not used for this AI type
-		[]
+	public override METHOD(getPossibleActions)
+		[
+		"ActionUnitArrest", 				
+		"ActionUnitDismountCurrentVehicle",
+		"ActionUnitFlee", 			
+		"ActionUnitFollow", 		
+		"ActionUnitGetInVehicle", 			
+		"ActionUnitIdle", 					
+		"ActionUnitInfantryMove",
+		"ActionUnitInfantryRegroup", 		
+		"ActionUnitInfantryLeaveFormation",
+		//"ActionUnitMove", // this is abstract!
+		"ActionUnitMoveMounted", 	
+		"ActionUnitNothing", 		
+		"ActionUnitRepairVehicle", 
+		"ActionUnitSalute", 		
+		"ActionUnitScareAway", 	
+		"ActionUnitAmbientAnim", 	
+		"ActionUnitShootAtTargetRange",
+		"ActionUnitInfantryStandIdle",
+		//"ActionUnitShootLegTarget", 
+		"ActionUnitSurrender",
+		"ActionUnitDialogue"
+		//"ActionUnitVehicleUnflip"
+		]
 	ENDMETHOD;
 
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
+	public override METHOD(setUrgentPriorityOnAddGoal)
 		true
 	ENDMETHOD;
 

@@ -214,7 +214,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		gTabCommander = nil;
 	ENDMETHOD;
 
-	METHOD(onButtonCreateLocation)
+	public event METHOD(onButtonCreateLocation)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("ON BUTTON CREATE LOCATION");
@@ -265,7 +265,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		CALLM1(_dialogObj, "setHintText", "Creating new location ...");
 	ENDMETHOD;
 
-	METHOD(onButtonClaimLocation)
+	public event METHOD(onButtonClaimLocation)
 		params [P_THISOBJECT];
 
 		pr _currentLoc = T_GETV("currentLocation");
@@ -315,17 +315,17 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
 	ENDMETHOD;
 
-	METHOD(onButtonSkipDusk)
+	public event METHOD(onButtonSkipDusk)
 		params [P_THISOBJECT];
 		T_CALLM1("_skipTimeDusk", 0);
 	ENDMETHOD;
 
-	METHOD(onButtonSkipPredawn)
+	public event METHOD(onButtonSkipPredawn)
 		params [P_THISOBJECT];
 		T_CALLM1("_skipTimeDawn", -0.5);
 	ENDMETHOD;
 	
-	METHOD(onButtonSkipDawn)
+	public event METHOD(onButtonSkipDawn)
 		params [P_THISOBJECT];
 		T_CALLM1("_skipTimeDawn", 0);
 	ENDMETHOD;
@@ -344,7 +344,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		T_CALLM0("_updateTimeSkipTooltips");
 	ENDMETHOD;
 
-	STATIC_METHOD(showServerResponse)
+	public STATIC_METHOD(showServerResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 
 		// If this tab is already closed, just throw text into system chat
@@ -357,7 +357,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		};
 	ENDMETHOD;
 
-	METHOD(setHintText)
+	protected METHOD(setHintText)
 		params [P_THISOBJECT, P_STRING("_text")];
 
 		pr _dialogObj = T_CALLM0("getDialogObject");

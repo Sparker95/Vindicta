@@ -6,7 +6,6 @@ call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonClearArea.sqf"
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonDefend.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonDefendActive.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonDefendPassive.sqf";
-call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonJoinGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonJoinLocation.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonLand.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMergeVehicleGroups.sqf";

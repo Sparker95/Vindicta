@@ -47,7 +47,7 @@ CLASS("ClusterModel", "ModelBase")
 		CALLM(_world, "addCluster", [_thisObject]);
 	ENDMETHOD;
 
-	METHOD(simCopy)
+	public override METHOD(simCopy)
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 
 		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
@@ -72,7 +72,7 @@ CLASS("ClusterModel", "ModelBase")
 		_copy
 	ENDMETHOD;
 
-	METHOD(sync)
+	public override METHOD(sync)
 		params [P_THISOBJECT];
 
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
@@ -98,12 +98,12 @@ CLASS("ClusterModel", "ModelBase")
 	ENDMETHOD;
 
 	// Cluster is empty (not necessarily killed, could be merged to another cluster etc.)
-	METHOD(killed)
+	public METHOD(killed)
 		params [P_THISOBJECT];
 		T_SETV("efficiency", +EFF_ZERO);
 	ENDMETHOD;
 	
-	METHOD(isDead)
+	public METHOD(isDead)
 		params [P_THISOBJECT];
 		private _efficiency = T_GETV("efficiency");
 		_efficiency isEqualTo EFF_ZERO 

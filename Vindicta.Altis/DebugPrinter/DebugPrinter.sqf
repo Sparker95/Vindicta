@@ -45,7 +45,7 @@ CLASS("DebugPrinter", "MessageReceiver");
 	// |                  G E T   M E S S A G E   L O O P                   |
 	// ----------------------------------------------------------------------
 
-	METHOD(getMessageLoop) //Derived classes must implement this method
+	public override METHOD(getMessageLoop) //Derived classes must implement this method
 		params [P_THISOBJECT];
 		private _return = T_GETV("msgLoop");
 		_return
@@ -55,7 +55,7 @@ CLASS("DebugPrinter", "MessageReceiver");
 	// |                    H A N D L E   M E S S A G E                     |
 	// ----------------------------------------------------------------------
 
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		diag_log format ["[DebugPrinter] Info: %1: %2 has received a message: type: %3, data: %4",
 			_thisObject, T_GETV("name"), _msg select MESSAGE_ID_TYPE, _msg select MESSAGE_ID_DATA];
@@ -67,15 +67,15 @@ CLASS("DebugPrinter", "MessageReceiver");
 	// Change ownership
 
 
-		// Must return a single value which can be deserialized to restore value of an object
-	/* virtual */ METHOD(serialize)
+	// Must return a single value which can be deserialized to restore value of an object
+	 protected override METHOD(serialize)
 		params [P_THISOBJECT];
 		private _data = [T_GETV("name"), T_GETV("msgLoop")];
 		_data
 	ENDMETHOD;
 
 	// Takes the output of deserialize and restores values of an object
-	/* virtual */ METHOD(deserialize)
+	 protected override METHOD(deserialize)
 		params [P_THISOBJECT, "_serialData"];
 		_serialData params ["_name", "_msgLoop"];
 		T_SETV("name", _serialData);
@@ -85,12 +85,12 @@ CLASS("DebugPrinter", "MessageReceiver");
 	// If your class has objects that must be transfered through the same mechanism, you must handle transfer of ownership of such objects here
 	// Must return true if all objects have been successfully transfered and return false otherwise
 	// You can also clear unneeded variables of this object here
-	/* virtual */ METHOD(transferOwnership)
+	 protected override METHOD(transferOwnership)
 		true
 	ENDMETHOD;
 
 	// Dummy process method
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 		private _size = 5000; // 500; 500 is 1.5ms
 		private _a = []; _a resize _size;

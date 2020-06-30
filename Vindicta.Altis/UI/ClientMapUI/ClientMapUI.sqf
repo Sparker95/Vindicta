@@ -352,8 +352,8 @@ CLASS("ClientMapUI", "")
 			params ["_control", "_xPos", "_yPos", "_mouseOver"];
 
 			pr _args = [_control, _xPos, _yPos];
-			pr _markerCurrent = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
-			pr _markerPrev = GET_STATIC_VAR(CLASS_NAME, "markerUnderCursor");
+			pr _markerCurrent = CALLSM(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _markerPrev = GETSV(CLASS_NAME, "markerUnderCursor");
 
 			// Did something change?
 			if (_markerPrev != _markerCurrent) then {
@@ -368,7 +368,7 @@ CLASS("ClientMapUI", "")
 				};
 
 				// Update the variable
-				SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
+				SETSV(CLASS_NAME, "markerUnderCursor", _markerCurrent)
 			};
 		}];
 		*/
@@ -389,7 +389,7 @@ CLASS("ClientMapUI", "")
 	http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 	*/
 
-	STATIC_METHOD(setPlayerRestoreData)
+	public STATIC_METHOD(setPlayerRestoreData)
 		params ["_thisClass", "_playerRestoreData"];
 		gPlayerRestoreData = _playerRestoreData;
 	ENDMETHOD;
@@ -403,14 +403,14 @@ CLASS("ClientMapUI", "")
 		0: _control - the button to be toggled
 		1: _enable - default: true, false to disable
 	*/
-	STATIC_METHOD(toggleButtonEnabled)
+	public STATIC_METHOD(toggleButtonEnabled)
 		params ["_thisClass", "_control", ["_enable", true]];
 		
 	ENDMETHOD;
 
 
 	// Returns marker text of closest marker
-	STATIC_METHOD(getNearestLocationName)
+	public STATIC_METHOD(getNearestLocationName)
 		params ["_thisClass", "_pos"];
 		pr _return = "";
 
@@ -502,7 +502,7 @@ CLASS("ClientMapUI", "")
 		Method: drawRoute
 		Description: Draws a route on the map, for example for attacks, reinforcements...
 	*/
-	STATIC_METHOD(drawRoute)
+	public STATIC_METHOD(drawRoute)
 		params [P_THISCLASS, P_ARRAY("_posArray"), P_STRING("_uniqueString"), P_BOOL("_enable"), P_BOOL("_cycle"), P_BOOL("_drawSrcDest"), ["_color", "ColorRed"], P_ARRAY("_labels") ];
 
 		//OOP_INFO_1("DRAW ROUTE: %1", _this);
@@ -632,8 +632,8 @@ CLASS("ClientMapUI", "")
 		Parameters: None
 
 		old code backup:
-		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
-		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		//pr _markersUnderCursor = 	CALLSM("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
+		//							CALLSM("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 
 	*/
 	METHOD(updateHintTextFromContext)
@@ -1331,7 +1331,7 @@ CLASS("ClientMapUI", "")
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	METHOD(intelPanelOnSelChanged)
+	public METHOD(intelPanelOnSelChanged)
 		params [P_THISOBJECT, "_lnb"];
 
 		// We only care if nothing is selected
@@ -1505,7 +1505,7 @@ CLASS("ClientMapUI", "")
 
 	Returns: nil
 	*/
-	METHOD(onMouseButtonDown)
+	public event METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 		OOP_INFO_1("ON MOUSE BUTTON DOWN: %1", _this);
@@ -1523,8 +1523,8 @@ CLASS("ClientMapUI", "")
 		We click on a location marker, No location markers have been selected before
 		*/
 
-		pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
-		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		pr _garrisonsUnderCursor = CALLSM("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+		pr _locationsUnderCursor = CALLSM("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
 
 		// Try to prioritize location marker
 		pr _markersUnderCursor = _locationsUnderCursor + _garrisonsUnderCursor;
@@ -1755,12 +1755,12 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 
-	METHOD(onMouseButtonUp)
+	public event METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 	ENDMETHOD;
 
-	METHOD(onMouseButtonClick)
+	public event METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 	ENDMETHOD;
@@ -1769,7 +1769,7 @@ CLASS("ClientMapUI", "")
 	// Checkboxes are buttons with [x] or [ ] at the start of their text
 	// Returns the new state of this 'checkbox'
 	// Because in arma checkbox is only the checkbox itself, and it has no text, WTF
-	METHOD(onButtonClickCheckbox)
+	public event METHOD(onButtonClickCheckbox)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 
 		OOP_INFO_1("onButtonClickCheckbox: %1", _this);
@@ -1785,7 +1785,7 @@ CLASS("ClientMapUI", "")
 		Description: Toggles visibility of inactive intel on the map.
 
 	*/
-	METHOD(onButtonClickShowIntelInactive)
+	public event METHOD(onButtonClickShowIntelInactive)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelInactive", _checked);
@@ -1797,7 +1797,7 @@ CLASS("ClientMapUI", "")
 		Description: Toggles visibility of inactive intel in the listbox.
 
 	*/
-	METHOD(onButtonClickShowIntelInactiveList)
+	public event METHOD(onButtonClickShowIntelInactiveList)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelInactiveList", _checked);
@@ -1816,7 +1816,7 @@ CLASS("ClientMapUI", "")
 		Description: Toggles visibility of intel on the map.
 
 	*/
-	METHOD(onButtonClickShowIntelActive)
+	public event METHOD(onButtonClickShowIntelActive)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelActive", _checked);
@@ -1828,7 +1828,7 @@ CLASS("ClientMapUI", "")
 		Description: Toggles visibility of intel in the listbox.
 
 	*/
-	METHOD(onButtonClickShowIntelActiveList)
+	public event METHOD(onButtonClickShowIntelActiveList)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelActiveList", _checked);
@@ -1847,7 +1847,7 @@ CLASS("ClientMapUI", "")
 		Description: Toggles visibility of intel on the map.
 
 	*/
-	METHOD(onButtonClickShowIntelEnded)
+	public event METHOD(onButtonClickShowIntelEnded)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelEnded", _checked);
@@ -1859,7 +1859,7 @@ CLASS("ClientMapUI", "")
 		Description: Toggles visibility of intel in the listbox.
 
 	*/
-	METHOD(onButtonClickShowIntelEndedList)
+	public event METHOD(onButtonClickShowIntelEndedList)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showIntelEndedList", _checked);
@@ -1873,7 +1873,7 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 	// shows or hides intel panel controls
-	METHOD(onButtonClickShowIntelPanel)
+	public event METHOD(onButtonClickShowIntelPanel)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		OOP_INFO_1("onButtonClickShowIntelPanel: %1", _this);
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
@@ -1905,7 +1905,7 @@ CLASS("ClientMapUI", "")
 		} forEach _controlNames;
 	ENDMETHOD;
 
-	METHOD(onButtonClickShowLocations)
+	public event METHOD(onButtonClickShowLocations)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showLocations", _checked);
@@ -1916,7 +1916,7 @@ CLASS("ClientMapUI", "")
 		} forEach _allLocMarkers;
 	ENDMETHOD;
 
-	METHOD(onButtonClickShowPlayers)
+	public event METHOD(onButtonClickShowPlayers)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 
@@ -1924,7 +1924,7 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 	/*
-	METHOD(onButtonClickShowEnemies)
+	public event METHOD(onButtonClickShowEnemies)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showEnemies", _checked);
@@ -1932,7 +1932,7 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 	*/
 
-	METHOD(onButtonClickClearNotifications)
+	public event METHOD(onButtonClickClearNotifications)
 		params [P_THISOBJECT];
 
 		CALLSM1("MapMarkerLocation", "setAllNotifications", false);
@@ -1944,7 +1944,7 @@ CLASS("ClientMapUI", "")
 
 		No parameters
 	*/
-	METHOD(onMapOpen)
+	public event METHOD(onMapOpen)
 		params [P_THISOBJECT];
 		pr _mapDisplay = findDisplay 12;
 
@@ -1953,7 +1953,7 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 	// Not used now
-	STATIC_METHOD(onButtonDownAddFriendlyGroup)
+	public event STATIC_METHOD(onButtonDownAddFriendlyGroup)
 		params ["_thisClass", "_control"];
 
 		private _mapDisplay = findDisplay 12;
@@ -1990,7 +1990,7 @@ CLASS("ClientMapUI", "")
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	METHOD(onMouseEnter)
+	public event METHOD(onMouseEnter)
 		params [P_THISOBJECT, "_ctrl"];
 
 		pr _mapDisplay = findDisplay 12;
@@ -2008,7 +2008,7 @@ CLASS("ClientMapUI", "")
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	METHOD(onMouseExit)
+	public event METHOD(onMouseExit)
 		params [P_THISOBJECT, "_ctrl"];
 
 		T_CALLM0("updateHintTextFromContext");
@@ -2020,7 +2020,7 @@ CLASS("ClientMapUI", "")
 		Method: onMapDraw
 		Description: Gets called each frame if map is open and being redrawn.
 	*/
-	METHOD(onMapDraw)
+	public event METHOD(onMapDraw)
 		params [P_THISOBJECT];
 
 		// listbox selection changed event handler is called before lbSelection updates 
@@ -2055,12 +2055,12 @@ CLASS("ClientMapUI", "")
 		Method: onMouseMoving
 		Fires continuously while moving the mouse with a certain interval.
 	*/
-	METHOD(onMapMouseMoving)
+	public event METHOD(onMapMouseMoving)
 		params [P_THISOBJECT, "_control", "_xPos", "_yPos", "_mouseOver"];
 
-		//pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]); // Let's not do it for garrison markers yet, ok?
+		//pr _garrisonsUnderCursor = CALLSM("MapMarkerGarrison", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]); // Let's not do it for garrison markers yet, ok?
 		pr _garrisonsUnderCursor = [];
-		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]);
+		pr _locationsUnderCursor = CALLSM("MapMarkerLocation", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]);
 		pr _markersUnderCursor = _garrisonsUnderCursor + _locationsUnderCursor;
 
 		// Previous markers under cursor
@@ -2143,7 +2143,7 @@ CLASS("ClientMapUI", "")
 	// //  R E S P A W N   B U T T O N
 	// //////////////////////////////////////////////////////////////////////////////////
 
-	METHOD(respawnPanelEnable)
+	public METHOD(respawnPanelEnable)
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		pr _respawnCtrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
@@ -2170,7 +2170,7 @@ CLASS("ClientMapUI", "")
 		T_GETV("respawnPanelEnabled");
 	ENDMETHOD;
 
-	METHOD(onButtonClickRespawn)
+	public event METHOD(onButtonClickRespawn)
 		params [P_THISOBJECT];
 
 		// If player has clicked this button, then it must be enabled
@@ -2341,7 +2341,7 @@ CLASS("ClientMapUI", "")
 
 		Example: call ClientMapUI_fnc_addDummyIntel;
 	*/
-	STATIC_METHOD(addDummyIntel)
+	public STATIC_METHOD(addDummyIntel)
 		params [P_THISCLASS];
 
 		// Fill dummy data for testing

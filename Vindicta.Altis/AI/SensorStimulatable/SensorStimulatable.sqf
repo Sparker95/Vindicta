@@ -36,14 +36,14 @@ CLASS("SensorStimulatable", "Sensor")
 	// |                            S T I M U L A T E
 	// ----------------------------------------------------------------------
 	
-	/* private */ METHOD(stimulate)
+	public METHOD(stimulate)
 		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		
 		// Do sensor-specific complex check
-		if (! (T_CALLM("doComplexCheck", [_stimulus]))) exitWith {};
+		if (! (T_CALLM1("doComplexCheck", _stimulus))) exitWith {};
 		
 		// Create world fact
-		T_CALLM("handleStimulus", [_stimulus]);
+		T_CALLM1("handleStimulus", _stimulus);
 	ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -51,7 +51,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[]
 	ENDMETHOD;
 	
@@ -60,7 +60,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(handleStimulus)
+	protected virtual METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 	ENDMETHOD;
 	
@@ -69,10 +69,10 @@ CLASS("SensorStimulatable", "Sensor")
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(doComplexCheck)
+	protected virtual METHOD(doComplexCheck)
 		//params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		// Return true by default
-		true				
+		true
 	ENDMETHOD;
 
 ENDCLASS;

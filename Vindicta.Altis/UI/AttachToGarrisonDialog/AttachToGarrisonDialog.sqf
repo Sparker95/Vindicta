@@ -82,7 +82,7 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 		gAttachToGarrisonDialog = nil;
 	ENDMETHOD;
 
-	METHOD(onButtonClick)
+	public override event METHOD(onButtonClick)
 		params [P_THISOBJECT, P_NUMBER("_ID")];
 
 		OOP_INFO_0("ON BUTTON CLICK");
@@ -101,7 +101,7 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 
 	ENDMETHOD;
 
-	STATIC_METHOD(staticShowServerResponse_0)
+	public STATIC_METHOD(staticShowServerResponse_0)
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_NUMBER("_code"), P_NUMBER("_unitCatID"), P_OOP_OBJECT("_gar"), P_SIDE("_garSide")];
 
 		OOP_INFO_1("STATIC SHOW SERVER RESPONSE 0: %1", _this);

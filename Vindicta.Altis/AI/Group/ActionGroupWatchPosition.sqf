@@ -8,6 +8,13 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	VARIABLE("radius");
 	VARIABLE("nextLookTime");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, [[]]] ],	// Required parameters
+			[ [TAG_CLEAR_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		private _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
@@ -18,7 +25,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLM0("clearWaypoints");
@@ -44,7 +51,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _state = T_CALLM0("activateIfInactive");
@@ -71,7 +78,7 @@ CLASS("ActionGroupWatchPosition", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		private _hG = T_GETV("hG");
 

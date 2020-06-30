@@ -19,6 +19,7 @@ this addBackpack "FGN_AAF_Bergen_Type07";
 this addWeapon "rhs_weap_m21s";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";

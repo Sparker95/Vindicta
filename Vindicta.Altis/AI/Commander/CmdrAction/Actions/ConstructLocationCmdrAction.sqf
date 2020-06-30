@@ -51,7 +51,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		#endif
 	ENDMETHOD;
 
-	METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -123,7 +123,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 
 	// Copied from TakeLocationCmdrAction
-	/* override */ METHOD(updateScore)
+	public override METHOD(updateScore)
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -222,11 +222,11 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 
 		// How much to scale the score for distance to target
-		private _distCoeff = 1; //CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]); // We don't care how far is it really, it's close enough anyway
+		private _distCoeff = 1; //CALLSM1("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtLocPos); // We don't care how far is it really, it's close enough anyway
 		// How much to scale the score for transport requirements
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
 
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _strategy = CALLSM("AICommander", "getCmdrStrategy", [_side]);
 		
 		private _scoreResource = _detachEffStrength * _distCoeff;
 
@@ -271,7 +271,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		#endif
 	ENDMETHOD;
 
-	/* protected override */ METHOD(updateIntel)
+	protected override METHOD(updateIntel)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM0(_world, "isReal"), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -299,7 +299,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 
-			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			private _intelClone = CALLSM("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
@@ -311,7 +311,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 
-	METHOD(updateIntelFromDetachment)
+	protected virtual METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
@@ -339,7 +339,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 	// Debug drawing
 
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -364,7 +364,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		_mrk setMarkerText T_CALLM("getLabel", [_world]);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");

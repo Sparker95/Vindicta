@@ -8,7 +8,7 @@ Class: ActionGroup.ActionGroupFlee
 CLASS("ActionGroupFlee", "ActionGroup")
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		private _AI = T_GETV("AI");
@@ -29,11 +29,16 @@ CLASS("ActionGroupFlee", "ActionGroup")
 	ENDMETHOD;
 
 	// Logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
 
 		ACTION_STATE_COMPLETED
+	ENDMETHOD;
+
+	public override METHOD(terminate)
+		params [P_THISOBJECT];
+		T_CALLCM0("ActionGroup", "terminate");
 	ENDMETHOD;
 
 ENDCLASS;

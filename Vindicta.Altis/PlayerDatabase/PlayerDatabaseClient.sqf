@@ -36,14 +36,14 @@ CLASS("PlayerDatabaseClient", "")
 		DELETE(_ns);
 	ENDMETHOD;
 
-	METHOD(set)
+	public client METHOD(set)
 		params [P_THISOBJECT, P_STRING("_key"), "_value"];
 
 		pr _ns = T_GETV("ns");
 		_ns setVariable ["_key", _value];
 	ENDMETHOD;
 
-	METHOD(get)
+	public client METHOD(get)
 		params [P_THISOBJECT, P_STRING("_key")];
 
 		pr _ns = T_GETV("ns");
@@ -51,7 +51,7 @@ CLASS("PlayerDatabaseClient", "")
 	ENDMETHOD;
 
 	// Stores new values for keys
-	METHOD(updateData)
+	public client METHOD(updateData)
 		params [P_THISOBJECT, P_ARRAY("_keyValuePairs")];
 
 		OOP_INFO_1("UPDATE DATA: %1", _keyValuePairs);
@@ -63,7 +63,7 @@ CLASS("PlayerDatabaseClient", "")
 	ENDMETHOD;
 
 	// Remote-executed from the server to receive actual data
-	STATIC_METHOD(receiveData)
+	public client STATIC_METHOD(receiveData)
 		params [P_THISCLASS, P_ARRAY("_keyValuePairs")];
 		CALLM1(gPlayerDatabaseClient, "updateData", _keyValuePairs);
 	ENDMETHOD;

@@ -38,6 +38,13 @@ CLASS("ActionGroupMove", "ActionGroup")
 	VARIABLE("leader");
 	VARIABLE("followers");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, [[]]], [TAG_MOVE_RADIUS, [0]] ],	// Required parameters
+			[ [TAG_FOLLOWERS, [[]]], [TAG_ROUTE, [[]]], [TAG_MAX_SPEED_KMH, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -72,7 +79,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the goal is activated
-	/* protected override */ METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_SETV("ready", false);
@@ -111,7 +118,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 			if(!CALLM0(_group, "isAirGroup")) then {
 				{
 					// Set the speed of all vehicles to unlimited
-					_x limitSpeed 666666;
+					_x limitSpeed -1;
 					_x setConvoySeparation SEPARATION;
 					//_x forceFollowRoad true;
 				} forEach (_vehicles apply {CALLM0(_x, "getObjectHandle")});
@@ -124,7 +131,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 			// Sort infantry units by distance to the selected leader
 			private _followers = CALLM0(_group, "getInfantryUnits") - [_leader];
-			private _sortedFollowers =  [_followers, { CALLM0(_x, "getPos") distance2D _vehLeadPos }, ASCENDING] call pr0_fnc_sortBy;
+			private _sortedFollowers =  [_followers, { CALLM0(_x, "getPos") distance2D _vehLeadPos }, ASCENDING] call vin_fnc_sortBy;
 
 			// Apply the sorting, this will also assign the _leader as the group leader
 			CALLM3(_group, "postMethodAsync", "sort", [[_leader] + _sortedFollowers], _continuation);
@@ -147,8 +154,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _group = GETV(_AI, "agent");
 
 		T_CALLM0("clearWaypoints");
-
-		if(count CALLM0(_group, "getVehicleUnits") > 0) then {
+		
+		private _vehUnits = CALLM0(_group, "getVehicleUnits");
+		private _infUnits = CALLM0(_group, "getInfantryUnits");
+		if(count _vehUnits > 0) then {
 			T_CALLM4("applyGroupBehaviour", "COLUMN", "CARELESS", "YELLOW", "NORMAL");
 		} else {
 			T_CALLM4("applyGroupBehaviour", "STAG COLUMN", "AWARE", "YELLOW", "NORMAL");
@@ -156,28 +165,48 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		private _leader = CALLM0(_group, "getLeader");
 
-		// Add follow goals for units other than the leader
-		private _followersAndAI = (CALLM0(_group, "getInfantryUnits") - [_leader]) apply {
-			[_x, CALLM0(_x, "getAI")]
-		} select {
-			_x params ["_unit", "_AI"];
-			CALLM0(_AI, "getAssignedVehicleRole") == "DRIVER"
-		};
-		private _followers = _followersAndAI apply { _x#0 };
-		private _followersAI = _followersAndAI apply { _x#1 };
-		{
-			CALLM4(_x, "addExternalGoal", "GoalUnitFollow", 0, [[TAG_INSTANT ARG _instant]], _AI);
-		} forEach _followersAI;
-
 		// Add move goal to leader
 		private _leaderAI = CALLM0(_leader, "getAI");
-		private _parameters = [
-			[TAG_POS, T_GETV("pos")],
-			[TAG_MOVE_RADIUS, T_GETV("radius")],
-			[TAG_ROUTE, T_GETV("route")],
-			[TAG_INSTANT, _instant]
-		];
-		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMove", 0, _parameters, _AI);
+		if (count _vehUnits > 0) then {
+
+			// Add follow goals for units other than the leader
+			private _followersAndAI = (_infUnits - [_leader]) apply {
+				[_x, CALLM0(_x, "getAI")]
+			} select {
+				_x params ["_unit", "_AI"];
+				CALLM0(_AI, "getAssignedVehicleRole") == "DRIVER"
+			};
+			private _followers = _followersAndAI apply { _x#0 };
+			private _followersAI = _followersAndAI apply { _x#1 };
+			{
+				CALLM4(_x, "addExternalGoal", "GoalUnitFollow", 0, [[TAG_INSTANT ARG _instant]], _AI);
+			} forEach _followersAI;
+
+			// Move with vehicle
+			private _parameters = [
+				[TAG_POS, T_GETV("pos")],
+				[TAG_MOVE_RADIUS, T_GETV("radius")],
+				[TAG_ROUTE, T_GETV("route")],
+				[TAG_INSTANT, _instant]
+			];
+			CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMove", 0, _parameters, _AI);
+		} else {
+			// Just move on foot
+			private _parameters = [
+				[TAG_MOVE_TARGET, T_GETV("pos")],
+				[TAG_MOVE_RADIUS, T_GETV("radius")],
+				[TAG_INSTANT, _instant]
+			];
+			CALLM4(_leaderAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
+
+			// Everyone else must regroup
+			{
+				private _ai = CALLM0(_x, "getAI");
+				private _parameters = [[TAG_INSTANT, _instant]];
+				private _args = ["GoalUnitInfantryRegroup", 0, _parameters, _AI, true, false, true]; // Will be always active, even when completed
+				CALLM(_ai, "addExternalGoal", _args);
+			} forEach (_infUnits - [_leader]);
+		};
 
 		// Make sure crew get mounted and infantry are assigned as cargo
 		T_CALLM0("updateVehicleAssignments");
@@ -189,7 +218,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// Logic to run each update-step
-	/* protected override */ METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -197,6 +226,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 		};
 
 		private _hG = T_GETV("hG");
+		private _ai = T_GETV("ai");
 		private _pos = T_GETV("pos");
 		private _radius = T_GETV("radius");
 
@@ -270,14 +300,18 @@ CLASS("ActionGroupMove", "ActionGroup")
 				T_SETV("speedLimit", _speedLimit);
 				vehicle leader _hG limitSpeed _speedLimit;
 			} else {
-				if(T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION) then {
+				private _nUnits = count units _hG;
+				private _infantrySeparation = T_CALLM0("getInfantrySeparation");
+				if((T_CALLM0("getMaxFollowSeparation") > 3 * GROUP_SEPARATION) ||
+					_infantrySeparation > ((_nUnits * 6) max 35)) then {
 					// Set reduced group speed
 					private _speedMode = T_GETV("speedMode");
-					_hG setSpeedMode "LIMITED";
+					CALLM1(_ai, "setSpeedMode", "LIMITED");
 				} else {
 					// Restore default group speed
 					private _speedMode = T_GETV("speedMode");
-					_hG setSpeedMode ([_speedMode, "NORMAL"] select (_speedMode isEqualTo ""));
+					private _newSpeedMode = [_speedMode, "NORMAL"] select (_speedMode isEqualTo "");
+					CALLM1(_ai, "setSpeedMode", _newSpeedMode);
 				};
 			};
 		};
@@ -285,13 +319,13 @@ CLASS("ActionGroupMove", "ActionGroup")
 		_state
 	ENDMETHOD;
 
-	/* protected override */ METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		// Reactivate, as we need to reassign goals
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;
 
-	/* protected override */ METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 
 		// Turn off vehicle sirens for removed units
@@ -306,9 +340,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	// logic to run when the action is satisfied
-	/* protected override */ METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
+		T_CALLCM0("ActionGroup", "terminate");
 		// Turn off vehicle sirens, and reset speed limits
 		{
 			private _t = CALLM0(CALLM0(_x, "getGarrison"), "getTemplate");
@@ -318,11 +353,10 @@ CLASS("ActionGroupMove", "ActionGroup")
 		} forEach CALLM0(T_GETV("group"), "getVehicleUnits");
 
 		T_CALLM0("clearWaypoints");
-		T_CALLM1("clearUnitGoals", ["GoalUnitFollow" ARG "GoalUnitMove"]);
 	ENDMETHOD;
 
 	//Gets the maximum separation between vehicles in convoy
-	/* private */ METHOD(getMaxSeparation)
+	METHOD(getMaxSeparation)
 		params [P_THISOBJECT];
 
 		private _group = T_GETV("group");
@@ -334,7 +368,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 
 		private _vehLead = vehicle leader CALLM0(_group, "getGroupHandle");
 		// Sort vehicles by distance from lead vehicle
-		_allVehicles = [_allVehicles, { _x distance2D _vehLead }, ASCENDING] call pr0_fnc_sortBy;
+		_allVehicles = [_allVehicles, { _x distance2D _vehLead }, ASCENDING] call vin_fnc_sortBy;
 		private _dMax = 0;
 		private _prev = _allVehicles deleteAt 0;
 		{
@@ -345,7 +379,7 @@ CLASS("ActionGroupMove", "ActionGroup")
 	ENDMETHOD;
 
 	//Gets the maximum separation between following groups
-	/* private */ METHOD(getMaxFollowSeparation)
+	METHOD(getMaxFollowSeparation)
 		params [P_THISOBJECT];
 
 		private _followingGroups = T_GETV("followingGroups") apply { CALLM0(_x, "getGroupHandle") };
@@ -356,17 +390,34 @@ CLASS("ActionGroupMove", "ActionGroup")
 		private _hG = T_GETV("hG");
 
 		// Sort following groups by distance from this group
-		_followingGroups = [_followingGroups, { leader _x distance2D leader _hG }, ASCENDING] call pr0_fnc_sortBy;
+		_followingGroups = [_followingGroups, { leader _x distance2D leader _hG }, ASCENDING] call vin_fnc_sortBy;
 		private _dMax = 0;
-		private _unitsByDistance = [ units _hG, { _x distance2D leader _hG }, DESCENDING] call pr0_fnc_sortBy;
+		private _unitsByDistance = [ units _hG, { _x distance2D leader _hG }, DESCENDING] call vin_fnc_sortBy;
 		private _lastUnitPrevGroup = _unitsByDistance#0;
 		{
 			private _followGrp = _x;
 			// Distance from last unit in previous group to leader of this group
 			_dMax = MAXIMUM(leader _followGrp distance2D _lastUnitPrevGroup, _dMax);
-			private _otherUnitsByDistance = [ units _followGrp, { _x distance2D _lastUnitPrevGroup }, DESCENDING] call pr0_fnc_sortBy;
+			private _otherUnitsByDistance = [ units _followGrp, { _x distance2D _lastUnitPrevGroup }, DESCENDING] call vin_fnc_sortBy;
 			_lastUnitPrevGroup = _otherUnitsByDistance#0;
 		} forEach _followingGroups;
 		_dMax
+	ENDMETHOD;
+
+	// Gets max distance between leader and any of its subordinates
+	/* private */ METHOD(getInfantrySeparation)
+		params [P_THISOBJECT];
+
+		private _hG = T_GETV("hG");
+		private _leader = leader _hG;
+		private _distances = ((units _hG) - [_leader]) apply {_x distance _leader};
+		
+		// Bail if noone is following
+		if (count _distances == 0) exitWith {
+			return 0;
+		};
+
+		private _maxDistance = selectMax _distances;
+		return _maxDistance;
 	ENDMETHOD;
 ENDCLASS;

@@ -149,7 +149,7 @@ CLASS("BuildUI", "")
 		g_BuildUI = nil;
 	ENDMETHOD;
 
-	METHOD(addOpenBuildMenuAction)
+	public METHOD(addOpenBuildMenuAction)
 		params [P_THISOBJECT, "_object"];
 
 		OOP_INFO_1("Adding Open Build Menu action to %1.", _object);
@@ -163,7 +163,7 @@ CLASS("BuildUI", "")
 		T_GETV("activeBuildMenus") pushBack [_object, _id];
 	ENDMETHOD;
 
-	METHOD(removeAllActions)
+	public METHOD(removeAllActions)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("Removing all active Open Build Menu actions.");
@@ -225,14 +225,14 @@ CLASS("BuildUI", "")
 		// Also for when they leave camp area.
 	ENDMETHOD;
 
-	STATIC_METHOD(getInstanceOpenUI)
+	public STATIC_METHOD(getInstanceOpenUI)
 		params [P_THISOBJECT, P_NUMBER("_source")];
 		pr _thisObject = g_BuildUI;
 		if (isNil "_thisObject") exitWith {};
 		T_CALLM1("openUI", _source);
 	ENDMETHOD;
 
-	METHOD(UIFrameUpdate)
+	public event METHOD(UIFrameUpdate)
 		params [P_THISOBJECT];
 
 		// Tooltips
@@ -339,7 +339,7 @@ CLASS("BuildUI", "")
 		// pr _newRotation = _rotation + _rate;
 	ENDMETHOD;
 
-	METHOD(onKeyHandler)
+	public event METHOD(onKeyHandler)
 		params [P_THISOBJECT, "_dikCode", "_shiftState", "_ctrlState", "_altState"];
 
 		switch (_dikCode) do { // keyname _dikCode is language dependent!!
@@ -477,8 +477,8 @@ CLASS("BuildUI", "")
 						pr _args = [format ["Demolish %1 and refund %2 construction resources?", (typeof(_objectToDelete)), _refundBuildRes],
 							[_objectToDelete, _refundBuildRes],
 							{
+								SCOPE_ACCESS_MIMIC("BuildUI");
 								params["_objectToDelete", "_refundBuildRes"];
-								
 								// you can unfortunately drop the object and close the buildUI before pressing either yes or no
 								if (isNil "g_BuildUI") exitWith { OOP_INFO_0("BuildUI closed during confirmation dialog?"); };
 								CALLM2(g_BuildUI, "demolishActiveObject", _objectToDelete, _refundBuildRes);
@@ -494,6 +494,7 @@ CLASS("BuildUI", "")
 						pr _args = [format ["Demolish %1? This object cannot be refunded.", (typeof(_objectToDelete))],
 							[_objectToDelete],
 							{
+								SCOPE_ACCESS_MIMIC("BuildUI");
 								params["_objectToDelete"];
 								
 								if (cursorobject == _objectToDelete) then {
@@ -867,7 +868,7 @@ CLASS("BuildUI", "")
 
 		// Create it somewhere safe before moving it to position
 		pr _newObj = _type createVehicleLocal [0, 0, 1000];
-		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
+		CALLSM2("BuildUI", "setObjectMovable", _newObj, true);
 		_newObj setVariable ["build_ui_newObject", true];
 		_newObj enableSimulation false;
 
@@ -898,13 +899,13 @@ CLASS("BuildUI", "")
 		if(count _activeObject == 0 or {cursorObject != (_activeObject select 0)}) then {
 
 			if(count _activeObject > 0) then {
-				//CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
+				//CALLSM1("BuildUI", "restoreSelectionObject", _activeObject);
 				_activeObject = [];
 				T_SETV("activeObject", _activeObject);
 			};
 
-			if(CALL_STATIC_METHOD_1("BuildUI", "isObjectMovable", cursorObject)) then {
-				_activeObject = CALL_STATIC_METHOD_1("BuildUI", "createSelectionObject", cursorObject);
+			if(CALLSM1("BuildUI", "isObjectMovable", cursorObject)) then {
+				_activeObject = CALLSM1("BuildUI", "createSelectionObject", cursorObject);
 				_activeObject params ["_obj", "_pos", "_dir", "_up"];
 				T_SETV("activeObject", _activeObject);
 				//cursorObject setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
@@ -989,6 +990,7 @@ CLASS("BuildUI", "")
 
 		// Updated highlighted object, this is a separate function due to https://feedback.bistudio.com/T123355
 		["BuildUIHighlightObject", "onEachFrame", { 
+			SCOPE_ACCESS_MIMIC("BuildUI");
 			CALLM0(g_BuildUI, "highlightObjectOnEachFrame");
 			call build_ui_highlightObjectOnEachFrame;
 		}, []] call BIS_fnc_addStackedEventHandler;
@@ -1001,7 +1003,7 @@ CLASS("BuildUI", "")
 
 		private _activeObject = T_GETV("activeObject");
 		if(count _activeObject > 0) then {
-			CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
+			CALLSM1("BuildUI", "restoreSelectionObject", _activeObject);
 			T_SETV("activeObject", []);
 		};
 
@@ -1058,7 +1060,7 @@ CLASS("BuildUI", "")
 
 		pr _movingObjects = +_selectedObjects;
 		if (count _activeObject > 0) then {
-			CALL_STATIC_METHOD_2("BuildUI", "addSelection", _movingObjects, _activeObject);
+			CALLSM2("BuildUI", "addSelection", _movingObjects, _activeObject);
 		};
 		if (count _movingObjects == 0) exitWith { false };
 
@@ -1102,6 +1104,7 @@ CLASS("BuildUI", "")
 
 		// Update moving objects on each frame, this is a separate function due to https://feedback.bistudio.com/T123355
 		["BuildUIMoveObjectsOnEachFrame", "onEachFrame", {
+			SCOPE_ACCESS_MIMIC("BuildUI");
 			CALLM0(g_BuildUI, "moveObjectsOnEachFrame");
 		}, []] call BIS_fnc_addStackedEventHandler;
 		true
@@ -1269,7 +1272,7 @@ CLASS("BuildUI", "")
 
 	ENDMETHOD;
 
-	STATIC_METHOD(setObjectMovable)
+	public STATIC_METHOD(setObjectMovable)
 		params [P_THISCLASS, P_OBJECT("_obj"), P_BOOL("_set")];
 		_obj setVariable [BUILDUI_OBJECT_TAG, _set, true];
 	ENDMETHOD;
@@ -1320,5 +1323,5 @@ build_UI_setObjectMovable = {
 	ASSERT_GLOBAL_OBJECT(g_BuildUI);
 	params ["_obj", "_val"];
 	OOP_INFO_2("'build_UI_setObjectMovable' method called with %1, %2", _obj, _val);
-	CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _obj, _val);
+	CALLSM2("BuildUI", "setObjectMovable", _obj, _val);
 };

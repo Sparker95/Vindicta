@@ -17,7 +17,7 @@
 		"prefix": "CLASS",
 		"body": [
 			"CLASS(\"$1\", \"$2\")",
-			"\tMETHOD(\"new\") {",
+			"\tMETHOD(new)",
 			"\t\tparams [P_THISOBJECT];",
 			"\t\t$0",
 			"\tENDMETHOD;",
@@ -29,6 +29,13 @@
 		"prefix": "VARIABLE",
 		"body": [
 			"VARIABLE(\"$0\");"
+		],
+		"description": "New OOP Light STATIC_VARIABLE"
+	},
+	"STATIC_VARIABLE": {
+		"prefix": "STATIC_VARIABLE",
+		"body": [
+			"STATIC_VARIABLE(\"$0\");"
 		],
 		"description": "New OOP Light VARIABLE"
 	},
@@ -72,7 +79,7 @@
 			"$0",
 			"",
 			"Parameters:",
-			"	_first - type, description",
+			"\t_first - type, description",
 			"",
 			"Returns: nil",
 			"*/"
@@ -82,5 +89,52 @@
 	"FIX_LINE_NUMBERS": {
 		"prefix": "FIX",
 		"body": ["FIX_LINE_NUMBERS()"]
+	},
+	"SAVEBREAK": {
+		"prefix": "// S",
+		"body": [
+			"// SAVEBREAK >>>",
+			"// ${1|Remove,Replace,Add|}, ${2:Reason}",
+			"$TM_SELECTED_TEXT$0",
+			"// <<< SAVEBREAK"
+		],
+		"description": "SAVEBREAK"
+	},
+	"forEach": {
+		"prefix": "forEach",
+		"body": [
+			"{// forEach ${1:collection}",
+			"\t$0",
+			"} forEach ${1:collection};"
+		],
+		"description": "forEach"
+	},
+	"switchtrue": {
+		"prefix": "switch",
+		"body": [
+			"switch true do {",
+			"\tcase $0: {",
+			"\t};",
+			"};"
+		],
+		"description": "switch true"
+	},
+	"for": {
+		"prefix": "for",
+		"body": [
+			"for \"_${1:loopVariable}\" from ${2:fromValue} to ${3:toValue} do {",
+			"\t$0",
+			"};"
+		],
+		"description": "for"
+	},
+	"while": {
+		"prefix": "while",
+		"body": [
+			"while { ${1:condition} } do {",
+			"\t$0",
+			"};"
+		],
+		"description": "while"
 	}
 }

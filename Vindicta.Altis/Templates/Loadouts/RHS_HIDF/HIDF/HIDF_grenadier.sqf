@@ -15,14 +15,15 @@ this addVest "rhsgref_alice_webbing";
 this addBackpack "B_FieldPack_oli";
 
 this addWeapon "rhs_weap_m16a4_carryhandle_M203";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 this addPrimaryWeaponItem "rhs_mag_20Rnd_556x45_M193_Stanag";
+this addPrimaryWeaponItem "rhs_mag_M441_HE";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_m67";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_20Rnd_556x45_M193_Stanag";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_20Rnd_556x45_M193_2MAG_Stanag";};
-for "_i" from 1 to 10 do {this addItemToBackpack "rhs_mag_M441_HE";};
+for "_i" from 1 to 12 do {this addItemToBackpack "rhs_mag_M441_HE";};
 for "_i" from 1 to 6 do {this addItemToBackpack "rhs_mag_M585_white";};
 this addItemToBackpack "rhs_mag_m661_green";
 this addItemToBackpack "rhs_mag_m662_red";

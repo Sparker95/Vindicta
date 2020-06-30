@@ -52,27 +52,27 @@ CLASS("MapMarkerGarrison", "MapMarker")
 		deleteMarkerLocal _mrkName;
 	ENDMETHOD;
 
-	METHOD(getGarrisonRecord)
+	public METHOD(getGarrisonRecord)
 		params [P_THISOBJECT];
 		T_GETV("garRecord")
 	ENDMETHOD;
 
-	METHOD(setSide)
+	public METHOD(setSide)
 		params [P_THISOBJECT, P_SIDE("_side")];
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		_mrkName setMarkerColorLocal ([_side, true] call BIS_fnc_sideColor);
 	ENDMETHOD;
 
-	METHOD(setPos)
+	public override METHOD(setPos)
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		_mrkName setMarkerPosLocal _pos;
 
 		// Call base class method
-		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
+		CALLCM("MapMarker", _thisObject, "setPos", [_pos]);
 	ENDMETHOD;
 
-	METHOD(onDraw)
+	public override event METHOD(onDraw)
 		//if (true) exitWith {};
 
 		params [P_THISOBJECT, "_control"];
@@ -93,17 +93,17 @@ CLASS("MapMarkerGarrison", "MapMarker")
 		};
 	ENDMETHOD;
 
-	METHOD(getMarker)
+	public METHOD(getMarker)
 		params [P_THISOBJECT];
 		_thisObject+MARKER_SUFFIX
 	ENDMETHOD;
 
-	METHOD(setText)
+	public METHOD(setText)
 		params [P_THISOBJECT, P_STRING("_text")];
 		(_thisObject+MARKER_SUFFIX) setMarkerTextLocal _text;
 	ENDMETHOD;
 
-	METHOD(show)
+	public override METHOD(show)
 		params [P_THISOBJECT, P_BOOL("_show")];
 		pr _alpha = [0, 0.85] select _show;
 		(_thisObject+MARKER_SUFFIX) setMarkerAlphaLocal _alpha;
@@ -112,7 +112,7 @@ CLASS("MapMarkerGarrison", "MapMarker")
 
 	// - - - - - - - Event handlers - - - - - - -
 
-	METHOD(onMouseButtonDown)
+	public override event METHOD(onMouseButtonDown)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 
@@ -123,7 +123,7 @@ CLASS("MapMarkerGarrison", "MapMarker")
 				CALLSM(CLASS_NAME, "deselectAllMarkers", []);
 			};
 
-			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
+			pr _selectedMarkers = GETSV(CLASS_NAME, "selectedMarkers");
 			_selectedMarkers pushBackUnique _thisObject;
 			T_SETV("selected", true);
 
@@ -136,18 +136,17 @@ CLASS("MapMarkerGarrison", "MapMarker")
 		};
 	ENDMETHOD;
 
-	METHOD(onMouseButtonUp)
+	public override event METHOD(onMouseButtonUp)
 		params [P_THISOBJECT, "_button", "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	ENDMETHOD;
 
-	METHOD(onMouseButtonClick)
+	public override event METHOD(onMouseButtonClick)
 		params [P_THISOBJECT, "_shift", "_ctrl", "_alt"];
 		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
-
 	ENDMETHOD;
 
-	STATIC_METHOD(onMouseClickElsewhere)
+	public event STATIC_METHOD(onMouseClickElsewhere)
 		params ["_thisClass", "_button", "_shift", "_ctrl", "_alt"];
 
 		if (_button == 0) then {
@@ -156,22 +155,22 @@ CLASS("MapMarkerGarrison", "MapMarker")
 		
 	ENDMETHOD;
 
-	STATIC_METHOD(deselectAllMarkers)
+	public STATIC_METHOD(deselectAllMarkers)
 		params ["_thisClass"];
 
-		pr _selectedMarkers = GET_STATIC_VAR(_thisClass, "selectedMarkers");
+		pr _selectedMarkers = GETSV(_thisClass, "selectedMarkers");
 		{
 			SETV(_x, "selected", false);
 		} forEach _selectedMarkers;
 
-		SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
+		SETSV(CLASS_NAME, "selectedMarkers", []);
 	ENDMETHOD;
 
 ENDCLASS;
 
-if (isNil {GET_STATIC_VAR(CLASS_NAME, "all")}) then {
-	SET_STATIC_VAR(CLASS_NAME, "all", []);
-	SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
+if (isNil {GETSV(CLASS_NAME, "all")}) then {
+	SETSV(CLASS_NAME, "all", []);
+	SETSV(CLASS_NAME, "allSelected", []);
 };
 
 #ifndef _SQF_VM
@@ -179,7 +178,7 @@ if (isNil {GET_STATIC_VAR(CLASS_NAME, "all")}) then {
 /*
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
-	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
+	CALLSM(CLASS_NAME, "onMouseClickElsewhere", _this);
 }] call BIS_fnc_addScriptedEventHandler;
 */
 

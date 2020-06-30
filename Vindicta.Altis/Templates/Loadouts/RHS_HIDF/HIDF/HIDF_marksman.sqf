@@ -19,6 +19,5 @@ this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_m62_Mag";
 this addPrimaryWeaponItem "rhsusf_acc_m14_bipod";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_m67";};
 for "_i" from 1 to 6 do {this addItemToVest "rhsusf_20Rnd_762x51_m62_Mag";};
 this linkItem "ItemWatch";

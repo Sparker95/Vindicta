@@ -77,7 +77,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	Returns: Number, the relative desireability of the location as compared to other locations. This value has no 
 	specific meaning or units.
 	*/
-	/* virtual */ METHOD(getLocationDesirability)
+	public virtual METHOD(getLocationDesirability)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
 		ASSERT_OBJECT_CLASS(_loc, "LocationModel");
@@ -152,7 +152,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	Returns: Number, the relative desireability of the location as compared to other locations. This value has no 
 	specific meaning or units.
 	*/
-	/* virtual */ METHOD(getConstructLocationDesirability)
+	public virtual METHOD(getConstructLocationDesirability)
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_POSITION("_locPos"), P_DYNAMIC("_locType"), P_SIDE("_side")];
 
 		// Same as for taking locations
@@ -219,7 +219,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD(getQRFScore)
+	public virtual METHOD(getQRFScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -253,7 +253,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD(getPatrolScore)
+	public virtual METHOD(getPatrolScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -285,7 +285,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD(getReinforceScore)
+	public virtual METHOD(getReinforceScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -318,7 +318,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD(getSupplyScore)
+	public virtual METHOD(getSupplyScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -356,7 +356,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	
 	Returns: Array of Numbers, score vector
 	*/
-	/* virtual */ METHOD(getTakeLocationScore)
+	public virtual METHOD(getTakeLocationScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -370,7 +370,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	ENDMETHOD;
 
-	/* virtual */ METHOD(getConstructLocationScore)
+	public virtual METHOD(getConstructLocationScore)
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -383,12 +383,12 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	ENDMETHOD;
 
 	// Save all varaibles
-	/* override */ METHOD(serializeForStorage)
+	public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true
