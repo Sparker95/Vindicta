@@ -18,13 +18,12 @@ this addBackpack "rhs_medic_bag";
 this addWeapon "rhs_weap_ak74_2";
 this addPrimaryWeaponItem "rhs_acc_dtk1983";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-
 this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 
 for "_i" from 1 to 7 do {this addItemToUniform "FirstAidKit";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_plum_AK";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rdg2_white";};
+this addItemToVest "rhs_mag_rdg2_white";
+this addItemToVest "rhs_mag_rdg2_black";
 this addItemToBackpack "Medikit";
 for "_i" from 1 to 2 do {this addItemToBackpack "FirstAidKit";};
 this linkItem "ItemWatch";

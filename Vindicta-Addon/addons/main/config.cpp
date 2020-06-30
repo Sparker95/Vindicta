@@ -9,7 +9,13 @@ class CfgPatches {
         requiredAddons[] = {
 			"cba_ui",
             "cba_xeh",
-            "cba_jr"
+            "cba_jr",
+            "ace_main",
+            "ace_gestures",
+            "ace_vehiclelock",
+            "ace_cargo",
+            "ace_interact_menu",
+            "ace_interaction"
 		};
         author = "";
         authors[] = {"Vindicta Team"};

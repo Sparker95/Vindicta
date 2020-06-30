@@ -102,7 +102,7 @@ OOP_error_wrongClass = {
 OOP_assert_class = {
 	params["_classNameStr", "_file", "_line"];
 	//Every class should have a member list. If it doesn't, then it's not a class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
 	//Check if it's a class
 	if(isNil "_memList") then {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
@@ -128,7 +128,7 @@ OOP_assert_objectClass = {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
 		false;
 	} else {
-		private _parents = GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
+		private _parents = _GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
 		if (_expectedClassNameStr in _parents || _classNameStr == _expectedClassNameStr) then {
 			true // all's fine
 		} else {
@@ -162,7 +162,7 @@ OOP_assert_object = {
 OOP_assert_staticMember = {
 	params["_classNameStr", "_memNameStr", "_file", "_line"];
 	//Get static member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
 	//Check if it's a class
 	if(isNil "_memList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
@@ -182,14 +182,20 @@ OOP_assert_member = {
 	params["_objNameStr", "_memNameStr", "_file", "_line"];
 	//Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	// Check if member name is not nil
+	if (isNil "_memNameStr") exitWith {
+		private _errorText = "member name is nil";
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
-		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
+		private _errorText = format ["class name is nil. Attempt to access member: %1 . %2", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
 	//Get member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	//Check member
 	private _memIdx = _memList findIf { _x#0 == _memNameStr };
 	private _valid = _memIdx != -1;
@@ -204,7 +210,7 @@ OOP_static_member_has_attr = {
 	params["_classNameStr", "_memNameStr", "_attr"];
 	// NO asserting here, it should be done already before calling this
 	// Get static  member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
 	// Get the member by name
 	private _memIdx = _memList findIf { _x#0 == _memNameStr };
 	// Return existance of attr
@@ -218,7 +224,7 @@ OOP_member_has_attr = {
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	// Get member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	// Get the member by name
 	private _memIdx = _memList findIf { _x#0 == _memNameStr };
 	// Return existance of attr
@@ -231,7 +237,7 @@ OOP_static_member_get_attr_ex = {
 	params["_classNameStr", "_memNameStr", "_attr"];
 	// NO asserting here, it should be done already before calling this
 	// Get static  member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
 	// Get the member by name
 	private _memIdx = _memList findIf { _x#0 == _memNameStr };
 	if(_memIdx == -1) then {
@@ -254,7 +260,7 @@ OOP_member_get_attr_ex = {
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	// Get member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	// Get the member by name
 	private _memIdx = _memList findIf { _x#0 == _memNameStr };
 	// Return existance of attr
@@ -274,7 +280,7 @@ OOP_assert_member_is_ref = {
 	private _valid = [_objNameStr, _memNameStr, _file, _line] call OOP_assert_member;
 	if(!_valid) exitWith { false };
 	if(!([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
-		private _errorText = format ["%1.%2 doesn't have ATTR_REFCOUNTED attribute but is being accessed by a REF function.", _objNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 doesn't have ATTR_REFCOUNTED attribute but is being accessed by a REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
@@ -287,7 +293,7 @@ OOP_assert_member_is_not_ref = {
 	private _valid = [_objNameStr, _memNameStr, _file, _line] call OOP_assert_member;
 	if(!_valid) exitWith { false };
 	if(([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
-		private _errorText = format ["%1.%2 has ATTR_REFCOUNTED attribute but is being accessed via a non REF function.", _objNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 has ATTR_REFCOUNTED attribute but is being accessed via a non REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
@@ -303,7 +309,7 @@ OOP_are_in_same_class_heirarchy = {
 	// If we are in the same class
 	if(_thisClass isEqualTo _classNameStr) exitWith { true };
 	// If we are in a descendant class
-	_classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)
+	_classNameStr in _GET_SPECIAL_MEM(_thisClass, PARENTS_STR)
 };
 
 OOP_assert_class_member_access = {
@@ -326,7 +332,7 @@ OOP_assert_class_member_access = {
 	};
 	// If it is both private and get-only then it is a declaration error, these are mutually exclusive
 	if(_isPrivate and _isGetOnly) exitWith {
-		private _errorText = format ["%1.%2 is marked private AND get-only, but they are intended to be mutually exclusive (get-only implies private set and public get)", _classNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 is marked private AND get-only, but they are intended to be mutually exclusive (get-only implies private set and public get)", _classNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false
 	};
@@ -341,7 +347,7 @@ OOP_assert_class_member_access = {
 	// At this point we know we are accessing from outside the class heirarchy
 	// Check we aren't attempting to set a get-only variable
 	if(!_isGet and _isGetOnly) exitWith {
-		private _errorText = format ["%1.%2 is get-only outside of its own class heirarchy", _classNameStr, _memNameStr];
+		private _errorText = format ["%1 . %2 is get-only outside of its own class heirarchy", _classNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false
 	};
@@ -360,7 +366,7 @@ OOP_assert_class_member_access = {
 
 	// // If we aren't in a class function at all then private would by violated.
 	// if(_isPrivate and {isNil "_thisClass"}) exitWith {
-	// 	private _errorText = format ["%1.%2 is unreachable (private)", _classNameStr, _memNameStr];
+	// 	private _errorText = format ["%1 . %2 is unreachable (private)", _classNameStr, _memNameStr];
 	// 	[_file, _line, _errorText] call OOP_error;
 	// 	false
 	// };
@@ -368,14 +374,14 @@ OOP_assert_class_member_access = {
 	// // Check if the object we are accessing is a parent of the class we are in (this is fine)
 	// // We could also allow access of members in derived classes but this is likely a design flaw anyway.
 	// // This code would allow it:
-	// // 	or {_thisClass in GET_SPECIAL_MEM(_classNameStr, PARENTS_STR)}
-	// if(_classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)) exitWith {
+	// // 	or {_thisClass in _GET_SPECIAL_MEM(_classNameStr, PARENTS_STR)}
+	// if(_classNameStr in _GET_SPECIAL_MEM(_thisClass, PARENTS_STR)) exitWith {
 	// 	#ifdef DEBUG_OOP_ASSERT_FUNCS
-	// 	diag_log "OK: _classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)";
+	// 	diag_log "OK: _classNameStr in _GET_SPECIAL_MEM(_thisClass, PARENTS_STR)";
 	// 	#endif
 	// 	true 
 	// };
-	private _errorText = format ["%1.%2 is unreachable (private)", _classNameStr, _memNameStr];
+	private _errorText = format ["%1 . %2 is unreachable (private)", _classNameStr, _memNameStr];
 	[_file, _line, _errorText] call OOP_error;
 	false
 };
@@ -384,7 +390,7 @@ OOP_assert_is_in_required_thread = {
 	params ["_objOrClass", "_classNameStr", "_memNameStr", "_threadAffinityFn", "_file", "_line"];
 	private _requiredThread = [_objOrClass] call _threadAffinityFn;
 	if(!isNil "_thisScript" and !isNil "_requiredThread" and  {!(_requiredThread isEqualTo _thisScript)}) exitWith {
-		private _errorText = format ["%1.%2 is accessed from the wrong thread, expected '%3' got '%4'", _classNameStr, _memNameStr, _requiredThread, _thisScript];
+		private _errorText = format ["%1 . %2 is accessed from the wrong thread, expected '%3' got '%4'", _classNameStr, _memNameStr, _requiredThread, _thisScript];
 		[_file, _line, _errorText] call OOP_error;
 		false
 	};
@@ -466,48 +472,220 @@ OOP_assert_set_member_access = {
 	[_objNameStr, _memNameStr, false, _file, _line] call OOP_assert_member_access;
 };
 
+#define SPECIAL_METHODS ["new", "delete", "copy", "assign", "ref", "unref"]
+OOP_assert_method_call = {
+	params ["_class", "_method", "_obj", "_file", "_line"];
+
+	// Find the attributes for the method in the most base class
+	// TODO: optimize this by copying declared class and attributes for functions into derived classes
+	private _classes = _GET_SPECIAL_MEM(_class, PARENTS_STR) + [_class];
+	private _idx = _classes findIf { _method in _GET_SPECIAL_MEM(_x, OWN_METHOD_LIST_STR) };
+	private _methodClass = _classes#_idx;
+	private _attribs = missionNamespace getVariable [CLASS_METHOD_ATTR_STR(_methodClass, _method), []];
+	private _scopeClasses = if(isNil "__classScope") then { [] } else { _GET_SPECIAL_MEM(__classScope, PARENTS_STR) + [__classScope] };
+
+	// Ignore special methods
+	if(_method in SPECIAL_METHODS) exitWith {};
+
+	// // Get relative file path. I thought it would fix vscode terminal links with spaces in them, but it doesn't...
+	// private _idx = _file find "Vindicta.Altis";
+	// _file = _file select [_idx + count "Vindicta.Altis"];
+	// _file = "." + _file;
+
+	// assert thread
+	if(attr(thread) in _attribs && {isNil ("__ignoreThreadAffinity" + _class)}) then {
+		private _properThread = isNil "_thisScript" || {GETV(CALLM0(_obj, "getMessageLoop"), "scriptHandle") isEqualTo _thisScript} || {!canSuspend};
+		if(!_properThread) then {
+			OOP_ERROR_4("%1 . %2 is called in wrong thread (%3:%4)", _class, _method, _file, _line);
+		};
+	};
+
+	// assert access
+	if(attr(protected) in _attribs && {!(_methodClass in _scopeClasses)} && {isNil ("__ignoreAccess" + _methodClass)}) exitWith {
+		OOP_ERROR_4("%1 . %2 is protected, and can only be called from its own class, or inherited classes (%3:%4)", _methodClass, _method, _file, _line);
+		//diag_log [_this, _classes, _methodClass, _attribs, __classScope];
+	};
+
+	// We ignore access for MessageReceiver, we need to check it in the postMethod functions instead as they know about the calling scope
+	if(!(attr(public) in _attribs || attr(protected) in _attribs) && {isNil "__classScope" || {!(_methodClass isEqualTo __classScope) && !(__classScope in ["MessageReceiver", "MessageReceiverEx"])}} && {isNil ("__ignoreAccess" + _methodClass)}) exitWith {
+		OOP_ERROR_4("%1 . %2 is private, and can only be called from its own class (%3:%4)", _methodClass, _method, _file, _line);
+		//diag_log [_this, _classes, _methodClass, _attribs, __classScope];
+	};
+
+	// assert server / client
+	if(attr(server) in _attribs && !IS_SERVER) exitWith {
+		OOP_ERROR_4("%1 . %2 can only be called on the server (%3:%4)", _methodClass, _method, _file, _line);
+	};
+	if(attr(client) in _attribs && !HAS_INTERFACE) exitWith {
+		OOP_ERROR_4("%1 . %2 can only be called on the client (%3:%4)", _methodClass, _method, _file, _line);
+	};
+};
 
 //Check method and print error if it's not found
 OOP_assert_method = {
-	params["_classNameStr", "_methodNameStr", "_file", "_line"];
+	params["_class", "_method", "_obj", "_file", "_line"];
 
-	if (isNil "_classNameStr") exitWith {
-		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
+	if (isNil "_method") exitWith {
+		private _errorText = "method name is nil";
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
+
+	if (isNil "_class") exitWith {
+		private _errorText = format ["class name is nil. Attempt to call method: %1", _method];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
 
 	//Get static member list of this class
-	private _methodList = GET_SPECIAL_MEM(_classNameStr, METHOD_LIST_STR);
-	//Check if it's a class
+	private _methodList = _GET_SPECIAL_MEM(_class, METHOD_LIST_STR);
+	// Check if it's a class
 	if(isNil "_methodList") exitWith {
-		[_file, _line, _classNameStr] call OOP_error_notClass;
+		[_file, _line, _class] call OOP_error_notClass;
 		false;
 	};
+
 	//Check method
-	private _valid = _methodNameStr in _methodList;
+	private _valid = _method in _methodList;
 	if(!_valid) then {
-		[_file, _line, _classNameStr, _methodNameStr] call OOP_error_methodNotFound;
+		[_file, _line, _class, _method] call OOP_error_methodNotFound;
 	};
+
+	#ifdef OOP_ASSERT_METHOD_CALL
+	[_class, _method, _obj, _file, _line] call OOP_assert_method_call;
+	#endif
+
 	//Return value
 	_valid
 };
+
+OOP_set_method_attr = {
+	params ["_class", "_method", "_attribs", ["_static", false]];
+	missionNamespace setVariable [CLASS_METHOD_ATTR_STR(_class, _method), +_attribs];
+
+	if(_method in SPECIAL_METHODS) exitWith {
+		if(count _attribs != 0) then {
+			OOP_ERROR_3("%1 . %2 must not use any attributes (using %3)", _class, _method, _attribs);
+		};
+	};
+
+	// Check for duplicate attributes
+	private _attribsUnique = [];
+	{ _attribsUnique pushBackUnique _x } forEach _attribs;
+	if(count _attribsUnique != count _attribs) exitWith {
+		OOP_ERROR_2("%1 . %2 declares some attributes more than once", _class, _method);
+	};
+
+	// Method already defined in this class
+	if (_method in _oop_newMethodList) exitWith {
+		OOP_ERROR_2("%1 . %2 declared more than once", _class, _method);
+	};
+
+	// Accessibility
+	private _public = attr(public) in _attribs;
+	private _protected = attr(protected) in _attribs;
+	if (_public && _protected) exitWith {
+		OOP_ERROR_2("%1 . %2 declared as 'public' and 'protected': use one only, or neither if you want to declare a method as private", _class, _method);
+	};
+	if(_public && {_attribs#0 != attr(public)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'public' must be first method attribute", _class, _method);
+	};
+	if(_protected && {_attribs#0 != attr(protected)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'protected' must be first method attribute", _class, _method);
+	};
+
+	_attribs = _attribs - [attr(public), attr(protected)];
+
+	// virtual / override
+	private _virtual = attr(virtual) in _attribs;
+	private _override = attr(override) in _attribs;
+	if (_static && (_virtual || _override)) then {
+		OOP_ERROR_2("%1 . %2 declared as 'virtual' or 'override': static functions cannot be either", _class, _method);
+	};
+	if (_virtual && _override) then {
+		OOP_ERROR_2("%1 . %2 declared as 'virtual' and 'override': use one only, or neither", _class, _method);
+	};
+	if(_virtual && {_attribs#0 != attr(virtual)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'virtual' must be specified after 'public'/'protected' but before 'server'/'client'", _class, _method);
+	};
+	if(_override && {_attribs#0 != attr(override)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'override' must be specified after 'public'/'protected' but before 'server'/'client'", _class, _method);
+	};
+	if (_virtual && !(_public || _protected)) then {
+		OOP_ERROR_2("%1 . %2 declared as 'virtual' but not 'public' or 'protected': this makes no sense, a virtual method must be visible to derived classes for them to override it", _class, _method);
+	};
+
+	private _exists = _method in _oop_methodList;
+	if(!_exists && _override) exitWith {
+		OOP_ERROR_2("%1 . %2 specifies 'override' but no base class contains a method with the same name", _class, _method);
+	};
+
+	if(_exists && !_static) then {
+		// Parents are ordered from least derived to most, so first one found will be first parent that defined the function.
+		// (Hopefully the same function isn't defined in multiple parents...)
+		private _oop_parents = _GET_SPECIAL_MEM(_class, PARENTS_STR);
+		private _idx = _oop_parents findIf { _method in _GET_SPECIAL_MEM(_x, OWN_METHOD_LIST_STR) };
+		private _parent = _oop_parents#_idx;
+		// Must use override keyword if the method already exists
+		if !(_override) then {
+			OOP_ERROR_3("%1 . %2 is hiding definition in %3: use 'virtual' and 'override' attributes to declare virtual methods", _class, _method, _parent);
+		} else {
+			private _otherAttribs = missionNamespace getVariable [CLASS_METHOD_ATTR_STR(_parent, _method), []];
+			if !(attr(virtual) in _otherAttribs) exitWith {
+				OOP_ERROR_3("%1 . %2 is overriding non-virtual method in %3: use 'virtual' and 'override' attributes to declare virtual methods", _class, _method, _parent);
+			};
+			private _otherPublic = attr(public) in _otherAttribs;
+			private _otherProtected = attr(protected) in _otherAttribs;
+			if(!_otherPublic && !_otherProtected) exitWith {
+				OOP_ERROR_3("%1 . %2 is overriding %3.%2 which does not have appropriate access attributes ('public', 'protected')", _parent, _method, _parent);
+			};
+			if (_public && !_otherPublic || _protected && !_otherProtected) exitWith {
+				OOP_ERROR_3("%1 . %2 overriding %3.%2 with different access attributes: overriding methods must have the same access", _class, _method, _parent);
+			};
+		};
+	};
+	_attribs = _attribs - [attr(virtual), attr(override)];
+
+	// Environment
+	private _server = attr(server) in _attribs;
+	private _client = attr(client) in _attribs;
+	if (_server && _client) then {
+		OOP_ERROR_2("%1 . %2 declared as 'server' and 'client': use neither if you want to declare a method as callable on both server and client", _class, _method);
+	};
+	if(_server && {_attribs#0 != attr(server)}) then {
+		OOP_ERROR_2("%1 . %2 'server' must be specified after 'virtual'/'override' but before 'thread'", _class, _method);
+	};
+	if(_client && {_attribs#0 != attr(client)}) then {
+		OOP_ERROR_2("%1 . %2 'client' must be specified after 'virtual'/'override' but before 'thread'", _class, _method);
+	};
+	_attribs = _attribs - [attr(server), attr(client)];
+
+	// Thread affinity
+	private _thread = attr(thread) in _attribs;
+	if(_thread && _static) exitWith {
+		OOP_ERROR_2("%1 . %2 is static and declared as 'thread': static methods cannot use 'thread' affinity attribute", _class, _method);
+	};
+	if(_thread && {_attribs#0 != attr(thread)}) exitWith {
+		OOP_ERROR_2("%1 . %2 'thread' must be last method attribute", _class, _method);
+	};
+};
+
 
 // Dumps all variables of an object
 OOP_dumpAllVariables = {
 	params [P_THISOBJECT];
 	// Get object's class
-	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_class, MEM_LIST_STR);
 	diag_log format ["[OOP]: Basic variable dump of %1: %2", _thisObject, _memList];
 	{
 		_x params ["_memName", "_memAttr"];
 		private _varValue = T_GETV(_memName);
 		if (isNil "_varValue") then {
-			diag_log format ["  %1.%2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
+			diag_log format ["  %1 . %2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
 		} else {
-			diag_log format ["  %1.%2: %3", _thisObject, _memName, _varValue];
+			diag_log format ["  %1 . %2: %3", _thisObject, _memName, _varValue];
 		};
 	} forEach _memList;
 };
@@ -540,7 +718,7 @@ OOP_dumpAllVariablesRecursive = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
 
 	//Get member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 
 	diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1: %2", _thisObject, _memList]));
 	{
@@ -574,7 +752,7 @@ OOP_dumpObjectVariable = {
 		switch (_typeName) do {
 			case "STRING": {
 				if(IS_OOP_OBJECT(_varValue)) then {
-					if ((toLower _varValue) in _objsDumpedAlready) then {
+					if (toLower _varValue in _objsDumpedAlready) then {
 						diag_log (_strIndent + format ["%1: (OOP Object): %2 (dumped already)", _header, _varValue]);
 					} else {
 						if (_indentNum + 1 > _maxDepth) then {
@@ -672,7 +850,7 @@ OOP_objectToJson = {
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	
 	DUMP("{");
 
@@ -767,7 +945,7 @@ OOP_objectToJson_diagLog = {
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	
 	DUMP_DIAGLOG("{");
 
@@ -833,14 +1011,62 @@ OOP_objectCrashDump = {
 OOP_callFromRemote = {
 	params[P_OOP_OBJECT("_object"), P_STRING("_methodNameStr"), ["_params", [], [[]]]];
 	//diag_log format [" --- OOP_callFromRemote: %1", _this];
-	CALLM(_object, _methodNameStr, _params);
+	if (IS_OOP_OBJECT(_object)) then {
+		CALLM(_object, _methodNameStr, _params);
+	} else {
+		diag_log format ["[OOP] Error: callFromRemote: object ref is invalid: %1, method: %2, parameters: %3", _object, _methodNameStr, _params];
+	};
 };
 
 // If assertion is enabled, this gets called on remote machine when we call a static method on it
 // So it will run the standard assertions before calling static method
 OOP_callStaticMethodFromRemote = {
 	params [P_STRING("_classNameStr"), P_STRING("_methodNameStr"), ["_args", [], [[]]]];
-	CALL_STATIC_METHOD(_classNameStr, _methodNameStr, _args);
+	CALLSM(_classNameStr, _methodNameStr, _args);
+};
+
+OOP_init_class = {
+	params [["_oop_classNameStr", "", [""]], ["_baseClassNames", "", ["", []]]];
+	_SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW);
+	private _oop_memList = [];
+	private _oop_staticMemList = [];
+	private _oop_methodList = [];
+	// Parents can be specified as a string or an array of strings
+	private _parentClassNames = switch true do {
+		case (_baseClassNames isEqualTo ""): { [] };
+		case (_baseClassNames isEqualType ""): { [_baseClassNames] };
+		default { _baseClassNames };
+	};
+	private _oop_parents = [];
+	{
+		private _baseClassNameStr = _x;
+		if (!([_baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then {
+			private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr];
+			FAILURE(_msg);
+		};
+		{ _oop_parents pushBackUnique _x; } forEach _GET_SPECIAL_MEM(_baseClassNameStr, PARENTS_STR);
+		_oop_parents pushBackUnique _baseClassNameStr;
+		{ _oop_memList pushBackUnique _x; } forEach _GET_SPECIAL_MEM(_baseClassNameStr, MEM_LIST_STR);
+		{ _oop_staticMemList pushBackUnique _x; } forEach _GET_SPECIAL_MEM(_baseClassNameStr, STATIC_MEM_LIST_STR);
+		private _oop_addedMethodList = [];
+		{ _oop_methodList pushBackUnique _x; _oop_addedMethodList pushBackUnique _x; } forEach _GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR);
+		private _oop_topParent = _oop_parents select ((count _oop_parents) - 1);
+		{
+			private _oop_methodCode = _GET_METHOD(_oop_topParent, _x);
+			_SET_METHOD(_oop_classNameStr, _x, _oop_methodCode);
+			_oop_methodCode = _GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x));
+			if (!isNil "_oop_methodCode") then { _SET_METHOD(_oop_classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); };
+		} forEach (_oop_addedMethodList - ["new", "delete", "copy"]);
+	} forEach _parentClassNames;
+	_SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents);
+	_SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList);
+	_SET_SPECIAL_MEM(_oop_classNameStr, STATIC_MEM_LIST_STR, _oop_staticMemList);
+	_SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList);
+	_SET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR, NAMESPACE);
+	// Methods introduced only in this class, not inherited
+	private _oop_newMethodList = [];
+	_SET_SPECIAL_MEM(_oop_classNameStr, OWN_METHOD_LIST_STR, _oop_newMethodList);
+	return [_oop_memList, _oop_staticMemList, _oop_methodList, _oop_newMethodList];
 };
 
 // Create new object from class name and parameters
@@ -851,23 +1077,22 @@ OOP_new = {
 
 	private _oop_nextID = -1;
 	_oop_nul = isNil {
-		_oop_nextID = GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
+		_oop_nextID = _GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
 		if (isNil "_oop_nextID") then { 
-			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW);	_oop_nextID = OOP_ID_COUNTER_NEW;
+			_SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW);	_oop_nextID = OOP_ID_COUNTER_NEW;
 		};
 		_oop_nextID = OOP_ID_COUNTER_PLUS_ONE(_oop_nextID);
-		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
+		_SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
 	};
 	
 	private _objNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);
 
-	FORCE_SET_MEM_NS(missionNamespace, _objNameStr, OOP_PARENT_STR, _classNameStr);
-	private _oop_parents = GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
+	_SETV(_objNameStr, OOP_PARENT_STR, _classNameStr);
+	private _oop_parents = _GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
 	private _oop_i = 0;
 	private _oop_parentCount = count _oop_parents;
-
 	while { _oop_i < _oop_parentCount } do {
-		([_objNameStr] + _extraParams) call GET_METHOD((_oop_parents select _oop_i), "new");
+		([_objNameStr] + _extraParams) call GET_METHOD(_oop_parents#_oop_i, "new");
 		_oop_i = _oop_i + 1;
 	};
 	CALLM(_objNameStr, "new", _extraParams);
@@ -885,19 +1110,19 @@ OOP_new_public = { // todo implement namespace
 
 	private _oop_nextID = -1;
 	_oop_nul = isNil {
-		_oop_nextID = GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
+		_oop_nextID = _GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
 		if (isNil "_oop_nextID") then { 
-			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); _oop_nextID = OOP_ID_COUNTER_NEW;
+			_SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); _oop_nextID = OOP_ID_COUNTER_NEW;
 		};
 		_oop_nextID = OOP_ID_COUNTER_PLUS_ONE(_oop_nextID);
-		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
+		_SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
 	};
 	private _objNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);
-	FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, _classNameStr);
+	_SETV(_objNameStr, OOP_PARENT_STR, _classNameStr);
 	PUBLIC_VAR(_objNameStr, OOP_PARENT_STR);
-	FORCE_SET_MEM(_objNameStr, OOP_PUBLIC_STR, 1);
+	_SETV(_objNameStr, OOP_PUBLIC_STR, 1);
 	PUBLIC_VAR(_objNameStr, OOP_PUBLIC_STR);
-	private _oop_parents = GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
+	private _oop_parents = _GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
 	private _oop_i = 0;
 	private _oop_parentCount = count _oop_parents;
 	while {_oop_i < _oop_parentCount} do {
@@ -921,17 +1146,17 @@ OOP_clone = { // todo implement namespace
 	// Get new ID for the new object
 	private _oop_nextID = -1;
 	_oop_nul = isNil {
-		_oop_nextID = GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
+		_oop_nextID = _GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
 		if (isNil "_oop_nextID") then { 
-			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); _oop_nextID = OOP_ID_COUNTER_NEW;
+			_SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); _oop_nextID = OOP_ID_COUNTER_NEW;
 		};
 		_oop_nextID = OOP_ID_COUNTER_PLUS_ONE(_oop_nextID);
-		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
+		_SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
 	};
 
 	private _newObjNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);
 
-	FORCE_SET_MEM(_newObjNameStr, OOP_PARENT_STR, _classNameStr);
+	_SETV(_newObjNameStr, OOP_PARENT_STR, _classNameStr);
 	
 	CALLM(_newObjNameStr, "copy", [_objNameStr]);
 
@@ -944,16 +1169,16 @@ OOP_clone = { // todo implement namespace
 OOP_clone_default = { // todo implement namespace
 	params [P_THISOBJECT, "_srcObject"];
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	{
 		_x params ["_varName"]; //, "_attributes"]; don't need attributes for now
-		private _value = FORCE_GET_MEM(_srcObject, _varName);
+		private _value = _GETV(_srcObject, _varName);
 		if (!isNil "_value") then {
 			// Check if it's an array, array is special, it needs a deeeep copy
 			if (_value isEqualType []) then {
-				FORCE_SET_MEM(_thisObject, _varName, +_value);
+				_SETV(_thisObject, _varName, +_value);
 			} else {
-				FORCE_SET_MEM(_thisObject, _varName, _value);
+				_SETV(_thisObject, _varName, _value);
 			};
 		};
 	} forEach _memList;
@@ -979,7 +1204,7 @@ OOP_assign_default = { // todo implement namespace
 	FIX_LINE_NUMBERS()
 
 	// Get member list and copy everything
-	private _memList = GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
 	if(!isNil "_attrRequired") then {
 		_memList = _memList select {
 			_x params ["_varName", "_attributes"];
@@ -989,17 +1214,17 @@ OOP_assign_default = { // todo implement namespace
 
 	{
 		_x params ["_varName"]; //, "_attributes"];
-		private _value = FORCE_GET_MEM(_srcObject, _varName);
+		private _value = _GETV(_srcObject, _varName);
 		if (!isNil "_value") then {
 			// Check if it's an array, array is special, it needs a deeeep copy
 			if (_value isEqualType []) then {
-				FORCE_SET_MEM(_destObject, _varName, +_value);
+				_SETV(_destObject, _varName, +_value);
 			} else {
-				FORCE_SET_MEM(_destObject, _varName, _value);
+				_SETV(_destObject, _varName, _value);
 			};
 		} else {
 			if (_copyNil) then {
-				FORCE_SET_MEM(_destObject, _varName, nil);
+				_SETV(_destObject, _varName, nil);
 			};
 		};
 	} forEach _memList;
@@ -1012,7 +1237,7 @@ OOP_serialize = { // todo implement namespace
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 	// Select only members that are serializable
-	private _memList = GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
 
 	private _array = [];
 	_array pushBack _classNameStr;
@@ -1032,7 +1257,7 @@ OOP_serialize_attr = { // todo implement namespace
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	if (!_serializeAllVariables) then {
 		_memList = _memList select {
 			_x params ["_varName", "_attributes"];
@@ -1060,7 +1285,7 @@ OOP_serialize_save = {
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
 		_x params ["_varName", "_attributes"];
 		(_attributes findIf {
 			(_x isEqualTo ATTR_SAVE) ||
@@ -1091,7 +1316,7 @@ OOP_deserialize = { // todo implement namespace
 	#endif
 	FIX_LINE_NUMBERS()
 
-	private _memList = GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
 
 	private _iVarName = 0;
 
@@ -1099,9 +1324,9 @@ OOP_deserialize = { // todo implement namespace
 		private _value = _array select _i;
 		(_memList select _iVarName) params ["_varName"];
 		if (!(isNil "_value")) then {
-			FORCE_SET_MEM(_objNameStr, _varName, _value);
+			_SETV(_objNameStr, _varName, _value);
 		} else {
-			FORCE_SET_MEM(_objNameStr, _varName, nil);
+			_SETV(_objNameStr, _varName, nil);
 		};
 		_iVarName = _iVarName + 1;
 	};
@@ -1118,7 +1343,7 @@ OOP_deserialize_attr = {
 	#endif
 	FIX_LINE_NUMBERS()
 
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	if(!_deserializeAllVariables) then {
 		_memList = _memList select {
 			//_x params ["_varName", "_attributes"];
@@ -1132,9 +1357,9 @@ OOP_deserialize_attr = {
 		private _value = _array select _i;
 		(_memList select _iVarName) params ["_varName"];
 		if(!(isNil "_value")) then {
-			FORCE_SET_MEM(_objNameStr, _varName, _value);
+			_SETV(_objNameStr, _varName, _value);
 		} else {
-			FORCE_SET_MEM(_objNameStr, _varName, nil);
+			_SETV(_objNameStr, _varName, nil);
 		};
 		_iVarName = _iVarName + 1;
 	};
@@ -1152,7 +1377,7 @@ OOP_deserialize_save = {
 	FIX_LINE_NUMBERS()
 
 	// Select member variables we expect to find in this save version
-	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
+	private _memList = _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR) select {
 		_x params ["_varName", "_attributes"];
 		(_attributes findIf {
 			(_x isEqualType 0 && {_x == ATTR_SAVE}) ||
@@ -1174,10 +1399,10 @@ OOP_deserialize_save = {
 	// 		private _defaultIdx = _attributes findIf {_x isEqualType [] && {_x#0 == ATTR_DEFAULT_KEY}};
 	// 		if(_defaultIdx != NOT_FOUND) then {
 	// 			private _defaultVal = _attributes#_defaultIdx#1;
-	// 			FORCE_SET_MEM(_objNameStr, _varName, _defaultVal);
+	// 			_SETV(_objNameStr, _varName, _defaultVal);
 	// 		};
 	// 	};
-	// } foreach GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	// } foreach _GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 
 	if((count _array - 2) != count _memList) exitWith {
 		
@@ -1191,9 +1416,9 @@ OOP_deserialize_save = {
 		private _value = _array#_i;
 		(_memList#(_i - 2)) params ["_varName"];
 		if(!(isNil "_value")) then {
-			FORCE_SET_MEM(_objNameStr, _varName, _value);
+			_SETV(_objNameStr, _varName, _value);
 		} else {
-			FORCE_SET_MEM(_objNameStr, _varName, nil);
+			_SETV(_objNameStr, _varName, nil);
 		};
 	};
 	true
@@ -1202,7 +1427,7 @@ OOP_deserialize_save = {
 OOP_deref_var = { // todo implement namespace
 	params ["_objNameStr", "_memName", "_memAttr"];
 	if(ATTR_REFCOUNTED in _memAttr) then {
-		private _memObj = FORCE_GET_MEM(_objNameStr, _memName);
+		private _memObj = _GETV(_objNameStr, _memName);
 		switch(typeName _memObj) do {
 			case "STRING": {
 				UNREF(_memObj);
@@ -1226,10 +1451,10 @@ OOP_delete = {
 	DESTRUCTOR_ASSERT_OBJECT(_objNameStr);
 
 	private _oop_classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-	private _oop_parents = GET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR);
+	private _oop_parents = _GET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR);
 	private _oop_parentCount = count _oop_parents;
 	private _oop_i = _oop_parentCount - 1;
-	private _oop_namespace = GET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR);
+	private _oop_namespace = _GET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR);
 
 	CALLM0(_objNameStr, "delete");
 	while {_oop_i > -1} do {
@@ -1238,14 +1463,14 @@ OOP_delete = {
 	};
 
 	private _isPublic = IS_PUBLIC(_objNameStr);
-	private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR);
+	private _oop_memList = _GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR);
 	
 	if (_isPublic) then {
 		{ // todo implement namespace
 			// If the var is REFCOUNTED then unref it
 			_x params ["_memName", "_memAttr"];
 			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
-			FORCE_SET_MEM(_objNameStr, _memName, nil);
+			_SETV(_objNameStr, _memName, nil);
 			PUBLIC_VAR(_objNameStr, OOP_PARENT_STR);
 		} forEach (_oop_memList+[OOP_PUBLIC_STR]);
 	} else {
@@ -1253,9 +1478,9 @@ OOP_delete = {
 			// If the var is REFCOUNTED then unref it
 			_x params ["_memName", "_memAttr"];
 			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
-			FORCE_SET_MEM_NS(_oop_namespace, _objNameStr, _memName, nil);
+			_SETV_NS(_oop_namespace, _objNameStr, _memName, nil);
 		} forEach (_oop_memList - [OOP_PARENT_STR]);
-		FORCE_SET_MEM_NS(missionNamespace, _objNameStr, OOP_PARENT_STR, nil);
+		_SETV(_objNameStr, OOP_PARENT_STR, nil);
 	};
 
 	PROFILER_COUNTER_DEC(_oop_classNameStr);
@@ -1293,7 +1518,7 @@ OOP_createStaticString = {
 // derived from this one.
 // Use variable attributes to enable automated ref counting for object refs:
 // VARIABLE_ATTR(..., [ATTR_REFCOUNTED]);
-// Use the SET_VAR_REF, SETV_REF, T_SETV_REF family of functions to write to 
+// Use the SETV_REF, SETV_REF, T_SETV_REF family of functions to write to 
 // these members to get automated de-refing of replaced value, and refing of
 // new value. See RefCountedTest.sqf for example.
 #define OOP_CLASS_NAME RefCounted
@@ -1431,13 +1656,14 @@ CLASS("AttrTestNotDerived1", "")
 ENDCLASS;
 
 // Multiple inheritence tests
-
 #define OOP_CLASS_NAME mi_a
 CLASS("mi_a", "")
 	METHOD(new)
 	ENDMETHOD;
 
-	METHOD(getValue)"A"ENDMETHOD;
+	public virtual METHOD(getValue)
+		"A"
+	ENDMETHOD;
 ENDCLASS;
 
 #define OOP_CLASS_NAME mi_b
@@ -1445,7 +1671,9 @@ CLASS("mi_b", "mi_a")
 	METHOD(new)
 	ENDMETHOD;
 
-	METHOD(getValue)"B"ENDMETHOD; // override
+	public override METHOD(getValue)
+		"B"
+	ENDMETHOD; // override
 ENDCLASS;
 
 #define OOP_CLASS_NAME mi_c
@@ -1453,7 +1681,9 @@ CLASS("mi_c", "")
 	METHOD(new)
 	ENDMETHOD;
 
-	METHOD(getAnotherValue)"anotherValue"ENDMETHOD;
+	public METHOD(getAnotherValue)
+		"anotherValue"
+	ENDMETHOD;
 ENDCLASS;
 
 #define OOP_CLASS_NAME mi_d
@@ -1466,12 +1696,12 @@ ENDCLASS;
 	private _thisObject = NEW("mi_d", []);
 
 
-	private _parents = GET_SPECIAL_MEM("mi_d", PARENTS_STR);
+	private _parents = _GET_SPECIAL_MEM("mi_d", PARENTS_STR);
 	//diag_log format ["Class mi_D parents: %1", _parents];
 
 	["Proper inheritence classes", _parents isEqualTo ["mi_a","mi_b","mi_c"]] call test_Assert;
 
-	//diag_log format ["getValue method: %1", FORCE_GET_METHOD(mi_d", "getValue)];
+	//diag_log format ["getValue method: %1", _GET_METHOD(mi_d", "getValue)];
 
 	private _value = T_CALLM0("getValue");
 	private _anotherValue = T_CALLM0("getAnotherValue");

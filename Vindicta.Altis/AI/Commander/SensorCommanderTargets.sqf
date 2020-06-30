@@ -55,7 +55,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 		
 		pr _AI = T_GETV("AI");
@@ -399,7 +399,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
 	ENDMETHOD;
 	
@@ -408,7 +408,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_TARGETS]
 	ENDMETHOD;
 	
@@ -417,7 +417,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		#ifdef DEBUG_TARGETS

@@ -194,7 +194,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"If you give me that now I will pay you back tuesday",
 			"I will take it from here",
 			"Don't worry, I will do it"
-			], _target] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -205,7 +205,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"No problem",
 			"Be careful with it, I'm no explosives expert!",
 			"You owe me"
-			], _caller] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -222,7 +222,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"I know just where to put this...",
 			"They won't know what hit them!",
 			"Is this thing safe?!"
-			], _target] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSentence;
 		
 		sleep 2;
 
@@ -233,7 +233,7 @@ Saboteur_fnc_playerTakesBomb = {
 			"Good luck!",
 			"Bye!",
 			"I need to be somewhere else..."
-			], _caller] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		// Civie runs off after maybe saluting
 		[[_target, _caller], { 
@@ -285,7 +285,7 @@ Saboteur_fnc_playerSelectsTarget = {
 			"You wanna be 'sploding something?",
 			"Let me make a suggestion...",
 			"I got an idea"
-			], _target] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -295,7 +295,7 @@ Saboteur_fnc_playerSelectsTarget = {
 			"Where?",
 			"Just point the way",
 			"Sorry, you will have to show me"
-			], _caller] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSentence;
 
 		sleep 2;
 
@@ -332,7 +332,7 @@ Saboteur_fnc_playerSelectsTarget = {
 				"Go here",
 				"What about here?",
 				"Put it just...here"
-				], _target] call Dialog_fnc_hud_createSentence;
+				]] call pr0_fnc_dialogue_createSentence;
 
 			sleep 2;
 
@@ -343,7 +343,7 @@ Saboteur_fnc_playerSelectsTarget = {
 				"They will never know what hit them!",
 				"Mwuhahahaha!",
 				"Oh yes."
-				], _caller] call Dialog_fnc_hud_createSentence;
+				]] call pr0_fnc_dialogue_createSentence;
 
 			// Civie runs off after maybe saluting
 			[[_target, _caller], { 
@@ -524,7 +524,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 
 #ifdef SABOTEUR_CIVILIANS_TESTING
 	// Make it always active mission if we are testing
-	/* override */ METHOD(isActive)
+	public override METHOD(isActive)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		true
 	ENDMETHOD;
@@ -532,7 +532,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 
 	// Called from base class update function, regardless of if the mission is active,
 	// because we might need to cleanup some missions that were ongoing.
-	/* protected override */ METHOD(updateExisting)
+	protected override METHOD(updateExisting)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_BOOL("_active")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -553,7 +553,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 	ENDMETHOD;
 	
 	// Called from base class update function, when the mission is active
-	/* protected virtual */ METHOD(spawnNew)
+	protected override METHOD(spawnNew)
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -583,7 +583,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			// _marker setMarkerType "hd_destroy";
 
 			// Use the civ types specified in the presence module
-			private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
+			private _civTypes = missionNameSpace getVariable ["pr0_cp_unitTypes", []];
 
 			for "_i" from 0 to (_deficit-1) do {
 

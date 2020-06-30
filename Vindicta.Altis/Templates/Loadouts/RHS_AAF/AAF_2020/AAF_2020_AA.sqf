@@ -24,7 +24,6 @@ this addSecondaryWeaponItem "rhs_mag_9k38_rocket";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 for "_i" from 1 to 6 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
 this addItemToBackpack "rhs_mag_9k38_rocket";
 this linkItem "ItemWatch";

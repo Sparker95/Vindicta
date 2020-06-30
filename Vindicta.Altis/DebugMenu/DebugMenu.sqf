@@ -172,7 +172,7 @@ pr0_fnc_initDebugMenu = {
 
 		// get location at player position
 		
-		private _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
+		private _loc = CALLSM("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
 		
 		if (_loc != "") then { 	
 

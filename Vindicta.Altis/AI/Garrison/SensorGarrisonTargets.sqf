@@ -32,8 +32,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ 
-	METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 		
 		// Bail if not spawned
@@ -108,7 +107,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		if (count _knownTargets > 0) then {
 			pr _gar = T_GETV("gar");
 			pr _side = CALLM0(_gar, "getSide");
-			pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+			pr _commanderAI = CALLSM("AICommander", "getAICommander", [_side]);
 			// Create stimulus
 			pr _stim = STIMULUS_NEW();
 			STIMULUS_SET_SOURCE(_stim, _gar);
@@ -162,7 +161,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Must return the desired update rate of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		UPDATE_INTERVAL
 	ENDMETHOD;
 	
@@ -171,8 +170,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ 
-	METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_TARGETS]
 	ENDMETHOD;
 	
@@ -182,7 +180,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ 
-	METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		pr _type = STIMULUS_GET_TYPE(_stimulus);

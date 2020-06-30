@@ -1,4 +1,4 @@
-#define PROFILER_COUNTERS_ENABLE
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\common.h"
 #include "Action.hpp"
 #include "..\..\Message\Message.hpp"
@@ -61,7 +61,9 @@ CLASS("Action", "MessageReceiverEx")
 	// STATIC_VARIABLE("numParameters"); // Amount of parameters this action requires // Maybe implement it later, not very important
 
 	// Array with parameters which must be derived from goal parameters
-	STATIC_VARIABLE("parameters");
+	STATIC_VARIABLE("parametersFromGoal");
+	// Array with parameters which can be derived from goal parameters
+	STATIC_VARIABLE("parametersFromGoalOptional");
 
 	// Bool indicating how this action can behave during spawning.
 	// This controls how planned actions get the "instant" parameter set in createActionsFromPlan.
@@ -89,6 +91,17 @@ CLASS("Action", "MessageReceiverEx")
 
 		T_SETV("AI", _AI);
 		T_SETV("state", ACTION_STATE_INACTIVE); // Default state
+
+		OOP_INFO_2("NEW: AI: %1, parameters: %2", _AI, _parameters);
+
+		// Verify parameters
+		#ifdef DEBUG_GOAP
+		pr _parametersGood = T_CALLM1("verifyParameters", _parameters);
+		if (!_parametersGood) then {
+			OOP_ERROR_0("Wrong parameters");
+		};
+		#endif
+		FIX_LINE_NUMBERS()
 
 		private _instant = CALLSM3("Action", "getParameterValue", _parameters, TAG_INSTANT, false);
 		T_SETV("instant", _instant);
@@ -120,12 +133,12 @@ CLASS("Action", "MessageReceiverEx")
 	// | Must implement this since we inherit from MessageReceiver          |
 	// ----------------------------------------------------------------------
 	
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		params [P_THISOBJECT];
 		CALLM0(T_GETV("AI"), "getMessageLoop");
 	ENDMETHOD;
 
-	/* protected virtual */ METHOD(setInstant)
+	public virtual METHOD(setInstant)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		T_SETV("instant", _instant);
 	ENDMETHOD;
@@ -145,7 +158,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(setAutonomous)
+	public METHOD(setAutonomous)
 		params [P_THISOBJECT, ["_timerPeriod", 1, [1]] ];
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
@@ -157,6 +170,90 @@ CLASS("Action", "MessageReceiverEx")
 		T_SETV("timer", _timer);
 	ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |          G E T   P O S S I B L E   P A R A M E T E R S             |
+	// ----------------------------------------------------------------------
+	/*
+	Method: getPossibleParameters
+
+	Other classes must override that to declare parameters passed to action!
+	The final possible parameters array is sum of getPossibleParameters and getCommonParameters
+
+	Returns array [requiredParameters, optionalParameters]
+	requiredParameters and optionalParameters are arrays of: [tag, type]
+		tag - string
+		type - some value against which isEqualType will be used
+	*/
+	public virtual METHOD(getPossibleParameters)
+		[
+			[],	// Required parameters
+			[]	// Optional parameters
+		]
+	ENDMETHOD;
+
+	/*
+	Method: getCommonParameters
+
+	Other classes must override that to declare parameters passed to action.
+	Typically some base class of multiple actions can have some common parameters.
+
+	Returns array [requiredParameters, optionalParameters]
+	requiredParameters and optionalParameters are arrays of: [tag, type]
+		tag - string
+		type - some value against which isEqualType will be used
+	*/
+	public virtual METHOD(getCommonParameters)
+		[
+			[],	// Required parameters
+			[ [TAG_INSTANT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
+	// Verifies parameters
+	METHOD(verifyParameters)
+		params [P_THISOBJECT, P_ARRAY("_parameters")];
+
+		pr _allGood = true;
+		pr _pPossible = T_CALLM0("getPossibleParameters");
+		_pPossible params ["_pRequired", "_pOptional"];
+		pr _pCommon = T_CALLM0("getCommonParameters");
+		_pCommon params ["_pCommonRequired", "_pCommonOptional"];
+		_pAllowed = _pRequired + _pOptional + _pCommonRequired + _pCommonOptional; // Instant is always allowed
+		
+		// Verify that no illegal parameters are passed
+		{
+			pr _tag = _x#0;
+			pr _value = _x#1;
+			pr _found = _pAllowed findIf {(_x#0) == _tag};
+			if (isNil "_value") then {
+				OOP_ERROR_1("Value of parameter %1 is nil!", _tag);
+			};
+			if (_found == -1) then {
+				OOP_ERROR_2("Illegal parameter: %1, allowed parameters: %2", _tag, _pAllowed);
+				_allGood = false;
+			} else {
+				// Verify type
+				pr _types = _pAllowed#_found#1;
+				pr _foundType = _types findIf {_value isEqualType _x};
+				if (_foundType == -1) then {
+					OOP_ERROR_3("Wrong parameter type for %1: %2, expected: %3", _tag, typeName _value, _types apply {typeName _x});
+					_allGood = false;
+				};
+			};
+		} forEach _parameters;
+
+		// Verify that all required parameters are passed
+		{
+			pr _tag = _x#0;
+			pr _found = _parameters findIf {(_x#0) == _tag};
+			if (_found == -1) then {
+				OOP_ERROR_2("Required parameter not found: %1, passed parameters: %2", _tag, _parameters);
+				_allGood = false;
+			};
+		} forEach (_pRequired + _pCommonRequired);
+
+		_allGood;
+	ENDMETHOD;
 	
 	
 	// ----------------------------------------------------------------------
@@ -174,7 +271,7 @@ CLASS("Action", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD(handleMessageEx) //Derived classes must implement this method
+	public override METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE;
 		private _msgHandled = false;
@@ -215,7 +312,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
-	/* virtual */ METHOD(activateIfInactive)
+	protected METHOD(activateIfInactive)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_INACTIVE) then {
@@ -236,7 +333,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number, one of <ACTION_STATE>, the current state
 	*/
-	METHOD(reactivateIfFailed)
+	protected METHOD(reactivateIfFailed)
 		params [P_THISOBJECT];
 		private _state = T_GETV("state");
 		if (_state == ACTION_STATE_FAILED) then {
@@ -257,7 +354,7 @@ CLASS("Action", "MessageReceiverEx")
 		_instant - The action should be completed instantly
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD(activate)
+	protected virtual METHOD(activate)
 		params [P_THISOBJECT];
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -271,7 +368,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: the current <ACTION_STATE>
 	*/
-	/* virtual */ METHOD(process)
+	public virtual METHOD(process)
 		params [P_THISOBJECT];
 		private _state = T_CALLM0("activateIfInactive");
 		_state
@@ -283,7 +380,8 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD(terminate)ENDMETHOD;
+	public virtual METHOD(terminate)
+	ENDMETHOD;
 	
 	/*
 	Method: addSubactionToFront
@@ -293,7 +391,9 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD(addSubactionToFront) diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!"; ENDMETHOD;
+	public virtual METHOD(addSubactionToFront)
+		diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!";
+	ENDMETHOD;
 	
 	/*
 	Method: addSubactionToFront
@@ -303,7 +403,9 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	/* virtual */ METHOD(addSubactionToBack) diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!"; ENDMETHOD;
+	public virtual METHOD(addSubactionToBack)
+		diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!";
+	ENDMETHOD;
 	
 	/*
 	Method: getSubactions
@@ -312,7 +414,9 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: []
 	*/
-	/* virtual */ METHOD(getSubactions) [] ENDMETHOD;
+	public virtual METHOD(getSubactions)
+		[]
+	ENDMETHOD;
 	
 	
 	/*
@@ -322,7 +426,7 @@ CLASS("Action", "MessageReceiverEx")
 	Returns: _thisObject
 	*/
 	
-	METHOD(getFrontSubaction)
+	public virtual METHOD(getFrontSubaction)
 		params [P_THISOBJECT];
 		_thisObject
 	ENDMETHOD;
@@ -339,7 +443,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in completed state, false otherwise
 	*/
-	METHOD(isCompleted)
+	public METHOD(isCompleted)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_COMPLETED
 	ENDMETHOD;
@@ -349,7 +453,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in active state, false otherwise
 	*/
-	METHOD(isActive)
+	public METHOD(isActive)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_ACTIVE
 	ENDMETHOD;
@@ -359,7 +463,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in inactive state, false otherwise
 	*/
-	METHOD(isInactive)
+	public METHOD(isInactive)
 		params [P_THISOBJECT];
 		(T_GETV("state")) == ACTION_STATE_INACTIVE
 	ENDMETHOD;
@@ -369,7 +473,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: true if action is in failed state, false otherwise
 	*/
-	METHOD(isFailed)
+	public METHOD(isFailed)
 		params [P_THISOBJECT];
 		T_GETV("state") == ACTION_STATE_FAILED
 	ENDMETHOD;
@@ -378,44 +482,8 @@ CLASS("Action", "MessageReceiverEx")
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -		
 
-
-	// ----------------------------------------------------------------------
-	// |                         G E T   C O S T                            |
-	// |                                                                    |
-	// | Returns the cost of taking this action in current situation
-	// | By default it returns the value of "cost" static variable
-	// | You can redefine it for inherited action if the returned cost needs to depend on something
-	// ----------------------------------------------------------------------
-	
-	/*
-	Method: getCost
-	Returns the cost of taking this action in current situation
-	By default it returns the value of "cost" static variable
-	You can redefine it for inherited action if the returned cost needs to depend on something
-	
-	Parameters: _AI, _wsStart, _wsEnd
-	
-	_AI - the <AI> object
-	_wsStart - the start <WorldState>
-	_wsEnd - the end <WorldState>
-	
-	Returns: Number
-	*/
-	STATIC_METHOD(getCost)
-		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_wsStart"), P_ARRAY("_wsEnd")];
-		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		
-		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
-		//if (isNil "_cost") then {
-		//	0
-		//} else {
-			_cost
-		//};
-	ENDMETHOD;
-	
 	
 	// ----------------------------------------------------------------------
 	//                 G E T   P R E C O N D I T I O N S
@@ -423,27 +491,33 @@ CLASS("Action", "MessageReceiverEx")
 	/*
 	Method: getPreconditions
 	Returns preconditions of this action depending on parameters
-	By default it tries to apply parameters to preconditions, if preconditions reference any parameters
+	By default it returns value of "preconditions" static variable. 
 	
-	Warning:If an action must provide preconditions which can't be copied from goal parameters, it must re-implement this method
+	It can be overriden on actions to provide preconditions from actual world with following limitations:
+	- Providev set of world state properties must be static.
+		It means that its's forbidden to provide some world state property in some cases and not provide it in others.
+	- Provided values must not affect branching of actions preceding this action.
+		It means that we can return	values like positions, object handles, etc, but typically not bools.
+
+	! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+	! ! !  When creating a world state to return, ensure that you specify its origin as ORIGIN_DYNAMIC_ACTION_PRECONDITIONS ! ! !
+	! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 	
 	Parameters: _goalParameters, _actionParameters
 	
 	_goalParameters - parameters of the <Goal> for which this action is considered
 	_actionParameters - parameters of this action resolved by the action planner
-	_c -
 	
 	Returns: <WorldState>
 	*/
-	STATIC_METHOD(getPreconditions)
+	public STATIC_METHOD(getPreconditions)
 		params [P_THISCLASS, P_ARRAY("_goalParameters"), P_ARRAY("_actionParameters")];
 
-		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
+		pr _wsPre = GETSV(_thisClass, "preconditions");
 		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
 		_wsPre
 	ENDMETHOD;
-	
-	
+
 	// ----------------------------------------------------------------------
 	// |                         G E T   P R E C E D E N C E                |
 	// |                                                                    |
@@ -457,22 +531,22 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: Number
 	*/
-	STATIC_METHOD(getPrecedence)
+	public STATIC_METHOD(getPrecedence)
 		params [P_THISCLASS];
 		
-		pr _precedence = GET_STATIC_VAR(_thisClass, "precedence");
+		pr _precedence = GETSV(_thisClass, "precedence");
 		
-		//if (isNil "_precedence") then {
-		//	0
-		//} else {
+		if (isNil "_precedence") then {
+			0
+		} else {
 			_precedence
-		//};
+		};
 	ENDMETHOD;
 	
-	STATIC_METHOD(isNonInstant)
+	public STATIC_METHOD(isNonInstant)
 		params [P_THISCLASS];
 		
-		pr _nonInstant = GET_STATIC_VAR(_thisClass, "nonInstant");
+		pr _nonInstant = GETSV(_thisClass, "nonInstant");
 		
 		if (isNil "_nonInstant") then {
 			false
@@ -494,7 +568,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: anything
 	*/
-	STATIC_METHOD(getParameterValue)
+	public STATIC_METHOD(getParameterValue)
 		params [P_THISCLASS, P_ARRAY("_parameters"), ["_tag", "", ["", 0]], P_DYNAMIC("_default")];
 		private _index = _parameters findif { _x select 0 == _tag };
 		private _val = if(_index == NOT_FOUND) then { _default } else { (_parameters#_index)#1 };
@@ -508,7 +582,7 @@ CLASS("Action", "MessageReceiverEx")
 	ENDMETHOD;
 	
 	// Merge _additional parameters into _base parameters, leaving any existing values unchanged
-	STATIC_METHOD(mergeParameterValues)
+	public STATIC_METHOD(mergeParameterValues)
 		params [P_THISCLASS, P_ARRAY("_base"), P_ARRAY("_additional")];
 		{
 			_x params ["_tag", "_value"];
@@ -536,7 +610,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsAdded)
+	public virtual METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
@@ -554,7 +628,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsRemoved)
+	public virtual METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		nil
@@ -573,7 +647,7 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsRemoved)
+	public virtual METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
@@ -591,14 +665,14 @@ CLASS("Action", "MessageReceiverEx")
 	
 	Returns: nil
 	*/
-	METHOD(handleUnitsAdded)
+	public virtual METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		
 		nil
 	ENDMETHOD;
 
 	// Helper functions
-	STATIC_METHOD(_clearWaypoints)
+	protected STATIC_METHOD(_clearWaypoints)
 		params [P_THISCLASS, P_GROUP("_hG")];
 		// Add a dummy waypoint as deleting all waypoints results in a dummy one being created later which messes
 		// with waypoint ordering
@@ -622,7 +696,7 @@ CLASS("Action", "MessageReceiverEx")
 
 	ENDMETHOD;
 	
-	STATIC_METHOD(_regroup)
+	protected STATIC_METHOD(_regroup)
 		params [P_THISCLASS, P_GROUP("_hG")];
 		if(isNull _hG) exitWith {
 			// No group
@@ -630,7 +704,7 @@ CLASS("Action", "MessageReceiverEx")
 		{ _x stop false; _x doFollow leader _hG; } forEach units _hG;
 	ENDMETHOD;
 
-	STATIC_METHOD(_teleport)
+	protected STATIC_METHOD(_teleport)
 		params [P_THISCLASS, P_ARRAY("_units"), P_POSITION("_pos")];
 		
 		{
@@ -705,7 +779,7 @@ CLASS("Action", "MessageReceiverEx")
 	// Debug
 	// Returns array of class-specific additional variable names to be transmitted to debug UI
 	// Override to show debug data in debug UI for specific class
-	/* virtual */ METHOD(getDebugUIVariableNames)
+	public virtual METHOD(getDebugUIVariableNames)
 		[]
 	ENDMETHOD;
 

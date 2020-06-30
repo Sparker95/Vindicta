@@ -18,7 +18,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 		T_SETV("destroyedUnits", []);
 	ENDMETHOD;
 
-	METHOD(update)
+	public override METHOD(update)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned
@@ -30,7 +30,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 		if (count _destroyedUnits == 0) exitWith {};
 		
 		pr _side = CALLM0(_gar, "getSide");
-		pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
+		pr _commanderAI = CALLSM("AICommander", "getAICommander", [_side]);
 		
 		// Send stimulus with data about destroyed units to commander
 		pr _stim = STIMULUS_NEW();
@@ -47,7 +47,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	METHOD(handleStimulus)
+	protected override METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 		
 		// Add the data about destroyed unit to the array, which will be sent to commander on next update
@@ -67,7 +67,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getStimulusTypes)
+	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_UNIT_DESTROYED]
 	ENDMETHOD;
 	
@@ -76,7 +76,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
 	// ----------------------------------------------------------------------
 	
-	METHOD(doComplexCheck)
+	protected override METHOD(doComplexCheck)
 		params [P_THISOBJECT, P_ARRAY("_stimulus")];
 
 		// Return true only if garrison is in combat state
@@ -91,7 +91,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD(getUpdateInterval)
+	public override METHOD(getUpdateInterval)
 		//params [P_THISOBJECT];
 		UPDATE_INTERVAL
 	ENDMETHOD;

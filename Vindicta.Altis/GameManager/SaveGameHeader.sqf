@@ -27,7 +27,7 @@ CLASS("SaveGameHeader", "Storable")
 	*/
 
 	// Initializes data fields for a new save
-	METHOD(initNew)
+	public METHOD(initNew)
 		params [P_THISOBJECT];
 		T_SETV("saveVersion", call misc_fnc_getSaveVersion);
 		T_SETV("missionVersion", call misc_fnc_getVersion);
@@ -44,12 +44,12 @@ CLASS("SaveGameHeader", "Storable")
 	// STORAGE
 	
 	// Save all varaibles
-	/* override */ METHOD(serializeForStorage)
+	public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true

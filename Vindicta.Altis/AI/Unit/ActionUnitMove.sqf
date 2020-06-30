@@ -1,5 +1,9 @@
 #include "common.hpp"
 
+/*
+Performs moving while in vehicle, supports waypoints.
+*/
+
 // How much time it's allowed to stand at one place without being considered 'stuck'
 #define TIMER_STUCK_THRESHOLD 20
 
@@ -10,6 +14,8 @@
 // #define DEBUG_PF 
 #endif
 FIX_LINE_NUMBERS()
+
+#define pr private
 
 #define OOP_CLASS_NAME ActionUnitMove
 CLASS("ActionUnitMove", "ActionUnit")
@@ -27,6 +33,13 @@ CLASS("ActionUnitMove", "ActionUnit")
 	VARIABLE("pathingFailedCounter");	// How many times pathfinding has failed in a row, reset on success
 	VARIABLE("pathingFailing");			// Set in the PathCalculated handler based on the result of the last pathfind operation
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_POS, [[]] ] ],	// Required parameters
+			[ [TAG_MOVE_RADIUS, [0]], [TAG_ROUTE, [[]]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -35,6 +48,11 @@ CLASS("ActionUnitMove", "ActionUnit")
 
 		private _radius = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS, 10);
 		T_SETV("radius", _radius);
+
+		pr _ai = T_GETV("ai");
+		CALLM1(_ai, "setMoveTarget", _pos);
+		CALLM1(_ai, "setMoveTargetRadius", _radius);
+		CALLM0(_ai, "updatePositionWSP");
 
 		// Route can be optionally passed or not
 		// We add the target position to the end
@@ -45,7 +63,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		// Handle AI just spawned state
@@ -111,6 +129,11 @@ CLASS("ActionUnitMove", "ActionUnit")
 
 		// Order to move
 		T_CALLM0("nextWaypoint");
+
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
@@ -194,13 +217,17 @@ CLASS("ActionUnitMove", "ActionUnit")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		private _hO = T_GETV("hO");
+		pr _ai = T_GETV("ai");
+		pr _ws = GETV(_ai, "worldState");
+		pr _arrived = WS_GET(_ws, WSP_UNIT_HUMAN_AT_TARGET_POS);
+
 
 		// Success condition: reached destination within specified radius
-		if(_hO distance2D T_GETV("pos") <= T_GETV("radius")) exitWith {
+		if(_arrived) exitWith {
 			T_SETV("state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		};
@@ -293,7 +320,7 @@ CLASS("ActionUnitMove", "ActionUnit")
 	ENDMETHOD;
 	
 	// logic to run when the goal is about to be terminated
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
 		// Delete waypoints

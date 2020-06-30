@@ -26,6 +26,7 @@ Author: Sparker
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
 Unit_fnc_EH_Respawn = compile preprocessFileLineNumbers "Unit\EH_Respawn.sqf";
 Unit_fnc_EH_handleDamageInfantry = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantry.sqf";
+Unit_fnc_EH_handleDamageVehicle = compile preprocessFileLineNumbers "Unit\EH_handleDamageVehicle.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
@@ -150,7 +151,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		T_SETV("data", _data);
 
 		// Push the new object into the array with all units
-		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
+		private _allArray = GETSV(UNIT_CLASS_NAME, "all");
 		_allArray pushBack _thisObject;
 
 		// Add this unit to a group
@@ -160,7 +161,10 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
-			//_hO enableWeaponDisassembly false; // Disable weapon disassmbly
+			// Don't uncomment this until weapon disassembly is supported
+			// I am looking at you Marvis, don't
+			// Just do not
+			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
 			T_CALLM0("initObjectVariables");
 			T_CALLM0("initObjectEventHandlers");
 			T_CALLM0("initObjectDynamicSimulation");
@@ -205,7 +209,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 
 		//Remove this unit from array with all units
-		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
+		private _allArray = GETSV(UNIT_CLASS_NAME, "all");
 		_allArray deleteAt (_allArray find _thisObject);
 
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -215,7 +219,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		T_SETV("data", nil);
 	ENDMETHOD;
 
-	METHOD(release)
+	public METHOD(release)
 		params [P_THISOBJECT];
 		// detach the Arma unit handle from this object if it is spawned
 		// Despawn this unit if it was spawned
@@ -232,7 +236,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: bool
 	*/
-	METHOD(isValid)
+	public METHOD(isValid)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		pr _return = if (isNil "_data") then {
@@ -295,7 +299,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: nil
 	*/
-	METHOD(spawn)
+	public METHOD(spawn)
 		params [P_THISOBJECT, "_pos", "_dir", ["_spawnAtPrevPos", false]];
 
 		OOP_INFO_1("SPAWN: %1", _this);
@@ -496,7 +500,10 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						// 	};
 						// };
 
-						//_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
+						// Don't uncomment this until weapon disassembly is supported
+						// I am looking at you Marvis, don't
+						// Just do not
+						_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
 						_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 						T_CALLM1("createAI", "AIUnitVehicle");
@@ -758,6 +765,18 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 		*/
 
+		// HandleDamage for vehicles
+		if ((_data select UNIT_DATA_ID_CAT == T_VEH) &&
+			{owner _hO in [0, clientOwner]}) then {			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
+
+			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
+				_hO removeAllEventHandlers "handleDamage";
+				pr _ehid = _hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageVehicle];
+				//diag_log format ["Added damage event handler: %1", _thisObject];
+				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
+			};
+		};
+
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
 			_hO addEventHandler ["GetIn", Unit_fnc_EH_GetIn];
@@ -850,13 +869,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	/* private */ METHOD(clearInventory)
+	public METHOD(clearInventory)
 		params [P_THISOBJECT];
 		private _emptyInventory = [[],[],[],[]];
 		T_CALLM1("setInventory", _emptyInventory);
 	ENDMETHOD;
 
-	/* private */ METHOD(addToInventory)
+	public METHOD(addToInventory)
 		params [P_THISOBJECT, P_ARRAY("_inventory")];
 
 		private _data = T_GETV("data");
@@ -890,7 +909,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	/* private */ METHOD(restoreInventory)
+	METHOD(restoreInventory)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 
@@ -913,7 +932,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		}
 	ENDMETHOD;
 
-	/* private */ METHOD(_setRealInventory)
+	METHOD(_setRealInventory)
 		params [P_THISOBJECT, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 
 		if(_hO in allPlayers) exitWith {
@@ -933,7 +952,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		CALLSM2("Unit", "_addToRealInventory", _hO, _inventory);
 	ENDMETHOD;
 	
-	/* private */ STATIC_METHOD(_addToRealInventory)
+	STATIC_METHOD(_addToRealInventory)
 		params [P_THISCLASS, P_OBJECT("_hO"), P_ARRAY("_inventory")];
 		//weapons
 		{
@@ -1333,7 +1352,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: nil
 	*/
-	METHOD(despawn)
+	public METHOD(despawn)
 		params [P_THISOBJECT, P_BOOL("_releaseHandle")];
 
 		OOP_INFO_0("DESPAWN");
@@ -1347,7 +1366,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-		if (!(isNull _objectHandle)) then { //If it's been spawned before
+		if (!isNull _objectHandle) then { //If it's been spawned before
 			// Stop AI, sensors, etc
 			pr _AI = _data select UNIT_DATA_ID_AI;
 			// Some units are brainless. Check if the unit had a brain.
@@ -1371,13 +1390,15 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			// Deinitialize the limited arsenal
 			T_CALLM0("limitedArsenalOnDespawn");
 
-			// Set the pos, vector dir and up, location
+			// Set the pos, vector dir and up
 			pr _posATL = getPosATL _objectHandle;
+			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
 			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
+			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
+
+			// Set the location
 			pr _gar = _data#UNIT_DATA_ID_GARRISON;
 			pr _loc = if (_gar != NULL_OBJECT) then { CALLM0(_gar, "getLocation") } else { NULL_OBJECT };
-			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
-			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
 
 			// If we are releasing the handle then we don't actually delete the unit!
@@ -1406,7 +1427,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Assigns the unit to a vehicle with specified vehicle role
 	*/
-	METHOD(setVehicleRole)
+	public METHOD(setVehicleRole)
 		params [P_THISOBJECT, "_vehicle", "_vehicleRole"];
 	ENDMETHOD;
 
@@ -1424,7 +1445,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: nil
 	*/
-	METHOD(setGarrison)
+	public METHOD(setGarrison)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison") ];
 
 		OOP_INFO_1("SET GARRISON: %1", _garrison);
@@ -1449,7 +1470,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: nil
 	*/
-	METHOD(setGroup)
+	public METHOD(setGroup)
 		params [P_THISOBJECT, P_OOP_OBJECT("_group") ];
 		private _data = T_GETV("data");
 		_data set [UNIT_DATA_ID_GROUP, _group];
@@ -1574,7 +1595,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: <Garrison>
 	*/
-	METHOD(getGarrison)
+	public METHOD(getGarrison)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 
@@ -1595,7 +1616,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: object handle of this unit, or objNull if it's not spawned
 	*/
-	METHOD(getObjectHandle)
+	public METHOD(getObjectHandle)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_OBJECT_HANDLE
@@ -1607,7 +1628,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: String
 	*/
-	METHOD(getClassName)
+	public METHOD(getClassName)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_CLASS_NAME
@@ -1617,7 +1638,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Method: isPlayer
 	Returns: true if the unit is a player
 	*/
-	METHOD(isPlayer)
+	public METHOD(isPlayer)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1632,7 +1653,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Returns: <Group>
 	*/
 	// Returns the group of this unit
-	METHOD(getGroup)
+	public METHOD(getGroup)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data # UNIT_DATA_ID_GROUP
@@ -1646,7 +1667,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: array: [_catID, _subcatID, _className]
 	*/
-	METHOD(getMainData)
+	public METHOD(getMainData)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		[_data # UNIT_DATA_ID_CAT, _data # UNIT_DATA_ID_SUBCAT, _data # UNIT_DATA_ID_CLASS_NAME]
@@ -1659,7 +1680,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Efficiency vector
 	*/
-	METHOD(getEfficiency)
+	public METHOD(getEfficiency)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		T_efficiency # (_data # UNIT_DATA_ID_CAT) # (_data # UNIT_DATA_ID_SUBCAT)
@@ -1673,7 +1694,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: the internal data array of this unit.
 	*/
-	METHOD(getData)
+	public METHOD(getData)
 		params [P_THISOBJECT];
 		T_GETV("data")
 	ENDMETHOD;
@@ -1686,7 +1707,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: [x, y, z]
 	*/
-	METHOD(getPos)
+	public METHOD(getPos)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1699,7 +1720,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: <Location> or ""
 	*/
-	METHOD(getDespawnLocation)
+	public METHOD(getDespawnLocation)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_LOCATION
@@ -1709,7 +1730,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Method: getCategory
 	Returns category ID, number
 	*/
-	METHOD(getCategory)
+	public METHOD(getCategory)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		_data#UNIT_DATA_ID_CAT
@@ -1719,7 +1740,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Method: getSubcategory
 	Returns subcategory ID, number
 	*/
-	METHOD(getSubcategory)
+	public METHOD(getSubcategory)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		_data#UNIT_DATA_ID_SUBCAT
@@ -1730,7 +1751,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Method: handleKilled
 	Gets called when a unit is killed.
 	*/
-	METHOD(handleKilled)
+	public METHOD(handleKilled)
 		params [P_THISOBJECT];
 
 		// Delete the brain of this unit, if it exists
@@ -1752,7 +1773,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	ENDMETHOD;
 
 	// Some cargo was loaded into this unit
-	METHOD(handleCargoLoaded)
+	public METHOD(handleCargoLoaded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		pr _AI = T_CALLM0("getAI");
 		if (_AI != "") then {
@@ -1761,7 +1782,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	ENDMETHOD;
 
 	// Some cargo was unloaded from this unit
-	METHOD(handleCargoUnloaded)
+	public METHOD(handleCargoUnloaded)
 		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
 		pr _AI = T_CALLM0("getAI");
 		if (_AI != "") then {
@@ -1784,7 +1805,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: <Unit> or ""
 	*/
-	STATIC_METHOD(getUnitFromObjectHandle)
+	public STATIC_METHOD(getUnitFromObjectHandle)
 		params [P_THISCLASS, P_OBJECT("_objectHandle") ];
 		GET_UNIT_FROM_OBJECT_HANDLE(_objectHandle);
 	ENDMETHOD;
@@ -1796,7 +1817,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: <Unit>
 	*/
-	STATIC_METHOD(createUnitFromObjectHandle)
+	public STATIC_METHOD(createUnitFromObjectHandle)
 	ENDMETHOD;
 
 
@@ -1811,7 +1832,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 	
-	STATIC_METHOD(getRequiredCrew)
+	public STATIC_METHOD(getRequiredCrew)
 		params ["_thisClass", P_ARRAY("_units")];
 		
 		pr _nDrivers = 0;
@@ -1839,7 +1860,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	
 	Returns: Number
 	*/
-	STATIC_METHOD(getCargoInfantryCapacity)
+	public STATIC_METHOD(getCargoInfantryCapacity)
 		params ["_thisClass", P_ARRAY("_units")];
 		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
@@ -1857,7 +1878,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: String - One of "CARELESS", "SAFE", "AWARE", "COMBAT" and "STEALTH"
 	*/
-	METHOD(getBehaviour)
+	public METHOD(getBehaviour)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1872,7 +1893,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isAlive)
+	public METHOD(isAlive)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1891,7 +1912,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isConscious)
+	public METHOD(isConscious)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _object = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1910,14 +1931,14 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: bool, true if the unit is spawned
 	*/
-	METHOD(isSpawned)
+	public METHOD(isSpawned)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		private _return = !( isNull (_data select UNIT_DATA_ID_OBJECT_HANDLE));
 		_return
 	ENDMETHOD;
 
-	METHOD(isDamaged)
+	public METHOD(isDamaged)
 		params [P_THISOBJECT];
 		if(T_CALLM0("isSpawned")) then {
 			pr _oh = T_CALLM0("getObjectHandle");
@@ -1927,7 +1948,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		}
 	ENDMETHOD;
 
-	METHOD(canMove)
+	public METHOD(canMove)
 		params [P_THISOBJECT];
 		if(T_CALLM0("isSpawned")) then {
 			pr _oh = T_CALLM0("getObjectHandle");
@@ -1948,7 +1969,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isInfantry)
+	public METHOD(isInfantry)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_CAT == T_INF
@@ -1961,7 +1982,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isVehicle)
+	public METHOD(isVehicle)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_CAT == T_VEH
@@ -1974,7 +1995,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isDrone)
+	public METHOD(isDrone)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_CAT == T_DRONE
@@ -1986,7 +2007,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isCargo)
+	public METHOD(isCargo)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_CAT == T_CARGO
@@ -1998,7 +2019,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isAir)
+	public METHOD(isAir)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data#UNIT_DATA_ID_CAT == T_VEH && { _data#UNIT_DATA_ID_SUBCAT in T_VEH_air }
@@ -2011,7 +2032,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: Bool
 	*/
-	METHOD(isStatic)
+	public METHOD(isStatic)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		[_data#UNIT_DATA_ID_CAT, _data#UNIT_DATA_ID_SUBCAT] in T_static
@@ -2021,7 +2042,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	// |                               B U I L D   R E S O U R C E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	METHOD(setBuildResources)
+	public METHOD(setBuildResources)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if we can't carry any build resources
@@ -2036,7 +2057,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	METHOD(getBuildResources)
+	public METHOD(getBuildResources)
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("GET BUILD RESOURCES");
@@ -2056,7 +2077,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		
 	ENDMETHOD;
 
-	METHOD(addBuildResources)
+	public METHOD(addBuildResources)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if a negative number is specified
@@ -2069,7 +2090,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		T_CALLM1("setBuildResources", _resNew);
 	ENDMETHOD;
 
-	METHOD(removeBuildResources)
+	public METHOD(removeBuildResources)
 		params [P_THISOBJECT, P_NUMBER("_value")];
 
 		// Bail if a negative number is specified
@@ -2175,14 +2196,14 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	METHOD(canHaveBuildResources)
+	public METHOD(canHaveBuildResources)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		pr _cat = _data#UNIT_DATA_ID_CAT;
 		_cat != T_INF
 	ENDMETHOD;
 
-	STATIC_METHOD(getInfantryBuildResources)
+	public STATIC_METHOD(getInfantryBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO")];
 		pr _items = (uniformItems _hO) + (vestItems _hO) + (backpackitems _hO);
 		pr _nItems = {_x == "vin_build_res_0"} count _items;
@@ -2190,7 +2211,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_nItems*_buildResPerMag
 	ENDMETHOD;
 
-	STATIC_METHOD(removeInfantryBuildResources)
+	public STATIC_METHOD(removeInfantryBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 		pr _nItemsToRemove = round (_value / _buildResPerMag);
@@ -2201,7 +2222,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(getVehicleBuildResources)
+	public STATIC_METHOD(getVehicleBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO")];
 
 		pr _magCargo = getMagazineCargo _hO;
@@ -2215,7 +2236,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(removeVehicleBuildResources)
+	public STATIC_METHOD(removeVehicleBuildResources)
 		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
 
 		// Bail if negative number is passed
@@ -2240,7 +2261,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: []
 	*/
-	METHOD(getSubagents)
+	public override METHOD(getSubagents)
 		[] // A single unit has no subagents
 	ENDMETHOD;
 
@@ -2251,7 +2272,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: <AIUnit>
 	*/
-	METHOD(getAI)
+	public override METHOD(getAI)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		_data select UNIT_DATA_ID_AI
@@ -2269,7 +2290,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Returns: nil
 	*/
 
-	METHOD(createDefaultCrew)
+	public METHOD(createDefaultCrew)
 		params [P_THISOBJECT, P_ARRAY("_template") ];
 
 		private _data = T_GETV("data");
@@ -2299,7 +2320,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	Returns: bool
 	*/
-	METHOD(isEmpty)
+	public METHOD(isEmpty)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -2311,7 +2332,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	// | Methods for manipulating the limited arsenal
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	METHOD(limitedArsenalEnable)
+	public METHOD(limitedArsenalEnable)
 		params [P_THISOBJECT, P_BOOL("_enabled")];
 
 		pr _data = T_GETV("data");
@@ -2383,7 +2404,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
-	METHOD(limitedArsenalEnabled)
+	public METHOD(limitedArsenalEnabled)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
@@ -2406,7 +2427,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			[_hO, _dataList] call jn_fnc_arsenal_initPersistent;
 
 			// Make the object movable again for the Build UI
-			CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
+			CALLSM2("BuildUI", "setObjectMovable", _hO, true);
 
 			true
 		} else {
@@ -2440,7 +2461,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	ENDMETHOD;
 
 	// Gets JNA data list depending on the spawn state of the unit
-	METHOD(limitedArsenalGetDataList)
+	public METHOD(limitedArsenalGetDataList)
 		params [P_THISOBJECT];
 		pr _data = T_GETV("data");
 
@@ -2457,7 +2478,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	ENDMETHOD;
 
 	// Removes items from the arsenal
-	METHOD(limitedArsenalRemoveItem)
+	public METHOD(limitedArsenalRemoveItem)
 		params [P_THISOBJECT, P_STRING("_item"), P_NUMBER("_amount")];
 		pr _index = _item call jn_fnc_arsenal_itemType;
 		pr _data = T_GETV("data");
@@ -2478,7 +2499,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD(serializeForStorage)
+	public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 
 		// Need to do this before copying "data"
@@ -2526,7 +2547,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		_data 
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		_serial set [UNIT_DATA_ID_OWNER, 2]; // Server
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
@@ -2567,13 +2588,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		true
 	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD(saveStaticVariables)
+	public STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = GETSV("Unit", "all");
 		CALLM2(_storage, "save", "Unit_all", +_all);
 	ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD(loadStaticVariables)
+	public STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = CALLM1(_storage, "load", "Unit_all");
 		SETSV("Unit", "all", +_all);
@@ -2582,7 +2603,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 ENDCLASS;
 
 if (isNil {GETSV("Unit", "all")} ) then {
-	SET_STATIC_MEM("Unit", "all", []);
+	SETSV("Unit", "all", []);
 };
 
 #ifdef _SQF_VM

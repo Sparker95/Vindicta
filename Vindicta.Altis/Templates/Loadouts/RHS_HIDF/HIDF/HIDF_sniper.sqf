@@ -24,11 +24,7 @@ this addHandgunItem "rhsusf_mag_7x45acp_MHP";
 this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_m67";};
-this addItemToVest "rhs_grenade_mki_mag";
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_mag_7x45acp_MHP";};
-this addItemToVest "rhs_grenade_anm8_mag";
 for "_i" from 1 to 5 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
 for "_i" from 1 to 5 do {this addItemToVest "rhsusf_5Rnd_762x51_m62_Mag";};
 this linkItem "ItemWatch";

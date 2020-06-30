@@ -6,7 +6,7 @@ Class: ActionGroup.ActionGroupGetInVehiclesAsCrew
 All members of this group will mount all vehicles in this group.
 
 Parameter tags:
-"onlyCombat" - optional, default false. if true, units will occupy only combat vehicles.
+TAG_ONLY_COMBAT_VEHICLES - optional, default false. if true, units will occupy only combat vehicles.
 */
 
 #define pr private
@@ -17,10 +17,17 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	VARIABLE("activeUnits");
 	VARIABLE("onlyCombat");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_ONLY_COMBAT_VEHICLES, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, "onlyCombat", false);
+		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, TAG_ONLY_COMBAT_VEHICLES, false);
 		T_SETV("onlyCombat", _onlyCombat);
 
 		T_SETV("activeUnits", []);
@@ -75,11 +82,13 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 	// logic to run when the goal is activated
 	// _unitsIgnore - units to ignore in assignment. For instance if this unit was destroyed.
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		T_CALLM0("clearUnitGoals");
 		T_CALLM0("regroup");
+
+		T_CALLM0("applyGroupBehaviour");
 
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
@@ -122,8 +131,8 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 				// Add goal to this driver
 				pr _parameters = [
-					["vehicle", _vehicle],
-					["vehicleRole", "DRIVER"],
+					[TAG_TARGET_VEHICLE_UNIT, _vehicle],
+					[TAG_VEHICLE_ROLE, "DRIVER"],
 					[TAG_INSTANT, _instant]
 				];
 				CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
@@ -147,9 +156,9 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 					// Add goal to this turret
 					pr _parameters = [
-						["vehicle", _vehicle],
-						["vehicleRole", "TURRET"],
-						["turretPath", _turretPath],
+						[TAG_TARGET_VEHICLE_UNIT, _vehicle],
+						[TAG_VEHICLE_ROLE, "TURRET"],
+						[TAG_TURRET_PATH, _turretPath],
 						[TAG_INSTANT, _instant]
 					];
 					CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
@@ -182,7 +191,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	ENDMETHOD;
 	
 	// Logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		if(T_CALLM0("failIfNoInfantry") == ACTION_STATE_FAILED) exitWith {
@@ -214,7 +223,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		_state
 	ENDMETHOD;
 
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
 		
@@ -225,7 +234,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		} forEach _units;
 	ENDMETHOD;
 
-	METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	ENDMETHOD;

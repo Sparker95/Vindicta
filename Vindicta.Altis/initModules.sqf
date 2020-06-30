@@ -72,6 +72,9 @@ call compile preprocessFileLineNumbers "MessageLoopManagers\MessageLoopGroupMana
 // Initialize Location class
 call compile preprocessFileLineNumbers "Location\Location.sqf";
 
+// Initialize civ presence
+call compile preprocessFileLineNumbers "CivilianPresence\initClasses.sqf";
+
 // Initialize Timer class
 call compile preprocessFileLineNumbers "Timer\Timer.sqf";
 
@@ -124,5 +127,8 @@ call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseClient.sqf"
 
 // Initialize the GarrisonServer
 call compile preprocessFileLineNumbers "GarrisonServer\initClasses.sqf";
+
+// Initialize dialogue
+call compile preprocessFileLineNumbers "Dialogue\initClasses.sqf";
 
 diag_log "[initModules] Done!";

@@ -70,7 +70,7 @@ if(_catID == T_INF) then { //For infantry we use the counter to check for free p
 			if(_cooldown < GAME_TIME && {isNil "_object" || {isNull _object} || {!isObjectHidden _object}}) then {
 				// Check if given position is safe to spawn the unit here
 				private _args = [_posArray#LOCATION_SP_ID_POS, _posArray#LOCATION_SP_ID_DIR, _className];
-				CALL_STATIC_METHOD("Location", "isPosSafe", _args)
+				CALLSM("Location", "isPosSafe", _args)
 			} else {
 				false
 			}

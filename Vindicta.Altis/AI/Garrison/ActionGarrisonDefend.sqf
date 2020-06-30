@@ -31,7 +31,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 		T_SETV("air", 0.25);
 	ENDMETHOD;
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 
 		OOP_INFO_0("ACTIVATE");
@@ -91,6 +91,12 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 			[TAG_FORMATION, T_GETV("infantryFormation")]
 		];
 
+		private _vehExtraParams = [
+			[TAG_COMBAT_MODE, "GREEN"],// Vehicle operators must mount vehicles first of all, not chase enemies
+			[TAG_BEHAVIOUR, "AWARE"],
+			[TAG_INSTANT, _instant]
+		];
+
 		pr _routes = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getPatrolRoutes") } else { [[],[]] };
 		pr _radius = if(_loc != NULL_OBJECT) then { CALLM0(_loc, "getBoundingRadius") } else { 250 };
 
@@ -120,7 +126,10 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 						};
 					};
 					case GROUP_TYPE_STATIC: {
-						["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
+						["GoalGroupGetInVehiclesAsCrew", 0, _vehExtraParams, _AI]
+					};
+					case GROUP_TYPE_VEH: {
+						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _vehExtraParams, _AI]
 					};
 					// case GROUP_TYPE_VEH: {
 					// 	["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
@@ -148,7 +157,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 	ENDMETHOD;
 
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 
 		// Bail if not spawned

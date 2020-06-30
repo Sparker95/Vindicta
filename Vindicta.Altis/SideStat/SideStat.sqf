@@ -34,7 +34,7 @@ CLASS("SideStat", "");
 	Method: getHumanResources
 	Returns: integer - humanResources
 	*/
-	METHOD(getHumanResources)
+	public METHOD(getHumanResources)
 		params [P_THISOBJECT];
 		T_GETV("humanResources");
 	ENDMETHOD;
@@ -45,7 +45,7 @@ CLASS("SideStat", "");
 	_valueToInc - integer
 	Returns: nil
 	*/
-	METHOD(incrementHumanResourcesBy)
+	public METHOD(incrementHumanResourcesBy)
 		params [P_THISOBJECT, "_valueToInc"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR + _valueToInc;
@@ -59,7 +59,7 @@ CLASS("SideStat", "");
 	_valueToDec - integer
 	Returns: nil
 	*/
-	METHOD(decrementHumanResourcesBy)
+	public METHOD(decrementHumanResourcesBy)
 		params [P_THISOBJECT, "_valueToDec"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR - _valueToDec;

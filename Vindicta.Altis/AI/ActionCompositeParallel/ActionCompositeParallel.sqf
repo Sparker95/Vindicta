@@ -37,9 +37,9 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	Returns: nil
 	*/
 	
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
-		private _state = T_CALLM("processSubactions", []);
+		private _state = T_CALLM0("processSubactions");
 		T_SETV("state", _state);
 		_state
 	ENDMETHOD;
@@ -87,7 +87,7 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	
 	Returns: nil
 	*/
-	METHOD(terminate)
+	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
 		pr _subactions = T_GETV("subactions");
@@ -102,7 +102,7 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	Calls the same method for all subactions.
 	*/
 	
-	METHOD(handleUnitsAdded)
+	public override METHOD(handleUnitsAdded)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		private _subactions = T_GETV("subactions");
 		{
@@ -115,7 +115,7 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	Calls the same method for all subactions.
 	*/
 	
-	METHOD(handleUnitsRemoved)
+	public override METHOD(handleUnitsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_units")];
 		private _subactions = T_GETV("subactions");
 		{
@@ -133,7 +133,7 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsAdded)
+	public override METHOD(handleGroupsAdded)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _subactions = T_GETV("subactions");
@@ -155,7 +155,7 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 	
 	Returns: nil
 	*/
-	METHOD(handleGroupsRemoved)
+	public override METHOD(handleGroupsRemoved)
 		params [P_THISOBJECT, P_ARRAY("_groups")];
 		
 		pr _subactions = T_GETV("subactions");

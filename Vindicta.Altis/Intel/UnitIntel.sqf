@@ -33,7 +33,7 @@ CLASS("UnitIntel", "")
 
 	Returns: nil
 	*/
-	STATIC_METHOD(initUnit)
+	public STATIC_METHOD(initUnit)
 		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 
 		ASSERT_GLOBAL_OBJECT(gPersonalInventory);
@@ -148,7 +148,7 @@ CLASS("UnitIntel", "")
 
 	Returns: nil
 	*/
-	STATIC_METHOD(updateUnit)
+	public STATIC_METHOD(updateUnit)
 		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 
 		// Bail if unit doesn't have an inventory item
@@ -199,7 +199,7 @@ CLASS("UnitIntel", "")
 
 	Returns: bool
 	*/
-	STATIC_METHOD(unitHasInventoryItem)
+	public STATIC_METHOD(unitHasInventoryItem)
 		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 		pr _hO = CALLM0(_unit, "getObjectHandle");
 
@@ -216,13 +216,13 @@ CLASS("UnitIntel", "")
 
 	Returns: nil
 	*/
-	STATIC_METHOD(initPlayer)
+	public STATIC_METHOD(initPlayer)
 		params [P_THISCLASS];
 
 		//diag_log "--- initPlayer";
 
 		//player removeAllEventHandlers "InventoryOpened";
-		if (! GET_STATIC_VAR(_thisClass, "eventHandlerAdded") || !isMultiplayer) then { // In singleplayer event handler doesn't get magically on respawn transfered :/
+		if (! GETSV(_thisClass, "eventHandlerAdded") || !isMultiplayer) then { // In singleplayer event handler doesn't get magically on respawn transfered :/
 
 			//diag_log "--- adding event handler";
 
@@ -318,7 +318,7 @@ CLASS("UnitIntel", "")
 			}];
 			player setVariable ["UnitIntel_take_EH", _ehid];
 
-			SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", true);
+			SETSV("UnitIntel", "eventHandlerAdded", true);
 		};
 		
 	ENDMETHOD;
@@ -383,4 +383,4 @@ CLASS("UnitIntel", "")
 
 ENDCLASS;
 
-SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", false);
+SETSV("UnitIntel", "eventHandlerAdded", false);

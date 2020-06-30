@@ -20,7 +20,6 @@ this addPrimaryWeaponItem "rhs_acc_1p78";
 this addPrimaryWeaponItem "rhs_100Rnd_762x54mmR_green";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_rgd5";};
 this addItemToVest "rhs_100Rnd_762x54mmR_green";
 this addItemToBackpack "rhs_100Rnd_762x54mmR_7BZ3";
 this addItemToBackpack "rhs_100Rnd_762x54mmR_green";

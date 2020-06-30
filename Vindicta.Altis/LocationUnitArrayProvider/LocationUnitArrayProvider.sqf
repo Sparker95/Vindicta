@@ -49,14 +49,14 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
 
 	// |                  G E T   M E S S A G E   L O O P
-	METHOD(getMessageLoop) //Derived classes must implement this method
+	public override METHOD(getMessageLoop) //Derived classes must implement this method
 		gMessageLoopMain
 	ENDMETHOD;
 
 
 	// |                     H A N D L E   M E S S A G E
 
-	METHOD(handleMessage) //Derived classes must implement this method
+	public override METHOD(handleMessage) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		//diag_log "[LocationunitArrayProvider] Info: calculating arrays...";
 		// It supports only one kind of messages now
@@ -85,7 +85,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
 	Returns: Array with object handles of objects that can spawn locations of given side
 	*/
-	METHOD(getUnitArray)
+	public METHOD(getUnitArray)
 		params [P_THISOBJECT, ["_side", WEST, [WEST]] ];
 		switch (_side) do {
 			case WEST: {T_GETV("spawnWest")};

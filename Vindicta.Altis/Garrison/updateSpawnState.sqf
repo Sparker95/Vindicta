@@ -8,10 +8,18 @@ params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);
 
+if !(T_GETV("type") in GARRISON_TYPES_AUTOSPAWN) exitWith {
+	// Not an autospawning garrison
+};
+
+if !T_GETV("active") exitWith {
+	// Not yet active
+};
+
 OOP_INFO_0("UPDATE SPAWN STATE");
 OOP_INFO_1("  this side: %1", T_GETV("side"));
 
-if(T_CALLM("isDestroyed", [])) exitWith {
+if(T_CALLM0("isDestroyed")) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 	DUMP_CALLSTACK;
 };
@@ -20,7 +28,7 @@ pr _dstSpawnMax = vin_spawnDist_garrison + 200; // Temporary, spawn distance
 
 pr _side = T_GETV("side");
 pr _loc = T_GETV("location");
-pr _thisPos = if (_loc == "") then {
+pr _thisPos = if (_loc == NULL_OBJECT) then {
 	T_CALLM0("getPos")
 } else {
 	CALLM0(_loc, "getPos")
@@ -31,17 +39,17 @@ pr _speedMax = 60;
 
 // Get distances to all garrisons of other sides
 pr _garrisonDist = if(_side != CIVILIAN) then {
-		CALLSM0("Garrison", "getAll") select {
-			GETV(_x, "active") &&											// Is active
-			{ !(GETV(_x, "side") in [_side, CIVILIAN]) } && 				// Side is not our side and is not civilian
-			{ (GETV(_x, "countInf") > 0) || (GETV(_x, "countDrone") > 0) }	// There is some infantry or drones
-		} apply {
-			CALLM0(_x, "getPos") distance _thisPos
-		};
-		//CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM0(_x, "getPos") distance _thisPos}
-	} else {
-		[]
+	CALLSM0("Garrison", "getAll") select {
+		GETV(_x, "active") &&											// Is active
+		{ !(GETV(_x, "side") in [_side, CIVILIAN]) } && 				// Side is not our side and is not civilian
+		{ (GETV(_x, "countInf") > 0) || (GETV(_x, "countDrone") > 0) }	// There is some infantry or drones
+	} apply {
+		CALLM0(_x, "getPos") distance _thisPos
 	};
+	//CALLSM("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM0(_x, "getPos") distance _thisPos}
+} else {
+	[]
+};
 pr _dstMin = if (count _garrisonDist > 0) then {selectMin _garrisonDist} else {666666};
 
 OOP_INFO_1("  distance to garrisons: %1", _dstMin);
@@ -64,7 +72,7 @@ switch (T_GETV("spawned")) do {
 
 		if (_dstMin < _dstSpawnMin) then {
 			OOP_INFO_0("  Spawning...");
-			T_CALLM2("postMethodAsync", "spawn", [false ARG true]); // flags: global, instant action
+			T_CALLM2("postMethodAsync", "spawn", [true]); // instant action: true
 			// Set timer interval
 			pr _interval = 4;
 			OOP_INFO_1("  Set interval: %1", _interval);

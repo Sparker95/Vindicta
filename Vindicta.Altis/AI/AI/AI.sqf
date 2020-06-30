@@ -87,7 +87,7 @@ CLASS("AI", "MessageReceiverEx")
 	// | Must be called every update interval
 	// ----------------------------------------------------------------------
 
-	METHOD(process)
+	public virtual METHOD(process)
 		params [P_THISOBJECT];
 	ENDMETHOD;
 
@@ -96,12 +96,12 @@ CLASS("AI", "MessageReceiverEx")
 	// |
 	// ----------------------------------------------------------------------
 
-	METHOD(handleMessageEx) //Derived classes must implement this method
+	public override METHOD(handleMessageEx) //Derived classes must implement this method
 		params [P_THISOBJECT, P_ARRAY("_msg") ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
 			case AI_MESSAGE_PROCESS: {
-				T_CALLM("process", []);
+				T_CALLM0("process");
 				true
 			};
 
@@ -132,7 +132,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD(addSensor)
+	public METHOD(addSensor)
 		params [P_THISOBJECT, ["_sensor", "ERROR_NO_SENSOR", [""]]];
 
 		ASSERT_OBJECT_CLASS(_sensor, "Sensor");
@@ -155,7 +155,7 @@ CLASS("AI", "MessageReceiverEx")
 	// | Update values of all sensors, according to their settings
 	// ----------------------------------------------------------------------
 
-	METHOD(updateSensors)
+	public METHOD(updateSensors)
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
 		#ifdef ASP_ENABLE
@@ -195,7 +195,7 @@ CLASS("AI", "MessageReceiverEx")
 	// | Handles external stimulus.
 	// ----------------------------------------------------------------------
 
-	METHOD(handleStimulus)
+	public METHOD(handleStimulus)
 		params [P_THISOBJECT, P_ARRAY("_stimulus") ];
 		pr _type = _stimulus select STIMULUS_ID_TYPE;
 		if (_type in T_GETV("sensorStimulusTypes")) then {
@@ -215,7 +215,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ------------------------------------------------------------------------------------------------------
 
 	// Adds a world fact
-	METHOD(addWorldFact)
+	public METHOD(addWorldFact)
 		params [P_THISOBJECT, P_ARRAY("_fact")];
 		pr _facts = T_GETV("worldFacts");
 		_facts pushBack _fact;
@@ -223,7 +223,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	// Finds a world fact that matches a query
 	// Returns the found world fact or nil if nothing was found
-	METHOD(findWorldFact)
+	public METHOD(findWorldFact)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -239,7 +239,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	// Finds all world facts that match a query
 	// Returns array with facts that satisfy criteria or []
-	METHOD(findWorldFacts)
+	public METHOD(findWorldFacts)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -254,7 +254,7 @@ CLASS("AI", "MessageReceiverEx")
 	ENDMETHOD;
 
 	// Deletes all facts that match query
-	METHOD(deleteWorldFacts)
+	public METHOD(deleteWorldFacts)
 		params [P_THISOBJECT, P_ARRAY("_query")];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -266,7 +266,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	// Maintains the array of world facts
 	// Deletes world facts that have exceeded their lifetime
-	METHOD(updateWorldFacts)
+	protected METHOD(updateWorldFacts)
 		params [P_THISOBJECT];
 		pr _facts = T_GETV("worldFacts");
 		pr _i = 0;
@@ -290,7 +290,7 @@ CLASS("AI", "MessageReceiverEx")
 	Starts the AI brain with timer. If this AI doesn't use timer, but a process category, override this.
 	From now process method will be called periodically.
 	*/
-	virtual METHOD(start)
+	public virtual METHOD(start)
 		params [P_THISOBJECT];
 
 		if (T_GETV("timer") == NULL_OBJECT) then {
@@ -321,7 +321,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: stop
 	Stops the periodic call of process function.
 	*/
-	virtual METHOD(stop)
+	public virtual METHOD(stop)
 		params [P_THISOBJECT];
 		
 		// Delete this object from process category 
@@ -351,7 +351,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	Returns: nil
 	*/
-	METHOD(setProcessInterval)
+	public METHOD(setProcessInterval)
 		params [P_THISOBJECT, ["_interval", 5, [5]]];
 		T_SETV("processInterval", _interval);
 
@@ -366,7 +366,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: addToProcessCategory
 	Adds this object to process category of its message loop.
 	*/
-	METHOD(addToProcessCategory)
+	public METHOD(addToProcessCategory)
 		params [P_THISOBJECT, P_STRING("_tag")];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM2(_msgLoop, "addProcessCategoryObject", _tag, _thisObject);
@@ -376,7 +376,7 @@ CLASS("AI", "MessageReceiverEx")
 	Method: setUrgentPriority
 	Sets this object as high priority in its message loop
 	*/
-	METHOD(setUrgentPriority)
+	public METHOD(setUrgentPriority)
 		params [P_THISOBJECT];
 		OOP_INFO_0("setUrgentPriority");
 		pr _msgLoop = T_CALLM0("getMessageLoop");
@@ -388,7 +388,7 @@ CLASS("AI", "MessageReceiverEx")
 
 	Removes this object from all process categories
 	*/
-	METHOD(removeFromProcessCategory)
+	public METHOD(removeFromProcessCategory)
 		params [P_THISOBJECT];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
 		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
@@ -396,13 +396,13 @@ CLASS("AI", "MessageReceiverEx")
 
 	// - - - - STORAGE - - - - -
 
-	/* override */ METHOD(postDeserialize)
+	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		//diag_log "AI postDeserialize";
 
 		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+		CALLCM("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		// Set reasonable default values
 		T_SETV("timer", "");

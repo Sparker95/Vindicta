@@ -68,7 +68,7 @@ CLASS("GarrisonSplitDialog", "")
 	
 	// Create a new unique instance of this dialog
 	// There can be only one instance of this dialog
-	/* public */ STATIC_METHOD(newInstance)
+	public STATIC_METHOD(newInstance)
 		params [P_THISCLASS, P_OOP_OBJECT("_garRecord")];
 		pr _instance = GETSV(_thisClass, "instance");
 		if (IS_NULL_OBJECT(_instance)) then {
@@ -84,7 +84,7 @@ CLASS("GarrisonSplitDialog", "")
 		};
 	ENDMETHOD;
 
-	/* public */ STATIC_METHOD(deleteInstance)
+	public STATIC_METHOD(deleteInstance)
 		params [P_THISCLASS];
 		pr _instance = GETSV(_thisClass, "instance");
 		if (IS_NULL_OBJECT(_instance)) then {
@@ -95,13 +95,13 @@ CLASS("GarrisonSplitDialog", "")
 		};
 	ENDMETHOD;
 
-	/* public */ STATIC_METHOD(getInstance)
+	public STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		GETSV(_thisClass, "instance");
 	ENDMETHOD;
 
 
-	/* private */ METHOD(new)
+	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		OOP_INFO_1("NEW: %1", _garRecord);
@@ -242,7 +242,7 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM1("updateListboxAndText", RIGHT_COL);
 	ENDMETHOD;
 
-	/* private */ METHOD(delete)
+	METHOD(delete)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("DELETE");
@@ -257,13 +257,13 @@ CLASS("GarrisonSplitDialog", "")
 	// = = = = = = = = Button callbacks = = = = = = = = = =
 
 	// Close or cancel button was pressed
-	METHOD(onButtonClose)
+	public event METHOD(onButtonClose)
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON CLOSE");
 		CALLSM0("GarrisonSplitDialog", "deleteInstance");
 	ENDMETHOD;
 
-	METHOD(onButtonMoveLeft)
+	public event METHOD(onButtonMoveLeft)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsLeft", false);
 		_unitData params ["_catID", "_subcatID"];
@@ -275,7 +275,7 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM3("syncListboxRows", LEFT_COL, _catID, _subcatID);
 	ENDMETHOD;
 
-	METHOD(onButtonMoveRight)
+	public event METHOD(onButtonMoveRight)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsRight", false);
 		_unitData params ["_catID", "_subcatID"];
@@ -287,7 +287,7 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM3("syncListboxRows", RIGHT_COL, _catID, _subcatID);
 	ENDMETHOD;
 
-	METHOD(onButtonMoveLeftAll)
+	public event METHOD(onButtonMoveLeftAll)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsLeft", true);
 		_unitData params ["_catID", "_subcatID"];
@@ -299,7 +299,7 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM3("syncListboxRows", LEFT_COL, _catID, _subcatID);
 	ENDMETHOD;
 
-	METHOD(onButtonMoveRightAll)
+	public event METHOD(onButtonMoveRightAll)
 		params [P_THISOBJECT];
 		pr _unitData = T_CALLM1("moveUnitsRight", true);
 		_unitData params ["_catID", "_subcatID"];
@@ -311,7 +311,7 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM3("syncListboxRows", RIGHT_COL, _catID, _subcatID);
 	ENDMETHOD;
 
-	METHOD(onButtonSplit)
+	public event METHOD(onButtonSplit)
 		params [P_THISOBJECT];
 
 		// Bail if another request is in progress
@@ -555,7 +555,7 @@ CLASS("GarrisonSplitDialog", "")
 	ENDMETHOD;
 
 	// Gets remotely called by the server
-	STATIC_METHOD(sendServerResponse)
+	public server STATIC_METHOD(sendServerResponse)
 		params [P_THISCLASS, P_NUMBER("_responseCode")];
 
 		OOP_INFO_1("SEND SERVER RESPONSE: %1", _this);

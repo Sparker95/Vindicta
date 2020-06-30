@@ -86,7 +86,7 @@ CLASS("Intel", "Storable")
 	Method: isCreated
 	Returns: Bool, true if this Intel object has been created already (assigned dateCreated and initialized by owner).
 	*/
-	METHOD(isCreated)
+	public METHOD(isCreated)
 		params [P_THISOBJECT];
 		private _dateCreated = T_GETV("dateCreated");
 		!(isNil "_dateCreated")
@@ -96,7 +96,7 @@ CLASS("Intel", "Storable")
 	Method: create
 	Set dateCreated to now to indicate that this object is valid.
 	*/
-	METHOD(create)
+	public METHOD(create)
 		params [P_THISOBJECT];
 		T_SETV("dateCreated", date);
 		T_SETV("state", INTEL_ACTION_STATE_INACTIVE);
@@ -107,7 +107,7 @@ CLASS("Intel", "Storable")
 	Valid only for intel created using addIntelClone. This will updateIntelFromClone directly
 	to the database that owns this intel.
 	*/
-	METHOD(updateInDb)
+	public METHOD(updateInDb)
 		params [P_THISOBJECT];
 		private _db = T_GETV("db");
 		ASSERT_MSG(!isNil "_db", "This intel wasn't created using addIntelClone so you can't use updateInDb.");
@@ -118,7 +118,7 @@ CLASS("Intel", "Storable")
 	Method: getDBEntry
 	Returns the db entry of the intel if it associated with its clone.
 	*/
-	METHOD(getDbEntry)
+	public METHOD(getDbEntry)
 		params [P_THISOBJECT];
 		T_GETV("dbEntry")
 	ENDMETHOD;
@@ -131,7 +131,7 @@ CLASS("Intel", "Storable")
 
 	Returns: nil
 	*/
-	/* virtual */ METHOD(clientAdd)
+	public virtual client METHOD(clientAdd)
 		params [P_THISOBJECT];
 	ENDMETHOD;
 
@@ -149,7 +149,7 @@ CLASS("Intel", "Storable")
 	*/
 	// 
 	// _intelSrc - the source <Intel> item where values will be retrieved from
-	/* virtual */ METHOD(clientUpdate)
+	public virtual client METHOD(clientUpdate)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
 	ENDMETHOD;
 
@@ -160,15 +160,15 @@ CLASS("Intel", "Storable")
 
 	Returns: nil
 	*/
-	/* virtual */ METHOD(clientRemove)
+	public virtual client METHOD(clientRemove)
 
 	ENDMETHOD;
 
-	METHOD(getShortName)
+	public virtual METHOD(getShortName)
 		"name"
 	ENDMETHOD;
 
-	METHOD(getInfo)
+	public virtual METHOD(getInfo)
 		text ""
 	ENDMETHOD;
 	
@@ -180,7 +180,7 @@ CLASS("Intel", "Storable")
 
 	Returns: nil
 	*/
-	METHOD(addToDatabaseIndex)
+	public virtual METHOD(addToDatabaseIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
 	ENDMETHOD;
 
@@ -191,11 +191,11 @@ CLASS("Intel", "Storable")
 
 	Returns: nil
 	*/
-	METHOD(removeFromDatabaseIndex)
+	public virtual METHOD(removeFromDatabaseIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
 	ENDMETHOD;
 
-	METHOD(updateDatabaseIndex)
+	public virtual METHOD(updateDatabaseIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_db"), P_OOP_OBJECT("_itemSrc")];
 	ENDMETHOD;
 
@@ -206,12 +206,12 @@ CLASS("Intel", "Storable")
 	So we just serialize/deserialize all their variables for saving.
 	*/
 
-	/* override */ METHOD(serializeForStorage)
+	public override METHOD(serializeForStorage)
 		params [P_THISOBJECT];
 		SERIALIZE_ALL(_thisObject);
 	ENDMETHOD;
 
-	/* override */ METHOD(deserializeFromStorage)
+	public override METHOD(deserializeFromStorage)
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ALL(_thisObject, _serial);
 		true
@@ -270,7 +270,7 @@ CLASS("IntelLocation", "Intel")
 	<MapMarker> associated with this intel*/
 	VARIABLE("mapMarker"); // NOT SERIALIZABLE! Each machine has its own mapMarker
 
-	METHOD(clientAdd)
+	public override client METHOD(clientAdd)
 		params [P_THISOBJECT];
 
 		private _mrk = NEW("MapMarkerLocation", [_thisObject]);
@@ -297,7 +297,7 @@ CLASS("IntelLocation", "Intel")
 		};
 	ENDMETHOD;
 
-	METHOD(clientUpdate)
+	public override client METHOD(clientUpdate)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
 
 		OOP_INFO_2("Updating %1 from %2", _thisObject, _intelSrc);
@@ -346,7 +346,7 @@ CLASS("IntelLocation", "Intel")
 		/*
 		pr _text = "??";
 		if (_type != LOCATION_TYPE_UNKNOWN) then {
-			pr _t = CALL_STATIC_METHOD("ClientMapUI", "getNearestLocationName", [_pos]);
+			pr _t = CALLSM("ClientMapUI", "getNearestLocationName", [_pos]);
 			if (_t == "") then { // Check if we have got an empty string
 				_text = format ["%1 %2", _side, _type]
 			} else {
@@ -384,25 +384,25 @@ CLASS("IntelLocation", "Intel")
 	ENDMETHOD;
 
 	//  
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		"IntelLocation"
 	ENDMETHOD;
 
 
-	METHOD(addToDatabaseIndex)
+	public override METHOD(addToDatabaseIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
 		CALLM3(_db, "addToIndex", _thisObject, OOP_PARENT_STR,	"IntelLocation"); // Item, varName, varValue
 		CALLM3(_db, "addToIndex", _thisObject, "location", T_GETV("location")); // Item, varName, varValue
 	ENDMETHOD;
 
-	METHOD(removeFromDatabaseIndex)
+	public override METHOD(removeFromDatabaseIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
 
 		CALLM2(_db, "removeFromIndex", _thisObject, OOP_PARENT_STR); // Item, varName
 		CALLM2(_db, "removeFromIndex", _thisObject, "location"); // Item, varName
 	ENDMETHOD;
 
-	METHOD(updateDatabaseIndex)
+	public override METHOD(updateDatabaseIndex)
 		params [P_THISOBJECT, P_OOP_OBJECT("_db"), P_OOP_OBJECT("_itemSrc")];
 
 		/*
@@ -496,7 +496,7 @@ CLASS("IntelCommanderAction", "Intel")
 	// Bool, only makes sense on client
 	VARIABLE("shownOnMap");
 
-	/* virtual override */ METHOD(clientAdd)
+	public override client METHOD(clientAdd)
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("CLIENT ADD");
@@ -540,7 +540,7 @@ CLASS("IntelCommanderAction", "Intel")
 		CALLM1(gClientMapUI, "onIntelAdded", _thisObject);
 	ENDMETHOD;
 
-	/* virtual override */ METHOD(clientRemove)
+	public override client METHOD(clientRemove)
 		params [P_THISOBJECT];
 
 		//OOP_INFO_0("CLIENT REMOVE");
@@ -555,7 +555,7 @@ CLASS("IntelCommanderAction", "Intel")
 	ENDMETHOD;
 
 	//  
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		"Action"
 	ENDMETHOD;
 
@@ -566,12 +566,12 @@ CLASS("IntelCommanderAction", "Intel")
 
 	Returns: float
 	*/
-	METHOD(getTMinutes)
+	public METHOD(getTMinutes)
 		params [P_THISOBJECT];
 		[T_GETV("dateDeparture"), date] call pr0_fnc_getTMinutesDiff
 	ENDMETHOD;
 
-	METHOD(getHoursMinutes)
+	public METHOD(getHoursMinutes)
 		params [P_THISOBJECT];
 		T_CALLM0("getTMinutes") call pr0_fnc_getHoursMinutes
 	ENDMETHOD;
@@ -580,7 +580,7 @@ CLASS("IntelCommanderAction", "Intel")
 	Method: isEnded
 	Returns true if state of this action is END
 	*/
-	METHOD(isEnded)
+	public METHOD(isEnded)
 		params [P_THISOBJECT];
 		pr _state = T_GETV("state");
 		if (!isNil "_state") then {
@@ -595,7 +595,7 @@ CLASS("IntelCommanderAction", "Intel")
 	This method is only relevant to commander actions.
 	Here we have logic to show this intel on the map or hide it.
 	*/
-	/* virtual */ METHOD(showOnMap)
+	public virtual METHOD(showOnMap)
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		//OOP_INFO_1("SHOW ON MAP: %1", _show);
@@ -640,7 +640,7 @@ CLASS("IntelCommanderAction", "Intel")
 	Method: getMapZoomPos
 	It's meant to return where the map will zoom into on client
 	*/
-	METHOD(getMapZoomPos)
+	public virtual METHOD(getMapZoomPos)
 		params [P_THISOBJECT];
 		pr _pos0 = +T_GETV("posSrc");
 		pr _pos1 = T_GETV("posTgt");
@@ -676,7 +676,7 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 
 	//  
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		params [P_THISOBJECT];
 		T_GETV("type");
 	ENDMETHOD;
@@ -697,7 +697,7 @@ CLASS("IntelCommanderActionSupply", "IntelCommanderAction")
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		params [P_THISOBJECT];
 		T_GETV("type");
 	ENDMETHOD;
@@ -726,7 +726,7 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 	This method is only relevant to commander actions.
 	Here we have logic to show this intel on the map or hide it.
 	*/
-	/* virtual override */ METHOD(showOnMap)
+	public override METHOD(showOnMap)
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		//OOP_INFO_1("SHOW ON MAP: %1", _show);
@@ -769,17 +769,17 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 		};
 	ENDMETHOD;
 
-	METHOD(getMapZoomPos)
+	public override METHOD(getMapZoomPos)
 		params [P_THISOBJECT];
 		selectRandom T_GETV("waypoints")
 	ENDMETHOD;
 
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		params [P_THISOBJECT];
 		T_GETV("type");
 	ENDMETHOD;
 
-	METHOD(getInfo)
+	public override METHOD(getInfo)
 		params [P_THISOBJECT];
 		private _info = "<br/><t color='#FFFFFF' font='EtelkaMonospaceProBold'>Schedule</t><br/>";
 		// private _locations = [T_GETV("srcLocation")] + T_GETV("locations") + [T_GETV("tgtLocation")];
@@ -817,7 +817,7 @@ CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
 
 	//  
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
 		// pr _typeStr = CALLSM1("Location", "getTypeString", _type);
@@ -847,7 +847,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 	VARIABLE_ATTR("tgtClusterId", [ATTR_SERIALIZABLE]);
 
 	//  
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		"Attack"
 	ENDMETHOD;
 ENDCLASS;
@@ -873,7 +873,7 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	This method is only relevant to commander actions.
 	Here we have logic to show this intel on the map or hide it.
 	*/
-	/* virtual override */ METHOD(showOnMap)
+	public override METHOD(showOnMap)
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		//OOP_INFO_1("SHOW ON MAP: %1", _show);
@@ -912,12 +912,12 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 		};
 	ENDMETHOD;
 
-	METHOD(getMapZoomPos)
+	public override METHOD(getMapZoomPos)
 		params [P_THISOBJECT];
 		selectRandom T_GETV("waypoints")
 	ENDMETHOD;
 
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		"Patrol"
 	ENDMETHOD;
 ENDCLASS;
@@ -933,7 +933,7 @@ CLASS("IntelCommanderActionRetreat", "IntelCommanderAction")
 	// Location being retreated to.
 	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
 
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		"Retreat"
 	ENDMETHOD;
 ENDCLASS;
@@ -945,7 +945,7 @@ The commander is planning something so he sends some recon squads!
 #define OOP_CLASS_NAME IntelCommanderActionRecon
 CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
 	//  
-	METHOD(getShortName)
+	public override METHOD(getShortName)
 		"Recon"
 	ENDMETHOD;
 ENDCLASS;
@@ -974,7 +974,7 @@ CLASS("IntelCluster", "Intel")
 	Top-right pos of the cluster*/
 	VARIABLE_ATTR("pos2", [ATTR_SERIALIZABLE]);
 
-	METHOD(clientAdd)
+	public override client METHOD(clientAdd)
 		params [P_THISOBJECT];
 
 		// Create map marker
@@ -1020,7 +1020,7 @@ CLASS("IntelCluster", "Intel")
 	*/
 	// 
 	// _intelSrc - the source <Intel> item where values will be retrieved from
-	METHOD(clientUpdate)
+	public override client METHOD(clientUpdate)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
 
 		T_CALLM1("setMarkerProperties", _intelSrc);
@@ -1033,7 +1033,7 @@ CLASS("IntelCluster", "Intel")
 
 	Returns: nil
 	*/
-	METHOD(clientRemove)
+	public override client METHOD(clientRemove)
 		params [P_THISOBJECT];
 
 		// Delete area and central marker

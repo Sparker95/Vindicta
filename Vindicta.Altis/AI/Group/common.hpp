@@ -19,3 +19,4 @@
 #include "..\Garrison\garrisonWorldStateProperties.hpp"
 #include "groupWorldStateProperties.hpp"
 #include "..\..\Location\Location.hpp"
+#include "..\..\MessageReceiver\MessageReceiver.hpp"

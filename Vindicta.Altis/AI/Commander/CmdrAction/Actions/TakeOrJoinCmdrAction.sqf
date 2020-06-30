@@ -59,7 +59,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 #endif
 	ENDMETHOD;
 
-	/* protected override */ METHOD(createTransitions)
+	protected override METHOD(createTransitions)
 		params [P_THISOBJECT];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -198,7 +198,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	ENDMETHOD;
 	
 	// Optional customization of the actions detachment
-	/* protected virtual */ METHOD(getPrepareActions)
+	protected virtual METHOD(getPrepareActions)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_successState"),
@@ -216,7 +216,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	ENDMETHOD;
 	
 	// Overridable arrival action, defaults to merging with the target
-	/* protected virtual */ METHOD(getArriveAction)
+	protected virtual METHOD(getArriveAction)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_failState"),
@@ -236,7 +236,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	ENDMETHOD;
 
 	// Optional pre-merge override, called just before a garrison doing RTB will merge with target
-	/* protected virtual */ METHOD(getPreMergeAction)
+	protected virtual METHOD(getPreMergeAction)
 		params [P_THISOBJECT,
 				P_ARRAY("_fromStates"),
 				P_AST_STATE("_mergeState"),
@@ -252,7 +252,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		NEW("AST_Success", _astArgs)
 	ENDMETHOD;
 
-	/* protected override */ METHOD(getLabel)
+	protected override METHOD(getLabel)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");
@@ -286,7 +286,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 
-	METHOD(updateIntelFromDetachment)
+	protected virtual METHOD(updateIntelFromDetachment)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
@@ -309,7 +309,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		};
 	ENDMETHOD;
 	
-	/* protected override */ METHOD(debugDraw)
+	protected override METHOD(debugDraw)
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		private _srcGarrId = T_GETV("srcGarrId");

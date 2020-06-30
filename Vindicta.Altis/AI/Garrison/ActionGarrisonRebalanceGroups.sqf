@@ -9,7 +9,7 @@ groups are appropriate balanced.
 CLASS("ActionGarrisonRebalanceGroups", "ActionGarrison")
 
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("ACTIVATE");

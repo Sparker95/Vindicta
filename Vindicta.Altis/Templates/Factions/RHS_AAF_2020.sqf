@@ -15,8 +15,8 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tRHS_AAF_2020"]; // 							Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Altis Armed Forces units. 2020 variant. Uses RHS and AAF2017."]; // 			Template display description
-_array set [T_DISPLAY_NAME, "RHS AAF 2020 Custom"]; // 				Template display name
+_array set [T_DESCRIPTION, "Altis Armed Forces units for Altis. 2020 variant. Uses RHS and AAF2017."]; // 			Template display description
+_array set [T_DISPLAY_NAME, "RHS Altis Armed Forces (2020)"]; // 				Template display name
 _array set [T_FACTION, T_FACTION_military]; // 				Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
 								"FGN_AAF_Troops",	// AAF 2017
@@ -31,8 +31,8 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_default, ["FGN_AAF_Inf_Rifleman"]];
 
-_inf set [T_INF_SL, ["RHS_AAF_2020_SL", "RHS_AAF_2020_SL_2"]]; // = 1
-_inf set [T_INF_TL, ["RHS_AAF_2020_TL", "RHS_AAF_2020_TL_2"]]; // = 2
+_inf set [T_INF_SL, ["RHS_AAF_2020_SL"]]; // = 1
+_inf set [T_INF_TL, ["RHS_AAF_2020_TL"]]; // = 2
 _inf set [T_INF_officer, ["RHS_AAF_2020_officer"]]; // = 3
 _inf set [T_INF_GL, ["RHS_AAF_2020_grenadier"]]; // = 4
 _inf set [T_INF_rifleman, ["RHS_AAF_2020_rifleman"]]; // = 5

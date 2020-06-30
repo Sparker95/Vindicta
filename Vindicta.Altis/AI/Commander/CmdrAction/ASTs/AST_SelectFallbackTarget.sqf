@@ -43,7 +43,7 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 		T_SETV("targetVar", _targetVar);
 	ENDMETHOD;
 
-	/* override */ METHOD(apply)
+	public override METHOD(apply)
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 

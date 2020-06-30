@@ -331,6 +331,15 @@ location_bp_cargo_medium =
 	[
 		["Land_HouseV2_04_interier", "Land_HouseV2_04_interier_dam"],
 		[[6.16649,329.451,0.34021,0],[5.45659,20.5788,0.327789,0]]
+	],
+	// CUP Sahrani
+	[
+		["Land_Dum_olez_istan1", "Land_Dum_olez_istan1_open2"],
+		[[2.84609,27.3014,-0.0522177,0],[3.06484,125.54,3.26687,0]]
+	],
+	[
+		["Land_Dum_olez_istan2_maly"],
+		[[4.65903,323.05,-0.112593,-2],[1.62625,239.845,3.2213,-2]]
 	]
 ];
 
@@ -423,7 +432,11 @@ location_bt_police =
 	"Land_House_C_4_dam_EP1",
 	// Chernarus
 	"Land_HouseV2_04_interier",
-	"Land_HouseV2_04_interier_dam"
+	"Land_HouseV2_04_interier_dam",
+	// Structures Micellaneous CUP
+	"Land_Dum_olez_istan1",
+	"Land_Dum_olez_istan1_open2",
+	"Land_Dum_olez_istan2_maly"
 ];
 
 location_decorations_police =

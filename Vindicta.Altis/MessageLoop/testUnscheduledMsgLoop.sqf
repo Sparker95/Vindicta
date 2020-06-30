@@ -19,7 +19,7 @@ CLASS("DummyLoad", "")
 		T_SETV("lastProcessTime", diag_tickTime);
 	ENDMETHOD;
 
-	METHOD(process)
+	public METHOD(process)
 		params [P_THISOBJECT];
 
 		_a = [];

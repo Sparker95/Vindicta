@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut","rhsusf_opscore_mar_ut_pelt"];
+_RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut_pelt"];
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","rhsusf_oakley_goggles_blk","",""];
 this addGoggles _RandomGoggles;
@@ -29,12 +29,15 @@ this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
-this addItemToVest "I_IR_Grenade";
+this addItemToUniform "I_IR_Grenade";
 for "_i" from 1 to 6 do {this addItemToVest "rhsusf_20Rnd_762x51_SR25_m118_special_Mag";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk3a2";};
 this addItemToBackpack "rhsusf_acc_premier_anpvs27";
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_mk3a2";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhsusf_20Rnd_762x51_SR25_m62_Mag";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhsusf_20Rnd_762x51_SR25_m993_Mag";};
+this addItemToBackpack "rhs_grenade_m15_mag";
+this addItemToBackpack "rhs_grenade_anm8_mag";
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_grenade_mkiiia1_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";

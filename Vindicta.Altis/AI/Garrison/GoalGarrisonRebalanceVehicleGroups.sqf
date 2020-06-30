@@ -2,7 +2,7 @@
 
 #define OOP_CLASS_NAME GoalGarrisonRebalanceVehicleGroups
 CLASS("GoalGarrisonRebalanceVehicleGroups", "Goal")
-	/* public virtual */ STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		private _ws = GETV(_AI, "worldState");
@@ -20,7 +20,7 @@ CLASS("GoalGarrisonRebalanceVehicleGroups", "Goal")
 			// When at a location we will rebalance groups as required to make sure incoming reinforements are distributed appropriated
 			!_isBalanced && _isAtLocation
 		) then {
-			GET_STATIC_VAR(_thisClass, "relevance");
+			GETSV(_thisClass, "relevance");
 		} else {
 			0
 		};

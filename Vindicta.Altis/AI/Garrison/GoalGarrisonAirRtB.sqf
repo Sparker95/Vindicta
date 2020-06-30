@@ -2,7 +2,7 @@
 
 #define OOP_CLASS_NAME GoalGarrisonAirRtB
 CLASS("GoalGarrisonAirRtB", "Goal")
-	/* override */ STATIC_METHOD(calculateRelevance)
+	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 		
 		private _garr = GETV(_AI, "agent");
@@ -13,7 +13,7 @@ CLASS("GoalGarrisonAirRtB", "Goal")
 		}
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(createPredefinedAction)
+	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
 		// Return to home base

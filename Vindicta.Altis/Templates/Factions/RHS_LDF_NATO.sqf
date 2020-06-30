@@ -147,4 +147,4 @@ _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 
-_array // End template
+_array; // End template

@@ -20,13 +20,14 @@ this addPrimaryWeaponItem "rhs_acc_2dpZenit";
 _RandomSight = selectRandom ["rhs_acc_pkas", ""];
 this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
+this addWeapon "Binocular";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_grenade_anm8_mag";
-for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
+this addItemToUniform "Chemlight_green";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm_tracer";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
+this addItemToVest "rhs_grenade_mki_mag";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mki_mag";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

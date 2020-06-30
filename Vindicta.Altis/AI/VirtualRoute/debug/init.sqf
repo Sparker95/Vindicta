@@ -115,7 +115,7 @@ gps_test_enable = {
 
     // Clear all debug info from the map.
     player addAction ["<t color='#FFFF00'>[VirtualRoute] Clear Route Debug</t>", {
-        CALL_STATIC_METHOD_0("VirtualRoute", "clearAllDebugDraw");
+        CALLSM0("VirtualRoute", "clearAllDebugDraw");
     }];
 
     // Stop all in progress convoy simulations and spawn their vehicles onto the road.

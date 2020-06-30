@@ -38,7 +38,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		SETSV("RadioKeyTab", "instance", nil);
 	ENDMETHOD;
 
-	METHOD(getInstance)
+	public STATIC_METHOD(getInstance)
 		params [P_THISCLASS];
 		pr _inst = GETSV(_thisClass, "instance");
 		if (isNil "_inst") then {
@@ -49,7 +49,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 	ENDMETHOD;
 
 
-	METHOD(onButtonAddKey)
+	public event METHOD(onButtonAddKey)
 		params [P_THISOBJECT];
 
 		// Bail if our previous response has not been processed yet
@@ -120,7 +120,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 
 	// Called on client REMOTELY by server to show the radio keys
 	// _keys - array of strings
-	STATIC_METHOD(staticServerShowKeys)
+	public STATIC_METHOD(staticServerShowKeys)
 		params [P_THISCLASS, P_ARRAY("_keys"), P_ARRAY("_keysAddedBy")];
 
 		OOP_INFO_1("STATIC SERVER SHOW KEYS: %1", _this);
@@ -133,7 +133,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 	ENDMETHOD;
 
 	// Called on client REMOTELY by server to show some response
-	STATIC_METHOD(staticServerShowResponse)
+	public STATIC_METHOD(staticServerShowResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 
 		OOP_INFO_1("STATIC SERVER SHOW RESPONSE: %1", _text);
@@ -146,7 +146,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 	ENDMETHOD;
 
 	/*
-	STATIC_METHOD(showServerResponse)
+	public STATIC_METHOD(showServerResponse)
 		params [P_THISCLASS, P_STRING("_text")];
 		// If this tab is already closed, just throw text into system chat
 		if (isNil "gTabCommander") then {

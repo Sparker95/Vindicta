@@ -265,14 +265,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 	ENDMETHOD;
 
-	METHOD(getMessageLoop)
+	public override METHOD(getMessageLoop)
 		gMsgLoopPlayerChecks
 	ENDMETHOD;
 
 
 	// ------------ H A N D L E  M E S S A G E ------------
 
-	METHOD(handleMessage)
+	public override METHOD(handleMessage)
 		params [P_THISOBJECT , ["_msg", [], [[] ]]];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 
@@ -355,7 +355,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	
 						// check if unit is in allowed area
 						pr _pos = getPos _unit;
-				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
+				 		pr _loc = CALLSM("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
 				 		if (_loc != NULL_OBJECT) then {
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
@@ -711,7 +711,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				// update normal UI
 				#ifndef DEBUG_UNDERCOVER_MONITOR
 				_args = [_unit, _suspicion, _hintKeys];
-				CALL_STATIC_METHOD("UndercoverUI", "drawUI", _args); // draw UI
+				CALLSM("UndercoverUI", "drawUI", _args); // draw UI
 				#endif
 				FIX_LINE_NUMBERS()
 
@@ -790,7 +790,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		SensorGroupTargets remoteExecutes this on this computer when an enemy group is currently spotting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD(onUnitSpotted)
+	public STATIC_METHOD(onUnitSpotted)
 		params ["_thisClass", P_OBJECT("_unit"), ["_group", grpNull, [grpNull]]];
 		pr _um = _unit getVariable ["undercoverMonitor", ""];
 		if (_um != "") then { // Sanity check
@@ -805,7 +805,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		ActionUnitArrest remoteExecutes this on this computer when an enemy group is arresting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD(onUnitArrested)
+	public STATIC_METHOD(onUnitArrested)
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _uM = _unit getVariable ["undercoverMonitor", ""];
 		if (_uM != "") then { // Sanity check
@@ -822,7 +822,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		setUnitFree remoteExecutes this on this computer when an enemy group is arresting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD(setUnitFree)
+	public STATIC_METHOD(setUnitFree)
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _uM = _unit getVariable ["undercoverMonitor", ""];
 		if (_uM != "") then { // Sanity check
@@ -835,7 +835,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		Other player's computers remoteExecute this on this computer to make this player overt.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
-	STATIC_METHOD(onUnitCompromised)
+	public STATIC_METHOD(onUnitCompromised)
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _um = _unit getVariable ["undercoverMonitor", ""];
 		if (_um != "") then { // Sanity check
@@ -914,7 +914,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 		Calculates the suspiciousness of the units equipment on foot and in vehicles, and stores it in two variables for this object.
 	*/
-	METHOD(calcGearSuspicion)
+	public event METHOD(calcGearSuspicion)
 		params [P_THISOBJECT];
 		pr _unit = T_GETV("unit");
 
@@ -971,7 +971,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	ENDMETHOD;
 
 	// Boosts suspicion for this interval
-	STATIC_METHOD(boostSuspicion)
+	public event STATIC_METHOD(boostSuspicion)
 		params [P_THISCLASS, P_OBJECT("_unit"), P_NUMBER("_value")];
 		pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 		if (_thisObject != "") then {
@@ -982,7 +982,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	ENDMETHOD;
 
 	// Called once on mission start
-	STATIC_METHOD(staticInit)
+	public STATIC_METHOD(staticInit)
 		params [P_THISCLASS];
 
 #ifndef _SQF_VM

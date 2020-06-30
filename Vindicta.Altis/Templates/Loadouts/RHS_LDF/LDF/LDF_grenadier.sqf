@@ -21,7 +21,7 @@ this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 this addPrimaryWeaponItem "rhs_VOG25";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_f1";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_plum_AK";};
 for "_i" from 1 to 2 do {this addItemToBackpack "rhs_VG40MD";};
 this addItemToBackpack "rhs_GRD40_Green";

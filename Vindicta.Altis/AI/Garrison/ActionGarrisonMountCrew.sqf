@@ -10,6 +10,13 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	
 	VARIABLE("mount"); // Bool, true for mounting, false for dismounting
 	
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_MOUNT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	// ------------ N E W ------------
 	
 	METHOD(new)
@@ -20,7 +27,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	ENDMETHOD;
 	
 	// logic to run when the goal is activated
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT, P_BOOL("_instant")];
 		
 		pr _gar = T_GETV("gar");
@@ -31,7 +38,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 		
 		// Do we need to mount or dismount?
 		pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInVehiclesAsCrew"] select T_GETV("mount");
-		pr _args = [_goalClassName, 0, [[TAG_INSTANT, _instant]], _AI];
+		pr _args = [_goalClassName, 0, [[TAG_INSTANT, _instant], [TAG_BEHAVIOUR, "AWARE"], [TAG_COMBAT_MODE, "GREEN"], [TAG_SPEED_MODE, "NORMAL"]], _AI];
 
 		// Give goals to groups
 		{
@@ -49,7 +56,7 @@ CLASS("ActionGarrisonMountCrew", "ActionGarrison")
 	ENDMETHOD;
 	
 	// logic to run each update-step
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
 		
 		// Check if spawned

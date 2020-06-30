@@ -16,12 +16,19 @@ Author: Sparker 12.11.2018
 CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
-	VARIABLE("suspTarget");	// "suspicious" players collected by SensorGroupTargets
+	VARIABLE("suspTarget");	// "suspicious" targers collected by SensorGroupTargets
 
 	#ifdef DEBUG_GOAL_MARKERS
 	VARIABLE("markersEnabled");
 	VARIABLE("unitMarkersEnabled");
 	#endif
+
+	// Points of interest for this group to investigate
+	VARIABLE("pointsOfInterest");
+
+	// Variables for ambient escord goal
+	VARIABLE("escortEndTime");
+	VARIABLE("escortObject");
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_agent")];
@@ -29,13 +36,9 @@ CLASS("AIGroup", "AI_GOAP")
 		ASSERT_OBJECT_CLASS(_agent, "Group");
 
 		// Make sure that the needed MessageLoop exists
-		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
+		ASSERT_GLOBAL_OBJECT(gMessageLoopUnscheduled);
 
-		T_SETV("suspTarget", nil);
-
-		// Initialize the world state
-		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
-		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
+		T_SETV("suspTarget", objNull);
 
 		// Initialize sensors
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
@@ -56,6 +59,11 @@ CLASS("AIGroup", "AI_GOAP")
 		// [_ws, WSP_GROUP_TURRETS_ASSIGNED, false] call ws_setPropertyValue;
 		T_SETV("worldState", _ws);
 
+		T_SETV("pointsOfInterest", []);
+
+		T_SETV("escortObject", objNull);
+		T_SETV("escortEndTime", 0);
+
 		#ifdef DEBUG_GOAL_MARKERS
 		T_SETV("markersEnabled", false);
 		T_SETV("unitMarkersEnabled", false);
@@ -71,15 +79,19 @@ CLASS("AIGroup", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_disableDebugMarkers");
 		#endif
+
 	ENDMETHOD;
 
-	/* override */ METHOD(start)
+	public override METHOD(start)
 		params [P_THISOBJECT];
 		T_CALLM1("addToProcessCategory", "AIGroup");
-	ENDMETHOD
+	ENDMETHOD;
 
-	METHOD(process)
+	public override METHOD(process)
 		params [P_THISOBJECT];
+
+		// Assert threading
+		ASSERT_UNSCHEDULED(_thisObject);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		if(T_GETV("unitMarkersEnabled")) then {
@@ -87,7 +99,14 @@ CLASS("AIGroup", "AI_GOAP")
 		};
 		#endif
 
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+		// Escord object
+		if (! isNull T_GETV("escortObject")) then {
+			if (GAME_TIME > T_GETV("escortEndTime")) then {
+				T_SETV("escortObject", objNull);
+			};
+		};
+
+		CALLCM("AI_GOAP", _thisObject, "process", []);
 
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_updateDebugMarkers");
@@ -96,83 +115,19 @@ CLASS("AIGroup", "AI_GOAP")
 	FIX_LINE_NUMBERS()
 
 	// World state accessors
-	METHOD(isLanded)
+	public METHOD(isLanded)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GROUP_ALL_LANDED] call ws_getPropertyValue
 	ENDMETHOD;
 
-	METHOD(isVehiclesUpright)
+	public METHOD(isVehiclesUpright)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GROUP_ALL_VEHICLES_UPRIGHT] call ws_getPropertyValue
 	ENDMETHOD;
 
-	METHOD(isVehiclesRepaired)
+	public METHOD(isVehiclesRepaired)
 		params [P_THISOBJECT];
 		[T_GETV("worldState"), WSP_GROUP_ALL_VEHICLES_REPAIRED] call ws_getPropertyValue
-	ENDMETHOD;
-
-	// ----------------------------------------------------------------------
-	// |                    G E T   M E S S A G E   L O O P
-	// | The group AI resides in its own thread
-	// ----------------------------------------------------------------------
-	
-	METHOD(getMessageLoop)
-		gMessageLoopGroupAI
-	ENDMETHOD;
-	
-	/*
-	Method: handleUnitsRemoved
-	Handles what happens when units get removed from their group, for instance when they gets destroyed.
-	Currently it deletes goals from units that have been given by this AI object and calls handleUnitsRemoved of the current action.
-	
-	Access: internal
-	
-	Parameters: _units
-	
-	_units - Array of <Unit> objects
-	
-	Returns: nil
-	*/
-	METHOD(handleUnitsRemoved)
-		params [P_THISOBJECT, P_ARRAY("_units")];
-
-		OOP_INFO_1("handleUnitsRemoved: %1", _units);
-
-		// Delete goals that have been given by this object
-		{
-			CALLM0(_x, "resetRecursive");
-		} forEach (_units apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
-
-		// Call handleUnitsRemoved of the current action, if it exists
-		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != NULL_OBJECT) then {
-			CALLM1(_currentAction, "handleUnitsRemoved", _units);
-		};
-	ENDMETHOD;
-	
-	/*
-	Method: handleUnitsAdded
-	Handles what happens when units get added to a group.
-	Currently it calles handleUnitAdded of the current action.
-	
-	Access: internal
-	
-	Parameters: _unit
-	
-	_units - Array of <Unit> objects
-	
-	Returns: nil
-	*/
-	METHOD(handleUnitsAdded)
-		params [P_THISOBJECT, P_ARRAY("_units")];
-		
-		OOP_INFO_1("handleUnitsAdded: %1", _units);
-		
-		// Call handleUnitAdded of the current action, if it exists
-		pr _currentAction = T_GETV("currentAction");
-		if (_currentAction != NULL_OBJECT) then {
-			CALLM1(_currentAction, "handleUnitsAdded", _units);
-		};
 	ENDMETHOD;
 
 	//                        G E T   P O S S I B L E   G O A L S
@@ -184,32 +139,14 @@ CLASS("AIGroup", "AI_GOAP")
 
 	Returns: Array with goal class names
 	*/
-	METHOD(getPossibleGoals)
+	public override METHOD(getPossibleGoals)
 		params [P_THISOBJECT];
 		if(CALLM0(T_GETV("agent"), "isAirGroup")) then {
 			["GoalGroupAirLand", "GoalGroupAirMaintain"]
 		} else {
 			//["GoalGroupRelax"]
-			["GoalGroupUnflipVehicles", "GoalGroupArrest"]
+			["GoalGroupUnflipVehicles", "GoalGroupArrest", "GoalGroupInvestigatePointOfInterest", "GoalGroupEscort"]
 		};
-	ENDMETHOD;
-
-
-	//                      G E T   P O S S I B L E   A C T I O N S
-	/*
-	Method: getPossibleActions
-	Returns the list of actions this agent can use for planning.
-
-	Access: Used by AI class
-
-	Returns: Array with action class names
-	*/
-	METHOD(getPossibleActions)
-		[]
-	ENDMETHOD;
-
-	/* override */ METHOD(setUrgentPriorityOnAddGoal)
-		true
 	ENDMETHOD;
 
 	// Debug
@@ -361,11 +298,154 @@ CLASS("AIGroup", "AI_GOAP")
 		};
 
 	ENDMETHOD;
-	// Returns array of class-specific additional variable names to be transmitted to debug UI
-	/* override */ METHOD(getDebugUIVariableNames)
-		[
-			"suspTarget"
-		]
+
+	// ----------------------------------------------------------------------
+	// |                    G E T   M E S S A G E   L O O P
+	// | The group AI resides in its own thread
+	// ----------------------------------------------------------------------
+	
+	public override METHOD(getMessageLoop)
+		gMessageLoopUnscheduled
 	ENDMETHOD;
 	
+	/*
+	Method: handleUnitsRemoved
+	Handles what happens when units get removed from their group, for instance when they gets destroyed.
+	Currently it deletes goals from units that have been given by this AI object and calls handleUnitsRemoved of the current action.
+	
+	Access: internal
+	
+	Parameters: _units
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	public METHOD(handleUnitsRemoved)
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		OOP_INFO_1("handleUnitsRemoved: %1", _units);
+
+		// Delete goals that have been given by this object
+		{
+			CALLM0(_x, "resetRecursive");
+		} forEach (_units apply { CALLM0(_x, "getAI") } select { !isNil { _x } && { _x != NULL_OBJECT } });
+
+		// Call handleUnitsRemoved of the current action, if it exists
+		pr _currentAction = T_GETV("currentAction");
+		if (_currentAction != NULL_OBJECT) then {
+			CALLM1(_currentAction, "handleUnitsRemoved", _units);
+		};
+	ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Handles what happens when units get added to a group.
+	Currently it calles handleUnitAdded of the current action.
+	
+	Access: internal
+	
+	Parameters: _unit
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	public METHOD(handleUnitsAdded)
+		params [P_THISOBJECT, P_ARRAY("_units")];
+		
+		OOP_INFO_1("handleUnitsAdded: %1", _units);
+		
+		// Call handleUnitAdded of the current action, if it exists
+		pr _currentAction = T_GETV("currentAction");
+		if (_currentAction != NULL_OBJECT) then {
+			CALLM1(_currentAction, "handleUnitsAdded", _units);
+		};
+	ENDMETHOD;
+
+	//                      G E T   P O S S I B L E   A C T I O N S
+	/*
+	Method: getPossibleActions
+	Returns the list of actions this agent can use for planning.
+
+	Access: Used by AI class
+
+	Returns: Array with action class names
+	*/
+	public override METHOD(getPossibleActions)
+		[]
+	ENDMETHOD;
+
+	public override METHOD(setUrgentPriorityOnAddGoal)
+		true
+	ENDMETHOD;
+
+	/*
+	Sets speed mode of group.
+	For infantry and vehicle groups it is done differently.
+	*/
+	METHOD(setSpeedMode)
+		params [P_THISOBJECT, P_STRING("_speedMode")];
+
+		pr _group = T_GETV("agent");
+		pr _hGroup = CALLM0(_group, "getGroupHandle");
+
+		pr _groupType = CALLM0(_group, "getType");
+		if (_groupType == GROUP_TYPE_INF) then {
+
+			pr _leader = CALLM0(_group, "getLeader");
+			pr _hLeader = CALLM0(_leader, "getObjectHandle");
+
+			// Get speed in format of getSpeed command: https://community.bistudio.com/wiki/getSpeed
+			pr _speedEnumLeader = switch (_speedMode) do {
+				case "LIMITED": {
+					"SLOW"
+				};
+				case "NORMAL": {
+					"NORMAL"
+				};
+				case "FULL": {
+					"FAST"
+				};
+				default {"NORMAL"};
+			};
+			pr _speedLeader = _hLeader getSpeed _speedEnumLeader;
+
+			// Set speed for units
+			// Units are allowed to move at full speed
+			{
+				_x forceSpeed -1;
+			} forEach (units _hGroup) - [_hLeader];
+			// Speed mode for everyone except leader, his speed is limited
+			_hGroup setSpeedMode "FULL";
+
+			// Set leader's speed
+			_hLeader forceSpeed _speedLeader;
+		} else {
+			_hGroup setSpeedMode _speedMode;
+		};
+	ENDMETHOD;
+
+	// Adds a point of interest
+	METHOD(addPointOfInterest)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		T_GETV("pointsOfInterest") pushBack _pos;
+	ENDMETHOD;
+	
+	// Sets an escort target
+	METHOD(setEscortTarget)
+		params [P_THISOBJECT, P_OBJECT("_target"), P_NUMBER("_duration")];
+		T_SETV("escortObject", _target);
+		T_SETV("escortEndTime", GAME_TIME + _duration);
+	ENDMETHOD;
+
+	public override METHOD(getDebugUIVariableNames)
+		[
+			"suspTarget",
+			"pointsOfInterest",
+			"escortEndTime",
+			"escortObject"
+		];
+	ENDMETHOD;
+
 ENDCLASS;

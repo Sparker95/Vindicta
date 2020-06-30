@@ -10,7 +10,7 @@ We need to split vehicle groups (after convoy move).
 #define OOP_CLASS_NAME ActionGarrisonSplitVehicleGroups
 CLASS("ActionGarrisonSplitVehicleGroups", "ActionGarrison")
 
-	METHOD(activate)
+	protected override METHOD(activate)
 		params [P_THISOBJECT];
 
 		pr _gar = T_GETV("gar");
