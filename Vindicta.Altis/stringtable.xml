@@ -531,7 +531,7 @@
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global">
 				<Original>AI global</Original>
-				<Polish>AI globalna trudności</Polish>
+				<Polish>Globalna trudności AI</Polish>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global_Tooltip">
 				<Original>This value is applied as a modifier to all AI settings</Original>
@@ -566,18 +566,23 @@
 		<Container name="Perf">
 			<Key ID="STR_Vindicta_Settings_Perf">
 				<Original>Performance</Original>
+				<Polish>Wydajność</Polish>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison">
 				<Original>Garrison Spawn Distance</Original>
+				<Polish>Odległość spawnowania się garnizonu</Polish>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Tooltip">
 				<Original>Spawn distance for enemy garrisons, measured in meters. Warning: raising this above the default can severely impact performance.</Original>
+				<Polish>Odległość spawnowani dla garnizonów wroga, mierzona w metrach. Ostrzeżenie: podniesienie wartości powyżej domyślnej może poważnie wpłynąć na wydajność</Polish>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian">
 				<Original>Civilian Spawn Distance</Original>
+				<Polish>Odległość spawnowani się cywilów</Polish>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian_Tooltip">
 				<Original>Spawn distance for civilians, measured in meters from the city border. Warning: raising this above the default can severely impact performance.</Original>
+				<Polish>Odległość odradzania dla ludności cywilnej, mierzona w metrach od granicy miasta. Ostrzeżenie: podniesienie wartości powyżej domyślnej może poważnie wpłynąć na wydajność</Polish>
 			</Key>
 		</Container>
 
