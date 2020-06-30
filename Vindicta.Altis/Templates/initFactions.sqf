@@ -59,7 +59,9 @@
 ["Templates\Factions\GM_WestGer_Police.sqf", 			T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\GEXP_Police.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\3CB_TPD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\3CB_TPD_O.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\3CB_CPD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\Expansion_Police.sqf",				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\3CB_TPD_O.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\DSI.sqf", 							T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\AT.sqf", 							T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
