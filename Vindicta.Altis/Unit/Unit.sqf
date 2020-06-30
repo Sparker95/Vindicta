@@ -27,6 +27,7 @@ Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
 Unit_fnc_EH_Respawn = compile preprocessFileLineNumbers "Unit\EH_Respawn.sqf";
 Unit_fnc_EH_handleDamageInfantryACE = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantryACE.sqf";
 Unit_fnc_EH_handleDamageInfantryStd = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantryStd.sqf";
+Unit_fnc_EH_handleDamageVehicle = compile preprocessFileLineNumbers "Unit\EH_handleDamageVehicle.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
@@ -786,7 +787,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 
 		// HandleDamage for vehicles
-		if ((_data select UNIT_DATA_ID_CAT == T_VEH) &&
+		if ((_data select UNIT_DATA_ID_CAT in [T_VEH, T_CARGO]) &&
 			{owner _hO in [0, clientOwner]}) then {			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 
 			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {

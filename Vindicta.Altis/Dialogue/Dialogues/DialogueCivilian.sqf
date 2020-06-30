@@ -1,6 +1,7 @@
 #include "..\common.hpp"
 #include "..\..\Location\Location.hpp"
 #include "..\..\AI\Commander\LocationData.hpp"
+#include "..\..\Undercover\UndercoverMonitor.hpp"
 
 // Test dialogue class
 
@@ -75,9 +76,13 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: incite civilian
 			NODE_OPTION("opt_incite", _phrasesIncite),
+			NODE_JUMP_IF("", "alreadyIncited", "isIncited", []),	// If already incited
 			NODE_SENTENCE("", TALKER_NPC, _phrasesCivilianInciteResponse),
 			NODE_CALL_METHOD("", "inciteCivilian", []),
 			NODE_SENTENCE("", TALKER_PLAYER, "Tell it to others!"),
+			NODE_JUMP("", "options"),
+
+			NODE_SENTENCE("alreadyIncited", TALKER_NPC, "I know! It's dangerous to discuss this."),
 			NODE_JUMP("", "options"),
 
 			// Option: scare civilian
@@ -268,12 +273,20 @@ CLASS("DialogueCivilian", "Dialogue")
 		};
 	ENDMETHOD;
 
+	METHOD(isIncited)
+		params [P_THISOBJECT];
+		pr _civ = T_GETV("unit0");
+		T_GETV("incited") || UNDERCOVER_IS_UNIT_SUSPICIOUS(_civ);
+	ENDMETHOD;
+
 	METHOD(inciteCivilian)
 		params [P_THISOBJECT];
-		if (!T_GETV("incited")) then {
+		if (!T_CALLM0("isIncited")) then {
 
-			CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG getPos player ARG (7+random(7))]);
-
+			pr _pos = getPos T_GETV("unit0");
+			CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG _pos ARG (7+random(7))]);
+			pr _civ = T_GETV("unit0");
+			UNDERCOVER_SET_UNIT_SUSPICIOUS(_civ, true);
 			T_SETV("incited", true);
 		};
 	ENDMETHOD;

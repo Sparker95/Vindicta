@@ -8,11 +8,11 @@
 #define UNDERCOVER_VIC_COMPROMISED "__b_VicCompromised" // sets current time + TIME_VIC_COMPROMISED on vehicle to compromise the vehicle
 
 // Macro for getting the 'exposed' value of a unit (object handle)
-#define UNDERCOVER_IS_UNIT_EXPOSED(unit) unit getVariable [UNDERCOVER_EXPOSED, false]
-#define UNDERCOVER_IS_UNIT_WANTED(unit) unit getVariable [UNDERCOVER_WANTED, false]
-#define UNDERCOVER_IS_UNIT_SUSPICIOUS(unit) unit getVariable [UNDERCOVER_SUSPICIOUS, false]
-#define UNDERCOVER_IS_TARGET(unit) unit getVariable [UNDERCOVER_TARGET, false]
-#define UNDERCOVER_GET_VIC_COMPROMISED(obj) obj getVariable [UNDERCOVER_VIC_COMPROMISED, -1]
+#define UNDERCOVER_IS_UNIT_EXPOSED(unit) (unit getVariable [UNDERCOVER_EXPOSED, false])
+#define UNDERCOVER_IS_UNIT_WANTED(unit) (unit getVariable [UNDERCOVER_WANTED, false])
+#define UNDERCOVER_IS_UNIT_SUSPICIOUS(unit) (unit getVariable [UNDERCOVER_SUSPICIOUS, false])
+#define UNDERCOVER_IS_TARGET(unit) (unit getVariable [UNDERCOVER_TARGET, false])
+#define UNDERCOVER_GET_VIC_COMPROMISED(obj) (obj getVariable [UNDERCOVER_VIC_COMPROMISED, -1])
 
 // Macro for setting suspicious value
 #define UNDERCOVER_SET_UNIT_SUSPICIOUS(unit, susp) unit setVariable [UNDERCOVER_SUSPICIOUS, susp, true]

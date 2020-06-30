@@ -137,7 +137,8 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 			private _radius = GETV(_city, "boundingRadius");
 
 			// Use the civ types specified in the presence module
-			private _civTypes = missionNameSpace getVariable ["pr0_cp_unitTypes", []];
+			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTypes = _civTemplate select T_INF select T_INF_default;
 			for "_i" from 0 to (_deficit-1) do {
 				private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
 				private _tmpGroup = createGroup civilian;

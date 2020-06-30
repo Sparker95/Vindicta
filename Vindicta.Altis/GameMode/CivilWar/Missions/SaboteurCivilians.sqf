@@ -571,7 +571,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			private _targetRoads = T_GETV("targetRoads");
 
 			private _targetVics = [_city] call Saboteur_fnc_getTargetVehiclePositions;
-			diag_log format ["Target vics: %1", _targetVics];
+			//diag_log format ["Target vics: %1", _targetVics];
 
 			#ifdef SABOTEUR_CIVILIANS_TESTING
 			[_targetVics, "Vic", "ColorPink"] call Saboteur_fnc_drawDebugMarkers;
@@ -583,7 +583,8 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			// _marker setMarkerType "hd_destroy";
 
 			// Use the civ types specified in the presence module
-			private _civTypes = missionNameSpace getVariable ["pr0_cp_unitTypes", []];
+			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTypes = _civTemplate select T_INF select T_INF_default;
 
 			for "_i" from 0 to (_deficit-1) do {
 
