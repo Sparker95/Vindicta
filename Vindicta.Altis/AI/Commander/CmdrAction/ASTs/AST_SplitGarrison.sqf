@@ -269,7 +269,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 // 		// T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
 // 	ENDMETHOD;
 
-// 	/* override */ METHOD(apply)
+// 	public override METHOD(apply)
 // 		params [P_THISOBJECT, P_STRING("_world")];
 // 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 

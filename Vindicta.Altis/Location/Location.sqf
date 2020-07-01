@@ -56,7 +56,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("capacityInf"); 								// Infantry capacity
 				VARIABLE("capacityHeli"); 								// Helicopter capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
-				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
 				VARIABLE_ATTR("buildProgress", [ATTR_SAVE]);			// How much of the location is built from 0 to 1
 				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
@@ -112,7 +111,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityHeli", 0);
 		T_SETV_PUBLIC("capacityHeli", 0);
 		T_SETV("capacityCiv", 0);
-		T_SETV("cpModule",objnull);
 		T_SETV_PUBLIC("isBuilt", false);
 		T_SETV("lastBuildProgressTime", 0);
 		T_SETV_PUBLIC("buildProgress", 0);
@@ -188,15 +186,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	public METHOD(setCapacityCiv)
 		params [P_THISOBJECT, P_NUMBER("_capacityCiv")];
 		T_SETV("capacityCiv", _capacityCiv);
-		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY && _capacityCiv > 0)then{
-			private _cpModule = [+T_GETV("pos"), T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
-			if(!isNull _cpModule) then {
-				T_SETV("cpModule",_cpModule);
-			} else {
-				T_SETV("cpModule", objNull);
-			};
-		};
-
 	ENDMETHOD;
 
 	/*
@@ -247,8 +236,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _locPos = T_GETV("pos");
 
 		#ifndef _SQF_VM
-		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius] select { typeOf _x != "" };
-		private _objects = nearestObjects [_locPos, [], _radius] select { typeOf _x != "" };
+		// Lots of objects from the map have typeOf "" unfortunately (thanks to arma)
+		// But we must scan them anyway
+		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
+		private _objects = nearestObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
 		private _allObjects = +_terrainObjects;
 		{
 			_allObjects pushBackUnique _x;
@@ -275,6 +266,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			if(T_CALLM1("isInBorder", _object)) then
 			{
 				private _type = typeOf _object;
+				private _modelName = (getModelInfo _object) select 0;
 
 				switch true do {
 					// A truck's position defined the position for tracked and wheeled vehicles
@@ -336,7 +328,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
 						if(_ambientAnimIdx != NOT_FOUND) then {
 							private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
-							private _mrk = createVehicle ["Sign_Pointer_Cyan_F", getPos _object, [], 0, "CAN_COLLIDE"];
+							private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal getPos _object;
 							_mrk setDir getDir _object;
 							_mrk setVariable ["vin_defaultAnims", [_anim]];
 							_mrk hideObjectGlobal true;
@@ -350,28 +342,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
 					};
 					// Process buildings, objects with anim markers, and shooting targets
-					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
+					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
 						T_CALLM2("addObject", _object, _object in _terrainObjects);
 						OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
 					};
 				};
-
-				// Process buildings, objects with anim markers, and shooting targets
-				if (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _type } != NOT_FOUND } || { _type in gShootingTargetTypes }) then {
-					T_CALLM3("addObject", _object, _object in _terrainObjects, true);
-					OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
-				};
-
-				// // Process objects with anim markers
-				// private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
-				// if(_animMarkersIdx != NOT_FOUND) then {
-				// 	T_CALLM1("addObject", _object);
-				// };
-
-				// // Process shooting targets
-				// if(_type in gShootingTargetTypes) then {
-				// 	T_CALLM1("addObject", _object);
-				// };
 			};
 		} forEach _allObjects;
 
@@ -385,11 +360,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Arguments: _hObject
 	*/
 	public METHOD(addObject)
-		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject"), P_BOOL("_autoSimple")];
+		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
-		// Convert to simple object if required
-		if(_autoSimple && !_isTerrainObject && !IS_SIMPLE_OBJECT _hObject && typeOf _hObject in gObjectMakeSimple) then {
-			_hObject = [_hObject] call BIS_fnc_replaceWithSimpleObject;
+		private _type = typeOf _hObject;
+
+		// Disable object simulation if needed
+		if((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) == "thingX"}) then {
+			_hObject enableSimulationGlobal false;
 		};
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
@@ -419,7 +396,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		if(_alreadyRegistered) exitWith {};
 
 		// Check how it affects the location's infantry capacity
-		private _type = typeOf _hObject;
+		private _modelName = (getModelInfo _hObject) select 0;
 		private _index = location_b_capacity findIf {_type in _x#0};
 		private _cap = 0;
 		if (_index != -1) then {
@@ -455,13 +432,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Process it for ambient anims
-		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _type };
+		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _modelName; };
 		if(_animMarkersIdx != NOT_FOUND) then {
 			(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
 			private _ambientAnimObjects = T_GETV("ambientAnimObjects");
 			{
 				_x params ["_relPos", "_relDir", "_anim"]; 
-				private _mrk = createVehicle ["Sign_Pointer_Cyan_F", [0,0,0], [], 0, "CAN_COLLIDE"];
+				private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal [0,0,0];
 				if(_isTerrainObject) then {
 					_mrk setPos (_hObject modelToWorldVisual _relPos);
 					_mrk setDir (getDir _hObject + _relDir);
@@ -475,6 +452,19 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_mrk hideObjectGlobal true;
 				_ambientAnimObjects pushBack _mrk;
 			} forEach _animMarkers;
+
+			// Add marker for debug
+			/*
+			_mrkName = format ["%1_%2", _thisObject, str _hObject];
+			pr _mrk = createMarkerLocal [_mrkName, (getPos _hObject)];
+			_mrk setMarkerShapeLocal "ICON";
+			_mrk setMarkerBrushLocal "SolidFull";
+			_mrk setMarkerColorLocal "ColorRed";
+			_mrk setMarkerAlphaLocal 1.0;
+			_mrk setMarkerTypeLocal "mil_dot";
+			//_mrk setMarkerSizeLocal [0.3, 0.3];
+			_mrk setMarkerTextLocal (str _hObject);
+			*/
 		};
 
 		// Process target range objects
@@ -518,8 +508,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		{
 			private _object = _x;
-			private _objectName = str _object;
-			private _modelName = _objectName select [(_objectName find ": ") + 2];
+			private _modelName = (getModelInfo _object)#0;
 			if(!(_object in _objects) && {T_CALLM1("isInBorder", _object)} && {_modelName in gMilitaryBuildingModels || (typeOf _x) in gMilitaryBuildingTypes}) then
 			{
 				private _pos = getPosATL _object;
@@ -2060,11 +2049,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 	
 
-	/* override */ STATIC_METHOD(saveStaticVariables)
+	STATIC_METHOD(saveStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 	ENDMETHOD;
 
-	/* override */ STATIC_METHOD(loadStaticVariables)
+	STATIC_METHOD(loadStaticVariables)
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		SETSV("Location", "all", []);
 	ENDMETHOD;

@@ -2,22 +2,25 @@
 
 /*
 Class: Goal.GoalUnitShootLegTarget
-Makes a single unit to move to a specified building position.
 
-Parameters:
-TAG_TARGET - object handle of the target to shoot
 */
 #define pr private
 
 #define OOP_CLASS_NAME GoalUnitShootLegTarget
-CLASS("GoalUnitShootLegTarget", "Goal")
+CLASS("GoalUnitShootLegTarget", "GoalUnit")
 
-	public STATIC_METHOD(createPredefinedAction)
-		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+	STATIC_METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_SHOOT_LEG, [objNull]] ],	// Required parameters
+			[]	// Optional parameters
+		]
+	ENDMETHOD;
 
-		pr _args = [_AI, _parameters];
-		pr _action = NEW("ActionUnitShootLegTarget", _args);
-		_action
+	STATIC_METHOD(onGoalChosen)
+		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
+
+		// Vehicle usage is forbidden
+		CALLM1(_ai, "setAllowVehicleWSP", false);
 
 	ENDMETHOD;
 

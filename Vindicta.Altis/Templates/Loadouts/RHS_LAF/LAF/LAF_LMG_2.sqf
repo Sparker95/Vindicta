@@ -16,7 +16,7 @@ this forceaddUniform "rhsgref_uniform_olive";
 this addBackpack "FGN_AAF_FAST_M81";
 
 this addWeapon "rhs_weap_m249_pip_S_para";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 this addPrimaryWeaponItem "rhsusf_acc_compm4";
 this addPrimaryWeaponItem "rhsusf_100Rnd_556x45_mixed_soft_pouch";
 this addPrimaryWeaponItem "rhsusf_acc_kac_grip_saw_bipod";

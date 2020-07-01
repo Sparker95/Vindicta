@@ -21,12 +21,19 @@ CLASS("ActionUnitArrest", "Action")
 	VARIABLE("spawnHandle");
 	VARIABLE("screamTime");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ [TAG_TARGET_ARREST, [objNull]] ],	// Required parameters
+			[  ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 		pr _a = GETV(_AI, "agent");
 		pr _captor = CALLM0(_a, "getObjectHandle");
 		T_SETV("objectHandle", _captor);
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_ARREST);
 		T_SETV("target", _target);
 		
 		//FSM
@@ -42,7 +49,12 @@ CLASS("ActionUnitArrest", "Action")
 		
 		pr _captor = T_GETV("objectHandle");
 		_captor lockWP false;
-		_captor setSpeedMode "NORMAL";
+		_captor forceSpeed -1;
+
+		// We are not in formation any more
+		// Reset world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, false);
 
 		//OOP_INFO_0("ActionUnitArrest: ACTIVATE");
 		// Set state
@@ -75,6 +87,14 @@ CLASS("ActionUnitArrest", "Action")
 			T_SETV("stateMachine", 3);
 		};
 		
+		// Notify the target bot if we are close enough
+		pr _targetAI = GET_AI_FROM_OBJECT_HANDLE(_target);
+		if (!IS_NULL_OBJECT(_targetAI)) then {
+			if ((_captor distance _target) < 25) then {
+				CALLM1(_targetAI, "setInDangerWSP", true);
+			};
+		};
+
 		scopename "switch";
 		switch (T_GETV("stateMachine")) do {
 
@@ -84,6 +104,7 @@ CLASS("ActionUnitArrest", "Action")
 
 				if (IS_ARRESTED_UNCONSCIOUS_DEAD(_target)) exitWith {
 					T_SETV("state", ACTION_STATE_COMPLETED);
+					CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 					ACTION_STATE_COMPLETED
 				};
 
@@ -113,8 +134,8 @@ CLASS("ActionUnitArrest", "Action")
 							_captor doWatch _target;
 							_pos_arrest = getpos _target;
 
-							if (getpos _target distance getpos _captor > 30) then { sleep 3;};
-							sleep 1;
+							if (getpos _target distance getpos _captor > 30) then { sleep 1;};
+							sleep 0.5;
 
 							_isMoving = !(_pos_arrest distance getpos _target < 0.1);
 							_target setVariable ["isMoving", _isMoving];
@@ -143,14 +164,14 @@ CLASS("ActionUnitArrest", "Action")
 								
 								pr _sentence = "Hey you, stop here.";
 								if (selectRandom [true,false]) then { 
-									_captor say "stop";
+									//_captor say "stop";
 									_sentence = selectRandom [
 									"STOP! Get on the fucking ground!",
 									"STOP! Get down on the ground!",
 									"DO NOT MOVE! Get down on the ground!"
 									];
 								} else {
-									_captor say "halt";
+									//_captor say "halt";
 									_sentence = selectRandom [
 									"HALT! Get on the fucking ground!",
 									"HALT! Get down on the ground!",
@@ -158,8 +179,8 @@ CLASS("ActionUnitArrest", "Action")
 									];
 								};
 								
-								[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
-								_captor setSpeedMode "FULL";
+								CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _captor, _sentence);
+								_captor forceSpeed -1;
 							};
 						};
 					};
@@ -225,9 +246,6 @@ CLASS("ActionUnitArrest", "Action")
 							_animationDone
 						}; // end waitUntil
 					}; // end spawn script
-						
-					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
-					// arrest player by sending a message to unit's undercoverMonitor				
 					
 					T_SETV("spawnHandle", _handle);
 				} else {
@@ -258,7 +276,7 @@ CLASS("ActionUnitArrest", "Action")
 			// COMPLETED SUCCESSFULLY
 			case 3: {
 				//OOP_INFO_0("ActionUnitArrest: COMPLETED.");
-
+				CALLM1(T_GETV("ai"), "setHasInteractedWSP", true);
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};
@@ -276,22 +294,12 @@ CLASS("ActionUnitArrest", "Action")
 		params [P_THISCLASS, P_OBJECT("_target")];
 
 		// If it's a civilian presence target...
-		if ([_target] call CivPresence_fnc_isUnitCreatedByCP) then {
-			[_target, true] call CivPresence_fnc_arrestUnit;
+		pr _ai = GET_AI_FROM_OBJECT_HANDLE(_target);
+		if (!IS_NULL_OBJECT(_ai)) then {
+			CALLM1(_ai, "setArrest", true);
 		} else {
 			// Otherwise it's a player
 			_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
-
-			if (!isPlayer _target) then {
-				// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
-				_target disableAI "MOVE"; // Disable AI Movement
-				_target disableAI "AUTOTARGET"; // Disable AI Autotarget
-				_target disableAI "ANIM"; // Disable AI Behavioural Scripts
-				_target allowFleeing 0; // Disable AI Fleeing
-				_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
-			};
-		
-			_target setVariable ["timeArrested", GAME_TIME + 10];
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
 		};
 	ENDMETHOD;
@@ -313,7 +321,7 @@ CLASS("ActionUnitArrest", "Action")
 				"OPEN FIRE!"
 			];
 
-			[_captor, _sentence, _target] call Dialog_fnc_hud_createSentence;
+			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _captor, _sentence);
 
 			pr _args = [_target, 3.0];
 			REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _target, false);
@@ -332,7 +340,9 @@ CLASS("ActionUnitArrest", "Action")
 		_captor doWatch objNull;
 		_captor lookAt objNull;
 		_captor lockWP false;
-		_captor setSpeedMode "LIMITED";
+		_captor forceSpeed -1;
+		doStop _captor;
+
 		
 	ENDMETHOD;
 

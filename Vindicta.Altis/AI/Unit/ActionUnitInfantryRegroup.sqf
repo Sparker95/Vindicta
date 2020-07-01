@@ -57,8 +57,12 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 		};
 
 		// Regroup
-		_hO doFollow leader _hO;
-		
+		_hO doFollow (leader group _hO);
+
+		// Set world state property
+		pr _ws = GETV(T_GETV("ai"), "worldState");
+		WS_SET(_ws, WSP_UNIT_HUMAN_FOLLOWING_TEAMMATE, true);
+
 		// Set state
 		T_SETV("state", ACTION_STATE_COMPLETED);
 		

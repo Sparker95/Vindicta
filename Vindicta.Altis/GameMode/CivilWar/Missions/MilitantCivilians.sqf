@@ -32,24 +32,24 @@ pr0_fnc_CivilianJoinPlayer = {
 		[_target, _caller] spawn {
 			params ["_target", "_caller"];
 
-			[_caller, selectRandom [
+			[_caller, [
 				"Join us brother!",
 				"The revolution needs you!",
 				"I need your help",
 				"Follow me!",
 				"We should work together"
-				], _target] call Dialog_fnc_hud_createSentence;
+			]] call pr0_fnc_dialogue_createSentence;
 
 			sleep 2;
 
 			if(alive _target) then {
-				[_target, selectRandom [
+				[_target, [
 					"I will follow you! Onward!",
 					"Lead the way!",
 					"Together we will be stronger!",
 					"Okay",
 					"What are we waiting for?"
-					], _caller] call Dialog_fnc_hud_createSentence;
+					]] call pr0_fnc_dialogue_createSentence;
 
 				// Join on server
 				[[_target, _caller, clientOwner], {
@@ -70,21 +70,21 @@ pr0_fnc_CivilianJoinPlayer = {
 						[[_x, _target], {
 							params ["_unit", "_target"];
 							_unit lookAt _target;
-							[_unit, selectRandom [
+							[_unit, [
 								"Welcome brother!",
 								"Another for the cause!",
 								"Hi",
 								"...",
 								"Do you have any spare bullets?",
 								"Hi neighbour!"
-							], _target] call Dialog_fnc_hud_createSentence;
+							]] call pr0_fnc_dialogue_createSentence;
 						}] remoteExec ["call", _clientOwner];
 					} foreach _otherUnits;
 
 					// _target stop false;
 				}] remoteExec ["spawn", 2];
 			} else {
-				[_target, selectRandom [
+				[_target, [
 					"(...)",
 					"(bleeds)",
 					"(maybe they are sleeping?)",
@@ -98,11 +98,11 @@ pr0_fnc_CivilianJoinPlayer = {
 					"(will be missed)",
 					"(ashes to ashes)",
 					"(looks pale)"
-					], _caller] call Dialog_fnc_hud_createSentence;
+					]] call pr0_fnc_dialogue_createSentence;
 			};
 		};
 	} else {
-		[_target, "You are too many already, we must be inconspicuous!", _caller] call Dialog_fnc_hud_createSentence;
+		[_target, "You are too many already, we must be inconspicuous!"] call pr0_fnc_dialogue_createSentence;
 	};
 };
 
@@ -386,13 +386,14 @@ pr0_fnc_givePlayerIntel = {
 				doStop _civ;
 				_civ lookAt _tgt;
 
-				[_civ, selectRandom [
+				[_civ, [
 					"I must tell you something!",
 					"There was news while you were away.",
 					"Sometimes I hear things...",
 					"They are planing something!",
 					"Please, you must know something..."
-				], _tgt]  remoteExec ["Dialog_fnc_hud_createSentence", _tgt, false];
+				]]call pr0_fnc_dialogue_createSentence;
+
 				sleep 2;
 
 				[_civ, format [ selectRandom [
@@ -400,19 +401,21 @@ pr0_fnc_givePlayerIntel = {
 					"There may be %1 near here!",
 					"%1 is planned by the enemy.",
 					"The enemy is planning %1!"
-				], CALLM0(_intel, "getShortName")], _tgt]  remoteExec ["Dialog_fnc_hud_createSentence", _tgt, false];
+				], CALLM0(_intel, "getShortName")]] call pr0_fnc_dialogue_createSentence;
+
 				sleep 2;
 
 				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
+				
 				sleep 2;
 
-				[_civ, selectRandom [
+				[_civ, [
 					"I must leave now.",
 					"I must be going, they are looking for us!",
 					"Its best not to be seen together.",
 					"I will keep my ears open.",
 					"Come back later, I might know more..."
-				], _tgt]  remoteExec ["Dialog_fnc_hud_createSentence", _tgt, false];
+				]] call pr0_fnc_dialogue_createSentence;
 
 				_civ lookAt _tgt;
 				_civ action ["Salute", _civ];
@@ -583,7 +586,8 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			private _radius = GETV(_city, "boundingRadius");
 
 			/// Use the civ types specified in the presence module
-			private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
+			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTypes = _civTemplate select T_INF select T_INF_default;
 
 			// Separate groups for each civilian so they can do their own thing
 			for "_i" from 0 to (_deficit-1) do {
@@ -591,7 +595,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				private _tmpGroup = createGroup civilian;
 				private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
 				// Lets apply our civ settings from selected faction template
-				private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+				
 				private _templateClass = [_civTemplate, T_INF, T_INF_survivor, -1] call t_fnc_select;
 				if ([_templateClass] call t_fnc_isLoadout) then {
 					[_civie, _templateClass] call t_fnc_setUnitLoadout;

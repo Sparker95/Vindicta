@@ -2,7 +2,7 @@
 
 // Class with predefined actions in initDatabase.sqf
 #define OOP_CLASS_NAME GoalGroupMove
-CLASS("GoalGroupMove", "Goal")
+CLASS("GoalGroupMove", "GoalGroup")
 	public STATIC_METHOD(createPredefinedAction)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -18,12 +18,13 @@ CLASS("GoalGroupMove", "Goal")
 			private _actionSerial = NEW("ActionCompositeSerial", [_AI]);
 
 			// Create action to get in vehicles
+			/*
 			private _getInParams = [
-				["onlyCombat", false] // All crew should be mounted
+				[TAG_ONLY_COMBAT_VEHICLES, false] // All crew should be mounted
 			];
-			CALLSM2("Action", "mergeParameterValues", _getInParams, _parameters);
 			private _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
+			*/
 
 			// Start clear area from center, so move there first
 			private _actionMove = NEW("ActionGroupMove", [_AI ARG _parameters]);

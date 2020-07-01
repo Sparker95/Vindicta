@@ -6,7 +6,7 @@ Goal for a group to clear a certain area.
 #define pr private
 
 #define OOP_CLASS_NAME GoalGroupClearArea
-CLASS("GoalGroupClearArea", "Goal")
+CLASS("GoalGroupClearArea", "GoalGroup")
 	
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
@@ -32,7 +32,7 @@ CLASS("GoalGroupClearArea", "Goal")
 
 			// Create action to get in vehicles
 			private _getInParams = [
-				["onlyCombat", true] // Only combat vehicle operators must stay in vehicles
+				[TAG_ONLY_COMBAT_VEHICLES, true] // Only combat vehicle operators must stay in vehicles
 			];
 			CALLSM2("Action", "mergeParameterValues", _getInParams, _parameters);
 			pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", [_AI ARG _getInParams]);

@@ -1,4 +1,4 @@
-#define PROFILER_COUNTERS_ENABLE
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\common.h"
 #include "Action.hpp"
 #include "..\..\Message\Message.hpp"
@@ -61,7 +61,9 @@ CLASS("Action", "MessageReceiverEx")
 	// STATIC_VARIABLE("numParameters"); // Amount of parameters this action requires // Maybe implement it later, not very important
 
 	// Array with parameters which must be derived from goal parameters
-	STATIC_VARIABLE("parameters");
+	STATIC_VARIABLE("parametersFromGoal");
+	// Array with parameters which can be derived from goal parameters
+	STATIC_VARIABLE("parametersFromGoalOptional");
 
 	// Bool indicating how this action can behave during spawning.
 	// This controls how planned actions get the "instant" parameter set in createActionsFromPlan.
@@ -89,6 +91,17 @@ CLASS("Action", "MessageReceiverEx")
 
 		T_SETV("AI", _AI);
 		T_SETV("state", ACTION_STATE_INACTIVE); // Default state
+
+		OOP_INFO_2("NEW: AI: %1, parameters: %2", _AI, _parameters);
+
+		// Verify parameters
+		#ifdef DEBUG_GOAP
+		pr _parametersGood = T_CALLM1("verifyParameters", _parameters);
+		if (!_parametersGood) then {
+			OOP_ERROR_0("Wrong parameters");
+		};
+		#endif
+		FIX_LINE_NUMBERS()
 
 		private _instant = CALLSM3("Action", "getParameterValue", _parameters, TAG_INSTANT, false);
 		T_SETV("instant", _instant);
@@ -157,6 +170,90 @@ CLASS("Action", "MessageReceiverEx")
 		T_SETV("timer", _timer);
 	ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |          G E T   P O S S I B L E   P A R A M E T E R S             |
+	// ----------------------------------------------------------------------
+	/*
+	Method: getPossibleParameters
+
+	Other classes must override that to declare parameters passed to action!
+	The final possible parameters array is sum of getPossibleParameters and getCommonParameters
+
+	Returns array [requiredParameters, optionalParameters]
+	requiredParameters and optionalParameters are arrays of: [tag, type]
+		tag - string
+		type - some value against which isEqualType will be used
+	*/
+	public virtual METHOD(getPossibleParameters)
+		[
+			[],	// Required parameters
+			[]	// Optional parameters
+		]
+	ENDMETHOD;
+
+	/*
+	Method: getCommonParameters
+
+	Other classes must override that to declare parameters passed to action.
+	Typically some base class of multiple actions can have some common parameters.
+
+	Returns array [requiredParameters, optionalParameters]
+	requiredParameters and optionalParameters are arrays of: [tag, type]
+		tag - string
+		type - some value against which isEqualType will be used
+	*/
+	public virtual METHOD(getCommonParameters)
+		[
+			[],	// Required parameters
+			[ [TAG_INSTANT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
+	// Verifies parameters
+	METHOD(verifyParameters)
+		params [P_THISOBJECT, P_ARRAY("_parameters")];
+
+		pr _allGood = true;
+		pr _pPossible = T_CALLM0("getPossibleParameters");
+		_pPossible params ["_pRequired", "_pOptional"];
+		pr _pCommon = T_CALLM0("getCommonParameters");
+		_pCommon params ["_pCommonRequired", "_pCommonOptional"];
+		_pAllowed = _pRequired + _pOptional + _pCommonRequired + _pCommonOptional; // Instant is always allowed
+		
+		// Verify that no illegal parameters are passed
+		{
+			pr _tag = _x#0;
+			pr _value = _x#1;
+			pr _found = _pAllowed findIf {(_x#0) == _tag};
+			if (isNil "_value") then {
+				OOP_ERROR_1("Value of parameter %1 is nil!", _tag);
+			};
+			if (_found == -1) then {
+				OOP_ERROR_2("Illegal parameter: %1, allowed parameters: %2", _tag, _pAllowed);
+				_allGood = false;
+			} else {
+				// Verify type
+				pr _types = _pAllowed#_found#1;
+				pr _foundType = _types findIf {_value isEqualType _x};
+				if (_foundType == -1) then {
+					OOP_ERROR_3("Wrong parameter type for %1: %2, expected: %3", _tag, typeName _value, _types apply {typeName _x});
+					_allGood = false;
+				};
+			};
+		} forEach _parameters;
+
+		// Verify that all required parameters are passed
+		{
+			pr _tag = _x#0;
+			pr _found = _parameters findIf {(_x#0) == _tag};
+			if (_found == -1) then {
+				OOP_ERROR_2("Required parameter not found: %1, passed parameters: %2", _tag, _parameters);
+				_allGood = false;
+			};
+		} forEach (_pRequired + _pCommonRequired);
+
+		_allGood;
+	ENDMETHOD;
 	
 	
 	// ----------------------------------------------------------------------
@@ -385,44 +482,8 @@ CLASS("Action", "MessageReceiverEx")
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -		
 
-
-	// ----------------------------------------------------------------------
-	// |                         G E T   C O S T                            |
-	// |                                                                    |
-	// | Returns the cost of taking this action in current situation
-	// | By default it returns the value of "cost" static variable
-	// | You can redefine it for inherited action if the returned cost needs to depend on something
-	// ----------------------------------------------------------------------
-	
-	/*
-	Method: getCost
-	Returns the cost of taking this action in current situation
-	By default it returns the value of "cost" static variable
-	You can redefine it for inherited action if the returned cost needs to depend on something
-	
-	Parameters: _AI, _wsStart, _wsEnd
-	
-	_AI - the <AI> object
-	_wsStart - the start <WorldState>
-	_wsEnd - the end <WorldState>
-	
-	Returns: Number
-	*/
-	public STATIC_METHOD(getCost)
-		//params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_wsStart"), P_ARRAY("_wsEnd")];
-		params [P_THISCLASS, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
-		
-		pr _cost = GETSV(_thisClass, "cost");
-		//if (isNil "_cost") then {
-		//	0
-		//} else {
-			_cost
-		//};
-	ENDMETHOD;
-	
 	
 	// ----------------------------------------------------------------------
 	//                 G E T   P R E C O N D I T I O N S
@@ -430,15 +491,22 @@ CLASS("Action", "MessageReceiverEx")
 	/*
 	Method: getPreconditions
 	Returns preconditions of this action depending on parameters
-	By default it tries to apply parameters to preconditions, if preconditions reference any parameters
+	By default it returns value of "preconditions" static variable. 
 	
-	Warning:If an action must provide preconditions which can't be copied from goal parameters, it must re-implement this method
+	It can be overriden on actions to provide preconditions from actual world with following limitations:
+	- Providev set of world state properties must be static.
+		It means that its's forbidden to provide some world state property in some cases and not provide it in others.
+	- Provided values must not affect branching of actions preceding this action.
+		It means that we can return	values like positions, object handles, etc, but typically not bools.
+
+	! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+	! ! !  When creating a world state to return, ensure that you specify its origin as ORIGIN_DYNAMIC_ACTION_PRECONDITIONS ! ! !
+	! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 	
 	Parameters: _goalParameters, _actionParameters
 	
 	_goalParameters - parameters of the <Goal> for which this action is considered
 	_actionParameters - parameters of this action resolved by the action planner
-	_c -
 	
 	Returns: <WorldState>
 	*/
@@ -449,8 +517,7 @@ CLASS("Action", "MessageReceiverEx")
 		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
 		_wsPre
 	ENDMETHOD;
-	
-	
+
 	// ----------------------------------------------------------------------
 	// |                         G E T   P R E C E D E N C E                |
 	// |                                                                    |
@@ -469,11 +536,11 @@ CLASS("Action", "MessageReceiverEx")
 		
 		pr _precedence = GETSV(_thisClass, "precedence");
 		
-		//if (isNil "_precedence") then {
-		//	0
-		//} else {
+		if (isNil "_precedence") then {
+			0
+		} else {
 			_precedence
-		//};
+		};
 	ENDMETHOD;
 	
 	public STATIC_METHOD(isNonInstant)

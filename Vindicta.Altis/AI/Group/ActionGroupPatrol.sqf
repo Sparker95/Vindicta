@@ -11,6 +11,13 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 
 	VARIABLE("route");
 
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_ROUTE, [[]] ] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
@@ -142,7 +149,9 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [[TAG_INSTANT ARG _instant]], _AI);
+			private _parameters = [[TAG_INSTANT, _instant]];
+			private _args = ["GoalUnitInfantryRegroup", 0, _parameters, _AI, true, false, true]; // Will be always active, even when completed
+			CALLM(_unitAI, "addExternalGoal", _args);
 		} forEach _units;
 
 		// Set state
@@ -169,20 +178,10 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	public override METHOD(terminate)
 		params [P_THISOBJECT];
 		
-		pr _hG = T_GETV("hG");
-		
+		T_CALLCM0("ActionGroup", "terminate");
+
 		// Delete all waypoints
 		T_CALLM0("clearWaypoints");
-
-				
-		// Delete given goals
-		pr _AI = T_GETV("AI");
-		pr _group = GETV(_AI, "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
-		} forEach _units;
 		
 	ENDMETHOD;
 

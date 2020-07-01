@@ -1,6 +1,0 @@
-#include "..\common.h"
-#include "..\Undercover\UndercoverMonitor.hpp"
-#include "..\Location\Location.hpp"
-#include "..\AI\Commander\AICommander.hpp"
-#include "..\AI\Commander\LocationData.hpp"
-#include "CivilianPresence.hpp"

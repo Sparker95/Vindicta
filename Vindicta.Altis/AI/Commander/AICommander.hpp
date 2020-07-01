@@ -134,7 +134,7 @@
 
 // Max amount of units at airfields
 #define CMDR_MAX_INF_AIRFIELD 80
-#define CMDR_MAX_VEH_AIRFIELD 15
+#define CMDR_MAX_VEH_AIRFIELD 25
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \

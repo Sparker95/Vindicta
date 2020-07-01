@@ -89,13 +89,14 @@ class Params {
 };
 
 class CfgFunctions {
-	class pr0
-	{
-		#include "Common\functions.hpp"
-	};
-	#include "Dialogue\functions.hpp"
+
+    class pr0
+    {
+        #include "Common\functions.hpp"
+    };
+	
 	#include "JeroenArsenal\functions.hpp"
-    #include "CivilianPresence\functions.hpp"
+   
 	class missionTag
 	{
 		class randomThings

@@ -58,13 +58,15 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		#endif
 		
 		pr _side = side _hG;
+		pr _leader = leader _hG;
 		pr _otherSides = [WEST, EAST, INDEPENDENT, CIVILIAN] - [_side];
 		pr _allPlayers = allPlayers;
+		pr _suspiciousTargets = [];
 		
 		if ({ alive _x } count units _hG > 0) then {
 		
 			// Check spotted targets
-			pr _nt = leader _hG targetsQuery [objNull, sideUnknown, "", [], 0/*TARGET_AGE_TO_REVEAL*/];
+			pr _nt = (leader _hG targetsQuery [objNull, sideUnknown, "", [], 0/*TARGET_AGE_TO_REVEAL*/]);
 			// Filter objects that are of different side and are currently being seen
 			pr _currentlyObservedObjects = _nt select {
 				//private _o = _x select 1;
@@ -89,9 +91,8 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				
 				if (_o isKindOf "Man") then {
 					// It's a Man
-					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o)) then {
-						pr _AI = T_GETV("AI");
-						SETV(_AI, "suspTarget", _o);
+					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o) && {!GET_ARRESTED_FLAG(_o)}) then {
+						_suspiciousTargets pushBack _o;
 					};
 
 					pr _args = [_o, _hG];
@@ -116,6 +117,22 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 					};
 				};
 			} forEach _currentlyObservedObjects;
+
+			// Scan for nearby suspicious civilian agents
+			pr _suspAgents = (_leader nearObjects ["CAManBase", 150]) select {
+				GET_AGENT_FLAG(_x);
+			} select {
+				(_x getVariable [UNDERCOVER_SUSPICIOUS, false]) && {!GET_ARRESTED_FLAG(_x)}
+			};
+			_suspiciousTargets append _suspAgents;
+			pr _AI = T_GETV("AI");
+			if ((count _suspiciousTargets) > 0) then {
+				_suspiciousTargets = _suspiciousTargets apply {[_x distance _leader, _x]};
+				_suspiciousTargets sort ASCENDING;
+				SETV(_AI, "suspTarget", _suspiciousTargets select 0 select 1);
+			} else {
+				SETV(_AI, "suspTarget", objNull);
+			};
 			
 			// Add exposed vehicle crew to the array
 			_currentlyObservedObjects append _exposedVehicleCrew;

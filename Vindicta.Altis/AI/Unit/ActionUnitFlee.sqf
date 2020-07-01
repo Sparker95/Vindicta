@@ -1,29 +1,79 @@
 #include "common.hpp"
 
+#define pr private
+
+/*
+This action orders the unit to run to a given destination in panic.
+Standard AIUnitHuman movement methods are not used here, movement is handled differently here.
+*/
+
 #define OOP_CLASS_NAME ActionUnitFlee
 CLASS("ActionUnitFlee", "ActionUnit")
-	
+
+	VARIABLE("pos");
+
+	public override METHOD(getPossibleParameters)
+		[
+			[ ],	// Required parameters
+			[ [TAG_MOVE_TARGET, [[]]], [TAG_MOVE_RADIUS, [0]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
+	METHOD(new)
+		params [P_THISOBJECT, P_OOP_OBJECT("_ai"), P_ARRAY("_parameters")];
+
+		pr _pos = CALLSM3("Action", "getParameterValue", _parameters, TAG_MOVE_TARGET, [0 ARG 0 ARG 0]);
+		T_SETV("pos", _pos);
+	ENDMETHOD;
+
+
 	protected override METHOD(activate)
 		params [P_THISOBJECT];
 		
-		private _unit = T_GETV("hO");
+		private _hO = T_GETV("hO");
+		/*
 		private _panicAnimsErectAndKneeled = [
 			"ApanPercMstpSnonWnonDnon_G01", "ApanPercMstpSnonWnonDnon_G02", "ApanPercMstpSnonWnonDnon_G03",
 			"ApanPknlMstpSnonWnonDnon_G01", "ApanPknlMstpSnonWnonDnon_G02", "ApanPknlMstpSnonWnonDnon_G03"
 		];
+		*/
 
 		// Keeping this for a civi variant maybe ?
 		// private _animationsProned = ["ApanPpneMstpSnonWnonDnon_G01", "ApanPpneMstpSnonWnonDnon_G02", "ApanPpneMstpSnonWnonDnon_G03"];
 
-		doStop _unit;
-		_unit call misc_fnc_actionDropAllWeapons;
-		_unit setSpeedMode "FULL";
-		_unit setBehaviour "CARELESS";
-		_unit switchMove selectRandom _panicAnimsErectAndKneeled;
+		//doStop _hO;
+		//_hO spawn misc_fnc_actionDropAllWeapons; // this can sleep so we should spawn it
 
-		private _pos = getPos _unit;
-		private _newpos = [_pos select 0, (_pos select 1) + 500, _pos select 2];
-		_unit doMove _newpos;
+		pr _ai = T_GETV("AI");
+		CALLM0(_ai, "stopMoveToTarget"); // Stop standard movement, we handle it ourselves in this action
+
+		_hO forceWalk false;
+		_hO setUnitPosWeak "UP";
+		_hO setUnitPos "UP";
+		if (random 10 > 4) then {
+			_hO switchAction "Panic";
+			_hO forceSpeed (selectRandom [5, -1]); // 5 - runs slowly, -1 - runs very very fast
+		} else {
+			_hO switchAction "";
+			_hO forceSpeed -1;
+		};
+
+		_hO setBehaviour "CARELESS";
+
+		//_hO switchMove selectRandom _panicAnimsErectAndKneeled;
+
+		private _posMove = T_GETV("pos");
+		if (_posMove isEqualTo [0,0,0]) then {
+			private _pos = getPos _hO;
+			_posMove = [(_pos#0) - 100 + random 200, (_pos#1) - 100 + random 200, _pos select 2];
+			T_SETV("pos", _posMove);
+		};
+
+		if (GET_AGENT_FLAG(_hO)) then {
+			_hO setDestination [_posMove,"LEADER PLANNED",true];
+		} else {
+			_hO doMove _posMove;
+		};
 
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
@@ -32,7 +82,22 @@ CLASS("ActionUnitFlee", "ActionUnit")
 	public override METHOD(process)
 		params [P_THISOBJECT];
 		T_CALLM0("activateIfInactive");
-		ACTION_STATE_COMPLETED
+		//ACTION_STATE_COMPLETED
+
+		pr _hO = T_GETV("hO");
+		if (_hO distance T_GETV("pos") < 2) then {
+			_hO setUnitPosWeak "Middle";
+			_hO setUnitPos "Middle";
+		};
+
+		// Always active
+		ACTION_STATE_ACTIVE
+	ENDMETHOD;
+
+	public override METHOD(terminate)
+		params [P_THISOBJECT];
+		pr _hO = T_GETV("hO");
+		doStop _hO;
 	ENDMETHOD;
 ENDCLASS;
 

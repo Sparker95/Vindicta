@@ -13,7 +13,7 @@ this forceaddUniform "rhsgref_uniform_olive";
 this addVest "FGN_AAF_M99Vest_M81";
 
 this addWeapon "SMG_02_F";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_flashlight";
 this addPrimaryWeaponItem "30Rnd_9x21_Mag_SMG_02";
 this addWeapon "rhsusf_weap_m1911a1";
 this addHandgunItem "rhsusf_mag_7x45acp_MHP";

@@ -102,7 +102,6 @@ CLASS("MessageLoop", "Storable");
 			private _id = addMissionEventHandler ["EachFrame", _codeStr];
 			T_SETV("eachFrameEHID", _id);
 			#endif
-			FIX_LINE_NUMBERS()
 		} else {
 			// Do this last to avoid race condition on other members of this class
 			private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
@@ -280,7 +279,6 @@ CLASS("MessageLoop", "Storable");
 				T_CALLM0("updateRequiredFractions");
 			};
 		};
-		nil
 	ENDMETHOD;
 
 	// Only relevant for scheduled process categories

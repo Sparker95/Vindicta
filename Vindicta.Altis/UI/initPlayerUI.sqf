@@ -90,3 +90,22 @@ CALLM1(gClientMapUI, "respawnPanelEnable", true);
 
 // Enable AI debug UI
 CALLSM0("AIDebugUI", "staticInit");
+
+// Add event handler for horn usage
+// It's here because we add event handler to display
+private _hornConfigs = "inheritsFrom _x == (configFile >> 'CfgWeapons' >> 'CarHorn')" configClasses (configFile >> "cfgWeapons");
+vin_carHornClassNames = (_hornConfigs apply {configName _x}) + ["CarHorn"];
+vin_carHornMouseDownHandler = {
+	if ((vehicle player isEqualTo player)) exitWith {};
+
+	pr _weapon = currentWeapon vehicle player;
+	if (_weapon in vin_carHornClassNames) then {
+		pr _nearMen = player nearObjects ["CAManBase", 15];
+		//systemChat format ["Beep Beep! %1", time];
+		//diag_log format ["Nearby men: %1", _nearMen];
+		pr _args = [vehicle player, _nearMen];
+		REMOTE_EXEC_CALL_STATIC_METHOD("AIUnitHuman", "addCarCollisionDanger", _args, ON_SERVER, false);
+		//call compile preprocessFileLineNumbers "temp.sqf";
+	};
+};
+(finddisplay 46) displayAddEventHandler ["MouseButtonDown", "call vin_carHornMouseDownHandler"];

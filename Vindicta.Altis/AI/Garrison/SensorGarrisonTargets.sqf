@@ -32,7 +32,6 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ 
 	public override METHOD(update)
 		params [P_THISOBJECT];
 		
@@ -171,7 +170,6 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ 
 	public override METHOD(getStimulusTypes)
 		[STIMULUS_TYPE_TARGETS]
 	ENDMETHOD;

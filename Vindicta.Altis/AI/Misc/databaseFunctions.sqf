@@ -3,6 +3,7 @@
 #define OOP_WARNING
 #define OFSTREAM_FILE "AI.rpt"
 #include "..\..\common.h"
+#include "..\AI\AI.hpp"
 
 /*
 These functions help initialize various properties of goals and actions from a single file in a more human-readable way.
@@ -24,7 +25,8 @@ AI_misc_fnc_setGoalEffects = {
 	params [P_STRING("_goalClass"), P_NUMBER("_size"), P_ARRAY("_effectsArray")];
 	
 	// Create a new world state
-	pr _ws = [_size] call ws_new;
+	// Mark values as originating from goal
+	pr _ws = [_size, ORIGIN_GOAL_WS] call ws_new;
 	
 	// Set world state parameters from the effects array
 	{
@@ -72,7 +74,8 @@ AI_misc_fnc_setActionPreconditions = {
 	params [P_STRING("_actionClass"), P_NUMBER("_size"), P_ARRAY("_preconditionsArray")];
 	
 	// Create a new world state
-	pr _ws = [_size] call ws_new;
+	// Precondition values are static
+	pr _ws = [_size, ORIGIN_STATIC_VALUE] call ws_new;
 	
 	// Set world state parameters from the effects array
 	{
@@ -92,13 +95,22 @@ AI_misc_fnc_setActionPreconditions = {
 	SETSV(_actionClass, "preconditions", _ws);
 };
 
-AI_misc_fnc_setActionParametersFromGoal = {
+AI_misc_fnc_setActionParametersFromGoalRequired = {
 	params [P_STRING("_actionClass"), P_ARRAY("_goalParameterTagsArray")];
 	pr _parameters = [];
 	{
-		_parameters pushBack [_x, nil];
+		_parameters pushBack [_x, _x, ORIGIN_GOAL_PARAMETER];
 	} forEach _goalParameterTagsArray;
-	SETSV(_actionClass, "parameters", _parameters);
+	SETSV(_actionClass, "parametersFromGoal", _parameters);
+};
+
+AI_misc_fnc_setActionParametersFromGoalOptional = {
+	params [P_STRING("_actionClass"), P_ARRAY("_goalParameterTagsArray")];
+	pr _parameters = [];
+	{
+		_parameters pushBack [_x, _x, ORIGIN_GOAL_PARAMETER];
+	} forEach _goalParameterTagsArray;
+	SETSV(_actionClass, "parametersFromGoalOptional", _parameters);
 };
 
 AI_misc_fnc_setActionPrecedence = {

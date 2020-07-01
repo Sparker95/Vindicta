@@ -113,7 +113,6 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 				_pos = _pos vectorMultiply (1 / count _allGroups);
 				_pos = ZERO_HEIGHT(_pos);
 				CALLM1(_AI, "setPos", _pos);
-				// [_worldState, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 			};
 		} else {
 			// When unspawned the group specific states related to units can be assumed based on unit counts

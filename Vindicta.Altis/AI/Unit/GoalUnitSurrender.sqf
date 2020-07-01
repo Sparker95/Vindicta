@@ -5,7 +5,7 @@ Class: Goal.GoalUnitSurrender
 */
 
 #define OOP_CLASS_NAME GoalUnitSurrender
-CLASS("GoalUnitSurrender", "Goal")
+CLASS("GoalUnitSurrender", "GoalUnit")
 
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
@@ -32,6 +32,12 @@ CLASS("GoalUnitSurrender", "Goal")
 			private _action = NEW("ActionUnitSurrender", [_AI]);
 			_action
 		}
+	ENDMETHOD;
+
+	// Must return a bool, true or false, if unit can talk while doing this goal
+	// Default is false;
+	STATIC_METHOD(canTalk)
+		true;
 	ENDMETHOD;
 
 ENDCLASS;

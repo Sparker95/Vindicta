@@ -5,10 +5,17 @@ Some generic macros
 // Wraps contents in quotes
 #define QUOTE(smth) #smth
 
-// Macro for global OOP variables
+//Macro for global OOP variables
 #define OOP_GVAR(var) o_##var
 #define OOP_GVAR_STR(var) format["o_%1", #var]
 
+// Unpacking a _thisObject variable into a private _variable
+// So if we have private _var = GET_VAR(_thisObject, "var"), this macros can help
+#define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, QUOTE(varName))
+
+// Macro for global OOP variables
+#define OOP_GVAR(var) o_##var
+#define OOP_GVAR_STR(var) format["o_%1", #var]
 // ---------------------------------------------------
 // |         T H R E A D I N G    U T I L S          |
 // ---------------------------------------------------

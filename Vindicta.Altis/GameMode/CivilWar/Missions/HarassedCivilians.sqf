@@ -9,7 +9,7 @@ pr0_fnc_StartFreeingCivilian = {
 		CALLSM("UndercoverMonitor", "onUnitCompromised", [_this]);
 	}] remoteExec ["call", 0];
 
-	[player, "Let me free you brother!", _target] call Dialog_fnc_hud_createSentence;
+	[player, "Let me free you brother!",0.5] call pr0_fnc_dialogue_createSentence;
 };
 
 // Callback for the end of the free civilian action
@@ -27,19 +27,19 @@ pr0_fnc_CompleteFreeingCivilian = {
 			_this setVariable [UNDERCOVER_TARGET, false, false];
 		}] remoteExec ["call", 0];
 
-		[player, "There you go, tell your friends of what transpired here today!", _target] call Dialog_fnc_hud_createSentence;
+		[player, "There you go, tell your friends of what transpired here today!"] call pr0_fnc_dialogue_createSentence;
 		sleep 5;
 
 		// Intel reward for player
-		[_target, "Thank you! One of those thugs dropped this, perhaps it is of interest to you.", player] call Dialog_fnc_hud_createSentence;
+		[_target, "Thank you! One of those thugs dropped this, perhaps it is of interest to you."] call pr0_fnc_dialogue_createSentence;
 		sleep 6;
 		// CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
 
-		[player, "(You take the papers handed to you)", _target] call Dialog_fnc_hud_createSentence;
+		[player, "(You take the papers handed to you)"] call pr0_fnc_dialogue_createSentence;
 		sleep 3;
-		[player, "Thank you, you should get out of here now, more will be coming.", _target] call Dialog_fnc_hud_createSentence;
+		[player, "Thank you, you should get out of here now, more will be coming."] call pr0_fnc_dialogue_createSentence;
 		sleep 5;
-		[_target, "I will, and you should go carefully aswell, they will be looking for you now!", player] call Dialog_fnc_hud_createSentence;
+		[_target, "I will, and you should go carefully aswell, they will be looking for you now!"] call pr0_fnc_dialogue_createSentence;
 		sleep 5;
 
 		systemChat "The enemy has taken note of the increased activity in this area!";
@@ -137,7 +137,8 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 			private _radius = GETV(_city, "boundingRadius");
 
 			// Use the civ types specified in the presence module
-			private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
+			private _civTemplate = CALLM1(gGameMode, "getTemplate", civilian);
+			private _civTypes = _civTemplate select T_INF select T_INF_default;
 			for "_i" from 0 to (_deficit-1) do {
 				private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
 				private _tmpGroup = createGroup civilian;

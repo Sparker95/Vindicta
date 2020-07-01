@@ -5,29 +5,35 @@
 			<Key ID="STR_JNC_ACT_SELECT">
 				<Original>Select</Original>
 				<German>Auswählen</German>
-				<Czech>Vybrat</Czech>
+				<Polish>Wybierz</Polish>
+        <Czech>Vybrat</Czech>
 			</Key>
 			<Key ID="STR_JNC_ACT_CANCEL">
 				<Original>Cancel</Original>
 				<German>Abbrechen</German>
-				<Czech>zrušit</Czech>
+				<Polish>Anuluj</Polish>
+        <Czech>zrušit</Czech>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_HINT">
 				<Original>Select an object</Original>
 				<German>Objekt auswählen</German>
-				<Czech>Vyberte objekt</Czech>
+				<Polish>Wybierz obiekt</Polish>
+        <Czech>Vyberte objekt</Czech>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_NO_OBJECT">
 				<Original>Not looking at anything</Original>
 				<German>Nichts ausgewählt</German>
+        <Polish>Na nic nie patrzysz</Polish>
 				<Czech>zrušit výběr</Czech>
 			</Key>
 			<Key ID="STR_JNC_TARGET_HINT">
 				<Original>Loading to inventory in %1</Original>
+        <Polish>Ładowanie do ekwipunku w %1</Polish>
 				<Czech>Načítání do inventáře v% 1</Czech>
 			</Key>
 			<Key ID="STR_JNC_MODIFIER_HINT">
 				<Original>Shift and Ctrl keys change how many items you move at once</Original>
+        <Polish>Klawisze Shift i Ctrl zmieniają liczbę przedmiotów przenoszonych jednocześnie</Polish>
 				<Czech>Klávesy Shift a Ctrl mění počet položek, které přesouváte najednou</Czech>
 			</Key>
 		</Container>
@@ -37,38 +43,46 @@
 			<Key ID="STR_JNA_ACT_OPEN">
 				<Original>Arsenal</Original>
 				<German>Arsenal</German>
+        <Polish>Arsenał</Polish>
 				<Czech>Arzenál</Czech>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
 				<Original>Arsenal to external Inventory</Original>
 				<German>In Fahrzeug laden</German>
+        <Polish>Arsenał do ekwipunku zewnętrznego</Polish>
 				<Czech>Arzenál do vnějšího inventáře</Czech>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
 				<Original>Select something with an inventory to load into</Original>
+        <Polish>Wybierz coś z ekwipunkiem do załadowania przedmiotów</Polish>
 				<Czech>Vyberte z inventáře, do kterého se má načíst</Czech>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD">
 				<Original>External Inventory to Arsenal</Original>
 				<German>Fahrzeug entladen</German>
+        <Polish>Zewnętrzny ekwipunek do Arsenału</Polish>
 				<Czech>Externí inventář do Arsenalu</Czech>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD_DESC">
 				<Original>Please select an object with an inventory, or another Arsenal to load from</Original>
+        <Polish>Wybierz obiekt z ekwipunkiem lub inny Arsenał, z którego można załadować aktualny</Polish>
 				<Czech>Vyberte objekt s inventářem nebo jiný arzenál, ze který chcete načíst</Czech>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
 				<Original>Not looking at an object</Original>
+        <Polish>Nie patrzysz na żaden obiekt</Polish>
 				<Czech>Nedíváme se na objekt</Czech>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
 				<Original>Object too far away</Original>
 				<German>Objekt zu weit entfernt</German>
+        <Polish>Obiekt jest za daleko</Polish>
 				<Czech>Objekt je příliš daleko</Czech>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
 				<Original>Object does not have any inventory or Arsenal</Original>
 				<German>Objekt hat kein Inventar oder Fahrzeug</German>
+        <Polish>Obiekt nie ma żadnego ekwipunku ani nie jest Arsenałem</Polish>
 				<Czech>Objekt nemá žádný inventář ani arzenál</Czech>
 			</Key>
 		</Container>
@@ -78,21 +92,25 @@
 			<Key ID="STR_JNG_ACT_OPEN">
 				<Original>Open garage</Original>
 				<German>Garage öffnen</German>
+        <Polish>Otwórz garaż</Polish>
 				<Czech>Otevřít garáž</Czech>
 			</Key>
 			<Key ID="STR_JNG_ACT_STOREVEHICLE">
 				<Original>Garage Vehicle</Original>
 				<German>Fahrzeug verstauen</German>
+        <Polish>Schowaj pojazd do garażu</Polish>
 				<Czech>vozidlo v garáži</Czech>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR1">
 				<Original>Vehicle too far away</Original>
 				<German>Fahrzeug zu weit entfernt</German>
+        <Polish>Pojazd jest za daleko</Polish>
 				<Czech>Vozidlo je příliš daleko</Czech>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR2">
 				<Original>Not looking at a vehicle</Original>
 				<German>Kein Fahrzeug ausgewählt</German>
+        <Polish>Nie patrzysz się na pojazd</Polish>
 				<Czech>Nedíváme se na vozidlo</Czech>
 			</Key>
 		</Container>
@@ -102,21 +120,25 @@
 			<Key ID="STR_JN_FUEL_ACT_REFUEL">
 				<Original>Refuel</Original>
 				<German>Betanken</German>
+        <Polish>Tankuj pojazd</Polish>
 				<Czech>Natankovat</Czech>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_REFUELOPTION">
 				<Original>Refuel cargo or tank</Original>
 				<German>Tank oder Ladung betanken</German>
+        <Polish>Tankuj ładunek lub zbiornik</Polish>
 				<Czech>Doplňte náklad nebo palivo</Czech>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELTANK">
 				<Original>Tank</Original>
 				<German>Tank</German>
+        <Polish>Zbiornik</Polish>
 				<Czech>Palivo</Czech>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELCARGO">
 				<Original>Cargo</Original>
 				<German>Ladung</German>
+        <Polish>Ładunek</Polish>
 				<Czech>Náklad</Czech>
 			</Key>
 		</Container>
@@ -126,6 +148,7 @@
 			<Key ID="STR_JN_AMMO_ACT_REARM">
 				<Original>Rearm</Original>
 				<German>Neubewaffnen</German>
+        <Polish>Przezbrój</Polish>
 				<Czech>Přezbrojit</Czech>
 			</Key>
 		</Container>
@@ -135,6 +158,7 @@
 			<Key ID="STR_JN_REPAIR_ACT_REPAIR">
 				<Original>Repair</Original>
 				<German>Reparieren</German>
+        <Polish>Napraw</Polish>
 				<Czech>Opravit</Czech>
 			</Key>
 		</Container>
@@ -147,93 +171,114 @@
 			<Key ID="STR_UM_OVERT">
 				<Original>OVERT</Original>
 				<German>FEINDLICH</German>
+        <Polish>WYKRYTY</Polish>
 				<Czech>NEPŘÁTELSKÝ</Czech>
 			</Key>
 			<Key ID="STR_UM_SUSPICIOUS">
 				<Original>SUSPICIOUS</Original>
 				<German>VERDÄCHTIG</German>
+        <Polish>PODEJRZANY</Polish>
 				<Czech>PODEZŘELÝ</Czech>
 			</Key>
 			<Key ID="STR_UM_UNDERCOVER">
 				<Original>UNDERCOVER</Original>
 				<German>ZIVIL</German>
+        <Polish>UTAJNIONY</Polish>
 				<Czech>V UTAJENÍ</Czech>
 			</Key>
 			<Key ID="STR_UM_COMPROMISED">
 				<Original>COMPROMISED</Original>
 				<German>AUFGEFLOGEN</German>
+        <Polish>ZDRADZONY</Polish>
 				<Czech>V OHROŽENÍ</Czech>
 			</Key>
 		</Container>
 		<Container name="Hints">
 			<Key ID="STR_UM_HINT_WEAPON">
 				<Original>OVERT: WEAPON</Original>
+        <Polish>WYKRYTY: BROŃ</Polish>
 				<Czech>OVERT: ZBRANĚ</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_DOWNED">
 				<Original>INCAPACITATED</Original>
+        <Polish>NIEPRZYTOMNY</Polish>
 				<Czech>NESCHOPNÝ</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_SURRENDER">
 				<Original>SURRENDERED</Original>
+        <Polish>PODDAJE SIĘ</Polish>
 				<Czech>VZDAL</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_HOSTILITY">
 				<Original>OVERT: WEAPON DISCHARGED!</Original>
+        <Polish>WYKRYTY: WYSTRZELONO Z BRONI!</Polish>
 				<Czech>OVERT: ZBRAŇ VYBITÁ!</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEAR">
 				<Original>SUSPICIOUS OUTFIT</Original>
+        <Polish>PODEJRZANY STRÓJ</Polish>
 				<Czech>PODEZŘELÉ OBLEČENÍ</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_MILVEH">
 				<Original>OVERT: MILITARY VEHICLE</Original>
+        <Polish>WYKRYTY: POJAZD WOJSKOWY</Polish>
 				<Czech>OVERT: VOJENSKÉ VOZIDLO</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEARVEH">
 				<Original>SUSPICIOUS OUTFIT VISIBLE</Original>
+        <Polish>WIDOCZNY PODEJRZANY STRÓJ</Polish>
 				<Czech>PODEZŘELÉ OBLEČENÍ VIDITELNÉ</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_CLOSINGIN">
 				<Original>THEY ARE GOING TO SPOT YOU!</Original>
+        <Polish>ONI CIĘ ZOBACZĄ!</Polish>
 				<Czech>UVIDÍ TĚ!</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPBEHAVIOR">
 				<Original>SUSPICIOUS BEHAVIOUR</Original>
+        <Polish>PODEJRZANE ZACHOWANIE</Polish>
 				<Czech>PODEZŘELÉ CHOVÁNÍ</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_OFFROAD">
 				<Original>TOO FAR FROM ROADS</Original>
+        <Polish>ZA DALEKO OD DROGI</Polish>
 				<Czech>PŘÍLIŠ DALEKO OD SILNICE</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_ALLOWEDAREA">
 				<Original>THIS AREA IS BEING WATCHED! STAY ON THE ROAD!</Original>
+        <Polish>JESTEŚ OBSERWOWANY! POZOSTAŃ NA DRODZE!</Polish>
 				<Czech>TATO OBLAST JE SLEDOVÁNA! ZŮSTAŇTE NA CESTĚ!</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_MILAREA">
 				<Original>MILITARY AREA</Original>
+        <Polish>OBSZAR ZASTRZEŻONY</Polish>
 				<Czech>VOJENSKÁ OBLAST</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
+        <Polish>SCHWYTANY</Polish>
 				<Czech>ZAJETÍ</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_MORPHINE">
 				<Original>INJECTING SOME MORPHINE?</Original>
+        <Polish>WSTRZYKIWANIE MORFINY?</Polish>
 				<Czech>PÍCHNOUT SI MORFIUM?</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_ILLEGAL">
 				<Original>ILLEGAL ACTION</Original>
+        <Polish>CZYN NIELEGALNY</Polish>
 				<Czech>PROTIPRÁVNÍ JEDNÁNÍ</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
+        <Polish>PATRZENIE DO EKWIPUNKU</Polish>
 				<Czech>PŘÍSTUP K INVENTÁŘI</Czech>
 			</Key>
 			<Key ID="STR_UM_HINT_COMPROMISEDVIC">
 				<Original>COMPROMISED VEHICLE</Original>
+        <Polish>POSZUKIWANY POJAZD</Polish>
 				<Czech>OHROŽENÉ VOZIDLO</Czech>
-			</Key>
+			</Key>																
 		</Container>
 	</Package>
 </Project>
@@ -243,64 +288,79 @@
 		<Container name="Hints">
 			<Key ID="STR_CMUI_DEFAULT">
 				<Original>There is no context hint available for this control.</Original>
+        <Polish>Dla tej kontrolki nie ma podpowiedzi.</Polish>
 				<Czech>Pro tento ovládací prvek není k dispozici žádná nápověda pro kontext.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_LISTBOX">
 				<Original>This list displays all known intel. Click on a row to display only that piece of intel on your map.</Original>
+        <Polish>Ta lista zawiera wszystkie znane dane wywiadowcze. Kliknij wiersz, aby wyświetlić tylko ten element wywiadu na mapie.</Polish>
 				<Czech>Tento seznam zobrazuje všechny známé informace. Kliknutím na řádek zobrazíte pouze tuto informaci na mapě.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ACTIVE">
 				<Original>Press to toggle the display of active intel drawn on your map.</Original>
+        <Polish>Naciśnij, aby przełączyć wyświetlanie planowanych, nieaktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení aktivních informací nakreslených na mapě.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_INACTIVE">
 				<Original>Press to toggle the display of planned, inactive intel drawn on your map.</Original>
+        <Polish>Naciśnij, aby przełączyć wyświetlanie planowanych, nieaktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení plánovaných, neaktivních informací nakreslených na mapě.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ENDED">
 				<Original>Press to toggle the display of old, ended intel drawn on your map.</Original>
+        <Polish>Naciśnij, aby przełączyć wyświetlanie starych, zakończonych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení starých, ukončených informací nakreslených na mapě.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_NOTIF">
 				<Original>Press to remove red alert icons on locations.</Original>
+        <Polish>Naciśnij, aby usunąć czerwone ikony alertów w lokalizacjach.</Polish>
 				<Czech>Stisknutím tlačítka odeberete červené výstražné ikony na místech.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_INTELP">
 				<Original>Press to toggle the display of the intel panel. Useful if you want to see the entire map.</Original>
+        <Polish>Naciśnij, aby przełączyć wyświetlanie panelu danych wywiadowczych. Przydatne, jeśli chcesz zobaczyć całą mapę.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení panelu Intel. Užitečné, pokud chcete vidět celou mapu.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_LOC">
 				<Original>Press to toggle our custom locations being shown on your map. That includes outposts and cities.</Original>
+        <Polish>Naciśnij, aby przełączyć nasze niestandardowe lokalizacje wyświetlane na mapie. Dotyczy to placówek wojskowych i miast.</Polish>
 				<Czech>Stisknutím přepínáte naše vlastní lokality zobrazené na mapě. To zahrnuje základny a města.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_PLAYERS">
 				<Original>Press to toggle players being shown on your map.</Original>
+        <Polish>Naciśnij, aby przełączać wyświetlanie graczy na mapie.</Polish>
 				<Czech>Stisknutím přepínáte hráče zobrazené na mapě.</Czech>
 			</Key>
 			<Key ID="STR_LOCALIZE_MUI_BUTTON_DUMMY">
 				<Original>Press to toggle this setting on or off.</Original>
+        <Polish>Naciśnij, aby włączyć lub wyłączyć to ustawienie.</Polish>
 				<Czech>Stisknutím toto nastavení zapínáte nebo vypnete.</Czech>
 			</Key>
 
 			<Key ID="STR_CMUI_SORTINGBTN_SIDE">
 				<Original>Sort intel list by faction side. WEST for BLUFOR, EAST for OPFOR, and IND for Independent.</Original>
+        <Polish>Sortuj listę wywiadowczą według stron frakcji. WEST dla BLUFOR, EAST dla OPFOR i IND dla Independent.</Polish>
 				<Czech>Seřaďte seznam informací podle frakcí. WEST pro BLUFOR, VÝCHOD pro OPFOR a IND pro nezávislé.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_STATUS">
 				<Original>Sort intel list by current status of the intel items.</Original>
+        <Polish>Sortuj listę danych wywiadowczych według aktualnego stanu elementów wywiadu.</Polish>
 				<Czech>Seřaďte seznam informací podle aktuálního stavu položek intelu.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TYPE">
 				<Original>Sort intel list by type.</Original>
+        <Polish>Sortuj listę danych wywiadowczych według rodzaju.</Polish>
 				<Czech>Seřaďte seznam informací podle typu.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TIME">
 				<Original>Sort intel list by most recent or oldest intel.</Original>
+        <Polish>Sortuj listę danych wywiadowczych według najnowszych lub najstarszych danych wywiadowczych.</Polish>
 				<Czech>Seřaďte seznam informací podle nejnovějších nebo nejstarších informací.</Czech>
 			</Key>
 
 			<Key ID="STR_CMUI_INTEL_TOOLTIP">
 				<Original>Double click to center on attack. Use Shift + LMB or Ctrl + LMB to multiselect items.</Original>
+        <Polish>Kliknij dwukrotnie, aby wyśrodkować na danej akcji. Użyj Shift + LMB lub Ctrl + LMB, aby zaznaczyć wiele pozycji.</Polish>
 				<Czech>Dvojitým kliknutím na střed útoku. K vícenásobnému výběru položek použijte Shift + LMB nebo Ctrl + LMB.</Czech>
 			</Key>
 
@@ -308,47 +368,58 @@
 		<Container name="IntelTxt">
 			<Key ID="STR_CMUI_INTEL_DEFAULT">
 				<Original>No description available.</Original>
+        <Polish>WYKRYTY</Polish>
 				<Czech>Není k dispozici žádný popis.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_MULTISELECT">
 				<Original>Select a single intel item to view a detailed description.</Original>
+        <Polish>Wybierz pojedynczy element wywiadu, aby wyświetlić szczegółowy opis.</Polish>
 				<Czech>Chcete-li zobrazit podrobný popis, vyberte jednu položku intelu.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_ATTACK">
 				<Original>The enemy commander has detected activity in this area and is dispatching an attack. Hold your ground and defeat enough attacks to stop the enemy from sending more.</Original>
+        <Polish>Dowódca wroga wykrył aktywność w tym obszarze i atakuje tę pozycję. Utrzymaj się i pokonaj wystarczającą liczbę ataków, aby powstrzymać wroga przed wysyłaniem kolejnych.</Polish>
 				<Czech>Nepřátelský velitel detekoval aktivitu v této oblasti a vysílá útok. Držte si pozici a porazit dostatek útoků zastavit nepřítele od odeslání více.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_RB">
 				<Original>The enemy commander is constructing a roadblock at this location.</Original>
+        <Polish>W tym miejscu wrogi dowódca buduje punkt kontrolny.</Polish>
 				<Czech>Nepřátelský velitel staví zátarasy na tomto místě.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_REINFORCE">
 				<Original>Enemy troops are being sent to this location to reinforce it.</Original>
+        <Polish>Do tego miejsca wysyłane są wrogie jednostki, aby je wzmocnić.</Polish>
 				<Czech>Na toto místo jsou vysláni nepřátelské jednotky, aby ho posílili.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_OFFICER">
 				<Original>A commanding officer is being sent to this location. If he arrives, he will take command and enable attacks from his destination. Intercept him or kill him at his destination – your choice.</Original>
+        <Polish>Dowódca jest wysyłany do tej lokalizacji. Jeśli przybędzie, przejmie dowodzenie i umożliwi ataki z miejsca docelowego. Przechwyć go lub zabij w miejscu docelowym - twój wybór.</Polish>
 				<Czech>Na toto místo je vyslán velící důstojník. Pokud dorazí, převezme velení a umožní útoky z cíle. Zachytit ho, nebo ho zabít v jeho cíli - vaše volba.</Czech>
 			</Key>
 
 			<Key ID="STR_CMUI_INTEL_CONV_BUILDING">
 				<Original>The enemy is resupplying a location with building resources. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some building resources.</Original>
+        <Polish>Wróg zaopatruje lokalizację w zasoby budowlane. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają, gdy dotrą na miejsce i zdobądź zasoby budowlane.</Polish>
 				<Czech>Nepřítel zásobuje místo stavebními zdroji. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, a obsažte některé stavební prostředky.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_AMMO">
 				<Original>The enemy is resupplying a location with ammunition. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some ammunition.</Original>
+        <Polish>Wróg zaopatruje miejsce w amunicję. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają po przybyciu i zdobądź trochę amunicji.</Polish>
 				<Czech>Nepřítel zásobuje místo municí. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, a zajměte nějakou munici.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_MISC">
 				<Original>The enemy is resupplying a location with unknown items. Intercept the transport, or attack the location they are headed to once they have arrived.</Original>
+        <Polish>Wróg zaopatruje lokalizację w nieznane przedmioty. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają, gdy już dotrą.</Polish>
 				<Czech>Nepřítel zásobuje místo neznámými předměty. Zachyťte transport nebo zaútočí na místo, kam míří, jakmile dorazí.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_MEDICAL">
 				<Original>The enemy is resupplying a location with medical items. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some medical supplies.</Original>
+        <Polish>Wróg zaopatruje miejsce w przedmioty medyczne. Przechwyć transport lub zaatakuj miejsce, do którego kierują się po przyjeździe, aby zdobyć zasoby medyczne.</Polish>
 				<Czech>Nepřítel zásobuje místo lékařskými předměty. Zachyťte transport, nebo zaútočte na místo, kam míří, jakmile dorazí, aby zachytili nějaké zdravotnické potřeby.</Czech>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_EXPLOSIVES">
 				<Original>The enemy is transporting a cache of explosives. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some explosives. Be careful not to blow it up!</Original>
+        <Polish>Wróg transportuje materiały wybuchowe. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają po przybyciu, aby schwytać niektóre materiały wybuchowe. Uważaj, aby go nie wysadzić!</Polish>
 				<Czech>Nepřítel převáží skrýš výbušnin. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, aby zachytili nějaké výbušniny. Dávejte pozor, abyste to vyhodit do povětří!</Czech>
 			</Key>
 
@@ -361,10 +432,12 @@
 		<Container name="TAB_SAVE">
 			<Key ID="STR_NEWSAVE_DISABLED">
 				<Original>You have reached the savegame limit of 5 savegames. Delete savegames to continue.</Original>
+        <Polish>Osiągnąłeś limit 5 zapisanych gier. Usuń zapisywane gry, aby kontynuować.</Polish>
 				<Czech>Dosáhli jste limitu savegame 5 savegames. Chcete-li pokračovat, odstraňte uložené hry.</Czech>
 			</Key>
 			<Key ID="STR_NEWSAVE_ENABLED">
 				<Original>Create a new save game.</Original>
+        <Polish>Utwórz nowy zapis gry.</Polish>
 				<Czech>Vytvořte novou uloženou hru.</Czech>
 			</Key>
 		</Container>
@@ -372,14 +445,17 @@
 		<Container name="TAB_INIT">
 			<Key ID="STR_INIT_ERROR1">
 				<Original>ERROR: Faction file contains errors. Check your .RPT file for more info.</Original>
+        <Polish>BŁĄD: plik frakcji zawiera błędy. Sprawdź plik .RPT, aby uzyskać więcej informacji.</Polish>
 				<Czech>Chyba: Soubor frakce obsahuje chyby. Zkontrolujte. RPT soubor pro více informací.</Czech>
 			</Key>
 			<Key ID="STR_INIT_ERROR2">
 				<Original>ERROR: Missing addon:</Original>
+        <Polish>BŁĄD: brakujący dodatek:</Polish>
 				<Czech>Chyba: Chybí addon:</Czech>
 			</Key>
 			<Key ID="STR_INIT_TOOLTIPHOVER">
 				<Original>Hover to show description.</Original>
+        <Polish>Najedź kursorem, aby wyświetlić opis.</Polish>
 				<Czech>Chcete-li zobrazit popis, najeďte myší.</Czech>
 			</Key>
 
@@ -392,134 +468,164 @@
 		<Container name="Section">
 			<Key ID="STR_Vindicta_Settings_Section">
 				<Original>*Vindicta</Original>
+        <Polish>*Vindicta</Polish>
 				<Czech>*Vindicta</Czech>
 			</Key>
 		</Container>
 		<Container name="Autoload">
 			<Key ID="STR_Vindicta_Settings_Autoload">
 				<Original>Auto Load</Original>
+        <Polish>Auto Ładowanie</Polish>
 				<Czech>Automatické načtení</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autoload_Enabled">
 				<Original>Enabled</Original>
+        <Polish>Włączone</Polish>
 				<Czech>Povoleno</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autoload_Enabled_Tooltip">
 				<Original>Most recent save will be loaded automatically on mission start</Original>
+        <Polish>Ostatni zapis zostanie załadowane automatycznie na początku misji</Polish>
 				<Czech>Poslední uložení se automaticky načte při zahájení mise</Czech>
 			</Key>
 		</Container>
 		<Container name="Autosave">
 			<Key ID="STR_Vindicta_Settings_Autosave">
 				<Original>Auto Save</Original>
+        <Polish>Auto Zapis</Polish>
 				<Czech>Automatické ukládání</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Enabled">
 				<Original>Enabled</Original>
+        <Polish>Włączone</Polish>
 				<Czech>Povoleno</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Enabled_Tooltip">
 				<Original>Enable/disable auto save system</Original>
+        <Polish>Włącz/wyłącz system auto zapisu</Polish>
 				<Czech>Povolení nebo zakázání systému automatického ukládání</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty">
 				<Original>On empty</Original>
+        <Polish>Gdy pusty</Polish>
 				<Czech>Na prázdné</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty_Tooltip">
 				<Original>Will auto save when the last player leaves the server</Original>
+        <Polish>Zapisuje się automatycznie, gdy ostatni gracz opuści serwer</Polish>
 				<Czech>Bude automaticky ukládat, když poslední hráč opustí server</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Interval">
 				<Original>Interval in hours (0 = disabled)</Original>
+        <Polish>Interwał w godzinach (0 = wyłączony)</Polish>
 				<Czech>Interval v hodinách (0 = zakázán)</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Interval_Tooltip">
 				<Original>Auto save will happen on this interval, setting to 0 will disable interval auto save</Original>
+        <Polish>W tym przedziale nastąpi automatyczne zapisywanie, ustawienie na 0 wyłączy automatyczne zapisywanie w odstępach</Polish>
 				<Czech>Automatické ukládání se stane v tomto intervalu, nastavení na 0 zakáže interval automatické ukládání</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat">
 				<Original>In combat</Original>
+        <Polish>Podczas walki</Polish>
 				<Czech>V boji</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat_Tooltip">
 				<Original>When enabled will allow autosaving when enemies are within 250m of a player, otherwise it will be delayed by up to 30 minutes after the scheduled time</Original>
+        <Polish>Włączenie tej opcji pozwoli na automatyczne zapisywanie, gdy wrogowie znajdą się w odległości 250m od gracza, w przeciwnym razie zapis zostanie opóźniony o 30 minut</Polish>
 				<Czech>Pokud je povoleno, umožní automatické úspory, když jsou nepřátelé do 250 m od hráče, jinak bude zpožděno až o 30 minut po plánovaném čase</Czech>
 			</Key>
 		</Container>
 		<Container name="Server">
 			<Key ID="STR_Vindicta_Settings_Server">
 				<Original>Server</Original>
+        <Polish>Serwer</Polish>
 				<Czech>Server</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Server_Suspend">
 				<Original>Suspend when empty</Original>
+        <Polish>Zawieś, gdy serwer będzie pusty</Polish>
 				<Czech>Pozastavit, pokud je prázdný</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Server_Suspend_Tooltip">
 				<Original>Time will be frozen when no players are connected to the server (applies to dedicated servers only)</Original>
+        <Polish>Czas zostanie zamrożony, gdy żaden z graczy nie zostanie podłączony do serwera (dotyczy tylko serwerów dedykowanych)</Polish>
 				<Czech>Čas bude zmrazen, pokud nejsou k serveru připojeni žádní hráči (platí pouze pro dedikované servery)</Czech>
 			</Key>
 		</Container>
 		<Container name="Game">
 			<Key ID="STR_Vindicta_Settings_Game">
 				<Original>Game</Original>
+        <Polish>Gra</Polish>
 				<Czech>Hra</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Game_Speed">
 				<Original>Game Speed Multiplier</Original>
+        <Polish>Mnożnik prędkości gry</Polish>
 				<Czech>Násobitel rychlosti hry</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Game_Speed_Tooltip">
 				<Original>Determines how fast time progresses in the game</Original>
+        <Polish>Określa szybkość upływu czasu w grze</Polish>
 				<Czech>Určuje, jak rychle bude ve hře postupovat čas.</Czech>
 			</Key>
 		</Container>
 		<Container name="Diff">
 			<Key ID="STR_Vindicta_Settings_Diff">
 				<Original>Difficulty</Original>
+        <Polish>Poziom Trudności</Polish>
 				<Czech>Obtížnosti</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Global">
 				<Original>Global difficulty</Original>
+        <Polish>Globalna trudność</Polish>
 				<Czech>Globální obtížnost</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Global_Tooltip">
 				<Original>This value is applied as a modifier to all other difficulty settings</Original>
+        <Polish>Ta wartość jest stosowana jako modyfikator do wszystkich innych ustawień trudności</Polish>
 				<Czech>Tato hodnota je použita jako modifikátor pro všechna ostatní nastavení obtížnosti.</Czech>
 			</Key>
 
 			<!-- Enemy Commander -->
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global">
 				<Original>Enemy Commander difficulty</Original>
+        <Polish>Poziom trudności wrogiego dowódcy</Polish>
 				<Czech>Obtížnost nepřátelského velitele</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global_Tooltip">
 				<Original>This value is applied as a modifier to all enemy Commander difficulty settings</Original>
+        <Polish>Ta wartość jest stosowana jako modyfikator do wszystkich ustawień wrogiego dowódcy</Polish>
 				<Czech>Tato hodnota je použita jako modifikátor pro všechna nastavení obtížnosti nepřátelského velitele</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate">
 				<Original>Reinforcement rate</Original>
+        <Polish>Szybkość wsparcia</Polish>
 				<Czech>Posílení</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy can reinforce</Original>
+        <Polish>Zmienia szybkość, z jaką wróg może się wzmacniać</Polish>
 				<Czech>Upravuje rychlost, s jakou může nepřítel posílit</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate">
 				<Original>Escalation rate</Original>
+        <Polish>Wskaźnik eskalacji</Polish>
 				<Czech>Míra eskalace</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy escalates their force strength (e.g. how soon in the campaign they will start to use tanks)</Original>
+        <Polish>Zmienia szybkość, z jaką wróg zwiększa swoją siłę (np. Jak szybko w kampanii zacznie używać czołgów)</Polish>
 				<Czech>Upravuje rychlost, s jakou nepřítel eskaluje svou sílu (např. jak brzy v kampani začne používat tanky)</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence">
 				<Original>Persitence</Original>
+        <Polish>Persitence</Polish>
 				<Czech>Perzitence</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence_Tooltip">
 				<Original>Modifies how persistent the enemy will be when sending repeated actions against you</Original>
+        <Polish>Zmienia wytrzymałość wroga podczas wysyłania powtarzających się działań przeciwko tobie</Polish>
 				<Czech>Upravuje, jak vytrvalý bude nepřítel při odesílání opakovaných akcí proti vám</Czech>
 			</Key>
 		</Container>
@@ -527,38 +633,47 @@
 		<Container name="AI">
 			<Key ID="STR_Vindicta_Settings_AI">
 				<Original>AI</Original>
+        <Polish>AI</Polish>
 				<Czech>AI</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global">
 				<Original>AI global</Original>
+        <Polish>Globalna trudności AI</Polish>
 				<Czech>AI global</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global_Tooltip">
 				<Original>This value is applied as a modifier to all AI settings</Original>
+        <Polish>Ta wartość jest stosowana jako modyfikator wszystkich ustawień AI</Polish>
 				<Czech>Tato hodnota se použije jako modifikátor pro všechna nastavení AI.</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Accuracy">
 				<Original>AI aiming accuracy</Original>
+        <Polish>Dokładność celowania AI</Polish>
 				<Czech>AI přesnost zaměření</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Shake">
 				<Original>AI aiming shake</Original>
+        <Polish>Drgania/ruch broni AI</Polish>
 				<Czech>AI míření chvění</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Speed">
 				<Original>AI aiming speed</Original>
+        <Polish>Prędkość celowania AI</Polish>
 				<Czech>Rychlost míření AI</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Spotting_Distance">
 				<Original>AI spotting distance</Original>
+        <Polish>Odległość wykrywania AI</Polish>
 				<Czech>Vzdálenost pozorování AI</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Spotting_Time">
 				<Original>AI spotting time</Original>
+        <Polish>Czas wykrywania AI</Polish>
 				<Czech>Doba pozorování AI</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Tooltip_Note">
 				<Original>Note: Final AI skill is affected by AI settings in server's profile</Original>
+        <Polish>Uwaga: Na ostateczną umiejętność AI wpływ mają ustawienia AI w profilu serwera</Polish>
 				<Czech>Poznámka: Konečná dovednost AI je ovlivněna nastavením AI v profilu serveru</Czech>
 			</Key>
 		</Container>
@@ -566,22 +681,27 @@
 		<Container name="Perf">
 			<Key ID="STR_Vindicta_Settings_Perf">
 				<Original>Performance</Original>
+        <Polish>Wydajność</Polish>
 				<Czech>Výkon</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison">
 				<Original>Garrison Spawn Distance</Original>
+        <Polish>Odległość spawnowania się garnizonu</Polish>
 				<Czech>Vzdálenost Spawn posádky</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Tooltip">
 				<Original>Spawn distance for enemy garrisons, measured in meters. Warning: raising this above the default can severely impact performance.</Original>
+        <Polish>Odległość spawnowania dla garnizonów wroga, mierzona w metrach. Ostrzeżenie: podniesienie wartości powyżej domyślnej może poważnie wpłynąć na wydajność</Polish>
 				<Czech>Vzdálenost Spawn pro nepřátelské posádky, měřeno v metrech. Upozornění: zvýšení výše výchozí může mít vážný dopad na výkon.</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian">
 				<Original>Civilian Spawn Distance</Original>
+        <Polish>Odległość spawnowania się cywilów</Polish>
 				<Czech>Vzdálenost civilního spawnu</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian_Tooltip">
 				<Original>Spawn distance for civilians, measured in meters from the city border. Warning: raising this above the default can severely impact performance.</Original>
+        <Polish>Odległość spawnowania dla ludności cywilnej, mierzona w metrach od granicy miasta. Ostrzeżenie: podniesienie wartości powyżej domyślnej może poważnie wpłynąć na wydajność</Polish>
 				<Czech>Vzdálenost Spawn pro civilisty, měřeno v metrech od městských hranic. Upozornění: zvýšení výše výchozí může mít vážný dopad na výkon.</Czech>
 			</Key>
 		</Container>
@@ -591,48 +711,59 @@
 		<Container name="Load">
 			<Key ID="STR_Vindicta_GameManager_Load_Loading">
 				<Original>LOADING</Original>
+        <Polish>ŁADOWANIE</Polish>
 				<Czech>NAČÍTÁNÍ</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Complete">
 				<Original>LOAD COMPLETE</Original>
+        <Polish>ŁADOWANIE ZAKOŃCZONE</Polish>
 				<Czech>NAČÍTÁNÍ KOMPLETNÍ</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Failed">
 				<Original>LOAD FAILED</Original>
+        <Polish>ŁADOWANIE SIĘ NIE POWIODŁO</Polish>
 				<Czech>NAČÍTÁNÍ SELHALO</Czech>
 			</Key>
 		</Container>
 		<Container name="Autoload">
 			<Key ID="STR_Vindicta_GameManager_Autoload">
 				<Original>Auto load</Original>
+        <Polish>Auto ładowanie</Polish>
 				<Czech>Automatické načítání</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Disabled">
 				<Original>Currently disabled, enable in CBA settings</Original>
+        <Polish>Obecnie wyłączone, włącz w ustawieniach CBA</Polish>
 				<Czech>V současné době zakázáno, povolit v nastavení CBA</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_NoSaves">
 				<Original>No saves found</Original>
+        <Polish>Nie znaleziono zapisów gry</Polish>
 				<Czech>Nebyly nalezeny žádné uložené</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_NoSavesForMap">
 				<Original>No saves found for this map</Original>
+        <Polish>Nie znaleziono zapisów gry dla tej mapy</Polish>
 				<Czech>Pro tuto mapu nebyly nalezeny žádné uložené</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Version">
 				<Original>Most recent save for this map is an incompatible version</Original>
+        <Polish>Najnowszy zapis gry na tej mapie jest niezgodny z tą wersją Vindicty</Polish>
 				<Czech>Poslední uložení pro tuto mapu je nekompatibilní verze</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Factions">
 				<Original>Most recent save for this map has incompatible factions</Original>
+        <Polish>Najnowszy zapis gry na tej mapie zawiera niezgodne frakcje</Polish>
 				<Czech>Poslední uložení pro tuto mapu má nekompatibilní frakce</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_CountDown">
 				<Original>Will autoload in %1s, login as admin to abort</Original>
+        <Polish>Wczyta się automatycznie za %1s, zaloguj się jako administrator, aby przerwać</Polish>
 				<Czech>Bude autoload v %1s, přihlásit se jako správce přerušit</Czech>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_AdminAbort">
 				<Original>Autoload aborted as admin is present</Original>
+        <Polish>Automatyczne ładowanie przerwane, ponieważ administrator jest obecny</Polish>
 				<Czech>Automatické načítání přerušeno, protože správce je přítomen</Czech>
 			</Key>
 		</Container>

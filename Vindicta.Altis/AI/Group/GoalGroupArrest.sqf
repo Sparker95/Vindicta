@@ -9,7 +9,7 @@ Author: Marvis 09.05.2019
 #define pr private
 
 #define OOP_CLASS_NAME GoalGroupArrest
-CLASS("GoalGroupArrest", "Goal")
+CLASS("GoalGroupArrest", "GoalGroup")
 
 	public STATIC_METHOD(calculateRelevance)
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
@@ -23,7 +23,7 @@ CLASS("GoalGroupArrest", "Goal")
 		if (behaviour leader _hG == "COMBAT") exitWith { 0 };
 		
 		pr _suspTarget = GETV(_AI, "suspTarget");
-		if (!isNil "_suspTarget" && {!IS_ARRESTED_UNCONSCIOUS_DEAD(_suspTarget)}) then {
+		if (!isNull _suspTarget && {!IS_ARRESTED_UNCONSCIOUS_DEAD(_suspTarget)}) then {
 			GETSV("GoalGroupArrest", "relevance");
 		} else {
 			0

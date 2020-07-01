@@ -1887,7 +1887,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Send a success message to player
 		pr _args = ["We have successfully created a location here!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
-
+		
 	ENDMETHOD;
 
 	public server METHOD(clientClaimLocation)
@@ -2068,7 +2068,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_INFO_MSG(_str, []);
 		#endif
 	ENDMETHOD;
-
+	
 	/*
 	Method: (private) generateAttackActions
 	Generate a list of possible/reasonable attack actions that could be performed. It will exclude ones that 
@@ -2701,7 +2701,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _garModel = CALLM1(_x, "getGarrison", _side);
 			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT)
 			&& {!IS_NULL_OBJECT(_garModel)}
+			#ifndef REINFORCEMENT_TESTING
 			&& {private _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")}
+			#endif
+			FIX_LINE_NUMBERS()
 			//&& {private _actual = GETV(_garModel, "actual"); CALLM0(_actual, "countInfantryUnits") < CMDR_MAX_INF_AIRFIELD} // todo find a better limit?
 		};
 
@@ -2760,8 +2763,17 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _armorAll = (_effAll#T_EFF_medium) + (_effAll#T_EFF_armor);
 		private _armorRequiredAll = 0;
 		
+		#ifdef REINFORCEMENT_TESTING
+		if(isNil "gDebugReinfProgress") then { gDebugReinfProgress = 0; };
+		private _progress = gDebugReinfProgress;
+		gDebugReinfProgress = gDebugReinfProgress + 0.1;
+		systemChat format ["Reinforcing %1 now at %2 progress", _side, _progress];
+		#else
 		private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
-		private _progressScaled = _progress * MAP_GAMMA(vin_diff_global, _progress);
+		#endif
+		FIX_LINE_NUMBERS()
+
+		private _progressScaled = MAP_GAMMA(vin_diff_global, _progress);
 		OOP_INFO_2("  Campaign progess: %1, scaled by difficulty setting: %2", _progress, _progressScaled);
 		{
 			private _type = CALLM0(_x, "getType");
@@ -2780,11 +2792,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_INFO_1("  More armor required: %1", _armorMoreRequired);
 
 		// Max amount of vehicles at airfields
-		private _nVehMax = if (_progressScaled < 0.25) then {
-			round 0.5*CMDR_MAX_VEH_AIRFIELD
-		} else {
-			CMDR_MAX_VEH_AIRFIELD
-		};
+		private _nVehMax = MAP_LINEAR(_progressScaled, 0.25, 1) * CMDR_MAX_VEH_AIRFIELD;
+
+		// if (_progressScaled < 0.25) then {
+		// 	round 0.5*CMDR_MAX_VEH_AIRFIELD
+		// } else {
+		// 	CMDR_MAX_VEH_AIRFIELD
+		// };
 
 		// [_name, _loc, _garrison, _infSpace, _vicSpace]
 		// Locations that we can reinforce with ground units
@@ -2958,83 +2972,82 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		// Construct a pool of vehicles we could add and shuffle them up then add some of them
 
-		// If campaign progress is big enough, give them more armored transport
-		// https://www.desmos.com/calculator/hhw3uxcjds
-		// If it's low, just give trucks
-		private _transportChances = [
-			T_VEH_truck_inf, 	1,
-			T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
-			T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3))
+		// // If campaign progress is big enough, give them more armored transport
+		// // https://www.desmos.com/calculator/hhw3uxcjds
+		// // If it's low, just give trucks
+		// private _transportRatios = [
+		// 	T_VEH_truck_inf, 	1,
+		// 	T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
+		// 	T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3))
+		// ];
+
+		// // Armor types depend on progress
+		// private _armorRatios = [
+		// 	T_VEH_MRAP_HMG, 	1,
+		// 	T_VEH_MRAP_GMG, 	0 max (1 * (_progressScaled ^ 1)) min 1,
+		// 	T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
+		// 	T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3)),
+		// 	T_VEH_MBT, 			0 max (5 * (_progressScaled ^ 5))
+		// ];
+
+		private _vehRatios = [
+			[T_VEH_truck_inf, 	2],
+			//T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
+			//T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3))
+			[T_VEH_MRAP_HMG, 	1],
+			[T_VEH_MRAP_GMG, 	0.25 max (1 * (_progressScaled ^ 1)) min 1],
+			[T_VEH_APC, 		0 max (2 * (_progressScaled ^ 2))],
+			[T_VEH_IFV, 		0 max (3 * (_progressScaled ^ 3))],
+			[T_VEH_MBT, 		0 max (5 * (_progressScaled ^ 5))]
 		];
+		private _vehThatNeedGroups = [T_VEH_APC, T_VEH_IFV, T_VEH_MBT];
 
-		// Armor types depend on progress
-		private _armorChances = [
-			T_VEH_MRAP_HMG, 	0.5,
-			T_VEH_MRAP_GMG, 	1,
-			T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
-			T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3)),
-			T_VEH_MBT, 			0 max (5 * (_progressScaled ^ 5))
-		];
+		private _ratioSum = 0;
+		{ _ratioSum = _ratioSum + _x#1 } forEach _vehRatios;
+		_vehRatios = _vehRatios apply { [_x#0, _x#1 / _ratioSum] };
 
-		private _vehiclePool = [];
-		for "_i" from 0 to _transportMoreRequired do {
-			// [type, group]
-			_vehiclePool pushBack [selectRandomWeighted _transportChances, false];
-		};
-		for "_i" from 0 to _armorMoreRequired do {
-			// [type, group]
-			_vehiclePool pushBack [selectRandomWeighted _armorChances, true];
+		private _vicReinfLocations = _reinfInfo select {
+			_x#4 > 0
 		};
 
-		// Try to spawn more units at the selected locations
-		if (count _vehiclePool > 0) then {
-			_vehiclePool = _vehiclePool call BIS_fnc_arrayShuffle;
+		{// forEach collection
+			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
+			while {_vicSpace > 0} do {
+				private _currRatios = _vehRatios apply { [_x#0, _x#1, CALLM1(_garrison, "countUnits", [[T_VEH ARG _x#0]])] };
+				private _ratioSum = 0;
+				{ _ratioSum = _ratioSum + _x#2 } forEach _currRatios;
+				private _bestVeh = -1;
+				private _bestDiff = 0;
+				{
+					// Difference in desired ratio and current ratio
+					private _ratioDiff = _x#1 - _x#2 / _ratioSum;
+					if(_ratioDiff >= _bestDiff) then {
+						_bestDiff = _ratioDiff;
+						_bestVeh = _x#0;
+					};
+				} forEach _currRatios;
 
-			private _vicReinfLocations = _reinfInfo select {
-				_x#4 > 0
-			};
-			OOP_INFO_1("  Trying to add %1 more vehicles...", count _vehiclePool);
-			while {count _vehiclePool > 0 && count _vicReinfLocations > 0} do {
-				// Select random airfield
-				//  0      1     2          3          4
-				// [_name, _loc, _garrison, _infSpace, _vicSpace]
-				private _targetLoc = selectRandom _vicReinfLocations;
-				_targetLoc params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
+				if(_bestVeh != -1) then {
+					if(_bestVeh in _vehThatNeedGroups) then {
+						// Create a group
+						// It's better to add combat vehicles with a group, so that AIs can use them instantly
+						private _group = NEW("Group", [_side ARG GROUP_TYPE_VEH]);
+						private _args = [_t, T_VEH, _bestVeh, -1, _group];
+						private _vehUnit = NEW("Unit", _args);
+						CALLM1(_group, "addUnit", _vehUnit);
+						CALLM1(_vehUnit, "createDefaultCrew", _t);
 
-				// Select a random vehicle
-				(_vehiclePool#0) params ["_subcatID", "_createGroup"];
-				_vehiclePool deleteAt 0;
+						CALLM2(_garrison, "postMethodAsync", "addGroup", [_group]);
+					} else {
+						private _args = [_t, T_VEH, _bestVeh, -1];
+						private _vehUnit = NEW("Unit", _args);
 
-				if(_createGroup) then {
-					// Create a group
-					// It's better to add combat vehicles with a group, so that AIs can use them instantly
-					private _group = NEW("Group", [_side ARG GROUP_TYPE_VEH]);
-					private _args = [_t, T_VEH, _subcatID, -1, _group];
-					private _vehUnit = NEW("Unit", _args);
-					CALLM1(_group, "addUnit", _vehUnit);
-					CALLM1(_vehUnit, "createDefaultCrew", _t);
-
-					CALLM2(_garrison, "postMethodAsync", "addGroup", [_group]);
-				} else {
-					private _args = [_t, T_VEH, _subcatID, -1];
-					private _vehUnit = NEW("Unit", _args);
-
-					CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
+						CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
+					};
 				};
-
-				// Decrease the counter
-				private _roomLeft = _vicSpace - 1;
-				if(_roomLeft <= 0) then {
-					_vicReinfLocations = _vicReinfLocations - [_targetLoc];
-				} else {
-					_targetLoc set [4, _roomLeft];
-				};
+				_vicSpace = _vicSpace - 1;
 			};
-
-			if(count _vehiclePool > 0) then {
-				OOP_INFO_1("  Could not add all vehicles required, %1 remain", count _vehiclePool);
-			}
-		};
+		} forEach _vicReinfLocations;
 
 		T_SETV("datePrevExtReinf", date);
 	ENDMETHOD;
@@ -3212,6 +3225,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_activeActions deleteAt (_activeActions find _action);
 		};
 	ENDMETHOD;
+
 
 	// = = = = = = = = = = = Radio = = = = = = = = = = = = =
 

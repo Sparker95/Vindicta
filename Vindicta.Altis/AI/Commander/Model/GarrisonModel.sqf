@@ -396,7 +396,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _actual = T_GETV("actual");
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM0(_actual, "getAI");
-		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _radius]];
+		private _parameters = [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius]];
 		CALLM2(_AI, "postMethodAsync", "addExternalGoal", ["GoalGarrisonMove" ARG 0 ARG _parameters ARG _thisObject]);
 
 		OOP_INFO_MSG("Moving %1 to %2 within %3", [LABEL(_thisObject) ARG _pos ARG _radius]);
@@ -502,7 +502,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _actual = T_GETV("actual");
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM0(_actual, "getAI");
-		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _moveRadius], [TAG_CLEAR_RADIUS, _clearRadius], [TAG_DURATION_SECONDS, _timeOutSeconds]];
+		private _parameters = [[TAG_POS_CLEAR_AREA, _pos], [TAG_CLEAR_RADIUS, _clearRadius], [TAG_DURATION_SECONDS, _timeOutSeconds]];
 		CALLM2(_AI, "postMethodAsync", "addExternalGoal", ["GoalGarrisonClearArea" ARG 0 ARG _parameters ARG _thisObject]);
 
 		OOP_INFO_MSG("%1 clearing area at %2, radius %3, timeout %4 seconds", [LABEL(_thisObject) ARG _pos ARG _clearRadius ARG _timeOutSeconds]);

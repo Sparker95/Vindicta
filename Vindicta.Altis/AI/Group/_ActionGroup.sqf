@@ -37,6 +37,13 @@ CLASS("ActionGroup", "Action")
 		T_SETV("replanOnCompositionChange", true);
 	ENDMETHOD;
 
+	public override METHOD(getCommonParameters)
+		[
+			[],	// Required parameters
+			[ [TAG_BEHAVIOUR, [""]], [TAG_COMBAT_MODE, [""]], [TAG_FORMATION, [""]], [TAG_SPEED_MODE, [""]], [TAG_INSTANT, [false]] ]	// Optional parameters
+		]
+	ENDMETHOD;
+
 	public override METHOD(terminate)
 		params [P_THISOBJECT];
 
@@ -125,6 +132,7 @@ CLASS("ActionGroup", "Action")
 		params [P_THISOBJECT, ["_defaultFormation", "WEDGE"], ["_defaultBehaviour", "AWARE"], ["_defaultCombatMode", "YELLOW"], ["_defaultSpeedMode", "NORMAL"]];
 
 		private _hG = T_GETV("hG");
+		private _ai = T_GETV("ai");
 		private _formation = T_GETV("formation");
 		_hG setFormation ([_formation, _defaultFormation] select (_formation isEqualTo ""));
 		private _behaviour = T_GETV("behaviour");
@@ -132,7 +140,8 @@ CLASS("ActionGroup", "Action")
 		private _combatMode = T_GETV("combatMode");
 		_hG setCombatMode ([_combatMode, _defaultCombatMode] select (_combatMode isEqualTo ""));
 		private _speedMode = T_GETV("speedMode");
-		_hG setSpeedMode ([_speedMode, _defaultSpeedMode] select (_speedMode isEqualTo ""));
+		private _speedModeSet = [_speedMode, _defaultSpeedMode] select (_speedMode isEqualTo "");
+		CALLM1(_ai, "setSpeedMode", _speedModeSet);
 	ENDMETHOD;
 
 	protected METHOD(clearWaypoints)

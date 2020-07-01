@@ -36,11 +36,5 @@ CLASS("ActionGroupStayInVehicles", "ActionGroup")
 		T_SETV("state", _state);
 		_state
 	ENDMETHOD;
-	
-	// logic to run when the action is satisfied
-	public override METHOD(terminate)
-		params [P_THISOBJECT];
-		
-	ENDMETHOD;
 
 ENDCLASS;

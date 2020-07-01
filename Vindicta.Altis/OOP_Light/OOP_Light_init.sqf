@@ -182,6 +182,12 @@ OOP_assert_member = {
 	params["_objNameStr", "_memNameStr", "_file", "_line"];
 	//Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	// Check if member name is not nil
+	if (isNil "_memNameStr") exitWith {
+		private _errorText = "member name is nil";
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to access member: %1 . %2", _objNameStr, _memNameStr];
@@ -518,6 +524,12 @@ OOP_assert_method_call = {
 //Check method and print error if it's not found
 OOP_assert_method = {
 	params["_class", "_method", "_obj", "_file", "_line"];
+
+	if (isNil "_method") exitWith {
+		private _errorText = "method name is nil";
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
 
 	if (isNil "_class") exitWith {
 		private _errorText = format ["class name is nil. Attempt to call method: %1", _method];
@@ -999,7 +1011,11 @@ OOP_objectCrashDump = {
 OOP_callFromRemote = {
 	params[P_OOP_OBJECT("_object"), P_STRING("_methodNameStr"), ["_params", [], [[]]]];
 	//diag_log format [" --- OOP_callFromRemote: %1", _this];
-	CALLM(_object, _methodNameStr, _params);
+	if (IS_OOP_OBJECT(_object)) then {
+		CALLM(_object, _methodNameStr, _params);
+	} else {
+		diag_log format ["[OOP] Error: callFromRemote: object ref is invalid: %1, method: %2, parameters: %3", _object, _methodNameStr, _params];
+	};
 };
 
 // If assertion is enabled, this gets called on remote machine when we call a static method on it
