@@ -43,7 +43,7 @@
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
 				<Original>Arsenal to external Inventory</Original>
-				<German>Arsenal nach externes Inventar</German>
+				<German>Arsenal zu externem Inventar</German>
 				<Polish>Arsenał do ekwipunku zewnętrznego</Polish>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
@@ -63,7 +63,7 @@
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
 				<Original>Not looking at an object</Original>
-				<German>Kein Objekt angeschaut</German>
+				<German>Kein Objekt ausgewählt</German>
 				<Polish>Nie patrzysz na żaden obiekt</Polish>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
@@ -97,7 +97,7 @@
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR2">
 				<Original>Not looking at a vehicle</Original>
-				<German>Kein Fahrzeug angeschaut</German>
+				<German>Kein Fahrzeug ausgewählt</German>
 				<Polish>Nie patrzysz się na pojazd</Polish>
 			</Key>
 		</Container>
@@ -106,7 +106,7 @@
 		<Container name="Actions">
 			<Key ID="STR_JN_FUEL_ACT_REFUEL">
 				<Original>Refuel</Original>
-				<German>Betanken</German>
+				<German>Auftanken</German>
 				<Polish>Tankuj pojazd</Polish>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_REFUELOPTION">
@@ -150,7 +150,7 @@
 		<Container name="States">
 			<Key ID="STR_UM_OVERT">
 				<Original>OVERT</Original>
-				<German>ENTDECKT</German>
+				<German>OFFENKUNDIG</German>
 				<Polish>WYKRYTY</Polish>
 			</Key>
 			<Key ID="STR_UM_SUSPICIOUS">
@@ -165,14 +165,14 @@
 			</Key>
 			<Key ID="STR_UM_COMPROMISED">
 				<Original>COMPROMISED</Original>
-				<German>AUFGEFLOGEN</German>
+				<German>KOMPROMITTIERT</German>
 				<Polish>ZDRADZONY</Polish>
 			</Key>
 		</Container>
 		<Container name="Hints">
 			<Key ID="STR_UM_HINT_WEAPON">
 				<Original>OVERT: WEAPON</Original>
-				<German>ENTDECKT: WAFFE</German>
+				<German>OFFENKUNDIG: WAFFE</German>
 				<Polish>WYKRYTY: BROŃ</Polish>
 			</Key>
 			<Key ID="STR_UM_HINT_DOWNED">
@@ -187,7 +187,7 @@
 			</Key>
 			<Key ID="STR_UM_HINT_HOSTILITY">
 				<Original>OVERT: WEAPON DISCHARGED!</Original>
-				<German>ENTDECKT: WAFFE ENTRLADEN!</German>
+				<German>OFFENKUNDIG: WAFFE ENTRLADEN!</German>
 				<Polish>WYKRYTY: WYSTRZELONO Z BRONI!</Polish>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEAR">
@@ -197,7 +197,7 @@
 			</Key>
 			<Key ID="STR_UM_HINT_MILVEH">
 				<Original>OVERT: MILITARY VEHICLE</Original>
-				<German>ENTDECKT: MILITÄR FAHRZEUG</German>
+				<German>OFFENKUNDIG: MILITÄR FAHRZEUG</German>
 				<Polish>WYKRYTY: POJAZD WOJSKOWY</Polish>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEARVEH">
@@ -208,7 +208,7 @@
 			<Key ID="STR_UM_HINT_CLOSINGIN">
 				<Original>THEY ARE GOING TO SPOT YOU!</Original>
 				<German>SIE WERDEN DICH ENTDECKEN!</German>
-				<Polish>oni cię zobaczą!</Polish>
+				<Polish>ONI CIĘ ZOBACZĄ!</Polish>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPBEHAVIOR">
 				<Original>SUSPICIOUS BEHAVIOUR</Original>
@@ -232,7 +232,7 @@
 			</Key>
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
-				<German>VESTGENOMMEN</German>
+				<German>FESTGENOMMEN</German>
 				<Polish>SCHWYTANY</Polish>
 			</Key>
 			<Key ID="STR_UM_HINT_MORPHINE">
@@ -268,22 +268,22 @@
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_LISTBOX">
 				<Original>This list displays all known intel. Click on a row to display only that piece of intel on your map.</Original>
-				<German>Diese Liste zeigt alle bekannten Informationen an. Klick auf eine Zeile, um nur diese Intel auf der Karte anzuzeigen</German>
+				<German>Diese Liste zeigt alle bekannten Informationen an. Klick auf eine Zeile, um nur diese Information auf der Karte anzuzeigen</German>
 				<Polish>Ta lista zawiera wszystkie znane dane wywiadowcze. Kliknij wiersz, aby wyświetlić tylko ten element wywiadu na mapie.</Polish>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ACTIVE">
 				<Original>Press to toggle the display of active intel drawn on your map.</Original>
-				<German>Drücke diesen Knopf, um die Anzeige der aktive Intel auf der Karte umzuschalten.</German>
+				<German>Drücke diesen Knopf, um die Anzeige der aktiven Informationen auf der Karte umzuschalten.</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie aktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_INACTIVE">
 				<Original>Press to toggle the display of planned, inactive intel drawn on your map.</Original>
-				<German>Drücke diesen Knopf, um die Anzeige der geplanten, inaktiven Intel auf der Karte umzuschalten.</German>
+				<German>Drücke diesen Knopf, um die Anzeige der geplanten, inaktiven Informationen auf der Karte umzuschalten.</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie planowanych, nieaktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ENDED">
 				<Original>Press to toggle the display of old, ended intel drawn on your map.</Original>
-				<German>Drücke diesen Knopf, um die Anzeige von alten, beendeten Intel auf der Karte umzuschalten.</German>
+				<German>Drücke diesen Knopf, um die Anzeige von alten, ungültigen Informationen auf der Karte umzuschalten.</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie starych, zakończonych danych wywiadowczych narysowanych na mapie.</Polish>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_NOTIF">
@@ -293,7 +293,7 @@
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_INTELP">
 				<Original>Press to toggle the display of the intel panel. Useful if you want to see the entire map.</Original>
-				<German>Drücke diesen Knopf, um die Anzeige des Intel-Panels umzuschalten. Nützlich, um die gesamte Karte zu sehen</German>
+				<German>Drücke diesen Knopf, um die Anzeige des Informationspanels umzuschalten. Nützlich, um die gesamte Karte zu sehen</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie panelu danych wywiadowczych. Przydatne, jeśli chcesz zobaczyć całą mapę.</Polish>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_LOC">
@@ -313,22 +313,22 @@
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_SIDE">
 				<Original>Sort intel list by faction side. WEST for BLUFOR, EAST for OPFOR, and IND for Independent.</Original>
-				<German>Sortiere Intel-Liste nach Fraktionen. WEST für BLUFOR, EAST für OPFOR und IND für Independent.</German>
+				<German>Sortiere Informationsliste nach Fraktionen. WEST für BLUFOR, EAST für OPFOR und IND für Independent.</German>
 				<Polish>Sortuj listę wywiadowczą według stron frakcji. WEST dla BLUFOR, EAST dla OPFOR i IND dla Independent.</Polish>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_STATUS">
 				<Original>Sort intel list by current status of the intel items.</Original>
-				<German>Sortiere Intel-Listek nach dem aktuellen Status der Informations elemente.</German>
+				<German>Sortiere Informationsliste nach dem aktuellen Status der Informations elemente.</German>
 				<Polish>Sortuj listę danych wywiadowczych według aktualnego stanu elementów wywiadu.</Polish>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TYPE">
 				<Original>Sort intel list by type.</Original>
-				<German>Sortiere Intel-Liste nach typ.</German>
+				<German>Sortiere Informationsliste nach typ.</German>
 				<Polish>Sortuj listę danych wywiadowczych według rodzaju.</Polish>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TIME">
 				<Original>Sort intel list by most recent or oldest intel.</Original>
-				<German>Sortiere Intel-Liste nach neusten oder ältesten Informationen.</German>
+				<German>Sortiere Informationsliste nach neusten oder ältesten Informationen.</German>
 				<Polish>Sortuj listę danych wywiadowczych według najnowszych lub najstarszych danych wywiadowczych.</Polish>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_TOOLTIP">
@@ -345,7 +345,7 @@
 			</Key>
 			<Key ID="STR_CMUI_INTEL_MULTISELECT">
 				<Original>Select a single intel item to view a detailed description.</Original>
-				<German>Wähle ein einzelnes Intel-Element aus, um eine detaillierte Beschreibung anzuzeigen.</German>
+				<German>Wähle ein einzelnes Element aus, um eine detaillierte Beschreibung anzuzeigen.</German>
 				<Polish>Wybierz pojedynczy element wywiadu, aby wyświetlić szczegółowy opis.</Polish>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_ATTACK">
@@ -401,19 +401,19 @@
 		<Container name="TAB_SAVE">
 			<Key ID="STR_NEWSAVE_DISABLED">
 				<Original>You have reached the savegame limit of 5 savegames. Delete savegames to continue.</Original>
-				<German>Sie haben das Limit von 5 Spielständen erreicht. Löschen Sie Spielstände, um fortzufahren.</German>
+				<German>Das Limit von 5 Spielständen wurde erreicht. Lösche alte Spielstände, um fortzufahren.</German>
 				<Polish>Osiągnąłeś limit 5 zapisanych gier. Usuń zapisywane gry, aby kontynuować.</Polish>
 			</Key>
 			<Key ID="STR_NEWSAVE_ENABLED">
 				<Original>Create a new save game.</Original>
-				<German>Erstellen Sie einen neuen Spielstand.</German>
+				<German>Erstelle einen neuen Spielstand.</German>
 				<Polish>Utwórz nowy zapis gry.</Polish>
 			</Key>
 		</Container>
 		<Container name="TAB_INIT">
 			<Key ID="STR_INIT_ERROR1">
 				<Original>ERROR: Faction file contains errors. Check your .RPT file for more info.</Original>
-				<German>FEHLER: Fraktions-Datei enthält Fehler. Überprüfen Sie Ihre .RPT-Datei für weitere Informationen.</German>
+				<German>FEHLER: Fraktions-Datei enthält Fehler. Überprüfe die .RPT-Datei für weitere Informationen.</German>
 				<Polish>BŁĄD: plik frakcji zawiera błędy. Sprawdź plik .RPT, aby uzyskać więcej informacji.</Polish>
 			</Key>
 			<Key ID="STR_INIT_ERROR2">
