@@ -416,6 +416,7 @@ CLASS("CivPresence", "")
 		};
 
 		pr _hO = createAgent [_className, _pos, [], 0, "CAN_COLLIDE"];
+		_hO setCaptive 1;
 		if (_loadout != "") then {
 			OOP_INFO_1("  setting loadout: %1", _loadout);
 			[_hO, _loadout] call t_fnc_setUnitLoadout;

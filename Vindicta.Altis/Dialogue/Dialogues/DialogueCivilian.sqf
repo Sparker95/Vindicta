@@ -118,7 +118,6 @@ CLASS("DialogueCivilian", "Dialogue")
 
 		// Resolve which locations are known
 		pr _unit = T_GETV("unit0");
-		pr _civ = T_GETV("unit0");
 		private _locs = CALLSM0("Location", "getAll");
 		private _locsNear = _locs select {
 			pr _type = CALLM0(_x, "getType");
@@ -157,8 +156,8 @@ CLASS("DialogueCivilian", "Dialogue")
 				pr _loc = _x;
 				pr _type = CALLM0(_loc, "getType");
 				pr _locPos = CALLM0(_loc, "getPos");
-				pr _bearing = player getDir _locPos;
-				pr _distance = player distance2D _locPos;
+				pr _bearing = _unit getDir _locPos;
+				pr _distance = _unit distance2D _locPos;
 				pr _bearings = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
 				pr _bearingID = (round (_bearing/45)) % 8;
 
@@ -254,7 +253,7 @@ CLASS("DialogueCivilian", "Dialogue")
 
 		if (_updateLevel != -6) then {
 			//diag_log format ["    adding to database"];
-			private _commander = CALLSM1("AICommander", "getAICommander", playerSide);
+			private _commander = CALLSM1("AICommander", "getAICommander", side group T_GETV("unit1"));
 			CALLM2(_commander, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false ARG false ARG _accuracyRadius]);
 		};
 	ENDMETHOD;

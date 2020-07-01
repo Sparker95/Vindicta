@@ -81,7 +81,7 @@ CLASS("DialogueClient", "")
 		// Create the compass
 
 		// Create the per frame handler
-		pr _id = addMissionEventHandler ["Draw3D", {
+		pr _id = addMissionEventHandler ["EachFrame", {
 			pr _instance = CALLSM0("DialogueClient", "getInstance");
 			//OOP_INFO_1("draw3d, instance: %1", _instance);
 			CALLM0(_instance, "onEachFrame");
@@ -121,7 +121,7 @@ CLASS("DialogueClient", "")
 		ctrlDelete _ctrlGroup;
 
 		// Remove mission event handler
-		removeMissionEventHandler ["Draw3D", T_GETV("ehID")];
+		removeMissionEventHandler ["eachFrame", T_GETV("ehID")];
 
 		// Remove keyboard event handler
 		(findDisplay 46) displayRemoveEventHandler  ["KeyDown", T_GETV("keyboardEHID")];
@@ -151,7 +151,7 @@ CLASS("DialogueClient", "")
 		pr _pointers = T_GETV("pointerControls");
 		pr _ctrlGroup = T_GETV("ctrlGroup") select 0;
 		if (count _pointers > 0 || count _lines > 0) then {
-			_ctrlGroup ctrlShow true;
+			_ctrlGroup ctrlShow (!visibleMap); // Hide if map is open
 			T_CALLM0("updateLines");
 			T_CALLM0("updatePointers");
 		} else {
@@ -260,6 +260,8 @@ CLASS("DialogueClient", "")
 										_xOffset + DIALOGUE_POINTER_AREA_X - 0.5*DIALOGUE_POINTER_WIDTH,
 										_yOffset + DIALOGUE_POINTER_AREA_Y];
 			_ctrlIcon ctrlCommit 0;
+
+			_ctrlIcon ctrlShow (!visibleMap);
 
 			// Set text
 			pr _imgPath = if ( (_relDir > 270) || (_relDir < 90) ) then {
