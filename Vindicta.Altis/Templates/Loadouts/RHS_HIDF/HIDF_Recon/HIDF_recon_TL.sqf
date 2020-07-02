@@ -17,7 +17,7 @@ this addBackpack "B_AssaultPack_khk";
 
 this addWeapon "rhs_weap_m4a1_carryhandle_m203S";
 this addPrimaryWeaponItem "rhsusf_acc_SF3P556";
-this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
+this addPrimaryWeaponItem "acc_pointer_IR";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Red";
 this addWeapon "rhs_weap_m72a7";
 this addWeapon "rhsusf_weap_m9";

@@ -18,7 +18,7 @@ this addBackpack "B_Messenger_Coyote_F";
 this addWeapon "rhs_weap_sr25";
 this addPrimaryWeaponItem "rhsusf_acc_SR25S";
 this addPrimaryWeaponItem "rhsusf_acc_M8541";
-this addPrimaryWeaponItem "rhsusf_acc_M952V";
+this addPrimaryWeaponItem "acc_pointer_IR";
 this addPrimaryWeaponItem "rhsusf_20Rnd_762x51_SR25_m118_special_Mag";
 this addPrimaryWeaponItem "rhsusf_acc_harris_bipod";
 this addWeapon "rhsusf_weap_glock17g4";

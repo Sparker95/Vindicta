@@ -12,7 +12,7 @@ this addGoggles _RandomGoggles;
 this forceAddUniform "FGN_FIA_M10_M81_DB";
 this addVest "V_I_G_resistanceLeader_F";
 this addHeadgear "FGN_AAF_Boonie_M81";
-this addBackpack "FGN_AAF_Fieldpack_M81";
+this addBackpack "FGN_AAF_UMTBS_M81";
 
 this addWeapon "rhs_weap_m16a4_imod_M203";
 this addPrimaryWeaponItem "rhsusf_acc_SF3P556";

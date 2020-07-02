@@ -15,13 +15,13 @@ _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf"
 this addGoggles _RandomGoggles;
 this forceaddUniform "rhs_uniform_gorka_1_a";
 
-this addWeapon "rhs_weap_m4a1_blockII_bk";
-this addPrimaryWeaponItem "rhsusf_acc_nt4_black";
+this addWeapon "rhs_weap_hk416d145";
+this addPrimaryWeaponItem "rhsusf_acc_rotex5_grey";
 _RandomSight = selectRandom ["rhsusf_acc_su230", "rhsusf_acc_su230_mrds"];
 this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhsusf_acc_grip2";
-this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
-this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855A1_Stanag";
+this addPrimaryWeaponItem "acc_pointer_IR";
+this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855A1_Stanag_Ranger";
 this addWeapon "rhs_weap_rpg75";
 this addWeapon "rhsusf_weap_glock17g4";
 this addHandgunItem "rhsusf_acc_omega9k";
@@ -33,7 +33,7 @@ for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
 this addItemToUniform "I_IR_Grenade";
 this addItemToVest "optic_NVS";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_mk3a2";};
-for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855A1_Stanag";};
+for "_i" from 1 to 6 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855A1_Stanag_Ranger";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";

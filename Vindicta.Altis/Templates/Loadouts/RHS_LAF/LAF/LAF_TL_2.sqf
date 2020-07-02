@@ -16,7 +16,8 @@ this forceaddUniform "rhsgref_uniform_olive";
 
 this addWeapon "rhs_weap_m16a4_carryhandle";
 this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
-this addPrimaryWeaponItem "rhsusf_acc_ACOG_USMC";
+_RandomSight = selectRandom ["rhsusf_acc_ACOG_USMC", ""];
+this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855A1_Stanag";
 this addPrimaryWeaponItem "rhsusf_acc_kac_grip";
 this addWeapon "Binocular";
