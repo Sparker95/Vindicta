@@ -18,7 +18,7 @@ this addBackpack "FGN_AAF_Bergen_SL_Olive";
 
 this addWeapon "rhs_weap_m70b3n";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-_RandomSight = selectRandom ["rhs_acc_pkas", "rhs_acc_1p78_3d"];
+_RandomSight = selectRandom ["", "rhs_acc_1p78_3d"];
 this addPrimaryWeaponItem _RandomSight;
 this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
 this addWeapon "rhs_weap_tt33";

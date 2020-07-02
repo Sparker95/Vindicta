@@ -17,7 +17,7 @@ this addBackpack "B_AssaultPack_rgr";
 
 this addWeapon "rhs_weap_m249_pip_S_para";
 this addPrimaryWeaponItem "rhsusf_acc_SF3P556";
-this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
+this addPrimaryWeaponItem "acc_pointer_IR";
 this addPrimaryWeaponItem "rhsusf_200Rnd_556x45_M855_mixed_soft_pouch";
 this addPrimaryWeaponItem "rhsusf_acc_grip4_bipod";
 this addWeapon "rhsusf_weap_m9";

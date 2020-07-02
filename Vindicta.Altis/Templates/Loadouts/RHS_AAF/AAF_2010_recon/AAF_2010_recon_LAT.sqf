@@ -16,9 +16,8 @@ this addHeadgear _RandomHeadgear;
 this forceaddUniform "FGN_AAF_M93_Lizard";
 this addBackpack "rhs_rpg_empty";
 
-this addWeapon "rhs_weap_m4a1";
+this addWeapon "rhs_weap_m4_carryhandle";
 this addPrimaryWeaponItem "rhsusf_acc_M952V";
-this addPrimaryWeaponItem "rhsusf_acc_compm4";
 this addPrimaryWeaponItem "rhsusf_acc_SFMB556";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855_Stanag";
 this addWeapon "rhs_weap_rpg7";

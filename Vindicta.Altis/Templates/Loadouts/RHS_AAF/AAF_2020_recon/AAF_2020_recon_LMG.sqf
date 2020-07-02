@@ -19,7 +19,7 @@ this addBackpack "FGN_AAF_UMTBS_Type07";
 this addWeapon "rhs_weap_m249_light_L";
 this addWeapon "rhs_weap_m249_pip_S_vfg1";
 this addPrimaryWeaponItem "rhsusf_acc_SF3P556";
-this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
+this addPrimaryWeaponItem "acc_pointer_IR";
 this addPrimaryWeaponItem "rhsusf_acc_ELCAN";
 this addPrimaryWeaponItem "rhsusf_100Rnd_556x45_mixed_soft_pouch_coyote";
 this addPrimaryWeaponItem "rhsusf_acc_grip1";

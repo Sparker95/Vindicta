@@ -16,10 +16,9 @@ this addHeadgear _RandomHeadgear;
 this forceaddUniform "FGN_AAF_M93_Lizard";
 this addBackpack "FGN_AAF_Fieldpack_Lizard";
 
-this addWeapon "rhs_weap_m4a1_m203s";
+this addWeapon "rhs_weap_m4_carryhandle_m203S";
 this addPrimaryWeaponItem "rhsusf_acc_M952V";
 this addPrimaryWeaponItem "rhsusf_acc_SFMB556";
-this addPrimaryWeaponItem "rhsusf_acc_compm4";
 this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855_Stanag";
 this addPrimaryWeaponItem "rhs_mag_M433_HEDP";
 this addWeapon "rhs_weap_savz61_folded";
