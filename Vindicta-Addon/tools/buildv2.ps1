@@ -1,5 +1,5 @@
 param (
-    [string]$patch = "666"
+    [string]$verPatch = "666"
 )
 
 #$verStr = "$($major)_$($minor)_$($patch)"
@@ -14,6 +14,9 @@ if((Get-Content -Path ..\configs\minorVersion.hpp).Count -gt 1) {
     "ERROR: configs\minorVersion.hpp contains a newline, it must not!"
     Exit 100
 }
+
+$verFull = "{$}"
+"Mission version: {}"
 
 Set-Content -Path ..\configs\buildVersion.hpp -Value $patch -Force -NoNewline
 
