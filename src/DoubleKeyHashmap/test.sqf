@@ -1,6 +1,6 @@
 #include "..\common.h"
 
-call compile preprocessFileLineNumbers "DoubleKeyHashmap\DoubleKeyHashmap.sqf";
+CALL_COMPILE_COMMON("DoubleKeyHashmap\DoubleKeyHashmap.sqf");
 
 private _hm = NEW("DoubleKeyHashmap", []);
 

@@ -1,2 +1,4 @@
-call compile preprocessFileLineNumbers "UI\RecruitDialog\RecruitDialog.sqf";
-call compile preprocessFileLineNumbers "UI\RecruitDialog\RecruitTab.sqf";
+#include "..\..\common.h"
+
+CALL_COMPILE_COMMON("UI\RecruitDialog\RecruitDialog.sqf");
+CALL_COMPILE_COMMON("UI\RecruitDialog\RecruitTab.sqf");

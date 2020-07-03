@@ -219,7 +219,7 @@ vin_fnc_initDebugMenu = {
 // shows unit and group actions and goals in an overlay text
 ["AI", "Toggle draw3D goals", {
 
-	call compile preprocessFileLineNumbers "DebugMenu\fn_draw3dUnitDetails.sqf";
+	CALL_COMPILE_COMMON("DebugMenu\fn_draw3dUnitDetails.sqf");
 		
 }] call vin_fnc_addDebugMenuItem;
 

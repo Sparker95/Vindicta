@@ -1477,66 +1477,66 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// File-based methods
 
 	// Handles messages
-	public override METHOD_FILE(handleMessageEx, "Location\handleMessageEx.sqf");
+	public override METHOD_FILE(handleMessageEx, "src\Location\handleMessageEx.sqf");
 
 	// Sets border parameters
-	METHOD_FILE(updateWaypoints, "Location\updateWaypoints.sqf");
+	METHOD_FILE(updateWaypoints, "src\Location\updateWaypoints.sqf");
 
 	// Checks if given position is inside the border
-	public METHOD_FILE(isInBorder, "Location\isInBorder.sqf");
+	public METHOD_FILE(isInBorder, "src\Location\isInBorder.sqf");
 
 	// Adds a spawn position
-	METHOD_FILE(addSpawnPos, "Location\addSpawnPos.sqf");
+	METHOD_FILE(addSpawnPos, "src\Location\addSpawnPos.sqf");
 
 	// Adds multiple spawn positions from a building
-	METHOD_FILE(addSpawnPosFromBuilding, "Location\addSpawnposFromBuilding.sqf");
+	METHOD_FILE(addSpawnPosFromBuilding, "src\Location\addSpawnposFromBuilding.sqf");
 
 	// Calculates infantry capacity based on buildings at this location
 	// It's old and better not to use it
-	METHOD_FILE(calculateInfantryCapacity, "Location\calculateInfantryCapacity.sqf");
+	METHOD_FILE(calculateInfantryCapacity, "src\Location\calculateInfantryCapacity.sqf");
 
 	// Gets a spawn position to spawn some unit
-	public METHOD_FILE(getSpawnPos, "Location\getSpawnPos.sqf");
+	public METHOD_FILE(getSpawnPos, "src\Location\getSpawnPos.sqf");
 
 	// Returns a random position within border
-	public METHOD_FILE(getRandomPos, "Location\getRandomPos.sqf");
+	public METHOD_FILE(getRandomPos, "src\Location\getRandomPos.sqf");
 
 	// Returns how many units of this type and group type this location can hold
-	public METHOD_FILE(getUnitCapacity, "Location\getUnitCapacity.sqf");
+	public METHOD_FILE(getUnitCapacity, "src\Location\getUnitCapacity.sqf");
 
 	// Checks if given position is safe to spawn a vehicle here
-	public STATIC_METHOD_FILE(isPosSafe, "Location\isPosSafe.sqf");
+	public STATIC_METHOD_FILE(isPosSafe, "src\Location\isPosSafe.sqf");
 
 	// Checks if given position is even safer to spawn a vehicle here (conservative, doesn't allow spawning 
 	// in buildings etc.)
-	public STATIC_METHOD_FILE(isPosEvenSafer, "Location\isPosEvenSafer.sqf");
+	public STATIC_METHOD_FILE(isPosEvenSafer, "src\Location\isPosEvenSafer.sqf");
 
 	// Returns the nearest location to given position and distance to it
-	public STATIC_METHOD_FILE(getNearestLocation, "Location\getNearestLocation.sqf");
+	public STATIC_METHOD_FILE(getNearestLocation, "src\Location\getNearestLocation.sqf");
 
 	// Returns location that has its border overlapping given position
-	public STATIC_METHOD_FILE(getLocationAtPos, "Location\getLocationAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationAtPos, "src\Location\getLocationAtPos.sqf");
 
 	// Returns an array of locations that have their border overlapping given position
-	public STATIC_METHOD_FILE(getLocationsAtPos, "Location\getLocationsAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationsAtPos, "src\Location\getLocationsAtPos.sqf");
 
 	// Adds an allowed area
-	METHOD_FILE(addAllowedArea, "Location\addAllowedArea.sqf");
+	METHOD_FILE(addAllowedArea, "src\Location\addAllowedArea.sqf");
 
 	// Checks if player is in any of the allowed areas
-	public METHOD_FILE(isInAllowedArea, "Location\isInAllowedArea.sqf");
+	public METHOD_FILE(isInAllowedArea, "src\Location\isInAllowedArea.sqf");
 
 	// Handle PROCESS message
-	public METHOD_FILE(process, "Location\process.sqf");
+	public METHOD_FILE(process, "src\Location\process.sqf");
 
 	// Spawns the location
-	METHOD_FILE(spawn, "Location\spawn.sqf");
+	METHOD_FILE(spawn, "src\Location\spawn.sqf");
 
 	// Despawns the location
-	METHOD_FILE(despawn, "Location\despawn.sqf");
+	METHOD_FILE(despawn, "src\Location\despawn.sqf");
 
 	// Builds the location
-	METHOD_FILE(build, "Location\build.sqf");
+	METHOD_FILE(build, "src\Location\build.sqf");
 
 	/*
 	Method: isBuilt
@@ -2067,9 +2067,9 @@ if (isNil {GETSV("Location", "all")}) then {
 #ifndef _SQF_VM
 
 // Initialize arrays with building types
-call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";
+CALL_COMPILE_COMMON("Location\initBuildingTypes.sqf");
 // Initialize ambient animation info
-call compile preprocessFileLineNumbers "Location\initAmbientAnim.sqf";
+CALL_COMPILE_COMMON("Location\initAmbientAnim.sqf");
 
 #endif
 

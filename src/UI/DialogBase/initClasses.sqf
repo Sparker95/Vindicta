@@ -1,4 +1,5 @@
+#include "..\..\common.h"
 
-call compile preprocessFileLineNumbers "UI\DialogBase\DialogBase.sqf";
-call compile preprocessFileLineNumbers "UI\DialogBase\DialogTabBase.sqf";
-call compile preprocessFileLineNumbers "UI\DialogBase\DialogOneTabButtons.sqf"
+CALL_COMPILE_COMMON("UI\DialogBase\DialogBase.sqf");
+CALL_COMPILE_COMMON("UI\DialogBase\DialogTabBase.sqf");
+CALL_COMPILE_COMMON("UI\DialogBase\DialogOneTabButtons.sqf");

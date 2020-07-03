@@ -2,10 +2,10 @@
 #include "..\common.h"
 
 #ifdef _SQF_VM
-call compile preprocessFileLineNumbers "Tests\initTests.sqf";
+CALL_COMPILE_COMMON("Tests\initTests.sqf");
 #endif
 
-call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+CALL_COMPILE_COMMON("OOP_Light\OOP_Light_init.sqf");
 
 #define OOP_CLASS_NAME ClassA
 CLASS("ClassA", "")

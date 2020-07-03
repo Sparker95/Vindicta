@@ -9,9 +9,9 @@ preInit is executed before JIP functions and before init.sqf.
 // Log some stuff
 
 // We need these functions right now, before anything else
-misc_fnc_getVersion = compile preprocessFileLineNumbers "Misc\fn_getVersion.sqf";
-misc_fnc_getSaveVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveVersion.sqf";
-misc_fnc_getSaveBreakVersion = compile preprocessFileLineNumbers "Misc\fn_getSaveBreakVersion.sqf";
+misc_fnc_getVersion = COMPILE_COMMON("Misc\fn_getVersion.sqf");
+misc_fnc_getSaveVersion = COMPILE_COMMON("Misc\fn_getSaveVersion.sqf");
+misc_fnc_getSaveBreakVersion = COMPILE_COMMON("Misc\fn_getSaveBreakVersion.sqf");
 
 private _lines = [
 "",
@@ -58,7 +58,7 @@ diag_log "";
 diag_log "";
 
 // Initialize classes and other things
-call compile preprocessFileLineNumbers "initModules.sqf";
+CALL_COMPILE_COMMON("initModules.sqf");
 
 if (IS_SERVER) then {
 	gGameManagerServer = NEW_PUBLIC("GameManager", []);

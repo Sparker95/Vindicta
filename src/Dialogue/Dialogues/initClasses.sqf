@@ -1,6 +1,8 @@
-call compile preprocessFileLineNumbers "Dialogue\Dialogues\DialogueTest.sqf";
-call compile preprocessFileLineNumbers "Dialogue\Dialogues\DialogueCivilian.sqf";
-call compile preprocessFileLineNumbers "Dialogue\Dialogues\DialoguePolice.sqf";
-call compile preprocessFileLineNumbers "Dialogue\Dialogues\DialogueMilitary.sqf";
+#include "..\..\common.h"
 
-call compile preprocessFileLineNumbers "Dialogue\Dialogues\commonPhrases.sqf";
+CALL_COMPILE_COMMON("Dialogue\Dialogues\DialogueTest.sqf");
+CALL_COMPILE_COMMON("Dialogue\Dialogues\DialogueCivilian.sqf");
+CALL_COMPILE_COMMON("Dialogue\Dialogues\DialoguePolice.sqf");
+CALL_COMPILE_COMMON("Dialogue\Dialogues\DialogueMilitary.sqf");
+
+CALL_COMPILE_COMMON("Dialogue\Dialogues\commonPhrases.sqf");

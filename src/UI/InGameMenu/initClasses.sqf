@@ -1,8 +1,10 @@
-call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenu.sqf";
-call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabCommander.sqf";
-call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabNotes.sqf";
-call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabGameModeInit.sqf";
-call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabSave.sqf";
-call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabTutorial.sqf";
+#include "..\..\common.h"
 
-call compile preprocessFileLineNumbers "UI\InGameMenu\DialogConfirmAction.sqf";
+CALL_COMPILE_COMMON("UI\InGameMenu\InGameMenu.sqf");
+CALL_COMPILE_COMMON("UI\InGameMenu\InGameMenuTabCommander.sqf");
+CALL_COMPILE_COMMON("UI\InGameMenu\InGameMenuTabNotes.sqf");
+CALL_COMPILE_COMMON("UI\InGameMenu\InGameMenuTabGameModeInit.sqf");
+CALL_COMPILE_COMMON("UI\InGameMenu\InGameMenuTabSave.sqf");
+CALL_COMPILE_COMMON("UI\InGameMenu\InGameMenuTabTutorial.sqf");
+
+CALL_COMPILE_COMMON("UI\InGameMenu\DialogConfirmAction.sqf");

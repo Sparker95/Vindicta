@@ -37,7 +37,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			y = 0; 
 			w = 0.427; 
 			h = 0.035; 
-			text = "UI\Images\gradient_LtoR.paa";
+			text = "src\UI\Images\gradient_LtoR.paa";
 
 			colorText[] = MUIC_MISSION;
 			// colorBackground[] = MUIC_MISSION;
@@ -107,7 +107,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			y = 0.123; 
 			w = 0.427; 
 			h = 0.035; 
-			text = "UI\Images\gradient_LtoR.paa";
+			text = "src\UI\Images\gradient_LtoR.paa";
 
 			colorText[] = {0, 0, 0, 0.6};
 			//colorBackground[] = MUIC_BLACKTRANSP;

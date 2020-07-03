@@ -1,4 +1,5 @@
 #include "..\config\global_config.hpp"
+#include "..\common.h"
 
 // !! Currently only called on server !!
 
@@ -11,7 +12,7 @@
 params [["_filePath", "", [""]], "_factionType"];
 
 // Call compile the file as usual...
-_t = call compile preprocessFileLineNumbers _filePath;
+_t = CALL_COMPILE_COMMON(_filePath);
 
 // Set mission namespace variable
 private _tName = _t select T_NAME;

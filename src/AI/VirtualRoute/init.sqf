@@ -1,5 +1,7 @@
-[] spawn compile preprocessFileLineNumbers "AI\VirtualRoute\gps_core\init.sqf";
+#include "..\..\common.h"
 
-call compile preprocessFileLineNumbers "AI\VirtualRoute\VirtualRoute.sqf";
+[] spawn COMPILE_COMMON("AI\VirtualRoute\gps_core\init.sqf");
 
-[] spawn compile preprocessFileLineNumbers "AI\VirtualRoute\debug\init.sqf";
+CALL_COMPILE_COMMON("AI\VirtualRoute\VirtualRoute.sqf");
+
+[] spawn COMPILE_COMMON("AI\VirtualRoute\debug\init.sqf");

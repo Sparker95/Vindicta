@@ -1,3 +1,4 @@
-call compile preprocessFileLineNumbers "CivilianPresence\Civilian.sqf";
-call compile preprocessFileLineNumbers "CivilianPresence\CivPresence.sqf";
-call compile preprocessFileLineNumbers "CivilianPresence\CivPresenceMgr.sqf";
+#include "..\common.h"
+CALL_COMPILE_COMMON("CivilianPresence\Civilian.sqf");
+CALL_COMPILE_COMMON("CivilianPresence\CivPresence.sqf");
+CALL_COMPILE_COMMON("CivilianPresence\CivPresenceMgr.sqf");

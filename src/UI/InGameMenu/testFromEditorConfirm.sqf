@@ -1,3 +1,3 @@
-call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
-call compile preprocessFileLineNumbers "UI\initClasses.sqf";
-call compile preprocessfilelinenumbers "UI\InGameMenu\testConfirm.sqf";
+CALL_COMPILE_COMMON("OOP_Light\OOP_Light_init.sqf");
+CALL_COMPILE_COMMON("UI\initClasses.sqf");
+CALL_COMPILE_COMMON("UI\InGameMenu\testConfirm.sqf");

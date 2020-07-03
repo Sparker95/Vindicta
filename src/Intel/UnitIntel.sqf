@@ -257,7 +257,7 @@ CLASS("UnitIntel", "")
 							}; // if (_data == ...)
 
 							if (_data == "vin_pills") then {
-								call compile preprocessFileLineNumbers "UI\Notification\trip.sqf";
+								CALL_COMPILE_COMMON("UI\Notification\trip.sqf");
 								_deleteItem = true;
 							};
 

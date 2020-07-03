@@ -23,15 +23,15 @@ Author: Sparker
 
 #define pr private
 
-Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
-Unit_fnc_EH_Respawn = compile preprocessFileLineNumbers "Unit\EH_Respawn.sqf";
-Unit_fnc_EH_handleDamageInfantryACE = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantryACE.sqf";
-Unit_fnc_EH_handleDamageInfantryStd = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantryStd.sqf";
-Unit_fnc_EH_handleDamageVehicle = compile preprocessFileLineNumbers "Unit\EH_handleDamageVehicle.sqf";
-Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
-Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
-Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
-Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoUnloaded.sqf";
+Unit_fnc_EH_Killed = COMPILE_COMMON("Unit\EH_Killed.sqf");
+Unit_fnc_EH_Respawn = COMPILE_COMMON("Unit\EH_Respawn.sqf");
+Unit_fnc_EH_handleDamageInfantryACE = COMPILE_COMMON("Unit\EH_handleDamageInfantryACE.sqf");
+Unit_fnc_EH_handleDamageInfantryStd = COMPILE_COMMON("Unit\EH_handleDamageInfantryStd.sqf");
+Unit_fnc_EH_handleDamageVehicle = COMPILE_COMMON("Unit\EH_handleDamageVehicle.sqf");
+Unit_fnc_EH_GetIn = COMPILE_COMMON("Unit\EH_GetIn.sqf");
+Unit_fnc_EH_GetOut = COMPILE_COMMON("Unit\EH_GetOut.sqf");
+Unit_fnc_EH_aceCargoLoaded = COMPILE_COMMON("Unit\EH_aceCargoLoaded.sqf");
+Unit_fnc_EH_aceCargoUnloaded = COMPILE_COMMON("Unit\EH_aceCargoUnloaded.sqf");
 
 // Check that ACE damage event handler is present and was not changed
 // We need this to both have ACE damage handler and prevent bots from murdering themselves because they can not drive

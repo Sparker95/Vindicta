@@ -1,2 +1,3 @@
-call compile preprocessFileLineNumbers "GameManager\GameManager.sqf";
-call compile preprocessFileLineNumbers "GameManager\SaveGameHeader.sqf";
+#include "..\common.h"
+CALL_COMPILE_COMMON("GameManager\GameManager.sqf");
+CALL_COMPILE_COMMON("GameManager\SaveGameHeader.sqf");

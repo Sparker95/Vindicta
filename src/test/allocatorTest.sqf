@@ -6,25 +6,25 @@
 
 // Initialize test functions
 #ifdef _SQF_VM
-call compile preprocessFileLineNumbers "Tests\initTests.sqf";
+CALL_COMPILE_COMMON("Tests\initTests.sqf");
 #endif
 
-//call compile preprocessFileLineNumbers "initModules.sqf";
+//CALL_COMPILE_COMMON("initModules.sqf");
 
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+	CALL_COMPILE_COMMON("OOP_Light\OOP_Light_init.sqf");
 };
 
 //Initialize templates
-call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
-call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
+CALL_COMPILE_COMMON("Templates\initFunctions.sqf");
+CALL_COMPILE_COMMON("Templates\initVariables.sqf");
 
 // Initialize GarrisonModel (because it has the allocation algorithm)
-call compile preprocessFileLineNumbers "SaveSystem\Storable.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\WorldModel.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\ModelBase.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\GarrisonModel.sqf";
+CALL_COMPILE_COMMON("SaveSystem\Storable.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\WorldModel.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\ModelBase.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\GarrisonModel.sqf");
 
 
 #define pr private

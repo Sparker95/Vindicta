@@ -1,13 +1,14 @@
+#include "..\..\common.h"
 // Auto generated file
-call compile preprocessFileLineNumbers "AI\Commander\AICommander.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\SensorCommanderCasualties.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\SensorCommanderLocation.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\SensorCommanderTargets.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\initDatabase.sqf";
+CALL_COMPILE_COMMON("AI\Commander\AICommander.sqf");
+CALL_COMPILE_COMMON("AI\Commander\SensorCommanderCasualties.sqf");
+CALL_COMPILE_COMMON("AI\Commander\SensorCommanderLocation.sqf");
+CALL_COMPILE_COMMON("AI\Commander\SensorCommanderTargets.sqf");
+CALL_COMPILE_COMMON("AI\Commander\initDatabase.sqf");
 
 
 // Ported from CmdrAI
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\initClasses.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\initClasses.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\CmdrStrategy\initClasses.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAITarget.sqf";
+CALL_COMPILE_COMMON("AI\Commander\CmdrAction\initClasses.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\initClasses.sqf");
+CALL_COMPILE_COMMON("AI\Commander\CmdrStrategy\initClasses.sqf");
+CALL_COMPILE_COMMON("AI\Commander\CmdrAITarget.sqf");

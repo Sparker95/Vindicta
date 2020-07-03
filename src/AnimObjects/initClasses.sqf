@@ -1,2 +1,3 @@
-call compile preprocessFileLineNumbers "AnimObjects\AnimObjectBench.sqf";
-call compile preprocessFileLineNumbers "AnimObjects\AnimObjectGroundVehicle.sqf";
+#include "..\common.h"
+CALL_COMPILE_COMMON("AnimObjects\AnimObjectBench.sqf");
+CALL_COMPILE_COMMON("AnimObjects\AnimObjectGroundVehicle.sqf");

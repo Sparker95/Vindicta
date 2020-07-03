@@ -45,7 +45,7 @@ _unit = cursorObject;
 _actionClassName = "ActionUnitSalute";
 _parameters = player;
 _interval = 1;
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\testFunctions.sqf");
 _Action = [_unit, _actionClassName, _parameters, _interval] call AI_misc_fnc_forceUnitAction;
 _action
 */
@@ -89,7 +89,7 @@ _unit = cursorObject;
 _actionClassName = "ActionGroupGetInVehiclesAsCrew";
 _parameters = [];
 _interval = 2;
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\testFunctions.sqf");
 _Action = [_unit, _actionClassName, _parameters, _interval] call AI_misc_fnc_forceGroupAction;
 _action
 */
@@ -119,7 +119,7 @@ AI_misc_fnc_addGroupGoal = {
 _unit = cursorObject;
 _goalClassName = "GoalGroupGetInVehiclesAsCrew";
 _parameters = [];
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\testFunctions.sqf");
 [_unit, _goalClassName, _parameters] call AI_misc_fnc_addGroupGoal;
 */
 
@@ -148,6 +148,6 @@ AI_misc_fnc_addGarrisonGoal = {
 _unit = cursorObject;
 _goalClassName = "GoalGarrisonMove";
 _parameters = [];
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\testFunctions.sqf");
 [_unit, _goalClassName, _parameters] call AI_misc_fnc_addGarrisonGoal;
 */

@@ -1,4 +1,5 @@
+#include "..\common.h"
 // Initialize Location Visibility Monitor
-call compile preprocessFileLineNumbers "ClientSideChecks\LocationVisibilityMonitor.sqf";
-call compile preprocessFileLineNumbers "ClientSideChecks\PlayerMonitor.sqf";
-call compile preprocessFileLineNumbers "ClientSideChecks\SoundMonitor.sqf";
+CALL_COMPILE_COMMON("ClientSideChecks\LocationVisibilityMonitor.sqf");
+CALL_COMPILE_COMMON("ClientSideChecks\PlayerMonitor.sqf");
+CALL_COMPILE_COMMON("ClientSideChecks\SoundMonitor.sqf");

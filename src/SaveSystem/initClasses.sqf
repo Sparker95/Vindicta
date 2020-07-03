@@ -1,3 +1,4 @@
-call compile preprocessFileLineNumbers "SaveSystem\Storage.sqf";
-call compile preprocessFileLineNumbers "SaveSystem\StorageProfileNamespace.sqf";
-call compile preprocessFileLineNumbers "SaveSystem\Storable.sqf";
+#include "..\common.h"
+CALL_COMPILE_COMMON("SaveSystem\Storage.sqf");
+CALL_COMPILE_COMMON("SaveSystem\StorageProfileNamespace.sqf");
+CALL_COMPILE_COMMON("SaveSystem\Storable.sqf");

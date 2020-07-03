@@ -1,2 +1,4 @@
-call compile preprocessFileLineNumbers "UI\RadioKeyDialog\RadioKeyDialog.sqf";
-call compile preprocessFileLineNumbers "UI\RadioKeyDialog\RadioKeyTab.sqf";
+#include "..\..\common.h"
+
+CALL_COMPILE_COMMON("UI\RadioKeyDialog\RadioKeyDialog.sqf");
+CALL_COMPILE_COMMON("UI\RadioKeyDialog\RadioKeyTab.sqf");

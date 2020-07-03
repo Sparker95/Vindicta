@@ -1,3 +1,5 @@
+#include "common.h"
+
 if (!hasInterface) exitWith {};
 
 diag_log format [">>> testLoadDisplay %1", _this];
@@ -15,7 +17,7 @@ _display ctrlCreate ["LoadingScreenGroup", -1];
 // version number
 private _ctrl = _display displayCtrl 64599;
 if (isNil "misc_fnc_getVersion") then { // Compile the function if it's not there yet
-	 misc_fnc_getVersion = compile preprocessFileLineNumbers "Misc\fn_getVersion.sqf";
+	 misc_fnc_getVersion = COMPILE_COMMON("Misc\fn_getVersion.sqf");
 };
 
 private _versionStr = 0 call misc_fnc_getVersion;

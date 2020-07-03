@@ -1,3 +1,5 @@
+#include "..\common.h"
+
 /*
 Building positions suitable for specific roles.
 
@@ -643,4 +645,4 @@ gMilitaryBuildingTypes = [];
 {
 	gMilitaryBuildingModels pushBack (_x#0);
 	gMilitaryBuildingTypes pushBack (_x#1);
-} forEach (call compile preprocessFileLineNumbers "Location\militaryBuildings.sqf");
+} forEach (CALL_COMPILE_COMMON("Location\militaryBuildings.sqf"));

@@ -26,8 +26,8 @@ Author: Sparker
 
 #define pr private
 
-MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
-MessageLoop_fnc_perFrameHandler = compile preprocessFileLineNumbers "MessageLoop\fn_perFrameHandler.sqf";
+MessageLoop_fnc_threadFunc = COMPILE_COMMON("MessageLoop\fn_threadFunc.sqf");
+MessageLoop_fnc_perFrameHandler = COMPILE_COMMON("MessageLoop\fn_perFrameHandler.sqf");
 
 #define N_MESSAGES_IN_SERIES_DEFAULT 128
 

@@ -960,7 +960,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		//player assignCurator zeus1;
 
 		// Standard player respawn handler script like in MP
-		[player, _oldUnit, "", 0, "GameModeBase singlePlayerKilled"] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
+		[player, _oldUnit, "", 0, "GameModeBase singlePlayerKilled"] CALL_COMPILE_COMMON("onPlayerRespawn.sqf");
 	ENDMETHOD;
 
 	// Override this to perform periodic game mode updates
@@ -1635,7 +1635,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// create MissionEventHandlers
 	METHOD(initMissionEventHandlers)
 		params [P_THISOBJECT];
-		call compile preprocessFileLineNumbers "Init\initMissionEH.sqf";
+		CALL_COMPILE_COMMON("Init\initMissionEH.sqf");
 	ENDMETHOD;
 
 	// Initialize dynamic simulation

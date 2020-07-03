@@ -1,3 +1,5 @@
+#include "..\common.h"
+
 #ifdef _SQF_VM
 #define IS_SERVER true
 #else
@@ -17,16 +19,16 @@ publicVariable "t_classnames_array";
 t_validTemplates = [];
 t_allTemplates = [];
 
-call compile preprocessFileLineNumbers "Templates\Loot\init.sqf";
-call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
-call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
-call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
-call compile preprocessFileLineNumbers "Templates\initComposition.sqf";
-call compile preprocessFileLineNumbers "Templates\initLoadouts.sqf";
-call compile preprocessFileLineNumbers "Templates\combatTips.sqf";
+CALL_COMPILE_COMMON("Templates\Loot\init.sqf");
+CALL_COMPILE_COMMON("Templates\initCategories.sqf");
+CALL_COMPILE_COMMON("Templates\initCategoriesNames.sqf");
+CALL_COMPILE_COMMON("Templates\initEfficiency.sqf");
+CALL_COMPILE_COMMON("Templates\initComposition.sqf");
+CALL_COMPILE_COMMON("Templates\initLoadouts.sqf");
+CALL_COMPILE_COMMON("Templates\combatTips.sqf");
 
 if (IS_SERVER) then {
-	call compile preprocessFileLineNumbers "Templates\initFactions.sqf";
+	CALL_COMPILE_COMMON("Templates\initFactions.sqf");
 	#ifndef _SQF_VM
 	publicVariable "t_validTemplates";
 	publicVariable "t_allTemplates";

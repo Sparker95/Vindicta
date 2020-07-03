@@ -1,35 +1,35 @@
 #include "common.h"
 
 // Initialize test functions
-//call compile preprocessFileLineNumbers "Tests\initTests.sqf";
+//CALL_COMPILE_COMMON("Tests\initTests.sqf");
 
 // Init OOP
 OOP_Light_initialized = true;
-call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+CALL_COMPILE_COMMON("OOP_Light\OOP_Light_init.sqf");
 
 // Init dependent classes
-call compile preprocessFileLineNumbers "SaveSystem\initClasses.sqf";
-call compile preprocessFileLineNumbers "AI\AI\GOAP_Agent.sqf";
-call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
-call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\repairFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\WorldState\WorldState.sqf";
-call compile preprocessFileLineNumbers "AI\WorldFact\WorldFact.sqf";
-call compile preprocessFileLineNumbers "AI\Misc\initFunctions.sqf";
-call compile preprocessFileLineNumbers "AI\Action\Action.sqf";
-call compile preprocessFileLineNumbers "AI\Sensor\Sensor.sqf";
-call compile preprocessFileLineNumbers "AI\SensorStimulatable\SensorStimulatable.sqf";
-call compile preprocessFileLineNumbers "AI\ActionComposite\ActionComposite.sqf";
-call compile preprocessFileLineNumbers "AI\ActionCompositeParallel\ActionCompositeParallel.sqf";
-call compile preprocessFileLineNumbers "AI\ActionCompositeSerial\ActionCompositeSerial.sqf";
-call compile preprocessFileLineNumbers "AI\Goal\Goal.sqf";
-call compile preprocessFileLineNumbers "AI\AI\AI.sqf";
-call compile preprocessFileLineNumbers "AI\AI\AI_GOAP.sqf";
-call compile preprocessFileLineNumbers "AI\Garrison\initClasses.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
-//call compile preprocessFileLineNumbers "AI\initClasses.sqf";
+CALL_COMPILE_COMMON("SaveSystem\initClasses.sqf");
+CALL_COMPILE_COMMON("AI\AI\GOAP_Agent.sqf");
+CALL_COMPILE_COMMON("MessageReceiver\MessageReceiver.sqf");
+CALL_COMPILE_COMMON("MessageReceiverEx\MessageReceiverEx.sqf");
+CALL_COMPILE_COMMON("AI\Misc\databaseFunctions.sqf");
+CALL_COMPILE_COMMON("AI\Misc\repairFunctions.sqf");
+CALL_COMPILE_COMMON("AI\Misc\testFunctions.sqf");
+CALL_COMPILE_COMMON("AI\WorldState\WorldState.sqf");
+CALL_COMPILE_COMMON("AI\WorldFact\WorldFact.sqf");
+CALL_COMPILE_COMMON("AI\Misc\initFunctions.sqf");
+CALL_COMPILE_COMMON("AI\Action\Action.sqf");
+CALL_COMPILE_COMMON("AI\Sensor\Sensor.sqf");
+CALL_COMPILE_COMMON("AI\SensorStimulatable\SensorStimulatable.sqf");
+CALL_COMPILE_COMMON("AI\ActionComposite\ActionComposite.sqf");
+CALL_COMPILE_COMMON("AI\ActionCompositeParallel\ActionCompositeParallel.sqf");
+CALL_COMPILE_COMMON("AI\ActionCompositeSerial\ActionCompositeSerial.sqf");
+CALL_COMPILE_COMMON("AI\Goal\Goal.sqf");
+CALL_COMPILE_COMMON("AI\AI\AI.sqf");
+CALL_COMPILE_COMMON("AI\AI\AI_GOAP.sqf");
+CALL_COMPILE_COMMON("AI\Garrison\initClasses.sqf");
+CALL_COMPILE_COMMON("AI\Unit\initClasses.sqf");
+//CALL_COMPILE_COMMON("AI\initClasses.sqf");
 
 /*
 A script to test how AStar works
@@ -39,13 +39,13 @@ Author: Sparker 08.12.2018
 #define pr private
 
 // Some garrison tests
-call compile preprocessFileLineNumbers "AI\AI\tests\garrison.sqf";
+CALL_COMPILE_COMMON("AI\AI\tests\garrison.sqf");
 
 // Getting into vehicle
-call compile preprocessFileLineNumbers "AI\AI\tests\infantryGetInVehicle.sqf";
+CALL_COMPILE_COMMON("AI\AI\tests\infantryGetInVehicle.sqf");
 
 // Driver follow leader
-call compile preprocessFileLineNumbers "AI\AI\tests\driverFollowLeader.sqf";
+CALL_COMPILE_COMMON("AI\AI\tests\driverFollowLeader.sqf");
 
 // Civilian panic
-call compile preprocessFileLineNumbers "AI\AI\tests\civilianPanic.sqf";
+CALL_COMPILE_COMMON("AI\AI\tests\civilianPanic.sqf");

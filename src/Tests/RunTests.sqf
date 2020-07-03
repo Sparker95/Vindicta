@@ -1,3 +1,5 @@
+#include "..\common.h"
+
 asserts_Failed = 0;
 asserts_Passed = 0;
 test_Okay = true;
@@ -5,24 +7,22 @@ test_Okay = true;
 test_Scope = "Unknown";
 
 // Initialize test functions
-call compile preprocessFileLineNumbers "Tests/initTests.sqf";
+CALL_COMPILE_COMMON("Tests\initTests.sqf");
 
 diag_log "----------------------------------------------------------------------";
 diag_log "|              I N I T I A L I Z I N G   O O P L I G H T              |";
 diag_log "----------------------------------------------------------------------";
 
-#include "..\common.h"
-
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+	CALL_COMPILE_COMMON("OOP_Light\OOP_Light_init.sqf");
 };
 
 diag_log "----------------------------------------------------------------------";
 diag_log "|               I N I T I A L I Z I N G   M O D U L E S              |";
 diag_log "----------------------------------------------------------------------";
 {
-	call compile preprocessFileLineNumbers "initModules.sqf";
+	CALL_COMPILE_COMMON("initModules.sqf");
 }
 except__
 {
@@ -36,7 +36,7 @@ diag_log "----------------------------------------------------------------------
 diag_log "|                  I N I T I A L I Z I N G   M A I N                 |";
 diag_log "----------------------------------------------------------------------";
 {
-	call compile preprocessFileLineNumbers "initForSQFVM.sqf";
+	CALL_COMPILE_COMMON("initForSQFVM.sqf");
 }
 except__
 {

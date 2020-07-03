@@ -4,7 +4,7 @@
 
 #include "..\..\..\common.h"
 
-gps_test_fnc_mapDrawLine = compile preprocessFileLineNumbers "AI\VirtualRoute\debug\mapDrawLine.sqf";
+gps_test_fnc_mapDrawLine = COMPILE_COMMON("AI\VirtualRoute\debug\mapDrawLine.sqf");
 
 // Add a map marker.
 gps_test_fn_mkr = {

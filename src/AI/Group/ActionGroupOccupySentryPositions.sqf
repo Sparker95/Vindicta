@@ -86,6 +86,6 @@ ENDCLASS;
 _unit = cursorObject;
 _goalClassName = "GoalGroupOccupySentryPositions";
 _parameters = [];
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\testFunctions.sqf");
 [_unit, _goalClassName, _parameters] call AI_misc_fnc_addGroupGoal;
 */

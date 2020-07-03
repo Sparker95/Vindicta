@@ -27,12 +27,12 @@ Test_wrapper_fn = {
 	diag_log "|                   C O L L E C T I N G   T E S T S                  |";
 	diag_log "----------------------------------------------------------------------";
 	[] call _wrapped;
-	// call compile preprocessFileLineNumbers "initModules.sqf";
+	// CALL_COMPILE_COMMON("initModules.sqf");
 
 	// diag_log "----------------------------------------------------------------------";
 	// diag_log "|               I N I T I A L I Z I N G   G L O B A L S              |";
 	// diag_log "----------------------------------------------------------------------";
-	// call compile preprocessFileLineNumbers "initGlobals.sqf";
+	// CALL_COMPILE_COMMON("initGlobals.sqf");
 
 	diag_log "----------------------------------------------------------------------";
 	diag_log "|                      R U N N I N G   T E S T S                     |";

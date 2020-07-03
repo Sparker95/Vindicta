@@ -1,7 +1,9 @@
+#include "..\..\..\common.h"
+
 // Auto generated file
-call compile preprocessFileLineNumbers "AI\Commander\Model\WorldModel.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\ModelBase.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\GarrisonModel.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\LocationModel.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\Model\ClusterModel.sqf";
+CALL_COMPILE_COMMON("AI\Commander\Model\WorldModel.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\ModelBase.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\GarrisonModel.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\LocationModel.sqf");
+CALL_COMPILE_COMMON("AI\Commander\Model\ClusterModel.sqf");
 

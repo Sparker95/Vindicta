@@ -89,7 +89,9 @@
 #define pr private
 
 // ----------------------------------------------------------------------
-// |                       CALL COMPILE RELATIVE                        |
+// |                       CALL COMPILE COMMON                          |
 // ----------------------------------------------------------------------
-// This macro performs `call compile preprocessfilelinenumbers ...` on a file relative to current path
-#define CALL_COMPILE_RELATIVE(path) call compile preprocessFileLineNumbers ( ([__FILE__] call vin_fnc_common_getCurrentDir) + path)
+// This macro appends common source folder path to passed path
+#define CALL_COMPILE_COMMON(path) call compile preprocessFileLineNumbers ("src\" + path)
+
+#define COMPILE_COMMON(path) compile preprocessFileLineNumbers ("src\" + path)

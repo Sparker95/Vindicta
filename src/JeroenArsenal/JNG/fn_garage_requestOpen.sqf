@@ -22,5 +22,5 @@ _object setVariable ["jng_playersInGarage",_temp,true];
 
 diag_log ["open Garage for: clientOwner ",_clientOwner];
 
-//call compile preProcessFileLineNumbers "JeroenArsenal\JNG\recompile.sqf";
+//CALL_COMPILE_COMMON("JeroenArsenal\JNG\recompile.sqf");
 ["Open",[_object]] remoteExecCall ["jn_fnc_garage", _clientOwner];

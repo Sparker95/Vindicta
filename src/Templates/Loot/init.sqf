@@ -1,1 +1,2 @@
-call compile preprocessFileLineNumbers "Templates\Loot\items.sqf";
+#include "..\..\common.h"
+CALL_COMPILE_COMMON("Templates\Loot\items.sqf");

@@ -1,47 +1,48 @@
 #include "..\config\global_config.hpp"
+#include "..\common.h"
 
-call compile preprocessFileLineNumbers "AI\Misc\initFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\initFunctions.sqf");
 
-call compile preprocessFileLineNumbers "AI\Action\Action.sqf";
+CALL_COMPILE_COMMON("AI\Action\Action.sqf");
 
-call compile preprocessFileLineNumbers "AI\ActionComposite\ActionComposite.sqf";
-call compile preprocessFileLineNumbers "AI\ActionCompositeParallel\ActionCompositeParallel.sqf";
-call compile preprocessFileLineNumbers "AI\ActionCompositeSerial\ActionCompositeSerial.sqf";
+CALL_COMPILE_COMMON("AI\ActionComposite\ActionComposite.sqf");
+CALL_COMPILE_COMMON("AI\ActionCompositeParallel\ActionCompositeParallel.sqf");
+CALL_COMPILE_COMMON("AI\ActionCompositeSerial\ActionCompositeSerial.sqf");
 
-call compile preprocessFileLineNumbers "AI\AI\AI.sqf";
-call compile preprocessFileLineNumbers "AI\AI\AI_GOAP.sqf";
+CALL_COMPILE_COMMON("AI\AI\AI.sqf");
+CALL_COMPILE_COMMON("AI\AI\AI_GOAP.sqf");
 
-call compile preprocessFileLineNumbers "AI\Goal\Goal.sqf";
+CALL_COMPILE_COMMON("AI\Goal\Goal.sqf");
 
-call compile preprocessFileLineNumbers "AI\Sensor\Sensor.sqf";
-call compile preprocessFileLineNumbers "AI\SensorStimulatable\SensorStimulatable.sqf";
+CALL_COMPILE_COMMON("AI\Sensor\Sensor.sqf");
+CALL_COMPILE_COMMON("AI\SensorStimulatable\SensorStimulatable.sqf");
 
-call compile preprocessFileLineNumbers "AI\WorldState\WorldState.sqf";
+CALL_COMPILE_COMMON("AI\WorldState\WorldState.sqf");
 
-call compile preprocessFileLineNumbers "AI\WorldFact\WorldFact.sqf";
+CALL_COMPILE_COMMON("AI\WorldFact\WorldFact.sqf");
 
-call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
+CALL_COMPILE_COMMON("AI\StimulusManager\StimulusManager.sqf");
 
-call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\databaseFunctions.sqf");
 
-call compile preprocessFileLineNumbers "AI\Misc\repairFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\repairFunctions.sqf");
 
-call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+CALL_COMPILE_COMMON("AI\Misc\testFunctions.sqf");
 
 
 
 // *Commander* AI
-call compile preprocessFileLineNumbers "AI\Commander\initClasses.sqf";
+CALL_COMPILE_COMMON("AI\Commander\initClasses.sqf");
 
 // Garrison AI classes
-call compile preprocessFileLineNumbers "AI\Garrison\initClasses.sqf";
+CALL_COMPILE_COMMON("AI\Garrison\initClasses.sqf");
 
 
 // Group AI classes
-call compile preprocessFileLineNumbers "AI\Group\initClasses.sqf";
+CALL_COMPILE_COMMON("AI\Group\initClasses.sqf");
 
 // Unit AI classes
-call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
+CALL_COMPILE_COMMON("AI\Unit\initClasses.sqf");
 
 // Virtual Route
 // We only want to initialize it if game mode is enabled
@@ -55,5 +56,5 @@ call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
 #endif
 
 #ifdef __INIT_VR
-call compile preprocessFileLineNumbers "AI\VirtualRoute\init.sqf";
+CALL_COMPILE_COMMON("AI\VirtualRoute\init.sqf");
 #endif

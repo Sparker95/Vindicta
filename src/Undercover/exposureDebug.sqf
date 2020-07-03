@@ -1,4 +1,4 @@
-fnc_getVisibleSurface = compile preprocessfilelinenumbers "Undercover\fn_getVisibleSurface.sqf";
+fnc_getVisibleSurface = COMPILE_COMMON("Undercover\fn_getVisibleSurface.sqf");
 
 g_surfaceUpdateTime = diag_tickTime;
 

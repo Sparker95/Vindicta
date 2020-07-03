@@ -1,7 +1,9 @@
-// Not an auto generated file!
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\ActionStateTransition.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\ASTs\initClasses.sqf";
+#include "..\..\..\common.h"
 
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\CmdrAction.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\CmdrActionRecord.sqf";
-call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\initClasses.sqf";
+// Not an auto generated file!
+CALL_COMPILE_COMMON("AI\Commander\CmdrAction\ActionStateTransition.sqf");
+CALL_COMPILE_COMMON("AI\Commander\CmdrAction\ASTs\initClasses.sqf");
+
+CALL_COMPILE_COMMON("AI\Commander\CmdrAction\CmdrAction.sqf");
+CALL_COMPILE_COMMON("AI\Commander\CmdrAction\CmdrActionRecord.sqf");
+CALL_COMPILE_COMMON("AI\Commander\CmdrAction\Actions\initClasses.sqf");

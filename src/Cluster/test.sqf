@@ -1,4 +1,4 @@
-call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
+CALL_COMPILE_COMMON("Cluster\initFunctions.sqf");
 
 //A script to test the cluster functions
 

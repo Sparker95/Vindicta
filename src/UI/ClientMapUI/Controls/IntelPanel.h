@@ -143,7 +143,7 @@ class CMUI_HINTS_BG : RscPicture
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.58; 
 	h = safeZoneH * 0.026;
-	text = "UI\Images\gradient_2way.paa";
+	text = "src\UI\Images\gradient_2way.paa";
 	colorBackground[] = {0.2,0.2,0.2,0.6};
 	colorText[] = {0.1, 0.1, 0.1, 1};
 };

@@ -45,75 +45,75 @@ gVanillaFaces = [
 ];
 
 //Arma3_AAF
-call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_AAF\AAF\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_AAF\AAF_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_AAF\AAF\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_AAF\AAF_Recon\init.sqf");
 //Arma3_LDF
-call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_LDF\LDF\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_LDF\LDF_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_LDF\LDF\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_LDF\LDF_Recon\init.sqf");
 //Arma3_POLICE
-call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_POLICE\Police\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_POLICE\Police\init.sqf");
 //Arma3_CIVILIAN
-call compile preprocessFileLineNumbers "Templates\Loadouts\Arma3_CIVILIAN\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_CIVILIAN\init.sqf");
 //RHS_AFRF
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AFRF\AFRF\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AFRF\AFRF_recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_AFRF\AFRF\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_AFRF\AFRF_recon\init.sqf");
 //AAF_2010
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_2010\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_2010_recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_AAF\AAF_2010\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_AAF\AAF_2010_recon\init.sqf");
 //AAF_2020
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_2020\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_2020_recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_AAF\AAF_2020\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_AAF\AAF_2020_recon\init.sqf");
 //AAF_police
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_AAF\AAF_police\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_AAF\AAF_police\init.sqf");
 //RHS_LDF
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF_Ranger\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LDF\LDF_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LDF\LDF\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LDF\LDF_Ranger\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LDF\LDF_Recon\init.sqf");
 //RHS_LAF
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LAF\LAF\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_LAF\LAF_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LAF\LAF\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LAF\LAF_Recon\init.sqf");
 //RHS_HIDF
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf");
 //RHS_APD
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_APD\Police\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_APD\Police\init.sqf");
 //WW2_Heer
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Recon\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Heer\Heer_Police\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Heer\Heer\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Heer\Heer_Recon\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Heer\Heer_Police\init.sqf");
 //WW2_Sov
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Sov\Red_Army\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Sov\Red_Army_Recon\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Sov\Red_Army_Police\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Sov\Red_Army\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Sov\Red_Army_Recon\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Sov\Red_Army_Police\init.sqf");
 //WW2_UK
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_UK\UK_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_UK\UK\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_UK\UK_Recon\init.sqf");
 //WW2_UK
-call compile preprocessFileLineNumbers "Templates\Loadouts\WW2_Civilian\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Civilian\init.sqf");
 //GM_WestGer
-call compile preprocessFileLineNumbers "Templates\Loadouts\GM_WestGer\WestGer\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\GM_WestGer\WestGer_Police\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\GM_WestGer\WestGer_Recon\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\GM_CIVILIAN\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer_Police\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer_Recon\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\GM_CIVILIAN\init.sqf");
 //BWMOD
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Recon\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Fleck\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Fleck_Recon\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Trop\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Trop_Recon\init.sqf");
 //BWMOD with Niarms
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms_Recon\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop_Niarms\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\RHS_BWMOD\BW_Trop_Niarms_Recon\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Fleck_Niarms_Recon\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Trop_Niarms\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Trop_Niarms_Recon\init.sqf");
 // CUP
-call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_RUS_CIVILIAN\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_TKA_CIVILIAN\init.sqf";
-call compile preprocessFileLineNumbers "Templates\Loadouts\CUP_RUS_POLICE\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\CUP_RUS_CIVILIAN\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\CUP_TKA_CIVILIAN\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\CUP_RUS_POLICE\init.sqf");
 // Gendermarie Expansion
-call compile preprocessFileLineNumbers "Templates\Loadouts\GEXP_POLICE\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\GEXP_POLICE\init.sqf");
 // 3CB BAF
-call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_BAF\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\3CB_BAF\init.sqf");
 // 3CB CCIVS
-call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_CCIVS\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\3CB_CCIVS\init.sqf");
 // 3CB Takistan Civillians
-call compile preprocessFileLineNumbers "Templates\Loadouts\3CB_TCIV\init.sqf";
+CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TCIV\init.sqf");

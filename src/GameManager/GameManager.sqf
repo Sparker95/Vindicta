@@ -103,7 +103,7 @@ CLASS("GameManager", "MessageReceiverEx")
 			0 spawn {
 				// Wait until we have UI
 				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
-				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+				CALL_COMPILE_COMMON("UI\initPlayerUI.sqf");
 
 				// Show notification
 				CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");

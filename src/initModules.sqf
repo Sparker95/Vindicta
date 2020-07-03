@@ -10,125 +10,125 @@ if(isNil "groupLogic") then {
 };
 
 // Initialize the debug menu
-call compile preprocessFileLineNumbers "DebugMenu\DebugMenu.sqf";
+CALL_COMPILE_COMMON("DebugMenu\DebugMenu.sqf");
 
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+	CALL_COMPILE_COMMON("OOP_Light\OOP_Light_init.sqf");
 };
 
 // Initialize StorageInterfaces
-call compile preprocessFileLineNumbers "SaveSystem\initClasses.sqf";
+CALL_COMPILE_COMMON("SaveSystem\initClasses.sqf");
 
 //Initialize templates
-call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
-call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
+CALL_COMPILE_COMMON("Templates\initFunctions.sqf");
+CALL_COMPILE_COMMON("Templates\initVariables.sqf");
 
 // Common functions
-call compile preprocessFileLineNumbers "Common\initFunctions.sqf";
+CALL_COMPILE_COMMON("Common\initFunctions.sqf");
 
 // UI classes and functions
-call compile preprocessFileLineNumbers "UI\initClasses.sqf";
+CALL_COMPILE_COMMON("UI\initClasses.sqf");
 
 //Initialize misc functions
-call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
-fnc_onPlayerRespawnServer = compile preprocessFileLineNumbers "fn_onPlayerRespawnServer.sqf";
-fnc_onPlayerInitializedServer = compile preprocessFileLineNumbers "fn_onPlayerInitializedServer.sqf";
+CALL_COMPILE_COMMON("Misc\initFunctions.sqf");
+fnc_onPlayerRespawnServer = COMPILE_COMMON("fn_onPlayerRespawnServer.sqf");
+fnc_onPlayerInitializedServer = COMPILE_COMMON("fn_onPlayerInitializedServer.sqf");
 
 //Initialize cluster module
-call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
+CALL_COMPILE_COMMON("Cluster\initFunctions.sqf");
 
 // Initialize MessageReceiver class
-call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
+CALL_COMPILE_COMMON("MessageReceiver\MessageReceiver.sqf");
 
 // Initialize MessageReceiverEx class
-call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf";
+CALL_COMPILE_COMMON("MessageReceiverEx\MessageReceiverEx.sqf");
 
 // Initialize MessageLoop class
-call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
+CALL_COMPILE_COMMON("MessageLoop\MessageLoop.sqf");
 
 // Mod compatibility global variables
-call compile preprocessFileLineNumbers "modCompatBools.sqf";
+CALL_COMPILE_COMMON("modCompatBools.sqf");
 
 // Initialize Commander class
-call compile preprocessFileLineNumbers "Commander\Commander.sqf";
+CALL_COMPILE_COMMON("Commander\Commander.sqf");
 
 // Initialize GOAP_Agent - we need it before Unit, Group, Garrison
-call compile preprocessFileLineNumbers "AI\AI\GOAP_Agent.sqf";
+CALL_COMPILE_COMMON("AI\AI\GOAP_Agent.sqf");
 
 // Initialize Unit class
-call compile preprocessFileLineNumbers "Unit\Unit.sqf";
+CALL_COMPILE_COMMON("Unit\Unit.sqf");
 
 // Initialize Group class
-call compile preprocessFileLineNumbers "Group\Group.sqf";
+CALL_COMPILE_COMMON("Group\Group.sqf");
 
 // Initialize Garrison class
-call compile preprocessFileLineNumbers "Garrison\Garrison.sqf";
+CALL_COMPILE_COMMON("Garrison\Garrison.sqf");
 
 // Initialize MessageLoopManagers classes
-call compile preprocessFileLineNumbers "MessageLoopManagers\MessageLoopMainManager.sqf";
-call compile preprocessFileLineNumbers "MessageLoopManagers\MessageLoopGroupManager.sqf";
+CALL_COMPILE_COMMON("MessageLoopManagers\MessageLoopMainManager.sqf");
+CALL_COMPILE_COMMON("MessageLoopManagers\MessageLoopGroupManager.sqf");
 
 // Initialize Location class
-call compile preprocessFileLineNumbers "Location\Location.sqf";
+CALL_COMPILE_COMMON("Location\Location.sqf");
 
 // Initialize civ presence
-call compile preprocessFileLineNumbers "CivilianPresence\initClasses.sqf";
+CALL_COMPILE_COMMON("CivilianPresence\initClasses.sqf");
 
 // Initialize Timer class
-call compile preprocessFileLineNumbers "Timer\Timer.sqf";
+CALL_COMPILE_COMMON("Timer\Timer.sqf");
 
 // Initialize TimerService class
-call compile preprocessFileLineNumbers "TimerService\TimerService.sqf";
+CALL_COMPILE_COMMON("TimerService\TimerService.sqf");
 
 // Initialize DebugPrinter class
-call compile preprocessFileLineNumbers "DebugPrinter\DebugPrinter.sqf";
+CALL_COMPILE_COMMON("DebugPrinter\DebugPrinter.sqf");
 
 // Initialize LocationUnitArrayprovider class
-call compile preprocessFileLineNumbers "LocationUnitArrayProvider\LocationUnitArrayProvider.sqf";
+CALL_COMPILE_COMMON("LocationUnitArrayProvider\LocationUnitArrayProvider.sqf");
 
 // Initialize AnimObject class
-call compile preprocessFileLineNumbers "AnimObject\AnimObject.sqf";
+CALL_COMPILE_COMMON("AnimObject\AnimObject.sqf");
 
 // Initialize AnimObject inherited classes
-call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";
+CALL_COMPILE_COMMON("AnimObjects\initClasses.sqf");
 
 // Initialize AI classes
-call compile preprocessFileLineNumbers "AI\initClasses.sqf";
+CALL_COMPILE_COMMON("AI\initClasses.sqf");
 
 // Initialize suspiciosness monitor
-call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
+CALL_COMPILE_COMMON("Undercover\initClasses.sqf");
 
 // Initialize Grid class
-call compile preprocessFileLineNumbers "GridStats\Grid.sqf";
+CALL_COMPILE_COMMON("GridStats\Grid.sqf");
 
 // Initialize SideStat class
-call compile preprocessFileLineNumbers "SideStat\SideStat.sqf";
+CALL_COMPILE_COMMON("SideStat\SideStat.sqf");
 
 // Initialize Intel and IntelDatabase classes
-call compile preprocessFileLineNumbers "Intel\initClasses.sqf";
+CALL_COMPILE_COMMON("Intel\initClasses.sqf");
 
 // Initialize the garbage collector
-call compile preprocessFileLineNumbers "GarbageCollector\GarbageCollector.sqf";
+CALL_COMPILE_COMMON("GarbageCollector\GarbageCollector.sqf");
 
 // Initialize client side checks
-call compile preprocessFileLineNumbers "ClientSideChecks\initClasses.sqf";
+CALL_COMPILE_COMMON("ClientSideChecks\initClasses.sqf");
 
 // Initialize GameModes
-call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
+CALL_COMPILE_COMMON("GameMode\initClasses.sqf");
 
 // Initialize GameManager classes
-call compile preprocessFileLineNumbers "GameManager\initClasses.sqf";
+CALL_COMPILE_COMMON("GameManager\initClasses.sqf");
 
 // Initialize PlayerDatabases
-call compile preprocessFileLineNumbers "DoubleKeyHashmap\DoubleKeyHashmap.sqf";
-call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseServer.sqf";
-call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseClient.sqf";
+CALL_COMPILE_COMMON("DoubleKeyHashmap\DoubleKeyHashmap.sqf");
+CALL_COMPILE_COMMON("PlayerDatabase\PlayerDatabaseServer.sqf");
+CALL_COMPILE_COMMON("PlayerDatabase\PlayerDatabaseClient.sqf");
 
 // Initialize the GarrisonServer
-call compile preprocessFileLineNumbers "GarrisonServer\initClasses.sqf";
+CALL_COMPILE_COMMON("GarrisonServer\initClasses.sqf");
 
 // Initialize dialogue
-call compile preprocessFileLineNumbers "Dialogue\initClasses.sqf";
+CALL_COMPILE_COMMON("Dialogue\initClasses.sqf");
 
 diag_log "[initModules] Done!";

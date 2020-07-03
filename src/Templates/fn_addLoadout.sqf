@@ -1,5 +1,7 @@
-/*
+#include "..\common.h"
 
+/*
+Registers a new loadout.
 */
 
 params [["_tag", "", [""]], ["_scriptName", "", [""]]];
@@ -12,4 +14,4 @@ if (!isNil {t_loadouts_hashmap getVariable _tag}) exitWith {
 t_loadouts_hashmap setVariable [_tag, _scriptName];
 
 // Try to compile the script as well to report errors
-compile preprocessFileLineNumbers ("Templates\Loadouts\" + _scriptName);
+COMPILE_COMMON(("Templates\Loadouts\" + _scriptName));

@@ -1,5 +1,5 @@
 #include "..\common.h"
-call compile preprocessFileLineNumbers "Intel\PersonalInventory.sqf";
+CALL_COMPILE_COMMON("Intel\PersonalInventory.sqf");
 
 #define pr private
 

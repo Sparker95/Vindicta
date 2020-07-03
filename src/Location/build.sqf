@@ -85,7 +85,7 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 	];
 	
 	pr _file = selectRandom (_files select _isHighway select _isCity);
-	pr _objects = call compile preprocessFileLineNumbers ("Location\Compositions\" + _file);
+	pr _objects = CALL_COMPILE_COMMON(("Location\Compositions\" + _file));
 
 	// Delete surrounding trees
 	pr _no = nearestTerrainObjects [_roadPos, ["TREE", "SMALL TREE", "BUSH"], 30, false, true];
