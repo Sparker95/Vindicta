@@ -1,8 +1,8 @@
 {
-    "missionDisplayName": "Vindicta",
-    "missionTechnicalName": "vindicta",
+    "displayName": "Vindicta",
+    "simpleName": "vindicta",
     "missionFolderWildcard": "Vindicta.*",
-    "oneMissionFolderName": "vindicta_v{0}_{1}_{2}.{3}",
+    "oneMissionPboName": "vindicta_{0}_{1}_{2}.{3}.pbo",
     "cfgPatchesClassName": "vindicta_missions",
     
     "comment00": "'from' is relative to repository root, 'to' is relative to mission.sqm",

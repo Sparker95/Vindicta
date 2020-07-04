@@ -2,19 +2,37 @@ param (
     [string]$verPatch = "666"
 )
 
-"Setup temporary directories..."
-New-Item -Path "_build" -ItemType Directory -Force > $null
-if (Test-Path "_build\missions") {
-    Get-Childitem "_build\missions" -Directory forEach-Object {
+Push-Location
 
-    } 
-    Remove-Item -Path "_build\missions" -Force -Recurse
-}
-New-Item -Path "_build\missions" -ItemType Directory -Force > $null
+Set-Location "$PSScriptRoot\..\..\"
 
-"`nRead the config.json file..."
+"Read the config.json file..."
 $configString = get-content -path (Join-path -path $PSScriptRoot -childPath "config.json")
 $config = ConvertFrom-Json -InputObject ($configString -as [String])
+$combinedFolderName = "$($config.simpleName)_missions".toLower()
+$combinedMissionsLocation = "_build\missions\$combinedFolderName"
+
+"`nSetup temporary directories..."
+New-Item -Path "_build" -ItemType Directory -Force > $null
+if (Test-Path "_build\missions") {
+    # It's impossible to delete a symlink due to some PowerShell bug
+    # So they are deletes with a workaround
+    <#
+    (Get-Childitem "_build\missions" -Directory) | ForEach-Object {
+        #"Checking subfolder:"
+        $_.fullName
+        $srcPath = Join-Path -Path $_.fullName -ChildPath "src"
+        if (Test-Path $srcPath) {
+            #"Deleting src symlink"
+            (Get-Item -Path $srcPath).Delete()
+        }
+    }
+    #>
+    Remove-Item -Path "_build\missions" -Recurse -Force
+}
+New-Item -Path "_build\missions" -ItemType Directory -Force > $null
+New-Item -Path "_build\missions\out" -ItemType Directory -Force > $null
+New-Item -Path "_build\missions\$combinedFolderName" -ItemType Directory -Force > $null
 
 "`nRead version..."
 $verMajor = Get-Content -path "configs\majorVersion.hpp"
@@ -33,9 +51,7 @@ $verPatch | Out-File -FilePath "_build\missions\buildVersion.hpp" -NoNewline
 $verFullDots = "$verMajor.$verMinor.$verPatch"
 $verFullUnderscores = "$verMajor_$verMinor_$verPatch"
 "Mission Version: $verFullDots"
-$briefingName = "$($config.missionDisplayName) $verMajor.$verMinor.$verPatch"
-# Must match to common pbo name
-$missionsPboPrefix = "$($config.missionTechnicalName)_missions".toLower()
+$briefingName = "$($config.displayName) $verMajor.$verMinor.$verPatch"
 
 "`nCheck all mission folders..."
 $missionFolders = Get-Childitem -directory -name ($config.missionFolderWildcard -as [String])
@@ -54,19 +70,19 @@ forEach ($missionFolder in $missionFolders) {
 for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     $mapName = $mapNames[$i]
     $missionFolder = $missionFolders[$i]
-    $tempMissionFolderName = $config.oneMissionFolderName -f $verMajor, $verMinor, $verPatch, $mapName
-    $tempMissionFolderName = $tempMissionFolderName.toLower()
-    "Temp mission folder name: $tempMissionFolderName"
-    $tempMissionLocation = "_build\missions\$tempMissionFolderName"
+    $oneMissionFolderName = "$($config.simpleName)_$mapName.$mapName".toLower()
+    $oneMissionPboName = ($config.oneMissionPboName -f $verMajor, $verMinor, $verPatch, $mapName).toLower()
+    $tempMissionLocation = "$combinedMissionsLocation\$oneMissionFolderName"
     New-Item -path $tempMissionLocation -ItemType Directory > $null
 
     # Copy files
     "Copying files..."
     $sw = [system.diagnostics.stopwatch]::startNew()
-    #Copy-Item "src" -Destination $tempMissionLocation -Recurse
-    New-Item -ItemType SymbolicLink -name "$tempMissionLocation\src" -value "src" > $null
-    Copy-Item "_build\missions\buildVersion.hpp" -Destination (Join-Path -Path $tempMissionLocation -ChildPath "src\config")
-    Copy-Item (Join-Path -Path $missionFolder -ChildPath "mission.sqm") -Destination $tempMissionLocation
+    Copy-Item "src" -Destination $tempMissionLocation -Recurse
+    # It was a bad idea to make symlink instead of copying folder, because then we paste config files to src/config
+    #New-Item -ItemType SymbolicLink -name "$tempMissionLocation\src" -value "src" > $null
+    Copy-Item "_build\missions\buildVersion.hpp" -Destination "$tempMissionLocation\src\config"
+    Copy-Item "$missionFolder\mission.sqm" -Destination $tempMissionLocation
     forEach ($pathPair in $config.copyFiles) {
         $pathDest = Join-Path -Path $tempMissionLocation -ChildPath $pathPair.to
         Copy-Item $pathPair.from -Destination $pathDest -Recurse
@@ -75,10 +91,13 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
 
     # Build PBO
     $sw.restart()
-    "Launching armake"
-    .\tools\Builder\hemtt armake build --force -i include $tempMissionLocation "_build\missions\$tempMissionFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+    "Building PBO with armake..."
+    .\tools\Builder\hemtt armake build --force -i include $tempMissionLocation "_build\missions\out\$oneMissionPboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
     "`tDone in $($sw.ElapsedMilliseconds)ms"
 }
+
+
+# GENERATE CONFIG.CPP
 
 "`nGenerate config.cpp"
 $sCfgPatches = ""
@@ -87,7 +106,7 @@ $sClassMPMissions = ""
 
 $sCfgPatches += "class CfgPatches {`n";
 $sCfgPatches += " class $($config.cfgPatchesClassName) {`n";
-$sCfgPatches += "  name = $($config.missionDisplayName) Missions;`n";
+$sCfgPatches += "  name = ""$($config.displayName) Missions"";`n";
 $sCfgPatches += "  units[] = {};`n";
 $sCfgPatches += "  weapons[] = {};`n";
 $sCfgPatches += "  requiredVersion = 1.56;`n";
@@ -99,14 +118,14 @@ $sCfgPatches += "  versionStr = ""1.0.0.0"";`n";
 $sCfgPatches += " };`n";
 $sCfgPatches += "};`n";
 
-"Available server.cfg classes:"
+"`nAvailable classes for server.cfg:"
 for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     $mapName = $mapNames[$i]
     $missionFolder = $missionFolders[$i]
-    $briefingNameMap = "$briefingName $mapName"
-    $className = "$($config.missionTechnicalName)_$mapName".toLower()
-    $missionsMissionFolder = "$($config.missionTechnicalName)_$mapname.$mapName".toLower()
-    $directory = "$missionsPboPrefix\$className.$mapName".toLower()
+    $briefingNameMap = "$($config.displayName) $mapName $verMajor.$verMinor.$verPatch "
+    $className = "$($config.simpleName)_$mapName".toLower()
+    $missionsMissionFolder = "$($config.simpleName)_$mapname.$mapName".toLower()
+    $directory = "$combinedFolderName\$className.$mapName".toLower()
     
     "$className.$mapName".toLower()
 
@@ -123,7 +142,8 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
 
 $sConfigCPP = ""
 
-$sConfigCPP += "`n`n";
+$sConfigCPP += $sCfgPatches
+
 $sConfigCPP += "class CfgMissions`n";
 $sConfigCPP += "{`n";
 
@@ -134,7 +154,7 @@ $sConfigCPP += " };`n";
 
 $sConfigCPP += " class Missions`n";
 $sConfigCPP += " {`n";
-$sConfigCPP += "  class $($config.missionTechnicalName)";
+$sConfigCPP += "  class $($config.simpleName)";
 $sConfigCPP += "  {`n";
 $sConfigCPP += "  briefingName = ""$briefingName"";`n";
 $sConfigCPP +=    $sClassMissions;
@@ -143,6 +163,12 @@ $sConfigCPP += " };`n";
 
 $sConfigCPP += "};`n";
 
-$sConfigCPP > "_build\missions\config.cpp"
+$sConfigCPP | Out-File -FilePath "$combinedMissionsLocation\config.cpp" -NoNewline -Encoding UTF8
 
-$pause
+"`nBuild combined missions PBO..."
+
+$sw = [system.diagnostics.stopwatch]::startNew()
+.\tools\Builder\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\out\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+"`tDone in $($sw.ElapsedMilliseconds)ms"
+
+Pop-Location
