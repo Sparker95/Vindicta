@@ -13,6 +13,7 @@ jobs:
     steps:
     - name: List files
       run: |
+        write-host "Hello from step list files"
         $files = ls
         write-host $files
     - name: Build Missions
