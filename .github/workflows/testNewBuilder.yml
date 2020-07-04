@@ -14,6 +14,5 @@ jobs:
     - name: Get Files
       run: ls
 
-    steps:
     - name: Build Missions
       run: .\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}
