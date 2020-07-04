@@ -9,7 +9,11 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 5
+
+    steps:
+    - name: Get Files
+      run: ls
+
     steps:
     - name: Build Missions
-      working-directory: ./tools/Builder
-      run: .buildMissions.ps1 -verPatch ${{ github.run_number }}
+      run: .\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}
