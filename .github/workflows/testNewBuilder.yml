@@ -11,4 +11,5 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Build Missions
-      run: .\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}
+      working-directory: .\tools\Builder
+      run: .buildMissions.ps1 -verPatch ${{ github.run_number }}
