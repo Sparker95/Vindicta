@@ -14,7 +14,7 @@ jobs:
     - name: List files
       run: |
         write-host "Hello from step list files"
-        $files = ls
-        write-host $files
+        Get-Location | write-host
+        Get-ChildItem | write-host
     - name: Build Missions
       run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
