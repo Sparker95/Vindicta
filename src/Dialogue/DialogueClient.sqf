@@ -654,8 +654,8 @@ CLASS("DialogueClient", "")
 		// Bail if target is not alive or unconscious
 		if (!alive _co || {lifestate _co == "INCAPACITATED"}) exitWith {false;};
 
-		// Bail if target is not man
-		if (!(_co isKindOf "CAManBase")) exitWith {false;};
+		// Bail if target is not man, or is player
+		if (!(_co isKindOf "CAManBase") || {isPlayer _co}) exitWith {false;};
 
 		// Bail if target is too far
 		if ((player distance _co) > 4.5) exitWith {false;};
