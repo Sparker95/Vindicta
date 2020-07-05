@@ -136,7 +136,8 @@ t_ACEMiscItems = [
 					["ACE_ATragMX",6],
 					["ACE_RangeCard",6],
 					["ACE_HandFlare_White", 30], // Flares
-					["ACE_key_lockpick", 20]	// Lockpick
+					["ACE_key_lockpick", 20],	// Lockpick
+					["ACE_Banana", 2]
 				];
 
 // ACE medical items for vehicles
