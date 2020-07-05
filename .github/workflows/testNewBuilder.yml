@@ -6,10 +6,39 @@ on:
       - build-tools
 
 jobs:
+
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@master
+      
+    - name: Validate Config
+      run: python3 tools/SQF-validate/config_style_checker.py
+
+    - name: Check for BOM
+      uses: arma-actions/bom-check@master
+      with:
+        path: 'src'
+
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@master
+
+    - name: Validate SQF with SQF-VM
+      run: |
+        cd src
+        New-Item .\config\user_local_config.hpp -ItemType File
+        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\src\Tests\RunTests.sqf
+
   build:
     runs-on: windows-latest
     timeout-minutes: 5
-
+    needs: [validate, test]
     steps:
     - name: Checkout the code
       uses: actions/checkout@master

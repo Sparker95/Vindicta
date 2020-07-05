@@ -45,7 +45,7 @@ if ($verMinor.Count -gt 1) {
     "ERROR: minirVersion.hpp countains a new line"
     exit 100
 }
-$verPatch | Out-File -FilePath "_build\missions\buildVersion.hpp" -NoNewline
+$verPatch | Out-File -FilePath "_build\missions\buildVersion.hpp" -NoNewline -Encoding UTF8
 
 # Generate common strings
 $verFullDots = "$verMajor.$verMinor.$verPatch"
