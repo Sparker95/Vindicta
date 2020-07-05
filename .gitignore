@@ -31,6 +31,10 @@ src/config/user_local_config.hpp
 ~*
 editing.*
 *.preproc
+Vindicta.*/init.sqf
+Vindicta.*/cba_settings.sqf
+Vindicta.*/onPlayerRespawn.sqf
+Vindicta.*/description.ext
 
 #ADDON
 
