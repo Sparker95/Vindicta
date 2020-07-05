@@ -12,6 +12,7 @@ New-Item -Path "..\_build\addon\Vindicta" -ItemType Directory -Force > $null
 New-Item -Path "..\_build\addon\Vindicta\addons" -ItemType Directory -Force > $null
 New-Item -Path "..\_build\addon\Vindicta\keys" -ItemType Directory -Force > $null
 
+$buildLocation = "$PSScriptRoot\..\..\_build"
 $addonLocation = "." # We are here already
 $addonOutLocation = "$PSScriptRoot\..\..\_build\addon\Vindicta"
 $addonsOutLocation = "$addonOutLocation\addons"
@@ -34,6 +35,9 @@ $extraFiles = Get-ChildItem -Path "extras" -File
 foreach ($extraFile in $extraFiles) {
     "Copying extra file $($extraFile.Name) ..."
     Copy-Item $extraFile.fullName $addonOutLocation
+}
+if (Test-Path "$buildLocation\FOR_DEDICATED_SERVER_CFG.TXT") {
+    Copy-Item "$buildLocation\FOR_DEDICATED_SERVER_CFG.TXT" $addonOutLocation
 }
 
 "`nCreate key..."

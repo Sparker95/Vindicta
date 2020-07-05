@@ -118,7 +118,8 @@ $sCfgPatches += "  versionStr = ""1.0.0.0"";`n";
 $sCfgPatches += " };`n";
 $sCfgPatches += "};`n";
 
-"`nAvailable classes for server.cfg:"
+$sReadme = "Example class Missions for server.cfg:`n`n"
+$sReadme += "class Missions`n{`n"
 for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     $mapName = $mapNames[$i]
     $missionFolder = $missionFolders[$i]
@@ -127,7 +128,13 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     $missionsMissionFolder = "$($config.simpleName)_$mapname.$mapName".toLower()
     $directory = "$combinedFolderName\$className.$mapName".toLower()
     
-    "$className.$mapName".toLower()
+    $sReadme += "  class $className`n"
+    $sReadme += "  {`n"
+    $templateValue = "$className.$mapName".toLower()
+    $sReadme += "    template = $templateValue;`n"
+    $sReadme += "    difficulty = ""veteran"";`n"
+    $sReadme += "    class Params {};`n"
+    $sReadme += "  };`n"
 
     $newClass = ""
     $newClass += "  class $className`n";
@@ -139,6 +146,8 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     $sClassMissions += $newClass
     $sClassMPMissions += $newClass
 }
+$sReadme += "};"
+$sReadme | Out-File -FilePath "_build\FOR_DEDICATED_SERVER_CFG.TXT"
 
 $sConfigCPP = ""
 
