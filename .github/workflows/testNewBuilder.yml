@@ -55,22 +55,37 @@ jobs:
         name: armaAddon
         path: _build\addon\Vindicta
 
+    - name: Upload separate missions artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: separateMissions
+        path: _build\missions\separatePBO
+
   upload:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [build]
     steps:
-    - name: Download build artifact
+    - name: Download addon artifact
       uses: actions/download-artifact@v2
       with:
         name: armaAddon
         path: armaAddon
 
-    - name: Ensure build artifact
-      run: |
-        ls
-        cd armaAddon
-        ls
+    - name: Download separate missions artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: separateMissions
+        path: separateMissions
+
+    - name: Upload to FTP
+      uses: sebastianpopp/ftp-action@v1.1.0
+      with:
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: "separateMissions"
+        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
 
     - name: Publish to Steam Workshop
       uses: arma-actions/workshop-upload@v1
