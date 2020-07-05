@@ -37,6 +37,12 @@ jobs:
         name: workshopItemArtifact
         path: _build\addon\Vindicta
 
+    - name: Ensure build artifact
+      run: |
+        ls
+        cd _build\addon\Vindicta
+        ls
+
     - name: Publish to Steam Workshop
       uses: arma-actions/workshop-upload@v1
       with:
