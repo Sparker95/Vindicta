@@ -1,0 +1,205 @@
+#include "common.h"
+
+#include "config\global_config.hpp"
+
+author="Vindicta Team";
+OnLoadName = "Vindicta";
+OnLoadMission = "Vindicta";
+
+allowFunctionsRecompile = 1;
+allowFunctionsLog = 1;
+
+// Name of the mission in the mission selection listbox
+// It has version in it so we generate it with teh build tool
+//#include "config\briefingName.hpp"
+
+overviewPicture = "\z\vindicta\addons\ui\pictures\overviewPicture.paa";
+overviewText = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
+overviewTextLocked = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
+
+// Enable debug console
+#ifdef EDITOR_PREVIEW
+enableDebugConsole = 2; // Everyone
+#else
+enableDebugConsole = 1; // Only admin or SP
+#endif
+
+// Disables saving
+saving = 0;
+
+// Enables createVehicleLocal
+// todo: we might want to redo out build UI to work with CreateSimpleObject local
+unsafeCVL = 1;
+
+// We don't have a briefing
+briefing = 0;
+
+// ---- Respawn ----
+respawn = 2; // 2 - instant
+respawnButton = 1; // 0: disabled - 1: enabled. Default: 1
+respawnDelay = 2; // Default: ?
+// respawnOnStart = 1;
+DisabledAI = 1;
+respawnTemplates[] = {"Counter"};
+
+class Header
+{
+    gameType = COOP; // I want my own game type plz :3
+    minplayers=1;
+    maxplayers=50;
+};
+
+class CfgSounds
+{
+	sounds[] = {};
+	#include "CfgSounds.hpp"
+};
+
+class CfgIdentities
+{
+
+};
+
+class CfgDebriefing
+{
+	class OOP_ERROR_DEBRIEFING_CLASS_NAME
+	{
+		title = "OOP: critical error";
+		description = "A critical OOP error has happened. See 'OOP error' section.";
+	};
+
+	class End1
+	{
+		title = "Please run in multiplayer";
+		description = "Arma has no respawn in singleplayer. Please run the mission is multiplayer. You can self-host it from the multiplayer menu.";
+	};
+};
+
+class CfgDebriefingSections
+{
+	class OOP_error
+	{
+		title = "OOP error";
+		variable = OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR;
+	};
+};
+
+class Params {
+    //#include "aceSettings.hpp"
+};
+
+class CfgFunctions {
+	
+	#include "JeroenArsenal\functions.hpp"
+   
+	class vin
+	{
+        #include "Common\functions.hpp"
+		class anything
+		{
+			class preInit {
+				preInit = 1;
+				file = "src\preInit.sqf";
+			};
+		};
+	};
+};
+
+//==== Dialogs and UIs ====
+#include "UI\Resources\UIBase.hpp"
+#include "UI\Resources\MissionUIControlClasses.h"
+#include "UI\ClientMapUI\ClientMapUI.h"
+#include "UI\DialogBase\DialogBase.h"
+#include "UI\InGameMenu\InGameMenu.h"
+#include "UI\TacticalTablet\TacticalTablet.h"
+#include "UI\RadioKeyDialog\RadioKeyDialog.h"
+#include "UI\RecruitDialog\RecruitDialog.h"
+#include "UI\LoadingScreen\LoadingScreen.h"
+#include "UI\Notification\Notification.h"
+#include "UI\AIDebug\AIDebug.h"
+
+// Just include plain control classes for the intel panel
+#include "UI\ClientMapUI\Controls\IntelPanel.h"
+
+//#include "\A3\ui_f\hpp\defineCommonGrids.inc"
+//#include "\A3\ui_f\hpp\defineCommonColors.inc"
+
+
+//==== Remote execution ====
+class CfgRemoteExec
+{
+    // List of script functions allowed to be sent from client via remoteExec
+    class Functions
+    {
+        // State of remoteExec: 0-turned off, 1-turned on, taking whitelist into account, 2-turned on, however, ignoring whitelists (default because of backward compatibility)
+        mode = 2;
+        // Ability to send jip messages: 0-disabled, 1-enabled (default)
+        jip = 1;
+    };
+
+    // List of script commands allowed to be sent from client via remoteExec
+    class Commands
+    {
+        mode = 2;
+    };
+};
+
+// HUD UIs
+class RscTitles {
+
+    class Default 
+    {
+        idd = -1;
+        fadein = 0;
+        fadeout = 0;
+        duration = 2;
+    };
+
+#include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
+#include "UI\BuildUI\BuildUI.h"
+#include "UI\InGameUI\Vin_InGameUI.h"
+
+};
+
+// Garbage collector
+// https://community.bistudio.com/wiki/Description.ext#Corpse_.26_wreck_management
+
+// Sets the mode for corpse removal manager.
+corpseManagerMode = 1; // Leave it at 1
+
+// Corpse limit before which ( <= ) corpseRemovalMaxTime applies and after which ( > ) corpseRemovalMinTime applies.
+corpseLimit = 30;
+
+// Remove all bodies that have been dead longer than corpseRemovalMinTime when corpseLimit is reached.
+corpseRemovalMinTime = 60; // seconds. Default: 10
+
+// Maximum time a corpse can remain on the ground if total number of corpses is equal or under corpseLimit.
+corpseRemovalMaxTime = 600; // seconds. Default: 3600
+
+// Sets the mode for wreck removal manager.
+wreckManagerMode = 1; // Leave it at 1
+
+// Vehicle wreck limit before which ( <= ) wreckRemovalMaxTime applies and after which ( > ) wreckRemovalMinTime applies .
+wreckLimit = 15;
+
+// Remove all wrecks that have existed longer than wreckRemovalMinTime when wreckLimit is breached.
+wreckRemovalMinTime = 1800; // seconds. Default: 10
+
+// Maximum time a wreck can remain on the ground if total number of wrecks is equal or under wreckLimit.
+wreckRemovalMaxTime = 7200; // seconds. Default: 36000 (10 hours)
+
+// The minimum distance between corpse or wreck and nearest player before the corpse or wreck is allowed to be removed by the garbage collector.
+minPlayerDistance = 100; // meters. Default: 0
+
+// Custom loading display
+class Extended_DisplayLoad_EventHandlers {
+    class RscDisplayLoading {
+        Mission_customLoadingScreen = "if (hasInterface) then {_this call compile preprocessFileLineNumbers 'src\loadDisplay.sqf';};";
+    };
+};
+
+// Build UI
+#include "UI\BuildUI\BuildUI_Objects.h"
+
+// Mission menu tutorial tab pages
+#include "UI\InGameMenu\TutorialPages.h"

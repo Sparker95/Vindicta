@@ -1,8 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "Vindicta.Altis",
-			"name": "Mission Root"
+			"path": "src",
+			"name": "Mission Source"
 		},
 		{
 			"path": "..\\..\\..\\..\\AppData\\Local\\Arma 3",

@@ -8,12 +8,13 @@ package-lock.json
 #VSCODE
 .vscode/ipch/*
 .vscode/settings.json
-Vindicta.Altis/.vscode/ipch/*
+src/.vscode/ipch/*
 
 #BUILD
 _build
 tools/_build
 tools/_buildID.txt
+*/src
 
 #TEMP
 temp
@@ -24,29 +25,16 @@ temp.sqf
 mission.sqm.backup.at*
 
 #MISSION
-Vindicta.Altis/out/linecount.txt
-Vindicta.Altis/out/linecount.json
-Vindicta.Altis/mission.sqm
-Vindicta.Altis/config/user_local_config.hpp
-Vindicta.Enoch
-Vindicta.Enoch/
-Vindicta.Malden
-Vindicta.Malden/
-Vindicta.Tembelan
-Vindicta.Tembelan/
-Vindicta.Takistan
-Vindicta.Takistan/
-Vindicta.Staszow 
-Vindicta.Staszow/
-Vindicta.Beketov
-Vindicta.Beketov/
-Vindicta.cup_chernarus_A3
-Vindicta.cup_chernarus_A3/
-Vindicta.gm_weferlingen_summer
-Vindicta.gm_weferlingen_summer/
+src/out/linecount.txt
+src/out/linecount.json
+src/config/user_local_config.hpp
 ~*
 editing.*
 *.preproc
+Vindicta.*/init.sqf
+Vindicta.*/cba_settings.sqf
+Vindicta.*/onPlayerRespawn.sqf
+Vindicta.*/description.ext
 
 #ADDON
 

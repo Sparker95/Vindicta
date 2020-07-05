@@ -1,0 +1,55 @@
+name: Validate Test Build
+on:
+  push:
+    branches-ignore: [master, development]
+  pull_request:
+    branches-ignore: master
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@master
+    - name: Validate Config
+      run: python3 tools/SQF-validate/config_style_checker.py
+    - name: Check for BOM
+      uses: arma-actions/bom-check@master
+      with:
+        path: 'src'
+
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@master
+    - name: Validate SQF with SQF-VM
+      run: |
+        cd src
+        New-Item .\config\user_local_config.hpp -ItemType File
+        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\src\Tests\RunTests.sqf
+
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    needs: [validate, test]
+    steps:
+
+    - uses: actions/checkout@master
+
+    - name: Checkout the source code
+      uses: actions/checkout@master
+
+    - name: Build Missions
+      run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
+
+    - name: Build addons
+      run: '.\tools\Builder\buildAddons.ps1'
+      
+    - uses: actions/upload-artifact@v1
+      with:
+        name: MissionFiles
+        path: _build\missions\separatePBO
+    
