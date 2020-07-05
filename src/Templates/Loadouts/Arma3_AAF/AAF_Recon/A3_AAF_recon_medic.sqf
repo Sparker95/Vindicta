@@ -20,7 +20,6 @@ this addPrimaryWeaponItem "muzzle_snds_m_khk_F";
 this addPrimaryWeaponItem "ACE_acc_pointer_green";
 this addPrimaryWeaponItem "optic_ACO_grn";
 this addPrimaryWeaponItem "30Rnd_556x45_Stanag_Sand";
-this addPrimaryWeaponItem "bipod_03_F_oli";
 this addWeapon "hgun_ACPC2_F";
 this addHandgunItem "muzzle_snds_acp";
 this addHandgunItem "acc_flashlight_pistol";
