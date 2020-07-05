@@ -92,7 +92,7 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     # Build PBO
     $sw.restart()
     "Building PBO with armake..."
-    .\tools\Builder\hemtt armake build --force -i include $tempMissionLocation "_build\missions\out\$oneMissionPboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+    .$PSScriptRoot\hemtt armake build --force -i include $tempMissionLocation "_build\missions\out\$oneMissionPboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
     "`tDone in $($sw.ElapsedMilliseconds)ms"
 }
 
@@ -168,7 +168,7 @@ $sConfigCPP | Out-File -FilePath "$combinedMissionsLocation\config.cpp" -NoNewli
 "`nBuild combined missions PBO..."
 
 $sw = [system.diagnostics.stopwatch]::startNew()
-.\tools\Builder\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\out\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+.$PSScriptRoot\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\out\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 "`tDone in $($sw.ElapsedMilliseconds)ms"
 
 Pop-Location
