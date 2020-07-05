@@ -1,9 +1,9 @@
-name: Test New Builder
+name: Dev Validate Test Build Upload
 
 on:
   push:
     branches:
-      - build-tools
+      - development
 
 jobs:
 

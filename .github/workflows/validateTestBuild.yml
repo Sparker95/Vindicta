@@ -1,4 +1,4 @@
-name: Validate Test and Build
+name: Validate Test Build
 on:
   push:
     branches-ignore: [master, development]
