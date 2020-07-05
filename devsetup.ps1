@@ -22,6 +22,12 @@ forEach ($missionFolder in $missionFolders) {
         New-Item -ItemType SymbolicLink -name "$missionFolder\src" -value "src" > $null
         "       Created symbolic link $missionFolder\src -> src"
     }
+
+    "  Copying common files..."
+    $filesToCopy = "cba_settings.sqf", "description.ext", "init.sqf", "onPlayerRespawn.sqf"
+    forEach ($fileName in $filesToCopy) {
+        Copy-Item "configs\$fileName" $missionFolder
+    }
 }
 
 pause
