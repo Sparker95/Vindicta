@@ -58,24 +58,31 @@ _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["gm_ge_army_typ1200_cargo"]]; // = 0 Default if nothing found
 
-_veh set [T_VEH_car_unarmed, ["gm_ge_army_iltis_cargo","gm_ge_army_typ1200_cargo"]]; // = 1 – REQUIRED
-_veh set [T_VEH_car_armed, ["gm_ge_army_iltis_milan"]]; // = 2
-_veh set [T_VEH_MRAP_unarmed, ["gm_ge_army_iltis_cargo"]]; // = 3 – REQUIRED
-_veh set [T_VEH_MRAP_HMG, ["gm_ge_army_u1300l_container"]]; // = 4 – REQUIRED
+_veh set [T_VEH_car_unarmed, ["gm_ge_army_iltis_cargo", "gm_ge_army_typ1200_cargo"]]; // = 1 – REQUIRED
+_veh set [T_VEH_car_armed, ["gm_ge_army_iltis_mg3"]]; // = 2
+_veh set [T_VEH_MRAP_unarmed, ["gm_ge_army_iltis_cargo" , "gm_ge_army_typ1200_cargo"]]; // = 3 – REQUIRED
+_veh set [T_VEH_MRAP_HMG, ["gm_ge_army_iltis_mg3"]]; // = 4 – REQUIRED
 _veh set [T_VEH_MRAP_GMG, ["gm_ge_army_iltis_milan"]]; // = 5 – REQUIRED
-_veh set [T_VEH_IFV, ["gm_ge_army_fuchsa0_reconnaissance", "gm_ge_army_fuchsa0_engineer", "gm_ge_army_fuchsa0_command"]]; // = 6 – REQUIRED
-_veh set [T_VEH_APC, ["gm_ge_army_m113a1g_apc","gm_ge_army_m113a1g_apc_milan","gm_ge_army_m113a1g_command"]]; // = 7 – REQUIRED
-_veh set [T_VEH_MBT, ["gm_ge_army_Leopard1a5","gm_ge_army_Leopard1a1a2"]]; // = 8 – REQUIRED
+_veh set [T_VEH_IFV, ["gm_ge_army_fuchsa0_reconnaissance", "gm_ge_army_fuchsa0_engineer", "gm_ge_army_fuchsa0_command", "gm_ge_army_luchsa1", "gm_ge_army_luchsa2", "gm_ge_army_bpz2a0"]]; // = 6 – REQUIRED
+_veh set [T_VEH_APC, ["gm_ge_army_m113a1g_apc", "gm_ge_army_m113a1g_apc_milan", "gm_ge_army_m113a1g_command"]]; // = 7 – REQUIRED
+_veh set [T_VEH_MBT, ["gm_ge_army_Leopard1a1", "gm_ge_army_Leopard1a1a1", "gm_ge_army_Leopard1a1a2", "gm_ge_army_Leopard1a3", "gm_ge_army_Leopard1a3a1", "gm_ge_army_Leopard1a5"]]; // = 8 – REQUIRED
 _veh set [T_VEH_SPAA, ["gm_ge_army_gepard1a1"]]; // = 11
 _veh set [T_VEH_stat_HMG_high, ["B_HMG_01_high_F"]]; // = 12 – REQUIRED
+_veh set [T_VEH_stat_AA, ["gm_ge_army_mg3_aatripod"]]; // = 16
 _veh set [T_VEH_stat_AT, ["gm_ge_army_milan_launcher_tripod"]]; // = 17
 _veh set [T_VEH_stat_mortar_light, ["B_Mortar_01_F"]]; // = 18 - REQUIRED
-_veh set [T_VEH_personal, ["gm_ge_army_k125","gm_ge_army_typ1200_cargo"]]; // = 31
+_veh set [T_VEH_heli_light, ["gm_ge_army_bo105m_vbh", "gm_ge_army_bo1051m_vbh", "gm_ge_army_bo1051m_vbh_swooper"]]; // = 20
+_veh set [T_VEH_heli_heavy, ["gm_ge_army_ch53g", "gm_ge_army_ch53gs"]]; // = 21
+_veh set [T_VEH_heli_cargo, ["gm_ge_army_ch53g", "gm_ge_army_ch53gs"]]; // = 22
+_veh set [T_VEH_heli_attack, ["gm_ge_army_bo105p_pah1", "gm_ge_army_bo105p_pah1a"]]; // = 23
+_veh set [T_VEH_plane_cargo, ["gm_ge_airforce_do28d2_medevac", "gm_ge_airforce_do28d2"]]; // = 26 – UNUSED
+_veh set [T_VEH_plane_unarmed, ["gm_ge_airforce_do28d2"]]; // = 27 – UNUSED
+_veh set [T_VEH_personal, ["gm_ge_army_bicycle_01_oli", "gm_ge_army_k125", "gm_ge_army_typ1200_cargo"]]; // = 31
 _veh set [T_VEH_truck_inf, ["gm_ge_army_kat1_451_cargo", "gm_ge_army_u1300l_cargo"]]; // = 32 – REQUIRED
-_veh set [T_VEH_truck_cargo, ["gm_ge_army_kat1_451_cargo", "gm_ge_army_u1300l_cargo"]]; // = 33
+_veh set [T_VEH_truck_cargo, ["gm_ge_army_kat1_451_cargo", "gm_ge_army_kat1_451_container", "gm_ge_army_u1300l_container"]]; // = 33
 _veh set [T_VEH_truck_ammo, ["gm_ge_army_kat1_451_reammo"]]; // = 34 – REQUIRED
-_veh set [T_VEH_truck_repair, ["gm_ge_army_u1300l_repair"]]; // = 35
-_veh set [T_VEH_truck_medical , ["gm_ge_army_u1300l_medic"]]; // = 36
+_veh set [T_VEH_truck_repair, ["gm_ge_army_u1300l_repair", "gm_ge_army_bpz2a0", "gm_ge_army_fuchsa0_engineer"]]; // = 35
+_veh set [T_VEH_truck_medical , ["gm_ge_army_u1300l_medic", "gm_ge_army_m113a1g_medic"]]; // = 36
 _veh set [T_VEH_truck_fuel, ["gm_ge_army_kat1_451_refuel"]]; // = 37
 
 
