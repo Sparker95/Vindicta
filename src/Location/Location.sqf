@@ -972,6 +972,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	ENDMETHOD;
 
+	// Gets default radius of location type
+	public STATIC_METHOD(getDefaultRadius)
+		params [P_THISCLASS, "_type"];
+		switch (_type) do {
+			case LOCATION_TYPE_CAMP: {100;};
+			case LOCATION_TYPE_ROADBLOCK: {40;};
+			default {100;};
+		};
+	ENDMETHOD;
+
 	/*
 	Method: getName
 
