@@ -40,7 +40,9 @@ jobs:
     - name: Ensure build artifact
       run: |
         ls
-        cd _build\addon\Vindicta
+        cd _build
+        cd addon
+        cd Vindicta
         ls
 
     - name: Publish to Steam Workshop
