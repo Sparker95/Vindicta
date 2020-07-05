@@ -19,5 +19,37 @@ jobs:
         write-host "Hello from step list files"
         Get-Location | write-host
         Get-ChildItem | write-host
+
     - name: Build Missions
       run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
+
+    - name: Build addons
+      run: '.\tools\Builder\buildAddons.ps1'
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: _build
+        path: _build
+
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build]
+    steps:
+    - name: Download build artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: build
+        path: .
+
+    - name: Publish to Steam Workshop
+      uses: arma-actions/workshop-upload@v1
+      with:
+        appId: '107410'      # default
+        itemId: '2154322285' # https://steamcommunity.com/sharedfiles/filedetails/?id=2154322285
+        contentPath: '_build/addon/Vindicta'
+        changelog: ""
+      env:
+        STEAM_USERNAME: ${{ secrets.STEAM_VIN_USER }}
+        STEAM_PASSWORD: ${{ secrets.STEAM_VIN_PW }}
