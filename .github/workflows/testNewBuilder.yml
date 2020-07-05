@@ -23,7 +23,7 @@ jobs:
     - name: Upload build addon artifact
       uses: actions/upload-artifact@v2
       with:
-        name: workshopItemArtifact
+        name: armaAddon
         path: _build\addon\Vindicta
 
   upload:
@@ -34,15 +34,13 @@ jobs:
     - name: Download build artifact
       uses: actions/download-artifact@v2
       with:
-        name: workshopItemArtifact
-        path: _build\addon\Vindicta
+        name: armaAddon
+        path: armaAddon
 
     - name: Ensure build artifact
       run: |
         ls
-        cd _build
-        cd addon
-        cd Vindicta
+        cd armaAddon
         ls
 
     - name: Publish to Steam Workshop
@@ -50,7 +48,7 @@ jobs:
       with:
         appId: '107410'      # default
         itemId: '2154322285' # https://steamcommunity.com/sharedfiles/filedetails/?id=2154322285
-        contentPath: '_build/addon/Vindicta'
+        contentPath: 'armaAddon'
         changelog: ""
       env:
         STEAM_USERNAME: ${{ secrets.STEAM_VIN_USER }}
