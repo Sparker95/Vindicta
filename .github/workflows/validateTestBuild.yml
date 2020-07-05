@@ -35,7 +35,13 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 5
     needs: [validate, test]
-    steps:    
+    steps:
+    - name: Build Missions
+      run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
+
+    - name: Build addons
+      run: '.\tools\Builder\buildAddons.ps1'
+      
     - uses: actions/upload-artifact@v1
       with:
         name: MissionFiles
