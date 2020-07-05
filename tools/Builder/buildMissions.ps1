@@ -31,7 +31,7 @@ if (Test-Path "_build\missions") {
     Remove-Item -Path "_build\missions" -Recurse -Force
 }
 New-Item -Path "_build\missions" -ItemType Directory -Force > $null
-New-Item -Path "_build\missions\out" -ItemType Directory -Force > $null
+New-Item -Path "_build\missions\separatePBO" -ItemType Directory -Force > $null
 New-Item -Path "_build\missions\$combinedFolderName" -ItemType Directory -Force > $null
 
 "`nRead version..."
@@ -92,7 +92,7 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     # Build PBO
     $sw.restart()
     "Building PBO with armake..."
-    .$PSScriptRoot\hemtt armake build --force -i include $tempMissionLocation "_build\missions\out\$oneMissionPboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+    .$PSScriptRoot\hemtt armake build --force -i include $tempMissionLocation "_build\missions\separatePBO\$oneMissionPboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
     "`tDone in $($sw.ElapsedMilliseconds)ms"
 }
 
@@ -177,7 +177,7 @@ $sConfigCPP | Out-File -FilePath "$combinedMissionsLocation\config.cpp" -NoNewli
 "`nBuild combined missions PBO..."
 
 $sw = [system.diagnostics.stopwatch]::startNew()
-.$PSScriptRoot\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\out\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
+.$PSScriptRoot\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 "`tDone in $($sw.ElapsedMilliseconds)ms"
 
 Pop-Location

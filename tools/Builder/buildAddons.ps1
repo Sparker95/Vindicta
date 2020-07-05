@@ -18,7 +18,7 @@ $addonOutLocation = "$PSScriptRoot\..\..\_build\addon\Vindicta"
 $addonsOutLocation = "$addonOutLocation\addons"
 
 "`nCopy mission pbo file..."
-Copy-Item "..\_build\missions\out\vindicta_missions.pbo" $addonsOutLocation
+Copy-Item "..\_build\missions\vindicta_missions.pbo" $addonsOutLocation
 
 "`nBuild addons..."
 $modules = Get-Childitem "$addonLocation\addons" -Directory
