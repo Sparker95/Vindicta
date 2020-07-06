@@ -23,7 +23,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 		gTabCommander = _thisObject;
 
-
+		pr _isAdmin = call misc_fnc_isAdminLocal;
 
 		// Create the controls
 		pr _displayParent = T_CALLM0("getDisplay");
@@ -189,11 +189,19 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		};
 
 		// Skip Time
-		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DUSK", "buttonClick", "onButtonSkipDusk");
-		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "buttonClick", "onButtonSkipPredawn");
-		T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAWN", "buttonClick", "onButtonSkipDawn");
+		if (_isAdmin) then {
+			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DUSK", "buttonClick", "onButtonSkipDusk");
+			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "buttonClick", "onButtonSkipPredawn");
+			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_SKIP_TO_DAWN", "buttonClick", "onButtonSkipDawn");
+			T_CALLM0("_updateTimeSkipTooltips");
+		} else {
+			{
+				pr _ctrl = T_CALLM1("findControl", _x);
+				_ctrl ctrlEnable false;
+				_ctrl ctrlSetTooltip "Only for admins";
+			} forEach ["TAB_CMDR_BUTTON_SKIP_TO_DUSK", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "TAB_CMDR_BUTTON_SKIP_TO_DAWN"];
+		};
 
-		T_CALLM0("_updateTimeSkipTooltips");
 	ENDMETHOD;
 
 	METHOD(_updateTimeSkipTooltips)

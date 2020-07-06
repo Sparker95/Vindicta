@@ -531,7 +531,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			#ifdef RELEASE_BUILD
 			// Send msg to game manager to perform emergency saving
-			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
+			// Disabled it for now, we don't want it any more
+			//CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
 			#endif
 			FIX_LINE_NUMBERS()
 		};
@@ -545,7 +546,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Format text
 		private _text = "Threads have crashed: ";
 		{ _text = _text + GETV(_x, "name") + " "; } forEach _crashedMsgLoops;
-		_text = _text + ". Restart the mission after saving is over, send the .RPT to devs";
+		_text = _text + ". Restart the mission and send the .RPT file to developers";
 
 		// Broadcast notification
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], ON_CLIENTS, NO_JIP);
