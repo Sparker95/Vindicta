@@ -43,7 +43,8 @@ CLASS("UnitIntel", "")
 
 		// Civilians are not having any of the intel items for now
 		pr _gar = CALLM0(_unit, "getGarrison");
-		if (CALLM0(_gar, "getSide") == CIVILIAN) exitWith {};
+		pr _side = CALLM0(_gar, "getSide");
+		if ( (_side == CIVILIAN) || {_side == CALLM0(gGameMode, "getPlayerSide");}) exitWith {};
 
 		// Bail if already initialized on this unit
 		pr _hO = CALLM0(_unit, "getObjectHandle");
