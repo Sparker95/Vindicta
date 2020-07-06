@@ -301,6 +301,11 @@
 				<Czech>OHROŽENÉ VOZIDLO</Czech>
 			</Key>
 		</Container>
+		<Container name="Actions">
+			<Key ID="STR_UM_ACTION_UNTIE_SELF">
+				<Original>Set yourself free</Original>
+			</Key>
+		</Container>
 	</Package>
 </Project>
 <Project name="ClientMapUI">

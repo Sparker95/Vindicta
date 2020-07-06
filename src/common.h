@@ -95,3 +95,6 @@
 #define CALL_COMPILE_COMMON(path) call compile preprocessFileLineNumbers ("src\" + path)
 
 #define COMPILE_COMMON(path) compile preprocessFileLineNumbers ("src\" + path)
+
+// Code to string
+#define CODE_TO_STRING(code) 0 call {private __codeToStringTemp = str code; __codeToStringTemp select [1, (count __codeToStringTemp)-2];}

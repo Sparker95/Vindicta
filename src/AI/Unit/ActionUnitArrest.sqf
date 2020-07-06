@@ -299,7 +299,6 @@ CLASS("ActionUnitArrest", "Action")
 			CALLM1(_ai, "setArrest", true);
 		} else {
 			// Otherwise it's a player
-			_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
 		};
 	ENDMETHOD;

@@ -35,6 +35,7 @@ Vindicta.*/init.sqf
 Vindicta.*/cba_settings.sqf
 Vindicta.*/onPlayerRespawn.sqf
 Vindicta.*/description.ext
+Vindicta.*/stringtable.xml
 
 #ADDON
 

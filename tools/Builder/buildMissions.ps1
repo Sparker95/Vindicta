@@ -75,6 +75,8 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     $tempMissionLocation = "$combinedMissionsLocation\$oneMissionFolderName"
     New-Item -path $tempMissionLocation -ItemType Directory > $null
 
+    "Building $oneMissionPboName"
+
     # Copy files
     "Copying files..."
     $sw = [system.diagnostics.stopwatch]::startNew()
