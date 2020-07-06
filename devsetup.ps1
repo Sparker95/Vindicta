@@ -24,7 +24,7 @@ forEach ($missionFolder in $missionFolders) {
     }
 
     "  Copying common files..."
-    $filesToCopy = "cba_settings.sqf", "description.ext", "init.sqf", "onPlayerRespawn.sqf"
+    $filesToCopy = "cba_settings.sqf", "description.ext", "init.sqf", "onPlayerRespawn.sqf", "stringtable.xml"
     forEach ($fileName in $filesToCopy) {
         Copy-Item "configs\$fileName" $missionFolder
     }

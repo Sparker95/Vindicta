@@ -56,7 +56,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("suspGearVeh");
 	VARIABLE("bodyExposure");
 	VARIABLE("timeCompromised");
-	VARIABLE("bCaptive");													// true if unit is in arrested state, must be false to leave arrested state
+	VARIABLE("bArrested");													// true if unit is in arrested state, must be false to leave arrested state
 	VARIABLE("camoCoeff"); 													// modified vanilla camouflage coefficient, see: community.bistudio.com/wiki/setUnitTrait
 	VARIABLE("bGhillie");													// true if unit is wearing ghillie suit
 	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
@@ -98,7 +98,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("suspGearVeh", 0);
 		T_SETV("bodyExposure", 1);
 		T_SETV("timeCompromised", -1);
-		T_SETV("bCaptive", false);
+		T_SETV("bArrested", false);
 		pr _camoCoeff = _unit getUnitTrait "camouflageCoef";
 		T_SETV("camoCoeff", _camoCoeff);
 		T_SETV("bGhillie", false);
@@ -121,6 +121,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
 		_unit setVariable [UNDERCOVER_WANTED, false, true];					// GLOBAL: if true player unit is hostile and "setCaptive false"
 		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)
+		RESET_ARRESTED_FLAG(_unit);											// GLOBAL: true if player is arrested
 
 		T_CALLM0("calcGearSuspicion");										// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
@@ -324,7 +325,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					*/
 					case sUNDERCOVER: {
 						if (T_GETV("stateChanged")) then {
+							OOP_INFO_0("Entered UNDERCOVER state");
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
+							RESET_ARRESTED_FLAG(_unit);
 							deleteMarkerLocal "markerWanted";
 							T_SETV("stateChanged", false);
 						}; // do once when state changed
@@ -532,6 +535,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					*/
 					case sWANTED: {
 						if (T_GETV("stateChanged")) then {
+							OOP_INFO_0("Entered WANTED state");
 							_unit setVariable [UNDERCOVER_WANTED, true, true];
 							T_SETV("stateChanged", false);
 						}; // do once when state changed
@@ -586,6 +590,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					*/
 					case sCOMPROMISED: {
 						if (T_GETV("stateChanged")) then {	
+							OOP_INFO_0("Entered COMPROMISED state");
 							T_SETV("stateChanged", false);
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
 							deleteMarkerLocal "markerWanted";
@@ -620,31 +625,29 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					--------------------------------------------------------------------------------------------------------------------------------------------
 					*/
 					case sARRESTED: {
-						if (T_GETV("stateChanged") && !(T_GETV("bCaptive"))) then {
+						// glitched out of arrest animation
+						if ( T_GETV("bArrested") && {!(animationState _unit != "acts_aidlpsitmstpssurwnondnon01")}) then {
+							// Re-run the state entry code, there is only one way to get out of arrested state
+							T_SETV("stateChanged", true);
+						};
+
+						if (T_GETV("stateChanged")) then {
+							OOP_INFO_0("Entered ARRESTED state");
 							T_SETV("stateChanged", false);
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
 							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
 							deleteMarkerLocal "markerWanted";
-							T_SETV("bCaptive", true);
-							// TODO: Sparker hide/show action behavior
-							pr _ID = [_unit] call fnc_UM_addActionUntieLocal;
+							T_SETV("bArrested", true);
 							T_SETV("untieActionID", _ID);
 							_unit setVariable ["timeArrested", time + 10, true];
+							_unit playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
+							SET_ARRESTED_FLAG(_unit);
 						}; // do once when state changed
 
-						// glitched out of arrest animation
-						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01" && time > _unit getVariable "timeArrested") then {
-							T_SETV("bCaptive", false);
-							if (T_GETV("untieActionID") != -1) then { _unit removeAction T_GETV("untieActionID"); };
-							CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 1.0);
-							OOP_INFO_0("Player appears to have glitched out of arrest animation.");
-						};
-
 						// exit arrested state
-						if !(T_GETV("bCaptive")) then {
+						if !(T_GETV("bArrested")) then {
 							player playMoveNow "acts_aidlpsitmstpssurwnondnon_out";
 							T_CALLM("setState", [sUNDERCOVER]);
-							_unit setVariable [UNDERCOVER_TARGET, false, true];
 						};
 
 						_suspicionArr pushBack [-1, "ARRESTED STATE"];
@@ -809,7 +812,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _uM = _unit getVariable ["undercoverMonitor", ""];
 		if (_uM != "") then { // Sanity check
-			if !(GETV(_uM, "bCaptive")) then {
+			if !(GETV(_uM, "bArrested")) then {
 				pr _msg = MESSAGE_NEW();
 				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_ARRESTED);
 				CALLM1(_um, "postMessage", _msg);
@@ -826,7 +829,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		params ["_thisClass", P_OBJECT("_unit")];
 		pr _uM = _unit getVariable ["undercoverMonitor", ""];
 		if (_uM != "") then { // Sanity check
-			SETV(_uM, "bCaptive", false);
+			SETV(_uM, "bArrested", false);
 		};
 		OOP_INFO_0("setUnitFree called");
 	ENDMETHOD;
@@ -992,6 +995,33 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}] call CBA_fnc_addEventHandler;
 #endif
 		FIX_LINE_NUMBERS()
+	ENDMETHOD;
+
+	// Initializes action to for player to release himself.
+	public STATIC_METHOD(initUntieActions)
+		params [P_THISCLASS];
+		private _codeShow = {GET_ARRESTED_FLAG(player)};
+		private _strCodeShow = CODE_TO_STRING(_codeShow);
+		[
+			player,											// Object the action is attached to
+			localize "STR_UM_ACTION_UNTIE_SELF",					// Title of the action
+			"",	// Idle icon shown on screen
+			"",	// Progress icon shown on screen
+			_strCodeShow,										// Condition for the action to be shown
+			_strCodeShow,										// Condition for the action to progress
+			{},													// Code executed when action starts
+			{},													// Code executed on every progress tick
+			{
+				CALLSM1("UndercoverMonitor", "setUnitFree", player);
+				CALLSM2("UndercoverMonitor", "boostSuspicion", player, 1);
+			},				// Code executed on completion
+			{},													// Code executed on interrupted
+			[],													// Arguments passed to the scripts as _this select 3
+			12,													// Action duration [s]
+			0,													// Priority
+			false,												// Remove on completion
+			false												// Show in unconscious state 
+		] call BIS_fnc_holdActionAdd;
 	ENDMETHOD;
 
 ENDCLASS;

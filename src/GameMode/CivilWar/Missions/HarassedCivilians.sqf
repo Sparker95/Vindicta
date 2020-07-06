@@ -23,8 +23,6 @@ vin_fnc_CompleteFreeingCivilian = {
 		[_target, {
 			// Untie them
 			_this playMoveNow "Acts_ExecutionVictim_Unbow";
-			// Make sure they don't get arrested again
-			_this setVariable [UNDERCOVER_TARGET, false, false];
 		}] remoteExec ["call", 0];
 
 		[player, "There you go, tell your friends of what transpired here today!"] call vin_fnc_dialogue_createSentence;

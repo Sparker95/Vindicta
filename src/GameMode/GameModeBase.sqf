@@ -909,6 +909,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Add action to talk to bots
 		CALLSM0("DialogueClient", "initPlayerAction");
 
+		// Add action to untie yourself
+		CALLSM0("UndercoverMonitor", "initUntieActions");
+
 		// Give player a lockpick
 		_newUnit addItemToUniform "ACE_key_lockpick";
 

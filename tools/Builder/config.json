@@ -34,6 +34,10 @@
         {
             "from": "configs\\onPlayerRespawn.sqf",
             "to": "" 
+        },
+        {
+            "from": "configs\\stringtable.xml",
+            "to": "" 
         }
     ]
 }

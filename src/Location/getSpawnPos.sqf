@@ -134,7 +134,13 @@ private _return = if(_found) then {//If the spawn position has been found
 		};
 		case (_catID == T_VEH && _subcatID in T_VEH_ground): {
 			// Try to find a random safe position on a road for this vehicle
-			private _testPos = [_locPos, _radius min random [0, 0, _radius*5], random 360] call BIS_fnc_relPos;
+			private _testPos = if (T_GETV("type") == LOCATION_TYPE_CITY) then {
+				// Vehicles in cities should spawn in more uniform way
+				_locPos params ["_px", "_py"];
+				[_px - _radius + 2*(random _radius), _py - _radius + 2*(random _radius), 0]
+			} else {
+				[_locPos, _radius min random [0, 0, _radius*5], random 360] call BIS_fnc_relPos;
+			};
 			return CALLSM3("Location", "findSafePosOnRoad", _testPos, _className, 200 max (_radius * 2))
 		};
 		case (_catID == T_VEH && _subcatID in T_VEH_static): {
