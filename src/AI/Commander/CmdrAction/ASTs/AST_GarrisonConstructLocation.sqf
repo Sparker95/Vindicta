@@ -89,10 +89,10 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 				private _args = [T_GETV("locPos"), _side]; // Our side creates this location
 				private _newLoc = NEW_PUBLIC("Location", _args);
 				CALLM1(_newLoc, "setType", T_GETV("locType"));
-				private _radius = CALLSM1("Location", "getDefaultRadius", _locType);
+				pr _type = T_GETV("locType");
+				private _radius = CALLSM1("Location", "getDefaultRadius", _type);
 				CALLM1(_newLoc, "setBorderCircle", _radius);
 				pr _gridpos = mapGridPosition T_GETV("locPos");
-				pr _type = T_GETV("locType");
 				pr _typeName = CALLSM1("Location", "getTypeString", _type);
 				pr _name = format ["%1 %2", _typeName, _gridPos];
 				CALLM1(_newLoc, "setName", _name);
