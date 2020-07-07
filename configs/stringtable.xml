@@ -303,7 +303,10 @@
 		</Container>
 		<Container name="Actions">
 			<Key ID="STR_UM_ACTION_UNTIE_SELF">
-				<Original>Set yourself free</Original>
+				<Original>Untie yourself</Original>
+			</Key>
+			<Key ID="STR_UM_ACTION_UNTIE_TARGET">
+				<Original>Untie</Original>
 			</Key>
 		</Container>
 	</Package>

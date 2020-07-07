@@ -65,3 +65,24 @@ g_phrasesCivilianNonsense = [
 	"The only thing I know is that I know nothing",
 	"Nothing is enough for the man to whom enough is too little."
 ];
+
+g_phrasesCivilianCantTalkArrested = [
+	"I did nothing wrong! The guy just arrested me for nothing!",
+	"They said that I look suspicious! What a nonsense!",
+	"Is it forbidden to have own opinion in this country now?!",
+	"This country goes straight to hell! What a shame!",
+	"They said that I look like a criminal they are searching for!",
+	"I am so angry at the police now!"
+];
+
+// Player was untied by player
+g_phrasesPlayerUntied = [
+	"Thanks for the help, brother!",
+	"Well done, thank you!"
+];
+
+// Civilian was untied by player
+g_phrasesCivilianUntied = [
+	"Thank you for the help! We should make the police pay for this!",
+	"Thanks, brother! These assholess will pay for what they are doing!"
+];

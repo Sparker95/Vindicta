@@ -106,6 +106,13 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 	protected override METHOD(handleStartNewDialogue)
 		params [P_THISOBJECT, P_OBJECT("_unitTalkTo"), P_NUMBER("_remoteClientID"), P_STRING("_dlgClassName")];
 
+		// Check if civilian is arrested
+		if (T_GETV("arrested")) exitWith {
+			pr _text = selectRandom g_phrasesCivilianCantTalkArrested;
+			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
+			false;
+		};
+
 		// Check if civilian is very scared
 		pr _worldState = T_GETV("worldState");
 		pr _danger = WS_GET(_worldState, WSP_UNIT_HUMAN_IN_DANGER);

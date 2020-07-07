@@ -684,7 +684,7 @@ CLASS("DialogueClient", "")
 		player addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
 			_scriptRun, // Script
 			0, // Arguments
-			9000, // Priority
+			100, // Priority
 			true, // ShowWindow
 			false, //hideOnUse
 			"", //shortcut
