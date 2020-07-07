@@ -9,6 +9,7 @@
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
 #include "..\UI\InGameUI\InGameUI_Macros.h"
+#include "..\AI\Unit\AIUnit.hpp"
 
 #define pr private
 #define sUNDERCOVER 0
@@ -997,6 +998,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	// Initializes action to for player to release himself.
 	public STATIC_METHOD(initUntieActions)
 		params [P_THISCLASS];
+
+		// Action to untie yourself
 		private _codeShow = {GET_ARRESTED_FLAG(player)};
 		private _strCodeShow = CODE_TO_STRING(_codeShow);
 		[
@@ -1015,10 +1018,52 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			{},													// Code executed on interrupted
 			[],													// Arguments passed to the scripts as _this select 3
 			12,													// Action duration [s]
-			0,													// Priority
+			200,													// Priority
 			false,												// Remove on completion
 			false												// Show in unconscious state 
 		] call BIS_fnc_holdActionAdd;
+
+		// Action to untie target
+		private _codeShow = {GET_ARRESTED_FLAG(cursorObject) && ((player distance cursorObject) < 2)};
+		private _strCodeShow = CODE_TO_STRING(_codeShow);
+		[
+			player,											// Object the action is attached to
+			localize "STR_UM_ACTION_UNTIE_TARGET",					// Title of the action
+			"",	// Idle icon shown on screen
+			"",	// Progress icon shown on screen
+			_strCodeShow,										// Condition for the action to be shown
+			_strCodeShow,										// Condition for the action to progress
+			{},													// Code executed when action starts
+			{},													// Code executed on every progress tick
+			{
+				REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "untieTargetServer", [cursorObject], ON_SERVER, false);
+			},				// Code executed on completion
+			{},													// Code executed on interrupted
+			[],													// Arguments passed to the scripts as _this select 3
+			4,													// Action duration [s]
+			200,													// Priority
+			false,												// Remove on completion
+			false												// Show in unconscious state 
+		] call BIS_fnc_holdActionAdd;
+
+	ENDMETHOD;
+
+	public STATIC_METHOD(untieTargetServer)
+		params [P_THISCLASS, P_OBJECT("_target")];
+		// Unties target - player or AI
+		if (isPlayer _target) then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "setUnitFree", [_target], _target, false);
+			pr _sentence = selectRandom g_phrasesPlayerUntied;
+			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _target, _sentence);
+		} else {
+			pr _ai = GET_AI_FROM_OBJECT_HANDLE(_target);
+			if (!IS_NULL_OBJECT(_ai)) then {
+				CALLM1(_ai, "setArrest", false);
+				pr _sentence = selectRandom g_phrasesCivilianUntied;
+				CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _target, _sentence);
+				CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG getpos _target ARG (7+random(7))]);
+			};
+		};
 	ENDMETHOD;
 
 ENDCLASS;
