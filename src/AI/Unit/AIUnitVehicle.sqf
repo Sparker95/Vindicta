@@ -137,10 +137,12 @@ CLASS("AIUnitVehicle", "AIUnit")
 			private _triggerAttachOffset = _velocityModelNorm vectorMultiply _halfHeight;
 			thisTrigger attachTo [_veh, _triggerAttachOffset];
 			//thisTrigger attachTo [_veh, [0, 0, 0]];
-			private _units = thisList select {_x isKindOf "CAManBase"};
-			if (count _units > 0) then {
-				//systemChat format ["Units in trigger: %1, time: %2", _units, time];
-				CALLSM3("AIUnitHuman", "addCarCollisionDanger", _veh, _units, 100);
+			if ((speed _veh) > 1) then {
+				private _units = thisList select {_x isKindOf "CAManBase"};
+				if (count _units > 0) then {
+					//systemChat format ["Units in trigger: %1, time: %2", _units, time];
+					CALLSM3("AIUnitHuman", "addCarCollisionDanger", _veh, _units, 100);
+				};
 			};
 
 			// Debug markers
