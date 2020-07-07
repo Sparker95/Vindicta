@@ -780,17 +780,11 @@
 				<Polish>Odległość spawnowania dla garnizonów wroga, mierzona w metrach. Ostrzeżenie: podniesienie wartości powyżej domyślnej może poważnie wpłynąć na wydajność</Polish>
 				<Czech>Vzdálenost Spawn pro nepřátelské posádky, měřeno v metrech. Upozornění: zvýšení výše výchozí může mít vážný dopad na výkon.</Czech>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian">
-				<Original>Civilian Spawn Distance</Original>
-				<German>Zivilisten Spawn-Distanz</German>
-				<Polish>Odległość spawnowania się cywilów</Polish>
-				<Czech>Vzdálenost civilního spawnu</Czech>
+			<Key ID="STR_Vindicta_Settings_Ambient_Civ_Multiplier">
+				<Original>Ambient Civilian Density</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Civilian_Tooltip">
-				<Original>Spawn distance for civilians, measured in meters from the city border. Warning: raising this above the default can severely impact performance.</Original>
-				<German>Spawn-Distanz für Zivilisten, gemessen in Metern von der Stadtgrenze. Warnung: Ein Wert über den Standardeinstellung kann die Leistung ernsthaft beeinträchtigen.</German>
-				<Polish>Odległość spawnowania dla ludności cywilnej, mierzona w metrach od granicy miasta. Ostrzeżenie: podniesienie wartości powyżej domyślnej może poważnie wpłynąć na wydajność</Polish>
-				<Czech>Vzdálenost Spawn pro civilisty, měřeno v metrech od městských hranic. Upozornění: zvýšení výše výchozí může mít vážný dopad na výkon.</Czech>
+			<Key ID="STR_Vindicta_Settings_Ambient_Civ_Multiplier_Tooltip">
+				<Original>Scales the amount of ambient civilians near players.</Original>
 			</Key>
 		</Container>
 	</Package>

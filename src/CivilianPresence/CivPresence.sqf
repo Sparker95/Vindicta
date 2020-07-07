@@ -12,6 +12,8 @@ Some BI civilian presence code is used
 // Variable which controls population density
 if (isNil "vin_CivPresence_multiplierUser") then {
 	vin_CivPresence_multiplierUser = 1;
+};
+if (isNil "vin_CivPresence_multiplierSystem") then {
 	vin_CivPresence_multiplierSystem = 1;
 };
 

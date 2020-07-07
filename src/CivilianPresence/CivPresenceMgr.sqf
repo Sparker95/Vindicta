@@ -290,6 +290,9 @@ CLASS("CivPresenceMgr", "")
 		] call CBA_fnc_waitAndExecute;
 	ENDMETHOD;
 
-
+	STATIC_METHOD(forceUpdateSettings)
+		params [P_THISCLASS];
+		
+	ENDMETHOD;
 
 ENDCLASS;

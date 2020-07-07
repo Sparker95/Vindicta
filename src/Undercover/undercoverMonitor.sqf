@@ -64,7 +64,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("inventoryContainer");											// Object handle, current inventory container we are accessing
 	VARIABLE("eventHandlers");												// Array with inventory EH IDs
 	VARIABLE("eventHandlersCBA");
-	VARIABLE("untieActionID");
 	VARIABLE("debugOverride"); 												// override make player captive for debug
 	VARIABLE("undercoverAnims");											// undercover animations
 	VARIABLE("speed");														// Unit speed, fades over time
@@ -106,7 +105,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("inventoryContainer", objNull);
 		T_SETV("eventHandlers", []);
 		T_SETV("eventHandlersCBA", []);
-		T_SETV("untieActionID", -1);
 		T_SETV("debugOverride", false);
 
 		pr _undercoverAnims = [
@@ -638,7 +636,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
 							deleteMarkerLocal "markerWanted";
 							T_SETV("bArrested", true);
-							T_SETV("untieActionID", _ID);
 							_unit setVariable ["timeArrested", time + 10, true];
 							_unit playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
 							SET_ARRESTED_FLAG(_unit);
