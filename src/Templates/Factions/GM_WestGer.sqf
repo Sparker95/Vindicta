@@ -92,7 +92,6 @@ _drone = +(tDefault select T_DRONE);
 /* Cargo classes */
 _cargo = +(tDefault select T_CARGO);
 
-
 /* Group templates */
 _group = +(tDefault select T_GROUP);
 

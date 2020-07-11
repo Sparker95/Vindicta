@@ -56,7 +56,7 @@ private _gunsAndAmmo = [
 	["hgun_P07_F", 				"16Rnd_9x21_Mag", 		true],	0.8,
 	["hgun_Rook40_F", 			"16Rnd_9x21_Mag", 		true],	0.7,
 	// longs
-	["hgun_PDW2000_F", 			"30Rnd_9x21_Mag", 		false],	0.1
+	["hgun_PDW2000_F", 			"30Rnd_9x21_Mag", 		false],	0.2
 ];
 
 private _ownedDLCs = getDLCs 1;
@@ -154,7 +154,7 @@ this forceAddUniform selectRandom _uniforms;
 if (random 5 < 1) then { this addHeadgear selectRandom _headgear;
 };
 
-if (random 3 < 1) then { this addVest selectRandom _vest;
+if (random 10 < 1) then { this addVest selectRandom _vest;
 };
 
 if (random 2 < 1) then { this addBackpack selectRandom _backpack;

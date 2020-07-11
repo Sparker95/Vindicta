@@ -25,19 +25,21 @@ private _uniforms = [
 	"U_C_Poloshirt_stripped",
 	"U_C_Poloshirt_tricolour",
 	"U_C_Uniform_Farmer_01_F",
-	"U_C_Uniform_Scientist_01_F",
-	"U_C_Uniform_Scientist_01_formal_F",
-	"U_C_Uniform_Scientist_02_formal_F",
 	"U_I_C_Soldier_Bandit_3_F",
 	"U_I_C_Soldier_Bandit_5_F",
 	"U_I_L_Uniform_01_tshirt_black_F",
 	"U_I_L_Uniform_01_tshirt_skull_F",
 	"U_I_L_Uniform_01_tshirt_sport_F",
-	"U_Marshal",
 	"U_O_R_Gorka_01_black_F",
     "U_C_Commoner_shorts",
-	"U_C_HunterBody_grn",
-	"U_C_Man_casual_1_F",
+    "U_C_HunterBody_grn",
+    "U_C_IDAP_Man_cargo_F",
+    "U_C_IDAP_Man_casual_F",
+    "U_C_IDAP_Man_Jeans_F",
+    "U_C_IDAP_Man_shorts_F",
+    "U_C_IDAP_Man_Tee_F",
+    "U_C_IDAP_Man_TeeShorts_F",
+    "U_C_Man_casual_1_F",
     "U_C_Man_casual_2_F",
     "U_C_Man_casual_3_F",
     "U_C_Man_casual_4_F",
@@ -47,7 +49,7 @@ private _uniforms = [
     "U_C_man_sport_2_F",
     "U_C_man_sport_3_F",
     "U_C_Mechanic_01_F",
-	"U_C_Poloshirt_blue",
+    "U_C_Poloshirt_blue",
     "U_C_Poloshirt_burgundy",
     "U_C_Poloshirt_redwhite",
     "U_C_Poloshirt_salmon",
@@ -55,16 +57,9 @@ private _uniforms = [
     "U_C_Poloshirt_tricolour",
     "U_C_Poor_1",
     "U_C_Poor_2",
-	"U_C_TeeSurfer_shorts_1",
+    "U_C_TeeSurfer_shorts_1",
     "U_C_TeeSurfer_shorts_2",
-    "U_C_WorkerCoveralls",
-	"U_I_C_Soldier_Bandit_1_F",
-    "U_I_C_Soldier_Bandit_2_F",
-    "U_I_C_Soldier_Bandit_3_F",
-    "U_I_C_Soldier_Bandit_4_F",
-    "U_I_C_Soldier_Bandit_5_F",
-	"U_Marshal",
-    "U_I_L_Uniform_01_tshirt_olive_F"
+    "U_C_WorkerCoveralls"
 ];
 
 this forceAddUniform selectRandom _uniforms;
@@ -75,7 +70,7 @@ private _vest = [
 	"V_Pocketed_olive_F"
 ];
 
-if (random 3 < 1) then { this addVest selectRandom _vest;
+if (random 10 < 1) then { this addVest selectRandom _vest;
 };
 
 private _headgear = [

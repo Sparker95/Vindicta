@@ -36,21 +36,6 @@ private _uniforms = [
 	"U_Marshal",
 	"U_O_R_Gorka_01_black_F",
     "U_C_Commoner_shorts",
-    "U_C_ConstructionCoverall_Black_F",
-    "U_C_ConstructionCoverall_Blue_F",
-    "U_C_ConstructionCoverall_Red_F",
-    "U_C_ConstructionCoverall_Vrana_F",
-    "U_C_Driver_1_black",
-    "U_C_Driver_1_blue",
-    "U_C_Driver_1_green",
-    "U_C_Driver_1_orange",
-    "U_C_Driver_1_red",
-    "U_C_Driver_1_white",
-    "U_C_Driver_1_yellow",
-    "U_C_Driver_1",
-    "U_C_Driver_2",
-    "U_C_Driver_3",
-    "U_C_Driver_4",
     "U_C_HunterBody_grn",
     "U_C_IDAP_Man_cargo_F",
     "U_C_IDAP_Man_casual_F",
@@ -78,7 +63,6 @@ private _uniforms = [
     "U_C_Poloshirt_tricolour",
     "U_C_Poor_1",
     "U_C_Poor_2",
-    "U_C_Scientist",
     "U_C_TeeSurfer_shorts_1",
     "U_C_TeeSurfer_shorts_2",
     "U_C_WorkerCoveralls",
@@ -139,6 +123,9 @@ private _vest = [
 	"V_Pocketed_coyote_F",
 	"V_Pocketed_olive_F"
 ];
+
+if (random 10 < 1) then { this addVest selectRandom _vest;
+};
 
 this forceAddUniform selectRandom _uniforms;
 
