@@ -202,7 +202,10 @@ g_UM_civHeadgear = [
     "H_RacingHelmet_3_F",
     "H_RacingHelmet_4_F",
     "H_StrawHat",
-    "H_StrawHat_dark"
+    "H_StrawHat_dark",
+    "H_Hat_Safari_olive_F",
+    "H_Hat_Safari_sand_F",
+    "H_WirelessEarpiece_F"
 ];
 publicVariable "g_UM_civHeadgear";
 
@@ -214,6 +217,9 @@ g_UM_civVests = [
     "V_DeckCrew_violet_F",
     "V_DeckCrew_white_F",
     "V_DeckCrew_yellow_F",
+    "V_LegStrapBag_black_F",
+    "V_LegStrapBag_coyote_F",
+    "V_LegStrapBag_olive_F",
     "V_Plain_crystal_F",
     "V_Plain_medical_F",
     "V_Pocketed_black_F",
@@ -261,8 +267,29 @@ publicVariable "g_UM_civFacewear";
 g_UM_civBackpacks = [
     "ACE_TacticalLadder_Pack",
 	"B_Messenger_Black_F",
+    "B_Messenger_Gray_F",
     "B_Messenger_Coyote_F",
-    "B_Messenger_Olive_F"
+    "B_Messenger_Olive_F",
+    "B_Respawn_Sleeping_bag_blue_F",
+    "B_Respawn_Sleeping_bag_brown_F",
+    "B_Respawn_TentDome_F",
+    "B_Respawn_Sleeping_bag_F",
+    "B_Respawn_TentA_F",
+    "B_FieldPack_blk",
+    "B_FieldPack_cbr",
+    "B_FieldPack_oli",
+    "B_AssaultPack_blk",
+    "B_AssaultPack_cbr",
+    "B_Carryall_cbr",
+    "ace_gunbag",
+    "ace_gunbag_Tan",
+    "B_LegStrapBag_black_F",
+    "B_LegStrapBag_coyote_F",
+    "B_LegStrapBag_olive_F",
+    "C_UAV_06_backpack_F",
+    "C_UAV_06_medical_backpack_F",
+    "C_IDAP_UAV_01_backpack_F",
+    "C_IDAP_UAV_06_backpack_F"
 ];
 publicVariable "g_UM_civBackpacks";
 

@@ -159,9 +159,37 @@ if(_isPistol) then {
 	this addWeaponItem [_gun, _ammo];
 };
 
-for "_i" from 1 to 5 do { this addItemToUniform _ammo };
 
-this addItemToUniform "FirstAidKit";
+
+
+[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+
+//====Items====
+if(random 10 > 3) then {
+	private _Item = [
+		"ItemWatch",
+		"LIB_GER_ItemWatch"
+	];
+	 this linkItem selectRandom _Item;
+};
+
+if(random 10 > 3) then {
+	private _Item2 = [
+		"ItemCompass",
+		"LIB_GER_ItemCompass"
+	];
+	 this linkItem selectRandom _Item2;
+};
+
 this linkItem "ItemMap";
-this linkItem "ItemCompass";
-this linkItem "ItemWatch";
+
+for "_i" from 1 to 3 do { this addItemToUniform _ammo };
+
+//====ACE Items====
+for "_i" from 1 to 4 do {this addItemToUniform "ACE_fieldDressing";};
+this addItemToUniform "ACE_elasticBandage";
+for "_i" from 1 to 2 do {this addItemToUniform "ACE_packingBandage";};
+this addItemToUniform "ACE_quikclot";
+this addItemToUniform "ACE_splint";
+this addItemToUniform "ACE_tourniquet";
+this addItemToUniform "ACE_Flashlight_Maglite_ML300L";

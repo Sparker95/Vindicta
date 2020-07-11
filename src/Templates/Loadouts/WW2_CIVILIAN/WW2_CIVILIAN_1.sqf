@@ -97,8 +97,39 @@ this forceAddUniform selectRandom [
 		"U_LIB_CIV_Functionary_4"
 ];
 
-if(random 10 > 5) then { this linkItem "ItemWatch" };
-
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
-this addItemToUniform "FirstAidKit";
+//====Items====
+if(random 10 > 3) then {
+	private _Item = [
+		"ItemWatch",
+		"LIB_GER_ItemWatch",
+		" "
+	];
+	 this linkItem selectRandom _Item;
+};
+
+if(random 10 > 3) then {
+	private _Item2 = [
+		"ItemCompass",
+		"LIB_GER_ItemCompass",
+		" "
+	];
+	 this linkItem selectRandom _Item2;
+};
+
+if(random 10 > 3) then {
+	private _Item3 = [
+		"ItemMap",
+		" "
+	];
+	 this linkItem selectRandom _Item3;
+};
+
+for "_i" from 1 to 4 do { this addItemToUniform _ammo };
+
+//====ACE Items====
+for "_i" from 1 to 2 do {this addItemToUniform "ACE_fieldDressing";};
+this addItemToUniform "ACE_elasticBandage";
+this addItemToUniform "ACE_packingBandage";
+this addItemToUniform "ACE_quikclot";

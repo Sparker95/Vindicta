@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-//===Headgear===
+//====Headgear====
 if (random 10 < 3) then {
 	private _headgear = [
 		"H_Hat_blue",
@@ -34,7 +34,7 @@ if (random 10 < 3) then {
 	this addHeadgear selectRandom _headgear;
 };
 
-//===Facewear====
+//====Facewear====
 if (random 10 < 3) then {
 	private _Facewear = [
 		"G_GEHeadBandage_Bloody",
@@ -56,7 +56,7 @@ if (random 10 < 3) then {
 	this addGoggles selectRandom _Facewear;
 };
 
-//===Uniform====
+//====Uniform====
 this forceAddUniform selectRandom [
 		"U_LIB_CIV_Assistant",
 		"U_LIB_CIV_Assistant_2",
@@ -92,7 +92,16 @@ this forceAddUniform selectRandom [
 
 this addVest "V_LIB_SOV_RA_Belt";
 
-//===Backpack====
+//====Vest====
+if (random 10 < 3) then {
+	private _Vest = [
+		"V_LIB_SOV_RA_Belt"
+	];
+
+	this addVest selectRandom _Vest;
+};
+
+//====Backpack====
 this addBackpack selectRandom [
 	"B_LIB_GER_Backpack",
 	"B_LIB_SOV_RA_Rucksack",
@@ -107,12 +116,37 @@ this addBackpack selectRandom [
 	"B_LIB_UK_HSack_Blanco"
 ];
 
-if(random 10 > 5) then { this linkItem "ItemWatch" };
-
 [this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
 
+//====Items====
+if(random 10 > 3) then {
+	private _Item = [
+		"ItemWatch",
+		"LIB_GER_ItemWatch"
+	];
+	 this linkItem selectRandom _Item;
+};
+
+if(random 10 > 3) then {
+	private _Item2 = [
+		"ItemCompass",
+		"LIB_GER_ItemCompass"
+	];
+	 this linkItem selectRandom _Item2;
+};
+
+if(random 10 > 3) then {
+	private _Item3 = [
+		"ItemMap",
+		" "
+	];
+	 this linkItem selectRandom _Item3;
+};
+
+//====ACE Items====
+for "_i" from 1 to 3 do {this addItemToUniform "ACE_fieldDressing";};
+this addItemToUniform "ACE_elasticBandage";
+for "_i" from 1 to 2 do {this addItemToUniform "ACE_packingBandage";};
+this addItemToBackpack "ACE_DefusalKit";
 this addItemToBackpack "LIB_ToolKit";
-this addItemToUniform "FirstAidKit";
-this linkItem "ItemMap";
-this linkItem "LIB_GER_ItemCompass";
-this linkItem "LIB_GER_ItemWatch";
+this addItemToUniform "ACE_tourniquet";
