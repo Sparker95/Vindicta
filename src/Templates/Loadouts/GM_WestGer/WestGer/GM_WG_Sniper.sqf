@@ -8,7 +8,7 @@ removeHeadgear this;
 removeGoggles this;
 
 //	==== Head Gear ====
-this addHeadgear "gm_ge_headgear_m62_net";
+this addHeadgear "gm_ge_headgear_hat_boonie_oli";
 
 //	==== Uniform ====
 this forceAddUniform "gm_ge_army_uniform_soldier_80_ols";
@@ -23,9 +23,16 @@ for "_i" from 1 to 2 do {this addItemToVest "gm_smokeshell_wht_dm25";};
 //	==== Backpack ====
 
 //	==== Weapons ====
+private _gunAndOptic = [
+	["gm_g3a3_oli", "gm_feroz24_blk"], 0.5,
+	["gm_g3a3_blk", "gm_feroz24_blk"], 0.5,
+	["gm_g3a3_grn", "gm_feroz24_blk"], 0.5,
+	["gm_g3a3_des", "gm_feroz24_des"], 0.1
+];
 
-this addWeapon "gm_svd_wud";
-this addPrimaryWeaponItem "gm_pso1_gry";
+(selectRandomWeighted _gunAndOptic) params ["_gun", "_optic"];
+this addWeapon _gun;
+this addPrimaryWeaponItem _optic;
 this addPrimaryWeaponItem "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";
 for "_i" from 1 to 6 do {this addItemToVest "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";};
 

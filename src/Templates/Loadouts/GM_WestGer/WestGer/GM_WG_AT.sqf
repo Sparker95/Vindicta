@@ -8,7 +8,7 @@ removeHeadgear this;
 removeGoggles this;
 
 //	==== Head Gear ====
-this addHeadgear "gm_ge_headgear_m62_net";
+this addHeadgear "gm_ge_headgear_m62";
 
 //	==== Uniform ====
 this forceAddUniform "gm_ge_army_uniform_soldier_80_ols";
@@ -26,10 +26,10 @@ this addBackpack "gm_ge_army_backpack_80_pzf44_oli";
 
 //	==== Weapons ====
 private _guns = [
-	["gm_g3a3_oli"], 0.5,
-	["gm_g3a3_blk"], 0.5,
-	["gm_g3a3_grn"], 0.5,
-	["gm_g3a3_des"], 0.1
+	["gm_g3a4_oli"], 0.5,
+	["gm_g3a4_blk"], 0.5,
+	["gm_g3a4_grn"], 0.5,
+	["gm_g3a4_des"], 0.1
 ];
 
 (selectRandomWeighted _guns) params ["_gun"];

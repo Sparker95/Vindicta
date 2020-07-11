@@ -19,9 +19,17 @@ this addItemToUniform "gm_ge_facewear_m65";
 this addVest "gm_ge_army_vest_80_officer";
 
 //	==== Weapons ====
-this addWeapon "gm_p1_blk";
-this addHandgunItem "gm_8Rnd_9x19mm_B_DM51_p1_blk";
-for "_i" from 1 to 3 do {this addItemToVest "gm_8Rnd_9x19mm_B_DM51_p1_blk";};
+private _guns = [
+	["gm_g3a4_oli"], 0.5,
+	["gm_g3a4_blk"], 0.5,
+	["gm_g3a4_grn"], 0.5,
+	["gm_g3a4_des"], 0.1
+];
+
+(selectRandomWeighted _guns) params ["_gun"];
+this addWeapon _gun;
+this addPrimaryWeaponItem "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";
+for "_i" from 1 to 4 do {this addItemToVest "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";};
 
 this AddWeapon "gm_ferod16_oli";
 

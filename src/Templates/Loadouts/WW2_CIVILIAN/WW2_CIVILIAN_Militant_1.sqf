@@ -105,12 +105,12 @@ private _gunsAndAmmo = [
 	["LIB_Webley_mk6",			"lib_6rnd_455",				true],	0.6,
 	["fow_w_welrod_mkii",		"fow_8rnd_765x17",			true],	0.3,
 	// long
-	["LIB_M1903A3_Springfield",	"fow_5rnd_762x63",			true],	0.1,
-	["LIB_K98",					"lib_5rnd_792x57",			true],	0.1,
-	["LIB_LeeEnfield_No4",		"lib_10rnd_770x56",			true],	0.1,
-	["LIB_M9130",				"lib_5rnd_762x54",			true],	0.1,
-	["fow_w_type99",			"fow_5rnd_77x58",			true],	0.1,
-	["LIB_DELISLE",				"lib_7rnd_45acp_delisle",	true],	0.1
+	["LIB_M1903A3_Springfield",	"fow_5rnd_762x63",			false],	0.1,
+	["LIB_K98",					"lib_5rnd_792x57",			false],	0.1,
+	["LIB_LeeEnfield_No4",		"lib_10rnd_770x56",			false],	0.1,
+	["LIB_M9130",				"lib_5rnd_762x54",			false],	0.1,
+	["fow_w_type99",			"fow_5rnd_77x58",			false],	0.1,
+	["LIB_DELISLE",				"lib_7rnd_45acp_delisle",	false],	0.1
 ];
 
 (selectRandomWeighted _gunsAndAmmo) params ["_gun", "_ammo", "_isPistol"];
@@ -118,10 +118,8 @@ private _gunsAndAmmo = [
 this addWeapon _gun;
 
 if(_isPistol) then {
-	this addHandgunItem "acc_flashlight_pistol";
 	this addHandgunItem _ammo;
 } else {
-	this addWeaponItem [_gun, "acc_flashlight"];
 	this addWeaponItem [_gun, _ammo];
 };
 

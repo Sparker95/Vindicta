@@ -37,12 +37,13 @@ _inf set [T_INF_exp, ["GM_WG_Demolition"]]; // = 9
 _inf set [T_INF_ammo, ["GM_WG_AmmoBearer"]]; // = 10
 _inf set [T_INF_LAT, ["GM_WG_LAT"]]; // = 11
 _inf set [T_INF_AT, ["GM_WG_AT"]]; // = 12
-_inf set [T_INF_AA, ["GM_WG_AT"]]; // = 13
+_inf set [T_INF_AA, ["GM_WG_AA"]]; // = 13
 _inf set [T_INF_LMG, ["GM_WG_MG"]]; // = 14
 _inf set [T_INF_HMG, ["GM_WG_MG"]]; // = 15
 _inf set [T_INF_medic, ["GM_WG_Medic"]]; // = 16
 _inf set [T_INF_engineer, ["GM_WG_Engineer"]]; // = 17 
 _inf set [T_INF_crew, ["GM_WG_Crew"]]; // = 18
+_inf set [T_INF_pilot, ["GM_WG_Pilot"]]; // = 19
 _inf set [T_INF_unarmed, ["GM_WG_Unarmed"]]; // = 23
 /* Recon unit classes */
 _inf set [T_INF_recon_TL, ["GM_WG_SF_TL"]]; // = 24

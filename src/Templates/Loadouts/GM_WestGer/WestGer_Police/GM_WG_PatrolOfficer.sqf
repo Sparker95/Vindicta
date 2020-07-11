@@ -19,10 +19,10 @@ this addVest "gm_ge_pol_vest_80_wht";
 
 //	==== Weapons ====
 private _gunAndAmmo = [
-	["gm_mp2a1_blk", 	"gm_32Rnd_9x19mm_B_DM51_mp2_blk"		],	0.3,
-	["gm_mp5a3_blk",	"gm_30rnd_9x19mm_b_dm51_mp5a3_blk"	],	0.2,
-	["gm_mp5a2_blk",	"gm_30rnd_9x19mm_b_dm51_mp5a3_blk"	],	0.2,
-	["gm_p1_blk",		"gm_8Rnd_9x19mm_B_DM51_p1_blk"	],	0.5
+	["gm_mp2a1_blk", 	"gm_32Rnd_9x19mm_B_DM51_mp2_blk",		false],	0.3,
+	["gm_mp5a3_blk",	"gm_30rnd_9x19mm_b_dm51_mp5a3_blk",		false],	0.2,
+	["gm_mp5a2_blk",	"gm_30rnd_9x19mm_b_dm51_mp5a3_blk",		false],	0.2,
+	["gm_p1_blk",		"gm_8Rnd_9x19mm_B_DM51_p1_blk",			true],	0.5
 ];
 
 (selectRandomWeighted _gunAndAmmo) params ["_gun", "_ammo", "_isPistol"];
