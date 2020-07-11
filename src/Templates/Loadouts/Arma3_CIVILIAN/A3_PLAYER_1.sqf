@@ -193,11 +193,10 @@ this linkItem "ItemWatch";
 for "_i" from 1 to 3 do { this addItemToUniform _ammo };
 
 //====ACE Items====
-for "_i" from 1 to 4 do {this addItemToUniform "ACE_fieldDressing";};
-this addItemToUniform "ACE_elasticBandage";
+for "_i" from 1 to 5 do {this addItemToUniform "ACE_fieldDressing";};
+for "_i" from 1 to 2 do {this addItemToUniform "ACE_elasticBandage";};
 for "_i" from 1 to 2 do {this addItemToUniform "ACE_packingBandage";};
 this addItemToUniform "ACE_quikclot";
-this addItemToUniform "ACE_splint";
 this addItemToUniform "ACE_tourniquet";
 this addItemToUniform "ACE_Flashlight_Maglite_ML300L";
 

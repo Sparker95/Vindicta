@@ -137,8 +137,6 @@ this linkItem "ItemWatch";
 for "_i" from 1 to 3 do {this addItemToUniform "ACE_fieldDressing";};
 this addItemToUniform "ACE_elasticBandage";
 for "_i" from 1 to 2 do {this addItemToUniform "ACE_packingBandage";};
-this addItemToBackpack "ACE_DefusalKit";
-this addItemToBackpack "ACE_Clacker";
 this addItemToUniform "ACE_tourniquet";
 
 //====Identity====
