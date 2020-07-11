@@ -151,7 +151,12 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it
-		pr _AI = NEW("AIGarrison", [_thisObject]);
+		pr _aiClass = switch(_type) do {
+			case GARRISON_TYPE_AIR: { "AIGarrisonAir"; };
+			case GARRISON_TYPE_PLAYER: { "AIGarrisonPlayer"; };
+			default { "AIGarrison"; };
+		};
+		pr _AI = NEW(_aiClass, [_thisObject]);
 		T_SETV("AI", _AI);
 
 		// Set position if it was specified

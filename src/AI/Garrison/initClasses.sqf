@@ -2,6 +2,9 @@
 
 // Auto generated file
 CALL_COMPILE_COMMON("AI\Garrison\AIGarrison.sqf");
+CALL_COMPILE_COMMON("AI\Garrison\AIGarrisonAir.sqf");
+CALL_COMPILE_COMMON("AI\Garrison\AIGarrisonMilitant.sqf");
+CALL_COMPILE_COMMON("AI\Garrison\AIGarrisonPlayer.sqf");
 CALL_COMPILE_COMMON("AI\Garrison\_ActionGarrison.sqf");
 CALL_COMPILE_COMMON("AI\Garrison\_ActionGarrisonBehaviour.sqf");
 CALL_COMPILE_COMMON("AI\Garrison\ActionGarrisonClearArea.sqf");
