@@ -750,62 +750,30 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// It should return the goals this garrison might be willing to achieve
 	public override METHOD(getPossibleGoals)
-		params [P_THISOBJECT];
-		switch GETV(T_GETV("agent"), "type") do {
-			case GARRISON_TYPE_GENERAL: {[
-				"GoalGarrisonAttackAssignedTargets",
-				"GoalGarrisonDefendActive",
-				"GoalGarrisonDefendPassive",
-				"GoalGarrisonRebalanceVehicleGroups",
-				"GoalGarrisonRelax",
-				"GoalGarrisonRepairAllVehicles"
-			]};
-			case GARRISON_TYPE_AIR: {[
-				"GoalGarrisonDefendActive",
-				"GoalGarrisonDefendPassive",
-				"GoalGarrisonRebalanceVehicleGroups",
-				"GoalGarrisonRelax",
-				"GoalGarrisonLand",
-				"GoalGarrisonAirRtB"
-			]};
-			case GARRISON_TYPE_PLAYER: {
-				[]
-			};
-		}
+		[
+			"GoalGarrisonAttackAssignedTargets",
+			"GoalGarrisonDefendActive",
+			"GoalGarrisonDefendPassive",
+			"GoalGarrisonRebalanceVehicleGroups",
+			"GoalGarrisonRelax",
+			"GoalGarrisonRepairAllVehicles"
+		];
 	ENDMETHOD;
 
 	public override METHOD(getPossibleActions)
-		params [P_THISOBJECT];
-		switch GETV(T_GETV("agent"), "type") do {
-			case GARRISON_TYPE_GENERAL: {[
-				"ActionGarrisonClearArea",
-				"ActionGarrisonJoinLocation",
-				"ActionGarrisonMergeVehicleGroups",
-				"ActionGarrisonMountCrew",
-				"ActionGarrisonMountInfantry",
-				"ActionGarrisonMoveCombined",
-				"ActionGarrisonMoveDismounted",
-				"ActionGarrisonMoveMounted",
-				"ActionGarrisonRebalanceGroups",
-				"ActionGarrisonRepairAllVehicles",
-				"ActionGarrisonSplitVehicleGroups"
-			]};
-			case GARRISON_TYPE_AIR: {[
-				"ActionGarrisonClearArea",
-				"ActionGarrisonJoinLocation",
-				"ActionGarrisonMergeVehicleGroups",
-				"ActionGarrisonMountCrew",
-				"ActionGarrisonMountInfantry",
-				"ActionGarrisonMoveDismounted",
-				"ActionGarrisonMoveMounted",
-				"ActionGarrisonRebalanceGroups",
-				"ActionGarrisonRepairAllVehicles",
-				"ActionGarrisonSplitVehicleGroups"
-			]};
-			case GARRISON_TYPE_PLAYER: {
-				[]
-			};
-		}
+		[
+			"ActionGarrisonClearArea",
+			"ActionGarrisonJoinLocation",
+			"ActionGarrisonMergeVehicleGroups",
+			"ActionGarrisonMountCrew",
+			"ActionGarrisonMountInfantry",
+			"ActionGarrisonMoveCombined",
+			"ActionGarrisonMoveDismounted",
+			"ActionGarrisonMoveMounted",
+			"ActionGarrisonRebalanceGroups",
+			"ActionGarrisonRepairAllVehicles",
+			"ActionGarrisonSplitVehicleGroups"
+		]
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------

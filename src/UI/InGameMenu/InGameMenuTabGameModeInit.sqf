@@ -223,6 +223,19 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 			CALLM1(_dialogObj, "setHintText", "You must enter a campaign name.");
 		};
 
+		// Check for forbidden characters: we must potentially enter a name compatible with file system
+		private _forbidden = "\/?*:|""<>,;=";
+		private _foundForbiddenCharacter = false;
+		(toArray _forbidden) findIf {
+			private _xStr = toString [_x];
+			private _id = _string find _xStr;
+			if (_id != -1) exitWith { _foundForbiddenCharacter = true; true; };
+			false;
+		};
+		if (_foundForbiddenCharacter) exitWith {
+			CALLM1(_dialogObj, "setHintText", "You must enter a valid campaign name.");
+		};
+
 		// Enemy force
 		pr _enemyForceText = ctrlText _editEnemyForcePercent;
 		pr _enemyForcePercent = parseNumber _enemyForceText;
