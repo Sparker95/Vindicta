@@ -18,11 +18,15 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 	// Structure: [record name, record header(ref), errors(array)]
 	VARIABLE("recordData");
 
+	// Class name of storage at the server
+	VARIABLE("storageClassName");
+
 	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Initialize variables
 		T_SETV("recordData", []);
+		T_SETV("storageClassName", "");
 
 		// Create controls
 		pr _displayParent = T_CALLM0("getDisplay");
@@ -104,12 +108,13 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 	// - - - - - Comms with server - - - - - -
 
 	METHOD(receiveRecordData)
-		params [P_THISOBJECT, P_ARRAY("_recordData")];
+		params [P_THISOBJECT, P_ARRAY("_recordData"), P_STRING("_storageClassName")];
 
 		OOP_INFO_0("RECEIVE RECORD DATA:");
 		{
 			OOP_INFO_1("  %1", _x);
 		} forEach _recordData;
+		OOP_INFO_1("Storage class name: %1", _storageClassName);
 
 		// Unpack serialized data
 		pr _recordDataLocal = _recordData apply
@@ -124,14 +129,15 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 
 		T_CALLM0("clearRecordData");
 		T_SETV("recordData", _recordDataLocal);
+		T_SETV("storageClassName", _storageClassName);
 		T_CALLM0("updateListbox");
 	ENDMETHOD;
 
 	public STATIC_METHOD(staticReceiveRecordData)
-		params [P_THISOBJECT, P_ARRAY("_recordData")];
+		params [P_THISOBJECT, P_ARRAY("_recordData"), P_STRING("_storageClassName")];
 		pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
 		if (!IS_NULL_OBJECT(_instance)) then {
-			CALLM1(_instance, "receiveRecordData", _recordData);
+			CALLM2(_instance, "receiveRecordData", _recordData, _storageClassName);
 		};
 	ENDMETHOD;
 
@@ -160,14 +166,23 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		};
 
 		// savegame count limit
-		if (count T_GETV("recordData") > 4) then {
-			pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
-			_newSaveBtn ctrlEnable false;
-			_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_DISABLED");
-		} else {
-			pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
-			_newSaveBtn ctrlEnable true;
-			_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_ENABLED");
+		OOP_INFO_1("Storage class name at server: %1", T_GETV("storageClassName"));
+		pr _saveGameLimit = switch (T_GETV("storageClassName")) do {
+			case "StorageFilext": {999;}; // Unlimited
+			case "StorageProfileNamespace": {4;};
+			default {0}; // Error?
+		};
+
+		if (call misc_fnc_isAdminLocal) then {
+			if (count T_GETV("recordData") > _saveGameLimit) then {
+				pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
+				_newSaveBtn ctrlEnable false;
+				_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_DISABLED");
+			} else {
+				pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
+				_newSaveBtn ctrlEnable true; // We can't enable it here, what if user is not an admin?
+				_newSaveBtn ctrlSetTooltip (localize "STR_NEWSAVE_ENABLED");
+			};
 		};
  
 	ENDMETHOD;

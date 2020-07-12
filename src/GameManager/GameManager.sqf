@@ -8,8 +8,6 @@ Runs in its own thread, because all other threads are saved and loaded.
 It also handles some client requests about saving/loading the game, and initial mission initialization.
 */
 
-#define __STORAGE_CLASS "StorageProfileNamespace"
-
 #define pr private
 
 // GameManager states
@@ -39,6 +37,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	VARIABLE("gameModeClassName");
 	VARIABLE("lastAutoSave");
 	VARIABLE("lastAutoSaveCheck");
+	VARIABLE("storageClassName"); // Class name of Storage (profile namespace, filext, etc...)
 
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -58,6 +57,15 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 		#endif
 		FIX_LINE_NUMBERS()
+
+		// Choose proper storage class name
+		// If FileXT addon is loaded, we use it
+		// Otherwise we use profile namespace for storage
+		if (isClass (configFile >> "cfgPatches" >> "filext")) then {
+			T_SETV("storageClassName", "StorageFilext");
+		} else {
+			T_SETV("storageClassName", "StorageProfileNamespace");
+		};
 
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
@@ -151,7 +159,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	// !!! Note: headers must be deleted from RAM afterwards !!!
 	METHOD(readAllSavedGameHeaders)
 		params [P_THISOBJECT];
-		pr _storage = NEW(__STORAGE_CLASS, []);
+		pr _storage = NEW(T_GETV("storageClassName"), []);
 
 		pr _allRecords = CALLM0(_storage, "getAllRecords");
 
@@ -245,7 +253,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		["saving", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>SAVING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
 
-		pr _storage = NEW(__STORAGE_CLASS, []);
+		pr _storage = NEW(T_GETV("storageClassName"), []);
 
 		// Create save game header
 		pr _header = NEW("SaveGameHeader", []);
@@ -372,7 +380,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Start loading screen
 		[LOCS("Vindicta_GameManager", "Load_Loading"), _recordName, 20000] call vin_fnc_loadGameMsg;
 
-		pr _storage = NEW(__STORAGE_CLASS, []);
+		pr _storage = NEW(T_GETV("storageClassName"), []);
 
 		pr _success = false;
 		if (CALLM1(_storage, "recordExists", _recordName)) then {
@@ -479,7 +487,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		
 		OOP_INFO_1("DELETE SAVED GAME: %1", _recordName);
 
-		pr _storage = NEW(__STORAGE_CLASS, []);
+		pr _storage = NEW(T_GETV("storageClassName"), []);
 		CALLM1(_storage, "eraseRecord", _recordName);
 		DELETE(_storage);
 	ENDMETHOD;
@@ -580,7 +588,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 
 		// Send data to client
-		pr _args = [_dataForClient];
+		pr _args = [_dataForClient, T_GETV("storageClassName")];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabSave", "staticReceiveRecordData", _args, _clientOwner, false);
 
 		// Cleanup

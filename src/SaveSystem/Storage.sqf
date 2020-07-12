@@ -326,7 +326,7 @@ CLASS("Storage", "")
 
 				// Check if it was a saved OOP object
 				pr _className = T_CALLM1("loadString", _ref + "_" + OOP_PARENT_STR);
-				if (!isNil "_className") then {
+				if (!isNil "_className" && {count _className > 0}) then {
 					// We are loading an object
 
 					OOP_INFO_1("Loading object: %1", _ref);
