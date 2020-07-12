@@ -29,43 +29,63 @@ class TAB_SAVE : MUI_GROUP
 			columns[] = {0, 1};	// One column
 		};
 
+		class TAB_SAVE_STATIC_STORAGE : MUI_BG_BLACKTRANSPARENT_ABS 
+		{
+			idc = -1;
+			x = 0.49000015;
+			y = 0.03000024;
+			w = 0.20000005;
+			h = 0.04;
+			text = "Storage:";
+		};
+
+		class TAB_SAVE_COMBO_STORAGE : MUI_COMBOBOX_ABS 
+		{
+			idc = -1;
+			x = 0.49000009;
+			y = 0.08000016;
+			w = 0.20000007;
+			h = 0.04000003;
+			text = "---";		
+		};
+
 		class TAB_SAVE_BUTTON_NEW : MUI_BUTTON_TXT_ABS 
 		{
 			idc = -1;
-			x = 0.478; 
-			y = 0.077; 
-			w = 0.200; 
-			h = 0.106;  
+			x = 0.49;
+			y = 0.18000018;
+			w = 0.20000003;
+			h = 0.07;
 			text = "New Save";			
 		};
 
 		class TAB_SAVE_BUTTON_OVERWRITE : MUI_BUTTON_TXT_ABS 
 		{
 			idc = -1;
-			x = 0.478; 
-			y = 0.188; 
-			w = 0.200; 
-			h = 0.106; 
+			x = 0.49000015;
+			y = 0.27000043;
+			w = 0.20000006;
+			h = 0.07;
 			text = "Overwrite";	
 		};
 
 		class TAB_SAVE_BUTTON_LOAD : MUI_BUTTON_TXT_ABS 
 		{
 			idc = -1;
-			x = 0.478; 
-			y = 0.298; 
-			w = 0.200; 
-			h = 0.106; 
+			x = 0.49000019;
+			y = 0.36000045;
+			w = 0.20000007;
+			h = 0.07;
 			text = "Load";
 		};
 
 		class TAB_SAVE_BUTTON_DELETE : MUI_BUTTON_TXT_ABS 
 		{
 			idc = -1;
-			x = 0.478; 
-			y = 0.409; 
-			w = 0.200; 
-			h = 0.112;
+			x = 0.49000019;
+			y = 0.45000042;
+			w = 0.20000006;
+			h = 0.07;
 			text = "Delete";	
 			colorBackground[] = MUIC_BTN_RED;	
 		};
@@ -185,5 +205,4 @@ class TAB_SAVE : MUI_GROUP
 			text = "";		
 		};		
 	};
-	
 };

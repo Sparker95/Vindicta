@@ -21,12 +21,16 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 	// Class name of storage at the server
 	VARIABLE("storageClassName");
 
+	// Array with available storage class names
+	VARIABLE("storageClassNames");
+
 	METHOD(new)
 		params [P_THISOBJECT];
 
 		// Initialize variables
 		T_SETV("recordData", []);
 		T_SETV("storageClassName", "");
+		T_SETV("storageClassNames", []);
 
 		// Create controls
 		pr _displayParent = T_CALLM0("getDisplay");
@@ -86,7 +90,8 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		SETSV(__CLASS_NAME, "instance", _thisObject);
 
 		// Request save game data from server
-		CALLM2(gGameManagerServer, "postMethodAsync", "clientRequestAllSavedGames", []);
+		pr _args = [clientOwner, ""];
+		CALLM2(gGameManagerServer, "postMethodAsync", "clientRequestAllSavedGames", _args);
 	ENDMETHOD;
 
 	METHOD(delete)
@@ -108,13 +113,13 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 	// - - - - - Comms with server - - - - - -
 
 	METHOD(receiveRecordData)
-		params [P_THISOBJECT, P_ARRAY("_recordData"), P_STRING("_storageClassName")];
+		params [P_THISOBJECT, P_ARRAY("_recordData"), P_STRING("_storageClassName"), P_ARRAY("_storageClassNames")];
 
 		OOP_INFO_0("RECEIVE RECORD DATA:");
 		{
 			OOP_INFO_1("  %1", _x);
 		} forEach _recordData;
-		OOP_INFO_1("Storage class name: %1", _storageClassName);
+		OOP_INFO_2("Current storage class names: %1, all class names: %2", _storageClassName, _storageClassNames);
 
 		// Unpack serialized data
 		pr _recordDataLocal = _recordData apply
@@ -128,16 +133,25 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		reverse _recordDataLocal;
 
 		T_CALLM0("clearRecordData");
+
 		T_SETV("recordData", _recordDataLocal);
 		T_SETV("storageClassName", _storageClassName);
+		pr _initCombo = false;
+		if ((count T_GETV("storageClassNames")) == 0) then {
+			_initCombo = true;
+		};
+		T_SETV("storageClassNames", +_storageClassNames);
 		T_CALLM0("updateListbox");
+		if (_initCombo) then {
+			T_CALLM0("initStorageCombo");
+		};
 	ENDMETHOD;
 
 	public STATIC_METHOD(staticReceiveRecordData)
-		params [P_THISOBJECT, P_ARRAY("_recordData"), P_STRING("_storageClassName")];
+		params [P_THISOBJECT, P_ARRAY("_recordData"), P_STRING("_storageClassName"), P_ARRAY("_storageClassNames")];
 		pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
 		if (!IS_NULL_OBJECT(_instance)) then {
-			CALLM2(_instance, "receiveRecordData", _recordData, _storageClassName);
+			CALLM3(_instance, "receiveRecordData", _recordData, _storageClassName, _storageClassNames);
 		};
 	ENDMETHOD;
 
@@ -187,6 +201,29 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
  
 	ENDMETHOD;
 
+	// Updates combo box with storage options
+	METHOD(initStorageCombo)
+		params [P_THISCLASS];
+
+		OOP_INFO_0("INIT STORAGE COMBO");
+
+		pr _ctrl = T_CALLM1("findControl", "TAB_SAVE_COMBO_STORAGE");
+		pr _currentStorageClassName = T_GETV("storageClassName");
+		pr _storageClassNames = T_GETV("storageClassNames");
+		{
+			_x params ["_className", "_displayName"];
+			_ctrl lbAdd _displayName;
+			_ctrl lbSetData [_forEachIndex, _className];
+			if (_className == _currentStorageClassName) then {
+				_ctrl lbSetCurSel _forEachIndex;
+			};
+		} forEach _storageClassNames;
+
+		T_CALLM3("controlAddEventHandler", "TAB_SAVE_COMBO_STORAGE", "LBSelChanged", "onStorageComboSelChanged");
+	ENDMETHOD;
+
+
+
 	// Returns index of the currently selected saved game in the recordData array
 	// Or -1 if nothing is selected
 	METHOD(getSelectedSavedGameIndex)
@@ -205,7 +242,8 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		params [P_THISOBJECT];
 
 		// Send request to server
-		CALLM2(gGameManagerServer, "postMethodAsync", "clientSaveGame", [clientOwner]);
+		pr _args = [clientOwner, T_GETV("storageClassName")];
+		CALLM2(gGameManagerServer, "postMethodAsync", "clientSaveGame", _args);
 
 		// Close in game menu after saving
 		CALLM0(gInGameMenu, "close");
@@ -234,7 +272,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		OOP_INFO_1("Sending request to overwrite saved game: %1", _recordName);
-		pr _args = [clientOwner, _recordName];
+		pr _args = [clientOwner, _recordName, T_GETV("storageClassName")];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientOverwriteSavedGame", _args);
 
 		// Close in game menu after overwriting
@@ -266,7 +304,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
 		OOP_INFO_1("Sending request to load saved game: %1", _recordName);
-		pr _args = [clientOwner, _recordName];
+		pr _args = [clientOwner, _recordName, T_GETV("storageClassName")];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientLoadSavedGame", _args);
 
 		// Close in game menu after loading
@@ -319,7 +357,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 	METHOD(_deleteSavedGame)
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		OOP_INFO_1("Sending request to delete saved game: %1", _recordName);
-		pr _args = [clientOwner, _recordName];
+		pr _args = [clientOwner, _recordName, T_GETV("storageClassName")];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientDeleteSavedGame", _args);
 	ENDMETHOD;
 
@@ -380,6 +418,20 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		_text = (format ["%1", GETV(_header, "saveID") + 1]);
 		_staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_COUNT");
 		_staticSaveData ctrlSetText _text;
+	ENDMETHOD;
+
+	METHOD(onStorageComboSelChanged)
+		params [P_THISOBJECT];
+
+		pr _ctrl = T_CALLM1("findControl", "TAB_SAVE_COMBO_STORAGE");
+		pr _index = lbCurSel _ctrl;
+		pr _storageClassName = _ctrl lbData _index;
+
+		OOP_INFO_2("onStorageComboSelChanged: index: %1, new storage: %2", _index, _storageClassName);
+
+		// Request new data with saves from another storage
+		pr _args = [clientOwner, _storageClassName];
+		CALLM2(gGameManagerServer, "postMethodAsync", "clientRequestAllSavedGames", _args);
 	ENDMETHOD;
 
 ENDCLASS;

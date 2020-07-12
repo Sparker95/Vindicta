@@ -37,7 +37,8 @@ CLASS("GameManager", "MessageReceiverEx")
 	VARIABLE("gameModeClassName");
 	VARIABLE("lastAutoSave");
 	VARIABLE("lastAutoSaveCheck");
-	VARIABLE("storageClassName"); // Class name of Storage (profile namespace, filext, etc...)
+	VARIABLE("storageClassName"); // Primary class name of Storage (profile namespace, filext, etc...)
+	VARIABLE("storageClassNames"); // Array with data to send to client about available class names
 
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -61,11 +62,16 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Choose proper storage class name
 		// If FileXT addon is loaded, we use it
 		// Otherwise we use profile namespace for storage
+		pr _storageClassNamePrimary = "StorageProfileNamespace";
+		pr _storageClassNames = [ ["StorageProfileNamespace", "Profile"] ];
 		if (isClass (configFile >> "cfgPatches" >> "filext")) then {
-			T_SETV("storageClassName", "StorageFilext");
+			_storageClassNamePrimary = "StorageFilext";
+			_storageClassNames pushBack ["StorageFilext", "FileXT"];
 		} else {
-			T_SETV("storageClassName", "StorageProfileNamespace");
+			//
 		};
+		T_SETV("storageClassName", _storageClassNamePrimary);
+		T_SETV("storageClassNames", _storageClassNames);
 
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
@@ -158,8 +164,8 @@ CLASS("GameManager", "MessageReceiverEx")
 	// Returns an array of [record name(string), header(ref)]
 	// !!! Note: headers must be deleted from RAM afterwards !!!
 	METHOD(readAllSavedGameHeaders)
-		params [P_THISOBJECT];
-		pr _storage = NEW(T_GETV("storageClassName"), []);
+		params [P_THISOBJECT, P_STRING("_storageClassName")];
+		pr _storage = NEW(_storageClassName, []);
 
 		pr _allRecords = CALLM0(_storage, "getAllRecords");
 
@@ -234,7 +240,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	ENDMETHOD;
 
 	METHOD(saveGame)
-		params [P_THISOBJECT, P_NUMBER("_type")];
+		params [P_THISOBJECT, P_NUMBER("_type"), P_STRING("_storageClassName")];
 
 		// Bail if we are not server
 		if (!isServer) exitWith {
@@ -242,18 +248,20 @@ CLASS("GameManager", "MessageReceiverEx")
 			false
 		};
 
+		ASSERT_MSG(_storageClassName != "", "Storage class name is empty!");
+
 		// Bail if game mode is not initialized (although the button should be disabled, right?)
 		if(!CALLM0(gGameManager, "isGameModeInitialized")) exitWith { false };
 
 		diag_log "[GameManager] - - - - - - - - - - - - - - - - - - - - - - - - - - -";
-		diag_log "[GameManager]			GAME SAVE STARTED";
+		diag_log format ["[GameManager]			GAME SAVE STARTED to: %1", _storageClassName];
 		OOP_INFO_0("GAME SAVE STARTED");
 
 		// Start loading screen
 		["saving", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>SAVING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
 
-		pr _storage = NEW(T_GETV("storageClassName"), []);
+		pr _storage = NEW(_storageClassName, []);
 
 		// Create save game header
 		pr _header = NEW("SaveGameHeader", []);
@@ -360,12 +368,14 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	// Loads game, returns true on success
 	METHOD(loadGame)
-		params [P_THISOBJECT, P_STRING("_recordName")];
+		params [P_THISOBJECT, P_STRING("_recordName"), P_STRING("_storageClassName")];
 
-		OOP_INFO_1("LOAD GAME: %1", _recordName);
+		ASSERT_MSG(_storageClassName != "", "Storage class name is empty!");
+
+		OOP_INFO_1("LOAD GAME: %1", _this);
 
 		diag_log 			"[GameManager] - - - - - - - - - - - - - - - - - - - - - - - - - - -";
-		diag_log format	[	"[GameManager]			LOAD GAME: %1", _recordName];
+		diag_log format	[	"[GameManager]			LOAD GAME: %1 from %2", _recordName, _storageClassName];
 		OOP_INFO_0("GAME SAVE STARTED");
 
 		// Bail if we are not server
@@ -380,7 +390,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Start loading screen
 		[LOCS("Vindicta_GameManager", "Load_Loading"), _recordName, 20000] call vin_fnc_loadGameMsg;
 
-		pr _storage = NEW(T_GETV("storageClassName"), []);
+		pr _storage = NEW(_storageClassName, []);
 
 		pr _success = false;
 		if (CALLM1(_storage, "recordExists", _recordName)) then {
@@ -483,11 +493,13 @@ CLASS("GameManager", "MessageReceiverEx")
 	ENDMETHOD;
 
 	METHOD(deleteSavedGame)
-		params [P_THISOBJECT, P_STRING("_recordName")];
+		params [P_THISOBJECT, P_STRING("_recordName"), P_STRING("_storageClassName")];
 		
-		OOP_INFO_1("DELETE SAVED GAME: %1", _recordName);
+		OOP_INFO_1("DELETE SAVED GAME: %1", _this);
 
-		pr _storage = NEW(T_GETV("storageClassName"), []);
+		ASSERT_MSG(_storageClassName != "", "Storage class name is empty!");
+
+		pr _storage = NEW(_storageClassName, []);
 		CALLM1(_storage, "eraseRecord", _recordName);
 		DELETE(_storage);
 	ENDMETHOD;
@@ -574,10 +586,18 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	// Called by client when he needs to get data on all the saved games
 	public server METHOD(clientRequestAllSavedGames)
-		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_storageClassName")];
+
+		OOP_INFO_1("clientRequestAllSavedGames: %1", _this);
+
+		// When client first opens the dialog, he doesn't know which storage to ask data from
+		// Therefore we use our preferred storage
+		if (_storageClassName == "") then {
+			_storageClassName = T_GETV("storageClassName");
+		};
 
 		// Read headers of all records
-		pr _recordNamesAndHeaders = T_CALLM0("readAllSavedGameHeaders");
+		pr _recordNamesAndHeaders = T_CALLM1("readAllSavedGameHeaders", _storageClassName);
 
 		// Check all headers for loadability
 		pr _checkResult = T_CALLM1("checkAllHeadersForLoading", _recordNamesAndHeaders);
@@ -588,7 +608,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 
 		// Send data to client
-		pr _args = [_dataForClient, T_GETV("storageClassName")];
+		pr _args = [_dataForClient, _storageClassName, +T_GETV("storageClassNames")];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabSave", "staticReceiveRecordData", _args, _clientOwner, false);
 
 		// Cleanup
@@ -600,38 +620,56 @@ CLASS("GameManager", "MessageReceiverEx")
 	ENDMETHOD;
 
 	public server METHOD(clientSaveGame)
-		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
-		T_CALLM0("saveGame");
-		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_storageClassName")];
+
+		if (_storageClassName == "") then {
+			_storageClassName = T_GETV("storageClassName");
+		};
+
+		T_CALLM2("saveGame", SAVE_TYPE_DEFAULT, _storageClassName);
+		T_CALLM2("clientRequestAllSavedGames", _clientOwner, _storageClassName);	// Send updated saved game list to client
 	ENDMETHOD;
 
 	public server METHOD(serverSaveGameRecovery)
 		params [P_THISOBJECT];
-		T_CALLM1("saveGame", SAVE_TYPE_RECOVERY);
+		T_CALLM2("saveGame", SAVE_TYPE_RECOVERY, T_GETV("storageClassName"));
 	ENDMETHOD;
 
 	public server METHOD(clientOverwriteSavedGame)
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName"), P_STRING("_storageClassName")];
 
-		OOP_INFO_1("CLIENT OVERWRITE SAVED GAME: %1", _recordName);
+		OOP_INFO_1("CLIENT OVERWRITE SAVED GAME: %1", _this);
 
-		T_CALLM1("deleteSavedGame", _recordName);
-		T_CALLM0("saveGame");
-		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
+		if (_storageClassName == "") then {
+			_storageClassName = T_GETV("storageClassName");
+		};
+
+		T_CALLM2("deleteSavedGame", _recordName, _storageClassName);
+		T_CALLM2("saveGame", SAVE_TYPE_DEFAULT, _storageClassName);
+		T_CALLM2("clientRequestAllSavedGames", _clientOwner, _storageClassName);	// Send updated saved game list to client
 	ENDMETHOD;
 
 	public server METHOD(clientDeleteSavedGame)
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
-		T_CALLM1("deleteSavedGame", _recordName);
-		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName"), P_STRING("_storageClassName")];
+
+		if (_storageClassName == "") then {
+			_storageClassName = T_GETV("storageClassName");
+		};
+
+		T_CALLM2("deleteSavedGame", _recordName, _storageClassName);
+		T_CALLM2("clientRequestAllSavedGames", _clientOwner, _storageClassName);	// Send updated saved game list to client
 	ENDMETHOD;
 
 	public server METHOD(clientLoadSavedGame)
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName"), P_STRING("_storageClassName")];
 
 		OOP_INFO_1("CLIENT LOAD SAVED GAME: %1", _recordName);
 
-		T_CALLM1("loadGame", _recordName);
+		if (_storageClassName == "") then {
+			_storageClassName = T_GETV("storageClassName");
+		};
+
+		T_CALLM2("loadGame", _recordName, _storageClassName);
 	ENDMETHOD;
 
 
@@ -835,14 +873,14 @@ CLASS("GameManager", "MessageReceiverEx")
 			};
 		};
 
-		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO, T_GETV("storageClassName"));
 		T_SETV("lastAutoSave", TIME_NOW);
 	ENDMETHOD;
 
 	public METHOD(checkEmptyAutoSave)
 		params [P_THISOBJECT];
 		if(!vin_autoSave_enabled || !vin_autoSave_onEmpty) exitWith { };
-		T_CALLM1("saveGame", SAVE_TYPE_AUTO);
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO, T_GETV("storageClassName"));
 		T_SETV("lastAutoSave", TIME_NOW);
 	ENDMETHOD;
 
