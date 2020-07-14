@@ -79,6 +79,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				VARIABLE_ATTR("outdated", 		[ATTR_PRIVATE]);
 				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
 
+	// Helper object for proximity checks
+				VARIABLE("helperObject");
+
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -170,6 +173,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			T_CALLM1("postMethodAsync", "spawn");
 		};
 
+		// Init helper object
+		T_CALLM0("_initHelperObject");
+
 		GETSV("Garrison", "all") pushBack _thisObject;
 	ENDMETHOD;
 
@@ -214,6 +220,22 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain, true, true]; // !! Will be called unscheduled, start suspended
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
+	ENDMETHOD;
+
+	// Initializes helper object
+	// Must be called after AI init!
+	METHOD(_initHelperObject)
+		params [P_THISOBJECT];
+		pr _pos = T_CALLM0("getPos");
+		#ifndef _SQF_VM
+		pr _obj = createLocation ["vin_garrison", _pos, 0, 0];
+		#else
+		pr _obj = "vin_garrison" createVehicle _pos;
+		#endif
+		_obj setVariable ["garrison", _thisObject];
+		T_SETV("helperObject", _obj);
+
+		OOP_INFO_1("initHelperObject: %1", _obj);
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -328,6 +350,11 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		OOP_INFO_0("DESTROY GARRISON");
 
 		__MUTEX_LOCK;
+
+		// Delete the helper object
+		#ifndef _SQF_VM
+		deleteLocation T_GETV("helperObject");
+		#endif
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 
@@ -3743,6 +3770,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			};
 			T_CALLM2("postMethodAsync", "spawn", [true]);
 		};
+
+		// Init helper object
+		T_CALLM0("_initHelperObject");
 
 		// Push to 'all' static variable
 		GETSV("Garrison", "all") pushBack _thisObject;

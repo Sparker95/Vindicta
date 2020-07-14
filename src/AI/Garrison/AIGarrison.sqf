@@ -552,6 +552,11 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
+
+		// Update our helper object
+		pr _gar = T_GETV("agent");
+		pr _obj = GETV(_gar, "helperObject");
+		_obj setPosition _pos;
 	ENDMETHOD;
 
 	// Gets the position
