@@ -1481,7 +1481,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	public METHOD(getMaxCivilianVehicles)
 		params [P_THISOBJECT];
 		private _radius = T_GETV("boundingRadius");
-		CLAMP(0.03 * _radius, 3, 25)
+		CLAMP(0.03 * _radius, 3, 12)
 	ENDMETHOD;
 
 	// File-based methods
