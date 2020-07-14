@@ -77,7 +77,7 @@ CLASS("ActionGarrisonRepairAllVehicles", "ActionGarrison")
 			} forEach _brokenVehicles;
 			*/
 			
-			pr _args = ["GoalUnitRepairVehicle", 0, [["vehicle", _brokenVehicle], [TAG_INSTANT, _instant]], _AI, false];
+			pr _args = ["GoalUnitRepairVehicle", 0, [[TAG_TARGET_REPAIR, _brokenVehicle], [TAG_INSTANT, _instant]], _AI, false];
 			CALLM2(_repairUnitAI, "postMethodAsync", "addExternalGoal", _args);
 			
 			T_SETV("state", ACTION_STATE_ACTIVE);
