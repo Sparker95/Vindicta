@@ -200,7 +200,7 @@ private _s = WSP_GAR_COUNT;
 											TAG_DURATION_SECONDS
 											]]	call AI_misc_fnc_setActionParametersFromGoalOptional;										
 // ---------------- ActionGarrisonJoinLocation
-["ActionGarrisonJoinLocation", _s,			[[WSP_GAR_AT_TARGET_POS, 					true]]]	call AI_misc_fnc_setActionPreconditions; // These are procedural
+["ActionGarrisonJoinLocation", _s,			[[WSP_GAR_AT_TARGET_POS, 					true]]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonJoinLocation", _s,			[
 											[WSP_GAR_AT_TARGET_LOCATION, 				true]
 											]]	call AI_misc_fnc_setActionEffects;

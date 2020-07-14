@@ -92,7 +92,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
-		pr _onlyCombat = T_GETV("onlyCombat");
+		pr _onlyCombat = T_GETV(TAG_ONLY_COMBAT_VEHICLES);
 		
 		pr _units = CALLM0(_group, "getUnits");
 		pr _vehicles = _units select {CALLM0(_x, "isVehicle")};

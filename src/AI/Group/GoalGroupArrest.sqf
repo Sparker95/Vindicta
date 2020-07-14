@@ -37,7 +37,7 @@ CLASS("GoalGroupArrest", "GoalGroup")
 		//OOP_INFO_0("GoalGroupArrest: Creating predefined action.");
 
 		pr _target = GETV(_AI, "suspTarget");
-		pr _parameters = [_AI, [[TAG_TARGET, _target]]];
+		pr _parameters = [_AI, [[TAG_TARGET_ARREST, _target]]];
 		//OOP_INFO_1("GoalGroupArrest: Target: %1", _target);
 
 		pr _action = NEW("ActionGroupArrest", _parameters);
