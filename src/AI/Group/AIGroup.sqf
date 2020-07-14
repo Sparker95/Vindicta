@@ -394,9 +394,6 @@ CLASS("AIGroup", "AI_GOAP")
 		if (_groupType == GROUP_TYPE_INF) then {
 
 			pr _leader = CALLM0(_group, "getLeader");
-
-			if (IS_NULL_OBJECT(_leader)) exitWith {};
-			
 			pr _hLeader = CALLM0(_leader, "getObjectHandle");
 
 			// Get speed in format of getSpeed command: https://community.bistudio.com/wiki/getSpeed

@@ -11,7 +11,7 @@
 
 // Civilians per m^2 max
 // 7 bots per 100x100m square
-#define MAX_DENSITY (4/100/100)
+#define MAX_DENSITY (10/100/100)
 
 // Each house will contribute this amount of active civilians
 #define N_CIVS_PER_HOUSE 1.0

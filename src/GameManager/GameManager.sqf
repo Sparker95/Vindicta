@@ -778,21 +778,8 @@ CLASS("GameManager", "MessageReceiverEx")
 		private _section = LOC("Section");
 		// TODO format this better. Maybe push/pop sections like START_SECTION(sec) if(isNil "_currSection") then { _currSection = sec; _sections = []; } else { _sections pushBack _currSection; _currSection = _currSection + "_" + sec; }
 		// Spawn distance
-		["vin_spawnDist_garrisonToPlayer",		"SLIDER",
-			[LOC("Perf_Spawn_Garrison_Player"), LOC("Perf_Spawn_Garrison_Player_Tooltip")],
-			[_section, LOC("Perf")],
-			[300, 5000, 1300, 0],
-			true] call CBA_fnc_addSetting;
-		["vin_spawnDist_garrisonToAI",		"SLIDER",
-			[LOC("Perf_Spawn_Garrison_AI"), LOC("Perf_Spawn_Garrison_AI_Tooltip")],
-			[_section, LOC("Perf")],
-			[300, 3000, 500, 0],
-			true] call CBA_fnc_addSetting;
-		["vin_CivPresence_multiplierUser",		"SLIDER",
-			[LOC("Ambient_Civ_Multiplier"), LOC("Ambient_Civ_Multiplier_Tooltip")],
-			[_section, LOC("Perf")],
-			[0, 5, 1, 2],
-			true] call CBA_fnc_addSetting;
+		["vin_spawnDist_garrison",		"SLIDER",	[LOC("Perf_Spawn_Garrison"), LOC("Perf_Spawn_Garrison_Tooltip")],		[_section, LOC("Perf")], [300, 10000, 1300, 0], true] call CBA_fnc_addSetting;
+		["vin_CivPresence_multiplierUser",		"SLIDER",	[LOC("Ambient_Civ_Multiplier"), LOC("Ambient_Civ_Multiplier_Tooltip")],		[_section, LOC("Perf")], [0, 5, 1, 2], true] call CBA_fnc_addSetting;
 
 		// Difficulty
 		["vin_diff_global",				"SLIDER",	[LOC("Diff_Global"),		LOC("Diff_Global_Tooltip")],				[_section, LOC("Diff")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
@@ -886,14 +873,14 @@ CLASS("GameManager", "MessageReceiverEx")
 			};
 		};
 
-		T_CALLM2("saveGame", SAVE_TYPE_AUTO, T_GETV("storageClassName"));
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO, T_GETV("storageClassName"));
 		T_SETV("lastAutoSave", TIME_NOW);
 	ENDMETHOD;
 
 	public METHOD(checkEmptyAutoSave)
 		params [P_THISOBJECT];
 		if(!vin_autoSave_enabled || !vin_autoSave_onEmpty) exitWith { };
-		T_CALLM2("saveGame", SAVE_TYPE_AUTO, T_GETV("storageClassName"));
+		T_CALLM1("saveGame", SAVE_TYPE_AUTO, T_GETV("storageClassName"));
 		T_SETV("lastAutoSave", TIME_NOW);
 	ENDMETHOD;
 
