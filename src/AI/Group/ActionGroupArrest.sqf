@@ -24,7 +24,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
 
-		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET);
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, TAG_TARGET_ARREST);
 		//OOP_INFO_1("ActionGroupArrest: Target: %1", _target);
 
 		T_SETV("target", _target);

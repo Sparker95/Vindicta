@@ -365,7 +365,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _type = typeOf _hObject;
 
 		// Disable object simulation if needed
-		if((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) == "thingX"}) then {
+		if ((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) != "house" }) then {
 			_hObject enableSimulationGlobal false;
 		};
 
