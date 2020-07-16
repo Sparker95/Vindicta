@@ -279,10 +279,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		{
 			private _object = _x;
 			ASP_SCOPE_START(scanObject_x);
+
 			if(T_CALLM1("isInBorder", _object)) then
 			{
 				private _type = typeOf _object;
 				private _modelName = (getModelInfo _object) select 0;
+
+				// Disable object simulation if needed
+				if ((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) != "house" }) then {
+					_object enableSimulationGlobal false;
+				};
 
 				switch true do {
 					// Process buildings, objects with anim markers, and shooting targets
@@ -368,11 +374,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
 		private _type = typeOf _hObject;
-
-		// Disable object simulation if needed
-		if ((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) != "house" }) then {
-			_hObject enableSimulationGlobal false;
-		};
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
 		private _countBP = count (_hObject buildingPos -1);
