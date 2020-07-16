@@ -1,1 +1,0 @@
-call compile preprocessFileLineNumbers "Templates\Loot\items.sqf";

@@ -1,0 +1,46 @@
+removeAllWeapons this;
+removeAllItems this;
+removeAllAssignedItems this;
+removeUniform this;
+removeVest this;
+removeBackpack this;
+removeHeadgear this;
+removeGoggles this;
+
+_RandomVest = selectRandom ["FGN_AAF_CIRAS_TL","FGN_AAF_CIRAS_TL_CamB"];
+this addVest _RandomVest;
+_RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut_pelt"];
+this addHeadgear _RandomHeadgear;
+_RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","rhsusf_oakley_goggles_blk","",""];
+this addGoggles _RandomGoggles;
+this forceaddUniform "rhs_uniform_gorka_1_a";
+this addBackpack "FGN_AAF_Bergen_SL_Type07";
+
+this addWeapon "rhs_weap_hk416d10";
+this addPrimaryWeaponItem "rhsusf_acc_rotex5_grey";
+this addPrimaryWeaponItem "rhsusf_acc_RX01_NoFilter";
+this addPrimaryWeaponItem "rhsusf_acc_grip2";
+this addPrimaryWeaponItem "acc_pointer_IR";
+this addPrimaryWeaponItem "rhs_mag_30Rnd_556x45_M855A1_Stanag_Ranger";
+this addWeapon "rhs_weap_rpg75";
+this addWeapon "rhsusf_weap_glock17g4";
+this addHandgunItem "rhsusf_acc_omega9k";
+this addHandgunItem "acc_flashlight_pistol";
+this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
+this addWeapon "Binocular";
+
+this addItemToUniform "FirstAidKit";
+for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
+this addItemToUniform "I_IR_Grenade";
+for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_mk3a2";};
+for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855A1_Stanag_Ranger_Tracer_Red";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_30Rnd_556x45_M855A1_Stanag_Ranger";};
+this addItemToBackpack "optic_NVS";
+this addItemToBackpack "rhs_grenade_anm8_mag";
+this addItemToBackpack "rhs_grenade_m15_mag";
+this linkItem "ItemMap";
+this linkItem "ItemCompass";
+this linkItem "ItemWatch";
+this linkItem "ItemRadio";
+this linkItem "ItemGPS";
+this linkItem "NVGoggles_OPFOR";
