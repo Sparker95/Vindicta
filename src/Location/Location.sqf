@@ -214,6 +214,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		OOP_DEBUG_1("findAllObjects for %1", T_GETV("name"));
 
 		// Setup marker allowed areas
+		ASP_SCOPE_START(addAllowedAreas);
 		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0}) select {
 			T_CALLM1("isInBorder", markerPos _x)
 		};
@@ -230,22 +231,35 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			OOP_INFO_1("Adding allowed area: %1", _x);
 			T_CALLM4("addAllowedArea", _pos, _a, _b, _dir);
 		} forEach _allowedAreas;
+		ASP_SCOPE_END(addAllowedAreas);
 
 		// Setup location's spawn positions
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
 
 		#ifndef _SQF_VM
+		ASP_SCOPE_START(findNearestObjects);
+
 		// Lots of objects from the map have typeOf "" unfortunately (thanks to arma)
 		// But we must scan them anyway
+		// We CAN NOT scan nearestTerrainObjects because it returns trees too, which increases findAllObjects time a lot
+		// I wish we could check if a given object is a tree and skip it
+
+		/*
 		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
 		private _objects = nearestObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
 		private _allObjects = +_terrainObjects;
 		{
 			_allObjects pushBackUnique _x;
 		} forEach _objects;
-		//(nearestTerrainObjects [_locPos, [], _radius] apply { [true, _x] }) + (nearestObjects [_locPos, [], _radius] apply { [false, _x] });
-		//private _allObjects = _locPos nearObjects _radius;
+		*/
+		
+		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius, false, true]; // select { typeOf _x != "" };
+		private _allObjects = _locPos nearObjects _radius;
+		ASP_SCOPE_END(findNearestObjects);
+
+		OOP_INFO_1("findAllObjects: scanning %1 objects", count _allObjects);
+
 		#else
 		private _allObjects = [];
 		#endif
@@ -261,14 +275,21 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// private _bdir = 0; //Building direction
 
 		// forEach _allObjects;
+		ASP_SCOPE_START(scanFoundObjects);
 		{
 			private _object = _x;
+			ASP_SCOPE_START(scanObject_x);
 			if(T_CALLM1("isInBorder", _object)) then
 			{
 				private _type = typeOf _object;
 				private _modelName = (getModelInfo _object) select 0;
 
 				switch true do {
+					// Process buildings, objects with anim markers, and shooting targets
+					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
+						T_CALLM2("addObject", _object, _object in _terrainObjects);
+						OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
+					};
 					// A truck's position defined the position for tracked and wheeled vehicles
 					case (_type == "b_truck_01_transport_f"): {
 						private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
@@ -304,18 +325,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						deleteVehicle _object;
 						OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
 					};
-					case (_type == "flag_bi_f"): {
-						// Probably add support for the flag later
-						// Why do we even need it
-					};
-					case (_type == "sign_arrow_large_f"): { // Red arrow
-						// Why do we need it
-						deleteVehicle _object;
-					};
-					case (_type == "sign_arrow_large_blue_f"): { // Blue arrow
-						// Why do we need it
-						deleteVehicle _object;
-					};
 					// Patrol routs
 					case (_type == "i_soldier_f"): {
 						T_CALLM1("addPatrolRoute", _object);
@@ -341,14 +350,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						T_CALLM2("addObject", _object, _object in _terrainObjects);
 						OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
 					};
-					// Process buildings, objects with anim markers, and shooting targets
-					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
-						T_CALLM2("addObject", _object, _object in _terrainObjects);
-						OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
-					};
 				};
 			};
 		} forEach _allObjects;
+		ASP_SCOPE_END(scanFoundObjects);
 
 		T_CALLM0("findBuildables");
 	ENDMETHOD;
@@ -501,10 +506,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _buildables = [];
 		private _sortableArray = [];
 #ifndef _SQF_VM
+		/*
 		private _nearbyObjects = [];
 		{
 			_nearbyObjects pushBackUnique _x;
 		} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
+		*/
+		private _nearbyObjects = _locPos nearObjects _radius;
 
 		{
 			private _object = _x;
