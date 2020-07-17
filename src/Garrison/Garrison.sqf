@@ -3660,6 +3660,33 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		[T_GETV("templateName")] call t_fnc_getTemplate
 	ENDMETHOD;
 
+	// Iterates all vehicles in this garrison
+	// Checks who's inside these vehicles, and if needed, transfers them to another garrison
+	public thread METHOD(updateVehicleOwnership)
+		params [P_THISOBJECT];
+
+		// Bail if not spawned or destroyed
+		if(!T_GETV("spawned") || {IS_GARRISON_DESTROYED(_thisObject)}) exitWith {0};
+
+		pr _thisSide = T_GETV("side");
+		pr _thisSideArray = [_thisSide];
+		pr _vehUnits = T_GETV("units") select { CALLM0(_x, "isVehicle") };
+		{
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			pr _sides = (crew _hO) apply {side group _x};
+			_sides = (_sides arrayIntersect _sides) - _thisSideArray;
+			if (count _sides > 0) then {
+				// We don't own this any more
+				OOP_INFO_1("Vehicle does not belong this garrison any more. Other sides: %1", _sides);
+
+				pr _sideDest = _sides#0;
+				pr _garDest = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _sideDest);
+				OOP_INFO_3("Moving unit %1 to garrison %2 of side %3", _x, _garDest, _sideDest);
+				CALLM1(_garDest, "captureUnit", _x);
+			};
+		} forEach _vehUnits;
+	ENDMETHOD;
+
 	// - - - - - STORAGE - - - - -
 	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];

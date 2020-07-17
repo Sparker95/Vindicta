@@ -29,6 +29,9 @@ if (!_spawned) exitWith {
 	//DUMP_CALLSTACK;
 };
 
+// Update vehicle ownership right now, to make sure we don't delete vehicles with players in them
+T_CALLM0("updateVehicleOwnership");
+
 // Reset spawned flag
 T_SETV("spawned", false);
 

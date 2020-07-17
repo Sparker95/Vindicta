@@ -6,6 +6,8 @@ FIX_LINE_NUMBERS()
 
 params [P_THISOBJECT];
 
+ASP_SCOPE_START(Garrison_fnc_updateSpawnState);
+
 ASSERT_THREAD(_thisObject);
 
 if !(T_GETV("type") in GARRISON_TYPES_AUTOSPAWN) exitWith {
