@@ -2187,10 +2187,10 @@ CLASS("ClientMapUI", "")
 			NULL_OBJECT
 		};
 
+		private _respawnPos = 0;
 		private _respawnOkay = if (IS_OOP_OBJECT(_loc)) then {
 			// Teleport player
-			pr _respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
-			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
+			_respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
 			// Show a message to everyone
 			pr _text = format ["%1 has respawned at %2.", name player, CALLM0(_loc, "getDisplayName")];
 			[_text] remoteExecCall ["systemChat"];
@@ -2207,11 +2207,11 @@ CLASS("ClientMapUI", "")
 		};
 
 		// Call gameMode method
-		pr _args = [player, objNull, "", 0, _restoreGear, !IS_OOP_OBJECT(_loc)];
+		pr _args = [player, objNull, "", 0, _restoreGear, !IS_OOP_OBJECT(_loc), playerSide];
 		CALLM(gGameMode, "playerSpawn", _args);
 
 		// Execute script on the server
-		_args remoteExec ["fnc_onPlayerRespawnServer", ON_SERVER, NO_JIP];
+		[player, objNull, playerSide, +_respawnPos] remoteExec ["fnc_onPlayerRespawnServer", ON_SERVER, NO_JIP];
 
 		// Disable this panel
 		T_CALLM1("respawnPanelEnable", false);

@@ -282,4 +282,21 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		CALLSM(_className, _methodName, _parameters);
 	ENDMETHOD;
 
+	// Runs player spawn code which must be done on server in main thread
+	public METHOD(finishPlayerSpawn)
+		params [P_THISOBJECT, P_OBJECT("_playerObj"), P_SIDE("_playerSide"), P_ARRAY("_respawnPos")];
+		
+		// Create a new Unit and attach it to player
+		pr _args = [[], T_INF, T_INF_rifleman, -1, "", _playerObj];
+		pr _unit = NEW("Unit", _args);
+
+		// Add player's unit to the global garrison
+		pr _gar = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _playerSide);
+		CALLM1(_gar, "addUnit", _unit);
+
+		// Finally set player's position
+		_playerObj setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
+
+	ENDMETHOD;
+
 ENDCLASS;

@@ -741,18 +741,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Create a suspiciousness monitor for player
 		NEW("UndercoverMonitor", [_newUnit]);
 
-		// Create scroll menu to talk to civilians
-		vin_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
-			private _civ = [7] call vin_fnc_coneTarget;
-			!isNull _civ
-			&& {!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}}
-			//&& {(_target distance _civ) < 7}
-			&& {alive _civ}
-			&& {!(_civ getVariable ["#arrested", false])}
-			&& {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
-		};
-
-
 		// Init the UnitIntel on player
 		CALLSM0("UnitIntel", "initPlayer");
 
