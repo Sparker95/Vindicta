@@ -35,10 +35,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	/* save */	VARIABLE_ATTR("faction",		[ATTR_PRIVATE ARG ATTR_SAVE]); // Template used for loadouts of the garrison
 	/* save */	VARIABLE_ATTR("templateName", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
 				VARIABLE_ATTR("spawned", 		[ATTR_PRIVATE]);
-	// SAVEBREAK >>>
-	// Remove, autoSpawn is no longer needed, use garrison type instead
-	/* save */	VARIABLE_ATTR("autoSpawn",		[ATTR_PRIVATE ARG ATTR_SAVE]); // If true, it will be updating its own spawn state even if inactive
-	// <<< SAVEBREAK
 	/* save */	VARIABLE_ATTR("name", 			[ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/* save */	VARIABLE_ATTR("AI", 			[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
@@ -572,7 +568,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			//OOP_INFO_0("  ACTIVE");
 
 			// If we are empty except for vehicles and we are not at a location then we must abandon them
-			if(T_GETV("side") != CIVILIAN and { T_GETV("location") == NULL_OBJECT } and { T_CALLM0("isOnlyEmptyVehicles") }) then {
+			if(T_GETV("side") != CIVILIAN and { T_GETV("location") == NULL_OBJECT } and {T_GETV("type") != GARRISON_TYPE_AMBIENT} and { T_CALLM0("isOnlyEmptyVehicles") }) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
 				pr _args = [_thisObject];
@@ -583,7 +579,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			// Players might be messing with inventories, so we must update our amount of build resources more often
 			pr _locHasPlayers = _loc != NULL_OBJECT && { CALLM0(_loc, "hasPlayers") };
 			//OOP_INFO_1("  hasPlayers: %1", _locHasPlayers);
-			if (T_GETV("outdated") || _locHasPlayers) then {
+			if ((T_GETV("outdated") || _locHasPlayers) && (T_GETV("type") != GARRISON_TYPE_AMBIENT)) then {
 				// Update build resources from the actual units
 				// It will cause an update broadcast by garrison server
 				T_CALLM0("updateBuildResources");

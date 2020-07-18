@@ -18,7 +18,7 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 	public override METHOD(getPossibleParameters)
 		[
-			[ [TAG_POS, [objNull]], [TAG_CLEAR_RADIUS, [0]] ],	// Required parameters
+			[ [TAG_POS, [[]]], [TAG_CLEAR_RADIUS, [0]] ],	// Required parameters
 			[  ]	// Optional parameters
 		]
 	ENDMETHOD;

@@ -547,6 +547,11 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		OOP_INFO_1("SET POS AI: %1", _pos);
 
+		if ((_pos#0 == 0) && (_pos#1 == 0)) exitWith {
+			OOP_ERROR_0("attempt to set garrison position to [0,0]");
+			DUMP_CALLSTACK;
+		};
+
 		T_SETV("pos", +_pos);
 
 		// Update our radio key, if someone has forced a position change on us
