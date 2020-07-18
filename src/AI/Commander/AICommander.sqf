@@ -287,24 +287,17 @@ CLASS("AICommander", "AI")
 
 		if(count _abandonedUnits > 0) then {
 			// Cluster these units into reasonable groups based on proximity
-			private _abandonedGroups = [[_abandonedUnits deleteAt 0]];
-			{// forEach _abandonedUnits;
-				private _unit = _x;
-				private _sortedGroups = _abandonedGroups apply { [_x#0 distance _unit, _x] };
-				_sortedGroups sort ASCENDING;
-				if(_sortedGroups#0#0 > 250) then {
-					// Add to new cluster
-					_abandonedGroups pushBack [[_unit]];
-				} else {
-					// Add to existing cluster
-					_sortedGroups#0#1 pushBack _unit;
-				};
-			} forEach _abandonedUnits;
+			pr _tempClusters = _abandonedUnits apply {
+				pr _pos = getPosASL _x;
+				CLUSTER_NEW(_pos select 0, _pos select 1, _pos select 0, _pos select 1, [_x]);
+			};
+			private _unitClusters = [_tempClusters, 250] call cluster_fnc_findClusters;
 
 			// Return the units to this commander
 			{// forEach _abandonedGroups;
-				CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG [_x]]);
-			} forEach _abandonedGroups;
+				pr _units = _x select CLUSTER_ID_OBJECTS;
+				CALLM2(_playerGarrison, "postMethodSync", "makeGarrisonFromUnits", [+_units]);
+			} forEach _unitClusters;
 		};
 
 		#ifdef DEBUG_COMMANDER
