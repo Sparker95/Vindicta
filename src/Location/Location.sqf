@@ -1898,6 +1898,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _tags = SAVED_OBJECT_TAGS apply { [_x, _obj getVariable [_x, nil]] } select { !isNil { _x#1 } };
 			[
 				typeOf _obj,
+				(getModelInfo _obj)#1, // Model path
 				getPosWorld _obj,
 				vectorDir _obj,
 				vectorUp _obj,
@@ -1990,17 +1991,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Rebuild the objects which have been constructed here
 		{ // forEach T_GETV("savedObjects");
-			_x params ["_type", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
+			_x params ["_type", "_modelPath", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
 			// Check if there is such an object here already
-			pr _objs = nearestObjects [_posWorld, [], 0.25, true] select { typeOf _x == _type };
+			pr _objs = nearestObjects [_posWorld, [], 0.25, true] select { (typeOf _x == _type) || {((getModelInfo _x)#1) == _modelPath;} };
 			pr _hO = if (count _objs == 0) then {
-				pr _hO = _type createVehicle [0, 0, 0];
+				pr _hO = if (count _type > 0) then {
+					_type createVehicle [0, 0, 0];
+				} else {
+					createSimpleObject [_modelPath, [0,0,0], false]; 
+				};
 				_hO setPosWorld _posWorld;
 				_hO setVectorDirAndUp [_vDir, _vUp];
-				_hO enableDynamicSimulation true;
-				_hO
+				_hO;
 			} else {
-				_objs#0
+				_objs#0;
 			};
 			if(!isNil {_tags}) then {
 				{
