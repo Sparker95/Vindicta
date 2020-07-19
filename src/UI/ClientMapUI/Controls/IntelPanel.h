@@ -179,6 +179,16 @@ class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	text = "SHOW LOCATIONS"; 
 };
 
+class CMUI_BUTTON_LOC_MINI_PANELS : MUI_BUTTON_TXT_CHECKBOX_LIKE 
+{
+	IDC = -1; 
+	x = safeZoneX + safeZoneW * 0.599; 
+	y = safeZoneY + safeZoneH * 0.002; 
+	w = safeZoneW * 0.118; 
+	h = safeZoneH * 0.028; 
+	text = "SHOW OVERVIEW"; 
+};
+
 class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
 {
 	IDC = -1; 
@@ -200,6 +210,8 @@ class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT
 	text = "CLEAR NOTIFICATIONS"; 
 };
 
+/*
+// For now, 'Show overview' is located at its place
 class CMUI_BUTTON_CONTACTREP : MUI_BUTTON_TXT
 {
 	IDC = -1; 
@@ -209,6 +221,7 @@ class CMUI_BUTTON_CONTACTREP : MUI_BUTTON_TXT
 	h = safeZoneH * 0.028; 
 	text = "SHOW CONTACT REPORTS"; 
 };
+*/
 
 // black background for buttons to fix ugly gap
 class CMUI_INTEL_BTNGRP_BG : MUI_BG_BLACKSOLID 

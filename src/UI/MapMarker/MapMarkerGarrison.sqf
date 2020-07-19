@@ -25,12 +25,15 @@ CLASS("MapMarkerGarrison", "MapMarker")
 
 	VARIABLE("garRecord"); // GarrisonRecord this map marker is attached to
 
+	VARIABLE("microPanel"); // Micro panel with info attached to this marker, managed by ClientMapUI
+
 	STATIC_VARIABLE("selectedMarkers");
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		T_SETV("garRecord", _garRecord);
+		T_SETV("microPanel", [controlNull]);
 
 		// Create marker
 		pr _mrkName = _thisObject+MARKER_SUFFIX;

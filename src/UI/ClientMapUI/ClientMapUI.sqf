@@ -79,6 +79,7 @@ CLASS("ClientMapUI", "")
 	VARIABLE("showLocations");
 	VARIABLE("showEnemies");
 	VARIABLE("showIntelPanel");
+	VARIABLE("showLocationMiniPanels");
 	// todo players?
 
 	VARIABLE("sortButtons"); // array of side/type/time sorting buttons
@@ -127,6 +128,7 @@ CLASS("ClientMapUI", "")
 		T_SETV("showIntelInactiveList", true); // in list
 		T_SETV("showIntelActiveList", true); // in list
 		T_SETV("showIntelEndedList", false); // in list
+		T_SETV("showLocationMiniPanels", true); // on map
 
 		T_SETV("showLocations", true);
 		T_SETV("showEnemies", true);
@@ -213,6 +215,10 @@ CLASS("ClientMapUI", "")
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
 		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 
+		pr _ctrl = ([_mapDisplay, "CMUI_BUTTON_LOC_MINI_PANELS"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowLocationMiniPanels", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+
 		pr _ctrl = ([_mapDisplay, "CMUI_BUTTON_PLAYERS"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowPlayers", _this); }];
 		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
@@ -248,9 +254,11 @@ CLASS("ClientMapUI", "")
 
 
 		// init headline text and color
+		/*
 		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
 		([_mapDisplay, "CMUI_BUTTON_CONTACTREP"] call ui_fnc_findControl) ctrlEnable false; // TODO
 		([_mapDisplay, "CMUI_BUTTON_CONTACTREP"] call ui_fnc_findControl) ctrlSetTooltip "Not yet implemented."; // TODO
+		*/
 
 		//  = = = = = = = = Create garrison action list box = = = = = = = =
 
@@ -1916,6 +1924,13 @@ CLASS("ClientMapUI", "")
 		} forEach _allLocMarkers;
 	ENDMETHOD;
 
+	public event METHOD(onButtonClickShowLocationMiniPanels)
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+
+		T_SETV("showLocationMiniPanels", _checked);
+	ENDMETHOD;
+
 	public event METHOD(onButtonClickShowPlayers)
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
@@ -2048,6 +2063,9 @@ CLASS("ClientMapUI", "")
 
 		// Update state of respawn panel thing
 		T_CALLM0("respawnPanelOnDraw");
+
+		// Update location micro panels
+		T_CALLM0("updateLocationMiniPanels");
 
 	ENDMETHOD;
 
@@ -2330,7 +2348,176 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 
+	private METHOD(updateLocationMiniPanels)
+		params [P_THISOBJECT];
 
+		pr _allMapMarkers = CALLSM0("MapMarkerLocation", "getAll");
+		pr _allGarrisonMarkers = CALLSM0("MapMarkerGarrison", "getAll");
+		if (T_GETV("showLocationMiniPanels")) then {
+			pr _typesDontShowPanel = [LOCATION_TYPE_CITY, LOCATION_TYPE_POLICE_STATION, LOCATION_TYPE_UNKNOWN];
+			pr _markersShowPanel = _allMapMarkers select {
+				! ((GETV(_x, "type") in _typesDontShowPanel));
+			};
+			{
+				pr _unitData = [];
+				if (GET_OBJECT_CLASS(_x) == "MapMarkerLocation") then {
+					pr _intel = GETV(_x, "intel");
+					if (GETV(_intel, "side") != playerSide) then {
+						_unitData = GETV(_intel, "unitData");
+					};
+				} else {
+					pr _garRecord = GETV(_x, "garRecord");
+					_unitData = CALLM0(_garRecord, "getBasicComposition");
+				};
+				pr _ctrlMap = ((findDisplay 12) displayCtrl IDC_MAP);
+				if (count _unitData > 0) then {
+					pr _ctrl = GETV(_x, "microPanel") select 0;
+					
+					// If this marker doesn't have this micro panel, create one
+					if (isNull _ctrl) then {
+						// Calculate amounts of units
+						OOP_INFO_2("updateLocationMiniPanels: intel: %1, unitData: %2", _intel, _unitData);
+						pr _inf = _unitData#T_INF;
+						pr _veh = _unitData#T_VEH;
+						pr _nInf = 0;
+						{ _nInf = _nInf + _x; } forEach _inf;
+
+						pr _nTransport =	_veh#T_VEH_car_unarmed +
+											_veh#T_VEH_car_armed +
+											_veh#T_VEH_MRAP_unarmed +
+											_veh#T_VEH_MRAP_HMG +
+											_veh#T_VEH_MRAP_GMG +
+											_veh#T_VEH_IFV +
+											_veh#T_VEH_APC +
+											_veh#T_VEH_truck_inf;
+
+						pr _nArmor 		=	_veh#T_VEH_MRAP_unarmed +
+											_veh#T_VEH_MRAP_HMG +
+											_veh#T_VEH_MRAP_GMG +
+											_veh#T_VEH_IFV +
+											_veh#T_VEH_APC +
+											_veh#T_VEH_MBT;
+
+						pr _nAir = 			_veh#T_VEH_heli_light +
+											_veh#T_VEH_heli_heavy +
+											_veh#T_VEH_heli_cargo +
+											_veh#T_VEH_heli_attack +
+											_veh#T_VEH_plane_attack +
+											_veh#T_VEH_plane_fighter +
+											_veh#T_VEH_plane_cargo +
+											_veh#T_VEH_plane_unarmed +
+											_veh#T_VEH_plane_VTOL;
+
+						pr _nStatics = 		_veh#T_VEH_stat_HMG_high +
+											_veh#T_VEH_stat_HMG_low+
+											_veh#T_VEH_stat_GMG_high+
+											_veh#T_VEH_stat_GMG_low+
+											_veh#T_VEH_stat_AA+
+											_veh#T_VEH_stat_AT+
+											_veh#T_VEH_stat_mortar_light+
+											_veh#T_VEH_stat_mortar_heavy;
+						
+						// Each row is: name, amount, base amount (if amount==baseAmount, bar size is 50%)
+						pr _rows = [
+										["Infantry", _nInf, 20],
+										["Transport", _nTransport, 2],
+										["Armor", _nArmor, 4],
+										["Statics", _nStatics, 3],
+										["Air", _nAir, 1]
+									];
+						_ctrl = CALLSM1("ClientMapUI", "createLocationMiniPanel", _rows);
+						SETV(_x, "microPanel", [_ctrl]);
+					};
+
+					// Update panel position
+					pr _posScreen = _ctrlMap posWorldToScreen GETV(_x, "pos");
+					_posScreen params ["_xScreen", "_yScreen"];
+					if (_yScreen < safeZoneY) then {_yScreen = -1;};
+					(ctrlPosition _ctrl) params ["__x", "__y", "_w", "_h"];
+					_ctrl ctrlSetPosition [_xScreen - 0.5*_w, _yScreen + 0.03, _w, _h];
+					_ctrl ctrlCommit 0;
+				};
+			} forEach (_markersShowPanel + _allGarrisonMarkers);
+		} else {
+			{
+				pr _ctrl = GETV(_x, "microPanel") select 0;
+				if (!isNull _ctrl) then {ctrlDelete _ctrl;};
+			} forEach (_allMapMarkers + _allGarrisonMarkers);
+		};
+	ENDMETHOD;
+
+	private STATIC_METHOD(createLocationMiniPanel)
+		params [P_THISCLASS, P_ARRAY("_rows")];
+
+		private _disp = finddisplay 12;
+
+		private _wGap = safeZoneW*0.003;
+		private _hGap = safeZoneH/safeZoneW*_wGap;
+		private _hRow = safeZoneH*0.015;
+		private _wCol0 = safeZoneW*0.04;
+		private _wCol1 = safeZoneW*0.015;
+		private _wBarMax = safeZoneW*0.04;
+		private _wBarNegative = safeZoneW*0.008;
+		private _hBar = safeZoneH*0.008;
+		private _wBackground = _wGap + _wCol0 + _wCol1 + _wBarMax + _wBarNegative;
+		private _hBackground = 2*_hGap + (count _rows)*_hRow;
+
+		private _ctrlGroup = _disp ctrlCreate ["RscControlsGroupNoScrollbars", -1];
+		_ctrlGroup ctrlSetPosition [0.7, 0.7, _wBackground+0.005, _hBackground+0.005];
+		_ctrlGroup ctrlCommit 0;
+
+		private _ctrlBackground = _disp ctrlCreate ["MUI_BG_BLACKTRANSPARENT", -1, _ctrlGroup];
+		_ctrlBackground ctrlSetPosition [0, 0, _wBackground, _hBackground];
+		_ctrlBackground ctrlSetBackgroundColor [0, 0, 0, 0.8];
+		_ctrlBackground ctrlCommit 0;
+
+		{
+			_x params ["_name", "_amount", "_baseAmount"];
+			private _i = _forEachIndex;
+			
+			
+			private _ctrlName = _disp ctrlCreate ["MUI_BG_TRANSPARENT_LEFT", -1, _ctrlGroup];
+			_ctrlName ctrlSetPosition [0, _hGap + _i*_hRow, _wCol0, _hRow];
+			_ctrlName ctrlCommit 0;
+			_ctrlName ctrlSetText _name;
+			
+			private _ctrlAmount = _disp ctrlCreate ["MUI_BG_TRANSPARENT_LEFT", -1, _ctrlGroup];
+			_ctrlAmount ctrlSetPosition [ _wCol0, _hGap + _i*_hRow, _wCol1, _hRow];
+			_ctrlAmount ctrlCommit 0;
+			_ctrlAmount ctrlSetText (str _amount);
+
+			private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
+
+			if (_amount > 0) then {
+				private _barSizeRel = 0.5*(ln (_amount/_baseAmount))+0.25; // https://www.desmos.com/calculator/7uastykkza
+				_barSizeRel = (_barSizeRel min 1.0) max 0.08; // Limited in range 0..1
+				private _barWidth = _barSizeRel*_wBarMax;
+				_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + _wBarNegative, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+
+				// Color bar
+				_ctrlBar ctrlSetBackgroundColor [3/256, 139/256, 250/256, 1.0];
+			} else {
+				private _color = [0.9, 0.0, 0.0, 1.0];
+
+				// Resize bar
+				_ctrlBar ctrlSetPosition [_wCol0 + _wCol1, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _wBarNegative, _hBar];
+
+				// Color bar red
+				_ctrlBar ctrlSetBackgroundColor _color;
+
+				// Color texts red
+				//_ctrlName ctrlSetTextColor _color;
+				_ctrlAmount ctrlSetTextColor _color;
+				//_ctrlName ctrlCommit 0;
+				_ctrlAmount ctrlCommit 0;
+			};
+			_ctrlBar ctrlCommit 0;
+			
+		} forEach _rows;
+
+		_ctrlGroup;
+	ENDMETHOD;
+	
 
 	/* 
 		Method: addDummyIntel

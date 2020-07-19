@@ -75,6 +75,12 @@ CLASS("GarrisonRecord", "")
 		T_GETV("composition")
 	ENDMETHOD;
 
+	// Array of unit count per category
+	public client METHOD(getBasicComposition)
+		params [P_THISOBJECT];
+		T_GETV("composition") apply { _x apply {count _x}; };
+	ENDMETHOD;
+
 	public client METHOD(getBuildResources)
 		params [P_THISOBJECT];
 		T_GETV("buildResources")

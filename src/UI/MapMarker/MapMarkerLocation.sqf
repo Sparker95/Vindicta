@@ -34,6 +34,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 	VARIABLE("radius"); // The accuracy radius
 	VARIABLE("type");
 	VARIABLE("notification"); // Bool
+	VARIABLE("microPanel"); // Micro panel with info attached to this marker, managed by ClientMapUI
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
@@ -43,6 +44,7 @@ CLASS("MapMarkerLocation", "MapMarker")
 		T_SETV("intel", _intel);
 		T_SETV("radius", 0);
 		T_SETV("notification", false);
+		T_SETV("microPanel", [controlNull]);
 
 		// Create background marker
 		// We will colorize it
