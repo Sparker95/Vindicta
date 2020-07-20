@@ -562,13 +562,14 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Update spawn state
 		T_CALLM0("updateSpawnState");
 
-		// Check spawn state if active
 		if (T_GETV("active")) then { 
+
+			pr _type = T_GETV("type");
 
 			//OOP_INFO_0("  ACTIVE");
 
 			// If we are empty except for vehicles and we are not at a location then we must abandon them
-			if(T_GETV("side") != CIVILIAN and { T_GETV("location") == NULL_OBJECT } and {T_GETV("type") != GARRISON_TYPE_AMBIENT} and { T_CALLM0("isOnlyEmptyVehicles") }) then {
+			if(T_GETV("side") != CIVILIAN and { T_GETV("location") == NULL_OBJECT } and {_type != GARRISON_TYPE_AMBIENT} and { T_CALLM0("isOnlyEmptyVehicles") }) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
 				pr _args = [_thisObject];
@@ -579,12 +580,36 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			// Players might be messing with inventories, so we must update our amount of build resources more often
 			pr _locHasPlayers = _loc != NULL_OBJECT && { CALLM0(_loc, "hasPlayers") };
 			//OOP_INFO_1("  hasPlayers: %1", _locHasPlayers);
-			if ((T_GETV("outdated") || _locHasPlayers) && (T_GETV("type") != GARRISON_TYPE_AMBIENT)) then {
+			if ((T_GETV("outdated") || _locHasPlayers) && (_type != GARRISON_TYPE_AMBIENT)) then {
 				// Update build resources from the actual units
 				// It will cause an update broadcast by garrison server
 				T_CALLM0("updateBuildResources");
 
 				T_SETV("outdated", false);
+			};
+
+			if (_type == GARRISON_TYPE_AMBIENT) then {
+				ASP_CREATE_PROFILE_SCOPE(Garrison,updateAmbientVehicles);
+				// Check all vehicles, remove those which were not visited by player for long time
+				{
+					pr _hO = CALLM0(_x, "getObjectHandle");
+					pr _index = allPlayers findIf { (_x distance _hO) < 1500 };
+					pr _lastTimeNearPlayer = _hO getVariable ["vin_lastTimeNearPlayer", -1];
+					if (_lastTimeNearPlayer == -1) then {
+						_lastTimeNearPlayer = GAME_TIME;
+						_hO setVariable ["vin_lastTimeNearPlayer", _lastTimeNearPlayer];
+					};
+					if (_index == -1) then {
+						// No players nearby
+						if (GAME_TIME - _lastTimeNearPlayer > 3600) then {
+							// Delete the vehicle
+							CALLM2(gMessageLoopMainManager, "postmethodAsync", "deleteObject", [_x]);
+						};
+					} else {
+						// Some players are nearby
+						_hO setVariable ["vin_lastTimeNearPlayer", GAME_TIME];
+					};
+				} forEach T_CALLM0("getVehicleUnits");
 			};
 		};
 
