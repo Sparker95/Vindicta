@@ -242,124 +242,123 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Lots of objects from the map have typeOf "" unfortunately (thanks to arma)
 		// But we must scan them anyway
-		// We CAN NOT scan nearestTerrainObjects because it returns trees too, which increases findAllObjects time a lot
-		// I wish we could check if a given object is a tree and skip it
-
-		/*
-		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
-		private _objects = nearestObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
-		private _allObjects = +_terrainObjects;
-		{
-			_allObjects pushBackUnique _x;
-		} forEach _objects;
-		*/
 		
+		// Lots of useful objects plus lots of junk (trees)
 		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius, false, true]; // select { typeOf _x != "" };
-		private _allObjects = _locPos nearObjects _radius;
+		// Lots of useful objects plus those placed in the editor
+		private _nearObjects = _locPos nearObjects _radius;
 		ASP_SCOPE_END(findNearestObjects);
 
-		OOP_INFO_1("findAllObjects: scanning %1 objects", count _allObjects);
+		OOP_INFO_1("findAllObjects: scanning %1 objects", count _nearObjects);
 
 		#else
-		private _allObjects = [];
+		private _nearObjects = [];
+		private _terrainObjects = [];
 		#endif
 		FIX_LINE_NUMBERS()
 
-		// private _object = objNull;
-		// private _type = "";
-		// private _bps = []; //Building positions
-		// private _bp = []; //Building position
-		// private _bc = []; //Building capacity
-		// private _inf_capacity = 0;
-		// private _position = [];
-		// private _bdir = 0; //Building direction
+		// hashmap to quickly mark those objects which have been processed
+		// We can't set variables on terrain objects
+		private _processedObjects = [false] call CBA_fnc_createNamespace;
 
-		// forEach _allObjects;
 		ASP_SCOPE_START(scanFoundObjects);
 		{
-			private _object = _x;
-			ASP_SCOPE_START(scanObject_x);
 
-			if(T_CALLM1("isInBorder", _object)) then
-			{
-				private _type = typeOf _object;
-				private _modelName = (getModelInfo _object) select 0;
+			if (!(_processedObjects getVariable [str _x, false])) then { // Don't process same object twice
+				if ((typeOf _x) != "" || { ! isNil {gObjectAnimMarkers getVariable ((getModelInfo _x) select 0);} }) then { // Ignore trees, there are so many of them
 
-				// Disable object simulation if needed
-				if ((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) != "house" }) then {
-					_object enableSimulationGlobal false;
-				};
+					private _type = typeOf _x;
+					private _modelName = (getModelInfo _x) select 0;
+					private _object = _x;
+					ASP_SCOPE_START(scanObject_x);
 
-				switch true do {
-					// Process buildings, objects with anim markers, and shooting targets
-					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
-						T_CALLM2("addObject", _object, _object in _terrainObjects);
-						OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
-					};
-					// A truck's position defined the position for tracked and wheeled vehicles
-					case (_type == "b_truck_01_transport_f"): {
-						private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
-					};
-					// A mortar's position defines the position for mortars
-					case (_type == "b_mortar_01_f"): {
-						private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
-					};
-					// A low HMG defines a position for low HMGs and low GMGs
-					case (_type == "b_hmg_01_f"): {
-						private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
-					};
-					// A high HMG defines a position for high HMGs and high GMGs
-					case (_type == "b_hmg_01_high_f"): {
-						private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
-					};
-					// A cargo container defines a position for cargo boxes
-					case (_type == "b_slingload_01_cargo_f"): {
-						private _args = [T_PL_cargo, [GROUP_TYPE_INF], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
-					};
-					// Patrol routs
-					case (_type == "i_soldier_f"): {
-						T_CALLM1("addPatrolRoute", _object);
-						OOP_DEBUG_1("findAllObjects for %1: found patrol route", T_GETV("name"));
-						deleteVehicle _object;
-					};
-					// Ambient anims
-					case (_type == "i_soldier_ar_f"): {
-						private _anims = (_object getVariable ["enh_ambientanimations_anims", []]) apply { toLower _x };
-						private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
-						if(_ambientAnimIdx != NOT_FOUND) then {
-							private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
-							private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal getPos _object;
-							_mrk setDir getDir _object;
-							_mrk setVariable ["vin_defaultAnims", [_anim]];
-							_mrk hideObjectGlobal true;
+					if(T_CALLM1("isInBorder", _object)) then
+					{
+						
+
+						// Disable object simulation if needed
+						if ((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) != "house" }) then {
+							_object enableSimulationGlobal false;
 						};
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found predefined solider position", T_GETV("name"));
-					};
-					// Helipads
-					case (_type in location_bt_helipad): {
-						T_CALLM2("addObject", _object, _object in _terrainObjects);
-						OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
+
+						switch true do {
+							// Process buildings, objects with anim markers, and shooting targets
+							case (_type isKindOf "House" || { ! isNil {gObjectAnimMarkers getVariable _modelName;} } || { _type in gShootingTargetTypes }): {
+								T_CALLM2("addObject", _object, _object in _terrainObjects);
+								OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
+							};
+							// A truck's position defined the position for tracked and wheeled vehicles
+							case (_type == "b_truck_01_transport_f"): {
+								private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
+							};
+							// A mortar's position defines the position for mortars
+							case (_type == "b_mortar_01_f"): {
+								private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
+							};
+							// A low HMG defines a position for low HMGs and low GMGs
+							case (_type == "b_hmg_01_f"): {
+								private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
+							};
+							// A high HMG defines a position for high HMGs and high GMGs
+							case (_type == "b_hmg_01_high_f"): {
+								private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
+							};
+							// A cargo container defines a position for cargo boxes
+							case (_type == "b_slingload_01_cargo_f"): {
+								private _args = [T_PL_cargo, [GROUP_TYPE_INF], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
+							};
+							// Patrol routs
+							case (_type == "i_soldier_f"): {
+								T_CALLM1("addPatrolRoute", _object);
+								OOP_DEBUG_1("findAllObjects for %1: found patrol route", T_GETV("name"));
+								deleteVehicle _object;
+							};
+							// Ambient anims
+							case (_type == "i_soldier_ar_f"): {
+								private _anims = (_object getVariable ["enh_ambientanimations_anims", []]) apply { toLower _x };
+								private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
+								if(_ambientAnimIdx != NOT_FOUND) then {
+									private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
+									private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal getPos _object;
+									_mrk setDir getDir _object;
+									_mrk setVariable ["vin_defaultAnims", [_anim]];
+									_mrk hideObjectGlobal true;
+								};
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found predefined solider position", T_GETV("name"));
+							};
+							// Helipads
+							case (_type in location_bt_helipad): {
+								T_CALLM2("addObject", _object, _object in _terrainObjects);
+								OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
+							};
+						};
 					};
 				};
+
+				// Mark object as processed
+				_processedObjects setVariable [str _x, true];
 			};
-		} forEach _allObjects;
+
+		} forEach (_nearObjects + _terrainObjects);
 		ASP_SCOPE_END(scanFoundObjects);
+
+		deleteLocation _processedObjects;
 
 		T_CALLM0("findBuildables");
 	ENDMETHOD;
@@ -438,9 +437,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Process it for ambient anims
-		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _modelName; };
-		if(_animMarkersIdx != NOT_FOUND) then {
-			(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
+		private _animMarkers = gObjectAnimMarkers getVariable _modelName;
+		if(! isNil "_animMarkers") then {
+			_animMarkers params ["_t", "_animMarkers"];
 			private _ambientAnimObjects = T_GETV("ambientAnimObjects");
 			{
 				_x params ["_relPos", "_relDir", "_anim"]; 
