@@ -2459,7 +2459,7 @@ CLASS("ClientMapUI", "")
 		private _wBarMax = safeZoneW*0.04;
 		private _wBarNegative = safeZoneW*0.008;
 		private _hBar = safeZoneH*0.008;
-		private _wBackground = _wGap + _wCol0 + _wCol1 + _wBarMax + _wBarNegative;
+		private _wBackground = _wGap + _wCol0 + _wCol1 + _wBarMax; // + _wBarNegative;
 		private _hBackground = 2*_hGap + (count _rows)*_hRow;
 
 		private _ctrlGroup = _disp ctrlCreate ["RscControlsGroupNoScrollbars", -1];
@@ -2486,32 +2486,25 @@ CLASS("ClientMapUI", "")
 			_ctrlAmount ctrlCommit 0;
 			_ctrlAmount ctrlSetText (str _amount);
 
-			private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
-
 			if (_amount > 0) then {
 				private _barSizeRel = 0.5*(ln (_amount/_baseAmount))+0.25; // https://www.desmos.com/calculator/7uastykkza
 				_barSizeRel = (_barSizeRel min 1.0) max 0.08; // Limited in range 0..1
 				private _barWidth = _barSizeRel*_wBarMax;
-				_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + _wBarNegative, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+				private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
+				_ctrlBar ctrlSetPosition [_wCol0 +_wCol1, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
 
 				// Color bar
-				_ctrlBar ctrlSetBackgroundColor [3/256, 139/256, 250/256, 1.0];
+				_ctrlBar ctrlSetBackgroundColor [244/255, 104/255, 0, 1.0];
+				_ctrlBar ctrlCommit 0;
 			} else {
-				private _color = [0.9, 0.0, 0.0, 1.0];
+				private _color = [0.5, 0.5, 0.5, 1.0];
 
-				// Resize bar
-				_ctrlBar ctrlSetPosition [_wCol0 + _wCol1, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _wBarNegative, _hBar];
-
-				// Color bar red
-				_ctrlBar ctrlSetBackgroundColor _color;
-
-				// Color texts red
+				// Color texts
 				//_ctrlName ctrlSetTextColor _color;
 				_ctrlAmount ctrlSetTextColor _color;
 				//_ctrlName ctrlCommit 0;
 				_ctrlAmount ctrlCommit 0;
 			};
-			_ctrlBar ctrlCommit 0;
 			
 		} forEach _rows;
 
