@@ -519,7 +519,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 
 		// Read headers of all records
-		pr _recordNamesAndHeaders = T_CALLM0("readAllSavedGameHeaders");
+		pr _recordNamesAndHeaders = T_CALLM1("readAllSavedGameHeaders", T_GETV("storageClassName"));
 
 		if(count _recordNamesAndHeaders == 0) exitWith {
 			LOC("Autoload_NoSaves") call vin_fnc_autoLoadMsg;
