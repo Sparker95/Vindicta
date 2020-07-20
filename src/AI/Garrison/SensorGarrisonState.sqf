@@ -112,7 +112,11 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 				} forEach _allGroups;
 				_pos = _pos vectorMultiply (1 / count _allGroups);
 				_pos = ZERO_HEIGHT(_pos);
-				CALLM1(_AI, "setPos", _pos);
+				if ((_pos#0 != 0) && (_pos#1 != 0)) then {
+					CALLM1(_AI, "setPos", _pos);
+				} else {
+					OOP_ERROR_0("Calculated garrison position is [0,0]");
+				};
 			};
 		} else {
 			// When unspawned the group specific states related to units can be assumed based on unit counts

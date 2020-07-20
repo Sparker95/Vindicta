@@ -117,7 +117,7 @@ CLASS("AIUnitInfantry", "AIUnitHuman")
 		"ActionUnitShootAtTargetRange",
 		"ActionUnitInfantryStandIdle",
 		//"ActionUnitShootLegTarget", 
-		"ActionUnitSurrender",
+		//"ActionUnitSurrender",
 		"ActionUnitDialogue"
 		//"ActionUnitVehicleUnflip"
 		]

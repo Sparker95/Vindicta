@@ -12,6 +12,7 @@ _pos - position
 Returns: nil
 */
 
+ASP_SCOPE_START(Location_fnc_isInBorder);
 params [P_THISOBJECT, ["_pos", objNull, [objNull, []]]];
 
 _pos inArea T_GETV("border")

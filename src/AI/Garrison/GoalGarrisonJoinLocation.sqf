@@ -34,6 +34,10 @@ CLASS("GoalGarrisonJoinLocation", "Goal")
 		pr _ws = GETV(_ai, "worldState");
 		WS_SET(_ws, WSP_GAR_AT_TARGET_LOCATION, false);
 
+		// Add parameters to array
+		_goalParameters pushBack [TAG_POS, _locPos];
+		_goalParameters pushBack [TAG_MOVE_RADIUS, _moveRadius];
+
 	ENDMETHOD;
 
 ENDCLASS;

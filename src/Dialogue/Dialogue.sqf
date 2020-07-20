@@ -44,6 +44,9 @@ CLASS("Dialogue", "")
 	VARIABLE("unit0"); // Always AI
 	VARIABLE("unit1"); // AI or player
 
+	// ID of per frame handler used to process this dialogue
+	VARIABLE("pfhId");
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_unit0"),
 					P_OBJECT("_unit1"), P_NUMBER("_clientID")];
@@ -82,6 +85,7 @@ CLASS("Dialogue", "")
 		params [P_THISOBJECT];
 
 		T_CALLM0("terminate");
+		T_CALLM0("endProcessing");
 	ENDMETHOD;
 
 	// Must be called periodically, up to once per frame
@@ -584,6 +588,31 @@ CLASS("Dialogue", "")
 	protected virtual METHOD(getNodes)
 		params [P_THISOBJECT, P_OBJECT("_unit0"), P_OBJECT("_unit1")];
 		[]
+	ENDMETHOD;
+
+	/*
+	Starts and ends processing of this dialogue on each frame
+	*/
+	public METHOD(startProcessing)
+		params [P_THISOBJECT];
+
+		if (T_GETV("pfhId") != -1) exitWith {};
+
+		pr _code = {
+			(_this#0) params ["_thisObject"];
+			T_CALLM0("process");
+		};
+		pr _pfhId = [_code, 0.1, [_thisObject]] call CBA_fnc_addPerFrameHandler;
+		T_SETV("pfhId", _pfhId);
+	ENDMETHOD;
+
+	public METHOD(endProcessing)
+		params [P_THISOBJECT];
+
+		pr _pfhId = T_GETV("pfhId");
+		if (_pfhId == -1) exitWith {};
+
+		[_pfhId] call CBA_fnc_removePerFrameHandler;
 	ENDMETHOD;
 
 ENDCLASS;

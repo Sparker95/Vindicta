@@ -1254,6 +1254,7 @@ CLASS("AIUnitHuman", "AIUnit")
 
 			pr _args = [_hO, _unitTalkTo, _remoteClientID];
 			pr _newDlg = NEW(_dlgClassName, _args);
+			CALLM0(_newDlg, "startProcessing");
 			OOP_INFO_1("  created dialogue: %1", _newDlg);
 			T_SETV("dialogue", _newDlg);
 			T_SETV("talkObject", _unitTalkTo);

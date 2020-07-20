@@ -308,6 +308,28 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Update position world state properties
 		T_CALLM0("updatePositionWSP");
 
+		// Check if we can capture other garrisons attached to this place
+		pr _loc = CALLM0(_gar, "getLocation");
+		if (!IS_NULL_OBJECT(_loc)) then {										// Copture something only if we are at location
+			pr _side = CALLM0(_gar, "getSide");
+			if ((CALLM0(_gar, "countInfantryUnits") > 0) ||						// We must have some infantry ...
+				{ _side in CALLM0(_loc, "getPlayerSides") } ) then {			// ... or some friendly players at this location
+				pr _otherGars = CALLM0(_loc, "getGarrisons"); 					// Get all garrisons of any sides
+				{																// Iterate those garrisons
+					if (_x != _gar) then {										// We can't capture ourselves...
+						if (CALLM0(_x, "getSide") != CIVILIAN) then {			// We aren't commies to capture civilian property...
+							if (CALLM0(_x, "countInfantryUnits") == 0) then {	// We can't capture a garrison which has infantry...
+								CALLM1(_gar, "captureGarrison", _x);			// Now all your units are belong to us!
+							};
+						};
+					};
+				} forEach _otherGars;
+			};
+		};
+
+		// Check if some of our vehicles are stolen
+		CALLM0(_gar, "updateVehicleOwnership");
+
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", T_CALLM0("isSpawned"), _accelerate);
 		if (CALLM0(_gar, "countInfantryUnits") > 0) then {
@@ -334,25 +356,6 @@ CLASS("AIGarrison", "AI_GOAP")
 				CALLM0(_sensor, "update");
 				pr _interval = CALLM0(_sensor, "getUpdateInterval");
 				SETV(_sensor, "timeNextUpdate", GAME_TIME + _interval);
-			};
-		};
-
-		// Check if we can capture other garrisons attached to this place
-		pr _loc = CALLM0(_gar, "getLocation");
-		if (!IS_NULL_OBJECT(_loc)) then {										// Copture something only if we are at location
-			pr _side = CALLM0(_gar, "getSide");
-			if ((CALLM0(_gar, "countInfantryUnits") > 0) ||						// We must have some infantry ...
-				{ _side in CALLM0(_loc, "getPlayerSides") } ) then {			// ... or some friendly players at this location
-				pr _otherGars = CALLM0(_loc, "getGarrisons"); 					// Get all garrisons of any sides
-				{																// Iterate those garrisons
-					if (_x != _gar) then {										// We can't capture ourselves...
-						if (CALLM0(_x, "getSide") != CIVILIAN) then {			// We aren't commies to capture civilian property...
-							if (CALLM0(_x, "countInfantryUnits") == 0) then {	// We can't capture a garrison which has infantry...
-								CALLM1(_gar, "captureGarrison", _x);			// Now all your units are belong to us!
-							};
-						};
-					};
-				} forEach _otherGars;
 			};
 		};
 
@@ -544,6 +547,11 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		OOP_INFO_1("SET POS AI: %1", _pos);
 
+		if ((_pos#0 == 0) && (_pos#1 == 0)) exitWith {
+			OOP_ERROR_0("attempt to set garrison position to [0,0]");
+			DUMP_CALLSTACK;
+		};
+
 		T_SETV("pos", +_pos);
 
 		// Update our radio key, if someone has forced a position change on us
@@ -552,6 +560,11 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
+
+		// Update our helper object
+		pr _gar = T_GETV("agent");
+		pr _obj = GETV(_gar, "helperObject");
+		_obj setPosition _pos;
 	ENDMETHOD;
 
 	// Gets the position

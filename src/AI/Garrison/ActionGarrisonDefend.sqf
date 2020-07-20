@@ -122,7 +122,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 								[TAG_CLEAR_RADIUS, _radius]
 							] + _commonParams, _AI]
 						} else {
-							["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
+							["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _commonParams, _AI]
 						};
 					};
 					case GROUP_TYPE_STATIC: {
@@ -132,7 +132,7 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _vehExtraParams, _AI]
 					};
 					// case GROUP_TYPE_VEH: {
-					// 	["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]] + _commonParams, _AI]
+					// 	["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _commonParams, _AI]
 					// };
 					case GROUP_TYPE_INF: {
 						// We need at least enough patrol groups to cover the defined routes

@@ -35,10 +35,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	/* save */	VARIABLE_ATTR("faction",		[ATTR_PRIVATE ARG ATTR_SAVE]); // Template used for loadouts of the garrison
 	/* save */	VARIABLE_ATTR("templateName", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
 				VARIABLE_ATTR("spawned", 		[ATTR_PRIVATE]);
-	// SAVEBREAK >>>
-	// Remove, autoSpawn is no longer needed, use garrison type instead
-	/* save */	VARIABLE_ATTR("autoSpawn",		[ATTR_PRIVATE ARG ATTR_SAVE]); // If true, it will be updating its own spawn state even if inactive
-	// <<< SAVEBREAK
 	/* save */	VARIABLE_ATTR("name", 			[ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	/* save */	VARIABLE_ATTR("AI", 			[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
@@ -78,6 +74,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// which would otherwise cause a lot of computations on each change
 				VARIABLE_ATTR("outdated", 		[ATTR_PRIVATE]);
 				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
+
+	// Helper object for proximity checks
+				VARIABLE("helperObject");
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -170,6 +169,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			T_CALLM1("postMethodAsync", "spawn");
 		};
 
+		// Init helper object
+		T_CALLM0("_initHelperObject");
+
 		GETSV("Garrison", "all") pushBack _thisObject;
 	ENDMETHOD;
 
@@ -214,6 +216,22 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain, true, true]; // !! Will be called unscheduled, start suspended
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
+	ENDMETHOD;
+
+	// Initializes helper object
+	// Must be called after AI init!
+	METHOD(_initHelperObject)
+		params [P_THISOBJECT];
+		pr _pos = T_CALLM0("getPos");
+		#ifndef _SQF_VM
+		pr _obj = createLocation ["vin_garrison", _pos, 0, 0];
+		#else
+		pr _obj = "vin_garrison" createVehicle _pos;
+		#endif
+		_obj setVariable ["garrison", _thisObject];
+		T_SETV("helperObject", _obj);
+
+		OOP_INFO_1("initHelperObject: %1", _obj);
 	ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -328,6 +346,11 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		OOP_INFO_0("DESTROY GARRISON");
 
 		__MUTEX_LOCK;
+
+		// Delete the helper object
+		#ifndef _SQF_VM
+		deleteLocation T_GETV("helperObject");
+		#endif
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 
@@ -545,7 +568,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			//OOP_INFO_0("  ACTIVE");
 
 			// If we are empty except for vehicles and we are not at a location then we must abandon them
-			if(T_GETV("side") != CIVILIAN and { T_GETV("location") == NULL_OBJECT } and { T_CALLM0("isOnlyEmptyVehicles") }) then {
+			if(T_GETV("side") != CIVILIAN and { T_GETV("location") == NULL_OBJECT } and {T_GETV("type") != GARRISON_TYPE_AMBIENT} and { T_CALLM0("isOnlyEmptyVehicles") }) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
 				pr _args = [_thisObject];
@@ -556,7 +579,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			// Players might be messing with inventories, so we must update our amount of build resources more often
 			pr _locHasPlayers = _loc != NULL_OBJECT && { CALLM0(_loc, "hasPlayers") };
 			//OOP_INFO_1("  hasPlayers: %1", _locHasPlayers);
-			if (T_GETV("outdated") || _locHasPlayers) then {
+			if ((T_GETV("outdated") || _locHasPlayers) && (T_GETV("type") != GARRISON_TYPE_AMBIENT)) then {
 				// Update build resources from the actual units
 				// It will cause an update broadcast by garrison server
 				T_CALLM0("updateBuildResources");
@@ -3633,6 +3656,33 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		[T_GETV("templateName")] call t_fnc_getTemplate
 	ENDMETHOD;
 
+	// Iterates all vehicles in this garrison
+	// Checks who's inside these vehicles, and if needed, transfers them to another garrison
+	public thread METHOD(updateVehicleOwnership)
+		params [P_THISOBJECT];
+
+		// Bail if not spawned or destroyed
+		if(!T_GETV("spawned") || {IS_GARRISON_DESTROYED(_thisObject)}) exitWith {0};
+
+		pr _thisSide = T_GETV("side");
+		pr _thisSideArray = [_thisSide];
+		pr _vehUnits = T_GETV("units") select { CALLM0(_x, "isVehicle") };
+		{
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			pr _sides = (crew _hO) apply {side group _x};
+			_sides = (_sides arrayIntersect _sides) - _thisSideArray;
+			if (count _sides > 0) then {
+				// We don't own this any more
+				OOP_INFO_1("Vehicle does not belong this garrison any more. Other sides: %1", _sides);
+
+				pr _sideDest = _sides#0;
+				pr _garDest = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _sideDest);
+				OOP_INFO_3("Moving unit %1 to garrison %2 of side %3", _x, _garDest, _sideDest);
+				CALLM1(_garDest, "captureUnit", _x);
+			};
+		} forEach _vehUnits;
+	ENDMETHOD;
+
 	// - - - - - STORAGE - - - - -
 	public override METHOD(preSerialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
@@ -3743,6 +3793,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			};
 			T_CALLM2("postMethodAsync", "spawn", [true]);
 		};
+
+		// Init helper object
+		T_CALLM0("_initHelperObject");
 
 		// Push to 'all' static variable
 		GETSV("Garrison", "all") pushBack _thisObject;
