@@ -84,6 +84,10 @@ CLASS("Civilian", "GOAP_Agent")
 		T_GETV("hO")
 	ENDMETHOD;
 
+	public METHOD(getGroup)
+		NULL_OBJECT;
+	ENDMETHOD;
+
 	STATIC_METHOD(getCivilianFromObjectHandle)
 		params [P_THISOBJECT, P_OBJECT("_hO")];
 

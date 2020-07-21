@@ -158,6 +158,9 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		pr _AI = NEW(_aiClass, [_thisObject]);
 		T_SETV("AI", _AI);
 
+		// Init helper object
+		T_CALLM0("_initHelperObject");
+
 		// Set position if it was specified
 		if (count _pos > 0) then {
 			T_CALLM2("postMethodAsync", "setPos", [_pos]);
@@ -168,9 +171,6 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		if(_immediateSpawn || !_autoSpawn) then {
 			T_CALLM1("postMethodAsync", "spawn");
 		};
-
-		// Init helper object
-		T_CALLM0("_initHelperObject");
 
 		GETSV("Garrison", "all") pushBack _thisObject;
 	ENDMETHOD;
