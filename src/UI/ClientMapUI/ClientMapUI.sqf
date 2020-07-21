@@ -2217,7 +2217,11 @@ CLASS("ClientMapUI", "")
 			true
 		} else {
 			// We want to be super sure that all is ok
-			!(_restoreGear isEqualTo [])
+			pr _restore = !(_restoreGear isEqualTo []);
+			if (_restore) then {
+				_respawnPos = ASLToAGL (_restoreGear#2);
+			};
+			_restore;
 		};
 
 		if(!_respawnOkay) exitWith {

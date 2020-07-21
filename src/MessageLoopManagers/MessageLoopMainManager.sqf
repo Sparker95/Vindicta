@@ -209,6 +209,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	public METHOD(EH_aceCargoLoaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
+		// Item can be of string type
+		if (_item isEqualType "") exitWith {};
+
 		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
 		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
 
@@ -233,6 +236,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	public METHOD(EH_aceCargoUnloaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
+
+		// Item can be of string type
+		if (_item isEqualType "") exitWith {};
 
 		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
 		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);

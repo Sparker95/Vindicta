@@ -9,7 +9,7 @@ Arguments are the same as in onPlayerRespawn.sqf.
 
 diag_log format ["------- onPlayerRespawnServer %1", _this];
 
-params	["_newUnit", "_oldUnit", "_playerSide", "_respawnPos"];
+params	[P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), P_SIDE("_playerSide"), P_ARRAY("_respawnPos")];
 
 // Re-evaluate spawn checks of city garrisons and city locations to accelerate the spawning of civilians
 // First, update the array of units which can spawn locations/garrisons
