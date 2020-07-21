@@ -28,7 +28,8 @@ class CfgPatches {
 #include "CfgModuleCategories.hpp"
 
 class CfgLocationTypes {
-    class vin_garrison {
+
+    class vin_helperLocation {
         name = "";
         drawStyle = "area";
         texture = "";
@@ -37,5 +38,11 @@ class CfgLocationTypes {
         textSize = 0;
         shadow = 0;
         font = "PuristaMedium";
+    };
+
+    class vin_garrison : vin_helperLocation {
+    };
+
+    class vin_location : vin_helperLocation {
     };
 };

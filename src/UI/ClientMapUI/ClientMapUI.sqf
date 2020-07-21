@@ -2348,7 +2348,7 @@ CLASS("ClientMapUI", "")
 	ENDMETHOD;
 
 
-	private METHOD(updateLocationMiniPanels)
+	METHOD(updateLocationMiniPanels)
 		params [P_THISOBJECT];
 
 		pr _allMapMarkers = CALLSM0("MapMarkerLocation", "getAll");
@@ -2446,7 +2446,7 @@ CLASS("ClientMapUI", "")
 		};
 	ENDMETHOD;
 
-	private STATIC_METHOD(createLocationMiniPanel)
+	STATIC_METHOD(createLocationMiniPanel)
 		params [P_THISCLASS, P_ARRAY("_rows")];
 
 		private _disp = finddisplay 12;

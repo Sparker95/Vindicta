@@ -78,6 +78,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				VARIABLE("playerRespawnPos");						// Position for player to respawn
 				VARIABLE("alarmDisabled");							// If the player disabled the alarm
+				VARIABLE("helperObject");
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -158,7 +159,25 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLM1(gGameMode, "registerLocation", _thisObject);
 		};
 
+		// Init helper object
+		T_CALLM0("_initHelperObject");
+
 		UPDATE_DEBUG_MARKER;
+	ENDMETHOD;
+
+	// Initializes helper object
+	METHOD(_initHelperObject)
+		params [P_THISOBJECT];
+		pr _pos = T_GETV("pos");
+		#ifndef _SQF_VM
+		pr _obj = createLocation ["vin_location", _pos, 0, 0];
+		#else
+		pr _obj = "vin_location" createVehicle _pos;
+		#endif
+		_obj setVariable ["location", _thisObject];
+		T_SETV("helperObject", _obj);
+
+		OOP_INFO_1("initHelperObject: %1", _obj);
 	ENDMETHOD;
 
 	// |                 S E T   D E B U G   N A M E
@@ -259,7 +278,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// hashmap to quickly mark those objects which have been processed
 		// We can't set variables on terrain objects
+		#ifndef _SQF_VM
 		private _processedObjects = [false] call CBA_fnc_createNamespace;
+		#else
+		private _processedObjects = "dummy" createVehicle [0,0,0];
+		#endif
 
 		ASP_SCOPE_START(scanFoundObjects);
 		{
@@ -358,7 +381,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} forEach (_nearObjects + _terrainObjects);
 		ASP_SCOPE_END(scanFoundObjects);
 
+		#ifndef _SQF_VM
 		deleteLocation _processedObjects;
+		#endif
 
 		T_CALLM0("findBuildables");
 	ENDMETHOD;
@@ -712,6 +737,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD(delete)
 		params [P_THISOBJECT];
+
+		// Delete the helper object
+		#ifndef _SQF_VM
+		deleteLocation T_GETV("helperObject");
+		#endif
 
 		// Remove the timer
 		private _timer = T_GETV("timer");
@@ -1449,6 +1479,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} else {
 			_a max _b
 		};
+
+		// Ensure bounding radius is within limit
+		if (_boundingRadius > LOCATION_BOUNDING_RADIUS_MAX) then {
+			OOP_ERROR_3("Bounding radius exceeds limit: %1 > %2, position: %3", _boundingRadius, LOCATION_BOUNDING_RADIUS_MAX, T_GETV("pos"));
+		};
+
 		T_SETV_PUBLIC("boundingRadius", _boundingRadius);
 		pr _border = [T_GETV("pos"), _a, _b, _dir, _isRectangle, -1]; // [center, a, b, angle, isRectangle, c]
 		T_SETV_PUBLIC("border", _border);
@@ -1706,9 +1742,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	public STATIC_METHOD(nearLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GETSV("Location", "all") select {
-			GETV(_x, "pos") distance2D _pos < _radius
-		}
+
+		(nearestLocations  [_pos, ["vin_location"], _radius]) apply {
+			GET_LOCATION_FROM_HELPER_OBJECT(_x);
+		};
 	ENDMETHOD;
 
 	/*
@@ -1721,9 +1758,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	public STATIC_METHOD(overlappingLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GETSV("Location", "all") select {
-			GETV(_x, "pos") distance2D _pos < _radius + GETV(_x, "boundingRadius")
-		}
+		pr _helpers = nearestLocations  [_pos, ["vin_location"], LOCATION_BOUNDING_RADIUS_MAX+_radius];
+		pr _nearLocations = _helpers apply { GET_LOCATION_FROM_HELPER_OBJECT(_x); };
+		_nearLocations select {
+			(GETV(_x, "pos") distance2D _pos) < (_radius + GETV(_x, "boundingRadius"));
+		};
 	ENDMETHOD;
 
 	// Runs "process" of locations within certain distance from the point
@@ -2040,6 +2079,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_PUBLIC_VAR("parent");
 		T_PUBLIC_VAR("respawnSides");
 		T_PUBLIC_VAR("playerRespawnPos");
+
+		// Init helper object
+		T_CALLM0("_initHelperObject");
 
 		//Push the new object into the array with all locations
 		GETSV("Location", "all") pushBackUnique _thisObject;

@@ -1,3 +1,4 @@
+#include "Location.hpp"
 #include "..\common.h"
 
 // Class: Location
@@ -20,7 +21,11 @@ Author: Sparker 08 June 2019
 
 params [P_THISCLASS, ["_pos", [], [objNull, []]], ["_locations", []]];
 
-pr _locsToCheck = if (count _locations > 0) then {_locations} else {GETSV("Location", "all")};
+pr _locsToCheck = if (count _locations > 0) then {_locations} else {
+	(nearestLocations  [_pos, ["vin_location"], LOCATION_BOUNDING_RADIUS_MAX]) apply {
+		GET_LOCATION_FROM_HELPER_OBJECT(_x);
+	};
+};
 
 _locsToCheck select {
 	_pos inArea GETV(_x, "border")

@@ -1,3 +1,4 @@
+#include "Location.hpp"
 #include "..\common.h"
 
 // Class: Location
@@ -18,7 +19,9 @@ Author: Sparker 2.11.2019
 
 params [P_THISCLASS, ["_pos", [], [objNull, []]]];
 
-pr _all = GETSV("Location", "all");
+pr _all = (nearestLocations  [_pos, ["vin_location"], LOCATION_BOUNDING_RADIUS_MAX]) apply {
+	GET_LOCATION_FROM_HELPER_OBJECT(_x);
+};
 
 pr _nearestLoc = _all select 0;
 pr _smallestDist = GETV(_nearestLoc, "pos") distance2D _pos;
