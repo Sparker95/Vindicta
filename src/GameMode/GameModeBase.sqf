@@ -1749,9 +1749,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_OBJECT("_player"), P_ARRAY("_arr"), P_BOOL("_positionAsWell")];
 
 		//_player setName _arr#1;
+		// Not this one is handled synchronously at the server:
+		/*
 		if(_positionAsWell) then {
 			_player setPosASL _arr#2;
 		};
+		*/
 
 		private _inventoryObj = ["new", _player] call OO_INVENTORY;
 		["setInventory", _arr#3] call _inventoryObj;

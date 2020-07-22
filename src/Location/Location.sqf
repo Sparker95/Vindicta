@@ -169,15 +169,28 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD(_initHelperObject)
 		params [P_THISOBJECT];
 		pr _pos = T_GETV("pos");
+		
+		pr _args = [_thisObject, _pos];
+		#ifndef _SQF_VM
+		REMOTE_EXEC_CALL_STATIC_METHOD("Location", "_initHelperObjectOnClient", _args, ON_ALL, _thisObject + "_initHelperObj");
+		#endif
+
+	ENDMETHOD;
+
+	// This is executed on JIP too
+	STATIC_METHOD(_initHelperObjectOnClient)
+		params [P_THISCLASS, P_OOP_OBJECT("_loc"), P_ARRAY("_pos")];
+
 		#ifndef _SQF_VM
 		pr _obj = createLocation ["vin_location", _pos, 0, 0];
 		#else
 		pr _obj = "vin_location" createVehicle _pos;
 		#endif
-		_obj setVariable ["location", _thisObject];
-		T_SETV("helperObject", _obj);
+		_obj setVariable ["location", _loc];
+		SETV(_loc, "helperObject", _obj);
 
 		OOP_INFO_1("initHelperObject: %1", _obj);
+
 	ENDMETHOD;
 
 	// |                 S E T   D E B U G   N A M E
