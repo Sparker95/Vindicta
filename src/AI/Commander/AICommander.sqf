@@ -2687,6 +2687,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		OOP_INFO_0("UPDATE EXTERNAL REINFORCEMENT");
 
+		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
+
 		// Pick an airfield we own
 		private _side = T_GETV("side");
 		private _model = T_GETV("worldModel");
@@ -2742,7 +2744,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Sum up efficiency of all garrisons and guess how many officers we want
-		private _effAll = +T_EFF_null;
+		private _effAll = CALLM0(_model, "getGlobalEff");
 
 		OOP_INFO_1("  All required eff: %1", _effRequiredAll);
 		OOP_INFO_1("  All current  eff: %1", _effAll);
@@ -2865,21 +2867,21 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Add air
-		{
-			_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
-			for "_i" from 0 to _nHelisRequired - 1 do {
-				private _type = T_VEH_heli_attack;
-				// selectRandomWeighted [
-				// 	T_VEH_heli_light,	1,
-				// 	T_VEH_heli_heavy,	1,
-				// 	T_VEH_heli_attack,	1
-				// ];
-				private _newGroup = CALLM2(_airGar, "postMethodAsync", "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
-				OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
-			};
-		} forEach _airReinfInfo;
-
-		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
+		if (_progressScaled > 0.3 && ([_t, T_VEH, T_VEH_heli_attack, 0] call t_fnc_isValid)) then {
+			{
+				_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
+				for "_i" from 0 to _nHelisRequired - 1 do {
+					private _type = T_VEH_heli_attack;
+					// selectRandomWeighted [
+					// 	T_VEH_heli_light,	1,
+					// 	T_VEH_heli_heavy,	1,
+					// 	T_VEH_heli_attack,	1
+					// ];
+					private _newGroup = CALLM2(_airGar, "postMethodAsync", "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+					OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
+				};
+			} forEach _airReinfInfo;
+		};
 
 		// Try to spawn more units at the selected locations
 		if (_infMoreRequired > 0) then {
@@ -2938,28 +2940,37 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		} forEach _reinfInfo;
 
 		private _fn_spawnNUnits = {
-			params ["_cat", "_subcat", "_desired", "_t", "_unitDebugName"];
-			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
-			private _nRequired = _desired - CALLM1(_garrison, "countUnits", [[_cat ARG _subcat]]);
+			params ["_cat", "_subcat", "_desired", "_t", "_unitDebugName", "_reinfInfoThis"];
+			if ([_t, T_VEH, _subcat, 0] call t_fnc_isValid) then {
+				_reinfInfoThis params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
+				private _nRequired = _desired - CALLM1(_garrison, "countUnits", [[_cat ARG _subcat]]);
 
-			OOP_INFO_3("  Adding %1 %2 at %3", _nRequired, _unitDebugName, _name);
-			while { _nRequired > 0 } do {
-				private _args = [_t, _cat, _subcat, -1];
-				private _vehUnit = NEW("Unit", _args);
+				OOP_INFO_3("  Adding %1 %2 at %3", _nRequired, _unitDebugName, _name);
+				while { _nRequired > 0 } do {
+					private _args = [_t, _cat, _subcat, -1];
+					private _vehUnit = NEW("Unit", _args);
 
-				CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
-				_nRequired = _nRequired - 1;
+					CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
+					_nRequired = _nRequired - 1;
+				};
 			};
 		};
 
-		// Spawn in more supply trucks
-		{
-			[T_VEH, T_VEH_truck_ammo, 2, _t, "supply trucks"] call _fn_spawnNUnits;
-		} forEach _reinfInfo;
+		// Create some utility vehicles
+		pr _utilitySpec = [];
+		#define __ADD_UTIL_SPEC_SAFE(array, amount, subcat, name) if ([_t, T_VEH, subcat, 0] call t_fnc_isValid) then { \
+			array pushback [amount, subcat, name]; \
+		}
+		__ADD_UTIL_SPEC_SAFE(_utilitySpec, 2, T_VEH_truck_ammo, "supply trucks");
+		//__ADD_UTIL_SPEC_SAFE(_utilitySpec, 3, T_VEH_truck_inf, "infantry trucks");
+		__ADD_UTIL_SPEC_SAFE(_utilitySpec, 2, T_VEH_car_unarmed, "unarmed cars");
 
-		// Spawn in more inf trucks
 		{
-			[T_VEH, T_VEH_truck_inf, 3, _t, "inf trucks"] call _fn_spawnNUnits;
+			pr _reinfInfo0 = _x;
+			{
+				_x params ["_amount", "_subcatID", "_name"];
+				[T_VEH, _subcatID, _amount, _t, _name, _reinfInfo0] call _fn_spawnNUnits;
+			} forEach _utilitySpec;
 		} forEach _reinfInfo;
 
 		// Spawn in more vehicles
@@ -2985,16 +2996,22 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// ];
 
 		private _vehRatios = [
-			[T_VEH_truck_inf, 	2],
+			[T_VEH_truck_inf, 	0.2],
+			[T_VEH_car_armed, 	0.05],
 			//T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
 			//T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3))
-			[T_VEH_MRAP_HMG, 	1],
-			[T_VEH_MRAP_GMG, 	0.25 max (1 * (_progressScaled ^ 1)) min 1],
+			[T_VEH_MRAP_HMG, 	0.1],
+			[T_VEH_MRAP_GMG, 	0.1 max (0.3 * (_progressScaled ^ 0.8)) min 1],
 			[T_VEH_APC, 		0 max (2 * (_progressScaled ^ 2))],
 			[T_VEH_IFV, 		0 max (3 * (_progressScaled ^ 3))],
-			[T_VEH_MBT, 		0 max (5 * (_progressScaled ^ 5))]
+			[T_VEH_MBT, 		0 max (4 * (_progressScaled ^ 4))]
 		];
-		private _vehThatNeedGroups = [T_VEH_APC, T_VEH_IFV, T_VEH_MBT];
+		// Select only those which are present in template
+		_vehRatios = _vehRatios select {
+			pr _subcatid = _x#0;
+			[_t, T_VEH, _subcatid, 0] call t_fnc_isValid;
+		};
+		private _vehThatNeedGroups = [T_VEH_APC, T_VEH_IFV, T_VEH_MBT, T_VEH_car_armed];
 
 		private _ratioSum = 0;
 		{ _ratioSum = _ratioSum + _x#1 } forEach _vehRatios;
