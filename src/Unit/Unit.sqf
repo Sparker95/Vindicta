@@ -1299,6 +1299,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 							_x params ["_className", "_itemCount"];
 							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 						} forEach t_ACEMedicalItems_cargo;
+					} else {
+						// Add standard medkits
+						_hO addItemCargoGlobal ["FirstAidKit", 80];
 					};
 
 					// Add ACE misc items
@@ -1343,6 +1346,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 							_x params ["_className", "_itemCount"];
 							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 						} forEach t_ACEMedicalItems_vehicles;
+					} else {
+						// Add standard medkits
+						_hO addItemCargoGlobal ["FirstAidKit", 20];
 					};
 					// = = = =
 				};

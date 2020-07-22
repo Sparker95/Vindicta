@@ -149,6 +149,24 @@ CLASS("GameManager", "MessageReceiverEx")
 		if(IS_SERVER) then {
 			T_CALLM0("autoLoad");
 		};
+
+		// Init standard BI revive if ACE medical is disabled
+		if (IS_MULTIPLAYER) then {
+			if (! (isClass (configfile >> "CfgPatches" >> "ace_medical"))) then {
+				diag_log "[Vindicta] Ace medican system is disabled, initializing standard Arma revive system";
+				[1] call BIS_fnc_paramReviveMode; // Enabled
+				[10]  call BIS_fnc_paramReviveDuration;
+				[0] call BIS_fnc_paramReviveRequiredTrait; // 0 - no trait required
+				[1.5] call BIS_fnc_paramReviveMedicSpeedMultiplier;
+				[2] call BIS_fnc_paramReviveRequiredItems; // 2 - medkit or FAK
+				[0] call BIS_fnc_paramReviveUnconsciousStateMode;
+				[200] call BIS_fnc_paramReviveBleedOutDuration;
+				[3] call BIS_fnc_paramReviveForceRespawnDuration;
+
+				// Initialize BIS revive
+				call BIS_fnc_reviveInit;
+			};
+		};
 	ENDMETHOD;
 	
 	// - - - - - Getters for game state - - - - -
