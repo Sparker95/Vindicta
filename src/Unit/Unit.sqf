@@ -434,16 +434,17 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						// Set unit skill
 						// Aiming and precision
-						_objectHandle setSkill ["aimingAccuracy", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingAccuracy * vin_aiskill_global, 1)];
-						_objectHandle setSkill ["aimingShake", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingShake * vin_aiskill_global, 1)];
-						_objectHandle setSkill ["aimingSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_aimingSpeed * vin_aiskill_global, 1)];
-						// Everything else
-						_objectHandle setSkill ["commanding", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
-						_objectHandle setSkill ["courage", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
-						_objectHandle setSkill ["general", 			MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
-						_objectHandle setSkill ["reloadSpeed", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, 0.5, 1)];
-						_objectHandle setSkill ["spotDistance", 	MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotDistance * vin_aiskill_global, 1)];
-						_objectHandle setSkill ["spotTime", 		MAP_LINEAR_SET_POINT(_diffModifer, 0, vin_aiskill_spotTime * vin_aiskill_global, 1)];
+
+						_objectHandle setSkill ["aimingAccuracy", vin_aiskill_aimingAccuracy];	// Aiming and precision
+						_objectHandle setSkill ["aimingShake", vin_aiskill_aimingShake];
+						_objectHandle setSkill ["aimingSpeed", vin_aiskill_aimingSpeed];
+						_objectHandle setSkill ["commanding", 1];		// Everything else
+						_objectHandle setSkill ["courage", 0.5];
+						//_objectHandle setSkill ["endurance", 0.8];
+						_objectHandle setSkill ["general", 1];
+						_objectHandle setSkill ["reloadSpeed", 0.5];
+						_objectHandle setSkill ["spotDistance", vin_aiskill_spotDistance];
+						_objectHandle setSkill ["spotTime", vin_aiskill_spotTime];
 
 						private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
 						switch _subcatID do {
