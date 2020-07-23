@@ -17,7 +17,7 @@ _array set [T_REQUIRED_ADDONS, [
 								"rhsgref_c_troops"]];
 
 //==== Infantry ====
-_inf = +(tDefault select T_INF);
+_inf = []; _inf resize T_INF_SIZE;
 _inf set [T_INF_SIZE-1, nil];
 _inf set [T_INF_default, ["B_GEN_Commander_F"]];
 
@@ -60,7 +60,7 @@ _inf set [T_INF_recon_JTAC, ["RHS_HIDF_recon_JTAC"]];
 //_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["rhsgref_hidf_m1025"]];
 
@@ -115,7 +115,7 @@ _veh set [T_VEH_truck_fuel, ["rhsusf_M978A4_usarmy_wd"]];
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 //_drone set [T_DRONE_SIZE-1, nil];
 //_drone set [T_DRONE_DEFAULT, ["I_UGV_01_F"]];
 //_drone set [T_DRONE_UGV_unarmed, ["I_UGV_01_F"]];

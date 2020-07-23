@@ -27,14 +27,14 @@ _inf set [T_INF_officer, ["UK3CB_TKP_B_RIF_2", "UK3CB_TKP_B_RIF_1", "UK3CB_TKP_B
 
 
 
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["UK3CB_TKP_B_Datsun_Pickup"]]; 
 
 _veh set [T_VEH_car_unarmed, ["UK3CB_TKP_B_Datsun_Pickup", "UK3CB_TKP_B_Hilux_Closed", "UK3CB_TKP_B_Datsun_Pickup", "UK3CB_TKP_B_Lada_Police", "UK3CB_TKP_B_LandRover_Closed", "UK3CB_TKP_B_LandRover_Open", "UK3CB_TKP_B_Offroad", "UK3CB_TKP_B_UAZ_Closed", "UK3CB_TKP_B_UAZ_Open"]]; // = 1 – REQUIRED
 
 
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 
 
 _cargo = +(tDefault select T_CARGO);

@@ -54,7 +54,7 @@ _inf set [T_INF_recon_marksman, ["GM_WG_SF_Marksman"]]; // = 29
 _inf set [T_INF_recon_JTAC, ["GM_WG_SF_Signaller"]]; // = 30
 
 /* Vehicle classes */
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["gm_ge_army_typ1200_cargo"]]; // = 0 Default if nothing found
 
@@ -80,7 +80,7 @@ _veh set [T_VEH_truck_fuel, ["gm_ge_army_kat1_451_refuel"]]; // = 37
 
 
 /* Drone classes */
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 
 /* Cargo classes */
 _cargo = +(tDefault select T_CARGO);

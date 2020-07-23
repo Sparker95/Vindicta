@@ -30,12 +30,12 @@ _inf set [T_INF_TL, ["WW2_Sov_police_medic", "WW2_Sov_police_rifleman", "WW2_Sov
 _inf set [T_INF_officer, ["WW2_Sov_police_officer", "WW2_Sov_police_medic", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman", "WW2_Sov_police_rifleman_2", "WW2_Sov_police_rifleman_3", "WW2_Sov_police_rifleman_3", "WW2_Sov_police_rifleman_3"]];
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["LIB_GazM1_SOV"]];
 _veh set [T_VEH_car_unarmed, ["LIB_GazM1_SOV", "LIB_GazM1_SOV_camo_sand", "LIB_Willys_MB", "LIB_Willys_MB_Hood"]];
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 
 //==== Cargo ====

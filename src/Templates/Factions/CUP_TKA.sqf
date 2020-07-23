@@ -67,7 +67,7 @@ _inf set [T_INF_recon_JTAC, ["CUP_O_TK_SpecOps"]];
 
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["CUP_O_LR_MG_TKM"]];
 
@@ -121,7 +121,7 @@ _veh set [T_VEH_truck_fuel, ["CUP_O_Ural_Refuel_TKA"]];
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 _drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 

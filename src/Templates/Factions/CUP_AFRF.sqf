@@ -57,7 +57,7 @@ _inf set [T_INF_recon_marksman, ["CUP_O_RUS_Soldier_Marksman"]]; // = 29
 _inf set [T_INF_recon_JTAC, ["CUP_O_RUS_SpecOps_Scout","CUP_O_RUS_SpecOps","CUP_O_RUS_Soldier_GL"]]; // = 30
 
 /* Vehicle classes */
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["CUP_O_UAZ_Unarmed_RU"]]; // = 0 Default if nothing found
 _veh set [T_VEH_car_unarmed, ["CUP_O_UAZ_Unarmed_RU","CUP_O_UAZ_Open_RU","CUP_O_UAZ_AMB_RU"]]; // = 1 – REQUIRED
@@ -93,7 +93,7 @@ _veh set [T_VEH_truck_medical , ["CUP_O_GAZ_Vodnik_MedEvac_RU"]]; // = 36
 _veh set [T_VEH_truck_fuel, ["CUP_O_Kamaz_Refuel_RU","CUP_O_Ural_Refuel_RU"]]; // = 37
 
 /* Drone classes */
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["CUP_O_Pchela1T_RU"]];
 

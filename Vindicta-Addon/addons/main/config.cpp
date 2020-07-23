@@ -46,3 +46,12 @@ class CfgLocationTypes {
     class vin_location : vin_helperLocation {
     };
 };
+
+// External faction addons add entries here
+class VinExternalFactions {
+    class VinExternalFactionBase {
+        loadoutsInitFile = "";  // "" if loadouts are not used
+        file = "";              // Must contain valid bath, otherwise it is ignored
+        version = -1;           // Must be overriden with a valid version
+    };
+};

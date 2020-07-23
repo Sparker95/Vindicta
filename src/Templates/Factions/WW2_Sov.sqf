@@ -21,7 +21,7 @@ _array set [T_REQUIRED_ADDONS, [
 		]]; 																	//Addons required to play this template
 
 //==== Infantry ====
-_inf = +(tDefault select T_INF);
+_inf = []; _inf resize T_INF_SIZE;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_default, ["LIB_SOV_rifleman"]];				//Default infantry if nothing is found
 
@@ -64,7 +64,7 @@ _inf set [T_INF_recon_JTAC, ["WW2_Sov_recon_JTAC"]];
 //_inf set [T_INF_diver_exp, [""]];
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["LIB_GazM1_SOV"]];
 
@@ -118,7 +118,7 @@ _veh set [T_VEH_truck_fuel, ["LIB_ZiS5v_Fuel"]];
 _veh set [T_VEH_submarine, ["sab_boat_u7_i"]];
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 
 //==== Cargo ====
