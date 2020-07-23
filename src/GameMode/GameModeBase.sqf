@@ -268,7 +268,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Suspend/resume the game on dedicated
 		#ifndef _SQF_VM
 		if(IS_DEDICATED) then {
-			if(vin_server_suspendWhenEmpty && count HUMAN_PLAYERS == 0) then {
+			if(	vin_server_suspendWhenEmpty &&
+				count HUMAN_PLAYERS == 0 &&
+				canSuspend						// Make sure it's never called during init
+				) then {
 				T_CALLM1("suspend", "Game suspended while no players connected");
 				// Wait for a player to connect again. Saving on empty server is delayed 5 minutes from when the 
 				// last player disconnected to avoid churning.
