@@ -64,7 +64,7 @@ _inf set [T_INF_diver_exp, ["O_diver_exp_F"]]; // = 33
 
 
 /* Vehicle classes */
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["O_MRAP_02_F"]]; // = 0 Default if nothing found
 
@@ -109,7 +109,7 @@ _veh set [T_VEH_submarine, ["O_SDV_01_F"]]; // = 38
 
 
 /* Drone classes */
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["O_UAV_01_F"]];
 

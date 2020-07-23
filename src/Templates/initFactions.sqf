@@ -1,66 +1,96 @@
 // !! Currently only called on server !!
 // Initialize factions
 // This variable is necessary for other factions to initialize!
-["Templates\Factions\default.sqf", 				T_FACTION_None		]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\default.sqf"]	call t_fnc_initializeTemplateFromFile;
 
 // !! Factions will be listed in UI in the same order as here !!
 
+//todo: It's not needed to pass faction type any more
+
+// Initialize factions from addons
+#ifdef _SQF_VM
+private _classes = [];
+#else
+private _classes = "isClass _x" configClasses (configFile >> "VinExternalFactions");
+#endif
+{
+    private _initFile = getText (_x >> "file");
+    if (_initFile != "") then {
+        diag_log format ["[Template] Initializing faction from addon: %1, path: %2", configName _x, _initFile];
+        [_initFile, true]	call t_fnc_initializeTemplateFromFile;
+    };
+} forEach _classes;
+
+
 // Military factions
-["Templates\Factions\AAF.sqf", 							T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\LDF.sqf", 							T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\NATO.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\CSAT.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_AAF_2020.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_AAF_2010.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_LDF.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_LAF.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_HIDF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_AFRF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_USAF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_CDF.sqf",						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\CUP_TKA.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\CUP_AFRF.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\CUP_USMC.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_Heer.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_Sov.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_UK.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_BAF.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_TNA_B.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_TNA_O.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\Russians2035.sqf", 				T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\DAF_Tan.sqf", 						T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\BWA.sqf", 							T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GM_WestGer.sqf", 					T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_BWMOD_BW_Fleck.sqf", 			T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_BWMOD_BW_Trop.sqf", 			T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf",	T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf",		T_FACTION_Military	]	call t_fnc_initializeTemplateFromFile;
+{
+    [_x] call t_fnc_initializeTemplateFromFile;
+} forEach [
+    "Templates\Factions\AAF.sqf",
+    "Templates\Factions\LDF.sqf",
+    "Templates\Factions\NATO.sqf", 	
+    "Templates\Factions\CSAT.sqf", 	
+    "Templates\Factions\RHS_AAF_2020.sqf",
+    "Templates\Factions\RHS_AAF_2010.sqf",
+    "Templates\Factions\RHS_LDF.sqf",
+    "Templates\Factions\RHS_LAF.sqf", 	
+    "Templates\Factions\RHS_HIDF.sqf", 
+    "Templates\Factions\RHS_AFRF.sqf", 
+    "Templates\Factions\RHS_USAF.sqf", 
+    "Templates\Factions\RHS_CDF.sqf",	
+    "Templates\Factions\CUP_TKA.sqf", 	
+    "Templates\Factions\CUP_AFRF.sqf", 
+    "Templates\Factions\CUP_USMC.sqf", 
+    "Templates\Factions\WW2_Heer.sqf", 
+    "Templates\Factions\WW2_Sov.sqf", 					
+    "Templates\Factions\WW2_UK.sqf", 					
+    "Templates\Factions\3CB_BAF.sqf", 					
+    "Templates\Factions\3CB_TNA_B.sqf", 				
+    "Templates\Factions\3CB_TNA_O.sqf", 				
+    "Templates\Factions\Russians2035.sqf", 			
+    "Templates\Factions\DAF_Tan.sqf", 					
+    "Templates\Factions\BWA.sqf",		
+    "Templates\Factions\GM_WestGer.sqf",
+    "Templates\Factions\RHS_BWMOD_BW_Fleck.sqf",
+    "Templates\Factions\RHS_BWMOD_BW_Trop.sqf",
+    "Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf",
+    "Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf"
+];
+
 
 // Other factions
-["Templates\Factions\CIVILIAN.sqf", 					T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_CIVILIAN.sqf", 				T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GM_CIVILIAN.sqf", 					T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\CUP_RUS_CIVILIAN.sqf", 			T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\CUP_TKA_CIVILIAN.sqf", 			T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_CCIVS.sqf", 					T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_TCIV.sqf", 					T_FACTION_Civ		]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GUERRILLA.sqf", 					T_FACTION_Guer		]	call t_fnc_initializeTemplateFromFile;
+{
+    [_x] call t_fnc_initializeTemplateFromFile;
+} forEach [
+    "Templates\Factions\CIVILIAN.sqf", 
+    "Templates\Factions\WW2_CIVILIAN.sqf",
+    "Templates\Factions\GM_CIVILIAN.sqf", 
+    "Templates\Factions\CUP_RUS_CIVILIAN.sqf",
+    "Templates\Factions\CUP_TKA_CIVILIAN.sqf",
+    "Templates\Factions\3CB_CCIVS.sqf",
+    "Templates\Factions\3CB_TCIV.sqf",
+    "Templates\Factions\GUERRILLA.sqf"
+];
 
 // Police factions
-["Templates\Factions\POLICE.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_AAF_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_LDF_ranger.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_APD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\CUP_RUS_Police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_Heer_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_Sov_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\WW2_UK_police.sqf", 				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GSG9.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GM_WestGer_Police.sqf", 			T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GEXP_Police.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_TPD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_TPD_O.sqf", 					T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\3CB_CPD.sqf", 						T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\Expansion_Police.sqf",				T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\DSI.sqf", 							T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\AT.sqf", 							T_FACTION_Police	]	call t_fnc_initializeTemplateFromFile;
+{
+    [_x] call t_fnc_initializeTemplateFromFile;
+} forEach [
+    "Templates\Factions\POLICE.sqf",
+    "Templates\Factions\RHS_AAF_police.sqf",
+    "Templates\Factions\RHS_LDF_ranger.sqf",
+    "Templates\Factions\RHS_APD.sqf",
+    "Templates\Factions\CUP_RUS_Police.sqf",
+    "Templates\Factions\WW2_Heer_police.sqf",
+    "Templates\Factions\WW2_Sov_police.sqf",
+    "Templates\Factions\WW2_UK_police.sqf",
+    "Templates\Factions\GSG9.sqf",
+    "Templates\Factions\GM_WestGer_Police.sqf",
+    "Templates\Factions\GEXP_Police.sqf",
+    "Templates\Factions\3CB_TPD.sqf",
+    "Templates\Factions\3CB_TPD_O.sqf",
+    "Templates\Factions\3CB_CPD.sqf",
+    "Templates\Factions\Expansion_Police.sqf",
+    "Templates\Factions\DSI.sqf",
+    "Templates\Factions\AT.sqf"
+];

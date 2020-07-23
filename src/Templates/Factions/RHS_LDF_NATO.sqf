@@ -19,7 +19,7 @@ _array set [T_REQUIRED_ADDONS, [
 								]];
 
 //==== Infantry ====
-_inf = +(tDefault select T_INF);
+_inf = []; _inf resize T_INF_SIZE;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_default, ["I_E_Soldier_F"]];
 
@@ -119,7 +119,7 @@ _veh set [T_VEH_truck_fuel, ["rhsgref_cdf_ural_fuel"]];
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 //_drone set [T_DRONE_SIZE-1, nil];
 //_drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 //_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];

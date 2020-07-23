@@ -693,7 +693,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _garrisons = [];
 		if(_locationType in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) then {
 			private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
-			private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]) min 10;
+			private _cVehGround = switch (_locationType) do {
+				case LOCATION_TYPE_AIRPORT: {15};
+				case LOCATION_TYPE_BASE: {10};
+				case LOCATION_TYPE_OUTPOST: {5};
+				default {5;};
+			};
 			private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 			private _cCargoBoxes = 2;
 			private _args = [_locationType, _side, _cInf, _cVehGround, _cHMGGMG, _cCargoBoxes, 80];
@@ -1328,11 +1333,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach _roadblockPositionsFinal;
 	ENDMETHOD;
 	
-	#define ADD_TRUCKS
-	#define ADD_UNARMED_MRAPS
+	#define ADD_TRANSPORT
 	#define ADD_HELIS
 	//#define ADD_ARMED_MRAPS
-	//#define ADD_ARMOR
+	//#define ADD_ARMED_VEHICLES
 	#define ADD_STATICS
 	METHOD(createMilitaryGarrison)
 		params [P_THISOBJECT, P_STRING("_locationType"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cCargoBoxes"), P_NUMBER("_buildResources")];
@@ -1375,17 +1379,38 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				];
 		};
 
-		private _vehGroupSpec = [
-			//|Chance to spawn
-			//|      |Min veh of this type
-			//|      |    |Max veh of this type
-			//|      |    |            |Veh type                          
-			[  0.5,   0,  3,           T_VEH_MRAP_HMG],
-			[  0.5,   0,  3,           T_VEH_MRAP_GMG],
-			[  0.3,   0,  2,           T_VEH_APC],
-			[  0.3,   0,  2,           T_VEH_IFV],
-			[  0.1,   0,  1,           T_VEH_MBT]
-		];
+		#define __ADD_VEH_SPEC_SAFE(array, chance, nmin, nmax, subcat) if ([_template, T_VEH, subcat, 0] call t_fnc_isValid) then { \
+			array pushBack [chance, nmin, nmax, subcat]; \
+		}
+
+		// Armored&armed vehicles
+		private _armorGroupSpec = [];
+		// Chance to spawn, min veh of this type, max veh of this type
+
+											//|Chance to spawn
+											//|     |Min veh of this type
+											//|     |   |Max veh of this type
+											//|     |   |   |Veh type   
+		__ADD_VEH_SPEC_SAFE(_armorGroupSpec,  0.5,	0,  3,	T_VEH_MRAP_HMG);
+		__ADD_VEH_SPEC_SAFE(_armorGroupSpec,  0.5,	0,  3,	T_VEH_MRAP_GMG);
+		__ADD_VEH_SPEC_SAFE(_armorGroupSpec,  0.3,	0,  2,	T_VEH_APC);
+		__ADD_VEH_SPEC_SAFE(_armorGroupSpec,  0.3,	0,  2,	T_VEH_IFV);
+		__ADD_VEH_SPEC_SAFE(_armorGroupSpec,  0.1,	0,  1,	T_VEH_MBT);
+		__ADD_VEH_SPEC_SAFE(_armorGroupSpec,  0.8,	1,  2,	T_VEH_car_armed);
+
+
+		#define __ADD_TRANSPORT_SPEC_SAFE(array, ratio, nmax, subcat) if ([_template, T_VEH, subcat, 0] call t_fnc_isValid) then { \
+			array pushback [ratio, nmax, subcat]; \
+		}
+
+		// Ground transport
+		private _transportSpec = [];
+		//												ratio,	nmax, type
+		__ADD_TRANSPORT_SPEC_SAFE(_transportSpec,		1.0,	5, T_VEH_truck_inf);
+		__ADD_TRANSPORT_SPEC_SAFE(_transportSpec,		0.5,	2, T_VEH_MRAP_unarmed);
+		__ADD_TRANSPORT_SPEC_SAFE(_transportSpec,		0.7,	3, T_VEH_car_unarmed);
+
+		////////////////////////////////////////////////
 
 		{
 			_x params ["_min", "_max", "_groupTemplate", "_groupBehaviour"];
@@ -1400,50 +1425,29 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach _infSpec;
 
 		// Add default vehicles
-		// Some trucks
-		private _i = 0;
-		#ifdef ADD_TRUCKS
-		while {_cVehGround > 0 && _i < 4} do {
-			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
-			if (CALLM0(_newUnit, "isValid")) then {
+
+		// Transport vehicles - added without group!
+		#ifdef ADD_TRANSPORT
+		pr _weightTotal = 0;
+		{ _weightTotal = _weightTotal + (_x#0);	} forEach _transportSpec;
+		{
+			_x params ["_ratio", "_nmax", "_subcatid"];
+			pr _amount = ceil random (_cVehGround*_ratio/_weightTotal);
+			while {_amount > 0} do {
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG _subcatid ARG -1 ARG ""]);
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
 				} else {
 					CALLM(_gar, "addUnit", [_newUnit]);
 				};
-				OOP_INFO_MSG("%1: Added truck %2", [_gar ARG _newUnit]);
-				_cVehGround = _cVehGround - 1;
-			} else {
-				DELETE(_newUnit);
+				_amount = _amount - 1;
 			};
-			_i = _i + 1;
-		};
+		} forEach _transportSpec;
 		#endif
 		FIX_LINE_NUMBERS()
 
-		// Unarmed MRAPs
-		private _i = 0;
-		#ifdef ADD_UNARMED_MRAPS
-		while {_cVehGround > 0 && _i < 1} do  {
-			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_MRAP_unarmed ARG -1 ARG ""]);
-			if (CALLM0(_newUnit, "isValid")) then {
-				if(canSuspend) then {
-					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
-				} else {
-					CALLM(_gar, "addUnit", [_newUnit]);
-				};
-				OOP_INFO_MSG("%1: Added unarmed mrap %2", [_gar ARG _newUnit]);
-				_cVehGround = _cVehGround - 1;
-			} else {
-				DELETE(_newUnit);
-			};
-			_i = _i + 1;
-		};
-		#endif
-		FIX_LINE_NUMBERS()
-
-		// APCs, IFVs, tanks, MRAPs
-		#ifdef ADD_ARMOR
+		// Armed and armored vehicles - added with group
+		#ifdef ADD_ARMED_VEHICLES
 		{
 			_x params ["_chance", "_min", "_max", "_type"];
 			if(random 1 <= _chance) then {
@@ -1455,18 +1459,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					_i = _i + 1;
 				};
 			};
-		} forEach _vehGroupSpec;
+		} forEach _armorGroupSpec;
 		#endif
 		FIX_LINE_NUMBERS()
 
 		// Static weapons
 		if (_cHMGGMG > 0) then {
 			// Cap of amount of static guns
-			_cHMGGMG = CLAMP(_cHMGGMG, 0, 6);
+			_cHMGGMG = CLAMP(_cHMGGMG, 0, 4);
 
 			private _staticGroup = NEW("Group", [_side ARG GROUP_TYPE_STATIC]);
 			private _tGMG = _template # T_VEH # T_VEH_stat_GMG_high;
-			if !(isNil "_tGMG") then {
+			if ([_template, T_VEH, T_VEH_stat_GMG_high, 0] call t_fnc_isValid) then {
 				private _gmgs = 0;
 				while {_cHMGGMG > 3 && _gmgs < 2} do {
 					private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_stat_GMG_high ARG -1 ARG _staticGroup]);
@@ -1475,10 +1479,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					_gmgs = _gmgs + 1;
 				}
 			};
-			while {_cHMGGMG > 0} do {
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_stat_HMG_high ARG -1 ARG _staticGroup]);
-				CALLM1(_newUnit, "createDefaultCrew", _template);
-				_cHMGGMG = _cHMGGMG - 1;
+			if ([_template, T_VEH, T_VEH_stat_HMG_high, 0] call t_fnc_isValid) then {
+				while {_cHMGGMG > 0} do {
+					private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_stat_HMG_high ARG -1 ARG _staticGroup]);
+					CALLM1(_newUnit, "createDefaultCrew", _template);
+					_cHMGGMG = _cHMGGMG - 1;
+				};
 			};
 			OOP_INFO_MSG("%1: Added static group %2", [_gar ARG _staticGroup]);
 			if(canSuspend) then {

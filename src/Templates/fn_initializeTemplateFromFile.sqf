@@ -9,10 +9,14 @@
 #define IS_SERVER isServer
 #endif
 
-params [["_filePath", "", [""]], "_factionType"];
+params [["_filePath", "", [""]], ["_absPath", false]];
 
 // Call compile the file as usual...
-_t = CALL_COMPILE_COMMON(_filePath);
+_t = if (_absPath) then {
+	call compile preprocessFileLineNumbers _filePath;
+} else {
+	CALL_COMPILE_COMMON(_filePath);
+};
 
 // Set mission namespace variable
 private _tName = _t select T_NAME;
@@ -32,6 +36,12 @@ if (isNil "_tDescription") exitWith {
 private _tDisplayName = _t select T_DISPLAY_NAME;
 if (isNil "_tDisplayName") exitWith {
 	diag_log format ["[Template] error: template display name was not specified for %1", _filePath];
+};
+
+// Check if faction type is provided
+private _factionType = _t select T_FACTION;
+if (isNil "_factionType") exitWith {
+	diag_log format ["[Template] error: template faction type was not specified for %1", _filePath];
 };
 
 // Iterate all required addons, check if they are loaded

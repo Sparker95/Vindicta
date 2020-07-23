@@ -14,7 +14,7 @@ if (isNil "_code") exitWith {
 };
 
 if (_code isEqualType "") then {
-	_code = COMPILE_COMMON(("Templates\Loadouts\" + _code));
+	_code = compile preprocessFileLineNumbers _code;
 	// Replace the scring in the hasm map with compiled code
 	t_loadouts_hashmap setVariable [_tag, _code];
 };
@@ -25,4 +25,4 @@ isNil { // Make it atomic
 	call _code;
 	this = _oldThis;
 };
-true
+true;

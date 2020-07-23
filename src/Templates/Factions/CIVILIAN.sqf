@@ -155,7 +155,7 @@ _inf set [T_INF_survivor, [
 ]];
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, [
     "C_Hatchback_01_sport_F",   5,

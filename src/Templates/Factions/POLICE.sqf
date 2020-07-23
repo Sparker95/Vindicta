@@ -47,12 +47,12 @@ _inf set [T_INF_TL, ["Arma3_police_1", "Arma3_police_2", "Arma3_police_3", "Arma
 _inf set [T_INF_officer, ["Arma3_police_officer", "Arma3_police_1", "Arma3_police_2", "Arma3_police_3", "Arma3_police_4", "Arma3_police_5", "Arma3_police_6", "Arma3_police_7", "Arma3_police_8", "Arma3_police_9", "Arma3_police_10", "Arma3_police_5", "Arma3_police_6", "Arma3_police_7", "Arma3_police_8", "Arma3_police_9", "Arma3_police_10"]];
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["B_GEN_Offroad_01_gen_F"]];
 _veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F", "B_GEN_Offroad_01_comms_F", "B_GEN_Offroad_01_covered_F", "B_GEN_Van_02_transport_F"]]; // , "B_GEN_Van_02_vehicle_F" -- not enough seats in this
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 
 //==== Cargo ====
