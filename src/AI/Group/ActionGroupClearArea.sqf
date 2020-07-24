@@ -73,7 +73,9 @@ CLASS("ActionGroupClearArea", "ActionGroup")
 
 		// A random bunch of waypoints to get them to move around a bit
 		for "_i" from 0 to 10 do {
-			private _rpos = [[[_pos, _radius]], [], {_isAir || !surfaceIsWater _this}] call BIS_fnc_randomPos;
+			private _radius0 = _radius;
+			if (_i == 0) then {	_radius0 = 35; };
+			private _rpos = [[[_pos, _radius0]], [], {_isAir || !surfaceIsWater _this}] call BIS_fnc_randomPos;
 			// BIS_fnc_randomPos returns [0,0] if it couldn't find anywhere, so we ignore these points
 			if(count _rpos == 3) then {
 				private _wp = _hG addWaypoint [AGLToASL _rpos, -1];
