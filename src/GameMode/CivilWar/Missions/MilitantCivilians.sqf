@@ -488,7 +488,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		private _radius = GETV(_city, "boundingRadius");
 
 		private _cityData = GETV(_city, "gameModeData");
-		private _instability = GETV(_cityData, "instability");
+		private _instability = GETV(_cityData, "influence");
 
 		// Refresh intel if stale
 		if(GAME_TIME > T_GETV("nextIntelUpdate")) then
@@ -567,7 +567,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 
 		private _radius = GETV(_city, "boundingRadius");
 		private _cityData = GETV(_city, "gameModeData");
-		private _instability = GETV(_cityData, "instability");
+		private _instability = GETV(_cityData, "influence");
 
 #ifdef MILITANT_CIVILIANS_TESTING
 		private _maxActive = 10;

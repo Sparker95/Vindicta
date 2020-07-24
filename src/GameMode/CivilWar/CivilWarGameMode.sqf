@@ -13,11 +13,9 @@ https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/
 FIX_LINE_NUMBERS()
 
 gCityStateData = [
-	["Stable",     [1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_STABLE */
-	["Agitated",   [1.0 , 0.96, 0.6 , 1.0], "#FFF599"], /* CITY_STATE_AGITATED */
-	["In Revolt!", [1.0 , 0.62, 0.28, 1.0], "#FF9e47"], /* CITY_STATE_IN_REVOLT */
-	["Suppressed", [1.0 , 0.28, 0.28, 1.0], "#FF4747"], /* CITY_STATE_SUPPRESSED */
-	["Liberated!", [0.44, 1.0 , 0.28, 1.0], "#70FF47"]  /* CITY_STATE_LIBERATED */
+	["Neutral",				[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	["Occupied by rebels",	[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	["Occupied by enemy",	[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"] /* CITY_STATE_NEUTRAL */
 ];
 
 /*
@@ -34,7 +32,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE_ATTR("lastUpdateTime", [ATTR_SAVE]);
 	// Player spawn points we calculate for each city spawn point
 	VARIABLE_ATTR("spawnPoints", [ATTR_SAVE]);
-	// All "active" cities. These are ones that have police stations, and where missions will be generated.
+	// All "active" cities. Currently all cities are active.
 	VARIABLE_ATTR("activeCities", [ATTR_SAVE]);
 	// Amount of casualties during the campaign, used in getCampaignProgess method
 	VARIABLE_ATTR("casualties", [ATTR_SAVE]);
@@ -140,12 +138,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	
 		// Select the cities we will consider for civil war activities
 		private _activeCities = GETSV("Location", "all") select { 
-			// If it is a city with a police station
-			// CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
-			// { { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION } count GETV(_x, "children") > 0 }
-
 			// If it is any city
-			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
+			CALLM0(_x, "getType") == LOCATION_TYPE_CITY;
 		};
 		T_SETV("activeCities", _activeCities);
 
@@ -239,6 +233,28 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["resume"], ON_SERVER)
 		}] call vin_fnc_addDebugMenuItem;
+
+		["Game Mode", "Add City Influence Friendly", {
+			pr _loc = CALLSM1("Location", "getLocationAtPos", getPos player);
+			if (!IS_NULL_OBJECT(_loc)) then {
+				pr _gmData = GETV(_loc, "gameModeData");
+				pr _influence = GETV(_gmData, "influence");
+				_influence = _influence + 0.2;
+				SETV(_gmData, "influence", _influence);
+				systemChat format ["Added 0.2 influence, new value: %1", _influence];
+			};
+		}] call vin_fnc_addDebugMenuItem;
+
+		["Game Mode", "Add City Influence Enemy", {
+			pr _loc = CALLSM1("Location", "getLocationAtPos", getPos player);
+			if (!IS_NULL_OBJECT(_loc)) then {
+				pr _gmData = GETV(_loc, "gameModeData");
+				pr _influence = GETV(_gmData, "influence");
+				_influence = _influence - 0.2;
+				SETV(_gmData, "influence", _influence);
+				systemChat format ["Removed 0.2 influence, new value: %1", _influence];
+			};
+		}] call vin_fnc_addDebugMenuItem;
 	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to give the player some starter gear and holster their weapon for them.
@@ -295,7 +311,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		{
 			private _city = _x;
 			private _cityData = GETV(_city, "gameModeData");
-			CALLM(_cityData, "update", [_city ARG _dt]);
+			CALLM(_cityData, "update", [_dt]);
 		} forEach T_GETV("activeCities");
 
 	ENDMETHOD;
@@ -310,7 +326,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			_maxInstability = _maxInstability + 1;
 		} forEach (T_GETV("activeCities") 
 			apply { GETV(_x, "gameModeData") }
-			apply { GETV(_x, "instability") });
+			apply { GETV(_x, "influence") });
 
 		private _stabRatio = _totalInstability / _maxInstability;
 		// https://www.desmos.com/calculator/nttiqqlvg9

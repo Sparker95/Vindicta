@@ -78,7 +78,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				VARIABLE("playerRespawnPos");						// Position for player to respawn
 				VARIABLE("alarmDisabled");							// If the player disabled the alarm
-				VARIABLE("helperObject");
+				VARIABLE("helperObject");							// An arma object placed at position of this location, for proximity checks.
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -1511,10 +1511,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _baseRadius = 300; // Radius at which it 
 			private _border = T_GETV("border");
 			_border params ["_pos", "_a", "_b"];
-			private _area = 4*_a*_b;
-			private _density_km2 = 60;	// Amount of civilians per square km
-			private _civsRaw = ceil ((_density_km2/1e6) * _area);
-			CLAMP(_civsRaw, 5, 25)
+			private _area = 3.14*_a*_b;
+			private _density_km2 = 6000;	// Amount of civilians per square km
+			private _civsRaw = round(3.14*_a*_b*_density_km2/1000000);
+
+			OOP_INFO_1("Civilian capacity: %1", _civsRaw);
+
+			_civsRaw;
 
 			// https://www.desmos.com/calculator/nahw1lso9f
 			/*
@@ -2066,9 +2069,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} forEach T_GETV("savedObjects");
 
 		T_SETV("savedObjects", []);
-
-		// Restore civ presense module
-		T_CALLM1("setCapacityCiv", T_GETV("capacityCiv"));
 
 		// Enable player respawn
 		{
