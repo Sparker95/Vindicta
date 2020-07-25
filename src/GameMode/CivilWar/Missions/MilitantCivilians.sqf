@@ -627,10 +627,13 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				[_pos, _radius * 0.5, _grp] call vin_fnc_generateRandomPath;
 
 				// Add action to recruit them to your squad
+				// Disabled it for now, it's more confusing than beneficial
+				/*
 				[
 					_civie, 
 					["Join me brother!", vin_fnc_CivilianJoinPlayer, [], 1.5, false, true, "", "true", 10]
 				] remoteExec ["addAction", 0, _civie];
+				*/
 			};
 		};
 	ENDMETHOD;

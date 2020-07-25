@@ -9,8 +9,6 @@ City data specific to this game mode.
 CLASS("CivilWarCityData", "CivilWarLocationData")
 	// City state 
 	VARIABLE_ATTR("state", [ATTR_SAVE]);
-	// Stability value based on local player activity, positive - good, negative - under enemy control
-	VARIABLE_ATTR("influence", [ATTR_SAVE]);
 	// Ambient missions, active while location is spawned
 	VARIABLE("ambientMissions");
 	// Amount of available recruits
@@ -82,7 +80,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	ENDMETHOD;
 
 	public METHOD(update)
-		params [P_THISOBJECT, P_NUMBER("_dt")];
+		params [P_THISOBJECT, P_NUMBER("_dt"), P_NUMBER("_aggression")];
 
 		pr _city = T_GETV("location");
 		ASSERT_OBJECT_CLASS(_city, "Location");
@@ -90,7 +88,6 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _influence = T_GETV("influence");
 
 		private _cityPos = CALLM0(_city, "getPos");
-		private _cityRadius = (300 max GETV(_city, "boundingRadius")) min 700;
 		private _cityCivCap = CALLM0(_city, "getCapacityCiv");
 		private _oldState = _state;
 
@@ -113,7 +110,23 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		};
 
 		// Update influence
-		_influence = (_influence min 1.0) max -1.0;	// Influence must be within [-1.0 ... 1.0]
+
+		if (_state == CITY_STATE_NEUTRAL) then {
+			// Neutral cities lose influence according to aggression
+			// At max aggression, decrease rate is 1.0 per 12 hours
+			pr _propagandaPerHour = _dt*_aggression/3600/12;
+			_influence = _influence - _propagandaPerHour;
+		} else {
+			// Captured city loses/gains influence at rate of 1 per 3 hours.
+			pr _influenceGain = _dt/3600/3;
+			if (_state == CITY_STATE_ENEMY_CONTROL) then {
+				_influence = _influence - _influenceGain;
+			} else {
+				_influence = _influence + _influenceGain;
+			};
+		};
+
+		_influence = CLAMP(_influence, -1.0, 1.0);
 
 		T_SETV_PUBLIC("influence", _influence);
 		T_SETV_PUBLIC("state", _state);
@@ -203,6 +216,16 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		_pop * _mob; // Population * mobilization
 	ENDMETHOD;
 
+	// Adds influence
+	METHOD(addInfluence)
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_NUMBER("_value")];
+			pr _inf = T_GETV("influence");
+			_inf = _inf + _value;
+
+		}; 
+	ENDMETHOD;
+
 	// Get the recruitment rate per hour
 	METHOD(getRecruitmentRate)
 		private _rate = 0;
@@ -214,6 +237,11 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_rate = 0 max (_absInfluence * _nRecruitsMax / 2);
 		};
 		_rate;
+	ENDMETHOD;
+
+	METHOD(getInfluence)
+		params [P_THISOBJECT];
+		T_GETV("influence");
 	ENDMETHOD;
 
 	public METHOD(removeRecruits)

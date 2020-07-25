@@ -24,7 +24,7 @@ CLASS("Phase2CmdrStrategy", "CmdrStrategy")
 		T_SETV("takeLocRoadBlockPriority", 			2);		// Need to clear roadblocks always
 		T_SETV("takeLocRoadBlockCoeff", 			2);
 
-		T_SETV("takeLocCityPriority", 				-0.1);	// Take cities with even low activity
+		T_SETV("takeLocCityPriority", 				1);
 		T_SETV("takeLocCityCoeff", 					1);		// Allow cities with activity to be taken
 
 		T_SETV("constructLocRoadblockPriority", 	-2);	// Construct roadblocks when enemy activity in the area is highish (the coeff is applied to activity before the priority)

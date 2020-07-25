@@ -119,7 +119,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 					// Start clear order
 					OOP_INFO_MSG("[w %1] %2 clearing area at %3: started", [_world ARG _garr ARG _targetPos]);
 					#ifdef RELEASE_BUILD
-					private _timeToClear = 80 * sqrt (_clearRadius + 100); // Seconds
+					private _timeToClear = (80 * sqrt (_clearRadius + 100)) min (20*60); // Seconds
 					#else
 					private _timeToClear = 120; // Seconds
 					#endif

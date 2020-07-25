@@ -12,11 +12,6 @@ CLASS("LocationModel", "ModelBase")
 	VARIABLE("pos");
 	// Location type
 	VARIABLE("type");
-	// SAVEBREAK >>>
-	// Remove, not used
-	// Side considered to be owning this location
-	VARIABLE("side");
-	// <<< SAVEBREAK
 	// Model Id of the garrison currently occupying this location
 	VARIABLE("garrisonIds");
 	// Is this location a spawn?
@@ -31,6 +26,8 @@ CLASS("LocationModel", "ModelBase")
 	VARIABLE("efficiency");
 	// Side which has created this place, or CIVILIAN if it was there at the map initially.
 	VARIABLE("sideCreated");
+	// Influence value (from game mode)
+	VARIABLE("influence");
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_actual")];
@@ -42,6 +39,7 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("radius", 0);
 		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("sideCreated", CIVILIAN);
+		T_SETV("influence", 0);
 
 		if(T_CALLM0("isActual")) then {
 			// We initialize some variables only once to avoid wasting time
@@ -134,12 +132,14 @@ CLASS("LocationModel", "ModelBase")
 			};
 		};
 
-		// if(!(_garrisonActual isEqualTo "")) then {
-		// 	private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
-		// 	T_SETV("garrisonId", GETV(_garrison, "id"));
-		// } else {
-		// 	T_SETV("garrisonId", MODEL_HANDLE_INVALID);
-		// };
+		// Sync influence
+		pr _gameModeData = GETV(_actual, "gameModeData");
+		if (!IS_NULL_OBJECT(_gameModeData)) then {
+			if (GET_OBJECT_CLASS(_gameModeData) == "CivilWarCityData") then {
+				pr _influence = CALLM0(_gameModeData, "getInfluence");
+				T_SETV("influence", _influence);
+			};
+		};
 	ENDMETHOD;
 
 	public METHOD(isEmpty)

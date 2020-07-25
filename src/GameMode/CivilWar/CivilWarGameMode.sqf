@@ -38,6 +38,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE_ATTR("casualties", [ATTR_SAVE]);
 	// Campaign progress cached value
 	VARIABLE("campaignProgress");
+	// Aggression cached value
+	VARIABLE("aggression");
 
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -48,9 +50,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
 		T_SETV("campaignProgress", 0);
+		T_SETV("aggression", 0);
 		if (IS_SERVER) then {	// Makes no sense for client
 			T_PUBLIC_VAR("casualties");
 			T_PUBLIC_VAR("campaignProgress");
+			T_PUBLIC_VAR("aggression");
 		};
 	ENDMETHOD;
 
@@ -297,9 +301,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	protected override METHOD(update)
 		params [P_THISOBJECT];
 		
-		T_CALLM("updateCampaignProgress", []);
+		T_CALLM0("updateCampaignProgress");
+		T_CALLM0("updateAggression");
 
-		T_CALLM("updatePhase", []);
+		T_CALLM0("updatePhase");
 		
 		//T_CALLM("updateEndCondition", []); // No need for it right now
 
@@ -307,32 +312,89 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		private _dt = 0 max (GAME_TIME - _lastUpdateTime) min 120; // It can be negative at start??
 		T_SETV("lastUpdateTime", GAME_TIME);
 
+		#ifdef DEBUG_CIVIL_WAR_GAME_MODE
+		_dt = 3600; // Accelerated 'time', each update is as if one hour has passed
+		#endif
+
 		// Update city stability and state
+		private _aggression = T_GETV("aggression");
 		{
 			private _city = _x;
 			private _cityData = GETV(_city, "gameModeData");
-			CALLM(_cityData, "update", [_dt]);
+			CALLM(_cityData, "update", [_dt ARG _aggression]);
 		} forEach T_GETV("activeCities");
 
 	ENDMETHOD;
 
 	METHOD(updateCampaignProgress)
 		params [P_THISOBJECT];
-		private _totalInstability = 0;
-		private _maxInstability = 1;
+
+		private _totalCities = 0;
+		private _capturedCities = 0;
+
+		#ifdef _SQF_VM
+		_totalCities = 1; // Make it not complain of zero divisor
+		#endif
+
+		// Progress = captured cities / total cities
 
 		{
-			_totalInstability = _totalInstability + _x;
-			_maxInstability = _maxInstability + 1;
-		} forEach (T_GETV("activeCities") 
-			apply { GETV(_x, "gameModeData") }
-			apply { GETV(_x, "influence") });
+			_totalCities = _totalCities + 1;
 
-		private _stabRatio = _totalInstability / _maxInstability;
-		// https://www.desmos.com/calculator/nttiqqlvg9
-		// Hits 0.2 when _stabRatio is 0.05 and 1 when _stabRatio is 0.8
-		//private _campaignProgress = 1 min (0.9 * log(15 * _stabRatio + 1));
-		T_SETV_PUBLIC("campaignProgress", _stabRatio);
+			pr _influence = GETV(_x, "influence");
+			pr _state = GETV(_x, "state");
+			if (_state == CITY_STATE_FRIENDLY_CONTROL && _influence > 0.5) then {
+				_capturedCities = _capturedCities + 1;
+			};
+		} forEach (T_GETV("activeCities") 
+			apply { GETV(_x, "gameModeData") });
+
+		private _progress = _capturedCities / _totalCities;
+		_progress = CLAMP(_progress, 0.0, 1.0);
+
+		T_SETV_PUBLIC("campaignProgress", _progress);
+	ENDMETHOD;
+
+	METHOD(updateAggression)
+		params [P_THISOBJECT];
+
+		pr _casualties = T_GETV("casualties");
+		_casualties = _casualties min 200;
+
+		pr _locTypes = [LOCATION_TYPE_BASE, LOCATION_TYPE_CAMP, LOCATION_TYPE_OUTPOST, LOCATION_TYPE_AIRPORT, LOCATION_TYPE_ROADBLOCK];
+		pr _locs = CALLSM0("Location", "getAll") select { CALLM0(_x, "getType") in _locTypes; };
+		pr _nCapturedLocs = 0;
+		pr _nCapturedAirports = 0;
+		{
+			pr _garrisons = CALLM1(_x, "getGarrisons", FRIENDLY_SIDE);
+			if (count _garrisons > 0) then {
+				_nCapturedLocs = _nCapturedLocs + 1;
+				if (CALLM0(_x, "getType") == LOCATION_TYPE_AIRPORT) then {
+					_nCapturedAirports = _nCapturedAirports + 1;
+				};
+			};
+		} forEach _locs;
+
+		// _ownedLocationsRatio - value in range 0..1, max when more than 30% of military locations captured
+		// Capturing airports gives a 0.4 increase, but final value is within 0..1 anyway
+
+		pr _ownedLocationsRatio = _nCapturedLocs / (0.3*((count _locs) + 1));
+		if (_nCapturedAirports > 0) then {
+			_ownedLocationsRatio = _ownedLocationsRatio + 0.4;
+		};
+		_ownedLocationsRatio = CLAMP(_ownedLocationsRatio, 0.0, 1.0);
+
+		// _casualtiesRatio - value in range 0..1. Max when a certain amount of casualties was reached.
+		pr _casualtiesRatio = 0;
+		pr _casualties = T_GETV("casualties");
+		_casualtiesRatio = _casualties / 200;
+		_casualtiesRatio = CLAMP(_casualtiesRatio, 0.0, 1.0);
+
+		// Final aggression:
+		pr _aggression = 0.5*(_ownedLocationsRatio + _casualtiesRatio);
+		_aggression = CLAMP(_aggression, 0.0, 1.0);
+
+		T_SETV_PUBLIC("aggression", _aggression);
 	ENDMETHOD;
 	
 	METHOD(updatePhase)
@@ -340,7 +402,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		private _activeCities = T_GETV("activeCities");
 
-		pr _prog = T_CALLM0("getCampaignProgress");
+		pr _prog = T_CALLM0("getAggression");
 
 		switch(T_GETV("phase")) do {
 			case 0: {
@@ -508,7 +570,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
 	public override METHOD(getRecruitmentRadius)
 		params [P_THISOBJECT];
-		2000
+		4000
 	ENDMETHOD;
 
 	// Returns an array of cities where we can recruit from
@@ -544,6 +606,16 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		0.9
 		#else
 		T_GETV("campaignProgress");
+		#endif
+		FIX_LINE_NUMBERS()
+	ENDMETHOD;
+
+	public override METHOD(getAggression)
+		params [P_THISOBJECT];
+		#ifdef DEBUG_END_GAME
+		0.9
+		#else
+		T_GETV("aggression");
 		#endif
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;

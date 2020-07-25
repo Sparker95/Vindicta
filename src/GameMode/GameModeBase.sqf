@@ -1002,13 +1002,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		0
 	ENDMETHOD;
 
-	public virtual METHOD(getRecruitmentRadius)
+	public virtual METHOD(getmentRadius)
 		params [P_THISCLASS];
 		0
 	ENDMETHOD;
 
 	// Must return a value 0...1 to drive some AICommander logic
 	public virtual METHOD(getCampaignProgress)
+		0.5
+	ENDMETHOD;
+
+	// Must return a value 0...1 to drive some AICommander logic
+	public virtual METHOD(getAggression)
 		0.5
 	ENDMETHOD;
 
