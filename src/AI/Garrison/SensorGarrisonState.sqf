@@ -9,15 +9,17 @@ Author: Sparker 08.11.2018
 #define pr private
 
 vin_fnc_accumulateGroupWSP = {
-	params ["_groups", "_groupWSP", "_default"];
-	if (count _groups == 0) exitWith {
-		_default
-	};
 	pr _garValue = true;
-	{
-		pr _groupVal = [_x, _groupWSP] call ws_getPropertyValue;
-		_garValue = _garValue && _groupVal;
-	} forEach (_groups apply { CALLM0(_x, "getAI") } apply { GETV(_x, "worldState") });
+	CRITICAL_SECTION {
+		params ["_groups", "_groupWSP", "_default"];
+		if (count _groups == 0) exitWith {
+			_default
+		};
+		{
+			pr _groupVal = [_x, _groupWSP] call ws_getPropertyValue;
+			_garValue = _garValue && _groupVal;
+		} forEach (_groups apply { CALLM0(_x, "getAI") } apply { GETV(_x, "worldState") });
+	};
 	_garValue
 };
 

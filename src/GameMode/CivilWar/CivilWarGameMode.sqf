@@ -121,7 +121,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			ENEMY_SIDE
 		} else {
 			if (_type == LOCATION_TYPE_OUTPOST) then {
-				if (random 100 < 50) then {
+				if (random 100 < 35) then {
 					//selectRandom [ENEMY_SIDE, WEST]
 					ENEMY_SIDE
 				} else {
@@ -391,7 +391,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		_casualtiesRatio = CLAMP(_casualtiesRatio, 0.0, 1.0);
 
 		// Final aggression:
-		pr _aggression = 0.5*(_ownedLocationsRatio + _casualtiesRatio);
+		pr _aggression = 0.4*_ownedLocationsRatio + 0.6*_casualtiesRatio);
 		_aggression = CLAMP(_aggression, 0.0, 1.0);
 
 		T_SETV_PUBLIC("aggression", _aggression);
@@ -542,17 +542,24 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	// Gets called in the main thread!
 	public override METHOD(unitDestroyed)
-		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
+		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction"), P_POSITION("_pos")];
+
+		OOP_INFO_1("Unit destroyed: %1", _this);
+
 		pr _valueToAdd = 0;
+		pr _influence = 0;
 		if (_catID == T_INF) then {
 			if (_side == ENEMY_SIDE) then {
 				if (_faction == "police") then {	// We less care for police killed
 					_valueToAdd = 0.3;
+					_influence = 0.05;
 				} else {
 					_valueToAdd = 1;
+					_influence = 0.07;
 				};
 			} else {
 				_valueToAdd = 0.1;
+				_influence = 0.03;	// Killed friendlies don't contribute as much as enemies
 			};
 		} else {
 			if (_side == ENEMY_SIDE) then {
@@ -560,12 +567,60 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			} else {
 				_valueToAdd = 0;
 			};
+			_influence = 0.2; // Destroying vehicles adds much influence
 		};
 		pr _casualties = T_GETV("casualties");
 		_casualties = _casualties + _valueToAdd;
 		T_SETV("casualties", _casualties);
 		PUBLIC_VAR(_thisObject, "casualties");
+
+
+		// Add influence to nearby cities
+		if (_influence != 0) then {
+			if (_pos#0 != 0) then {
+				if (_side != ENEMY_SIDE) then { _influence = -_influence; };
+				T_CALLM3("addInfluenceAtPos", _pos, 2500, _influence);
+			};
+		};
 	ENDMETHOD;
+
+	// Gets called in game mode thread!
+	public override METHOD(civilianKilled)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+
+		OOP_INFO_1("Civilian killed at: %1", _pos);
+
+		// Reduce influence
+		T_CALLM3("addInfluenceAtPos", _pos, 1500, -0.15);
+	ENDMETHOD;
+
+	public override METHOD(civilianUntied)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		OOP_INFO_1("Civilian untied at: %1", _pos);
+		T_CALLM3("addInfluenceAtPos", _pos, 500, 0.15);
+	ENDMETHOD;
+
+	public override METHOD(civilianIncited)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		OOP_INFO_1("Civilian incited at: %1", _pos);
+		T_CALLM3("addInfluenceAtPos", _pos, 500, 0.07);
+	ENDMETHOD;
+
+	public override METHOD(addInfluenceAtPos)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius"), P_NUMBER("_influence")];
+		
+		pr _nearCities = CALLSM2("Location", "nearLocations", _pos, _radius);
+		pr _thisLoc = CALLSM1("Location", "getLocationAtPos", _pos);
+		if (!IS_NULL_OBJECT(_thisLoc)) then {
+			_nearCities pushBackUnique _thisLoc;
+		};
+		_nearCities = _nearCities select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY;};
+		{
+			pr _gmData = GETV(_x, "gameModeData");
+			CALLM1(_gmData, "addInfluenceScaled", _influence);
+		} forEach _nearCities;
+	ENDMETHOD;
+
 
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
 	public override METHOD(getRecruitmentRadius)
@@ -602,8 +657,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	public override METHOD(getCampaignProgress)
 		params [P_THISOBJECT];
-		#ifdef DEBUG_END_GAME
-		0.9
+		#ifdef DEBUG_SET_PROGRESS
+		DEBUG_SET_PROGRESS
 		#else
 		T_GETV("campaignProgress");
 		#endif
@@ -612,8 +667,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	public override METHOD(getAggression)
 		params [P_THISOBJECT];
-		#ifdef DEBUG_END_GAME
-		0.9
+		#ifdef DEBUG_SET_AGGRESSION
+		DEBUG_SET_AGGRESSION
 		#else
 		T_GETV("aggression");
 		#endif

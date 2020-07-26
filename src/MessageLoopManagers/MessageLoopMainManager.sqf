@@ -70,6 +70,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		// Since this code is run in the main thread, we can just call the methods directly
 		// Post a message to the garrison of the unit
 		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (!IS_NULL_OBJECT(_garrison)) then {	// Sanity check	
 			CALLM1(_garrison, "handleUnitKilled", _unit);
 
@@ -78,7 +79,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			pr _subcatID = CALLM0(_unit, "getSubcategory");
 			pr _side = CALLM0(_garrison, "getSide");
 			pr _faction = CALLM0(_garrison, "getFaction");
-			CALLM4(gGameMode, "unitDestroyed", _catID, _subcatID, _side, _faction);
+			pr _pos = getPos _hO;
+			pr _args = [_catID, _subcatID, _side, _faction, _pos];
+			CALLM(gGameMode, "unitDestroyed", _args);
 
 			// Send stimulus to garrison's casualties sensor
 			pr _garAI = CALLM0(_garrison, "getAI");

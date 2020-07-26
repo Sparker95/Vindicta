@@ -220,10 +220,23 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	METHOD(addInfluence)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_NUMBER("_value")];
-			pr _inf = T_GETV("influence");
-			_inf = _inf + _value;
+			pr _influence = T_GETV("influence");
+			_influence = _influence + _value;
+			_influence = CLAMP(_influence, -1.0, 1.0);
+			T_SETV_PUBLIC("influence", _influence);
 
+			OOP_INFO_2("addInfluence: %1, new value: %2", _value, _influence);
 		}; 
+	ENDMETHOD;
+
+	// Adds influence scaled by city size
+	METHOD(addInfluenceScaled)
+		params [P_THISOBJECT, P_NUMBER("_value")];
+		pr _population = T_GETV("population");
+		pr _mult = (_population/1000)^(-0.75); // https://www.desmos.com/calculator/mkpvvijqze
+		_value = _value * _mult;
+		OOP_INFO_3("addInfluenceScaled: %1, multiplier: %2, population: %3", _value, _mult, _population);
+		T_CALLM1("addInfluence", _value);
 	ENDMETHOD;
 
 	// Get the recruitment rate per hour

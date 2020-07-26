@@ -2793,10 +2793,46 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_INFO_1("  All required eff: %1", _effRequiredAll);
 		OOP_INFO_1("  All current  eff: %1", _effAll);
 
-		// Amount of infantry and transport we want to have
+		// Amount of infantry we want to have
 		private _infMoreRequired = (_effRequiredAll select T_EFF_crew) - (_effAll select T_EFF_crew);
 
 		OOP_INFO_1("  More infantry required: %1", _infMoreRequired);
+
+		private _squadTypes = [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad];
+		OOP_INFO_1("  Trying to add %1 more infantry...", _infMoreRequired);
+
+		// Try to add recruits
+		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
+		while {_infMoreRequired > 0 && count _reinfData > 0} do {
+
+			pr _reinfDataThis = _reinfData#0;
+			_reinfDataThis params ["_activity", "_garActual", "_locActual", "_nearestRecruitCity", "_nInf", "_locMaxInf", "_availRecruits"];
+
+			// Select a random group type
+			private _subcatID = selectRandom _squadTypes;
+			private _countInfInGroup = count (_t#T_GROUP#_subcatID#0); // Amount of units
+
+			private _nGroups = floor (_availRecruits / _countInfInGroup);
+
+			for "_groupID" from 0 to (_nGroups - 1) do {
+				// Create a group
+				private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
+				CALLM2(_group, "createUnitsFromTemplate", _t, _subcatID);
+				CALLM2(_garActual, "postMethodAsync", "addGroup", [_group]);
+				OOP_INFO_1("   Added group: %1", _group);
+
+				// Decrease the counter
+				_infMoreRequired = _infMoreRequired - _countInfInGroup;
+
+				OOP_INFO_4("  Added group %1 of %2 units to %3 at %4", _group, _countInfInGroup, _garActual, CALLM0(_locActual, "getName"));
+			};
+
+			_reinfData deleteAt 0;
+		};
+
+		if(_infMoreRequired > 0) then {
+			OOP_INFO_1("  Could not add all infantry required, %1 remain", _infMoreRequired);
+		};
 
 	ENDMETHOD;
 
@@ -3018,6 +3054,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Try to spawn more units at the selected locations
+		// Inf spawning at airfields is disabled now
+		/*
 		if (_infMoreRequired > 0) then {
 			private _infReinfLocations = _reinfInfo select {
 				_x#3 > 0
@@ -3057,6 +3095,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				OOP_INFO_1("  Could not add all infantry required, %1 remain", _infMoreRequired);
 			}
 		};
+		*/
 
 		// Spawn in more officers
 		{

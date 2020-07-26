@@ -1062,6 +1062,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _sentence = selectRandom g_phrasesCivilianUntied;
 				CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _target, _sentence);
 				CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG getpos _target ARG (7+random(7))]);
+				CALLM2(gGameMode, "postMethodAsync", "civilianUntied", [getpos _target]);
 			};
 		};
 	ENDMETHOD;

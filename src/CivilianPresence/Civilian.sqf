@@ -37,6 +37,16 @@ CLASS("Civilian", "GOAP_Agent")
 		// When killed, delete AI
 		_civObjectHandle addEventHandler ["killed", {
 			pr _hO = _this select 0;
+
+			// For some reason this gets called twice
+			// First time is correct, second time with null-object, 
+			if (isNull _hO) exitWith {};
+
+			OOP_INFO_2("Civilian killed: %1, position: %2", _hO, getPosWorld _hO);
+
+			// Notify game mode
+			CALLM2(gGameMode, "postMethodAsync", "civilianKilled", [getPosWorld _hO]);
+
 			pr _thisObject = CALLSM1("Civilian", "getCivilianFromObjectHandle", _hO);
 			if (!IS_NULL_OBJECT(_thisObject)) then {
 				pr _ai = CALLM0(_thisObject, "getAI");

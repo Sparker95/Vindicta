@@ -421,6 +421,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						// Give weapons to the unit (if he has special weapons)
 						T_CALLM0("applyInfantryGear");
 
+						/*
 						// Global difficulty will effect AI between 0.2 and 0.8
 						private _effectiveDiff = if(side _groupHandle == CALLM0(gGameMode, "getEnemySide")) then {
 							vin_diff_global;
@@ -431,6 +432,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						// Difficulty on effects AI between 0.2 and 0.8, to make it more responsive.
 						// i.e. difficulty above 0.8 will give all AI skill 1, below 0.2 all AI skill 0
 						private _diffModifer = MAP_TO_RANGE(_effectiveDiff, 0.2, 0.8, 0, 1);
+						*/
 
 						// Set unit skill
 						// Aiming and precision
