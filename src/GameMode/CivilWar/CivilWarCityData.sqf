@@ -248,7 +248,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_amount")];
 
-			if (_side == SIDE_FRIENDLY) then {
+			if (_side == FRIENDLY_SIDE) then {
 				private _n = T_GETV("nRecruitsFriendly");
 				_n = (_n - _amount) max 0;
 				T_SETV_PUBLIC("nRecruitsFriendly", _n);
@@ -269,7 +269,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _return = 0;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_SIDE("_side")];
-			if (_side == SIDE_FRIENDLY) then {
+			if (_side == FRIENDLY_SIDE) then {
 				_return = floor T_GETV("nRecruitsFriendly");
 			} else {
 				_return = floor T_GETV("nRecruitsEnemy");

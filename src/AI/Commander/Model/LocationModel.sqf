@@ -28,6 +28,8 @@ CLASS("LocationModel", "ModelBase")
 	VARIABLE("sideCreated");
 	// Influence value (from game mode)
 	VARIABLE("influence");
+	// Max infantry capacity
+	VARIABLE("capacityInf");
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_actual")];
@@ -40,6 +42,7 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("sideCreated", CIVILIAN);
 		T_SETV("influence", 0);
+		T_SETV("capacityInf", 0);
 
 		if(T_CALLM0("isActual")) then {
 			// We initialize some variables only once to avoid wasting time
@@ -140,6 +143,9 @@ CLASS("LocationModel", "ModelBase")
 				T_SETV("influence", _influence);
 			};
 		};
+
+		// Sync inf capacity
+		T_SETV("capacityInf", CALLM0(_actual, "getCapacityInf"));
 	ENDMETHOD;
 
 	public METHOD(isEmpty)

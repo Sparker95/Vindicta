@@ -449,9 +449,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Increase infantry capacity
-		private _capacityInf = T_GETV("capacityInf") + _cap;
-		T_SETV("capacityInf", _capacityInf);
-		T_SETV_PUBLIC("capacityInf", _capacityInf);
+		if (_cap > 0) then {
+			private _capacityInf = T_GETV("capacityInf") + _cap;
+			_capacityInf = _capacityInf min CALLSM1("Location", "getCapacityInfForType", T_GETV("type"));
+			T_SETV("capacityInf", _capacityInf);
+			T_SETV_PUBLIC("capacityInf", _capacityInf);
+		};
 
 		// Check if it enabled radio functionality for the location
 		private _index = location_bt_radio find _type;
@@ -1099,7 +1102,31 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	public METHOD(getCapacityInf)
 		params [P_THISOBJECT];
-		T_GETV("capacityInf")
+		T_GETV("capacityInf");
+	ENDMETHOD;
+
+	/*
+	Method: getCapacityInfForType
+	Returns absolute maximum infantry capacity for given location type.
+	*/
+	public STATIC_METHOD(getCapacityInfForType)
+		params [P_THISOBJECT, P_STRING("_type")];
+		switch (_type) do {
+			case LOCATION_TYPE_UNKNOWN: { 0 }; // ??
+			case LOCATION_TYPE_CITY: { 50 };
+			case LOCATION_TYPE_CAMP: { 30 };
+			case LOCATION_TYPE_BASE: { 60 };
+			case LOCATION_TYPE_OUTPOST: { 40 };
+			case LOCATION_TYPE_DEPOT: { 40 };
+			case LOCATION_TYPE_POWER_PLANT: { 40 };
+			case LOCATION_TYPE_POLICE_STATION: { 20 };
+			case LOCATION_TYPE_RADIO_STATION: { 30 };
+			case LOCATION_TYPE_AIRPORT: { 60 };
+			case LOCATION_TYPE_ROADBLOCK: { 15 };
+			case LOCATION_TYPE_OBSERVATION_POST: { 10 };
+			case LOCATION_TYPE_RESPAWN: { 0 }; // ??
+			default { 40 };
+		};
 	ENDMETHOD;
 
 	/*

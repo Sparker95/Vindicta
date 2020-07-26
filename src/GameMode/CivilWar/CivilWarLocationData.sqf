@@ -105,8 +105,8 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			pr _type = CALLM0(_loc, "getType");
 			if(_type in LOCATIONS_RECRUIT) then {
 				pr _pos = CALLM0(_loc, "getPos");
-				pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
-				pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+				pr _cities = CALLM2(gGameMode, "getRecruitCities", _pos, playerSide);
+				pr _nRecruits = CALLM2(gGameMode, "getRecruitCount", _cities, playerSide);
 				_return = _return + [["AVAILABLE RECRUITS", str _nRecruits]];
 			};
 			if(_type in LOCATIONS_BUILD_PROGRESS) then {

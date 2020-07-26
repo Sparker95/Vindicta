@@ -575,13 +575,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	// Returns an array of cities where we can recruit from
 	public override METHOD(getRecruitCities)
-		params [P_THISOBJECT, P_POSITION("_pos")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_SIDE("_side")];
 		private _radius = T_CALLM0("getRecruitmentRadius");
 
 		// Get nearby cities
 		private _cities = ( CALLSM2("Location", "overlappingLocations", _pos, _radius) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY} ) select {
 			private _gmdata = GETV(_x, "gameModeData");
-			CALLM0(_gmdata, "getRecruitCount") > 0
+			CALLM1(_gmdata, "getRecruitCount", _side) > 0
 		};
 
 		_cities
@@ -589,15 +589,15 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	// Returns how many recruits we can get at a certain place from nearby cities
 	public override METHOD(getRecruitCount)
-		params [P_THISOBJECT, P_ARRAY("_cities")];
+		params [P_THISOBJECT, P_ARRAY("_cities"), P_SIDE("_side")];
 
 		private _sum = 0;
 		{
 			private _gmdata = GETV(_x, "gameModeData");
-			_sum = _sum + CALLM0(_gmdata, "getRecruitCount");
+			_sum = _sum + CALLM1(_gmdata, "getRecruitCount",_side);
 		} forEach _cities;
 
-		_sum
+		_sum;
 	ENDMETHOD;
 
 	public override METHOD(getCampaignProgress)

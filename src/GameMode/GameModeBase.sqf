@@ -992,17 +992,38 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Must be here for common interface
 	// Returns an array of cities where we can recruit from
 	public virtual METHOD(getRecruitCities)
-		params [P_THISOBJECT, P_POSITION("_pos")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_SIDE("_side")];
 		[]
 	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
 	public virtual METHOD(getRecruitCount)
-		params [P_THISOBJECT, P_ARRAY("_cities")];
+		params [P_THISOBJECT, P_ARRAY("_cities"), P_SIDE("_side")];
 		0
 	ENDMETHOD;
 
-	public virtual METHOD(getmentRadius)
+	// Returns nearest city with at least given amount of recruits, or null object
+	public METHOD(getNearestRecruitCity)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_SIDE("_side"), P_NUMBER("_minAmount")];
+
+		pr _cities = T_CALLM2("getRecruitCities", _pos, _side) select {
+			pr _amount = T_CALLM2("getRecruitCount", [_x], _side);
+			_amount > _minAmount;
+		};
+
+		// Bail if there are no such cities nearby
+		if (count _cities == 0) exitWith {
+			NULL_OBJECT;
+		};
+
+		pr _array = _cities apply {[CALLM0(_x, "getPos") distance2D _pos, _x]};
+		_array sort ASCENDING;
+		pr _nearestCity = _array#0#1;
+
+		_nearestCity;
+	ENDMETHOD;
+
+	public virtual METHOD(getRecruitmentRadius)
 		params [P_THISCLASS];
 		0
 	ENDMETHOD;
@@ -1211,7 +1232,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM0(_loc, "findAllObjects");
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4 or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
+			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4 or CALLM0(_loc, "getCapacityCiv") >= 800)) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];

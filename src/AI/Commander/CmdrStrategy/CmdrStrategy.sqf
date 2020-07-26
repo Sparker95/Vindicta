@@ -126,8 +126,8 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 				// If city is under enemy influence, we should take it
 				pr _influence = GETV(_loc, "influence");
 				pr _add = 0;
-				if (_influence > 0.25) then { // It's positive when enemy owns it
-					_add = _influence*4;
+				if (_influence > 0.25) then { // It's positive when rebels own it
+					_add = _influence*6;
 				};
 				_priority = T_GETV("takeLocCityPriority") +
 					T_GETV("takeLocCityCoeff") * _activityMult;
