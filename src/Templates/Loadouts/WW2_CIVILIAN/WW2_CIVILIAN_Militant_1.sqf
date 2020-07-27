@@ -95,7 +95,7 @@ if(random 10 > 5) then { this linkItem "ItemWatch" };
 private _gunsAndAmmo = [
 	// pistols
 	["LIB_P38",					"lib_8rnd_9x19",			true],	0.9,
-	["LIB_P08",					"lib_8rnd_9x19_p08",		true],	0.7,
+	["LIB_P08",					"fow_8rnd_9x19",			true],	0.7,
 	["LIB_Colt_M1911",			"lib_7rnd_45acp",			true],	0.7,
 	["LIB_M1896",				"lib_10rnd_9x19_m1896",		true],	0.5,
 	["fow_w_p640p",				"fow_13rnd_9x19",			true],	0.5,
