@@ -656,7 +656,9 @@ CLASS("ClientMapUI", "")
 		};
 
 		if(_gameModeInitialized && {!isNil "gGameModeServer"}) then {
-			private _progressHint = format["Campaign progress: %1%2", floor (100 * CALLM0(gGameModeServer, "getCampaignProgress")), "%"];
+			pr _progressPercent = floor (100 * CALLM0(gGameModeServer, "getCampaignProgress"));
+			pr _aggressionPercent = floor (100 * CALLM0(gGameModeServer, "getAggression"));
+			private _progressHint = format["Campaign progress: %1%2, enemy aggression: %3%4", _progressPercent, "%", _aggressionPercent, "%"];
 			T_CALLM1("setHintText", _progressHint);
 			} else {
 				if(call misc_fnc_isAdminLocal) then {
@@ -1965,6 +1967,14 @@ CLASS("ClientMapUI", "")
 
 		// Reset the map UI to default state
 		T_CALLM0("showGlobalIntel");
+
+		// Redraw mini panels
+		if (T_GETV("showLocationMiniPanels")) then {
+			{
+				pr _ctrl = GETV(_x, "microPanel") select 0;
+				if (!isNull _ctrl) then {ctrlDelete _ctrl;};
+			} forEach (CALLSM0("MapMarkerLocation", "getAll") + CALLSM0("MapMarkerGarrison", "getAll"));
+		};
 	ENDMETHOD;
 
 	// Not used now
@@ -2357,12 +2367,17 @@ CLASS("ClientMapUI", "")
 
 		pr _allMapMarkers = CALLSM0("MapMarkerLocation", "getAll");
 		pr _allGarrisonMarkers = CALLSM0("MapMarkerGarrison", "getAll");
+		pr _ctrlMap = ((findDisplay 12) displayCtrl IDC_MAP);
+
 		if (T_GETV("showLocationMiniPanels")) then {
+
+			// Create panels for everything except for cities
+
 			pr _typesDontShowPanel = [LOCATION_TYPE_CITY, LOCATION_TYPE_POLICE_STATION, LOCATION_TYPE_UNKNOWN];
 			pr _markersShowPanel = _allMapMarkers select {
 				! ((GETV(_x, "type") in _typesDontShowPanel));
 			};
-			{
+			{ // forEach (_markersShowPanel + _allGarrisonMarkers);
 				pr _unitData = [];
 				if (GET_OBJECT_CLASS(_x) == "MapMarkerLocation") then {
 					pr _intel = GETV(_x, "intel");
@@ -2371,9 +2386,16 @@ CLASS("ClientMapUI", "")
 					};
 				} else {
 					pr _garRecord = GETV(_x, "garRecord");
-					_unitData = CALLM0(_garRecord, "getBasicComposition");
+					pr _loc = GETV(_garRecord, "location");
+					// Ignore garrisons at locations of types which we want to ignore
+					if (!IS_NULL_OBJECT(_loc)) then {
+						if (!(CALLM0(_loc, "getType") in _typesDontShowPanel)) then {
+							_unitData = CALLM0(_garRecord, "getBasicComposition");
+						};
+					} else {
+						_unitData = CALLM0(_garRecord, "getBasicComposition");
+					};					
 				};
-				pr _ctrlMap = ((findDisplay 12) displayCtrl IDC_MAP);
 				if (count _unitData > 0) then {
 					pr _ctrl = GETV(_x, "microPanel") select 0;
 					
@@ -2433,15 +2455,37 @@ CLASS("ClientMapUI", "")
 						SETV(_x, "microPanel", [_ctrl]);
 					};
 
-					// Update panel position
-					pr _posScreen = _ctrlMap posWorldToScreen GETV(_x, "pos");
-					_posScreen params ["_xScreen", "_yScreen"];
-					if (_yScreen < safeZoneY) then {_yScreen = -1;};
-					(ctrlPosition _ctrl) params ["__x", "__y", "_w", "_h"];
-					_ctrl ctrlSetPosition [_xScreen - 0.5*_w, _yScreen + 0.03, _w, _h];
-					_ctrl ctrlCommit 0;
+					CALLSM3("ClientMapUI", "updateMiniPanelPosition", _ctrl, _ctrlMap, GETV(_x, "pos"));
 				};
+
+
 			} forEach (_markersShowPanel + _allGarrisonMarkers);
+
+
+			// Create panels for cities
+			{
+				if (GETV(_x, "type") == LOCATION_TYPE_CITY) then {
+
+					pr _ctrl = GETV(_x, "microPanel") select 0;
+
+					if (isNull _ctrl) then {
+						pr _intel = GETV(_x, "intel");
+						pr _loc = GETV(_intel, "location");
+						pr _gmData = CALLM0(_loc, "getGameModeData");
+						if (GET_OBJECT_CLASS(_gmData) == "CivilWarCityData") then {
+							pr _influence = CALLM0(_gmData, "getInfluence");
+							_influence = round (_influence * 100);
+							pr _rows = [
+								["Influence", _influence, 100, true]
+							];
+							_ctrl = CALLSM1("ClientMapUI", "createLocationMiniPanel", _rows);
+							SETV(_x, "microPanel", [_ctrl]);
+						};
+					};
+
+					CALLSM3("ClientMapUI", "updateMiniPanelPosition", _ctrl, _ctrlMap, GETV(_x, "pos"));
+				};
+			} forEach _allMapMarkers;
 		} else {
 			{
 				pr _ctrl = GETV(_x, "microPanel") select 0;
@@ -2450,6 +2494,26 @@ CLASS("ClientMapUI", "")
 		};
 	ENDMETHOD;
 
+	STATIC_METHOD(updateMiniPanelPosition)
+		params [P_THISCLASS, P_CONTROL("_ctrl"), P_CONTROL("_ctrlMap"), P_POSITION("_pos")];
+
+		// Update panel position
+		pr _posScreen = _ctrlMap posWorldToScreen _pos;
+		_posScreen params ["_xScreen", "_yScreen"];
+		if (_yScreen < safeZoneY) then {_yScreen = -1;};
+		(ctrlPosition _ctrl) params ["__x", "__y", "_w", "_h"];
+		_ctrl ctrlSetPosition [_xScreen - 0.5*_w, _yScreen + 0.03, _w, _h];
+		_ctrl ctrlCommit 0;
+	ENDMETHOD;
+
+	/*
+	Creates a mini panel control
+	rows - array of:
+	"_name", "_amount", "_baseAmount", "_bipolar"
+	_bipolar - optional, default false. If true, bar width is linear and can represent negative numbers:
+	bar width = _amount / _baseAmount
+	If false, bar width is logarithmic and can only represent positive numbers.
+	*/
 	STATIC_METHOD(createLocationMiniPanel)
 		params [P_THISCLASS, P_ARRAY("_rows")];
 
@@ -2459,7 +2523,7 @@ CLASS("ClientMapUI", "")
 		private _hGap = safeZoneH/safeZoneW*_wGap;
 		private _hRow = safeZoneH*0.015;
 		private _wCol0 = safeZoneW*0.04;
-		private _wCol1 = safeZoneW*0.015;
+		private _wCol1 = safeZoneW*0.02;
 		private _wBarMax = safeZoneW*0.04;
 		private _wBarNegative = safeZoneW*0.008;
 		private _hBar = safeZoneH*0.008;
@@ -2475,8 +2539,8 @@ CLASS("ClientMapUI", "")
 		_ctrlBackground ctrlSetBackgroundColor [0, 0, 0, 0.8];
 		_ctrlBackground ctrlCommit 0;
 
-		{
-			_x params ["_name", "_amount", "_baseAmount"];
+		{ //  forEach _rows;
+			_x params ["_name", "_amount", "_baseAmount", ["_bipolar", false]]; // _bipolar - when true, that value can be positive and negative
 			private _i = _forEachIndex;
 			
 			
@@ -2490,24 +2554,48 @@ CLASS("ClientMapUI", "")
 			_ctrlAmount ctrlCommit 0;
 			_ctrlAmount ctrlSetText (str _amount);
 
-			if (_amount > 0) then {
-				private _barSizeRel = 0.5*(ln (_amount/_baseAmount))+0.25; // https://www.desmos.com/calculator/7uastykkza
-				_barSizeRel = (_barSizeRel min 1.0) max 0.08; // Limited in range 0..1
-				private _barWidth = _barSizeRel*_wBarMax;
-				private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
-				_ctrlBar ctrlSetPosition [_wCol0 +_wCol1, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+			if (!_bipolar) then {
+				if (_amount > 0) then {
+					private _barSizeRel = 0.5*(ln (_amount/_baseAmount))+0.25; // https://www.desmos.com/calculator/7uastykkza
+					_barSizeRel = (_barSizeRel min 1.0) max 0.08; // Limited in range 0..1
+					private _barWidth = _barSizeRel*_wBarMax;
+					private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
+					_ctrlBar ctrlSetPosition [_wCol0 +_wCol1, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
 
-				// Color bar
-				_ctrlBar ctrlSetBackgroundColor [244/255, 104/255, 0, 1.0];
-				_ctrlBar ctrlCommit 0;
+					// Color bar
+					_ctrlBar ctrlSetBackgroundColor [244/255, 104/255, 0, 1.0];
+					_ctrlBar ctrlCommit 0;
+				} else {
+					private _color = [0.5, 0.5, 0.5, 1.0];
+
+					// Color texts
+					//_ctrlName ctrlSetTextColor _color;
+					_ctrlAmount ctrlSetTextColor _color;
+					//_ctrlName ctrlCommit 0;
+					_ctrlAmount ctrlCommit 0;
+				};
 			} else {
-				private _color = [0.5, 0.5, 0.5, 1.0];
+				if (_amount != 0) then {
+					private _barSizeRel = 0.5 * abs (_amount / _baseAmount);
+					private _barWidth = _barSizeRel*_wBarMax;
+					private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
 
-				// Color texts
-				//_ctrlName ctrlSetTextColor _color;
-				_ctrlAmount ctrlSetTextColor _color;
-				//_ctrlName ctrlCommit 0;
-				_ctrlAmount ctrlCommit 0;
+					if (_amount > 0) then {
+						_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+						_ctrlBar ctrlSetBackgroundColor [6/255, 124/255, 1, 1];
+					} else {
+						_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax - _barWidth, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+						_ctrlBar ctrlSetBackgroundColor [1, 0, 0, 1];
+					};
+					_ctrlBar ctrlCommit 0;
+
+					// Create a white mark at zero position
+					private _ctrlMark = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
+					_ctrlMark ctrlSetBackgroundColor [1,1,1,1];
+					pr _ctrlMarkWidth = safeZoneW * 0.0015;
+					_ctrlMark ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax - 0.5*_ctrlMarkWidth, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _ctrlMarkWidth, _hBar];
+					_ctrlmark ctrlCommit 0;
+				};
 			};
 			
 		} forEach _rows;

@@ -287,6 +287,9 @@ CLASS("DialogueCivilian", "Dialogue")
 			pr _civ = T_GETV("unit0");
 			UNDERCOVER_SET_UNIT_SUSPICIOUS(_civ, true);
 			T_SETV("incited", true);
+
+			// Notify game mode
+			CALLM2(gGameMode, "postMethodAsync", "civilianIncited", [_pos]);
 		};
 	ENDMETHOD;
 

@@ -78,7 +78,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				VARIABLE("playerRespawnPos");						// Position for player to respawn
 				VARIABLE("alarmDisabled");							// If the player disabled the alarm
-				VARIABLE("helperObject");
+				VARIABLE("helperObject");							// An arma object placed at position of this location, for proximity checks.
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -449,9 +449,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Increase infantry capacity
-		private _capacityInf = T_GETV("capacityInf") + _cap;
-		T_SETV("capacityInf", _capacityInf);
-		T_SETV_PUBLIC("capacityInf", _capacityInf);
+		if (_cap > 0) then {
+			private _capacityInf = T_GETV("capacityInf") + _cap;
+			_capacityInf = _capacityInf min CALLSM1("Location", "getCapacityInfForType", T_GETV("type"));
+			T_SETV("capacityInf", _capacityInf);
+			T_SETV_PUBLIC("capacityInf", _capacityInf);
+		};
 
 		// Check if it enabled radio functionality for the location
 		private _index = location_bt_radio find _type;
@@ -1099,7 +1102,31 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	public METHOD(getCapacityInf)
 		params [P_THISOBJECT];
-		T_GETV("capacityInf")
+		T_GETV("capacityInf");
+	ENDMETHOD;
+
+	/*
+	Method: getCapacityInfForType
+	Returns absolute maximum infantry capacity for given location type.
+	*/
+	public STATIC_METHOD(getCapacityInfForType)
+		params [P_THISOBJECT, P_STRING("_type")];
+		switch (_type) do {
+			case LOCATION_TYPE_UNKNOWN: { 0 }; // ??
+			case LOCATION_TYPE_CITY: { 50 };
+			case LOCATION_TYPE_CAMP: { 30 };
+			case LOCATION_TYPE_BASE: { 60 };
+			case LOCATION_TYPE_OUTPOST: { 40 };
+			case LOCATION_TYPE_DEPOT: { 40 };
+			case LOCATION_TYPE_POWER_PLANT: { 40 };
+			case LOCATION_TYPE_POLICE_STATION: { 20 };
+			case LOCATION_TYPE_RADIO_STATION: { 30 };
+			case LOCATION_TYPE_AIRPORT: { 60 };
+			case LOCATION_TYPE_ROADBLOCK: { 15 };
+			case LOCATION_TYPE_OBSERVATION_POST: { 10 };
+			case LOCATION_TYPE_RESPAWN: { 0 }; // ??
+			default { 40 };
+		};
 	ENDMETHOD;
 
 	/*
@@ -1511,10 +1538,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _baseRadius = 300; // Radius at which it 
 			private _border = T_GETV("border");
 			_border params ["_pos", "_a", "_b"];
-			private _area = 4*_a*_b;
-			private _density_km2 = 60;	// Amount of civilians per square km
-			private _civsRaw = ceil ((_density_km2/1e6) * _area);
-			CLAMP(_civsRaw, 5, 25)
+			private _area = 3.14*_a*_b;
+			private _density_km2 = 6000;	// Amount of civilians per square km
+			private _civsRaw = round(3.14*_a*_b*_density_km2/1000000);
+
+			OOP_INFO_1("Civilian capacity: %1", _civsRaw);
+
+			_civsRaw;
 
 			// https://www.desmos.com/calculator/nahw1lso9f
 			/*
@@ -2066,9 +2096,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} forEach T_GETV("savedObjects");
 
 		T_SETV("savedObjects", []);
-
-		// Restore civ presense module
-		T_CALLM1("setCapacityCiv", T_GETV("capacityCiv"));
 
 		// Enable player respawn
 		{

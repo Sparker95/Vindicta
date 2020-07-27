@@ -824,7 +824,6 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// AI
 		pr _tooltip = LOC("AI_Tooltip_Note");
-		["vin_aiskill_global",			"SLIDER",	[LOC("AI_Global"),				LOC("AI_Global_Tooltip")],				[_section, LOC("AI")],[0, 2, 1, 2],	true] call CBA_fnc_addSetting;
 		["vin_aiskill_aimingAccuracy",	"SLIDER",	[LOC("AI_Accuracy"),			_tooltip],								[_section, LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
 		["vin_aiskill_aimingShake",		"SLIDER",	[LOC("AI_Shake"),				_tooltip],								[_section, LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
 		["vin_aiskill_aimingSpeed",		"SLIDER",	[LOC("AI_Speed"),				_tooltip],								[_section, LOC("AI")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;

@@ -13,11 +13,9 @@ https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/
 FIX_LINE_NUMBERS()
 
 gCityStateData = [
-	["Stable",     [1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_STABLE */
-	["Agitated",   [1.0 , 0.96, 0.6 , 1.0], "#FFF599"], /* CITY_STATE_AGITATED */
-	["In Revolt!", [1.0 , 0.62, 0.28, 1.0], "#FF9e47"], /* CITY_STATE_IN_REVOLT */
-	["Suppressed", [1.0 , 0.28, 0.28, 1.0], "#FF4747"], /* CITY_STATE_SUPPRESSED */
-	["Liberated!", [0.44, 1.0 , 0.28, 1.0], "#70FF47"]  /* CITY_STATE_LIBERATED */
+	["Neutral",				[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	["Occupied by rebels",	[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	["Occupied by enemy",	[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"] /* CITY_STATE_NEUTRAL */
 ];
 
 /*
@@ -34,12 +32,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE_ATTR("lastUpdateTime", [ATTR_SAVE]);
 	// Player spawn points we calculate for each city spawn point
 	VARIABLE_ATTR("spawnPoints", [ATTR_SAVE]);
-	// All "active" cities. These are ones that have police stations, and where missions will be generated.
+	// All "active" cities. Currently all cities are active.
 	VARIABLE_ATTR("activeCities", [ATTR_SAVE]);
 	// Amount of casualties during the campaign, used in getCampaignProgess method
 	VARIABLE_ATTR("casualties", [ATTR_SAVE]);
 	// Campaign progress cached value
 	VARIABLE("campaignProgress");
+	// Aggression cached value
+	VARIABLE("aggression");
 
 	METHOD(new)
 		params [P_THISOBJECT];
@@ -50,9 +50,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
 		T_SETV("campaignProgress", 0);
+		T_SETV("aggression", 0);
 		if (IS_SERVER) then {	// Makes no sense for client
 			T_PUBLIC_VAR("casualties");
 			T_PUBLIC_VAR("campaignProgress");
+			T_PUBLIC_VAR("aggression");
 		};
 	ENDMETHOD;
 
@@ -119,7 +121,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			ENEMY_SIDE
 		} else {
 			if (_type == LOCATION_TYPE_OUTPOST) then {
-				if (random 100 < 50) then {
+				if (random 100 < 35) then {
 					//selectRandom [ENEMY_SIDE, WEST]
 					ENEMY_SIDE
 				} else {
@@ -140,12 +142,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	
 		// Select the cities we will consider for civil war activities
 		private _activeCities = GETSV("Location", "all") select { 
-			// If it is a city with a police station
-			// CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
-			// { { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION } count GETV(_x, "children") > 0 }
-
 			// If it is any city
-			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
+			CALLM0(_x, "getType") == LOCATION_TYPE_CITY;
 		};
 		T_SETV("activeCities", _activeCities);
 
@@ -239,6 +237,28 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Call to server to get the info
 			REMOTE_EXEC_METHOD(gGameModeServer, "postMethodAsync", ["resume"], ON_SERVER)
 		}] call vin_fnc_addDebugMenuItem;
+
+		["Game Mode", "Add City Influence Friendly", {
+			pr _loc = CALLSM1("Location", "getLocationAtPos", getPos player);
+			if (!IS_NULL_OBJECT(_loc)) then {
+				pr _gmData = GETV(_loc, "gameModeData");
+				pr _influence = GETV(_gmData, "influence");
+				_influence = _influence + 0.2;
+				SETV(_gmData, "influence", _influence);
+				systemChat format ["Added 0.2 influence, new value: %1", _influence];
+			};
+		}] call vin_fnc_addDebugMenuItem;
+
+		["Game Mode", "Add City Influence Enemy", {
+			pr _loc = CALLSM1("Location", "getLocationAtPos", getPos player);
+			if (!IS_NULL_OBJECT(_loc)) then {
+				pr _gmData = GETV(_loc, "gameModeData");
+				pr _influence = GETV(_gmData, "influence");
+				_influence = _influence - 0.2;
+				SETV(_gmData, "influence", _influence);
+				systemChat format ["Removed 0.2 influence, new value: %1", _influence];
+			};
+		}] call vin_fnc_addDebugMenuItem;
 	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to give the player some starter gear and holster their weapon for them.
@@ -281,9 +301,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	protected override METHOD(update)
 		params [P_THISOBJECT];
 		
-		T_CALLM("updateCampaignProgress", []);
+		T_CALLM0("updateCampaignProgress");
+		T_CALLM0("updateAggression");
 
-		T_CALLM("updatePhase", []);
+		T_CALLM0("updatePhase");
 		
 		//T_CALLM("updateEndCondition", []); // No need for it right now
 
@@ -291,32 +312,89 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		private _dt = 0 max (GAME_TIME - _lastUpdateTime) min 120; // It can be negative at start??
 		T_SETV("lastUpdateTime", GAME_TIME);
 
+		#ifdef DEBUG_CIVIL_WAR_GAME_MODE
+		_dt = 3600; // Accelerated 'time', each update is as if one hour has passed
+		#endif
+
 		// Update city stability and state
+		private _aggression = T_GETV("aggression");
 		{
 			private _city = _x;
 			private _cityData = GETV(_city, "gameModeData");
-			CALLM(_cityData, "update", [_city ARG _dt]);
+			CALLM(_cityData, "update", [_dt ARG _aggression]);
 		} forEach T_GETV("activeCities");
 
 	ENDMETHOD;
 
 	METHOD(updateCampaignProgress)
 		params [P_THISOBJECT];
-		private _totalInstability = 0;
-		private _maxInstability = 1;
+
+		private _totalCities = 0;
+		private _capturedCities = 0;
+
+		#ifdef _SQF_VM
+		_totalCities = 1; // Make it not complain of zero divisor
+		#endif
+
+		// Progress = captured cities / total cities
 
 		{
-			_totalInstability = _totalInstability + _x;
-			_maxInstability = _maxInstability + 1;
-		} forEach (T_GETV("activeCities") 
-			apply { GETV(_x, "gameModeData") }
-			apply { GETV(_x, "instability") });
+			_totalCities = _totalCities + 1;
 
-		private _stabRatio = _totalInstability / _maxInstability;
-		// https://www.desmos.com/calculator/nttiqqlvg9
-		// Hits 0.2 when _stabRatio is 0.05 and 1 when _stabRatio is 0.8
-		//private _campaignProgress = 1 min (0.9 * log(15 * _stabRatio + 1));
-		T_SETV_PUBLIC("campaignProgress", _stabRatio);
+			pr _influence = GETV(_x, "influence");
+			pr _state = GETV(_x, "state");
+			if (_state == CITY_STATE_FRIENDLY_CONTROL && _influence > 0.5) then {
+				_capturedCities = _capturedCities + 1;
+			};
+		} forEach (T_GETV("activeCities") 
+			apply { GETV(_x, "gameModeData") });
+
+		private _progress = _capturedCities / _totalCities;
+		_progress = CLAMP(_progress, 0.0, 1.0);
+
+		T_SETV_PUBLIC("campaignProgress", _progress);
+	ENDMETHOD;
+
+	METHOD(updateAggression)
+		params [P_THISOBJECT];
+
+		pr _casualties = T_GETV("casualties");
+		_casualties = _casualties min 200;
+
+		pr _locTypes = [LOCATION_TYPE_BASE, LOCATION_TYPE_CAMP, LOCATION_TYPE_OUTPOST, LOCATION_TYPE_AIRPORT, LOCATION_TYPE_ROADBLOCK];
+		pr _locs = CALLSM0("Location", "getAll") select { CALLM0(_x, "getType") in _locTypes; };
+		pr _nCapturedLocs = 0;
+		pr _nCapturedAirports = 0;
+		{
+			pr _garrisons = CALLM1(_x, "getGarrisons", FRIENDLY_SIDE);
+			if (count _garrisons > 0) then {
+				_nCapturedLocs = _nCapturedLocs + 1;
+				if (CALLM0(_x, "getType") == LOCATION_TYPE_AIRPORT) then {
+					_nCapturedAirports = _nCapturedAirports + 1;
+				};
+			};
+		} forEach _locs;
+
+		// _ownedLocationsRatio - value in range 0..1, max when more than 30% of military locations captured
+		// Capturing airports gives a 0.4 increase, but final value is within 0..1 anyway
+
+		pr _ownedLocationsRatio = _nCapturedLocs / (0.3*((count _locs) + 1));
+		if (_nCapturedAirports > 0) then {
+			_ownedLocationsRatio = _ownedLocationsRatio + 0.4;
+		};
+		_ownedLocationsRatio = CLAMP(_ownedLocationsRatio, 0.0, 1.0);
+
+		// _casualtiesRatio - value in range 0..1. Max when a certain amount of casualties was reached.
+		pr _casualtiesRatio = 0;
+		pr _casualties = T_GETV("casualties");
+		_casualtiesRatio = _casualties / 200;
+		_casualtiesRatio = CLAMP(_casualtiesRatio, 0.0, 1.0);
+
+		// Final aggression:
+		pr _aggression = 0.4*_ownedLocationsRatio + 0.6*_casualtiesRatio;
+		_aggression = CLAMP(_aggression, 0.0, 1.0);
+
+		T_SETV_PUBLIC("aggression", _aggression);
 	ENDMETHOD;
 	
 	METHOD(updatePhase)
@@ -324,7 +402,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		private _activeCities = T_GETV("activeCities");
 
-		pr _prog = T_CALLM0("getCampaignProgress");
+		pr _prog = T_CALLM0("getAggression");
 
 		switch(T_GETV("phase")) do {
 			case 0: {
@@ -464,17 +542,24 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	// Gets called in the main thread!
 	public override METHOD(unitDestroyed)
-		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
+		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction"), P_POSITION("_pos")];
+
+		OOP_INFO_1("Unit destroyed: %1", _this);
+
 		pr _valueToAdd = 0;
+		pr _influence = 0;
 		if (_catID == T_INF) then {
 			if (_side == ENEMY_SIDE) then {
 				if (_faction == "police") then {	// We less care for police killed
 					_valueToAdd = 0.3;
+					_influence = 0.05;
 				} else {
 					_valueToAdd = 1;
+					_influence = 0.07;
 				};
 			} else {
 				_valueToAdd = 0.1;
+				_influence = 0.03;	// Killed friendlies don't contribute as much as enemies
 			};
 		} else {
 			if (_side == ENEMY_SIDE) then {
@@ -482,28 +567,76 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			} else {
 				_valueToAdd = 0;
 			};
+			_influence = 0.2; // Destroying vehicles adds much influence
 		};
 		pr _casualties = T_GETV("casualties");
 		_casualties = _casualties + _valueToAdd;
 		T_SETV("casualties", _casualties);
 		PUBLIC_VAR(_thisObject, "casualties");
+
+
+		// Add influence to nearby cities
+		if (_influence != 0) then {
+			if (_pos#0 != 0) then {
+				if (_side != ENEMY_SIDE) then { _influence = -_influence; };
+				T_CALLM3("addInfluenceAtPos", _pos, 2500, _influence);
+			};
+		};
 	ENDMETHOD;
+
+	// Gets called in game mode thread!
+	public override METHOD(civilianKilled)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+
+		OOP_INFO_1("Civilian killed at: %1", _pos);
+
+		// Reduce influence
+		T_CALLM3("addInfluenceAtPos", _pos, 1500, -0.15);
+	ENDMETHOD;
+
+	public override METHOD(civilianUntied)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		OOP_INFO_1("Civilian untied at: %1", _pos);
+		T_CALLM3("addInfluenceAtPos", _pos, 500, 0.15);
+	ENDMETHOD;
+
+	public override METHOD(civilianIncited)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		OOP_INFO_1("Civilian incited at: %1", _pos);
+		T_CALLM3("addInfluenceAtPos", _pos, 500, 0.07);
+	ENDMETHOD;
+
+	public override METHOD(addInfluenceAtPos)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius"), P_NUMBER("_influence")];
+		
+		pr _nearCities = CALLSM2("Location", "nearLocations", _pos, _radius);
+		pr _thisLoc = CALLSM1("Location", "getLocationAtPos", _pos);
+		if (!IS_NULL_OBJECT(_thisLoc)) then {
+			_nearCities pushBackUnique _thisLoc;
+		};
+		_nearCities = _nearCities select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY;};
+		{
+			pr _gmData = GETV(_x, "gameModeData");
+			CALLM1(_gmData, "addInfluenceScaled", _influence);
+		} forEach _nearCities;
+	ENDMETHOD;
+
 
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
 	public override METHOD(getRecruitmentRadius)
 		params [P_THISOBJECT];
-		2000
+		4000
 	ENDMETHOD;
 
 	// Returns an array of cities where we can recruit from
 	public override METHOD(getRecruitCities)
-		params [P_THISOBJECT, P_POSITION("_pos")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_SIDE("_side")];
 		private _radius = T_CALLM0("getRecruitmentRadius");
 
 		// Get nearby cities
 		private _cities = ( CALLSM2("Location", "overlappingLocations", _pos, _radius) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY} ) select {
 			private _gmdata = GETV(_x, "gameModeData");
-			CALLM0(_gmdata, "getRecruitCount") > 0
+			CALLM1(_gmdata, "getRecruitCount", _side) > 0
 		};
 
 		_cities
@@ -511,23 +644,33 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	// Returns how many recruits we can get at a certain place from nearby cities
 	public override METHOD(getRecruitCount)
-		params [P_THISOBJECT, P_ARRAY("_cities")];
+		params [P_THISOBJECT, P_ARRAY("_cities"), P_SIDE("_side")];
 
 		private _sum = 0;
 		{
 			private _gmdata = GETV(_x, "gameModeData");
-			_sum = _sum + CALLM0(_gmdata, "getRecruitCount");
+			_sum = _sum + CALLM1(_gmdata, "getRecruitCount",_side);
 		} forEach _cities;
 
-		_sum
+		_sum;
 	ENDMETHOD;
 
 	public override METHOD(getCampaignProgress)
 		params [P_THISOBJECT];
-		#ifdef DEBUG_END_GAME
-		0.9
+		#ifdef DEBUG_SET_PROGRESS
+		DEBUG_SET_PROGRESS
 		#else
 		T_GETV("campaignProgress");
+		#endif
+		FIX_LINE_NUMBERS()
+	ENDMETHOD;
+
+	public override METHOD(getAggression)
+		params [P_THISOBJECT];
+		#ifdef DEBUG_SET_AGGRESSION
+		DEBUG_SET_AGGRESSION
+		#else
+		T_GETV("aggression");
 		#endif
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;

@@ -268,7 +268,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Suspend/resume the game on dedicated
 		#ifndef _SQF_VM
 		if(IS_DEDICATED) then {
-			if(vin_server_suspendWhenEmpty && count HUMAN_PLAYERS == 0) then {
+			if(	vin_server_suspendWhenEmpty &&
+				count HUMAN_PLAYERS == 0 &&
+				canSuspend						// Make sure it's never called during init
+				) then {
 				T_CALLM1("suspend", "Game suspended while no players connected");
 				// Wait for a player to connect again. Saving on empty server is delayed 5 minutes from when the 
 				// last player disconnected to avoid churning.
@@ -692,7 +695,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		private _garrisons = [];
 		if(_locationType in [LOCATION_TYPE_AIRPORT, LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST]) then {
-			private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
+			private _cInf = (0.6 * T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf"))) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
 			private _cVehGround = switch (_locationType) do {
 				case LOCATION_TYPE_AIRPORT: {15};
 				case LOCATION_TYPE_BASE: {10};
@@ -977,7 +980,25 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Override this to perform actions when a unit is killed
 	public virtual METHOD(unitDestroyed)
-		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
+		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction"), P_POSITION("_pos")];
+	ENDMETHOD;
+
+	// Override to implement what happens when some influence must be added at a position
+	public virtual METHOD(addInfluenceAtPos)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_value")];
+	ENDMETHOD;
+
+	// Override this to perform actions when a civilian is killed
+	public virtual METHOD(civilianKilled)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+	ENDMETHOD;
+
+	public virtual METHOD(civilianUntied)
+		params [P_THISOBJECT, P_POSITION("_pos")];
+	ENDMETHOD;
+
+	public virtual METHOD(civilianIncited)
+		params [P_THISOBJECT, P_POSITION("_pos")];
 	ENDMETHOD;
 
 	// Override this to create gameModeData of a location
@@ -989,14 +1010,35 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Must be here for common interface
 	// Returns an array of cities where we can recruit from
 	public virtual METHOD(getRecruitCities)
-		params [P_THISOBJECT, P_POSITION("_pos")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_SIDE("_side")];
 		[]
 	ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
 	public virtual METHOD(getRecruitCount)
-		params [P_THISOBJECT, P_ARRAY("_cities")];
+		params [P_THISOBJECT, P_ARRAY("_cities"), P_SIDE("_side")];
 		0
+	ENDMETHOD;
+
+	// Returns nearest city with at least given amount of recruits, or null object
+	public METHOD(getNearestRecruitCity)
+		params [P_THISOBJECT, P_POSITION("_pos"), P_SIDE("_side"), P_NUMBER("_minAmount")];
+
+		pr _cities = T_CALLM2("getRecruitCities", _pos, _side) select {
+			pr _amount = T_CALLM2("getRecruitCount", [_x], _side);
+			_amount > _minAmount;
+		};
+
+		// Bail if there are no such cities nearby
+		if (count _cities == 0) exitWith {
+			NULL_OBJECT;
+		};
+
+		pr _array = _cities apply {[CALLM0(_x, "getPos") distance2D _pos, _x]};
+		_array sort ASCENDING;
+		pr _nearestCity = _array#0#1;
+
+		_nearestCity;
 	ENDMETHOD;
 
 	public virtual METHOD(getRecruitmentRadius)
@@ -1006,6 +1048,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Must return a value 0...1 to drive some AICommander logic
 	public virtual METHOD(getCampaignProgress)
+		0.5
+	ENDMETHOD;
+
+	// Must return a value 0...1 to drive some AICommander logic
+	public virtual METHOD(getAggression)
 		0.5
 	ENDMETHOD;
 
@@ -1203,43 +1250,50 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM0(_loc, "findAllObjects");
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4 or CALLM0(_loc, "getCapacityCiv") >= 25)) then {
-				// TODO: Add some visual/designs to this
-				private _posPolice = +GETV(_loc, "pos");
-				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
-				// Find first building which is one of the police building types
-				private _possiblePoliceBuildings = (_posPolice nearObjects 200) select { _x isKindOf "House" } select { typeOf _x in location_bt_police };
+			if (_locType == LOCATION_TYPE_CITY) then {
+				pr _chancePolice = 0.4;
+				if (CALLM0(_loc, "getCapacityCiv") > 1000) then {
+					_chancePolice = 0.7;
+				};
 
-				if ((count _possiblePoliceBuildings) > 0) then {
-					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
-					private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
-					private _policeStation = NEW_PUBLIC("Location", _args);
-					CALLM1(_policeStation, "setBorderCircle", 10);
-					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
-					CALLM0(_policeStation, "addSpawnPosFromBuildings");
-					CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
-					CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
+				if (random 1 < _chancePolice) then {
+					// TODO: Add some visual/designs to this
+					private _posPolice = +GETV(_loc, "pos");
+					_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
+					// Find first building which is one of the police building types
+					private _possiblePoliceBuildings = (_posPolice nearObjects 200) select { _x isKindOf "House" } select { typeOf _x in location_bt_police };
 
-					// TODO: Get city size or building count and scale police capacity from that ?
-					CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));
-					CALLM(_loc, "addChild", [_policeStation]);
-					SETV(_policeStation, "useParentPatrolWaypoints", true);
-					// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
+					if ((count _possiblePoliceBuildings) > 0) then {
+						private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
+						private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
+						private _policeStation = NEW_PUBLIC("Location", _args);
+						CALLM1(_policeStation, "setBorderCircle", 10);
+						CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
+						CALLM0(_policeStation, "addSpawnPosFromBuildings");
+						CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
+						CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
 
-					// Decorate the police station building
-					// todo maybe move it to another place?
-					private _type = typeOf _policeStationBuilding;
-					private _index = location_decorations_police findIf {_type in (_x#0)};
-					if (_index != -1) then {
-						private _arrayExport = location_decorations_police#_index#1;
-						{
-							_x params ["_offset", "_vDirAndUp"];
-							private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
-							_texObj setObjectTextureGlobal [0, "z\vindicta\addons\ui\pictures\policeSign.paa"];
-							_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
-							_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
-							_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));
-						} forEach _arrayExport;
+						// TODO: Get city size or building count and scale police capacity from that ?
+						CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));
+						CALLM(_loc, "addChild", [_policeStation]);
+						SETV(_policeStation, "useParentPatrolWaypoints", true);
+						// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
+
+						// Decorate the police station building
+						// todo maybe move it to another place?
+						private _type = typeOf _policeStationBuilding;
+						private _index = location_decorations_police findIf {_type in (_x#0)};
+						if (_index != -1) then {
+							private _arrayExport = location_decorations_police#_index#1;
+							{
+								_x params ["_offset", "_vDirAndUp"];
+								private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
+								_texObj setObjectTextureGlobal [0, "z\vindicta\addons\ui\pictures\policeSign.paa"];
+								_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
+								_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
+								_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));
+							} forEach _arrayExport;
+						};
 					};
 				};
 			};

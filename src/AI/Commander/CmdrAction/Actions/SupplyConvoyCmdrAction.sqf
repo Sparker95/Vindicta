@@ -632,7 +632,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		switch (_type) do {
 			case ACTION_SUPPLY_TYPE_BUILDING: {
 				_cargo set [CARGO_ITEMS, [
-					["vin_build_res_0", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 25, 50 * _amount)]
+					["vin_build_res_0", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 25, 500 * _amount)]
 				]];
 			};
 			case ACTION_SUPPLY_TYPE_AMMO: {
