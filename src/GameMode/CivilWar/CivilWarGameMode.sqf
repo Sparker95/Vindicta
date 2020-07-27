@@ -391,7 +391,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		_casualtiesRatio = CLAMP(_casualtiesRatio, 0.0, 1.0);
 
 		// Final aggression:
-		pr _aggression = 0.4*_ownedLocationsRatio + 0.6*_casualtiesRatio);
+		pr _aggression = 0.4*_ownedLocationsRatio + 0.6*_casualtiesRatio;
 		_aggression = CLAMP(_aggression, 0.0, 1.0);
 
 		T_SETV_PUBLIC("aggression", _aggression);

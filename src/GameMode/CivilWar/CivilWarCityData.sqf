@@ -282,10 +282,13 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _return = 0;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_SIDE("_side")];
-			if (_side == FRIENDLY_SIDE) then {
+			pr _state = T_GETV("state");
+			if (_side == FRIENDLY_SIDE && _state != CITY_STATE_ENEMY_CONTROL) then {
 				_return = floor T_GETV("nRecruitsFriendly");
 			} else {
-				_return = floor T_GETV("nRecruitsEnemy");
+				if (_side == ENEMY_SIDE && _state != CITY_STATE_FRIENDLY_CONTROL) then {
+					_return = floor T_GETV("nRecruitsEnemy");
+				};
 			};
 		};
 		_return
