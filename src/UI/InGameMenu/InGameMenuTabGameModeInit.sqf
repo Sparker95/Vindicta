@@ -77,8 +77,10 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 					if (count (_t#T_MISSING_ADDONS) > 0) then {
 						_cbEnemyFaction lbSetColor [_indexCB, MUIC_COLOR_BTN_RED];
 					};
+
+					OOP_INFO_2("  Added military faction: %1: %2", _counter, _lbData);
+					_counter = _counter + 1;
 				};
-				_counter = _counter + 1;
 			};
 		} forEach (call t_fnc_getAllTemplateNames);
 		_cbEnemyFaction lbSetCurSel 0;
@@ -169,6 +171,10 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 		pr _enemyTemplateName = LB_CUR_SEL_DATA(_cbEnemyFaction);
 		pr _policeTemplateName = LB_CUR_SEL_DATA(_cbPoliceFaction);
 		pr _civilianTemplateName = LB_CUR_SEL_DATA(_cbCivilianFaction);
+		OOP_INFO_1("Selected enemy faction: %1", _enemyTemplateName);
+		OOP_INFO_1("Selected police faction: %1", _policeTemplateName);
+		OOP_INFO_1("Selected civilian faction: %1", _civilianTemplateName);
+
 		{
 			pr _t = [_x] call t_fnc_getTemplate;
 			pr _rowIndex = _staticDescription lnbAddRow [_t#T_DISPLAY_NAME, (localize "STR_INIT_TOOLTIPHOVER")];
