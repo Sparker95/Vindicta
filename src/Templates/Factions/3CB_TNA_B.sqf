@@ -35,7 +35,7 @@ _inf set [T_INF_ammo, ["UK3CB_TKA_B_STATIC_TRI_AGS30", "UK3CB_TKA_B_STATIC_TRI_D
 _inf set [T_INF_LAT, ["UK3CB_TKA_B_LAT"]];
 _inf set [T_INF_AT, ["UK3CB_TKA_B_AT"]];
 _inf set [T_INF_AA, ["UK3CB_TKA_B_AA"]];
-_inf set [T_INF_LMG, ["UK3CB_TKA_B_AR"]];
+_inf set [T_INF_LMG, ["UK3CB_TKA_B_AR_1"]];
 _inf set [T_INF_HMG, ["UK3CB_TKA_B_MG"]];
 _inf set [T_INF_medic, ["UK3CB_TKA_B_MD"]];
 _inf set [T_INF_engineer, ["UK3CB_TKA_B_ENG"]];
