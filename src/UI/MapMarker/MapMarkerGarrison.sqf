@@ -53,6 +53,12 @@ CLASS("MapMarkerGarrison", "MapMarker")
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		OOP_INFO_1("DELETE mrkName: %1", _mrkName);
 		deleteMarkerLocal _mrkName;
+
+		// Delete micro panel if it exists
+		pr _microPanel = T_GETV("microPanel");
+		if (!isNull _microPanel) then {
+			ctrlDelete _microPanel;
+		};
 	ENDMETHOD;
 
 	public METHOD(getGarrisonRecord)

@@ -322,18 +322,19 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 	/*
 	Method: setIntelState
-	Sets the state of the intel associated with this action. Updates it for enemies, but only if state was changed.
+	Sets the state of the intel associated with this action. /// (not any more) Updates it for enemies, but only if state was changed.
 	*/
 	protected METHOD(setIntelState)
 		params [P_THISOBJECT, ["_state", INTEL_ACTION_STATE_INACTIVE, [0]], ["_updateForEnemies", true, [true]]];
 		private _intelClone = T_GETV("intelClone");
 		if (!IS_NULL_OBJECT(_intelClone)) then {
-			private _statePrev = GETV(_intelClone, "state");
+			//private _statePrev = GETV(_intelClone, "state");
 			SETV(_intelClone, "state", _state);
 			// If state has changed and update for enemies was requested
-			if (_state != _statePrev && _updateForEnemies) then {
+			//if (_state != _statePrev && _updateForEnemies) then {
+			// Disabled for now to see if it resolves error when state isn't synchronized for some reason
 				T_CALLM0("updateIntelForEnemies");
-			};
+			//};
 		};
 	ENDMETHOD;
 

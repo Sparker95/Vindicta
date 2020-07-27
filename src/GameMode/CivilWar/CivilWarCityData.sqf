@@ -94,10 +94,10 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		// If the location is spawned and there are twice as many friendly as enemy units then it is liberated, otherwise it is suppressed
 		private _friendlyCount = 0;
-		{ _friendlyCount = _friendlyCount + CALLM0(_x, "countConsciousInfantryUnits") } forEach CALLM1(_city, "getGarrisonsRecursive", FRIENDLY_SIDE);
+		{ _friendlyCount = _friendlyCount + CALLM0(_x, "countConsciousInfantryUnits") } forEach CALLM1(_city, "getGarrisons", FRIENDLY_SIDE);
 
 		private _enemyCount = 0;
-		{ _enemyCount = _enemyCount + CALLM0(_x, "countConsciousInfantryUnits") } forEach CALLM1(_city, "getGarrisonsRecursive", ENEMY_SIDE);
+		{ _enemyCount = _enemyCount + CALLM0(_x, "countConsciousInfantryUnits") } forEach CALLM1(_city, "getGarrisons", ENEMY_SIDE);
 
 		// Update city state
 		if (_friendlyCount == 0 && _enemyCount == 0) then {
