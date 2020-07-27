@@ -96,6 +96,12 @@ CLASS("MapMarkerLocation", "MapMarker")
 			deleteMarkerLocal (_thisObject + _x);
 		} forEach [MARKER_SUFFIX, RADIUS_MARKER_SUFFIX, NOTIFICATION_SUFFIX, BG_SUFFIX];
 
+		// Delete micro panel if it exists
+		pr _microPanel = T_GETV("microPanel");
+		if (!isNull _microPanel) then {
+			ctrlDelete _microPanel;
+		};
+
 	ENDMETHOD;
 
 	// Sets the "mouse over" state of this object
