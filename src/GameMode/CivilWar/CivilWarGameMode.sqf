@@ -696,6 +696,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		PUBLIC_VAR(_thisObject, "casualties");
 
 		T_CALLM0("updateCampaignProgress");
+		T_CALLM0("updateAggression");
 
 		true
 	ENDMETHOD;
