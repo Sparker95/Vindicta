@@ -527,6 +527,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _cityData = GETV(_location, "gameModeData");
 			CALLM(_cityData, "spawned", [_location]);
 		};
+		0;
 	ENDMETHOD;
 
 	// Overrides GameModeBase, we want to despawn missions etc in some locations

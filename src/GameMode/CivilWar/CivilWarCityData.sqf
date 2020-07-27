@@ -62,6 +62,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		// It's quite confusing so I have disabled it for now, sorry
 		//_ambientMissions pushBack NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED ARG CITY_STATE_IN_REVOLT]]);
+		0;
 	ENDMETHOD;
 
 	public METHOD(despawned)
