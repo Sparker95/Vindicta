@@ -56,8 +56,8 @@ CLASS("MapMarkerGarrison", "MapMarker")
 
 		// Delete micro panel if it exists
 		pr _microPanel = T_GETV("microPanel");
-		if (!isNull _microPanel) then {
-			ctrlDelete _microPanel;
+		if (!isNull _microPanel#0) then {
+			ctrlDelete _microPanel#0;
 		};
 	ENDMETHOD;
 

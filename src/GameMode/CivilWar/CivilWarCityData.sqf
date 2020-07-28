@@ -253,9 +253,14 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		_rate;
 	ENDMETHOD;
 
-	METHOD(getInfluence)
+	public METHOD(getInfluence)
 		params [P_THISOBJECT];
 		T_GETV("influence");
+	ENDMETHOD;
+
+	public METHOD(getState)
+		params [P_THISOBJECT];
+		T_GETV("state");
 	ENDMETHOD;
 
 	public METHOD(removeRecruits)
