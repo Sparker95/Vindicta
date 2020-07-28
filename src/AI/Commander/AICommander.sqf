@@ -2935,7 +2935,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		gDebugReinfProgress = gDebugReinfProgress + 0.1;
 		systemChat format ["Reinforcing %1 now at %2 progress", _side, _progress];
 		#else
-		private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		private _progress = CALLM0(gGameMode, "getAggression"); // 0..1
 		#endif
 		FIX_LINE_NUMBERS()
 
