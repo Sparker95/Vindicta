@@ -15,6 +15,12 @@ CLASS("Civilian", "GOAP_Agent")
 	VARIABLE("hO");
 	VARIABLE("AI");
 
+	// Civilian supports resistence and will give intel and help
+	/* public */ VARIABLE("supportsResistance");
+
+	// True when this civilian has helped already (gave resources, etc)
+	/* public */ VARIABLE("hasContributed");
+
 	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_civObjectHandle"), P_OOP_OBJECT("_civPresence")];
 
@@ -62,6 +68,21 @@ CLASS("Civilian", "GOAP_Agent")
 		
 		// Start AI
 		CALLM0(_AI, "start");
+
+		// Check if civilian supports resistance
+		pr _loc = CALLM0(_civPresence, "getLocation");
+		pr _support = false;
+		if (!IS_NULL_OBJECT(_loc)) then {
+			if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
+				pr _gmdata = CALLM0(_loc, "getGameModeData");
+				pr _influence = CALLM0(_gmData, "getInfluence");
+				pr _chance = MAP_TO_RANGE(_influence, 0, 1, 0.1, 0.6);
+				_support = true; // (random 1) < _chance;
+			};
+		};
+		T_SETV("supportsResistance", _support);
+
+		T_SETV("hasContributed", false);
 	ENDMETHOD;
 
 	METHOD(delete)

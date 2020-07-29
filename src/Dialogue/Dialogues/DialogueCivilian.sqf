@@ -8,12 +8,19 @@
 #define OOP_CLASS_NAME DialogueCivilian
 CLASS("DialogueCivilian", "Dialogue")
 
+	// <Civilian> object handle
+	VARIABLE("civ");
+
 	// We can incite civilian only once during the dialogue
+	// todo it must be stored in Civilian object
 	VARIABLE("incited");
 
 	METHOD(new)
 		params [P_THISOBJECT];
 		T_SETV("incited", false);
+
+		pr _civ = CALLSM1("Civilian", "getCivilianFromObjectHandle", T_GETV("unit0"));
+		T_SETV("civ", _civ);
 	ENDMETHOD;
 
 	protected override METHOD(getNodes)
@@ -62,28 +69,65 @@ CLASS("DialogueCivilian", "Dialogue")
 			"Move out of here! This place is not safe!"
 		];
 
+		pr _phrasesIntel = [
+			"Do you know anything interesting about military activity nearby?",
+			"Have you got any intel about the military?",
+			"Any idea if the army is planning something?"
+		];
+
+		pr _phrasesAskHelp = [
+			"The resistence needs your help! Do you have any building supplies?",
+			"Listen, the resistence needs some building supplies, do you have any?"
+		];
+
+		pr _phrasesAgreeHelp = [
+			"Here, take these construction supplies, that's all I have.",
+			"Take these construction supplies, that's all I can help you with."
+		];
+
+		pr _phrasesDontSupportResistance = [
+			"I can't help you with it.",
+			"Sorry I can't help you.",
+			"There is nothing I can help you with."
+		];
+
 		pr _array = [
 			//NODE_SENTENCE("", TALKER_PLAYER, g_phrasesPlayerStartDialogue),
 			NODE_SENTENCE("", TALKER_NPC, ["Sure!" ARG "Yes?" ARG "How can I help you?"]),
 			
 			// Options: 
-			NODE_OPTIONS("options", ["opt_locations" ARG "opt_incite" ARG "opt_scare" ARG "opt_time" ARG "opt_bye"]),
+			NODE_OPTIONS("options", ["opt_locations" ARG "opt_intel" ARG "opt_incite" ARG "opt_askContribute" ARG "opt_scare" ARG "opt_time" ARG "opt_bye"]),
 
 			// Option: ask about military locations
 			NODE_OPTION("opt_locations", _phrasesPlayerAskMilitaryLocations),
 			NODE_CALL("", "subroutineTellLocations"),
-			NODE_JUMP("", "anythingElse"),
+			NODE_JUMP("", "node_anythingElse"),
+
+			// Option: ask about intel
+			NODE_OPTION("opt_intel", selectRandom _phrasesIntel),
+			NODE_CALL("", "subroutineTellIntel"),
+			NODE_JUMP("", "node_anythingElse"),
 
 			// Option: incite civilian
 			NODE_OPTION("opt_incite", _phrasesIncite),
-			NODE_JUMP_IF("", "alreadyIncited", "isIncited", []),	// If already incited
+			NODE_JUMP_IF("", "node_alreadyIncited", "isIncited", []),	// If already incited
 			NODE_SENTENCE("", TALKER_NPC, _phrasesCivilianInciteResponse),
 			NODE_CALL_METHOD("", "inciteCivilian", []),
 			NODE_SENTENCE("", TALKER_PLAYER, "Tell it to others!"),
 			NODE_JUMP("", "options"),
 
-			NODE_SENTENCE("alreadyIncited", TALKER_NPC, "I know! It's dangerous to discuss this."),
+			NODE_SENTENCE("node_alreadyIncited", TALKER_NPC, "I know! It's dangerous to discuss this."),
 			NODE_JUMP("", "options"),
+
+			// Option: ask for contribution
+			NODE_OPTION("opt_askContribute", selectRandom _phrasesAskHelp),
+			NODE_JUMP_IF("", "node_alreadyContributed", "hasContributed", []),
+			NODE_CALL_METHOD("", "giveBuildResources", []),
+			NODE_SENTENCE("", TALKER_NPC, selectRandom _phrasesAgreeHelp),
+			NODE_JUMP("", "node_anythingElse"),
+
+			NODE_SENTENCE("node_alreadyContributed", TALKER_NPC, "Sorry I gave all I could already!"),
+			NODE_JUMP("", "node_anythingElse"),
 
 			// Option: scare civilian
 			NODE_OPTION("opt_scare", _phrasesScare),
@@ -94,7 +138,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			NODE_OPTION("opt_time", "What time is it?"),
 			NODE_SENTENCE_METHOD("", TALKER_NPC, "sentenceTime"),
 			NODE_SENTENCE("", TALKER_PLAYER, "Thanks!"),
-			NODE_JUMP("", "anythingElse"),
+			NODE_JUMP("", "node_anythingElse"),
 
 			// Option: leave
 			NODE_OPTION("opt_bye", "Bye! I must leave now."),
@@ -102,11 +146,12 @@ CLASS("DialogueCivilian", "Dialogue")
 			NODE_END(""),
 
 			// Genertic 'Anything else?' reply after the end of some option branch
-			NODE_SENTENCE("anythingElse", TALKER_NPC, "Anything else?"),
+			NODE_SENTENCE("node_anythingElse", TALKER_NPC, "Anything else?"),
 			NODE_JUMP("", "options") // Go back to options
 		];
 
 		T_CALLM1("generateLocationsNodes", _array); // Extra nodes are appended to the end
+		T_CALLM1("generateIntelNodes", _array);
 
 		_array;
 	ENDMETHOD;
@@ -225,6 +270,34 @@ CLASS("DialogueCivilian", "Dialogue")
 
 	ENDMETHOD;
 
+	METHOD(generateLocationsNodes)
+		params [P_THISOBJECT, P_ARRAY("_nodes")];
+
+		OOP_INFO_0("generateIntelNodes");
+
+
+		_a = [];
+		_a pushBack NODE_SENTENCE("subroutineTellLocations", TALKER_NPC, ["Let me think..." ARG "Give me a second..." ARG "One moment. Let me think..."]);
+		
+
+		// This dialogue part is called as a subroutine
+		// Therefore we must return back
+		_a pushBack NODE_RETURN("");
+
+
+		// Civilian: I must go
+		_strMustGo = selectRandom [
+			"That's all I can tell you.",
+			"I don't know anything else.",
+			"That's all I know."
+		];
+		_a pushBack NODE_SENTENCE("", TALKER_NPC, _strMustGo);
+
+		// Combine the node arrays
+		_nodes append _a;
+
+	ENDMETHOD;
+
 	METHOD(revealLocation)
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc"), P_STRING("_type"), P_NUMBER("_distance")];
 
@@ -278,6 +351,12 @@ CLASS("DialogueCivilian", "Dialogue")
 		T_GETV("incited") || UNDERCOVER_IS_UNIT_SUSPICIOUS(_civ);
 	ENDMETHOD;
 
+	METHOD(hasContributed)
+		params [P_THISOBJECT];
+		pr _civ = T_GETV("civ");
+		GETV(_civ, "hasContributed");
+	ENDMETHOD;
+
 	METHOD(inciteCivilian)
 		params [P_THISOBJECT];
 		if (!T_CALLM0("isIncited")) then {
@@ -297,6 +376,28 @@ CLASS("DialogueCivilian", "Dialogue")
 		params [P_THISOBJECT];
 		pr _civ = T_GETV("unit0");
 		CALLSM1("AIUnitCivilian", "dangerEventHandler", _civ);
+	ENDMETHOD;
+
+	METHOD(giveBuildResources)
+		params [P_THISOBJECT];
+
+		SETV(T_GETV("civ"), "hasContributed", true);
+
+		pr _civ = T_GETV("unit0");
+		pr _player = T_GETV("unit1");
+		pr _count = round (10 + random 10);
+
+		pr _canAdd = _player canAddItemToBackpack ["vin_build_res_0", _count];
+
+		if (_canAdd) then {
+			(unitbackpack _player) addMagazineCargoGlobal ["vin_build_res_0", _count];
+		} else {
+			pr _holder = createVehicle ["WeaponHolderSimulated", getPosATL _civ, [], 0, "CAN_COLLIDE"]; 
+			_holder addBackpackCargo ["B_FieldPack_khk", 1];
+			(firstbackpack _holder) addMagazineCargoGlobal ["vin_build_res_0", _count];
+		};
+
+
 	ENDMETHOD;
 
 ENDCLASS;

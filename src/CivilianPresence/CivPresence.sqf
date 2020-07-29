@@ -27,6 +27,9 @@ CLASS("CivPresence", "")
 	// Center position
 	VARIABLE("pos");
 
+	// Location at this position
+	VARIABLE("loc");
+
 	// Amount of houses in this area, used for calculation of civ count
 	VARIABLE("nHouses");
 
@@ -66,7 +69,7 @@ CLASS("CivPresence", "")
 
 	// 
 	/* private */ METHOD(new)
-		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy"), P_ARRAY("_buildingPositions"), P_ARRAY("_waypoints"), P_ARRAY("_animObjects")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy"), P_ARRAY("_buildingPositions"), P_ARRAY("_waypoints"), P_ARRAY("_animObjects"), P_OOP_OBJECT("_loc")];
 
 		pr _area = [_pos, _halfWidthx, _halfWidthy, 0, true]; // pos, a, b, angle, rectangle
 		T_SETV("area", _area);
@@ -131,6 +134,7 @@ CLASS("CivPresence", "")
 		T_SETV("ambientAnimObjects", _animObjects);
 		T_SETV("defaultCivType", "");
 		T_SETV("unarmedCivTypes", []);
+		T_SETV("loc", _loc);
 
 	ENDMETHOD;
 
@@ -176,7 +180,7 @@ CLASS("CivPresence", "")
 
 	// Creates an object here, returns object or NULL_OBJECT if it cant't be created here
 	METHOD(tryCreateInstance)
-		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfWidthx"), P_NUMBER("_halfWidthy"), P_OOP_OBJECT("_loc")];
 
 		OOP_INFO_1("tryCreateInstance: %1", _this);
 
@@ -267,7 +271,7 @@ CLASS("CivPresence", "")
 		pr _instance = NULL_OBJECT;
 		if (_success) then {			
 
-			pr _args = [_pos, _halfWidthX, _halfWidthY, _buildingPositions, _waypoints, _animObjects];
+			pr _args = [_pos, _halfWidthX, _halfWidthY, _buildingPositions, _waypoints, _animObjects, _loc];
 			_instance = NEW("CivPresence", _args);
 		};
 
@@ -523,6 +527,11 @@ CLASS("CivPresence", "")
 	METHOD(getRandomWaypoint)
 		params [P_THISOBJECT];
 		selectRandom T_GETV("waypointsAGL");
+	ENDMETHOD;
+
+	METHOD(getLocation)
+		params [P_THISOBJECT];
+		T_GETV("loc");
 	ENDMETHOD;
 
 ENDCLASS;
