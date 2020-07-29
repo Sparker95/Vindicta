@@ -3198,13 +3198,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
 			while {_vicSpace > 0} do {
 				private _currRatios = _vehRatios apply { [_x#0, _x#1, CALLM1(_garrison, "countUnits", [[T_VEH ARG _x#0]])] };
-				private _ratioSum = 0;
-				{ _ratioSum = _ratioSum + _x#2 } forEach _currRatios;
 				private _bestVeh = -1;
 				private _bestDiff = 0;
 				{
 					// Difference in desired ratio and current ratio
-					private _ratioDiff = _x#1 - _x#2 / _ratioSum;
+					private _ratioDiff = _x#1 - _x#2;
 					if(_ratioDiff >= _bestDiff) then {
 						_bestDiff = _ratioDiff;
 						_bestVeh = _x#0;
