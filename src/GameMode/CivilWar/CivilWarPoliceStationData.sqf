@@ -38,7 +38,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			if (count _garrisons > 0 and  { CALLM0(_garrisons#0, "countInfantryUnits") <= 4 } and {!T_GETV("reinfSent")}) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				// If we liberated the city then we spawn police on our own side!
-				private _side = if(_cityState == CITY_STATE_ENEMY_CONTROL) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
+				private _side = if(_cityState == CITY_STATE_FRIENDLY_CONTROL) then {  FRIENDLY_SIDE } else { ENEMY_SIDE };
 				// We will use a fixed response size -- police are coming from outside town so town size isn't really relavent
 				private _cVehGround = 2;
 				private _cInf = _cVehGround * 4;
