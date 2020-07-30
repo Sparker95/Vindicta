@@ -279,6 +279,14 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	protected METHOD(addIntelAt)
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 3500, [0]]]; // Testing
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+
+
+		private _intelClone = T_GETV("intelClone");
+		private _intel = NULL_OBJECT;
+		if (!IS_NULL_OBJECT(_intelClone)) then {
+			_intel = CALLM0(_intelClone, "getDbEntry");
+		};
+
 		{
 			_x params ["_distance", "_garrison"];
 			// For now let's give intel to all garrisons in range?
@@ -292,16 +300,22 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
 
 		// Add intel for civilian informants in cities
-		{
-			T_CALLM2("addIntelAtLocationForSide", _x, civilian);
-		} forEach (CALLM(_world, "getNearestLocations", [_pos ARG _radius ARG [LOCATION_TYPE_CITY]]) apply {
-			_x#1
-		});
+		if (!IS_NULL_OBJECT(_intel)) then {
+			{
+				T_CALLM2("addIntelAtLocationForSide", _x, civilian);
+
+				// Add intel directly to cities
+				if (CALLM0(_x, "isActual")) then {
+					pr _locActual = GETV(_x, "actual");
+					CALLM1(_locActual, "addIntel", _intel);
+				};
+			} forEach (CALLM(_world, "getNearestLocations", [_pos ARG 2000 ARG [LOCATION_TYPE_CITY]]) apply {
+				_x#1
+			});
+		};
 
 		// Make enemies intercept this intel
-		private _intelClone = T_GETV("intelClone");
 		if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
-			private _intel = CALLM0(_intelClone, "getDbEntry");
 			CALLSM2("AICommander", "interceptIntelAt", _intel, _pos);
 		};
 	ENDMETHOD;

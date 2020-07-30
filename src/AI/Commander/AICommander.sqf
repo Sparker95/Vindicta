@@ -751,16 +751,46 @@ CLASS("AICommander", "AI")
 		};
 
 		// Do we have friendly locations nearby?
+		pr _intelIntercepted = false;
 		if (count _friendlyLocs > 0) then {
 			if (_weHaveRadioKey) then {
 				T_CALLM2("inspectIntel", _intel, INTEL_METHOD_RADIO);
 				OOP_INFO_0("  successfull interception");
+				_intelIntercepted = true;
 			} else {
 				// Todo Mark an unknown radio transmission on the map??
 				OOP_INFO_0("  we don't have this radio key");
 			};
 		} else {
 			OOP_INFO_0("  no friendly locations with radio nearby...");
+		};
+
+		// Iterate nearby cities, our influence of these cities affects the chance of interception
+		if (!_intelIntercepted && (T_GETV("side") == CALLM0(gGameMode, "getPlayerSide")) ) then { // Only works for rebels
+			pr _nearCities = CALLSM2("Location", "nearLocations", _pos, 2000) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY;};
+			OOP_INFO_1("Nearby cities: %1", _nearCities);
+			if (count _nearCities > 0) then {
+				pr _avgInfluence = 0;
+				{
+					pr _gmData = CALLM0(_x, "getGameModeData");
+					if (!IS_NULL_OBJECT(_gmData)) then {
+						if (GET_OBJECT_CLASS(_gmData) == "CivilWarCityData") then {
+							pr _influence = CALLM0(_gmData, "getInfluence"); // Within 0..1 range
+							OOP_INFO_2("   City %1: influence %2", CALLM0(_x, "getName"), _influence);
+							_influence = _influence max 0; // Ignore negative values
+							_avgInfluence = _avgInfluence + _influence;
+						};
+					};
+				} forEach _nearCities;
+				_avgInfluence = _avgInfluence / (count _nearCities); // Within 0..1 range
+				OOP_INFO_1("  Average influence: %1", _avgInfluence);
+				if (random 1 < _avgInfluence) then {
+					OOP_INFO_0("  Intel intercepted through city");
+					T_CALLM2("inspectIntel", _intel, INTEL_METHOD_CITY);
+				} else {
+					OOP_INFO_0("  Intel not intercepted");
+				};
+			};
 		};
 
 		// TEST delete this!

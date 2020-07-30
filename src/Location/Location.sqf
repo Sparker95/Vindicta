@@ -35,10 +35,6 @@ FIX_LINE_NUMBERS()
 CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/* save */ 	VARIABLE_ATTR("type", [ATTR_SAVE]);						// String, location type
-	// SAVEBREAK >>>
-	// Remove "side" property: locations do not have intrinsic sides, only occupying forces
-	/* save */ 	VARIABLE_ATTR("side", [ATTR_SAVE]);						// Side, location side
-	// <<< SAVEBREAK
 	/* save */ 	VARIABLE_ATTR("name", [ATTR_SAVE]);						// String, location name
 	/* save */ 	VARIABLE_ATTR("children", [ATTR_SAVE]);					// Children of this location if it has any (e.g. police stations are children of cities)
 	/* save */ 	VARIABLE_ATTR("parent", [ATTR_SAVE]); 					// Parent of the Location if it has one (e.g. parent of police station is its containing city location)
@@ -75,6 +71,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// Variables which are set up only for saving process
 	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);				// Array of [className, posWorld, vectorDir, vectorUp] of objects
+	/* save */	VARIABLE_ATTR("intel", [ATTR_SAVE]);					// Array of intel items civilians know about.
 
 				VARIABLE("playerRespawnPos");						// Position for player to respawn
 				VARIABLE("alarmDisabled");							// If the player disabled the alarm
@@ -161,6 +158,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Init helper object
 		T_CALLM0("_initHelperObject");
+
+		T_SETV("intel", []);
 
 		UPDATE_DEBUG_MARKER;
 	ENDMETHOD;
@@ -535,6 +534,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		group _hObject deleteGroupWhenEmpty true;
 	ENDMETHOD;
 
+	// Adds an intel object
+	/* public */ METHOD(addIntel)
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+		OOP_INFO_1("addIntel: %1", _intel);
+		T_GETV("intel") pushBackUnique _intel;
+	ENDMETHOD;
+
 	METHOD(findBuildables)
 		params [P_THISOBJECT];
 
@@ -808,6 +814,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	public METHOD(getPos)
 		params [P_THISOBJECT];
 		T_GETV("pos")
+	ENDMETHOD;
+
+	// Returns array of all intel items
+	public METHOD(getIntel)
+		params [P_THISOBJECT];
+		+T_GETV("intel");
 	ENDMETHOD;
 
 	

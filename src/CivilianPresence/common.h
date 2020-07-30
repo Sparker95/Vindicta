@@ -5,9 +5,10 @@
 #define OFSTREAM_FILE "civpresence.rpt"
 #include "..\common.h"
 #include "..\AI\parameterTags.hpp"
+#include "..\Location\Location.hpp"
 
 // Enabled debug markers
-#define DEBUG_CIV_PRESENCE
+//#define DEBUG_CIV_PRESENCE
 
 // Civilians per m^2 max
 // 7 bots per 100x100m square

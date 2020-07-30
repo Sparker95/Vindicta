@@ -14,12 +14,16 @@ CLASS("Civilian", "GOAP_Agent")
 
 	VARIABLE("hO");
 	VARIABLE("AI");
+	VARIABLE("loc"); // Location this civilian is spawned at
 
 	// Civilian supports resistence and will give intel and help
 	/* public */ VARIABLE("supportsResistance");
 
 	// True when this civilian has helped already (gave resources, etc)
 	/* public */ VARIABLE("hasContributed");
+
+	// True if civilian will give intel
+	/* public */ VARIABLE("knowsIntel");
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OBJECT("_civObjectHandle"), P_OOP_OBJECT("_civPresence")];
@@ -71,16 +75,31 @@ CLASS("Civilian", "GOAP_Agent")
 
 		// Check if civilian supports resistance
 		pr _loc = CALLM0(_civPresence, "getLocation");
+		OOP_INFO_1("NEW CIVILIAN: location: %1", _loc);
+		T_SETV("loc", _loc);
 		pr _support = false;
+		pr _knowsIntel = false;
 		if (!IS_NULL_OBJECT(_loc)) then {
-			if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
+			pr _type = CALLM0(_loc, "getType");
+			OOP_INFO_0("Location is not null!");
+			if (_type == LOCATION_TYPE_CITY) then {
+				OOP_INFO_0("Location is city!");
 				pr _gmdata = CALLM0(_loc, "getGameModeData");
 				pr _influence = CALLM0(_gmData, "getInfluence");
-				pr _chance = MAP_TO_RANGE(_influence, 0, 1, 0.1, 0.6);
-				_support = true; // (random 1) < _chance;
+				pr _chanceSupport = linearConversion [0, 1, _influence, 0.05, 0.55, true];
+				pr _chanceIntel = linearConversion [0, 1, _influence, 0.5, 1.0, true];
+				OOP_INFO_3("Influence: %1, support chance: %2, intel knowledge chance: %3", _influence, _chanceSupport, _chanceIntel);
+				_support = (random 1) < _chanceSupport;
+				_knowsIntel = (random 1) < _chanceIntel;
+				OOP_INFO_2("Support: %1, knows intel: %2", _support, _knowsIntel);
+			} else {
+				OOP_ERROR_0("Location is not a city");
 			};
+		} else {
+			OOP_ERROR_0("Location is null!");
 		};
 		T_SETV("supportsResistance", _support);
+		T_SETV("knowsIntel", _knowsIntel);
 
 		T_SETV("hasContributed", false);
 	ENDMETHOD;
