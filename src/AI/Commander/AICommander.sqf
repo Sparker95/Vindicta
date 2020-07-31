@@ -2390,7 +2390,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 						ACTION_SUPPLY_TYPE_MEDICAL,		1,
 						ACTION_SUPPLY_TYPE_MISC,		1
 					];
-					private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+					private _progress = CALLM0(gGameMode, "getAggression") + 0.4; // 0..1 + 0.4
 					private _amount = 0 max random [_progress * 0.5, _progress, _progress * 1.5] min 1;
 					// Find intermediate city targets
 					// How many do we want?
