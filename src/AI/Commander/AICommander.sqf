@@ -279,12 +279,23 @@ CLASS("AICommander", "AI")
 		} select {
 			// Unit has valid handle
 			private _unitHandle = _x;
+
+			/*
+			pr _isPlayer = isPlayer _unitHandle;
+			pr _units = units (group _unitHandle);
+			pr _findPlayer = (units (group _unitHandle)) findIf { isPlayer _x };
+			pr _args = [_x, group _x, _isPlayer, _findPlayer, _units];
+			OOP_INFO_1("Select abandoned units: %1", _args);
+			*/
+
 			!isNull _unitHandle
 			&& { alive _unitHandle }
 			&& { !isPlayer _unitHandle }
 			// Group has no player in it
-			&& { units group _unitHandle findIf { _x in allPlayers } == NOT_FOUND }
+			&& { (units (group _unitHandle)) findIf { isPlayer _x } == NOT_FOUND }
 		};
+
+		OOP_INFO_1("Abandoned units: %1", _abandonedUnits);
 
 		if(count _abandonedUnits > 0) then {
 			// Cluster these units into reasonable groups based on proximity

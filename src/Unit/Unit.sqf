@@ -79,6 +79,12 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 
 	Unit_aceSetVehicleLock_EH = ["ace_vehicleLock_setVehicleLock", _code] call CBA_fnc_addEventHandler;
 };
+
+if (isServer) then {
+	// We use this instead of EH added to unit because this one works for non-local units too
+	addMissionEventHandler ["EntityKilled", {call Unit_fnc_EH_Killed}];
+};
+
 #endif
 FIX_LINE_NUMBERS()
 
@@ -278,26 +284,41 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Returns: Created <AI> object
 	*/
 	METHOD(createAI)
-		params [P_THISOBJECT, P_STRING("_AIClassName")];
+		pr _AI = NULL_OBJECT;
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_STRING("_AIClassName")];
 
-		// Create an AI object of the unit
-		// Don't start the brain, because its process method will be called by
-		// its group's AI brain
-		pr _data = T_GETV("data");
+			// Create an AI object of the unit
+			// Don't start the brain, because its process method will be called by
+			// its group's AI brain
+			pr _data = T_GETV("data");
 
-		if(_data # UNIT_DATA_ID_AI != NULL_OBJECT) exitWith {
-			OOP_ERROR_0("Unit AI is already created");
+			if(_data # UNIT_DATA_ID_AI != NULL_OBJECT) exitWith {
+				OOP_ERROR_0("Unit AI is already created");
+			};
+
+			_AI = NEW(_AIClassName, [_thisObject]);
+			_data set [UNIT_DATA_ID_AI, _AI];
+
+			CALLM0(_AI, "start");
 		};
-
-		pr _AI = NEW(_AIClassName, [_thisObject]);
-		_data set [UNIT_DATA_ID_AI, _AI];
-
-		CALLM0(_AI, "start");
 
 		// Return
 		_AI
 	ENDMETHOD;
 
+	// Deletes AI on this unit
+	public METHOD(deleteAI)
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			pr _data = T_GETV("data");
+			pr _ai = _data select UNIT_DATA_ID_AI;
+			if (!IS_NULL_OBJECT(_ai)) then {
+				DELETE(_ai);
+				_data set [UNIT_DATA_ID_AI, NULL_OBJECT];
+			};
+		};
+	ENDMETHOD;
 
 
 	//                              S P A W N
@@ -730,20 +751,6 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _data = T_GETV("data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		pr _catID = _data select UNIT_DATA_ID_CAT;
-
-		// Killed
-		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
-			pr _ehid = [_hO, "Killed", {
-				params ["_unit"];
-				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
-					_unit setVariable [UNIT_EH_KILLED_STR, nil];
-					// Cannot do this due to https://feedback.bistudio.com/T150628
-					// _unit removeEventHandler ["Killed", _thisID];
-					_this call Unit_fnc_EH_Killed;
-				};
-			}] call CBA_fnc_addBISEventHandler;
-			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
-		};
 
 		// Respawned
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
