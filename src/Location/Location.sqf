@@ -1247,7 +1247,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			pr _width = [_x, 0.2, 20] call misc_fnc_getRoadWidth;
 			pr _dist = position _x distance _pos;
 			// We value wide roads more, also we value roads further away more
-			[_dist*_width*_width*_width, _dist, _x]
+			[_dist*_width*_width*((random 10) + 1), _dist, _x]
 		};
 
 		// Sort roads by their value metric
@@ -1680,8 +1680,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			// Find an alternative spawn place for a city or police station
 			if (_type == LOCATION_TYPE_CITY) then {
 				// Find appropriate player spawn point, not to near and not to far from the police station, inside a house
-				private _nearbyHouses = (_pos nearObjects ["House", 200]) apply { [_pos distance getPos _x, _x] };
-				_nearbyHouses sort false; // Descending
+				private _houses = (_pos nearObjects ["House", 200]) apply { [_pos distance getPos _x, _x] };
+				//_nearbyHouses sort false; // Descending
+				_nearbyHouses = _houses call BIS_fnc_arrayShuffle;
 				private _spawnPos = _pos vectorAdd [100, 100, 0];
 				{
 					_x params ["_dist", "_building"];
