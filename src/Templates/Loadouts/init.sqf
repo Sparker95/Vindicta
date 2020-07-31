@@ -75,9 +75,6 @@ CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LAF\LAF_Recon\init.sqf");
 //RHS_HIDF
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf");
-//WW2_UK
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_UK\UK\init.sqf");
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_UK\UK_Recon\init.sqf");
 //GM_WestGer
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer_Police\init.sqf");
