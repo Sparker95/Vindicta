@@ -456,7 +456,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			(unitbackpack _player) addMagazineCargoGlobal ["vin_build_res_0", _count];
 		} else {
 			pr _holder = createVehicle ["WeaponHolderSimulated", getPosATL _civ, [], 0, "CAN_COLLIDE"]; 
-			_holder addBackpackCargo ["B_FieldPack_khk", 1];
+			_holder addBackpackCargoGlobal ["B_FieldPack_khk", 1];
 			(firstbackpack _holder) addMagazineCargoGlobal ["vin_build_res_0", _count];
 		};
 
