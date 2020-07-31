@@ -47,7 +47,7 @@
 #define CLAMP_POSITIVE(val_) MAXIMUM(val_, 0)
 // Clamp val_ between 0 and -inf
 #define CLAMP_NEGATIVE(val_) MINIMUM(val_, 0)
-// Map v from (a, b) to (x, y)
+// Map v from (a, b) to (s, t)
 #ifndef _SQF_VM
 #define MAP_TO_RANGE(v, a, b, s, t) (linearConversion [a, b, v, s, t, false])
 #else
@@ -98,3 +98,13 @@
 
 // Code to string
 #define CODE_TO_STRING(code) 0 call {private __codeToStringTemp = str code; __codeToStringTemp select [1, (count __codeToStringTemp)-2];}
+
+
+// Profiler scopes
+#ifdef ASP_ENABLE
+#define ASP_SCOPE_START(name) private __ASPScope##name = createProfileScope #name
+#define ASP_SCOPE_END(name) __ASPScope##name=nil
+#else
+#define ASP_SCOPE_START(name) ;
+#define ASP_SCOPE_END(name) ;
+#endif

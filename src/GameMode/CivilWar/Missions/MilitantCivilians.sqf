@@ -488,7 +488,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		private _radius = GETV(_city, "boundingRadius");
 
 		private _cityData = GETV(_city, "gameModeData");
-		private _instability = GETV(_cityData, "instability");
+		private _instability = GETV(_cityData, "influence");
 
 		// Refresh intel if stale
 		if(GAME_TIME > T_GETV("nextIntelUpdate")) then
@@ -567,7 +567,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 
 		private _radius = GETV(_city, "boundingRadius");
 		private _cityData = GETV(_city, "gameModeData");
-		private _instability = GETV(_cityData, "instability");
+		private _instability = GETV(_cityData, "influence");
 
 #ifdef MILITANT_CIVILIANS_TESTING
 		private _maxActive = 10;
@@ -627,10 +627,13 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				[_pos, _radius * 0.5, _grp] call vin_fnc_generateRandomPath;
 
 				// Add action to recruit them to your squad
+				// Disabled it for now, it's more confusing than beneficial
+				/*
 				[
 					_civie, 
 					["Join me brother!", vin_fnc_CivilianJoinPlayer, [], 1.5, false, true, "", "true", 10]
 				] remoteExec ["addAction", 0, _civie];
+				*/
 			};
 		};
 	ENDMETHOD;

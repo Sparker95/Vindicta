@@ -365,7 +365,7 @@ CLASS("CivPresence", "")
 	// "process" method of this object will not be called any more
 	/* private */ METHOD(_removeFromProcessCategory)
 		params [P_THISOBJECT];
-		CALLM1(gMessageLoopUnscheduled, "deleteProcessCategoryObject", _thisObject);
+		CALLM1(gMessageLoopUnscheduled, "removeProcessCategoryObject", _thisObject);
 		T_SETV("processingEnabled", false);
 	ENDMETHOD;
 

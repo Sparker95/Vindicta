@@ -55,7 +55,7 @@ _inf set [T_INF_recon_marksman, ["CUP_B_FR_Soldier_Marksman"]]; // = 29
 _inf set [T_INF_recon_JTAC, ["CUP_B_FR_Soldier_Operator"]]; // = 30
 
 /* Vehicle classes */
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["CUP_B_HMMWV_Unarmed_USMC","CUP_B_M1151_USMC","CUP_B_M1152_USMC"]]; // = 0 Default if nothing found
 _veh set [T_VEH_car_unarmed, ["CUP_B_HMMWV_Unarmed_USMC","CUP_B_M1151_USMC","CUP_B_M1152_USMC"]]; // = 1 – REQUIRED
@@ -89,7 +89,7 @@ _veh set [T_VEH_truck_medical , ["CUP_B_HMMWV_Ambulance_USMC"]]; // = 36
 _veh set [T_VEH_truck_fuel, ["CUP_B_MTVR_Refuel_USMC"]]; // = 37
 
 /* Drone classes */
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["CUP_B_USMC_DYN_MQ9"]];
 

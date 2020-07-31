@@ -70,6 +70,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		// Since this code is run in the main thread, we can just call the methods directly
 		// Post a message to the garrison of the unit
 		pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (!IS_NULL_OBJECT(_garrison)) then {	// Sanity check	
 			CALLM1(_garrison, "handleUnitKilled", _unit);
 
@@ -78,7 +79,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			pr _subcatID = CALLM0(_unit, "getSubcategory");
 			pr _side = CALLM0(_garrison, "getSide");
 			pr _faction = CALLM0(_garrison, "getFaction");
-			CALLM4(gGameMode, "unitDestroyed", _catID, _subcatID, _side, _faction);
+			pr _pos = getPos _hO;
+			pr _args = [_catID, _subcatID, _side, _faction, _pos];
+			CALLM(gGameMode, "unitDestroyed", _args);
 
 			// Send stimulus to garrison's casualties sensor
 			pr _garAI = CALLM0(_garrison, "getAI");
@@ -209,6 +212,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	public METHOD(EH_aceCargoLoaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
 
+		// Item can be of string type
+		if (_item isEqualType "") exitWith {};
+
 		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
 		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
 
@@ -233,6 +239,9 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	public METHOD(EH_aceCargoUnloaded)
 		params [P_THISOBJECT, "_item", "_vehicle"];
+
+		// Item can be of string type
+		if (_item isEqualType "") exitWith {};
 
 		private _unitItem = CALLSM("Unit", "getUnitFromObjectHandle", [_item]);
 		private _unitVeh = CALLSM("Unit", "getUnitFromObjectHandle", [_vehicle]);
@@ -280,6 +289,23 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
 		OOP_INFO_1("callStaticMethodInThread: %1", _this);
 		CALLSM(_className, _methodName, _parameters);
+	ENDMETHOD;
+
+	// Runs player spawn code which must be done on server in main thread
+	public METHOD(finishPlayerSpawn)
+		params [P_THISOBJECT, P_OBJECT("_playerObj"), P_SIDE("_playerSide"), P_ARRAY("_respawnPos")];
+		
+		// Create a new Unit and attach it to player
+		pr _args = [[], T_INF, T_INF_rifleman, -1, "", _playerObj];
+		pr _unit = NEW("Unit", _args);
+
+		// Add player's unit to the global garrison
+		pr _gar = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _playerSide);
+		CALLM1(_gar, "addUnit", _unit);
+
+		// Finally set player's position
+		_playerObj setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
+
 	ENDMETHOD;
 
 ENDCLASS;

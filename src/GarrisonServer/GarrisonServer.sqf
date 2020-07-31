@@ -380,8 +380,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Ensure that we can recruit at this place
 		pr _pos = CALLM0(_loc, "getPos");
-		pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
-		pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+		pr _cities = CALLM2(gGameMode, "getRecruitCities", _pos, _side);
+		pr _nRecruits = CALLM2(gGameMode, "getRecruitCount", _cities, _side);
 
 		// Bail if we can't recruit here any more
 		if (_nRecruits < 1) exitWith {
@@ -392,7 +392,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Remove recruits from any city
 		if (count _cities > 0) then {
 			pr _gmdata = GETV(_cities#0, "gameModeData");
-			CALLM1(_gmdata, "removeRecruits", 1);
+			CALLM2(_gmdata, "removeRecruits", _side, 1);
 		};
 
 		// Find an existing garrison here or create one
@@ -491,8 +491,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Find the amount of recruits available
 		pr _pos = CALLM0(_loc, "getPos");
-		pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
-		pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+		pr _cities = CALLM2(gGameMode, "getRecruitCities", _pos, _side);
+		pr _nRecruits = CALLM2(gGameMode, "getRecruitCount", _cities, _side);
 
 		pr _args = [_unitsAndGear, call t_fnc_getAllValidTemplateNames, _nRecruits];
 		OOP_INFO_1("  sending daga: %1", _args);

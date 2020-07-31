@@ -101,8 +101,9 @@
 // Debug Civilian militants (will spawn lots of them, all the time)
 //#define MILITANT_CIVILIANS_TESTING
 
-// Set campaign progress to 0.9
-//#define DEBUG_END_GAME
+// Set campaign progress and aggression to desired value
+//#define DEBUG_SET_PROGRESS 0.5
+//#define DEBUG_SET_AGGRESSION 0.5
 
 // Show garrison and group AI debug markers
 //#define DEBUG_GOAL_MARKERS

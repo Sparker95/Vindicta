@@ -25,12 +25,15 @@ CLASS("MapMarkerGarrison", "MapMarker")
 
 	VARIABLE("garRecord"); // GarrisonRecord this map marker is attached to
 
+	VARIABLE("microPanel"); // Micro panel with info attached to this marker, managed by ClientMapUI
+
 	STATIC_VARIABLE("selectedMarkers");
 
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		T_SETV("garRecord", _garRecord);
+		T_SETV("microPanel", [controlNull]);
 
 		// Create marker
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
@@ -50,6 +53,12 @@ CLASS("MapMarkerGarrison", "MapMarker")
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		OOP_INFO_1("DELETE mrkName: %1", _mrkName);
 		deleteMarkerLocal _mrkName;
+
+		// Delete micro panel if it exists
+		pr _microPanel = T_GETV("microPanel");
+		if (!isNull _microPanel) then {
+			ctrlDelete _microPanel;
+		};
 	ENDMETHOD;
 
 	public METHOD(getGarrisonRecord)

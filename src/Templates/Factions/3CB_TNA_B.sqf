@@ -35,7 +35,7 @@ _inf set [T_INF_ammo, ["UK3CB_TKA_B_STATIC_TRI_AGS30", "UK3CB_TKA_B_STATIC_TRI_D
 _inf set [T_INF_LAT, ["UK3CB_TKA_B_LAT"]];
 _inf set [T_INF_AT, ["UK3CB_TKA_B_AT"]];
 _inf set [T_INF_AA, ["UK3CB_TKA_B_AA"]];
-_inf set [T_INF_LMG, ["UK3CB_TKA_B_AR"]];
+_inf set [T_INF_LMG, ["UK3CB_TKA_B_AR_1"]];
 _inf set [T_INF_HMG, ["UK3CB_TKA_B_MG"]];
 _inf set [T_INF_medic, ["UK3CB_TKA_B_MD"]];
 _inf set [T_INF_engineer, ["UK3CB_TKA_B_ENG"]];
@@ -64,7 +64,7 @@ _inf set [T_INF_recon_JTAC, ["UK3CB_TKA_B_SF_SL"]];
 
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["UK3CB_TKA_B_Hilux_Open"]];
 
@@ -118,7 +118,7 @@ _veh set [T_VEH_truck_fuel, ["UK3CB_TKA_B_Ural_Fuel"]];
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 //_drone set [T_DRONE_SIZE-1, nil];
 //_drone set [T_DRONE_DEFAULT, ["I_UGV_01_F"]];
 //_drone set [T_DRONE_UGV_unarmed, ["I_UGV_01_F"]];

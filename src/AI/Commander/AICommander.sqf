@@ -254,6 +254,7 @@ CLASS("AICommander", "AI")
 		// Consider bringing more units into the map
 		if(T_GETV("planningEnabled")) then {
 			T_CALLM0("updateExternalReinforcement");
+			T_CALLM0("updateRecruitment");
 		};
 
 		// C L E A N U P
@@ -287,24 +288,17 @@ CLASS("AICommander", "AI")
 
 		if(count _abandonedUnits > 0) then {
 			// Cluster these units into reasonable groups based on proximity
-			private _abandonedGroups = [[_abandonedUnits deleteAt 0]];
-			{// forEach _abandonedUnits;
-				private _unit = _x;
-				private _sortedGroups = _abandonedGroups apply { [_x#0 distance _unit, _x] };
-				_sortedGroups sort ASCENDING;
-				if(_sortedGroups#0#0 > 250) then {
-					// Add to new cluster
-					_abandonedGroups pushBack [[_unit]];
-				} else {
-					// Add to existing cluster
-					_sortedGroups#0#1 pushBack _unit;
-				};
-			} forEach _abandonedUnits;
+			pr _tempClusters = _abandonedUnits apply {
+				pr _pos = getPosASL _x;
+				CLUSTER_NEW(_pos select 0, _pos select 1, _pos select 0, _pos select 1, [_x]);
+			};
+			private _unitClusters = [_tempClusters, 250] call cluster_fnc_findClusters;
 
 			// Return the units to this commander
 			{// forEach _abandonedGroups;
-				CALLM(_playerGarrison, "postMethodSync", ["makeGarrisonFromUnits" ARG [_x]]);
-			} forEach _abandonedGroups;
+				pr _units = _x select CLUSTER_ID_OBJECTS;
+				CALLM2(_playerGarrison, "postMethodSync", "makeGarrisonFromUnits", [+_units]);
+			} forEach _unitClusters;
 		};
 
 		#ifdef DEBUG_COMMANDER
@@ -2673,6 +2667,176 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	#define VEHICLE_STOCK_FN(_progress, _rate) (0 max (_rate * (_progress ^ _rate)))
 
 	/*
+	Method: updateRecruitment
+	Should be called on each process;
+	*/
+	METHOD(updateRecruitment)
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("UPDATE RECRUITMENT");
+
+		pr _side = T_GETV("side");
+		pr _model = T_GETV("worldModel");
+		pr _strategy = T_GETV("cmdrStrategy");
+
+		pr _garrisonsAtLocations = T_GETV("garrisons") select {
+			pr _loc = CALLM0(_x, "getLocation");
+
+			if (!IS_NULL_OBJECT(_loc)) then {
+				CALLM0(_loc, "getType") in LOCATIONS_RECRUIT;
+			} else {
+				false;
+			};
+		};
+
+		pr _reinfData = [];
+		pr _recruitCities = [];
+
+		
+		{ // forEach CALLM0(_model, "getLocations");
+			private _locType = GETV(_x, "type");
+
+			OOP_INFO_2("  Checking location: %1 at %2", CALLM0(GETV(_x, "actual"), "getName"), GETV(_x, "pos"));
+
+			// One of location types where we can recruit at (outpost, airfield, etc)
+			if (_locType in LOCATIONS_RECRUIT) then {
+				private _garModel = CALLM1(_x, "getGarrison", _side);
+				if (!IS_NULL_OBJECT(_garModel)) then {					// There is a friendly garrison there
+					private _garActual = GETV(_garModel, "actual");
+					if	(												// Friendly garrison is not spawned
+							#ifndef REINFORCEMENT_TESTING
+							!CALLM0(_garActual, "isSpawned")
+							#else
+							true
+							#endif
+							FIX_LINE_NUMBERS()
+						) then {
+						if ( (GETV(_garModel, "type") == GARRISON_TYPE_GENERAL)) then {	// Friendly garrison is of general type
+							private _comp = GETV(_garModel, "composition");
+							private _nInf = [_comp] call comp_fnc_countInfantry;
+							private _locPos = GETV(_x, "pos");
+							private _locMaxInf = GETV(_x, "capacityInf");
+							if (_nInf < _locMaxInf) then {					// It's not overcrowded
+																			// If there is a city with some recruits nearby
+								private _nearestRecruitCity = CALLM3(gGameMode, "getNearestRecruitCity", +_locPos, _side, 6);
+								if (!IS_NULL_OBJECT(_nearestRecruitCity) && {!(_nearestRecruitCity in _recruitCities)}) then {
+									pr _availRecruits = CALLM2(gGameMode, "getRecruitCount", [_nearestRecruitCity], _side);
+
+									OOP_INFO_3("   Nearest recruit city: %1 %2 at %3", _nearestRecruitCity, CALLM0(_nearestRecruitCity, "getName"), CALLM0(_nearestRecruitCity, "getPos"));
+
+									private _locActual = GETV(_x, "actual");
+									private _activity = CALLM1(_model, "getActivity", _locPos);
+									_reinfData pushBack [_activity, _garActual, _locActual, _nearestRecruitCity, _nInf, _locMaxInf, _availRecruits];
+									_recruitCities pushBack _nearestRecruitCity;
+								} else {
+									OOP_INFO_0("   No nearest recruit city nearby or it was used already");
+								};
+							} else {
+								OOP_INFO_2("   Inf capacity reached (%1 / %2)", _nInf, _locMaxInf);
+							};
+						} else {
+							OOP_INFO_0("   Not general type garrison");
+						};
+					} else {
+						OOP_INFO_0("   Is spawned");
+					};
+				} else {
+					OOP_INFO_0("   No friendly garrison here");
+				};
+			//} else {
+			//	OOP_INFO_0("   Not a recruitment location");
+			};
+		} forEach CALLM0(_model, "getLocations");
+
+		_reinfData sort ASCENDING;
+		#ifdef OOP_INFO
+		OOP_INFO_0("Potential recruitments:");
+		{
+			_x params ["_activity", "_garActual", "_locActual", "_nearestRecruitCity", "_nInf", "_locMaxInf", "_availRecruits"];
+			OOP_INFO_4("    %1 at %2     <--       %3 (%4 recruits)", CALLM0(_locActual, "getName"), GETV(_locActual, "pos"), CALLM0(_nearestRecruitCity, "getName"), _availRecruits);
+		} forEach _reinfData;
+		#endif
+
+		// Estimate infantry requirements
+		private _desiredLocations = [];
+		{
+			private _locModel = _x;
+			if (!IS_NULL_OBJECT(_locModel)) then { // Sanity check
+				private _actual = GETV(_locModel, "actual");
+				private _desirability = CALLM3(_strategy, "getLocationDesirability", _model, _locModel, _side);
+				if (_desirability > 0) then {
+					_desiredLocations pushBack _actual;
+				};
+			};
+		} forEach CALLM0(_model, "getLocations");
+
+		// Sum up all the required efficiency
+		private _effRequiredAll = +T_EFF_null;
+		{
+			private _pos = CALLM0(_x, "getPos");
+			private _effDesiredHere = +CALLM1(_model, "getDesiredEff", _pos);
+
+			[_effRequiredAll, _effDesiredHere] call eff_fnc_acc_add;
+		} foreach _desiredLocations;
+
+		// Make some reasonable limits to the desired amount of units
+		private _maxInfOnMap = (count _desiredLocations) * CALLSM1("Location", "getCapacityInfForType", LOCATION_TYPE_OUTPOST) + 100;
+		OOP_INFO_1("  max inf on map: %1", _maxInfOnMap);
+		if ((_effRequiredAll#T_EFF_crew) > _maxInfOnMap) then {
+			OOP_INFO_1("  limited the maximum amount of desired infantry! Calculated: %1", _effRequiredAll#T_EFF_crew);
+			_effRequiredAll set [T_EFF_crew, _maxInfOnMap];
+		};
+
+		// Sum up efficiency of all garrisons and guess how many officers we want
+		private _effAll = CALLM0(_model, "getGlobalEff");
+
+		OOP_INFO_1("  All required eff: %1", _effRequiredAll);
+		OOP_INFO_1("  All current  eff: %1", _effAll);
+
+		// Amount of infantry we want to have
+		private _infMoreRequired = (_effRequiredAll select T_EFF_crew) - (_effAll select T_EFF_crew);
+
+		OOP_INFO_1("  More infantry required: %1", _infMoreRequired);
+
+		private _squadTypes = [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad];
+		OOP_INFO_1("  Trying to add %1 more infantry...", _infMoreRequired);
+
+		// Try to add recruits
+		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
+		while {_infMoreRequired > 0 && count _reinfData > 0} do {
+
+			pr _reinfDataThis = _reinfData#0;
+			_reinfDataThis params ["_activity", "_garActual", "_locActual", "_nearestRecruitCity", "_nInf", "_locMaxInf", "_availRecruits"];
+
+			// Select a random group type
+			private _subcatID = selectRandom _squadTypes;
+			private _countInfInGroup = count (_t#T_GROUP#_subcatID#0); // Amount of units
+
+			private _nGroups = floor (_availRecruits / _countInfInGroup);
+
+			for "_groupID" from 0 to (_nGroups - 1) do {
+				// Create a group
+				private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
+				CALLM2(_group, "createUnitsFromTemplate", _t, _subcatID);
+				CALLM2(_garActual, "postMethodAsync", "addGroup", [_group]);
+				OOP_INFO_1("   Added group: %1", _group);
+
+				// Decrease the counter
+				_infMoreRequired = _infMoreRequired - _countInfInGroup;
+
+				OOP_INFO_4("  Added group %1 of %2 units to %3 at %4", _group, _countInfInGroup, _garActual, CALLM0(_locActual, "getName"));
+			};
+
+			_reinfData deleteAt 0;
+		};
+
+		if(_infMoreRequired > 0) then {
+			OOP_INFO_1("  Could not add all infantry required, %1 remain", _infMoreRequired);
+		};
+
+	ENDMETHOD;
+
+	/*
 	Method: updateExternalReinforcement
 	Should be called on each process. Updates external reinforcements.
 	*/
@@ -2694,6 +2858,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		OOP_INFO_0("UPDATE EXTERNAL REINFORCEMENT");
 
+		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
+
 		// Pick an airfield we own
 		private _side = T_GETV("side");
 		private _model = T_GETV("worldModel");
@@ -2706,7 +2872,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			&& {private _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")}
 			#endif
 			FIX_LINE_NUMBERS()
-			//&& {private _actual = GETV(_garModel, "actual"); CALLM0(_actual, "countInfantryUnits") < CMDR_MAX_INF_AIRFIELD} // todo find a better limit?
 		};
 
 		// Bail if we can't bring reinforcements anywhere
@@ -2741,7 +2906,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		} foreach _desiredLocations;
 
 		// Make some reasonable limits to the desired amount of units
-		private _maxInfOnMap = (count _desiredLocations) * 40 + 100;
+		private _maxInfOnMap = (count _desiredLocations) * CALLSM1("Location", "getCapacityInfForType", LOCATION_TYPE_OUTPOST) + 100;
 		OOP_INFO_1("  max inf on map: %1", _maxInfOnMap);
 		if ((_effRequiredAll#T_EFF_crew) > _maxInfOnMap) then {
 			OOP_INFO_1("  limited the maximum amount of desired infantry! Calculated: %1", _effRequiredAll#T_EFF_crew);
@@ -2749,7 +2914,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Sum up efficiency of all garrisons and guess how many officers we want
-		private _effAll = +T_EFF_null;
+		private _effAll = CALLM0(_model, "getGlobalEff");
 
 		OOP_INFO_1("  All required eff: %1", _effRequiredAll);
 		OOP_INFO_1("  All current  eff: %1", _effAll);
@@ -2820,7 +2985,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					CALLM0(_loc, "getDisplayName"),
 					_loc,
 					_generalGarrisons # 0,
-					CMDR_MAX_INF_AIRFIELD - _nInf,
+					CALLSM1("Location", "getCapacityInfForType", LOCATION_TYPE_AIRPORT) - _nInf,
 					_nVehMax - _nVeh
 				]
 			} else {
@@ -2872,23 +3037,25 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Add air
-		{
-			_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
-			for "_i" from 0 to _nHelisRequired - 1 do {
-				private _type = T_VEH_heli_attack;
-				// selectRandomWeighted [
-				// 	T_VEH_heli_light,	1,
-				// 	T_VEH_heli_heavy,	1,
-				// 	T_VEH_heli_attack,	1
-				// ];
-				private _newGroup = CALLM2(_airGar, "postMethodAsync", "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
-				OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
-			};
-		} forEach _airReinfInfo;
-
-		private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
+		if (_progressScaled > 0.3 && ([_t, T_VEH, T_VEH_heli_attack, 0] call t_fnc_isValid)) then {
+			{
+				_x params ["_airGar", "_nHelisRequired", "_mPlanesRequired"];
+				for "_i" from 0 to _nHelisRequired - 1 do {
+					private _type = T_VEH_heli_attack;
+					// selectRandomWeighted [
+					// 	T_VEH_heli_light,	1,
+					// 	T_VEH_heli_heavy,	1,
+					// 	T_VEH_heli_attack,	1
+					// ];
+					private _newGroup = CALLM2(_airGar, "postMethodAsync", "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+					OOP_INFO_MSG("%1: Created heli group %2", [_airGar ARG _newGroup]);
+				};
+			} forEach _airReinfInfo;
+		};
 
 		// Try to spawn more units at the selected locations
+		// Inf spawning at airfields is disabled now
+		/*
 		if (_infMoreRequired > 0) then {
 			private _infReinfLocations = _reinfInfo select {
 				_x#3 > 0
@@ -2928,6 +3095,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				OOP_INFO_1("  Could not add all infantry required, %1 remain", _infMoreRequired);
 			}
 		};
+		*/
 
 		// Spawn in more officers
 		{
@@ -2945,28 +3113,37 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		} forEach _reinfInfo;
 
 		private _fn_spawnNUnits = {
-			params ["_cat", "_subcat", "_desired", "_t", "_unitDebugName"];
-			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
-			private _nRequired = _desired - CALLM1(_garrison, "countUnits", [[_cat ARG _subcat]]);
+			params ["_cat", "_subcat", "_desired", "_t", "_unitDebugName", "_reinfInfoThis"];
+			if ([_t, T_VEH, _subcat, 0] call t_fnc_isValid) then {
+				_reinfInfoThis params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
+				private _nRequired = _desired - CALLM1(_garrison, "countUnits", [[_cat ARG _subcat]]);
 
-			OOP_INFO_3("  Adding %1 %2 at %3", _nRequired, _unitDebugName, _name);
-			while { _nRequired > 0 } do {
-				private _args = [_t, _cat, _subcat, -1];
-				private _vehUnit = NEW("Unit", _args);
+				OOP_INFO_3("  Adding %1 %2 at %3", _nRequired, _unitDebugName, _name);
+				while { _nRequired > 0 } do {
+					private _args = [_t, _cat, _subcat, -1];
+					private _vehUnit = NEW("Unit", _args);
 
-				CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
-				_nRequired = _nRequired - 1;
+					CALLM2(_garrison, "postMethodAsync", "addUnit", [_vehUnit]);
+					_nRequired = _nRequired - 1;
+				};
 			};
 		};
 
-		// Spawn in more supply trucks
-		{
-			[T_VEH, T_VEH_truck_ammo, 2, _t, "supply trucks"] call _fn_spawnNUnits;
-		} forEach _reinfInfo;
+		// Create some utility vehicles
+		pr _utilitySpec = [];
+		#define __ADD_UTIL_SPEC_SAFE(array, amount, subcat, name) if ([_t, T_VEH, subcat, 0] call t_fnc_isValid) then { \
+			array pushback [amount, subcat, name]; \
+		}
+		__ADD_UTIL_SPEC_SAFE(_utilitySpec, 2, T_VEH_truck_ammo, "supply trucks");
+		//__ADD_UTIL_SPEC_SAFE(_utilitySpec, 3, T_VEH_truck_inf, "infantry trucks");
+		__ADD_UTIL_SPEC_SAFE(_utilitySpec, 2, T_VEH_car_unarmed, "unarmed cars");
 
-		// Spawn in more inf trucks
 		{
-			[T_VEH, T_VEH_truck_inf, 3, _t, "inf trucks"] call _fn_spawnNUnits;
+			pr _reinfInfo0 = _x;
+			{
+				_x params ["_amount", "_subcatID", "_name"];
+				[T_VEH, _subcatID, _amount, _t, _name, _reinfInfo0] call _fn_spawnNUnits;
+			} forEach _utilitySpec;
 		} forEach _reinfInfo;
 
 		// Spawn in more vehicles
@@ -2992,16 +3169,22 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// ];
 
 		private _vehRatios = [
-			[T_VEH_truck_inf, 	2],
+			[T_VEH_truck_inf, 	0.2],
+			[T_VEH_car_armed, 	0.05],
 			//T_VEH_APC, 			0 max (2 * (_progressScaled ^ 2)),
 			//T_VEH_IFV, 			0 max (3 * (_progressScaled ^ 3))
-			[T_VEH_MRAP_HMG, 	1],
-			[T_VEH_MRAP_GMG, 	0.25 max (1 * (_progressScaled ^ 1)) min 1],
+			[T_VEH_MRAP_HMG, 	0.1],
+			[T_VEH_MRAP_GMG, 	0.1 max (0.3 * (_progressScaled ^ 0.8)) min 1],
 			[T_VEH_APC, 		0 max (2 * (_progressScaled ^ 2))],
 			[T_VEH_IFV, 		0 max (3 * (_progressScaled ^ 3))],
-			[T_VEH_MBT, 		0 max (5 * (_progressScaled ^ 5))]
+			[T_VEH_MBT, 		0 max (4 * (_progressScaled ^ 4))]
 		];
-		private _vehThatNeedGroups = [T_VEH_APC, T_VEH_IFV, T_VEH_MBT];
+		// Select only those which are present in template
+		_vehRatios = _vehRatios select {
+			pr _subcatid = _x#0;
+			[_t, T_VEH, _subcatid, 0] call t_fnc_isValid;
+		};
+		private _vehThatNeedGroups = [T_VEH_APC, T_VEH_IFV, T_VEH_MBT, T_VEH_car_armed];
 
 		private _ratioSum = 0;
 		{ _ratioSum = _ratioSum + _x#1 } forEach _vehRatios;

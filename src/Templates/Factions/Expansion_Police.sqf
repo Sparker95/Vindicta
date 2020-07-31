@@ -20,14 +20,14 @@ _inf set [T_INF_officer, ["Expansion_Mod_Police_Corporal", "Expansion_Mod_Police
 
 
 
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["EM_Police_Civic"]]; 
 
 _veh set [T_VEH_car_unarmed, ["EM_Police_Civic", "EM_Police_CrownVic", "EM_Police_Explorer", "EM_Police_Explorer_UM", "EM_Police_BMWM5", "EM_Police_Raptor", "EM_Police_Raptor_UM", "EM_Police_Savana", "EM_Police_Taurus", "EM_Police_Taurus_UM", "EM_Police_BMWX6_UM", "EM_Police_BMWX6"]]; // = 1 – REQUIRED
 
 
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 
 
 _cargo = +(tDefault select T_CARGO);

@@ -232,7 +232,16 @@ comp_fnc_greaterOrEqual = {
 	!_failed
 };
 
-
+// Calculates amount of infantry
+comp_fnc_countInfantry = {
+	params ["_comp"];
+	pr _inf = _comp select T_INF;
+	pr _ret = 0;
+	{
+		_ret = _ret + _x;
+	} forEach _inf;
+	_ret;
+};
 
 #ifdef _SQF_VM
 

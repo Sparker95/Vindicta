@@ -119,7 +119,7 @@ _veh set [T_VEH_truck_fuel, ["FGN_AAF_Ural_Fuel"]];
 
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 //_drone set [T_DRONE_SIZE-1, nil];
 //_drone set [T_DRONE_DEFAULT, ["I_UGV_01_F"]];
 //_drone set [T_DRONE_UGV_unarmed, ["I_UGV_01_F"]];

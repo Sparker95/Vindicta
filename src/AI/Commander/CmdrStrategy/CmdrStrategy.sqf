@@ -122,7 +122,17 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 				_priority = T_GETV("takeLocRoadBlockPriority") +
 					T_GETV("takeLocRoadBlockCoeff") * _activityMult;
 			};
-			case LOCATION_TYPE_CITY: { 
+			case LOCATION_TYPE_CITY: {
+				// If city is under enemy influence, we should take it
+				pr _influence = GETV(_loc, "influence");
+				pr _add = 0;
+				if (_influence > 0.35) then { // It's positive when rebels own it
+					_add = 0.5 + _influence*7;
+				};
+				// Bigger cities are valued most of all
+				pr _actual = GETV(_loc, "actual");
+				pr _pop = CALLM0(_actual, "getCapacityCiv");
+				pr _popMult = (_pop/500)^2;
 				_priority = T_GETV("takeLocCityPriority") +
 					T_GETV("takeLocCityCoeff") * _activityMult;
 			};
@@ -135,8 +145,12 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			default { _priority = 0 };
 		};
 
+		pr _return = _priority + _priorityGeneral;
+
+		OOP_INFO_4("Location desirability: %1 %2 at %3 : %4", GETV(_loc, "type"), _loc, GETV(_loc, "pos"), _return);
+
 		// Sum up calculated priority and other priority boosts
-		_priority + _priorityGeneral
+		_return
 	ENDMETHOD;
 
 	/*

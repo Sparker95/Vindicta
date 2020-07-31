@@ -90,7 +90,7 @@ CLASS("ClusterModel", "ModelBase")
 			T_SETV("pos", (_cluster call cluster_fnc_getCenter) + [0]);
 			private _newSize = _cluster call cluster_fnc_getSize;
 			T_SETV("size", +_newSize);
-			T_SETV("radius", ((selectMax _newSize) + 300) max 300);
+			T_SETV("radius", ((selectMax _newSize) + 100) max 150);
 			T_SETV("efficiency", +(_targetCluster select TARGET_CLUSTER_ID_EFFICIENCY));
 			T_SETV("damage", _targetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE);
 			true

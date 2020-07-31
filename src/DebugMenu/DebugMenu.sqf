@@ -178,7 +178,8 @@ vin_fnc_initDebugMenu = {
 
 				private _recruits = 20;
 				private _gmdata = GETV(_loc, "gameModeData");
-				CALLM2(_gmdata, "addRecruits", _loc, _recruits);
+				private _recruits = GETV(_gmData, "recruitsFriendly");
+				SETV(_gmData, "recruitsFriendly", _recruits+20);
 				systemChat "Added 20 recruits to current location.";
 
 		} else {
@@ -213,13 +214,6 @@ vin_fnc_initDebugMenu = {
 				T_SETV("debugOverride", true);
 			};
 		};
-		
-}] call vin_fnc_addDebugMenuItem;
-
-// shows unit and group actions and goals in an overlay text
-["AI", "Toggle draw3D goals", {
-
-	CALL_COMPILE_COMMON("DebugMenu\fn_draw3dUnitDetails.sqf");
 		
 }] call vin_fnc_addDebugMenuItem;
 

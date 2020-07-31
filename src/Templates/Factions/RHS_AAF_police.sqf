@@ -51,13 +51,13 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 */
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["FGN_AAF_Police_Offroad"]];
 _veh set [T_VEH_car_unarmed, ["FGN_AAF_Police_Offroad"]];
 
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 //_drone set [T_DRONE_SIZE-1, nil];
 //_drone set [T_DRONE_DEFAULT, ["I_UGV_01_F"]];
 //_drone set [T_DRONE_UGV_unarmed, ["I_UGV_01_F"]];

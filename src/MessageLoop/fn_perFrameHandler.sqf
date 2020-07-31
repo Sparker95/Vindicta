@@ -144,7 +144,12 @@ if (!isGamePaused) then {
 					private __scopeObj = createProfileScope ([format ["MessageLoop_processObject_%1", _obj]] call misc_fnc_createStaticString);
 					#endif
 
-					CALLM0(_obj, "process");
+					// Ensure that object is valid
+					// It's cheaper to check it here, than to check if it's in all object array when we set this object high priority
+					// Because there might be very many objects in this process category
+					if (IS_OOP_OBJECT(_obj)) then {
+						CALLM0(_obj, "process");
+					};
 
 					_nObjectsThisFrame = _nObjectsThisFrame - 1;
 				};

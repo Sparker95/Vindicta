@@ -10,10 +10,11 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 	// If a reinforcement regiment is on the way then it goes here. We ref count it ourselves as well
 	// so it doesn't get deleted until we are done with it.
 	VARIABLE_ATTR("reinfGarrison", [ATTR_REFCOUNTED]);
+	VARIABLE_ATTR("reinfSent", [ATTR_SAVE]); // Police reinforcements can be sent to a police station only once
 
 	METHOD(new)
 		params [P_THISOBJECT];
-
+		T_SETV("reinfSent", false);
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
 	ENDMETHOD;
 
@@ -34,10 +35,10 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			// We need some way to reinforce police generally probably?
 			private _garrisons = CALLM1(_policeStation, "getGarrisons", ENEMY_SIDE);
 			// We only want to reinforce police stations still under our control
-			if (count _garrisons > 0 and  { CALLM0(_garrisons#0, "countInfantryUnits") <= 4 }) then {
+			if (count _garrisons > 0 and  { CALLM0(_garrisons#0, "countInfantryUnits") <= 4 } and {!T_GETV("reinfSent")}) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				// If we liberated the city then we spawn police on our own side!
-				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
+				private _side = if(_cityState == CITY_STATE_ENEMY_CONTROL) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
 				// We will use a fixed response size -- police are coming from outside town so town size isn't really relavent
 				private _cVehGround = 2;
 				private _cInf = _cVehGround * 4;
@@ -67,6 +68,9 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 					// Send the garrison to join the police station location
 					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation], [TAG_MOVE_RADIUS, 100]], _thisObject];
 					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
+
+					// Set flag that we have dispatched reinforcements once already
+					T_SETV("reinfSent", true);
 				};
 			};
 		};

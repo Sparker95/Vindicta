@@ -1334,8 +1334,12 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			private _catID = _x select 0;
 			private _subcatID = _x select 1;
 			private _classID = _x select 2;
-			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group")
-			NEW("Unit", _args);
+			if ([_template, _catID, _subcatID, _classID] call t_fnc_isValid) then {
+				private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //P_ARRAY("_template"), P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_NUMBER("_classID"), P_OOP_OBJECT("_group")
+				NEW("Unit", _args);
+			} else {
+				OOP_ERROR_4("createUnitFromTemplate: [%1, %2, %3] is not a valid unit for template %4", _catID, _subcatID, _classID, _template select T_NAME);
+			};
 		} forEach _groupData;
 
 		count _groupData

@@ -42,3 +42,9 @@
 #define BUILDUI_OBJECT_TAG "build_ui_allowMove"
 
 #define SAVED_OBJECT_TAGS [BUILDUI_OBJECT_TAG]
+
+// Max bounding radius of a location
+#define LOCATION_BOUNDING_RADIUS_MAX 3000
+
+//
+#define GET_LOCATION_FROM_HELPER_OBJECT(obj) obj getVariable "location"

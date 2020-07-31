@@ -391,7 +391,7 @@ CLASS("AI", "MessageReceiverEx")
 	public METHOD(removeFromProcessCategory)
 		params [P_THISOBJECT];
 		pr _msgLoop = T_CALLM0("getMessageLoop");
-		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
+		CALLM1(_msgLoop, "removeProcessCategoryObject", _thisObject);
 	ENDMETHOD;
 
 	// - - - - STORAGE - - - - -

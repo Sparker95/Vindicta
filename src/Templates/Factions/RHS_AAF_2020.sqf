@@ -114,7 +114,7 @@ _veh set [T_VEH_submarine, ["B_SDV_01_F"]]; // = 38
 
 
 /* Drone classes */
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["B_UAV_01_F"]];
 

@@ -12,8 +12,6 @@
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Undercover\UndercoverMonitor.hpp"
 
-#define CITY_STATE_STABLE 0
-#define CITY_STATE_AGITATED 1
-#define CITY_STATE_IN_REVOLT 2
-#define CITY_STATE_SUPPRESSED 3
-#define CITY_STATE_LIBERATED 4
+#define CITY_STATE_NEUTRAL 0
+#define CITY_STATE_FRIENDLY_CONTROL 1
+#define CITY_STATE_ENEMY_CONTROL 2

@@ -771,18 +771,20 @@
 				<Polish>Wydajność</Polish>
 				<Czech>Výkon</Czech>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison">
-				<Original>Garrison Spawn Distance</Original>
-				<German>Garnisions Spawn-Distanz</German>
-				<Polish>Odległość spawnowania się garnizonu</Polish>
-				<Czech>Vzdálenost Spawn posádky</Czech>
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Player">
+				<Original>AI to Player spawn Distance</Original>
 			</Key>
-			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Tooltip">
-				<Original>Spawn distance for enemy garrisons, measured in meters. Warning: raising this above the default can severely impact performance.</Original>
-				<German>Spawn-Distanz für feindliche Garnisonen, gemessen in Metern. Warnung: Ein Wert über den Standardeinstellung kann die Leistung stark beeinträchtigen.</German>
-				<Polish>Odległość spawnowania dla garnizonów wroga, mierzona w metrach. Ostrzeżenie: podniesienie wartości powyżej domyślnej może poważnie wpłynąć na wydajność</Polish>
-				<Czech>Vzdálenost Spawn pro nepřátelské posádky, měřeno v metrech. Upozornění: zvýšení výše výchozí může mít vážný dopad na výkon.</Czech>
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Player_Tooltip">
+				<Original>AI spawn distance measured from garrisons to nearest player.</Original>
 			</Key>
+
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI">
+				<Original>AI to enemy AI spawn Distance</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI_Tooltip">
+				<Original>AI spawn distance measured from garrisons to nearest enemy AI.</Original>
+			</Key>
+
 			<Key ID="STR_Vindicta_Settings_Ambient_Civ_Multiplier">
 				<Original>Ambient Civilian Density</Original>
 			</Key>

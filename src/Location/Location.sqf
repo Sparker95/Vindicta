@@ -78,6 +78,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 				VARIABLE("playerRespawnPos");						// Position for player to respawn
 				VARIABLE("alarmDisabled");							// If the player disabled the alarm
+				VARIABLE("helperObject");							// An arma object placed at position of this location, for proximity checks.
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -158,7 +159,38 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLM1(gGameMode, "registerLocation", _thisObject);
 		};
 
+		// Init helper object
+		T_CALLM0("_initHelperObject");
+
 		UPDATE_DEBUG_MARKER;
+	ENDMETHOD;
+
+	// Initializes helper object
+	METHOD(_initHelperObject)
+		params [P_THISOBJECT];
+		pr _pos = T_GETV("pos");
+		
+		pr _args = [_thisObject, _pos];
+		#ifndef _SQF_VM
+		REMOTE_EXEC_CALL_STATIC_METHOD("Location", "_initHelperObjectOnClient", _args, ON_ALL, _thisObject + "_initHelperObj");
+		#endif
+
+	ENDMETHOD;
+
+	// This is executed on JIP too
+	STATIC_METHOD(_initHelperObjectOnClient)
+		params [P_THISCLASS, P_OOP_OBJECT("_loc"), P_ARRAY("_pos")];
+
+		#ifndef _SQF_VM
+		pr _obj = createLocation ["vin_location", _pos, 0, 0];
+		#else
+		pr _obj = "vin_location" createVehicle _pos;
+		#endif
+		_obj setVariable ["location", _loc];
+		SETV(_loc, "helperObject", _obj);
+
+		OOP_INFO_1("initHelperObject: %1", _obj);
+
 	ENDMETHOD;
 
 	// |                 S E T   D E B U G   N A M E
@@ -214,6 +246,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		OOP_DEBUG_1("findAllObjects for %1", T_GETV("name"));
 
 		// Setup marker allowed areas
+		ASP_SCOPE_START(addAllowedAreas);
 		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0}) select {
 			T_CALLM1("isInBorder", markerPos _x)
 		};
@@ -230,125 +263,140 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			OOP_INFO_1("Adding allowed area: %1", _x);
 			T_CALLM4("addAllowedArea", _pos, _a, _b, _dir);
 		} forEach _allowedAreas;
+		ASP_SCOPE_END(addAllowedAreas);
 
 		// Setup location's spawn positions
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
 
 		#ifndef _SQF_VM
+		ASP_SCOPE_START(findNearestObjects);
+
 		// Lots of objects from the map have typeOf "" unfortunately (thanks to arma)
 		// But we must scan them anyway
-		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
-		private _objects = nearestObjects [_locPos, [], _radius]; // select { typeOf _x != "" };
-		private _allObjects = +_terrainObjects;
-		{
-			_allObjects pushBackUnique _x;
-		} forEach _objects;
-		//(nearestTerrainObjects [_locPos, [], _radius] apply { [true, _x] }) + (nearestObjects [_locPos, [], _radius] apply { [false, _x] });
-		//private _allObjects = _locPos nearObjects _radius;
+		
+		// Lots of useful objects plus lots of junk (trees)
+		private _terrainObjects = nearestTerrainObjects [_locPos, [], _radius, false, true]; // select { typeOf _x != "" };
+		// Lots of useful objects plus those placed in the editor
+		private _nearObjects = _locPos nearObjects _radius;
+		ASP_SCOPE_END(findNearestObjects);
+
+		OOP_INFO_1("findAllObjects: scanning %1 objects", count _nearObjects);
+
 		#else
-		private _allObjects = [];
+		private _nearObjects = [];
+		private _terrainObjects = [];
 		#endif
 		FIX_LINE_NUMBERS()
 
-		// private _object = objNull;
-		// private _type = "";
-		// private _bps = []; //Building positions
-		// private _bp = []; //Building position
-		// private _bc = []; //Building capacity
-		// private _inf_capacity = 0;
-		// private _position = [];
-		// private _bdir = 0; //Building direction
+		// hashmap to quickly mark those objects which have been processed
+		// We can't set variables on terrain objects
+		#ifndef _SQF_VM
+		private _processedObjects = [false] call CBA_fnc_createNamespace;
+		#else
+		private _processedObjects = "dummy" createVehicle [0,0,0];
+		#endif
 
-		// forEach _allObjects;
+		ASP_SCOPE_START(scanFoundObjects);
 		{
-			private _object = _x;
-			if(T_CALLM1("isInBorder", _object)) then
-			{
-				private _type = typeOf _object;
-				private _modelName = (getModelInfo _object) select 0;
 
-				switch true do {
-					// A truck's position defined the position for tracked and wheeled vehicles
-					case (_type == "b_truck_01_transport_f"): {
-						private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
-					};
-					// A mortar's position defines the position for mortars
-					case (_type == "b_mortar_01_f"): {
-						private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
-					};
-					// A low HMG defines a position for low HMGs and low GMGs
-					case (_type == "b_hmg_01_f"): {
-						private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
-					};
-					// A high HMG defines a position for high HMGs and high GMGs
-					case (_type == "b_hmg_01_high_f"): {
-						private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
-					};
-					// A cargo container defines a position for cargo boxes
-					case (_type == "b_slingload_01_cargo_f"): {
-						private _args = [T_PL_cargo, [GROUP_TYPE_INF], getPosATL _object, direction _object, objNull];
-						T_CALLM("addSpawnPos", _args);
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
-					};
-					case (_type == "flag_bi_f"): {
-						// Probably add support for the flag later
-						// Why do we even need it
-					};
-					case (_type == "sign_arrow_large_f"): { // Red arrow
-						// Why do we need it
-						deleteVehicle _object;
-					};
-					case (_type == "sign_arrow_large_blue_f"): { // Blue arrow
-						// Why do we need it
-						deleteVehicle _object;
-					};
-					// Patrol routs
-					case (_type == "i_soldier_f"): {
-						T_CALLM1("addPatrolRoute", _object);
-						OOP_DEBUG_1("findAllObjects for %1: found patrol route", T_GETV("name"));
-						deleteVehicle _object;
-					};
-					// Ambient anims
-					case (_type == "i_soldier_ar_f"): {
-						private _anims = (_object getVariable ["enh_ambientanimations_anims", []]) apply { toLower _x };
-						private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
-						if(_ambientAnimIdx != NOT_FOUND) then {
-							private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
-							private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal getPos _object;
-							_mrk setDir getDir _object;
-							_mrk setVariable ["vin_defaultAnims", [_anim]];
-							_mrk hideObjectGlobal true;
+			if (!(_processedObjects getVariable [str _x, false])) then { // Don't process same object twice
+				if ((typeOf _x) != "" || { ! isNil {gObjectAnimMarkers getVariable ((getModelInfo _x) select 0);} }) then { // Ignore trees, there are so many of them
+
+					private _type = typeOf _x;
+					private _modelName = (getModelInfo _x) select 0;
+					private _object = _x;
+					ASP_SCOPE_START(scanObject_x);
+
+					if(T_CALLM1("isInBorder", _object)) then
+					{
+						
+
+						// Disable object simulation if needed
+						if ((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) != "house" }) then {
+							_object enableSimulationGlobal false;
 						};
-						deleteVehicle _object;
-						OOP_DEBUG_1("findAllObjects for %1: found predefined solider position", T_GETV("name"));
-					};
-					// Helipads
-					case (_type in location_bt_helipad): {
-						T_CALLM2("addObject", _object, _object in _terrainObjects);
-						OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
-					};
-					// Process buildings, objects with anim markers, and shooting targets
-					case (_type isKindOf "House" || { gObjectAnimMarkers findIf { _x#0 == _modelName } != NOT_FOUND } || { _type in gShootingTargetTypes }): {
-						T_CALLM2("addObject", _object, _object in _terrainObjects);
-						OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
+
+						switch true do {
+							// Process buildings, objects with anim markers, and shooting targets
+							case (_type isKindOf "House" || { ! isNil {gObjectAnimMarkers getVariable _modelName;} } || { _type in gShootingTargetTypes }): {
+								T_CALLM2("addObject", _object, _object in _terrainObjects);
+								OOP_DEBUG_1("findAllObjects for %1: found house", T_GETV("name"));
+							};
+							// A truck's position defined the position for tracked and wheeled vehicles
+							case (_type == "b_truck_01_transport_f"): {
+								private _args = [T_PL_tracked_wheeled, [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found vic spawn marker", T_GETV("name"));
+							};
+							// A mortar's position defines the position for mortars
+							case (_type == "b_mortar_01_f"): {
+								private _args = [[T_VEH, T_VEH_stat_mortar_light], [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found mortar spawn marker", T_GETV("name"));
+							};
+							// A low HMG defines a position for low HMGs and low GMGs
+							case (_type == "b_hmg_01_f"): {
+								private _args = [T_PL_HMG_GMG_low, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found low hmg/gpg spawn marker", T_GETV("name"));
+							};
+							// A high HMG defines a position for high HMGs and high GMGs
+							case (_type == "b_hmg_01_high_f"): {
+								private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found high hmg/gpg spawn marker", T_GETV("name"));
+							};
+							// A cargo container defines a position for cargo boxes
+							case (_type == "b_slingload_01_cargo_f"): {
+								private _args = [T_PL_cargo, [GROUP_TYPE_INF], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found cargo box spawn marker", T_GETV("name"));
+							};
+							// Patrol routs
+							case (_type == "i_soldier_f"): {
+								T_CALLM1("addPatrolRoute", _object);
+								OOP_DEBUG_1("findAllObjects for %1: found patrol route", T_GETV("name"));
+								deleteVehicle _object;
+							};
+							// Ambient anims
+							case (_type == "i_soldier_ar_f"): {
+								private _anims = (_object getVariable ["enh_ambientanimations_anims", []]) apply { toLower _x };
+								private _ambientAnimIdx = gAmbientAnimSets findIf { _x#1 isEqualTo _anims };
+								if(_ambientAnimIdx != NOT_FOUND) then {
+									private _anim = gAmbientAnimSets#_ambientAnimIdx#0;
+									private _mrk = "Sign_Pointer_Cyan_F" createVehicleLocal getPos _object;
+									_mrk setDir getDir _object;
+									_mrk setVariable ["vin_defaultAnims", [_anim]];
+									_mrk hideObjectGlobal true;
+								};
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found predefined solider position", T_GETV("name"));
+							};
+							// Helipads
+							case (_type in location_bt_helipad): {
+								T_CALLM2("addObject", _object, _object in _terrainObjects);
+								OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
+							};
+						};
 					};
 				};
+
+				// Mark object as processed
+				_processedObjects setVariable [str _x, true];
 			};
-		} forEach _allObjects;
+
+		} forEach (_nearObjects + _terrainObjects);
+		ASP_SCOPE_END(scanFoundObjects);
+
+		#ifndef _SQF_VM
+		deleteLocation _processedObjects;
+		#endif
 
 		T_CALLM0("findBuildables");
 	ENDMETHOD;
@@ -363,11 +411,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
 		private _type = typeOf _hObject;
-
-		// Disable object simulation if needed
-		if((_type != "") && {(getText (configFile >> "cfgVehicles" >> _type >> "simulation")) == "thingX"}) then {
-			_hObject enableSimulationGlobal false;
-		};
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
 		private _countBP = count (_hObject buildingPos -1);
@@ -406,9 +449,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Increase infantry capacity
-		private _capacityInf = T_GETV("capacityInf") + _cap;
-		T_SETV("capacityInf", _capacityInf);
-		T_SETV_PUBLIC("capacityInf", _capacityInf);
+		if (_cap > 0) then {
+			private _capacityInf = T_GETV("capacityInf") + _cap;
+			_capacityInf = _capacityInf min CALLSM1("Location", "getCapacityInfForType", T_GETV("type"));
+			T_SETV("capacityInf", _capacityInf);
+			T_SETV_PUBLIC("capacityInf", _capacityInf);
+		};
 
 		// Check if it enabled radio functionality for the location
 		private _index = location_bt_radio find _type;
@@ -432,9 +478,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Process it for ambient anims
-		private _animMarkersIdx = gObjectAnimMarkers findIf { _x#0 == _modelName; };
-		if(_animMarkersIdx != NOT_FOUND) then {
-			(gObjectAnimMarkers#_animMarkersIdx) params ["_t", "_animMarkers"];
+		private _animMarkers = gObjectAnimMarkers getVariable _modelName;
+		if(! isNil "_animMarkers") then {
+			_animMarkers params ["_t", "_animMarkers"];
 			private _ambientAnimObjects = T_GETV("ambientAnimObjects");
 			{
 				_x params ["_relPos", "_relDir", "_anim"]; 
@@ -501,10 +547,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _buildables = [];
 		private _sortableArray = [];
 #ifndef _SQF_VM
+		/*
 		private _nearbyObjects = [];
 		{
 			_nearbyObjects pushBackUnique _x;
 		} foreach (nearestTerrainObjects [_locPos, [], _radius] + nearestObjects [_locPos, [], _radius]);
+		*/
+		private _nearbyObjects = _locPos nearObjects _radius;
 
 		{
 			private _object = _x;
@@ -704,6 +753,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD(delete)
 		params [P_THISOBJECT];
+
+		// Delete the helper object
+		#ifndef _SQF_VM
+		deleteLocation T_GETV("helperObject");
+		#endif
 
 		// Remove the timer
 		private _timer = T_GETV("timer");
@@ -1048,7 +1102,31 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	public METHOD(getCapacityInf)
 		params [P_THISOBJECT];
-		T_GETV("capacityInf")
+		T_GETV("capacityInf");
+	ENDMETHOD;
+
+	/*
+	Method: getCapacityInfForType
+	Returns absolute maximum infantry capacity for given location type.
+	*/
+	public STATIC_METHOD(getCapacityInfForType)
+		params [P_THISOBJECT, P_STRING("_type")];
+		switch (_type) do {
+			case LOCATION_TYPE_UNKNOWN: { 0 }; // ??
+			case LOCATION_TYPE_CITY: { 50 };
+			case LOCATION_TYPE_CAMP: { 30 };
+			case LOCATION_TYPE_BASE: { 60 };
+			case LOCATION_TYPE_OUTPOST: { 40 };
+			case LOCATION_TYPE_DEPOT: { 40 };
+			case LOCATION_TYPE_POWER_PLANT: { 40 };
+			case LOCATION_TYPE_POLICE_STATION: { 20 };
+			case LOCATION_TYPE_RADIO_STATION: { 30 };
+			case LOCATION_TYPE_AIRPORT: { 60 };
+			case LOCATION_TYPE_ROADBLOCK: { 15 };
+			case LOCATION_TYPE_OBSERVATION_POST: { 10 };
+			case LOCATION_TYPE_RESPAWN: { 0 }; // ??
+			default { 40 };
+		};
 	ENDMETHOD;
 
 	/*
@@ -1441,6 +1519,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} else {
 			_a max _b
 		};
+
+		// Ensure bounding radius is within limit
+		if (_boundingRadius > LOCATION_BOUNDING_RADIUS_MAX) then {
+			OOP_ERROR_3("Bounding radius exceeds limit: %1 > %2, position: %3", _boundingRadius, LOCATION_BOUNDING_RADIUS_MAX, T_GETV("pos"));
+		};
+
 		T_SETV_PUBLIC("boundingRadius", _boundingRadius);
 		pr _border = [T_GETV("pos"), _a, _b, _dir, _isRectangle, -1]; // [center, a, b, angle, isRectangle, c]
 		T_SETV_PUBLIC("border", _border);
@@ -1454,10 +1538,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _baseRadius = 300; // Radius at which it 
 			private _border = T_GETV("border");
 			_border params ["_pos", "_a", "_b"];
-			private _area = 4*_a*_b;
-			private _density_km2 = 60;	// Amount of civilians per square km
-			private _civsRaw = ceil ((_density_km2/1e6) * _area);
-			CLAMP(_civsRaw, 5, 25)
+			private _area = 3.14*_a*_b;
+			private _density_km2 = 6000;	// Amount of civilians per square km
+			private _civsRaw = round(3.14*_a*_b*_density_km2/1000000);
+
+			OOP_INFO_1("Civilian capacity: %1", _civsRaw);
+
+			_civsRaw;
 
 			// https://www.desmos.com/calculator/nahw1lso9f
 			/*
@@ -1481,7 +1568,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	public METHOD(getMaxCivilianVehicles)
 		params [P_THISOBJECT];
 		private _radius = T_GETV("boundingRadius");
-		CLAMP(0.03 * _radius, 3, 25)
+		CLAMP(0.03 * _radius, 3, 12)
 	ENDMETHOD;
 
 	// File-based methods
@@ -1698,9 +1785,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	public STATIC_METHOD(nearLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GETSV("Location", "all") select {
-			GETV(_x, "pos") distance2D _pos < _radius
-		}
+
+		(nearestLocations  [_pos, ["vin_location"], _radius]) apply {
+			GET_LOCATION_FROM_HELPER_OBJECT(_x);
+		};
 	ENDMETHOD;
 
 	/*
@@ -1713,9 +1801,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	public STATIC_METHOD(overlappingLocations)
 		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		GETSV("Location", "all") select {
-			GETV(_x, "pos") distance2D _pos < _radius + GETV(_x, "boundingRadius")
-		}
+		pr _helpers = nearestLocations  [_pos, ["vin_location"], LOCATION_BOUNDING_RADIUS_MAX+_radius];
+		pr _nearLocations = _helpers apply { GET_LOCATION_FROM_HELPER_OBJECT(_x); };
+		_nearLocations select {
+			(GETV(_x, "pos") distance2D _pos) < (_radius + GETV(_x, "boundingRadius"));
+		};
 	ENDMETHOD;
 
 	// Runs "process" of locations within certain distance from the point
@@ -1889,6 +1979,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			private _tags = SAVED_OBJECT_TAGS apply { [_x, _obj getVariable [_x, nil]] } select { !isNil { _x#1 } };
 			[
 				typeOf _obj,
+				(getModelInfo _obj)#1, // Model path
 				getPosWorld _obj,
 				vectorDir _obj,
 				vectorUp _obj,
@@ -1981,17 +2072,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Rebuild the objects which have been constructed here
 		{ // forEach T_GETV("savedObjects");
-			_x params ["_type", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
+			_x params ["_type", "_modelPath", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
 			// Check if there is such an object here already
-			pr _objs = nearestObjects [_posWorld, [], 0.25, true] select { typeOf _x == _type };
+			pr _objs = nearestObjects [_posWorld, [], 0.25, true] select { (typeOf _x == _type) || {((getModelInfo _x)#1) == _modelPath;} };
 			pr _hO = if (count _objs == 0) then {
-				pr _hO = _type createVehicle [0, 0, 0];
+				pr _hO = if (count _type > 0) then {
+					_type createVehicle [0, 0, 0];
+				} else {
+					createSimpleObject [_modelPath, [0,0,0], false]; 
+				};
 				_hO setPosWorld _posWorld;
 				_hO setVectorDirAndUp [_vDir, _vUp];
-				_hO enableDynamicSimulation true;
-				_hO
+				_hO;
 			} else {
-				_objs#0
+				_objs#0;
 			};
 			if(!isNil {_tags}) then {
 				{
@@ -2002,9 +2096,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} forEach T_GETV("savedObjects");
 
 		T_SETV("savedObjects", []);
-
-		// Restore civ presense module
-		T_CALLM1("setCapacityCiv", T_GETV("capacityCiv"));
 
 		// Enable player respawn
 		{
@@ -2028,6 +2119,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_PUBLIC_VAR("parent");
 		T_PUBLIC_VAR("respawnSides");
 		T_PUBLIC_VAR("playerRespawnPos");
+
+		// Init helper object
+		T_CALLM0("_initHelperObject");
 
 		//Push the new object into the array with all locations
 		GETSV("Location", "all") pushBackUnique _thisObject;

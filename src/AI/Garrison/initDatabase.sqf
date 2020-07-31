@@ -200,7 +200,7 @@ private _s = WSP_GAR_COUNT;
 											TAG_DURATION_SECONDS
 											]]	call AI_misc_fnc_setActionParametersFromGoalOptional;										
 // ---------------- ActionGarrisonJoinLocation
-["ActionGarrisonJoinLocation", _s,			[[WSP_GAR_AT_TARGET_POS, 					true]]]	call AI_misc_fnc_setActionPreconditions; // These are procedural
+["ActionGarrisonJoinLocation", _s,			[[WSP_GAR_AT_TARGET_POS, 					true]]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonJoinLocation", _s,			[
 											[WSP_GAR_AT_TARGET_LOCATION, 				true]
 											]]	call AI_misc_fnc_setActionEffects;
@@ -219,12 +219,12 @@ private _s = WSP_GAR_COUNT;
 ["ActionGarrisonMoveAir",					C*1.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMounted",				C*2.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveCombined",				C*4.5	]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonMoveDismounted",			C*7.0	]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonMoveDismounted",			C*6.0	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonDefendActive", 				C*1.0	]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonMergeVehicleGroups", 		C*0.0	]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonSplitVehicleGroups", 		C*0.0	]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonRebalanceGroups", 			C*0.0	]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonRepairAllVehicles", 		C*0.0	]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonMergeVehicleGroups", 		C*0.4	]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonSplitVehicleGroups", 		C*0.4	]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonRebalanceGroups", 			C*0.4	]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonRepairAllVehicles", 		C*0.4	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonClearArea", 				C*0.1	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonJoinLocation", 				C*0.1	]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonLand", 						C*1.0	]	call AI_misc_fnc_setActionCost;

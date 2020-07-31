@@ -9,15 +9,17 @@ Author: Sparker 08.11.2018
 #define pr private
 
 vin_fnc_accumulateGroupWSP = {
-	params ["_groups", "_groupWSP", "_default"];
-	if (count _groups == 0) exitWith {
-		_default
-	};
 	pr _garValue = true;
-	{
-		pr _groupVal = [_x, _groupWSP] call ws_getPropertyValue;
-		_garValue = _garValue && _groupVal;
-	} forEach (_groups apply { CALLM0(_x, "getAI") } apply { GETV(_x, "worldState") });
+	CRITICAL_SECTION {
+		params ["_groups", "_groupWSP", "_default"];
+		if (count _groups == 0) exitWith {
+			_default
+		};
+		{
+			pr _groupVal = [_x, _groupWSP] call ws_getPropertyValue;
+			_garValue = _garValue && _groupVal;
+		} forEach (_groups apply { CALLM0(_x, "getAI") } apply { GETV(_x, "worldState") });
+	};
 	_garValue
 };
 
@@ -112,7 +114,11 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 				} forEach _allGroups;
 				_pos = _pos vectorMultiply (1 / count _allGroups);
 				_pos = ZERO_HEIGHT(_pos);
-				CALLM1(_AI, "setPos", _pos);
+				if ((_pos#0 != 0) && (_pos#1 != 0)) then {
+					CALLM1(_AI, "setPos", _pos);
+				} else {
+					OOP_ERROR_0("Calculated garrison position is [0,0]");
+				};
 			};
 		} else {
 			// When unspawned the group specific states related to units can be assumed based on unit counts

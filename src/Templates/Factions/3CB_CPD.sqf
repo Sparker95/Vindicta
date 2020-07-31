@@ -27,14 +27,14 @@ _inf set [T_INF_officer, ["UK3CB_CPD_B_PAT", "UK3CB_CPD_B_PAT_RIF_BOLT", "UK3CB_
 
 
 
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["UK3CB_CPD_B_TIGR"]]; 
 
 _veh set [T_VEH_car_unarmed, ["UK3CB_CPD_B_TIGR", "UK3CB_CPD_B_TIGR_FFV", "UK3CB_CPD_B_Gaz24", "UK3CB_CPD_B_Offroad_Unarmed", "UK3CB_CPD_B_S1203", "UK3CB_CPD_B_UAZ_Closed", "UK3CB_CPD_B_UAZ_Open", "UK3CB_CPD_B_Hilux_Closed", "UK3CB_CPD_B_Hilux_Open"]]; // = 1 – REQUIRED
 
 
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 
 
 _cargo = +(tDefault select T_CARGO);

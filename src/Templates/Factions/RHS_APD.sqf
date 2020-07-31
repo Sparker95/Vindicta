@@ -34,12 +34,12 @@ _inf set [T_INF_TL, ["RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police
 _inf set [T_INF_officer, ["RHS_police_officer", "RHS_police_1", "RHS_police_2", "RHS_police_3", "RHS_police_4", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10", "RHS_police_5", "RHS_police_6", "RHS_police_7", "RHS_police_8", "RHS_police_9", "RHS_police_10"]];
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["demian2435_police_car"]];
 _veh set [T_VEH_car_unarmed, ["demian2435_police_car", "demian2435_police_Hatchback", "demian2435_police_offroad"]];
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 
 //==== Cargo ====

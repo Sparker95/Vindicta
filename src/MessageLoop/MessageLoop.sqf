@@ -353,11 +353,11 @@ CLASS("MessageLoop", "Storable");
 		nil
 	ENDMETHOD;
 
-	public METHOD(deleteProcessCategoryObject)
+	public METHOD(removeProcessCategoryObject)
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_object")];
 
-			OOP_INFO_1("deleteProcessCategoryObject: %1", _object);
+			OOP_INFO_1("removeProcessCategoryObject: %1", _object);
 
 			pr _cats = T_GETV("processCategories");
 			{

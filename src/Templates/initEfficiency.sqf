@@ -49,30 +49,30 @@ private _eff_inf = [];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_default,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_SL,						[1,		0,		0,		0,		0.7,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_TL,						[1,		0,		0,		0,		0.5,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_SL,						[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_TL,						[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_officer,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_inf set [T_INF_GL,						[1,		0,		0,		0,		1.3,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_GL,						[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_rifleman,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_marksman,				[1,		0,		0,		0,		1.4,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_sniper,					[1,		0,		0,		0,		1.4,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_marksman,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_sniper,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_spotter,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_exp,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_ammo,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_LAT,					[1,		0,		0,		0,		0.8,	0.9,	0.4,	0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_LAT,					[1,		0,		0,		0,		1,		0.9,	0.4,	0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_inf set [T_INF_AT,						[1,		0,		0,		0,		0.7,	1.9,	0.6,	0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_AA,						[1,		0,		0,		0,		0.7,	0,		0,		1,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_LMG,					[1,		0,		0,		0,		1.5,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_HMG,					[1,		0,		0,		0,		1.6,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_AT,						[1,		0,		0,		0,		1,		1.9,	0.6,	0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_AA,						[1,		0,		0,		0,		1,		0,		0,		1,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_LMG,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_HMG,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_inf set [T_INF_medic,					[1,		0,		0,		0,		0.7,	0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_medic,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_engineer,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_crew,					[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_crew_heli,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];

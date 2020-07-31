@@ -234,9 +234,9 @@ CLASS("AIDebugUI", "")
 		if (time - T_GETV("timeLastGarrisonRequest") > INTERVAL_GARRISON_REQUEST || _selChanged) then {
 
 			// We must have some unit to get its garrison data
-			if (count _groups == 1 || count _units == 1) then {
+			if ((count _groups == 1) || (count _units > 0)) then {
 				pr _unit = if (count _groups == 1) then {
-					pr _groupUnits = units (_selGroups#0);
+					pr _groupUnits = units (_groups#0);
 					if (count _groupUnits > 0) then { _groupUnits#0 } else { objNull };
 				} else {
 					_units#0

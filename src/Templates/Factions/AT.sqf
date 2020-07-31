@@ -54,12 +54,12 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 */
 
 //==== Vehicles ====
-_veh = +(tDefault select T_VEH);
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["NLD_VWCrafter"]];
 _veh set [T_VEH_car_unarmed, ["NLD_VWCrafter", "NLD_DSI_BMW", "NLD_DSI_Bearcat"]]; // , "B_GEN_Van_02_vehicle_F" -- not enough seats in this
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = []; _drone resize T_DRONE_SIZE;
 _drone set [T_DRONE_SIZE-1, nil];
 //_drone set [T_DRONE_DEFAULT, ["O_UAV_01_F"]];
 
