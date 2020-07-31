@@ -145,6 +145,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// Scale enemy efficiency
 		private _scaleFactor = (CALLM1(_worldNow, "calcActivityMultiplier", _tgtClusterPos)) max 1.3;
 		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _scaleFactor);
+		_enemyEff = [_enemyEff, ENEMY_CLUSTER_EFF_MAX] call eff_fnc_min;
 		if ((_enemyEff#T_eff_soft) > 0) then {
 			_enemyEff set [T_EFF_soft, (_enemyEff#T_eff_soft) max 6];	// Set min amount of attack force
 		};

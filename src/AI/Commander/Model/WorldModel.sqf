@@ -237,9 +237,8 @@ CLASS("WorldModel", "Storable")
 	public METHOD(getDamageScore)
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius")];
 		private _rawDamage = T_CALLM2("getDamage", _pos, _radius);
-		private _campaignProgress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
 		private _aggression = CALLM0(gGameMode, "getAggression"); // 0..1
-		private _a = 0.5*(_aggression + _campaignProgress);
+		private _a = _aggression;
 		__DAMAGE_FUNCTION(_rawDamage, _a);
 	ENDMETHOD;
 

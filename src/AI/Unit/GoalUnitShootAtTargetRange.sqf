@@ -25,7 +25,8 @@ CLASS("GoalUnitShootAtTargetRange", "GoalUnit")
 		if (count _positions == 0) exitWith {};
 
 		_positions params ["_shootingPos", "_safePos"];
-		_goalParameters pushBack [TAG_POS, _shootingPos];
+		_goalParameters pushBack [TAG_MOVE_TARGET, _shootingPos];
+		_goalParameters pushBack [TAG_MOVE_RADIUS, 2];
 
 		// Set move target and evaluate if we are close to it already
 		CALLM1(_ai, "setMoveTarget", _shootingPos);

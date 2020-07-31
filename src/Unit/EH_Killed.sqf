@@ -11,6 +11,8 @@ Executed in unscheduled when a unit is destroyed.
 
 params ["_unit", "_killer", "_instigator", "_useEffects"];
 
+OOP_INFO_1("EH_Killed: %1", _this);
+
 // Fix for ACE
 _killer = if (isNull _killer) then {
 		_unit getVariable ["ace_medical_lastDamageSource", _killer];

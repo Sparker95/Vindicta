@@ -1300,7 +1300,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Mark city area for civ presence
 			if (_locType == LOCATION_TYPE_CITY) then {
-				CALLM1(_civPresenceMgr, "markAreaForInitialization", [_locSectorPos] + _locBorder);
+				pr _args = [[_locSectorPos] + _locBorder, _loc];
+				CALLM(_civPresenceMgr, "markAreaForInitialization", _args);
 			};
 
 			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
@@ -2318,7 +2319,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 			if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
 				pr _border = CALLM0(_loc, "getBorder");
-				CALLM1(_civPresenceMgr, "markAreaForInitialization", _border);
+				CALLM2(_civPresenceMgr, "markAreaForInitialization", _border, _loc);
 			};
 
 		} forEach T_GETV("locations");

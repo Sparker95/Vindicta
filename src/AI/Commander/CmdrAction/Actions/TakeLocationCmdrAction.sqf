@@ -110,6 +110,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		OOP_INFO_1(" Enemy efficiency from grid : %1", _enemyEff);
 		OOP_INFO_1(" Enemy efficiency from intel: %1", _enemyEffFromIntel);
 		_enemyEff = EFF_MAX(_enemyEff, _enemyEffFromIntel);	// Maximum eff from grid and intel
+		_enemyEff = [_enemyEff, ENEMY_LOCATION_EFF_MAX] call eff_fnc_min;
 		OOP_INFO_1(" Resulting               eff: %1", _enemyEff);
 		ASSERT_OBJECT(_tgtLoc);
 		private _side = GETV(_srcGarr, "side");

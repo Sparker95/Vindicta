@@ -1,3 +1,8 @@
+param (
+    [string]$metaFileName = "meta.cpp"
+)
+
+"Meta file name: $metaFileName`n`n"
 Push-Location
 
 Set-Location "$PSScriptRoot\..\..\Vindicta-Addon"
@@ -29,7 +34,6 @@ foreach ($module in $modules) {
     .$PSScriptRoot\hemtt armake build --force -i include  $module.fullName "$addonsOutLocation\$pboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
 }
 
-
 "`nCopy extras..."
 $extraFiles = Get-ChildItem -Path "extras" -File
 foreach ($extraFile in $extraFiles) {
@@ -39,6 +43,13 @@ foreach ($extraFile in $extraFiles) {
 if (Test-Path "$buildLocation\FOR_DEDICATED_SERVER_CFG.TXT") {
     Copy-Item "$buildLocation\FOR_DEDICATED_SERVER_CFG.TXT" $addonOutLocation
 }
+
+"`nCopy meta.cpp..."
+Copy-Item "meta\$metaFileName" $addonOutLocation
+Push-Location
+Set-Location $addonOutLocation
+Rename-Item $metaFileName "meta.cpp"
+Pop-Location
 
 "`nCreate key..."
 Push-Location

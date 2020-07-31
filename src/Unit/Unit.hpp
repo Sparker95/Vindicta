@@ -37,7 +37,6 @@
 // String names of public variables set on units
 #define UNIT_VAR_NAME_STR "__u"
 #define UNIT_EFFICIENCY_VAR_NAME_STR "__e"
-#define UNIT_EH_KILLED_STR "__u_eh_killed"
 #define UNIT_EH_RESPAWN_STR "__u_eh_respawn"
 #define UNIT_EH_HANDLE_RATING_STR "__u_eh_HandleRating"
 #define UNIT_EH_DAMAGE_STR "__u_eh_damage"

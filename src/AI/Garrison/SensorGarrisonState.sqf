@@ -103,6 +103,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 			// Aggregate landed value
 			pr _allGroupsLanded = [_allGroups, WSP_GROUP_ALL_LANDED, true] call vin_fnc_accumulateGroupWSP;
+			if (isNil "_allGroupsLanded") then { _allGroupsLanded = true; }; // For some reason nil is returned sometimes? :/
 			[_worldState, WSP_GAR_ALL_LANDED, _allGroupsLanded] call ws_setPropertyValue;
 
 			// Garrison position is average of group positions, if there are any

@@ -10,3 +10,5 @@
 #define INTEL_METHOD_RADIO			1
 // Civilians told us
 #define INTEL_METHOD_TALK_CIV		2
+// City rumours
+#define INTEL_METHOD_CITY           3

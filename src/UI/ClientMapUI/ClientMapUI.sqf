@@ -14,6 +14,7 @@
 #include "..\Resources\UIProfileColors.h"
 #include "..\..\PlayerDatabase\PlayerDatabase.hpp"
 #include "..\..\Intel\Intel.hpp"
+#include "..\..\GameMode\cityState.hpp"
 
 #define pr private
 
@@ -2474,8 +2475,17 @@ CLASS("ClientMapUI", "")
 						pr _gmData = CALLM0(_loc, "getGameModeData");
 						if (GET_OBJECT_CLASS(_gmData) == "CivilWarCityData") then {
 							pr _influence = CALLM0(_gmData, "getInfluence");
+							pr _state = CALLM0(_gmData, "getState");
+							pr _stateText = "";
+							pr _stateColor = [];
+							switch (_state) do {
+								case CITY_STATE_ENEMY_CONTROL: { _stateColor = [248/255, 7/255, 32/255, 1]; _stateText = "Enemy control"; };			// Red
+								case CITY_STATE_FRIENDLY_CONTROL: { _stateColor = [6/255, 124/255, 1, 1]; _stateText = "Friendly control"; };	// Blue
+								default { _stateColor = [1,1,1,1]; _stateText = "Neutral"; };							// Orange [244/255, 104/255, 0, 1.0]
+							};
 							_influence = round (_influence * 100);
 							pr _rows = [
+								["Status", _stateText, _stateColor],
 								["Influence", _influence, 100, true]
 							];
 							_ctrl = CALLSM1("ClientMapUI", "createLocationMiniPanel", _rows);
@@ -2509,10 +2519,17 @@ CLASS("ClientMapUI", "")
 	/*
 	Creates a mini panel control
 	rows - array of:
+
 	"_name", "_amount", "_baseAmount", "_bipolar"
 	_bipolar - optional, default false. If true, bar width is linear and can represent negative numbers:
 	bar width = _amount / _baseAmount
 	If false, bar width is logarithmic and can only represent positive numbers.
+
+	or:
+	"_name", "_valueStr", "_color"
+	_valueStr - string to be placed on the right of name
+	_color - array [r,g,b,a] - color of valuestr
+
 	*/
 	STATIC_METHOD(createLocationMiniPanel)
 		params [P_THISCLASS, P_ARRAY("_rows")];
@@ -2540,7 +2557,7 @@ CLASS("ClientMapUI", "")
 		_ctrlBackground ctrlCommit 0;
 
 		{ //  forEach _rows;
-			_x params ["_name", "_amount", "_baseAmount", ["_bipolar", false]]; // _bipolar - when true, that value can be positive and negative
+			_x params ["_name", "_amount"]; // _bipolar - when true, that value can be positive and negative
 			private _i = _forEachIndex;
 			
 			
@@ -2550,52 +2567,68 @@ CLASS("ClientMapUI", "")
 			_ctrlName ctrlSetText _name;
 			
 			private _ctrlAmount = _disp ctrlCreate ["MUI_BG_TRANSPARENT_LEFT", -1, _ctrlGroup];
-			_ctrlAmount ctrlSetPosition [ _wCol0, _hGap + _i*_hRow, _wCol1, _hRow];
-			_ctrlAmount ctrlCommit 0;
-			_ctrlAmount ctrlSetText (str _amount);
+			
+			
+			
+			if (_amount isEqualType 0) then {
+				_x params ["_name", "_amount", "_baseAmount", ["_bipolar", false]];
 
-			if (!_bipolar) then {
-				if (_amount > 0) then {
-					private _barSizeRel = 0.5*(ln (_amount/_baseAmount))+0.25; // https://www.desmos.com/calculator/7uastykkza
-					_barSizeRel = (_barSizeRel min 1.0) max 0.08; // Limited in range 0..1
-					private _barWidth = _barSizeRel*_wBarMax;
-					private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
-					_ctrlBar ctrlSetPosition [_wCol0 +_wCol1, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+				_ctrlAmount ctrlSetPosition [ _wCol0, _hGap + _i*_hRow, _wCol1, _hRow];
+				_ctrlAmount ctrlSetText (str _amount);
+				_ctrlAmount ctrlCommit 0;
 
-					// Color bar
-					_ctrlBar ctrlSetBackgroundColor [244/255, 104/255, 0, 1.0];
-					_ctrlBar ctrlCommit 0;
-				} else {
-					private _color = [0.5, 0.5, 0.5, 1.0];
-
-					// Color texts
-					//_ctrlName ctrlSetTextColor _color;
-					_ctrlAmount ctrlSetTextColor _color;
-					//_ctrlName ctrlCommit 0;
-					_ctrlAmount ctrlCommit 0;
-				};
-			} else {
-				if (_amount != 0) then {
-					private _barSizeRel = 0.5 * abs (_amount / _baseAmount);
-					private _barWidth = _barSizeRel*_wBarMax;
-					private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
-
+				if (!_bipolar) then {
 					if (_amount > 0) then {
-						_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
-						_ctrlBar ctrlSetBackgroundColor [6/255, 124/255, 1, 1];
-					} else {
-						_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax - _barWidth, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
-						_ctrlBar ctrlSetBackgroundColor [1, 0, 0, 1];
-					};
-					_ctrlBar ctrlCommit 0;
+						private _barSizeRel = 0.5*(ln (_amount/_baseAmount))+0.25; // https://www.desmos.com/calculator/7uastykkza
+						_barSizeRel = (_barSizeRel min 1.0) max 0.08; // Limited in range 0..1
+						private _barWidth = _barSizeRel*_wBarMax;
+						private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
+						_ctrlBar ctrlSetPosition [_wCol0 +_wCol1, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
 
-					// Create a white mark at zero position
-					private _ctrlMark = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
-					_ctrlMark ctrlSetBackgroundColor [1,1,1,1];
-					pr _ctrlMarkWidth = safeZoneW * 0.0015;
-					_ctrlMark ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax - 0.5*_ctrlMarkWidth, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _ctrlMarkWidth, _hBar];
-					_ctrlmark ctrlCommit 0;
+						// Color bar
+						_ctrlBar ctrlSetBackgroundColor [244/255, 104/255, 0, 1.0];
+						_ctrlBar ctrlCommit 0;
+					} else {
+						private _color = [0.5, 0.5, 0.5, 1.0];
+
+						// Color texts
+						//_ctrlName ctrlSetTextColor _color;
+						_ctrlAmount ctrlSetTextColor _color;
+						//_ctrlName ctrlCommit 0;
+						_ctrlAmount ctrlCommit 0;
+					};
+				} else {
+					if (_amount != 0) then {
+						private _barSizeRel = 0.5 * abs (_amount / _baseAmount);
+						private _barWidth = _barSizeRel*_wBarMax;
+						private _ctrlBar = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
+
+						if (_amount > 0) then {
+							_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+							_ctrlBar ctrlSetBackgroundColor [6/255, 124/255, 1, 1];
+						} else {
+							_ctrlBar ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax - _barWidth, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _barWidth, _hBar];
+							_ctrlBar ctrlSetBackgroundColor [1, 0, 0, 1];
+						};
+						_ctrlBar ctrlCommit 0;
+
+						// Create a white mark at zero position
+						private _ctrlMark = _disp ctrlCreate ["RscText", -1, _ctrlGroup];
+						_ctrlMark ctrlSetBackgroundColor [1,1,1,1];
+						pr _ctrlMarkWidth = safeZoneW * 0.0015;
+						_ctrlMark ctrlSetPosition [_wCol0 +_wCol1 + 0.5*_wBarMax - 0.5*_ctrlMarkWidth, _hGap + _i*_hRow + 0.5*(_hRow - _hBar), _ctrlMarkWidth, _hBar];
+						_ctrlmark ctrlCommit 0;
+					};
 				};
+			};
+
+			if (_amount isEqualType "") then {
+				_x params ["_name", "_valueStr", "_color"];
+
+				_ctrlAmount ctrlSetText _valueStr;
+				_ctrlAmount ctrlSetTextColor _color;
+				_ctrlAmount ctrlSetPosition [ _wCol0, _hGap + _i*_hRow, _wCol1 + _wBarMax, _hRow];
+				_ctrlAmount ctrlCommit 0;
 			};
 			
 		} forEach _rows;

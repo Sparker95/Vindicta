@@ -15,6 +15,10 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 	METHOD(new)
 		params [P_THISOBJECT];
 
+
+		// The in-game tutorial looks quite nice, but we should use the one on the website for now.
+		// We might re-enable it later or reuse its layout at some point.
+		/*
 		SETSV("InGameMenuTabTutorial", "instance", _thisObject);
 
 		// Create the controls
@@ -40,6 +44,22 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 		// We must omit the base class
 
 		_listnbox lnbSetCurSelRow 0;
+		*/
+
+		// Create the controls
+		pr _displayParent = T_CALLM0("getDisplay");
+		pr _group = _displayParent ctrlCreate ["TAB_TUTORIAL_TEMP", -1];
+		T_CALLM1("setControl", _group);
+
+		pr _nl = toString [10];
+
+		pr _ctrl = T_CALLM1("findControl", "TAB_TOTORIAL_TEMP_EDIT");
+		_str = _nl + "Our tutorial is hosted at the website:" + _nl + _nl;
+		_str = _str + "https://vindicta-team.github.io/Vindicta-Docs/" + _nl + _nl;
+		_str = _str + "You can select and copy the link with CTRL + C";
+		_ctrl ctrlSetText _str;
+		
+		copyToClipboard "https://vindicta-team.github.io/Vindicta-Docs/";
 
 	ENDMETHOD;
 
