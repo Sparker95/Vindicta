@@ -8,10 +8,10 @@ removeHeadgear this;
 removeGoggles this;
 
 //	==== Head Gear ====
-this addHeadgear "gm_ge_headgear_m62_net";
+this addHeadgear "gm_ge_headgear_m62";
 
 //	==== Uniform ====
-this forceAddUniform "gm_ge_army_uniform_soldier_80_ols";
+this forceAddUniform "gm_ge_army_uniform_soldier_gloves_80_ols";
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "gm_ge_facewear_m65";
 this addItemToUniform "gm_ge_headgear_hat_80_oli";
