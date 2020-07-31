@@ -41,7 +41,6 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\CUP_TKA.sqf", 	
     "Templates\Factions\CUP_AFRF.sqf", 
     "Templates\Factions\CUP_USMC.sqf", 
-    "Templates\Factions\3CB_BAF.sqf", 					
     "Templates\Factions\3CB_TNA_B.sqf", 				
     "Templates\Factions\3CB_TNA_O.sqf", 				
     "Templates\Factions\Russians2035.sqf", 			

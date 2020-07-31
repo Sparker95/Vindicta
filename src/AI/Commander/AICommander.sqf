@@ -279,12 +279,23 @@ CLASS("AICommander", "AI")
 		} select {
 			// Unit has valid handle
 			private _unitHandle = _x;
+
+			/*
+			pr _isPlayer = isPlayer _unitHandle;
+			pr _units = units (group _unitHandle);
+			pr _findPlayer = (units (group _unitHandle)) findIf { isPlayer _x };
+			pr _args = [_x, group _x, _isPlayer, _findPlayer, _units];
+			OOP_INFO_1("Select abandoned units: %1", _args);
+			*/
+
 			!isNull _unitHandle
 			&& { alive _unitHandle }
 			&& { !isPlayer _unitHandle }
 			// Group has no player in it
-			&& { units group _unitHandle findIf { _x in allPlayers } == NOT_FOUND }
+			&& { (units (group _unitHandle)) findIf { isPlayer _x } == NOT_FOUND }
 		};
+
+		OOP_INFO_1("Abandoned units: %1", _abandonedUnits);
 
 		if(count _abandonedUnits > 0) then {
 			// Cluster these units into reasonable groups based on proximity
@@ -751,16 +762,46 @@ CLASS("AICommander", "AI")
 		};
 
 		// Do we have friendly locations nearby?
+		pr _intelIntercepted = false;
 		if (count _friendlyLocs > 0) then {
 			if (_weHaveRadioKey) then {
 				T_CALLM2("inspectIntel", _intel, INTEL_METHOD_RADIO);
 				OOP_INFO_0("  successfull interception");
+				_intelIntercepted = true;
 			} else {
 				// Todo Mark an unknown radio transmission on the map??
 				OOP_INFO_0("  we don't have this radio key");
 			};
 		} else {
 			OOP_INFO_0("  no friendly locations with radio nearby...");
+		};
+
+		// Iterate nearby cities, our influence of these cities affects the chance of interception
+		if (!_intelIntercepted && (T_GETV("side") == CALLM0(gGameMode, "getPlayerSide")) ) then { // Only works for rebels
+			pr _nearCities = CALLSM2("Location", "nearLocations", _pos, 2000) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY;};
+			OOP_INFO_1("Nearby cities: %1", _nearCities);
+			if (count _nearCities > 0) then {
+				pr _avgInfluence = 0;
+				{
+					pr _gmData = CALLM0(_x, "getGameModeData");
+					if (!IS_NULL_OBJECT(_gmData)) then {
+						if (GET_OBJECT_CLASS(_gmData) == "CivilWarCityData") then {
+							pr _influence = CALLM0(_gmData, "getInfluence"); // Within 0..1 range
+							OOP_INFO_2("   City %1: influence %2", CALLM0(_x, "getName"), _influence);
+							_influence = _influence max 0; // Ignore negative values
+							_avgInfluence = _avgInfluence + _influence;
+						};
+					};
+				} forEach _nearCities;
+				_avgInfluence = _avgInfluence / (count _nearCities); // Within 0..1 range
+				OOP_INFO_1("  Average influence: %1", _avgInfluence);
+				if (random 1 < _avgInfluence) then {
+					OOP_INFO_0("  Intel intercepted through city");
+					T_CALLM2("inspectIntel", _intel, INTEL_METHOD_CITY);
+				} else {
+					OOP_INFO_0("  Intel not intercepted");
+				};
+			};
 		};
 
 		// TEST delete this!
@@ -2349,7 +2390,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 						ACTION_SUPPLY_TYPE_MEDICAL,		1,
 						ACTION_SUPPLY_TYPE_MISC,		1
 					];
-					private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+					private _progress = CALLM0(gGameMode, "getAggression") + 0.4; // 0..1 + 0.4
 					private _amount = 0 max random [_progress * 0.5, _progress, _progress * 1.5] min 1;
 					// Find intermediate city targets
 					// How many do we want?
@@ -2935,7 +2976,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		gDebugReinfProgress = gDebugReinfProgress + 0.1;
 		systemChat format ["Reinforcing %1 now at %2 progress", _side, _progress];
 		#else
-		private _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		private _progress = CALLM0(gGameMode, "getAggression"); // 0..1
 		#endif
 		FIX_LINE_NUMBERS()
 
@@ -3198,13 +3239,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_x params ["_name", "_loc", "_garrison", "_infSpace", "_vicSpace"];
 			while {_vicSpace > 0} do {
 				private _currRatios = _vehRatios apply { [_x#0, _x#1, CALLM1(_garrison, "countUnits", [[T_VEH ARG _x#0]])] };
-				private _ratioSum = 0;
-				{ _ratioSum = _ratioSum + _x#2 } forEach _currRatios;
 				private _bestVeh = -1;
 				private _bestDiff = 0;
 				{
 					// Difference in desired ratio and current ratio
-					private _ratioDiff = _x#1 - _x#2 / _ratioSum;
+					private _ratioDiff = _x#1 - _x#2;
 					if(_ratioDiff >= _bestDiff) then {
 						_bestDiff = _ratioDiff;
 						_bestVeh = _x#0;

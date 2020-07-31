@@ -47,7 +47,7 @@ jobs:
       run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
 
     - name: Build addons
-      run: '.\tools\Builder\buildAddons.ps1'
+      run: '.\tools\Builder\buildAddons.ps1 -metaFileName meta_dev.cpp'
 
     - name: Upload build addon artifact
       uses: actions/upload-artifact@v2

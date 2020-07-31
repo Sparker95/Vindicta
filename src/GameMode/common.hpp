@@ -12,6 +12,4 @@
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Undercover\UndercoverMonitor.hpp"
 
-#define CITY_STATE_NEUTRAL 0
-#define CITY_STATE_FRIENDLY_CONTROL 1
-#define CITY_STATE_ENEMY_CONTROL 2
+#include "cityState.hpp"

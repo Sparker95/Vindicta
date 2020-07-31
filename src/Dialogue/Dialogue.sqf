@@ -66,13 +66,7 @@ CLASS("Dialogue", "")
 		T_SETV("handlingEvent", false);
 		T_SETV("state", DIALOGUE_STATE_RUN);
 
-		// Call virtual method to get nodes
-		pr _nodes = T_CALLM2("getNodes", _unit0, _unit1);
-		if (isNil "_nodes" || {count _nodes == 0}) then {
-			OOP_ERROR_0("Node array is nil or empty");
-			_nodes = [];
-		};
-		T_SETV("nodes", _nodes);
+		T_SETV("nodes", []); // Nodes are initialized later in process call
 
 		// Send request to client
 		if (_clientID != -1) then {
@@ -91,6 +85,18 @@ CLASS("Dialogue", "")
 	// Must be called periodically, up to once per frame
 	METHOD(process)
 		params [P_THISOBJECT];
+
+		// Generate nodes if not yet initialized
+		// Call virtual method to get nodes
+		pr _nodes = T_GETV("nodes");
+		if (count _nodes == 0) then {
+			_nodes = T_CALLM2("getNodes", _unit0, _unit1);
+			if (isNil "_nodes" || {count _nodes == 0}) then {
+				OOP_ERROR_0("Node array is nil or empty");
+				_nodes = [];
+			};
+			T_SETV("nodes", _nodes);
+		};
 
 		// Bail if dialogue is over
 		pr _state = T_GETV("state");

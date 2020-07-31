@@ -96,8 +96,6 @@ CALL_COMPILE_COMMON("Templates\Loadouts\CUP_TKA_CIVILIAN\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\CUP_RUS_POLICE\init.sqf");
 // Gendermarie Expansion
 CALL_COMPILE_COMMON("Templates\Loadouts\GEXP_POLICE\init.sqf");
-// 3CB BAF
-CALL_COMPILE_COMMON("Templates\Loadouts\3CB_BAF\init.sqf");
 // 3CB CCIVS
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_CCIVS\init.sqf");
 // 3CB Takistan Civillians

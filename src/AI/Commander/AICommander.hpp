@@ -123,6 +123,13 @@
 #define EFF_FOOT_PATROL_EFF			[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		8]
 #define EFF_MOUNTED_PATROL_EFF		[8,		0,		0,		0,		8,		0,		0,		0,		0,		0,		0,		0,		0,		8]
 
+// Maximum ENEMY efficiency values to limit potential response force within sane values
+//									soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
+// Used in 'take location'
+#define ENEMY_LOCATION_EFF_MAX		[40,	7,		6,		2,		9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999]
+// Used in 'QRF' cmdr action
+#define ENEMY_CLUSTER_EFF_MAX		[30,	7,		6,		2,		9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999]
+
 // Max amount of simultaneous actions
 #define CMDR_MAX_TAKE_OUTPOST_ACTIONS 3
 #define CMDR_MAX_REINFORCE_ACTIONS 3
