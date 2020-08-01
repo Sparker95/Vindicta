@@ -7,7 +7,7 @@
 
 #define pr private
 
-#define __GET_POS(a) if ((a) isEqualType objNull) then {getPos (a)} else {a}
+#define __GET_POS(a) (if ((a) isEqualType objNull) then {getPos (a)} else {(a)})
 
 #define OOP_CLASS_NAME VirtualRoute
 CLASS("VirtualRoute", "")
@@ -262,7 +262,8 @@ CLASS("VirtualRoute", "")
 				T_SETV("route", _fullPath);
 
 				// Generating waypoints for AI navigation
-				private _waypoints = [__GET_POS(_fullPath select 0)];
+				private __wp0 = __GET_POS(_fullPath select 0);
+				private _waypoints = [__wp0];
 				private _last_junction = 0;
 				for "_i" from 0 to count _fullPath - 1 do {
 					private _current = _fullPath select _i;
