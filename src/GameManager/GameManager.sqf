@@ -788,6 +788,13 @@ CLASS("GameManager", "MessageReceiverEx")
 		CALLM2(_instance, "postMethodAsync", "initGameModeClient", [_className]);
 	ENDMETHOD;
 
+	// Fix for SQF-VM
+	#ifdef _SQF_VM
+	vin_diff_aggressionBoost = 0;
+	vin_diff_lootAmount = 1.0;
+	vin_diff_global = 1.0;
+	#endif
+
 	// - - - - - Settings - - - - -
 	METHOD(initSettings)
 		params [P_THISOBJECT];

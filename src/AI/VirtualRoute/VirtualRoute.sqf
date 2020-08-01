@@ -7,6 +7,8 @@
 
 #define pr private
 
+#define __GET_POS(a) if ((a) isEqualType objNull) then {getPos (a)} else {a}
+
 #define OOP_CLASS_NAME VirtualRoute
 CLASS("VirtualRoute", "")
 
@@ -33,6 +35,8 @@ CLASS("VirtualRoute", "")
 
 	VARIABLE_ATTR("debugDraw", [ATTR_PRIVATE]);
 
+	VARIABLE_ATTR("infantry", [ATTR_PRIVATE]); // True if infantry path is used
+
 	
 	/*
 	Method: new
@@ -46,6 +50,8 @@ CLASS("VirtualRoute", "")
 	_costFn - Optional, function to override cost evaluation for route nodes.
 	_speedFn - Optional, function to override convoy speed, called during update.
 	_async - Optional, bool, default true. If true, calculates the route in another thread. If false, calculates the route right now.
+	_debugDraw - optional
+	_infantry - if true, it will use a path finding for infantry. Does not support cost function yet.
 	*/
 	METHOD(new)
 		params [
@@ -57,13 +63,15 @@ CLASS("VirtualRoute", "")
 			["_speedFn", ""],
 			["_callbackArgs", []],
 			["_async", true],
-			["_debugDraw", false]
+			["_debugDraw", false],
+			["_infantry", false]
 		];
 		private _fromATL = [_from#0, _from#1, 0];
 		private _destinationATL = [_destination#0, _destination#1, 0];
 		T_SETV("from", _fromATL);
 		T_SETV("destination", _destinationATL);
 		T_SETV("recalculateInterval", _recalculateInterval);
+		T_SETV("infantry", _infantry);
 
 		T_SETV("callbackArgs", _callbackArgs);
 
@@ -84,12 +92,20 @@ CLASS("VirtualRoute", "")
 		T_SETV("speedFn", _fast_speedFn);
 #else
 		if(_speedFn isEqualType "") then {
-			pr _default_speedFn = {
-				params ["_road", "_next_road", "_callbackArgs"];
-				if([_road] call misc_fnc_isHighWay) exitWith {
-					60 * 0.277778
+			pr _default_speedFn = if (!_infantry) then {
+				// Default vehicle speed function
+				{
+					params ["_road", "_next_road", "_callbackArgs"];
+					if([_road] call misc_fnc_isHighWay) exitWith {
+						60 * 0.277778
+					};
+					40 * 0.277778
 				};
-				40 * 0.277778
+			} else {
+				// Default infantry speed function
+				{
+					14.0 * 0.277778;
+				};
 			};
 			T_SETV("speedFn", _default_speedFn);
 		} else {
@@ -113,6 +129,104 @@ CLASS("VirtualRoute", "")
 
 		T_SETV("currSpeed_ms", 0);
 
+		if (!_infantry) then {
+			T_CALLM1("_calcRouteGroundVehicles", _async);
+		} else {
+			T_CALLM1("_calcRouteInfantry", _async);
+		};
+
+	ENDMETHOD;
+
+	METHOD(delete)
+		params [P_THISOBJECT];
+
+		T_CALLM("waitUntilCalculated", []);
+
+		private _debugDraw = T_GETV("debugDraw");
+		if(_debugDraw) then {
+			T_CALLM("clearDebugDraw", []);
+		};
+	ENDMETHOD;
+
+	public METHOD(waitUntilCalculated)
+		params [P_THISOBJECT];
+		// Make sure calculation is terminated. If it isn't then we must have run it async, so we should be 
+		// able to wait for it I guess?
+		// hack for infantry route calculation, ignore waiting. It won't crash main thread anyway.
+		if(!T_GETV("calculated") and !T_GETV("failed") and !T_GETV("infantry")) then {
+			waitUntil {
+				T_GETV("calculated") or T_GETV("failed")
+			};
+		};
+	ENDMETHOD;
+
+	METHOD(_calcRouteInfantry)
+		params [P_THISOBJECT, P_BOOL("_async")];
+
+		private _from = T_GETV("from");
+		private _destination = T_GETV("destination");
+		
+		#ifndef _SQF_VM
+		private _agent = calculatePath ["man","AWARE", _from, _destination];
+		#else
+		private _agent = "sqfvm" createVehicle [0,0,0];
+		#endif
+		_agent setVariable ["_virtualRoute", _thisObject];
+		_agent addEventHandler ["PathCalculated", {
+			params ["_agent", "_path"];
+
+			if (isNull _agent) exitWith {};
+
+			private _thisObject = _agent getVariable "_virtualRoute";
+
+			// Bail if VirtualRoute is deleted already
+			if (!IS_OOP_OBJECT(_thisObject)) exitWith {};
+
+			private _from = T_GETV("from");
+			private _destination = T_GETV("destination");
+			private _costFn = T_GETV("costFn");
+			private _callbackArgs = T_GETV("callbackArgs");
+			private _debugDraw = T_GETV("debugDraw");
+
+			OOP_INFO_1("Path calculated, nodes: %1", count _path);
+
+			if (count _path < 2) exitWith {
+				OOP_WARNING_2("VirtualRoute infantry path calculation failed between %1 and %2 (route has below 2 nodes)", str _from, str _destination);
+				T_SETV("failed", true);
+			};
+			
+			pr _lastWaypoint = _path select ((count _path) - 1);
+			if (_lastWaypoint distance2D _destination > 50) exitWith {
+				OOP_WARNING_2("VirtualRoute infantry path calculation failed between %1 and %2 (route end point is too far from destination)", str _from, str _destination);
+				T_SETV("failed", true);
+			};
+
+			{
+				_x set [2, 0]; // Reset vertical component
+			} forEach _path;
+			T_SETV("route", +_path);
+			T_SETV("waypoints", +_path);
+
+			// Speed for first section
+			pr _speedFn = T_GETV("speedFn");
+			pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1, _callbackArgs] call _speedFn;
+			T_SETV("currSpeed_ms", _currSpeed_ms);
+
+			#ifndef RELEASE_BUILD
+			if(_debugDraw) then {
+				T_CALLM0("debugDraw");
+			};
+			#endif
+			FIX_LINE_NUMBERS()
+
+			// Set it last
+			T_SETV("calculated", true);
+			deleteVehicle _agent;
+		}];
+	ENDMETHOD;
+
+	METHOD(_calcRouteGroundVehicles)
+		params [P_THISOBJECT, P_BOOL("_async")];
 		// Function that calculates the route
 		pr _calcRoute = {
 			SCOPE_ACCESS_MIMIC("VirtualRoute");
@@ -148,22 +262,22 @@ CLASS("VirtualRoute", "")
 				T_SETV("route", _fullPath);
 
 				// Generating waypoints for AI navigation
-				private _waypoints = [getPos (_fullPath select 0)];
+				private _waypoints = [__GET_POS(_fullPath select 0)];
 				private _last_junction = 0;
 				for "_i" from 0 to count _fullPath - 1 do {
 					private _current = _fullPath select _i;
 					if(count ([gps_allCrossRoadsWithWeight, str _current] call misc_fnc_hashTable_find) > 1) then
 					{
-						_waypoints pushBack (getPos (_fullPath select floor((_i + _last_junction)/2)));
+						_waypoints pushBack (__GET_POS(_fullPath select floor((_i + _last_junction)/2)));
 						_last_junction = _i;
 					};
 				};
-				_waypoints pushBack getPos (_fullPath select (count _fullPath - 1));
+				_waypoints pushBack __GET_POS(_fullPath select (count _fullPath - 1));
 
 				T_SETV("waypoints", _waypoints);
 
 				T_SETV("nextIdx", 1);
-				T_SETV("pos", getPos (_fullPath select 0));
+				T_SETV("pos", __GET_POS(_fullPath select 0));
 
 				private _speedFn = T_GETV("speedFn");
 
@@ -190,28 +304,6 @@ CLASS("VirtualRoute", "")
 			[_thisObject] spawn _calcRoute;
 		} else {
 			[_thisObject] call _calcRoute;
-		};
-	ENDMETHOD;
-
-	METHOD(delete)
-		params [P_THISOBJECT];
-
-		T_CALLM("waitUntilCalculated", []);
-
-		private _debugDraw = T_GETV("debugDraw");
-		if(_debugDraw) then {
-			T_CALLM("clearDebugDraw", []);
-		};
-	ENDMETHOD;
-
-	public METHOD(waitUntilCalculated)
-		params [P_THISOBJECT];
-		// Make sure calculation is terminated. If it isn't then we must have run it async, so we should be 
-		// able to wait for it I guess?
-		if(!T_GETV("calculated") and !T_GETV("failed")) then {
-			waitUntil {
-				T_GETV("calculated") or T_GETV("failed")
-			};
 		};
 	ENDMETHOD;
 
@@ -260,7 +352,7 @@ CLASS("VirtualRoute", "")
 		private _pos = T_GETV("pos");
 		private _nextIdx = T_GETV("nextIdx");
 		private _route = T_GETV("route");
-		pr _nextPos = getPos (_route select _nextIdx);
+		pr _nextPos = __GET_POS(_route select _nextIdx);
 		pr _nextDist = _pos distance _nextPos;
 
 		// How far will should we travel?
@@ -285,7 +377,7 @@ CLASS("VirtualRoute", "")
 				_currSpeed_ms = [_route select _nextIdx - 1, _route select _nextIdx] call _speedFn;
 				T_SETV("currSpeed_ms", _currSpeed_ms);
 
-				_nextPos = getPos (_route select _nextIdx);
+				_nextPos = __GET_POS(_route select _nextIdx);
 				_nextDist = _pos distance _nextPos;
 
 				// Delete this position from the waypoint array (if it is in the waypoint array)
@@ -333,7 +425,7 @@ CLASS("VirtualRoute", "")
 		ASSERT_MSG(!T_GETV("failed"), "Route calculation failed, cannot get convoy positions");
 		ASSERT_MSG(T_GETV("calculated"), "Can't call getConvoyPositions until route has finished calculating");
 		
-		pr _startPos = getPos (_route select 0);
+		pr _startPos = __GET_POS(_route select 0);
 
 		private _convoyPositions = [];
 
@@ -342,7 +434,7 @@ CLASS("VirtualRoute", "")
 		if(_pos distance _startPos < _spacing * _number) then {
 			pr _currPos = _startPos;
 			pr _index = 0;
-			pr _nextPos = getPos (_route select (_index + 1));
+			pr _nextPos = __GET_POS(_route select (_index + 1));
 			for "_i" from 0 to (_number-1) do {
 				_convoyPositions pushBack [_currPos, _currPos getDir _nextPos];
 				pr _distNext = _currPos distance _nextPos;
@@ -351,7 +443,7 @@ CLASS("VirtualRoute", "")
 					_distRemaining = _distRemaining - _distNext;
 					_index = _index + 1;
 					_currPos = _nextPos;
-					_nextPos = getPos (_route select (_index + 1));
+					_nextPos = __GET_POS(_route select (_index + 1));
 					_distNext = _currPos distance _nextPos;
 				};
 				_currPos = _currPos vectorAdd (vectorNormalized (_nextPos vectorDiff _currPos) vectorMultiply _distRemaining);
@@ -360,7 +452,7 @@ CLASS("VirtualRoute", "")
 		} else {
 			pr _currPos = _pos;
 			pr _index = _nextIdx - 1;
-			pr _prevPos = getPos (_route select _index);
+			pr _prevPos = __GET_POS(_route select _index);
 			for "_i" from 0 to (_number-1) do {
 				_convoyPositions pushBack [_currPos, _prevPos getDir _currPos];
 				pr _distPrev = _currPos distance _prevPos;
@@ -369,7 +461,7 @@ CLASS("VirtualRoute", "")
 					_distRemaining = _distRemaining - _distPrev;
 					_index = _index - 1;
 					_currPos = _prevPos;
-					_prevPos = getPos (_route select _index);
+					_prevPos = __GET_POS(_route select _index);
 					_distPrev = _currPos distance _prevPos;
 				};
 				_currPos = _currPos vectorAdd (vectorNormalized (_prevPos vectorDiff _currPos) vectorMultiply _distRemaining);
@@ -399,7 +491,11 @@ CLASS("VirtualRoute", "")
 
 		private _route = T_GETV("route");
 
-		pr _path_pos = _route apply { getPos _x };
+		pr _path_pos = if (_route#0 isEqualType objNull) then {
+			_route apply { getPos _x };
+		} else {
+			_route;
+		};
 		pr _seg_positions = [_path_pos, 20] call gps_core_fnc_RDP;
 
 		for "_i" from 0 to (count _seg_positions - 2) do
@@ -462,9 +558,9 @@ CLASS("VirtualRoute", "")
 			pr _i = 0;
 			pr _count = count _route;
 			pr _index = 0;
-			pr _dist = (getPos (_route#0)) distance2D _pos;
+			pr _dist = (__GET_POS(_route#0)) distance2D _pos;
 			while {_i < _count} do {
-				pr _p = getPos (_route#_i);
+				pr _p = __GET_POS(_route#_i);
 				pr _d = _p distance2D _pos;
 				if (_d < _dist) then {_dist = _d; _index = _i;};
 				_i = _i + 1;
@@ -475,13 +571,13 @@ CLASS("VirtualRoute", "")
 				_index = _index + 1;
 			};
 			T_SETV("nextIdx", _index);
-			T_SETV("pos", getPos (_route select _index));
+			T_SETV("pos", __GET_POS(_route select _index));
 
 			// Search the route from start and delete all waypoints until this point
 			_i = 0;
 			pr _waypoints = T_GETV("waypoints");
 			while {_i <= _index} do {
-				pr _p = getPos (_route#_i);
+				pr _p = __GET_POS(_route#_i);
 				pr _wpid = _waypoints findIf {_x isEqualTo _p};
 				if (_wpid != -1) then {
 					_waypoints deleteAt _wpid;
