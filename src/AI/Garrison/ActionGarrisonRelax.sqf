@@ -39,9 +39,11 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 		pr _nGroupsPatrolReserve = 0;
 		pr _atPoliceStation = false;
 		pr _atRoadblock = false;
+		pr _atLocation = false;
 
 		// We absolutely want at least some bots inside police stations
 		if (_loc != NULL_OBJECT) then { // If garrison is at location...
+			_atLocation = true;
 			switch (CALLM0(_loc, "getType")) do {
 				case LOCATION_TYPE_POLICE_STATION: {
 					_atPoliceStation = true;
@@ -116,8 +118,8 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 					};
 
 					case GROUP_TYPE_VEH: {
-						if (_atRoadblock) then {
-							// Get into vehicles at roadblocks
+						if (!_atLocation) then {
+							// Get into vehicles when not at a location
 							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _extraParams, _AI]; // Occupy only combat vehicles
 						} else {
 							// Crew of vehicle groups stays around their vehicle
