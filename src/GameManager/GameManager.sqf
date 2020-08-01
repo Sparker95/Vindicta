@@ -813,7 +813,11 @@ CLASS("GameManager", "MessageReceiverEx")
 			true] call CBA_fnc_addSetting;
 
 		// Difficulty
-		["vin_diff_global",				"SLIDER",	[LOC("Diff_Global"),		LOC("Diff_Global_Tooltip")],				[_section, LOC("Diff")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+		["vin_diff_global",				"SLIDER",	[LOC("Diff_Global"),		LOC("Diff_Global_Tooltip")],	[_section, LOC("Diff")],[0, 1, 0.5, 2],	true] call CBA_fnc_addSetting;
+
+		["vin_diff_aggressionBoost",	"SLIDER",	[LOC("Diff_Aggression"),	LOC("Diff_Aggression_Tooltip")],[_section, LOC("Diff")],[0, 100, 0, 0],	true] call CBA_fnc_addSetting;
+
+		["vin_diff_lootAmount",	"SLIDER",	[LOC("Diff_LootAmount"),	LOC("Diff_LootAmount")],[_section, LOC("Diff")],[0.5, 5, 1.0, 1],	true] call CBA_fnc_addSetting;
 
 		// Disabled for now until we work out how best to combine global and individual settings
 		// Difficulty - Cmdr

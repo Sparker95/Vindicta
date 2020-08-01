@@ -658,6 +658,21 @@
 				<Polish>Ta wartość jest stosowana jako modyfikator do wszystkich innych ustawień trudności</Polish>
 				<Czech>Tato hodnota je použita jako modifikátor pro všechna ostatní nastavení obtížnosti.</Czech>
 			</Key>
+
+			<Key ID="STR_Vindicta_Settings_Diff_Aggression">
+				<Original>Aggression Boost</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Diff_Aggression_Tooltip">
+				<Original>Value added to initial aggression level.</Original>
+			</Key>
+
+			<Key ID="STR_Vindicta_Settings_Diff_LootAmount">
+				<Original>Military Loot Amount</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Diff_LootAmount_Tooltip">
+				<Original>Amount of gear found in military cargo crates and vehicles. Does not include construction resources.</Original>
+			</Key>
+
 			<!-- Enemy Commander -->
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global">
 				<Original>Enemy Commander difficulty</Original>

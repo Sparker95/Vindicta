@@ -1171,7 +1171,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			} else {
 
 				// = = = = MILITARY CARGO AND VEHICLES = = = =
-				private _lootScaling = MAP_LINEAR_SET_POINT(1 - vin_diff_global, 0.2, 1, 3);
+				private _lootScaling = vin_diff_lootAmount;
 
 				pr _nInf = CALLM0(_gar, "countInfantryUnits");
 				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
@@ -1216,7 +1216,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					if (count (_tInv#_subcatID) > 0) then { // If there are any items in this subcategory
 
 						// Randomize _n
-						_n = round (random [0.2*_n, _n, 1.8*_n]);
+						_n = (round (random [0.2*_n, _n, 1.8*_n]));
 						pr _items = _tInv#_subcatID;
 						for "_i" from 0 to (_n-1) do {
 							_hO addItemCargoGlobal [selectRandom _items, round (1 + random 1)];
@@ -1307,11 +1307,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
+							_intemCount = vin_diff_lootAmount * _itemCount;
 							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 						} forEach t_ACEMedicalItems_cargo;
 					} else {
 						// Add standard medkits
-						_hO addItemCargoGlobal ["FirstAidKit", 80];
+						_hO addItemCargoGlobal ["FirstAidKit", vin_diff_lootAmount * 80];
 					};
 
 					// Add ACE misc items
@@ -1322,6 +1323,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						pr _classNames = t_ACEMiscItems;
 						{
 							_x params ["_itemName", "_itemCount"];
+							_itemCount = _itemCount * vin_diff_lootAmount;
 							if(random 10 < 7) then {
 								_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 							};
