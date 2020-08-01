@@ -89,6 +89,14 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 
 		SETSV(__CLASS_NAME, "instance", _thisObject);
 
+		// Temporary:
+		// Set hint about FileXT addon
+		pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_SAVE_DATA");
+		pr _nl = toString [10];
+		pr _str = "With FileXT addon you can store saved games in a more convenient way." + _nl;
+		_str = _str + "You can find installation instructions at our Guide Web-Page.";
+		_staticSaveData ctrlSetText _str;
+
 		// Request save game data from server
 		pr _args = [clientOwner, ""];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientRequestAllSavedGames", _args);
@@ -175,8 +183,8 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		if (count T_GETV("recordData") > 0) then {
 			_lnbSavedGames lnbSetCurSelRow 0; // It will cause a static box update too
 		} else {
-			pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_SAVE_DATA");
-			_staticSaveData ctrlSetText "";
+			//pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_SAVE_DATA");
+			//_staticSaveData ctrlSetText "";
 		};
 
 		// savegame count limit
