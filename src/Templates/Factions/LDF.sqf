@@ -15,7 +15,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tLDF"]; 														//Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces. Made by MatrikSky."]; 	//Template display description
+_array set [T_DESCRIPTION, "Vanilla Livonian Defense Forces."]; 	//Template display description
 _array set [T_DISPLAY_NAME, "Arma 3 LDF"]; 											//Template display name
 _array set [T_FACTION, T_FACTION_Military]; 										//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; 								//Addons required to play this template
@@ -26,17 +26,17 @@ _inf resize T_INF_SIZE;
 _inf set [T_INF_default,  ["I_E_Soldier_F"]];							//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["I_E_Soldier_SL_F"]];
-_inf set [T_INF_TL, ["I_E_Soldier_TL_F", "I_E_RadioOperator_F"]];
+_inf set [T_INF_TL, ["I_E_Soldier_TL_F", 2, "I_E_RadioOperator_F", 1]];
 _inf set [T_INF_officer, ["I_E_Officer_F"]];
 _inf set [T_INF_GL, ["I_E_Soldier_GL_F"]];
-_inf set [T_INF_rifleman, ["I_E_Soldier_F", "I_E_Soldier_lite_F", "I_E_Soldier_Pathfinder_F"]];
+_inf set [T_INF_rifleman, ["I_E_Soldier_F", 3, "I_E_Soldier_lite_F", 1, "I_E_Soldier_Pathfinder_F", 1]];
 _inf set [T_INF_marksman, ["I_E_Soldier_M_F"]];
 _inf set [T_INF_sniper, ["Arma3_LDF_sniper"]];
 _inf set [T_INF_spotter, ["Arma3_LDF_spotter"]];
 _inf set [T_INF_exp, ["I_E_Soldier_exp_F", "I_E_soldier_Mine_F"]];
 _inf set [T_INF_ammo, ["I_E_Soldier_A_F"]];
 _inf set [T_INF_LAT, ["I_E_Soldier_LAT2_F"]];
-_inf set [T_INF_AT, ["I_E_Soldier_LAT_F", "I_E_Soldier_AT_F"]];
+_inf set [T_INF_AT, ["I_E_Soldier_LAT_F", 5, "I_E_Soldier_AT_F", 1]];
 _inf set [T_INF_AA, ["I_E_Soldier_AA_F"]];
 _inf set [T_INF_LMG, ["I_E_Soldier_AR_F"]];
 _inf set [T_INF_HMG, ["Arma3_LDF_HMG"]];
@@ -50,7 +50,7 @@ _inf set [T_INF_survivor, ["I_E_Survivor_F"]];
 _inf set [T_INF_unarmed, ["I_E_Soldier_unarmed_F"]];
 //==== Recon ====
 _inf set [T_INF_recon_TL, ["Arma3_LDF_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["Arma3_LDF_recon_rifleman", "Arma3_LDF_recon_rifleman", "Arma3_LDF_recon_rifleman", "Arma3_LDF_recon_autorifleman"]];
+_inf set [T_INF_recon_rifleman, ["Arma3_LDF_recon_rifleman", 3, "Arma3_LDF_recon_autorifleman", 1]];
 _inf set [T_INF_recon_medic, ["Arma3_LDF_recon_medic"]];
 _inf set [T_INF_recon_exp, ["Arma3_LDF_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["Arma3_LDF_recon_LAT"]];
@@ -82,7 +82,7 @@ _veh set [T_VEH_MRLS, ["I_E_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPA, ["B_MBT_01_arty_F"]];
 _veh set [T_VEH_SPAA, ["B_APC_Tracked_01_AA_F"]];
 
-_veh set [T_VEH_stat_HMG_high, ["I_E_HMG_01_high_F"]];
+_veh set [T_VEH_stat_HMG_high, ["I_E_HMG_01_high_F", 1,"I_HMG_02_high_F", 4]];
 _veh set [T_VEH_stat_GMG_high, ["I_E_GMG_01_high_F"]];
 _veh set [T_VEH_stat_HMG_low, ["I_E_HMG_01_F"]];
 _veh set [T_VEH_stat_GMG_low, ["I_E_GMG_01_F"]];
