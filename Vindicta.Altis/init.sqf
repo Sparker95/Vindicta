@@ -20,3 +20,5 @@ if (isServer) then {
 };
 
 CALLM0(gGameManager, "init");
+
+call compile preprocessFileLineNumbers "showAd.sqf";
