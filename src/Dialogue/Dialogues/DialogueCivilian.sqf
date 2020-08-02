@@ -2,6 +2,7 @@
 #include "..\..\Location\Location.hpp"
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\..\Undercover\UndercoverMonitor.hpp"
+#include "..\..\Intel\Intel.hpp"
 
 // Test dialogue class
 
@@ -307,9 +308,14 @@ CLASS("DialogueCivilian", "Dialogue")
 		if (count _intelArray > 0) then {
 			{
 				pr _intel = _x;
-				pr _departDate = GETV(_intel, "dateDeparture");
+				pr _intelState = GETV(_intel, "state");
 				// Check if it's a future event
-				if ((dateToNumber _departDate) > (dateToNumber DATE_NOW)) then {
+				// If it's stil lactive or inactive, but not ended
+				if (_intelState != INTEL_ACTION_STATE_END) then {					
+					pr _departDate = GETV(_intel, "dateDeparture");
+					// Fir for minutes being above 60 sometimes
+					pr _year = _departDate#0;
+					_departDate = numberToDate [_year, (dateToNumber _departDate)];
 					pr _intelNameStr = CALLM0(_intel, "getShortName");
 					pr _dateStr = _departDate call misc_fnc_dateToISO8601;
 					pr _text = format ["%1 %2 at %3", selectRandom _phrasesIntelSource, _intelNameStr, _dateStr];
