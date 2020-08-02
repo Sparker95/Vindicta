@@ -52,7 +52,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
 
-#ifdef DEBUG_CMDRAI
+#ifdef DEBUG_CMDRAI_ACTIONS
 		deleteMarker (_thisObject + "_line");
 		//deleteMarker (_thisObject + "_line2");
 		deleteMarker (_thisObject + "_label");
