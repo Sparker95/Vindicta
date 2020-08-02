@@ -15,7 +15,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tCSAT"]; // 														Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla Canton Protocol Strategic Alliance Treaty."]; // 	Template display description
+_array set [T_DESCRIPTION, "Standard Canton Protocol Strategic Alliance Treaty from base game."]; // 	Template display description
 _array set [T_DISPLAY_NAME, "Arma 3 CSAT"]; // 											Template display name
 _array set [T_FACTION, T_FACTION_military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 								Addons required to play this template

@@ -14,7 +14,7 @@ _array = [];
 _array set [T_SIZE-1, nil]; //Make an array having the size equal to the number of categories first
 
 _array set [T_NAME, "tCivilian"];                           //Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla Altis civilians."];     //Template display description
+_array set [T_DESCRIPTION, "Standard Altis civilians from base game."];     //Template display description
 _array set [T_DISPLAY_NAME, "Arma 3 Altis Civilians"];      //Template display name
 _array set [T_FACTION, T_FACTION_Civ];                      //Faction type
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];        //Addons required to play this template

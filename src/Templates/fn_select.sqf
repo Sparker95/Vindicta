@@ -29,7 +29,13 @@ if(isNil "_subcat" || { count _subcat == 0 }) then {
 switch true do {
 	case (_classID != -1): { _subcat select _classID };
 	// A weighted array has the form [value, weight, value, weight, ...]
-	case (count _subcat > 1 && {_subcat#1 isEqualType 0}): { selectRandomWeighted _subcat };
+	case (count _subcat > 1 && {_subcat#1 isEqualType 0}): {
+		#ifndef _SQF_VM
+		selectRandomWeighted _subcat
+		#else
+		_subcat#0
+		#endif
+	};
 	// Normal non-empty array
 	case (count _subcat > 0): { selectRandom _subcat };
 	default { 
