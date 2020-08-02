@@ -16,7 +16,7 @@ diag_log "[vin_advertizer]: init";
 
   pr _text = "";
   _text = _text + "   \n    Hello!\n\n";
-  _text = _text + "    You can download the new Vindicta version from Steam Workshop.\n\n";
+  _text = _text + "    Vindicta has moved!\n\n";
   _text = _text + "    Use the button below to copy the download link.\n\n";
   _text = _text + "    This branch will no longer be maintained, because now Vindicta is hosted from\n";
   _text = _text + "our new Steam account to ease automated deployment to Steam in the future.\n\n";
