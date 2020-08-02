@@ -1,0 +1,43 @@
+{
+    "displayName": "Vindicta",
+    "simpleName": "vindicta",
+    "missionFolderWildcard": "Vindicta.*",
+    "oneMissionPboName": "vindicta_{0}_{1}_{2}.{3}.pbo",
+    "cfgPatchesClassName": "vindicta_missions",
+    
+    "comment00": "'from' is relative to repository root, 'to' is relative to mission.sqm",
+    "copyFiles": [
+        {
+            "from": "configs\\release\\global_config.hpp",
+            "to": "src\\config"
+        },
+        {
+            "from": "configs\\majorVersion.hpp",
+            "to": "src\\config"
+        },
+        {
+            "from": "configs\\minorVersion.hpp",
+            "to": "src\\config"
+        },
+        {
+            "from": "configs\\cba_settings.sqf",
+            "to": "" 
+        },
+        {
+            "from": "configs\\description.ext",
+            "to": "" 
+        },
+        {
+            "from": "configs\\init.sqf",
+            "to": "" 
+        },
+        {
+            "from": "configs\\onPlayerRespawn.sqf",
+            "to": "" 
+        },
+        {
+            "from": "configs\\stringtable.xml",
+            "to": "" 
+        }
+    ]
+}

@@ -1,0 +1,140 @@
+{
+	// Place your snippets for sqf here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"CLASS": {
+		"prefix": "CLASS",
+		"body": [
+			"CLASS(\"$1\", \"$2\")",
+			"\tMETHOD(new)",
+			"\t\tparams [P_THISOBJECT];",
+			"\t\t$0",
+			"\tENDMETHOD;",
+			"ENDCLASS;"
+		],
+		"description": "New OOP Light CLASS"
+	},
+	"VARIABLE": {
+		"prefix": "VARIABLE",
+		"body": [
+			"VARIABLE(\"$0\");"
+		],
+		"description": "New OOP Light STATIC_VARIABLE"
+	},
+	"STATIC_VARIABLE": {
+		"prefix": "STATIC_VARIABLE",
+		"body": [
+			"STATIC_VARIABLE(\"$0\");"
+		],
+		"description": "New OOP Light VARIABLE"
+	},
+	"METHOD": {
+		"prefix": "METHOD",
+		"body": [
+			"METHOD($1)",
+			"\tparams [P_THISOBJECT];",
+			"\t$0",
+			"ENDMETHOD;",
+			""
+		],
+		"description": "New OOP Light METHOD"
+	},
+	"STATIC_METHOD": {
+		"prefix": "STATIC_METHOD",
+		"body": [
+			"STATIC_METHOD($1)",
+			"\tparams [P_THISCLASS];",
+			"\t$0",
+			"ENDMETHOD;",
+			""
+		],
+		"description": "New OOP Light STATIC_METHOD"
+	},
+	"DOC_CLASS": {
+		"prefix": "DOC_CLASS",
+		"body": [
+			"/*",
+			"Class: $1",
+			"$0",
+			"*/"
+		],
+		"description": "Document a class"
+	},
+	"DOC_FUNC": {
+		"prefix": "DOC_FUNC",
+		"body": [
+			"/*",
+			"Method: $1",
+			"$0",
+			"",
+			"Parameters:",
+			"\t_first - type, description",
+			"",
+			"Returns: nil",
+			"*/"
+		],
+		"description": "Document a function"
+	},
+	"FIX_LINE_NUMBERS": {
+		"prefix": "FIX",
+		"body": ["FIX_LINE_NUMBERS()"]
+	},
+	"SAVEBREAK": {
+		"prefix": "// S",
+		"body": [
+			"// SAVEBREAK >>>",
+			"// ${1|Remove,Replace,Add|}, ${2:Reason}",
+			"$TM_SELECTED_TEXT$0",
+			"// <<< SAVEBREAK"
+		],
+		"description": "SAVEBREAK"
+	},
+	"forEach": {
+		"prefix": "forEach",
+		"body": [
+			"{// forEach ${1:collection}",
+			"\t$0",
+			"} forEach ${1:collection};"
+		],
+		"description": "forEach"
+	},
+	"switchtrue": {
+		"prefix": "switch",
+		"body": [
+			"switch true do {",
+			"\tcase $0: {",
+			"\t};",
+			"};"
+		],
+		"description": "switch true"
+	},
+	"for": {
+		"prefix": "for",
+		"body": [
+			"for \"_${1:loopVariable}\" from ${2:fromValue} to ${3:toValue} do {",
+			"\t$0",
+			"};"
+		],
+		"description": "for"
+	},
+	"while": {
+		"prefix": "while",
+		"body": [
+			"while { ${1:condition} } do {",
+			"\t$0",
+			"};"
+		],
+		"description": "while"
+	}
+}

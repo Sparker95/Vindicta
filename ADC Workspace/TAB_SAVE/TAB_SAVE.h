@@ -29,10 +29,10 @@ class TAB_SAVE
 		{
 			type = 0;
 			idc = -1;
-			x = 0.01000012;
-			y = 0.06000017;
-			w = 0.53000009;
-			h = 0.52000015;
+			x = 0.02;
+			y = 0.077;
+			w = 0.452;
+			h = 0.445;
 			text = "123";
 			class ListScrollBar
 			{
@@ -44,10 +44,10 @@ class TAB_SAVE
 		{
 			type = 1;
 			idc = -1;
-			x = 0.55;
-			y = 0.11000007;
-			w = 0.14;
-			h = 0.05000006;
+			x = 0.49;
+			y = 0.18000018;
+			w = 0.20000003;
+			h = 0.07;
 			text = "New Save";
 			borderSize = 0;
 			
@@ -56,10 +56,10 @@ class TAB_SAVE
 		{
 			type = 1;
 			idc = -1;
-			x = 0.55000015;
-			y = 0.23000038;
-			w = 0.14000003;
-			h = 0.05000006;
+			x = 0.49000015;
+			y = 0.27000043;
+			w = 0.20000006;
+			h = 0.07;
 			text = "Overwrite";
 			borderSize = 0;
 			
@@ -68,10 +68,10 @@ class TAB_SAVE
 		{
 			type = 1;
 			idc = -1;
-			x = 0.55000019;
-			y = 0.3600004;
-			w = 0.14000003;
-			h = 0.05000006;
+			x = 0.49000019;
+			y = 0.36000045;
+			w = 0.20000007;
+			h = 0.07;
 			text = "Load";
 			borderSize = 0;
 			
@@ -80,24 +80,24 @@ class TAB_SAVE
 		{
 			type = 1;
 			idc = -1;
-			x = 0.55000019;
-			y = 0.48000037;
-			w = 0.14000003;
-			h = 0.05000006;
+			x = 0.49000019;
+			y = 0.45000042;
+			w = 0.20000006;
+			h = 0.07;
 			text = "Delete";
 			borderSize = 0;
 			
 		};
-		class TAB_SAVE_STATIC_PREVIOUS_SAVES : MUI_BASE_ABS 
+		class TAB_SAVE_STATIC_STORAGE : MUI_BASE_ABS 
 		{
 			type = 0;
 			idc = -1;
-			x = 0.01;
-			y = 0.01000014;
-			w = 0.68000002;
+			x = 0.49000015;
+			y = 0.03000024;
+			w = 0.20000005;
 			h = 0.04;
 			style = 0;
-			text = "Previously saved games:";
+			text = "Storage:";
 			
 		};
 		class TAB_SAVE_STATIC_SAVE_DATA_copy1 : MUI_BASE_ABS 
@@ -110,6 +110,37 @@ class TAB_SAVE
 			h = 0.30000015;
 			style = 0;
 			text = "Saved game data ...";
+			
+		};
+		class TAB_SAVE_COMBO_STORAGE : MUI_COMBOBOX_ABS 
+		{
+			type = 4;
+			idc = -1;
+			x = 0.49000009;
+			y = 0.08000016;
+			w = 0.20000007;
+			h = 0.04000003;
+			class ComboScrollBar
+			{
+				color[] = {1,1,1,1};
+				thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+				arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+				arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+				border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+				
+			};
+			
+		};
+		class TAB_SAVE_STATIC_PREVIOUS_SAVES : MUI_BASE_ABS 
+		{
+			type = 0;
+			idc = -1;
+			x = 0.02;
+			y = 0.028;
+			w = 0.452;
+			h = 0.04;
+			style = 0;
+			text = "Previously saved games:";
 			
 		};
 		

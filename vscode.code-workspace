@@ -1,8 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "Vindicta.Altis",
-			"name": "Mission Root"
+			"path": "src",
+			"name": "Mission Source"
 		},
 		{
 			"path": "..\\..\\..\\..\\AppData\\Local\\Arma 3",
@@ -69,6 +69,7 @@
 			"_thisId",
 			"_thisType",
 			"BIS_fnc_reviveInit",
+			"BIS_fnc_sideColor",
 			"CBA_Settings_fnc_init",
 			"CBA_fnc_compatibleMagazines",
 			"CBA_fnc_notify",
@@ -276,13 +277,12 @@
 			"test_AddTest",
 			"test_Assert",
 			"gMessageLoopMain",
-			"CivPresence_fnc_spawn",
+			"pr0_fnc_cp_spawn",
 			"BIS_DeathBlur",
 			"zeus1",
 			"spawnGroup1",
 			"spawnGroup2",
 			"gGameMode",
-			"Dialog_fnc_hud_createSentence",
 			"gLUAP",
 			"T_comp_null",
 			"T_comp_ground_or_infantry_mask",
@@ -312,7 +312,25 @@
 			"OOP_serialize_save",
 			"OOP_deserialize",
 			"OOP_deserialize_attr",
-			"OOP_deserialize_save"
+			"OOP_deserialize_save",
+			"pr0_fnc_dialogue_createConveration",
+			"pr0_fnc_dialogue_createSentence",
+			"pr0_fnc_dialogue_HUD_create",
+			"pr0_fnc_dialogue_HUD_createSentence",
+			"pr0_fnc_dialogue_registerDataSet",
+			"pr0_fnc_dialogue_HUD_delete",
+			"pr0_fnc_dialogue_HUD_deleteSentence",
+			"pr0_fnc_dialogue_HUD_deleteQuestion",
+			"pr0_fnc_dialogue_HUD_updateSentence",
+			"pr0_fnc_dialogue_HUD_unitSideColor",
+			"pr0_fnc_dialogue_mainLoop",
+			"pr0_fnc_dialogue_mainLoop_sentence",
+			"pr0_fnc_dialogue_mainLoop_question",
+			"pr0_fnc_dialogue_mainLoop_question_return",
+			"pr0_fnc_dialogue_mainLoop_error",
+			"pr0_fnc_dialogue_mainLoop_end",
+			"pr0_fnc_dialogue_mainLoop_checkConditions",
+			"pr0_fnc_dialogue_createConversation"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"

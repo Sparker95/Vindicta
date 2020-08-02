@@ -55,16 +55,16 @@ class CfgMagazines
 
 	class vin_build_res_0: CA_Magazine
 	{
-		buildResource = 10; // Amount of build resources, used by the scenario
+		buildResource = 1; // Amount of build resources, used by the scenario
 		count = 1; // Ammount of bullets, we make it so that one box = one box in the arsenal, ok?
-		mass = 80; // In arma it's really volume, not mass
+		mass = 8; // In arma it's really volume, not mass
 		scope=2;
-		displayName="Construction resources (x10)";
+		displayName="Construction resources";
 		descriptionShort = "Resources to build different things";
-		picture = QPATHTOF(icons\inv_ic_construction.paa);
-		hiddenSelections[] = {"Camo"};
-		hiddenSelectionsTextures[] = {"\A3\Props_F_Orange\Humanitarian\Supplies\Data\PaperBox_01_small_brown_CO.paa"};
-		model = "\A3\Props_F_Orange\Humanitarian\Supplies\PaperBox_01_small_closed_F.p3d";
+		picture = "\A3\EditorPreviews_F_Orange\Data\CfgVehicles\Land_Brick_01_F.jpg";
+		hiddenSelections[] = {};
+		hiddenSelectionsTextures[] = {};
+		model = "\a3\Props_F_Orange\Civilian\Constructions\Brick_01_F.p3d";
 	};
 
 	class vin_pills: CA_Magazine

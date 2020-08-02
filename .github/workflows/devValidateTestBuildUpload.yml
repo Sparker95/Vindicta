@@ -1,0 +1,99 @@
+name: Dev Validate Test Build Upload
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@master
+      
+    - name: Validate Config
+      run: python3 tools/SQF-validate/config_style_checker.py
+
+    - name: Check for BOM
+      uses: arma-actions/bom-check@master
+      with:
+        path: 'src'
+
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@master
+
+    - name: Validate SQF with SQF-VM
+      run: |
+        cd src
+        New-Item .\config\user_local_config.hpp -ItemType File
+        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\src\Tests\RunTests.sqf
+
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    needs: [validate, test]
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@master
+
+    - name: Build Missions
+      run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
+
+    - name: Build addons
+      run: '.\tools\Builder\buildAddons.ps1 -metaFileName meta_dev.cpp'
+
+    - name: Upload build addon artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: armaAddon
+        path: _build\addon\Vindicta
+
+    - name: Upload separate missions artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: separateMissions
+        path: _build\missions\separatePBO
+
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build]
+    steps:
+    - name: Download addon artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: armaAddon
+        path: armaAddon
+
+    - name: Download separate missions artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: separateMissions
+        path: separateMissions
+
+    - name: Upload to FTP
+      uses: sebastianpopp/ftp-action@v1.1.0
+      with:
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: "separateMissions"
+        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
+
+    - name: Publish to Steam Workshop
+      uses: arma-actions/workshop-upload@v1
+      with:
+        appId: '107410'      # default
+        itemId: '2154322285' # https://steamcommunity.com/sharedfiles/filedetails/?id=2154322285
+        contentPath: 'armaAddon'
+        changelog: ""
+      env:
+        STEAM_USERNAME: ${{ secrets.STEAM_VIN_USER }}
+        STEAM_PASSWORD: ${{ secrets.STEAM_VIN_PW }}

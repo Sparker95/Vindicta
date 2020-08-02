@@ -1,0 +1,47 @@
+removeAllWeapons this;
+removeAllItems this;
+removeAllAssignedItems this;
+removeUniform this;
+removeVest this;
+removeBackpack this;
+removeHeadgear this;
+removeGoggles this;
+
+_RandomHeadgear = selectRandom ["FGN_AAF_PASGT","FGN_AAF_PASGT_ESS","FGN_AAF_PASGT_ESS_2","FGN_AAF_PASGT_Type07","FGN_AAF_PASGT_Type07_ESS","FGN_AAF_PASGT_Type07_ESS_2"];
+this addHeadgear _RandomHeadgear;
+_RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","","",""];
+this addGoggles _RandomGoggles;
+this forceaddUniform "FGN_AAF_M10_Type07_Summer";
+this addVest "FGN_AAF_CIRAS_SL";
+this addBackpack "FGN_AAF_Bergen_SL_Type07";
+
+this addWeapon "rhs_weap_m21a";
+this addPrimaryWeaponItem "rhs_acc_2dpZenit";
+this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
+_RandomSight = selectRandom ["rhs_acc_pkas", "rhs_acc_ekp8_02b", ""];
+this addPrimaryWeaponItem _RandomSight;
+this addWeapon "rhs_weap_tt33";
+this addHandgunItem "rhs_mag_762x25_8";
+this addWeapon "Binocular";
+
+this addItemToUniform "FirstAidKit";
+this addItemToUniform "FGN_AAF_PatrolCap_Type07";
+this addItemToUniform "rhs_acc_perst1ik";
+for "_i" from 1 to 2 do {this addItemToUniform "Chemlight_green";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_762x25_8";};
+for "_i" from 1 to 2 do {this addItemToVest "rhsgref_30rnd_556x45_m21_t";};
+for "_i" from 1 to 4 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
+this addItemToVest "rhs_grenade_anm8_mag";
+this addItemToVest "rhs_grenade_mki_mag";
+this addItemToBackpack "rhs_acc_1pn93_1";
+this addItemToBackpack "rhs_mag_m18_green";
+this addItemToBackpack "rhs_mag_m18_purple";
+this addItemToBackpack "rhs_mag_m18_red";
+this addItemToBackpack "rhs_mag_m18_yellow";
+this linkItem "ItemMap";
+this linkItem "ItemCompass";
+this linkItem "ItemWatch";
+this linkItem "ItemRadio";
+this linkItem "ItemGPS";
+this linkItem "rhsusf_ANPVS_14";

@@ -47,6 +47,17 @@
             "group": "build",
             "problemMatcher": []
         },
+		        {
+            "label": "EDIT CHERNARUS",
+            "type": "process",
+            "command": "edit_cup_chernarus_A3.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
         {
             "label": "EDIT STASZOW",
             "type": "process",
@@ -105,7 +116,7 @@
         {
             "label": "Compile with SQF-VM",
             "type": "process",
-            "command": "../tools/SQF-VM/sqfvm.exe",
+            "command": "tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
                 "--no-execute-print",
@@ -117,7 +128,7 @@
                 "--disable-macro-warnings"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Vindicta.Altis"
+                "cwd": "${workspaceRoot}"
             },
             "group": "build",
             "presentation": {
@@ -145,7 +156,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Vindicta.Altis"
+                        "${workspaceRoot}"
                     ],
                     "pattern": [
                         {
@@ -163,7 +174,7 @@
         {
             "label": "Run with SQF-VM (sometimes won't work due to unimplemented functions)",
             "type": "process",
-            "command": "../tools/SQF-VM/sqfvm.exe",
+            "command": "tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
                 "--no-execute-print",
@@ -174,7 +185,7 @@
                 "${file}"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Vindicta.Altis"
+                "cwd": "${workspaceRoot}"
             },
             "group": "build",
             "presentation": {
@@ -202,7 +213,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Vindicta.Altis"
+                        "${workspaceRoot}"
                     ],
                     "pattern": [
                         {
@@ -220,64 +231,17 @@
         {
             "label": "Preprocess with SQF-VM",
             "type": "process",
-            "command": "../tools/SQF-VM/sqfvm.exe",
-            "args": [
-                "-a",
-                "--no-execute-print",
-                "--load",
-                ".",
-                "-E",
-                "${file}",
-                "--disable-macro-warnings"
-            ],
+            "command": "tools/preproc.bat",
+            "args": [ "${file}" ],
             "options": {
-                "cwd": "${workspaceRoot}/Vindicta.Altis"
+                "cwd": "${workspaceRoot}"
             },
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "clear": true,
-                "focus": true,
-                "group": "SQF-VM"
-            },
-            "problemMatcher": [
-                {
-                    "owner": "sqf",
-                    "fileLocation": "absolute",
-                    "pattern": [
-                        {
-                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
-                            "line": 2,
-                            "column": 3,
-                            "severity": 1,
-                            "file": 4,
-                            "message": 5
-                        }
-                    ]
-                },
-                {
-                    "owner": "sqf",
-                    "fileLocation": [
-                        "relative",
-                        "${workspaceRoot}/Vindicta.Altis"
-                    ],
-                    "pattern": [
-                        {
-                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
-                            "line": 2,
-                            "column": 3,
-                            "severity": 1,
-                            "file": 4,
-                            "message": 5
-                        }
-                    ]
-                }
-            ]
+            "group": "build"
         },
         {
             "label": "Pretty print with SQF-VM (not working)",
             "type": "process",
-            "command": "../tools/SQF-VM/sqfvm.exe",
+            "command": "tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
                 "--load",
@@ -288,7 +252,7 @@
                 "${file}"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Vindicta.Altis"
+                "cwd": "${workspaceRoot}"
             },
             "group": "build",
             "presentation": {
@@ -316,7 +280,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Vindicta.Altis"
+                        "${workspaceRoot}"
                     ],
                     "pattern": [
                         {
@@ -365,7 +329,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Vindicta.Altis"
+                        "${workspaceRoot}"
                     ],
                     "pattern": [
                         {
@@ -383,7 +347,7 @@
         {
             "label": "Test: All",
             "type": "process",
-            "command": "../tools/SQF-VM/sqfvm.exe",
+            "command": "tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
                 "--no-execute-print",
@@ -391,10 +355,10 @@
                 "--load",
                 ".",
                 "-i",
-                "${workspaceRoot}\\Vindicta.Altis\\Tests\\RunTests.sqf"
+                "${workspaceRoot}\\src\\Tests\\RunTests.sqf"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Vindicta.Altis"
+                "cwd": "${workspaceRoot}"
             },
             "group": {
                 "kind": "test",
@@ -425,7 +389,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Vindicta.Altis"
+                        "${workspaceRoot}"
                     ],
                     "pattern": [
                         {
