@@ -3,11 +3,6 @@
 // OOP_Light.h
 #include "OOP_Light\OOP_Light.h"
 
-// Unknown
-#ifdef _SQF_VM
-#define vin_diff_global 0.5
-#endif
-
 // -----------------------------------------------------
 // |              L I N E   N U M B E R S              |
 // -----------------------------------------------------

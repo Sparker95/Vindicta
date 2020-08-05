@@ -671,7 +671,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		#ifdef DEBUG_SET_AGGRESSION
 		DEBUG_SET_AGGRESSION
 		#else
-		T_GETV("aggression");
+		(T_GETV("aggression") + vin_diff_aggressionBoost/100) min 1.0;
 		#endif
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;

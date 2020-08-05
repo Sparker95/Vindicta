@@ -71,7 +71,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
 
-#ifdef DEBUG_CMDRAI
+#ifdef DEBUG_CMDRAI_ACTIONS
 		private _routeTargets = T_GETV("routeTargets");
 		for "_i" from 0 to count _routeTargets do
 		{

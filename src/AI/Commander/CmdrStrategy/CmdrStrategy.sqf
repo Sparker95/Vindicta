@@ -129,11 +129,15 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 				if (_influence > 0.35) then { // It's positive when rebels own it
 					_add = 0.5 + _influence*7;
 				};
-				// Bigger cities are valued most of all
+				// If enemy occupies this, we want to occupy this too
+				pr _priorityFromClass = T_GETV("takeLocCityPriority");
 				pr _actual = GETV(_loc, "actual");
-				pr _pop = CALLM0(_actual, "getCapacityCiv");
-				pr _popMult = (_pop/500)^2;
-				_priority = T_GETV("takeLocCityPriority") +
+				pr _sides = [EAST, WEST, INDEPENDENT] - [_side];
+				pr _garrisons = CALLM1(_actual, "getGarrisons", _sides);
+				if (count _garrisons > 0) then {
+					_priorityFromClass = 1;
+				};
+				_priority = _priorityFromClass +
 					T_GETV("takeLocCityCoeff") * _activityMult;
 			};
 			case LOCATION_TYPE_CAMP: {

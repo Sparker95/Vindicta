@@ -1,5 +1,10 @@
-comment "Exported from Arsenal by MatrikSky";
 
+comment "Exported from Arsenal by Sparker";
+
+comment "[!] UNIT MUST BE LOCAL [!]";
+if (!local this) exitWith {};
+
+comment "Remove existing items";
 removeAllWeapons this;
 removeAllItems this;
 removeAllAssignedItems this;
@@ -9,44 +14,31 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-/*Helmet*/
-this addHeadgear "H_Beret_gen_F";
-/*Uniform*/
-this forceAddUniform "U_B_GEN_Commander_F";
-/*Vest*/
-this addVest "V_TacVest_blk_POLICE";
-/*Backpack*/
-
-/*Weapon*/
-this addWeapon "arifle_MSBS65_black_F";
+comment "Add weapons";
+this addWeapon "SMG_01_F";
+this addPrimaryWeaponItem "30Rnd_45ACP_Mag_SMG_01";
 this addWeapon "hgun_Pistol_heavy_02_F";
-/*WeaponItem*/
-this addPrimaryWeaponItem "acc_flashlight";
-_RandomPrimaryWeaponItem = selectRandom ["optic_ACO_grn", "optic_Holosight_blk_F"];
-this addPrimaryWeaponItem _RandomPrimaryWeaponItem;
-this addPrimaryWeaponItem "30Rnd_65x39_caseless_msbs_mag";
 this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "6Rnd_45ACP_Cylinder";
 
-/*Items*/
+comment "Add containers";
+this forceAddUniform "U_B_GEN_Commander_F";
+this addVest "V_TacVest_gen_F";
+
+comment "Add items to containers";
 this addItemToUniform "FirstAidKit";
+this addItemToUniform "ACE_Chemlight_HiBlue";
 for "_i" from 1 to 3 do {this addItemToVest "6Rnd_45ACP_Cylinder";};
 for "_i" from 1 to 2 do {this addItemToVest "30Rnd_556x45_Stanag";};
-this addItemToUniform "ACE_Chemlight_HiBlue";
 for "_i" from 1 to 2 do {this addItemToVest "Chemlight_blue";};
+for "_i" from 1 to 5 do {this addItemToVest "30Rnd_45ACP_Mag_SMG_01";};
+this addHeadgear "H_Beret_gen_F";
 
-/*Items*/
+comment "Add items";
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 
-private _voice = [
-	"male01gre", 
-	"male02gre", 
-	"male03gre", 
-	"male04gre", 
-	"male05gre"
-];
-
-[this,"Default",selectRandom _voice] call BIS_fnc_setIdentity;
+comment "Set identity";
+[this,"Default","male04gre"] call BIS_fnc_setIdentity;

@@ -98,7 +98,7 @@
 #define SPLIT_VALIDATE_CREW_EXT			14
 
 #ifdef _SQF_VM
-#undef DEBUG_CMDRAI
+#undef DEBUG_CMDRAI_ACTIONS
 #endif
 
 // Shortcuts

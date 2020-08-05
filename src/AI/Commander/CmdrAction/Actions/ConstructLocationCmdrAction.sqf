@@ -45,7 +45,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		params [P_THISOBJECT];
 	
 		// Clear our debug markers
-		#ifdef DEBUG_CMDRAI
+		#ifdef DEBUG_CMDRAI_ACTIONS
 		deleteMarker (_thisObject + "_line");
 		deleteMarker (_thisObject + "_label");
 		#endif

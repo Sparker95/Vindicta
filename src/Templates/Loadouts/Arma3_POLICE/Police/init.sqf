@@ -10,10 +10,6 @@ ADD_LOADOUT("Arma3_police_7",			"Arma3_POLICE\Police\A3_police_7.sqf")
 ADD_LOADOUT("Arma3_police_8",			"Arma3_POLICE\Police\A3_police_8.sqf")
 ADD_LOADOUT("Arma3_police_9",			"Arma3_POLICE\Police\A3_police_9.sqf")
 ADD_LOADOUT("Arma3_police_10",			"Arma3_POLICE\Police\A3_police_10.sqf")
-ADD_LOADOUT("Arma3_police_11",			"Arma3_POLICE\Police\A3_police_11.sqf")
-ADD_LOADOUT("Arma3_police_12",			"Arma3_POLICE\Police\A3_police_12.sqf")
-ADD_LOADOUT("Arma3_police_13",			"Arma3_POLICE\Police\A3_police_13.sqf")
-ADD_LOADOUT("Arma3_police_14",			"Arma3_POLICE\Police\A3_police_14.sqf")
 ADD_LOADOUT("Arma3_police_officer",		"Arma3_POLICE\Police\A3_police_officer.sqf")
 
 

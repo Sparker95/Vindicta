@@ -496,7 +496,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 		T_CALLM("updateIntel", [_world]);
 
-		#ifdef DEBUG_CMDRAI
+		#ifdef DEBUG_CMDRAI_ACTIONS
 		T_CALLM("debugDraw", [_world]);
 		#endif
 	ENDMETHOD;

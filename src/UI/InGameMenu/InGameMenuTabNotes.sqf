@@ -48,6 +48,7 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 		if (!isNull _ctrl) then {
 			pr _text = ctrlText _ctrl;
 			SETSV("InGameMenuTabNotes", "text", _text);
+			profileNamespace setVariable ["vin_notes", _text];
 		};
 	ENDMETHOD;
 
@@ -58,7 +59,9 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 		pr _instance = GETSV("InGameMenuTabNotes", "instance");
 		if (isNil "_instance") then {
 			pr _textCurrent = GETSV("InGameMenuTabNotes", "text");
-			SETSV("InGameMenuTabNotes", "text", _textCurrent + _text);
+			pr _textNew = _textCurrent + _text;
+			SETSV("InGameMenuTabNotes", "text", _textNew);
+			profileNamespace setVariable ["vin_notes", _textNew];
 		} else {
 			pr _thisObject = _instance;
 			pr _ctrl = T_CALLM1("findControl", "TAB_NOTES_EDIT");
@@ -70,5 +73,9 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 ENDCLASS;
 
 if (isNil {GETSV("InGameMenuTabNotes", "text")}) then {
-	SETSV("InGameMenuTabNotes", "text", "Here I will write notes... (Use Shift+Enter for a new line, Ctrl+C and Ctrl+V for copying text)");
+	pr _textFromProfile = profileNamespace getVariable ["vin_notes", ""];
+	if (_textFromProfile ==  "") then {
+		_textFromProfile = "Here I will write notes... (Use Shift+Enter for a new line, Ctrl+C and Ctrl+V for copying text)";
+	};
+	SETSV("InGameMenuTabNotes", "text", _textFromProfile);
 };
