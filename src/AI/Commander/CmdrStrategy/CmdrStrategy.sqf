@@ -125,10 +125,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			case LOCATION_TYPE_CITY: {
 				// If city is under enemy influence, we should take it
 				pr _influence = GETV(_loc, "influence");
-				pr _add = 0;
-				if (_influence > 0.35) then { // It's positive when rebels own it
-					_add = 0.5 + _influence*7;
-				};
+				pr _add = _influence*2.0;
 				// If enemy occupies this, we want to occupy this too
 				pr _priorityFromClass = T_GETV("takeLocCityPriority");
 				pr _actual = GETV(_loc, "actual");
@@ -138,7 +135,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 					_priorityFromClass = 1;
 				};
 				_priority = _priorityFromClass +
-					T_GETV("takeLocCityCoeff") * _activityMult;
+					T_GETV("takeLocCityCoeff") * _activityMult + _add;
 			};
 			case LOCATION_TYPE_CAMP: {
 				// Same as outpost
