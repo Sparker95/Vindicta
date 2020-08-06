@@ -20,7 +20,7 @@ jobs:
       with:
         path: 'Vindicta.Altis'
 
-test:
+  test:
     runs-on: windows-latest
     timeout-minutes: 5
     steps:
