@@ -119,7 +119,7 @@ jobs:
         appId: '107410'      # default
         itemId: '2185874952' # Vindicta (Alpha) new page https://steamcommunity.com/sharedfiles/filedetails/?id=2185874952
         contentPath: 'build'
-        changelog: "${{ steps.release_info.outputs.changelog }}"
+        changelog: ""
       env:
         STEAM_USERNAME: ${{ secrets.STEAM_VIN_USER }}
         STEAM_PASSWORD: ${{ secrets.STEAM_VIN_PW }}
