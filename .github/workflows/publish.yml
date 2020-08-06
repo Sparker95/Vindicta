@@ -20,17 +20,18 @@ jobs:
       with:
         path: 'Vindicta.Altis'
 
-  test:
+test:
     runs-on: windows-latest
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@master
+    - name: Checkout the code
+      uses: actions/checkout@master
 
     - name: Validate SQF with SQF-VM
       run: |
-        cd Vindicta.Altis
+        cd src
         New-Item .\config\user_local_config.hpp -ItemType File
-        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
+        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\src\Tests\RunTests.sqf
 
   build:
     runs-on: windows-latest
