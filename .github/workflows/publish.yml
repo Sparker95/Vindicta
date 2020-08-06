@@ -126,7 +126,7 @@ jobs:
 
     - name: Prepare for Release
       run: |
-        Rename-Item armaAddon @Vindicta
+        mv armaAddon @Vindicta
         zip -r vindicta.zip @Vindicta
         zip -r missions.zip armaMissions
         ls
