@@ -24,7 +24,7 @@ CLASS("Phase3CmdrStrategy", "CmdrStrategy")
 		T_SETV("takeLocRoadBlockPriority", 			2);		// Need to clear roadblocks always
 		T_SETV("takeLocRoadBlockCoeff", 			2);
 
-		T_SETV("takeLocCityPriority", 				1);		// Take cities always
+		T_SETV("takeLocCityPriority", 				1);		// Take cities always if there is activity
 		T_SETV("takeLocCityCoeff", 					1);		// Allow cities with activity to be taken
 
 		T_SETV("constructLocRoadblockPriority", 	0.1);	// Pre-emptively create roadblocks everywhere

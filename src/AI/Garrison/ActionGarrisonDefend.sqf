@@ -128,9 +128,6 @@ CLASS("ActionGarrisonDefend", "ActionGarrisonBehaviour")
 					case GROUP_TYPE_STATIC: {
 						["GoalGroupGetInVehiclesAsCrew", 0, _vehExtraParams, _AI]
 					};
-					case GROUP_TYPE_VEH: {
-						["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _vehExtraParams, _AI]
-					};
 					// case GROUP_TYPE_VEH: {
 					// 	["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _commonParams, _AI]
 					// };

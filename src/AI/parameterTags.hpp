@@ -75,3 +75,4 @@
 
 
 #define TAG_ONLY_COMBAT_VEHICLES "g_onlyCombat"
+#define TAG_REASSIGN_REMAINING_CREW "g_reassignNonCombatCrew"

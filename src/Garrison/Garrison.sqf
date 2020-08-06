@@ -2682,6 +2682,22 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			});
 		};
 	ENDMETHOD;
+
+	// Tries to find an infantry group and to move the passed units to it
+	METHOD(moveUnitsToInfantryGroup)
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		OOP_INFO_1("moveUnitsToInfantryGroup: %1", _units);
+
+		pr _infGroups = T_CALLM1("findGroupsByType", GROUP_TYPE_INF);
+		if (count _infGroups == 0) exitWith {
+			OOP_INFO_0("moveToInfantryGroup: Could not find infantry groups");
+		};
+
+		pr _group = _infGroups#0;
+		OOP_INFO_1("moveUnitsToInfantryGroup: moving units to group: %1", _group);
+		CALLM1(_group, "addUnits", _units);
+	ENDMETHOD;
 	
 	/*
 	Method: increaseCounters

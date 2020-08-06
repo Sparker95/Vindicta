@@ -96,9 +96,10 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 							OOP_INFO_1("    %1", _target);
 
 							// Return stimulus
-							_target
+							_target;
 						} else {
-							TARGET_NEW(format ["unknown %1", _hO], 2.0, _pos, _dateNumber, +(T_efficiency#T_INF#T_INF_rifleman))
+							pr __str = format ["unknown %1", _hO];
+							TARGET_NEW(__str, 2.0, _pos, _dateNumber, +(T_efficiency#T_INF#T_INF_rifleman));
 						};
 					};
 				};
