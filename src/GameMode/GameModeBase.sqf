@@ -501,6 +501,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 					#ifdef RELEASE_BUILD
 					// Make a recursive dump of the last processed object
+					// Disabled for now, we don't use it anyway
+					/*
 					private _lastObject = GETV(_msgLoop, "lastObject");
 					if (IS_NULL_OBJECT(_lastObject)) then {
 						OOP_ERROR_0("Last processed object is null");
@@ -513,6 +515,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
 						};
 					};
+					*/
 					#endif
 					FIX_LINE_NUMBERS()
 
