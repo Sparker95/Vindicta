@@ -17,7 +17,7 @@ diag_log "[vin_advertizer]: init";
   pr _text = "";
   _text = _text + "   \n    Hello!\n\n";
   _text = _text + "    Vindicta has moved to a new Steam Workshop page!\n\n";
-  _text = _text + "    Use the button below to copy the download link.\n\n";
+  _text = _text + "    Use the button below to copy the Workshop link.\n\n";
   _text = _text + "    This branch will no longer be maintained, because now Vindicta is hosted from\n";
   _text = _text + "our new Steam account to ease automated deployment to Steam in the future.\n\n";
 
@@ -43,4 +43,10 @@ diag_log "[vin_advertizer]: init";
       copyToClipboard "https://steamcommunity.com/sharedfiles/filedetails/?id=2185874952";
   };
   CALLM2(_dlg, "addButtonClickHandler", 0, _codeClickCopy);
+
+  pr _codeDelete = {
+    gInGameMenu = NEW("InGameMenu", []);
+  };
+
+  CALLM1(_dlg, "onDelete", _codeDelete);
 };

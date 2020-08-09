@@ -71,9 +71,11 @@ private _gameModeInitialized = if(isNil "gGameManager") then {
 	CALLM0(gGameManager, "isGameModeInitialized");
 };
 
+/*
 if (!_gameModeInitialized && {call misc_fnc_isAdminLocal}) then {
 	gInGameMenu = NEW("InGameMenu", []);
 };
+*/
 
 gPlayerUIInitialized = true;
 

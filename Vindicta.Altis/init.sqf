@@ -21,4 +21,6 @@ if (isServer) then {
 
 CALLM0(gGameManager, "init");
 
-call compile preprocessFileLineNumbers "showAd.sqf";
+if (hasInterface) then {
+    call compile preprocessFileLineNumbers "showAd.sqf";
+};
