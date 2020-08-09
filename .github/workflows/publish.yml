@@ -74,7 +74,7 @@ jobs:
       uses: arma-actions/workshop-upload@v1
       with:
         appId: '107410'      # default
-        itemId: '1729562743' # Vindicta Dev at Sparker's account https://steamcommunity.com/sharedfiles/filedetails/?id=1729562743
+        itemId: '1964186045' # Vindicta (ALpha-Old) at Sparker's account https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045&searchtext=vindicta
         contentPath: 'build/@vindicta'
         changelog: "Add notification at start up"
       env:
