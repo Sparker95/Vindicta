@@ -70,11 +70,6 @@ jobs:
       with:
         name: build
 
-    - uses: actions/download-artifact@v1
-      with:
-        name: _uploadurl
-        path: .
-
     - name: Publish to Steam Workshop
       uses: arma-actions/workshop-upload@v1
       with:
