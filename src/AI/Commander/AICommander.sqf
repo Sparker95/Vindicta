@@ -3032,7 +3032,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					_loc,
 					_generalGarrisons # 0,
 					CALLSM1("Location", "getCapacityInfForType", LOCATION_TYPE_AIRPORT) - _nInf,
-					_nVehMax - _nVeh
+					(_nVehMax - _nVeh) min CMDR_MAX_GROUND_VEH_EACH_EXTERNAL_REINFORCEMENT
 				]
 			} else {
 				[]

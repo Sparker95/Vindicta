@@ -144,6 +144,9 @@
 #define CMDR_MAX_INF_AIRFIELD 80
 #define CMDR_MAX_VEH_AIRFIELD 25
 
+// Max amount of ground vehicles which can be imported at each external reinforcement
+#define CMDR_MAX_GROUND_VEH_EACH_EXTERNAL_REINFORCEMENT 5
+
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \
 	ASSERT_MSG(actual isEqualType [], QUOTE(actual) + " is invalid type. It should be an array."); \
