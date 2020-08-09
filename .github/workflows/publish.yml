@@ -1,9 +1,9 @@
-name: Publish to Workshop
+name: Publish to Workshop [OLD PAGE]
 
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - master-old-workshop
 
 jobs:
   validate:
@@ -43,21 +43,17 @@ jobs:
       with:
         node-version: '10.x'
 
-    - name: Get Release Info
+    - name: Set version
       run: |
-        $latest_release = (Invoke-WebRequest https://api.github.com/repos/${{ github.repository }}/releases | ConvertFrom-Json).Get(0)
-        $major, $minor = $latest_release.tag_name.replace('v','').split('.')
+        $major = "0"
+        $minor = "45"
         Set-Content -Path .\configs\majorVersion.hpp -Value $major -Force -NoNewline
         Set-Content -Path .\configs\minorVersion.hpp -Value $minor -Force -NoNewline
-        $uploadurl = $latest_release.upload_url
-        $changelog = $latest_release.body
-        Set-Content -Path .\_uploadurl -Value $uploadurl -Force -NoNewline
-        Set-Content -Path .\_changelog -Value $changelog -Force -NoNewline
 
     - name: Build
       run: |
         cd Vindicta-Addon
-        .\tools\buildv2.ps1 ${{ github.run_number }}
+        .\tools\buildv2.ps1 -patch 20
         
     - uses: actions/upload-artifact@v1
       with:
@@ -68,11 +64,6 @@ jobs:
       with:
         name: _uploadurl
         path: _uploadurl
-          
-    - uses: actions/upload-artifact@v1
-      with:
-        name: _changelog
-        path: _changelog
 
   upload:
     runs-on: ubuntu-latest
@@ -88,46 +79,14 @@ jobs:
       with:
         name: _uploadurl
         path: .
-        
-    - uses: actions/download-artifact@v1
-      with:
-        name: _changelog
-        path: .
-
-    - id: release_info
-      run: |
-        ls
-        echo "::set-output name=upload_url::$(cat _uploadurl)"
-        changelog=`cat _changelog`
-        echo $changelog
-        changelog="${changelog//'%'/'%25'}"
-        changelog="${changelog//$'\n'/'%0A'}"
-        changelog="${changelog//$'\r'/'%0D'}" 
-        echo "::set-output name=changelog::$changelog"
 
     - name: Publish to Steam Workshop
       uses: arma-actions/workshop-upload@v1
       with:
         appId: '107410'      # default
-        itemId: '1964186045' # Vindicta (Alpha) https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+        itemId: '1729562743' # Vindicta Dev at Sparker's account https://steamcommunity.com/sharedfiles/filedetails/?id=1729562743
         contentPath: 'build/@vindicta'
-        changelog: "${{ steps.release_info.outputs.changelog }}"
+        changelog: "Add notification at start up"
       env:
         STEAM_USERNAME: ${{ secrets.SECRET_0 }}
         STEAM_PASSWORD: ${{ secrets.SECRET_1 }}
-
-    - name: Prepare for Release
-      run: |
-        cd build
-        zip -r vindicta.zip @vindicta
-        ls
-
-    - name: Publish to GitHub Release
-      uses: actions/upload-release-asset@v1.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release_info.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./build/vindicta.zip
-        asset_name: vindicta.zip
-        asset_content_type: application/zip
