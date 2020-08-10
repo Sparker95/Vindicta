@@ -234,7 +234,7 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 		private _foundForbiddenCharacter = false;
 		(toArray _forbidden) findIf {
 			private _xStr = toString [_x];
-			private _id = _string find _xStr;
+			private _id = _campaignName find _xStr;
 			if (_id != -1) exitWith { _foundForbiddenCharacter = true; true; };
 			false;
 		};

@@ -387,7 +387,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// _casualtiesRatio - value in range 0..1. Max when a certain amount of casualties was reached.
 		pr _casualtiesRatio = 0;
 		pr _casualties = T_GETV("casualties");
-		_casualtiesRatio = _casualties / 400;
+		_casualtiesRatio = _casualties / 750;
 		_casualtiesRatio = CLAMP(_casualtiesRatio, 0.0, 1.0);
 
 		// Final aggression:

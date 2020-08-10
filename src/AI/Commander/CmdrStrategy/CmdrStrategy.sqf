@@ -244,7 +244,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
-		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtClusterPos, 1000);
+		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtClusterPos, 2500);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	ENDMETHOD;
 
@@ -381,7 +381,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
 		private _tgtPos = GETV(_tgtLoc, "pos");
-		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtPos, 1000);
+		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtPos, 2500);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	ENDMETHOD;
 
