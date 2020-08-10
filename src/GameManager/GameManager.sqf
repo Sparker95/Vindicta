@@ -523,7 +523,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	ENDMETHOD;
 
 	vin_fnc_autoLoadMsg = {
-		diag_log _this;
+		diag_log ("[Vindicta Autoload] " + _this);
 		["autoloadwarning", [format ["<t size='4' color='#FF7733'>%1</t><br/><t size='2' color='#FFFFFF'>%2</t>", LOCS("Vindicta_GameManager", "Autoload"), _this], "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["autoloadwarning", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 	};
@@ -543,6 +543,12 @@ CLASS("GameManager", "MessageReceiverEx")
 			LOC("Autoload_NoSaves") call vin_fnc_autoLoadMsg;
 		};
 
+		// log
+		diag_log "[Vindicta Autoload] All saved games:";
+		{
+			diag_log format ["    %1", _x];
+		} forEach _recordNamesAndHeaders;
+
 		// Check all headers for loadability
 		pr _checkResult = T_CALLM1("checkAllHeadersForLoading", _recordNamesAndHeaders);
 
@@ -554,6 +560,12 @@ CLASS("GameManager", "MessageReceiverEx")
 			!(INCOMPATIBLE_WORLD_NAME in _x#1)
 		};
 
+		// Log
+		diag_log "[Vindicta Autoload] Saved games compatible for load:";
+		{
+			diag_log format ["    %1", _x];
+		} forEach _dataForLoad;
+
 		if(count _dataForLoad == 0) exitWith {
 			LOC("Autoload_NoSavesForMap") call vin_fnc_autoLoadMsg;
 		};
@@ -561,6 +573,8 @@ CLASS("GameManager", "MessageReceiverEx")
 		reverse _dataForLoad;
 
 		_dataForLoad#0 params ["_recordName", "_errors"];
+
+		diag_log format ["[Vindicta Autoload] Selected saved game: %1", _recordName];
 
 		if(INCOMPATIBLE_SAVE_VERSION in _errors) exitWith {
 			LOC("Autoload_Version") call vin_fnc_autoLoadMsg;
@@ -584,17 +598,19 @@ CLASS("GameManager", "MessageReceiverEx")
 				private _autoLoadTime = PROCESS_TIME + 30;
 				while { !IS_ADMIN_ON_DEDI && _autoLoadTime > PROCESS_TIME } do {
 					sleep 0.5;
-					format [LOC("Autoload_CountDown"), _autoLoadTime - PROCESS_TIME] call vin_fnc_autoLoadMsg;
+					format [LOC("Autoload_CountDown"), ceil (_autoLoadTime - PROCESS_TIME)] call vin_fnc_autoLoadMsg;
 				};
 
 				if(!IS_ADMIN_ON_DEDI) then {
-					T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+					pr _args = [_recordName, T_GETV("storageClassName")];
+					T_CALLM2("postMethodAsync", "loadGame", _args);
 				} else {
 					LOC("Autoload_AdminAbort") call vin_fnc_autoLoadMsg;
 				};
 			};
 		} else {
-			T_CALLM2("postMethodAsync", "loadGame", [_recordName]);
+			pr _args = [_recordName, T_GETV("storageClassName")];
+			T_CALLM2("postMethodAsync", "loadGame", _args);
 		};
 
 		#undef LOC_SCOPE

@@ -2121,6 +2121,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _side = T_GETV("side");
 
+		// Limit amount of concurrent actions
+		private _activeActions = T_GETV("activeActions");
+		pr _count = {GET_OBJECT_CLASS(_x) == "QRFCmdrAction"} count _activeActions;
+		if (_count >= CMDR_MAX_ATTACK_ACTIONS) exitWith {[]};
+
 		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
 			(GETV(_x, "side") == _side) and
@@ -3027,7 +3032,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					_loc,
 					_generalGarrisons # 0,
 					CALLSM1("Location", "getCapacityInfForType", LOCATION_TYPE_AIRPORT) - _nInf,
-					_nVehMax - _nVeh
+					(_nVehMax - _nVeh) min CMDR_MAX_GROUND_VEH_EACH_EXTERNAL_REINFORCEMENT
 				]
 			} else {
 				[]

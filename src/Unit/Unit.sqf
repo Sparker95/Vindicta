@@ -1188,15 +1188,16 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 				// Some number which scales the amount of items in this box
-				pr _nGuns = 1.3 * _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
+				pr __n = _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
+				pr _nGuns = 0.8 * __n;
 
 				// Modifier for cargo boxes
 				if (_catID == T_CARGO) then {
-					_nGuns = _nGuns * 3;
+					_nGuns = 6 * __n;
 				};
 
 				// Add weapons and magazines
-				pr _arr = [[T_INV_primary, _nGuns, 10], [T_INV_secondary, 0.4*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
+				pr _arr = [[T_INV_primary, 1.5*_nGuns, 10], [T_INV_secondary, 0.3*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
 				{
 					_x params ["_subcatID", "_n", "_nMagsPerGun"];
 					if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory

@@ -208,7 +208,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 #ifndef RELEASE_BUILD
 		private _delay = random 2;
 #else
-		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + (random 15 + 30);
+		private _delay = 75 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + (random 30 + 30);
 #endif
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!

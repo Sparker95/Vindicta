@@ -131,17 +131,21 @@
 #define ENEMY_CLUSTER_EFF_MAX		[30,	7,		6,		2,		9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999]
 
 // Max amount of simultaneous actions
-#define CMDR_MAX_TAKE_OUTPOST_ACTIONS 3
+#define CMDR_MAX_TAKE_OUTPOST_ACTIONS 2
 #define CMDR_MAX_REINFORCE_ACTIONS 3
-#define CMDR_MAX_SUPPLY_ACTIONS 3
+#define CMDR_MAX_SUPPLY_ACTIONS 6
 #define CMDR_MAX_OFFICER_ASSIGNMENT_ACTIONS 3
-//#define CMDR_MAX_ATTACK_ACTIONS 100 QRFs are unlimited
+// QRF actions
+#define CMDR_MAX_ATTACK_ACTIONS 4
 #define CMDR_MAX_PATROL_ACTIONS 6
-#define CMDR_MAX_CONSTRUCT_ACTIONS 3
+#define CMDR_MAX_CONSTRUCT_ACTIONS 2
 
 // Max amount of units at airfields
 #define CMDR_MAX_INF_AIRFIELD 80
 #define CMDR_MAX_VEH_AIRFIELD 25
+
+// Max amount of ground vehicles which can be imported at each external reinforcement
+#define CMDR_MAX_GROUND_VEH_EACH_EXTERNAL_REINFORCEMENT 5
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \
@@ -182,5 +186,5 @@
 // This maps activity=value like: 25=~0.5, 100=1, 1000=~2 
 #define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * MAP_LINEAR_SET_POINT(vin_diff_global, 0.2, 1, 3) * (rawActivity) + 1))
 
-// https://www.desmos.com/calculator/yxhaqijv19
-#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.2 * (1 - sqrt(0.9 * MAP_GAMMA(vin_diff_global, campaignProgress))) * (rawDamage)) - 0.1)
+// https://www.desmos.com/calculator/vgvrm8x3un
+#define __DAMAGE_FUNCTION(rawDamage, campaignProgress) (exp(-0.5 * (1 - sqrt(0.9 * MAP_GAMMA(vin_diff_global, campaignProgress))) * (rawDamage - 8)) - 0.1)
