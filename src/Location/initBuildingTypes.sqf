@@ -342,6 +342,35 @@ location_bp_cargo_medium =
 	[
 		["Land_Dum_olez_istan2_maly"],
 		[[4.65903,323.05,-0.112593,-2],[1.62625,239.845,3.2213,-2]]
+	],
+	//Tanoa
+	[
+		["Land_House_Small_02_F"],
+		[[3.82726,207.414,0.163198,0],[3.26539,323.981,0.163198,0]]
+	],
+	[
+		["Land_House_Big_02_F"],
+		[[9.05937,278.308,0.247039,0],[5.93008,283.286,0.247039,0]]
+	],
+	[
+		["Land_House_Small_03_F"],
+		[[4.46964,287.943,0.707387,0],[1.97211,30.6399,0.707387,0]]
+	],
+	[
+		["Land_House_Small_06_F"],
+		[[1.42332,253.6,0.403843,0],[3.89371,187.168,0.403843,0]]
+	],
+	[
+		["Land_House_Big_01_F"],
+		[[5.00607,42.4493,0.221095,0],[2.84669,81.0797,0.221095,0]]
+	],
+	[
+		["Land_GarageShelter_01_F"],
+		[[3.08881,314.871,0.0952454,0],[2.53124,248.677,0.0952454,0]]
+	],
+	[
+		["Land_House_Small_01_F"],
+		[[2.54961,251.88,0.575955,0],[4.77418,287.64,0.575955,0]]
 	]
 ];
 
@@ -438,7 +467,16 @@ location_bt_police =
 	// Structures Micellaneous CUP
 	"Land_Dum_olez_istan1",
 	"Land_Dum_olez_istan1_open2",
-	"Land_Dum_olez_istan2_maly"
+	"Land_Dum_olez_istan2_maly",
+
+	// Tanoa
+	"Land_House_Small_02_F",
+	"Land_House_Big_02_F",
+	"Land_House_Small_03_F",
+	"Land_House_Small_06_F",
+	"Land_House_Big_01_F",
+	"Land_GarageShelter_01_F",
+	"Land_House_Small_01_F"
 ];
 
 location_decorations_police =
