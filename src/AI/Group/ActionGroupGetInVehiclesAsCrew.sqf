@@ -15,12 +15,14 @@ TAG_ONLY_COMBAT_VEHICLES - optional, default false. if true, units will occupy o
 CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 	VARIABLE("activeUnits");
+	VARIABLE("inactiveUnits");
 	VARIABLE("onlyCombat");
+	//VARIABLE("reassignNonCombatCrew");
 
 	public override METHOD(getPossibleParameters)
 		[
 			[ ],	// Required parameters
-			[ [TAG_ONLY_COMBAT_VEHICLES, [false]] ]	// Optional parameters
+			[ [TAG_ONLY_COMBAT_VEHICLES, [false]] /*, [TAG_REASSIGN_REMAINING_CREW, [false]]*/ ]	// Optional parameters
 		]
 	ENDMETHOD;
 
@@ -29,6 +31,9 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, TAG_ONLY_COMBAT_VEHICLES, false);
 		T_SETV("onlyCombat", _onlyCombat);
+
+		//pr _reassign = GET_PARAMETER_VALUE_DEFAULT(_parameters, TAG_REASSIGN_REMAINING_CREW, false);
+		//T_SETV("reassignNonCombatCrew", _reassign);
 
 		T_SETV("activeUnits", []);
 	ENDMETHOD;
@@ -93,6 +98,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		pr _onlyCombat = T_GETV("onlyCombat");
+		//pr _reassign = T_GETV("reassignNonCombatCrew");
 		
 		pr _units = CALLM0(_group, "getUnits");
 		pr _vehicles = _units select {CALLM0(_x, "isVehicle")};
@@ -168,17 +174,34 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 			} forEach (_stdTurrets + _copilotTurrets);
 		} forEach _vehiclesStdCrew;
 
-		// Assign regroup goal to remaining inf
-		pr _parameters = [[TAG_INSTANT, _instant]];
-		{
-			//CALLM0(_x, "unassignVehicle");
-			CALLM4(_x, "addExternalGoal", "GoalUnitInfantryRegroup", 0, _parameters, _AI);
-		} forEach _availableCrewAI;
+		// Order the rest to dismount
+		pr _inactiveUnits = _availableCrewAI apply { GETV(_x, "agent") };
+		T_SETV("inactiveUnits", _inactiveUnits);
+		//if (!_reassign) then {
+			pr _parameters = [[TAG_INSTANT, _instant]];
+			{
+				//CALLM0(_x, "unassignVehicle");
+				CALLM4(_x, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, _parameters, _AI);
+			} forEach _availableCrewAI;
+		/*
+		// Disabled for now because it causes problems
+		// Garrison AI tries to rebalance vehicle groups
+		} else {
+		
+			// If asked to reassign remaining crew, move them to more suitable groups
+			pr _remainingCrew = _availableCrewAI apply {
+				GETV(_x, "agent");
+			};
+			pr _gar = CALLM0(_group, "getGarrison");
+			OOP_INFO_1("Moving remaining crew to infantry group: %1", _remainingCrew);
+			CALLM2(_gar, "postMethodAsync", "moveUnitsToInfantryGroup", [_remainingCrew]);
+		};
+		*/
 		
 		pr _activeUnits = (_driversAI + _turretsAI) apply { GETV(_x, "agent") };
 		T_SETV("activeUnits", _activeUnits);
 		
-		pr _state = if(count _activeUnits == 0) then {
+		pr _state = if((count _activeUnits == 0) && (count _inactiveUnits == 0)) then {
 			// If no drivers or turrets are required then we succeeded immediately
 			ACTION_STATE_COMPLETED
 		} else {
@@ -202,8 +225,13 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// Wait until all given goals are completed
 			pr _activeUnits = T_GETV("activeUnits");
+			pr _inactiveUnits = T_GETV("inactiveUnits");
+			pr _activeCompleted = CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _activeUnits, "GoalUnitGetInVehicle", _AI);
+			pr _inactiveCompleted = CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _inactiveUnits, "GoalUnitDismountCurrentVehicle", _AI);
+			OOP_INFO_2("Active units: %1, completed: %2", _activeUnits, _activeCompleted);
+			OOP_INFO_2("Inactive units: %1", _inactiveUnits, _inactiveCompleted);
 			pr _AI = T_GETV("AI");
-			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoalRequired", _activeUnits, "GoalUnitGetInVehicle", _AI)) then {
+			if ( _activeCompleted && _inactiveCOmpleted ) then {
 				// Update sensors immediately
 				CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
 				_state = ACTION_STATE_COMPLETED;

@@ -52,6 +52,7 @@ CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_LDF\LDF\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_LDF\LDF_Recon\init.sqf");
 //Arma3_POLICE
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_POLICE\Police\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_POLICE\Police_DLC\init.sqf");
 //Arma3_CIVILIAN
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_CIVILIAN\init.sqf");
 //RHS_AFRF
@@ -75,21 +76,6 @@ CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LAF\LAF_Recon\init.sqf");
 //RHS_HIDF
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf");
-//RHS_APD
-CALL_COMPILE_COMMON("Templates\Loadouts\RHS_APD\Police\init.sqf");
-//WW2_Heer
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Heer\Heer\init.sqf");
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Heer\Heer_Recon\init.sqf");
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Heer\Heer_Police\init.sqf");
-//WW2_Sov
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Sov\Red_Army\init.sqf");
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Sov\Red_Army_Recon\init.sqf");
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Sov\Red_Army_Police\init.sqf");
-//WW2_UK
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_UK\UK\init.sqf");
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_UK\UK_Recon\init.sqf");
-//WW2_UK
-CALL_COMPILE_COMMON("Templates\Loadouts\WW2_Civilian\init.sqf");
 //GM_WestGer
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer_Police\init.sqf");
@@ -111,8 +97,6 @@ CALL_COMPILE_COMMON("Templates\Loadouts\CUP_TKA_CIVILIAN\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\CUP_RUS_POLICE\init.sqf");
 // Gendermarie Expansion
 CALL_COMPILE_COMMON("Templates\Loadouts\GEXP_POLICE\init.sqf");
-// 3CB BAF
-CALL_COMPILE_COMMON("Templates\Loadouts\3CB_BAF\init.sqf");
 // 3CB CCIVS
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_CCIVS\init.sqf");
 // 3CB Takistan Civillians

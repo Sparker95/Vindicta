@@ -63,7 +63,7 @@ if (!_nearEnemyGarrisons && !_nearPlayers) then {
 	_nearEnemyAI = _index != -1;
 };
 
-OOP_INFO_4("UPDATE SPAWN STATE: side: %1, garrisons: %2, players: %3, AIs: %4", _side, _nearEnemyGarrisons, _nearPlayers, _nearEnemyAI);
+//OOP_INFO_4("UPDATE SPAWN STATE: side: %1, garrisons: %2, players: %3, AIs: %4", _side, _nearEnemyGarrisons, _nearPlayers, _nearEnemyAI);
 
 switch (T_GETV("spawned")) do {
 	case false: { // Garrison is currently not spawned
@@ -71,7 +71,7 @@ switch (T_GETV("spawned")) do {
 		pr _timer = T_GETV("timer");
 
 		if (_nearEnemyGarrisons || _nearPlayers || _nearEnemyAI) then {
-			OOP_INFO_0("  Posting spawn method call...");
+			//OOP_INFO_0("  Posting spawn method call...");
 			T_CALLM2("postMethodAsync", "spawn", [true]); // instant action: true
 			// Set timer interval
 			//pr _interval = 4;
@@ -88,7 +88,7 @@ switch (T_GETV("spawned")) do {
 
 	case true: { // Garrison is currently spawned
 		if (!_nearEnemyGarrisons && !_nearPlayers && !_nearEnemyAI) then {
-			OOP_INFO_0("  Despawning...");
+			//OOP_INFO_0("  Despawning...");
 			T_CALLM2("postMethodAsync", "despawn", []);
 		};
 	}; // case 1

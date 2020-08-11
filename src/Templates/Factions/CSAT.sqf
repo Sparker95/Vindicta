@@ -15,7 +15,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tCSAT"]; // 														Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla Canton Protocol Strategic Alliance Treaty."]; // 	Template display description
+_array set [T_DESCRIPTION, "Standard Canton Protocol Strategic Alliance Treaty from base game."]; // 	Template display description
 _array set [T_DISPLAY_NAME, "Arma 3 CSAT"]; // 											Template display name
 _array set [T_FACTION, T_FACTION_military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 								Addons required to play this template
@@ -30,14 +30,14 @@ _inf set [T_INF_SL, ["O_Soldier_SL_F"]]; // = 1
 _inf set [T_INF_TL, ["O_Soldier_TL_F"]]; // = 2
 _inf set [T_INF_officer, ["O_officer_F"]]; // = 3
 _inf set [T_INF_GL, ["O_Soldier_GL_F"]]; // = 4
-_inf set [T_INF_rifleman, ["O_Soldier_F", "O_Soldier_lite_F"]]; // = 5
-_inf set [T_INF_marksman, ["O_soldier_M_F", "O_Sharpshooter_F"]]; // = 6
+_inf set [T_INF_rifleman, ["O_Soldier_F", 3, "O_Soldier_lite_F", 1]]; // = 5
+_inf set [T_INF_marksman, ["O_soldier_M_F", 2, "O_Sharpshooter_F", 1]]; // = 6
 _inf set [T_INF_sniper, ["O_ghillie_ard_F"]]; // = 7
 _inf set [T_INF_spotter, ["O_spotter_F"]]; // = 8
 _inf set [T_INF_exp, ["O_soldier_exp_F", "O_soldier_mine_F"]]; // = 9
 _inf set [T_INF_ammo, ["O_Soldier_A_F"]]; // = 10
 _inf set [T_INF_LAT, ["O_Soldier_LAT_F"]]; // = 11
-_inf set [T_INF_AT, ["O_Soldier_HAT_F", "O_Soldier_AT_F"]]; // = 12
+_inf set [T_INF_AT, ["O_Soldier_HAT_F", 3, "O_Soldier_AT_F", 1]]; // = 12
 _inf set [T_INF_AA, ["O_Soldier_AA_F"]]; // = 13
 _inf set [T_INF_LMG, ["O_Soldier_AR_F"]]; // = 14
 _inf set [T_INF_HMG, ["O_HeavyGunner_F"]]; // = 15
@@ -55,7 +55,7 @@ _inf set [T_INF_recon_rifleman, ["O_recon_F"]]; // = 25
 _inf set [T_INF_recon_medic, ["O_recon_medic_F"]]; // = 26
 _inf set [T_INF_recon_exp, ["O_recon_exp_F"]]; // = 27
 _inf set [T_INF_recon_LAT, ["O_recon_LAT_F"]]; // = 28
-_inf set [T_INF_recon_marksman, ["O_recon_M_F", "O_Pathfinder_F"]]; // = 29
+_inf set [T_INF_recon_marksman, ["O_recon_M_F", 2, "O_Pathfinder_F", 1]]; // = 29
 _inf set [T_INF_recon_JTAC, ["O_recon_JTAC_F"]]; // = 30
 /* Diver unit classes */
 _inf set [T_INF_diver_TL, ["O_diver_TL_F"]]; // = 31

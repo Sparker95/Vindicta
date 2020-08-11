@@ -8,7 +8,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tAAF"];
-_array set [T_DESCRIPTION, "Vanilla Altis Armed Forces."];
+_array set [T_DESCRIPTION, "Standard Altis Armed Forces from base game."];
 _array set [T_DISPLAY_NAME, "Arma 3 AAF"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
@@ -22,14 +22,14 @@ _inf set [T_INF_SL, ["I_Soldier_SL_F"]];
 _inf set [T_INF_TL, ["I_Soldier_TL_F"]];
 _inf set [T_INF_officer, ["I_officer_F"]];
 _inf set [T_INF_GL, ["I_Soldier_GL_F"]];
-_inf set [T_INF_rifleman, ["I_soldier_F", "I_Soldier_lite_F"]];
+_inf set [T_INF_rifleman, ["I_soldier_F", 3, "I_Soldier_lite_F", 1]];
 _inf set [T_INF_marksman, ["I_Soldier_M_F"]];
 _inf set [T_INF_sniper, ["Arma3_AAF_sniper"]];
 _inf set [T_INF_spotter, ["Arma3_AAF_spotter"]];
 _inf set [T_INF_exp, ["I_Soldier_exp_F", "I_soldier_mine_F"]];
 _inf set [T_INF_ammo, ["I_Soldier_A_F"]];
 _inf set [T_INF_LAT, ["I_Soldier_LAT2_F"]];
-_inf set [T_INF_AT, ["I_Soldier_LAT_F", "I_Soldier_AT_F"]];
+_inf set [T_INF_AT, ["I_Soldier_LAT_F", 5, "I_Soldier_AT_F", 1]];
 _inf set [T_INF_AA, ["I_Soldier_AA_F"]];
 _inf set [T_INF_LMG, ["I_Soldier_AR_F"]];
 _inf set [T_INF_HMG, ["Arma3_AAF_HMG"]];
@@ -44,7 +44,7 @@ _inf set [T_INF_unarmed, ["I_Soldier_unarmed_F"]];
 
 //==== Recon ====
 _inf set [T_INF_recon_TL, ["Arma3_AAF_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["Arma3_AAF_recon_rifleman", "Arma3_AAF_recon_autorifleman"]];
+_inf set [T_INF_recon_rifleman, ["Arma3_AAF_recon_rifleman", 3, "Arma3_AAF_recon_autorifleman", 1]];
 _inf set [T_INF_recon_medic, ["Arma3_AAF_recon_medic"]];
 _inf set [T_INF_recon_exp, ["Arma3_AAF_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["Arma3_AAF_recon_LAT"]];
@@ -78,7 +78,7 @@ _veh set [T_VEH_MRLS, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPA, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPAA, ["I_LT_01_AA_F"]];
 
-_veh set [T_VEH_stat_HMG_high, ["I_HMG_02_high_F"]];
+_veh set [T_VEH_stat_HMG_high, ["I_E_HMG_01_high_F", 1,"I_HMG_02_high_F", 4]];
 _veh set [T_VEH_stat_GMG_high, ["I_GMG_01_high_F"]];
 _veh set [T_VEH_stat_HMG_low, ["I_HMG_02_F"]];
 _veh set [T_VEH_stat_GMG_low, ["I_GMG_01_F"]];

@@ -125,16 +125,17 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			case LOCATION_TYPE_CITY: {
 				// If city is under enemy influence, we should take it
 				pr _influence = GETV(_loc, "influence");
-				pr _add = 0;
-				if (_influence > 0.35) then { // It's positive when rebels own it
-					_add = 0.5 + _influence*7;
-				};
-				// Bigger cities are valued most of all
+				pr _add = _influence*2.0;
+				// If enemy occupies this, we want to occupy this too
+				pr _priorityFromClass = T_GETV("takeLocCityPriority");
 				pr _actual = GETV(_loc, "actual");
-				pr _pop = CALLM0(_actual, "getCapacityCiv");
-				pr _popMult = (_pop/500)^2;
-				_priority = T_GETV("takeLocCityPriority") +
-					T_GETV("takeLocCityCoeff") * _activityMult;
+				pr _sides = [EAST, WEST, INDEPENDENT] - [_side];
+				pr _garrisons = CALLM1(_actual, "getGarrisons", _sides);
+				if (count _garrisons > 0) then {
+					_priorityFromClass = 1;
+				};
+				_priority = _priorityFromClass +
+					T_GETV("takeLocCityCoeff") * _activityMult + _add;
 			};
 			case LOCATION_TYPE_CAMP: {
 				// Same as outpost
@@ -243,7 +244,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
 		private _tgtClusterPos = GETV(_tgtCluster, "pos");
-		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtClusterPos, 1000);
+		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtClusterPos, 2500);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	ENDMETHOD;
 
@@ -380,7 +381,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
 		private _tgtPos = GETV(_tgtLoc, "pos");
-		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtPos, 1000);
+		private _adjustedDamage = CALLM2(_worldNow, "getDamageScore", _tgtPos, 2500);
 		APPLY_SCORE_STRATEGY(_defaultScore, _adjustedDamage)
 	ENDMETHOD;
 

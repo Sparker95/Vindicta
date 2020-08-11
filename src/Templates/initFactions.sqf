@@ -41,10 +41,6 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\CUP_TKA.sqf", 	
     "Templates\Factions\CUP_AFRF.sqf", 
     "Templates\Factions\CUP_USMC.sqf", 
-    "Templates\Factions\WW2_Heer.sqf", 
-    "Templates\Factions\WW2_Sov.sqf", 					
-    "Templates\Factions\WW2_UK.sqf", 					
-    "Templates\Factions\3CB_BAF.sqf", 					
     "Templates\Factions\3CB_TNA_B.sqf", 				
     "Templates\Factions\3CB_TNA_O.sqf", 				
     "Templates\Factions\Russians2035.sqf", 			
@@ -63,7 +59,6 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     [_x] call t_fnc_initializeTemplateFromFile;
 } forEach [
     "Templates\Factions\CIVILIAN.sqf", 
-    "Templates\Factions\WW2_CIVILIAN.sqf",
     "Templates\Factions\GM_CIVILIAN.sqf", 
     "Templates\Factions\CUP_RUS_CIVILIAN.sqf",
     "Templates\Factions\CUP_TKA_CIVILIAN.sqf",
@@ -77,13 +72,10 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     [_x] call t_fnc_initializeTemplateFromFile;
 } forEach [
     "Templates\Factions\POLICE.sqf",
+    "Templates\Factions\POLICE_DLC.sqf",
     "Templates\Factions\RHS_AAF_police.sqf",
     "Templates\Factions\RHS_LDF_ranger.sqf",
-    "Templates\Factions\RHS_APD.sqf",
     "Templates\Factions\CUP_RUS_Police.sqf",
-    "Templates\Factions\WW2_Heer_police.sqf",
-    "Templates\Factions\WW2_Sov_police.sqf",
-    "Templates\Factions\WW2_UK_police.sqf",
     "Templates\Factions\GSG9.sqf",
     "Templates\Factions\GM_WestGer_Police.sqf",
     "Templates\Factions\GEXP_Police.sqf",

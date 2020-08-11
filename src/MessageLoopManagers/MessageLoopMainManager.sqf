@@ -25,6 +25,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	*/
 	public METHOD(EH_Killed)
 		params [P_THISOBJECT, P_OBJECT("_objectHandle"), P_OBJECT("_killer"), P_OBJECT("_instigator"), P_BOOL("_useEffects")];
+		OOP_INFO_1("EH_Killed: %1", _this);
 		T_CALLM3("UnitObjectKilled", _objectHandle, objNull, _killer);
 	ENDMETHOD;
 
@@ -49,7 +50,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
-		OOP_INFO_1("%1", _this);
+		OOP_INFO_1("UnitObjectKilled: %1", _this);
 
 		// Is this object an instance of Unit class?
 		private _unit = CALLSM("Unit", "getUnitFromObjectHandle", [_objectHandle]);
@@ -65,7 +66,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit"), P_OBJECT("_killer")];
 
 		pr _data = GETV(_unit, "data");
-		OOP_INFO_2("%1 %2", _unit, _data);
+		OOP_INFO_1("UnitKilled: %1", _this);
 
 		// Since this code is run in the main thread, we can just call the methods directly
 		// Post a message to the garrison of the unit
@@ -287,7 +288,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	// We use that to call some static methods in the main thread
 	public METHOD(callStaticMethodInThread)
 		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
-		OOP_INFO_1("callStaticMethodInThread: %1", _this);
+		//OOP_INFO_1("callStaticMethodInThread: %1", _this);
 		CALLSM(_className, _methodName, _parameters);
 	ENDMETHOD;
 
@@ -295,9 +296,18 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	public METHOD(finishPlayerSpawn)
 		params [P_THISOBJECT, P_OBJECT("_playerObj"), P_SIDE("_playerSide"), P_ARRAY("_respawnPos")];
 		
+		diag_log format ["finishPlayerSpawn: %1", _this];
+
+		pr _prevUnit = GET_UNIT_FROM_OBJECT_HANDLE(_playerObj);
+		if (!IS_NULL_OBJECT(_prevUnit)) then {
+			OOP_ERROR_1("finishPlayerSpawn: player object already has a unit: %1", _prevUnit);
+		};
+
 		// Create a new Unit and attach it to player
 		pr _args = [[], T_INF, T_INF_rifleman, -1, "", _playerObj];
 		pr _unit = NEW("Unit", _args);
+
+		diag_log format ["  Created unit for player: %1, %2", _unit, GET_UNIT_FROM_OBJECT_HANDLE(_playerObj)];
 
 		// Add player's unit to the global garrison
 		pr _gar = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _playerSide);

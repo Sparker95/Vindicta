@@ -321,8 +321,10 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 		private _gar = T_GETV("gar");
 		private _garPos = CALLM0(_gar, "getPos");
 		private _pos = T_GETV("pos");
+		private _infantry = T_CALLM0("useInfantryPath");
 
 		// If its an air garrison moving, or distance is short then we can use straight line movement (vehicles will still use roads, just not with planned route)
+		pr _infantry = T_CALLM0("useInfantryPath");
 		if(CALLM0(_gar, "getType") == GARRISON_TYPE_AIR || { _pos distance2D _garPos < 750 }) exitwith {
 			_vr = NULL_OBJECT;
 			T_SETV("virtualRoute", _vr);
@@ -339,7 +341,7 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			_base_cost + _threat * 20
 		};
 
-		private _args = [_garPos, _pos, -1, _threatCostFn, "", [_cmdr], true, true];
+		private _args = [_garPos, _pos, -1, _threatCostFn, "", [_cmdr], true, true, _infantry];
 		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
 		_vr
@@ -430,6 +432,11 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
 			true
 		};
+	ENDMETHOD;
+
+	// Override if offroad path finding must be used
+	protected virtual METHOD(useInfantryPath)
+		false;
 	ENDMETHOD;
 
 ENDCLASS;

@@ -23,7 +23,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	METHOD(new)
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		T_SETV("state", CITY_STATE_NEUTRAL);
-		T_SETV("influence", 0);
+		T_SETV("influence", 0); // 0.3 + random 0.7); // might use for testing
 		T_SETV("ambientMissions", []);
 		T_SETV("nRecruitsFriendly", 0);
 		T_SETV("nRecruitsEnemy", 0);
@@ -253,9 +253,14 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		_rate;
 	ENDMETHOD;
 
-	METHOD(getInfluence)
+	public METHOD(getInfluence)
 		params [P_THISOBJECT];
 		T_GETV("influence");
+	ENDMETHOD;
+
+	public METHOD(getState)
+		params [P_THISOBJECT];
+		T_GETV("state");
 	ENDMETHOD;
 
 	public METHOD(removeRecruits)

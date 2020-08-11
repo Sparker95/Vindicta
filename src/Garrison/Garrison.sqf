@@ -2682,6 +2682,22 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			});
 		};
 	ENDMETHOD;
+
+	// Tries to find an infantry group and to move the passed units to it
+	METHOD(moveUnitsToInfantryGroup)
+		params [P_THISOBJECT, P_ARRAY("_units")];
+
+		OOP_INFO_1("moveUnitsToInfantryGroup: %1", _units);
+
+		pr _infGroups = T_CALLM1("findGroupsByType", GROUP_TYPE_INF);
+		if (count _infGroups == 0) exitWith {
+			OOP_INFO_0("moveToInfantryGroup: Could not find infantry groups");
+		};
+
+		pr _group = _infGroups#0;
+		OOP_INFO_1("moveUnitsToInfantryGroup: moving units to group: %1", _group);
+		CALLM1(_group, "addUnits", _units);
+	ENDMETHOD;
 	
 	/*
 	Method: increaseCounters
@@ -3598,6 +3614,18 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Assign the units to the players garrison
 		CALLM1(_tgtGarrison, "takeUnits", _units);
 
+		// Remove units from their new group OOP object
+		// We do this to prevent the group AI from doing anything
+		// todo it's really a hacky way to do it
+		{
+			pr _group = CALLM0(_x, "getGroup");
+			CALLM1(_group, "removeUnit", _x);
+			if (count CALLM0(_group, "getUnits") == 0) then {
+				CALLM1(_tgtGarrison, "removeGroup", _group);
+				DELETE(_group);
+			};
+		} forEach _units;
+
 		pr _nearbyClients = allPlayers select { side group _x == side group _player && (_x distance _player) < 100 } apply { owner _x };
 		private _msg = format ["%1 units assigned to %2", count _units, name _player];
 		private _args = ["UNITS ASSIGNED", _msg, "They are now under direct control"];
@@ -3606,6 +3634,11 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// HACK: somewhat of a hack as we aren't making OOP groups, however the player garrisons do not 
 		// have any AI so they won't interfere with this
 		_unitHandles join _player;
+
+		// Delete AI from all units, we don't want it to interfere
+		{
+			CALLM0(_x, "deleteAI");
+		} forEach _units;
 	ENDMETHOD;
 
 
@@ -3645,6 +3678,14 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		private _spawned = true; // If we are adding units from unit handles then they must be spawned
 		private _args = [_type, _side, _pos, _faction, _templateName, _spawned];
 		private _newGarrison = NEW("Garrison", _args);
+		CALLM0(_newGarrison, "spawn");
+
+		// Create AI for all the units
+		{
+			if (CALLM0(_x, "isInfantry")) then {
+				CALLM1(_x, "createAI", "AIUnitInfantry"); // All units must be infantry
+			};
+		} forEach _unitObjects;
 
 		// Create some infantry group
 		private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);

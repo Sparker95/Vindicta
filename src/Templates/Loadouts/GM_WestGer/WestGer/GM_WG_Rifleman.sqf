@@ -32,7 +32,7 @@ private _guns = [
 (selectRandomWeighted _guns) params ["_gun"];
 this addWeapon _gun;
 this addPrimaryWeaponItem "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";
-for "_i" from 1 to 6 do {this addItemToVest "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";};
+for "_i" from 1 to 4 do {this addItemToVest "gm_20Rnd_762x51mm_B_T_DM21_g3_blk";};
 
 //	==== Misc Items ====
 this linkItem "ItemMap"; 			// Map

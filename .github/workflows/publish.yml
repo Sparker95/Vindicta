@@ -24,13 +24,14 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@master
+    - name: Checkout the code
+      uses: actions/checkout@master
 
     - name: Validate SQF with SQF-VM
       run: |
-        cd Vindicta.Altis
+        cd src
         New-Item .\config\user_local_config.hpp -ItemType File
-        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
+        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\src\Tests\RunTests.sqf
 
   build:
     runs-on: windows-latest
@@ -39,14 +40,12 @@ jobs:
     steps:
     - uses: actions/checkout@master
 
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-
     - name: Get Release Info
       run: |
         $latest_release = (Invoke-WebRequest https://api.github.com/repos/${{ github.repository }}/releases | ConvertFrom-Json).Get(0)
-        $major, $minor = $latest_release.tag_name.replace('v','').split('.')
+        $versionSplit = $latest_release.tag_name.replace('v','').split('.')
+        $major = $versionSplit[0]
+        $minor = $versionSplit[1]
         Set-Content -Path .\configs\majorVersion.hpp -Value $major -Force -NoNewline
         Set-Content -Path .\configs\minorVersion.hpp -Value $minor -Force -NoNewline
         $uploadurl = $latest_release.upload_url
@@ -54,15 +53,21 @@ jobs:
         Set-Content -Path .\_uploadurl -Value $uploadurl -Force -NoNewline
         Set-Content -Path .\_changelog -Value $changelog -Force -NoNewline
 
-    - name: Build
-      run: |
-        cd Vindicta-Addon
-        .\tools\buildv2.ps1 ${{ github.run_number }}
+    - name: Build Missions
+      run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
+
+    - name: Build addons
+      run: '.\tools\Builder\buildAddons.ps1 -metaFileName meta_main.cpp'
         
     - uses: actions/upload-artifact@v1
       with:
-        name: build
-        path: Vindicta-Addon/release
+        name: armaAddon
+        path: _build\addon\Vindicta
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: armaMissions
+        path: _build\missions\separatePBO
           
     - uses: actions/upload-artifact@v1
       with:
@@ -82,7 +87,12 @@ jobs:
     - name: Download build
       uses: actions/download-artifact@v1
       with:
-        name: build
+        name: armaAddon
+
+    - name: Download missions build
+      uses: actions/download-artifact@v1
+      with:
+        name: armaMissions
 
     - uses: actions/download-artifact@v1
       with:
@@ -109,25 +119,36 @@ jobs:
       uses: arma-actions/workshop-upload@v1
       with:
         appId: '107410'      # default
-        itemId: '1964186045' # Vindicta (Alpha) https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
-        contentPath: 'build/@vindicta'
-        changelog: "${{ steps.release_info.outputs.changelog }}"
+        itemId: '2185874952' # Vindicta (Alpha) new page https://steamcommunity.com/sharedfiles/filedetails/?id=2185874952
+        contentPath: 'armaAddon'
+        changelog: ""
       env:
-        STEAM_USERNAME: ${{ secrets.SECRET_0 }}
-        STEAM_PASSWORD: ${{ secrets.SECRET_1 }}
+        STEAM_USERNAME: ${{ secrets.STEAM_VIN_USER }}
+        STEAM_PASSWORD: ${{ secrets.STEAM_VIN_PW }}
 
     - name: Prepare for Release
       run: |
-        cd build
-        zip -r vindicta.zip @vindicta
+        mv armaAddon @Vindicta
+        zip -r vindicta.zip @Vindicta
+        zip -r missions.zip armaMissions
         ls
 
-    - name: Publish to GitHub Release
+    - name: Publish addon to GitHub Release
       uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.release_info.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./build/vindicta.zip
+        asset_path: vindicta.zip
         asset_name: vindicta.zip
+        asset_content_type: application/zip
+
+    - name: Publish missions to GitHub Release
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release_info.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: missions.zip
+        asset_name: missions.zip
         asset_content_type: application/zip

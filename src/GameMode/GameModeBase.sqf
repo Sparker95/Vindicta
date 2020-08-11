@@ -501,6 +501,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 					#ifdef RELEASE_BUILD
 					// Make a recursive dump of the last processed object
+					// Disabled for now, we don't use it anyway
+					/*
 					private _lastObject = GETV(_msgLoop, "lastObject");
 					if (IS_NULL_OBJECT(_lastObject)) then {
 						OOP_ERROR_0("Last processed object is null");
@@ -513,6 +515,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
 						};
 					};
+					*/
 					#endif
 					FIX_LINE_NUMBERS()
 
@@ -1300,7 +1303,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Mark city area for civ presence
 			if (_locType == LOCATION_TYPE_CITY) then {
-				CALLM1(_civPresenceMgr, "markAreaForInitialization", [_locSectorPos] + _locBorder);
+				pr _args = [[_locSectorPos] + _locBorder, _loc];
+				CALLM(_civPresenceMgr, "markAreaForInitialization", _args);
 			};
 
 			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
@@ -2318,7 +2322,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 			if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
 				pr _border = CALLM0(_loc, "getBorder");
-				CALLM1(_civPresenceMgr, "markAreaForInitialization", _border);
+				CALLM2(_civPresenceMgr, "markAreaForInitialization", _border, _loc);
 			};
 
 		} forEach T_GETV("locations");

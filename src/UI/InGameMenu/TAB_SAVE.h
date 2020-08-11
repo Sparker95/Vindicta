@@ -202,7 +202,9 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.733; 
 			w = 0.659; 
 			h = 0.112;  
-			text = "";		
-		};		
+			text = "";	
+		};
+
+
 	};
 };

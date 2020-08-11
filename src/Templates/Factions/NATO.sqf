@@ -16,7 +16,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tNATO"]; // 														Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vanilla North Atlantic Treaty Organization."]; // 			Template display description
+_array set [T_DESCRIPTION, "Standard NATO from base game."]; // 			Template display description
 _array set [T_DISPLAY_NAME, "Arma 3 NATO"]; // 											Template display name
 _array set [T_FACTION, T_FACTION_military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 								Addons required to play this template
@@ -31,14 +31,14 @@ _inf set [T_INF_SL, ["B_Soldier_SL_F"]]; // = 1
 _inf set [T_INF_TL, ["B_Soldier_TL_F"]]; // = 2
 _inf set [T_INF_officer, ["B_officer_F"]]; // = 3
 _inf set [T_INF_GL, ["B_Soldier_GL_F"]]; // = 4
-_inf set [T_INF_rifleman, ["B_Soldier_F", "B_Soldier_lite_F"]]; // = 5
-_inf set [T_INF_marksman, ["B_soldier_M_F", "B_Sharpshooter_F"]]; // = 6
+_inf set [T_INF_rifleman, ["B_Soldier_F", 3, "B_Soldier_lite_F", 1]]; // = 5
+_inf set [T_INF_marksman, ["B_soldier_M_F", 2, "B_Sharpshooter_F", 1]]; // = 6
 _inf set [T_INF_sniper, ["B_ghillie_lsh_F"]]; // = 7
 _inf set [T_INF_spotter, ["B_spotter_F"]]; // = 8
 _inf set [T_INF_exp, ["B_soldier_exp_F", "B_soldier_mine_F"]]; // = 9
 _inf set [T_INF_ammo, ["B_Soldier_A_F"]]; // = 10
 _inf set [T_INF_LAT, ["B_soldier_LAT2_F"]]; // = 11
-_inf set [T_INF_AT, ["B_soldier_LAT_F", "B_soldier_AT_F"]]; // = 12
+_inf set [T_INF_AT, ["B_soldier_LAT_F", 5, "B_soldier_AT_F", 1]]; // = 12
 _inf set [T_INF_AA, ["B_soldier_AA_F"]]; // = 13
 _inf set [T_INF_LMG, ["B_soldier_AR_F"]]; // = 14
 _inf set [T_INF_HMG, ["B_HeavyGunner_F"]]; // = 15
@@ -56,7 +56,7 @@ _inf set [T_INF_recon_rifleman, ["B_recon_F"]]; // = 25
 _inf set [T_INF_recon_medic, ["B_recon_medic_F"]]; // = 26
 _inf set [T_INF_recon_exp, ["B_recon_exp_F"]]; // = 27
 _inf set [T_INF_recon_LAT, ["B_recon_LAT_F"]]; // = 28
-_inf set [T_INF_recon_marksman, ["B_recon_M_F", "B_Recon_Sharpshooter_F"]]; // = 29
+_inf set [T_INF_recon_marksman, ["B_recon_M_F", 2, "B_Recon_Sharpshooter_F", 1]]; // = 29
 _inf set [T_INF_recon_JTAC, ["B_recon_JTAC_F"]]; // = 30
 /* Diver unit classes */
 _inf set [T_INF_diver_TL, ["B_diver_TL_F"]]; // = 31
@@ -80,7 +80,7 @@ _veh set [T_VEH_MBT, ["B_MBT_01_cannon_F", "B_MBT_01_TUSK_F", "B_AFV_Wheeled_01_
 _veh set [T_VEH_MRLS, ["B_MBT_01_mlrs_F"]]; // = 9
 _veh set [T_VEH_SPA, ["B_MBT_01_arty_F"]]; // = 10
 _veh set [T_VEH_SPAA, ["B_APC_Tracked_01_AA_F"]]; // = 11
-_veh set [T_VEH_stat_HMG_high, ["B_HMG_01_high_F"]]; // = 12 – REQUIRED
+_veh set [T_VEH_stat_HMG_high, ["I_E_HMG_01_high_F", 1,"I_HMG_02_high_F", 2]]; // = 12 – REQUIRED
 _veh set [T_VEH_stat_GMG_high, ["B_GMG_01_high_F"]]; // = 13 – Replaced by T_VEH_stat_HMG_high if not set
 _veh set [T_VEH_stat_HMG_low, ["B_HMG_01_F"]]; // = 14
 _veh set [T_VEH_stat_GMG_low, ["B_GMG_01_F"]]; // = 15

@@ -19,18 +19,28 @@ this addVest "gm_ge_pol_vest_80_wht";
 
 //	==== Weapons ====
 private _gunAndAmmo = [
-	["gm_mp2a1_blk", 	"gm_32Rnd_9x19mm_B_DM51_mp2_blk"		],	0.8,
-	["gm_mpikms72_brn", "gm_30Rnd_762x39mm_B_57N231_ak47_blk"	],	0.2
+	["gm_mp2a1_blk", 	"gm_32Rnd_9x19mm_B_DM51_mp2_blk",		false],	0.3,
+	["gm_mp5a3_blk",	"gm_30rnd_9x19mm_b_dm51_mp5a3_blk",		false],	0.2,
+	["gm_mp5a2_blk",	"gm_30rnd_9x19mm_b_dm51_mp5a3_blk",		false],	0.2,
+	["gm_p1_blk",		"gm_8Rnd_9x19mm_B_DM51_p1_blk",			true],	0.5
 ];
 
-(selectRandomWeighted _gunAndAmmo) params ["_gun", "_ammo"];
+(selectRandomWeighted _gunAndAmmo) params ["_gun", "_ammo", "_isPistol"];
 this addWeapon _gun;
+
+if(_isPistol) then {
+	this addHandgunItem _ammo;
+} else {
+	this addWeaponItem [_gun, _ammo];
+};
+
 this addPrimaryWeaponItem _ammo;
+
 for "_i" from 1 to 2 do {this addItemToVest _ammo;};
 
 this addWeapon "gm_p1_blk";
 this addHandgunItem "gm_8Rnd_9x19mm_B_DM51_p1_blk";
-for "_i" from 1 to 4 do {this addItemToVest "gm_8Rnd_9x19mm_B_DM51_p1_blk";};
+for "_i" from 1 to 2 do {this addItemToVest "gm_8Rnd_9x19mm_B_DM51_p1_blk";};
 
 //	==== Misc Items ====
 this linkItem "ItemMap"; 			// Map

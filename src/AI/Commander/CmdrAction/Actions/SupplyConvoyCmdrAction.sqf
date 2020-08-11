@@ -95,7 +95,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
 
-#ifdef DEBUG_CMDRAI
+#ifdef DEBUG_CMDRAI_ACTIONS
 		private _routeTargets = T_GETV("routeTargets");
 		for "_i" from 0 to count _routeTargets do
 		{
@@ -632,7 +632,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		switch (_type) do {
 			case ACTION_SUPPLY_TYPE_BUILDING: {
 				_cargo set [CARGO_ITEMS, [
-					["vin_build_res_0", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 25, 500 * _amount)]
+					["vin_build_res_0", CALLSM2("SupplyConvoyCmdrAction", "randomAmount", 250, 500 * _amount)]
 				]];
 			};
 			case ACTION_SUPPLY_TYPE_AMMO: {

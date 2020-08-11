@@ -79,6 +79,12 @@ if (isNil "Unit_aceSetVehicleLock_EH") then {
 
 	Unit_aceSetVehicleLock_EH = ["ace_vehicleLock_setVehicleLock", _code] call CBA_fnc_addEventHandler;
 };
+
+if (isServer) then {
+	// We use this instead of EH added to unit because this one works for non-local units too
+	addMissionEventHandler ["EntityKilled", {call Unit_fnc_EH_Killed}];
+};
+
 #endif
 FIX_LINE_NUMBERS()
 
@@ -278,26 +284,41 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	Returns: Created <AI> object
 	*/
 	METHOD(createAI)
-		params [P_THISOBJECT, P_STRING("_AIClassName")];
+		pr _AI = NULL_OBJECT;
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_STRING("_AIClassName")];
 
-		// Create an AI object of the unit
-		// Don't start the brain, because its process method will be called by
-		// its group's AI brain
-		pr _data = T_GETV("data");
+			// Create an AI object of the unit
+			// Don't start the brain, because its process method will be called by
+			// its group's AI brain
+			pr _data = T_GETV("data");
 
-		if(_data # UNIT_DATA_ID_AI != NULL_OBJECT) exitWith {
-			OOP_ERROR_0("Unit AI is already created");
+			if(_data # UNIT_DATA_ID_AI != NULL_OBJECT) exitWith {
+				OOP_ERROR_0("Unit AI is already created");
+			};
+
+			_AI = NEW(_AIClassName, [_thisObject]);
+			_data set [UNIT_DATA_ID_AI, _AI];
+
+			CALLM0(_AI, "start");
 		};
-
-		pr _AI = NEW(_AIClassName, [_thisObject]);
-		_data set [UNIT_DATA_ID_AI, _AI];
-
-		CALLM0(_AI, "start");
 
 		// Return
 		_AI
 	ENDMETHOD;
 
+	// Deletes AI on this unit
+	public METHOD(deleteAI)
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			pr _data = T_GETV("data");
+			pr _ai = _data select UNIT_DATA_ID_AI;
+			if (!IS_NULL_OBJECT(_ai)) then {
+				DELETE(_ai);
+				_data set [UNIT_DATA_ID_AI, NULL_OBJECT];
+			};
+		};
+	ENDMETHOD;
 
 
 	//                              S P A W N
@@ -684,6 +705,11 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Set variables of the object
 		if (!isNull _hO) then {
+			pr _prevUnit = GET_UNIT_FROM_OBJECT_HANDLE(_hO);
+			if (!IS_NULL_OBJECT(_prevUnit)) then {
+				OOP_ERROR_2("initObjectVariables: unit already has a unit object attached to it: %1 %2", _hO, _prevUnit);
+			};
+
 			// Variable with a reference to Unit object
 			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true]; // Global variable!
 			pr _cat = _data select UNIT_DATA_ID_CAT;
@@ -711,10 +737,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		// Reset variables of the object
 		if (!isNull _hO) then {
 			// Variable with a reference to Unit object
-			_hO setVariable [UNIT_VAR_NAME_STR, nil];
+			// Let's not erase it to be safe, armas event handlers are very fucked up in MP game
+			// and I am afraid that a case like that could erase variable on an valid player object
+			_hO setVariable [UNIT_VAR_NAME_STR, nil, true];
 			
 			// Variable with the efficiency vector of this unit
-			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
+			//_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
 		};
 	ENDMETHOD;
 
@@ -731,21 +759,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		pr _catID = _data select UNIT_DATA_ID_CAT;
 
-		// Killed
-		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
-			pr _ehid = [_hO, "Killed", {
-				params ["_unit"];
-				if(!isNil {_unit getVariable UNIT_EH_KILLED_STR}) then {
-					_unit setVariable [UNIT_EH_KILLED_STR, nil];
-					// Cannot do this due to https://feedback.bistudio.com/T150628
-					// _unit removeEventHandler ["Killed", _thisID];
-					_this call Unit_fnc_EH_Killed;
-				};
-			}] call CBA_fnc_addBISEventHandler;
-			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
-		};
-
 		// Respawned
+		/*
+		// I don't think we need it at all, do we?
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
@@ -758,6 +774,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
 		};
+		*/
 
 		// Rating (hopefully disabling the renegade system)
 		if (isNil {_hO getVariable UNIT_EH_HANDLE_RATING_STR}) then {
@@ -1164,22 +1181,23 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			} else {
 
 				// = = = = MILITARY CARGO AND VEHICLES = = = =
-				private _lootScaling = MAP_LINEAR_SET_POINT(1 - vin_diff_global, 0.2, 1, 3);
+				private _lootScaling = vin_diff_lootAmount;
 
 				pr _nInf = CALLM0(_gar, "countInfantryUnits");
 				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
 				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 				// Some number which scales the amount of items in this box
-				pr _nGuns = 1.3 * _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
+				pr __n = _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
+				pr _nGuns = 0.8 * __n;
 
 				// Modifier for cargo boxes
 				if (_catID == T_CARGO) then {
-					_nGuns = _nGuns * 3;
+					_nGuns = 6 * __n;
 				};
 
 				// Add weapons and magazines
-				pr _arr = [[T_INV_primary, _nGuns, 10], [T_INV_secondary, 0.4*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
+				pr _arr = [[T_INV_primary, 1.5*_nGuns, 10], [T_INV_secondary, 0.3*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
 				{
 					_x params ["_subcatID", "_n", "_nMagsPerGun"];
 					if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
@@ -1209,7 +1227,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					if (count (_tInv#_subcatID) > 0) then { // If there are any items in this subcategory
 
 						// Randomize _n
-						_n = round (random [0.2*_n, _n, 1.8*_n]);
+						_n = (round (random [0.2*_n, _n, 1.8*_n]));
 						pr _items = _tInv#_subcatID;
 						for "_i" from 0 to (_n-1) do {
 							_hO addItemCargoGlobal [selectRandom _items, round (1 + random 1)];
@@ -1300,11 +1318,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
 						{
 							_x params ["_className", "_itemCount"];
+							_intemCount = vin_diff_lootAmount * _itemCount;
 							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 						} forEach t_ACEMedicalItems_cargo;
 					} else {
 						// Add standard medkits
-						_hO addItemCargoGlobal ["FirstAidKit", 80];
+						_hO addItemCargoGlobal ["FirstAidKit", vin_diff_lootAmount * 80];
 					};
 
 					// Add ACE misc items
@@ -1315,6 +1334,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						pr _classNames = t_ACEMiscItems;
 						{
 							_x params ["_itemName", "_itemCount"];
+							_itemCount = _itemCount * vin_diff_lootAmount;
 							if(random 10 < 7) then {
 								_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
 							};

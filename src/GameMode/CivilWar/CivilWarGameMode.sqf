@@ -387,7 +387,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// _casualtiesRatio - value in range 0..1. Max when a certain amount of casualties was reached.
 		pr _casualtiesRatio = 0;
 		pr _casualties = T_GETV("casualties");
-		_casualtiesRatio = _casualties / 200;
+		_casualtiesRatio = _casualties / 750;
 		_casualtiesRatio = CLAMP(_casualtiesRatio, 0.0, 1.0);
 
 		// Final aggression:
@@ -671,7 +671,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		#ifdef DEBUG_SET_AGGRESSION
 		DEBUG_SET_AGGRESSION
 		#else
-		T_GETV("aggression");
+		(T_GETV("aggression") + vin_diff_aggressionBoost/100) min 1.0;
 		#endif
 		FIX_LINE_NUMBERS()
 	ENDMETHOD;

@@ -525,10 +525,17 @@ CLASS("IntelCommanderAction", "Intel")
 			};
 
 			pr _method = GETV(_intel, "method");
-			pr _categoryText = if (_method == INTEL_METHOD_INVENTORY_ITEM) then {
-				"INTEL FOUND IN TABLET"
-			} else {
-				"INTEL INTERCEPTED BY RADIO"
+			pr _categoryText = switch (_method) do {
+				case (INTEL_METHOD_INVENTORY_ITEM) : {
+					"INTEL FOUND IN TABLET"
+				};
+				case (INTEL_METHOD_RADIO) : {
+					"INTEL INTERCEPTED BY RADIO"
+				};
+				case INTEL_METHOD_CITY : {
+					"INTEL INTERCEPTED BY CITIZENS"
+				};
+				default {"INTEL INTERCEPTED";};
 			};
 			pr _text = format ["%1 %2", _actionName, _timeStr];
 			pr _args = [_categoryText, _text];

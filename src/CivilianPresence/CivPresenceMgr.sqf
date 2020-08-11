@@ -68,9 +68,9 @@ CLASS("CivPresenceMgr", "")
 
 	// Marks a specific area to be initialized during createCivPresenceObjects call
 	METHOD(markAreaForInitialization)
-		params [P_THISOBJECT, P_ARRAY("_area")];
+		params [P_THISOBJECT, P_ARRAY("_area"), P_OOP_OBJECT("_location")];
 
-		OOP_INFO_1("markAreaForInitialization: %1", _area);
+		OOP_INFO_2("markAreaForInitialization: %1, %2", _area, _location);
 		FIX_LINE_NUMBERS()
 
 		_area params ["_pos", "_ra", "_rb", "_angle", "_rectangle"];
@@ -97,7 +97,7 @@ CLASS("CivPresenceMgr", "")
 			for "_yid" from _yID to (_y2ID-1) do {
 				pr _posWorld = [LOGICAL_TO_WORLD(_xid, _cellsize), LOGICAL_TO_WORLD(_yid, _cellsize), 0];
 				if (_posWorld inArea _area) then {
-					(_gridArray#_xid) set [_yid, 1];
+					(_gridArray#_xid) set [_yid, _location];
 					_markedGrids pushBack [_xid, _yid];
 				//} else {
 				//	OOP_INFO_2("  %1 not in area %2", _posWorld, _area);
@@ -136,11 +136,12 @@ CLASS("CivPresenceMgr", "")
 			pr _columnArray = _x;
 			{
 				pr _ly = _foreachindex;	// Logical Y
-				if (_x == 1) then {
+				if (!(_x isEqualTo 0)) then { // _x has value of location at this position
 					pr _args = [
 						[LOGICAL_TO_WORLD(_lx, _cellSize), LOGICAL_TO_WORLD(_ly, _cellSize), 0],	// Pos
 						_cellSize/2,
-						_cellSize/2
+						_cellSize/2,
+						_x
 					];
 
 					pr _cp = CALLSM("CivPresence", "tryCreateInstance", _args);

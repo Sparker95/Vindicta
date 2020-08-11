@@ -190,6 +190,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		};
 
 		// Check if we are aiming a weapon at any civilian
+		/*
 		pr _co = cursorTarget;
 		if (vehicle _unit isEqualTo _unit) then {										// If we are on foot
 			if (_co getVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, false]) then {	// If target is a civilian created by civ presence
@@ -200,6 +201,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				};
 			};
 		};
+		*/
 
 		// How to auto arrange AI in player groups:
 		// If player is in a group with AI then AI must be moved to player garrison
@@ -216,6 +218,23 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 		OOP_INFO_1("NEAR LOCATIONS: %1", T_GETV("nearLocations"));
 		OOP_INFO_1("CURRENT LOCATIONS: %1", T_GETV("currentLocations"));
+
+		// Check if player is trying to fly an aircraft
+		private _veh = vehicle player;
+		if (_veh isKindOf "Air") then {
+			//pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_veh);
+			if ( /*!IS_NULL_OBJECT(_veh) &&*/ (isEngineOn _veh)) then {
+				pr _phrasesCantFly = [
+					"I don't know how to fly this, I am not a pilot.",
+					"What does this switch do? I have no idea. I can't fly this.",
+					"I really have no idea how to pilot this.",
+					"There is no way I could pilot an aircraft.",
+					"I should better switch this off, I have no idea what I am doing."
+				];
+				_veh vehicleChat (selectRandom _phrasesCantFly);
+				_veh engineOn false;
+			};
+		};
 
 		T_SETV("prevPos", getPosASL _unit);
 	ENDMETHOD;

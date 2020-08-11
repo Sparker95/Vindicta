@@ -365,7 +365,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
-								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
+								pr _progress = CALLM0(gGameModeServer, "getAggression"); // 0..1
 								pr _multiplier = 1 + 2 * _progress;
 								if (_bInVeh) then {
 									_suspicionArr pushBack [1, "In military area in a vehicle"];
@@ -1037,6 +1037,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			{},													// Code executed on every progress tick
 			{
 				REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "untieTargetServer", [cursorObject], ON_SERVER, false);
+				CALLSM2("UndercoverMonitor", "boostSuspicion", player, 2);
 			},				// Code executed on completion
 			{},													// Code executed on interrupted
 			[],													// Arguments passed to the scripts as _this select 3
