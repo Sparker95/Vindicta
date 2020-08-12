@@ -5,7 +5,7 @@ Low resolution navigation grid to estimate travel distance for commander.
 Used primarity for distance estimation during action scoring.
 */
 
-//#define DEBUG_STRATEGIC_NAV_GRID
+#define DEBUG_STRATEGIC_NAV_GRID
 
 #define _NODE_ID_LINKS      0
 #define _NODE_ID_G          1
@@ -218,7 +218,8 @@ CLASS("StrategicNavGrid", "")
         _valid;
     ENDMETHOD;
 
-    // Returns logical node position [_x, _y] nearest to _posWorld 
+    // Returns logical node position [_x, _y] nearest to _posWorld
+    // Might return invalid node position (outside of the map)
     public METHOD(getNearestNode)
         params [P_THISOBJECT, P_ARRAY("_posWorld")];
         _posWorld params ["_xWorld", "_yWorld"];
@@ -335,6 +336,80 @@ CLASS("StrategicNavGrid", "")
         _return;
 
     ENDMETHOD;
+
+
+    // Returns nearest non-water node to given world position
+    // Returns [] if it couldn't find anything
+    METHOD(findNearestGroundNode)
+        params [P_THISOBJECT, P_ARRAY("_posWorld")];
+
+        // Get nearest node as first estimate
+        pr _nearestNode = T_CALLM1("getNearestNode", _posWorld);
+
+        // Ensure that node is valid, this might be at edge of the map
+        pr _size = T_GETV("sizeNodes");
+        _nearestNode params ["_x", "_y"];
+        _nearestNode set [0, CLAMP(_x, 0, _size-1)];
+        _nearestNode set [1, CLAMP(_y, 0, _size-1)];
+
+        // Common path should be fast
+        // Check if it's not water and bail
+        pr _gridWater = T_GETV("gridWater");
+        if (!(_gridWater#(_nearestNode#0)#(_nearestNode#1))) exitWith {
+            OOP_INFO_1("Node %1 is already at ground", _nearestNode);
+            +_nearestNode;
+        };
+
+        pr _resolution = T_GETV("resolution");
+        pr _grid = T_GETV("grid");
+
+        // Array of [_distance, [_x, _y]]
+        pr _nodesToCheck = [[0, _nearestNode]];
+        // Array of [_x, _y] logical positions of nodes we have checked
+        pr _nodesChecked = [];
+        
+        pr _isNodeValid = {
+            params ["_x", "_y"];
+            pr _valid = (_x >= 0) && {_y >= 0} && {_x < _size} && {_y < _size};
+            _valid;
+        };
+
+        pr _return = [];
+        while {count _nodesToCheck > 0} do {
+            // Sort _nodesToCheck by their distance to _posWorld
+            _nodesToCheck sort ASCENDING;
+            OOP_INFO_2("Nodes to check: %1: %2", count _nodesToCheck, _nodesToCheck);
+            OOP_INFO_1("Checked nodes: %1", _nodesChecked);
+            pr _a = _nodesToCheck#0;
+            pr _node = _a#1;
+            _node params ["_x", "_y"];
+
+            // Return if this node is on the ground
+            if (! (_gridWater#(_node#0)#(_node#1)) ) exitWith {
+                _return = [_node#0, _node#1];
+                OOP_INFO_1("Found ground node: %1", _return);
+            };
+
+            // Mark this node as checked
+            _nodesToCheck deleteAt 0;
+            _nodesChecked pushBack [_node#0, _node#1];
+
+            // Expand this node - add its neighbour nodes to _nodesToCheck
+            pr _neighbors = _grid#(_node#0)#(_node#1)#_NODE_ID_LINKS;
+            {
+                if (_x call _isNodeValid) then {
+                    if (!(_x in _nodesChecked)) then {
+                        _nodesToCheck pushBack [_x distance2D _nearestNode, _x];
+                    };
+                };
+            } forEach [[_x-1, _y], [_x+1, _y], [_x, _y-1], [_x, _y+1]];
+        };
+
+        OOP_INFO_0("Failed to fine ground node");
+
+        _return;
+    ENDMETHOD;
+
 ENDCLASS;
 
 #ifndef RELEASE_BUILD
@@ -342,11 +417,18 @@ StrategicNavGrid_fnc_test = {
 
     gStrategicNavGrid = NEW("StrategicNavGrid", [500]);
 
-        pr _pos0 = [9, 11];
-        pr _pos1 = [12, 15];
-        pr _return = CALLM2(gStrategicNavGrid, "findPath", _pos0, _pos1);
-        diag_log _return;
-        diag_log "Distance:";
-        diag_log (_return #1);
+    pr _pos0 = [9, 11];
+    pr _pos1 = [12, 15];
+    pr _return = CALLM2(gStrategicNavGrid, "findPath", _pos0, _pos1);
+    diag_log _return;
+    diag_log "Distance:";
+    diag_log (_return #1);
+
+    0 spawn {
+    pr _posWorld = [3000, 6000, 0];
+    pr _nearestGroundNode = CALLM1(gStrategicNavGrid, "findNearestGroundNode", _posWorld);
+    diag_log "Nearest ground node:";
+    diag_log _nearestGroundNode;
+    };
 };
 #endif
