@@ -3103,8 +3103,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _nPlaneMax = ceil (_nPlaneSpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
 			[
 				_airGarr,
-				CLAMP(_nHeliMax, 0, _nHeliSpace) - _nHeli,
-				CLAMP(_nPlaneMax, 0, _nPlaneSpace) - _nPlane
+				(CLAMP(_nHeliMax, 0, _nHeliSpace) - _nHeli) min 1,
+				(CLAMP(_nPlaneMax, 0, _nPlaneSpace) - _nPlane) min 1
 			]
 		};
 
