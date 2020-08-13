@@ -5,7 +5,7 @@ Low resolution navigation grid to estimate travel distance for commander.
 Used primarity for distance estimation during action scoring.
 */
 
-#define DEBUG_STRATEGIC_NAV_GRID
+//#define DEBUG_STRATEGIC_NAV_GRID
 
 #define _NODE_ID_LINKS      0
 #define _NODE_ID_G          1
