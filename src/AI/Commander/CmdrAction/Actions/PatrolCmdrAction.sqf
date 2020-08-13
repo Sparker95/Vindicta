@@ -565,6 +565,8 @@ REGISTER_DEBUG_MARKER_STYLE("PatrolCmdrAction", "ColorYellow", "mil_pickup");
 
 ["PatrolCmdrAction", {
 
+	CALLSM0("AICommander", "initStrategicNavGrid");
+
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);

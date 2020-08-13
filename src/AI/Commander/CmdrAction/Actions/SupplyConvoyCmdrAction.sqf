@@ -755,6 +755,9 @@ if(isNil { GETSV("SupplyConvoyCmdrAction", "SupplyNames")}) then {
 #define TARGET_POS [1000, 2, 3]
 
 ["SupplyConvoyCmdrAction", {
+
+	CALLSM0("AICommander", "initStrategicNavGrid");
+
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
