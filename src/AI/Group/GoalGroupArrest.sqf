@@ -20,8 +20,13 @@ CLASS("GoalGroupArrest", "GoalGroup")
 
 		pr _hG = CALLM0(_group, "getGroupHandle");
 
-		if (behaviour leader _hG == "COMBAT") exitWith { 0 };
+		// Irrelevant if in combat
+		pr _leader = leader _hG;
+		if (behaviour _leader == "COMBAT") exitWith { 0 };
 		
+		// Irrelevant if in vehicle
+		if (!((vehicle _leader) isEqualTo _leader)) exitWith { 0 };
+
 		pr _suspTarget = GETV(_AI, "suspTarget");
 		if (!isNull _suspTarget && {!IS_ARRESTED_UNCONSCIOUS_DEAD(_suspTarget)}) then {
 			GETSV("GoalGroupArrest", "relevance");
