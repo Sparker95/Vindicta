@@ -13,6 +13,9 @@ Used primarity for distance estimation during action scoring.
 #define _NODE_ID_CAME_FROM  3
 #define _NODE_NEW() [[], 0, 0, []]
 
+// Distance cache size, we want to have it high to help commander with planning
+#define _CACHE_SIZE (1024*20)
+
 #define OOP_CLASS_NAME StrategicNavGrid
 CLASS("StrategicNavGrid", "")
 
@@ -40,6 +43,9 @@ CLASS("StrategicNavGrid", "")
     VARIABLE("gridF");
     VARIABLE("gridG");
     VARIABLE("gridCameFrom");
+
+    // Cache for calculated distances
+    VARIABLE("distanceCache");
 
     // Resolution - amount of meters between nodes
     METHOD(new)
@@ -180,12 +186,6 @@ CLASS("StrategicNavGrid", "")
                     };
                     #endif
                 };
-
-                #ifndef _SQF_VM
-                _fMap setVariable [str [_xl, _yl], 0];
-                _gMap setVariable [str [_xl, _yl], 0];
-                #endif
-
                 _yl = _yl + 1;
             };
             _xl = _xl + 1;
@@ -207,6 +207,10 @@ CLASS("StrategicNavGrid", "")
         T_SETV("gridF", +_fg);
         T_SETV("gridG", +_fg);
         T_SETV("gridCameFrom", _cameFrom);
+
+        // Initialize cache
+        pr _cache = NEW("CacheStringToValue", [_CACHE_SIZE]);
+        T_SETV("distanceCache", _cache);
     ENDMETHOD;
 
     // Returns true if given logical node position is within range of this grid 
@@ -229,9 +233,11 @@ CLASS("StrategicNavGrid", "")
 
     // _pos0, _pos1 - are logical positions!
     // Returns [path (array of nodes), distance (number)]
-    // On failure, returns []
+    // On failure, returns [[], -1]
     public METHOD(findPath)
         params [P_THISOBJECT, P_ARRAY("_pos0"), P_ARRAY("_pos1")];
+
+        OOP_INFO_1("findPath: %1", _this);
 
         // Bail if nodes are not valid
         if (!T_CALLM1("isNodeValid", _pos0)) exitWith {
@@ -276,9 +282,10 @@ CLASS("StrategicNavGrid", "")
         [_fScore, _pos0, [_pos0, _pos1] call _hFunc] call _gridSet;
 
         scopeName "scope0";
-        pr _return = [];
+        pr _return = [[], -1]; // Value will be returned if nothing is found
 
         while {count _openSet > 0} do {
+            OOP_INFO_1("Open set size: %1", count _openSet);
             // Select node in open set with lowest F score
             pr _openSetF = _openSet apply {
                 [_fScore#(_x#0)#(_x#1), _x];
@@ -333,6 +340,8 @@ CLASS("StrategicNavGrid", "")
             } forEach _neighbors;
         };
 
+        OOP_INFO_1("findPath: return value: %1", _return);
+
         _return;
 
     ENDMETHOD;
@@ -340,11 +349,15 @@ CLASS("StrategicNavGrid", "")
 
     // Returns nearest non-water node to given world position
     // Returns [] if it couldn't find anything
-    METHOD(findNearestGroundNode)
+    public METHOD(findNearestGroundNode)
         params [P_THISOBJECT, P_ARRAY("_posWorld")];
+
+        OOP_INFO_1("findNearestGroundNode: %1", _posWorld);
 
         // Get nearest node as first estimate
         pr _nearestNode = T_CALLM1("getNearestNode", _posWorld);
+
+        OOP_INFO_1("Nearest node: %1", _nearestNode);
 
         // Ensure that node is valid, this might be at edge of the map
         pr _size = T_GETV("sizeNodes");
@@ -405,9 +418,133 @@ CLASS("StrategicNavGrid", "")
             } forEach [[_x-1, _y], [_x+1, _y], [_x, _y-1], [_x, _y+1]];
         };
 
-        OOP_INFO_0("Failed to fine ground node");
+        if (count _return == 0) then {
+            OOP_ERROR_1("Failed to find ground node for position: %1", _posWorld);
+        };
 
         _return;
+    ENDMETHOD;
+
+    // Estimate ground travel distance between two points
+    // Returns -1 if there is no route (islands are not connected)
+    public METHOD(calculateGroundDistance)
+        params [P_THISOBJECT, P_POSITION("_posWorldFrom"), P_POSITION("_posWorldTo")];
+
+        OOP_INFO_1("calculateGroundDistance: %1", _this);
+
+        // We need these values for cache key
+        pr _posFromUnsafe = T_CALLM1("getNearestNode", _posWorldFrom);
+        pr _posToUnsafe = T_CALLM1("getNearestNode", _posWorldTo);
+
+        // Lookup result in cache
+        pr _key = format ["%1_%2", _posFromUnsafe, _posToUnsafe];
+        pr _cache = T_GETV("distanceCache");
+        pr _value = CALLM1(_cache, "getValue", _key);
+        if (!isNil "_value") exitWith {
+            OOP_INFO_1("calculateGroundDistance: return value: %1", _value);
+            _value;
+        };
+
+        // Here we get safe grid positions which are within the grid and are on ground
+        // Because path finder needs proper positions
+        pr _posFrom = T_CALLM1("findNearestGroundNode", _posWorldFrom);
+        pr _posTo = T_CALLM1("findNearestGroundNode", _posWorldTo);
+
+        if ((count _posFrom == 0) || (count _posTo == 0)) exitWith {
+            CALLM2(_cache, "addValue", _key, -1);
+            -1;
+        };
+        
+        pr _return = T_CALLM2("findPath", _posFrom, _posTo);
+        _return params ["_path", "_distance"];
+        
+        // Add value to cache
+        // Add reverse path to cache too
+        CALLM2(_cache, "addValue", _key, _distance);
+        pr _keyReverse = format ["%1_%2", _posToUnsafe, _posFromUnsafe];
+        CALLM2(_cache, "addValue", _keyReverse, _distance);
+
+        OOP_INFO_1("calculateGroundDistance: return value: %1", _distance);
+
+        _distance;
+
+    ENDMETHOD;
+
+ENDCLASS;
+
+// Cache with limited size which maps string to anything
+// Same cache is used in GarrisonModel
+#define OOP_CLASS_NAME CacheStringToValue
+CLASS("CacheStringToValue", "")
+
+    VARIABLE("cache");      // Hashmap
+    VARIABLE("allKeys");    // Array of all keys
+	VARIABLE("counter");	// Counter for all keys, we increase and overflow it at each addition to cache
+	VARIABLE("nMiss");	    // Amount of misses in the cache
+	VARIABLE("nHit");	    // Amount of hits in the cache
+    
+
+    METHOD(new)
+        params [P_THISOBJECT, P_NUMBER("_size")];
+
+        #ifdef _SQF_VM
+        pr _hm = "dummy" createVehicle [1, 2, 3];
+        #else
+        pr _hm = [false] call CBA_fnc_createNamespace;
+        #endif
+        T_SETV("cache", _hm);
+
+        T_SETV("nHit", 0);
+        T_SETV("nMiss", 0);
+        T_SETV("counter", 0);
+        pr _allKeys = [];
+        _allKeys resize _size;
+        _allkeys = _allKeys apply {""};
+        T_SETV("allKeys", _allKeys);
+    ENDMETHOD;
+
+    // Gets value from cache, returns nil if value wasn't found
+    METHOD(getValue)
+        params [P_THISOBJECT, P_STRING("_key")];
+        #ifdef RELEASE_BUILD
+        T_GETV("cache") getVariable _key;
+        #else
+        pr _value = T_GETV("cache") getVariable [_key, nil];
+        if (isNil "_value") exitWith {
+            OOP_INFO_1("Cache miss: %1", _key);
+            pr _a = T_GETV("nMiss");
+            T_SETV("nMiss", _a+1);
+            OOP_INFO_3("  nHit/nMiss/ttl: %1 / %2 / %3", T_GETV("nHit"), T_GETV("nMiss"), T_GETV("nHit") + T_GETV("nMiss"));
+            nil;
+        };
+        OOP_INFO_2("Cache hit: %1 : %2", _key, _value);
+        pr _a = T_GETV("nHit");
+        T_SETV("nHit", _a+1);
+        OOP_INFO_3("  nHit/nMiss/ttl: %1 / %2 / %3", T_GETV("nHit"), T_GETV("nMiss"), T_GETV("nHit") + T_GETV("nMiss"));
+        _value;
+        #endif
+    ENDMETHOD;
+
+    // Adds value to cache
+    // If cache exceeds size, previous values are deleted
+    METHOD(addValue)
+        CRITICAL_SECTION {
+        params [P_THISOBJECT, P_STRING("_key"), P_DYNAMIC("_value")];
+            pr _allKeys = T_GETV("allKeys");
+            pr _counter = T_GETV("counter");
+            pr _hashMap = T_GETV("cache");
+            pr _existingKey = _allKeys#_counter;
+            if (count _existingKey > 0) then { // If it's not ""
+                // There is an existing entry here, need to delete it from the cache
+				// Because we want to limit the cache size
+                _hashMap setVariable [_existingKey, nil];
+            };
+            _allKeys set [_counter, _key];
+            _hashMap setVariable [_key, _value];
+            _counter = (_counter + 1) % (count _allKeys); // Overflow over cache size
+            T_SETV("counter", _counter);
+        };
+        0; // Return 0... just in case
     ENDMETHOD;
 
 ENDCLASS;
@@ -425,10 +562,16 @@ StrategicNavGrid_fnc_test = {
     diag_log (_return #1);
 
     0 spawn {
-    pr _posWorld = [3000, 6000, 0];
-    pr _nearestGroundNode = CALLM1(gStrategicNavGrid, "findNearestGroundNode", _posWorld);
-    diag_log "Nearest ground node:";
-    diag_log _nearestGroundNode;
+        pr _posWorld = [3000, 6000, 0];
+        pr _nearestGroundNode = CALLM1(gStrategicNavGrid, "findNearestGroundNode", _posWorld);
+        diag_log "Nearest ground node:";
+        diag_log _nearestGroundNode;
+
+        pr _posWorld0 = [3000, 6000, 0];
+        pr _posWorld1 = [7000, 11000, 0];
+        _calcGroundDistanceResult = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _posWorld0, _posWorld1);
+        diag_log "_calcGroundDistanceResult:";
+        diag_log _calcGroundDistanceResult;
     };
 };
 #endif
