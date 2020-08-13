@@ -2595,7 +2595,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Determine list of cities to patrol, excluding those in enemy hands, or already being patrolled
 		private _citiesToPatrol = CALLM(_worldNow, "getLocations", [[LOCATION_TYPE_CITY]]) select {
 			private _pos = GETV(_x, "pos");
-			CALLM2(_worldNow, "getDamageScore", _pos, 1000) < 0
+			// Damage score is negative if we don't want to attack it any more
+			CALLM2(_worldNow, "getDamageScore", _pos, 1000) > 0
 		};
 		if(count _citiesToPatrol == 0) exitWith { [] };
 
