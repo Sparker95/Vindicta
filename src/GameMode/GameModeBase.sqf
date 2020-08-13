@@ -1081,6 +1081,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD(initCommanders)
 		params [P_THISOBJECT];
 
+		// Initialize nav grid for commanders
+		CALLSM0("AICommander", "initStrategicNavGrid");
+
 		// Independent
 		private _cmdr = NEW("Commander", []); // all commanders are equal
 		private _args = [_cmdr, INDEPENDENT, gMessageLoopCommanderInd];
@@ -2341,6 +2344,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("savedMarkers", []);
 
 		// Load commanders
+		CALLSM0("AICommander", "initStrategicNavGrid");
 		private _toLoad = 3;
 		{
 			private _ai = T_GETV(_x);

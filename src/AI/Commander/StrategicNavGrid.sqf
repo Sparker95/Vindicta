@@ -53,6 +53,11 @@ CLASS("StrategicNavGrid", "")
 
         OOP_INFO_1("NEW %1", _this);
 
+        // Don't do anything in tests
+        #ifdef _SQF_VM
+        if (true) exitWith {};
+        #endif
+
         T_SETV("resolution", _resolution);
 
         pr _ws = WORLD_SIZE;
@@ -285,7 +290,7 @@ CLASS("StrategicNavGrid", "")
         pr _return = [[], -1]; // Value will be returned if nothing is found
 
         while {count _openSet > 0} do {
-            OOP_INFO_1("Open set size: %1", count _openSet);
+            //OOP_INFO_1("Open set size: %1", count _openSet);
             // Select node in open set with lowest F score
             pr _openSetF = _openSet apply {
                 [_fScore#(_x#0)#(_x#1), _x];
@@ -431,6 +436,11 @@ CLASS("StrategicNavGrid", "")
         params [P_THISOBJECT, P_POSITION("_posWorldFrom"), P_POSITION("_posWorldTo")];
 
         OOP_INFO_1("calculateGroundDistance: %1", _this);
+
+        // Bypass in tests
+        #ifdef _SQF_VM
+        if (true) exitWith { _posWorldFrom distance _posWorldTo };
+        #endif
 
         // We need these values for cache key
         pr _posFromUnsafe = T_CALLM1("getNearestNode", _posWorldFrom);
