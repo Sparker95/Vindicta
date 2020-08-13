@@ -45,7 +45,8 @@ if ($verMinor.Count -gt 1) {
     "ERROR: minirVersion.hpp countains a new line"
     exit 100
 }
-$verPatch | Out-File -FilePath "_build\missions\buildVersion.hpp" -NoNewline -Encoding UTF8
+# VerPatch is wrapped in quotes because we can put a string into buildVersion, although typically it is a number
+"`"$verPatch`"" | Out-File -FilePath "_build\missions\buildVersion.hpp" -NoNewline -Encoding UTF8
 
 # Generate common strings
 $verFullDots = "$verMajor.$verMinor.$verPatch"
@@ -125,7 +126,7 @@ $sReadme += "class Missions`n{`n"
 for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     $mapName = $mapNames[$i]
     $missionFolder = $missionFolders[$i]
-    $briefingNameMap = "$($config.displayName) $mapName $verMajor.$verMinor.$verPatch "
+    $briefingNameMap = "$($config.displayName) $mapName $verMajor.$verMinor.$verPatch"
     $className = "$($config.simpleName)_$mapName".toLower()
     $missionsMissionFolder = "$($config.simpleName)_$mapname.$mapName".toLower()
     $directory = "$combinedFolderName\$className.$mapName".toLower()
