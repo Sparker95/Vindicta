@@ -1972,7 +1972,7 @@ switch _mode do {
     case "buttonInvToJNA": {
         //_display = _this select 0;
         pr _object = UINamespace getVariable "jn_object";
-		[_object,_object] call jn_fnc_arsenal_cargoToArsenal;
+		[_object,_object] remoteExecCall ["jn_fnc_arsenal_cargoToArsenal", 2];
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////

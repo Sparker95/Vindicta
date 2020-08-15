@@ -248,7 +248,7 @@ if(hasInterface)then{
 				if(_object_selected getVariable ["jna_init", false] && _object_selected != _object) then {
 					[_object_selected,_object] call jn_fnc_arsenal_arsenalToArsenal;
 				} else {
-					[_object_selected,_object] call jn_fnc_arsenal_cargoToArsenal;
+					[_object_selected,_object] remoteExecCall ["jn_fnc_arsenal_cargoToArsenal", 2];
 
 					// create hint about empty crates
 					if !(isNil "g_BuildUI_garbageObjects") then {
