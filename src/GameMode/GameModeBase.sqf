@@ -2018,6 +2018,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					ENABLE_SIMULATION_GLOBAL(_x, true);
 				} forEach ((allUnits - HUMAN_PLAYERS + ALL_VEHICLES) select { _x getVariable ["vin_simWasEnabled", false] });
 
+				// Make sure units are unsuspended
+				{
+					ENABLE_SIMULATION_GLOBAL(_x, true);
+				} forEach allUnits;
+
 				T_CALLM0("initDynamicSimulation");
 			};
 
