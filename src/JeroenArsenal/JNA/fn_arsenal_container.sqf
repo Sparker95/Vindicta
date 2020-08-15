@@ -162,7 +162,7 @@ switch _mode do {
 			case IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON;
 			case IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON;
 			case IDC_RSCDISPLAYARSENAL_TAB_HANDGUN:		{configfile >> "CfgWeapons" >> _item >> "WeaponSlotsInfo" >> "mass"};
-			case IDC_RSCDISPLAYARSENAL_TAB_BINOCULARS:	{configFile >> "CfgWeapons" >> _item >> "WeaponSlotsInfo" >> "mass"}
+			case IDC_RSCDISPLAYARSENAL_TAB_BINOCULARS:	{configFile >> "CfgWeapons" >> _item >> "WeaponSlotsInfo" >> "mass"};
 			default										{ configfile >> "cfgweapons" 	>> _item >> "ItemInfo" >> "mass" };
 		};
 
