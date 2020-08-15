@@ -269,8 +269,13 @@ CLASS("VirtualRoute", "")
 					private _current = _fullPath select _i;
 					if(count ([gps_allCrossRoadsWithWeight, str _current] call misc_fnc_hashTable_find) > 1) then
 					{
-						_waypoints pushBack (__GET_POS(_fullPath select floor((_i + _last_junction)/2)));
-						_last_junction = _i;
+						pr _road = _fullPath select floor((_i + _last_junction)/2);
+						pr _roadPosATL = getPosATL _road;
+						// Ignore positions above ground
+						if (_roadPosATL#2 < 0.25) then {
+							_waypoints pushBack _roadPosATL;
+							_last_junction = _i;
+						};
 					};
 				};
 				_waypoints pushBack __GET_POS(_fullPath select (count _fullPath - 1));
