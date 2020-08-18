@@ -25,7 +25,7 @@ CLASS("Phase1CmdrStrategy", "CmdrStrategy")
 		T_SETV("takeLocRoadBlockCoeff", 			2);		// Take enemy roadblocks
 
 		T_SETV("takeLocCityPriority", 				-1);	// Take cities with high enemy activity only
-		T_SETV("takeLocCityCoeff", 					0.005);	// Allow cities with activity to be taken
+		T_SETV("takeLocCityCoeff", 					0.01);	// Allow cities with activity to be taken
 
 		T_SETV("constructLocRoadblockPriority", 	0);
 		T_SETV("constructLocRoadblockCoeff", 		0);

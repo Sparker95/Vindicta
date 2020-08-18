@@ -705,6 +705,11 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 		// Set variables of the object
 		if (!isNull _hO) then {
+			pr _prevUnit = GET_UNIT_FROM_OBJECT_HANDLE(_hO);
+			if (!IS_NULL_OBJECT(_prevUnit)) then {
+				OOP_ERROR_2("initObjectVariables: unit already has a unit object attached to it: %1 %2", _hO, _prevUnit);
+			};
+
 			// Variable with a reference to Unit object
 			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true]; // Global variable!
 			pr _cat = _data select UNIT_DATA_ID_CAT;
@@ -732,10 +737,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		// Reset variables of the object
 		if (!isNull _hO) then {
 			// Variable with a reference to Unit object
-			_hO setVariable [UNIT_VAR_NAME_STR, nil];
+			// Let's not erase it to be safe, armas event handlers are very fucked up in MP game
+			// and I am afraid that a case like that could erase variable on an valid player object
+			_hO setVariable [UNIT_VAR_NAME_STR, nil, true];
 			
 			// Variable with the efficiency vector of this unit
-			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
+			//_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
 		};
 	ENDMETHOD;
 
@@ -753,6 +760,8 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _catID = _data select UNIT_DATA_ID_CAT;
 
 		// Respawned
+		/*
+		// I don't think we need it at all, do we?
 		if (isNil {_hO getVariable UNIT_EH_RESPAWN_STR}) then {
 			pr _ehid = [_hO, "Respawn", {
 				params ["_unit"];
@@ -765,6 +774,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			}] call CBA_fnc_addBISEventHandler;
 			_hO setVariable [UNIT_EH_RESPAWN_STR, _ehid];
 		};
+		*/
 
 		// Rating (hopefully disabling the renegade system)
 		if (isNil {_hO getVariable UNIT_EH_HANDLE_RATING_STR}) then {
@@ -1178,15 +1188,16 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
 				// Some number which scales the amount of items in this box
-				pr _nGuns = 1.3 * _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
+				pr __n = _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
+				pr _nGuns = 0.8 * __n;
 
 				// Modifier for cargo boxes
 				if (_catID == T_CARGO) then {
-					_nGuns = _nGuns * 3;
+					_nGuns = 6 * __n;
 				};
 
 				// Add weapons and magazines
-				pr _arr = [[T_INV_primary, _nGuns, 10], [T_INV_secondary, 0.4*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
+				pr _arr = [[T_INV_primary, 1.5*_nGuns, 10], [T_INV_secondary, 0.3*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
 				{
 					_x params ["_subcatID", "_n", "_nMagsPerGun"];
 					if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory

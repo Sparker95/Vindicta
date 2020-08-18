@@ -44,7 +44,7 @@ jobs:
       uses: actions/checkout@master
 
     - name: Build Missions
-      run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}'
+      run: '.\tools\Builder\buildMissions.ps1 -verPatch ${{ github.run_number }}_DEV'
 
     - name: Build addons
       run: '.\tools\Builder\buildAddons.ps1 -metaFileName meta_dev.cpp'

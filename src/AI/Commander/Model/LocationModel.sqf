@@ -92,6 +92,7 @@ CLASS("LocationModel", "ModelBase")
 		SETV(_copy, "radius", T_GETV("radius"));
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		SETV(_copy, "sideCreated", T_GETV("sideCreated"));
+		SETV(_copy, "influence", T_GETV("influence"));
 		_copy
 	ENDMETHOD;
 

@@ -183,6 +183,32 @@ CLASS("AICommander", "AI")
 		T_SETV("planPhase", 0);
 	ENDMETHOD;
 
+	// Initializes strategic nav grid
+	// It is used by all commanders, so we create it with a static function
+	STATIC_METHOD(initStrategicNavGrid)
+		params [P_THISCLASS];
+
+		// You can override these values for specific map
+		#ifdef _SQF_VM
+		pr _worldName = "altis";
+		#else
+		pr _worldName = toLower worldName;
+		#endif
+		pr _resolution = switch (_worldName) do {
+			case "altis": { 500 };
+			case "malden": { 500 };
+			case "tanoa": { 500 };
+			default {
+				pr _value = WORLD_SIZE / 25;
+				_value = 100 * (ceil (_resolution / 100));
+				_value;
+			};
+		};
+
+		gStrategicNavGrid = NEW("StrategicNavGrid", [_resolution]);
+	ENDMETHOD;
+	
+
 /*
 88888888ba   88888888ba     ,ad8888ba,      ,ad8888ba,   88888888888  ad88888ba    ad88888ba   
 88      "8b  88      "8b   d8"'    `"8b    d8"'    `"8b  88          d8"     "8b  d8"     "8b  
@@ -2121,6 +2147,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		private _side = T_GETV("side");
 
+		// Limit amount of concurrent actions
+		private _activeActions = T_GETV("activeActions");
+		pr _count = {GET_OBJECT_CLASS(_x) == "QRFCmdrAction"} count _activeActions;
+		if (_count >= CMDR_MAX_ATTACK_ACTIONS) exitWith {[]};
+
 		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
 			(GETV(_x, "side") == _side) and
@@ -2564,7 +2595,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Determine list of cities to patrol, excluding those in enemy hands, or already being patrolled
 		private _citiesToPatrol = CALLM(_worldNow, "getLocations", [[LOCATION_TYPE_CITY]]) select {
 			private _pos = GETV(_x, "pos");
-			CALLM2(_worldNow, "getDamageScore", _pos, 1000) < 0
+			// Damage score is negative if we don't want to attack it any more
+			CALLM2(_worldNow, "getDamageScore", _pos, 1000) > 0
 		};
 		if(count _citiesToPatrol == 0) exitWith { [] };
 
@@ -3027,7 +3059,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					_loc,
 					_generalGarrisons # 0,
 					CALLSM1("Location", "getCapacityInfForType", LOCATION_TYPE_AIRPORT) - _nInf,
-					_nVehMax - _nVeh
+					(_nVehMax - _nVeh) min CMDR_MAX_GROUND_VEH_EACH_EXTERNAL_REINFORCEMENT
 				]
 			} else {
 				[]
@@ -3072,8 +3104,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _nPlaneMax = ceil (_nPlaneSpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
 			[
 				_airGarr,
-				CLAMP(_nHeliMax, 0, _nHeliSpace) - _nHeli,
-				CLAMP(_nPlaneMax, 0, _nPlaneSpace) - _nPlane
+				(CLAMP(_nHeliMax, 0, _nHeliSpace) - _nHeli) min 1,
+				(CLAMP(_nPlaneMax, 0, _nPlaneSpace) - _nPlane) min 1
 			]
 		};
 

@@ -134,11 +134,14 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _payloadWhitelistMask = T_comp_infantry_mask;	// Take only infantry as an attacking force
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
-		#ifndef _SQF_VM
-		pr _dist = _tgtLocPos distance2D _srcGarrPos;
-		#else
-		pr _dist = _tgtLocPos distance _srcGarrPos;
-		#endif
+
+		pr _dist = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _srcGarrPos, _tgtLocPos);
+
+		if (_dist == -1) exitWith {
+			OOP_DEBUG_0("Destination is unreachable over ground");
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
 		if ( _dist > TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags append [	SPLIT_VALIDATE_TRANSPORT,		// Make sure we can transport ourselves
 										// Also allocate a minimum amount of transport as an external requirement, not only for ourselves but for the future
@@ -208,7 +211,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 #ifndef RELEASE_BUILD
 		private _delay = random 2;
 #else
-		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + (random 15 + 30);
+		private _delay = 75 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + (random 30 + 30);
 #endif
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
@@ -312,6 +315,9 @@ REGISTER_DEBUG_MARKER_STYLE("TakeLocationCmdrAction", "ColorBlue", "mil_flag");
 }] call test_AddTest;
 
 ["TakeLocationCmdrAction.save and load", {
+
+	CALLSM0("AICommander", "initStrategicNavGrid");
+
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);

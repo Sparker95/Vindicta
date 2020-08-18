@@ -82,10 +82,10 @@ class BuildObjects
 			displayName = "Storage";
 
 			// Note that we have increased capacity of these boxes through the addon 
-			__BUILD_OBJECT_CLASS_CAT(CatStorage,Box_FIA_Support_F,								40, 3, 2);
-			__BUILD_OBJECT_CLASS_CAT(CatStorage,Box_Syndicate_Ammo_F,							20, 3, 1);
-			__BUILD_OBJECT_CLASS_CAT(CatStorage,I_supplyCrate_F,								40, 3, 2);
-			__BUILD_OBJECT_CLASS_CAT(CatStorage,B_CargoNet_01_ammo_F,							80, 3, 3);
+			__BUILD_OBJECT_CLASS_CAT(CatStorage,Box_FIA_Support_F,								20, 3, 2);
+			//__BUILD_OBJECT_CLASS_CAT(CatStorage,Box_Syndicate_Ammo_F,							20, 3, 1); // Too powerful
+			__BUILD_OBJECT_CLASS_CAT(CatStorage,I_supplyCrate_F,								20, 3, 2);
+			__BUILD_OBJECT_CLASS_CAT(CatStorage,B_CargoNet_01_ammo_F,							20, 3, 3);
 		};
 
 		class CatCamo {

@@ -1566,7 +1566,7 @@ switch _mode do {
                     [_object, _index, _oldItem] call jn_fnc_arsenal_addItem;
 
                     //add new weapon
-                    if (_item != "") then {
+                    if ((_item != "") && (_amount > 0)) then { // Added (_amount > 0) to prevent duplication of ace launchers
                         //give player new weapon
                         [player,_item,0] call bis_fnc_addweapon;
                         [_object, _index, _item]call jn_fnc_arsenal_removeItem;
@@ -1972,7 +1972,7 @@ switch _mode do {
     case "buttonInvToJNA": {
         //_display = _this select 0;
         pr _object = UINamespace getVariable "jn_object";
-		[_object,_object] call jn_fnc_arsenal_cargoToArsenal;
+		[_object,_object] remoteExecCall ["jn_fnc_arsenal_cargoToArsenal", 2];
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////

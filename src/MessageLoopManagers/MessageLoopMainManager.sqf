@@ -296,9 +296,18 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	public METHOD(finishPlayerSpawn)
 		params [P_THISOBJECT, P_OBJECT("_playerObj"), P_SIDE("_playerSide"), P_ARRAY("_respawnPos")];
 		
+		diag_log format ["finishPlayerSpawn: %1", _this];
+
+		pr _prevUnit = GET_UNIT_FROM_OBJECT_HANDLE(_playerObj);
+		if (!IS_NULL_OBJECT(_prevUnit)) then {
+			OOP_ERROR_1("finishPlayerSpawn: player object already has a unit: %1", _prevUnit);
+		};
+
 		// Create a new Unit and attach it to player
 		pr _args = [[], T_INF, T_INF_rifleman, -1, "", _playerObj];
 		pr _unit = NEW("Unit", _args);
+
+		diag_log format ["  Created unit for player: %1, %2", _unit, GET_UNIT_FROM_OBJECT_HANDLE(_playerObj)];
 
 		// Add player's unit to the global garrison
 		pr _gar = CALLSM1("GameModeBase", "getPlayerGarrisonForSide", _playerSide);

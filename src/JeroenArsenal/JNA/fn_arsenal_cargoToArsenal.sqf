@@ -1,5 +1,11 @@
 #include "defineCommon.inc"
 
+// Must be executed on the server to prevent all the duplication exploits!
+
+if (!isServer) exitWith {
+	diag_log "arsenal_cargoToArsenal: error: must be executed on the server";
+};
+
 params["_objectFrom","_objectTo"];
 
 pr _array = _objectFrom call jn_fnc_arsenal_cargoToArray;
@@ -18,4 +24,4 @@ clearbackpackCargoGlobal _objectFrom;
 
 OOP_INFO_1("Adding array of items: %1", _array);
 
-[_objectTo,_array] remoteExec ["jn_fnc_arsenal_arrayToArsenal",2];
+[_objectTo,_array] call jn_fnc_arsenal_arrayToArsenal;

@@ -169,11 +169,11 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW_EXT, SPLIT_VALIDATE_CREW, SPLIT_VALIDATE_CREW_EXT, SPLIT_VALIDATE_TRANSPORT];
 		private _payloadWhitelistMask = T_comp_ground_or_infantry_mask;	// Take only inf or ground vehicles as an attacking force
 		// todo add other transport types?
-		#ifndef _SQF_VM
-		pr _dist = _tgtLocPos distance2D _srcGarrPos;
-		#else
-		pr _dist = _tgtLocPos distance _srcGarrPos;
-		#endif
+		pr _dist = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _tgtLocPos, _srcGarrPos);
+		if (_dist == -1) exitWith {
+			OOP_DEBUG_0("Destination is unreachable over ground");
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
 
 		_enemyEff set [T_EFF_crew, EFF_GARRISON_MIN_EFF#T_EFF_crew];	// Ensure minimal amount of crew (infantry)
 
@@ -241,7 +241,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 #ifndef RELEASE_BUILD
 		private _delay = random 2;
 #else
-		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + (random 15 + 30);
+		private _delay = 75 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + (random 30 + 30);
 #endif
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
@@ -409,6 +409,8 @@ REGISTER_DEBUG_MARKER_STYLE("ConstructLocationCmdrAction", "ColorBrown", "loc_Ru
 
 ["ConstructLocationCmdrAction", {
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
+
+	CALLSM0("AICommander", "initStrategicNavGrid");
 
 	// Init the activity grid
 	// We need it above zero to generate an action

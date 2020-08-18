@@ -501,6 +501,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 					#ifdef RELEASE_BUILD
 					// Make a recursive dump of the last processed object
+					// Disabled for now, we don't use it anyway
+					/*
 					private _lastObject = GETV(_msgLoop, "lastObject");
 					if (IS_NULL_OBJECT(_lastObject)) then {
 						OOP_ERROR_0("Last processed object is null");
@@ -513,6 +515,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
 						};
 					};
+					*/
 					#endif
 					FIX_LINE_NUMBERS()
 
@@ -1078,6 +1081,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD(initCommanders)
 		params [P_THISOBJECT];
 
+		// Initialize nav grid for commanders
+		CALLSM0("AICommander", "initStrategicNavGrid");
+
 		// Independent
 		private _cmdr = NEW("Commander", []); // all commanders are equal
 		private _args = [_cmdr, INDEPENDENT, gMessageLoopCommanderInd];
@@ -1242,74 +1248,77 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
 
 			// Create a new location
-			private _args = [_locSectorPos, CIVILIAN]; // Location created by noone
-			private _loc = NEW_PUBLIC("Location", _args);
-			CALLM1(_loc, "setName", _locName);
-			CALLM1(_loc, "setType", _locType);
-			CALLM1(_loc, "setBorder", _locBorder);
-			CALLM0(_loc, "findAllObjects");
+			if (_locType != LOCATION_TYPE_ROADBLOCK) then {
+				private _args = [_locSectorPos, CIVILIAN]; // Location created by noone
+				private _loc = NEW_PUBLIC("Location", _args);
+				CALLM1(_loc, "setName", _locName);
+				CALLM1(_loc, "setType", _locType);
+				CALLM1(_loc, "setBorder", _locBorder);
+				CALLM0(_loc, "findAllObjects");
 
-			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY) then {
-				pr _chancePolice = 0.4;
-				if (CALLM0(_loc, "getCapacityCiv") > 1000) then {
-					_chancePolice = 0.7;
-				};
+				// Create police stations in cities
+				if (_locType == LOCATION_TYPE_CITY) then {
+					pr _chancePolice = 0.4;
+					if (CALLM0(_loc, "getCapacityCiv") > 1000) then {
+						_chancePolice = 0.7;
+					};
 
-				if (random 1 < _chancePolice) then {
-					// TODO: Add some visual/designs to this
-					private _posPolice = +GETV(_loc, "pos");
-					_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
-					// Find first building which is one of the police building types
-					private _possiblePoliceBuildings = (_posPolice nearObjects 200) select { _x isKindOf "House" } select { typeOf _x in location_bt_police };
+					if (random 1 < _chancePolice) then {
+						// TODO: Add some visual/designs to this
+						private _posPolice = +GETV(_loc, "pos");
+						_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
+						// Find first building which is one of the police building types
+						private _possiblePoliceBuildings = (_posPolice nearObjects 200) select { _x isKindOf "House" } select { typeOf _x in location_bt_police };
 
-					if ((count _possiblePoliceBuildings) > 0) then {
-						private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
-						private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
-						private _policeStation = NEW_PUBLIC("Location", _args);
-						CALLM1(_policeStation, "setBorderCircle", 10);
-						CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
-						CALLM0(_policeStation, "addSpawnPosFromBuildings");
-						CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
-						CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
+						if ((count _possiblePoliceBuildings) > 0) then {
+							private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
+							private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
+							private _policeStation = NEW_PUBLIC("Location", _args);
+							CALLM1(_policeStation, "setBorderCircle", 10);
+							CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
+							CALLM0(_policeStation, "addSpawnPosFromBuildings");
+							CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
+							CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
 
-						// TODO: Get city size or building count and scale police capacity from that ?
-						CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));
-						CALLM(_loc, "addChild", [_policeStation]);
-						SETV(_policeStation, "useParentPatrolWaypoints", true);
-						// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
+							// TODO: Get city size or building count and scale police capacity from that ?
+							CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));
+							CALLM(_loc, "addChild", [_policeStation]);
+							SETV(_policeStation, "useParentPatrolWaypoints", true);
+							// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
 
-						// Decorate the police station building
-						// todo maybe move it to another place?
-						private _type = typeOf _policeStationBuilding;
-						private _index = location_decorations_police findIf {_type in (_x#0)};
-						if (_index != -1) then {
-							private _arrayExport = location_decorations_police#_index#1;
-							{
-								_x params ["_offset", "_vDirAndUp"];
-								private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
-								_texObj setObjectTextureGlobal [0, "z\vindicta\addons\ui\pictures\policeSign.paa"];
-								_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
-								_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
-								_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));
-							} forEach _arrayExport;
+							// Decorate the police station building
+							// todo maybe move it to another place?
+							private _type = typeOf _policeStationBuilding;
+							private _index = location_decorations_police findIf {_type in (_x#0)};
+							if (_index != -1) then {
+								private _arrayExport = location_decorations_police#_index#1;
+								{
+									_x params ["_offset", "_vDirAndUp"];
+									private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
+									_texObj setObjectTextureGlobal [0, "z\vindicta\addons\ui\pictures\policeSign.paa"];
+									_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
+									_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
+									_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));
+								} forEach _arrayExport;
+							};
 						};
 					};
 				};
-			};
 
-			// Mark city area for civ presence
-			if (_locType == LOCATION_TYPE_CITY) then {
-				pr _args = [[_locSectorPos] + _locBorder, _loc];
-				CALLM(_civPresenceMgr, "markAreaForInitialization", _args);
-			};
+				// Mark city area for civ presence
+				if (_locType == LOCATION_TYPE_CITY) then {
+					pr _args = [[_locSectorPos] + _locBorder, _loc];
+					CALLM(_civPresenceMgr, "markAreaForInitialization", _args);
+				};
 
-			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
-				_predefinedRoadblockPositions pushBack _locSectorPos;
-			} else {
 				if(_locType in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST, LOCATION_TYPE_AIRPORT, LOCATION_TYPE_CITY]) then {
 					_locationsForRoadblocks pushBack [_locSectorPos, _side];
 				};
+			};
+
+			// We don't create roadblocks, we just mark their position for future placement
+			if (_locType == LOCATION_TYPE_ROADBLOCK) then {
+				_predefinedRoadblockPositions pushBack _locSectorPos;
 			};
 
 			#ifdef PARTIAL_MAP_POPULATION
@@ -2009,6 +2018,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					ENABLE_SIMULATION_GLOBAL(_x, true);
 				} forEach ((allUnits - HUMAN_PLAYERS + ALL_VEHICLES) select { _x getVariable ["vin_simWasEnabled", false] });
 
+				// Make sure units are unsuspended
+				{
+					ENABLE_SIMULATION_GLOBAL(_x, true);
+				} forEach allUnits;
+
 				T_CALLM0("initDynamicSimulation");
 			};
 
@@ -2338,6 +2352,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("savedMarkers", []);
 
 		// Load commanders
+		CALLSM0("AICommander", "initStrategicNavGrid");
 		private _toLoad = 3;
 		{
 			private _ai = T_GETV(_x);

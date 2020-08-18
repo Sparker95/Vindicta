@@ -163,7 +163,23 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
-		private _dist = _tgtClusterPos DISTANCE_2D _srcGarrPos;
+		private _dist = switch (_srcType) do {
+			// Air counterattack doesn't care about terrain
+			case GARRISON_TYPE_AIR: {
+				_tgtClusterPos DISTANCE_2D _srcGarrPos;
+			};
+
+			// Ground counterattack must calculate distance from simplified terrain grid
+			case GARRISON_TYPE_GENERAL: {
+				private _distanceOverGround = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _srcGarrPos, _tgtClusterPos);
+				_distanceOverGround;
+			};
+		};
+
+		if (_dist == -1) exitWith {
+			OOP_DEBUG_0("Destination is unreachable over ground");
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
 
 		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
@@ -369,6 +385,8 @@ REGISTER_DEBUG_MARKER_STYLE("QRFCmdrAction", "ColorRed", "mil_destroy");
 #define TARGET_POS [1000, 2, 3]
 
 ["QRFCmdrAction", {
+	CALLSM0("AICommander", "initStrategicNavGrid");
+	
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);

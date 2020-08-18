@@ -56,11 +56,11 @@ class CfgVehicles {
 		};
 	};
 
-	class Vindicta_LocationWaypoint: Module_F
+	class Vindicta_BridgeConnection: Module_F
 	{
 		scope = 2;
 		vehicleClass = "Modules";
-		displayName = "Location Waypoint";
+		displayName = "Bridge Connection";
 		category = "Vindicta";
 
 		class Units;
@@ -69,7 +69,7 @@ class CfgVehicles {
 		{
 			class Units: Units
 			{
-				property = "Vindicta_LocationWaypoint";
+				property = "Vindicta_BridgeConnection";
 			};
 		};
 	};
