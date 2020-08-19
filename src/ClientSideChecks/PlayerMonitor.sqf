@@ -233,6 +233,20 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				];
 				_veh vehicleChat (selectRandom _phrasesCantFly);
 				_veh engineOn false;
+
+				private _posATL = getPosATL _veh;
+				if ((speed _veh > 40) || ((_posATL#2) > 20)) then {
+					if (random 10 < 2) then {
+						_veh vehicleChat "Damn, I should have stayed on the ground!";
+						_veh setHitPointDamage ["hitvrotor", 1, true];
+						_hits = (getAllHitPointsDamage _veh) select 0;
+						{
+							if ("engine" in _x) then {
+								_veh setHitPointDamage [_x, 1, true];
+							};
+						} forEach _hits;
+					};
+				};
 			};
 		};
 

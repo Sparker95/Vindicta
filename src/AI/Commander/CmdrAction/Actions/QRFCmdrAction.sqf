@@ -187,6 +187,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		};
 
 		// Try to allocate units
+		private _allocArgs = [];
 		private _allocResult = switch _srcType do {
 #ifndef DEBUG_AIR_QRF
 			case GARRISON_TYPE_GENERAL: {
@@ -194,10 +195,10 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
 				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 				private _transportBlacklistMask = [];
-				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+				_allocArgs = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask];
-				CALLSM("GarrisonModel", "allocateUnits", _args)
+				CALLSM("GarrisonModel", "allocateUnits", _allocArgs)
 			};
 #endif
 			FIX_LINE_NUMBERS()
@@ -206,17 +207,17 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
 				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 				private _transportBlacklistMask = [];
-				private _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+				_allocArgs = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask];
-				CALLSM("GarrisonModel", "allocateUnits", _args)
+				CALLSM("GarrisonModel", "allocateUnits", _allocArgs)
 			};
 			default { [] };
 		};
 
 		// Bail if we have failed to allocate resources
 		if (count _allocResult == 0) exitWith {
-			// OOP_DEBUG_MSG("Failed to allocate resources: %1", [_args]);
+			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_allocArgs]);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
