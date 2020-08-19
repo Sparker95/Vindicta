@@ -200,7 +200,7 @@ CLASS("AICommander", "AI")
 			case "tanoa": { 500 };
 			default {
 				pr _value = WORLD_SIZE / 25;
-				_value = 100 * (ceil (_resolution / 100));
+				_value = 100 * (ceil (_value / 100));
 				_value;
 			};
 		};
