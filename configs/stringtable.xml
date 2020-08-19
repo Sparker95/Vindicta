@@ -7,36 +7,42 @@
 				<German>Auswählen</German>
 				<Polish>Wybierz</Polish>
 				<Czech>Vybrat</Czech>
+				<French>Sélectionner</French>
 			</Key>
 			<Key ID="STR_JNC_ACT_CANCEL">
 				<Original>Cancel</Original>
 				<German>Abbrechen</German>
 				<Polish>Anuluj</Polish>
 				<Czech>zrušit</Czech>
+				<French>Annuler</French>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_HINT">
 				<Original>Select an object</Original>
 				<German>Wähle ein Objekt aus</German>
 				<Polish>Wybierz obiekt</Polish>
 				<Czech>Vyberte objekt</Czech>
+				<French>Sélectionnez un objet</French>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_NO_OBJECT">
 				<Original>Not looking at anything</Original>
 				<German>Nichts ausgewählt</German>
 				<Polish>Na nic nie patrzysz</Polish>
 				<Czech>zrušit výběr</Czech>
+				<French>Ne regarde rien</French>
 			</Key>
 			<Key ID="STR_JNC_TARGET_HINT">
 				<Original>Loading to inventory in %1</Original>
 				<German>Lade ins Inventar in %1</German>
 				<Polish>Ładowanie do ekwipunku w %1</Polish>
 				<Czech>Načítání do inventáře v% 1</Czech>
+				<French>Chargement dans l'inventaire dans %1</French>
 			</Key>
 			<Key ID="STR_JNC_MODIFIER_HINT">
 				<Original>Shift and Ctrl keys change how many items you move at once</Original>
 				<German>Die Umschalt- und Strg-Tasten ändern, wie viele Items auf einmal verschoben werden</German>
 				<Polish>Klawisze Shift i Ctrl zmieniają liczbę przedmiotów przenoszonych jednocześnie</Polish>
 				<Czech>Klávesy Shift a Ctrl mění počet položek, které přesouváte najednou</Czech>
+				<French>Les touches Maj et Ctrl modifient le nombre d'éléments que vous déplacez en une fois</French>
 			</Key>
 		</Container>
 	</Package>
@@ -47,48 +53,56 @@
 				<German>Arsenal</German>
 				<Polish>Arsenał</Polish>
 				<Czech>Arzenál</Czech>
+				<French>Arsenal</French>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
 				<Original>Arsenal to external Inventory</Original>
 				<German>Arsenal zu externem Inventar</German>
 				<Polish>Arsenał do ekwipunku zewnętrznego</Polish>
 				<Czech>Arzenál do vnějšího inventáře</Czech>
+				<French>Arsenal vers l'inventaire externe</French>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
 			<Original>Select something with an inventory to load into</Original>
 				<German>Wähle etwas mit einem Inventar zum Einladen</German>
 				<Polish>Wybierz coś z ekwipunkiem do załadowania przedmiotów</Polish>
 				<Czech>Vyberte z inventáře, do kterého se má načíst</Czech>
+				<French>Sélectionnez quelque chose avec un inventaire dans lequel charger</French>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD">
 				<Original>External Inventory to Arsenal</Original>
 				<German>Externes Inventar zum Arsenal</German>
 				<Polish>Zewnętrzny ekwipunek do Arsenału</Polish>
 				<Czech>Externí inventář do Arsenalu</Czech>
+				<French>Inventaire externe à l'Arsenal</French>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD_DESC">
 				<Original>Please select an object with an inventory, or another Arsenal to load from</Original>
 				<German>Bitte wähle ein Objekt mit einem Inventar oder ein anderes Arsenal zum Ausladen</German>
 				<Polish>Wybierz obiekt z ekwipunkiem lub inny Arsenał, z którego można załadować aktualny</Polish>
 				<Czech>Vyberte objekt s inventářem nebo jiný arzenál, ze který chcete načíst</Czech>
+				<French>Veuillez sélectionner un objet avec un inventaire ou un autre Arsenal à partir duquel charger</French>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
 				<Original>Not looking at an object</Original>
 				<German>Kein Objekt ausgewählt</German>
 				<Polish>Nie patrzysz na żaden obiekt</Polish>
 				<Czech>Nedíváme se na objekt</Czech>
+				<French>Ne regarde pas l'objet</French>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
 				<Original>Object too far away</Original>
 				<German>Objekt zu weit entfernt</German>
 				<Polish>Obiekt jest za daleko</Polish>
 				<Czech>Objekt je příliš daleko</Czech>
+				<French>Objet trop loin</French>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
 				<Original>Object does not have any inventory or Arsenal</Original>
 				<German>Objekt hat kein Inventar oder Arsenal</German>
 				<Polish>Obiekt nie ma żadnego ekwipunku ani nie jest Arsenałem</Polish>
 				<Czech>Objekt nemá žádný inventář ani arzenál</Czech>
+				<French>L'objet n'a pas d'inventaire ni d'Arsenal</French>
 			</Key>
 		</Container>
 	</Package>
@@ -99,24 +113,28 @@
 				<German>Garage öffnen</German>
 				<Polish>Otwórz garaż</Polish>
 				<Czech>Otevřít garáž</Czech>
+				<French>Garage ouvert</French>
 			</Key>
 			<Key ID="STR_JNG_ACT_STOREVEHICLE">
 				<Original>Garage Vehicle</Original>
 				<German>Fahrzeug verstauen</German>
 				<Polish>Schowaj pojazd do garażu</Polish>
 				<Czech>vozidlo v garáži</Czech>
+				<French>Garage Véhicule</French>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR1">
 				<Original>Vehicle too far away</Original>
 				<German>Fahrzeug zu weit entfernt</German>
 				<Polish>Pojazd jest za daleko</Polish>
 				<Czech>Vozidlo je příliš daleko</Czech>
+				<French>Véhicule trop éloigné</French>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR2">
 				<Original>Not looking at a vehicle</Original>
 				<German>Kein Fahrzeug ausgewählt</German>
 				<Polish>Nie patrzysz się na pojazd</Polish>
 				<Czech>Nedíváme se na vozidlo</Czech>
+				<French>Ne regarde pas le véhicule</French>
 			</Key>
 		</Container>
 	</Package>
@@ -127,24 +145,28 @@
 				<German>Auftanken</German>
 				<Polish>Tankuj pojazd</Polish>
 				<Czech>Natankovat</Czech>
+				<French>Ravitailler</French>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_REFUELOPTION">
 				<Original>Refuel cargo or tank</Original>
 				<German>Tank oder Ladung betanken</German>
 				<Polish>Tankuj ładunek lub zbiornik</Polish>
 				<Czech>Doplňte náklad nebo palivo</Czech>
+				<French>Ravitailler la citerne ou le réservoir</French>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELTANK">
 				<Original>Tank</Original>
 				<German>Tank</German>
 				<Polish>Zbiornik</Polish>
 				<Czech>Palivo</Czech>
+				<French>Réservoir</French>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELCARGO">
 				<Original>Cargo</Original>
 				<German>Ladung</German>
 				<Polish>Ładunek</Polish>
 				<Czech>Náklad</Czech>
+				<French>Cargaison</French>
 			</Key>
 		</Container>
 	</Package>
@@ -155,6 +177,7 @@
 				<German>Aufrüsten</German>
 				<Polish>Przezbrój</Polish>
 				<Czech>Přezbrojit</Czech>
+				<French>Réarmer</French>
 			</Key>
 		</Container>
 	</Package>
@@ -165,6 +188,7 @@
 				<German>Reparieren</German>
 				<Polish>Napraw</Polish>
 				<Czech>Opravit</Czech>
+				<French>Réparer</French>
 			</Key>
 		</Container>
 	</Package>
@@ -177,24 +201,28 @@
 				<German>OFFENKUNDIG</German>
 				<Polish>WYKRYTY</Polish>
 				<Czech>NEPŘÁTELSKÝ</Czech>
+				<French>DANGER</French>
 			</Key>
 			<Key ID="STR_UM_SUSPICIOUS">
 				<Original>SUSPICIOUS</Original>
 				<German>VERDÄCHTIGT</German>
 				<Polish>PODEJRZANY</Polish>
 				<Czech>PODEZŘELÝ</Czech>
+				<French>MÉFIANT</French>
 			</Key>
 			<Key ID="STR_UM_UNDERCOVER">
 				<Original>UNDERCOVER</Original>
 				<German>VERDECKT</German>
 				<Polish>UTAJNIONY</Polish>
 				<Czech>V UTAJENÍ</Czech>
+				<French>HORS DE DANGER</French>
 			</Key>
 			<Key ID="STR_UM_COMPROMISED">
 				<Original>COMPROMISED</Original>
 				<German>KOMPROMITTIERT</German>
 				<Polish>ZDRADZONY</Polish>
 				<Czech>V OHROŽENÍ</Czech>
+				<French>COMPROMIS</French>
 			</Key>
 		</Container>
 		<Container name="Hints">
@@ -203,102 +231,119 @@
 				<German>OFFENKUNDIG: WAFFE</German>
 				<Polish>WYKRYTY: BROŃ</Polish>
 				<Czech>OVERT: ZBRANĚ</Czech>
+				<French>APPARENCE: ARMER</French>
 			</Key>
 			<Key ID="STR_UM_HINT_DOWNED">
 				<Original>INCAPACITATED</Original>
 				<German>OHNMÄCHTIG</German>
 				<Polish>NIEPRZYTOMNY</Polish>
 				<Czech>NESCHOPNÝ</Czech>
+				<French>INCONSCIENT</French>
 			</Key>
 			<Key ID="STR_UM_HINT_SURRENDER">
 				<Original>SURRENDERED</Original>
 				<German>KAPITULIERT</German>
 				<Polish>PODDAJE SIĘ</Polish>
 				<Czech>VZDAL</Czech>
+				<French>RENDU</French>
 			</Key>
 			<Key ID="STR_UM_HINT_HOSTILITY">
 				<Original>OVERT: WEAPON DISCHARGED!</Original>
 				<German>OFFENKUNDIG: WAFFE ENTRLADEN!</German>
 				<Polish>WYKRYTY: WYSTRZELONO Z BRONI!</Polish>
 				<Czech>OVERT: ZBRAŇ VYBITÁ!</Czech>
+				<French>APPARENCE: ARME DÉCHARGÉE!</French>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEAR">
 				<Original>SUSPICIOUS OUTFIT</Original>
 				<German>VERDÄCHTIGE KLEIDUNG</German>
 				<Polish>PODEJRZANY STRÓJ</Polish>
 				<Czech>PODEZŘELÉ OBLEČENÍ</Czech>
+				<French>TENUE SUSPECTE</French>
 			</Key>
 			<Key ID="STR_UM_HINT_MILVEH">
 				<Original>OVERT: MILITARY VEHICLE</Original>
 				<German>OFFENKUNDIG: MILITÄR FAHRZEUG</German>
 				<Polish>WYKRYTY: POJAZD WOJSKOWY</Polish>
 				<Czech>OVERT: VOJENSKÉ VOZIDLO</Czech>
+				<French>APPARENCE: VÉHICULE MILITAIRE</French>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEARVEH">
 				<Original>SUSPICIOUS OUTFIT VISIBLE</Original>
 				<German>VERDÄCHTIGE AUSRÜSTUNG SICHTBAR</German>
 				<Polish>WIDOCZNY PODEJRZANY STRÓJ</Polish>
 				<Czech>PODEZŘELÉ OBLEČENÍ VIDITELNÉ</Czech>
+				<French>TENUE SUSPECTE VISIBLE</French>
 			</Key>
 			<Key ID="STR_UM_HINT_CLOSINGIN">
 				<Original>THEY ARE GOING TO SPOT YOU!</Original>
 				<German>SIE WERDEN DICH ENTDECKEN!</German>
 				<Polish>ONI CIĘ ZOBACZĄ!</Polish>
 				<Czech>UVIDÍ TĚ!</Czech>
+				<French>ILS VOUS ONT REPÉRER!</French>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPBEHAVIOR">
 				<Original>SUSPICIOUS BEHAVIOUR</Original>
 				<German>VERDÄCHTIGES VERHALTEN</German>
 				<Polish>PODEJRZANE ZACHOWANIE</Polish>
 				<Czech>PODEZŘELÉ CHOVÁNÍ</Czech>
+				<French>COMPORTEMENT SUSPECT</French>
 			</Key>
 			<Key ID="STR_UM_HINT_OFFROAD">
 				<Original>TOO FAR FROM ROADS</Original>
 				<German>ZU WEIT VON STRAẞEN ENTFERNT</German>
 				<Polish>ZA DALEKO OD DROGI</Polish>
 				<Czech>PŘÍLIŠ DALEKO OD SILNICE</Czech>
+				<French>HORS PISTE</French>
 			</Key>
 			<Key ID="STR_UM_HINT_ALLOWEDAREA">
 				<Original>THIS AREA IS BEING WATCHED! STAY ON THE ROAD!</Original>
 				<German>DIESES GEBIET WIRD ÜBERWACHT! BLEIB AUF DER STRAẞE!</German>
 				<Polish>JESTEŚ OBSERWOWANY! POZOSTAŃ NA DRODZE!</Polish>
 				<Czech>TATO OBLAST JE SLEDOVÁNA! ZŮSTAŇTE NA CESTĚ!</Czech>
-			</Key>
+				<French>CETTE ZONE EST SURVEILLÉE! RESTEZ SUR LA ROUTE!</French>
+			</Key> 
 			<Key ID="STR_UM_HINT_MILAREA">
 				<Original>MILITARY AREA</Original>
 				<German>MILITÄR GEBIET</German>
 				<Polish>OBSZAR ZASTRZEŻONY</Polish>
 				<Czech>VOJENSKÁ OBLAST</Czech>
+				<French>ZONE MILITAIRE</French>
 			</Key>
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
 				<German>FESTGENOMMEN</German>
 				<Polish>SCHWYTANY</Polish>
 				<Czech>ZAJETÍ</Czech>
+				<French>CAPTIF</French>
 			</Key>
 			<Key ID="STR_UM_HINT_MORPHINE">
 				<Original>INJECTING SOME MORPHINE?</Original>
 				<German>INJIZIERE ETWAS MORPHIUM?</German>
 				<Polish>WSTRZYKIWANIE MORFINY?</Polish>
 				<Czech>PÍCHNOUT SI MORFIUM?</Czech>
+				<French>INJECTER DE LA MORPHINE?</French>
 			</Key>
 			<Key ID="STR_UM_HINT_ILLEGAL">
 				<Original>ILLEGAL ACTION</Original>
 				<German>ILLEGALE HANDLUNG</German>
 				<Polish>CZYN NIELEGALNY</Polish>
 				<Czech>PROTIPRÁVNÍ JEDNÁNÍ</Czech>
+				<French>ACTION ILLÉGALE</French>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
 				<German>ZUGRIFF AUFS INVENTAR</German>
 				<Polish>PATRZENIE DO EKWIPUNKU</Polish>
 				<Czech>PŘÍSTUP K INVENTÁŘI</Czech>
+				<French>DANS L'INVENTAIRE</French>
 			</Key>
 			<Key ID="STR_UM_HINT_COMPROMISEDVIC">
 				<Original>COMPROMISED VEHICLE</Original>
 				<German>KOMPROMITTIERTES FAHRZEUG</German>
 				<Polish>POSZUKIWANY POJAZD</Polish>
 				<Czech>OHROŽENÉ VOZIDLO</Czech>
+				<French>VÉHICULE COMPROMIS</French>
 			</Key>
 		</Container>
 		<Container name="Actions">
@@ -319,90 +364,105 @@
 				<German>Für dieses Steuerelement ist kein Kontex-Hinweis verfügbar.</German>
 				<Polish>Dla tej kontrolki nie ma podpowiedzi.</Polish>
 				<Czech>Pro tento ovládací prvek není k dispozici žádná nápověda pro kontext.</Czech>
+				<French>Aucune indication de contexte n'est disponible pour ce contrôle.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_LISTBOX">
 				<Original>This list displays all known intel. Click on a row to display only that piece of intel on your map.</Original>
 				<German>Diese Liste zeigt alle bekannten Informationen an. Klick auf eine Zeile, um nur diese Information auf der Karte anzuzeigen</German>
 				<Polish>Ta lista zawiera wszystkie znane dane wywiadowcze. Kliknij wiersz, aby wyświetlić tylko ten element wywiadu na mapie.</Polish>
 				<Czech>Tento seznam zobrazuje všechny známé informace. Kliknutím na řádek zobrazíte pouze tuto informaci na mapě.</Czech>
+				<French>Cette liste affiche tous les renseignements connues. Cliquez sur une ligne pour afficher uniquement ce renseignement sur votre carte.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ACTIVE">
 				<Original>Press to toggle the display of active intel drawn on your map.</Original>
 				<German>Drücke diesen Knopf, um die Anzeige der aktiven Informationen auf der Karte umzuschalten.</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie aktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení aktivních informací nakreslených na mapě.</Czech>
+				<French>Cliquez pour affichager le renseignement comme "actif" et qu'il apparaisse sur votre carte.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_INACTIVE">
-				<Original>Press to toggle the display of planned, inactive intel drawn on your map.</Original>
+				<Original>Press to toggle the display of active intel drawn on your map.</Original>
 				<German>Drücke diesen Knopf, um die Anzeige der geplanten, inaktiven Informationen auf der Karte umzuschalten.</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie planowanych, nieaktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení plánovaných, neaktivních informací nakreslených na mapě.</Czech>
+				<French>Cliquez pour affichager le renseignement comme "actif" et qu'il apparaisse sur votre carte.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ENDED">
 				<Original>Press to toggle the display of old, ended intel drawn on your map.</Original>
 				<German>Drücke diesen Knopf, um die Anzeige von alten, ungültigen Informationen auf der Karte umzuschalten.</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie starych, zakończonych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení starých, ukončených informací nakreslených na mapě.</Czech>
+				<French>Cliquez pour affichager le renseignement comme "terminer" sur votre carte.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_NOTIF">
 				<Original>Press to remove red alert icons on locations.</Original>
 				<German>Drücke diesen Knopf, um rote Alarmsymbole an den Standorten zu entfernen.</German>
 				<Polish>Naciśnij, aby usunąć czerwone ikony alertów w lokalizacjach.</Polish>
 				<Czech>Stisknutím tlačítka odeberete červené výstražné ikony na místech.</Czech>
+				<French>Cliquez pour supprimer les icônes d'alerte rouges des différents endroits.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_INTELP">
 				<Original>Press to toggle the display of the intel panel. Useful if you want to see the entire map.</Original>
 				<German>Drücke diesen Knopf, um die Anzeige des Informationspanels umzuschalten. Nützlich, um die gesamte Karte zu sehen</German>
 				<Polish>Naciśnij, aby przełączyć wyświetlanie panelu danych wywiadowczych. Przydatne, jeśli chcesz zobaczyć całą mapę.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení panelu Intel. Užitečné, pokud chcete vidět celou mapu.</Czech>
+				<French>Cliquez pour changer l'affichage du panneau des renseignements. Utile si vous voulez voir la carte entièrement.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_LOC">
 				<Original>Press to toggle our custom locations being shown on your map. That includes outposts and cities.</Original>
 				<German>Drücke diesen Knopf, um die Anzeige von zusätzlichen Standorten auf der Karte umzuschalten. Dazu gehören Außenposten und Städte.</German>
 				<Polish>Naciśnij, aby przełączyć nasze niestandardowe lokalizacje wyświetlane na mapie. Dotyczy to placówek wojskowych i miast.</Polish>
 				<Czech>Stisknutím přepínáte naše vlastní lokality zobrazené na mapě. To zahrnuje základny a města.</Czech>
+				<French>Cliquez pour afficher vos emplacements personnalisés sur la carte. Cela comprend les avant-postes et les villes.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_PLAYERS">
 				<Original>Press to toggle players being shown on your map.</Original>
 				<German>Drücke diesen Knopf, um die Anzeige von Spielern auf der Karte umzuschalten.</German>
 				<Polish>Naciśnij, aby przełączać wyświetlanie graczy na mapie.</Polish>
 				<Czech>Stisknutím přepínáte hráče zobrazené na mapě.</Czech>
+				<French>Cliquez pour affichés les joueurs sur la carte.</French>
 			</Key>
 			<Key ID="STR_LOCALIZE_MUI_BUTTON_DUMMY">
 				<Original>Press to toggle this setting on or off.</Original>
 				<German>Drücke diesen Knopf, um diese Einstellung umzuschalten.</German>
 				<Polish>Naciśnij, aby włączyć lub wyłączyć to ustawienie.</Polish>
 				<Czech>Stisknutím toto nastavení zapínáte nebo vypnete.</Czech>
+				<French>Cliquez pour activer ou désactiver ce paramètre.</French>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_SIDE">
 				<Original>Sort intel list by faction side. WEST for BLUFOR, EAST for OPFOR, and IND for Independent.</Original>
 				<German>Sortiere Informationsliste nach Fraktionen. WEST für BLUFOR, EAST für OPFOR und IND für Independent.</German>
 				<Polish>Sortuj listę wywiadowczą według stron frakcji. WEST dla BLUFOR, EAST dla OPFOR i IND dla Independent.</Polish>
 				<Czech>Seřaďte seznam informací podle frakcí. WEST pro BLUFOR, VÝCHOD pro OPFOR a IND pro nezávislé.</Czech>
+				<French>Trier la liste de renseignement par Faction. WEST pour BLUFOR, EAST pour OPFOR et IND pour Independent.</French>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_STATUS">
 				<Original>Sort intel list by current status of the intel items.</Original>
 				<German>Sortiere Informationsliste nach dem aktuellen Status der Informations elemente.</German>
 				<Polish>Sortuj listę danych wywiadowczych według aktualnego stanu elementów wywiadu.</Polish>
 				<Czech>Seřaďte seznam informací podle aktuálního stavu položek intelu.</Czech>
+				<French>Trier la liste de renseignement par statut actuel des éléments de renseignement.</French>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TYPE">
 				<Original>Sort intel list by type.</Original>
 				<German>Sortiere Informationsliste nach typ.</German>
 				<Polish>Sortuj listę danych wywiadowczych według rodzaju.</Polish>
 				<Czech>Seřaďte seznam informací podle typu.</Czech>
+				<French>Trier la liste de renseignement par type.</French>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TIME">
 				<Original>Sort intel list by most recent or oldest intel.</Original>
 				<German>Sortiere Informationsliste nach neusten oder ältesten Informationen.</German>
 				<Polish>Sortuj listę danych wywiadowczych według najnowszych lub najstarszych danych wywiadowczych.</Polish>
 				<Czech>Seřaďte seznam informací podle nejnovějších nebo nejstarších informací.</Czech>
+				<French>Trier la liste de renseignements en fonction des informations les plus récentes ou les plus anciennes.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_TOOLTIP">
 				<Original>Double click to center on attack. Use Shift + LMB or Ctrl + LMB to multiselect items.</Original>
 				<German>Doppelklick um auf den Angriff zu zentrieren. Verwende Umschalt + LMB oder Strg + LMB um mehrere Elemente auszuwählen.</German>
 				<Polish>Kliknij dwukrotnie, aby wyśrodkować na danej akcji. Użyj Shift + LMB lub Ctrl + LMB, aby zaznaczyć wiele pozycji.</Polish>
 				<Czech>Dvojitým kliknutím na střed útoku. K vícenásobnému výběru položek použijte Shift + LMB nebo Ctrl + LMB.</Czech>
+				<French>Double-cliquez pour centrer sur l'attaque. Utilisez Maj + clique gauche ou Ctrl + clique gauche pour sélectionner plusieurs éléments.</French>
 			</Key>
 		</Container>
 		<Container name="IntelTxt">
@@ -411,66 +471,77 @@
 				<German>Keine Beschreibung vorhanden.</German>
 				<Polish>Brak dostępnego opisu.</Polish>
 				<Czech>Není k dispozici žádný popis.</Czech>
+				<French>Pas de description disponible.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_MULTISELECT">
 				<Original>Select a single intel item to view a detailed description.</Original>
 				<German>Wähle ein einzelnes Element aus, um eine detaillierte Beschreibung anzuzeigen.</German>
 				<Polish>Wybierz pojedynczy element wywiadu, aby wyświetlić szczegółowy opis.</Polish>
 				<Czech>Chcete-li zobrazit podrobný popis, vyberte jednu položku intelu.</Czech>
+				<French>Sélectionnez un seul élément de renseignement pour afficher une description détaillée.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_ATTACK">
 				<Original>The enemy commander has detected activity in this area and is dispatching an attack. Hold your ground and defeat enough attacks to stop the enemy from sending more.</Original>
 				<German>Der feindliche Kommandeur hat Aktivität in diesem Gebiet festgestellt und leitet einen Angriff ein. Halten Sie die Stellung und schlagen Sie genug Angriffe zurück, um den Feind daran zu hindern, weitere zu entsenden.</German>
 				<Polish>Dowódca wroga wykrył aktywność w tym obszarze i atakuje tę pozycję. Utrzymaj się i pokonaj wystarczającą liczbę ataków, aby powstrzymać wroga przed wysyłaniem kolejnych.</Polish>
 				<Czech>Nepřátelský velitel detekoval aktivitu v této oblasti a vysílá útok. Držte si pozici a porazit dostatek útoků zastavit nepřítele od odeslání více.</Czech>
+				<French>Le Commandant ennemi a détecté une activité dans cette zone et lance une attaque. Tenez bon et repoussez suffisamment d'attaques ennemi pour empêcher qu'il n'en arrive pas davantage.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_RB">
 				<Original>The enemy commander is constructing a roadblock at this location.</Original>
 				<German>Der feindliche Kommandeur errichtet an dieser Stelle eine Straßensperre.</German>
 				<Polish>W tym miejscu wrogi dowódca buduje punkt kontrolny.</Polish>
 				<Czech>Nepřátelský velitel staví zátarasy na tomto místě.</Czech>
+				<French>Le Commandant ennemi construit un barrage routier à cet endroit.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_REINFORCE">
 				<Original>Enemy troops are being sent to this location to reinforce it.</Original>
 				<German>Zur Verstärkung werden feindliche Truppen an diesen Ort geschickt.</German>
 				<Polish>Do tego miejsca wysyłane są wrogie jednostki, aby je wzmocnić.</Polish>
 				<Czech>Na toto místo jsou vysláni nepřátelské jednotky, aby ho posílili.</Czech>
+				<French>Des troupes de renfort ennemie sont envoyées à cet endroit.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_OFFICER">
 				<Original>A commanding officer is being sent to this location. If he arrives, he will take command and enable attacks from his destination. Intercept him or kill him at his destination – your choice.</Original>
 				<German>Ein kommandierender Offizier wird an diesen Standort entsandt. Wenn er eintrifft, wird er das Kommando übernehmen und Angriffe von seinem Zielort aus ermöglichen. Fangen Sie ihn ab oder töten Sie ihn an seinem Zielort - Ihre Wahl.</German>
 				<Polish>Dowódca jest wysyłany do tej lokalizacji. Jeśli przybędzie, przejmie dowodzenie i umożliwi ataki z miejsca docelowego. Przechwyć go lub zabij w miejscu docelowym - twój wybór.</Polish>
 				<Czech>Na toto místo je vyslán velící důstojník. Pokud dorazí, převezme velení a umožní útoky z cíle. Zachytit ho, nebo ho zabít v jeho cíli - vaše volba.</Czech>
+				<French>Un Commandant est envoyé à cet endroit. S'il arrive, il prendra le contrôle et ordonnera des attaques depuis cette zone. Interceptez-le ou tuez-le avant qu'il arrive à destination - Faites un choix !</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_BUILDING">
 				<Original>The enemy is resupplying a location with building resources. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some building resources.</Original>
 				<German>Der Feind versorgt einen Ort mit Baumaterialien. Fangen Sie den Transport ab oder greifen Sie den Ort an, zu dem er unterwegs ist.</German>
 				<Polish>Wróg zaopatruje lokalizację w zasoby budowlane. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają, gdy dotrą na miejsce i zdobądź zasoby budowlane.</Polish>
 				<Czech>Nepřítel zásobuje místo stavebními zdroji. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, a obsažte některé stavební prostředky.</Czech>
+				<French>L'ennemi réapprovisionne un emplacement en ressources de construction par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des ressources de construction.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_AMMO">
 				<Original>The enemy is resupplying a location with ammunition. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some ammunition.</Original>
 				<German>Der Feind versorgt einen Ort mit Munition. Fangen Sie den Transport ab oder greifen Sie den Ort an, zu dem er unterwegs ist.</German>
 				<Polish>Wróg zaopatruje miejsce w amunicję. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają po przybyciu i zdobądź trochę amunicji.</Polish>
 				<Czech>Nepřítel zásobuje místo municí. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, a zajměte nějakou munici.</Czech>
+				<French>L'ennemi réapprovisionne un emplacement en munitions par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des munitions.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_MISC">
 				<Original>The enemy is resupplying a location with unknown items. Intercept the transport, or attack the location they are headed to once they have arrived.</Original>
 				<German>Der Feind versorgt einen Ort mit unbekannten Objekten. Fangen Sie den Transport ab oder greifen Sie den Ort an, zu dem er unterwegs ist.</German>
 				<Polish>Wróg zaopatruje lokalizację w nieznane przedmioty. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają, gdy już dotrą.</Polish>
 				<Czech>Nepřítel zásobuje místo neznámými předměty. Zachyťte transport nebo zaútočí na místo, kam míří, jakmile dorazí.</Czech>
+				<French>L'ennemi réapprovisionne un emplacement avec des objets inconnus par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des objets inconnus.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_MEDICAL">
 				<Original>The enemy is resupplying a location with medical items. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some medical supplies.</Original>
 				<German>Der Feind versorgt einen Ort mit medizinischen Gütern. Fangen Sie den Transport ab oder greifen Sie den Ort an, zu dem er unterwegs ist.</German>
 				<Polish>Wróg zaopatruje miejsce w przedmioty medyczne. Przechwyć transport lub zaatakuj miejsce, do którego kierują się po przyjeździe, aby zdobyć zasoby medyczne.</Polish>
 				<Czech>Nepřítel zásobuje místo lékařskými předměty. Zachyťte transport, nebo zaútočte na místo, kam míří, jakmile dorazí, aby zachytili nějaké zdravotnické potřeby.</Czech>
+				<French>L'ennemi réapprovisionne un emplacement en fournitures médicales par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des fournitures médicales.</French>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_EXPLOSIVES">
 				<Original>The enemy is transporting a cache of explosives. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some explosives. Be careful not to blow it up!</Original>
 				<German>Der Feind versorgt einen Ort mit einer Ladung Sprengstoff. Fangen Sie den Transport ab oder greifen Sie den Ort an, zu dem er unterwegs ist.</German>
 				<Polish>Wróg transportuje materiały wybuchowe. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają po przybyciu, aby schwytać niektóre materiały wybuchowe. Uważaj, aby go nie wysadzić!</Polish>
 				<Czech>Nepřítel převáží skrýš výbušnin. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, aby zachytili nějaké výbušniny. Dávejte pozor, abyste to vyhodit do povětří!</Czech>
+				<French>L'ennemi réapprovisionne un emplacement en caisses d'explosifs par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des caisses d'explosifs.
 			</Key>
 		</Container>
 	</Package>
@@ -483,12 +554,14 @@
 				<German>Das Limit von 5 Spielständen wurde erreicht. Lösche alte Spielstände, um fortzufahren.</German>
 				<Polish>Osiągnąłeś limit 5 zapisanych gier. Usuń zapisywane gry, aby kontynuować.</Polish>
 				<Czech>Dosáhli jste limitu savegame 5 savegames. Chcete-li pokračovat, odstraňte uložené hry.</Czech>
+				<French>Vous avez atteint la limite de 5 sauvegardes autorisé. Supprimez-en pour continuer.</French>
 			</Key>
 			<Key ID="STR_NEWSAVE_ENABLED">
 				<Original>Create a new save game.</Original>
 				<German>Erstelle einen neuen Spielstand.</German>
 				<Polish>Utwórz nowy zapis gry.</Polish>
 				<Czech>Vytvořte novou uloženou hru.</Czech>
+				<French>Créez une nouvelle sauvegarde.</French>
 			</Key>
 		</Container>
 		<Container name="TAB_INIT">
@@ -497,18 +570,21 @@
 				<German>FEHLER: Fraktions-Datei enthält Fehler. Überprüfe die .RPT-Datei für weitere Informationen.</German>
 				<Polish>BŁĄD: plik frakcji zawiera błędy. Sprawdź plik .RPT, aby uzyskać więcej informacji.</Polish>
 				<Czech>Chyba: Soubor frakce obsahuje chyby. Zkontrolujte. RPT soubor pro více informací.</Czech>
+				<French>ERREUR: le fichier des Factions contient des erreurs. Vérifiez votre fichier .RPT pour plus d'informations.</French>
 			</Key>
 			<Key ID="STR_INIT_ERROR2">
 				<Original>ERROR: Missing addon:</Original>
 				<German>FEHLER: Fehlendes Addon:</German>
 				<Polish>BŁĄD: brakujący dodatek:</Polish>
 				<Czech>Chyba: Chybí addon:</Czech>
+				<French>ERREUR: Mode manquant:</French>
 			</Key>
 			<Key ID="STR_INIT_TOOLTIPHOVER">
 				<Original>Hover to show a description.</Original>
 				<German>Bewege die Maus, um eine Beschreibung anzuzeigen.</German>
 				<Polish>Najedź kursorem, aby wyświetlić opis.</Polish>
 				<Czech>Chcete-li zobrazit popis, najeďte myší.</Czech>
+				<French>Survolez pour afficher une description.</French>
 			</Key>
 		</Container>
 	</Package>
@@ -521,6 +597,7 @@
 				<German>*Vindicta</German>
 				<Polish>*Vindicta</Polish>
 				<Czech>*Vindicta</Czech>
+				<French>*VINDICTA</French>
 			</Key>
 		</Container>
 		<Container name="Autoload">
@@ -529,18 +606,21 @@
 				<German>Automatisches Laden</German>
 				<Polish>Auto Ładowanie</Polish>
 				<Czech>Automatické načtení</Czech>
+				<French>Chargement automatique</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autoload_Enabled">
 				<Original>Enabled</Original>
 				<German>Aktiviert</German>
 				<Polish>Włączone</Polish>
 				<Czech>Povoleno</Czech>
+				<French>Activer</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autoload_Enabled_Tooltip">
 				<Original>Most recent save will be loaded automatically on mission start</Original>
 				<German>Der letzte Spielstand wird automatisch beim Start der Mission geladen</German>
 				<Polish>Ostatni zapis zostanie załadowane automatycznie na początku misji</Polish>
 				<Czech>Poslední uložení se automaticky načte při zahájení mise</Czech>
+				<French>La sauvegarde la plus récente sera chargée automatiquement au début de la mission</French>
 			</Key>
 		</Container>
 		<Container name="Autosave">
@@ -549,54 +629,63 @@
 				<German>Automatisches Speichern</German>
 				<Polish>Auto Zapis</Polish>
 				<Czech>Automatické ukládání</Czech>
+				<French>Sauvegarde automatique</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Enabled">
 				<Original>Enabled</Original>
 				<German>Aktiviert</German>
 				<Polish>Włączone</Polish>
 				<Czech>Povoleno</Czech>
+				<French>Activer</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Enabled_Tooltip">
 				<Original>Enable/disable auto save system</Original>
 				<German>Automatisches Speicher System aktiveren/deaktiveren</German>
 				<Polish>Włącz/wyłącz system auto zapisu</Polish>
 				<Czech>Povolení nebo zakázání systému automatického ukládání</Czech>
+				<French>Activer/désactiver le système de sauvegarde automatique</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty">
 				<Original>On empty</Original>
 				<German>Im Leerzustand</German>
 				<Polish>Gdy pusty</Polish>
 				<Czech>Na prázdné</Czech>
+				<French>Si serveur vide</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty_Tooltip">
 				<Original>Will auto save when the last player leaves the server</Original>
 				<German>Wird automatisch gespeichert, wenn der letzte Spieler den Server verlässt.</German>
 				<Polish>Zapisuje się automatycznie, gdy ostatni gracz opuści serwer</Polish>
 				<Czech>Bude automaticky ukládat, když poslední hráč opustí server</Czech>
+				<French>Sauvegarde automatiquement lorsque le dernier joueur quitte le serveur</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Interval">
 				<Original>Interval in hours (0 = disabled)</Original>
 				<German>Interval in Stunden (0 = deaktiviert)</German>
 				<Polish>Interwał w godzinach (0 = wyłączony)</Polish>
 				<Czech>Interval v hodinách (0 = zakázán)</Czech>
+				<French>Intervalle en heures (0 = désactivé)</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Interval_Tooltip">
 				<Original>Auto save will happen on this interval, setting to 0 will disable interval auto save</Original>
 				<German>Die automatische Speicherung erfolgt in diesem Intervall. Eine Einstellung auf 0 deaktiviert die automatische Speicherung in diesem Intervall.</German>
 				<Polish>W tym przedziale nastąpi automatyczne zapisywanie, ustawienie na 0 wyłączy automatyczne zapisywanie w odstępach</Polish>
 				<Czech>Automatické ukládání se stane v tomto intervalu, nastavení na 0 zakáže interval automatické ukládání</Czech>
+				<French>L'enregistrement automatique se produira à cet intervalle, le réglage sur 0 désactivera l'intervalle d'enregistrement automatique.</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat">
 				<Original>In combat</Original>
 				<German>Im Kampf</German>
 				<Polish>Podczas walki</Polish>
 				<Czech>V boji</Czech>
+				<French>Combat engagé</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat_Tooltip">
 				<Original>When enabled will allow autosaving when enemies are within 250m of a player, otherwise it will be delayed by up to 30 minutes after the scheduled time</Original>
 				<German>Wenn diese Option aktiviert ist, ist die automatische Speicherung möglich, wenn sich Feinde im Umkreis von 250 m von einem Spieler befinden, andernfalls wird sie um bis zu 30 Minuten nach der geplanten Zeit verzögert.</German>
 				<Polish>Włączenie tej opcji pozwoli na automatyczne zapisywanie, gdy wrogowie znajdą się w odległości 250m od gracza, w przeciwnym razie zapis zostanie opóźniony o 30 minut</Polish>
 				<Czech>Pokud je povoleno, umožní automatické úspory, když jsou nepřátelé do 250 m od hráče, jinak bude zpožděno až o 30 minut po plánovaném čase</Czech>
+				<French>Lorsqu'elle est activée, la sauvegarde automatique s'effectuera si les ennemis se trouvent à moins de 250 m d'un joueur. Sinon elle sera retardée de 30 minutes.</French>
 			</Key>
 		</Container>
 		<Container name="Server">
@@ -605,18 +694,21 @@
 				<German>Server</German>
 				<Polish>Serwer</Polish>
 				<Czech>Server</Czech>
+				<French>Serveur</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Server_Suspend">
 				<Original>Suspend when empty</Original>
 				<German>Im Leerzustand suspendieren</German>
 				<Polish>Zawieś, gdy serwer będzie pusty</Polish>
 				<Czech>Pozastavit, pokud je prázdný</Czech>
+				<French>Suspendre lorsqu'il est vide</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Server_Suspend_Tooltip">
 				<Original>Time will be frozen when no players are connected to the server (applies to dedicated servers only)</Original>
 				<German>Die Zeit wird eingefroren, wenn keine Spieler mit dem Server verbunden sind (gilt nur für dedizierte Server)</German>
 				<Polish>Czas zostanie zamrożony, gdy żaden z graczy nie zostanie podłączony do serwera (dotyczy tylko serwerów dedykowanych)</Polish>
 				<Czech>Čas bude zmrazen, pokud nejsou k serveru připojeni žádní hráči (platí pouze pro dedikované servery)</Czech>
+				<French>Suspendre lorsqu'il est vide</French>
 			</Key>
 		</Container>
 		<Container name="Game">
@@ -625,18 +717,21 @@
 				<German>Spiel</German>
 				<Polish>Gra</Polish>
 				<Czech>Hra</Czech>
+				<French>Jeu</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Game_Speed">
 				<Original>Game Speed Multiplier</Original>
 				<German>Spielgeschwindigkeitsmultiplikator</German>
 				<Polish>Mnożnik prędkości gry</Polish>
 				<Czech>Násobitel rychlosti hry</Czech>
+				<French>Multiplicateur de vitesse de jeu</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Game_Speed_Tooltip">
 				<Original>Determines how fast time progresses in the game</Original>
 				<German>Bestimmt, wie schnell die Zeit im Spiel fortschreitet</German>
 				<Polish>Określa szybkość upływu czasu w grze</Polish>
 				<Czech>Určuje, jak rychle bude ve hře postupovat čas.</Czech>
+				<French>Détermine la vitesse à laquelle le temps progresse dans le jeu</French>
 			</Key>
 		</Container>
 		<Container name="Diff">
@@ -645,12 +740,14 @@
 				<German>Schwierigkeit</German>
 				<Polish>Poziom Trudności</Polish>
 				<Czech>Obtížnosti</Czech>
+				<French>Difficulté</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Global">
 				<Original>Global difficulty</Original>
 				<German>Globale Schwierigkeit</German>
 				<Polish>Globalna trudność</Polish>
 				<Czech>Globální obtížnost</Czech>
+				<French>Difficulté globale</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Global_Tooltip">
 				<Original>Affects enemy attack strength, frequency of external reinforcements.</Original>
@@ -676,48 +773,56 @@
 				<German>Schwierigkeit des feindlichen Kommandeurs</German>
 				<Polish>Poziom trudności wrogiego dowódcy</Polish>
 				<Czech>Obtížnost nepřátelského velitele</Czech>
+				<French>Niveau de difficulté du Commandant ennemi</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global_Tooltip">
 				<Original>This value is applied as a modifier to all enemy Commander difficulty settings</Original>
 				<German>Dieser Wert wird als Modifikator auf alle Schwierigkeitseinstellungen des feindlichen Kommandeurs angewandt.</German>
 				<Polish>Ta wartość jest stosowana jako modyfikator do wszystkich ustawień wrogiego dowódcy</Polish>
 				<Czech>Tato hodnota je použita jako modifikátor pro všechna nastavení obtížnosti nepřátelského velitele</Czech>
+				<French>Cette valeur est appliquée en tant que modificateur à tous les paramètres de difficulté du Commandant ennemi</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate">
 				<Original>Reinforcement rate</Original>
 				<German>Verstärkungsrate</German>
 				<Polish>Szybkość wsparcia</Polish>
 				<Czech>Posílení</Czech>
+				<French>Taux de renforcement</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy can reinforce</Original>
 				<German>Ändert die Geschwindigkeit, mit der der Feind verstärken kann</German>
 				<Polish>Zmienia szybkość, z jaką wróg może się wzmacniać</Polish>
 				<Czech>Upravuje rychlost, s jakou může nepřítel posílit</Czech>
+				<French>Modifie la vitesse à laquelle l'ennemi peut se renforcer</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate">
 				<Original>Escalation rate</Original>
 				<German>Eskalationsrate</German>
 				<Polish>Wskaźnik eskalacji</Polish>
 				<Czech>Míra eskalace</Czech>
+				<French>Taux d'augmentation</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy escalates their force strength (e.g. how soon in the campaign they will start to use tanks)</Original>
 				<German>Ändert die Geschwindigkeit, mit der der Feind seine Truppenstärke erhöht (z.B. wie schnell er im Kampagnenverlauf Kampfpanzer einsetzen wird)</German>
 				<Polish>Zmienia szybkość, z jaką wróg zwiększa swoją siłę (np. Jak szybko w kampanii zacznie używać czołgów)</Polish>
 				<Czech>Upravuje rychlost, s jakou nepřítel eskaluje svou sílu (např. jak brzy v kampani začne používat tanky)</Czech>
+				<French>Modifie la vitesse à laquelle l'ennemi augmente sa force (par exemple, à quelle vitesse dans la campagne il commencera à utiliser des chars)</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence">
 				<Original>Persitence</Original>
 				<German>Persistenz</German>
 				<Polish>Persitence</Polish>
 				<Czech>Stálost</Czech>
+				<French>Persistance</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence_Tooltip">
 				<Original>Modifies how persistent the enemy will be when sending repeated actions against you</Original>
 				<German>Ändert, wie hartnäckig der Feind sein wird, wenn er wiederholte Aktionen gegen Sie sendet</German>
 				<Polish>Zmienia wytrzymałość wroga podczas wysyłania powtarzających się działań przeciwko tobie</Polish>
 				<Czech>Upravuje, jak vytrvalý bude nepřítel při odesílání opakovaných akcí proti vám</Czech>
+				<French>Modifie la persistance de l'ennemi lors de l'envoi d'actions répétées contre vous</French>
 			</Key>
 		</Container>
 		<Container name="AI">
@@ -726,54 +831,63 @@
 				<German>KI</German>
 				<Polish>AI</Polish>
 				<Czech>AI</Czech>
+				<French>IA</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global">
 				<Original>AI global</Original>
 				<German>KI global</German>
 				<Polish>Globalna trudności AI</Polish>
 				<Czech>AI global</Czech>
+				<French>IA global</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global_Tooltip">
 				<Original>This value is applied as a modifier to all AI settings</Original>
 				<German>Dieser Wert wird als Modifikator auf alle KI-Einstellungen angewendet.</German>
 				<Polish>Ta wartość jest stosowana jako modyfikator wszystkich ustawień AI</Polish>
 				<Czech>Tato hodnota se použije jako modifikátor pro všechna nastavení AI.</Czech>
+				<French>Cette valeur est appliquée en tant que modificateur à tous les paramètres de l'IA</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Accuracy">
 				<Original>AI aiming accuracy</Original>
 				<German>KI-Zielgenauigkeit</German>
 				<Polish>Dokładność celowania AI</Polish>
 				<Czech>AI přesnost zaměření</Czech>
+				<French>Précision de visée de l'IA</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Shake">
 				<Original>AI aiming shake</Original>
 				<German>KI-Zielstabilität</German>
 				<Polish>Drgania/ruch broni AI</Polish>
 				<Czech>AI míření chvění</Czech>
+				<French>Oscillation de viser de l'IA</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Speed">
 				<Original>AI aiming speed</Original>
 				<German>KI-Zielgeschwindigkeit</German>
 				<Polish>Prędkość celowania AI</Polish>
 				<Czech>Rychlost míření AI</Czech>
+				<French>Vitesse de visée de l'IA</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Spotting_Distance">
 				<Original>AI spotting distance</Original>
 				<German>KI-Erkennungsdistanz</German>
 				<Polish>Odległość wykrywania AI</Polish>
 				<Czech>Vzdálenost pozorování AI</Czech>
+				<French>Distance de détection de l'IA</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Spotting_Time">
 				<Original>AI spotting time</Original>
 				<German>KI-Erkennungszeit</German>
 				<Polish>Czas wykrywania AI</Polish>
 				<Czech>Doba pozorování AI</Czech>
+				<French>Temps de détection de l'IA</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Tooltip_Note">
 				<Original>Note: Final AI skill is affected by AI settings in server's profile</Original>
 				<German>Hinweis: Die endgültige KI-Fähigkeit wird von den KI-Einstellungen im Profil des Servers beeinflusst.</German>
 				<Polish>Uwaga: Na ostateczną umiejętność AI wpływ mają ustawienia AI w profilu serwera</Polish>
 				<Czech>Poznámka: Konečná dovednost AI je ovlivněna nastavením AI v profilu serveru</Czech>
+				<French>Remarque: la compétence d'IA finale est affectée par les paramètres d'IA du profil serveur</French>
 			</Key>
 		</Container>
 		<Container name="Perf">
@@ -782,6 +896,7 @@
 				<German>Performance</German>
 				<Polish>Wydajność</Polish>
 				<Czech>Výkon</Czech>
+				<French>Performance</French>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Player">
 				<Original>AI to Player spawn Distance</Original>
@@ -812,18 +927,21 @@
 				<German>LADE</German>
 				<Polish>ŁADOWANIE</Polish>
 				<Czech>NAČÍTÁNÍ</Czech>
+				<French>CHARGEMENT</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Complete">
 				<Original>LOAD COMPLETE</Original>
 				<German>LADEN ABGESCHLOSSEN</German>
 				<Polish>ŁADOWANIE ZAKOŃCZONE</Polish>
 				<Czech>NAČÍTÁNÍ KOMPLETNÍ</Czech>
+				<French>CHARGEMENT EFFECTUÉ</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Failed">
 				<Original>LOAD FAILED</Original>
 				<German>LADEN FEHLGESCHLAGEN</German>
 				<Polish>ŁADOWANIE SIĘ NIE POWIODŁO</Polish>
 				<Czech>NAČÍTÁNÍ SELHALO</Czech>
+				<French>CHARGEMENT ÉCHOUÉ</French>
 			</Key>
 		</Container>
 		<Container name="Autoload">
@@ -832,48 +950,56 @@
 				<German>Automaisches Laden</German>
 				<Polish>Auto ładowanie</Polish>
 				<Czech>Automatické načítání</Czech>
+				<French>Chargement automatique</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Disabled">
 				<Original>Currently disabled, enable in CBA settings</Original>
 				<German>Derzeit deaktiviert, aktivierbar in den CBA-Einstellungen</German>
 				<Polish>Obecnie wyłączone, włącz w ustawieniach CBA</Polish>
 				<Czech>V současné době zakázáno, povolit v nastavení CBA</Czech>
+				<French>Actuellement désactivé, activez dans les paramètres CBA</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_NoSaves">
 				<Original>No saves found</Original>
 				<German>Keine Spielstände gefunden</German>
 				<Polish>Nie znaleziono zapisów gry</Polish>
 				<Czech>Nebyly nalezeny žádné uložené</Czech>
+				<French>Aucune sauvegarde trouvée</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_NoSavesForMap">
 				<Original>No saves found for this map</Original>
 				<German>Keine Spielstände für diese Karte gefunden</German>
 				<Polish>Nie znaleziono zapisów gry dla tej mapy</Polish>
 				<Czech>Pro tuto mapu nebyly nalezeny žádné uložené</Czech>
+				<French>Aucune sauvegarde trouvée pour cette carte</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Version">
 				<Original>Most recent save for this map is an incompatible version</Original>
 				<German>Der letze Spielstand auf dieser Karte hat eine inkompatible Version</German>
 				<Polish>Najnowszy zapis gry na tej mapie jest niezgodny z tą wersją Vindicty</Polish>
 				<Czech>Poslední uložení pro tuto mapu je nekompatibilní verze</Czech>
+				<French>La sauvegarde la plus récente pour cette carte est une version incompatible</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Factions">
 				<Original>Most recent save for this map has incompatible factions</Original>
 				<German>Der letze Spielstand auf dieser Karte hat inkompatible Fraktionen</German>
 				<Polish>Najnowszy zapis gry na tej mapie zawiera niezgodne frakcje</Polish>
 				<Czech>Poslední uložení pro tuto mapu má nekompatibilní frakce</Czech>
+				<French>La sauvegarde la plus récente pour cette carte a des Factions incompatibles</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_CountDown">
 				<Original>Will autoload in %1s, login as admin to abort</Original>
 				<German>Wird automtisch in %1s geladen, zum Abbrechen als Admin anmelden</German>
 				<Polish>Wczyta się automatycznie za %1s, zaloguj się jako administrator, aby przerwać</Polish>
 				<Czech>Bude autoload v %1s, přihlásit se jako správce přerušit</Czech>
+				<French>Se chargera automatiquement dans %1s, connectez-vous en tant qu'administrateur pour abandonner</French>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_AdminAbort">
 				<Original>Autoload aborted as admin is present</Original>
 				<German>Automaisches Laden abgebrochen, da ein Admin vorhanden ist</German>
 				<Polish>Automatyczne ładowanie przerwane, ponieważ administrator jest obecny</Polish>
 				<Czech>Automatické načítání přerušeno, protože správce je přítomen</Czech>
+				<French>Le chargement automatique est interrompu car l'administrateur est présent</French>
 			</Key>
 		</Container>
 	</Package>
