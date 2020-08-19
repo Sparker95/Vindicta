@@ -165,7 +165,13 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// Check if we will need transport or not
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
-		private _dist = _srcGarrPos distance _tgtGarrPos;
+		private _dist = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _srcGarrPos, _tgtGarrPos);
+
+		if (_dist == -1) exitWith {
+			OOP_DEBUG_0("Destination is unreachable over ground");
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
 		if (_sendAnOfficer || _dist > REINFORCE_NO_TRANSPORT_DISTANCE_MAX) then {
 			_needTransport = true;
 		};
@@ -228,7 +234,12 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
 
 		// How much to scale the score for distance to target
-		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _srcGarrPos distance _tgtGarrPos);
+		private _dist = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _srcGarrPos, _tgtGarrPos);
+		if (_dist == -1) exitWith {
+			OOP_DEBUG_0("Destination is unreachable over ground");
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+		private _distCoeff = CALLSM1("CmdrAction", "calcDistanceFalloff", _dist);
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.
@@ -322,6 +333,8 @@ REGISTER_DEBUG_MARKER_STYLE("ReinforceCmdrAction", "ColorWhite", "mil_join");
 #define TARGET_POS [1000, 2, 3]
 
 ["ReinforceCmdrAction", {
+	CALLSM0("AICommander", "initStrategicNavGrid");
+
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
