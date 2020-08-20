@@ -266,6 +266,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			if(_enemyStr > 0) then {
 				private _modifiedEnemyEff = EFF_MUL(_enemyEff, AIR_GARRISON_EFF_PROFILE);
 				private _modifiedEnemyStr = EFF_SUM(_modifiedEnemyEff);
+				_modifiedEnemyStr = _modifiedEnemyStr min 90; // Fix for exponent making infinite value
 				// We also apply a response curve to stop air units responding vs weak enemy, but preference them vs strong:
 				// Its called softplus Relu https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Softplus
 				// See this function at https://www.desmos.com/calculator/ptlmv3tdcf
