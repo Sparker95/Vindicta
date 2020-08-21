@@ -15,7 +15,7 @@ if (isNil "_code") exitWith {
 
 if (_code isEqualType "") then {
 	_code = compile preprocessFileLineNumbers _code;
-	// Replace the scring in the hasm map with compiled code
+	// Replace the scring in the hash map with compiled code
 	t_loadouts_hashmap setVariable [_tag, _code];
 };
 
