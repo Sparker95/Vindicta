@@ -64,7 +64,7 @@ _veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["I_G_Offroad_01_F"]];
 
-_veh set [T_VEH_car_unarmed, ["I_G_Offroad_01_F"]];
+_veh set [T_VEH_car_unarmed, ["A3_AAF_offroad_unarmed"]];
 _veh set [T_VEH_car_armed, ["I_G_Offroad_01_armed_F"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["I_MRAP_03_F"]];
