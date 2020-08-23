@@ -30,6 +30,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\LDF.sqf",
     "Templates\Factions\NATO.sqf", 	
     "Templates\Factions\NATOPacific.sqf", 	
+    "Templates\Factions\NATOWoodland.sqf",
     "Templates\Factions\CSAT.sqf", 
     "Templates\Factions\CSATPacific.sqf",	
     "Templates\Factions\RHS_AAF_2020.sqf",
