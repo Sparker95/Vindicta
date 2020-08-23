@@ -634,6 +634,7 @@ CLASS("AIDebugPanel", "")
 				case "AIUnitCivilian": {WSP_UNIT_HUMAN_NAMES};
 				case "AIGroup": {WSP_GROUP_NAMES};
 				case "AIGarrison": {WSP_GARRISON_NAMES};
+				case "AIGarrisonAir": {WSP_GARRISON_NAMES};
 				default {["error", "error", "error", "error"]};
 			};
 			//diag_log format ["World state names: %1, _agentClass: %2", _wsNames, _agentClass];

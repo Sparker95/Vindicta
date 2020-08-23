@@ -151,7 +151,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _loadout = "";
 		if ([_class] call t_fnc_isLoadout) then {
 			_loadout = _class;
-			_class = _template # _catID # 0 # 0; // Default class name from the template
+			if (_catID == T_INF) then {
+				// Default class name from the template
+				_class = _template # _catID # 0 # 0;
+			} else {
+				// Class name is specified in vehicle loadout
+				_class = [_loadout] call t_fnc_getVehicleLoadoutClassName;
+			};
 		};
 
 		// Create the data array
@@ -424,7 +430,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						// Set loadout if requited
 						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
-						if (_loadout != NULL_OBJECT) then {
+						if (_loadout != "") then {
 							[_objectHandle, _loadout] call t_fnc_setUnitLoadout;
 						};
 						[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
@@ -505,6 +511,12 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						if (isNull _objectHandle) then {
 							OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
+						};
+
+						// Set vehicle loadout if needed
+						pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
+						if (_loadout != "") then {
+							[_objectHandle, _loadout] call t_fnc_setVehicleLoadout;
 						};
 
 						// Disabling this as it can cause intersections as other vehicles aren't detected during createVehicle
@@ -2620,7 +2632,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				pr _loadout = "";
 				if ([_newClass] call t_fnc_isLoadout) then {
 					_loadout = _newClass;
-					_newClass = _template # _catID # 0 # 0; // Default class name from the template
+					if (_catID == T_INF) then {
+						// Default class name from the template
+						_newClass = _template # _catID # 0 # 0; // Default class name from the template
+					} else {
+						// Class name is specified in vehicle loadout
+						_newClass = [_loadout] call t_fnc_getVehicleLoadoutClassName;
+					};
 				};
 				_serial set [UNIT_DATA_ID_CLASS_NAME, _newClass];
 				_serial set [UNIT_DATA_ID_LOADOUT, _loadout];

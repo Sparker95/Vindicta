@@ -95,6 +95,7 @@ while {true} do {
 		private _countMessagesMax = T_GETV("nMessagesInSeries");
 
 		// Start loading screen if we have no interface and there are too messages
+		/*
 		#ifndef _SQF_VM
 		if (!HAS_INTERFACE && count _msgQueue > _countMessagesMax) then {
 			startLoadingScreen ["Msg loop"];
@@ -102,6 +103,7 @@ while {true} do {
 			OOP_INFO_2("Start loading screen: %1, message queue is too big: %2", T_GETV("name"), count _msgQueue);
 		};
 		#endif
+		*/
 		FIX_LINE_NUMBERS()
 
 		while { count _msgQueue > 0 && _countMessages < _countMessagesMax } do {
@@ -225,6 +227,7 @@ while {true} do {
 			pr _categoryAboveMaxInterval = _intervalAveragePerObject > _intervalMax;
 
 			// Start loading screen if we are processing above max interval
+			/*
 			#ifndef _SQF_VM
 			if ( !HAS_INTERFACE && _categoryAboveMaxInterval) then {
 				startLoadingScreen ["Msg loop"];
@@ -232,6 +235,7 @@ while {true} do {
 				OOP_DEBUG_4("Start loading screen: %1, process category %2 is above max threshold: %3 > %4", T_GETV("name"), _cat select __PC_ID_TAG, _intervalAveragePerObject, _intervalMax);
 			};
 			#endif
+			*/
 			FIX_LINE_NUMBERS()
 
 			if ( ( _fractionsCurrent#_i <= _fractionsRequired#_i									// Process next object from this category if current update frequency fraction is below required level
@@ -359,10 +363,12 @@ while {true} do {
 		MUTEX_UNLOCK(_mutex);
 	};
 
+	/*
 	// End loading screen if it was ever started
 	if (_loadingScreenStarted) then {
 		endLoadingScreen;
 	};
+	*/
 
 	// Give time to other threads in the SQF scheduler
 	uisleep _sleepInterval;
