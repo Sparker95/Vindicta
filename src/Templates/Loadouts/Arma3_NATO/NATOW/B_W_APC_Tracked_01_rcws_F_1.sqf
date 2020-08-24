@@ -5,8 +5,6 @@
     // This code will be called upon vehicle construction
     {
         params ["_veh"];
-        private _randomCamo = selectRandom[0,1];
-        private _randomSLAT = selectRandom[0,1];
 [
 	_veh,
 	["Olive",1], 

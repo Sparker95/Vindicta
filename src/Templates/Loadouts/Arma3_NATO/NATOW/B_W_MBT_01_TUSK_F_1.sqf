@@ -9,7 +9,7 @@
 [
 	_veh,
 	["Olive",1], 
-	["showCamonetTurret",_randomCamo,"showCamonetHull",_randomCamo,"showBags",0.4]
+	["showCamonetTurret",0,"showCamonetHull",0,"showBags",0.4]
 ] call BIS_fnc_initVehicle;
     }
 ]

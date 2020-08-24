@@ -1,6 +1,6 @@
 [
     // Initial vehicle class name
-    "B_W_APC_Wheeled_01_cannon_F",
+    "B_W_MBT_01_cannon_F",
 
     // This code will be called upon vehicle construction
     {
@@ -8,7 +8,8 @@
 [
 	_veh,
 	["Olive",1], 
-	["showBags",0.4,"showCamonetHull",0,"showCamonetTurret",0,"showSLATHull",0,"showSLATTurret",0]
+	["showBags",0.4,"showCamonetTurret",1,"showCamonetHull",1]
 ] call BIS_fnc_initVehicle;
+
     }
 ]

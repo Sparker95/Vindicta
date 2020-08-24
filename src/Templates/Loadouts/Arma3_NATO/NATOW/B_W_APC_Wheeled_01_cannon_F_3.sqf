@@ -8,7 +8,7 @@
 [
 	_veh,
 	["Olive",1], 
-	["showBags",0.4,"showCamonetHull",0,"showCamonetTurret",0,"showSLATHull",0,"showSLATTurret",0]
+	["showBags",0.4,"showCamonetHull",0,"showCamonetTurret",0,"showSLATHull",1,"showSLATTurret",1]
 ] call BIS_fnc_initVehicle;
     }
 ]
