@@ -1,14 +1,15 @@
 [
     // Initial vehicle class name
-    "B_W_APC_Tracked_01_rcws_F",
+    "B_T_AFV_Wheeled_01_up_cannon_F",
 
     // This code will be called upon vehicle construction
     {
         params ["_veh"];
 [
 	_veh,
-	["Olive",1], 
-	["showCamonetHull",0.5,"showBags",0.4]
+	["Green",1], 
+	["showCamonetHull",0,"showCamonetTurret",0,"showSLATHull",0.5]
 ] call BIS_fnc_initVehicle;
+
     }
 ]

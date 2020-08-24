@@ -1,15 +1,14 @@
 [
     // Initial vehicle class name
-    "B_W_AFV_Wheeled_01_up_cannon_F",
+    "B_T_MBT_01_TUSK_F",
 
     // This code will be called upon vehicle construction
     {
         params ["_veh"];
 [
 	_veh,
-	["Green",1], 
-	["showCamonetHull",0,"showCamonetTurret",0,"showSLATHull",0.5]
+	["Olive",1], 
+	["showCamonetTurret",0,"showCamonetHull",0,"showBags",0.35]
 ] call BIS_fnc_initVehicle;
-
     }
 ]
