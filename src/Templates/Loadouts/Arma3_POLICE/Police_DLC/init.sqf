@@ -11,5 +11,7 @@ ADD_LOADOUT("Arma3_police_dlc_8",			"Arma3_POLICE\Police_DLC\A3_police_dlc_8.sqf
 ADD_LOADOUT("Arma3_police_dlc_9",			"Arma3_POLICE\Police_DLC\A3_police_dlc_9.sqf")
 ADD_LOADOUT("Arma3_police_dlc_10",			"Arma3_POLICE\Police_DLC\A3_police_dlc_10.sqf")
 ADD_LOADOUT("Arma3_police_dlc_officer",		"Arma3_POLICE\Police_DLC\A3_police_dlc_officer.sqf")
-
-
+ADD_LOADOUT("B_GEN_Offroad_01_gen_F_1_DLC",		"Arma3_POLICE\Police_DLC\B_GEN_Offroad_01_gen_F_1_DLC.sqf")
+ADD_LOADOUT("B_GEN_Offroad_01_comms_F_1",		"Arma3_POLICE\Police_DLC\B_GEN_Offroad_01_comms_F_1.sqf")
+ADD_LOADOUT("B_GEN_Offroad_01_covered_F_1",		"Arma3_POLICE\Police_DLC\B_GEN_Offroad_01_covered_F_1.sqf")
+ADD_LOADOUT("B_GEN_Van_02_transport_F_1",		"Arma3_POLICE\Police_DLC\B_GEN_Van_02_transport_F_1.sqf")

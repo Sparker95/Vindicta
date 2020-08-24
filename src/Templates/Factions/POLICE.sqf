@@ -46,7 +46,7 @@ _inf set [T_INF_officer, ["Arma3_police_officer", 0.50, /*"Arma3_police_14", 0.7
 //==== Vehicles ====
 _veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["B_GEN_Offroad_01_gen_F"]];
-_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F"]];
+_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F_1"]];
 
 //==== Drones ====
 _drone = []; _drone resize T_DRONE_SIZE;
