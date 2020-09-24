@@ -780,6 +780,10 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				private _unitData = CALLM0(_unit, "getMainData");
 				private _args = _unitData + [_groupType]; // P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_STRING("_className"), P_STRING("_groupType")
 				private _posAndDir = CALLM(_loc, "getSpawnPos", _args);
+
+				// Recreate group handle if needed, for some reason although we create it above, it might get deleted between these calls. Why, arma?
+				T_CALLM0("_createGroupHandle");
+
 				CALLM(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
 
@@ -869,6 +873,10 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			{
 				// todo improve this
 				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
+
+				// Recreate group handle if needed, for some reason although we create it above, it might get deleted between these calls. Why, arma?
+				T_CALLM0("_createGroupHandle");
+
 				CALLM2(_x, "spawn", _pos, 0);
 			} forEach _infUnits;
 
@@ -937,6 +945,10 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				pr _infSpawnPos = _pos;
 				{
 					pr _pos = _infSpawnPos getPos [random 15, random 360]; // Just put them anywhere
+
+					// Recreate group handle if needed, for some reason although we create it above, it might get deleted between these calls. Why, arma?
+					T_CALLM0("_createGroupHandle");
+
 					CALLM2(_x, "spawn", _pos, 0);
 				} forEach _infUnits;
 
