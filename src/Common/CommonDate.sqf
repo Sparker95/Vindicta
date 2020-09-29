@@ -3,14 +3,14 @@
 // _to - date
 vin_fnc_getTMinutesDiff = {
 	params ["_from", "_to"];
-	private _numberDiff = (_from call misc_fnc_dateToNumber) - (_to call misc_fnc_dateToNumber);
+	private _numberDiff = (datetonumber _from) - (datetonumber _to);
 	private _futureEvent = true;
 	if (_numberDiff < 0) then {
 		_numberDiff = -_numberDiff;
 		_futureEvent = false;
 	};
 	#ifndef _SQF_VM
-	private _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+	private _dateDiff = numberToDate [_from#0, _numberDiff];
 	#else
 	private _dateDiff = [0,0,0,0,0];
 	#endif
