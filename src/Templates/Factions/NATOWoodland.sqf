@@ -1,23 +1,15 @@
 /*
-███╗   ██╗ █████╗ ████████╗ ██████╗ 
-████╗  ██║██╔══██╗╚══██╔══╝██╔═══██╗
-██╔██╗ ██║███████║   ██║   ██║   ██║
-██║╚██╗██║██╔══██║   ██║   ██║   ██║
-██║ ╚████║██║  ██║   ██║   ╚██████╔╝
-╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ 
-http://patorjk.com/software/taag/#p=testall&v=3&f=Big%20Money-nw&t=NATO                              
-                         
 Vindicta Faction Template. Use this template as the basis for your template.
-Updated: August 2020 by Marvis and Spectrum
+Updated: August 2020 by Spectrum
 */
 
 _array = [];
 
 _array set [T_SIZE-1, nil];
 
-_array set [T_NAME, "tNATOP"]; // 														Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "NATO Pacific from base game."]; // 			Template display description
-_array set [T_DISPLAY_NAME, "Arma 3 NATO Pacific"]; // 											Template display name
+_array set [T_NAME, "tNATOWdl"]; // 														Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "NATO Woodland from the Contact DLC."]; // 			Template display description
+_array set [T_DISPLAY_NAME, "Arma 3 NATO Woodland"]; // 											Template display name
 _array set [T_FACTION, T_FACTION_military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 								Addons required to play this template
 
@@ -25,43 +17,43 @@ _array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; // 								Addons required 
 /* Infantry unit classes */
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf set [T_INF_default,  ["B_T_Soldier_F"]];					//Default infantry if nothing is found
+_inf set [T_INF_default,  ["B_W_Soldier_F"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["B_T_Soldier_SL_F"]]; // = 1
-_inf set [T_INF_TL, ["B_T_Soldier_TL_F"]]; // = 2
-_inf set [T_INF_officer, ["B_T_Officer_F"]]; // = 3
-_inf set [T_INF_GL, ["B_T_Soldier_GL_F"]]; // = 4
-_inf set [T_INF_rifleman, ["B_T_Soldier_F"]]; // = 5
-_inf set [T_INF_marksman, ["B_T_soldier_M_F"]]; // = 6
-_inf set [T_INF_sniper, ["B_T_Sniper_F"]]; // = 7
-_inf set [T_INF_spotter, ["B_T_Spotter_F"]]; // = 8
-_inf set [T_INF_exp, ["B_T_Soldier_Exp_F", "B_T_soldier_mine_F"]]; // = 9
-_inf set [T_INF_ammo, ["B_T_Soldier_A_F"]]; // = 10
-_inf set [T_INF_LAT, ["B_T_Soldier_LAT2_F"]]; // = 11
-_inf set [T_INF_AT, ["B_T_Soldier_LAT_F", 5, "B_T_Soldier_AT_F", 1]]; // = 12
-_inf set [T_INF_AA, ["B_T_Soldier_AA_F"]]; // = 13
-_inf set [T_INF_LMG, ["B_T_Soldier_AR_F"]]; // = 14
-_inf set [T_INF_HMG, ["B_T_Soldier_AR_F"]]; // = 15
-_inf set [T_INF_medic, ["B_T_Medic_F"]]; // = 16
-_inf set [T_INF_engineer, ["B_T_Engineer_F", "B_soldier_repair_F"]]; // = 17 
-_inf set [T_INF_crew, ["B_T_Crew_F"]]; // = 18
-_inf set [T_INF_crew_heli, ["B_T_Helicrew_F"]]; // = 19
-_inf set [T_INF_pilot, ["B_T_Pilot_F"]]; // = 20
-_inf set [T_INF_pilot_heli, ["B_T_Helipilot_F"]]; // = 21
-//_inf set [T_INF_survivor, []]; // = 22
-//_inf set [T_INF_unarmed, []]; // = 23
+_inf set [T_INF_SL, ["B_W_Soldier_SL_F"]]; // = 1
+_inf set [T_INF_TL, ["B_W_Soldier_TL_F"]]; // = 2
+_inf set [T_INF_officer, ["B_W_Officer_F"]]; // = 3
+_inf set [T_INF_GL, ["B_W_Soldier_GL_F"]]; // = 4
+_inf set [T_INF_rifleman, ["B_W_Soldier_F",3 , "B_W_RadioOperator_F", 1]]; // = 5
+_inf set [T_INF_marksman, ["B_W_soldier_M_F"]]; // = 6
+_inf set [T_INF_sniper, ["B_ghillie_lsh_F"]]; // = 7
+_inf set [T_INF_spotter, ["B_spotter_F"]]; // = 8
+_inf set [T_INF_exp, ["B_W_Soldier_Exp_F", "B_W_soldier_mine_F"]]; // = 9
+_inf set [T_INF_ammo, ["B_W_Soldier_A_F", "B_W_Soldier_AAR_F", "B_W_Soldier_AAA_F", "B_W_Soldier_AAT_F"]]; // = 10
+_inf set [T_INF_LAT, ["B_W_Soldier_LAT2_F"]]; // = 11
+_inf set [T_INF_AT, ["B_W_Soldier_LAT_F", 5, "B_W_Soldier_AT_F", 1]]; // = 12
+_inf set [T_INF_AA, ["B_W_Soldier_AA_F"]]; // = 13
+_inf set [T_INF_LMG, ["B_W_Soldier_AR_F"]]; // = 14
+_inf set [T_INF_HMG, ["B_W_Soldier_AR_F"]]; // = 15
+_inf set [T_INF_medic, ["B_W_Medic_F"]]; // = 16
+_inf set [T_INF_engineer, ["B_W_Engineer_F", "B_W_Soldier_Repair_F"]]; // = 17 
+_inf set [T_INF_crew, ["B_W_Crew_F"]]; // = 18
+_inf set [T_INF_crew_heli, ["B_W_Helicrew_F"]]; // = 19
+_inf set [T_INF_pilot, ["B_Pilot_F"]]; // = 20
+_inf set [T_INF_pilot_heli, ["B_W_Helipilot_F"]]; // = 21
+//_inf set [T_INF_survivor, ["B_Survivor_F"]]; // = 22
+//_inf set [T_INF_unarmed, ["B_Soldier_unarmed_F"]]; // = 23
 /* Recon unit classes */
-_inf set [T_INF_recon_TL, ["B_T_Recon_TL_F"]]; // = 24
-_inf set [T_INF_recon_rifleman, ["B_T_Recon_F"]]; // = 25
-_inf set [T_INF_recon_medic, ["B_T_Recon_M_F"]]; // = 26
-_inf set [T_INF_recon_exp, ["B_T_Recon_Exp_F"]]; // = 27
-_inf set [T_INF_recon_LAT, ["B_T_Recon_LAT_F"]]; // = 28
-_inf set [T_INF_recon_marksman, ["B_T_Recon_M_F"]]; // = 29
-_inf set [T_INF_recon_JTAC, ["B_T_Recon_JTAC_F"]]; // = 30
+_inf set [T_INF_recon_TL, ["B_W_Soldier_TL_F"]]; // = 24
+_inf set [T_INF_recon_rifleman, ["B_W_Soldier_F"]]; // = 25
+_inf set [T_INF_recon_medic, ["B_W_Medic_F"]]; // = 26
+_inf set [T_INF_recon_exp, ["B_W_Soldier_Exp_F"]]; // = 27
+_inf set [T_INF_recon_LAT, ["B_W_Soldier_LAT2_F"]]; // = 28
+_inf set [T_INF_recon_marksman, ["B_W_soldier_M_F"]]; // = 29
+_inf set [T_INF_recon_JTAC, ["B_W_RadioOperator_F"]]; // = 30
 /* Diver unit classes */
-//_inf set [T_INF_diver_TL, []]; // = 31
-//_inf set [T_INF_diver_rifleman, []]; // = 32
-//_inf set [T_INF_diver_exp, []]; // = 33
+//_inf set [T_INF_diver_TL, ["B_diver_TL_F"]]; // = 31
+//_inf set [T_INF_diver_rifleman, ["B_diver_F"]]; // = 32
+//_inf set [T_INF_diver_exp, ["B_diver_exp_F"]]; // = 33
 
 
 /* Vehicle classes */
@@ -70,13 +62,14 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["B_T_LSV_01_unarmed_F"]]; // = 0 Default if nothing found
 
 _veh set [T_VEH_car_unarmed, ["B_T_LSV_01_unarmed_F"]]; // = 1 – REQUIRED
-_veh set [T_VEH_car_armed, ["B_T_LSV_01_armed_F", "B_T_LSV_01_AT_F"]]; // = 2
+_veh set [T_VEH_car_armed, ["B_T_LSV_01_AT_F", "B_T_LSV_01_armed_F"]]; // = 2
 _veh set [T_VEH_MRAP_unarmed, ["B_T_MRAP_01_F"]]; // = 3 – REQUIRED
 _veh set [T_VEH_MRAP_HMG, ["B_T_MRAP_01_hmg_F"]]; // = 4 – REQUIRED
 _veh set [T_VEH_MRAP_GMG, ["B_T_MRAP_01_gmg_F"]]; // = 5 – REQUIRED
-_veh set [T_VEH_IFV, ["B_T_APC_Wheeled_01_cannon_F_1", "B_T_APC_Wheeled_01_cannon_F_2", "B_T_APC_Wheeled_01_cannon_F_3", "B_T_APC_Wheeled_01_cannon_F_4", "B_T_APC_Tracked_01_CRV_F_1"]]; // = 6 – REQUIRED
+_veh set [T_VEH_IFV, ["B_T_APC_Wheeled_01_cannon_F_1", "B_T_APC_Tracked_01_CRV_F_1"]]; // = 6 – REQUIRED
 _veh set [T_VEH_APC, ["B_T_APC_Tracked_01_rcws_F_1"]]; // = 7 – REQUIRED
-_veh set [T_VEH_MBT, ["B_T_MBT_01_cannon_F_1", "B_T_MBT_01_cannon_F_2", "B_T_MBT_01_TUSK_F_1", "B_T_MBT_01_TUSK_F_2", "B_T_AFV_Wheeled_01_cannon_F_1", "B_T_AFV_Wheeled_01_cannon_F_2", "B_T_AFV_Wheeled_01_up_cannon_F_1", "B_T_AFV_Wheeled_01_up_cannon_F_2"]]; // = 8 – REQUIRED
+_veh set [T_VEH_MBT, ["B_T_MBT_01_cannon_F_1", "B_T_MBT_01_cannon_F_2", "B_T_MBT_01_TUSK_F_1", "B_T_MBT_01_TUSK_F_2", "B_T_AFV_Wheeled_01_cannon_F_1", "B_T_AFV_Wheeled_01_cannon_F_2",
+ "B_T_AFV_Wheeled_01_up_cannon_F_1", "B_T_AFV_Wheeled_01_up_cannon_F_2"]]; // = 8 – REQUIRED
 _veh set [T_VEH_MRLS, ["B_T_MBT_01_mlrs_F"]]; // = 9
 _veh set [T_VEH_SPA, ["B_T_MBT_01_arty_F"]]; // = 10
 _veh set [T_VEH_SPAA, ["B_T_APC_Tracked_01_AA_F"]]; // = 11
