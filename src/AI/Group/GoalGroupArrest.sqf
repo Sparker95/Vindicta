@@ -15,6 +15,13 @@ CLASS("GoalGroupArrest", "GoalGroup")
 		params [P_THISCLASS, P_OOP_OBJECT("_AI")];
 
 		pr _group = GETV(_AI, "agent");
+
+		// Irrelevant if WEST side. Friendly bots do not arrest civilians.
+		pr _side = CALLM0(_group, "getSide");
+		if (_side == WEST) exitWith {
+			0;
+		};
+
 		pr _groupType = CALLM0(_group, "getType");		
 		if(_groupType != GROUP_TYPE_INF) exitWith { 0 };
 

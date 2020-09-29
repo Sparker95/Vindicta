@@ -767,6 +767,13 @@
 				<Original>Amount of gear found in military cargo crates and vehicles. Does not include construction resources.</Original>
 			</Key>
 
+			<Key ID="STR_Vindicta_Settings_Diff_AllowPlayerMarkers">
+				<Original>Allow Player Map Markers</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Diff_AllowPlayerMarkers_Tooltip">
+				<Original>Allows map markers of players shown on the map.</Original>
+			</Key>
+
 			<!-- Enemy Commander -->
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global">
 				<Original>Enemy Commander difficulty</Original>
