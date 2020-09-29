@@ -44,7 +44,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 2*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Reinforce";
+			text = "Reinforce / Occupy";
 		};
         class BUTTON_PATROL : MUI_BUTTON_TXT 
 		{
