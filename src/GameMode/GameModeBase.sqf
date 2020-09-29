@@ -592,7 +592,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		}];
 		addMissionEventHandler ["HandleDisconnect", {
 			params ["_unit", "_id", "_uid", "_name"];
-			if(alive _unit) then {
+			if(alive _unit && {(lifeState _unit) != "INCAPACITATED"}) then {
 				CALLM3(gGameMode, "savePlayerInfo", _uid, _unit, _name);
 			};
 			false;
