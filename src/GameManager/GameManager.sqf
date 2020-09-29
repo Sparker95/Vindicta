@@ -842,6 +842,8 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		["vin_diff_lootAmount",	"SLIDER",	[LOC("Diff_LootAmount"),	LOC("Diff_LootAmount")],[_section, LOC("Diff")],[0.5, 5, 1.0, 1],	true] call CBA_fnc_addSetting;
 
+		["vin_diff_allowPlayerMarkers", "CHECKBOX", [LOC("Diff_AllowPlayerMarkers"), LOC("Diff_AllowPlayerMarkers_Tooltip")], [_section, LOC("Diff")], true, true] call CBA_fnc_addSetting;
+
 		// Disabled for now until we work out how best to combine global and individual settings
 		// Difficulty - Cmdr
 		// ["vin_diff_cmdrGlobal",			"SLIDER",	[LOC("Diff_Cmdr_Global"),	LOC("Diff_Cmdr_Global_Tooltip")],			[_section, LOC("Diff")],[0, 2, 1, 2],	true] call CBA_fnc_addSetting;
