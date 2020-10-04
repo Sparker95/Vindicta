@@ -29,6 +29,8 @@ t_fnc_newCategory = COMPILE_COMMON("Templates\fn_newCategory.sqf");
 t_fnc_addLoadout = COMPILE_COMMON("Templates\fn_addLoadout.sqf");
 t_fnc_setUnitLoadout = COMPILE_COMMON("Templates\fn_setUnitLoadout.sqf");
 t_fnc_isLoadout = COMPILE_COMMON("Templates\fn_isLoadout.sqf");
+t_fnc_setVehicleLoadout = COMPILE_COMMON("Templates\fn_setVehicleLoadout.sqf");
+t_fnc_getVehicleLoadoutClassName = COMPILE_COMMON("Templates\fn_getVehicleLoadoutClassName.sqf");
 
 t_fnc_processTemplateItems = COMPILE_COMMON("Templates\fn_processTemplateItems.sqf");
 

@@ -450,7 +450,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Increase infantry capacity
 		if (_cap > 0) then {
 			private _capacityInf = T_GETV("capacityInf") + _cap;
-			_capacityInf = _capacityInf min CALLSM1("Location", "getCapacityInfForType", T_GETV("type"));
+			//_capacityInf = _capacityInf min CALLSM1("Location", "getCapacityInfForType", T_GETV("type"));
 			T_SETV("capacityInf", _capacityInf);
 			T_SETV_PUBLIC("capacityInf", _capacityInf);
 		};

@@ -103,3 +103,6 @@ CALL_COMPILE_COMMON("Templates\Loadouts\3CB_CCIVS\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TCIV\init.sqf");
 // 3CB Takistan Army
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TNA_B\init.sqf");
+// NATO LDF
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_NATO\NATO\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_NATO\NATOP\init.sqf");

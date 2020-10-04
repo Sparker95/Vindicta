@@ -36,7 +36,7 @@ FIX_LINE_NUMBERS()
 #define pr private
 
 // Maximum amount of entries into the unit allocation cache
-#define ALLOCATOR_CACHE_SIZE 5000
+#define ALLOCATOR_CACHE_SIZE (1024*10)
 
 //#define UNIT_ALLOCATOR_DEBUG
 

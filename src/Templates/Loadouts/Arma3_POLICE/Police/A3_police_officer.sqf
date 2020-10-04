@@ -15,9 +15,9 @@ removeHeadgear this;
 removeGoggles this;
 
 comment "Add weapons";
-this addWeapon "SMG_02_F";
+this addWeapon "SMG_01_F";
 this addPrimaryWeaponItem "optic_ACO_grn_smg";
-this addPrimaryWeaponItem "30Rnd_9x21_Mag_SMG_02";
+this addPrimaryWeaponItem "30Rnd_45ACP_Mag_SMG_01";
 this addWeapon "hgun_Pistol_heavy_02_F";
 this addHandgunItem "acc_flashlight_pistol";
 this addHandgunItem "6Rnd_45ACP_Cylinder";
@@ -28,12 +28,10 @@ this addVest "V_TacVest_blk_POLICE";
 
 comment "Add items to containers";
 for "_i" from 1 to 2 do {this addItemToUniform "FirstAidKit";};
+for "_i" from 1 to 2 do {this addItemToVest "6Rnd_45ACP_Cylinder";};
 this addItemToUniform "ACE_Chemlight_HiBlue";
-this addItemToUniform "30Rnd_9x21_Mag_SMG_02";
-for "_i" from 1 to 3 do {this addItemToVest "6Rnd_45ACP_Cylinder";};
 for "_i" from 1 to 2 do {this addItemToVest "Chemlight_blue";};
-for "_i" from 1 to 4 do {this addItemToVest "30Rnd_9x21_Mag_SMG_02";};
-for "_i" from 1 to 2 do {this addItemToVest "HandGrenade";};
+for "_i" from 1 to 3 do {this addItemToVest "30Rnd_45ACP_Mag_SMG_01";};
 this addHeadgear "H_Beret_gen_F";
 
 comment "Add items";

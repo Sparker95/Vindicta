@@ -24,7 +24,7 @@ if (isNil "_tName") exitWith {
 	diag_log format ["[Template] error: tempalte name was not specified for %1", _filePath];
 };
 
-diag_log format ["[Template] Initializing template from file: %1", _filePath];
+diag_log format ["[Template] Initializing template from file: %1, display name: %2", _filePath, _t select T_DISPLAY_NAME];
 
 // Check if description is provided
 private _tDescription = _t select T_DESCRIPTION;

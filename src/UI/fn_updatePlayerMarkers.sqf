@@ -15,7 +15,7 @@ pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
 
 // Alpha for enabled markers
 // If markers are disabled, we just set their alpha to 0
-pr _alphaEnabled = [0, 1] select gUIEnablePlayerMarkers;
+pr _alphaEnabled = [0, 1] select (gUIEnablePlayerMarkers && {if (! isNil "vin_diff_allowPlayerMarkers") then {vin_diff_allowPlayerMarkers} else {true} }); // vin_enablePlayerMarkers is from CBA settings
 
 // Delete markers for previous players which have been killed
 {

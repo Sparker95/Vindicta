@@ -320,6 +320,8 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 
+		/*
+		// Debug drawing of this is broken now, no idea why
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
 		if(_targetPos isEqualType []) then {
@@ -336,6 +338,7 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 			_mrk setMarkerAlpha 1;
 			_mrk setMarkerText T_CALLM("getLabel", [_world]);
 		};
+		*/
 
 		// private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 		// if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
@@ -755,6 +758,9 @@ if(isNil { GETSV("SupplyConvoyCmdrAction", "SupplyNames")}) then {
 #define TARGET_POS [1000, 2, 3]
 
 ["SupplyConvoyCmdrAction", {
+
+	CALLSM0("AICommander", "initStrategicNavGrid");
+
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);

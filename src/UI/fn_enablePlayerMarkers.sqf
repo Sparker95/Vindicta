@@ -2,6 +2,7 @@
 params [["_enable", true, [false]]];
 
 // We just set the global flag here
+// Note that CBA settings also write another variable, and the end result is AND between the two variables
 gUIEnablePlayerMarkers = _enable;
 
 // Add periodic update of player markers

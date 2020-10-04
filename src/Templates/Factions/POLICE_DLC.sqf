@@ -46,7 +46,7 @@ _inf set [T_INF_officer, ["Arma3_police_dlc_officer", 0.50, "Arma3_police_dlc_1"
 //==== Vehicles ====
 _veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["B_GEN_Offroad_01_gen_F"]];
-_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F", 2, "B_GEN_Offroad_01_comms_F", 1, "B_GEN_Offroad_01_covered_F", 1.75, "B_GEN_Van_02_transport_F", 1]]; // , "B_GEN_Van_02_vehicle_F" -- not enough seats in this
+_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F_1_DLC", 2, "B_GEN_Offroad_01_comms_F_1", 1, "B_GEN_Offroad_01_covered_F_1", 1.75, "B_GEN_Van_02_transport_F_1", 1]]; // , "B_GEN_Van_02_vehicle_F" -- not enough seats in this
 
 //==== Drones ====
 _drone = []; _drone resize T_DRONE_SIZE;

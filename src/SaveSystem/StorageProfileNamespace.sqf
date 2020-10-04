@@ -231,7 +231,7 @@ CLASS("StorageProfileNamespace", "Storage")
 		pr _prefix = _entry#RECORD_ID_PREFIX;
 
 		// Read all variables of this record and erase them
-		pr _allVariablesStr = __PNS getVariable [__NS_VAR_NAME(_prefix, __VAR_ALL_VARIABLES), []];
+		pr _allVariablesStr = __PNS getVariable [__NS_VAR_NAME(_prefix, __VAR_ALL_VARIABLES), "[]"];
 		#ifndef _SQF_VM
 		pr _allVariables = parseSimpleArray _allVariablesStr;
 		#else
