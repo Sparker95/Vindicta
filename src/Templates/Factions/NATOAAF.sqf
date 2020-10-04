@@ -28,7 +28,7 @@ _inf set [T_INF_LAT, ["B_soldier_LAT_F", "I_Soldier_LAT_F"]];
 _inf set [T_INF_AT, ["B_soldier_AT_F", "I_Soldier_AT_F"]];
 _inf set [T_INF_AA, ["B_soldier_AA_F", "I_Soldier_AA_F"]];
 _inf set [T_INF_LMG, ["B_soldier_AR_F", "I_Soldier_AR_F"]];
-_inf set [T_INF_HMG, ["B_HeavyGunner_F", "A3_AAF_HMG"]];
+_inf set [T_INF_HMG, ["B_HeavyGunner_F", "Arma3_AAF_HMG"]];
 _inf set [T_INF_medic, ["B_medic_F", "I_medic_F"]];
 _inf set [T_INF_engineer, ["B_engineer_F", "I_engineer_F"]];
 _inf set [T_INF_crew, ["B_crew_F", "I_crew_F"]];
