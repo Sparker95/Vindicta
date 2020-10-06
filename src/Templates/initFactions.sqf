@@ -53,7 +53,8 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\RHS_BWMOD_BW_Fleck.sqf",
     "Templates\Factions\RHS_BWMOD_BW_Trop.sqf",
     "Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf",
-    "Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf"
+    "Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf",
+    "Templates\Factions\NATOAAF.sqf"
 ];
 
 
