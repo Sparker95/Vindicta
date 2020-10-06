@@ -1127,13 +1127,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			case LOCATION_TYPE_UNKNOWN: { 0 }; // ??
 			case LOCATION_TYPE_CITY: { 50 };
 			case LOCATION_TYPE_CAMP: { 30 };
-			case LOCATION_TYPE_BASE: { 60 };
-			case LOCATION_TYPE_OUTPOST: { 40 };
+			case LOCATION_TYPE_BASE: { 80 };
+			case LOCATION_TYPE_OUTPOST: { 60 };
 			case LOCATION_TYPE_DEPOT: { 40 };
 			case LOCATION_TYPE_POWER_PLANT: { 40 };
 			case LOCATION_TYPE_POLICE_STATION: { 20 };
 			case LOCATION_TYPE_RADIO_STATION: { 30 };
-			case LOCATION_TYPE_AIRPORT: { 60 };
+			case LOCATION_TYPE_AIRPORT: { 80 };
 			case LOCATION_TYPE_ROADBLOCK: { 15 };
 			case LOCATION_TYPE_OBSERVATION_POST: { 10 };
 			case LOCATION_TYPE_RESPAWN: { 0 }; // ??

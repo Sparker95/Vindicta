@@ -105,6 +105,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
+		OOP_INFO_0("updateScore");
+
 		private _srcGarrId = T_GETV("srcGarrId");
 		private _tgtClusterId = T_GETV("tgtClusterId");
 
@@ -112,6 +114,15 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _srcGarrEff = GETV(_srcGarr, "efficiency");
 		private _srcGarrComp = GETV(_srcGarr, "composition");
+		private _srcType = GETV(_srcGarr, "type");
+
+		#ifdef OOP_INFO
+		if (_srcType == GARRISON_TYPE_AIR) then {
+			OOP_INFO_0("  Garrison type: air");
+		} else {
+			OOP_INFO_0("  Garrison type: ground");
+		};
+		#endif
 		
 		ASSERT_OBJECT(_srcGarr);
 
@@ -152,12 +163,14 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 #endif
 		FIX_LINE_NUMBERS()
 
+		OOP_INFO_1("  srcEff:   %1", _srcGarrEff);
+		OOP_INFO_1("  enemyEff: %1", _enemyEff);
+
 		// Bail if the garrison clearly can not destroy the enemy
 		if (count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+			OOP_INFO_0("  Garrison can not destroy target");
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
-
-		private _srcType = GETV(_srcGarr, "type");
 
 		private _needTransport = false;
 
@@ -177,7 +190,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		};
 
 		if (_dist == -1) exitWith {
-			OOP_DEBUG_0("Destination is unreachable over ground");
+			OOP_DEBUG_0("  Destination is unreachable over ground");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
@@ -217,25 +230,26 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		// Bail if we have failed to allocate resources
 		if (count _allocResult == 0) exitWith {
-			OOP_DEBUG_MSG("Failed to allocate resources: %1", [_allocArgs]);
+			OOP_DEBUG_MSG("  Failed to allocate resources: %1", [_allocArgs]);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
 
 		// Bail if remaining efficiency is below minimum level for this garrison
-		/*
-		// Disabled those for now, probably we want QRFs to be quite aggressive
 		private _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		// Disabled those for now, probably we want QRFs to be quite aggressive
+		/*
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
 			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
+		*/
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
 			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
-		*/
+		
 
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,
@@ -254,6 +268,9 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
 
 		// Air units prefer to attack higher threat targets only
+		/*
+		// Disabled for now, perhaps we want helicopters to attack people instead of standing at a place.
+		// By the way, helicopters are scored much higher in getDetachmentStrength
 		if(_srcType == GARRISON_TYPE_AIR) then {
 			// Air garrison likes to attack armor, and hates AA
 			// This equation will apply a weighting to the enemy efficiency and then calculate its modified strength.
@@ -261,7 +278,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			// It means our adjusted strength goes up a lot against armor and down a lot against AA, resulting in scoring 
 			// doing the same.
 			//											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
-			#define AIR_GARRISON_EFF_PROFILE 			[0.25,	1.5,	3,		1,		1,		1,		1,		-3,		1,		1,		1,		1,		1,		1]
+			#define AIR_GARRISON_EFF_PROFILE 			[1,		1.5,	3,		1,		1,		1,		1,		-3,		1,		1,		1,		1,		1,		1]
 			private _enemyStr = EFF_SUM(_enemyEff);
 			if(_enemyStr > 0) then {
 				private _modifiedEnemyEff = EFF_MUL(_enemyEff, AIR_GARRISON_EFF_PROFILE);
@@ -275,6 +292,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 				_detachEffStrength = _detachEffStrength * CLAMP_POSITIVE(_strengthScalar);
 			};
 		};
+		*/
 
 		// Air units care about distance less than ground units (check https://www.desmos.com/calculator/pjs09xfxkm to determine good values)
 		private _fallOffRate = if(_srcType == GARRISON_TYPE_AIR) then { 0.4 } else { 1 };
