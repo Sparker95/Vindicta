@@ -99,6 +99,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_startDateVar,						// Date to wait until
 				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
+				// todo add more parameters here
 		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);
 
 		private _moveAST_Args = [

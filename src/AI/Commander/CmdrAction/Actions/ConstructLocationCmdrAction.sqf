@@ -88,7 +88,9 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change if successful2
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_startDateVar,						// Date to wait until
-				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
+				_splitGarrIdVar,					// Garrison to wait (checks it is still alive)
+				-1,									// Target, although here there is none, so it's -1
+				CMDR_ACTION_STATE_END];			// State to return when the target is dead
 		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);
 
 		// 
