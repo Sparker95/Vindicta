@@ -1340,7 +1340,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 							{
 								_x params ["_className", "_itemCount"];
 								_intemCount = vin_diff_lootAmount * _itemCount;
-								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
+								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.9, 1.5, 2])];
 							} forEach t_ACEMedicalItems_cargo;
 						};
 
@@ -1396,7 +1396,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						if (isClass (configfile >> "CfgPatches" >> "kat_main")) then {
 							{
 								_x params ["_className", "_itemCount"];
-								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
+								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.6, 1, 1.5])];
 							} forEach t_KATitems_Vehicle;
 						};
 

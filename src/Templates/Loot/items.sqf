@@ -6,17 +6,15 @@ t_miscItems_civ_WW2 = [];
 
 // KAT class names (addon name: kat_main)
 t_KATitems_Vehicle = [
-                ["kat_chestSeal", 5],
-                ["kat_PainKiller", 5]
+                ["kat_chestSeal", 5]
                 ];
 
 // KAT cargo items, ACE items are added because the other array contains ACE blood so it will load this instead.
 t_KATitems_Cargo = [
-                ["kat_chestSeal", 100],
-                ["kat_PainKiller", 100],
-                ["kat_accuvac", 100],
-                ["kat_guedel", 100],
-                ["kat_X_AED", 30],
+                ["kat_chestSeal", 80],
+                ["kat_accuvac", 10],
+                ["kat_guedel", 30],
+                ["kat_X_AED", 10],
                 ["kat_crossPanel", 30],
                 ["kat_bloodIV_O", 10],
                 ["kat_bloodIV_A", 30],
