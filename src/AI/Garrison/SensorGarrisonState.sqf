@@ -143,6 +143,11 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		pr _requiredCrew = 0;
 		pr _assignedCrew = 0;
 
+		// Find combat vehicles which are not in groups, we must put them into groups later so that bots can use them
+		pr _allCombatVehiclesInGroup = _vehUnits findIf {
+			(CALLM0(_x, "getSubcategory") in T_VEH_combat) && { IS_NULL_OBJECT(CALLM0(_x, "getGroup")) }
+		} == -1;
+
 		// Find non static vehicle groups that don't have enough drivers or turret operators
 		pr _haveTurretOperators = true;
 		pr _haveDrivers = true;
@@ -176,7 +181,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		// Groups are balanced if we have assigned as much crew as possible, and no more than required, and group types reflect their contents correctly
 		// All other inf should be in separate groups
 		pr _balanced = _assignedCrew == MINIMUM(_requiredCrew, _nInfGarrison);
-		[_worldState, WSP_GAR_GROUPS_BALANCED, _balanced && _groupTypesCorrect] call ws_setPropertyValue;
+		[_worldState, WSP_GAR_GROUPS_BALANCED, _balanced && _groupTypesCorrect && _allCombatVehiclesInGroup] call ws_setPropertyValue;
 
 		//OOP_INFO_3("Infantry amount: %1, all infantry seats: %2, driver seats: %3", _nInfGarrison, _nSeatsAll, _nDriversAll);
 
@@ -192,7 +197,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		pr _gar = T_GETV("gar");
 		// If garrison is not spawned, run the check less often
 		if (CALLM0(_gar, "isSpawned")) then {
-			10
+			13
 		} else {
 			120
 		};

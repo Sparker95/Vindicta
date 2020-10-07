@@ -96,7 +96,6 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 	public override METHOD(postDeserialize)
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage"), P_NUMBER("_version")];
 
-		private _version = CALLM0(_storage, "getVersion");
 		if (_version < 28) then {
 			// Initialize these to invalid values
 			T_SETV("failTargetDead", CMDR_ACTION_STATE_END);
