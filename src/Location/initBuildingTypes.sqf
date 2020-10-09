@@ -371,7 +371,17 @@ location_bp_cargo_medium =
 	[
 		["Land_House_Small_01_F"],
 		[[2.54961,251.88,0.575955,0],[4.77418,287.64,0.575955,0]]
-	]
+	],
+
+	// RHS PKL
+	[["Land_rhspkl_hut_01"],[[5.24106,-96.798,1.37074,270.959],[5.28796,-84.5465,1.37074,270.959]]],
+    [["Land_rhspkl_hut_02"],[[5.83803,189.625,1.38538,0],[4.45634,192.565,1.38538,0]]],
+    [["Land_rhspkl_hut_03"],[[4.81163,198.186,1.3664,0],[4.72642,162.213,1.3664,0]]],
+    [["Land_rhspkl_hut_04"],[[4.99418,158.678,1.34299,0],[4.69744,186.632,1.34299,0]]],
+    [["Land_rhspkl_hut_05"],[[5.61876,180.351,1.40414,0],[3.74854,179.922,1.40414,0]]],
+    [["Land_rhspkl_hut_06"],[[1.01065,329.404,1.91617,1.18239],[1.09486,198.851,1.91617,0]]],
+    [["Land_rhspkl_hut_07"],[[0.730642,204.373,1.51519,0],[1.48428,349.72,1.51519,0]]],
+    [["Land_rhspkl_hut_08"],[[1.25072,23.5531,1.1439,88.9171],[1.08291,-25.4642,1.1439,269.327]]]
 ];
 
 // Buildings which can be used as police stations
@@ -476,7 +486,17 @@ location_bt_police =
 	"Land_House_Small_06_F",
 	"Land_House_Big_01_F",
 	"Land_GarageShelter_01_F",
-	"Land_House_Small_01_F"
+	"Land_House_Small_01_F",
+
+	// RHS PKL
+	"Land_rhspkl_hut_01",
+    "Land_rhspkl_hut_02",
+    "Land_rhspkl_hut_03",
+    "Land_rhspkl_hut_04",
+    "Land_rhspkl_hut_05",
+    "Land_rhspkl_hut_06",
+    "Land_rhspkl_hut_07",
+    "Land_rhspkl_hut_08"
 ];
 
 location_decorations_police =
@@ -638,6 +658,46 @@ location_bt_helipad =
 ];
 
 /*
+// !!!!! USE THIS FOR location_bp_cargo_medium !!!!!
+// This is BEAST of a code
+// You need to place houses and cargo boxes inside houses
+// Then select them all, and run the code to export cargo box positions
+
+_objects = get3DENSelected "object";
+
+_houses = _objects select {_x isKindOf "House"};
+_boxes = _objects select {_x isKindOf "ReammoBox_F"};
+
+_return = [];
+
+{
+    private _house = _x;
+    private _housePos = getPosWorld _house;
+    private _bb = boundingBoxReal _house;
+    (_bb#0) params ["_sx", "_sy", "_sz"];
+    private _radius = sqrt(_sx^2 + _sy^2);
+    private _boxesInside = _boxes select { (_house distance2D _x) < _radius };
+    private _boxPositions = [];
+    {
+        private _box = _x;
+        _boxPos = getPosWorld _x;
+
+        private _dirRel = (_housePos getDir _boxPos) - (direction _box);
+        private _zRel = _boxPos#2 - _housePos#2;
+        private _distRel = _housePos distance2D _boxPos;
+
+        _objDir = (direction _box) - (direction _house);
+
+        _boxPositions pushBack [_distRel, _dirRel, _zRel, _objDir];
+    } forEach _boxesInside;
+
+    _return pushBack [[typeOf _house], _boxPositions];
+} forEach _houses;
+
+_return;
+*/
+
+/*
 _newdir = direction b + 180;
 (vehicle player) setDir _newDir;
 vehicle player setPos ((b getPos [1.5, (direction b) + 240]) vectorAdd [0, 0, 4.4]);
@@ -727,8 +787,6 @@ _arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldTo
  
 _arrayExport
 */
-
-
 
 /*
 //Code to get class names of all selected eden objects
