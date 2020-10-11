@@ -8,6 +8,7 @@
 				<Polish>Wybierz</Polish>
 				<Czech>Vybrat</Czech>
 				<French>Sélectionner</French>
+				<Chinesesimp>选择</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_ACT_CANCEL">
 				<Original>Cancel</Original>
@@ -15,6 +16,7 @@
 				<Polish>Anuluj</Polish>
 				<Czech>zrušit</Czech>
 				<French>Annuler</French>
+				<Chinesesimp>取消</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_HINT">
 				<Original>Select an object</Original>
@@ -22,6 +24,7 @@
 				<Polish>Wybierz obiekt</Polish>
 				<Czech>Vyberte objekt</Czech>
 				<French>Sélectionnez un objet</French>
+				<Chinesesimp>选择一个物体</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_NO_OBJECT">
 				<Original>Not looking at anything</Original>
@@ -29,6 +32,7 @@
 				<Polish>Na nic nie patrzysz</Polish>
 				<Czech>zrušit výběr</Czech>
 				<French>Ne regarde rien</French>
+				<Chinesesimp>未指向任何东西</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_TARGET_HINT">
 				<Original>Loading to inventory in %1</Original>
@@ -36,6 +40,7 @@
 				<Polish>Ładowanie do ekwipunku w %1</Polish>
 				<Czech>Načítání do inventáře v% 1</Czech>
 				<French>Chargement dans l'inventaire dans %1</French>
+				<Chinesesimp>装载到%1的物品栏中</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNC_MODIFIER_HINT">
 				<Original>Shift and Ctrl keys change how many items you move at once</Original>
@@ -43,6 +48,7 @@
 				<Polish>Klawisze Shift i Ctrl zmieniają liczbę przedmiotów przenoszonych jednocześnie</Polish>
 				<Czech>Klávesy Shift a Ctrl mění počet položek, které přesouváte najednou</Czech>
 				<French>Les touches Maj et Ctrl modifient le nombre d'éléments que vous déplacez en une fois</French>
+				<Chinesesimp>Shift和Ctrl键能够更改移动物品的数量</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -54,6 +60,7 @@
 				<Polish>Arsenał</Polish>
 				<Czech>Arzenál</Czech>
 				<French>Arsenal</French>
+				<Chinesesimp>军火库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
 				<Original>Arsenal to external Inventory</Original>
@@ -61,6 +68,7 @@
 				<Polish>Arsenał do ekwipunku zewnętrznego</Polish>
 				<Czech>Arzenál do vnějšího inventáře</Czech>
 				<French>Arsenal vers l'inventaire externe</French>
+				<Chinesesimp>军火库至外部物品栏</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
 			<Original>Select something with an inventory to load into</Original>
@@ -68,6 +76,7 @@
 				<Polish>Wybierz coś z ekwipunkiem do załadowania przedmiotów</Polish>
 				<Czech>Vyberte z inventáře, do kterého se má načíst</Czech>
 				<French>Sélectionnez quelque chose avec un inventaire dans lequel charger</French>
+				<Chinesesimp>选择有物品栏的物体进行装载</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD">
 				<Original>External Inventory to Arsenal</Original>
@@ -75,6 +84,7 @@
 				<Polish>Zewnętrzny ekwipunek do Arsenału</Polish>
 				<Czech>Externí inventář do Arsenalu</Czech>
 				<French>Inventaire externe à l'Arsenal</French>
+				<Chinesesimp>外部物品栏至军火库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD_DESC">
 				<Original>Please select an object with an inventory, or another Arsenal to load from</Original>
@@ -82,6 +92,7 @@
 				<Polish>Wybierz obiekt z ekwipunkiem lub inny Arsenał, z którego można załadować aktualny</Polish>
 				<Czech>Vyberte objekt s inventářem nebo jiný arzenál, ze který chcete načíst</Czech>
 				<French>Veuillez sélectionner un objet avec un inventaire ou un autre Arsenal à partir duquel charger</French>
+				<Chinesesimp>请选择有物品栏的物体，或另一个军火库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
 				<Original>Not looking at an object</Original>
@@ -89,6 +100,7 @@
 				<Polish>Nie patrzysz na żaden obiekt</Polish>
 				<Czech>Nedíváme se na objekt</Czech>
 				<French>Ne regarde pas l'objet</French>
+				<Chinesesimp>未指向物体</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
 				<Original>Object too far away</Original>
@@ -96,6 +108,7 @@
 				<Polish>Obiekt jest za daleko</Polish>
 				<Czech>Objekt je příliš daleko</Czech>
 				<French>Objet trop loin</French>
+				<Chinesesimp>所选物体过远</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
 				<Original>Object does not have any inventory or Arsenal</Original>
@@ -103,6 +116,7 @@
 				<Polish>Obiekt nie ma żadnego ekwipunku ani nie jest Arsenałem</Polish>
 				<Czech>Objekt nemá žádný inventář ani arzenál</Czech>
 				<French>L'objet n'a pas d'inventaire ni d'Arsenal</French>
+				<Chinesesimp>所选物体没有物品栏，也并非军火库</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -114,6 +128,7 @@
 				<Polish>Otwórz garaż</Polish>
 				<Czech>Otevřít garáž</Czech>
 				<French>Garage ouvert</French>
+				<Chinesesimp>开启车库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNG_ACT_STOREVEHICLE">
 				<Original>Garage Vehicle</Original>
@@ -121,6 +136,7 @@
 				<Polish>Schowaj pojazd do garażu</Polish>
 				<Czech>vozidlo v garáži</Czech>
 				<French>Garage Véhicule</French>
+				<Chinesesimp>停靠载具</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR1">
 				<Original>Vehicle too far away</Original>
@@ -128,6 +144,7 @@
 				<Polish>Pojazd jest za daleko</Polish>
 				<Czech>Vozidlo je příliš daleko</Czech>
 				<French>Véhicule trop éloigné</French>
+				<Chinesesimp>载具过远</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR2">
 				<Original>Not looking at a vehicle</Original>
@@ -135,6 +152,7 @@
 				<Polish>Nie patrzysz się na pojazd</Polish>
 				<Czech>Nedíváme se na vozidlo</Czech>
 				<French>Ne regarde pas le véhicule</French>
+				<Chinesesimp>未指向任何载具</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -146,6 +164,7 @@
 				<Polish>Tankuj pojazd</Polish>
 				<Czech>Natankovat</Czech>
 				<French>Ravitailler</French>
+				<Chinesesimp>加油</Chinesesimp>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_REFUELOPTION">
 				<Original>Refuel cargo or tank</Original>
@@ -153,6 +172,7 @@
 				<Polish>Tankuj ładunek lub zbiornik</Polish>
 				<Czech>Doplňte náklad nebo palivo</Czech>
 				<French>Ravitailler la citerne ou le réservoir</French>
+				<Chinesesimp>为储油箱或储油罐加油</Chinesesimp>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELTANK">
 				<Original>Tank</Original>
@@ -160,6 +180,7 @@
 				<Polish>Zbiornik</Polish>
 				<Czech>Palivo</Czech>
 				<French>Réservoir</French>
+				<Chinesesimp>储油罐</Chinesesimp>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELCARGO">
 				<Original>Cargo</Original>
@@ -167,6 +188,7 @@
 				<Polish>Ładunek</Polish>
 				<Czech>Náklad</Czech>
 				<French>Cargaison</French>
+				<Chinesesimp>储油箱</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -178,6 +200,7 @@
 				<Polish>Przezbrój</Polish>
 				<Czech>Přezbrojit</Czech>
 				<French>Réarmer</French>
+				<Chinesesimp>弹药补给</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -189,6 +212,7 @@
 				<Polish>Napraw</Polish>
 				<Czech>Opravit</Czech>
 				<French>Réparer</French>
+				<Chinesesimp>维修</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -202,6 +226,7 @@
 				<Polish>WYKRYTY</Polish>
 				<Czech>NEPŘÁTELSKÝ</Czech>
 				<French>DANGER</French>
+				<Chinesesimp>显著敌对</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_SUSPICIOUS">
 				<Original>SUSPICIOUS</Original>
@@ -209,6 +234,7 @@
 				<Polish>PODEJRZANY</Polish>
 				<Czech>PODEZŘELÝ</Czech>
 				<French>MÉFIANT</French>
+				<Chinesesimp>可疑身份</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_UNDERCOVER">
 				<Original>UNDERCOVER</Original>
@@ -216,6 +242,7 @@
 				<Polish>UTAJNIONY</Polish>
 				<Czech>V UTAJENÍ</Czech>
 				<French>HORS DE DANGER</French>
+				<Chinesesimp>卧底身份</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_COMPROMISED">
 				<Original>COMPROMISED</Original>
@@ -223,6 +250,7 @@
 				<Polish>ZDRADZONY</Polish>
 				<Czech>V OHROŽENÍ</Czech>
 				<French>COMPROMIS</French>
+				<Chinesesimp>身份暴露</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Hints">
@@ -232,6 +260,7 @@
 				<Polish>WYKRYTY: BROŃ</Polish>
 				<Czech>OVERT: ZBRANĚ</Czech>
 				<French>APPARENCE: ARMER</French>
+				<Chinesesimp>显著敌对：武器</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_DOWNED">
 				<Original>INCAPACITATED</Original>
@@ -239,6 +268,7 @@
 				<Polish>NIEPRZYTOMNY</Polish>
 				<Czech>NESCHOPNÝ</Czech>
 				<French>INCONSCIENT</French>
+				<Chinesesimp>昏迷</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_SURRENDER">
 				<Original>SURRENDERED</Original>
@@ -246,6 +276,7 @@
 				<Polish>PODDAJE SIĘ</Polish>
 				<Czech>VZDAL</Czech>
 				<French>RENDU</French>
+				<Chinesesimp>已投降</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_HOSTILITY">
 				<Original>OVERT: WEAPON DISCHARGED!</Original>
@@ -253,6 +284,7 @@
 				<Polish>WYKRYTY: WYSTRZELONO Z BRONI!</Polish>
 				<Czech>OVERT: ZBRAŇ VYBITÁ!</Czech>
 				<French>APPARENCE: ARME DÉCHARGÉE!</French>
+				<Chinesesimp>显著敌对：武器射击！</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEAR">
 				<Original>SUSPICIOUS OUTFIT</Original>
@@ -260,6 +292,7 @@
 				<Polish>PODEJRZANY STRÓJ</Polish>
 				<Czech>PODEZŘELÉ OBLEČENÍ</Czech>
 				<French>TENUE SUSPECTE</French>
+				<Chinesesimp>可疑外表</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_MILVEH">
 				<Original>OVERT: MILITARY VEHICLE</Original>
@@ -267,6 +300,7 @@
 				<Polish>WYKRYTY: POJAZD WOJSKOWY</Polish>
 				<Czech>OVERT: VOJENSKÉ VOZIDLO</Czech>
 				<French>APPARENCE: VÉHICULE MILITAIRE</French>
+				<Chinesesimp>显著敌对：军用载具</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEARVEH">
 				<Original>SUSPICIOUS OUTFIT VISIBLE</Original>
@@ -274,6 +308,7 @@
 				<Polish>WIDOCZNY PODEJRZANY STRÓJ</Polish>
 				<Czech>PODEZŘELÉ OBLEČENÍ VIDITELNÉ</Czech>
 				<French>TENUE SUSPECTE VISIBLE</French>
+				<Chinesesimp>可疑外表可见</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_CLOSINGIN">
 				<Original>THEY ARE GOING TO SPOT YOU!</Original>
@@ -281,6 +316,7 @@
 				<Polish>ONI CIĘ ZOBACZĄ!</Polish>
 				<Czech>UVIDÍ TĚ!</Czech>
 				<French>ILS VOUS ONT REPÉRER!</French>
+				<Chinesesimp>他们要发现你了！</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPBEHAVIOR">
 				<Original>SUSPICIOUS BEHAVIOUR</Original>
@@ -288,6 +324,7 @@
 				<Polish>PODEJRZANE ZACHOWANIE</Polish>
 				<Czech>PODEZŘELÉ CHOVÁNÍ</Czech>
 				<French>COMPORTEMENT SUSPECT</French>
+				<Chinesesimp>可疑行为</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_OFFROAD">
 				<Original>TOO FAR FROM ROADS</Original>
@@ -295,6 +332,7 @@
 				<Polish>ZA DALEKO OD DROGI</Polish>
 				<Czech>PŘÍLIŠ DALEKO OD SILNICE</Czech>
 				<French>HORS PISTE</French>
+				<Chinesesimp>离道路过远</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_ALLOWEDAREA">
 				<Original>THIS AREA IS BEING WATCHED! STAY ON THE ROAD!</Original>
@@ -302,6 +340,7 @@
 				<Polish>JESTEŚ OBSERWOWANY! POZOSTAŃ NA DRODZE!</Polish>
 				<Czech>TATO OBLAST JE SLEDOVÁNA! ZŮSTAŇTE NA CESTĚ!</Czech>
 				<French>CETTE ZONE EST SURVEILLÉE! RESTEZ SUR LA ROUTE!</French>
+				<Chinesesimp>该地区受到监控！不要离开道路！</Chinesesimp>
 			</Key> 
 			<Key ID="STR_UM_HINT_MILAREA">
 				<Original>MILITARY AREA</Original>
@@ -309,6 +348,7 @@
 				<Polish>OBSZAR ZASTRZEŻONY</Polish>
 				<Czech>VOJENSKÁ OBLAST</Czech>
 				<French>ZONE MILITAIRE</French>
+				<Chinesesimp>军事禁区</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
@@ -316,6 +356,7 @@
 				<Polish>SCHWYTANY</Polish>
 				<Czech>ZAJETÍ</Czech>
 				<French>CAPTIF</French>
+				<Chinesesimp>俘虏</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_MORPHINE">
 				<Original>INJECTING SOME MORPHINE?</Original>
@@ -323,6 +364,7 @@
 				<Polish>WSTRZYKIWANIE MORFINY?</Polish>
 				<Czech>PÍCHNOUT SI MORFIUM?</Czech>
 				<French>INJECTER DE LA MORPHINE?</French>
+				<Chinesesimp>来点吗啡吗？</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_ILLEGAL">
 				<Original>ILLEGAL ACTION</Original>
@@ -330,6 +372,7 @@
 				<Polish>CZYN NIELEGALNY</Polish>
 				<Czech>PROTIPRÁVNÍ JEDNÁNÍ</Czech>
 				<French>ACTION ILLÉGALE</French>
+				<Chinesesimp>非法行为</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
@@ -337,6 +380,7 @@
 				<Polish>PATRZENIE DO EKWIPUNKU</Polish>
 				<Czech>PŘÍSTUP K INVENTÁŘI</Czech>
 				<French>DANS L'INVENTAIRE</French>
+				<Chinesesimp>使用物品栏</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_HINT_COMPROMISEDVIC">
 				<Original>COMPROMISED VEHICLE</Original>
@@ -344,14 +388,17 @@
 				<Polish>POSZUKIWANY POJAZD</Polish>
 				<Czech>OHROŽENÉ VOZIDLO</Czech>
 				<French>VÉHICULE COMPROMIS</French>
+				<Chinesesimp>已暴露载具</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Actions">
 			<Key ID="STR_UM_ACTION_UNTIE_SELF">
 				<Original>Untie yourself</Original>
+				<Chinesesimp>为自己解绑</Chinesesimp>
 			</Key>
 			<Key ID="STR_UM_ACTION_UNTIE_TARGET">
 				<Original>Untie</Original>
+				<Chinesesimp>解绑</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -365,6 +412,7 @@
 				<Polish>Dla tej kontrolki nie ma podpowiedzi.</Polish>
 				<Czech>Pro tento ovládací prvek není k dispozici žádná nápověda pro kontext.</Czech>
 				<French>Aucune indication de contexte n'est disponible pour ce contrôle.</French>
+				<Chinesesimp>该功能无可用提示。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_LISTBOX">
 				<Original>This list displays all known intel. Click on a row to display only that piece of intel on your map.</Original>
@@ -372,6 +420,7 @@
 				<Polish>Ta lista zawiera wszystkie znane dane wywiadowcze. Kliknij wiersz, aby wyświetlić tylko ten element wywiadu na mapie.</Polish>
 				<Czech>Tento seznam zobrazuje všechny známé informace. Kliknutím na řádek zobrazíte pouze tuto informaci na mapě.</Czech>
 				<French>Cette liste affiche tous les renseignements connues. Cliquez sur une ligne pour afficher uniquement ce renseignement sur votre carte.</French>
+				<Chinesesimp>该列表列出乐所有已知情报。点击其中一个会让地图上的其它情报隐藏。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ACTIVE">
 				<Original>Press to toggle the display of active intel drawn on your map.</Original>
@@ -379,6 +428,7 @@
 				<Polish>Naciśnij, aby przełączyć wyświetlanie aktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení aktivních informací nakreslených na mapě.</Czech>
 				<French>Cliquez pour affichager le renseignement comme "actif" et qu'il apparaisse sur votre carte.</French>
+				<Chinesesimp>点击切换地图上有效情报的显示。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_INACTIVE">
 				<Original>Press to toggle the display of active intel drawn on your map.</Original>
@@ -386,6 +436,7 @@
 				<Polish>Naciśnij, aby przełączyć wyświetlanie planowanych, nieaktywnych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení plánovaných, neaktivních informací nakreslených na mapě.</Czech>
 				<French>Cliquez pour affichager le renseignement comme "actif" et qu'il apparaisse sur votre carte.</French>
+				<Chinesesimp>点击切换地图上有效情报的显示。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_INTEL_ENDED">
 				<Original>Press to toggle the display of old, ended intel drawn on your map.</Original>
@@ -393,6 +444,7 @@
 				<Polish>Naciśnij, aby przełączyć wyświetlanie starych, zakończonych danych wywiadowczych narysowanych na mapie.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení starých, ukončených informací nakreslených na mapě.</Czech>
 				<French>Cliquez pour affichager le renseignement comme "terminer" sur votre carte.</French>
+				<Chinesesimp>点击切换地图上已过时情报的显示。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_NOTIF">
 				<Original>Press to remove red alert icons on locations.</Original>
@@ -400,6 +452,7 @@
 				<Polish>Naciśnij, aby usunąć czerwone ikony alertów w lokalizacjach.</Polish>
 				<Czech>Stisknutím tlačítka odeberete červené výstražné ikony na místech.</Czech>
 				<French>Cliquez pour supprimer les icônes d'alerte rouges des différents endroits.</French>
+				<Chinesesimp>点击移出各个地点的红色警报标志。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_INTELP">
 				<Original>Press to toggle the display of the intel panel. Useful if you want to see the entire map.</Original>
@@ -407,6 +460,7 @@
 				<Polish>Naciśnij, aby przełączyć wyświetlanie panelu danych wywiadowczych. Przydatne, jeśli chcesz zobaczyć całą mapę.</Polish>
 				<Czech>Stisknutím přepínáte zobrazení panelu Intel. Užitečné, pokud chcete vidět celou mapu.</Czech>
 				<French>Cliquez pour changer l'affichage du panneau des renseignements. Utile si vous voulez voir la carte entièrement.</French>
+				<Chinesesimp>点击切换情报面板的显示。适用于需要浏览全图时。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_LOC">
 				<Original>Press to toggle our custom locations being shown on your map. That includes outposts and cities.</Original>
@@ -414,6 +468,7 @@
 				<Polish>Naciśnij, aby przełączyć nasze niestandardowe lokalizacje wyświetlane na mapie. Dotyczy to placówek wojskowych i miast.</Polish>
 				<Czech>Stisknutím přepínáte naše vlastní lokality zobrazené na mapě. To zahrnuje základny a města.</Czech>
 				<French>Cliquez pour afficher vos emplacements personnalisés sur la carte. Cela comprend les avant-postes et les villes.</French>
+				<Chinesesimp>点击切换地图上自定义地点的显示。这包括前哨和城市。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_CMUI_BUTTON_PLAYERS">
 				<Original>Press to toggle players being shown on your map.</Original>
@@ -421,6 +476,7 @@
 				<Polish>Naciśnij, aby przełączać wyświetlanie graczy na mapie.</Polish>
 				<Czech>Stisknutím přepínáte hráče zobrazené na mapě.</Czech>
 				<French>Cliquez pour affichés les joueurs sur la carte.</French>
+				<Chinesesimp>点击切换地图上玩家的显示。</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOCALIZE_MUI_BUTTON_DUMMY">
 				<Original>Press to toggle this setting on or off.</Original>
@@ -428,6 +484,7 @@
 				<Polish>Naciśnij, aby włączyć lub wyłączyć to ustawienie.</Polish>
 				<Czech>Stisknutím toto nastavení zapínáte nebo vypnete.</Czech>
 				<French>Cliquez pour activer ou désactiver ce paramètre.</French>
+				<Chinesesimp>点击切换设定的开关。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_SIDE">
 				<Original>Sort intel list by faction side. WEST for BLUFOR, EAST for OPFOR, and IND for Independent.</Original>
@@ -435,6 +492,7 @@
 				<Polish>Sortuj listę wywiadowczą według stron frakcji. WEST dla BLUFOR, EAST dla OPFOR i IND dla Independent.</Polish>
 				<Czech>Seřaďte seznam informací podle frakcí. WEST pro BLUFOR, VÝCHOD pro OPFOR a IND pro nezávislé.</Czech>
 				<French>Trier la liste de renseignement par Faction. WEST pour BLUFOR, EAST pour OPFOR et IND pour Independent.</French>
+				<Chinesesimp>按阵营排列情报。West指蓝方、East指红方、IND指独立方。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_STATUS">
 				<Original>Sort intel list by current status of the intel items.</Original>
@@ -442,6 +500,7 @@
 				<Polish>Sortuj listę danych wywiadowczych według aktualnego stanu elementów wywiadu.</Polish>
 				<Czech>Seřaďte seznam informací podle aktuálního stavu položek intelu.</Czech>
 				<French>Trier la liste de renseignement par statut actuel des éléments de renseignement.</French>
+				<Chinesesimp>按当前所处状态排列情报。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TYPE">
 				<Original>Sort intel list by type.</Original>
@@ -449,6 +508,7 @@
 				<Polish>Sortuj listę danych wywiadowczych według rodzaju.</Polish>
 				<Czech>Seřaďte seznam informací podle typu.</Czech>
 				<French>Trier la liste de renseignement par type.</French>
+				<Chinesesimp>按类型排列情报。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_SORTINGBTN_TIME">
 				<Original>Sort intel list by most recent or oldest intel.</Original>
@@ -456,6 +516,7 @@
 				<Polish>Sortuj listę danych wywiadowczych według najnowszych lub najstarszych danych wywiadowczych.</Polish>
 				<Czech>Seřaďte seznam informací podle nejnovějších nebo nejstarších informací.</Czech>
 				<French>Trier la liste de renseignements en fonction des informations les plus récentes ou les plus anciennes.</French>
+				<Chinesesimp>按新旧顺序排列情报。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_TOOLTIP">
 				<Original>Double click to center on attack. Use Shift + LMB or Ctrl + LMB to multiselect items.</Original>
@@ -463,6 +524,7 @@
 				<Polish>Kliknij dwukrotnie, aby wyśrodkować na danej akcji. Użyj Shift + LMB lub Ctrl + LMB, aby zaznaczyć wiele pozycji.</Polish>
 				<Czech>Dvojitým kliknutím na střed útoku. K vícenásobnému výběru položek použijte Shift + LMB nebo Ctrl + LMB.</Czech>
 				<French>Double-cliquez pour centrer sur l'attaque. Utilisez Maj + clique gauche ou Ctrl + clique gauche pour sélectionner plusieurs éléments.</French>
+				<Chinesesimp>双击居中到攻击点。用Shift+左键或Ctrl+左键进行多选。</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="IntelTxt">
@@ -472,6 +534,7 @@
 				<Polish>Brak dostępnego opisu.</Polish>
 				<Czech>Není k dispozici žádný popis.</Czech>
 				<French>Pas de description disponible.</French>
+				<Chinesesimp>无可用介绍。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_MULTISELECT">
 				<Original>Select a single intel item to view a detailed description.</Original>
@@ -479,6 +542,7 @@
 				<Polish>Wybierz pojedynczy element wywiadu, aby wyświetlić szczegółowy opis.</Polish>
 				<Czech>Chcete-li zobrazit podrobný popis, vyberte jednu položku intelu.</Czech>
 				<French>Sélectionnez un seul élément de renseignement pour afficher une description détaillée.</French>
+				<Chinesesimp>选择一项情报检视具体介绍。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_ATTACK">
 				<Original>The enemy commander has detected activity in this area and is dispatching an attack. Hold your ground and defeat enough attacks to stop the enemy from sending more.</Original>
@@ -486,6 +550,7 @@
 				<Polish>Dowódca wroga wykrył aktywność w tym obszarze i atakuje tę pozycję. Utrzymaj się i pokonaj wystarczającą liczbę ataków, aby powstrzymać wroga przed wysyłaniem kolejnych.</Polish>
 				<Czech>Nepřátelský velitel detekoval aktivitu v této oblasti a vysílá útok. Držte si pozici a porazit dostatek útoků zastavit nepřítele od odeslání více.</Czech>
 				<French>Le Commandant ennemi a détecté une activité dans cette zone et lance une attaque. Tenez bon et repoussez suffisamment d'attaques ennemi pour empêcher qu'il n'en arrive pas davantage.</French>
+				<Chinesesimp>敌军指挥官察觉到该区域的活动并派遣了部队。守住这里并通过挫败敌人的进攻来制止敌人的进一步增援。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_RB">
 				<Original>The enemy commander is constructing a roadblock at this location.</Original>
@@ -493,6 +558,7 @@
 				<Polish>W tym miejscu wrogi dowódca buduje punkt kontrolny.</Polish>
 				<Czech>Nepřátelský velitel staví zátarasy na tomto místě.</Czech>
 				<French>Le Commandant ennemi construit un barrage routier à cet endroit.</French>
+				<Chinesesimp>敌军指挥官正在此处设立关卡。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_REINFORCE">
 				<Original>Enemy troops are being sent to this location to reinforce it.</Original>
@@ -500,6 +566,7 @@
 				<Polish>Do tego miejsca wysyłane są wrogie jednostki, aby je wzmocnić.</Polish>
 				<Czech>Na toto místo jsou vysláni nepřátelské jednotky, aby ho posílili.</Czech>
 				<French>Des troupes de renfort ennemie sont envoyées à cet endroit.</French>
+				<Chinesesimp>敌军增援部队正派往此处。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_OFFICER">
 				<Original>A commanding officer is being sent to this location. If he arrives, he will take command and enable attacks from his destination. Intercept him or kill him at his destination – your choice.</Original>
@@ -507,6 +574,7 @@
 				<Polish>Dowódca jest wysyłany do tej lokalizacji. Jeśli przybędzie, przejmie dowodzenie i umożliwi ataki z miejsca docelowego. Przechwyć go lub zabij w miejscu docelowym - twój wybór.</Polish>
 				<Czech>Na toto místo je vyslán velící důstojník. Pokud dorazí, převezme velení a umožní útoky z cíle. Zachytit ho, nebo ho zabít v jeho cíli - vaše volba.</Czech>
 				<French>Un Commandant est envoyé à cet endroit. S'il arrive, il prendra le contrôle et ordonnera des attaques depuis cette zone. Interceptez-le ou tuez-le avant qu'il arrive à destination - Faites un choix !</French>
+				<Chinesesimp>一名指挥官正在前往此处。一旦抵达他便能接过指挥权并从他所处位置发动进攻。截杀他或在目的地干掉他——随你们喜好。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_BUILDING">
 				<Original>The enemy is resupplying a location with building resources. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some building resources.</Original>
@@ -514,6 +582,7 @@
 				<Polish>Wróg zaopatruje lokalizację w zasoby budowlane. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają, gdy dotrą na miejsce i zdobądź zasoby budowlane.</Polish>
 				<Czech>Nepřítel zásobuje místo stavebními zdroji. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, a obsažte některé stavební prostředky.</Czech>
 				<French>L'ennemi réapprovisionne un emplacement en ressources de construction par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des ressources de construction.</French>
+				<Chinesesimp>敌军正在向此处派发建筑物资。拦截运输车队或在他们抵达时目的地时发动进攻，把建筑物资缴获回来。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_AMMO">
 				<Original>The enemy is resupplying a location with ammunition. Intercept the transport, or attack the location they are headed to once they have arrived, and capture some ammunition.</Original>
@@ -521,6 +590,7 @@
 				<Polish>Wróg zaopatruje miejsce w amunicję. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają po przybyciu i zdobądź trochę amunicji.</Polish>
 				<Czech>Nepřítel zásobuje místo municí. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, a zajměte nějakou munici.</Czech>
 				<French>L'ennemi réapprovisionne un emplacement en munitions par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des munitions.</French>
+				<Chinesesimp>敌军正在向此处派发弹药物资。拦截运输车队或在他们抵达时目的地时发动进攻，把弹药物资缴获回来。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_MISC">
 				<Original>The enemy is resupplying a location with unknown items. Intercept the transport, or attack the location they are headed to once they have arrived.</Original>
@@ -528,6 +598,7 @@
 				<Polish>Wróg zaopatruje lokalizację w nieznane przedmioty. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają, gdy już dotrą.</Polish>
 				<Czech>Nepřítel zásobuje místo neznámými předměty. Zachyťte transport nebo zaútočí na místo, kam míří, jakmile dorazí.</Czech>
 				<French>L'ennemi réapprovisionne un emplacement avec des objets inconnus par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des objets inconnus.</French>
+				<Chinesesimp>敌军正在向此处派发不明物资。拦截运输车队或在他们抵达时目的地时发动进攻。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_MEDICAL">
 				<Original>The enemy is resupplying a location with medical items. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some medical supplies.</Original>
@@ -535,13 +606,15 @@
 				<Polish>Wróg zaopatruje miejsce w przedmioty medyczne. Przechwyć transport lub zaatakuj miejsce, do którego kierują się po przyjeździe, aby zdobyć zasoby medyczne.</Polish>
 				<Czech>Nepřítel zásobuje místo lékařskými předměty. Zachyťte transport, nebo zaútočte na místo, kam míří, jakmile dorazí, aby zachytili nějaké zdravotnické potřeby.</Czech>
 				<French>L'ennemi réapprovisionne un emplacement en fournitures médicales par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des fournitures médicales.</French>
+				<Chinesesimp>敌军正在向此处派发医疗物资。拦截运输车队或在他们抵达时目的地时发动进攻，把医疗物资缴获回来。</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_INTEL_CONV_EXPLOSIVES">
 				<Original>The enemy is transporting a cache of explosives. Intercept the transport, or attack the location they are headed to once they have arrived, to capture some explosives. Be careful not to blow it up!</Original>
 				<German>Der Feind versorgt einen Ort mit einer Ladung Sprengstoff. Fangen Sie den Transport ab oder greifen Sie den Ort an, zu dem er unterwegs ist.</German>
 				<Polish>Wróg transportuje materiały wybuchowe. Przechwyć transport lub zaatakuj miejsce, do którego zmierzają po przybyciu, aby schwytać niektóre materiały wybuchowe. Uważaj, aby go nie wysadzić!</Polish>
 				<Czech>Nepřítel převáží skrýš výbušnin. Zachyťte transport nebo zaútočte na místo, kam míří, jakmile dorazí, aby zachytili nějaké výbušniny. Dávejte pozor, abyste to vyhodit do povětří!</Czech>
-				<French>L'ennemi réapprovisionne un emplacement en caisses d'explosifs par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des caisses d'explosifs.
+				<French>L'ennemi réapprovisionne un emplacement en caisses d'explosifs par convoi. Attaquez-le à l'endroit où il se dirige ou avant qu'il n'y arrive et emparez-vous des caisses d'explosifs.</French>
+				<Chinesesimp>敌军正在运送一批爆炸物。拦截运输车队或在他们抵达时目的地时发动进攻，把爆炸物缴获回来。千万小心别弄炸了！</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -555,6 +628,7 @@
 				<Polish>Osiągnąłeś limit 5 zapisanych gier. Usuń zapisywane gry, aby kontynuować.</Polish>
 				<Czech>Dosáhli jste limitu savegame 5 savegames. Chcete-li pokračovat, odstraňte uložené hry.</Czech>
 				<French>Vous avez atteint la limite de 5 sauvegardes autorisé. Supprimez-en pour continuer.</French>
+				<Chinesesimp>你已达到游戏存档上限（5个）。删除存档后继续。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NEWSAVE_ENABLED">
 				<Original>Create a new save game.</Original>
@@ -562,6 +636,7 @@
 				<Polish>Utwórz nowy zapis gry.</Polish>
 				<Czech>Vytvořte novou uloženou hru.</Czech>
 				<French>Créez une nouvelle sauvegarde.</French>
+				<Chinesesimp>建立新游戏</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="TAB_INIT">
@@ -571,6 +646,7 @@
 				<Polish>BŁĄD: plik frakcji zawiera błędy. Sprawdź plik .RPT, aby uzyskać więcej informacji.</Polish>
 				<Czech>Chyba: Soubor frakce obsahuje chyby. Zkontrolujte. RPT soubor pro více informací.</Czech>
 				<French>ERREUR: le fichier des Factions contient des erreurs. Vérifiez votre fichier .RPT pour plus d'informations.</French>
+				<Chinesesimp>错误：阵营文件包含错误。检查你的.RPT文件获取更多信息。</Chinesesimp>
 			</Key>
 			<Key ID="STR_INIT_ERROR2">
 				<Original>ERROR: Missing addon:</Original>
@@ -578,6 +654,7 @@
 				<Polish>BŁĄD: brakujący dodatek:</Polish>
 				<Czech>Chyba: Chybí addon:</Czech>
 				<French>ERREUR: Mode manquant:</French>
+				<Chinesesimp>错误：缺少加载项：</Chinesesimp>
 			</Key>
 			<Key ID="STR_INIT_TOOLTIPHOVER">
 				<Original>Hover to show a description.</Original>
@@ -585,6 +662,7 @@
 				<Polish>Najedź kursorem, aby wyświetlić opis.</Polish>
 				<Czech>Chcete-li zobrazit popis, najeďte myší.</Czech>
 				<French>Survolez pour afficher une description.</French>
+				<Chinesesimp>鼠标指向显示介绍。</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -598,6 +676,7 @@
 				<Polish>*Vindicta</Polish>
 				<Czech>*Vindicta</Czech>
 				<French>*VINDICTA</French>
+				<Chinesesimp></Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Autoload">
@@ -607,6 +686,7 @@
 				<Polish>Auto Ładowanie</Polish>
 				<Czech>Automatické načtení</Czech>
 				<French>Chargement automatique</French>
+				<Chinesesimp>自动加载</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autoload_Enabled">
 				<Original>Enabled</Original>
@@ -614,6 +694,7 @@
 				<Polish>Włączone</Polish>
 				<Czech>Povoleno</Czech>
 				<French>Activer</French>
+				<Chinesesimp>开启</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autoload_Enabled_Tooltip">
 				<Original>Most recent save will be loaded automatically on mission start</Original>
@@ -621,6 +702,7 @@
 				<Polish>Ostatni zapis zostanie załadowane automatycznie na początku misji</Polish>
 				<Czech>Poslední uložení se automaticky načte při zahájení mise</Czech>
 				<French>La sauvegarde la plus récente sera chargée automatiquement au début de la mission</French>
+				<Chinesesimp>最新的存档将会在任务开始时自动加载</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Autosave">
@@ -630,6 +712,7 @@
 				<Polish>Auto Zapis</Polish>
 				<Czech>Automatické ukládání</Czech>
 				<French>Sauvegarde automatique</French>
+				<Chinesesimp>自动保存</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Enabled">
 				<Original>Enabled</Original>
@@ -637,6 +720,7 @@
 				<Polish>Włączone</Polish>
 				<Czech>Povoleno</Czech>
 				<French>Activer</French>
+				<Chinesesimp>开启</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Enabled_Tooltip">
 				<Original>Enable/disable auto save system</Original>
@@ -644,6 +728,7 @@
 				<Polish>Włącz/wyłącz system auto zapisu</Polish>
 				<Czech>Povolení nebo zakázání systému automatického ukládání</Czech>
 				<French>Activer/désactiver le système de sauvegarde automatique</French>
+				<Chinesesimp>开启/停止自动保存系统</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty">
 				<Original>On empty</Original>
@@ -651,6 +736,7 @@
 				<Polish>Gdy pusty</Polish>
 				<Czech>Na prázdné</Czech>
 				<French>Si serveur vide</French>
+				<Chinesesimp>空置时</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty_Tooltip">
 				<Original>Will auto save when the last player leaves the server</Original>
@@ -658,6 +744,7 @@
 				<Polish>Zapisuje się automatycznie, gdy ostatni gracz opuści serwer</Polish>
 				<Czech>Bude automaticky ukládat, když poslední hráč opustí server</Czech>
 				<French>Sauvegarde automatiquement lorsque le dernier joueur quitte le serveur</French>
+				<Chinesesimp>当最后一个玩家离开服务器后将会自动保存</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Interval">
 				<Original>Interval in hours (0 = disabled)</Original>
@@ -665,6 +752,7 @@
 				<Polish>Interwał w godzinach (0 = wyłączony)</Polish>
 				<Czech>Interval v hodinách (0 = zakázán)</Czech>
 				<French>Intervalle en heures (0 = désactivé)</French>
+				<Chinesesimp>间隔小时（0 = 关闭）</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_Interval_Tooltip">
 				<Original>Auto save will happen on this interval, setting to 0 will disable interval auto save</Original>
@@ -672,6 +760,7 @@
 				<Polish>W tym przedziale nastąpi automatyczne zapisywanie, ustawienie na 0 wyłączy automatyczne zapisywanie w odstępach</Polish>
 				<Czech>Automatické ukládání se stane v tomto intervalu, nastavení na 0 zakáže interval automatické ukládání</Czech>
 				<French>L'enregistrement automatique se produira à cet intervalle, le réglage sur 0 désactivera l'intervalle d'enregistrement automatique.</French>
+				<Chinesesimp>间隔时间内进行自动保存，设置为0时将会关闭自动保存间隔</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat">
 				<Original>In combat</Original>
@@ -679,6 +768,7 @@
 				<Polish>Podczas walki</Polish>
 				<Czech>V boji</Czech>
 				<French>Combat engagé</French>
+				<Chinesesimp>战斗时</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_In_Combat_Tooltip">
 				<Original>When enabled will allow autosaving when enemies are within 250m of a player, otherwise it will be delayed by up to 30 minutes after the scheduled time</Original>
@@ -686,6 +776,7 @@
 				<Polish>Włączenie tej opcji pozwoli na automatyczne zapisywanie, gdy wrogowie znajdą się w odległości 250m od gracza, w przeciwnym razie zapis zostanie opóźniony o 30 minut</Polish>
 				<Czech>Pokud je povoleno, umožní automatické úspory, když jsou nepřátelé do 250 m od hráče, jinak bude zpožděno až o 30 minut po plánovaném čase</Czech>
 				<French>Lorsqu'elle est activée, la sauvegarde automatique s'effectuera si les ennemis se trouvent à moins de 250 m d'un joueur. Sinon elle sera retardée de 30 minutes.</French>
+				<Chinesesimp>开启后将会允许敌人处于玩家周围250米以内时进行自动保存，否则保存功能将会延后至多30分钟</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Server">
@@ -695,6 +786,7 @@
 				<Polish>Serwer</Polish>
 				<Czech>Server</Czech>
 				<French>Serveur</French>
+				<Chinesesimp>服务器</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Server_Suspend">
 				<Original>Suspend when empty</Original>
@@ -702,6 +794,7 @@
 				<Polish>Zawieś, gdy serwer będzie pusty</Polish>
 				<Czech>Pozastavit, pokud je prázdný</Czech>
 				<French>Suspendre lorsqu'il est vide</French>
+				<Chinesesimp>空置时暂停</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Server_Suspend_Tooltip">
 				<Original>Time will be frozen when no players are connected to the server (applies to dedicated servers only)</Original>
@@ -709,6 +802,7 @@
 				<Polish>Czas zostanie zamrożony, gdy żaden z graczy nie zostanie podłączony do serwera (dotyczy tylko serwerów dedykowanych)</Polish>
 				<Czech>Čas bude zmrazen, pokud nejsou k serveru připojeni žádní hráči (platí pouze pro dedikované servery)</Czech>
 				<French>Suspendre lorsqu'il est vide</French>
+				<Chinesesimp>当服务器中没有玩家时时间将会暂停（限架设服务器）</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Game">
@@ -718,6 +812,7 @@
 				<Polish>Gra</Polish>
 				<Czech>Hra</Czech>
 				<French>Jeu</French>
+				<Chinesesimp>游戏</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Game_Speed">
 				<Original>Game Speed Multiplier</Original>
@@ -725,6 +820,7 @@
 				<Polish>Mnożnik prędkości gry</Polish>
 				<Czech>Násobitel rychlosti hry</Czech>
 				<French>Multiplicateur de vitesse de jeu</French>
+				<Chinesesimp>游戏速度乘数</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Game_Speed_Tooltip">
 				<Original>Determines how fast time progresses in the game</Original>
@@ -732,6 +828,7 @@
 				<Polish>Określa szybkość upływu czasu w grze</Polish>
 				<Czech>Určuje, jak rychle bude ve hře postupovat čas.</Czech>
 				<French>Détermine la vitesse à laquelle le temps progresse dans le jeu</French>
+				<Chinesesimp>决定游戏中时间的流速</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Diff">
@@ -741,6 +838,7 @@
 				<Polish>Poziom Trudności</Polish>
 				<Czech>Obtížnosti</Czech>
 				<French>Difficulté</French>
+				<Chinesesimp>难度</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Global">
 				<Original>Global difficulty</Original>
@@ -748,30 +846,38 @@
 				<Polish>Globalna trudność</Polish>
 				<Czech>Globální obtížnost</Czech>
 				<French>Difficulté globale</French>
+				<Chinesesimp>全局难度</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Global_Tooltip">
 				<Original>Affects enemy attack strength, frequency of external reinforcements.</Original>
+				<Chinesesimp>影响敌军的进攻强度、外来增援的频率。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Diff_Aggression">
 				<Original>Aggression Boost</Original>
+				<Chinesesimp>侵略性加值</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Aggression_Tooltip">
 				<Original>Value added to initial aggression level.</Original>
+				<Chinesesimp>增加初始侵略等级。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Diff_LootAmount">
 				<Original>Military Loot Amount</Original>
+				<Chinesesimp>军用战利品数量</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_LootAmount_Tooltip">
 				<Original>Amount of gear found in military cargo crates and vehicles. Does not include construction resources.</Original>
+				<Chinesesimp>军用货箱和载具里能找到的装备数量。不包括建筑物资。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Diff_AllowPlayerMarkers">
 				<Original>Allow Player Map Markers</Original>
+				<Chinesesimp>允许玩家地图标记</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_AllowPlayerMarkers_Tooltip">
 				<Original>Allows map markers of players shown on the map.</Original>
+				<Chinesesimp>允许地图上显示玩家标记。</Chinesesimp>
 			</Key>
 
 			<!-- Enemy Commander -->
@@ -781,6 +887,7 @@
 				<Polish>Poziom trudności wrogiego dowódcy</Polish>
 				<Czech>Obtížnost nepřátelského velitele</Czech>
 				<French>Niveau de difficulté du Commandant ennemi</French>
+				<Chinesesimp>敌军指挥官难度</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Global_Tooltip">
 				<Original>This value is applied as a modifier to all enemy Commander difficulty settings</Original>
@@ -788,6 +895,7 @@
 				<Polish>Ta wartość jest stosowana jako modyfikator do wszystkich ustawień wrogiego dowódcy</Polish>
 				<Czech>Tato hodnota je použita jako modifikátor pro všechna nastavení obtížnosti nepřátelského velitele</Czech>
 				<French>Cette valeur est appliquée en tant que modificateur à tous les paramètres de difficulté du Commandant ennemi</French>
+				<Chinesesimp>该数值应用在所有敌军指挥官难度设定上。</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate">
 				<Original>Reinforcement rate</Original>
@@ -795,6 +903,7 @@
 				<Polish>Szybkość wsparcia</Polish>
 				<Czech>Posílení</Czech>
 				<French>Taux de renforcement</French>
+				<Chinesesimp>增援频率</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Reinforcement_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy can reinforce</Original>
@@ -802,6 +911,7 @@
 				<Polish>Zmienia szybkość, z jaką wróg może się wzmacniać</Polish>
 				<Czech>Upravuje rychlost, s jakou může nepřítel posílit</Czech>
 				<French>Modifie la vitesse à laquelle l'ennemi peut se renforcer</French>
+				<Chinesesimp>更改敌军能够发动增援的频率</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate">
 				<Original>Escalation rate</Original>
@@ -809,6 +919,7 @@
 				<Polish>Wskaźnik eskalacji</Polish>
 				<Czech>Míra eskalace</Czech>
 				<French>Taux d'augmentation</French>
+				<Chinesesimp>激化率</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Escalation_Rate_Tooltip">
 				<Original>Modifies the rate at which the enemy escalates their force strength (e.g. how soon in the campaign they will start to use tanks)</Original>
@@ -816,6 +927,7 @@
 				<Polish>Zmienia szybkość, z jaką wróg zwiększa swoją siłę (np. Jak szybko w kampanii zacznie używać czołgów)</Polish>
 				<Czech>Upravuje rychlost, s jakou nepřítel eskaluje svou sílu (např. jak brzy v kampani začne používat tanky)</Czech>
 				<French>Modifie la vitesse à laquelle l'ennemi augmente sa force (par exemple, à quelle vitesse dans la campagne il commencera à utiliser des chars)</French>
+				<Chinesesimp>更改敌军加强自身军事力量的频率（例如：战役中敌军会多久开始开上坦克）</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence">
 				<Original>Persitence</Original>
@@ -823,6 +935,7 @@
 				<Polish>Persitence</Polish>
 				<Czech>Stálost</Czech>
 				<French>Persistance</French>
+				<Chinesesimp>顽固程度</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Diff_Cmdr_Persistence_Tooltip">
 				<Original>Modifies how persistent the enemy will be when sending repeated actions against you</Original>
@@ -830,6 +943,7 @@
 				<Polish>Zmienia wytrzymałość wroga podczas wysyłania powtarzających się działań przeciwko tobie</Polish>
 				<Czech>Upravuje, jak vytrvalý bude nepřítel při odesílání opakovaných akcí proti vám</Czech>
 				<French>Modifie la persistance de l'ennemi lors de l'envoi d'actions répétées contre vous</French>
+				<Chinesesimp>更改敌军重复向玩家发动同一行动的持续力度</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="AI">
@@ -839,6 +953,7 @@
 				<Polish>AI</Polish>
 				<Czech>AI</Czech>
 				<French>IA</French>
+				<Chinesesimp>AI</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global">
 				<Original>AI global</Original>
@@ -846,6 +961,7 @@
 				<Polish>Globalna trudności AI</Polish>
 				<Czech>AI global</Czech>
 				<French>IA global</French>
+				<Chinesesimp>全局AI</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Global_Tooltip">
 				<Original>This value is applied as a modifier to all AI settings</Original>
@@ -853,6 +969,7 @@
 				<Polish>Ta wartość jest stosowana jako modyfikator wszystkich ustawień AI</Polish>
 				<Czech>Tato hodnota se použije jako modifikátor pro všechna nastavení AI.</Czech>
 				<French>Cette valeur est appliquée en tant que modificateur à tous les paramètres de l'IA</French>
+				<Chinesesimp>该数值应用到所有AI设置上</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Accuracy">
 				<Original>AI aiming accuracy</Original>
@@ -860,6 +977,7 @@
 				<Polish>Dokładność celowania AI</Polish>
 				<Czech>AI přesnost zaměření</Czech>
 				<French>Précision de visée de l'IA</French>
+				<Chinesesimp>AI瞄准精度</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Shake">
 				<Original>AI aiming shake</Original>
@@ -867,6 +985,7 @@
 				<Polish>Drgania/ruch broni AI</Polish>
 				<Czech>AI míření chvění</Czech>
 				<French>Oscillation de viser de l'IA</French>
+				<Chinesesimp>AI瞄准抖动</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Speed">
 				<Original>AI aiming speed</Original>
@@ -874,6 +993,7 @@
 				<Polish>Prędkość celowania AI</Polish>
 				<Czech>Rychlost míření AI</Czech>
 				<French>Vitesse de visée de l'IA</French>
+				<Chinesesimp>AI瞄准速度</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Spotting_Distance">
 				<Original>AI spotting distance</Original>
@@ -881,6 +1001,7 @@
 				<Polish>Odległość wykrywania AI</Polish>
 				<Czech>Vzdálenost pozorování AI</Czech>
 				<French>Distance de détection de l'IA</French>
+				<Chinesesimp>AI察觉距离</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Spotting_Time">
 				<Original>AI spotting time</Original>
@@ -888,6 +1009,7 @@
 				<Polish>Czas wykrywania AI</Polish>
 				<Czech>Doba pozorování AI</Czech>
 				<French>Temps de détection de l'IA</French>
+				<Chinesesimp>AI察觉时间</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_AI_Tooltip_Note">
 				<Original>Note: Final AI skill is affected by AI settings in server's profile</Original>
@@ -895,6 +1017,7 @@
 				<Polish>Uwaga: Na ostateczną umiejętność AI wpływ mają ustawienia AI w profilu serwera</Polish>
 				<Czech>Poznámka: Konečná dovednost AI je ovlivněna nastavením AI v profilu serveru</Czech>
 				<French>Remarque: la compétence d'IA finale est affectée par les paramètres d'IA du profil serveur</French>
+				<Chinesesimp>注意：最终AI技能受服务器配置中的AI设置影响</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Perf">
@@ -904,26 +1027,33 @@
 				<Polish>Wydajność</Polish>
 				<Czech>Výkon</Czech>
 				<French>Performance</French>
+				<Chinesesimp>性能</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Player">
 				<Original>AI to Player spawn Distance</Original>
+				<Chinesesimp>AI与玩家刷新距离</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Player_Tooltip">
 				<Original>AI spawn distance measured from garrisons to nearest player.</Original>
+				<Chinesesimp>从驻军位置到距离最近的玩家之间的AI刷新距离。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI">
 				<Original>AI to enemy AI spawn Distance</Original>
+				<Chinesesimp>AI与敌军AI刷新距离</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI_Tooltip">
 				<Original>AI spawn distance measured from garrisons to nearest enemy AI.</Original>
+				<Chinesesimp>从驻军位置到距离最近的敌军AI之间的AI刷新距离。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Ambient_Civ_Multiplier">
 				<Original>Ambient Civilian Density</Original>
+				<Chinesesimp>平民密度</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Ambient_Civ_Multiplier_Tooltip">
 				<Original>Scales the amount of ambient civilians near players.</Original>
+				<Chinesesimp>玩家附近平民的数量比例</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
@@ -935,6 +1065,7 @@
 				<Polish>ŁADOWANIE</Polish>
 				<Czech>NAČÍTÁNÍ</Czech>
 				<French>CHARGEMENT</French>
+				<Chinesesimp>读取中</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Complete">
 				<Original>LOAD COMPLETE</Original>
@@ -942,6 +1073,7 @@
 				<Polish>ŁADOWANIE ZAKOŃCZONE</Polish>
 				<Czech>NAČÍTÁNÍ KOMPLETNÍ</Czech>
 				<French>CHARGEMENT EFFECTUÉ</French>
+				<Chinesesimp>读取完成</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Load_Failed">
 				<Original>LOAD FAILED</Original>
@@ -949,6 +1081,7 @@
 				<Polish>ŁADOWANIE SIĘ NIE POWIODŁO</Polish>
 				<Czech>NAČÍTÁNÍ SELHALO</Czech>
 				<French>CHARGEMENT ÉCHOUÉ</French>
+				<Chinesesimp>读取失败</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="Autoload">
@@ -958,6 +1091,7 @@
 				<Polish>Auto ładowanie</Polish>
 				<Czech>Automatické načítání</Czech>
 				<French>Chargement automatique</French>
+				<Chinesesimp>自动读取</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Disabled">
 				<Original>Currently disabled, enable in CBA settings</Original>
@@ -965,6 +1099,7 @@
 				<Polish>Obecnie wyłączone, włącz w ustawieniach CBA</Polish>
 				<Czech>V současné době zakázáno, povolit v nastavení CBA</Czech>
 				<French>Actuellement désactivé, activez dans les paramètres CBA</French>
+				<Chinesesimp>当前已禁用，请在CBA设置中开启</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_NoSaves">
 				<Original>No saves found</Original>
@@ -972,6 +1107,7 @@
 				<Polish>Nie znaleziono zapisów gry</Polish>
 				<Czech>Nebyly nalezeny žádné uložené</Czech>
 				<French>Aucune sauvegarde trouvée</French>
+				<Chinesesimp>未找到存档</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_NoSavesForMap">
 				<Original>No saves found for this map</Original>
@@ -979,6 +1115,7 @@
 				<Polish>Nie znaleziono zapisów gry dla tej mapy</Polish>
 				<Czech>Pro tuto mapu nebyly nalezeny žádné uložené</Czech>
 				<French>Aucune sauvegarde trouvée pour cette carte</French>
+				<Chinesesimp>未找到该图存档</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Version">
 				<Original>Most recent save for this map is an incompatible version</Original>
@@ -986,6 +1123,7 @@
 				<Polish>Najnowszy zapis gry na tej mapie jest niezgodny z tą wersją Vindicty</Polish>
 				<Czech>Poslední uložení pro tuto mapu je nekompatibilní verze</Czech>
 				<French>La sauvegarde la plus récente pour cette carte est une version incompatible</French>
+				<Chinesesimp>无法兼容该图最新的存档</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_Factions">
 				<Original>Most recent save for this map has incompatible factions</Original>
@@ -993,6 +1131,7 @@
 				<Polish>Najnowszy zapis gry na tej mapie zawiera niezgodne frakcje</Polish>
 				<Czech>Poslední uložení pro tuto mapu má nekompatibilní frakce</Czech>
 				<French>La sauvegarde la plus récente pour cette carte a des Factions incompatibles</French>
+				<Chinesesimp>该图最新的存档有不兼容的阵营</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_CountDown">
 				<Original>Will autoload in %1s, login as admin to abort</Original>
@@ -1000,6 +1139,7 @@
 				<Polish>Wczyta się automatycznie za %1s, zaloguj się jako administrator, aby przerwać</Polish>
 				<Czech>Bude autoload v %1s, přihlásit se jako správce přerušit</Czech>
 				<French>Se chargera automatiquement dans %1s, connectez-vous en tant qu'administrateur pour abandonner</French>
+				<Chinesesimp>将于%1秒后自动加载，以管理员身份登陆来终止</Chinesesimp>
 			</Key>
 			<Key ID="STR_Vindicta_GameManager_Autoload_AdminAbort">
 				<Original>Autoload aborted as admin is present</Original>
@@ -1007,6 +1147,7 @@
 				<Polish>Automatyczne ładowanie przerwane, ponieważ administrator jest obecny</Polish>
 				<Czech>Automatické načítání přerušeno, protože správce je přítomen</Czech>
 				<French>Le chargement automatique est interrompu car l'administrateur est présent</French>
+				<Chinesesimp>管理员在线，自动加载终止</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>
