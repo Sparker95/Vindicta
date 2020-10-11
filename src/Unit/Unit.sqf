@@ -1328,11 +1328,22 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					// Add ACE medical items
 					// NOTE that for cargo boxes and vehicles the arrays are different!
 					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
-						{
-							_x params ["_className", "_itemCount"];
-							_intemCount = vin_diff_lootAmount * _itemCount;
-							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
-						} forEach t_ACEMedicalItems_cargo;
+
+						if (isClass (configfile >> "CfgPatches" >> "kat_main")) then {
+							{
+								_x params ["_className", "_itemCount"];
+								_intemCount = vin_diff_lootAmount * _itemCount;
+								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
+							} forEach t_KATitems_Cargo;
+
+						} else {
+							{
+								_x params ["_className", "_itemCount"];
+								_intemCount = vin_diff_lootAmount * _itemCount;
+								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.9, 1.5, 2])];
+							} forEach t_ACEMedicalItems_cargo;
+						};
+
 					} else {
 						// Add standard medkits
 						_hO addItemCargoGlobal ["FirstAidKit", vin_diff_lootAmount * 80];
@@ -1381,6 +1392,14 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 							_x params ["_className", "_itemCount"];
 							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
 						} forEach t_ACEMedicalItems_vehicles;
+
+						if (isClass (configfile >> "CfgPatches" >> "kat_main")) then {
+							{
+								_x params ["_className", "_itemCount"];
+								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.6, 1, 1.5])];
+							} forEach t_KATitems_Vehicle;
+						};
+
 					} else {
 						// Add standard medkits
 						_hO addItemCargoGlobal ["FirstAidKit", 20];

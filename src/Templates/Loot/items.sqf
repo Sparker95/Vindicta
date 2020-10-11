@@ -4,6 +4,43 @@ t_miscItems_civ_modern = ["FirstAidKit", "ItemGPS", "ItemWatch", "ItemCompass", 
 // Basic WW2 items
 t_miscItems_civ_WW2 = [];
 
+// KAT class names (addon name: kat_main)
+t_KATitems_Vehicle = [
+                ["kat_chestSeal", 5]
+                ];
+
+// KAT cargo items, ACE items are added because the other array contains ACE blood so it will load this instead.
+t_KATitems_Cargo = [
+                ["kat_chestSeal", 80],
+                ["kat_accuvac", 10],
+                ["kat_guedel", 30],
+                ["kat_X_AED", 10],
+                ["kat_crossPanel", 30],
+                ["kat_bloodIV_O", 10],
+                ["kat_bloodIV_A", 30],
+                ["kat_bloodIV_B", 30],
+                ["kat_bloodIV_AB", 30],
+                ["kat_bloodIV_O_500", 10],
+                ["kat_bloodIV_A_500", 30],
+                ["kat_bloodIV_B_500", 30],
+                ["kat_bloodIV_AB_500", 30],
+                ["kat_bloodIV_O_250", 10],
+                ["kat_bloodIV_A_250", 30],
+                ["kat_bloodIV_B_250", 30],
+                ["kat_bloodIV_AB_250", 30],
+                ["ACE_fieldDressing", 100],
+                ["ACE_packingBandage", 100],
+                ["ACE_elasticBandage", 100],
+                ["ACE_tourniquet", 40],
+                ["ACE_splint", 30],
+                ["ACE_morphine", 40],
+                ["ACE_adenosine", 20],
+                ["ACE_epinephrine", 40],
+                ["ACE_quikClot", 40],
+                ["ACE_personalAidKit", 10],
+                ["ACE_surgicalKit", 10]
+                ];
+
 // ACRE class names and their quantities
 t_ACRERadios = [
 				["ACRE_SEM52SL",2], // medium-range radio, similar to the 148 and 152
