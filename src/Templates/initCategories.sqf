@@ -449,4 +449,6 @@ T_INV_backpacks			= 9;
 T_INV_NVGs				= 10;	// Night vision goggles
 T_INV_grenades			= 11;	// All kinds of grenades
 T_INV_explosives		= 12;	// Explosives
-T_INV_size				= 13;
+T_INV_primary_sorted	= 13;	// Arrays of arrays of form [_weapon, _magazines, _items],
+T_INV_secondary_sorted  = 14;	// For each infantry subcategory
+T_INV_size				= 15;

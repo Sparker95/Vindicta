@@ -5,6 +5,8 @@ Author: Sparker 30 september 2019
 
 #define pr private
 
+#define DEBUG_TEMPLATES
+
 #ifdef DEBUG_TEMPLATES
 #define LOG_TEMPLATE diag_log format
 #else
@@ -13,8 +15,10 @@ Author: Sparker 30 september 2019
 
 params ["_t", ["_returnString", false]];
 
+LOG_TEMPLATE ["t_fnc_processTemplateItems: %1", _t select T_NAME];
+
 pr _catID = T_INF;
-pr _catSize = 23; //T_INF_SIZE; // Quick fix to disable recon items from appearing in the weapon pool
+pr _catSize = T_INF_SIZE;
 pr _classDefault = _t#_catID#0#0;
 pr _subCatID = T_INF_default + 1; // We don't want to process the default loadout/unit!
 pr _group = createGroup WEST;
@@ -35,6 +39,11 @@ pr _handgunWeaponMagazines = [];
 pr _primaryWeaponItems = [];
 pr _secondaryWeaponItems = [];
 pr _handgunWeaponItems = [];
+
+// Weapons sorted by subcategories
+// Each array below has arrays of [_weapon, _magazines, _items]
+pr _primarySorted = []; _primarySorted resize T_INF_SIZE; _primarySorted = _primarySorted apply {[]};
+pr _secondarySorted = []; _secondarySorted resize T_INF_SIZE; _secondarySorted = _secondarySorted apply {[]};
 
 // General items
 pr _items = [];
@@ -88,6 +97,8 @@ while {_subCatID < _catSize} do {
 	pr _classArray = _t#_catID#_subCatID;
 	pr _primaryWeaponsThisSubcat = [];		// Primary and secondary weapons of this subcategory
 	pr _secondaryWeaponsThisSubcat = [];
+	pr _primaryThisSubcatSorted = [];
+	pr _secondaryThisSubcatSorted = [];
 	if (!isNil "_classArray") then {
 		{ // foreach classarray
 			if (_x isEqualType "") then {
@@ -135,43 +146,55 @@ while {_subCatID < _catSize} do {
 				if (_weap != "") then {
 					_weap = _weap call bis_fnc_baseWeapon;
 					LOG_TEMPLATE 	["  Weapon:			%1", _weap];
+					pr _weaponItems = (primaryWeaponItems _hO) select {_x != ""};
+
+					// Get mags for all muzzles to account for grenade launchers
+					pr _mags = [];
+					pr _cfgWeapon = configfile >> "cfgweapons" >> _weap;
+					{ 
+						_cfgMuzzle = if (_x == "this") then {_cfgWeapon} else {_cfgWeapon >> _x};
+						{ _mags pushBackUnique _x; } foreach getarray (_cfgMuzzle >> "magazines");
+					} foreach getarray (configfile >> "CfgWeapons" >> _weap >> "muzzles");
+
+					//pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
+					LOG_TEMPLATE	["  Weapon mags:	%1", _mags];
+					pr _magsIntersect = _mags arrayIntersect _unitMags;
+					LOG_TEMPLATE	["  Mags intersect:	%1", _magsIntersect];
+					pr _magsFinal = if (count _magsIntersect == 0) then { _mags; } else { _magsIntersect; };
+
 					if (! (_weap in _primaryWeapons)) then {
-						pr _items = primaryWeaponItems _hO;
-						pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
-						LOG_TEMPLATE	["  Weapon mags:	%1", _mags];
-						pr _magsIntersect = _mags arrayIntersect _unitMags;
-						LOG_TEMPLATE	["  Mags intersect:	%1", _magsIntersect];
 						_primaryWeapons pushBack _weap;
-						if (count _magsIntersect == 0) then {
-							_primaryWeaponMagazines pushBack _mags;				// Some configs are incomplete and point at base magazine item, just grab all magazines available in config then
-							LOG_TEMPLATE ["   Add to array: %1", _mags];
-						} else {
-							_primaryWeaponMagazines pushBack _magsIntersect;	// We need mags compatible with unit's weapon, but only those which are compatible with the weapon
-							LOG_TEMPLATE ["   Add to array: %1", _magsIntersect];
-						};
-						
-						{ if (_x != "") then {_primaryWeaponItems pushBackUnique _x} } forEach _items;
+						_primaryWeaponMagazines pushBack _magsFinal;
+						_primaryWeaponItems append _weaponItems;
 					};
+
 					_primaryWeaponsThisSubcat pushBackunique _weap;
+
+					if (_primaryThisSubcatSorted findIf {_x#0 == _weap} == -1) then {
+						_primaryThisSubcatSorted pushBack [_weap, _magsFinal, _weaponItems];
+					};
 				};
 
 				// Process secondary weapon
 				pr _weap = secondaryWeapon _hO;
 				if (_weap != "") then {
 					_weap = _weap call bis_fnc_baseWeapon;
-					if (! (_weap in _secondaryWeapons)) then {
-						pr _items = secondaryWeaponItems _hO;
-						pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
-						pr _magsIntersect = _mags arrayIntersect _unitMags;
+					pr _weaponItems = (secondaryWeaponItems _hO) select {_x != ""};
+					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
+					pr _magsIntersect = _mags arrayIntersect _unitMags;
+					pr _magsFinal = if (count _magsIntersect == 0) then { _mags; } else { _magsIntersect; };
+					
+					if (!(_weap in _secondaryWeapons)) then {
+						_secondaryWeaponMagazines pushBack _magsFinal;
 						_secondaryWeapons pushBack _weap;
-						if (count _magsIntersect == 0) then {
-							_secondaryWeaponMagazines pushBack _mags;
-						} else {
-							_secondaryWeaponMagazines pushBack _magsIntersect;
-						};
-						{ if (_x != "") then {_secondaryWeaponItems pushBackUnique _x} } forEach _items;
+						_secondaryWeaponItems append _weaponItems;
 					};
+
 					_secondaryWeaponsThisSubcat pushBackUnique _weap;
+
+					if (_secondaryThisSubcatSorted findIf {_x#0 == _weap} == -1) then {
+						_secondaryThisSubcatSorted pushBack [_weap, _magsFinal, _weaponItems];
+					};
 				};
 
 				// Process handgun weapon
@@ -248,6 +271,9 @@ while {_subCatID < _catSize} do {
 	pr _loadoutGearThis = [_primaryWeaponsThisSubcat, _secondaryWeaponsThisSubcat, _headgears, _vests];
 	_loadoutGear set [_subCatID, _loadoutGearThis];
 
+	_primarySorted set [_subcatID, _primaryThisSubcatSorted];
+	_secondarySorted set [_subcatID, _secondaryThisSubcatSorted];
+
 	_subCatID = _subCatID + 1;
 };
 
@@ -296,6 +322,16 @@ LOG_TEMPLATE ["  %1", _backpacks];
 LOG_TEMPLATE ["Night Vision:"];
 LOG_TEMPLATE ["  %1", _NVGs];
 
+LOG_TEMPLATE ["Primary weapons sorted:"];
+{
+	LOG_TEMPLATE ["  %1: %2", T_NAMES#T_INF#_forEachIndex, _x];
+} forEach _primarySorted;
+
+LOG_TEMPLATE ["Secondary weapons sorted:"];
+{
+	LOG_TEMPLATE ["  %1: %2", T_NAMES#T_INF#_forEachIndex, _x];
+} forEach _secondarySorted;
+
 // Export to string
 
 // Prepare arrays
@@ -333,7 +369,9 @@ pr _arrayExport = [	_primary,
 					_backpacks,
 					_NVGs,
 					_grenades,
-					_explosives];
+					_explosives,
+					_primarySorted,
+					_secondarySorted];
 
 // Export a human-readable string if requested
 if (_returnString) then {
