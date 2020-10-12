@@ -19,8 +19,8 @@ publicVariable "t_classnames_array";
 t_validTemplates = [];
 t_allTemplates = [];
 
-CALL_COMPILE_COMMON("Templates\Loot\init.sqf");
 CALL_COMPILE_COMMON("Templates\initCategories.sqf");
+CALL_COMPILE_COMMON("Templates\initLoot.sqf");
 CALL_COMPILE_COMMON("Templates\initCategoriesNames.sqf");
 CALL_COMPILE_COMMON("Templates\initEfficiency.sqf");
 CALL_COMPILE_COMMON("Templates\initComposition.sqf");

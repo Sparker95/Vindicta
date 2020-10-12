@@ -2152,9 +2152,14 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _count = {GET_OBJECT_CLASS(_x) == "QRFCmdrAction"} count _activeActions;
 		if (_count >= CMDR_MAX_ATTACK_ACTIONS) exitWith {[]};
 
+		OOP_INFO_0("generateAttackActions");
+		OOP_INFO_0("selecting garrisons:");
 		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
+
+			OOP_INFO_3("  garrison: %1, actual: %2, type: %3", _x, GETV(_x, "actual"), GETV(_x, "type"));
+
 			// Must be on our side and not involved in another action
-			(GETV(_x, "side") == _side) and
+			pr _return = (GETV(_x, "side") == _side) and
 			{ !CALLM0(_x, "isBusy") } and 
 			{
 				(
@@ -2170,7 +2175,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					// Consider all air garrisons
 					GETV(_x, "type") == GARRISON_TYPE_AIR
 				}
-			}
+			};
+
+			OOP_INFO_1("  selected: %1", _return);
+			_return;
 		};
 
 		// Candidates are clusters that are still alive in the future.

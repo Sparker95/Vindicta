@@ -109,6 +109,7 @@ CLASS("ActionStateTransition", "Storable")
 		} else {
 			// If we can't apply any transitions then go directly to END
 			// TODO: can we do something better than terminate?
+			OOP_WARNING_1("Failed to find transitions from state: %1", _state);
 			_state = CMDR_ACTION_STATE_END;
 		};
 		_state

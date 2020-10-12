@@ -341,14 +341,14 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 	METHOD(_skipTimeDusk)
 		params [P_THISOBJECT, P_NUMBER("_offsetFromDusk")];
 		private _hoursUntilNextDusk = call vin_fnc_getHoursUntilNextDusk;
-		(_hoursUntilNextDusk + _offsetFromDusk) remoteExecCall ["skipTime", ON_ALL];
+		(_hoursUntilNextDusk + _offsetFromDusk) remoteExecCall ["skipTime", 2]; // 2 = ON_SERVER
 		T_CALLM0("_updateTimeSkipTooltips");
 	ENDMETHOD;
 
 	METHOD(_skipTimeDawn)
 		params [P_THISOBJECT, P_NUMBER("_offsetFromDawn")];
 		private _hoursUntilNextDawn = call vin_fnc_getHoursUntilNextDawn;
-		(_hoursUntilNextDawn + _offsetFromDawn) remoteExecCall ["skipTime", ON_ALL];
+		(_hoursUntilNextDawn + _offsetFromDawn) remoteExecCall ["skipTime", 2]; // 2 = ON_SERVER
 		T_CALLM0("_updateTimeSkipTooltips");
 	ENDMETHOD;
 

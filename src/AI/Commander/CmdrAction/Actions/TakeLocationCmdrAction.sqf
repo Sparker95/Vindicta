@@ -85,6 +85,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
+		OOP_INFO_0("updateScore");
+
 		private _srcGarrId = T_GETV("srcGarrId");
 		private _tgtLocId = T_GETV("tgtLocId");
 
@@ -101,6 +103,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if garrison is dead
 		if(CALLM0(_srcGarr, "isDead")) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
+			OOP_INFO_0("  src garrison is dead");
 		};
 
 		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
@@ -127,6 +130,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if the garrison clearly can not destroy the enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
+			OOP_INFO_0("  src garrison is too weak");
 		};
 
 		// Set up flags for allocation algorithm
@@ -138,7 +142,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		pr _dist = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _srcGarrPos, _tgtLocPos);
 
 		if (_dist == -1) exitWith {
-			OOP_DEBUG_0("Destination is unreachable over ground");
+			OOP_INFO_0("Destination is unreachable over ground");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
@@ -165,6 +169,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		// Bail if we have failed to allocate resources
 		if ((count _allocResult) == 0) exitWith {
+			OOP_INFO_0("  Failed to allocate units");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
@@ -173,11 +178,11 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// Bail if remaining efficiency is below minimum level for this garrison
 		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
-			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
+			OOP_DEBUG_2("  Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
-			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
+			OOP_DEBUG_1("  Remaining crew requirement not satisfied: %1", _effRemaining);
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
  

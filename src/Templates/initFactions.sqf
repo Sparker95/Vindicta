@@ -30,6 +30,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\LDF.sqf",
     "Templates\Factions\NATO.sqf", 	
     "Templates\Factions\NATOPacific.sqf", 	
+    "Templates\Factions\NATOWoodland.sqf",
     "Templates\Factions\CSAT.sqf", 
     "Templates\Factions\CSATPacific.sqf",	
     "Templates\Factions\RHS_AAF_2020.sqf",
@@ -52,7 +53,10 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\RHS_BWMOD_BW_Fleck.sqf",
     "Templates\Factions\RHS_BWMOD_BW_Trop.sqf",
     "Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf",
-    "Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf"
+    "Templates\Factions\RHS_BWMOD_Niarms_BW_Trop.sqf",
+    "Templates\Factions\NATOAAF.sqf",
+    "Templates\Factions\AAFCSAT.sqf",
+    "Templates\Factions\NATOCSAT.sqf"
 ];
 
 

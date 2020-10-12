@@ -45,7 +45,10 @@ if(_index != -1) then {
 
 // Pre-defined positions for cargo boxes
 private _index = location_bp_cargo_medium findIf { _class in (_x select 0)};
-if (_index != -1) then {
+
+// We want to do this only for police stations.
+// It's very annoying when cargo boxes spawn in some random house at outpost instead of pre-defined position.
+if (_index != -1 && _type == LOCATION_TYPE_POLICE_STATION) then {
 	private _bps = location_bp_cargo_medium select _index;
 	{
 		_bp = _x;

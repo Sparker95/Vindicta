@@ -114,7 +114,10 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change if successful2
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_startDateVar,						// Date to wait until
-				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
+				_splitGarrIdVar,					// Garrison to wait (checks it is still alive)
+				_targetVar,							// Target
+				CMDR_ACTION_STATE_RTB_SELECT_TARGET	// Select new target if target is dead while we are waiting
+				];
 		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);
 
 		T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
@@ -125,7 +128,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 					[CMDR_ACTION_STATE_READY_TO_MOVE], 		
 					CMDR_ACTION_STATE_ARRIVED, 			// State change when successful
 					CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
-					CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
+					CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when target is dead
 					_splitGarrIdVar, 					// Id of garrison to move
 					_targetVar, 						// Target to move to (initially the target garrison)
 					T_CALLM1("createVariable", 200)]; 	// Radius to move within

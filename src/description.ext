@@ -168,13 +168,13 @@ class RscTitles {
 corpseManagerMode = 1; // Leave it at 1
 
 // Corpse limit before which ( <= ) corpseRemovalMaxTime applies and after which ( > ) corpseRemovalMinTime applies.
-corpseLimit = 30;
+corpseLimit = 50;
 
 // Remove all bodies that have been dead longer than corpseRemovalMinTime when corpseLimit is reached.
-corpseRemovalMinTime = 60; // seconds. Default: 10
+corpseRemovalMinTime = 600; // seconds. Default: 10
 
 // Maximum time a corpse can remain on the ground if total number of corpses is equal or under corpseLimit.
-corpseRemovalMaxTime = 600; // seconds. Default: 3600
+corpseRemovalMaxTime = 1200; // seconds. Default: 3600
 
 // Sets the mode for wreck removal manager.
 wreckManagerMode = 1; // Leave it at 1
@@ -189,7 +189,7 @@ wreckRemovalMinTime = 1800; // seconds. Default: 10
 wreckRemovalMaxTime = 7200; // seconds. Default: 36000 (10 hours)
 
 // The minimum distance between corpse or wreck and nearest player before the corpse or wreck is allowed to be removed by the garbage collector.
-minPlayerDistance = 100; // meters. Default: 0
+minPlayerDistance = 300; // meters. Default: 0
 
 // Custom loading display
 class Extended_DisplayLoad_EventHandlers {

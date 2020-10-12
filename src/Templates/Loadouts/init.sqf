@@ -47,6 +47,12 @@ gVanillaFaces = [
 //Arma3_AAF
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_AAF\AAF\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_AAF\AAF_Recon\init.sqf");
+//Arma3_NATO
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_NATO\NATO\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_NATO\NATOP\init.sqf");
+//Arma3_CSAT
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_CSAT\CSAT\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_CSAT\CSATP\init.sqf");
 //Arma3_LDF
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_LDF\LDF\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_LDF\LDF_Recon\init.sqf");

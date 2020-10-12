@@ -81,7 +81,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 				private _toGarr = CALLM(_world, "getGarrison", [_target]);
 				ASSERT_OBJECT(_toGarr);
 				// Check if the target garrison is dead
-				_targetDead = if(CALLM0(_toGarr, "isDead") && (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) ) then {
+				_targetDead = if(CALLM0(_toGarr, "isDead") /*&& (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) */ ) then { // Can't merge to destroyed garrison even if it's at a location
 					#ifndef _SQF_VM
 					// We don't want this warning in auto-tests, its already being tested
 					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_toGarr)]);

@@ -61,6 +61,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_startDateVar,						// Date to wait until
 				_srcGarrIdVar];						// Garrison to wait (checks it is still alive)
+				// todo add more parameters here
 		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);
 
 		T_GET_AST_VAR(_targetVar) params ["_targetType", "_target"];

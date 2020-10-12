@@ -78,15 +78,6 @@ jobs:
         name: separateMissions
         path: separateMissions
 
-    - name: Upload to FTP
-      uses: sebastianpopp/ftp-action@v1.1.0
-      with:
-        host: ${{ secrets.FTP_SERVER }}
-        user: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        localDir: "separateMissions"
-        remoteDir: "/ugs-eu-germany-1.armahosts.com_2322/mpmissions"
-
     - name: Publish to Steam Workshop
       uses: arma-actions/workshop-upload@v1
       with:

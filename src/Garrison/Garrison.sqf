@@ -2514,6 +2514,35 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	// All vehicle groups will be assigned crew, remaining inf will be split into regular groups.
 	public thread METHOD(rebalanceGroups)
 		params [P_THISOBJECT];
+
+		OOP_INFO_0("REBALANCE GROUPS");
+		// ===== Ensure that all combat vehicles are in groups so that bots can use them =====
+		pr _ungroupedCombatVehUnits = T_CALLM0("getVehicleUnits") select {
+			(CALLM0(_x, "getSubcategory") in T_VEH_combat) &&
+			{ IS_NULL_OBJECT(CALLM0(_x, "getGroup")) }
+		};
+		OOP_INFO_1("Ungrouped combat vehicles: %1", _ungroupedCombatVehUnits);
+		if (count _ungroupedCombatVehUnits > 0) then {
+			pr _ungroupedStaticVehUnits = _ungroupedCombatVehUnits select { CALLM0(_x, "isStatic") };
+			pr _ungroupedNonStaticVehUnits = _ungroupedCombatVehUnits select { !CALLM0(_x, "isStatic") };
+			OOP_INFO_1("Ungrouped combat statics:     %1", _ungroupedStaticVehUnits);
+			OOP_INFO_1("Ungrouped combat non-statics: %1", _ungroupedNonStaticVehUnits);
+			if (count _ungroupedStaticVehUnits > 0) then {
+				private _newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_STATIC]);
+				OOP_INFO_1("Created new group for statics: %1", _newGroup);
+				OOP_INFO_2("Moving units to new group: %1 <- %2", _newGroup, _ungroupedStaticVehUnits);
+				T_CALLM1("addGroup", _newGroup); // Add the new group to the src garrison first
+				CALLM1(_newGroup, "addUnits", _ungroupedStaticVehUnits);
+			};
+
+			if (count _ungroupedNonStaticVehUnits > 0) then {
+				private _newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH]);
+				OOP_INFO_1("Created new group for non-static vehicles: %1", _newGroup);
+				OOP_INFO_2("Moving units to new group: %1 <- %2", _newGroup, _ungroupedNonStaticVehUnits);
+				T_CALLM1("addGroup", _newGroup); // Add the new group to the src garrison first
+				CALLM1(_newGroup, "addUnits", _ungroupedNonStaticVehUnits);
+			};
+		};
 		
 		// ===== Ensure all vehicles are manned first =====
 		// Create a pool of units we can use to fill vehicle slots
