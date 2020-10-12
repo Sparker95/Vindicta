@@ -17,7 +17,7 @@ T_LootWeight set [T_INF_TL,         10];	//Team leader
 T_LootWeight set [T_INF_officer,    1]; //Officer
 T_LootWeight set [T_INF_GL,         15];	//GL soldier
 T_LootWeight set [T_INF_rifleman,   100]; //Basic rifleman
-T_LootWeight set [T_INF_marksman,   1]; //Marksman
+T_LootWeight set [T_INF_marksman,   10]; //Marksman
 T_LootWeight set [T_INF_sniper,     5];	//Sniper
 T_LootWeight set [T_INF_spotter,    5];	//Spotter
 T_LootWeight set [T_INF_exp,        10]; //Demo specialist
