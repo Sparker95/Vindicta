@@ -451,4 +451,5 @@ T_INV_grenades			= 11;	// All kinds of grenades
 T_INV_explosives		= 12;	// Explosives
 T_INV_primary_sorted	= 13;	// Arrays of arrays of form [_weapon, _magazines, _items],
 T_INV_secondary_sorted  = 14;	// For each infantry subcategory
-T_INV_size				= 15;
+T_INV_NVG_scale			= 15;	// Number 0..1, scale of NVG amount, calculated from ratio of NVG to non-NVG soldiers
+T_INV_size				= 16;

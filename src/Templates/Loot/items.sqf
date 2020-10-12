@@ -4,57 +4,59 @@ t_miscItems_civ_modern = ["FirstAidKit", "ItemGPS", "ItemWatch", "ItemCompass", 
 // Basic WW2 items
 t_miscItems_civ_WW2 = [];
 
+
 // KAT class names (addon name: kat_main)
-t_KATitems_Vehicle = [
-                ["kat_chestSeal", 5]
-                ];
-
-// KAT cargo items, ACE items are added because the other array contains ACE blood so it will load this instead.
+// Numbers are amount of items per man for loot calculations
 t_KATitems_Cargo = [
-                ["kat_chestSeal", 80],
-                ["kat_accuvac", 10],
-                ["kat_guedel", 30],
-                ["kat_X_AED", 10],
-                ["kat_crossPanel", 30],
-                ["kat_bloodIV_O", 10],
-                ["kat_bloodIV_A", 30],
-                ["kat_bloodIV_B", 30],
-                ["kat_bloodIV_AB", 30],
-                ["kat_bloodIV_O_500", 10],
-                ["kat_bloodIV_A_500", 30],
-                ["kat_bloodIV_B_500", 30],
-                ["kat_bloodIV_AB_500", 30],
-                ["kat_bloodIV_O_250", 10],
-                ["kat_bloodIV_A_250", 30],
-                ["kat_bloodIV_B_250", 30],
-                ["kat_bloodIV_AB_250", 30],
-                ["ACE_fieldDressing", 100],
-                ["ACE_packingBandage", 100],
-                ["ACE_elasticBandage", 100],
-                ["ACE_tourniquet", 40],
-                ["ACE_splint", 30],
-                ["ACE_morphine", 40],
-                ["ACE_adenosine", 20],
-                ["ACE_epinephrine", 40],
-                ["ACE_quikClot", 40],
-                ["ACE_personalAidKit", 10],
-                ["ACE_surgicalKit", 10]
+                ["kat_chestSeal", 0.5],
+                ["kat_accuvac", 0.5],
+                ["kat_guedel", 0.5],
+                ["kat_X_AED", 0.5],
+                ["kat_crossPanel", 0.5],
+                ["kat_bloodIV_O", 0.2],
+                ["kat_bloodIV_A", 0.2],
+                ["kat_bloodIV_B", 0.2],
+                ["kat_bloodIV_AB", 0.2],
+                ["kat_bloodIV_O_500", 0.2],
+                ["kat_bloodIV_A_500", 0.2],
+                ["kat_bloodIV_B_500", 0.2],
+                ["kat_bloodIV_AB_500", 0.2],
+                ["kat_bloodIV_O_250", 0.2],
+                ["kat_bloodIV_A_250", 0.2],
+                ["kat_bloodIV_B_250", 0.2],
+                ["kat_bloodIV_AB_250", 0.2]
+				/*
+                ["ACE_fieldDressing", 10],
+                ["ACE_packingBandage", 10],
+                ["ACE_elasticBandage", 10],
+                ["ACE_tourniquet", 4],
+                ["ACE_splint", 4],
+                ["ACE_morphine", 2],
+                ["ACE_adenosine", 2],
+                ["ACE_epinephrine", 2],
+                ["ACE_quikClot", 10],
+                ["ACE_personalAidKit", 1],
+                ["ACE_surgicalKit", 1]
+				*/
                 ];
 
+// ACRE: "acre_main"
 // ACRE class names and their quantities
+// Numbers are amount of items per man for loot calculations
 t_ACRERadios = [
-				["ACRE_SEM52SL",2], // medium-range radio, similar to the 148 and 152
-				["ACRE_SEM70",4], // Long-range radio, is NOT a backpack, but needs to be put in a backpack.
-				["ACRE_PRC77",1], // Vietnam-era radio, needs to be put in a backpack.
-				["ACRE_PRC343",6], // Shortest-range infantry radio. (400m-900m range, depending on terrain)
-				["ACRE_PRC152",3], //medium-range radio, 3-5km
-				["ACRE_PRC148",3], //medium-range radio, 3-5km
-				["ACRE_PRC117F",1], //Long range radio, is NOT a backpack, but needs to be put in a backpack. 10-20km
-				["ACRE_VHF30108SPIKE",1], // antenna for radio signal extension, with a spike to put it higher in the air.
-				["ACRE_VHF30108",3], // Just the antenna
-				["ACRE_VHF30108MAST",1] // Antenna with a mast.
+				["ACRE_SEM52SL",0.3], // medium-range radio, similar to the 148 and 152
+				["ACRE_SEM70",0.3], // Long-range radio, is NOT a backpack, but needs to be put in a backpack.
+				["ACRE_PRC77",0.3], // Vietnam-era radio, needs to be put in a backpack.
+				["ACRE_PRC343",0.3], // Shortest-range infantry radio. (400m-900m range, depending on terrain)
+				["ACRE_PRC152",0.3], //medium-range radio, 3-5km
+				["ACRE_PRC148",0.3], //medium-range radio, 3-5km
+				["ACRE_PRC117F",0.3], //Long range radio, is NOT a backpack, but needs to be put in a backpack. 10-20km
+				["ACRE_VHF30108SPIKE",0.3], // antenna for radio signal extension, with a spike to put it higher in the air.
+				["ACRE_VHF30108",0.3], // Just the antenna
+				["ACRE_VHF30108MAST",0.3] // Antenna with a mast.
 			];
 
+// TFAR 0.9.12: "task_force_radio"
 // TFAR class names
 // Numbers are amount of items per man for loot calculations
 t_TFARRadios_0912 = [
@@ -88,6 +90,7 @@ t_TFARBackpacks_0912 = [
 					//["tf_mr6000l"] //"Belongs" to OPFOR
 				];
 
+// TFAR 1.0: "tfar_core"
 // TFAR new radio class names
 t_TFARRadios_0100 = [
 					//["TFAR_fadak",2], //"Belongs" to Opfor
@@ -180,31 +183,6 @@ t_ACEMiscItems = [
 					["ACE_key_lockpick", 3],	// Lockpick
 					["ACE_Banana", 2]
 				];
-
-// ACE medical items for vehicles
-t_ACEMedicalItems_vehicles = [
-                ["ACE_fieldDressing", 20],
-                ["ACE_packingBandage", 20],
-                ["ACE_elasticBandage", 20],
-                ["ACE_tourniquet", 5],
-                ["ACE_splint", 5],
-                ["ACE_morphine", 4],
-                ["ACE_adenosine", 4],
-                ["ACE_epinephrine", 4],
-                //["ACE_plasmaIV", 1],
-                //["ACE_plasmaIV_500", 10],
-                //["ACE_plasmaIV_250", 20],
-                //["ACE_salineIV", 1],
-                //["ACE_salineIV_500", 10],
-                //["ACE_salineIV_250", 20],
-                ["ACE_bloodIV", 1],
-                ["ACE_bloodIV_500", 0.5],
-                //["ACE_bloodIV_250",  20],
-                ["ACE_quikClot", 20],
-                ["ACE_personalAidKit", 1],
-                ["ACE_surgicalKit", 1]
-                //["ACE_bodyBag", 0]
-                ];
 
 // ACE medical items for cargo boxes
 // Numbers are amount of items per man for loot calculations

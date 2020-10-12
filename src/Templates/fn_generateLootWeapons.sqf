@@ -1,6 +1,7 @@
 #include "..\common.h"
 
 // Generates array with inventory items to fill inventory of cargo boxes
+// This function is meant to work with data in format used by T_INV template category
 
 params [["_primaryWeapons", [], [[]]],  // Array of arrays of [_weapon, _magazines, _items] for each subcategory
         ["_secondaryWeapons", [], [[]]],// Array of arrays of [_weapon, _magazines, _items] for each subcategory
@@ -28,8 +29,10 @@ private _addItem = {
 // Iterate all infantry subcategories
 private _i = 0;
 private _nSubcategories = count _lootWeight;
+// This is a scaling factor indended for police and similar factions which have an almost empty soldier type list
+private _nSubcategoriesWithWeapons = { count _x > 0 } count _primaryWeapons;
 while {_i < _nSubcategories} do {
-    private _nWeaponsThisSubcategory = _totalAmount * (_lootWeight#_i);
+    private _nWeaponsThisSubcategory = _totalAmount * (_lootWeight#_i) * _nSubcategories / _nSubcategoriesWithWeapons;
     if (_nWeaponsThisSubcategory > 0) then {
         {
             _x params ["_weaponsArray", "_magsPerGun", "_itemsPerGun"];
@@ -47,8 +50,8 @@ while {_i < _nSubcategories} do {
                 };
             };
         } forEach   [
-                        [_primaryWeapons#_i, 10, 1], // Array with weapons, mags per gun, items per gun
-                        [_secondaryWeapons#_i, 4, 1]
+                        [_primaryWeapons select _i, 10, 1], // Array with weapons, mags per gun, items per gun
+                        [_secondaryWeapons select _i, 4, 1]
                     ];
     };
 

@@ -10,6 +10,7 @@
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Group\Group.hpp"
 #include "..\Garrison\Garrison.hpp"
+#include "..\Location\Location.hpp"
 
 /*
 Class: Unit
@@ -1103,6 +1104,61 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
+	// Generates loot array while trying to equally share each item
+	// So that total amount of items is around _amount.
+	// Generates array of [_type, _amount] from array of types
+	// _amount - total amount of items
+	unit_fnc_generateLootBasic = {
+		params ["_lootTypeArray", "_totalAmount"];
+		private _count = count _lootTypeArray;
+		if (_count == 0) exitWith {[]};
+		private _return = [];
+		if (_totalAmount > _count) then {
+			private _amountEachItem = round (_totalAmount / _count);
+			_return = _lootTypeArray apply {[_x, _amountEachItem]};
+		} else {
+			// Add first _totalAmount items
+			private _i = 0;
+			while {_i < _totalAmount} do {
+				_return pushBack [_lootTypeArray#_i, 1];
+				_i = _i + 1;
+			};
+		};
+		_return;
+	};
+
+	// Generates loot array where amount of each item in the original array
+	// Is scaled in (item/soldier)
+	unit_fnc_generateLootScaled = {
+		params ["_lootTypeAndScale", "_manAmount"];
+		_lootTypeAndScale apply {[_x#0, round (_manAmount*(_x#1))]} select { (_x#1) > 0};
+	};
+
+	// Everything except for backpacks
+	unit_fnc_addLootScaledItems = {
+		params ["_hO", "_lootSpecification"];
+		_lootSpecification params ["_array", "_cfgPatches", "_amount"];
+		if (_cfgPatches == "" || {isClass (configfile >> "CfgPatches" >> _cfgPatches)}) then {
+			pr _lootArray = [_array, _amount] call unit_fnc_generateLootScaled;
+			{
+				_hO addItemCargoGlobal _x;
+			} forEach _lootArray;
+		};
+	};
+
+	// Same as above but for backpacks
+	unit_fnc_addLootScaledBackpacks = {
+		params ["_hO", "_lootSpecification"];
+		_lootSpecification params ["_array", "_cfgPatches", "_amount"];
+		if (_cfgPatches == "" || {isClass (configfile >> "CfgPatches" >> _cfgPatches)}) then {
+			pr _lootArray = [__typeAndScale, __amount] call unit_fnc_generateLootScaled;
+			{
+				_hO addBackpackCargoGlobal _x;
+			} forEach _lootArray;
+		};
+	};
+
+
 	METHOD(initObjectInventory)
 		params [P_THISOBJECT];
 
@@ -1131,22 +1187,21 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 			// Bail if there is a limited arsenal
 			pr _arsenalDataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
-			if ((count _arsenalDataList) != 0) exitWith {
-
-			};
+			if ((count _arsenalDataList) != 0) exitWith { };
 
 			// Otherwise fill the ammo box with stuff from the template
 			pr _gar = _data select UNIT_DATA_ID_GARRISON;
-			if (_gar == NULL_OBJECT) exitWith {
-			};
+			pr _loc = NULL_OBJECT;
+			if (_gar == NULL_OBJECT) exitWith {	};
+			_loc = CALLM0(_gar, "getLocation");
+			pr _locType = if (_loc != NULL_OBJECT) then {CALLM0(_loc, "getType")} else {LOCATION_TYPE_UNKNOWN};
 			pr _t = CALLM0(_gar, "getTemplate");
-			// Add stuff to cargo from the template
 			pr _tInv = _t#T_INV;
 
-			pr _side = CALLM0(_data#UNIT_DATA_ID_GARRISON, "getSide");
+			pr _side = CALLM0(_gar, "getSide");
 			if(_side == CIVILIAN) then {
 
-				// = = = NOT INFANTRY CIVILIAN = = =
+				// = = = CIVILIAN VEHICLES = = =
 
 				// Small chance for weapons and magazines
 				private _inv = [];
@@ -1179,235 +1234,117 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					};
 				} foreach (_tInv#T_INV_items);
 				// Add backpack
-				if(count (_tInv#T_INV_backpacks) > 0 && random 3 < 1) then {
+				if(count (_tInv#T_INV_backpacks) > 0 && random 1.5 < 1) then {
 					_hO addBackpackCargoGlobal [selectRandom (_tInv#T_INV_backpacks), 2];
 				};
 				if (random 20 < 1) then {
 					_hO addItemCargoGlobal ["vin_pills", 20];
 				};
 
-				
-				// = = = END NOT INFANTRY CIVILIAN = = =
-				
+				// = = = END CIVILIAN VEHICLES = = =
 
 			} else {
 
 				// = = = = MILITARY CARGO AND VEHICLES = = = =
 				private _lootScaling = vin_diff_lootAmount;
 
-				pr _nInf = CALLM0(_gar, "countInfantryUnits");
-				pr _nVeh = CALLM0(_gar, "countVehicleUnits");
-				pr _nCargo = CALLM0(_gar, "countCargoUnits");
 
-				// Some number which scales the amount of items in this box
-				pr __n = _nInf * _lootScaling / ((_nVeh + _nCargo) max 1);
-				pr _nGuns = 0.8 * __n;
-
-				// Modifier for cargo boxes
-				if (_catID == T_CARGO) then {
-					_nGuns = 6 * __n;
-				};
-
-				// Add weapons and magazines
-				pr _arr = [[T_INV_primary, 1.5*_nGuns, 10], [T_INV_secondary, 0.3*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
-				{
-					_x params ["_subcatID", "_n", "_nMagsPerGun"];
-					if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
-
-						// Randomize _n
-						_n = round (random [0.2*_n, _n, 1.8*_n]);
-
-						for "_i" from 0 to (_n-1) do {
-							pr _weaponsAndMags = _tInv#_subcatID;
-							pr _weaponAndMag = selectRandom _weaponsAndMags;
-							_weaponAndMag params ["_weaponClassName", "_magazines"];
-							_hO addItemCargoGlobal [_weaponClassName, round (1 + random 1) ];
-							if (count _magazines > 0) then {
-								_hO addMagazineCargoGlobal [selectRandom _magazines, _nMagsPerGun];
-							};
-						};
+				pr _nInf = if (_locType != LOCATION_TYPE_UNKNOWN) then {
+					switch (_locType) do {
+						case LOCATION_TYPE_UNKNOWN: { 0 }; // ??
+						case LOCATION_TYPE_BASE: { 100 };
+						case LOCATION_TYPE_OUTPOST: { 50 };
+						case LOCATION_TYPE_DEPOT: { 40 };
+						case LOCATION_TYPE_POLICE_STATION: { 20 };
+						case LOCATION_TYPE_AIRPORT: { 130 };
+						case LOCATION_TYPE_ROADBLOCK: { 15 };
+						default { 10 };
 					};
-				} forEach _arr;
-
-				// Add items of weapons, misc items, NVGs
-				pr _arr = [	[T_INV_primary_items, 0.6*_nGuns], [T_INV_secondary_items, 0.6*_nGuns],	// [_subcatID, num. attempts]
-							[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.7*_nGuns],
-							[T_INV_NVGs, 1.5*_nGuns]]; // We want more NVGs
-				{
-					_x params ["_subcatID", "_n"];
-
-					if (count (_tInv#_subcatID) > 0) then { // If there are any items in this subcategory
-
-						// Randomize _n
-						_n = (round (random [0.2*_n, _n, 1.8*_n]));
-						pr _items = _tInv#_subcatID;
-						for "_i" from 0 to (_n-1) do {
-							_hO addItemCargoGlobal [selectRandom _items, round (1 + random 1)];
-						};
-					};
-				} forEach _arr;
-
-				// Add ACRE Radios
-				// We probably want them in all vehicles, not only in boxes
-				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
-					// Array with item class name, count
-					pr _ACREclassNames = t_ACRERadios;
-					{
-						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
-					} forEach _ACREclassNames;
-				};
-
-				// Add TFAR Radios (0.9.12)
-				if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
-					// Array with item class name, count
-					pr _TFARclassNames = t_TFARRadios_0912;
-					{
-						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
-					} forEach _TFARclassNames;
-				};
-
-				// Add TFAR Radios (BETA)
-				if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
-					// Array with item class name, count
-					pr _TFARBetaclassNames = t_TFARRadios_0100;
-					{
-						_x params ["_itemName", "_itemCount"];
-						_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
-					} forEach _TFARBetaclassNames;
-				};
-
-				// Add headgear
-				pr _nHeadgears = ceil (_nGuns * random [0.5, 1, 1.5]);
-				pr _headgear = _tInv#T_INV_headgear;
-				for "_i" from 0 to _nHeadgears do {
-					_hO addItemCargoGlobal [selectRandom _headgear, 1];
-				};
-
-				// Add vests
-				pr _nVests = ceil (_nGuns * random [0.5, 1, 1.5]);
-				pr _vests = _tInv#T_INV_vests;
-				for "_i" from 0 to _nVests do {
-					_hO addItemCargoGlobal [selectRandom _vests, 1];
-				};
-	
-				// Add backpacks
-				pr _nBackpacks = ceil (_nGuns * random [0.5, 1, 1.5]);
-				pr _backpacks = _tInv#T_INV_backpacks;
-				for "_i" from 0 to _nBackpacks do {
-					_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
-				};
-
-				// Add TFAR (0.9.12) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
-				if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
-					// Array with backpack class name
-					for "_i" from 0 to _nBackpacks do {
-						_hO addBackpackCargoGlobal [selectRandom t_TFARBackpacks_0912, 1];
-					};
-				};
-
-				// Add TFAR (BETA) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
-				if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
-					// Array with backpack class name
-					pr _TFARBETAbackpack = t_TFARBackpacks_0100;
-					for "_i" from 0 to _nVests do {
-						_hO addBackpackCargoGlobal [selectRandom _TFARBETAbackpack, 1];
-					};
-				};
-
-				// = = = = = END BOTH CARGO AND VEHICLES MILITARY = = = = = =
-
-
-
-				// Add special items to cargo containers
-				if (_catID == T_CARGO) then {
-
-					// = = = = MILITARY CARGO BOXES = = = =
-
-					// Add ACE medical items
-					// NOTE that for cargo boxes and vehicles the arrays are different!
-					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
-
-						if (isClass (configfile >> "CfgPatches" >> "kat_main")) then {
-							{
-								_x params ["_className", "_itemCount"];
-								_intemCount = vin_diff_lootAmount * _itemCount;
-								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
-							} forEach t_KATitems_Cargo;
-
-						} else {
-							{
-								_x params ["_className", "_itemCount"];
-								_intemCount = vin_diff_lootAmount * _itemCount;
-								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.9, 1.5, 2])];
-							} forEach t_ACEMedicalItems_cargo;
-						};
-
-					} else {
-						// Add standard medkits
-						_hO addItemCargoGlobal ["FirstAidKit", vin_diff_lootAmount * 80];
-					};
-
-					// Add ACE misc items
-					if (isClass (configfile >> "CfgPatches" >> "ace_common")) then {
-						// Array with item class name, count
-						// Exported from the ACE_Box_Misc
-						// Then modified a bit
-						pr _classNames = t_ACEMiscItems;
-						{
-							_x params ["_itemName", "_itemCount"];
-							_itemCount = _itemCount * vin_diff_lootAmount;
-							if(random 10 < 7) then {
-								_hO addItemCargoGlobal [_itemName, round (_lootScaling * _itemCount * random [0.8, 1.4, 2])];
-							};
-						} forEach _classNames;
-					};
-
-					// Add grenades and explosives
-					pr _grenades = _tInv#T_INV_grenades;
-					{
-						if (random 10 < 7) then {
-							_hO addItemCargoGlobal [_x, _nGuns];
-						};
-					} forEach _grenades;
-
-					// Add explosives
-					pr _explosives = _tInv#T_INV_explosives;
-					pr _nExplosives = ceil (_nGuns*0.2);
-					{
-						if (random 10 < 3) then {
-							_hO addItemCargoGlobal [_x, _nExplosives];
-						};
-					} forEach _explosives;
-
-					// = = = = = END MILITARY BOXES = = = = =
 				} else {
-
-					// = = = = = MILITARY VEHICLES = = = = =
-
-					// Add ACE medical items
-					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
-						{
-							_x params ["_className", "_itemCount"];
-							_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.5, 1, 1.5])];
-						} forEach t_ACEMedicalItems_vehicles;
-
-						if (isClass (configfile >> "CfgPatches" >> "kat_main")) then {
-							{
-								_x params ["_className", "_itemCount"];
-								_hO addItemCargoGlobal [_className, round (_lootScaling * _itemCount * random [0.6, 1, 1.5])];
-							} forEach t_KATitems_Vehicle;
-						};
-
-					} else {
-						// Add standard medkits
-						_hO addItemCargoGlobal ["FirstAidKit", 20];
-					};
-					// = = = =
+					3 // No location
 				};
 
-				// = = = = END NOT INFANTRY MILITARY = = = =
+				//pr _nVeh = CALLM0(_gar, "countVehicleUnits");
+				//pr _nCargo = CALLM0(_gar, "countCargoUnits");
+
+				if (_catID == T_CARGO) then {
+					
+					// We typically have two cargo boxes per location, thus we divide it by two
+					// Some number which scales the amount of items in this box
+					pr _nInfScaled = _lootScaling * _nInf / 2;
+
+					// Non-template items
+					{ [_hO, _x] call unit_fnc_addLootScaledItems; } forEach [
+						// [_itemArray, _cfgPatches, _amount]
+						[t_KATitems_Cargo, "kat_main", _nInfScaled],
+						[t_ACRERadios, "acre_main", _nInfScaled],
+						[t_TFARRadios_0912, "task_force_radio", _nInfScaled],
+						[t_TFARRadios_0100, "tfar_core", _nInfScaled],
+						[t_ACEMiscItems, "ace_common", _nInfScaled],
+						[t_ACEMedicalItems_cargo, "ace_medical", _nInfScaled]
+					];
+					
+					// Non-template backpacks
+					{ [_hO, _x] call unit_fnc_addLootScaledBackpacks; } forEach [
+						[t_TFARBackpacks_0912, "task_force_radio", _nInfScaled],
+						[t_TFARBackpacks_0100, "tfar_core", _nInfScaled]
+					];
+
+					// Add weapons from template
+					pr _lootWeapons = [_tInv#T_INV_primary_sorted, _tInv#T_INV_secondary_sorted, T_LootWeight, _nInfScaled] call t_fnc_generateLootWeapons;
+					// _lootWeapons is: [_weapons, _magazines, _items]
+					// Each of these arrays is an array of [_type, _count] 
+					{
+						{
+							_hO addItemCargoGlobal _x;
+						} forEach _x;
+					} forEach _lootWeapons;
+
+					// Add other things from template
+					{
+						private __loot = _x call unit_fnc_generateLootBasic;
+						{
+							_hO addItemCargoGlobal _x;
+						} forEach __loot;
+					} forEach [
+						[_tInv#T_INV_headgear, _nInfScaled],
+						[_tInv#T_INV_vests, 1.5*_nInfScaled],
+						[_tInv#T_INV_grenades, _nInfScaled],
+						[_tInv#T_INV_explosives, 0.2*_nInfScaled],
+						[_tInv#T_INV_items, 4*_nInfScaled]
+					];
+
+					// Backpacks from template
+					{
+						_hO addBackpackCargoGlobal _x;
+					} forEach ([_tInv#T_INV_backpacks, 0.3*_nInfScaled] call unit_fnc_generateLootBasic);
+
+					// NVGs from template
+					private _nvgAmount = (_tInv#T_INV_NVG_scale) * _nInfScaled;
+					{
+						_hO addItemCargoGlobal _x;
+					} forEach ([_tInv#T_INV_NVGs, _nvgAmount] call unit_fnc_generateLootBasic);
+
+					// Basic first aid kits
+					_hO addItemCargoGlobal ["FirstAidKit", _nInfScaled*3];
+				} else {
+					pr _nInfScaled = _lootScaling * 3;
+					// A few vests and hats
+					{
+						private __loot = _x call unit_fnc_generateLootBasic;
+						{
+							_hO addItemCargoGlobal _x;
+						} forEach __loot;
+					} forEach [
+						[_tInv#T_INV_headgear, _nInfScaled],
+						[_tInv#T_INV_vests, _nInfScaled]
+					];
+
+					// Basic first aid kits
+					_hO addItemCargoGlobal ["FirstAidKit", 3*_nInfScaled];
+				};
+
+				// = = = = END MILITARY CARGO = = = =
 
 			};
 		} else {

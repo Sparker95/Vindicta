@@ -22,6 +22,7 @@ pr _catSize = T_INF_SIZE;
 pr _classDefault = _t#_catID#0#0;
 pr _subCatID = T_INF_default + 1; // We don't want to process the default loadout/unit!
 pr _group = createGroup WEST;
+pr _totalSoldierTypeCount = 0; // Total amount of soldiers in this template
 
 // Weapons and magazines for corresponding weapons
 pr _primaryWeapons = [];
@@ -50,6 +51,7 @@ pr _items = [];
 
 // NVGs
 pr _NVGs = [];
+pr _NVGCount = 0;
 
 // Grenades
 pr _grenades = [];
@@ -100,6 +102,7 @@ while {_subCatID < _catSize} do {
 	pr _primaryThisSubcatSorted = [];
 	pr _secondaryThisSubcatSorted = [];
 	if (!isNil "_classArray") then {
+		_totalSoldierTypeCount = _totalSoldierTypeCount + (count _classArray);
 		{ // foreach classarray
 			if (_x isEqualType "") then {
 				pr _classOrLoadout = _x;
@@ -260,6 +263,7 @@ while {_subCatID < _catSize} do {
 				pr _nvg = hmd _hO;
 				if (_nvg != "") then {
 					_NVGs pushBackUnique _nvg;
+					_NVGCount = _NVGCount + 1;
 				};
 
 				// Delete the unit
@@ -285,6 +289,9 @@ pr _riflemanWeapons = _loadoutGear#T_INF_rifleman#0;
 (_loadoutGear#T_INF_AA#0) append _riflemanWeapons;
 (_loadoutGear#T_INF_medic#0) append _riflemanWeapons;
 (_loadoutGear#T_INF_engineer#0) append _riflemanWeapons;
+
+pr _nvgScale = (1.5 * _NVGCount / _totalSoldierTypeCount) min 1;
+LOG_TEMPLATE ["Total amount of soldier types processed: %1", _totalSoldierTypeCount];
 
 LOG_TEMPLATE ["Primary weapons:", _primaryWeapons];
 LOG_TEMPLATE ["  %1", _primaryWeapons];
@@ -319,6 +326,7 @@ LOG_TEMPLATE ["  %1", _vests];
 LOG_TEMPLATE ["Backpacks:"];
 LOG_TEMPLATE ["  %1", _backpacks];
 
+LOG_TEMPLATE ["Night Vision Scale: %1", _nvgScale];
 LOG_TEMPLATE ["Night Vision:"];
 LOG_TEMPLATE ["  %1", _NVGs];
 
@@ -371,7 +379,8 @@ pr _arrayExport = [	_primary,
 					_grenades,
 					_explosives,
 					_primarySorted,
-					_secondarySorted];
+					_secondarySorted,
+					_nvgScale]; // NVG_scale
 
 // Export a human-readable string if requested
 if (_returnString) then {
