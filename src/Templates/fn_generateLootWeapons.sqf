@@ -26,13 +26,26 @@ private _addItem = {
     };
 };
 
+// Correct the loot weight, we must nullify lootWeight for subcategories not present
+// In the weaponsArray, then normalize it again
+private _nSubcategories = count _lootWeight;
+private _lootWeightCorrected = +_lootWeight;
+private _sum = 0;
+for "_subcatID" from 0 to (_nSubcategories - 1) do {
+    if (count (_primaryWeapons#_subcatID) > 0) then {
+        _sum = _sum + (_lootWeightCorrected#_subcatID);
+    };
+};
+if (_sum > 0) then { // Don't want to divide by 0
+    for "_subcatID" from 0 to (_nSubcategories - 1) do {
+        _lootWeightCorrected set [_subCatID, (_lootWeightCorrected#_subCatID)/_sum];
+    };
+};
+
 // Iterate all infantry subcategories
 private _i = 0;
-private _nSubcategories = count _lootWeight;
-// This is a scaling factor indended for police and similar factions which have an almost empty soldier type list
-private _nSubcategoriesWithWeapons = { count _x > 0 } count _primaryWeapons;
 while {_i < _nSubcategories} do {
-    private _nWeaponsThisSubcategory = _totalAmount * (_lootWeight#_i) * _nSubcategories / _nSubcategoriesWithWeapons;
+    private _nWeaponsThisSubcategory = _totalAmount * (_lootWeightCorrected#_i);
     if (_nWeaponsThisSubcategory > 0) then {
         {
             _x params ["_weaponsArray", "_magsPerGun", "_itemsPerGun"];

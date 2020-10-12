@@ -1256,7 +1256,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						case LOCATION_TYPE_OUTPOST: { 50 };
 						case LOCATION_TYPE_DEPOT: { 40 };
 						case LOCATION_TYPE_POLICE_STATION: { 20 };
-						case LOCATION_TYPE_AIRPORT: { 130 };
+						case LOCATION_TYPE_AIRPORT: { 200 };
 						case LOCATION_TYPE_ROADBLOCK: { 15 };
 						default { 10 };
 					};
