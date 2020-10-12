@@ -5,7 +5,7 @@ Author: Sparker 30 september 2019
 
 #define pr private
 
-#define DEBUG_TEMPLATES
+//#define DEBUG_TEMPLATES
 
 #ifdef DEBUG_TEMPLATES
 #define LOG_TEMPLATE diag_log format
