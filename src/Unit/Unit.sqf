@@ -1151,7 +1151,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		params ["_hO", "_lootSpecification"];
 		_lootSpecification params ["_array", "_cfgPatches", "_amount"];
 		if (_cfgPatches == "" || {isClass (configfile >> "CfgPatches" >> _cfgPatches)}) then {
-			pr _lootArray = [__typeAndScale, __amount] call unit_fnc_generateLootScaled;
+			pr _lootArray = [_array, _amount] call unit_fnc_generateLootScaled;
 			{
 				_hO addBackpackCargoGlobal _x;
 			} forEach _lootArray;
