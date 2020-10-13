@@ -34,6 +34,8 @@ t_fnc_getVehicleLoadoutClassName = COMPILE_COMMON("Templates\fn_getVehicleLoadou
 
 t_fnc_processTemplateItems = COMPILE_COMMON("Templates\fn_processTemplateItems.sqf");
 
+t_fnc_generateLootWeapons = COMPILE_COMMON("Templates\fn_generateLootWeapons.sqf");
+
 t_fnc_callAPIOptional = COMPILE_COMMON("Templates\fn_callAPIOptional.sqf");
 
 t_fnc_addUndercoverItems = COMPILE_COMMON("Templates\fn_addUndercoverItems.sqf");
