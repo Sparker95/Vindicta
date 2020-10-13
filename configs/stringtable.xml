@@ -1152,3 +1152,745 @@
 		</Container>
 	</Package>
 </Project>
+<Project name="Dialogues">
+	<Package name="commonPhrases">
+		<Container name="CantTalkBusy">
+			<Key ID="STR_CANT_TALK_BUSY_1">
+				<Original>I can't talk now, I am busy.</Original>
+				<Chinesesimp>我现在没法聊天，正忙着呢。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_2">
+				<Original>Sorry I can't talk now.</Original>
+				<Chinesesimp>抱歉我现在和你聊天。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_3">
+				<Original>I'm busy, I can't talk.</Original>
+				<Chinesesimp>我正忙着呢，没时间聊。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_4">
+				<Original>Leave me alone, I can't talk now.</Original>
+				<Chinesesimp>别来烦我，我现在不能聊天。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_5">
+				<Original>I can't talk now!</Original>
+				<Chinesesimp>我现在不能和你聊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_6">
+				<Original>I am too busy to talk right now.</Original>
+				<Chinesesimp>我正忙得不可开交。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_7">
+				<Original>I have no time to talk.</Original>
+				<Chinesesimp>我没时间和你聊。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CantTalkAnymore">
+			<Key ID="STR_CANT_TALK_ANYMORE_1">
+				<Original>My plans have changed, I must leave now.</Original>
+				<Chinesesimp>计划有变，我必须得走了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_2">
+				<Original>I can't talk any more.</Original>
+				<Chinesesimp>我不能再多讲了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_3">
+				<Original>Sorry I can't talk any more.</Original>
+				<Chinesesimp>抱歉我不能继续聊了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_4">
+				<Original>Sorry I have no more time for this.</Original>
+				<Chinesesimp>抱歉我没时间耗着了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_5">
+				<Original>Sorry I must leave.</Original>
+				<Chinesesimp>抱歉我必须得走了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_6">
+				<Original>I must leave.</Original>
+				<Chinesesimp>我必须得走了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_7">
+				<Original>I must leave, sorry.</Original>
+				<Chinesesimp>我真的得走了，抱歉。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_8">
+				<Original>I have no more time for this, sorry.</Original>
+				<Chinesesimp>我没时间了，抱歉。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_9">
+				<Original>I must go now.</Original>
+				<Chinesesimp>我必须离开了。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CantTalkScared">
+			<Key ID="STR_CANT_TALK_Scared_1">
+				<Original>Don't hurt me!</Original>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_2">
+				<Original>Please don't hurt me!</Original>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_3">
+				<Original>I'm so scared!</Original>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_4">
+				<Original>Please don't shoot me!</Original>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_5">
+				<Original>No! Please! Don't shoot me!</Original>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_6">
+				<Original>I won't tell anyone I saw you! I swear!</Original>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_7">
+				<Original>I am not armed! Don't shoot!</Original>
+			</Key>
+		</Container>
+		<Container name="CivilianPanic">
+			<Key ID="STR_C_PANIC_1">
+				<Original>Oh my god!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_2">
+				<Original>Damn!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_3">
+				<Original>Damn it!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_4">
+				<Original>Nooo!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_5">
+				<Original>Oh no!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_6">
+				<Original>Fuck!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_7">
+				<Original>Oh fuck!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_8">
+				<Original>Fucking hell!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_9">
+				<Original>Fuck this shit!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_10">
+				<Original>I'm out of here!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_11">
+				<Original>Shit shit shit!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_12">
+				<Original>Someone help me!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_13">
+				<Original>Help me, anyone!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_14">
+				<Original>Police! Police! Help me!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_15">
+				<Original>Someone, call the police!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_16">
+				<Original>Someone, call the cops!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_17">
+				<Original>Police! Help me!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_18">
+				<Original>This is horrible!</Original>
+			</Key>
+			<Key ID="STR_C_PANIC_19">
+				<Original>This is insane!</Original>
+			</Key>
+		</Container>
+		<Container name="StartDialogue">
+			<Key ID="STR_START_DIALOGUE_1">
+				<Original>Hey, you've got a minute?</Original>
+				<Chinesesimp>嗨，可以占用你点时间么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_2">
+				<Original>Can I ask you something?</Original>
+				<Chinesesimp>我能问你点儿事么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_3">
+				<Original>Sir, can you talk now?</Original>
+				<Chinesesimp>先生，你现在方便谈话吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_4">
+				<Original>Excuse me, do you have a moment to talk?</Original>
+				<Chinesesimp>打扰一下，你能抽出点时间来谈话吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_5">
+				<Original>Can you talk now?</Original>
+				<Chinesesimp>我们可以聊聊么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_6">
+				<Original>Hey, can I talk to you for a moment?</Original>
+				<Chinesesimp>嗨，我能和你聊聊么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_7">
+				<Original>Hi! Can I talk to you?</Original>
+				<Chinesesimp>嘿！我能和你谈谈吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_8">
+				<Original>Hey, do you have a second?</Original>
+				<Chinesesimp>嗨，你有时间么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_9">
+				<Original>Hey! Got a minute?</Original>
+				<Chinesesimp>嘿！有时间吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_10">
+				<Original>Hey, I'd like to talk to you.</Original>
+				<Chinesesimp>嘿，我想和你聊一聊。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilianNonsense">
+			<Key ID="STR_C_NONSENSE_1">
+				<Original>I am nothing but a simulation on some computer.</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_2">
+				<Original>This all is not real! This is a simulation! What shall we do now?</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_3">
+				<Original>How can you prove that this world is real? It's all a simulation!</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_4">
+				<Original>Me and you and this world, we are just a bunch of 1s and 0s!</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_5">
+				<Original>Help! I don't remember what happened to me 3 minutes ago. I just appeared out of nowhere!!</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_6">
+				<Original>What has happened? All my furniture is gone and I must sleep on the floor now.</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_7">
+				<Original>I think therefore I am.</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_8">
+				<Original>To be is to be perceived.</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_9">
+				<Original>The only thing I know is that I know nothing.</Original>
+			</Key>
+			<Key ID="STR_C_NONSENSE_10">
+				<Original>Nothing is enough for the man to whom enough is too little.</Original>
+			</Key>
+		</Container>
+		<Container name="CivilianCantTalkArrested">
+			<Key ID="STR_C_CANT_TALK_ARRESTED_1">
+				<Original>I did nothing wrong! The guy just arrested me for nothing!</Original>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_2">
+				<Original>They said that I look suspicious! What a nonsense!</Original>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_3">
+				<Original>Is it forbidden to have own opinion in this country now?!</Original>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_4">
+				<Original>This country goes straight to hell! What a shame!</Original>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_5">
+				<Original>They said that I look like a criminal they are searching for!</Original>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_6">
+				<Original>I am so angry at the police now!</Original>
+			</Key>
+		</Container>
+		<Container name="PlayerUntied">
+			<Key ID="STR_P_UNTIED_1">
+				<Original>Thanks for the help, brother!</Original>
+			</Key>
+			<Key ID="STR_P_UNTIED_2">
+				<Original>Well done, thank you!</Original>
+			</Key>
+		</Container>
+		<Container name="CivilianUntied">
+			<Key ID="STR_C_UNTIED_1">
+				<Original>Thank you for the help! We should make the police pay for this!</Original>
+			</Key>
+			<Key ID="STR_C_UNTIED_2">
+				<Original>Thanks, brother! These assholess will pay for what they are doing!</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="dialogueCivilian">
+		<Container name="PlayerAskMilitaryLocations">
+			<Key ID="STR_MILITARY_LOCATIONS_1">
+				<Original>Do you know any military outposts in the area?</Original>
+				<Chinesesimp>你知道这附近哪里有军事哨所吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_2">
+				<Original>Do you know of any military places around here?</Original>
+				<Chinesesimp>这附近有任何军事禁区吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_3">
+				<Original>Hey, are there any ... you know ... military places near here?</Original>
+				<Chinesesimp>嘿，这附近…有军事禁区吗？你懂的…</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_4">
+				<Original>Have you seen any military activity around here?</Original>
+				<Chinesesimp>你在这附近看到过任何军事活动吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_5">
+				<Original>Do you know any military locations around here?</Original>
+				<Chinesesimp>你了解周边的军事区域吗？</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="Incite">
+			<Key ID="STR_INCITE_1">
+				<Original>Damn police, they keep arresting innocent people!</Original>
+			</Key>
+			<Key ID="STR_INCITE_2">
+				<Original>Those militarist pigs will pay for their crimes!</Original>
+			</Key>
+			<Key ID="STR_INCITE_3">
+				<Original>Yesterday they have arrested my friends' family because of 'terrorist activity' as the police say!</Original>
+			</Key>
+			<Key ID="STR_INCITE_4">
+				<Original>The police took my brother yesterday, you might be next one!</Original>
+			</Key>
+			<Key ID="STR_INCITE_5">
+				<Original>Have you heard about those illegal detention camps? I know a guy who returned from one, horrible place!</Original>
+			</Key>
+			<Key ID="STR_INCITE_6">
+				<Original>We must stay united, or next time police will take one of us for some fake reason!</Original>
+			</Key>
+			<Key ID="STR_INCITE_7">
+				<Original>Police tossed drugs to one of my friends and arrested him! Assholes!</Original>
+			</Key>
+			<Key ID="STR_INCITE_8">
+				<Original>We should seek justice for all the war crimes the military are doing here!</Original>
+			</Key>
+			<Key ID="STR_INCITE_9">
+				<Original>The military are so corrupt! There is no other solution to this any more!</Original>
+			</Key>
+		</Container>
+		<Container name="CivilianInciteResponse">
+			<Key ID="STR_C_INCITE_RESPONSE_1">
+				<Original>Damn that's horrible!",  "I am shocked to hear this!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_2">
+				<Original>You are so right!", "That's horrible!", "We should put an end to this!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_3">
+				<Original>Yes! The truth must be exposed!", "Oh really, they don't tell that on TV!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_4">
+				<Original>Damn I've never heard of it on the local radio!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_5">
+				<Original>You're straight up spitting facts there mate! It's about time somebody puts a stop to that, and I for one am up for it!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_6">
+				<Original>You're right, they really are corrupt. Lets get to work on some change around here!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_7">
+				<Original>They definitely have some stick up their ass, let's show them who the real boss is!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_8">
+				<Original>Well there is one solution, and it involves guns and liberation. I'm up for it if you ask me!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_9">
+				<Original>I might know a way to fix their attitude! Its about time I get involved in this!</Original>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_10">
+				<Original>The less control they have, the better! Count me in!</Original>
+			</Key>
+		</Container>
+		<Container name="Scare">
+			<Key ID="STR_SCARE_1">
+				<Original>Get out of here, quick!</Original>
+			</Key>
+			<Key ID="STR_SCARE_2">
+				<Original>Something bad is going to happen here. Better move away!</Original>
+			</Key>
+			<Key ID="STR_SCARE_3">
+				<Original>It's not safe here, run away!</Original>
+			</Key>
+			<Key ID="STR_SCARE_4">
+				<Original>This place is not safe, you better get away!</Original>
+			</Key>
+			<Key ID="STR_SCARE_5">
+				<Original>Sir you better get out of here, quick!</Original>
+			</Key>
+			<Key ID="STR_SCARE_6">
+				<Original>Move out of here! This place is not safe!</Original>
+			</Key>
+		</Container>
+		<Container name="Intel">
+			<Key ID="STR_INTEL_1">
+				<Original>Do you know if there will be any military maneuvers nearby?</Original>
+			</Key>
+			<Key ID="STR_INTEL_2">
+				<Original>Have you got any idea if the military are planning something?</Original>
+			</Key>
+			<Key ID="STR_INTEL_3">
+				<Original>Any idea if the army is planning something?</Original>
+			</Key>
+		</Container>
+		<Container name="AskHelp">
+			<Key ID="STR_ASK_HELP_1">
+				<Original>The resistence needs your help! Do you have any building supplies?</Original>
+			</Key>
+			<Key ID="STR_ASK_HELP_2">
+				<Original>Listen, the resistence needs some building supplies, do you have any?</Original>
+			</Key>
+		</Container>
+		<Container name="AgreeHelp">
+			<Key ID="STR_AGREE_HELP_1">
+				<Original>Here, take these construction supplies, that's all I have.</Original>
+			</Key>
+			<Key ID="STR_AGREE_HELP_2">
+				<Original>Take these construction supplies, that's all I can help you with.</Original>
+			</Key>
+		</Container>
+		<Container name="DontSupportResistance">
+			<Key ID="STR_DONT_SUPPORT_1">
+				<Original>I can't help you with it.</Original>
+			</Key>
+			<Key ID="STR_DONT_SUPPORT_2">
+				<Original>Sorry I can't help you.</Original>
+			</Key>
+			<Key ID="STR_DONT_SUPPORT_3">
+				<Original>There is nothing I can help you with.</Original>
+			</Key>
+		</Container>
+		<Container name="DontKnowIntel">
+			<Key ID="STR_DONT_KNOW_1">
+				<Original>I don't know anything like that.</Original>
+			</Key>
+			<Key ID="STR_DONT_KNOW_2">
+				<Original>I am not aware of such information.</Original>
+			</Key>
+			<Key ID="STR_DONT_KNOW_3">
+				<Original>Sorry I don't know anything of this kind.</Original>
+			</Key>
+		</Container>
+		<Container name="NODE_Dialogues">
+			<Key ID="STR_NODE_C_SD_1">
+				<Original>Sure!</Original>
+				<Chinesesimp>好啊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_SD_2">
+				<Original>Yes?</Original>
+				<Chinesesimp>啥？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_SD_3">
+				<Original>How can I help you?</Original>
+				<Chinesesimp>需要帮助吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_P_TITO">
+				<Original>Tell it to others!</Original>
+				<Chinesesimp>把这事流传出去！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_DANGEROUS_TO_DISCUSS">
+				<Original>I know! It's dangerous to discuss this.</Original>
+				<Chinesesimp>我懂的！这也太危险了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_NO_MORE_RESOURCE">
+				<Original>Sorry I gave all I could already!</Original>
+				<Chinesesimp>能给的我都已经给了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_P_ASK_TIME">
+				<Original>What time is it?</Original>
+				<Chinesesimp>现在几点了？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_P_THANKS">
+				<Original>Thanks!</Original>
+				<Chinesesimp>谢了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_NO_1">
+				<Original>Are you serious? You have a watch on your hand!</Original>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_NO_2">
+				<Original>Don't you have a phone?</Original>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_NO_3">
+				<Original>Don't you have a watch yourself?</Original>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_YES">
+				<Original>It is %1</Original>
+			</Key>
+			<Key ID="STR_NODE_P_BYE">
+				<Original>Bye! I must leave now.</Original>
+			</Key>
+			<Key ID="STR_NODE_C_BYE_1">
+				<Original>Bye!</Original>
+			</Key>
+			<Key ID="STR_NODE_C_BYE_2">
+				<Original>Good bye!</Original>
+			</Key>
+			<Key ID="STR_NODE_C_BYE_3">
+				<Original>See you!</Original>
+			</Key>
+			<Key ID="STR_NODE_C_ANYMORE">
+				<Original>Anything else?</Original>
+			</Key>
+		</Container>
+		<Container name="NODE_Infos">
+			<Key ID="STR_NODE_INFO_NEARBY">
+				<Original>  Nearby locations: %1</Original>
+			</Key>
+			<Key ID="STR_NODE_INFO_KNOWN">
+				<Original>  Locations known by civilian: %1</Original>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_1">
+				<Original>Let me think...</Original>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_2">
+				<Original>Give me a second...</Original>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_3">
+				<Original>One moment. Let me think...</Original>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_NO">
+				<Original>No, there aren't any within kilometers of this place.</Original>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_YES">
+				<Original>Yes, I know of a few places like that ...</Original>
+			</Key>
+			<Key ID="STR_NODE_DIR_N">
+				<Original>north</Original>
+				<Chinesesimp>北方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_NE">
+				<Original>north-east</Original>
+				<Chinesesimp>东北方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_E">
+				<Original>east</Original>
+				<Chinesesimp>东方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_SE">
+				<Original>south-east</Original>
+				<Chinesesimp>东南方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_S">
+				<Original>south</Original>
+				<Chinesesimp>南方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_SW">
+				<Original>south-west</Original>
+				<Chinesesimp>西南方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_W">
+				<Original>west</Original>
+				<Chinesesimp>西方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_NW">
+				<Original>north-west</Original>
+				<Chinesesimp>西北方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L400_1">
+				<Original>quite close.</Original>
+			</Key>
+			<Key ID="STR_NODE_L400_2">
+				<Original>within 400 meters.</Original>
+			</Key>
+			<Key ID="STR_NODE_L400_3">
+				<Original>right over here.</Original>
+			</Key>
+			<Key ID="STR_NODE_L400_4">
+				<Original>five-minute walk from here.</Original>
+			</Key>
+			<Key ID="STR_NODE_L1000_1">
+				<Original>not too far away from here.</Original>
+			</Key>
+			<Key ID="STR_NODE_L1000_2">
+				<Original>within a kilometer.</Original>
+			</Key>
+			<Key ID="STR_NODE_L1000_3">
+				<Original>10 minute walk from here.</Original>
+			</Key>
+			<Key ID="STR_NODE_L1000_4">
+				<Original>not far from here at all.</Original>
+			</Key>
+			<Key ID="STR_NODE_M1000_1">
+				<Original>very far away.</Original>
+			</Key>
+			<Key ID="STR_NODE_M1000_2">
+				<Original>pretty far away</Original>
+			</Key>
+			<Key ID="STR_NODE_M1000_3">
+				<Original>more than a kilometer from here.</Original>
+			</Key>
+			<Key ID="STR_NODE_M1000_4">
+				<Original>quite a bit away from here.</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_1">
+				<Original>There is a </Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_2">
+				<Original>I know about a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_3">
+				<Original>I think there is a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_4">
+				<Original>Some time ago I saw a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_5">
+				<Original>A friend told me about a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_6">
+				<Original>People are nervous about a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_7">
+				<Original>People are talking about a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_8">
+				<Original>A long time ago there was a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_9">
+				<Original>Not sure about the coordinates, there is a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_10">
+				<Original>A friend said he heard from somebody about a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_11">
+				<Original>I heard some guys talk about a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_12">
+				<Original>I think I heard policemen talk about a</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_13">
+				<Original>Some time ago I could hear some soldiers talk about a</Original>
+			</Key>
+			<Key ID="STR_NODE_AT">
+				<Original>at %1</Original>
+				<Chinesesimp>位于%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_TO">
+				<Original>to the %1</Original>
+				<Chinesesimp>方位%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_1">
+				<Original>That's all I can tell you.</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_2">
+				<Original>I don't know anything else.</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_3">
+				<Original>That's all I know.</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_4">
+				<Original>What are you going to do with this information anyway?</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_5">
+				<Original>By the way, why do you are you asking this?</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_6">
+				<Original>Just don't tell me why you are asking, all right?</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_7">
+				<Original>I don't want to know what you are going to do with this information!</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_8">
+				<Original>Just don't tell them I told you this!</Original>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_9">
+				<Original>I have a bad feeling about this.</Original>
+			</Key>
+			<Key ID="STR_NODE_INFO_INTEL">
+				<Original>%1 %2 at %3</Original>
+				<Chinesesimp>%1 %2于%3</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="dialoguePolice">
+		<Container name="OfficerHello">
+			<Key ID="STR_O_HELLO_1">
+				<Original>What's the problem?</Original>
+			</Key>
+			<Key ID="STR_O_HELLO_2">
+				<Original>I'm on duty. Don't waste my time!</Original>
+			</Key>
+			<Key ID="STR_O_HELLO_3">
+				<Original>Move along, I am busy! What do you want?</Original>
+			</Key>
+			<Key ID="STR_O_HELLO_4">
+				<Original>Don't you see, I am busy over here!</Original>
+			</Key>
+			<Key ID="STR_O_HELLO_5">
+				<Original>Go ahead, what do you want?</Original>
+			</Key>
+			<Key ID="STR_O_HELLO_6">
+				<Original>Your face looks familiar. Did I arrest you a week ago?</Original>
+			</Key>
+			<Key ID="STR_O_HELLO_7">
+				<Original>You look like the guy I fined a week ago!</Original>
+			</Key>
+		</Container>
+		<Container name="OfficerBye">
+			<Key ID="STR_O_BYE_1">
+				<Original>Don't do anything funny, I'll be watching you!</Original>
+			</Key>
+			<Key ID="STR_O_BYE_2">
+				<Original>Report anything unusual, citizen!</Original>
+			</Key>
+			<Key ID="STR_O_BYE_3">
+				<Original>Stop wasting my time, citizen!</Original>
+			</Key>
+			<Key ID="STR_O_BYE_4">
+				<Original>Allright, now go away!</Original>
+			</Key>
+			<Key ID="STR_O_BYE_5">
+				<Original>I knew it was a pointless dialogue!</Original>
+			</Key>
+		</Container>
+		<Container name="OfficerThanks">
+			<Key ID="STR_O_THANKS_1">
+				<Original>Good job, citizen. We will take measures.</Original>
+			</Key>
+			<Key ID="STR_O_THANKS_2">
+				<Original>Thank you. We will do something about it.</Original>
+			</Key>
+		</Container>
+		<Container name="ReportActivities">
+			<Key ID="STR_P_ACTIVITIES_1">
+				<Original>Some man is giving out leaflets.</Original>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_2">
+				<Original>Someone is making a political speech.</Original>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_3">
+				<Original>I think there is a political meeting over there.</Original>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_4">
+				<Original>I heard people talk about weapons.</Original>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_5">
+				<Original>Some guys are loading strange boxes into their car.</Original>
+			</Key>
+		</Container>
+		<Container name="NODE_O_Infos">
+			<Key ID="STR_P_WHERE_POLICESTATION">
+				<Original>Where is the police station?</Original>
+			</Key>
+			<Key ID="STR_P_REPORT">
+				<Original>I want to report terrorist activity nearby!</Original>
+			</Key>
+			<Key ID="STR_O_REPORT_FOLLOWUP_1">
+				<Original>What do you know?!</Original>
+			</Key>
+			<Key ID="STR_O_REPORT_FOLLOWUP_2">
+				<Original>Where did you see it?</Original>
+			</Key>
+			<Key ID="STR_P_REPORT_POINTAT">
+				<Original>Where I am looking at. A few hundred of meters this way.</Original>
+			</Key>
+			<Key ID="STR_P_REPORT_LEADWAY">
+				<Original>Follow me, I will show you!</Original>
+			</Key>
+			<Key ID="STR_O_REPORT_LEADWAY">
+				<Original>This sounds strange. Let's go, show me the way!</Original>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+
+
+
+			

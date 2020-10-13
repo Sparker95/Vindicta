@@ -28,79 +28,79 @@ CLASS("DialogueCivilian", "Dialogue")
 		params [P_THISOBJECT, P_OBJECT("_unit0"), P_OBJECT("_unit1")];
 		
 		pr _phrasesPlayerAskMilitaryLocations = [
-			"Do you know any military outposts in the area?",
-			"Do you know of any military places around here?",
-			"Hey, are there any ... you know ... military places near here?",
-			"Have you seen any military activity around here?",
-			"Do you know any military locations around here?"
+			localize "STR_MILITARY_LOCATIONS_1",
+			localize "STR_MILITARY_LOCATIONS_2",
+			localize "STR_MILITARY_LOCATIONS_3",
+			localize "STR_MILITARY_LOCATIONS_4",
+			localize "STR_MILITARY_LOCATIONS_5"
 		];
 
 		pr _phrasesIncite = [
-			"Damn police, they keep arresting innocent people!",
-			"Those militarist pigs will pay for their crimes!",
-			"Yesterday they have arrested my friends' family because of 'terrorist activity' as the police say!",
-			"The police took my brother yesterday, you might be next one!",
-			"Have you heard about those illegal detention camps? I know a guy who returned from one, horrible place!",
-			"We must stay united, or next time police will take one of us for some fake reason!",
-			"Police tossed drugs to one of my friends and arrested him! Assholes!",
-			"We should seek justice for all the war crimes the military are doing here!",
-			"The military are so corrupt! There is no other solution to this any more!"
+			localize "STR_INCITE_1",
+			localize "STR_INCITE_2",
+			localize "STR_INCITE_3",
+			localize "STR_INCITE_4",
+			localize "STR_INCITE_5",
+			localize "STR_INCITE_6",
+			localize "STR_INCITE_7",
+			localize "STR_INCITE_8",
+			localize "STR_INCITE_9"
 		];
 
 		pr _phrasesCivilianInciteResponse = [
-			"Damn that's horrible!",  "I am shocked to hear this!",
-			"You are so right!", "That's horrible!", "We should put an end to this!",
-			"Yes! The truth must be exposed!", "Oh really, they don't tell that on TV!",
-			"Damn I've never heard of it on the local radio!",
+			localize "STR_C_INCITE_RESPONSE_1",
+			localize "STR_C_INCITE_RESPONSE_2",
+			localize "STR_C_INCITE_RESPONSE_3",
+			localize "STR_C_INCITE_RESPONSE_4",
 			// Written by Jasperdoit:
-			"You're straight up spitting facts there mate! It's about time somebody puts a stop to that, and I for one am up for it!",
-			"You're right, they really are corrupt. Lets get to work on some change around here!",
-			"They definitely have some stick up their ass, let's show them who the real boss is!",
-			"Well there is one solution, and it involves guns and liberation. I'm up for it if you ask me!",
-			"I might know a way to fix their attitude! Its about time I get involved in this!",
-			"The less control they have, the better! Count me in!"
+			localize "STR_C_INCITE_RESPONSE_5",
+			localize "STR_C_INCITE_RESPONSE_6",
+			localize "STR_C_INCITE_RESPONSE_7",
+			localize "STR_C_INCITE_RESPONSE_8",
+			localize "STR_C_INCITE_RESPONSE_9",
+			localize "STR_C_INCITE_RESPONSE_10"
 		];
 
 		pr _phrasesScare = [
-			"Get out of here, quick!",
-			"Something bad is going to happen here. Better move away!",
-			"It's not safe here, run away!",
-			"This place is not safe, you better get away!",
-			"Sir you better get out of here, quick!",
-			"Move out of here! This place is not safe!"
+			localize "STR_SCARE_1",
+			localize "STR_SCARE_2",
+			localize "STR_SCARE_3",
+			localize "STR_SCARE_4",
+			localize "STR_SCARE_5",
+			localize "STR_SCARE_6"
 		];
 
 		pr _phrasesIntel = [
-			"Do you know if there will be any military maneuvers nearby?",
-			"Have you got any idea if the military are planning something?",
-			"Any idea if the army is planning something?"
+			localize "STR_INTEL_1",
+			localize "STR_INTEL_2",
+			localize "STR_INTEL_3"
 		];
 
 		pr _phrasesAskHelp = [
-			"The resistence needs your help! Do you have any building supplies?",
-			"Listen, the resistence needs some building supplies, do you have any?"
+			localize "STR_ASK_HELP_1",
+			localize "STR_ASK_HELP_2"
 		];
 
 		pr _phrasesAgreeHelp = [
-			"Here, take these construction supplies, that's all I have.",
-			"Take these construction supplies, that's all I can help you with."
+			localize "STR_AGREE_HELP_1",
+			localize "STR_AGREE_HELP_2"
 		];
 
 		pr _phrasesDontSupportResistance = [
-			"I can't help you with it.",
-			"Sorry I can't help you.",
-			"There is nothing I can help you with."
+			localize "STR_DONT_SUPPORT_1",
+			localize "STR_DONT_SUPPORT_2",
+			localize "STR_DONT_SUPPORT_3"
 		];
 
 		pr _phrasesDontKnowIntel = [
-			"I don't know anything like that.",
-			"I am not aware of such information.",
-			"Sorry I don't know anything of this kind."
+			localize "STR_DONT_KNOW_1",
+			localize "STR_DONT_KNOW_2",
+			localize "STR_DONT_KNOW_3"
 		];
 
 		pr _array = [
 			//NODE_SENTENCE("", TALKER_PLAYER, g_phrasesPlayerStartDialogue),
-			NODE_SENTENCE("", TALKER_NPC, ["Sure!" ARG "Yes?" ARG "How can I help you?"]),
+			NODE_SENTENCE("", TALKER_NPC, [localize "STR_NODE_C_SD_1" ARG localize "STR_NODE_C_SD_2" ARG localize "STR_NODE_C_SD_3"]),
 			
 			// Options: 
 			NODE_OPTIONS("node_options", ["opt_locations" ARG "opt_intel" ARG "opt_incite" ARG "opt_askContribute" ARG "opt_scare" ARG "opt_time" ARG "opt_bye"]),
@@ -124,10 +124,10 @@ CLASS("DialogueCivilian", "Dialogue")
 			NODE_JUMP_IF("", "node_alreadyIncited", "isIncited", []),	// If already incited
 			NODE_SENTENCE("", TALKER_NPC, _phrasesCivilianInciteResponse),
 			NODE_CALL_METHOD("", "inciteCivilian", []),
-			NODE_SENTENCE("", TALKER_PLAYER, "Tell it to others!"),
+			NODE_SENTENCE("", TALKER_PLAYER, localize "STR_NODE_P_TITO"),
 			NODE_JUMP("", "node_options"),
 
-			NODE_SENTENCE("node_alreadyIncited", TALKER_NPC, "I know! It's dangerous to discuss this."),
+			NODE_SENTENCE("node_alreadyIncited", TALKER_NPC, localize "STR_NODE_C_DANGEROUS_TO_DISCUSS"),
 			NODE_JUMP("", "node_options"),
 
 			// Option: ask for contribution
@@ -141,7 +141,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			NODE_SENTENCE("", TALKER_NPC, selectRandom _phrasesAgreeHelp),
 			NODE_JUMP("", "node_anythingElse"),
 
-			NODE_SENTENCE("node_alreadyContributed", TALKER_NPC, "Sorry I gave all I could already!"),
+			NODE_SENTENCE("node_alreadyContributed", TALKER_NPC, localize "STR_NODE_C_NO_MORE_RESOURCE"),
 			NODE_JUMP("", "node_anythingElse"),
 
 			// Option: scare civilian
@@ -150,18 +150,18 @@ CLASS("DialogueCivilian", "Dialogue")
 			NODE_END(""),
 
 			// Option: ask about time
-			NODE_OPTION("opt_time", "What time is it?"),
+			NODE_OPTION("opt_time", localize "STR_NODE_P_ASK_TIME"),
 			NODE_SENTENCE_METHOD("", TALKER_NPC, "sentenceTime"),
-			NODE_SENTENCE("", TALKER_PLAYER, "Thanks!"),
+			NODE_SENTENCE("", TALKER_PLAYER, localize "STR_NODE_P_THANKS"),
 			NODE_JUMP("", "node_anythingElse"),
 
 			// Option: leave
-			NODE_OPTION("opt_bye", "Bye! I must leave now."),
-			NODE_SENTENCE("", TALKER_NPC, ["Bye!" ARG "Good bye!" ARG "See you!"]),
+			NODE_OPTION("opt_bye", localize "STR_NODE_P_BYE"),
+			NODE_SENTENCE("", TALKER_NPC, [localize "STR_NODE_C_BYE_1" ARG localize "STR_NODE_C_BYE_2" ARG localize "STR_NODE_C_BYE_3"]),
 			NODE_END(""),
 
 			// Genertic 'Anything else?' reply after the end of some option branch
-			NODE_SENTENCE("node_anythingElse", TALKER_NPC, "Anything else?"),
+			NODE_SENTENCE("node_anythingElse", TALKER_NPC, localize "STR_NODE_C_ANYMORE"),
 			NODE_JUMP("", "node_options") // Go back to options
 		];
 
@@ -188,7 +188,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			(_type != LOCATION_TYPE_CITY)
 		};
 
-		OOP_INFO_1("  Nearby locations: %1", _locsNear);
+		OOP_INFO_1(localize "STR_NODE_INFO_NEARBY", _locsNear);
 
 		_locsCivKnows = _locsNear select {
 			pr _type = CALLM0(_x, "getType");
@@ -202,16 +202,16 @@ CLASS("DialogueCivilian", "Dialogue")
 			}
 		};
 
-		OOP_INFO_1("  Locations known by civilian: %1", _locsCivKnows);
+		OOP_INFO_1(localize "STR_NODE_INFO_KNOWN", _locsCivKnows);
 
 		_a = [];
-		_a pushBack NODE_SENTENCE("subroutineTellLocations", TALKER_NPC, ["Let me think..." ARG "Give me a second..." ARG "One moment. Let me think..."]);
+		_a pushBack NODE_SENTENCE("subroutineTellLocations", TALKER_NPC, [localize "STR_NODE_C_GATHER_1" ARG localize "STR_NODE_C_GATHER_2" ARG localize "STR_NODE_C_GATHER_3"]);
 		
 		if (count _locsCivKnows == 0) then {
-			pr _str = "No, there aren't any within kilometers of this place.";
+			pr _str = localize "STR_NODE_C_GATHER_NO";
 			_a pushBack NODE_SENTENCE("", TALKER_NPC, _str);
 		} else {
-			pr _str = "Yes, I know of a few places like that ...";
+			pr _str = localize "STR_NODE_C_GATHER_YES";
 			_a pushBack NODE_SENTENCE("", TALKER_NPC, _str);
 
 			{ // forEach _locsCivKnows;
@@ -220,42 +220,42 @@ CLASS("DialogueCivilian", "Dialogue")
 				pr _locPos = CALLM0(_loc, "getPos");
 				pr _bearing = _unit getDir _locPos;
 				pr _distance = _unit distance2D _locPos;
-				pr _bearings = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
+				pr _bearings = [localize "STR_NODE_DIR_N", localize "STR_NODE_DIR_NE", localize "STR_NODE_DIR_E", localize "STR_NODE_DIR_SE", localize "STR_NODE_DIR_S", localize "STR_NODE_DIR_SW", localize "STR_NODE_DIR_W", localize "STR_NODE_DIR_NW"];
 				pr _bearingID = (round (_bearing/45)) % 8;
 
 				// Strings
 				pr _typeString = CALLSM1("Location", "getTypeString", _type);
 				pr _bearingString = _bearings select _bearingID;
 				pr _distanceString = if(_distance < 400) then {
-					selectRandom ["quite close.", "within 400 meters.", "right over here.", "five-minute walk from here."]
+					selectRandom [localize "STR_NODE_L400_1", localize "STR_NODE_L400_2", localize "STR_NODE_L400_3", localize "STR_NODE_L400_4"]
 				} else {
 					if (_distance < 1000) then {
-						selectRandom ["not too far away from here.", "within a kilometer.", "10 minute walk from here.", "not far from here at all."];
+						selectRandom [localize "STR_NODE_L1000_1", localize "STR_NODE_L1000_2", localize "STR_NODE_L1000_3", localize "STR_NODE_L1000_4"];
 					} else {
-						selectRandom ["very far away.", "pretty far away.", "more than a kilometer from here.", "quite a bit away from here."];
+						selectRandom [localize "STR_NODE_M1000_1", localize "STR_NODE_M1000_2", localize "STR_NODE_M1000_3", localize "STR_NODE_M1000_4"];
 					};
 				};
-				pr _intro = selectRandom [	"There is a ",
-											"I know about a",
-											"I think there is a",
-											"Some time ago I saw a",
-											"A friend told me about a",
-											"People are nervous about a",
-											"People are talking about a",
-											"A long time ago there was a",
-											"Not sure about the coordinates, there is a"];
+				pr _intro = selectRandom [	localize "STR_NODE_C_INFO_INTRO_1",
+											localize "STR_NODE_C_INFO_INTRO_2",
+											localize "STR_NODE_C_INFO_INTRO_3",
+											localize "STR_NODE_C_INFO_INTRO_4",
+											localize "STR_NODE_C_INFO_INTRO_5",
+											localize "STR_NODE_C_INFO_INTRO_6",
+											localize "STR_NODE_C_INFO_INTRO_7",
+											localize "STR_NODE_C_INFO_INTRO_8",
+											localize "STR_NODE_C_INFO_INTRO_9"];
 
 				pr _posString = if (_type == LOCATION_TYPE_POLICE_STATION) then {
 					pr _locCities = CALLSM1("Location", "getLocationsAtPos", _locPos) select {
 						CALLM0(_x, "getType") == LOCATION_TYPE_CITY
 					};
 					if (count _locCities > 0) then {
-						format ["at %1", CALLM0(_locCities select 0, "getName")];
+						format [localize "STR_NODE_AT", CALLM0(_locCities select 0, "getName")];
 					} else {
-						format ["to the %1", _bearingString];
+						format [localize "STR_NODE_TO", _bearingString];
 					};
 				} else {
-					format ["to the %1", _bearingString];
+					format [localize "STR_NODE_TO", _bearingString];
 				};
 
 				pr _text = format ["%1 %2 %3, %4", _intro, _typeString, _posString, _distanceString];
@@ -271,9 +271,9 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Civilian: I must go
 			_strMustGo = selectRandom [
-				"That's all I can tell you.",
-				"I don't know anything else.",
-				"That's all I know."
+				localize "STR_NODE_C_INFO_OUTRO_1",
+				localize "STR_NODE_C_INFO_OUTRO_2",
+				localize "STR_NODE_C_INFO_OUTRO_3"
 			];
 			_a pushBack NODE_SENTENCE("", TALKER_NPC, _strMustGo);
 		};
@@ -293,15 +293,14 @@ CLASS("DialogueCivilian", "Dialogue")
 		OOP_INFO_2("generateIntelNodes: location: %1 %2", _loc, CALLM0(_loc, "getName"));
 
 		_a = [];
-		_a pushBack NODE_SENTENCE("subroutineTellIntel", TALKER_NPC, ["Let me think..." ARG "Give me a second..." ARG "One moment. Let me think..."]);
+		_a pushBack NODE_SENTENCE("subroutineTellIntel", TALKER_NPC, [localize "STR_NODE_C_GATHER_1" ARG localize "STR_NODE_C_GATHER_2" ARG localize "STR_NODE_C_GATHER_3"]);
 
 		pr _phrasesIntelSource = [
-			"A friend told me about a",
-			"A friend said he heard from somebody about a",
-			"I heard some guys talk about a",
-			"I think I heard policemen talk about a",
-			"My friend told me about a",
-			"Some time ago I could hear some soldiers talk about a"
+			localize "STR_NODE_C_INFO_INTRO_5",
+			localize "STR_NODE_C_INFO_INTRO_10",
+			localize "STR_NODE_C_INFO_INTRO_11",
+			localize "STR_NODE_C_INFO_INTRO_12",
+			localize "STR_NODE_C_INFO_INTRO_13"
 		];
 
 		pr _intelArray = CALLM0(_loc, "getIntel");
@@ -318,7 +317,7 @@ CLASS("DialogueCivilian", "Dialogue")
 					_departDate = numberToDate [_year, (dateToNumber _departDate)];
 					pr _intelNameStr = CALLM0(_intel, "getShortName");
 					pr _dateStr = _departDate call misc_fnc_dateToISO8601;
-					pr _text = format ["%1 %2 at %3", selectRandom _phrasesIntelSource, _intelNameStr, _dateStr];
+					pr _text = format [localize "STR_NODE_INFO_INTEL", selectRandom _phrasesIntelSource, _intelNameStr, _dateStr];
 					_a pushBack NODE_SENTENCE("", TALKER_NPC, _text);
 					_a pushBack NODE_CALL_METHOD("", "revealIntel", [_intel]);
 				};
@@ -326,12 +325,12 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Civilian: I must go
 			_strMustGo = selectRandom [
-				"What are you going to do with this information anyway?",
-				"By the way, why do you are you asking this?",
-				"Just don't tell me why you are asking, all right?",
-				"I don't want to know what you are going to do with this information!",
-				"Just don't tell them I told you this!",
-				"I have a bad feeling about this."
+				localize "STR_NODE_C_INFO_OUTRO_4",
+				localize "STR_NODE_C_INFO_OUTRO_5",
+				localize "STR_NODE_C_INFO_OUTRO_6",
+				localize "STR_NODE_C_INFO_OUTRO_7",
+				localize "STR_NODE_C_INFO_OUTRO_8",
+				localize "STR_NODE_C_INFO_OUTRO_9"
 			];
 			_a pushBack NODE_SENTENCE("", TALKER_NPC, _strMustGo);
 		} else {
@@ -393,12 +392,12 @@ CLASS("DialogueCivilian", "Dialogue")
 		if (random 10 < 2) then {
 			selectRandom
 				[
-					"Are you serious? You have a watch on your hand!",
-					"Don't you have a phone?",
-					"Don't you have a watch yourself?"
+					localize "STR_NODE_C_ASK_TIME_NO_1",
+					localize "STR_NODE_C_ASK_TIME_NO_2",
+					localize "STR_NODE_C_ASK_TIME_NO_3"
 				];
 		} else {
-			format ["It is %1", [_time, "HH:MM"] call BIS_fnc_timeToString];
+			format [localize "STR_NODE_C_ASK_TIME_YES", [_time, "HH:MM"] call BIS_fnc_timeToString];
 		};
 	ENDMETHOD;
 
