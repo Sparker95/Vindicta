@@ -38,7 +38,7 @@ if(_index != -1) then {
 			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
 			_terrainHeightASL = getTerrainHeightASL _position;
 			_buildingHeightASL = (getPosASL _building) select 2;
-			_difference = ((_terrainHeightASL - _buildingHeightASL) + ((getPosATL _building) select 2))*-1;
+			_difference = (((_terrainHeightASL - _buildingHeightASL) - 0.1) + ((getPosATL _building) select 2))*-1; //-0.1 drop the statics from tiny height to cover for model misalignment across templates
 			_position = _position vectorAdd [0, 0, _difference];
 			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
