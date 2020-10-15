@@ -60,7 +60,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		if (!_isAdmin) then {
 			{
 				_x ctrlEnable false;
-				_x ctrlSetTooltip "Only for admins";
+				_x ctrlSetTooltip localize "STR_ADMIN_ONLY";
 			} forEach [
 				_bnNewSave,
 				_bnOverwriteSave,
@@ -74,14 +74,14 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 				//_bnOverwriteSave	ctrlEnable true;
 				_bnLoadSave			ctrlEnable false;
 				
-				pr _tooltipText = "Game can be loaded only after a mission restart";
+				pr _tooltipText = localize "STR_LOAD_AFTER_RESTART";
 				_bnLoadSave ctrlSetTooltip _tooltipText;
 			} else {
 				_bnNewSave			ctrlEnable false;
 				_bnOverwriteSave	ctrlEnable false;
 				//_bnLoad				ctrlEnable true;
 				
-				pr _tooltipText = "There is nothing to save yet";
+				pr _tooltipText = localize "STR_NOTHING_TO_SAVE";
 				_bnOverwriteSave ctrlSetTooltip _tooltipText;
 				_bnNewSave ctrlSetTooltip _tooltipText;
 			};
@@ -93,8 +93,8 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		// Set hint about FileXT addon
 		pr _staticSaveData = T_CALLM1("findControl", "TAB_SAVE_STATIC_SAVE_DATA");
 		pr _nl = toString [10];
-		pr _str = "With FileXT addon you can store saved games in a more convenient way." + _nl;
-		_str = _str + "You can find installation instructions at our Guide Web-Page.";
+		pr _str = localize "STR_FILEXT_SUGGEST" + _nl;
+		_str = _str + localize "STR_FILEXT_SUGGEST_1";
 		_staticSaveData ctrlSetText _str;
 
 		// Request save game data from server
@@ -264,7 +264,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		if(!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {};
 
 		// Show a confirmation dialog
-		pr _args = [format ["Create a new game save?\n"],
+		pr _args = [format [localize "STR_CREATE_NEW_GAME"],
 			[],
 			{
 				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
@@ -296,7 +296,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		_selRecordData params ["_recordName", "_header", "_errors"];
 		
 		// Show a confirmation dialog
-		pr _args = [format ["Overwrite this saved game?\n%1", _recordName],
+		pr _args = [format [localize "STR_OVERWRITE_SAVE", _recordName],
 			[_recordName],
 			{
 				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
@@ -338,19 +338,19 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		// Last save break is at save version 19, we cannot load older games
 		if (_headerVer < _saveBreakVersion || _headerVer > _currVer) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
-			pr _text = format ["Error: version is incompatible: save: %1, current: %2, last compatible: %3", _headerVer, _currVer, _saveBreakVersion];
+			pr _text = format [localize "STR_INCOMPAT_SAVE", _headerVer, _currVer, _saveBreakVersion];
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
 
 		// Check if maps match
 		if ( (toLower GETV(_header,"worldName")) != (toLower worldName)) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
-			pr _text = format ["Error: maps are incompatible: save: %1, current: %2", GETV(_header,"worldName"), worldName];
+			pr _text = format [localize "STR_INCOMPAT_MAP", GETV(_header,"worldName"), worldName];
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
 
 		// Show a confirmation dialog
-		pr _args = [format ["Load this saved game?\n%1", _recordName],
+		pr _args = [format [localize "STR_LOAD_CONFIRM", _recordName],
 			[_recordName],
 			{
 				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
@@ -378,7 +378,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		_selRecordData params ["_recordName", "_header", "_errors"];
 
 		// Show a confirmation dialog
-		pr _args = [format ["Delete this saved game?\n%1", _recordName],
+		pr _args = [format [localize "STR_DELETE_CONFIRM", _recordName],
 			[_recordName],
 			{
 				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");

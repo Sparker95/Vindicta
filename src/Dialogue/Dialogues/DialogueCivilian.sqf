@@ -52,13 +52,17 @@ CLASS("DialogueCivilian", "Dialogue")
 			localize "STR_C_INCITE_RESPONSE_2",
 			localize "STR_C_INCITE_RESPONSE_3",
 			localize "STR_C_INCITE_RESPONSE_4",
-			// Written by Jasperdoit:
 			localize "STR_C_INCITE_RESPONSE_5",
 			localize "STR_C_INCITE_RESPONSE_6",
 			localize "STR_C_INCITE_RESPONSE_7",
 			localize "STR_C_INCITE_RESPONSE_8",
+			// Written by Jasperdoit:
 			localize "STR_C_INCITE_RESPONSE_9",
-			localize "STR_C_INCITE_RESPONSE_10"
+			localize "STR_C_INCITE_RESPONSE_10",
+			localize "STR_C_INCITE_RESPONSE_11",
+			localize "STR_C_INCITE_RESPONSE_12",
+			localize "STR_C_INCITE_RESPONSE_13",
+			localize "STR_C_INCITE_RESPONSE_14"
 		];
 
 		pr _phrasesScare = [

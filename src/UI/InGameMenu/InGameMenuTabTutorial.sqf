@@ -54,9 +54,9 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 		pr _nl = toString [10];
 
 		pr _ctrl = T_CALLM1("findControl", "TAB_TOTORIAL_TEMP_EDIT");
-		_str = _nl + "Our tutorial is hosted at the website:" + _nl + _nl;
+		_str = _nl + localize "STR_TUTORIAL_HINT_1" + _nl + _nl;
 		_str = _str + "https://vindicta-team.github.io/Vindicta-Docs/" + _nl + _nl;
-		_str = _str + "You can select and copy the link with CTRL + C";
+		_str = _str + localize "STR_TUTORIAL_HINT_3";
 		_ctrl ctrlSetText _str;
 		
 		copyToClipboard "https://vindicta-team.github.io/Vindicta-Docs/";
