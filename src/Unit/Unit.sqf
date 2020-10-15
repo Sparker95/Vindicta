@@ -639,7 +639,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					_objectHandle setVectorDirAndUp _dirAndUpPrev;
 				} else {
 					_objectHandle setDir _dir;
-					_objectHandle setPos _pos;
+					_objectHandle setPosATL _pos;
 				};
 
 				// Initialize variables
