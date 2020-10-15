@@ -111,7 +111,55 @@ g_UM_civUniforms = [
     "U_C_Uniform_Scientist_01_formal_F",
     "U_C_Uniform_Scientist_02_formal_F",
     "U_O_R_Gorka_01_black_F",
-    "U_C_E_LooterJacket_01_F"
+    "U_C_E_LooterJacket_01_F",
+
+    // Vietnam CDLC
+    "vn_o_uniform_vc_01_01",
+	"vn_o_uniform_vc_01_02",
+	"vn_o_uniform_vc_01_04",
+	"vn_o_uniform_vc_01_07",
+	"vn_o_uniform_vc_01_06",
+	"vn_o_uniform_vc_01_03",
+	"vn_o_uniform_vc_01_05",
+	"vn_o_uniform_vc_mf_01_07",
+	"vn_o_uniform_vc_mf_10_07",
+	"vn_o_uniform_vc_reg_11_08",
+	"vn_o_uniform_vc_reg_11_09",
+	"vn_o_uniform_vc_reg_11_10",
+	"vn_o_uniform_vc_mf_11_07",
+	"vn_o_uniform_vc_reg_12_08",
+	"vn_o_uniform_vc_reg_12_09",
+	"vn_o_uniform_vc_reg_12_10",
+	"vn_o_uniform_vc_mf_12_07",
+	"vn_o_uniform_vc_02_01",
+	"vn_o_uniform_vc_02_02",
+	"vn_o_uniform_vc_02_04",
+	"vn_o_uniform_vc_02_07",
+	"vn_o_uniform_vc_02_06",
+	"vn_o_uniform_vc_02_03",
+	"vn_o_uniform_vc_02_05",
+	"vn_o_uniform_vc_mf_02_07",
+    "vn_o_uniform_vc_03_01",
+    "vn_o_uniform_vc_03_02",
+    "vn_o_uniform_vc_03_04",
+    "vn_o_uniform_vc_03_07",
+    "vn_o_uniform_vc_03_06",
+    "vn_o_uniform_vc_03_03",
+    "vn_o_uniform_vc_03_05",
+    "vn_o_uniform_vc_mf_03_07",
+    "vn_o_uniform_vc_04_01",
+    "vn_o_uniform_vc_04_02",
+    "vn_o_uniform_vc_04_04",
+    "vn_o_uniform_vc_04_07",
+    "vn_o_uniform_vc_04_06",
+    "vn_o_uniform_vc_04_03",
+    "vn_o_uniform_vc_04_05",
+    "vn_o_uniform_vc_mf_04_07",
+    "vn_o_uniform_vc_05_01",
+    "vn_o_uniform_vc_05_04",
+    "vn_o_uniform_vc_05_03",
+    "vn_o_uniform_vc_05_02",
+    "vn_o_uniform_vc_mf_09_07"
 ];
 publicVariable "g_UM_civUniforms";
 
@@ -205,7 +253,20 @@ g_UM_civHeadgear = [
     "H_StrawHat_dark",
     "H_Hat_Safari_olive_F",
     "H_Hat_Safari_sand_F",
-    "H_WirelessEarpiece_F"
+    "H_WirelessEarpiece_F",
+
+    // Vietnam CDLC
+    "vn_c_headband_04",
+    "vn_b_headband_03",
+    "vn_c_headband_03",
+    "vn_c_headband_02",
+    "vn_b_headband_01",
+    "vn_c_headband_01",
+    "vn_c_conehat_01",
+    "vn_c_conehat_02",
+    "vn_b_bandana_03",
+    "vn_b_bandana_01",
+    "vn_o_boonie_vc_01_01"
 ];
 publicVariable "g_UM_civHeadgear";
 
@@ -260,7 +321,18 @@ g_UM_civFacewear = [
     "G_Squares",
     "G_Squares_Tinted",
     "G_Tactical_Black",
-    "G_Tactical_Clear"
+    "G_Tactical_Clear",
+
+    // Vietnam CDLC
+    "vn_b_aviator",
+    "vn_o_bandana_b",
+    "vn_o_bandana_g",
+    "vn_o_scarf_01_04",
+    "vn_b_scarf_01_03",
+    "vn_o_scarf_01_03",
+    "vn_o_scarf_01_02",
+    "vn_b_scarf_01_01",
+    "vn_o_scarf_01_01"
 ];
 publicVariable "g_UM_civFacewear";
 
@@ -289,7 +361,13 @@ g_UM_civBackpacks = [
     "C_UAV_06_backpack_F",
     "C_UAV_06_medical_backpack_F",
     "C_IDAP_UAV_01_backpack_F",
-    "C_IDAP_UAV_06_backpack_F"
+    "C_IDAP_UAV_06_backpack_F",
+
+    // Vietnam CDLC
+    "vn_c_pack_01",
+    "vn_c_pack_01_medic_pl",
+    "vn_c_pack_01_engineer_pl",
+    "vn_c_pack_02"
 ];
 publicVariable "g_UM_civBackpacks";
 
@@ -337,6 +415,8 @@ g_UM_civWeapons = [
     "Laserdesignator_02",
     "Laserdesignator_03",
     "ACE_Flashlight_Maglite_ML300L",
+    "vn_fkb1_red",
+    "vn_fkb1",
     ""
 ];
 publicVariable "g_UM_civWeapons";
