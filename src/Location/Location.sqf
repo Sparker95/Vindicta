@@ -410,7 +410,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL("_isTerrainObject")];
 
 		private _type = typeOf _hObject;
-
+		private _index = location_bp_HGM_GMG_high findIf { _type in (_x select 0)};
+		private _hasStaticPos = false;
+		if(_index != -1) then {
+			_hasStaticPos = true;
+		};
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
 		private _countBP = count (_hObject buildingPos -1);
 		private _alreadyRegistered = if (_countBP > 0) then {
@@ -421,9 +425,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_array pushBackUnique _hObject;
 				// This variable records which positions in the building are occupied by a unit (it is modified in unit Actions)
 				_hObject setVariable ["vin_occupied_positions", []];
-				//if (_addSpawnPos) then {
+				if (_hasStaticPos) then {
 					T_CALLM1("addSpawnPosFromBuilding", _hObject);
-				//};
+				};
 				false 
 			}
 		} else {
@@ -431,6 +435,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			if(_hObject in _array) then {
 				true
 			} else {
+				if (_hasStaticPos) then {
+					T_CALLM1("addSpawnPosFromBuilding", _hObject);
+				};
 				_array pushBackUnique _hObject;
 				false
 			}
