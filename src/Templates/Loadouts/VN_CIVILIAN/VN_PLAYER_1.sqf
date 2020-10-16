@@ -133,6 +133,10 @@ if(random 5 < 1) then {
 	];
 };
 //====Items====
+this linkItem "ItemMap";
+this linkItem "ItemCompass";
+this linkItem "ItemWatch";
+
 for "_i" from 1 to 3 do { this addItemToUniform _ammo };
 
 //====ACE Items====
