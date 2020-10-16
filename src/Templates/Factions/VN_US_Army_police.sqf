@@ -4,7 +4,7 @@ _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tVN_US_Army_police"]; 									//Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Vietman war US Army military police."]; 	//Template display description
-_array set [T_DISPLAY_NAME, "US Army MP"]; 						//Template display name
+_array set [T_DISPLAY_NAME, "VN DLC - US Military Police"]; 						//Template display name
 _array set [T_FACTION, T_FACTION_Police]; 							//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [
 		"A3_Characters_F", 
