@@ -30,7 +30,11 @@ location_bp_HGM_GMG_high =
 	[ //The small military watchtower
 		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F", "Land_Cargo_Patrol_V4_F"],
 		[[1.9, 220, 4.4, 180], [1.9, 130, 4.4, 180]]
-	]
+	],
+
+	// VN DLC towers
+	[["Land_vn_b_tower_01"],[[0.262384,122.788,3.5045,0]]],
+	[["Land_vn_hlaska"],[[0.408451,20.2113,5.42978,0]]]
 
 	/*
 	[ //The military HQ
