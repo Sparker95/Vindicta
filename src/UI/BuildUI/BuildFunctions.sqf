@@ -58,7 +58,7 @@ ui_fnc_enterBuildMode = {
 	// 	_x setVariable ["P0_allowMove", true];
 	// } forEach (player nearObjects 50);
 
-	player addAction ["Grab Object", {
+	player addAction [localize "STR_BF_GRAB", {
 		params ["_object"];
 		
 		[] call ui_fnc_moveObject;

@@ -16,7 +16,7 @@ class HR_label : Map_UI_text_base
     w = safeZoneW * 0.02050782;
     h = safeZoneH * 0.02951389;
     sizeEx = safeZoneH * 0.025;
-    text = "HR:";
+    text = $STR_LD_HR;
     enable = 0;
 };
 class HR_value : Map_UI_text_base 
@@ -36,7 +36,7 @@ class LocationData_type : Map_UI_text_base
     y = safeZoneY + safeZoneH * 0.5;
     w = safeZoneW * 0.2296875;
     h = safeZoneH * 0.04027778;
-    text = "Type: ...";
+    text = $STR_LD_TYPE;
     enable = 0;
 };
 class LocationData_time : Map_UI_text_base
@@ -46,7 +46,7 @@ class LocationData_time : Map_UI_text_base
     y = safeZoneY + safeZoneH * 0.58;
     w = safeZoneW * 0.23;
     h = safeZoneH * 0.04;
-    text = "Last updated: ...";
+    text = $STR_LD_LAST_UPDATED;
     enable = 0;
 };
 class LocationData_composition : Map_UI_text_base
@@ -56,7 +56,7 @@ class LocationData_composition : Map_UI_text_base
     y = safeZoneY + safeZoneH * 0.62;
     w = safeZoneW * 0.24;
     h = safeZoneH * 0.36;
-    text = "Composition: ...";
+    text = $STR_LD_COMPOSITION;
     enable = 0;
 };
 class LocationData_side : Map_UI_text_base
@@ -66,7 +66,7 @@ class LocationData_side : Map_UI_text_base
     y = safeZoneY + safeZoneH * 0.54;
     w = safeZoneW * 0.23;
     h = safeZoneH * 0.04;
-    text = "Side: ...";
+    text = $STR_LD_SIDE;
     enable = 0;
 };
 class LocationData_header : Map_UI_text_base
@@ -76,7 +76,7 @@ class LocationData_header : Map_UI_text_base
     y = safeZoneY + safeZoneH * 0.46;
     w = safeZoneW * 0.24;
     h = safeZoneH * 0.03;
-    text = "Location data";
+    text = $STR_LD_LOCATION_DATA;
     enable = 0;
 };
 class LocationData_button : Map_UI_button
@@ -86,5 +86,5 @@ class LocationData_button : Map_UI_button
     y = safeZoneY + safeZoneH * 0.5;
     w = safeZoneW * 0.12011719;
     h = safeZoneH * 0.03993056;
-    text = "Push me";
+    text = $STR_LD_PUSH_ME;
 };

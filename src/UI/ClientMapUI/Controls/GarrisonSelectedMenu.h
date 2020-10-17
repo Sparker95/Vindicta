@@ -30,7 +30,7 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			w = __MENU_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
 			//text = "<-\\-> Split";
-			text = "Split";			
+			text = $STR_COMMAND_SPLIT;			
 		};
 		/*
 		class STATIC_HEADER : MUI_BASE 
@@ -67,7 +67,7 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			y = 1*__ROW_HEIGHT;
 			w = __MENU_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Give order ...";			
+			text = $STR_COMMAND_GIVE_ORDER;			
 		};
 
 		class BUTTON_CANCEL_ORDER : MUI_BUTTON_TXT 
@@ -77,7 +77,7 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			y = 2*__ROW_HEIGHT;
 			w = __MENU_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Cancel order";
+			text = $STR_COMMAND_CANCEL_ORDER;
 		};
 	};
 	

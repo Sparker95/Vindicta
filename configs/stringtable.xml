@@ -1035,7 +1035,7 @@
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Player_Tooltip">
 				<Original>AI spawn distance measured from garrisons to nearest player.</Original>
-				<Chinesesimp>从驻军位置到距离最近的玩家之间的AI刷新距离。</Chinesesimp>
+				<Chinesesimp>从驻地到距离最近的玩家之间的AI刷新距离。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI">
@@ -1044,7 +1044,7 @@
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI_Tooltip">
 				<Original>AI spawn distance measured from garrisons to nearest enemy AI.</Original>
-				<Chinesesimp>从驻军位置到距离最近的敌军AI之间的AI刷新距离。</Chinesesimp>
+				<Chinesesimp>从驻地到距离最近的敌军AI之间的AI刷新距离。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Ambient_Civ_Multiplier">
@@ -1427,7 +1427,7 @@
 			</Key>
 			<Key ID="STR_MILITARY_LOCATIONS_3">
 				<Original>Hey, are there any ... you know ... military places near here?</Original>
-				<Chinesesimp>嘿，这附近…有军事禁区吗？你懂的…</Chinesesimp>
+				<Chinesesimp>嘿，这附近...有军事禁区吗？你懂的...</Chinesesimp>
 			</Key>
 			<Key ID="STR_MILITARY_LOCATIONS_4">
 				<Original>Have you seen any military activity around here?</Original>
@@ -1903,7 +1903,7 @@
 	</Package>
 </Project>
 <Project name="Menus">
-	<Pacakge name="nnGameMenu">
+	<Pacakge name="inGameMenus">
 		<Container name="InitializationMenu">
 			<Key ID="STR_IM_CREATE">
 				<Original>Create</Original>
@@ -2041,7 +2041,7 @@
 			</Key>
 			<Key ID="STR_CON_CREATING">
 				<Original>Creating new location ...</Original>
-				<Chinesesimp>正在建立新地点…</Chinesesimp>
+				<Chinesesimp>正在建立新地点...</Chinesesimp>
 			</Key>
 			<Key ID="STR_CON_INVALID_CLAIM">
 				<Original>There is nothing to claim here!</Original>
@@ -2171,79 +2171,103 @@
 		<Container name="GMINIT">
 			<Key ID="STR_GMINIT_CHOSEN_FACTIONS">
 				<Original>CHOSEN FACTIONS:</Original>
+				<Chinesesimp>选择阵营：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_NEW_CAMPAIGN">
 				<Original>CREATE A NEW VINDICTA CAMPAIGN</Original>
+				<Chinesesimp>建立新VINDICTA战役</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_GAMEMODE">
 				<Original>GAME MODE:</Original>
+				<Chinesesimp>游戏模式：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_INITIAL_ENY">
 				<Original>INITIAL ENEMY %:</Original>
+				<Chinesesimp>初始敌军%：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_MIL_FACTION">
 				<Original>MILITARY FACTION:</Original>
+				<Chinesesimp>军事阵营：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_CAMPAIGN_NAME">
 				<Original>CAMPAIGN NAME:</Original>
+				<Chinesesimp>战役名称：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_CIV_FACTION">
 				<Original>CIVILIAN FACTION:</Original>
+				<Chinesesimp>平民阵营：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_POL_FACTION">
 				<Original>POLICE FACTION:</Original>
+				<Chinesesimp>警察阵营：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_NAME">
 				<Original>ENTER NAME</Original>
+				<Chinesesimp>输入名称</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_CIV_WAR">
 				<Original>CIVIL WAR</Original>
+				<Chinesesimp>内战</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_STD">
 				<Original>STANDARD</Original>
+				<Chinesesimp>标准</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_ADV_SETTINGS">
 				<Original>ADVANCED SETTINGS</Original>
+				<Chinesesimp>高级设置</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_START">
 				<Original>START</Original>
+				<Chinesesimp>开始</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="NOTES">
 			<Key ID="STR_NOTES_HINT">
 				<Original>You can write notes here. Radio cryptokeys will also be added here.</Original>
+				<Chinesesimp>你可以在此写下笔记。无线电密钥也会自动添加到这里。</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="SAVE">
 			<Key ID="STR_SAVE_STORAGE">
 				<Original>Storage:</Original>
+				<Chinesesimp>存储位置：</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_NEW">
 				<Original>New Save</Original>
+				<Chinesesimp>新存档</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_OVERWRITE">
 				<Original>Overwrite</Original>
+				<Chinesesimp>覆盖</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_LOAD">
 				<Original>Load</Original>
+				<Chinesesimp>读取</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_DELETE">
 				<Original>Delete</Original>
+				<Chinesesimp>删除</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_PREVIOUS">
 				<Original>PREVIOUSLY SAVED GAMES:</Original>
+				<Chinesesimp>先前存档：</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_NAME">
 				<Original>SAVE NAME:</Original>
+				<Chinesesimp>存档名称：</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_MAP">
 				<Original>MAP:</Original>
+				<Chinesesimp>地图：</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_VERSION">
 				<Original>VERSION:</Original>
+				<Chinesesimp>版本：</Chinesesimp>
 			</Key>
 			<Key ID="STR_SAVE_COUNT">
 				<Original>SAVE COUNT:</Original>
+				<Chinesesimp>存档计数：</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="TutorialPages">
@@ -2393,7 +2417,716 @@
 			</Key>
 		</Container>
 	</Package>
+	<Package name="attachToGarrisonDialog">
+		<Container name="ATG_hints">
+			<Key ID="STR_ATG_ATTACH_TO_GARRISON">
+				<Original>Attach unit to garrison</Original>
+				<Chinesesimp>将单位指派到驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ATTACH">
+				<Original>Attach</Original>
+				<Chinesesimp>指派</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_WRONG_UNIT">
+				<Original>Error: Wrong unit!\nPlease try again!</Original>
+			</Key>
+			<Key ID="STR_ATG_ERROR_NO_LOC">
+				<Original>Error: There is no location to attach the unit!\nPlease try again!</Original>
+			</Key>
+			<Key ID="STR_ATG_LOADING">
+				<Original>Data is loading...\n</Original>
+			</Key>
+			<Key ID="STR_ATG_UNIT">
+				<Original>Unit: %1\n</Original>
+				<Chinesesimp>单位：%1\n</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_NOT_FOUND">
+				<Original>Error: unit is not found on the server!\nPlease try again!</Original>
+			</Key>
+			<Key ID="STR_ATG_ERROR_WRONG_GARRISON">
+				<Original>Error: unit's garrison is wrong!\nPlease try again!</Original>
+			</Key>
+			<Key ID="STR_ATG_ERROR_WRONG_DESTINATION">
+				<Original>Error: destination garrison is wrong!\nPlease try again!</Original>
+			</Key>
+			<Key ID="STR_ATG_ERROR_SAME_GARRISON">
+				<Original>This unit is already at this garrison!"</Original>
+			</Key>
+			<Key ID="STR_ATG_CAN_ATTACH_TO">
+				<Original>Unit can be attached to %1\n</Original>
+			</Key>
+			<Key ID="STR_ATG_NOT_OWNED">
+				<Original>We don't own this unit!\nWe can't attach the unit to %1.\n</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="buildFunctions">
+		<Container name="BuildFunctions">
+			<Key ID="STR_BF_GRAB">
+				<Original>Grab Object</Original>
+				<Chinesesimp>抓取物体</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="buildUIObjects">
+		<Container name="Build_UI_Objects">
+			<Key ID="STR_BUIO_TENTS">
+				<Original>Tents</Original>
+				<Chinesesimp>帐篷</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_MEDICAL">
+				<Original>Medical</Original>
+				<Chinesesimp>医疗</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_STORAGE">
+				<Original>Storage</Original>
+				<Chinesesimp>存储</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_CAMO">
+				<Original>Camouflage</Original>
+				<Chinesesimp>伪装网</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_LIGHT">
+				<Original>Lighting</Original>
+				<Chinesesimp>照明</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_DEFENSE">
+				<Original>Defense</Original>
+				<Chinesesimp>防御工事</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RANGE">
+				<Original>Shooting Range</Original>
+				<Chinesesimp>射击场</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_BUILDINGS">
+				<Original>Buildings</Original>
+				<Chinesesimp>建筑</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_CONCEAL">
+				<Original>Concealment</Original>
+				<Chinesesimp>隐蔽物</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RECREATION">
+				<Original>Recreation</Original>
+				<Chinesesimp>消遣</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_SPECIAL">
+				<Original>Special</Original>
+				<Chinesesimp>特殊</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RADIO">
+				<Original>Radio Shack</Original>
+				<Chinesesimp>无线电小屋</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RADIO_DESC">
+				<Original>A small building with radio equipment. Intercepts enemy radio communications in the range of ~5km, if you have the radio cryptokey</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="buildUI">
+		<Container name="Build_UI.h">
+			<Key ID="STR_BUI_TAB">
+				<Original>TAB: OPEN BUILD MENU</Original>
+				<Chinesesimp>TAB：开启建造菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DEFENSES">
+				<Original>Defenses</Original>
+				<Chinesesimp>防御工事</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_RANGE">
+				<Original>Shooting Range</Original>
+				<Chinesesimp>射击场</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DECOR">
+				<Original>Decoration</Original>
+				<Chinesesimp>装饰</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="Build_UI.sqf">
+			<Key ID="STR_BUI_OPEN_MENU">
+				<Original>Open Build Menu</Original>
+				<Chinesesimp>开启建造菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_TAB">
+				<Original>TAB:</Original>
+				<Chinesesimp>TAB：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_BACKSPACE">
+				<Original>BACKSPACE:</Original>
+				<Chinesesimp>退格键：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_QE">
+				<Original>Q and E:</Original>
+				<Chinesesimp>Q和E：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_ARROWS">
+				<Original>ARROW KEYS:</Original>
+				<Chinesesimp>方向键：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DELETE">
+				<Original>DELETE:</Original>
+				<Chinesesimp>删除键：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_BUILD">
+				<Original> Build/Place</Original>
+				<Chinesesimp>建造/放置</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_PICKUP">
+				<Original> Pick up highlighted object</Original>
+				<Chinesesimp>建起高亮物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_SELECT">
+				<Original> Select current object</Original>
+				<Chinesesimp>选择当前物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_CLOSE">
+				<Original> Close menu</Original>
+				<Chinesesimp>关闭菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_CANCEL">
+				<Original> Cancel placement</Original>
+				<Chinesesimp>取消放置</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_ROTATE">
+				<Original> Rotate object</Original>
+				<Chinesesimp>旋转物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_NAVIGATE">
+				<Original> Navigate through categories and items</Original>
+				<Chinesesimp>于类别和物体之间导航</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DELETE">
+				<Original> Delete highlighted object</Original>
+				<Chinesesimp>删除高亮物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISH_NOT_EMPTY">
+				<Original>Object must be empty to demolish. Cannot delete the arsenal.</Original>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISH_REFUND">
+				<Original>Demolish %1 and refund %2 construction resources?</Original>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISH_NO_REFUND">
+				<Original>Demolish %1? This object cannot be refunded.</Original>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISHED">
+				<Original>Object %1 was demolished.</Original>
+			</Key>
+			<Key ID="STR_BUI_NOT_ENOUGH_RESOURCES">
+				<Original>Not enough build resources in your inventory: %1 (%2 required)</Original>
+			</Key>
+			<Key ID="STR_BUI_REFUNDED">
+				<Original>Refunded %1 construction resources.</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="controls">
+		<Container name="GarrisonCommand.h">
+			<Key ID="STR_COMMAND_MOVE">
+				<Original>Move</Original>
+				<Chinesesimp>移动</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_ATTACK">
+				<Original>Attack</Original>
+				<Chinesesimp>进攻</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_REINFORCE">
+				<Original>Reinforce / Occupy</Original>
+				<Chinesesimp>增援 / 占领</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_PATROL">
+				<Original>Patrol (NYI)</Original>
+				<Chinesesimp>巡逻（未实装）</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_CANCEL">
+				<Original>&lt; Cancel &gt;</Original>
+				<Chinesesimp>&lt; 取消 &gt;</Chinesesimp>
+			</Key>			
+		</Container>
+		<Container name="GarrisonSelectedMenu.h">
+			<Key ID="STR_COMMAND_SPLIT">
+				<Original>Split</Original>
+				<Chinesesimp>拆分</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_GIVE_ORDER">
+				<Original>Give order ...</Original>
+				<Chinesesimp>下达命令...</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_CANCEL_ORDER">
+				<Original>Cancel order</Original>
+				<Chinesesimp>取消命令</Chinesesimp>
+			</Key>
+		<Container name="IntelPanel.h">
+			<Key ID="STR_INT_INTEL">
+				<Original>INTEL</Original>
+				<Chinesesimp>情报</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_ACTIVE">
+				<Original>SHOW ACTIVE:</Original>
+				<Chinesesimp>显示活动中的：</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_PLANNED">
+				<Original>SHOW PLANNED:</Original>
+				<Chinesesimp>显示计划中的：</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_ENDED">
+				<Original>SHOW ENDED:</Original>
+				<Chinesesimp>显示已结束的：</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_MAP">
+				<Original>ON MAP</Original>
+				<Chinesesimp>地图上</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_LIST">
+				<Original>IN LIST</Original>
+				<Chinesesimp>列表中</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_PLAYERS">
+				<Original>SHOW PLAYERS</Original>
+				<Chinesesimp>显示玩家</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_LOC">
+				<Original>SHOW LOCATIONS</Original>
+				<Chinesesimp>显示地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_OVERVIEW">
+				<Original>SHOW OVERVIEW</Original>
+				<Chinesesimp>显示总览</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_PANEL">
+				<Original>SHOW INTEL PANEL</Original>
+				<Chinesesimp>显示情报面板</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_CLEAR_NOTIFICATIONS">
+				<Original>CLEAR NOTIFICATIONS</Original>
+				<Chinesesimp>清空提示</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_DESC">
+				<Original>&lt;t color='#222222' font='EtelkaMonospacePro' align='left'&gt;Select a single intel item to view a detailed description.&lt;/t&gt;</Original>
+			</Key>
+			<Key ID="STR_INT_RESPAWN">
+				<Original>RESPAWN</Original>
+				<Chinesesimp>重生</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_RESPAWN_HINT">
+				<Original>Respawn hint text</Original>
+				<Chinesesimp>重生提示文本</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="LocationSelectedMenu.h">
+			<Key ID="STR_UNIT_RECUIT">
+				<Original>Recruit</Original>
+				<Chinesesimp>招募</Chinesesimp>
+			</Key>
+			<Key ID="STR_UNIT_DISBAND">
+				<Original>Disband &lt;NYI&gt;</Original>
+				<Chinesesimp>解散 &lt;未实装&gt;</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="PlayerList.h">
+			<Key ID="STR_LIST_PLAYER">
+				<Original>Players list</Original>
+				<Chinesesimp>玩家列表</Chinesesimp>
+			</Key>
+			<Key ID="STR_LIST_ADD_MEMBER">
+				<Original>Add as member</Original>
+				<Chinesesimp>添加为成员</Chinesesimp>
+		</Container>
+	</Package>
+	<Package name="Dialogs">
+		<Container name="GarrisonSplitDialog.h">
+			<Key ID="STR_GAR_SPLIT">
+				<Original>拆分驻地</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_SPLIT_DESC">
+				<Original>Hint: double-click row to move a unit</Original>
+				<Chinesesimp>提示：双击来移动单位</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_NEW">
+				<Original>New garrison</Original>
+				<Chinesesimp>新驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_INFANTRY">
+				<Original>Infantry: 666</Original>
+				<Chinesesimp>步兵：666</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_CURRENT">
+				<Original>Current garrison</Original>
+				<Chinesesimp>当前驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_SEATS">
+				<Original>Cargo seats: 666</Original>
+				<Chinesesimp>载具座位：666</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_CANCEL">
+				<Original>Cancel</Original>
+				<Chinesesimp>取消</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_SPLIT">
+				<Original>Split</Original>
+				<Chinesesimp>拆分</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="clientMapUI">
+		<Container name="ClientMapUI">
+			<Key ID="STR_CMUI_B_SIDE">
+				<Original>SIDE</Original>
+				<Chinesesimp>阵营</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_STATUS">
+				<Original>STATUS</Original>
+				<Chinesesimp>状态</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_TYPE">
+				<Original>TYPE</Original>
+				<Chinesesimp>类型</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_TIME">
+				<Original>TIME</Original>
+				<Chinesesimp>时间</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CAMPAIGN_PROGRESS">
+				<Original>Campaign progress: %1%2, enemy aggression: %3%4</Original>
+			</Key>
+			<Key ID="STR_CMUI_NOT_INITIALIZED">
+				<Original>Game not initialized: Press U and create or load a game.</Original>
+			</Key>
+			<Key ID="STR_CMUI_NOT_INITIALIZED_ADMIN">
+				<Original>Game not initialized: Wait for admin to create or load a game.</Original>
+			</Key>
+			<Key ID="STR_CMUI_GARRISON_ORDER_HINT">
+				<Original>Select the order to give to this garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_DESTINATION_HINT">
+				<Original>Left-click on the map to set destination.</Original>
+			</Key>
+			<Key ID="STR_CMUI_SPLIT_HINT">
+				<Original>Choose composition of the new garrison on the right column and push the 'Split' button.</Original>
+			</Key>
+			<Key ID="STR_CMUI_GARRISON_ACTION_HINT">
+				<Original>Use the menu to perform actions on the selected garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_MOVE_ORDER">
+				<Original>Giving a MOVE order to the garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_ATTACK_ORDER">
+				<Original>Giving an ATTACK order to the garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_REINFORCE_ORDER">
+				<Original>Giving a REINFORCE order to the garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_NYI_ORDER">
+				<Original>This garrison order is not yet implemented.</Original>
+			</Key>
+			<Key ID="STR_CMUI_NO_PERMISSION_TO_GARRISON">
+				<Original>You don't have permissions to command garrisons</Original>
+			</Key>
+			<Key ID="STR_CMUI_NYI">
+				<Original>NYI</Original>
+			</Key>
+			<Key ID="STR_CMUI_CANCEL_ORDER">
+				<Original>Cancelling the current order of the garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_NYI_HINT">
+				<Original>Not yet implemented...</Original>
+			</Key>
+			<Key ID="STR_CMUI_PLAYER_RESPAWNED">
+				<Original>%1 has respawned at %2.</Original>
+				<Chinesesimp>%1已于%2重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESTORE">
+				<Original>RESTORE</Original>
+				<Chinesesimp>归位</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESPAWN">
+				<Original>RESPAWN</Original>
+				<Chinesesimp>重生</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CANT_RESPAWN_NOT_INITIALIZED">
+				<Original>You can not respawn because the game mode is not initialized yet.</Original>
+				<Chinesesimp>由于游戏模式尚未初始化，你无法重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_SELECT_RESPAWN_POINT">
+				<Original>Select a respawn point</Original>
+				<Chinesesimp>选择一个重生点</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESAPWN_DISABLED">
+				<Original>Respawn is disabled here.</Original>
+				<Chinesesimp>无法在此重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESPAWN_DISABLED_NEAR_ENY">
+				<Original>You can not respawn here because there are enemies nearby.</Original>
+				<Chinesesimp>你无法在附近有敌人的重生点上重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESTORE_GEARS">
+				<Original>You can restore here with your saved gear.</Original>
+				<Chinesesimp>你可以带着已存装备一起在此归位。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CAN_RESPAWN">
+				<Original>"You can respawn here.</Original>
+				<Chinesesimp>你可以在此重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESTORE_GEARS_LAST_POSITION">
+				<Original>You can restore at your last position with your saved gear.</Original>
+				<Chinesesimp>你可以带着已存装备归位到最后所处地点。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ENY_CONTROL">
+				<Original>Enemy control</Original>
+				<Chinesesimp>敌军实控</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_FRIENDLY_CONTROL">
+				<Original>Friendly control</Original>
+				<Chinesesimp>友军实控</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NEUTRAL">
+				<Original>Neutral</Original>
+				<Chinesesimp>中立地区</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NEUTRAL">
+				<Original>Neutral</Original>
+				<Chinesesimp>中立地区</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_STATUS">
+				<Original>Status</Original>
+				<Chinesesimp>状态</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_INFLUENCE">
+				<Original>Influence</Original>
+				<Chinesesimp>影响力</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="GarrisonSplitDialog">
+			<Key ID="STR_GSD_REQUEST_IN_PROGRESS">
+				<Original>Another request is in progress!</Original>
+				<Chinesesimp>已有请求进行中！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_NO_UNIT_IN_RIGHT">
+				<Original>You must move some units to the right first!</Original>
+				<Chinesesimp>你必须先移动一些单位到右侧！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_GARRISON_DESTROYED">
+				<Original>The selected garrison has been destroyed!</Original>
+				<Chinesesimp>选择的驻地已被摧毁！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_WAIT_FOR_SERVER">
+				<Original>Waiting for server to respond...</Original>
+				<Chinesesimp>等待服务器相应...</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_INFANTRY_NUM">
+				<Original>Infantry: %1</Original>
+				<Chinesesimp>步兵：%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_CARGO_NUM">
+				<Original>Cargo seats: %1</Original>
+				<Chinesesimp>载具座位：%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_ERROR_GARRISON_DESTROYED">
+				<Original>Error: Garrison is destroyed.</Original>
+				<Chinesesimp>错误：驻地已被摧毁。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_SPLIT_SUCCESS">
+				<Original>Garrison was split successfully.</Original>
+				<Chinesesimp>成功拆分驻地。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="notification">
+		<Container name="Notification.h">
+			<Key ID="STR_NOTI_CRYPTOKEY_FOUND">
+				<Original>Enemy radio cryptokey was found!</Original>
+			</Key>
+			<Key ID="STR_NOTI_CRYPTOKEY_STORED">
+				<Original>Cryptokeys are stored in your notes tab</Original>
+			</Key>
+		</Container>
+		<Container name="NotificationFactory.sqf">
+			<Key ID="STR_NOTI_CHECK_MAP">
+				<Original>Check your map for more info</Original>
+			</Key>
+			<Key ID="STR_NOTI_CRYPTOKEY_FOUND_HINT">
+				<Original>RADIO CRYPTOKEY FOUND</Original>
+			</Key>
+			<Key ID="STR_NOTI_ACTIVATE_AT_RADIO">
+				<Original>Activate it at a friendly radio station!\n%1</Original>
+			</Key>
+			<Key ID="STR_NOTI_CHECK_NOTES">
+				<Original>Check notes in the in-game menu</Original>
+			</Key>
+			<Key ID="STR_NOTI_SYSTEM">
+				<Original>SYSTEM</Original>
+			</Key>
+			<Key ID="STR_NOTI_MISSION_ERROR">
+				<Original>CRITICAL MISSION ERROR</Original>
+			</Key>
+			<Key ID="STR_NOTI_ENY_SOPTTED">
+				<Original>ENEMY SPOTTED</Original>
+			</Key>
+			<Key ID="STR_NOTI_ENY_DETECTED">
+				<Original>Friendly forces have detected enemies at %1</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="RadioKeyDialog">
+		<Container name="RadioKeyDialog.sqf">
+			<Key ID="STR_RKD_MANAGE_KEYS">
+				<Original>Manage radio cryptokey</Original>
+			</Key>
+			<Key ID="STR_RKD_HINT">
+				<Original>Hint: Check enemy tablets to find their radio cryptokeys</Original>
+			</Key>
+		</Container>
+		<Container name="RadioKeyTab.h">
+			<Key ID="STR_RKD_ADD">
+				<Original>Add key</Original>
+			</Key>
+			<Key ID="STR_RKD_ADDED">
+				<Original>Added enemy cryptokeys:</Original>
+			</Key>
+			<Key ID="STR_RKD_ENTER">
+				<Original>Enter cryptokey:</Original>
+			</Key>
+		</Container>
+		<Container name="RadioKeyTab.sqf">
+			<Key ID="STR_RKD_CHECKING_PREV_KEY">
+				<Original>Previous key is being checked!</Original>
+			</Key>
+			<Key ID="STR_RKD_KEY_NOT_ENTERED">
+				<Original>You must enter the key first!</Original>
+			</Key>
+			<Key ID="STR_RKD_CHECKING_KEY">
+				<Original>Checking key...</Original>
+			</Key>
+			<Key ID="STR_RKD_ADDED_BY">
+				<Original>%1 added by %2</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="RecruitDialog">
+		<Container name="RecruitDialog.sqf">
+			<Key ID="STR_RD_RECRUIT_DESC">
+				<Original>Recruit Soldiers</Original>
+			</Key>
+			<Key ID="STR_RD_ARSENAL_HINT">
+				<Original>Hint: Location must have an Arsenal</Original>
+			</Key>
+		</Container>
+		<Container name="RecruitTab.h">
+			<Key ID="STR_RD_RECRUIT">
+				<Original>RECRUIT</Original>
+			</Key>
+			<Key ID="STR_RD_LOADOUTS">
+				<Original>AVAILABLE LOADOUTS:</Original>
+			</Key>
+			<Key ID="STR_RD_WEAPONS">
+				<Original>WEAPONS:</Original>
+			</Key>
+			<Key ID="STR_RD_GEAR">
+				<Original>GEAR:</Original>
+			</Key>
+		</Container>
+		<Container name="RecruitTab.sqf">
+			<Key ID="STR_RD_COUNT">
+				<Original>Counting recruits...</Original>
+			</Key>
+			<Key ID="STR_NEED_LOADOUT">
+				<Original>You must select a loadout first</Original>
+			</Key>
+			<Key ID="STR_RECRUITING">
+				<Original>Recruiting soldier...</Original>
+			</Key>
+			<Key ID="STR_RECRUITS_AVAILABLE">
+				<Original>RECRUITS AVAILABLE: %1</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Resource">
+		<Container name="LocationData.h">
+			<Key ID="STR_LD_HR">
+				<Original>HR:</Original>
+			</Key>
+			<Key ID="STR_LD_TYPE">
+				<Original>Type: ...</Original>
+			</Key>
+			<Key ID="STR_LD_LAST_UPDATED">
+				<Original>Last updated: ...</Original>
+			</Key>
+			<Key ID="STR_LD_COMPOSITION">
+				<Original>Composition: ...</Original>
+			</Key>
+			<Key ID="STR_LD_SIDE">
+				<Original>Side: ...</Original>
+			</Key>
+			<Key ID="STR_LD_LOCATION_DATA">
+				<Original>Location data</Original>
+			</Key>
+			<Key ID="STR_LD_PUSH_ME">
+				<Original>Push me</Original>
+			</Key>
+		</Container>
+		<Container name="UIBase.hpp">
+			<Key ID="STR_OK">
+				<Original>OK</Original>
+			</Key>
+			<Key ID="STR_CANCEL">
+				<Original>Cancel</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="TacticalTablet">
+		<Container name="TacticalTablet.h">
+			<Key ID="STR_TT_TITLE">
+				<Original>MilTech inc.    Tacticool Tablet V1.1</Original>
+				<Chinesesimp>军科无限免责公司    战狼平板 V1.1</Chinesesimp>
+			</Key>
+	</Package>
+	<Package name="onPlayerSpawn">
+		<Container name="onPlayerSpawn.sqf">
+			<Key ID="STR_PS_U_FOR_MENU">
+				<Original>Press [U] to open the in-game menu</Original>
+			</Key>
+			<Key ID="STR_PS_CHECK_TUTORIAL">
+				<Original>Make sure to check the tutorial.</Original>
+			</Key>
+		</Container>
+	</Package>
 </Project>
-
-
-			
+<Project name="Vindicta-Addon">
+	<Package name="items">
+		<Container name="CfgMagazines.hpp">
+			<Key ID="STR_ITEM_DOCUMENTS">
+				<Original>Military documents</Original>
+			</Key>
+			<Key ID="STR_ITEM_DOCUMENTS_DESC_1">
+				<Original>A few military documents. Pick it up to study the intel.</Original>
+			</Key>
+			<Key ID="STR_ITEM_DOCUMENTS_DESC_2">
+				<Original>Some military documents. Pick it up to study the intel.</Original>
+			</Key>
+			<Key ID="STR_ITEM_TACTICAL_TABLET">
+				<Original>Tactical tablet</Original>
+			</Key>
+			<Key ID="STR_ITEM_TACTICAL_TABLET_DESC">
+				<Original>A military tactical tablet. Pick it up to study the intel.</Original>
+			</Key>
+			<Key ID="STR_ITEM_PERSONAL_TABLET">
+				<Original>Personal tablet</Original>
+			</Key>
+			<Key ID="STR_ITEM_PERSONAL_TABLET_DESC">
+				<Original>A personal tablet. Pick it up to study the intel.</Original>
+			</Key>
+			<Key ID="STR_ITEM_CONSTRUCTION_RESOURCES">
+				<Original>Construction resources</Original>
+			</Key>
+			<Key ID="STR_ITEM_CONSTRUCTION_RESOURCES_DESC">
+				<Original>Resources to build different things.</Original>
+			</Key>
+			<Key ID="STR_ITEM_STRANGE_PILLS">
+				<Original>Strange pills</Original>
+			</Key>
+			<Key ID="STR_ITEM_STRANGE_PILLS_DESC">
+				<Original>!! Don't use it if you can't tolerate flashing images !! Double-click to use. Carefully.</Original>
+			</Key>
+		</Container>
+	</Package>
+</Project>

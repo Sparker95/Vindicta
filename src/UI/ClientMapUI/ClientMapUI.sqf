@@ -324,10 +324,10 @@ CLASS("ClientMapUI", "")
 			OOP_ERROR_0("Listbox button group was not found!");
 		} else {
 			pr _btns = [(finddisplay 12), "MUI_BUTTON_LISTNBOX", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0, 0.13, 0.35, 0.78], true] call ui_fnc_createButtonsInGroup;
-			_btns#0 ctrlSetText "SIDE";
-			_btns#1 ctrlSetText "STATUS";
-			_btns#2 ctrlSetText "TYPE";
-			_btns#3 ctrlSetText "TIME";
+			_btns#0 ctrlSetText localize "STR_CMUI_B_SIDE";
+			_btns#1 ctrlSetText localize "STR_CMUI_B_STATUS";
+			_btns#2 ctrlSetText localize "STR_CMUI_B_TYPE";
+			_btns#3 ctrlSetText localize "STR_CMUI_B_TIME";
 
 			T_SETV("sortButtons", _btns);
 
@@ -551,7 +551,7 @@ CLASS("ClientMapUI", "")
 					_markers pushBack _name;
 
 				// no need for source marker label, we already see where it starts and ends
-				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_dot", ""], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_dot", "Destination"]];
+				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_dot", ""], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_dot", localize "STR_CMUI_DESTINATION"]];
 			};
 
 			// Draw lines
@@ -659,13 +659,13 @@ CLASS("ClientMapUI", "")
 		if(_gameModeInitialized && {!isNil "gGameModeServer"}) then {
 			pr _progressPercent = floor (100 * CALLM0(gGameModeServer, "getCampaignProgress"));
 			pr _aggressionPercent = floor (100 * CALLM0(gGameModeServer, "getAggression"));
-			private _progressHint = format["Campaign progress: %1%2, enemy aggression: %3%4", _progressPercent, "%", _aggressionPercent, "%"];
+			private _progressHint = format[localize "STR_CMUI_CAMPAIGN_PROGRESS", _progressPercent, "%", _aggressionPercent, "%"];
 			T_CALLM1("setHintText", _progressHint);
 			} else {
 				if(call misc_fnc_isAdminLocal) then {
-					T_CALLM1("setHintText", "Game not initialized: Press U and create or load a game.");
+					T_CALLM1("setHintText", localize "STR_CMUI_NOT_INITIALIZED");
 				} else {
-					T_CALLM1("setHintText", "Game not initialized: Wait for admin to create or load a game.");
+					T_CALLM1("setHintText", localize "STR_CMUI_NOT_INITIALIZED_ADMIN");
 				};
 		};
 
@@ -673,19 +673,19 @@ CLASS("ClientMapUI", "")
 		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
 
 		if (T_GETV("garActionLBShown")) exitWith {
-			T_CALLM1("setHintText", "Select the order to give to this garrison.");
+			T_CALLM1("setHintText", localize "STR_CMUI_GARRISON_ORDER_HINT");
 		};
 
 		if (T_GETV("givingOrder")) exitWith {
-			T_CALLM1("setHintText", "Left-click on the map to set destination.");
+			T_CALLM1("setHintText", localize "STR_CMUI_DESTINATION_HINT");
 		};
 		
 		if (T_GETV("garSplitDialog") != "") exitWith {
-			T_CALLM1("setHintText", "Choose composition of the new garrison on the right column and push the 'Split' button.");
+			T_CALLM1("setHintText", localize "STR_CMUI_SPLIT_HINT");
 		};
 
 		if (count _selectedGarrisons >= 1) exitWith {
-			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison.");
+			T_CALLM1("setHintText", localize "STR_CMUI_GARRISON_ACTION_HINT");
 		};
 
 	ENDMETHOD;
@@ -786,25 +786,25 @@ CLASS("ClientMapUI", "")
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateMoveAction", _args);
-				systemChat "Giving a MOVE order to the garrison.";
+				systemChat localize "STR_CMUI_MOVE_ORDER";
 			};
 			case "attack" : {
 				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateAttackAction", _args);
-				systemChat "Giving an ATTACK order to the garrison.";
+				systemChat localize "STR_CMUI_ATTACK_ORDER";
 			};
 			case "reinforce" : {
 				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateReinforceAction", _args);
-				systemChat "Giving a REINFORCE order to the garrison.";
+				systemChat localize "STR_CMUI_REINFORCE_ORDER";
 			};
 			case "patrol" : {
 				//OOP_INFO_1("  %1 garrison action is not implemented", _action);
-				systemChat "This garrison order is not yet implemented.";
+				systemChat localize "STR_CMUI_NYI_ORDER";
 			};
 			case "close" : {
 				// Do nothing, it will just close itself
@@ -862,11 +862,11 @@ CLASS("ClientMapUI", "")
 		if (!_canCommand) then {
 			{
 				((findDisplay 12) displayCtrl _x) ctrlEnable false;
-				((findDisplay 12) displayCtrl _x) ctrlSetTooltip "You don't have permissions to command garrisons";
+				((findDisplay 12) displayCtrl _x) ctrlSetTooltip localize "STR_CMUI_NO_PERMISSION_TO_GARRISON";
 			} forEach [IDC_GSELECT_BUTTON_SPLIT, IDC_GSELECT_BUTTON_MERGE, IDC_GSELECT_BUTTON_GIVE_ORDER, IDC_GSELECT_BUTTON_CANCEL_ORDER];
 		} else {
 			((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlEnable false;
-			((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlSetTooltip "NYI";
+			((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlSetTooltip localize "STR_CMUI_NYI";
 			{
 				((findDisplay 12) displayCtrl _x) ctrlEnable true;
 				((findDisplay 12) displayCtrl _x) ctrlSetTooltip "";
@@ -950,7 +950,7 @@ CLASS("ClientMapUI", "")
 				pr _garRef = CALLM0(_garRecord, "getGarrison");
 				pr _args = [_garRef];
 				CALLM2(_AI, "postMethodAsync", "cancelCurrentAction", [_garRef]);
-				systemChat "Cancelling the current order of the garrison.";
+				systemChat localize "STR_CMUI_CANCEL_ORDER";
 			};
 			default {
 				// Do nothing
@@ -1001,7 +1001,7 @@ CLASS("ClientMapUI", "")
 			{
 				pr _ctrl0 = T_CALLM1("findControl", _x);
 				_ctrl0 ctrlEnable false;
-				_ctrl0 ctrlSetTooltip "You don't have permissions to command garrisons";
+				_ctrl0 ctrlSetTooltip localize "STR_CMUI_NO_PERMISSION_TO_GARRISON";
 			} forEach ["LSELECTED_BUTTON_RECRUIT"];
 		} else {
 			{
@@ -1070,7 +1070,7 @@ CLASS("ClientMapUI", "")
 			};
 
 			case "disband" : {
-				systemChat "Not yet implemented...";
+				systemChat localize "STR_CMUI_NYI_HINT";
 			};
 		};
 
@@ -1701,10 +1701,10 @@ CLASS("ClientMapUI", "")
 		// set text on sorting buttons
 		pr _btns = T_GETV("sortButtons");
 		if !(_btns isEqualTo []) then {
-			_btns#0 ctrlSetText "SIDE";
-			_btns#1 ctrlSetText "STATUS";
-			_btns#2 ctrlSetText "TYPE";
-			_btns#3 ctrlSetText "TIME";
+			_btns#0 ctrlSetText localize "STR_CMUI_B_SIDE";
+			_btns#1 ctrlSetText localize "STR_CMUI_B_STATUS";
+			_btns#2 ctrlSetText localize "STR_CMUI_B_TYPE";
+			_btns#3 ctrlSetText localize "STR_CMUI_B_TIME";
 		};
 
 		// reset selected listbox entries
@@ -2221,7 +2221,7 @@ CLASS("ClientMapUI", "")
 			// Teleport player
 			_respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
 			// Show a message to everyone
-			pr _text = format ["%1 has respawned at %2.", name player, CALLM0(_loc, "getDisplayName")];
+			pr _text = format [localize "STR_CMUI_PLAYER_RESPAWNED", name player, CALLM0(_loc, "getDisplayName")];
 			[_text] remoteExecCall ["systemChat"];
 			// Save the last respawn position
 			T_SETV("lastRespawnPos", _respawnPos);
@@ -2303,13 +2303,13 @@ CLASS("ClientMapUI", "")
 
 			// Bail if game mode is not initialized
 			if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
-				T_CALLM1("respawnPanelSetText", "You can not respawn because the game mode is not initialized yet.");
+				T_CALLM1("respawnPanelSetText", localize "STR_CMUI_CANT_RESPAWN_NOT_INITIALIZED");
 				_ctrlButton ctrlEnable false;
 			};
 
 			// Bail if no markers are selected
 			if (!_canRestore && count _locMarkers != 1) exitWith {
-				T_CALLM1("respawnPanelSetText", "Select a respawn point");
+				T_CALLM1("respawnPanelSetText", localize "STR_CMUI_SELECT_RESPAWN_POINT");
 				_ctrlButton ctrlEnable false;
 			};
 
@@ -2328,7 +2328,7 @@ CLASS("ClientMapUI", "")
 				// Bail if respawn is disabled
 				if (!CALLM1(_loc, "playerRespawnEnabled", playerSide)) exitWith {
 					// Respawn is disabled here through location's methods
-					T_CALLM1("respawnPanelSetText", "Respawn is disabled here.");
+					T_CALLM1("respawnPanelSetText", localize "STR_CMUI_RESAPWN_DISABLED");
 					_ctrlButton ctrlEnable false;
 				};
 
@@ -2344,19 +2344,19 @@ CLASS("ClientMapUI", "")
 
 				// Bail if there are enemies in area
 				if (_index != -1) exitWith {
-					T_CALLM1("respawnPanelSetText", "You can not respawn here because there are enemies nearby.");
+					T_CALLM1("respawnPanelSetText", localize "STR_CMUI_RESPAWN_DISABLED_NEAR_ENY");
 					_ctrlButton ctrlEnable false;
 				};
 
 				// No enemies found there
 				if(_canRestore) then {
-					T_CALLM1("respawnPanelSetText", "You can restore here with your saved gear.");
+					T_CALLM1("respawnPanelSetText", localize "STR_CMUI_RESTORE_GEARS");
 				} else {
-					T_CALLM1("respawnPanelSetText", "You can respawn here.");
+					T_CALLM1("respawnPanelSetText", localize "STR_CMUI_CAN_RESPAWN");
 				};
 				_ctrlButton ctrlEnable true;
 			} else {
-				T_CALLM1("respawnPanelSetText", "You can restore at your last position with your saved gear.");
+				T_CALLM1("respawnPanelSetText", localize "STR_CMUI_RESTORE_GEARS_LAST_POSITION");
 				_ctrlButton ctrlEnable true;
 			};
 		};
@@ -2479,14 +2479,14 @@ CLASS("ClientMapUI", "")
 							pr _stateText = "";
 							pr _stateColor = [];
 							switch (_state) do {
-								case CITY_STATE_ENEMY_CONTROL: { _stateColor = [248/255, 7/255, 32/255, 1]; _stateText = "Enemy control"; };			// Red
-								case CITY_STATE_FRIENDLY_CONTROL: { _stateColor = [6/255, 124/255, 1, 1]; _stateText = "Friendly control"; };	// Blue
-								default { _stateColor = [1,1,1,1]; _stateText = "Neutral"; };							// Orange [244/255, 104/255, 0, 1.0]
+								case CITY_STATE_ENEMY_CONTROL: { _stateColor = [248/255, 7/255, 32/255, 1]; _stateText = localize "STR_CMUI_ENY_CONTROL"; };			// Red
+								case CITY_STATE_FRIENDLY_CONTROL: { _stateColor = [6/255, 124/255, 1, 1]; _stateText = localize "STR_CMUI_FRIENDLY_CONTROL"; };	// Blue
+								default { _stateColor = [1,1,1,1]; _stateText = localize "STR_CMUI_NEUTRAL"; };							// Orange [244/255, 104/255, 0, 1.0]
 							};
 							_influence = round (_influence * 100);
 							pr _rows = [
-								["Status", _stateText, _stateColor],
-								["Influence", _influence, 100, true]
+								[localize "STR_CMUI_STATUS", _stateText, _stateColor],
+								[localize "STR_CMUI_INFLUENCE", _influence, 100, true]
 							];
 							_ctrl = CALLSM1("ClientMapUI", "createLocationMiniPanel", _rows);
 							SETV(_x, "microPanel", [_ctrl]);
