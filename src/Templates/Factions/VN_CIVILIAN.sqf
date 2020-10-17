@@ -177,6 +177,10 @@ _arsenal set[T_ARSENAL_headgear, [
     "vn_b_bandana_01",
     "vn_o_boonie_vc_01_01"
 ]];
+_arsenal set [T_ARSENAL_grenades, [
+    "vn_molotov_grenade_mag",
+    "vn_chicom_grenade_mag"
+]];
 
 //==== Infantry ====
 _inf = [];
@@ -200,13 +204,23 @@ _inf set [T_INF_survivor, [
 _veh = +(tDefault select T_VEH);
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, [
-    "vn_c_bicycle_01",   16,
-    "vn_c_bicycle_02",   8/*,
+    "vn_c_bicycle_01",          10,
+    "vn_c_bicycle_02",          10,
+    "C_Truck_02_box_F",         10,
+    "C_Offroad_02_unarmed_F",   30,
+    "C_Offroad_02_unarmed_F",   10,
+    "C_Truck_02_transport_F",   10,
+    "C_Truck_02_covered_F",     10,
+    "C_Offroad_01_F",           10,
+    "C_Tractor_01_F",           3
+
+    /*
     "vn_o_wheeled_z157_02",   2,
     "vn_o_wheeled_z157_01",   2,
     "vn_b_wheeled_m151_01",   4,
     "vn_b_wheeled_m151_01",   4*/
 ]];
+
 
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);

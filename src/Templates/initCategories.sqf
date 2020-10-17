@@ -82,6 +82,7 @@ T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_backpacks,		 9);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_uniforms,		10);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_facewear,		11);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_headgear,		12);
+T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_grenades,		13);
 
 // = = = = = = = = = U N D E R C O V E R = = = = = = = = =
 
