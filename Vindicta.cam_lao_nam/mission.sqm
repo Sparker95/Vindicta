@@ -8,7 +8,7 @@ class EditorData
 	toggles=1541;
 	class ItemIDProvider
 	{
-		nextID=1489;
+		nextID=1491;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=105;
+		nextID=132;
 	};
 	class Camera
 	{
-		pos[]={3272.6633,556.83459,3682.3804};
-		dir[]={-0.046443019,-0.84707385,0.52945334};
-		up[]={-0.074020155,0.53147501,0.84383386};
-		aside[]={0.99617964,6.2502295e-008,0.087383874};
+		pos[]={16202.983,185.24289,3332.9431};
+		dir[]={0.51041269,-0.34981832,0.7855683};
+		up[]={0.1905953,0.93681598,0.29334131};
+		aside[]={0.83854657,-2.0707375e-007,-0.54483503};
 	};
 };
 binarizationWanted=0;
@@ -745,7 +745,7 @@ class Mission
 			state=1;
 			class Entities
 			{
-				items=42;
+				items=43;
 				class Item0
 				{
 					dataType="Logic";
@@ -3878,9 +3878,84 @@ class Mission
 						nAttributes=3;
 					};
 				};
+				class Item42
+				{
+					dataType="Logic";
+					class PositionInfo
+					{
+						position[]={10533.93,251.42607,8247.3809};
+						angles[]={6.2791882,0.30846947,6.2611938};
+					};
+					areaSize[]={73.809998,0,82.237};
+					flags=1;
+					id=1489;
+					type="Vindicta_LocationSector";
+					atlOffset=0.42701721;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="Vindicta_LocationSector_type";
+							expression="_this setVariable ['Type',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="city";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="Vindicta_LocationSector";
+							expression="_this setVariable ['Units',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="1";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="Vindicta_LocationSector_name";
+							expression="_this setVariable ['Name',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Navaho";
+								};
+							};
+						};
+						nAttributes=3;
+					};
+				};
 			};
 			id=114;
-			atlOffset=-173.86583;
+			atlOffset=-61.501587;
 		};
 		class Item21
 		{
@@ -4759,7 +4834,7 @@ class Mission
 					colorName="ColorCIV";
 					a=7.3979998;
 					b=50;
-					angle=56.142971;
+					angle=56.142944;
 					id=161;
 				};
 			};
@@ -15409,7 +15484,7 @@ class Mission
 					colorName="ColorCIV";
 					a=7.4332094;
 					b=166.43808;
-					angle=12.276534;
+					angle=12.276533;
 					id=1155;
 				};
 				class Item25
@@ -15422,7 +15497,7 @@ class Mission
 					colorName="ColorCIV";
 					a=10.184567;
 					b=35.749519;
-					angle=53.192684;
+					angle=53.192665;
 					id=1156;
 					atlOffset=0.0038604736;
 				};

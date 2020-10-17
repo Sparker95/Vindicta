@@ -123,12 +123,20 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} forEach _buildings;
 
 		// Assign random activities to unoccupied units
-		private _allActivities = (_freeAmbient + _freeTargets + _freeBuildingLocs) call BIS_fnc_arrayShuffle;
+		//private _allActivities = (_freeAmbient + _freeTargets + _freeBuildingLocs) call BIS_fnc_arrayShuffle;
 
+		// Probably we want to use ambient animations first of all
+		// and use houses last of all
+		private _allActivities =	(_freeAmbient select { _x#0 <= _maxDistance }) 
+									+ (_freeTargets select { _x#0 <= _maxDistance })
+									+ (_freeBuildingLocs select { _x#0 <= _maxDistance });
+
+		/*
 		if !(_nearPos isEqualTo []) then {
 			_allActivities = _allActivities select { _x#0 <= _maxDistance };
 			_allActivities sort ASCENDING;
 		};
+		*/
 
 		private _AI = T_GETV("AI");
 
