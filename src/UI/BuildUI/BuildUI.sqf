@@ -240,14 +240,14 @@ CLASS("BuildUI", "")
 		pr _tooltipRobotoBold = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedBold'>%2</t>";
 		pr _tooltipRobotoLight = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedLight'> %2</t>";
 		pr _tooltipSeparator = (format[_tooltipRobotoBold, _colorTooltip, "    |    "]);
-		pr _tooltipBuild = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_BUILD"]);
-		pr _tooltipPickup = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_PICKUP"]);
-		pr _tooltipBuildItemCat = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_SELECT"]);
-		pr _tooltipCloseMenu = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_BACKSPACE"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_CLOSE"]);
-		pr _tooltipCancelPlace = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_BACKSPACE"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_CANCEL"]);
-		pr _tooltipRotate = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_QE"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_ROTATE"]);
-		pr _tooltipNavigate = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_ARROWS"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_NAVIGATE"]);
-		pr _tooltipDelete = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_DELETE"]) + (format[_tooltipRobotoLight, _colorTooltip, localize "STR_BUI_DELETE"]);
+		pr _tooltipBuild = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, " "+ localize "STR_BUI_BUILD"]);
+		pr _tooltipPickup = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_PICKUP"]);
+		pr _tooltipBuildItemCat = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_SELECT"]);
+		pr _tooltipCloseMenu = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_BACKSPACE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_CLOSE"]);
+		pr _tooltipCancelPlace = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_BACKSPACE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_CANCEL"]);
+		pr _tooltipRotate = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_QE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_ROTATE"]);
+		pr _tooltipNavigate = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_ARROWS"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_NAVIGATE"]);
+		pr _tooltipDelete = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_DELETE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_DELETE_HINT"]);
 
 		// Bail if we can't build any more here
 		if ((!CALLSM1("PlayerMonitor", "canUnitBuildAtLocation", player)) && (T_GETV("resourceSource") != -1)) exitWith {

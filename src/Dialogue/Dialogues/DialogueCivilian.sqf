@@ -192,7 +192,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			(_type != LOCATION_TYPE_CITY)
 		};
 
-		OOP_INFO_1(localize "STR_NODE_INFO_NEARBY", _locsNear);
+		OOP_INFO_1("  Nearby locations: %1", _locsNear);
 
 		_locsCivKnows = _locsNear select {
 			pr _type = CALLM0(_x, "getType");
@@ -206,7 +206,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			}
 		};
 
-		OOP_INFO_1(localize "STR_NODE_INFO_KNOWN", _locsCivKnows);
+		OOP_INFO_1("  Locations known by civilian: %1", _locsCivKnows);
 
 		_a = [];
 		_a pushBack NODE_SENTENCE("subroutineTellLocations", TALKER_NPC, [localize "STR_NODE_C_GATHER_1" ARG localize "STR_NODE_C_GATHER_2" ARG localize "STR_NODE_C_GATHER_3"]);
@@ -321,7 +321,7 @@ CLASS("DialogueCivilian", "Dialogue")
 					_departDate = numberToDate [_year, (dateToNumber _departDate)];
 					pr _intelNameStr = CALLM0(_intel, "getShortName");
 					pr _dateStr = _departDate call misc_fnc_dateToISO8601;
-					pr _text = format [localize "STR_NODE_INFO_INTEL", selectRandom _phrasesIntelSource, _intelNameStr, _dateStr];
+					pr _text = format [localize "STR_NODE_INFO_INTEL", selectRandom _phrasesIntelSource, localize _intelNameStr, _dateStr];
 					_a pushBack NODE_SENTENCE("", TALKER_NPC, _text);
 					_a pushBack NODE_CALL_METHOD("", "revealIntel", [_intel]);
 				};

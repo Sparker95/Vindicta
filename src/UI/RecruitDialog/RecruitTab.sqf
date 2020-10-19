@@ -330,7 +330,7 @@ CLASS("RecruitTab", "DialogTabBase")
 		pr _selectedIdx = -1;
 		{
 			pr _subcatID = _x;
-			_ctrl lnbAddRow [T_NAMES select T_INF select _subcatID];
+			_ctrl lnbAddRow [localize T_NAMES select T_INF select _subcatID];
 			_ctrl lnbSetValue [[_forEachIndex, 0], _subcatID];
 			if(_subcatID == _lastSelectedRecruit) then {
 				_selectedIdx = _forEachIndex;

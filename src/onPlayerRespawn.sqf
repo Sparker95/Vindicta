@@ -45,7 +45,7 @@ removeAllWeapons player;
 // If it's first respawn, show a hint
 if (isNil {vin_bRespawned}) then {
     vin_bRespawned = true;
-    private _args = ["CONTROLS", localize "STR_PS_U_FOR_MENU", localize "STR_PS_CHECK_TUTORIAL"];
+    private _args = [localize "STR_PS_CONTROLS", localize "STR_PS_U_FOR_MENU", localize "STR_PS_CHECK_TUTORIAL"];
     CALLSM("NotificationFactory", "createHint", _args);
 };
 

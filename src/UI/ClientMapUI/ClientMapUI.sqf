@@ -1100,7 +1100,7 @@ CLASS("ClientMapUI", "")
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetColumnsPos [0, 0.6];
 		{
-			_lnb lnbAddRow ["GARRISON", str (_forEachIndex + 1)];
+			_lnb lnbAddRow [localize "STR_CMUI_GARRISON", str (_forEachIndex + 1)];
 			pr _comp = CALLM0(_x, "getComposition");
 			{
 				pr _catID = _foreachindex;
@@ -1109,7 +1109,7 @@ CLASS("ClientMapUI", "")
 					pr _classes = _x; // Array with IDs of classes
 					if (count _classes > 0) then {
 						pr _name = T_NAMES#_catID#_subcatID;
-						_lnb lnbAddRow ["  " + toUpper(_name), str (count _classes)];
+						_lnb lnbAddRow ["  " + toUpper(localize _name), str (count _classes)];
 					};
 				} forEach _x;
 			} forEach _comp;
@@ -1147,15 +1147,15 @@ CLASS("ClientMapUI", "")
 		pr _lnb = [findDisplay 12, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl;
 		// Apply new text for GUI elements
 		_lnb lnbSetCurSelRow -1;
-		_lnb lnbAddRow [ "TYPE", _typeText];
-		_lnb lnbAddRow [ "SIDE", _sideText];
+		_lnb lnbAddRow [ localize "STR_CMUI_B_TYPE" , _typeText];
+		_lnb lnbAddRow [ localize "STR_CMUI_B_SIDE", _sideText];
 
 		pr _loc = GETV(_intel, "location");
 
 		// Add inf capacity
 		pr _capinf = CALLM0(_loc, "getCapacityInf");
 		//_lnb lnbAddRow [format ["MAX INFANTRY %1", _capInf], "", ""];
-		_lnb lnbAddRow ["MAX INFANTRY", str _capInf];
+		_lnb lnbAddRow [localize "STR_CMUI_MAX_INFANTRY", str _capInf];
 
 		// Add amount of recruits if it's a city
 		pr _gameModeData = GETV(_loc, "gameModeData");
@@ -1185,7 +1185,7 @@ CLASS("ClientMapUI", "")
 			// Amount of infrantry
 			pr _soldierCount = 0;
 			{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
-			_lnb lnbAddRow ["SOLDIERS", str _soldierCount ];
+			_lnb lnbAddRow [localize "STR_CMUI_SOLDIERS", str _soldierCount ];
 
 			// Count vehicles
 			pr _uaveh = _ua select T_VEH;
@@ -1194,7 +1194,7 @@ CLASS("ClientMapUI", "")
 				if (_x > 0) then {
 					pr _subcatID = _forEachIndex;
 					pr _vehName = T_NAMES select T_VEH select _subcatID;
-					_lnb lnbAddRow [toUpper(_vehName), str _x];
+					_lnb lnbAddRow [toUpper(localize _vehName), str _x];
 				};
 			} forEach _uaveh;
 		};
@@ -1252,9 +1252,9 @@ CLASS("ClientMapUI", "")
 					// Calculate time difference between current date and departure date
 					pr _intelState = GETV(_intel, "state");
 					pr _stateStr = switch (_intelState) do {
-						case INTEL_ACTION_STATE_ACTIVE: {"ACTIVE"};
-						case INTEL_ACTION_STATE_INACTIVE: {"INACTIVE"};
-						case INTEL_ACTION_STATE_END: {"ENDED"};
+						case INTEL_ACTION_STATE_ACTIVE: {"STR_CMUI_ACTIVE"};
+						case INTEL_ACTION_STATE_INACTIVE: {"STR_CMUI_INACTIVE"};
+						case INTEL_ACTION_STATE_END: {"STR_CMUI_ENDED"};
 						default {"error"};
 					};
 
@@ -1264,9 +1264,9 @@ CLASS("ClientMapUI", "")
 
 					// Make a string representation of time difference
 					pr _timeDiffStr = if (_h > 0) then {
-						format ["%1h %2m", _h, _m]
+						format [localize "STR_INT_HR_MIN", _h, _m]
 					} else {
-						format ["%1m", _m]
+						format [localize "STR_INT_MIN", _m]
 					};
 
 					if (_future) then { // T-1h 13m
@@ -1278,13 +1278,13 @@ CLASS("ClientMapUI", "")
 					// Make a string representation of side
 					pr _side = GETV(_intel, "side");
 					_sideStr  = switch (_side) do {
-						case WEST: {"WEST"};
-						case EAST: {"EAST"};
-						case independent: {"IND"};
-						default {"ALIEN"};
+						case WEST: {localize "STR_CMUI_WEST"};
+						case EAST: {localize "STR_CMUI_EAST"};
+						case independent: {localize "STR_CMUI_IND"};
+						default {localize "STR_CMUI_ALIEN"};
 					};
 
-					pr _rowData = [_sideStr, _stateStr, _shortName, _timeDiffStr];
+					pr _rowData = [_sideStr, localize _stateStr, localize _shortName, _timeDiffStr];
 					pr _index = _lnb lnbAddRow _rowData;
 					_lnb lnbSetData [[_index, 0], _intel];
 
@@ -1314,19 +1314,19 @@ CLASS("ClientMapUI", "")
 					// grey if ended
 					switch (_stateStr) do {
 						default {};
-						case "ENDED": {
+						case "STR_CMUI_ENDED": {
 							_lnb lnbSetColor [[_index, 0], [0.45, 0.45, 0.45, 1]];
 							_lnb lnbSetColor [[_index, 1], [0.45, 0.45, 0.45, 1]];
 							_lnb lnbSetColor [[_index, 2], [0.45, 0.45, 0.45, 1]];
 							_lnb lnbSetColor [[_index, 3], [0.45, 0.45, 0.45, 1]];
 						};
-						case "ACTIVE": {
+						case "STR_CMUI_ACTIVE": {
 							_lnb lnbSetColor [[_index, 0], MUIC_COLOR_MISSION];
 							_lnb lnbSetColor [[_index, 1], MUIC_COLOR_MISSION];
 							_lnb lnbSetColor [[_index, 2], MUIC_COLOR_MISSION];
 							_lnb lnbSetColor [[_index, 3], MUIC_COLOR_MISSION];
 						};
-						case "INACTIVE": {};
+						case "STR_CMUI_INACTIVE": {};
 					};
 
 					//OOP_INFO_1("ADDED ROW: %1", _rowData);
@@ -1385,17 +1385,17 @@ CLASS("ClientMapUI", "")
 						// Get extra custom info
 						pr _extraInfo = CALLM0(_intel, "getInfo");
 
-						pr _locId = switch (toLower(_shortName)) do {
-							case "attack" : 				{ "STR_CMUI_INTEL_ATTACK" };
-							case "construct roadblock" : 	{ "STR_CMUI_INTEL_RB" };
-							case "reinforce garrison" : 	{ "STR_CMUI_INTEL_REINFORCE" };
-							case "patrol" : 				{ "STR_CMUI_INTEL_PATROL" };
-							case "assign new officer" : 	{ "STR_CMUI_INTEL_OFFICER" };
-							case "building supplies" : 		{ "STR_CMUI_INTEL_CONV_BUILDING" };
-							case "ammunition" : 			{ "STR_CMUI_INTEL_CONV_AMMO" };
-							case "explosives" : 			{ "STR_CMUI_INTEL_CONV_EXPLOSIVES" };
-							case "medical" : 				{ "STR_CMUI_INTEL_CONV_MEDICAL" };
-							case "miscellaneous" : 			{ "STR_CMUI_INTEL_CONV_MISC" };
+						pr _locId = switch (_shortName) do {
+							case "STR_NOTI_ATTACK" : 				{ "STR_CMUI_INTEL_ATTACK" };
+							case "STR_NOTI_CONSTRUCT_ROADBLOCK" : 	{ "STR_CMUI_INTEL_RB" };
+							case "STR_NOTI_REINFORCE_GARRISON" : 	{ "STR_CMUI_INTEL_REINFORCE" };
+							case "STR_NOTI_PATROL" : 				{ "STR_CMUI_INTEL_PATROL" };
+							case "STR_NOTI_ASSIGN_OFFICER" : 	{ "STR_CMUI_INTEL_OFFICER" };
+							case "STR_NOTI_BUILDING_SUPPLIES" : 		{ "STR_CMUI_INTEL_CONV_BUILDING" };
+							case "STR_NOTI_AMMUNITION" : 			{ "STR_CMUI_INTEL_CONV_AMMO" };
+							case "STR_NOTI_EXPLOSIVES" : 			{ "STR_CMUI_INTEL_CONV_EXPLOSIVES" };
+							case "STR_NOTI_MEDICAL" : 				{ "STR_CMUI_INTEL_CONV_MEDICAL" };
+							case "STR_NOTI_MISC" : 			{ "STR_CMUI_INTEL_CONV_MISC" };
 							default 						{ "STR_CMUI_INTEL_DEFAULT" };
 						};
 						private _desc = format ["<t color='#AAAAAA'>%1</t><br/>%2", localize _locId, _extraInfo];
@@ -2296,9 +2296,9 @@ CLASS("ClientMapUI", "")
 			
 
 			if(_canRestore) then {
-				_ctrlButton ctrlSetText "RESTORE";
+				_ctrlButton ctrlSetText localize "STR_CMUI_RESTORE";
 			} else {
-				_ctrlButton ctrlSetText "RESPAWN";
+				_ctrlButton ctrlSetText localize "STR_CMUI_RESPAWN";
 			};
 
 			// Bail if game mode is not initialized
@@ -2446,11 +2446,11 @@ CLASS("ClientMapUI", "")
 						
 						// Each row is: name, amount, base amount (if amount==baseAmount, bar size is 50%)
 						pr _rows = [
-										["Infantry", _nInf, 20],
-										["Transport", _nTransport, 2],
-										["Armor", _nArmor, 4],
-										["Statics", _nStatics, 3],
-										["Air", _nAir, 1]
+										[localize "STR_CMUI_INFANTRY", _nInf, 20],
+										[localize "STR_CMUI_TRANSPORT", _nTransport, 2],
+										[localize "STR_CMUI_ARMOR", _nArmor, 4],
+										[localize "STR_CMUI_STATICS", _nStatics, 3],
+										[localize "STR_CMUI_AIR", _nAir, 1]
 									];
 						_ctrl = CALLSM1("ClientMapUI", "createLocationMiniPanel", _rows);
 						SETV(_x, "microPanel", [_ctrl]);

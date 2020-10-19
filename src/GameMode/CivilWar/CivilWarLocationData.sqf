@@ -62,12 +62,12 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			T_SETV_PUBLIC("ownerSide", _newOwner);
 			if(_newOwner == FRIENDLY_SIDE) then {
 				// Notify players of what happened
-				private _args = ["LOCATION CLAIMED", format["%1 was claimed", CALLM0(_loc, "getDisplayName")], "Garrison some fighters to hold it"];
+				private _args = [localize "STR_CW_LOCATION_CLAIMED", format[localize "STR_CW_WAS_CLAIMED", CALLM0(_loc, "getDisplayName")], localize "STR_CW_LOCATION_CLAIMED_HINT"];
 				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
 			} else {
 				if(_oldOwner == FRIENDLY_SIDE) then {
 					// Notify players of what happened
-					private _args = ["LOCATION LOST", format["%1 was lost", CALLM0(_loc, "getDisplayName")], "Send some fighters to retake it"];
+					private _args = [localize "STR_CW_LOCATION_LOST", format[localize "STR_CW_WAS_LOST", CALLM0(_loc, "getDisplayName")], localize "STR_CW_LOCATION_LOST_HINT"];
 					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createLocationNotification", _args, ON_CLIENTS, NO_JIP);
 				};
 			};
@@ -107,11 +107,11 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 				pr _pos = CALLM0(_loc, "getPos");
 				pr _cities = CALLM2(gGameMode, "getRecruitCities", _pos, playerSide);
 				pr _nRecruits = CALLM2(gGameMode, "getRecruitCount", _cities, playerSide);
-				_return = _return + [["AVAILABLE RECRUITS", str _nRecruits]];
+				_return = _return + [[localize "STR_CW_AVAILABLE_RECRUITS", str _nRecruits]];
 			};
 			if(_type in LOCATIONS_BUILD_PROGRESS) then {
 				pr _buildProgress = GETV(_loc, "buildProgress");
-				_return = _return + [["BUILD PROGRESS", format["%1%2", _buildProgress * 100, "%"]]];
+				_return = _return + [[localize "STR_CW_BUILD_PROGRESS", format["%1%2", _buildProgress * 100, "%"]]];
 			};
 		};
 		_return

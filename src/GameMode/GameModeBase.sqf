@@ -763,7 +763,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		NEW("SoundMonitor", [_newUnit]);
 
 		// Action to start building stuff
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", localize "STR_GMB_MENU_FROM_LOC"], // title
 						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
 						0, // Arguments
 						0, // Priority
@@ -778,7 +778,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 
 		// Action to start building stuff
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from inventory"], // title
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", localize "STR_GMB_MENU_FROM_INV"], // title
 						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
 						0, // Arguments
 						-1, // Priority
@@ -803,7 +803,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != ''}		// Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive _co}														// Object must be alive
 		};
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", localize "STR_GMB_ATTACH_TO_GARRISON"], // title // pic: arrow pointing down
 						{
 							isNil {
 								private _co = cursorObject;
@@ -836,7 +836,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive _co}															// Object must be alive
 		};
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_singleplayer_ca.paa' />  %1", "Take unit"], // title // pic: arrow pointing down and single man
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_singleplayer_ca.paa' />  %1", localize "STR_GMB_TAKE_UNIT"], // title // pic: arrow pointing down and single man
 						{
 							isNil {
 								private _co = [7] call vin_fnc_coneTarget;
@@ -859,7 +859,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						""]; //memoryPoint
 
 		// Action to add units group to player group
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_multiplayer_ca.paa' />  %1", "Take group"], // title // pic: arrow pointing down and three men
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_multiplayer_ca.paa' />  %1", localize "STR_GMB_TAKE_GROUP"], // title // pic: arrow pointing down and three men
 						{
 							isNil {
 								private _co = [7] call vin_fnc_coneTarget;
@@ -892,7 +892,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM1(_loc, "setAlarmDisabled", true);
 			};
 		};
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\igui\rscingameui\rscunitinfoairrtdfull\ico_cpt_sound_off_ca.paa' />  %1", "Disable alarm"], // title
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\igui\rscingameui\rscunitinfoairrtdfull\ico_cpt_sound_off_ca.paa' />  %1", localize "STR_GMB_DISABLE_ALARM"], // title
 						{call vin_fnc_disableAlarm}, // disable alarm
 						0, // Arguments
 						-1, // Priority

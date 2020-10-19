@@ -56,9 +56,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 			private _compAllocated = T_GET_AST_VAR("detachmentCompVar");
 			if(_compAllocated#T_INF#T_INF_officer > 0) then {
-				SETV(_intel, "type", "Assign New Officer");
+				SETV(_intel, "type", "STR_NOTI_ASSIGN_OFFICER");
 			} else {
-				SETV(_intel, "type", "Reinforce Garrison");
+				SETV(_intel, "type", "STR_NOTI_REINFORCE_GARRISON");
 			};
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
 			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));

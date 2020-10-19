@@ -745,11 +745,11 @@ REGISTER_DEBUG_MARKER_STYLE("SupplyConvoyCmdrAction", "ColorPink", "mil_pickup")
 
 if(isNil { GETSV("SupplyConvoyCmdrAction", "SupplyNames")}) then {
 	private _actionSupplyNames = [
-		"Building Supplies",
-		"Ammunition",
-		"Explosives",
-		"Medical",
-		"Miscellaneous"
+		"STR_NOTI_BUILDING_SUPPLIES",
+		"STR_NOTI_AMMUNITION",
+		"STR_NOTI_EXPLOSIVES",
+		"STR_NOTI_MEDICAL",
+		"STR_NOTI_MISC"
 	];
 	SETSV("SupplyConvoyCmdrAction", "SupplyNames", _actionSupplyNames);
 };
