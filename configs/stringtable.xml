@@ -1793,7 +1793,7 @@
 			</Key>
 			<Key ID="STR_NODE_L400_1">
 				<Original>quite close.</Original>
-				<Chinesesimp>非常近的地方。</Chinesesimp>
+				<Chinesesimp>非常近。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_L400_2">
 				<Original>within 400 meters.</Original>
@@ -1805,11 +1805,11 @@
 			</Key>
 			<Key ID="STR_NODE_L400_4">
 				<Original>five-minute walk from here.</Original>
-				<Chinesesimp>走路5分钟就到的地方。</Chinesesimp>
+				<Chinesesimp>走路5分钟就到。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_L1000_1">
 				<Original>not too far away from here.</Original>
-				<Chinesesimp>离这儿不太远的地方。</Chinesesimp>
+				<Chinesesimp>离这儿不太远。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_L1000_2">
 				<Original>within a kilometer.</Original>
@@ -1817,27 +1817,27 @@
 			</Key>
 			<Key ID="STR_NODE_L1000_3">
 				<Original>10 minute walk from here.</Original>
-				<Chinesesimp>走路10分钟就到的地方。</Chinesesimp>
+				<Chinesesimp>走路10分钟就到。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_L1000_4">
 				<Original>not far from here at all.</Original>
-				<Chinesesimp>离这里不算太远的地方。</Chinesesimp>
+				<Chinesesimp>离这里不算太远。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_M1000_1">
 				<Original>very far away.</Original>
-				<Chinesesimp>非常远的地方。</Chinesesimp>
+				<Chinesesimp>非常远。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_M1000_2">
 				<Original>pretty far away.</Original>
-				<Chinesesimp>还挺远的地方。</Chinesesimp>
+				<Chinesesimp>还挺远的。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_M1000_3">
 				<Original>more than a kilometer from here.</Original>
-				<Chinesesimp>离这儿超过一公里的地方。</Chinesesimp>
+				<Chinesesimp>离这儿超过一公里。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_M1000_4">
 				<Original>quite a bit away from here.</Original>
-				<Chinesesimp>离这儿还挺远的地方。</Chinesesimp>
+				<Chinesesimp>离这儿还挺远。</Chinesesimp>
 			</Key>
 			<Key ID="STR_NODE_C_INFO_INTRO_1">
 				<Original>There is a </Original>
@@ -3481,6 +3481,16 @@
 			<Key ID="STR_NOTI_RECON">
 				<Original>Recon</Original>
 				<Chinesesimp>侦察</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="fn_arsenal_init.sqf">
+			<Key ID="STR_NOTI_EMPTY_CRATES">
+				<Original>EMPTY CRATES</Original>
+				<Chinesesimp>空箱子</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_EMPTY_CRATES_HINT">
+				<Original>Empty crates can be demolished in the build menu.</Original>
+				<Chinesesimp>空箱子可以通过建造菜单拆除。</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>

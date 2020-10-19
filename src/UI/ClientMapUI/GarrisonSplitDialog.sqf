@@ -381,7 +381,7 @@ CLASS("GarrisonSplitDialog", "")
 				pr _classes = _x; // Array with IDs of classes
 				if (count _classes > 0) then {
 					pr _name = T_NAMES#_catID#_subcatID;
-					_lnb lnbAddRow [str (count _classes), localize _name];
+					_lnb lnbAddRow [str (count _classes), (localize _name)];
 					_IDsArray pushBack [_catID, _subCatID];
 				};
 			} forEach _x;
