@@ -330,9 +330,9 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			pr _actionName = CALLM0(_intel, "getShortName");
 
 			pr _args = if (_t < 0) then {
-				[localize "STR_PM_REMINDER", format [localize "STR_INT_WILL_START", localize _actionName, _tstr]]
+				[localize "STR_PM_REMINDER", format [localize "STR_PM_REMINDER_HINT", localize _actionName, _tstr]]
 			} else {
-				[localize "STR_PM_STARTED", format [localize "STR_INT_STARTED", localize _actionName, _tstr]]
+				[localize "STR_PM_STARTED", format [localize "STR_PM_STARTED_HINT", localize _actionName, _tstr]]
 			};
 
 			CALLSM("NotificationFactory", "createIntelCommanderActionReminder", _args);

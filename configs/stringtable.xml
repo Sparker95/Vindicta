@@ -2973,7 +2973,7 @@
 			</Key>
 			<Key ID="STR_INT_1_AT_2">
 				<Original>%1 at %2.</Original>
-				<Chinesesimp>%1于%2。</Chinesesimp>
+				<Chinesesimp>%1位于%2。</Chinesesimp>
 			</Key>
 			<Key ID="STR_INT_LOC_DISCOVERED">
 				<Original>LOCATION DISCOVERED</Original>
@@ -4146,9 +4146,17 @@
 				<Original>REMINDER</Original>
 				<Chinesesimp>提示</Chinesesimp>
 			</Key>
+			<Key ID="STR_PM_REMINDER_HINT">
+				<Original>%1 will start in %2</Original>
+				<Chinesesimp>%1将于%2后开始</Chinesesimp>
+			</Key>
 			<Key ID="STR_PM_STARTED">
 				<Original>STARTED</Original>
 				<Chinesesimp>已开始</Chinesesimp>
+			<Key ID="STR_PM_STARTED_HINT">
+				<Original>%1 started %2 ago</Original>
+				<Chinesesimp>%1已于%2前开始</Chinesesimp>
+			</Key>
 			</Key>
 			<Key ID="STR_PM_P_NO_PILOTING_1">
 				<Original>I don't know how to fly this, I am not a pilot.</Original>
