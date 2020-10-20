@@ -1960,18 +1960,18 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Notify players of what happened
 		private _loc = CALLM0(_garrison, "getLocation");
 		private _garrDesc = if(!IS_NULL_OBJECT(_loc)) then {
-			format["at %1", CALLM0(_loc, "getDisplayName")]
+			format[localize "STR_NOTI_AT_LOC", CALLM0(_loc, "getDisplayName")]
 		} else {
 			private _pos = CALLM0(_garrison, "getPos");
-			format["at %1", mapGridPosition _pos]
+			format[localize "STR_NOTI_AT_LOC", mapGridPosition _pos]
 		};
 		private _action = if(count _srcUnits > 0) then {
-			"captured"
+			"STR_NOTI_CAPTURED_FILLER"
 		} else {
-			"destroyed"
+			"STR_NOTI_DESTROYED_FILLER"
 		};
 
-		private _args = ["GARRISON CAPTURED", format["Garrison %1 was %2 by enemy", _garrDesc, _action], "Garrisons must contain infantry"];
+		private _args = [localize "STR_NOTI_CAPTURED", format[localize "STR_NOTI_CAPTURED_DESC", _garrDesc, (localize _action)], localize "STR_NOTI_CAPTURED_HINT"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createGarrisonNotification", _args, ON_CLIENTS, NO_JIP);
 
 		// Destroy the source garrison
@@ -3087,16 +3087,16 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 
 			private _location = T_CALLM0("getLocation");
 			private _msg = if(_location != NULL_OBJECT) then {
-				format["%1 was automatically detached from garrison at %2", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"), CALLM0(_location, "getDisplayName")]
+				format[localize "STR_NOTI_VEHICLE_DETACHED_HINT_FROM_LOC", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"), CALLM0(_location, "getDisplayName")]
 			} else {
-				format["%1 was automatically detached from garrison", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")]
+				format[localize "STR_NOTI_VEHICLE_DETACHED_HINT", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")]
 			};
 
 			private _ourSide = T_CALLM0("getSide");
 
 			// Notify nearby players of what happened
 			private _nearbyClients = allPlayers select {side group _x == _ourSide && (_x distance _vicHandle) < 100} apply { owner _x };
-			private _args = ["VEHICLE DETACHED", _msg, "It will be no longer be saved here"];
+			private _args = [localize "STR_NOTI_VEHICLE_DETACHED", _msg, localize "STR_NOTI_VEHICLE_DETACHED_DESC"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
 			OOP_INFO_0(_msg);
 
@@ -3204,10 +3204,10 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 			// Notify nearby players of what happened if its on player side
 			pr _nearbyClients = allPlayers select {side group _x == _infSide && (_x distance _vicHandle) < 100} apply { owner _x };
 
-			private _args = ["VEHICLE ATTACHED", format["%1 was automatically attached to garrison at %2", 
+			private _args = [localize "STR_NOTI_VEHICLE_ATTACHED", format[localize "STR_NOTI_VEHICLE_ATTACHED_HINT", 
 				getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"),
 				CALLM0(_nearestLocation, "getDisplayName")
-			], "It will be saved here"];
+			], localize "STR_NOTI_VEHICLE_ATTACHED_DESC"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
 			OOP_INFO_0(_msg);
 		};
@@ -3656,8 +3656,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		} forEach _units;
 
 		pr _nearbyClients = allPlayers select { side group _x == side group _player && (_x distance _player) < 100 } apply { owner _x };
-		private _msg = format ["%1 units assigned to %2", count _units, name _player];
-		private _args = ["UNITS ASSIGNED", _msg, "They are now under direct control"];
+		private _msg = format [localize "STR_NOTI_UNITS_ASSIGNED_HINT", count _units, name _player];
+		private _args = [localize "STR_NOTI_UNITS_ASSIGNED", _msg, localize "STR_NOTI_UNITS_ASSIGNED_DESC"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, NO_JIP);
 
 		// HACK: somewhat of a hack as we aren't making OOP groups, however the player garrisons do not 
@@ -3736,8 +3736,8 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		// Delete our empty groups
 		T_CALLM0("deleteEmptyGroups");
 
-		private _msg = format ["%1 units formed new garrison at %2", count _unitObjects, mapGridPosition _pos];
-		private _args = ["GARRISON FORMED", _msg, "They are now available for map control"];
+		private _msg = format [localize "STR_NOTI_GARRISON_FORMED_HINT", count _unitObjects, mapGridPosition _pos];
+		private _args = [localize "STR_NOTI_GARRISON_FORMED", _msg, localize "STR_NOTI_GARRISON_FORMED_DESC"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
 	ENDMETHOD;
 

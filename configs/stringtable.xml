@@ -2983,8 +2983,8 @@
 				<Original>LOCATION INTEL UPDATED</Original>
 				<Chinesesimp>地点情报更新</Chinesesimp>
 			</Key>
-			<Key ID="STR_INT_HR_MIN">
-				<Original>%1h %2m</Original>	<!--hours and minutes-->
+			<Key ID="STR_INT_HR_MIN">	<!--hours and minutes-->
+				<Original>%1h %2m</Original>
 				<Chinesesimp>%1时%2分</Chinesesimp>
 			</Key>
 			<Key ID="STR_INT_MIN">
@@ -3194,6 +3194,30 @@
 				<Original>Use the menu to perform actions on the selected garrison.</Original>
 				<Chinesesimp>用菜单控制所选驻地的行动。</Chinesesimp>
 			</Key>
+			<Key ID="STR_CMUI_MOVE_MARKER">
+				<Original>MOVE</Original>
+				<Chinesesimp>移动</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CAPTURE_MARKER">
+				<Original>CAPTURE</Original>
+				<Chinesesimp>占领</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ATTACK_MARKER">
+				<Original>ATTACK</Original>
+				<Chinesesimp>进攻</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_REINFORCE_MARKER">
+				<Original>REINFORCE</Original>
+				<Chinesesimp>增援</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_SUPPLY_MARKER">
+				<Original>SUPPLY</Original>
+				<Chinesesimp>补给</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_PATROL_MARKER">
+				<Original>PATROL</Original>
+				<Chinesesimp>巡逻</Chinesesimp>
+			</Key>
 			<Key ID="STR_CMUI_MOVE_ORDER">
 				<Original>Giving a MOVE order to the garrison.</Original>
 				<Chinesesimp>给驻地下达移动命令。</Chinesesimp>
@@ -3395,6 +3419,10 @@
 			<Key ID="STR_NOTI_CRYPTOKEY_STORED">
 				<Original>Cryptokeys are stored in your notes tab</Original>
 				<Chinesesimp>密钥保存在你的笔记选单中</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_MORE_OTHERS">
+				<Original>%1 and %2 others...</Original>
+				<Chinesesimp>%1及其它%2项...</Chinesesimp>
 			</Key>
 		</Container>
 		<Container name="NotificationFactory.sqf">
@@ -4163,10 +4191,86 @@
 			<Key ID="STR_PM_STARTED">
 				<Original>STARTED</Original>
 				<Chinesesimp>已开始</Chinesesimp>
+			</Key>
 			<Key ID="STR_PM_STARTED_HINT">
 				<Original>%1 started %2 ago</Original>
 				<Chinesesimp>%1已于%2前开始</Chinesesimp>
 			</Key>
+			<Key ID="STR_NOTI_UNITS_ASSIGNED">
+				<Original>UNITS ASSIGNED</Original>
+				<Chinesesimp>单位已分配</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_UNITS_ASSIGNED_HINT">
+				<Original>%1 units assigned to %2</Original>
+				<Chinesesimp>%1个单位已被分配给%2</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_UNITS_ASSIGNED_DESC">
+				<Original>They are now under direct control</Original>
+				<Chinesesimp>他们现在处于直接控制下</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_AT_LOC">
+				<Original>at %1</Original>
+				<Chinesesimp>位于%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED">
+				<Original>GARRISON CAPTURED</Original>
+				<Chinesesimp>驻地已沦陷</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED_FILLER">
+				<Original>captured</Original>
+				<Chinesesimp>占领</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_DESTROYED_FILLER">
+				<Original>destroyed</Original>
+				<Chinesesimp>摧毁</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED_DESC">	<!--Garrison %1(name of the location) %2(captured or destryoed) by enemy-->
+				<Original>Garrison %1 was %2 by enemy</Original>
+				<Chinesesimp>%1的驻地已被敌军%2</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED_HINT">
+				<Original>Garrisons must contain infantry</Original>
+				<Chinesesimp>驻地须由步兵驻扎</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED_HINT_FROM_LOC">
+				<Original>%1 was automatically detached from garrison at %2</Original>
+				<Chinesesimp>%1已经自动从%2驻地脱离</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED_HINT">
+				<Original>%1 was automatically detached from garrison</Original>
+				<Chinesesimp>%1已自动从驻地脱离</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED">
+				<Original>VEHICLE DETACHED</Original>
+				<Chinesesimp>载具已脱离</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED_DESC">
+				<Original>It will be no longer be saved here</Original>
+				<Chinesesimp>它不会继续保存在这里</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_ATTACHED">
+				<Original>VEHICLE ATTACHED</Original>
+				<Chinesesimp>载具已停靠</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_ATTACHED_HINT">
+				<Original>%1 was automatically attached to garrison at %2</Original>
+				<Chinesesimp>%1已自动停靠至%2驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_ATTACHED_DESC">
+				<Original>It will be saved here</Original>
+				<Chinesesimp>它将会保存在这里</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_GARRISON_FORMED">
+				<Original>GARRISON FORMED</Original>
+				<Chinesesimp>驻军已组建</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_GARRISON_FORMED_HINT">
+				<Original>%1 units formed new garrison at %2</Original>
+				<Chinesesimp>%1个单位已于%2组建驻军</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_GARRISON_FORMED_DESC">
+				<Original>They are now available for map control</Original>
+				<Chinesesimp>现在可通过地图控制他们</Chinesesimp>
 			</Key>
 			<Key ID="STR_PM_P_NO_PILOTING_1">
 				<Original>I don't know how to fly this, I am not a pilot.</Original>
