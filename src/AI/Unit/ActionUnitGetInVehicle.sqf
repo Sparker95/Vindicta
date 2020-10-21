@@ -163,7 +163,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			ACTION_STATE_FAILED
 		};
 		// Set the vehicle upright if its a static
-		if (CALLM0(_unitVeh, "isStatic") then {
+		if (CALLM0(_unitVeh, "isStatic")) then {
 			if ((vectorUp _hO) select 2 < 0.5) then {	//0.5 roughly 45 degrees of tilt
 				_hO setVectorUp surfaceNormal position _hO;
 				_terrainHeight = getTerrainHeightASL position _hO; 
