@@ -686,12 +686,10 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 	public override METHOD(getShortName)
 		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
-		{
-			switch toUpper(_type) do {
-				case "ASSIGN NEW OFFICER" :	{ "STR_NOTI_ASSIGN_OFFICER" };
-				case "REINFORCE GARRISON" : { "STR_NOTI_REINFORCE_GARRISON" };
-			};
-		} forEach _type;
+		switch toUpper(_type) do {
+			case "ASSIGN NEW OFFICER" :	{ "STR_NOTI_ASSIGN_OFFICER" };
+			case "REINFORCE GARRISON" : { "STR_NOTI_REINFORCE_GARRISON" };
+		};
 	ENDMETHOD;
 ENDCLASS;
 
@@ -790,15 +788,13 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 	public override METHOD(getShortName)
 		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
-		{
-			switch toUpper(_type) do {
-				case "BUILDING SUPPLIES" 			: 	{ "STR_NOTI_BUILDING_SUPPLIES" };
-				case "AMMUNITION" 					:	{ "STR_NOTI_AMMUNITION" };
-				case "EXPLOSIVES" 					:	{ "STR_NOTI_EXPLOSIVES" };
-				case "MEDICAL" 						:	{ "STR_NOTI_MEDICAL" };
-				case "MISCELLANEOUS" 				:	{ "STR_NOTI_MISC" };
-			};
-		} forEach _type;
+		switch toUpper(_type) do {
+			case "BUILDING SUPPLIES" 			: 	{ "STR_NOTI_BUILDING_SUPPLIES" };
+			case "AMMUNITION" 					:	{ "STR_NOTI_AMMUNITION" };
+			case "EXPLOSIVES" 					:	{ "STR_NOTI_EXPLOSIVES" };
+			case "MEDICAL" 						:	{ "STR_NOTI_MEDICAL" };
+			case "MISCELLANEOUS" 				:	{ "STR_NOTI_MISC" };
+		};
 	ENDMETHOD;
 
 	public override METHOD(getInfo)
