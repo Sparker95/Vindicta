@@ -1252,9 +1252,9 @@ CLASS("ClientMapUI", "")
 					// Calculate time difference between current date and departure date
 					pr _intelState = GETV(_intel, "state");
 					pr _stateStr = switch (_intelState) do {
-						case INTEL_ACTION_STATE_ACTIVE: {"STR_CMUI_ACTIVE"};
+						case INTEL_ACTION_STATE_ACTIVE	: {"STR_CMUI_ACTIVE"};
 						case INTEL_ACTION_STATE_INACTIVE: {"STR_CMUI_INACTIVE"};
-						case INTEL_ACTION_STATE_END: {"STR_CMUI_ENDED"};
+						case INTEL_ACTION_STATE_END		: {"STR_CMUI_ENDED"};
 						default {"error"};
 					};
 
@@ -1278,9 +1278,9 @@ CLASS("ClientMapUI", "")
 					// Make a string representation of side
 					pr _side = GETV(_intel, "side");
 					_sideStr  = switch (_side) do {
-						case WEST: {localize "STR_CMUI_WEST"};
-						case EAST: {localize "STR_CMUI_EAST"};
-						case independent: {localize "STR_CMUI_IND"};
+						case WEST		:	{localize "STR_CMUI_WEST"};
+						case EAST		:	{localize "STR_CMUI_EAST"};
+						case independent:	{localize "STR_CMUI_IND"};
 						default {localize "STR_CMUI_ALIEN"};
 					};
 
@@ -1311,22 +1311,22 @@ CLASS("ClientMapUI", "")
 #endif
 					FIX_LINE_NUMBERS()
 
-					// grey if ended
-					switch (_stateStr) do {
+					// grey if ended //Changed variable _stateStr into _intelState for save compatibility
+					switch (_intelState) do {
 						default {};
-						case "STR_CMUI_ENDED": {
+						case INTEL_ACTION_STATE_END: {
 							_lnb lnbSetColor [[_index, 0], [0.45, 0.45, 0.45, 1]];
 							_lnb lnbSetColor [[_index, 1], [0.45, 0.45, 0.45, 1]];
 							_lnb lnbSetColor [[_index, 2], [0.45, 0.45, 0.45, 1]];
 							_lnb lnbSetColor [[_index, 3], [0.45, 0.45, 0.45, 1]];
 						};
-						case "STR_CMUI_ACTIVE": {
+						case INTEL_ACTION_STATE_ACTIVE: {
 							_lnb lnbSetColor [[_index, 0], MUIC_COLOR_MISSION];
 							_lnb lnbSetColor [[_index, 1], MUIC_COLOR_MISSION];
 							_lnb lnbSetColor [[_index, 2], MUIC_COLOR_MISSION];
 							_lnb lnbSetColor [[_index, 3], MUIC_COLOR_MISSION];
 						};
-						case "STR_CMUI_INACTIVE": {};
+						case INTEL_ACTION_STATE_INACTIVE: {};
 					};
 
 					//OOP_INFO_1("ADDED ROW: %1", _rowData);
@@ -1385,18 +1385,18 @@ CLASS("ClientMapUI", "")
 						// Get extra custom info
 						pr _extraInfo = CALLM0(_intel, "getInfo");
 
-						pr _locId = switch (_shortName) do {
-							case "STR_NOTI_ATTACK" : 				{ "STR_CMUI_INTEL_ATTACK" };
+						pr _locId = switch toUpper(_shortName) do {
+							case "STR_NOTI_ATTACK" 				: 	{ "STR_CMUI_INTEL_ATTACK" };
 							case "STR_NOTI_CONSTRUCT_ROADBLOCK" : 	{ "STR_CMUI_INTEL_RB" };
-							case "STR_NOTI_REINFORCE_GARRISON" : 	{ "STR_CMUI_INTEL_REINFORCE" };
-							case "STR_NOTI_PATROL" : 				{ "STR_CMUI_INTEL_PATROL" };
-							case "STR_NOTI_ASSIGN_OFFICER" : 	{ "STR_CMUI_INTEL_OFFICER" };
-							case "STR_NOTI_BUILDING_SUPPLIES" : 		{ "STR_CMUI_INTEL_CONV_BUILDING" };
-							case "STR_NOTI_AMMUNITION" : 			{ "STR_CMUI_INTEL_CONV_AMMO" };
-							case "STR_NOTI_EXPLOSIVES" : 			{ "STR_CMUI_INTEL_CONV_EXPLOSIVES" };
-							case "STR_NOTI_MEDICAL" : 				{ "STR_CMUI_INTEL_CONV_MEDICAL" };
-							case "STR_NOTI_MISC" : 			{ "STR_CMUI_INTEL_CONV_MISC" };
-							default 						{ "STR_CMUI_INTEL_DEFAULT" };
+							case "STR_NOTI_REINFORCE_GARRISON"	: 	{ "STR_CMUI_INTEL_REINFORCE" };
+							case "STR_NOTI_PATROL" 				:	{ "STR_CMUI_INTEL_PATROL" };
+							case "STR_NOTI_ASSIGN_OFFICER" 		:	{ "STR_CMUI_INTEL_OFFICER" };
+							case "STR_NOTI_BUILDING_SUPPLIES" 	: 	{ "STR_CMUI_INTEL_CONV_BUILDING" };
+							case "STR_NOTI_AMMUNITION" 			:	{ "STR_CMUI_INTEL_CONV_AMMO" };
+							case "STR_NOTI_EXPLOSIVES" 			:	{ "STR_CMUI_INTEL_CONV_EXPLOSIVES" };
+							case "STR_NOTI_MEDICAL" 			:	{ "STR_CMUI_INTEL_CONV_MEDICAL" };
+							case "STR_NOTI_MISC" 				:	{ "STR_CMUI_INTEL_CONV_MISC" };
+							default 								{ "STR_CMUI_INTEL_DEFAULT" };
 						};
 						private _desc = format ["<t color='#AAAAAA'>%1</t><br/>%2", localize _locId, _extraInfo];
 						T_CALLM1("setDescriptionText", _desc);

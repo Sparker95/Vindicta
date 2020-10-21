@@ -516,7 +516,7 @@ CLASS("IntelCommanderAction", "Intel")
 			pr _timeDiffStr = if (_h > 0) then {
 				format [localize "STR_INT_HR_MIN", _h, _m]
 			} else {
-				format [localize "%1m", _m]
+				format [localize "STR_INT_MIN", _m]
 			};
 			pr _timeStr = if (_future) then {
 				format [localize "STR_INT_WILL_START", _timeDiffStr];
@@ -685,7 +685,13 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 	//  
 	public override METHOD(getShortName)
 		params [P_THISOBJECT];
-		T_GETV("type");
+		pr _type = T_GETV("type");
+		{
+			switch toUpper(_type) do {
+				case "ASSIGN NEW OFFICER" :	{ "STR_NOTI_ASSIGN_OFFICER" };
+				case "REINFORCE GARRISON" : { "STR_NOTI_REINFORCE_GARRISON" };
+			};
+		} forEach _type;
 	ENDMETHOD;
 ENDCLASS;
 
@@ -783,7 +789,16 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 
 	public override METHOD(getShortName)
 		params [P_THISOBJECT];
-		T_GETV("type");
+		pr _type = T_GETV("type");
+		{
+			switch toUpper(_type) do {
+				case "BUILDING SUPPLIES" 			: 	{ "STR_NOTI_BUILDING_SUPPLIES" };
+				case "AMMUNITION" 					:	{ "STR_NOTI_AMMUNITION" };
+				case "EXPLOSIVES" 					:	{ "STR_NOTI_EXPLOSIVES" };
+				case "MEDICAL" 						:	{ "STR_NOTI_MEDICAL" };
+				case "MISCELLANEOUS" 				:	{ "STR_NOTI_MISC" };
+			};
+		} forEach _type;
 	ENDMETHOD;
 
 	public override METHOD(getInfo)

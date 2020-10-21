@@ -3480,6 +3480,10 @@
 				<Original>Miscellaneous</Original>
 				<Chinesesimp>其它物资</Chinesesimp>
 			</Key>
+			<Key ID="STR_NOTI_DEFAULT">
+				<Original>Supplies</Original>
+				<Chinesesimp>物资</Chinesesimp>
+			</Key>
 		</Container>
 		<Container name="SupplyConvoyCmdrAction.sqf">
 			<Key ID="STR_NOTI_ASSIGN_OFFICER">
