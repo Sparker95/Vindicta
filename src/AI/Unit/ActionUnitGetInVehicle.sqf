@@ -164,7 +164,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		};
 		// Set the vehicle upright if its a static
 		if (CALLM0(_unitVeh, "isStatic") then {
-			if (vectorUp _hO < 0.5) then {	//0.5 roughly 45 degrees of tilt
+			if ((vectorUp _hO) select 2 < 0.5) then {	//0.5 roughly 45 degrees of tilt
 				_hO setVectorUp surfaceNormal getPos _hO;
 				_hO setPosATL [(getPosATL _hO) select 0, (getPosATL _hO) select 1, 0];
 			};
