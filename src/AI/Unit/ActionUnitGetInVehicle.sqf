@@ -166,10 +166,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		if (CALLM0(_unitVeh, "isStatic") then {
 			if (vectorUp _hO < 0.5) then {	//0.5 roughly 45 degrees of tilt
 				_hO setVectorUp surfaceNormal getPos _hO;
-				_terrainHeight = getTerrainHeightASL position _hO; 
-				_position = getPosASL _hO;
-				_position = [_position select 0, _position select 1, _terrainHeight];
-				_hO setPosASL _position;
+				_hO setPosATL [(getPosATL _hO) select 0, (getPosATL _hO) select 1, 0];
 			};
 		};
 
