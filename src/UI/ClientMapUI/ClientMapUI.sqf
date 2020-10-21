@@ -1313,7 +1313,6 @@ CLASS("ClientMapUI", "")
 
 					// grey if ended //Changed variable _stateStr into _intelState for save compatibility
 					switch (_intelState) do {
-						default {};
 						case INTEL_ACTION_STATE_END: {
 							_lnb lnbSetColor [[_index, 0], [0.45, 0.45, 0.45, 1]];
 							_lnb lnbSetColor [[_index, 1], [0.45, 0.45, 0.45, 1]];
@@ -1327,6 +1326,7 @@ CLASS("ClientMapUI", "")
 							_lnb lnbSetColor [[_index, 3], MUIC_COLOR_MISSION];
 						};
 						case INTEL_ACTION_STATE_INACTIVE: {};
+						default {};
 					};
 
 					//OOP_INFO_1("ADDED ROW: %1", _rowData);

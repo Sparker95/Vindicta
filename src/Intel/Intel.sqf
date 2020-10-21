@@ -689,6 +689,7 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 		switch toUpper(_type) do {
 			case "ASSIGN NEW OFFICER" :	{ "STR_NOTI_ASSIGN_OFFICER" };
 			case "REINFORCE GARRISON" : { "STR_NOTI_REINFORCE_GARRISON" };
+			default { OOP_ERROR_1("Wrong enum value: %1", _type) };
 		};
 	ENDMETHOD;
 ENDCLASS;
@@ -794,6 +795,7 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 			case "EXPLOSIVES" 					:	{ "STR_NOTI_EXPLOSIVES" };
 			case "MEDICAL" 						:	{ "STR_NOTI_MEDICAL" };
 			case "MISCELLANEOUS" 				:	{ "STR_NOTI_MISC" };
+			default { OOP_ERROR_1("Wrong enum value: %1", _type) };
 		};
 	ENDMETHOD;
 
