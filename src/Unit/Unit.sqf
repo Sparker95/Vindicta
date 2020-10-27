@@ -666,6 +666,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				};
 			};
 
+			// Try and restore saved damages
+			private _restoredDamages = T_CALLM0("restoreDamages");
+
 			// Give intel to this unit
 			// Intel tablets are not saved in inventory
 			switch (_catID) do {
@@ -963,6 +966,25 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
+	METHOD(restoreDamages)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+
+		// Bail if not spawned
+		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith { false };
+
+		pr _savedDamages = if(count _data > UNIT_DATA_ID_DAMAGES) then {
+			_data#UNIT_DATA_ID_DAMAGES
+		} else {
+			[]
+		};
+
+		if (count _savedDamages > 0) then {
+			{_hO setHitIndex [_forEachIndex, _x]} forEach (_savedDamages select 2);
+		};
+	ENDMETHOD;
+
 	METHOD(restoreInventory)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
@@ -1056,6 +1078,20 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				_array pushBack [_item, _count];
 			};
 		};
+
+		METHOD(saveDamages)
+			params [P_THISOBJECT];
+			private _data = T_GETV("data");
+
+			// Bail if not spawned
+			pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+			if (isNull _hO) exitWith {};
+
+			pr _catid = _data select UNIT_DATA_ID_CAT;
+
+			private _savedDamages = getAllHitPointsDamage _hO;
+			_data set [UNIT_DATA_ID_DAMAGES, _savedDamages];
+		ENDMETHOD;
 
 		private _fn_loadInv = {
 			params ["_hO", "_inventoryArray"];
@@ -1404,6 +1440,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 			// Save the inventory (for cargo and vics)
 			T_CALLM0("saveInventory");
+
+			// Save the damages (for cargo and vics)
+			T_CALLM0("saveDamages");
 
 			// Deinitialize the limited arsenal
 			T_CALLM0("limitedArsenalOnDespawn");
@@ -2524,6 +2563,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		if (T_CALLM0("isSpawned")) then {
 			// Save the inventory (for cargo and vics)
 			T_CALLM0("saveInventory");
+			T_CALLM0("saveDamages");
 			T_CALLM0("limitedArsenalSyncToUnit");
 		};
 

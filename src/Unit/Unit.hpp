@@ -17,8 +17,9 @@
 
 #define UNIT_DATA_ID_GEAR		15
 
-#define UNIT_DATA_ID_INVENTORY		16
-#define UNIT_DATA_SIZE				17
+#define UNIT_DATA_ID_DAMAGES		16
+#define UNIT_DATA_ID_INVENTORY		17
+#define UNIT_DATA_SIZE				18
 
 //									 0, 1, 2,  3,       4,  5, 6,  7,  8,  9,  10, 11, 12,      13,                 14, 15
 #define UNIT_DATA_DEFAULT			[0, 0, "", objNull, "", 2, "", [], "", "", 0,  [], [0,0,0], [[0,0,0], [0,0,0]], "", []]
