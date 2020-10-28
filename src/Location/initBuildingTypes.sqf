@@ -48,11 +48,11 @@ _location_bp_HGM_GMG_high =
 [
 	[ //The giant military tower
 		["Land_Cargo_Tower_V1_F", "Land_Cargo_Tower_V2_F", "Land_Cargo_Tower_V3_F", "Land_Cargo_Tower_V4_F"],
-		[[11, 90], [13, 0], [14, 0], [16, 180], [17, 180]]
+		[[5.08573,99.9938,17.8895,89.9927],[5.62946,211.636,17.803,181.076],[5.82216,319.148,17.8895,0.203539],[5.75881,50.7726,17.8895,49.4819]]
 	],
 	[ //The small military watchtower
 		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F", "Land_Cargo_Patrol_V4_F"],
-		[[1.9, 220, 4.4, 180], [1.9, 130, 4.4, 180]]
+		[[1.55509,236.874,4.34404,181.819],[1.56281,126.451,4.34404,180.368]]
 	],
 
 	[ //HBAR Tower
@@ -64,12 +64,8 @@ _location_bp_HGM_GMG_high =
         [[1.49471,14.0567,2.76688,315.001]]
     ]
 
-	/*
-	[ //The military HQ
-		["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V2_F", "Land_Cargo_HQ_V3_F"],
-		[[4, 90], [5, 0], [6, -45], [7, 225], [8, 180]]
-	]
-	*/
+	// Test
+	//[["Land_i_House_Small_03_V1_F"],[[6.23894,146.461,3.62,180],[5.25872,175.733,3.62,180],[5.65386,46.6535,3.62,48.776],[5.83554,311.685,3.62,311.112],[2.58857,218.237,3.62,232.053]]]
 ];
 
 location_bp_HGM_GMG_high = _location_bp_HGM_GMG_high call _createHashmapFromBuildingPositions;
@@ -668,20 +664,21 @@ location_bt_helipad =
 
 /*
 // !!!!! USE THIS FOR location_bp_cargo_medium !!!!!
-// This is BEAST of a code
+// And for static guns too!
 // You need to place houses and cargo boxes inside houses
 // Then select them all, and run the code to export cargo box positions
 
 _objects = get3DENSelected "object";
 
 _houses = _objects select {_x isKindOf "House"};
-_boxes = _objects select {_x isKindOf "ReammoBox_F"};
+_boxes = _objects select {! (_x isKindOf "House")};
 
 _return = [];
 
 {
     private _house = _x;
     private _housePos = getPosWorld _house;
+	private _housePosATL = getPosATL _house;
     private _bb = boundingBoxReal _house;
     (_bb#0) params ["_sx", "_sy", "_sz"];
     private _radius = sqrt(_sx^2 + _sy^2);
@@ -689,10 +686,11 @@ _return = [];
     private _boxPositions = [];
     {
         private _box = _x;
-        _boxPos = getPosWorld _x;
+        _boxPos = getPosWorld _box;
+		_posATL = getPosATL _box;
 
-        private _dirRel = (_housePos getDir _boxPos) - (direction _box);
-        private _zRel = _boxPos#2 - _housePos#2;
+        private _dirRel = (_housePosATL getDir _posATL) - (direction _house);
+        private _zRel = (_posATL#2) - (_housePosATL#2);
         private _distRel = _housePos distance2D _boxPos;
 
         _objDir = (direction _box) - (direction _house);

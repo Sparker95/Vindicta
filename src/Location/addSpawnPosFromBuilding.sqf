@@ -21,10 +21,24 @@ private _class = typeOf _building;
 private _type = T_GETV("type");
 if (_type == LOCATION_TYPE_CITY) exitWith {}; // We must be truly insane if we want to process all buildings in a city
 
-// Cylindrical to orthogonal coordinates
-_cylToOrth = {
-	params ["_dist", "_angle", "_height"];
-	[_dist*(sin _angle), _dist*(cos _angle), _height]
+_calculateOffsetAndDir = {
+	params ["_bpArray", "_building"];
+	_bpArray params ["_dist", "_angle", "_height"];
+	private _bDir = direction _building;
+	private _dirOut = _bDir + _angle;
+	private _buildingPosATL = getPosATL _building;
+	private _offset = [_dist*(sin (_angle + _bDir)), _dist*(cos (_angle + _bDir)), _height];
+	private _posATL = _buildingPosATL vectorAdd _offset;
+	private _zCorrection = (getTerrainHeightASL _buildingPosATL) - (getTerrainHeightASL _posATL);
+	_posATL set [2, (_posATL#2) + _zCorrection];
+
+	#ifndef RELEASE_BUILD
+	private _arrow = "Sign_Arrow_Direction_Cyan_F" createVehicle _posATL;
+	_arrow setPosATL _posATL;
+	_arrow setDir _dirOut;
+	#endif
+
+	[_posATL, _dirOut];
 };
 
 //Pre-defined positions for static HMG and GMG in buildings. Check initBuildingTypes.sqf.
@@ -34,17 +48,9 @@ if(!isNil "_bps") then {
 	{
 		_bp = _x;
 		_bdir = direction _building;
-		if(count _bp == 2) then { //This position is defined by building position ID and direction
-			_position = _building buildingPos (_bp select 0);
-			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _position, _bdir + (_bp select 1), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			T_CALLM("addSpawnPos", _args);
-			//diag_log format ["Addes HMG position: ID: %1", _bp select 0];
-		} else { //This position is defined by offset in cylindrical coordinates
-			private _offsetOrthCoordinates = _bp call _cylToOrth;
-			private _posWorld = _building modelToWorldWorld _offsetOrthCoordinates;
-			private _posATL = ASLtoATL _posWorld;
-			_posATL vectorAdd [0, 0, -0.1]; //-0.1 drop the statics from tiny height to cover for model misalignment across templates
-			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _posATL, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
+			([_bp, _building] call _calculateOffsetAndDir) params ["_posATL", "_dir"];
+			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
 			//diag_log format ["Addes HMG position: %1", _bp];
 		};
@@ -61,10 +67,8 @@ if (!(isNil "_bps") && _type == LOCATION_TYPE_POLICE_STATION) then {
 		_bp = _x;
 		_bdir = direction _building;
 		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
-			private _offsetOrthCoordinates = _bp call _cylToOrth;
-			private _posWorld = _building modelToWorldWorld _offsetOrthCoordinates;
-			private _posATL = ASLToATL _posWorld;
-			private _args = [T_PL_cargo_small_medium, [GROUP_TYPE_INF], _posATL, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+			([_bp, _building] call _calculateOffsetAndDir) params ["_posATL", "_dir"];
+			private _args = [T_PL_cargo_small_medium, [GROUP_TYPE_INF], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
 
 			//diag_log format ["Addes cargo box position: %1", _bp];
