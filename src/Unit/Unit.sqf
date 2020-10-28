@@ -771,6 +771,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _data = T_GETV("data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		pr _catID = _data select UNIT_DATA_ID_CAT;
+		pr _subcatID = _data select UNIT_DATA_ID_SUBCAT;
 
 		// Respawned
 		/*
@@ -820,7 +821,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 
 		// HandleDamage for vehicles
-		if ((_data select UNIT_DATA_ID_CAT in [T_VEH, T_CARGO]) &&
+		if ( ( (_catID == T_CARGO) || ((_catID == T_VEH) && ! (_subCatID in T_VEH_air)  )) &&
 			{owner _hO in [0, clientOwner]}) then {			// We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 
 			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
