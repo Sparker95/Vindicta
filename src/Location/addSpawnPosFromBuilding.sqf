@@ -35,8 +35,11 @@ if(_index != -1) then {
 			T_CALLM("addSpawnPos", _args);
 			//diag_log format ["Addes HMG position: ID: %1", _bp select 0];
 		} else { //This position is defined by offset in cylindrical coordinates
-			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
-			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+			private _offsetOrthCoordinates = [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
+			private _posWorld = _building modelToWorldWorld _offsetOrthCoordinates;
+			private _posATL = ASLtoATL _posWorld;
+			_posATL vectorAdd [0, 0, -0.1]; //-0.1 drop the statics from tiny height to cover for model misalignment across templates
+			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _posATL, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
 			//diag_log format ["Addes HMG position: %1", _bp];
 		};
@@ -54,8 +57,10 @@ if (_index != -1 && _type == LOCATION_TYPE_POLICE_STATION) then {
 		_bp = _x;
 		_bdir = direction _building;
 		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
-			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
-			private _args = [T_PL_cargo_small_medium, [GROUP_TYPE_INF], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+			private _offsetOrthCoordinates = [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
+			private _posWorld = _building modelToWorldWorld _offsetOrthCoordinates;
+			private _posATL = ASLToATL _posWorld;
+			private _args = [T_PL_cargo_small_medium, [GROUP_TYPE_INF], _posATL, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
 
 			//diag_log format ["Addes cargo box position: %1", _bp];
