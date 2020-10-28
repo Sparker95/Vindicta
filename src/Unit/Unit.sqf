@@ -666,6 +666,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				};
 			};
 
+			// Try and restore saved attributes
+			private _restoredAttributes = T_CALLM0("restoreAttributes");
+
 			// Give intel to this unit
 			// Intel tablets are not saved in inventory
 			switch (_catID) do {
@@ -964,6 +967,36 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
+	METHOD(restoreAttributes)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+
+		// Bail if not spawned
+		private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith { false };
+
+		if ((_hO isKindOf "LandVehicle") && ((_hO isKindOf "StaticWeapon") == false)) then {
+			private _vehicleProperties = _data#UNIT_DATA_ID_VEHICLE_PROPERTIES;
+
+			private _savedDamages = (_vehicleProperties select 0);
+
+			if (count _savedDamages > 0) then {
+				{_hO setHitIndex [_forEachIndex, _x]} forEach (_savedDamages select 2);
+			};
+
+			private _savedTextures = (_vehicleProperties select 1);
+
+			if (count _savedTextures > 0) then {
+				for '_i' from 0 to count _savedTextures - 1 do {
+					_savedTextures set [_i,[_i,_savedTextures select _i]] 
+				}; 
+				{
+					_hO setObjectTextureGlobal _x 
+				} forEach _savedTextures; 
+			};
+		};
+	ENDMETHOD;
+
 	METHOD(restoreInventory)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
@@ -1103,6 +1136,26 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			//diag_log format["SAVED INV FOR %1: %2", _hO, _savedInventory];
 			_data set [UNIT_DATA_ID_INVENTORY, _savedInventory];
 		};
+	ENDMETHOD;
+
+	METHOD(saveAttributes)
+			params [P_THISOBJECT];
+			private _data = T_GETV("data");
+
+			// Bail if not spawned
+			private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+			if (isNull _hO) exitWith {};
+
+			if ((_hO isKindOf "LandVehicle") && ((_hO isKindOf "StaticWeapon") == false)) then {
+				private _vehicleProperties = _data#UNIT_DATA_ID_VEHICLE_PROPERTIES;
+				private _savedTexture = getObjectTextures _hO;
+				_vehicleProperties set [1, _savedTexture];
+
+				private _savedDamages = getAllHitPointsDamage _hO;
+				_vehicleProperties set [0, _savedDamages];
+
+				_data set [UNIT_DATA_ID_VEHICLE_PROPERTIES, _vehicleProperties];
+			};
 	ENDMETHOD;
 
 	// Generates loot array while trying to equally share each item
@@ -1405,6 +1458,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 			// Save the inventory (for cargo and vics)
 			T_CALLM0("saveInventory");
+
+			// Save the vehicle attributes (for cargo and vics)
+			T_CALLM0("saveAttributes");
 
 			// Deinitialize the limited arsenal
 			T_CALLM0("limitedArsenalOnDespawn");
@@ -2525,6 +2581,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		if (T_CALLM0("isSpawned")) then {
 			// Save the inventory (for cargo and vics)
 			T_CALLM0("saveInventory");
+			T_CALLM0("saveAttributes");
 			T_CALLM0("limitedArsenalSyncToUnit");
 		};
 
