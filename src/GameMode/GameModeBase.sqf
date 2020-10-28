@@ -1275,10 +1275,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
 							private _policeStation = NEW_PUBLIC("Location", _args);
 							CALLM1(_policeStation, "setBorderCircle", 10);
-							CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
-							CALLM0(_policeStation, "addSpawnPosFromBuildings");
 							CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
 							CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
+							CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
+							CALLM0(_policeStation, "addSpawnPosFromBuildings");
 
 							// TODO: Get city size or building count and scale police capacity from that ?
 							CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));
