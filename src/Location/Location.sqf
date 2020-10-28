@@ -472,6 +472,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLSM1("Location", "initMedicalObject", _hObject);
 		};
 
+		if (_type in location_bt_repair) then {
+			CALLSM1("Location", "initRepairObject", _hObject);
+		};
+
 		// Check for helipad
 		if(_type in location_bt_helipad) then {
 			T_GETV("helipads") pushBack _hObject;
@@ -1847,6 +1851,40 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} forEach _locs;
 	ENDMETHOD;
 
+	STATIC_METHOD(initRepairObject)
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		if (!isServer) exitWith {
+			OOP_ERROR_0("initRepairObject must be called on server!");
+		};
+
+		// Generate a JIP ID
+		private _ID = 0;
+		if(isNil "location_repair_nextID") then {
+			location_repair_nextID = 0;
+			_ID = 0;
+		} else {
+			_ID = location_repair_nextID;
+		};
+		location_repair_nextID = location_repair_nextID + 1;
+
+		private _JIPID = format ["loc_repair_jip_%1", _ID];
+		_object setVariable ["loc_repair_jip", _JIPID];
+
+		// Add an event handler to delete the init from the JIP queue when the object is gone
+		_object addEventHandler ["Deleted", {
+			params ["_entity"];
+			private _JIPID = _entity getVariable "loc_repair_jip";
+			if (isNil "_JIPID") exitWith {
+				OOP_ERROR_1("loc_repair_jip not found for object %1", _entity);
+			};
+			remoteExecCall ["", _JIPID]; // Remove it from the queue
+		}];
+
+		REMOTE_EXEC_CALL_STATIC_METHOD("Location", "initRepairObjectAction", [_object], 0, _JIPID); // global, JIP
+
+	ENDMETHOD;
+
 	// Initalization of different objects
 	STATIC_METHOD(initMedicalObject)
 		params [P_THISCLASS, P_OBJECT("_object")];
@@ -1899,6 +1937,55 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				[player] call ace_medical_treatment_fnc_fullHealLocal;
 				player playMove "AinvPknlMstpSlayWrflDnon_medic";
 			}, 
+			0, // Arguments
+			100, // Priority
+			true, // ShowWindow
+			false, //hideOnUse
+			"", //shortcut
+			"true", //condition
+			_radius, //radius
+			false, //unconscious
+			"", //selection
+			""]; //memoryPoint
+	ENDMETHOD;
+
+	STATIC_METHOD(initRepairObjectAction)
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		OOP_INFO_1("INIT REPAIR OBJECT ACTION: %1", _object);
+
+		// Estimate usage radius
+		private _radius = (sizeof typeof _object) + 5;
+
+		_object setVariable["ACE_isRepairFacility", true];
+		_object allowdamage false;
+
+		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\repair_ca.paa'/>  Repair Vehicle", // title
+			{
+				_nearVehicles = [];
+				_nearVehicles = position (_this select 0) nearObjects ["LandVehicle", 50];
+				if (count _nearVehicles > 0) then{
+					private _args = ["REPAIR", "Repairing vehicles.", "Please wait."];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
+					{
+						[_x, false] remoteExec ['engineOn', _x]; //shut engine off
+
+						{
+							if (_x in allPlayers) then {
+								moveOut _x;
+								private _args = ["REPAIR", "Disembarked from the vehicle.", "The vehicle is currently being repaired."];
+								REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _x, NO_JIP);
+
+							};
+						} forEach crew _x; //disembark all crew
+
+    					[_x, 0] remoteExec ['setDamage', _x]; //repair vehicle
+					} forEach _nearVehicles;
+				} else {
+					private _args = ["REPAIR", "No vehicles to repair found.", "Check if the vehicles are close enough."];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
+				};
+			},
 			0, // Arguments
 			100, // Priority
 			true, // ShowWindow

@@ -78,6 +78,12 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(CatMedical,Land_DeconTent_01_white_F,							60);
 		};
 
+		class CatRepair {
+			displayName = "Repair";
+
+			__BUILD_OBJECT_CLASS(CatRepair,B_Slingload_01_Repair_F,								100);
+		};
+
 		class CatStorage {
 			displayName = "Storage";
 
@@ -213,8 +219,8 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(Recreation,Land_Carousel_01_F, 								150);
 		};
 
-		class Special {
-			displayName = "Special";
+		class Radio {
+			displayName = "Radio";
 			class RadioShack : BuildObjectBase {
 				className = "Land_TBox_F";
 				displayName = "Radio Shack";
