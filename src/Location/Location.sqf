@@ -382,6 +382,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 								T_CALLM2("addObject", _object, _object in _terrainObjects);
 								OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
 							};
+							// Spawn positions for non-houses
+							case (_type call location_fnc_objectClassHasSpawnPositions): {
+								T_CALLM2("addObject", _object, _object in _terrainObjects);
+								OOP_DEBUG_1("findAllObjects for %1: found predefined spawn positions for non-house", T_GETV("name"));
+							};
 						};
 					};
 				};
@@ -421,9 +426,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_array pushBackUnique _hObject;
 				// This variable records which positions in the building are occupied by a unit (it is modified in unit Actions)
 				_hObject setVariable ["vin_occupied_positions", []];
-				//if (_addSpawnPos) then {
-					T_CALLM1("addSpawnPosFromBuilding", _hObject);
-				//};
+				T_CALLM1("addSpawnPosFromBuilding", _hObject);
 				false 
 			}
 		} else {
@@ -432,6 +435,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				true
 			} else {
 				_array pushBackUnique _hObject;
+				T_CALLM1("addSpawnPosFromBuilding", _hObject);
 				false
 			}
 		};

@@ -1,5 +1,28 @@
 #include "..\common.h"
 
+// Functions to access building positions quickly
+location_fnc_objectClassHasSpawnPositions = {
+	// !!!!! Very Important !!!!!!
+	// If we want to add more spawn positions from buildings,
+	// Like static AT guns from buildings, or static AAs, or whatever,
+	// We must add these into this code too
+	(! isNil {location_bp_HGM_GMG_high getVariable _this}) ||
+	(! isNil {location_bp_cargo_medium getVariable _this})
+};
+
+// Function to turn array with position markup into hash map for quicker access
+_createHashmapFromBuildingPositions = {
+	private _hm = [false] call CBA_fnc_createNamespace;
+	{
+		private _classNames = _x#0;
+		private _positions = _x#1;
+		{ // All class names share same set of positions
+			_hm setVariable [_x, _positions];
+		} forEach _classNames;
+	} forEach _this;
+	_hm;
+};
+
 /*
 Building positions suitable for specific roles.
 
@@ -21,7 +44,7 @@ The structure of each array with positions for specific type is:
 */
 
 //Positions where a high GMG or a high HMG can be placed and operated from.
-location_bp_HGM_GMG_high =
+_location_bp_HGM_GMG_high =
 [
 	[ //The giant military tower
 		["Land_Cargo_Tower_V1_F", "Land_Cargo_Tower_V2_F", "Land_Cargo_Tower_V3_F", "Land_Cargo_Tower_V4_F"],
@@ -30,7 +53,16 @@ location_bp_HGM_GMG_high =
 	[ //The small military watchtower
 		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F", "Land_Cargo_Patrol_V4_F"],
 		[[1.9, 220, 4.4, 180], [1.9, 130, 4.4, 180]]
-	]
+	],
+
+	[ //HBAR Tower
+        ["Land_HBarrier_01_big_tower_green_F"],
+        [[1.18102,189.651,4.20664,180]]
+    ],
+    [ //HBAR Bunker Tower
+        ["Land_HBarrier_01_tower_green_F"],
+        [[1.49471,14.0567,2.76688,315.001]]
+    ]
 
 	/*
 	[ //The military HQ
@@ -40,32 +72,7 @@ location_bp_HGM_GMG_high =
 	*/
 ];
 
-//Positions where soldiers can freely shoot from.
-//Note that soldiers can also shoot well from HMG positions.
-location_bp_sentry =
-[
-	[ //The giant military tower
-		["Land_Cargo_Tower_V1_F", "Land_Cargo_Tower_V2_F", "Land_Cargo_Tower_V3_F", "Land_Cargo_Tower_V4_F"],
-		[[0, 0], [1, 0], [10, 180], [12, 0], [15, 270], [2, 0], [4, 180], [7, 90], [8, 270]]
-	],
-	[ //The small military watchtower
-		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F", "Land_Cargo_Patrol_V4_F"],
-		[[0, 180], [1, 180]]
-	],
-	[ //The military HQ
-		["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V2_F", "Land_Cargo_HQ_V3_F"],
-		[[4, 90], [5, 0], [6, -45], [7, 225], [8, 180]]
-	],
-	//Global Mobilization
-	[ 
-		["land_gm_tower_bt_6_fuest_80"],
-		[[2, 280], [3, 180], [4, 0]]
-	],
-	[ 
-		["land_gm_tower_bt_11_60"],
-		[[0, 180], [1, 180]]
-	]	
-];
+location_bp_HGM_GMG_high = _location_bp_HGM_GMG_high call _createHashmapFromBuildingPositions;
 
 // Capacities of buildings for infantry
 // Typically a building's inf capacity is amount of its buildingPos, however for some buildings we can override that here
@@ -152,7 +159,7 @@ location_b_capacity =
 ];
 
 // Positions for cargo boxes
-location_bp_cargo_medium =
+_location_bp_cargo_medium =
 [
 	[
 		["Land_i_House_Small_01_V3_F", "Land_i_House_Small_01_V1_F", "Land_i_House_Small_01_V2_F", "Land_u_House_Small_01_V1_F"],
@@ -383,6 +390,8 @@ location_bp_cargo_medium =
     [["Land_rhspkl_hut_07"],[[0.730642,204.373,1.51519,0],[1.48428,349.72,1.51519,0]]],
     [["Land_rhspkl_hut_08"],[[1.25072,23.5531,1.1439,88.9171],[1.08291,-25.4642,1.1439,269.327]]]
 ];
+
+location_bp_cargo_medium = _location_bp_cargo_medium call _createHashmapFromBuildingPositions;
 
 // Buildings which can be used as police stations
 location_bt_police = 
