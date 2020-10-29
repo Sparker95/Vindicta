@@ -509,6 +509,48 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 
+						_objectHandle setVariable ["BIS_enableRandomization", false]; //disable vanilla randomization
+
+						if (active3CBFactions == true) then {
+							_objectHandle call UK3CB_Factions_Vehicles_fnc_disable_randomize; //disable 3cb randomization on vehicle for texture persistence as they have custom randomization
+						};
+
+						//do our own randomization on vehicle textures exactly when we need it to happen and syncs up textures across clients, only for civilian vehicles, 
+						if ((_objectHandle isKindOf "LandVehicle") && (side _objectHandle == civilian )) then {
+							_objectType = typeOf _objectHandle;
+							_textureSources = "true" configClasses (configFile >> "CfgVehicles" >> _objectType >> "TextureSources");
+							_availableTextures = [];
+							_textureSources apply {
+								_colorName = configName _x;
+								_textures = [_x , "textures", []] call BIS_fnc_returnConfigEntry;
+								_availableTextures pushBack [_colorName, _textures];
+							};
+
+							_textureLists = [configFile >> "CfgVehicles" >> _objectType , "textureList", []] call BIS_fnc_returnConfigEntry;
+
+							_correctTextures = [];
+
+							for [{private _t = 0}, {_t < count _availableTextures}, {_t = _t + 1}] do
+							{
+							private _element = _availableTextures select _t;
+							if((_element select 0) in _textureLists) then
+								{
+								_correctTextures pushBack (_element select 1);
+								};
+							};
+
+							_randomTexture = selectRandom _correctTextures;
+
+							if (count _randomTexture > 0) then {
+								for '_i' from 0 to count _randomTexture - 1 do {
+									_randomTexture set [_i,[_i,_randomTexture select _i]]
+								};
+								{
+									_objectHandle setObjectTextureGlobal _x
+								} forEach _randomTexture;
+							};
+						};
+
 						if (isNull _objectHandle) then {
 							OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
