@@ -195,6 +195,7 @@ CLASS("DialogueCivilian", "Dialogue")
 			pr _dist = CALLM0(_x, "getPos") distance _unit;
 			// Civilian can't tell about everything, but they surely know about police stations and locations which are very close
 			(!(_type in [LOCATION_TYPE_CAMP, LOCATION_TYPE_RESPAWN])) && // Array of types the civilian can't know about
+			{ CALLM0(_x, "isBuilt") } &&	// Don't tell about places which aren't built
 			{
 				(random 10 < 5) ||
 				{_type == LOCATION_TYPE_POLICE_STATION}
