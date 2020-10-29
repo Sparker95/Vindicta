@@ -34,7 +34,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.030;
 			w = 0.659;
 			h = 0.038;
-			text = "CREATE A LOCATION";
+			text = $STR_CMDR_CREATE_LOC;
 			//colorBackground[] = {0.2, 0.8, 0.2, 0.6};
 			style = 0;
 			font = "PuristaBold";
@@ -58,7 +58,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			w = 0.305; 
 			h = 0.038; 
 			style = 0;
-			text = "location name here";
+			text = $STR_CMDR_LOC_NAME;
 			autocomplete = "";
 		};
 
@@ -70,7 +70,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.080;
 			w = 0.141;
 			h = 0.038;
-			text = "NAME";
+			text = $STR_CMDR_NAME;
 		};
 
 		class TAB_CMDR_STATIC_1 : MUI_DESCRIPTION_ABS 
@@ -81,7 +81,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.124;
 			w = 0.141;
 			h = 0.038;
-			text = "TYPE";
+			text = $STR_CMDR_TYPE;
 		};
 
 		class TAB_CMDR_BUTTON_CREATE_LOC : TAB_CMDR_BUTTON 
@@ -90,7 +90,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.080;
 			w = 0.179;
 			h = 0.126;
-			text = "CREATE";
+			text = $STR_CMD_CREATE;
 		};
 
 		class TAB_CMDR_STATIC_2 : MUI_DESCRIPTION_ABS
@@ -101,7 +101,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.168;
 			w = 0.141;
 			h = 0.038;
-			text = "COST";
+			text = $STR_CMDR_COST;
 		};
 
 		class TAB_CMDR_STATIC_BUILD_RESOURCES : MUI_BASE_ABS 
@@ -114,7 +114,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			h = 0.038;
 			style = ST_LEFT;
 			font = "RobotoCondensed";
-			text = "666 build resources";
+			text = $STR_CMDR_RESOURCE;
 		};
 
 		class TAB_CMDR_STATIC_HELP : MUI_BG_TRANSPARENT_MULTILINE_LEFT_ABS
@@ -126,7 +126,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			w = 0.468;
 			h = 0.080;
 			style = 16+0+0x200; // multi line, no rect
-			text = "Build resources must be in your backpack or in the vehicle you are looking at.";
+			text = $STR_CMDR_RESOURCE_HINT;
 			lineSpacing = 1;	
 		};
 
@@ -138,7 +138,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.335;
 			w = 0.141;
 			h = 0.038;
-			text = "SKIP TIME";
+			text = $STR_CMDR_SKIP_TIME;
 		};
 
 		class TAB_CMDR_BUTTON_SKIP_TO_DUSK : TAB_CMDR_BUTTON 
@@ -147,7 +147,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.335;
 			w = 0.146;
 			h = 0.038;
-			text = "Dusk";
+			text = $STR_CMDR_DUSK;
 		};
 
 		class TAB_CMDR_BUTTON_SKIP_TO_PREDAWN : TAB_CMDR_BUTTON 
@@ -156,7 +156,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.335;
 			w = 0.146;
 			h = 0.038;
-			text = "Predawn";
+			text = $STR_CMDR_PREDAWN;
 		};
 
 		class TAB_CMDR_BUTTON_SKIP_TO_DAWN : TAB_CMDR_BUTTON 
@@ -165,7 +165,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			y = 0.335;
 			w = 0.146;
 			h = 0.038;
-			text = "Dawn";
+			text = $STR_CMDR_DAWN;
 		};
 	};
 };

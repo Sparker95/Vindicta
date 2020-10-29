@@ -154,7 +154,7 @@ CLASS("BuildUI", "")
 
 		OOP_INFO_1("Adding Open Build Menu action to %1.", _object);
 
-		pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu"], {  
+		pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", localize "STR_BUI_OPEN_MENU"], {  
 			params ["_target", "_caller", "_actionId", "_arguments"];
 			_arguments params [P_THISOBJECT];
 			T_CALLM0("openUI");
@@ -240,14 +240,14 @@ CLASS("BuildUI", "")
 		pr _tooltipRobotoBold = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedBold'>%2</t>";
 		pr _tooltipRobotoLight = "<t color='%1' align='center' shadow='1' valign='bottom' font='RobotoCondensedLight'> %2</t>";
 		pr _tooltipSeparator = (format[_tooltipRobotoBold, _colorTooltip, "    |    "]);
-		pr _tooltipBuild = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Build/Place"]);
-		pr _tooltipPickup = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Pick up highlighted object"]);
-		pr _tooltipBuildItemCat = (format[_tooltipRobotoBold, _colorTooltip, "TAB:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Select current object"]);
-		pr _tooltipCloseMenu = (format[_tooltipRobotoBold, _colorTooltip, "BACKSPACE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Close menu"]);
-		pr _tooltipCancelPlace = (format[_tooltipRobotoBold, _colorTooltip, "BACKSPACE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Cancel placement"]);
-		pr _tooltipRotate = (format[_tooltipRobotoBold, _colorTooltip, "Q and E:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Rotate object"]);
-		pr _tooltipNavigate = (format[_tooltipRobotoBold, _colorTooltip, "ARROW KEYS:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Navigate through categories and items"]);
-		pr _tooltipDelete = (format[_tooltipRobotoBold, _colorTooltip, "DELETE:"]) + (format[_tooltipRobotoLight, _colorTooltip, " Delete highlighted object"]);
+		pr _tooltipBuild = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, " "+ localize "STR_BUI_BUILD"]);
+		pr _tooltipPickup = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_PICKUP"]);
+		pr _tooltipBuildItemCat = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_TAB"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_SELECT"]);
+		pr _tooltipCloseMenu = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_BACKSPACE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_CLOSE"]);
+		pr _tooltipCancelPlace = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_BACKSPACE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_CANCEL"]);
+		pr _tooltipRotate = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_QE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_ROTATE"]);
+		pr _tooltipNavigate = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_ARROWS"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_NAVIGATE"]);
+		pr _tooltipDelete = (format[_tooltipRobotoBold, _colorTooltip, localize "STR_BUI_DELETE"]) + (format[_tooltipRobotoLight, _colorTooltip, " " + localize "STR_BUI_DELETE_HINT"]);
 
 		// Bail if we can't build any more here
 		if ((!CALLSM1("PlayerMonitor", "canUnitBuildAtLocation", player)) && (T_GETV("resourceSource") != -1)) exitWith {
@@ -425,7 +425,7 @@ CLASS("BuildUI", "")
 								_isGarbage = true;
 							} else {
 								if (cursorobject == _objectToDelete) then {
-									hint "Object must be empty to demolish. Cannot delete the arsenal.";
+									hint localize "STR_BUI_DEMOLISH_NOT_EMPTY";
 								};
 							};
 
@@ -474,7 +474,7 @@ CLASS("BuildUI", "")
 						playSound ["clicksoft", false];
 						
 						// Show a confirmation dialog
-						pr _args = [format ["Demolish %1 and refund %2 construction resources?", (typeof(_objectToDelete)), _refundBuildRes],
+						pr _args = [format [localize "STR_BUI_DEMOLISH_REFUND", (typeof(_objectToDelete)), _refundBuildRes],
 							[_objectToDelete, _refundBuildRes],
 							{
 								SCOPE_ACCESS_MIMIC("BuildUI");
@@ -491,14 +491,14 @@ CLASS("BuildUI", "")
 						if (_isGarbage) then {
 
 						// Show a confirmation dialog
-						pr _args = [format ["Demolish %1? This object cannot be refunded.", (typeof(_objectToDelete))],
+						pr _args = [format [localize "STR_BUI_DEMOLISH_NO_REFUND", (typeof(_objectToDelete))],
 							[_objectToDelete],
 							{
 								SCOPE_ACCESS_MIMIC("BuildUI");
 								params["_objectToDelete"];
 								
 								if (cursorobject == _objectToDelete) then {
-									systemChat format["Object %1 was demolished.", (typeof(_objectToDelete))];
+									systemChat format[localize "STR_BUI_DEMOLISHED", (typeof(_objectToDelete))];
 									REMOTE_EXEC_CALL_STATIC_METHOD("MessageLoopMainManager", "KillUnit", [_objectToDelete], ON_SERVER, NO_JIP);
 								};
 							},
@@ -1163,7 +1163,7 @@ CLASS("BuildUI", "")
 							CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 						} else {
 							// Show error message
-							systemChat format ["Not enough build resources in your inventory: %1 (%2 required)", _playerBuildRes, _buildRes];
+							systemChat format [localize "STR_BUI_NOT_ENOUGH_RESOURCES", _playerBuildRes, _buildRes];
 						};
 					};
 					
@@ -1242,7 +1242,7 @@ CLASS("BuildUI", "")
 
 		if (cursorobject == _objectToDelete) then {
 			deleteVehicle _objectToDelete;
-			systemChat format["Refunded %1 construction resources.", _refundBuildRes];
+			systemChat format[localize "STR_BUI_REFUNDED", _refundBuildRes];
 
 			// refund if anything can be refunded, else do nothing
 			if (_refundBuildRes > 0) then {

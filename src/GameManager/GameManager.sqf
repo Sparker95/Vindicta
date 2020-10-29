@@ -120,7 +120,7 @@ CLASS("GameManager", "MessageReceiverEx")
 				CALL_COMPILE_COMMON("UI\initPlayerUI.sqf");
 
 				// Show notification
-				CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+				CALLSM1("NotificationFactory", "createSystem", localize "STR_GM_PRESS_U_TO_SETUP");
 
 				// Exception for SP, we must wait till player spawns, then do more init, because onPlayerRespawn.sqf does not work there
 				if (!isMultiplayer) then {
@@ -276,7 +276,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		OOP_INFO_0("GAME SAVE STARTED");
 
 		// Start loading screen
-		["saving", ["<t size='4' color='#FF7733'>PLEASE WAIT</t><br/><t size='6' color='#FFFFFF'>SAVING NOW</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", [localize "STR_GM_SAVING_NOW", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 20000] remoteExec ["cutFadeOut", ON_ALL, false];
 
 		pr _storage = NEW(_storageClassName, []);
@@ -330,7 +330,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		_success = false;
 		if (CALLM0(_storage, "isOpen")) then {
 			// Send notification to everyone
-			pr _text = "Game state save is in progress...";
+			pr _text = localize "STR_GM_SAVE_IN_PROGRESS";
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 			diag_log format ["[GameManager] Saving game mode: %1", gGameMode];
@@ -354,7 +354,7 @@ CLASS("GameManager", "MessageReceiverEx")
 			T_SETV("saveID", T_GETV("saveID") + 1);
 
 			// Send notification to everyone
-			pr _text = "Game state has been saved!";
+			pr _text = localize "STR_GM_SAVED";
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 			_success = true;
 		} else {
@@ -364,7 +364,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 
 		// End loading screen
-		["saving", ["<t size='4' color='#77FF77'>SAVE COMPLETE</t><br/><t size='6' color='#FFFFFF'>CARRY ON...</t>", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
+		["saving", [localize "STR_GM_SAVE_COMPLETE", "PLAIN", -1, true, true]] remoteExec ["cutText", ON_ALL, false];
 		["saving", 10] remoteExec ["cutFadeOut", ON_ALL, false];
 
 		OOP_INFO_0("GAME SAVE ENDED");
@@ -439,7 +439,7 @@ CLASS("GameManager", "MessageReceiverEx")
 						diag_log "[GameManager] Starting loading the game mode object";
 
 						// Send notification to everyone
-						pr _text = "Game load is in progress...";
+						pr _text = localize "STR_GM_GAME_LOADING";
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
@@ -472,7 +472,7 @@ CLASS("GameManager", "MessageReceiverEx")
 						T_SETV("gameModeInitialized", true);
 
 						// Send notification to everyone
-						pr _text = "Game has been loaded. You should respawn now.";
+						pr _text = localize "STR_GM_GAME_LOADED";
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 						diag_log "[GameManager] Finished loading the game mode object";
@@ -735,14 +735,14 @@ CLASS("GameManager", "MessageReceiverEx")
 			};
 		} forEach _templatesVerify;
 		if (!_templatesGood) exitWith {
-			pr _text = format ["Error: factions are not loaded on server: %1", _failedTemplates];
+			pr _text = format [localize "STR_GM_ERROR_FACTION_NOT_LOADED", _failedTemplates];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabGameModeinit", "showServerResponse", [_text], _clientOwner, false);
 		};
 
 		OOP_INFO_1("Initializing game mode on server: %1", _className);
 
 		// Send notifications...
-		pr _text = "Game is being initialized. It can take up to several minutes.";
+		pr _text = localize "STR_GM_INITIALIZING";
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 		uisleep 0.05; // Let it send the messages
@@ -764,7 +764,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		OOP_INFO_0("Finished initializing game mode");
 
 		// Send notifications...
-		pr _text = "Game mode initialization is complete. You should respawn now.";
+		pr _text = localize "STR_GM_INITIALIZED";
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], ON_CLIENTS, NO_JIP);
 
 		// Set flag
@@ -912,22 +912,22 @@ CLASS("GameManager", "MessageReceiverEx")
 			private _lastAutoSaveCheck = T_GETV("lastAutoSaveCheck");
 			T_SETV("lastAutoSaveCheck", TIME_NOW);
 			private _delayMessage = if(_playersInCombat) then {
-				"<br/><t size='2' color='#FFFFFF'>(delayed due to enemies within 250m of players)</t>"
+				localize "STR_GM_DELAY_SAVING"
 			} else {
 				""
 			};
 			switch true do {
 				// 5m warning
 				case (_nextAutoSaveTime - 300 <= TIME_NOW && _nextAutoSaveTime - 300 > _lastAutoSaveCheck): {
-					("<t size='2' color='#FFFF33'>Auto saving in 5 minutes</t>" + _delayMessage) call vin_fnc_autoSaveMsg;
+					(localize "STR_GM_SAVING_IN_5M" + _delayMessage) call vin_fnc_autoSaveMsg;
 				};
 				// 30s  warning
 				case (_nextAutoSaveTime - 30 <= TIME_NOW && _nextAutoSaveTime - 30 > _lastAutoSaveCheck): {
-					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t>" + _delayMessage) call vin_fnc_autoSaveMsg;
+					(localize "STR_GM_SAVING_IN_30S" + _delayMessage) call vin_fnc_autoSaveMsg;
 				};
 				// Forced warning
 				case (_playersInCombat && _nextAutoSaveTime + 30 * 60 <= TIME_NOW && _nextAutoSaveTime + 30 * 60 - 30 > _lastAutoSaveCheck): {
-					("<t size='4' color='#FFFF33'>Auto saving in 30 seconds</t><br/><t size='1' color='#FFFFFF'>(was delayed by 30 minutes due to enemies within 250m of players)</t>" + _delayMessage) call vin_fnc_autoSaveMsg;
+					(localize "STR_GM_SAVING_IN_30S_DELAYED" + _delayMessage) call vin_fnc_autoSaveMsg;
 				};
 			};
 		};

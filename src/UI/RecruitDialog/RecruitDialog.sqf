@@ -25,8 +25,8 @@ CLASS("RecruitDialog", "DialogBase")
 		T_CALLM1("enableMultiTab", false);
 		T_CALLM2("setContentSize", 1.2, 0.9);
 		T_CALLM1("setCurrentTab", 0);
-		T_CALLM1("setHeadlineText", "Recruit Soldiers");
-		T_CALLM1("setHintText", "Hint: Location must have an Arsenal");
+		T_CALLM1("setHeadlineText", localize "STR_RD_RECRUIT_DESC");
+		T_CALLM1("setHintText", localize "STR_RD_ARSENAL_HINT");
 
 	ENDMETHOD;
 

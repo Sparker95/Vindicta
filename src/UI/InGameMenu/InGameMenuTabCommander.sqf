@@ -43,10 +43,10 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			// We are potentially creating a location here
 			// Button
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_BUTTON_CREATE_LOC");
-			_ctrl ctrlSetText "CREATE";
+			_ctrl ctrlSetText localize "STR_CON_CREATE";
 			// Tab headline
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_CREATE_A_LOCATION");
-			_ctrl ctrlSetText "Create a location";
+			_ctrl ctrlSetText localize "STR_CON_CREATE_T";
 
 			// Build resource cost
 			pr _buildResCost = CREATE_LOCATION_COST;
@@ -57,13 +57,13 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 			T_SETV("buildResourcesCost", _buildResCost);
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_BUILD_RESOURCES");
-			_ctrl ctrlSetText (format ["%1 construction resources", _buildResCost]);
+			_ctrl ctrlSetText (format [localize "STR_CON_RESOURCES", _buildResCost]);
 
 			// Fill the combo box
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_COMBO_LOC_TYPE");
 			OOP_INFO_1("COMBO CTRL: %1", ctrlClassName _ctrl);
-			_ctrl lbAdd "Camp";
-			_ctrl lbAdd "Roadblock";
+			_ctrl lbAdd localize "STR_CON_CAMP";
+			_ctrl lbAdd localize "STR_CON_ROADBLOCK";
 			_ctrl lbSetData [0, LOCATION_TYPE_CAMP];
 			_ctrl lbSetData [1, LOCATION_TYPE_ROADBLOCK];
 			//_ctrl lbAdd "Outpost";
@@ -126,11 +126,11 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			// We are potentially claiming this location
 			// Button
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_BUTTON_CREATE_LOC");
-			_ctrl ctrlSetText "CLAIM";
+			_ctrl ctrlSetText localize "STR_CON_CLAIM";
 
 			// Check if we are trying to claim a city
 			if (CALLM0(_currentLoc, "getType") == LOCATION_TYPE_CITY) then {
-				_ctrl ctrlSetTooltip "We can't claim a city!";
+				_ctrl ctrlSetTooltip localize "STR_CON_CANT_CITY";
 				_ctrl ctrlEnable false;
 			};
 
@@ -141,14 +141,14 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			pr _intelResult = (_result0 arrayIntersect _result1) select 0;
 			if (!isNil "_intelResult") then {
 				if (GETV(_intelResult, "side") == playerSide) then {
-					_ctrl ctrlSetTooltip "We already own this place!";
+					_ctrl ctrlSetTooltip localize "STR_CON_CANT_OWNED";
 					_ctrl ctrlEnable false;
 				};
 			};
 
 			// Tab headline
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_CREATE_A_LOCATION");
-			_ctrl ctrlSetText "Claim a location";
+			_ctrl ctrlSetText localize "STR_CON_CLAIM_T";
 
 			// Set cost text
 			pr _buildResCost = 0;
@@ -173,7 +173,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 			// Set cost text
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_BUILD_RESOURCES");
-			_ctrl ctrlSetText (format ["%1 construction resources", _buildResCost]);
+			_ctrl ctrlSetText (format [localize "STR_CON_RESOURCES", _buildResCost]);
 			T_SETV("buildResourcesCost", _buildResCost); // Store the cost, we will check it later when button is pushed
 
 			// Set name text
@@ -198,7 +198,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			{
 				pr _ctrl = T_CALLM1("findControl", _x);
 				_ctrl ctrlEnable false;
-				_ctrl ctrlSetTooltip "Only for admins";
+				_ctrl ctrlSetTooltip localize "STR_CON_ADMIN_ONLY";
 			} forEach ["TAB_CMDR_BUTTON_SKIP_TO_DUSK", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN", "TAB_CMDR_BUTTON_SKIP_TO_DAWN"];
 		};
 
@@ -209,11 +209,11 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		private _hoursUntilNextDusk = round call vin_fnc_getHoursUntilNextDusk;
 		private _hoursUntilNextDawn = round call vin_fnc_getHoursUntilNextDawn;
 		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DUSK")
-			ctrlSetTooltip format["Will skip time until dusk (dusk is in about %1 hours)", _hoursUntilNextDusk];
+			ctrlSetTooltip format[localize "STR_SKIP_DUSK", _hoursUntilNextDusk];
 		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_PREDAWN")
-			ctrlSetTooltip format["Will skip time until 30 minutes before dawn (dawn is in about %1 hours)", round _hoursUntilNextDawn];
+			ctrlSetTooltip format[localize "STR_SKIP_EARLY", round _hoursUntilNextDawn];
 		T_CALLM1("findControl", "TAB_CMDR_BUTTON_SKIP_TO_DAWN")
-			ctrlSetTooltip format["Will skip time until dawn (dawn is in about %1 hours)", _hoursUntilNextDawn];
+			ctrlSetTooltip format[localize "STR_SKIP_DAWN", _hoursUntilNextDawn];
 	ENDMETHOD;
 	
 
@@ -243,17 +243,17 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		OOP_INFO_1("Player's build resources: %1", _playerBuildRes);
 		pr _buildResCost = T_GETV("buildResourcesCost");
 		if (_playerBuildRes < _buildResCost && _coBuildRes < _buildResCost) exitWith {
-			pr _text = format ["You must have at least %1 build resources!", _buildResCost];
+			pr _text = format [localize "STR_CON_NOT_ENOUGH", _buildResCost];
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
 
 		// Ensure proper input
 		if (count _locName == 0) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must specify a proper name.");
+			CALLM1(_dialogObj, "setHintText", localize "STR_CON_INVALID_NAME");
 		};
 
 		if (_row < 0) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must select a location type.");
+			CALLM1(_dialogObj, "setHintText", localize "STR_CON_INVALID_LOC");
 		};
 
 		// Disable button before sending message to server to avoid race condition
@@ -270,7 +270,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		pr _args = [clientOwner, getPosWorld player, _locType, _locName, _hBuildResSrc, _buildResCost];
 		CALLM2(_AI, "postMethodAsync", "clientCreateLocation", _args);
 
-		CALLM1(_dialogObj, "setHintText", "Creating new location ...");
+		CALLM1(_dialogObj, "setHintText", localize "STR_CON_CREATING");
 	ENDMETHOD;
 
 	public event METHOD(onButtonClaimLocation)
@@ -285,7 +285,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 		// Bail if there is nothing
 		if (IS_NULL_OBJECT(_currentLoc)) exitWith {
-			T_CALLM1("setHintText", "There is nothing to claim here!");
+			T_CALLM1("setHintText", localize "STR_CON_INVALID_CLAIM");
 		};
 
 		// Bail if we already own this place, check it through the intel database to make it more reliable
@@ -294,7 +294,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		//OOP_INFO_2("Intel result: %1 %2", _result0, _result1);
 		pr _intelResult = (_result0 arrayIntersect _result1) select 0;
 		if (!isNil "_intelResult" && {(GETV(_intelResult, "side") == playerSide)}) exitWith {
-			T_CALLM1("setHintText", "We already own this place!");
+			T_CALLM1("setHintText", localize "STR_CON_CANT_OWNED");
 		};
 
 		// Check if player has enough build resources
@@ -306,7 +306,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		OOP_INFO_1("Player's build resources: %1", _playerBuildRes);
 		pr _buildResCost = T_GETV("buildResourcesCost");
 		if (_playerBuildRes < _buildResCost && _coBuildRes < _buildResCost) exitWith {
-			pr _text = format ["You must have at least %1 build resources!", _buildResCost];
+			pr _text = format [localize "STR_CON_NOT_ENOUGH", _buildResCost];
 			T_CALLM1("setHintText", _text);
 		};
 

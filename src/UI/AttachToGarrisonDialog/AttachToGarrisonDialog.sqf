@@ -47,9 +47,9 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 
 		// Set appearence, add buttons, ...
 		T_CALLM2("setContentSize", 0.7, 0.3); // Height will be determined by text height anyway
-		T_CALLM1("setHeadlineText", "Attach unit to garrison");
+		T_CALLM1("setHeadlineText", localize "STR_ATG_ATTACH_TO_GARRISON");
 		T_CALLM1("setHintText", "");
-		T_CALLM1("createButtons", ["Attach"]);
+		T_CALLM1("createButtons", [localize "STR_ATG_ATTACH"]);
 
 		gAttachToGarrisonDialog = _thisObject;
 
@@ -59,16 +59,16 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 
 		// Bail if wrong object...
 		if (IS_NULL_OBJECT(_unit)) exitWith {
-			T_CALLM1("setText", "Error: Wrong unit!\nPlease try again!");
+			T_CALLM1("setText", localize "STR_ATG_ERROR_WRONG_UNIT");
 		};
 
 		// Bail if we aren't at location...
 		if (IS_NULL_OBJECT(_loc)) exitWith {
-			T_CALLM1("setText", "Error: There is no location to attach the unit!\nPlease try again!");
+			T_CALLM1("setText", localize "STR_ATG_ERROR_NO_LOC");
 		};
 
 		// All is fine! (for now)
-		T_CALLM1("setText", "Data is loading...\n");
+		T_CALLM1("setText", localize "STR_ATG_LOADING");
 		pr _args = [clientOwner, _unit];
 
 		// Request data from server ... let's hope it replies ...
@@ -121,30 +121,30 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 		// Unit's display name
 		pr _hO = T_GETV("hO");
 		pr _displayName = getText ( configFile >> "cfgVehicles" >> (typeOf _hO) >> "displayName" );
-		_str = _str + (format ["Unit: %1\n", _displayName]);
+		_str = _str + (format [localize "STR_ATG_UNIT", _displayName]);
 
 		// Bail if unit is invalid
 		if (_code == 0) exitWith {
-			_str = _str + "Error: unit is not found on the server!\nPlease try again!";
+			_str = _str + localize "STR_ATG_ERROR_NOT_FOUND";
 			T_CALLM1("setText", _str);
 		};
 
 		// Bail if garrison is invalid
 		if (_code == 1) exitWith {
-			_str = _str + "Error: unit's garrison is wrong!\nPlease try again!";
+			_str = _str + localize "STR_ATG_ERROR_WRONG_GARRISON";
 			T_CALLM1("setText", _str);
 		};
 
 		// Bail if garrison is invalid
 		if (_code == 3) exitWith {
-			_str = _str + "Error: destination garrison is wrong!\nPlease try again!";
+			_str = _str + localize "STR_ATG_ERROR_WRONG_DESTINATION";
 			T_CALLM1("setText", _str);
 		};
 
 		// Bail if the unit is already at this garrison
 		// It's also a success condition after we have transfered the unit
 		if (T_GETV("garrison") == _gar) exitWith {
-			_str = _str + "This unit is already at this garrison!";
+			_str = _str + localize "STR_ATG_ERROR_SAME_GARRISON";
 			T_CALLM1("setText", _str);
 			// Disable button
 			pr _ctrl = T_CALLM1("getButtonControl", 0);
@@ -157,11 +157,11 @@ CLASS("AttachToGarrisonDialog", "DialogOneTabButtons")
 
 		pr _locName = CALLM0(T_GETV("location"), "getDisplayName");
 		if (_canAttach) then {
-			_str = _str + (format ["Unit can be attached to %1\n", _locName]);
+			_str = _str + (format [localize "STR_ATG_CAN_ATTACH_TO", _locName]);
 			pr _ctrl = T_CALLM1("getButtonControl", 0);
 			_ctrl ctrlEnable true;
 		} else {
-			_str = _str + ( format ["We don't own this unit!\nWe can't attach the unit to %1.\n", _locName]);
+			_str = _str + ( format [localize "STR_ATG_NOT_OWNED", _locName]);
 		};
 
 		// Set text

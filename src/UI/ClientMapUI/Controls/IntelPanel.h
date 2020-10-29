@@ -34,7 +34,7 @@ class CMUI_INTEL_HEADLINE : MUI_HEADLINE
 	x = safeZoneX + safeZoneW * 0.760; 
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.233; 
-	text = "INTEL"; 
+	text = $STR_INT_INTEL; 
 	colorText[] = MUIC_BLACK; 
 	colorBackground[] = MUIC_MISSION; 
 };
@@ -47,7 +47,7 @@ class CMUI_INTEL_ACTIVE_DESCR : MUI_DESCRIPTION
 	y = safeZoneY + safeZoneH * 0.675; 
 	w = safeZoneW * 0.102; 
 	h = safeZoneH * 0.028;  
-	text = "SHOW ACTIVE:"; 
+	text = $STR_INT_ACTIVE; 
 	style = ST_RIGHT;
 };
 
@@ -59,7 +59,7 @@ class CMUI_INTEL_INACTIVE_DESCR : MUI_DESCRIPTION
 	y = safeZoneY + safeZoneH * 0.705; 
 	w = safeZoneW * 0.102; 
 	h = safeZoneH * 0.028; 
-	text = "SHOW PLANNED:"; 
+	text = $STR_INT_PLANNED; 
 	style = ST_RIGHT;
 };
 
@@ -71,7 +71,7 @@ class CMUI_INTEL_ENDED_DESCR : MUI_DESCRIPTION
 	y = safeZoneY + safeZoneH * 0.735; 
 	w = safeZoneW * 0.102; 
 	h = safeZoneH * 0.028; 
-	text = "SHOW ENDED:";
+	text = $STR_INT_ENDED;
 	style = ST_RIGHT; 
 };
 
@@ -82,7 +82,7 @@ class CMUI_INTEL_BTN_ACTIVE_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.675; 
 	w = safeZoneW * 0.061; 
 	h = safeZoneH * 0.028;
-	text = "ON MAP"; 
+	text = $STR_INT_MAP; 
 };
 
 class CMUI_INTEL_BTN_ACTIVE_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -92,7 +92,7 @@ class CMUI_INTEL_BTN_ACTIVE_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.675; 
 	w = safeZoneW * 0.061; 
 	h = safeZoneH * 0.028;
-	text = "IN LIST"; 
+	text = $STR_INT_LIST; 
 };
 
 class CMUI_INTEL_BTN_INACTIVE_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -102,7 +102,7 @@ class CMUI_INTEL_BTN_INACTIVE_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.705; 
 	w = safeZoneW * 0.061; 
 	h = safeZoneH * 0.028; 
-	text = "ON MAP"; 
+	text = $STR_INT_MAP; 
 };
 
 class CMUI_INTEL_BTN_INACTIVE_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -112,7 +112,7 @@ class CMUI_INTEL_BTN_INACTIVE_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.705; 
 	w = safeZoneW * 0.061; 
 	h = safeZoneH * 0.028; 
-	text = "IN LIST"; 
+	text = $STR_INT_LIST; 
 };
 
 class CMUI_INTEL_BTN_ENDED_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -122,7 +122,7 @@ class CMUI_INTEL_BTN_ENDED_MAP : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.735; 
 	w = safeZoneW * 0.061; 
 	h = safeZoneH * 0.028; 
-	text = "ON MAP"; 
+	text = $STR_INT_MAP; 
 };
 
 class CMUI_INTEL_BTN_ENDED_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -132,7 +132,7 @@ class CMUI_INTEL_BTN_ENDED_LIST : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.735; 
 	w = safeZoneW * 0.061; 
 	h = safeZoneH * 0.028;  
-	text = "IN LIST"; 
+	text = $STR_INT_LIST; 
 };
 
 // background gradient image for the hint panel
@@ -166,7 +166,7 @@ class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.029; 
-	text = "SHOW PLAYERS"; 
+	text = $STR_INT_PLAYERS; 
 };
 
 class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -176,7 +176,7 @@ class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.029; 
-	text = "SHOW LOCATIONS"; 
+	text = $STR_INT_LOC; 
 };
 
 class CMUI_BUTTON_LOC_MINI_PANELS : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -186,7 +186,7 @@ class CMUI_BUTTON_LOC_MINI_PANELS : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
-	text = "SHOW OVERVIEW"; 
+	text = $STR_INT_OVERVIEW; 
 };
 
 class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE 
@@ -196,7 +196,7 @@ class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.029; 
-	text = "SHOW INTEL PANEL"; 
+	text = $STR_INT_PANEL; 
 };
 
 class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT 
@@ -207,7 +207,7 @@ class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.029;
-	text = "CLEAR NOTIFICATIONS"; 
+	text = $STR_INT_CLEAR_NOTIFICATIONS; 
 };
 
 /*
@@ -279,7 +279,7 @@ class CMUI_INTEL_DESCRIPTION_FRAME : MUI_GROUP
 			w = safeZoneW * 0.208; 
 			h = 1; 
 			colorBackground[] = MUIC_TRANSPARENT;
-			text = "<t color='#222222' font='EtelkaMonospacePro' align='left'>Select a single intel item to view a detailed description.</t>";
+			text = $STR_INT_DESC;
 			sizeEx = safeZoneH*0.016;
 			style = ST_MULTI;
 		};
@@ -298,7 +298,7 @@ class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT
     h = safeZoneH * 0.065; 
 
 	font = "PuristaLight";
-    text = "RESPAWN"; 
+    text = $STR_INT_RESPAWN; 
 	sizeEx = 0.06;
 	shadow = 1;
 
@@ -314,6 +314,6 @@ class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID
     y = safeZoneY + safeZoneH * 0.889; 
     w = safeZoneW * 0.3; 
     h = safeZoneH * 0.035; 
-    text = "Respawn hint text";
+    text = $STR_INT_RESPAWN_HINT;
     font = "RobotoCondensed";
 };
