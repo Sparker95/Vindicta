@@ -63,7 +63,7 @@ class BuildUI
 			w = safeZoneW * 0.38020834;
 			h = safeZoneH * 0.0175926;
 			style = 2;
-			text = "TAB: OPEN BUILD MENU";
+			text = $STR_BUI_TAB;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = MUIC_BLACK;
 			font = "RobotoCondensed";
@@ -79,7 +79,7 @@ class BuildUI
 			w = safeZoneW * 0.38020834;
 			h = safeZoneH * 0.0175926;
 			style = 2;
-			text = "TAB: OPEN BUILD MENU";
+			text = $STR_BUI_TAB;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = MUIC_BLACK;
 			font = "RobotoCondensed";
@@ -95,7 +95,7 @@ class BuildUI
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
-			text = "Defenses";
+			text = $STR_BUI_DEFENSES;
 			colorBackground[] = {0.5873,0.7698,0.7302,0};
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensedBold";
@@ -110,7 +110,7 @@ class BuildUI
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
-			text = "Shooting Range";
+			text = $STR_BUI_RANGE;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";
@@ -126,7 +126,7 @@ class BuildUI
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
-			text = "Decoration";
+			text = $STR_BUI_DECOR;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
@@ -142,7 +142,7 @@ class BuildUI
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
-			text = "Shooting Range";
+			text = $STR_BUI_RANGE;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
@@ -158,7 +158,7 @@ class BuildUI
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
-			text = "Shooting Range";
+			text = $STR_BUI_RANGE;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";
@@ -174,7 +174,7 @@ class BuildUI
 			w = safeZoneW * 0.13;
 			h = safeZoneH * 0.02;
 			style = 2;
-			text = "Defenses";
+			text = $STR_BUI_DEFENSES;
 			colorBackground[] = {0.5873,0.7698,0.7302,0};
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensedBold";
@@ -190,7 +190,7 @@ class BuildUI
 			w = safeZoneW * 0.13;
 			h = safeZoneH * 0.02;
 			style = 2;
-			text = "Shooting Range";
+			text = $STR_BUI_RANGE;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
@@ -206,7 +206,7 @@ class BuildUI
 			w = safeZoneW * 0.13;
 			h = safeZoneH * 0.02;
 			style = 2;
-			text = "Decoration";
+			text = $STR_BUI_DECOR;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
@@ -222,7 +222,7 @@ class BuildUI
 			w = safeZoneW * 0.13;
 			h = safeZoneH * 0.02;
 			style = 2;
-			text = "Shooting Range";
+			text = $STR_BUI_RANGE;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";
@@ -238,7 +238,7 @@ class BuildUI
 			w = safeZoneW * 0.13;
 			h = safeZoneH * 0.02;
 			style = 2;
-			text = "Shooting Range";
+			text = $STR_BUI_RANGE;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";

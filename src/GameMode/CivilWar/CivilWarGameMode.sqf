@@ -13,9 +13,9 @@ https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/
 FIX_LINE_NUMBERS()
 
 gCityStateData = [
-	["Neutral",				[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
-	["Occupied by rebels",	[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
-	["Occupied by enemy",	[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"] /* CITY_STATE_NEUTRAL */
+	[localize "STR_GMB_NEUTRAL",				[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	[localize "STR_GMB_REBEL_OCCUPIED",			[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	[localize "STR_GMB_ENY_OCCUPIED",			[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"] /* CITY_STATE_NEUTRAL */
 ];
 
 /*
@@ -502,7 +502,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Just do nothing for now I guess :/
 			//"You won the game! Congratulations!" remoteExecCall ["systemChat", 0];
 			{
-				"winscreen" cutText ["You won! The enemy have no fight left in them.", "PLAIN", 5];
+				"winscreen" cutText [localize "STR_CW_WON_NO_AIRPORT", "PLAIN", 5];
 				uisleep 10;
 				"winscreen" cutFadeOut 20;
 			} remoteExecCall ["spawn", ON_CLIENTS];
@@ -510,7 +510,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		if(_campaignProgress > 0.95) then {
 			{
-				"winscreen2" cutText ["You won! The people are all with you!", "PLAIN", 5];
+				"winscreen2" cutText [localize "STR_CW_WON_ALL_SUPPORT", "PLAIN", 5];
 				uisleep 10;
 				"winscreen2" cutFadeOut 20;
 			} remoteExecCall ["spawn", ON_CLIENTS];

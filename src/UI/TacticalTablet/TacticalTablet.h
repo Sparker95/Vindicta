@@ -52,7 +52,7 @@ class TACTICAL_TABLET
 			w = 0.30000009;
 			h = 0.05000004;
 			style = 0;
-			text = "MilTech inc.    Tacticool Tablet V1.1";
+			text = $STR_TT_TITLE;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {0.702,0.702,0.702,1};
 			font = "PuristaMedium";

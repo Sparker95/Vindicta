@@ -164,14 +164,14 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		pr _ratePerHourEnemy = if (_influence < 0) then {
 			T_CALLM2("getRecruitmentRate", abs _influence, ENEMY_SIDE);
 		} else { 0; };
-		_mapUIInfo pushBack ["STATUS", _stateData#0];
-		_mapUIInfo pushBack ["POPULATION", str T_GETV("population")];
-		_mapUIInfo pushBack ["INFLUENCE", format["%1%2", (_influence * 100) toFixed 0, "%"]];
-		_mapUIInfo pushBack ["FRIENDLY RECRUITS", str floor T_GETV("nRecruitsFriendly")];
-		_mapUIInfo pushBack ["  MAX", str round T_CALLM1("getMaxRecruits", FRIENDLY_SIDE)];
-		_mapUIInfo pushBack ["  PER HOUR", _ratePerHourFriendly toFixed 1];
-		_mapUIInfo pushBack ["ENEMY RECRUITS", str floor T_GETV("nRecruitsEnemy")];
-		_mapUIInfo pushBack ["  PER HOUR", _ratePerHourEnemy toFixed 1];
+		_mapUIInfo pushBack [localize "STR_CW_STATUS", _stateData#0];
+		_mapUIInfo pushBack [localize "STR_CW_POPULATION", str T_GETV("population")];
+		_mapUIInfo pushBack [localize "STR_CW_INFLUENCE", format["%1%2", (_influence * 100) toFixed 0, "%"]];
+		_mapUIInfo pushBack [localize "STR_CW_FRIENDLY_RECRUITS", str floor T_GETV("nRecruitsFriendly")];
+		_mapUIInfo pushBack ["  " + localize "STR_CW_MAX", str round T_CALLM1("getMaxRecruits", FRIENDLY_SIDE)];
+		_mapUIInfo pushBack ["  " + localize "STR_CW_PER_HOUR", _ratePerHourFriendly toFixed 1];
+		_mapUIInfo pushBack [localize "STR_CW_ENEMY_RECRUITS", str floor T_GETV("nRecruitsEnemy")];
+		_mapUIInfo pushBack ["  " + localize "STR_CW_PER_HOUR", _ratePerHourEnemy toFixed 1];
 		T_SETV_PUBLIC("mapUIInfo", _mapUIInfo);
 
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE

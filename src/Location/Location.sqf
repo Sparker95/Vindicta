@@ -681,7 +681,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					// If progress has degraded by a 5% chunk
 					if(ALIASED_VALUE(_oldBuildProgress * 100, 5) < ALIASED_VALUE(_buildProgress * 100, 5)) then {
 						// Notify players of what happened
-						private _args = ["LOCATION DETERIORATED", format["Some buildings at %1 have been removed", T_GETV("name")], "Garrison fighters to maintain locations"];
+						private _args = [localize "STR_LOC_GONE", format[localize "STR_LOC_BUILDINGS_REMOVED", T_GETV("name")], localize "STR_LOC_GONE_HINT"];
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
 					};
 				};
@@ -1031,17 +1031,17 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	public STATIC_METHOD(getTypeString)
 		params [P_THISCLASS, "_type"];
 		switch (_type) do {
-			case LOCATION_TYPE_OUTPOST: {"Outpost"};
-			case LOCATION_TYPE_CAMP: {"Camp"};
-			case LOCATION_TYPE_BASE: {"Base"};
-			case LOCATION_TYPE_UNKNOWN: {"Unknown"};
-			case LOCATION_TYPE_CITY: {"City"};
-			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
-			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
-			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
-			case LOCATION_TYPE_AIRPORT: {"Airport"};
-			case LOCATION_TYPE_RESPAWN: {"Respawn"};
-			default {"ERROR LOC TYPE"};
+			case LOCATION_TYPE_OUTPOST: {localize "STR_LOC_OUTPOST"};
+			case LOCATION_TYPE_CAMP: {localize "STR_LOC_CAMP"};
+			case LOCATION_TYPE_BASE: {localize "STR_LOC_BASE"};
+			case LOCATION_TYPE_UNKNOWN: {localize "STR_LOC_UNKOWN"};
+			case LOCATION_TYPE_CITY: {localize "STR_LOC_CITY"};
+			case LOCATION_TYPE_OBSERVATION_POST: {localize "STR_LOC_OB"};
+			case LOCATION_TYPE_ROADBLOCK: {localize "STR_LOC_ROADBLOCK"};
+			case LOCATION_TYPE_POLICE_STATION: {localize "STR_LOC_POLICE_STATION"};
+			case LOCATION_TYPE_AIRPORT: {localize "STR_LOC_AIRPORT"};
+			case LOCATION_TYPE_RESPAWN: {localize "STR_LOC_RESPAWN"};
+			default {localize "STR_LOC_ERROR"};
 		};
 	ENDMETHOD;
 
@@ -1896,7 +1896,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_object setVariable["ACE_medical_isMedicalFacility", true];
 		_object allowdamage false;
 
-		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
+		_object addAction [localize "STR_LOC_HEAL_SELF", // title
 			{
 				player setdamage 0;
 				[player] call ace_medical_treatment_fnc_fullHealLocal;
@@ -1958,7 +1958,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Estimate usage radius
 		private _radius = (sizeof typeof _object) + 5;
 
-		_object addAction ["Manage radio cryptokeys", // title
+		_object addAction [localize "STR_LOC_MANAGE_KEYS", // title
 			{
 				// Open the radio key dialog
 				private _dlg0 = NEW("RadioKeyDialog", []);

@@ -703,9 +703,9 @@ CLASS("AICommander", "AI")
 
 		// Show some text on client's computer
 		if (_intelAdded) then {
-			"You have found some new intel!" remoteExecCall ["systemChat", _clientOwner];
+			localize "STR_INT_FOUND_NEW" remoteExecCall ["systemChat", _clientOwner];
 		} else {
-			"We already know this intel!" remoteExecCall ["systemChat", _clientOwner];
+			localize "STR_INT_FOUND_ALREADY" remoteExecCall ["systemChat", _clientOwner];
 		};
 
 	ENDMETHOD;
@@ -881,10 +881,10 @@ CLASS("AICommander", "AI")
 		_ret params ["_data", "_dataIsNotNil"];
 
 		if (!_dataIsNotNil) exitWith {
-			pr _text = "No data registered for this device in TactiCommNetWork!" + _endl;
+			pr _text = localize "STR_TT_TABLET_MSG_13" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
 
-			pr _text = "Retinal scan identity mismatch!" + _endl + "Device will be locked." + _endl;
+			pr _text = localize "STR_TT_TABLET_MSG_14" + _endl + localize "STR_TT_TABLET_MSG_15" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
 		};
 
@@ -908,22 +908,22 @@ CLASS("AICommander", "AI")
 				// Check if we have this radio key
 				if (_itemSide != _side) then {
 					if (_radioKey in T_GETV("enemyRadioKeys")) then {
-						"We have this cryptokey already..." remoteExecCall ["systemChat", _clientOwner];
+						localize "STR_INT_FOUND_ALREADY_2" remoteExecCall ["systemChat", _clientOwner];
 					} else {
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createRadioCryptokey", [_radioKey], _clientOwner, NO_JIP);
 
 						// Copy stuff into player's notes
-						pr _text = format [_endl + "%1 Found enemy radio cryptokey: %2" + _endl, date call misc_fnc_dateToISO8601, _radioKey];
+						pr _text = format [_endl + localize "STR_NOTES_FOUND_KEY" + _endl, date call misc_fnc_dateToISO8601, _radioKey];
 						REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabNotes", "staticAppendText", [_text], _clientOwner, NO_JIP);
 					};
 				};
 
 				// Send data to tablet
-				pr _text = format [_endl + "  Radio cryptokey: %1" + _endl, _radioKey];
+				pr _text = format [_endl + "  " + localize "STR_TT_TABLET_MSG_16" + _endl, _radioKey];
 				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, NO_JIP);
 			} else {
 				// Send data to tablet
-				pr _text = _endl + "  Radio cryptokey: only in military tablets" + _endl;
+				pr _text = _endl + "  " + localize "STR_TT_TABLET_MSG_17" + _endl;
 				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, NO_JIP);
 			};
 		};
@@ -944,22 +944,22 @@ CLASS("AICommander", "AI")
 				pr _posTgt = GETV(_intelPersonal, "posTgt");
 
 				if (!isNil "_posTgt") then {
-					pr _text = format ["  Current order: %1 at grid %2" + _endl, _actionName, mapGridPosition _posTgt];
+					pr _text = format ["  " + localize "STR_TT_TABLET_MSG_18" + _endl, localize _actionName, mapGridPosition _posTgt];
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				} else {
-					pr _text = format ["  Current order: %1" + _endl, _actionName];
+					pr _text = format ["  " + localize "STR_TT_TABLET_MSG_19" + _endl, localize _actionName];
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				};
 
 				if (!isNil "_posSrc") then {
-					pr _text = format ["Departure from %1, at date %2" + _endl, mapGridPosition _posSrc, _dateDeparture call misc_fnc_dateToISO8601];
+					pr _text = format [localize "STR_TT_TABLET_MSG_20" + _endl, mapGridPosition _posSrc, _dateDeparture call misc_fnc_dateToISO8601];
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				};
 			} else {
 				OOP_ERROR_1("Invalid personal intel ref: %1", _intelPersonal);
 			};
 		} else {
-			pr _text = format [_endl + "  Current order: none" + _endl];
+			pr _text = format [_endl + "  " + localize "STR_TT_TABLET_MSG_21" + _endl];
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 		};
 
@@ -967,7 +967,7 @@ CLASS("AICommander", "AI")
 		pr _intelGeneralUnique = _intelGeneral - [_intelPersonal]; // We don't want to process known intel
 		if (count _intelGeneralUnique > 0) then {
 
-			pr _text = "  Friendly squad orders:" + _endl;
+			pr _text = "  " + localize "STR_TT_TABLET_MSG_22" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
 
 			{
@@ -986,17 +986,17 @@ CLASS("AICommander", "AI")
 						pr _posSrc = GETV(_intel, "posSrc");
 						pr _posTgt = GETV(_intel, "posTgt");
 
-						pr _text = _actionName;
+						pr _text = localize _actionName;
 						if (!isNil "_posSrc") then {
-							_text = _text + format [" from %1", mapGridPosition _posSrc];
+							_text = _text + format [" " + localize "STR_TT_TABLET_MSG_23", mapGridPosition _posSrc];
 						};
 
 						if (!isNil "_posTgt") then {
-							_text = _text + format [" to %1", mapGridPosition _posTgt];
+							_text = _text + format [" " + localize "STR_TT_TABLET_MSG_24", mapGridPosition _posTgt];
 						};
 
 						if (!isNil "_dateDeparture") then {
-							_text = _text + format [" at date %1", _dateDeparture call misc_fnc_dateToISO8601];
+							_text = _text + format [" " + localize "STR_TT_TABLET_MSG_25", _dateDeparture call misc_fnc_dateToISO8601];
 						};
 
 						_text = _text + _endl;
@@ -1011,7 +1011,7 @@ CLASS("AICommander", "AI")
 
 		// Process locations known by this garrison
 		if (count _locs > 0) then {
-			pr _text = "  Friendly stationary forces:" + _endl;
+			pr _text = "  " + localize "STR_TT_TABLET_MSG_26" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.2], _clientOwner, false);
 			{
 				pr _loc = _x;
@@ -1025,13 +1025,13 @@ CLASS("AICommander", "AI")
 				pr _type = CALLM0(_loc, "getType");
 				pr _typeStr = CALLSM1("Location", "getTypeString", _type);
 				pr _pos = CALLM0(_loc, "getPos");
-				pr _text = format ["Grid %1: %2 %3" + _endl, mapGridPosition _pos, _typeStr, CALLM0(_loc, "getName")];
+				pr _text = format [localize "STR_TT_TABLET_MSG_27" + _endl, mapGridPosition _pos, _typeStr, CALLM0(_loc, "getName")];
 				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
 			} forEach _locs;
 		};
 
 		if (_itemSide != _side) then {
-			pr _text = _endl + "Retinal scan identity mismatch! Device is locked." + _endl;
+			pr _text = _endl + localize "STR_TT_TABLET_MSG_28" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
 		};
 
@@ -1078,12 +1078,12 @@ CLASS("AICommander", "AI")
 
 		if (_foundSomething) then {
 			if (_addedSomething) then {
-				"Some intel has been added!" remoteExecCall ["systemChat", _clientOwner];
+				localize "STR_INT_INTEL_ADDED" remoteExecCall ["systemChat", _clientOwner];
 			} else {
-				"Some intel has been updated!" remoteExecCall ["systemChat", _clientOwner];
+				localize "STR_INT_INTEL_UPDATED" remoteExecCall ["systemChat", _clientOwner];
 			};
 		} else {
-			"You have found nothing here!" remoteExecCall ["systemChat", _clientOwner];
+			localize "STR_INT_FOUND_NOTHING" remoteExecCall ["systemChat", _clientOwner];
 		};
 
 		// Reset this inventory item data
@@ -3570,7 +3570,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Check if we have this radio key
 		if (_key in T_GETV("enemyRadioKeys")) exitWith {
 			// Show response for player
-			pr _text = "We already have this key!";
+			pr _text = localize "STR_RKD_DUPLICATED_KEY";
 			pr _args = [_text];
 			REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
 		};
@@ -3581,7 +3581,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _radioKeyGrid = T_GETV("radioKeyGrid");
 		pr _foundInOurGrid = CALLM1(_radioKeyGrid, "findValue", _key);
 		if (_foundInOurGrid) exitWith {
-			pr _text = format ["Key %1 belongs to our side!", _key];
+			pr _text = format [localize "STR_RKD_OWN_KEY", _key];
 			pr _args = [_text];
 			REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
 		};
@@ -3599,7 +3599,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		// Bail if player has entered some unknown key
 		if (!_keyFoundInEnemy) exitWith {
-			pr _text = format ["Key %1 is invalid!", _key];
+			pr _text = format [localize "STR_RKD_KEY_INVALID", _key];
 			pr _args = [_text];
 			REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
 		};
@@ -3609,7 +3609,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_GETV("enemyRadioKeysAddedBy") pushBack _playerName;
 
 		// Show response for player
-		pr _text = format ["Key %1 was added!", _key];
+		pr _text = format [localize "STR_RKD_KEY_ADDED", _key];
 		pr _args = [_text];
 		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
 

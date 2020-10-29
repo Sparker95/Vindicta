@@ -42,7 +42,7 @@ class RadioKeyTab : MUI_GROUP_ABS
 			y = 0.94000002;
 			w = 0.14000003;
 			h = 0.04;
-			text = "Add key";			
+			text = $STR_RKD_ADD;			
 		};
 		class Control919808632 : MUI_BASE_ABS
 		{
@@ -51,7 +51,7 @@ class RadioKeyTab : MUI_GROUP_ABS
 			w = 0.65;
 			h = 0.05000004;
 			style = 0;
-			text = "Added enemy cryptokeys:";
+			text = $STR_RKD_ADDED;
 			sizeEx = 0.04;			
 		};
 		class Control919808632_copy1 : MUI_BASE_ABS
@@ -61,7 +61,7 @@ class RadioKeyTab : MUI_GROUP_ABS
 			w = 0.5;
 			h = 0.04;
 			style = 0;
-			text = "Enter cryptokey:";		
+			text = $STR_RKD_ENTER;		
 		};
 		
 	};

@@ -8,8 +8,8 @@ class CfgMagazines
 		mass=0;
 		scope=2;
 		count = 1;
-		displayName="Military documents";
-		descriptionShort = "A few military documents. Pick it up to study the intel.";
+		displayName=$STR_ITEM_DOCUMENTS;
+		descriptionShort = $STR_ITEM_DOCUMENTS_DESC_1;
 		picture = QPATHTOF(icons\inv_ic_mildocs1.paa);
 		model = "\A3\Structures_F_EPC\Items\Documents\Document_01_F.p3d";
 	};
@@ -19,8 +19,8 @@ class CfgMagazines
 		mass=0;
 		scope=2;
 		count = 1;
-		displayName="Military documents";
-		descriptionShort = "Some military documents. Pick it up to study the intel.";
+		displayName=$STR_ITEM_DOCUMENTS;
+		descriptionShort = $STR_ITEM_DOCUMENTS_DESC_2;
 		picture = QPATHTOF(icons\inv_ic_mildocs2.paa);
 		model = "\A3\Structures_F\Items\Documents\FilePhotos_F.p3d";
 	};
@@ -30,8 +30,8 @@ class CfgMagazines
 		mass = 0.1;
 		scope=2;
 		count = 1;
-		displayName="Tactical tablet";
-		descriptionShort = "A military tactical tablet. Pick it up to study the intel.";
+		displayName=$STR_ITEM_TACTICAL_TABLET;
+		descriptionShort = $STR_ITEM_TACTICAL_TABLET_DESC;
 		picture = QPATHTOF(icons\inv_ic_tabletTactical.paa);
 		model = "\A3\Props_F_Exp_A\Military\Equipment\Tablet_02_F.p3d";
 	};
@@ -41,8 +41,8 @@ class CfgMagazines
 		mass = 0.1;
 		scope=2;
 		count = 1;
-		displayName="Personal tablet";
-		descriptionShort = "A personal tablet. Pick it up to study the intel";
+		displayName=$STR_ITEM_PERSONAL_TABLET;
+		descriptionShort = $STR_ITEM_PERSONAL_TABLET_DESC;
 		picture = QPATHTOF(icons\inv_ic_tabletWhite.paa);
 		model = "\A3\Structures_F_Heli\Items\Electronics\Tablet_01_F.p3d";
 	};
@@ -59,8 +59,8 @@ class CfgMagazines
 		count = 1; // Ammount of bullets, we make it so that one box = one box in the arsenal, ok?
 		mass = 8; // In arma it's really volume, not mass
 		scope=2;
-		displayName="Construction resources";
-		descriptionShort = "Resources to build different things";
+		displayName=$STR_ITEM_CONSTRUCTION_RESOURCES;
+		descriptionShort = $STR_ITEM_CONSTRUCTION_RESOURCES_DESC;
 		picture = "\A3\EditorPreviews_F_Orange\Data\CfgVehicles\Land_Brick_01_F.jpg";
 		hiddenSelections[] = {};
 		hiddenSelectionsTextures[] = {};
@@ -72,8 +72,8 @@ class CfgMagazines
 		count = 1;
 		mass = 0.1;
 		scope = 2;
-		displayName="Strange pills";
-		descriptionShort = "!! Don't use it if you can't tolerate flashing images !! Double-click to use. Carefully.";
+		displayName=$STR_ITEM_STRANGE_PILLS;
+		descriptionShort = $STR_ITEM_STRANGE_PILLS_DESC;
 		picture = QPATHTOF(icons\inv_ic_pills.paa);
 		model = "\A3\Structures_F_EPA\Items\Medical\Antibiotic_F.p3d";
 	};

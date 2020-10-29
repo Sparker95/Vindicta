@@ -74,7 +74,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			colorBackground[] = {0, 0, 0, 0};
 
 			style = 0;
-			text = "INTEL";
+			text = $STR_INT_INTEL;
 			font = "PuristaSemibold";
 			sizeEx = 0.035;
 			onLoad = "uiNamespace setVariable ['vin_not_category', _this#0]"; // Dont delete this!
@@ -92,7 +92,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			colorBackground[] = {0, 0, 0, 0};
 
 			style = 0+16+512;
-			text = "Enemy radio cryptokey was found!";
+			text = $STR_NOTI_CRYPTOKEY_FOUND;
 			font = "RobotoCondensedLight";
 			sizeEx = 0.035;
 			lineSpacing = 1;
@@ -126,7 +126,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			colorBackground[] = {0, 0, 0, 0};
 
 			style = ST_LEFT;
-			text = "Cryptokeys are stored in your notes tab";
+			text = $STR_NOTI_CRYPTOKEY_STORED;
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensedLight";
 			sizeEx = 0.035;

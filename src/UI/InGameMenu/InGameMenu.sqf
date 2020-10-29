@@ -21,24 +21,24 @@ CLASS("InGameMenu", "DialogBase")
 		};
 		if (!_gameModeInitialized) then {
 
-			T_CALLM2("addTab", "InGameMenuTabGameModeInit", "Create");
-			T_CALLM2("addTab", "InGameMenuTabSave", "Savegames");
-			T_CALLM2("addTab", "InGameMenuTabTutorial", "Tutorial");
+			T_CALLM2("addTab", "InGameMenuTabGameModeInit", localize "STR_IM_CREATE");
+			T_CALLM2("addTab", "InGameMenuTabSave", localize "STR_IM_SAVE");
+			T_CALLM2("addTab", "InGameMenuTabTutorial", localize "STR_IM_TUTOR");
 
-			pr _text = format ["Mission Startup Menu  v%1", call misc_fnc_getVersion];
+			pr _text = format [localize "STR_IM_TITLE", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
-			T_CALLM1("setHintText", "Load a previously saved game or create a new campaign.");
+			T_CALLM1("setHintText", localize "STR_IM_DESC");
 		} else {
-			//T_CALLM2("addTab", "DialogTabBase", "Mission");
-			T_CALLM2("addTab", "InGameMenuTabCommander", "Strategic");
-			//T_CALLM2("addTab", "DialogTabBase", "Admin");
-			T_CALLM2("addTab", "InGameMenuTabNotes", "Notes");
-			T_CALLM2("addTab", "InGameMenuTabSave", "Savegames");
-			T_CALLM2("addTab", "InGameMenuTabTutorial", "Guide");
+			//T_CALLM2("addTab", "DialogTabBase", "Mission"localize "STR_MM_MISSION");
+			T_CALLM2("addTab", "InGameMenuTabCommander", localize "STR_MM_STRAT");
+			//T_CALLM2("addTab", "DialogTabBase", "Admin"localize "STR_MM_ADMIN");
+			T_CALLM2("addTab", "InGameMenuTabNotes", localize "STR_MM_NOTE");
+			T_CALLM2("addTab", "InGameMenuTabSave", localize "STR_MM_SAVE");
+			T_CALLM2("addTab", "InGameMenuTabTutorial", localize "STR_MM_TUTOR");
 
-			pr _text = format ["Mission Menu  v%1", call misc_fnc_getVersion];
+			pr _text = format [localize "STR_MM_TITLE", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
-			T_CALLM1("setHintText", "Vindicta pre-alpha version.");
+			T_CALLM1("setHintText", localize "STR_MM_DESC");
 		};
 
 		T_CALLM1("enableMultiTab", true);

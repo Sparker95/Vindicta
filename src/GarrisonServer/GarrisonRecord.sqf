@@ -172,7 +172,7 @@ CLASS("GarrisonRecord", "")
 			};
 
 			// Set text of the garrison marker
-			CALLM1(T_GETV("mapMarker"), "setText", format ["%1" ARG _actionText]);
+			CALLM1(T_GETV("mapMarker"), "setText", format ["%1" ARG (localize _actionText)]);
 		};
 	ENDMETHOD;
 
