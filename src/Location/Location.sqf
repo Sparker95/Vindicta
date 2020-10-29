@@ -664,6 +664,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				private _buildRate = if(_manPower > 0) then { BUILD_RATE(_manPower, _dt / 3600) } else { 0 };
 				_buildProgress = SATURATE(_buildProgress + _buildRate);
 			} else {
+				/*
+				// Disabled the location build progress decay for now
 				private _playerSide = CALLM0(gGameMode, "getPlayerSide");
 				private _oldBuildProgress = T_GETV("buildProgress");
 				private _friendlyUnits = 0;
@@ -683,6 +685,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
 					};
 				};
+				*/
 			};
 
 			OOP_INFO_3("UpdateBuildProgress: %1 %2 %3", T_GETV("name"), _buildProgress, _buildables);
