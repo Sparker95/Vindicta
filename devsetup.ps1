@@ -15,7 +15,7 @@ if (-not (Test-Path "src\config\user_local_config.hpp")) {
 }
 
 "`nSetting up symlinks for src folder..."
-$missionFolders = Get-Childitem -directory -name "Vindicta.*"
+$missionFolders = Get-Childitem -directory -name "Vindicta*.*"
 forEach ($missionFolder in $missionFolders) {
     "   Found mission folder: $missionFolder"
     if (-not (Test-Path "$missionFolder\src")) {

@@ -1,11 +1,11 @@
 {
-    "displayName": "Vindicta",
-    "simpleName": "vindicta",
-    "missionFolderWildcard": "Vindicta.*",
-    "oneMissionPboName": "vindicta_{0}_{1}_{2}.{3}.pbo",
     "cfgPatchesClassName": "vindicta_missions",
+    "displayName": "Vindicta",
+    "cfgMissionsClassName": "vindicta_missions",
+    "combinedMissionsFolderName": "vindicta_missions",
     
-    "comment00": "'from' is relative to repository root, 'to' is relative to mission.sqm",
+    "comment00": "List of files to copy during the build",
+    "comment01": "'from' is relative to repository root, 'to' is relative to mission.sqm",
     "copyFiles": [
         {
             "from": "configs\\release\\global_config.hpp",
@@ -38,6 +38,22 @@
         {
             "from": "configs\\stringtable.xml",
             "to": "" 
+        }
+    ],
+
+    "comment10": "List of mission folders to build",
+    "missionFolders": [
+        {
+            "folder": "Vindicta.Altis",
+            "CfgMissionsEntry": "vindicta_altis",
+            "mapName": "altis",
+            "briefingName": "Vindicta - Altis"
+        },
+        {
+            "folder": "Vindicta.Malden",
+            "CfgMissionsEntry": "vindicta_malden",
+            "mapName": "malden",
+            "briefingName": "Vindicta - Malden"
         }
     ]
 }

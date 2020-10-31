@@ -42,7 +42,7 @@ _array resize T_SIZE; //Make an array having the size equal to the number of cat
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tGM_Civilian"];
 _array set [T_DESCRIPTION, "Cold war era, civilians."];
-_array set [T_DISPLAY_NAME, "GM Civilians"];
+_array set [T_DISPLAY_NAME, "GM DLC - Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
 _array set [T_REQUIRED_ADDONS, ["gm_core"]];
 
