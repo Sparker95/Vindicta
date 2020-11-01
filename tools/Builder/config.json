@@ -74,6 +74,12 @@
             "briefingName": "Vindicta - Weferlingen East"
         },
         {
+            "folder": "Vindicta_West.gm_weferlingen_summer",
+            "CfgMissionsEntry": "vindicta_gm_weferlingen_summer_west",
+            "mapName": "gm_weferlingen_summer",
+            "briefingName": "Vindicta - Weferlingen West"
+        },
+        {
             "folder": "Vindicta.Malden",
             "CfgMissionsEntry": "vindicta_malden",
             "mapName": "malden",
