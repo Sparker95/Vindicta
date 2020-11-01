@@ -1,5 +1,6 @@
 #include "..\..\Resources\UIProfileColors.h"
 #include "..\ClientMapUI_Macros.h"
+#include "..\..\..\commonPath.hpp"
 
 class CMUI_INTEL_LISTBOX_BG : MUI_BASE 
 {
@@ -143,7 +144,7 @@ class CMUI_HINTS_BG : RscPicture
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.58; 
 	h = safeZoneH * 0.026;
-	text = "src\UI\Images\gradient_2way.paa";
+	text = QUOTE_COMMON_PATH(UI\Images\gradient_2way.paa);
 	colorBackground[] = {0.2,0.2,0.2,0.6};
 	colorText[] = {0.1, 0.1, 0.1, 1};
 };

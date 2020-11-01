@@ -190,7 +190,7 @@ minPlayerDistance = 300; // meters. Default: 0
 // Custom loading display
 class Extended_DisplayLoad_EventHandlers {
     class RscDisplayLoading {
-        Mission_customLoadingScreen = "if (hasInterface) then {_this call compile preprocessFileLineNumbers 'src\loadDisplay.sqf';};";
+        Mission_customLoadingScreen = "if (hasInterface) then {_this call compile preprocessFileLineNumbers 'vindicta_missions\src\loadDisplay.sqf';};";
     };
 };
 

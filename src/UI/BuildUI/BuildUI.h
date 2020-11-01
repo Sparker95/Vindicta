@@ -1,4 +1,5 @@
 #include "BuildUI_Macros.h"
+#include "..\..\commonPath.hpp"
 
 #define TEXT_SIZE_CAT		safeZoneH * 0.025
 #define TEXT_SIZE_ITEM		safeZoneH * 0.017
@@ -26,7 +27,7 @@ class BuildUI
 			y = safeZoneY + safeZoneH * 0.78148149;
 			w = safeZoneW * 0.4125;
 			h = safeZoneH * 0.05370371;
-			text = "src\UI\Images\gradient_2way.paa";
+			text = QUOTE_COMMON_PATH(UI\Images\gradient_2way.paa);
 			colorText[] = {0.82, 0.561, 0.129, 1.0};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 		};
@@ -37,7 +38,7 @@ class BuildUI
 			y = safeZoneY + safeZoneH * 0.74537038;
 			w = safeZoneW * 0.4125;
 			h = safeZoneH * 0.03055556;
-			text = "src\UI\Images\gradient_2way.paa";
+			text = QUOTE_COMMON_PATH(UI\Images\gradient_2way.paa);
 			colorBackground[] = {0.2,0.2,0.2,0.6};
 			colorText[] = {0.1, 0.1, 0.1, 1};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
@@ -49,7 +50,7 @@ class BuildUI
 			y = safeZoneY + safeZoneH * 0.7212963;
 			w = safeZoneW * 0.4125;
 			h = safeZoneH * 0.01851852;
-			text = "src\UI\Images\gradient_2way.paa";
+			text = QUOTE_COMMON_PATH(UI\Images\gradient_2way.paa);
 			colorBackground[] = {0,0,0,0.6};
 			colorText[] = {0.1, 0.1, 0.1, 1};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
