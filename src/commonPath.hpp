@@ -8,11 +8,11 @@
 
 #ifdef PBO_VARIANT_STANDALONE_MISSION
 #define COMMON_PATH(path) ("src\" + path)
-#define __COMMON_PATH_NO_QUOTES(path) (src\##path)
+#define __COMMON_PATH_NO_QUOTES(path) src\##path
 #else
 // vindicta_missions matches the prefix name of the pbo with combined missions
 #define COMMON_PATH(path) ("vindicta_missions\" + path)
-#define __COMMON_PATH_NO_QUOTES(path) (vindicta_missions\##path)
+#define __COMMON_PATH_NO_QUOTES(path) vindicta_missions\##path
 #endif
 
 #define QUOTE_COMMON_PATH(path) QUOTE(__COMMON_PATH_NO_QUOTES(path))

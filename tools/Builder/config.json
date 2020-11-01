@@ -50,10 +50,76 @@
             "briefingName": "Vindicta - Altis"
         },
         {
+            "folder": "Vindicta.Beketov",
+            "CfgMissionsEntry": "vindicta_beketov",
+            "mapName": "beketov",
+            "briefingName": "Vindicta - Beketov"
+        },
+        {
+            "folder": "Vindicta.cup_chernarus_A3",
+            "CfgMissionsEntry": "vindicta_cup_chernarus_A3",
+            "mapName": "cup_chernarus_A3",
+            "briefingName": "Vindicta - Chernarus"
+        },
+        {
+            "folder": "Vindicta.Enoch",
+            "CfgMissionsEntry": "vindicta_enoch",
+            "mapName": "enoch",
+            "briefingName": "Vindicta - Livonia"
+        },
+        {
+            "folder": "Vindicta_East.gm_weferlingen_summer",
+            "CfgMissionsEntry": "vindicta_gm_weferlingen_summer_east",
+            "mapName": "gm_weferlingen_summer",
+            "briefingName": "Vindicta - Weferlingen East"
+        },
+        {
             "folder": "Vindicta.Malden",
             "CfgMissionsEntry": "vindicta_malden",
             "mapName": "malden",
             "briefingName": "Vindicta - Malden"
+        },
+        {
+            "folder": "Vindicta.rhspkl",
+            "CfgMissionsEntry": "vindicta_rhspkl",
+            "mapName": "rhspkl",
+            "briefingName": "Vindicta - Prei Khmaoch Luong"
+        },
+        {
+            "folder": "Vindicta.saralite",
+            "CfgMissionsEntry": "vindicta_rhspkl",
+            "mapName": "saralite",
+            "briefingName": "Vindicta - Southern Sahrani"
+        },
+        {
+            "folder": "Vindicta.Staszow",
+            "CfgMissionsEntry": "vindicta_staszow",
+            "mapName": "taszow",
+            "briefingName": "Vindicta - Staszow"
+        },
+        {
+            "folder": "Vindicta.Takistan",
+            "CfgMissionsEntry": "vindicta_takistan",
+            "mapName": "takistan",
+            "briefingName": "Vindicta - Takistan"
+        },
+        {
+            "folder": "Vindicta.Tanoa",
+            "CfgMissionsEntry": "vindicta_tanoa",
+            "mapName": "tanoa",
+            "briefingName": "Vindicta - Tanoa"
+        },
+        {
+            "folder": "Vindicta.tem_anizay",
+            "CfgMissionsEntry": "vindicta_tem_anizay",
+            "mapName": "tem_anizay",
+            "briefingName": "Vindicta - Anizay"
+        },
+        {
+            "folder": "Vindicta.Tembelan",
+            "CfgMissionsEntry": "vindicta_tembelan",
+            "mapName": "tembelan",
+            "briefingName": "Vindicta - Tembelan"
         }
     ]
 }
