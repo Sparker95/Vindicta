@@ -89,6 +89,8 @@ forEach ($folderConfig in $config.missionFolders) {
     #New-Item -ItemType SymbolicLink -name "$tempMissionLocation\src" -value "src" > $null
     Copy-Item "_build\missions\buildVersion.hpp" -Destination "$tempMissionLocation\src\config"
     Copy-Item "$missionFolder\mission.sqm" -Destination $tempMissionLocation
+    Copy-Item "configs\pboVariant_standalone.hpp" -Destination "$tempMissionLocation\src\config\pboVariant.hpp" -Force
+    Copy-Item "configs\pboVariant_standalone.hpp" -Destination "$tempMissionLocation\pboVariant.hpp" -Force
     forEach ($pathPair in $config.copyFiles) {
         $pathDest = Join-Path -Path $tempMissionLocation -ChildPath $pathPair.to
         Copy-Item $pathPair.from -Destination $pathDest -Recurse
@@ -100,6 +102,9 @@ forEach ($folderConfig in $config.missionFolders) {
     "Building PBO with armake..."
     .$PSScriptRoot\hemtt armake build --force -i include $tempMissionLocation "_build\missions\separatePBO\$oneMissionPboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
     "`tDone in $($sw.ElapsedMilliseconds)ms"
+
+    # Delete src folder, it's no longer needed for the upcoming combined pbo build
+    Remove-Item -Path "$tempMissionLocation\src" -Recurse
 }
 
 # GENERATE CONFIG.CPP
@@ -179,6 +184,24 @@ $sConfigCPP += "};`n";
 $sConfigCPP | Out-File -FilePath "$combinedMissionsLocation\config.cpp" -NoNewline -Encoding UTF8
 
 "`nBuild combined missions PBO..."
+
+# Copy one src folder for all the missions
+Copy-Item "src" -Destination $combinedMissionsLocation -Recurse
+
+# Copy other files
+
+$missionFolders = Get-Childitem $combinedMissionsLocation -name "*" -Directory
+forEach ($missionFolder in $missionFolders) {
+    Copy-Item "configs\pboVariant_combined.hpp" -Destination "$combinedMissionsLocation\$missionFolder\pboVariant.hpp" -Force
+}
+
+Copy-Item "configs\pboVariant_combined.hpp" -Destination "$combinedMissionsLocation\src\config\pboVariant.hpp" -Force
+forEach ($pathPair in $config.copyFiles) {
+    if ($pathPair.to -like "src\*") {
+        $pathDest = Join-Path -Path $combinedMissionsLocation -ChildPath $pathPair.to
+        Copy-Item $pathPair.from -Destination $pathDest -Recurse
+    }
+}
 
 $sw = [system.diagnostics.stopwatch]::startNew()
 .$PSScriptRoot\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation

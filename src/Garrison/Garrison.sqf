@@ -3442,16 +3442,16 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 	
 	// ======================================= FILES ==============================================
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx
-	public override METHOD_FILE(handleMessageEx, "src\Garrison\handleMessageEx.sqf");
+	public override METHOD_FILE(handleMessageEx, COMMON_PATH("Garrison\handleMessageEx.sqf"));
 
 	// Spawns the whole garrison
-	public thread METHOD_FILE(spawn, "src\Garrison\spawn.sqf");
+	public thread METHOD_FILE(spawn, COMMON_PATH("Garrison\spawn.sqf"));
 
 	// Despawns the whole garrison
-	public thread METHOD_FILE(despawn, "src\Garrison\despawn.sqf");
+	public thread METHOD_FILE(despawn, COMMON_PATH("Garrison\despawn.sqf"));
 
 	// Update spawn state of the garrison
-	thread METHOD_FILE(updateSpawnState, "src\Garrison\updateSpawnState.sqf");
+	thread METHOD_FILE(updateSpawnState, COMMON_PATH("Garrison\updateSpawnState.sqf"));
 
 	public thread METHOD(createAddInfGroup)
 		params [P_THISOBJECT, "_side", "_subcatID", ["_type", GROUP_TYPE_INF]];

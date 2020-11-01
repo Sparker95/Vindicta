@@ -1593,66 +1593,66 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	// File-based methods
 
 	// Handles messages
-	public override METHOD_FILE(handleMessageEx, "src\Location\handleMessageEx.sqf");
+	public override METHOD_FILE(handleMessageEx, QUOTE_COMMON_PATH(Location\handleMessageEx.sqf));
 
 	// Sets border parameters
-	METHOD_FILE(updateWaypoints, "src\Location\updateWaypoints.sqf");
+	METHOD_FILE(updateWaypoints, QUOTE_COMMON_PATH(Location\updateWaypoints.sqf));
 
 	// Checks if given position is inside the border
-	public METHOD_FILE(isInBorder, "src\Location\isInBorder.sqf");
+	public METHOD_FILE(isInBorder, QUOTE_COMMON_PATH(Location\isInBorder.sqf));
 
 	// Adds a spawn position
-	METHOD_FILE(addSpawnPos, "src\Location\addSpawnPos.sqf");
+	METHOD_FILE(addSpawnPos, QUOTE_COMMON_PATH(Location\addSpawnPos.sqf));
 
 	// Adds multiple spawn positions from a building
-	METHOD_FILE(addSpawnPosFromBuilding, "src\Location\addSpawnposFromBuilding.sqf");
+	METHOD_FILE(addSpawnPosFromBuilding, QUOTE_COMMON_PATH(Location\addSpawnposFromBuilding.sqf));
 
 	// Calculates infantry capacity based on buildings at this location
 	// It's old and better not to use it
-	METHOD_FILE(calculateInfantryCapacity, "src\Location\calculateInfantryCapacity.sqf");
+	METHOD_FILE(calculateInfantryCapacity, QUOTE_COMMON_PATH(Location\calculateInfantryCapacity.sqf));
 
 	// Gets a spawn position to spawn some unit
-	public METHOD_FILE(getSpawnPos, "src\Location\getSpawnPos.sqf");
+	public METHOD_FILE(getSpawnPos, QUOTE_COMMON_PATH(Location\getSpawnPos.sqf));
 
 	// Returns a random position within border
-	public METHOD_FILE(getRandomPos, "src\Location\getRandomPos.sqf");
+	public METHOD_FILE(getRandomPos, QUOTE_COMMON_PATH(Location\getRandomPos.sqf));
 
 	// Returns how many units of this type and group type this location can hold
-	public METHOD_FILE(getUnitCapacity, "src\Location\getUnitCapacity.sqf");
+	public METHOD_FILE(getUnitCapacity, QUOTE_COMMON_PATH(Location\getUnitCapacity.sqf));
 
 	// Checks if given position is safe to spawn a vehicle here
-	public STATIC_METHOD_FILE(isPosSafe, "src\Location\isPosSafe.sqf");
+	public STATIC_METHOD_FILE(isPosSafe, QUOTE_COMMON_PATH(Location\isPosSafe.sqf));
 
 	// Checks if given position is even safer to spawn a vehicle here (conservative, doesn't allow spawning 
 	// in buildings etc.)
-	public STATIC_METHOD_FILE(isPosEvenSafer, "src\Location\isPosEvenSafer.sqf");
+	public STATIC_METHOD_FILE(isPosEvenSafer, QUOTE_COMMON_PATH(Location\isPosEvenSafer.sqf));
 
 	// Returns the nearest location to given position and distance to it
-	public STATIC_METHOD_FILE(getNearestLocation, "src\Location\getNearestLocation.sqf");
+	public STATIC_METHOD_FILE(getNearestLocation, QUOTE_COMMON_PATH(Location\getNearestLocation.sqf));
 
 	// Returns location that has its border overlapping given position
-	public STATIC_METHOD_FILE(getLocationAtPos, "src\Location\getLocationAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationAtPos, QUOTE_COMMON_PATH(Location\getLocationAtPos.sqf));
 
 	// Returns an array of locations that have their border overlapping given position
-	public STATIC_METHOD_FILE(getLocationsAtPos, "src\Location\getLocationsAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationsAtPos, QUOTE_COMMON_PATH(Location\getLocationsAtPos.sqf));
 
 	// Adds an allowed area
-	METHOD_FILE(addAllowedArea, "src\Location\addAllowedArea.sqf");
+	METHOD_FILE(addAllowedArea, QUOTE_COMMON_PATH(Location\addAllowedArea.sqf));
 
 	// Checks if player is in any of the allowed areas
-	public METHOD_FILE(isInAllowedArea, "src\Location\isInAllowedArea.sqf");
+	public METHOD_FILE(isInAllowedArea, QUOTE_COMMON_PATH(Location\isInAllowedArea.sqf));
 
 	// Handle PROCESS message
-	public METHOD_FILE(process, "src\Location\process.sqf");
+	public METHOD_FILE(process, QUOTE_COMMON_PATH(Location\process.sqf));
 
 	// Spawns the location
-	METHOD_FILE(spawn, "src\Location\spawn.sqf");
+	METHOD_FILE(spawn, QUOTE_COMMON_PATH(Location\spawn.sqf));
 
 	// Despawns the location
-	METHOD_FILE(despawn, "src\Location\despawn.sqf");
+	METHOD_FILE(despawn, QUOTE_COMMON_PATH(Location\despawn.sqf));
 
 	// Builds the location
-	METHOD_FILE(build, "src\Location\build.sqf");
+	METHOD_FILE(build, QUOTE_COMMON_PATH(Location\build.sqf));
 
 	/*
 	Method: isBuilt

@@ -26,8 +26,10 @@ forEach ($missionFolder in $missionFolders) {
     "  Copying common files..."
     $filesToCopy = "cba_settings.sqf", "description.ext", "init.sqf", "onPlayerRespawn.sqf", "stringtable.xml"
     forEach ($fileName in $filesToCopy) {
-        Copy-Item "configs\$fileName" $missionFolder
+        Copy-Item "configs\$fileName" $missionFolder -Force
     }
+
+    Copy-Item "configs\pboVariant_standalone.hpp" "$missionFolder\pboVariant.hpp" -Force
 }
 
 pause

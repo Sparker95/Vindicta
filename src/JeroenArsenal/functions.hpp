@@ -1,14 +1,16 @@
+#include "..\commonPath.hpp"
+
 class JN {
 	
 	class Test {
-		file = "src\JeroenArsenal\Test";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\Test);
 		class test_init {preinit = 1;};
 		class test_recompile {};
 		class test_debugv2 {postinit = 1;};
 		class test_configCopier {};
 	};
 	class Common {
-		file = "src\JeroenArsenal\Common";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\Common);
 		class common_addActionSelect {};
 		class common_addActionCancel {};
 		class common_updateActionCancel {};
@@ -16,17 +18,17 @@ class JN {
 		class common_getActionCanceled {};
 	};
 	class Common_Vehicle {
-		file = "src\JeroenArsenal\Common\vehicle";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\Common\vehicle);
 		class common_vehicle_getSeatNames {};
 		class common_vehicle_getVehicleType {};
 	};
 	class Common_Array {
-		file = "src\JeroenArsenal\Common\array";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\Common\array);
 		class common_array_add {};
 		class common_array_remove {};
 	};
 	class JNA {
-		file = "src\JeroenArsenal\JNA";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\JNA);
 		class arsenal {};
 		class arsenal_addItem {};
 		class arsenal_cargoToArray {};
@@ -50,7 +52,7 @@ class JN {
 		class arsenal_getVests {};
 	};
 	class JNG {
-		file = "src\JeroenArsenal\JNG";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\JNG);
 		class garage {};
 		class garage_addVehicle {};
 		class garage_init {};
@@ -68,7 +70,7 @@ class JN {
 	/*
 	// Sorry had to disable that, it seems to desynchronize and nullify fual amounts sometimes
 	class Fuel {
-		file = "src\JeroenArsenal\Fuel";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\Fuel";
 		class fuel_init {postinit = 1;};
 		class fuel_vehicleInit {};
 		class fuel_consumption_init {postInit = 1;};
@@ -88,7 +90,7 @@ class JN {
 	*/
 	
 	class Ammo {
-		file = "src\JeroenArsenal\Ammo";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\Ammo);
 		class ammo_init {preinit = 1;};
 		class ammo_getLoadout {};
 		class ammo_getPylonLoadoutMissing {};
@@ -104,7 +106,7 @@ class JN {
 	};
 	
 	class Repair {
-		file = "src\JeroenArsenal\Repair";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\Repair);
 		class repair_addActionRepair {};
 		class repair_addActionRepairPlayer {};
 		class repair_addSelectRepair {};
@@ -120,7 +122,7 @@ class JN {
 	};
 	
 	class JNL {
-		file = "src\JeroenArsenal\JNL";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\JNL);
 		class logistics_init {preinit = 1;};
 		class logistics_load {};
 		class logistics_unLoad {};
@@ -129,7 +131,7 @@ class JN {
 	};
 
 	class JNL_Actions {
-		file = "src\JeroenArsenal\JNL\Actions";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\JNL\Actions);
 		class logistics_addActionGetInWeapon {};
 		class logistics_addActionLoad {};
 		class logistics_addActionUnload {};
@@ -141,7 +143,7 @@ class JN {
 	};
 
 	class JNL_Functions {
-		file = "src\JeroenArsenal\JNL\Functions";
+		file = QUOTE_COMMON_PATH(JeroenArsenal\JNL\Functions);
 		class logistics_canLoad {};
 		class logistics_getCargo {};
 		class logistics_getCargoOffsetAndDir {};

@@ -9,10 +9,6 @@ OnLoadMission = "Vindicta";
 allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;
 
-// Name of the mission in the mission selection listbox
-// It has version in it so we generate it with teh build tool
-//#include "config\briefingName.hpp"
-
 overviewPicture = "\z\vindicta\addons\ui\pictures\overviewPicture.paa";
 overviewText = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
 overviewTextLocked = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
@@ -95,11 +91,11 @@ class CfgFunctions {
 	class vin
 	{
         #include "Common\functions.hpp"
-		class anything
+		class vindicta
 		{
 			class preInit {
 				preInit = 1;
-				file = "src\preInit.sqf";
+				file = QUOTE_COMMON_PATH(preInit.sqf);
 			};
 		};
 	};
