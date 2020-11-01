@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=585;
+	toggles=1609;
 	class ItemIDProvider
 	{
-		nextID=4504;
+		nextID=4507;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=244;
+		nextID=246;
 	};
 	class Camera
 	{
-		pos[]={1684.8191,94.725754,2457.5991};
-		dir[]={-0.26523808,-0.23515043,0.93508798};
-		up[]={-0.064187676,0.97193956,0.22628826};
-		aside[]={0.96206295,2.7756323e-007,0.27289036};
+		pos[]={18609.709,30.655827,14579.229};
+		dir[]={-0.1937663,-0.29410627,0.93592721};
+		up[]={-0.059625167,0.9557724,0.28800076};
+		aside[]={0.97923607,1.0040822e-009,0.20273261};
 	};
 };
 binarizationWanted=0;
@@ -298,7 +298,7 @@ class CustomAttributes
 							"BOOL"
 						};
 					};
-					value=0;
+					value=1;
 				};
 			};
 		};
@@ -330,7 +330,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=341;
+		items=344;
 		class Item0
 		{
 			dataType="Layer";
@@ -2275,7 +2275,7 @@ class Mission
 					};
 					id=2406;
 					type="B_Slingload_01_Cargo_F";
-					atlOffset=0.45349121;
+					atlOffset=0.25196838;
 				};
 				class Item64
 				{
@@ -2290,7 +2290,7 @@ class Mission
 					};
 					id=2407;
 					type="B_Slingload_01_Cargo_F";
-					atlOffset=1.3053284;
+					atlOffset=1.1039734;
 				};
 				class Item65
 				{
@@ -4722,7 +4722,7 @@ class Mission
 			alpha=0;
 			a=5;
 			b=20;
-			angle=75.662971;
+			angle=75.662964;
 			id=2512;
 			atlOffset=-0.0047454834;
 		};
@@ -4764,7 +4764,7 @@ class Mission
 			alpha=0;
 			a=5;
 			b=20;
-			angle=52.578983;
+			angle=52.578979;
 			id=2515;
 			atlOffset=-0.041168213;
 		};
@@ -4792,7 +4792,7 @@ class Mission
 			alpha=0;
 			a=5;
 			b=20;
-			angle=57.238983;
+			angle=57.238979;
 			id=2517;
 			atlOffset=0.00030899048;
 		};
@@ -38132,9 +38132,230 @@ class Mission
 			alpha=0;
 			a=5;
 			b=20;
-			angle=141.05399;
+			angle=141.05397;
 			id=4503;
 			atlOffset=-0.00042247772;
+		};
+		class Item341
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={19444.521,3,7236.0332};
+			};
+			areaSize[]={50,0,50};
+			flags=1;
+			id=4504;
+			type="Vindicta_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Vindicta_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="roadblock";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Vindicta_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Vindicta_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Clarke Roadblock";
+						};
+					};
+				};
+				nAttributes=3;
+			};
+		};
+		class Item342
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={19963.598,2.9999998,6292.2349};
+			};
+			areaSize[]={200.752,0,164.427};
+			flags=1;
+			id=4505;
+			type="Vindicta_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Vindicta_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Vindicta_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Vindicta_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Kurtz Village";
+						};
+					};
+				};
+				nAttributes=3;
+			};
+		};
+		class Item343
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={19139.238,1.460673,8208.3408};
+				angles[]={0.0027750733,0,6.2493782};
+			};
+			areaSize[]={81.844002,0,84.469002};
+			flags=1;
+			id=4506;
+			type="Vindicta_LocationSector";
+			atlOffset=-1.1920929e-007;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Vindicta_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Vindicta_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Vindicta_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Nam Vien Village";
+						};
+					};
+				};
+				nAttributes=3;
+			};
 		};
 	};
 	class Connections
