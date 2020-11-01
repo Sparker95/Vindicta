@@ -5,14 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=1609;
+	toggles=585;
 	class ItemIDProvider
 	{
-<<<<<<< HEAD
 		nextID=4508;
-=======
-		nextID=4507;
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 	};
 	class MarkerIDProvider
 	{
@@ -24,17 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-<<<<<<< HEAD
 		pos[]={11883.418,95.430756,3333.4287};
 		dir[]={0.88554281,-0.45361641,0.10047441};
 		up[]={0.45073986,0.89118838,0.051141378};
 		aside[]={0.11274058,-1.7152342e-007,-0.99364775};
-=======
-		pos[]={18609.709,30.655827,14579.229};
-		dir[]={-0.1937663,-0.29410627,0.93592721};
-		up[]={-0.059625167,0.9557724,0.28800076};
-		aside[]={0.97923607,1.0040822e-009,0.20273261};
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 	};
 };
 binarizationWanted=0;
@@ -309,7 +298,7 @@ class CustomAttributes
 							"BOOL"
 						};
 					};
-					value=1;
+					value=0;
 				};
 			};
 		};
@@ -341,11 +330,7 @@ class Mission
 	};
 	class Entities
 	{
-<<<<<<< HEAD
 		items=345;
-=======
-		items=344;
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 		class Item0
 		{
 			dataType="Layer";
@@ -38164,15 +38149,9 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-<<<<<<< HEAD
 				position[]={7488.7036,3,6369.7339};
 			};
 			areaSize[]={150,0,100};
-=======
-				position[]={19444.521,3,7236.0332};
-			};
-			areaSize[]={50,0,50};
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 			flags=1;
 			id=4504;
 			type="Vindicta_LocationSector";
@@ -38193,11 +38172,7 @@ class Mission
 									"STRING"
 								};
 							};
-<<<<<<< HEAD
 							value="city";
-=======
-							value="roadblock";
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 						};
 					};
 				};
@@ -38235,11 +38210,7 @@ class Mission
 									"STRING"
 								};
 							};
-<<<<<<< HEAD
 							value="Puk Po";
-=======
-							value="Clarke Roadblock";
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 						};
 					};
 				};
@@ -38251,7 +38222,6 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-<<<<<<< HEAD
 				position[]={9437.2686,3,9427.1172};
 				angles[]={0,4.2184534,0};
 			};
@@ -38260,14 +38230,6 @@ class Mission
 			id=4505;
 			type="Vindicta_LocationSector";
 			atlOffset=2.8610229e-005;
-=======
-				position[]={19963.598,2.9999998,6292.2349};
-			};
-			areaSize[]={200.752,0,164.427};
-			flags=1;
-			id=4505;
-			type="Vindicta_LocationSector";
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 			class CustomAttributes
 			{
 				class Attribute0
@@ -38323,11 +38285,7 @@ class Mission
 									"STRING"
 								};
 							};
-<<<<<<< HEAD
 							value="Dang Sui";
-=======
-							value="Kurtz Village";
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 						};
 					};
 				};
@@ -38339,23 +38297,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-<<<<<<< HEAD
 				position[]={19965.375,3,6332.6206};
 			};
 			areaSize[]={120,0,100};
 			flags=1;
 			id=4506;
 			type="Vindicta_LocationSector";
-=======
-				position[]={19139.238,1.460673,8208.3408};
-				angles[]={0.0027750733,0,6.2493782};
-			};
-			areaSize[]={81.844002,0,84.469002};
-			flags=1;
-			id=4506;
-			type="Vindicta_LocationSector";
-			atlOffset=-1.1920929e-007;
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 			class CustomAttributes
 			{
 				class Attribute0
@@ -38411,7 +38358,6 @@ class Mission
 									"STRING"
 								};
 							};
-<<<<<<< HEAD
 							value="Dong Nam";
 						};
 					};
@@ -38488,9 +38434,6 @@ class Mission
 								};
 							};
 							value="Patong";
-=======
-							value="Nam Vien Village";
->>>>>>> 5d88280892a0f276f571e146a4f943afcc21fe87
 						};
 					};
 				};
