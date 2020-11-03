@@ -1017,7 +1017,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith { false };
 
-		if ((_hO isKindOf "LandVehicle") && ((_hO isKindOf "StaticWeapon") == false)) then {
+		if ((_hO isKindOf "LandVehicle") && (!(_hO isKindOf "StaticWeapon"))) then {
 			private _vehicleProperties = _data#UNIT_DATA_ID_VEHICLE_PROPERTIES;
 
 			private _savedDamages = (_vehicleProperties select 0);
@@ -1189,12 +1189,13 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			if (isNull _hO) exitWith {};
 
 			if ((_hO isKindOf "LandVehicle") && ((_hO isKindOf "StaticWeapon") == false)) then {
-				private _vehicleProperties = _data#UNIT_DATA_ID_VEHICLE_PROPERTIES;
+				private _vehicleProperties = [];
+				_vehicleProperties resize UNIT_VEH_PROPERTIES_SIZE;
 				private _savedTexture = getObjectTextures _hO;
-				_vehicleProperties set [1, _savedTexture];
+				_vehicleProperties set [UNIT_VEH_PROPERTY_TEXTURES, _savedTexture];
 
 				private _savedDamages = getAllHitPointsDamage _hO;
-				_vehicleProperties set [0, _savedDamages];
+				_vehicleProperties set [UNIT_VEH_PROPERTY_DAMAGES, _savedDamages];
 
 				_data set [UNIT_DATA_ID_VEHICLE_PROPERTIES, _vehicleProperties];
 			};
@@ -2666,11 +2667,22 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	ENDMETHOD;
 
 	public override METHOD(deserializeFromStorage)
-		params [P_THISOBJECT, P_ARRAY("_serial")];
+		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
 		_serial set [UNIT_DATA_ID_OWNER, 2]; // Server
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		_serial set [UNIT_DATA_ID_AI, ""];
+
+		// SAVEBREAK >>>
+		// Patch previous saves which don't have vehicle attributes stored yet
+		if (_version < 29) then {
+			pr _props = [];
+			_props resize UNIT_VEH_PROPERTIES_SIZE;
+			_props set [UNIT_VEH_PROPERTY_DAMAGES, []];
+			_props set [UNIT_VEH_PROPERTY_TEXTURES, []];
+			_serial set [UNIT_DATA_ID_VEHICLE_PROPERTIES, _props];
+		};
+		// <<< SAVEBREAK
 
 		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
 		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;
