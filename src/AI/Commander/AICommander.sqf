@@ -821,7 +821,7 @@ CLASS("AICommander", "AI")
 				} forEach _nearCities;
 				_avgInfluence = _avgInfluence / (count _nearCities); // Within 0..1 range
 				OOP_INFO_1("  Average influence: %1", _avgInfluence);
-				if (random 1 < _avgInfluence) then {
+				if (random 2 < _avgInfluence) then {
 					OOP_INFO_0("  Intel intercepted through city");
 					T_CALLM2("inspectIntel", _intel, INTEL_METHOD_CITY);
 				} else {
