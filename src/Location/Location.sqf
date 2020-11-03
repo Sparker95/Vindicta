@@ -1963,12 +1963,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_object setVariable["ACE_isRepairFacility", true];
 		_object allowdamage false;
 
-		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\repair_ca.paa'/>  Repair Vehicle", // title
+		_object addAction [localize "STR_LOC_REPAIR_VEHICLES", // title
 			{
 				_nearVehicles = [];
-				_nearVehicles = position (_this select 0) nearObjects ["LandVehicle", 50];
+				_nearVehicles = position (_this select 0) nearObjects ["LandVehicle", 14];
 				if (count _nearVehicles > 0) then{
-					private _args = ["REPAIR", "Repairing vehicles.", "Please wait."];
+					private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_REPAIRING_VEHICLES", ""];
 					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
 					{
 						[_x, false] remoteExec ['engineOn', _x]; //shut engine off
@@ -1976,7 +1976,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 						{
 							if (_x in allPlayers) then {
 								moveOut _x;
-								private _args = ["REPAIR", "Disembarked from the vehicle.", "The vehicle is currently being repaired."];
+								private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_YOU_WERE_DISEMBARKED", localize "STR_LOC_REPAIR_THE_VEHICLE_IS_REPAIRED"];
 								REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _x, NO_JIP);
 
 							};
@@ -1985,7 +1985,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
     					[_x, 0] remoteExec ['setDamage', _x]; //repair vehicle
 					} forEach _nearVehicles;
 				} else {
-					private _args = ["REPAIR", "No vehicles to repair found.", "Check if the vehicles are close enough."];
+					private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_NO_VEHICLES_FOUND", localize "STR_LOC_REPAIR_CHECK_VEHICLES_CLOSE", localize "STR_LOC_REPAIR_CHECK_VEHICLES_CLOSE"];
 					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
 				};
 			},
