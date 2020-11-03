@@ -36,7 +36,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.03000024;
 			w = 0.20000005;
 			h = 0.04;
-			text = "Storage:";
+			text = $STR_SAVE_STORAGE;
 		};
 
 		class TAB_SAVE_COMBO_STORAGE : MUI_COMBOBOX_ABS 
@@ -56,7 +56,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.18000018;
 			w = 0.20000003;
 			h = 0.07;
-			text = "New Save";			
+			text = $STR_SAVE_NEW;			
 		};
 
 		class TAB_SAVE_BUTTON_OVERWRITE : MUI_BUTTON_TXT_ABS 
@@ -66,7 +66,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.27000043;
 			w = 0.20000006;
 			h = 0.07;
-			text = "Overwrite";	
+			text = $STR_SAVE_OVERWRITE;	
 		};
 
 		class TAB_SAVE_BUTTON_LOAD : MUI_BUTTON_TXT_ABS 
@@ -76,7 +76,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.36000045;
 			w = 0.20000007;
 			h = 0.07;
-			text = "Load";
+			text = $STR_SAVE_LOAD;
 		};
 
 		class TAB_SAVE_BUTTON_DELETE : MUI_BUTTON_TXT_ABS 
@@ -86,7 +86,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.45000042;
 			w = 0.20000006;
 			h = 0.07;
-			text = "Delete";	
+			text = $STR_SAVE_DELETE;	
 			colorBackground[] = MUIC_BTN_RED;	
 		};
 
@@ -98,7 +98,7 @@ class TAB_SAVE : MUI_GROUP
 			w = 0.452; 
 			h = 0.040;  
 			style = 0;
-			text = "PREVIOUSLY SAVED GAMES:";	
+			text = $STR_SAVE_PREVIOUS;	
 			colorBackground[] = MUIC_BLACK;		
 		};
 
@@ -109,7 +109,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.538; 
 			w = 0.226; 
 			h = 0.040;  
-			text = "SAVE NAME:";
+			text = $STR_SAVE_NAME;
 		};
 
 		class TAB_SAVE_STATIC_DESCRMAP : MUI_DESCRIPTION_ABS 
@@ -119,7 +119,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.584; 
 			w = 0.226; 
 			h = 0.040; 
-			text = "MAP:"; 
+			text = $STR_SAVE_MAP; 
 		};
 
 		class TAB_SAVE_STATIC_DESCRVER : MUI_DESCRIPTION_ABS 
@@ -129,7 +129,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.629; 
 			w = 0.226; 
 			h = 0.040;  
-			text = "VERSION:";
+			text = $STR_SAVE_VERSION;
 		};
 
 		class TAB_SAVE_STATIC_DESCRCOUNT : MUI_DESCRIPTION_ABS 
@@ -139,7 +139,7 @@ class TAB_SAVE : MUI_GROUP
 			y = 0.675; 
 			w = 0.226; 
 			h = 0.040;
-			text = "SAVE COUNT:";
+			text = $STR_SAVE_COUNT;
 		};
 
 		// show save name here

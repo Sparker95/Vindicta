@@ -174,7 +174,9 @@ CLASS("SupplyConvoyCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_NEXT_WAYPOINT, 	// State change if successful
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_departVar,							// Date to wait until
-				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
+				_splitGarrIdVar,					// Garrison to wait (checks it is still alive)
+				-1,									// Target (there is none)
+				CMDR_ACTION_STATE_RTB_SELECT_TARGET];			// State if target is dead
 		_asts pushBack NEW("AST_WaitGarrison", _waitAST_Args);
 
 		// Select next waypoint for the patrol assigning it to targetVar

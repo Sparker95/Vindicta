@@ -55,7 +55,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		// Bail if our previous response has not been processed yet
 		if (T_GETV("state") != 0) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
-			CALLM1(_dialogObj, "setHintText", "Previous key is being checked!");
+			CALLM1(_dialogObj, "setHintText", localize "STR_RKD_CHECKING_PREV_KEY");
 		};
 
 		// Read key from the edit box
@@ -65,7 +65,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		// Ensure at least some input
 		if (count _key == 0) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
-			CALLM1(_dialogObj, "setHintText", "You must enter the key first!");
+			CALLM1(_dialogObj, "setHintText", localize "STR_RKD_KEY_NOT_ENTERED");
 		};
 
 		// Change state variable
@@ -73,7 +73,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 
 		// Set temporary hint text...
 		pr _dialogObj = T_CALLM0("getDialogObject");
-		CALLM1(_dialogObj, "setHintText", "Checking key...");
+		CALLM1(_dialogObj, "setHintText", localize "STR_RKD_CHECKING_KEY");
 
 		// Send data to server
 		pr _args = [playerSide, clientOwner, _key, name player];
@@ -111,7 +111,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		pr _endl = toString [13, 10];
 		pr _str = "";
 		{
-			_str = _str + format ["%1 added by %2", _x, _keysAddedBy#_forEachIndex];
+			_str = _str + format [localize "STR_RKD_ADDED_BY", _x, _keysAddedBy#_forEachIndex];
 			_str = _str + _endl;
 		} forEach _keys;
 

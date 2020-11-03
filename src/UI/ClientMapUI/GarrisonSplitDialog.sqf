@@ -316,7 +316,7 @@ CLASS("GarrisonSplitDialog", "")
 
 		// Bail if another request is in progress
 		if (T_GETV("state") != 0) exitWith {
-			T_CALLM1("setHintText", "Another request is in progress!");
+			T_CALLM1("setHintText", localize "STR_GSD_REQUEST_IN_PROGRESS");
 		};
 
 		// Bail if nothing is selected
@@ -329,14 +329,14 @@ CLASS("GarrisonSplitDialog", "")
 		} forEach _comp;
 		if (_countUnitsRight < 1) exitWith {
 			OOP_INFO_0("Nothing is selected");
-			T_CALLM1("setHintText", "You must move some units to the right first!");
+			T_CALLM1("setHintText", localize "STR_GSD_NO_UNIT_IN_RIGHT");
 		};
 
 		// Bail if garrison record is invalid
 		pr _garRecord = T_GETV("garRecord");
 		if (!IS_OOP_OBJECT(_garRecord)) exitWith {
 			OOP_INFO_0("Selected garrison is already destroyed");
-			T_CALLM1("setHintText", "The selected garrison has been destroyed!");
+			T_CALLM1("setHintText", localize "STR_GSD_GARRISON_DESTROYED");
 		};
 
 		// Send message to the server
@@ -346,7 +346,7 @@ CLASS("GarrisonSplitDialog", "")
 		// Although it's on another machine, messageReceiver class will route the message for us		
 		pr _args = [_garRef, _comp,  clientOwner];
 		CALLM2(_AI, "postMethodAsync", "splitGarrisonFromComposition", _args);
-		T_CALLM1("setHintText", "Waiting for server to respond...");
+		T_CALLM1("setHintText", localize "STR_GSD_WAIT_FOR_SERVER");
 		T_SETV("state", 1);
 		// Close now
 		T_CALLM0("onButtonClose");
@@ -381,7 +381,7 @@ CLASS("GarrisonSplitDialog", "")
 				pr _classes = _x; // Array with IDs of classes
 				if (count _classes > 0) then {
 					pr _name = T_NAMES#_catID#_subcatID;
-					_lnb lnbAddRow [str (count _classes), _name];
+					_lnb lnbAddRow [str (count _classes), (localize _name)];
 					_IDsArray pushBack [_catID, _subCatID];
 				};
 			} forEach _x;
@@ -390,8 +390,8 @@ CLASS("GarrisonSplitDialog", "")
 		// Update text
 		pr _nInf = T_CALLM1("getInfantryCount", _comp);
 		pr _nCargo = T_CALLM1("getCargoSeatCount", _comp);
-		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl _idcInf) ctrlSetText (format ["Infantry: %1", _nInf]);
-		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl _idcCargo) ctrlSetText (format ["Cargo seats: %1", _nCargo]);
+		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl _idcInf) ctrlSetText (format [localize "STR_GSD_INFANTRY_NUM", _nInf]);
+		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl _idcCargo) ctrlSetText (format [localize "STR_GSD_CARGO_NUM", _nCargo]);
 
 		/*
 		for "_i" from 0 to 40 do {
@@ -568,11 +568,11 @@ CLASS("GarrisonSplitDialog", "")
 			switch (_responseCode) do {
 			// Garrison is destroyed
 			case 11: {
-				systemChat "Error: Garrison is destroyed.";
+				systemChat localize "STR_GSD_ERROR_GARRISON_DESTROYED";
 			};
 			case 22: {
 				// It's a success
-				systemChat "Garrison was split successfully.";
+				systemChat localize "STR_GSD_SPLIT_SUCCESS";
 			};
 		};
 		};
@@ -583,12 +583,12 @@ CLASS("GarrisonSplitDialog", "")
 		switch (_responseCode) do {
 			// Garrison is destroyed
 			case 11: {
-				T_CALLM1("setHintText", "Error: Garrison is destroyed.");
+				T_CALLM1("setHintText", localize "STR_GSD_ERROR_GARRISON_DESTROYED");
 			};
 			case 22: {
 				// It's a success
-				T_CALLM1("setHintText", "Garrison was split successfully.");
-				systemChat "Garrison was split successfully";
+				T_CALLM1("setHintText", localize "STR_GSD_SPLIT_SUCCESS");
+				systemChat localize "STR_GSD_SPLIT_SUCCESS";
 				//CALLSM0("GarrisonSplitDialog", "deleteInstance"); no let's rather not auto-close it, because we might have opened another dialog already
 			};
 		};

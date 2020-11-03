@@ -30,7 +30,7 @@ class CMUI_LSELECTED_MENU : MUI_GROUP
 			w = __MENU_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
 			//text = "<-\\-> Split";
-			text = "Recruit";			
+			text = $STR_UNIT_RECUIT;			
 		};
 
 		class LSELECTED_BUTTON_DISBAND : MUI_BUTTON_TXT 
@@ -41,7 +41,7 @@ class CMUI_LSELECTED_MENU : MUI_GROUP
 			w = __MENU_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
 			//text = "<-\\-> Split";
-			text = "Disband <NYI>";			
+			text = $STR_UNIT_DISBAND;			
 		};
 
 /*

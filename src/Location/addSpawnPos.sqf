@@ -18,7 +18,7 @@ params [P_THISOBJECT, P_ARRAY("_unitTypes"), P_ARRAY("_groupTypes"), P_ARRAY("_p
 
 private _spawnPosTypes = T_GETV("spawnPosTypes"); //All spawn positions of this location
 
-OOP_DEBUG_1("Adding spawn pos %1", _this);
+OOP_DEBUG_1("addSpawnPos: ", _this);
 
 // Check if a suitable array in spawn types already exists
 // unit types and group types must match

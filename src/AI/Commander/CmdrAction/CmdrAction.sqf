@@ -597,7 +597,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 	*/
 	public STATIC_METHOD(getDetachmentStrength)
 		params [P_THISCLASS, P_ARRAY("_eff")];
-		(_eff#T_EFF_soft) + 1.5*(_eff#T_EFF_medium) + 2*(_eff#T_EFF_armor) + 2*(_eff#T_EFF_air)
+		(_eff#T_EFF_soft) + 1.5*(_eff#T_EFF_medium) + 2*(_eff#T_EFF_armor) + 4*(_eff#T_EFF_air)
 	ENDMETHOD;
 
 	/*

@@ -124,18 +124,16 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			};
 			case LOCATION_TYPE_CITY: {
 				// If city is under enemy influence, we should take it
-				pr _influence = GETV(_loc, "influence");
-				pr _add = _influence*2.0;
+				pr _influence = GETV(_loc, "influence"); // Positive influence means city is influenced by player
 				// If enemy occupies this, we want to occupy this too
-				pr _priorityFromClass = T_GETV("takeLocCityPriority");
+				pr _boostOccupiedByEnemy = 0;
 				pr _actual = GETV(_loc, "actual");
 				pr _sides = [EAST, WEST, INDEPENDENT] - [_side];
 				pr _garrisons = CALLM1(_actual, "getGarrisons", _sides);
 				if (count _garrisons > 0) then {
-					_priorityFromClass = 1;
+					_boostOccupiedByEnemy = 1;
 				};
-				_priority = _priorityFromClass +
-					T_GETV("takeLocCityCoeff") * _activityMult + _add;
+				_priority = T_GETV("takeLocCityPriority") + _boostOccupiedByEnemy + T_GETV("takeLocCityCoeff") * _influence;
 			};
 			case LOCATION_TYPE_CAMP: {
 				// Same as outpost
@@ -148,7 +146,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 
 		pr _return = _priority + _priorityGeneral;
 
-		OOP_INFO_4("Location desirability: %1 %2 at %3 : %4", GETV(_loc, "type"), _loc, GETV(_loc, "pos"), _return);
+		OOP_INFO_5("Location desirability: %1 %2 %3 at %4 : %5", GETV(_loc, "type"), _loc, CALLM0(GETV(_loc, "actual"), "getName"), GETV(_loc, "pos"), _return);
 
 		// Sum up calculated priority and other priority boosts
 		_return

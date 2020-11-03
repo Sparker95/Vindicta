@@ -23,9 +23,9 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 			P_ARRAY("_argsNo"), P_CODE("_codeNo")];
 		// Set appearence, add buttons, ...
 		T_CALLM2("setContentSize", 0.7, 0.3); // Height will be determined by text height anyway
-		T_CALLM1("setHeadlineText", "Confirm action");
+		T_CALLM1("setHeadlineText", localize "STR_DB_TITLE");
 		T_CALLM1("setHintText", "");
-		T_CALLM1("createButtons", ["Yes" ARG "No"]);
+		T_CALLM1("createButtons", [localize "STR_DB_YES" ARG localize "STR_DB_NO"]);
 		T_CALLM1("setText", _text);
 
 		T_SETV("argsYes", _argsYes);

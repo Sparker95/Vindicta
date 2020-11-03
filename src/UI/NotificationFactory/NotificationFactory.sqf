@@ -41,7 +41,7 @@ CLASS("NotificationFactory", "")
 		private _sound = "UAV_01";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\map_ca.paa";
 		private _duration = 8;
-		private _hint = "Check your map for more info"; // Override hint!
+		private _hint = localize "STR_NOTI_CHECK_MAP"; // Override hint!
 		private _args = [_picture, [_category, INTEL_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	ENDMETHOD;
@@ -53,7 +53,7 @@ CLASS("NotificationFactory", "")
 		private _sound = "UAV_02";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infoNews_ca.paa";
 		private _duration = 10;
-		private _hint = "Check your map for more info"; // Override hint!
+		private _hint = localize "STR_NOTI_CHECK_MAP"; // Override hint!
 		private _args = [_picture, [_category, ACTION_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	ENDMETHOD;
@@ -65,7 +65,7 @@ CLASS("NotificationFactory", "")
 		private _sound = "Topic_Done";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\watch_ca.paa";
 		private _duration = 10;
-		private _hint = "Check your map for more info"; // Override hint!
+		private _hint = localize "STR_NOTI_CHECK_MAP"; // Override hint!
 		private _important = true;
 		private _args = [_picture, [_category, ACTION_COLORS], _text, _hint, _duration, _sound, _important];
 		CALLSM("Notification", "createNotification", _args);
@@ -111,9 +111,9 @@ CLASS("NotificationFactory", "")
 		private _sound = "UAV_03";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\radio_ca.paa";
 		private _duration = 25;
-		private _category = "RADIO CRYPTOKEY FOUND";
-		private _text = format ["Activate it at a friendly radio station!\n%1", _key];
-		private _hint = "Check notes in the in-game menu"; // Override hint!
+		private _category = localize "STR_NOTI_CRYPTOKEY_FOUND_HINT";
+		private _text = format [localize "STR_NOTI_ACTIVATE_AT_RADIO", _key];
+		private _hint = localize "STR_NOTI_CHECK_NOTES"; // Override hint!
 		private _args = [_picture, [_category, RADIO_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	ENDMETHOD;
@@ -124,7 +124,7 @@ CLASS("NotificationFactory", "")
 
 		private _sound = "beep_target";
 		private _duration = 15;
-		private _category = "SYSTEM";
+		private _category = localize "STR_NOTI_SYSTEM";
 		private _hint = ""; // Override hint!
 		if(_picture isEqualTo "") then {
 			_picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa"
@@ -151,7 +151,7 @@ CLASS("NotificationFactory", "")
 		private _sound = "defaultNotification";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\notification_ca.paa";
 		private _duration = 15;
-		private _category = "CRITICAL MISSION ERROR";
+		private _category = localize "STR_NOTI_MISSION_ERROR";
 		private _hint = ""; // Override hint!
 		private _args = [_picture, [_category, CRITICAL_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
@@ -176,9 +176,9 @@ CLASS("NotificationFactory", "")
 		private _sound = "UAV_04";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\binoculars_ca.paa";
 		private _duration = 30;
-		private _category = "ENEMY SPOTTED";
-		private _text = format ["Friendly forces have detected enemies at %1", mapGridPosition _pos];
-		private _hint = "Check your map for more info"; // Override hint!
+		private _category = localize "STR_NOTI_ENY_SOPTTED";
+		private _text = format [localize "STR_NOTI_ENY_DETECTED", mapGridPosition _pos];
+		private _hint = localize "STR_NOTI_CHECK_MAP"; // Override hint!
 		private _args = [_picture, _category, _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	ENDMETHOD;

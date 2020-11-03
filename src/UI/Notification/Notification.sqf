@@ -289,7 +289,7 @@ CLASS("Notification", "")
 
 				if(count _sameType > 6) then {
 					// coallese them
-					_args set [TEXT_IDX, format ["%1 and %2 others...", _args#TEXT_IDX, count _sameType - 1]];
+					_args set [TEXT_IDX, format [localize "STR_NOTI_MORE_OTHERS", _args#TEXT_IDX, count _sameType - 1]];
 					{
 						_queue deleteAt (_queue find _x);
 					} forEach _sameType;

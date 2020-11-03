@@ -253,7 +253,7 @@ if(hasInterface)then{
 					// create hint about empty crates
 					if !(isNil "g_BuildUI_garbageObjects") then {
 						if ((typeof _object_selected) in g_BuildUI_garbageObjects) then {
-							pr _args = ["EMPTY CRATES", "Empty crates can be demolished in the build menu.", "Make sure to check the tutorial."];
+							pr _args = [localize "STR_NOTI_EMPTY_CRATES", localize "STR_NOTI_EMPTY_CRATES_HINT", localize "STR_PS_CHECK_TUTORIAL"];
     						CALLSM("NotificationFactory", "createHint", _args);
 						};
 					};

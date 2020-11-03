@@ -139,7 +139,7 @@ _eff_veh set [T_VEH_stat_mortar_heavy,		[3,		0,		0,		0,		10,		0,		0,		0,		0.2,	0
 _eff_veh set [T_VEH_heli_light,				[0,		0,		0,		1,		0,		0,		0,		0,		0,		3,		0,		0,		1,		0]];
 _eff_veh set [T_VEH_heli_heavy,				[0,		0,		0,		1,		0,		0,		0,		0,		0,		12,		0,		0,		2,		0]];
 _eff_veh set [T_VEH_heli_cargo,				[0,		0,		0,		1,		0,		0,		0,		0,		0,		12,		0,		0,		2,		0]];
-_eff_veh set [T_VEH_heli_attack,			[0,		0,		0,		2,		10,		15,		6,		0,		0,		0,		0,		0,		2,		0]];
+_eff_veh set [T_VEH_heli_attack,			[0,		0,		0,		2,		30,		15,		6,		0,		0,		0,		0,		0,		2,		0]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_veh set [T_VEH_plane_attack,			[0,		0,		0,		3,		10,		15,		10,		4,		0,		0,		0,		0,		1,		0]];

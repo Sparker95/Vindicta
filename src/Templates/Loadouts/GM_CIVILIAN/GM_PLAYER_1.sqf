@@ -48,3 +48,4 @@ for "_i" from 1 to 3 do {this addItemToUniform _ammo;};
 //	==== Misc Items ====
 this linkItem "ItemMap"; 			// Map
 this linkItem "gm_watch_kosei_80"; 	// Watch
+this linkItem "gm_ge_army_conat2";  // Compass

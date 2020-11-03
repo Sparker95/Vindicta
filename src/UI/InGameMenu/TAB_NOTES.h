@@ -22,7 +22,7 @@ class TAB_NOTES : MUI_GROUP_ABS
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorText[] = MUIC_WHITE;
 			font = "EtelkaMonospacePro";
-			text = "You can write notes here. Radio cryptokeys will also be added here.";
+			text = $STR_NOTES_HINT;
 		};		
 	};
 	
