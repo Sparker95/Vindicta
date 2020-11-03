@@ -3102,6 +3102,10 @@
 				<Original>TYPE</Original>
 				<Chinesesimp>类型</Chinesesimp>
 			</Key>
+			<Key ID="STR_CMUI_B_NAME">
+				<Original>NAME</Original>
+				<Chinesesimp>名称</Chinesesimp>
+			</Key>
 			<Key ID="STR_CMUI_B_TIME">
 				<Original>TIME</Original>
 				<Chinesesimp>时间</Chinesesimp>
