@@ -368,7 +368,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						OOP_INFO_1("  revealing to commander: %1", _sideCommander);
 						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
 					} else {
-						if (_sideCommander != _playerSide}) then { // Enemies are smart
+						if (_sideCommander != _playerSide) then { // Enemies are smart
 							// This part determines commander's knowledge about enemy locations at game init
 							// Only relevant for One AI vs Another AI Commander game mode I think
 							//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
