@@ -1010,6 +1010,8 @@ CLASS("AICommander", "AI")
 		};
 
 		// Process locations known by this garrison
+		// This is disabled for now
+		/*
 		if (count _locs > 0) then {
 			pr _text = "  " + localize "STR_TT_TABLET_MSG_26" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.2], _clientOwner, false);
@@ -1029,6 +1031,7 @@ CLASS("AICommander", "AI")
 				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
 			} forEach _locs;
 		};
+		*/
 
 		if (_itemSide != _side) then {
 			pr _text = _endl + localize "STR_TT_TABLET_MSG_28" + _endl;
