@@ -83,6 +83,18 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.266; 
 			h = 0.038;  
 			text = $STR_GMINIT_INITIAL_ENY;
+			hint = "Hint Hint";
+		};
+
+		class STATIC_ENEMY_OUTPOSTS_OCCUPIED : MUI_DESCRIPTION_ABS 
+		{
+			idc = -1;
+			x = 0.020; 
+			y = 0.357; 
+			w = 0.266; 
+			h = 0.038;  
+			text = $STR_GMINIT_INITIAL_ENEMY_OUTPOSTS;
+			hint = "Hint Hint";
 		};
 
 		class STATIC_MILITARY_FACTION : MUI_DESCRIPTION_ABS 
@@ -133,6 +145,17 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.371; 
 			h = 0.038; 
 			text = "100";
+			style = 0;
+		};
+
+		class TAB_GMINIT_EDIT_ENEMY_OUTPOSTS_OCCUPIED : MUI_EDIT_ABS 
+		{
+			idc = -1;
+			x = 0.308; 
+			y = 0.357; 
+			w = 0.371; 
+			h = 0.038; 
+			text = "35";
 			style = 0;
 		};
 
