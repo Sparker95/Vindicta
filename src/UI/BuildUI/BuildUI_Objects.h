@@ -81,7 +81,7 @@ class BuildObjects
 		class CatRepair {
 			displayName = "Repair";
 
-			__BUILD_OBJECT_CLASS(CatRepair,B_Slingload_01_Repair_F,								100);
+			__BUILD_OBJECT_CLASS(CatRepair,Land_Workshop_01_F,								100);
 		};
 
 		class CatStorage {

@@ -654,7 +654,8 @@ location_bt_medical =
 
 location_bt_repair =
 [
-    "B_Slingload_01_Repair_F"
+    "B_Slingload_01_Repair_F",
+	"Land_Workshop_01_F"
 ];
 
 // Helipads
