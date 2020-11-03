@@ -2796,7 +2796,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 							private _comp = GETV(_garModel, "composition");
 							private _nInf = [_comp] call comp_fnc_countInfantry;
 							private _locPos = GETV(_x, "pos");
-							private _locMaxInf = GETV(_x, "capacityInf");
+							private _locMaxInf = CALLSM1("Location", "getCapacityInfForType", _locType);
 							if (_nInf < _locMaxInf) then {					// It's not overcrowded
 																			// If there is a city with some recruits nearby
 								private _nearestRecruitCity = CALLM3(gGameMode, "getNearestRecruitCity", +_locPos, _side, 6);
