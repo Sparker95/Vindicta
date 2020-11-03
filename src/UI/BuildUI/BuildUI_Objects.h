@@ -78,6 +78,12 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(CatMedical,Land_DeconTent_01_white_F,							60);
 		};
 
+		class CatRepair {
+			displayName = "Repair";
+
+			__BUILD_OBJECT_CLASS(CatRepair,Land_Workshop_01_F,								100);
+		};
+
 		class CatStorage {
 			displayName = $STR_BUIO_STORAGE;
 

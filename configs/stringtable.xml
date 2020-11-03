@@ -4365,8 +4365,30 @@
 				<Chinesesimp>错误地点类型</Chinesesimp>
 			</Key>
 			<Key ID="STR_LOC_HEAL_SELF">
-				<Original>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/&lgt;  Heal Yourself</Original>
-				<Chinesesimp>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/&lgt;  自我医治</Chinesesimp>
+				<Original>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/&gt;  Heal Yourself</Original>
+				<Chinesesimp>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/&gt;  自我医治</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_VEHICLES">
+				<Original>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\repair_ca.paa'/&gt;  Repair Vehicles</Original>
+				<Chinesesimp>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\repair_ca.paa'/&gt;  维修车</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_REPAIR">
+				<Original>REPAIR</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_YOU_WERE_DISEMBARKED">
+				<Original>You were disembarked from the vehicle.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_THE_VEHICLE_IS_REPAIRED">
+				<Original>The vehicle is currently being repaired.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_REPAIRING_VEHICLES">
+				<Original>Repairing vehicles.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_NO_VEHICLES_FOUND">
+				<Original>No vehicles to repair found.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_CHECK_VEHICLES_CLOSE">
+				<Original>Check if the vehicles are close enough.</Original>
 			</Key>
 			<Key ID="STR_LOC_MANAGE_KEYS">
 				<Original>Manage radio cryptokeys</Original>

@@ -652,6 +652,12 @@ location_bt_medical =
     "Land_MedicalTent_01_white_generic_outer_F"
 ];
 
+location_bt_repair =
+[
+    "B_Slingload_01_Repair_F",
+	"Land_Workshop_01_F"
+];
+
 // Helipads
 location_bt_helipad =
 [

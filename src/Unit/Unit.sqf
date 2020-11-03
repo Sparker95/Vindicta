@@ -509,6 +509,48 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 
+						_objectHandle setVariable ["BIS_enableRandomization", false]; //disable vanilla randomization
+
+						if (active3CBFactions == true) then {
+							_objectHandle call UK3CB_Factions_Vehicles_fnc_disable_randomize; //disable 3cb randomization on vehicle for texture persistence as they have custom randomization
+						};
+
+						//do our own randomization on vehicle textures exactly when we need it to happen and syncs up textures across clients, only for civilian vehicles, 
+						if ((_objectHandle isKindOf "LandVehicle") && (side _objectHandle == civilian )) then {
+							_objectType = typeOf _objectHandle;
+							_textureSources = "true" configClasses (configFile >> "CfgVehicles" >> _objectType >> "TextureSources");
+							_availableTextures = [];
+							_textureSources apply {
+								_colorName = configName _x;
+								_textures = [_x , "textures", []] call BIS_fnc_returnConfigEntry;
+								_availableTextures pushBack [_colorName, _textures];
+							};
+
+							_textureLists = [configFile >> "CfgVehicles" >> _objectType , "textureList", []] call BIS_fnc_returnConfigEntry;
+
+							_correctTextures = [];
+
+							for [{private _t = 0}, {_t < count _availableTextures}, {_t = _t + 1}] do
+							{
+							private _element = _availableTextures select _t;
+							if((_element select 0) in _textureLists) then
+								{
+								_correctTextures pushBack (_element select 1);
+								};
+							};
+
+							_randomTexture = selectRandom _correctTextures;
+
+							if (count _randomTexture > 0) then {
+								for '_i' from 0 to count _randomTexture - 1 do {
+									_randomTexture set [_i,[_i,_randomTexture select _i]]
+								};
+								{
+									_objectHandle setObjectTextureGlobal _x
+								} forEach _randomTexture;
+							};
+						};
+
 						if (isNull _objectHandle) then {
 							OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
 							_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
@@ -665,6 +707,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 				};
 			};
+
+			// Try and restore saved attributes
+			private _restoredAttributes = T_CALLM0("restoreAttributes");
 
 			// Give intel to this unit
 			// Intel tablets are not saved in inventory
@@ -964,6 +1009,36 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		};
 	ENDMETHOD;
 
+	METHOD(restoreAttributes)
+		params [P_THISOBJECT];
+		private _data = T_GETV("data");
+
+		// Bail if not spawned
+		private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith { false };
+
+		if ((_hO isKindOf "LandVehicle") && (!(_hO isKindOf "StaticWeapon"))) then {
+			private _vehicleProperties = _data#UNIT_DATA_ID_VEHICLE_PROPERTIES;
+
+			private _savedDamages = (_vehicleProperties select 0);
+
+			if (count _savedDamages > 0) then {
+				{_hO setHitIndex [_forEachIndex, _x]} forEach (_savedDamages select 2);
+			};
+
+			private _savedTextures = (_vehicleProperties select 1);
+
+			if (count _savedTextures > 0) then {
+				for '_i' from 0 to count _savedTextures - 1 do {
+					_savedTextures set [_i,[_i,_savedTextures select _i]] 
+				}; 
+				{
+					_hO setObjectTextureGlobal _x 
+				} forEach _savedTextures; 
+			};
+		};
+	ENDMETHOD;
+
 	METHOD(restoreInventory)
 		params [P_THISOBJECT];
 		private _data = T_GETV("data");
@@ -1103,6 +1178,27 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			//diag_log format["SAVED INV FOR %1: %2", _hO, _savedInventory];
 			_data set [UNIT_DATA_ID_INVENTORY, _savedInventory];
 		};
+	ENDMETHOD;
+
+	METHOD(saveAttributes)
+			params [P_THISOBJECT];
+			private _data = T_GETV("data");
+
+			// Bail if not spawned
+			private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+			if (isNull _hO) exitWith {};
+
+			if ((_hO isKindOf "LandVehicle") && ((_hO isKindOf "StaticWeapon") == false)) then {
+				private _vehicleProperties = [];
+				_vehicleProperties resize UNIT_VEH_PROPERTIES_SIZE;
+				private _savedTexture = getObjectTextures _hO;
+				_vehicleProperties set [UNIT_VEH_PROPERTY_TEXTURES, _savedTexture];
+
+				private _savedDamages = getAllHitPointsDamage _hO;
+				_vehicleProperties set [UNIT_VEH_PROPERTY_DAMAGES, _savedDamages];
+
+				_data set [UNIT_DATA_ID_VEHICLE_PROPERTIES, _vehicleProperties];
+			};
 	ENDMETHOD;
 
 	// Generates loot array while trying to equally share each item
@@ -1405,6 +1501,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 			// Save the inventory (for cargo and vics)
 			T_CALLM0("saveInventory");
+
+			// Save the vehicle attributes (for cargo and vics)
+			T_CALLM0("saveAttributes");
 
 			// Deinitialize the limited arsenal
 			T_CALLM0("limitedArsenalOnDespawn");
@@ -2525,6 +2624,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		if (T_CALLM0("isSpawned")) then {
 			// Save the inventory (for cargo and vics)
 			T_CALLM0("saveInventory");
+			T_CALLM0("saveAttributes");
 			T_CALLM0("limitedArsenalSyncToUnit");
 		};
 
@@ -2567,11 +2667,22 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 	ENDMETHOD;
 
 	public override METHOD(deserializeFromStorage)
-		params [P_THISOBJECT, P_ARRAY("_serial")];
+		params [P_THISOBJECT, P_ARRAY("_serial"), P_NUMBER("_version")];
 		_serial set [UNIT_DATA_ID_OWNER, 2]; // Server
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		_serial set [UNIT_DATA_ID_AI, ""];
+
+		// SAVEBREAK >>>
+		// Patch previous saves which don't have vehicle attributes stored yet
+		if (_version < 29) then {
+			pr _props = [];
+			_props resize UNIT_VEH_PROPERTIES_SIZE;
+			_props set [UNIT_VEH_PROPERTY_DAMAGES, []];
+			_props set [UNIT_VEH_PROPERTY_TEXTURES, []];
+			_serial set [UNIT_DATA_ID_VEHICLE_PROPERTIES, _props];
+		};
+		// <<< SAVEBREAK
 
 		// Check class exists, if not re-resolve it from the cat and sub-cat if possible
 		private _class = _serial#UNIT_DATA_ID_CLASS_NAME;
