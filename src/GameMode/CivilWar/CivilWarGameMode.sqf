@@ -116,12 +116,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		OOP_DEBUG_MSG("%1", [_loc]);
 		private _type = GETV(_loc, "type");
+		private _enemyOutpostsPercent = T_GETV("enemyInitialOutpostsRatio") * 100;
 		// Initial setup has AAF holding all bases and police stations
 		if(_type in [LOCATION_TYPE_BASE, LOCATION_TYPE_POLICE_STATION, LOCATION_TYPE_AIRPORT]) then {
 			ENEMY_SIDE
 		} else {
 			if (_type == LOCATION_TYPE_OUTPOST) then {
-				if (random 100 < 35) then {
+				if (random 100 < _enemyOutpostsPercent) then {
 					//selectRandom [ENEMY_SIDE, WEST]
 					ENEMY_SIDE
 				} else {
