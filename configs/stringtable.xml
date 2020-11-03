@@ -2377,9 +2377,20 @@
 				<Chinesesimp>游戏模式：</Chinesesimp>
 			</Key>
 			<Key ID="STR_GMINIT_INITIAL_ENY">
-				<Original>INITIAL ENEMY %:</Original>
-				<Chinesesimp>初始敌军%：</Chinesesimp>
+				<Original>ENEMIES AT OUTPOSTS %:</Original>
+				<Chinesesimp>前哨的敌人%：</Chinesesimp>
 			</Key>
+			<Key ID="STR_GMINIT_TOOLTIP_INITIAL_ENY">
+				<Original>Initial amount of enemies at occupied outposts</Original>
+			</Key>
+			<Key ID="STR_GMINIT_INITIAL_ENEMY_OUTPOSTS">
+				<Original>OCCUPIED OUTPOSTS %:</Original>
+				<Chinesesimp>发生敌人的前哨%：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_TOOLTIP_ENEMY_OUTPOSTS">
+				<Original>Initial amount of outposts occupied by enemies</Original>
+			</Key>
+
 			<Key ID="STR_GMINIT_MIL_FACTION">
 				<Original>MILITARY FACTION:</Original>
 				<Chinesesimp>军事阵营：</Chinesesimp>
@@ -3101,6 +3112,10 @@
 			<Key ID="STR_CMUI_B_TYPE">
 				<Original>TYPE</Original>
 				<Chinesesimp>类型</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_NAME">
+				<Original>NAME</Original>
+				<Chinesesimp>名称</Chinesesimp>
 			</Key>
 			<Key ID="STR_CMUI_B_TIME">
 				<Original>TIME</Original>

@@ -1139,6 +1139,11 @@ CLASS("ClientMapUI", "")
 			OOP_INFO_0("Intel doesn't exist");
 		};
 
+		pr _loc = GETV(_intel, "location");
+		pr _nameText = localize "STR_LOC_UNKOWN";
+		if (GETV(_intel, "accuracyRadius") == 0) then {	// We don't reveal name of location name of which is not known
+			_nameText = CALLM0(_loc, "getDisplayName");
+		};
 		pr _typeText = CALLSM1("Location", "getTypeString", GETV(_intel, "type"));
 		pr _timeText = str GETV(_intel, "dateUpdated");
 		pr _sideText = str GETV(_intel, "side");
@@ -1147,10 +1152,10 @@ CLASS("ClientMapUI", "")
 		pr _lnb = [findDisplay 12, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl;
 		// Apply new text for GUI elements
 		_lnb lnbSetCurSelRow -1;
+
+		_lnb lnbAddRow [ localize "STR_CMUI_B_NAME", _nameText];
 		_lnb lnbAddRow [ localize "STR_CMUI_B_TYPE" , _typeText];
 		_lnb lnbAddRow [ localize "STR_CMUI_B_SIDE", _sideText];
-
-		pr _loc = GETV(_intel, "location");
 
 		// Add inf capacity
 		pr _capinf = CALLM0(_loc, "getCapacityInf");

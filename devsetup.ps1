@@ -15,7 +15,7 @@ if (-not (Test-Path "src\config\user_local_config.hpp")) {
 }
 
 "`nSetting up symlinks for src folder..."
-$missionFolders = Get-Childitem -directory -name "Vindicta.*"
+$missionFolders = Get-Childitem -directory -name "Vindicta*.*"
 forEach ($missionFolder in $missionFolders) {
     "   Found mission folder: $missionFolder"
     if (-not (Test-Path "$missionFolder\src")) {
@@ -26,8 +26,10 @@ forEach ($missionFolder in $missionFolders) {
     "  Copying common files..."
     $filesToCopy = "cba_settings.sqf", "description.ext", "init.sqf", "onPlayerRespawn.sqf", "stringtable.xml"
     forEach ($fileName in $filesToCopy) {
-        Copy-Item "configs\$fileName" $missionFolder
+        Copy-Item "configs\$fileName" $missionFolder -Force
     }
+
+    Copy-Item "configs\pboVariant_standalone.hpp" "$missionFolder\pboVariant.hpp" -Force
 }
 
 pause

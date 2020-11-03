@@ -74,8 +74,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE("playerInfoArray");
 	VARIABLE("startSuspendTime");
 
+	VARIABLE_ATTR("enemyInitialOutpostsRatio", [ATTR_SAVE_VER(30)]); // Value 0...1
+
 	METHOD(new)
-		params [P_THISOBJECT, P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"), P_STRING("_tNameCivilian"), P_NUMBER("_enemyForcePercent")];
+		params [P_THISOBJECT, P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"), P_STRING("_tNameCivilian"), P_NUMBER("_enemyForcePercent"), P_NUMBER("_enemyOutpostsPercent")];
 		T_SETV("name", "unnamed");
 		T_SETV("spawningEnabled", false);
 
@@ -118,6 +120,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
+
+		T_SETV("enemyInitialOutpostsRatio", _enemyOutpostsPercent/100);
 
 		T_SETV("locations", []);
 

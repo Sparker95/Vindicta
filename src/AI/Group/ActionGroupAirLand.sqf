@@ -114,7 +114,7 @@ CLASS("ActionGroupAirLand", "ActionGroup")
 			private _h0 = CALLM0(T_GETV("vehicle"), "getObjectHandle");
 			_h0 engineOn false;
 			_h0 setFuel 1;
-			_h0 setDamage 0;
+			//_h0 setDamage 0; // Why? Seems weird!
 			_h0 setVehicleAmmo 1;
 		};
 	ENDMETHOD;

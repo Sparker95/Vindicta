@@ -821,7 +821,7 @@ CLASS("AICommander", "AI")
 				} forEach _nearCities;
 				_avgInfluence = _avgInfluence / (count _nearCities); // Within 0..1 range
 				OOP_INFO_1("  Average influence: %1", _avgInfluence);
-				if (random 1 < _avgInfluence) then {
+				if (random 2 < _avgInfluence) then {
 					OOP_INFO_0("  Intel intercepted through city");
 					T_CALLM2("inspectIntel", _intel, INTEL_METHOD_CITY);
 				} else {
@@ -1010,6 +1010,8 @@ CLASS("AICommander", "AI")
 		};
 
 		// Process locations known by this garrison
+		// This is disabled for now
+		/*
 		if (count _locs > 0) then {
 			pr _text = "  " + localize "STR_TT_TABLET_MSG_26" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.2], _clientOwner, false);
@@ -1029,6 +1031,7 @@ CLASS("AICommander", "AI")
 				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
 			} forEach _locs;
 		};
+		*/
 
 		if (_itemSide != _side) then {
 			pr _text = _endl + localize "STR_TT_TABLET_MSG_28" + _endl;
@@ -2796,7 +2799,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 							private _comp = GETV(_garModel, "composition");
 							private _nInf = [_comp] call comp_fnc_countInfantry;
 							private _locPos = GETV(_x, "pos");
-							private _locMaxInf = GETV(_x, "capacityInf");
+							private _locMaxInf = CALLSM1("Location", "getCapacityInfForType", _locType);
 							if (_nInf < _locMaxInf) then {					// It's not overcrowded
 																			// If there is a city with some recruits nearby
 								private _nearestRecruitCity = CALLM3(gGameMode, "getNearestRecruitCity", +_locPos, _side, 6);

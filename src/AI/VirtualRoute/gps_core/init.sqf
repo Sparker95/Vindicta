@@ -1,4 +1,5 @@
 #include "macros.h"
+#include "..\..\..\commonPath.hpp"
 /**
 	@Author : [Utopia] Amaury
 	@Creation : 28/01/18
@@ -9,8 +10,12 @@
 **/
 
 misc_fnc_getCurrentDir = {
-	params [["_fullPath","",[""]]];
+	// This is meant to resolve path dynamically if we were to move GPS_CORE folder elsewhere
+	// But it's not needed any more since we aren't moving it, so it resolves path in a static way now
 
+	//params [["_fullPath","",[""]]];
+
+	/*
 	_fullPath = toLower _fullPath;
 	_completeMissionName = toLower format [".%1",worldName];
 
@@ -21,6 +26,8 @@ misc_fnc_getCurrentDir = {
 	};
 	_allDirs deleteAt (count _allDirs - 1);
 	(_allDirs joinString "\") + "\";
+	*/
+	QUOTE_COMMON_PATH(AI\VirtualRoute\gps_core\)
 };
 
 gps_core_dir = [__FILE__] call misc_fnc_getCurrentDir;
