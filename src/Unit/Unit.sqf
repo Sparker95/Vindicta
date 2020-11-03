@@ -1338,6 +1338,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 					_hO addItemCargoGlobal ["vin_pills", 20];
 				};
 
+				// Toolkit
+				_hO addItemCargoGlobal ["ToolKit", 1];
+
 				// = = = END CIVILIAN VEHICLES = = =
 
 			} else {
@@ -1439,6 +1442,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 					// Basic first aid kits
 					_hO addItemCargoGlobal ["FirstAidKit", 3*_nInfScaled];
+
+					// Toolkit
+					_hO addItemCargoGlobal ["ToolKit", 1];
 				};
 
 				// = = = = END MILITARY CARGO = = = =
