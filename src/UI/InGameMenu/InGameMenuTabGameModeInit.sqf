@@ -213,7 +213,7 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 	public event METHOD(onButtonRnd)
 		params [P_THISOBJECT];
 		pr _editCampaignName = T_CALLM1("findControl", "TAB_GMINIT_EDIT_CAMPAIGN_NAME");
-		_editCampaignName ctrlSetText (selectRandom (CALL_COMPILE_COMMON("Templates\campaignNames.sqf")));
+		_editCampaignName ctrlSetText (CALL_COMPILE_COMMON("Templates\campaignNames.sqf"));
 	ENDMETHOD;
 	
 	public event METHOD(onButtonStart)
