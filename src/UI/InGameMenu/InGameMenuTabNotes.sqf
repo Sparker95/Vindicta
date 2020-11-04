@@ -75,7 +75,7 @@ ENDCLASS;
 if (isNil {GETSV("InGameMenuTabNotes", "text")}) then {
 	pr _textFromProfile = profileNamespace getVariable ["vin_notes", ""];
 	if (_textFromProfile ==  "") then {
-		_textFromProfile = localize "STR_NOTES_TEXT";
+		_textFromProfile = LOCALIZE "STR_NOTES_TEXT";
 	};
 	SETSV("InGameMenuTabNotes", "text", _textFromProfile);
 };

@@ -355,7 +355,7 @@ CLASS("UnitIntel", "")
 		CALLM2(_inst,"appendTextDelay", _text, 0.05);
 
 		CALLM2(_inst,"appendTextDelay", _endl + localize "STR_TT_TABLET_MSG_8" + _endl,  0.1 + random 0.2);
-		CALLM2(_inst,"appendTextDelay", selectrandom gCombatTips, 0);
+		CALLM2(_inst,"appendTextDelay", localize (selectrandom gCombatTips), 0);
 		CALLM2(_inst,"appendTextDelay", _endl, 0);
 
 		CALLM2(_inst,"appendTextDelay", _endl + localize "STR_TT_TABLET_MSG_9" + _endl,  0.15 + random 0.2);

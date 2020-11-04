@@ -64,6 +64,9 @@ Redefinitions of different functions which are not implemented on different plat
 
 #define DISTANCE_2D distance
 #define IS_SIMPLE_OBJECT isNull
+
+#define LOCALIZE 
+
 // #define 
 // ^^^ SQF-VM ^^^
 
@@ -115,6 +118,8 @@ Redefinitions of different functions which are not implemented on different plat
 
 #define DISTANCE_2D distance2D
 #define IS_SIMPLE_OBJECT isSimpleObject
+
+#define LOCALIZE localize
 
 #endif
 // ^^^ ARMA ^^^
