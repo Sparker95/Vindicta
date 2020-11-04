@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=4061;
+		nextID=4255;
 	};
 	class Camera
 	{
-		pos[]={23717.639,145.47736,21091.92};
-		dir[]={-0.36846277,-0.63720846,-0.67706144};
-		up[]={-0.30460325,0.77067256,-0.55971581};
-		aside[]={-0.87844855,-2.8943759e-007,0.47806269};
+		pos[]={21121.539,51.566277,7077.4141};
+		dir[]={0,-0.70710683,0.70710683};
+		up[]={0,0.70710677,0.70710677};
+		aside[]={0.99999994,0,-0};
 	};
 };
 binarizationWanted=0;
@@ -171,7 +171,7 @@ class AddonsMetaData
 		class Item10
 		{
 			className="A3_Props_F_Enoch";
-			name="Arma 3 Enoch - Decorative and Mission Objects";
+			name="Arma 3 Contact Platform - Decorative and Mission Objects";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
@@ -26199,7 +26199,7 @@ class Mission
 									};
 									id=1367;
 									type="B_Truck_01_transport_F";
-									atlOffset=2.2888184e-005;
+									atlOffset=-0.003288269;
 								};
 								class Item1
 								{
@@ -26267,7 +26267,7 @@ class Mission
 									};
 									id=1376;
 									type="B_Truck_01_transport_F";
-									atlOffset=-0.00037384033;
+									atlOffset=-0.040672302;
 								};
 								class Item5
 								{
@@ -26284,7 +26284,7 @@ class Mission
 									};
 									id=1377;
 									type="B_Truck_01_transport_F";
-									atlOffset=-1.5258789e-005;
+									atlOffset=-0.027900696;
 								};
 								class Item6
 								{
@@ -26488,7 +26488,7 @@ class Mission
 								};
 							};
 							id=3655;
-							atlOffset=-0.47503662;
+							atlOffset=-0.47355652;
 						};
 						class Item2
 						{
@@ -27914,7 +27914,7 @@ class Mission
 						};
 					};
 					id=3435;
-					atlOffset=-0.31154633;
+					atlOffset=-0.31147766;
 				};
 				class Item4
 				{
@@ -35275,21 +35275,22 @@ class Mission
 								class Item0
 								{
 									dataType="Marker";
-									position[]={21231.141,22.297333,7133.5127};
+									position[]={21222.977,22.392822,7139.7134};
 									name="allowedarea_1";
 									text="Syrta Checkpoint";
 									markerType="RECTANGLE";
 									type="rectangle";
 									colorName="ColorCIV";
 									a=80.123825;
-									b=15.250807;
+									b=10.979779;
 									angle=309.64853;
 									id=521;
+									atlOffset=-0.046800613;
 								};
 								class Item1
 								{
 									dataType="Marker";
-									position[]={21050.695,25.529663,6964.3428};
+									position[]={21048.111,27.054289,6969.7241};
 									name="allowedarea_2";
 									text="Syrta Checkpoint";
 									markerType="RECTANGLE";
@@ -35299,7 +35300,6 @@ class Mission
 									b=30.153854;
 									angle=329.30844;
 									id=524;
-									atlOffset=-1.3247585;
 								};
 								class Item2
 								{
@@ -35319,17 +35319,17 @@ class Mission
 								class Item3
 								{
 									dataType="Marker";
-									position[]={20673.984,32.111816,7180.2246};
+									position[]={20694.209,32.111816,7189.6836};
 									name="allowedarea_4";
 									text="Syrta Checkpoint";
 									markerType="RECTANGLE";
 									type="rectangle";
 									colorName="ColorCIV";
 									a=76.281952;
-									b=43.904118;
+									b=21.57629;
 									angle=244.93544;
 									id=525;
-									atlOffset=-0.90431595;
+									atlOffset=-0.28413391;
 								};
 								class Item4
 								{
@@ -101047,7 +101047,7 @@ class Mission
 			alpha=0.60951996;
 			a=141.5137;
 			b=93.672745;
-			angle=307.62134;
+			angle=307.62131;
 			id=9617;
 			atlOffset=8.1462555;
 		};
