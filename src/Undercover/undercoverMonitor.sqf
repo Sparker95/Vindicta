@@ -1054,13 +1054,13 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		// Unties target - player or AI
 		if (isPlayer _target) then {
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "setUnitFree", [_target], _target, false);
-			pr _sentence = selectRandom g_phrasesPlayerUntied;
+			pr _sentence = localize selectRandom g_phrasesPlayerUntied;
 			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _target, _sentence);
 		} else {
 			pr _ai = GET_AI_FROM_OBJECT_HANDLE(_target);
 			if (!IS_NULL_OBJECT(_ai)) then {
 				CALLM1(_ai, "setArrest", false);
-				pr _sentence = selectRandom g_phrasesCivilianUntied;
+				pr _sentence = localize selectRandom g_phrasesCivilianUntied;
 				CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _target, _sentence);
 				CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG getpos _target ARG (7+random(7))]);
 				CALLM2(gGameMode, "postMethodAsync", "civilianUntied", [getpos _target]);

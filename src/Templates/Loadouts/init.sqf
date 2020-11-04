@@ -87,6 +87,8 @@ CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer_Police\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer_Recon\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_CIVILIAN\init.sqf");
+//GM_EastGer
+CALL_COMPILE_COMMON("Templates\Loadouts\GM_EastGer\EastGer\init.sqf");
 //BWMOD
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Fleck\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_BWMOD\BW_Fleck_Recon\init.sqf");

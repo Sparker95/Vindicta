@@ -51,6 +51,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\DAF_Tan.sqf", 					
     "Templates\Factions\BWA.sqf",		
     "Templates\Factions\GM_WestGer.sqf",
+    "Templates\Factions\GM_EastGer.sqf",
     "Templates\Factions\RHS_BWMOD_BW_Fleck.sqf",
     "Templates\Factions\RHS_BWMOD_BW_Trop.sqf",
     "Templates\Factions\RHS_BWMOD_Niarms_BW_Fleck.sqf",
