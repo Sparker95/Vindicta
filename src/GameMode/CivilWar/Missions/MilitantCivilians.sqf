@@ -401,7 +401,7 @@ vin_fnc_givePlayerIntel = {
 					"There may be %1 near here!",
 					"%1 is planned by the enemy.",
 					"The enemy is planning %1!"
-				], CALLM0(_intel, "getShortName")]] call vin_fnc_dialogue_createSentence;
+				], localize CALLM0(_intel, "getShortName") ]] call vin_fnc_dialogue_createSentence;
 
 				sleep 2;
 

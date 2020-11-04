@@ -1,1 +1,6 @@
+#include "pboVariant.hpp"
+#ifdef PBO_VARIANT_STANDALONE_MISSION
 #include "src\description.ext"
+#else
+#include "..\src\description.ext"
+#endif

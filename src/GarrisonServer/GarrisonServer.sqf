@@ -221,7 +221,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		if (_objCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Object class name is empty. _this: %1", _this); };
 		// Bail if the garrison isn't registered any more
 		if (!(_gar in T_GETV("objects"))) exitWith {
-			"We can't build here any more." remoteExecCall ["systemChat", _clientOwner];
+			localize "STR_GS_CANT_BUILD_ANYMORE" remoteExecCall ["systemChat", _clientOwner];
 		};
 
 		pr _buildRes = CALLM1(_gar, "getBuildResources", true); // Force update
@@ -240,7 +240,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Bail if there is not enough resources
 		if (_buildRes < _cost && _checkGarrisonBuildRes) exitWith {
 			pr _objName = getText (configfile >> "CfgVehicles" >> _className >> "displayName");
-			pr _text = format ["Not enough resources to build %1", _objName];
+			pr _text = format [localize "STR_GS_NOT_ENOUGH_RESOURCES", _objName];
 			_text remoteExecCall ["systemChat", _clientOwner];
 		};
 
@@ -295,7 +295,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Send message to player
 		pr _objName = getText (configfile >> "CfgVehicles" >> _className >> "displayName");
-		pr _text = format ["Object %1 was build successfully!", _objName];
+		pr _text = format [localize "STR_GS_OBJECT_BUILT", _objName];
 		_text remoteExecCall ["systemChat", _clientOwner];
 	ENDMETHOD;
 
@@ -451,7 +451,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Send msg back
 		pr _name = T_NAMES#T_INF#_subcatID;
-		pr _text = format ["We have recruited one %1", _name];
+		pr _text = format [localize "STR_GS_SOLDIER_RECRUITED", localize _name];
 		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "showServerResponse", [_text], _clientOwner, NO_JIP);
 
 		// Send weapon data again, to re-enable client's buttons

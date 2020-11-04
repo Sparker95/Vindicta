@@ -1590,7 +1590,7 @@ class RscButtonMenuOK
 		156
 	};
 	default = 1;
-	text = "OK";
+	text = $STR_OK;
 	soundPush[] =
 	{
 		"\A3\ui_f\data\sound\RscButtonMenuOK\soundPush",
@@ -1605,7 +1605,7 @@ class RscButtonMenuCancel
 	{
 		"0x00050000 + 1"
 	};
-	text = "Cancel";
+	text = $STR_CANCEL;
 };
 class RscControlsGroup
 {

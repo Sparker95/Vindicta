@@ -37,7 +37,13 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 		// TODO settings
 		pr _btnSettings = T_CALLM1("findControl", "TAB_GMINIT_BUTTON_SETTINGS");
 		_btnSettings ctrlEnable false;
-		_btnSettings ctrlSetTooltip "Not yet implemented.";
+		_btnSettings ctrlSetTooltip localize "STR_NOT_YET_IMPLEMENTED";
+
+		// Set hints
+		pr _staticEnemyOutposts = T_CALLM1("findControl", "STATIC_ENEMY_OUTPOSTS_OCCUPIED");
+		_staticEnemyOutposts ctrlSetTooltip (localize "STR_GMINIT_TOOLTIP_ENEMY_OUTPOSTS");
+		pr _staticInitialEnemyPercent = T_CALLM1("findControl", "STATIC_ENEMY_FORCE_PERCENTAGE");
+		_staticInitialEnemyPercent ctrlSetTooltip (localize "STR_GMINIT_TOOLTIP_INITIAL_ENY");
 
 		T_CALLM0("onButtonRnd");
 
@@ -130,7 +136,7 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 		pr _isAdmin = call misc_fnc_isAdminLocal;
 		if (!_isAdmin) then {
 			_bnStart ctrlEnable false;
-			_bnStart ctrlSetTooltip "Only for admins";
+			_bnStart ctrlSetTooltip localize "STR_CON_ADMIN_ONLY";
 		};
 
 		// Add control event handlers
@@ -207,7 +213,7 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 	public event METHOD(onButtonRnd)
 		params [P_THISOBJECT];
 		pr _editCampaignName = T_CALLM1("findControl", "TAB_GMINIT_EDIT_CAMPAIGN_NAME");
-		_editCampaignName ctrlSetText (selectRandom (CALL_COMPILE_COMMON("Templates\campaignNames.sqf")));
+		_editCampaignName ctrlSetText (CALL_COMPILE_COMMON("Templates\campaignNames.sqf"));
 	ENDMETHOD;
 	
 	public event METHOD(onButtonStart)
@@ -220,13 +226,14 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 		pr _cbCivilianFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_CIV_FACTION");
 		pr _editCampaignName = T_CALLM1("findControl", "TAB_GMINIT_EDIT_CAMPAIGN_NAME");
 		pr _editEnemyForcePercent = T_CALLM1("findControl", "TAB_GMINIT_EDIT_ENEMY_PERCENTAGE");
+		pr _editEnemyOutposts = T_CALLM1("findControl", "TAB_GMINIT_EDIT_ENEMY_OUTPOSTS_OCCUPIED");
 
 		pr _dialogObj = T_CALLM0("getDialogObject");
 
 		// Campaign name
 		pr _campaignName = ctrlText _editCampaignName;
 		if (count _campaignName == 0) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must enter a campaign name.");
+			CALLM1(_dialogObj, "setHintText", localize "STR_IO_NO_CAMPAIGN_NAME");
 		};
 
 		// Check for forbidden characters: we must potentially enter a name compatible with file system
@@ -239,16 +246,24 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 			false;
 		};
 		if (_foundForbiddenCharacter) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must enter a valid campaign name.");
+			CALLM1(_dialogObj, "setHintText", localize "STR_IO_INVALID_CAMPAIGN_NAME");
 		};
 
-		// Enemy force
+		// Enemies at outposts
 		pr _enemyForceText = ctrlText _editEnemyForcePercent;
 		pr _enemyForcePercent = parseNumber _enemyForceText;
 		if (isNil "_enemyForcePercent") exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must enter a valid amount of enemy forces.");
+			CALLM1(_dialogObj, "setHintText", localize "STR_IO_INVALID_ENY_FORCE");
 		};
 		_enemyForcePercent = (_enemyForcePercent max 0) min 1000;
+
+		// Occupied outposts
+		pr _enemyOutpostsText = ctrlText _editEnemyOutposts;
+		pr _enemyOutpostsPercent = parseNumber _enemyOutpostsText;
+		if (isNil "_enemyOutpostsPercent") exitWith {
+			CALLM1(_dialogObj, "setHintText", localize "STR_IO_INVALID_ENY_FORCE");
+		};
+		_enemyOutpostsPercent = (_enemyOutpostsPercent max 0) min 100;
 
 		pr _gameModeClassName = LB_CUR_SEL_DATA(_cbGameMode);
 		pr _enemyTemplateName = LB_CUR_SEL_DATA(_cbEnemyFaction);
@@ -267,11 +282,11 @@ CLASS("InGameMenuTabGameModeInit", "DialogTabBase")
 
 		// Bail if incompatible template was selected
 		if (!_templatesGood) exitWith {
-			CALLM1(_dialogObj, "setHintText", "ERROR: You must select factions which have all the addons loaded on the server.");
+			CALLM1(_dialogObj, "setHintText", localize "STR_IO_FACTION_NOT_LOADED");
 		};
 
 		// Send data to server's GameManager
-		pr _gameModeParams = [_enemyTemplateName, _policeTemplateName, _civilianTemplateName, _enemyForcePercent];
+		pr _gameModeParams = [_enemyTemplateName, _policeTemplateName, _civilianTemplateName, _enemyForcePercent, _enemyOutpostsPercent];
 		pr _templatesVerify = [_enemyTemplateName, _policeTemplateName, _civilianTemplateName];
 		pr _args = [clientOwner, _gameModeClassName, _gameModeParams, _campaignName, _templatesVerify];
 		CALLM2(gGameManagerServer, "postMethodAsync", "initCampaignServer", _args);

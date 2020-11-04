@@ -72,7 +72,7 @@ CLASS("RecruitTab", "DialogTabBase")
 
 		// Set text...
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_STATIC_N_RECRUITS");
-		_ctrl ctrlSetText "Counting recruits...";
+		_ctrl ctrlSetText localize "STR_RD_COUNT";
 		// Disable the button
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
 		_ctrl ctrlEnable false;
@@ -190,7 +190,7 @@ CLASS("RecruitTab", "DialogTabBase")
 		// Bail if nothing is selected
 		pr _id = lnbCurSelRow _lnbMain;
 		if (_id == -1) exitWith {
-			CALLM1(_dialog, "setHintText", "You must select a loadout first");
+			CALLM1(_dialog, "setHintText", localize "STR_NEED_LOADOUT");
 		};
 
 		pr _subcatid = _lnbMain lnbValue [_id, 0];
@@ -226,7 +226,7 @@ CLASS("RecruitTab", "DialogTabBase")
 		OOP_INFO_1("ON BUTTON RECRUIT: sending data to server: %1", _args);
 		CALLM2(gGarrisonServer, "postMethodAsync", "recruitUnitAtLocation", _args);
 
-		CALLM1(_dialogObj, "setHintText", "Recruiting soldier...");
+		CALLM1(_dialogObj, "setHintText", localize "STR_RECRUITING");
 
 		// Disable the button
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
@@ -249,7 +249,7 @@ CLASS("RecruitTab", "DialogTabBase")
 
 		// Set text...
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_STATIC_N_RECRUITS");
-		_ctrl ctrlSetText (format ["RECRUITS AVAILABLE: %1", _nRecruits]);
+		_ctrl ctrlSetText (format [localize "STR_RECRUITS_AVAILABLE", _nRecruits]);
 		// Enable the button
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
 		_ctrl ctrlEnable true;
@@ -330,7 +330,7 @@ CLASS("RecruitTab", "DialogTabBase")
 		pr _selectedIdx = -1;
 		{
 			pr _subcatID = _x;
-			_ctrl lnbAddRow [T_NAMES select T_INF select _subcatID];
+			_ctrl lnbAddRow [localize (T_NAMES select T_INF select _subcatID)];
 			_ctrl lnbSetValue [[_forEachIndex, 0], _subcatID];
 			if(_subcatID == _lastSelectedRecruit) then {
 				_selectedIdx = _forEachIndex;

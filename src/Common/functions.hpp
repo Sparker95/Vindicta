@@ -1,5 +1,6 @@
+#include "..\commonPath.hpp"
 class common {
-	file = "src\Common";
+	file = QUOTE_COMMON_PATH(Common);
 	class common_bearingToID {};
 	class common_remoteExec {};
 	class common_remoteExecCall {};

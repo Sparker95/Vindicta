@@ -82,8 +82,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		private _targetRangeObjects = if (_loc != NULL_OBJECT) then {CALLM0(_loc, "getTargetRangeObjects")} else {[]};
 
 		// // Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
-		// _buildings = _buildings apply {[2 * (abs ((boundingBoxReal _x) select 1 select 2)), _x]};
-		// _buildings sort false;
+		_buildings = _buildings apply {[2 * (abs ((boundingBoxReal _x) select 1 select 2)), _x]};
+		_buildings sort false;
 
 		private _freeAmbient = _ambientAnimObjects select {
 			!(_x getVariable ["vin_occupied", false])
@@ -105,7 +105,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 
 		private _freeBuildingLocs = [];
 		{
-			private _building = _x;
+			private _building = _x#1;
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _building distance _nearPos };
 			private _countPos = count (_building buildingPos -1);
 			private _allBuildingPosIDs = [];

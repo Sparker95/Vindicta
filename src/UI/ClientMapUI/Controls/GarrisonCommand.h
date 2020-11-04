@@ -26,7 +26,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 0*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Move";
+			text = $STR_COMMAND_MOVE;
 		};
 		class BUTTON_ATTACK : MUI_BUTTON_TXT 
 		{
@@ -35,7 +35,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 1*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Attack";
+			text = $STR_COMMAND_ATTACK;
 		};
         class BUTTON_REINFORCE : MUI_BUTTON_TXT 
 		{
@@ -44,7 +44,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 2*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Reinforce / Occupy";
+			text = $STR_COMMAND_REINFORCE;
 		};
         class BUTTON_PATROL : MUI_BUTTON_TXT 
 		{
@@ -53,7 +53,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 3*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Patrol (NYI)";
+			text = $STR_COMMAND_PATROL;
 		};
         class BUTTON_CLOSE : MUI_BUTTON_TXT 
 		{
@@ -62,7 +62,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 4*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "< Cancel >";
+			text = $STR_COMMAND_CANCEL;
 		};	
 	};
 };

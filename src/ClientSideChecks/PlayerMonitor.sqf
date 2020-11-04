@@ -225,11 +225,11 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			//pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_veh);
 			if ( /*!IS_NULL_OBJECT(_veh) &&*/ (isEngineOn _veh)) then {
 				pr _phrasesCantFly = [
-					"I don't know how to fly this, I am not a pilot.",
-					"What does this switch do? I have no idea. I can't fly this.",
-					"I really have no idea how to pilot this.",
-					"There is no way I could pilot an aircraft.",
-					"I should better switch this off, I have no idea what I am doing."
+					localize "STR_PM_P_NO_PILOTING_1",
+					localize "STR_PM_P_NO_PILOTING_2",
+					localize "STR_PM_P_NO_PILOTING_3",
+					localize "STR_PM_P_NO_PILOTING_4",
+					localize "STR_PM_P_NO_PILOTING_5"
 				];
 				_veh vehicleChat (selectRandom _phrasesCantFly);
 				_veh engineOn false;
@@ -237,7 +237,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				private _posATL = getPosATL _veh;
 				if ((speed _veh > 40) || ((_posATL#2) > 20)) then {
 					if (random 10 < 2) then {
-						_veh vehicleChat "Damn, I should have stayed on the ground!";
+						_veh vehicleChat localize "STR_PM_P_TO_THE_GROUND";
 						_veh setHitPointDamage ["hitvrotor", 1, true];
 						_hits = (getAllHitPointsDamage _veh) select 0;
 						{
@@ -323,16 +323,16 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			pr _h = floor (abs _t / 60);
 			pr _m = floor (abs _t % 60);
 			pr _tstr = if (_h > 0) then {
-				format ["%1h %2m", _h, _m]
+				format [localize "STR_INT_HR_MIN", _h, _m]
 			} else {
-				format ["%1m", _m]
+				format [localize "STR_INT_MIN", _m]
 			};
 			pr _actionName = CALLM0(_intel, "getShortName");
 
 			pr _args = if (_t < 0) then {
-				["REMINDER", format ["%1 will start in %2", _actionName, _tstr]]
+				[localize "STR_PM_REMINDER", format [localize "STR_PM_REMINDER_HINT", localize _actionName, _tstr]]
 			} else {
-				["STARTED", format ["%1 started %2 ago", _actionName, _tstr]]
+				[localize "STR_PM_STARTED", format [localize "STR_PM_STARTED_HINT", localize _actionName, _tstr]]
 			};
 
 			CALLSM("NotificationFactory", "createIntelCommanderActionReminder", _args);

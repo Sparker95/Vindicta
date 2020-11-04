@@ -9,7 +9,7 @@ Set-Location "$PSScriptRoot\..\..\"
 "Read the config.json file..."
 $configString = get-content -path (Join-path -path $PSScriptRoot -childPath "config.json")
 $config = ConvertFrom-Json -InputObject ($configString -as [String])
-$combinedFolderName = "$($config.simpleName)_missions".toLower()
+$combinedFolderName = "$($config.combinedMissionsFolderName)".toLower()
 $combinedMissionsLocation = "_build\missions\$combinedFolderName"
 
 "`nSetup temporary directories..."
@@ -50,29 +50,32 @@ if ($verMinor.Count -gt 1) {
 
 # Generate common strings
 $verFullDots = "$verMajor.$verMinor.$verPatch"
-$verFullUnderscores = "$verMajor_$verMinor_$verPatch"
-"Mission Version: $verFullDots"
+$verFullUnderscores = $verMajor + "_" + $verMinor + "_" + $verPatch
+"Mission Version: $verFullDots $verFullUnderscores"
 $briefingName = "$($config.displayName) $verMajor.$verMinor.$verPatch"
 
 "`nCheck all mission folders..."
-$missionFolders = Get-Childitem -directory -name ($config.missionFolderWildcard -as [String])
-$mapNames = @()
-forEach ($missionFolder in $missionFolders) {
-    "Found mission folder: $missionFolder"
-    #Ensure that .sqm file exists here
-    if (-not (Test-Path (Join-Path -path $missionFolder -childPath "mission.sqm"))) {
-        "ERROR: mission.sqm was not found in $missionFolder"
+forEach ($folderConfig in $config.missionFolders) {
+    $folderName = $folderConfig.folder
+    "Verifying mission folder: $folderName"
+    #Ensure that folder exists
+    if (-not (Test-Path $folderName)) {
+        "ERROR: folder does not exist: $folderName"
         exit 200
     }
-    $mapNames += $missionFolder.Split(".")[-1]
+    #Ensure that .sqm file exists here
+    if (-not (Test-Path (Join-Path -path $folderName -childPath "mission.sqm"))) {
+        "ERROR: mission.sqm was not found in: $folderName"
+        exit 210
+    }
 }
 
 "`nBuild individual mission PBOs..."
-for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
-    $mapName = $mapNames[$i]
-    $missionFolder = $missionFolders[$i]
-    $oneMissionFolderName = "$($config.simpleName)_$mapName.$mapName".toLower()
-    $oneMissionPboName = ($config.oneMissionPboName -f $verMajor, $verMinor, $verPatch, $mapName).toLower()
+forEach ($folderConfig in $config.missionFolders) {
+    $mapName = $folderConfig.mapName
+    $missionFolder = $folderConfig.folder
+    $oneMissionFolderName = "$($folderConfig.CfgMissionsEntry).$mapName".toLower()
+    $oneMissionPboName = "$($folderConfig.CfgMissionsEntry)_$verFullUnderscores.$mapName.pbo".toLower()
     $tempMissionLocation = "$combinedMissionsLocation\$oneMissionFolderName"
     New-Item -path $tempMissionLocation -ItemType Directory > $null
 
@@ -86,6 +89,8 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     #New-Item -ItemType SymbolicLink -name "$tempMissionLocation\src" -value "src" > $null
     Copy-Item "_build\missions\buildVersion.hpp" -Destination "$tempMissionLocation\src\config"
     Copy-Item "$missionFolder\mission.sqm" -Destination $tempMissionLocation
+    Copy-Item "configs\pboVariant_standalone.hpp" -Destination "$tempMissionLocation\src\config\pboVariant.hpp" -Force
+    Copy-Item "configs\pboVariant_standalone.hpp" -Destination "$tempMissionLocation\pboVariant.hpp" -Force
     forEach ($pathPair in $config.copyFiles) {
         $pathDest = Join-Path -Path $tempMissionLocation -ChildPath $pathPair.to
         Copy-Item $pathPair.from -Destination $pathDest -Recurse
@@ -97,8 +102,10 @@ for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
     "Building PBO with armake..."
     .$PSScriptRoot\hemtt armake build --force -i include $tempMissionLocation "_build\missions\separatePBO\$oneMissionPboName" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation
     "`tDone in $($sw.ElapsedMilliseconds)ms"
-}
 
+    # Delete src folder, it's no longer needed for the upcoming combined pbo build
+    Remove-Item -Path "$tempMissionLocation\src" -Recurse
+}
 
 # GENERATE CONFIG.CPP
 
@@ -109,7 +116,7 @@ $sClassMPMissions = ""
 
 $sCfgPatches += "class CfgPatches {`n";
 $sCfgPatches += " class $($config.cfgPatchesClassName) {`n";
-$sCfgPatches += "  name = ""$($config.displayName) Missions"";`n";
+$sCfgPatches += "  name = ""Vindicta Missions"";`n";
 $sCfgPatches += "  units[] = {};`n";
 $sCfgPatches += "  weapons[] = {};`n";
 $sCfgPatches += "  requiredVersion = 1.56;`n";
@@ -123,12 +130,11 @@ $sCfgPatches += "};`n";
 
 $sReadme = "Example class Missions for server.cfg:`n`n"
 $sReadme += "class Missions`n{`n"
-for (($i = 0); ($i -lt $mapNames.count); ($i++) ) {
-    $mapName = $mapNames[$i]
-    $missionFolder = $missionFolders[$i]
-    $briefingNameMap = "$($config.displayName) $mapName $verMajor.$verMinor.$verPatch"
-    $className = "$($config.simpleName)_$mapName".toLower()
-    $missionsMissionFolder = "$($config.simpleName)_$mapname.$mapName".toLower()
+forEach ($folderConfig in $config.missionFolders) {
+    $mapName = $folderConfig.mapName
+    $missionFolder = $folderConfig.folder
+    $briefingNameMap = "$($folderConfig.briefingName) $verFullDots"
+    $className = $folderConfig.CfgMissionsEntry.toLower()
     $directory = "$combinedFolderName\$className.$mapName".toLower()
     
     $sReadme += "  class $className`n"
@@ -166,7 +172,7 @@ $sConfigCPP += " };`n";
 
 $sConfigCPP += " class Missions`n";
 $sConfigCPP += " {`n";
-$sConfigCPP += "  class $($config.simpleName)";
+$sConfigCPP += "  class $($config.cfgMissionsClassName)";
 $sConfigCPP += "  {`n";
 $sConfigCPP += "  briefingName = ""$briefingName"";`n";
 $sConfigCPP +=    $sClassMissions;
@@ -178,6 +184,24 @@ $sConfigCPP += "};`n";
 $sConfigCPP | Out-File -FilePath "$combinedMissionsLocation\config.cpp" -NoNewline -Encoding UTF8
 
 "`nBuild combined missions PBO..."
+
+# Copy one src folder for all the missions
+Copy-Item "src" -Destination $combinedMissionsLocation -Recurse
+
+# Copy other files
+
+$missionFolders = Get-Childitem $combinedMissionsLocation -name "*" -Directory
+forEach ($missionFolder in $missionFolders) {
+    Copy-Item "configs\pboVariant_combined.hpp" -Destination "$combinedMissionsLocation\$missionFolder\pboVariant.hpp" -Force
+}
+
+Copy-Item "configs\pboVariant_combined.hpp" -Destination "$combinedMissionsLocation\src\config\pboVariant.hpp" -Force
+forEach ($pathPair in $config.copyFiles) {
+    if ($pathPair.to -like "src\*") {
+        $pathDest = Join-Path -Path $combinedMissionsLocation -ChildPath $pathPair.to
+        Copy-Item $pathPair.from -Destination $pathDest -Recurse
+    }
+}
 
 $sw = [system.diagnostics.stopwatch]::startNew()
 .$PSScriptRoot\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation

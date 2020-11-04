@@ -44,7 +44,7 @@ class BuildObjects
 	// Below are buildUI categories, inside which we have actual objects
 	class Categories {
 		class CatTents {
-			displayName = "Tents";
+			displayName = $STR_BUIO_TENTS;
 
 			// Small tents (2 person)
 			__BUILD_OBJECT_CLASS(CatTents,Land_TentA_F, 										10);
@@ -60,7 +60,7 @@ class BuildObjects
 		};
 
 		class CatMedical {
-			displayName = "Medical";
+			displayName = $STR_BUIO_MEDICAL;
 
 			__BUILD_OBJECT_CLASS(CatMedical,Land_MedicalTent_01_MTP_closed_F,					60);
 			__BUILD_OBJECT_CLASS(CatMedical,Land_MedicalTent_01_digital_closed_F,				60);
@@ -78,8 +78,14 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(CatMedical,Land_DeconTent_01_white_F,							60);
 		};
 
+		class CatRepair {
+			displayName = "Repair";
+
+			__BUILD_OBJECT_CLASS(CatRepair,Land_Workshop_01_F,								100);
+		};
+
 		class CatStorage {
-			displayName = "Storage";
+			displayName = $STR_BUIO_STORAGE;
 
 			// Note that we have increased capacity of these boxes through the addon 
 			__BUILD_OBJECT_CLASS_CAT(CatStorage,Box_FIA_Support_F,								20, 3, 2);
@@ -89,7 +95,7 @@ class BuildObjects
 		};
 
 		class CatCamo {
-			displayName = "Camouflage";
+			displayName = $STR_BUIO_CAMO;
 
 			// Camo nets
 			__BUILD_OBJECT_CLASS(CatCamo,CamoNet_OPFOR_F,										20);
@@ -98,7 +104,7 @@ class BuildObjects
 		};
 
 		class Lighting {
-			displayName = "Lighting";
+			displayName = $STR_BUIO_LIGHT;
 
 			// Lights
 			__BUILD_OBJECT_CLASS(Lighting,Land_TentLamp_01_standing_F,							10);
@@ -109,7 +115,7 @@ class BuildObjects
 		};
 
 		class Defense {
-			displayName = "Defense";
+			displayName = $STR_BUIO_DEFENSE;
 
 			// cheap makeshift barriers
 			__BUILD_OBJECT_CLASS(Defense,Land_SlumWall_01_s_2m_F,								10);
@@ -144,7 +150,7 @@ class BuildObjects
 		};
 
 		class TargetRange {
-			displayName = "Shooting Range";
+			displayName = $STR_BUIO_RANGE;
 
 			// small targets
 			__BUILD_OBJECT_CLASS(TargetRange,Land_Target_Oval_F,								10);
@@ -166,7 +172,7 @@ class BuildObjects
 		};
 
 		class BuildingsA {
-			displayName = "Buildings";
+			displayName = $STR_BUIO_BUILDINGS;
 
 			// towers and bunkers
 			__BUILD_OBJECT_CLASS(BuildingsA,Land_GuardTower_01_F,								160);
@@ -177,7 +183,7 @@ class BuildObjects
 		};
 
 		class Concealment {
-			displayName = "Concealment";
+			displayName = $STR_BUIO_CONCEAL;
 
 			// walls
 			__BUILD_OBJECT_CLASS(Concealment,Land_Wall_Tin_4_2,									10);
@@ -187,7 +193,7 @@ class BuildObjects
 		};
 
 		class Recreation {
-			displayName = "Recreation";
+			displayName = $STR_BUIO_RECREATION;
 
 			// tables
 			__BUILD_OBJECT_CLASS(Recreation,Land_WoodenTable_02_large_F, 						10);
@@ -214,13 +220,13 @@ class BuildObjects
 		};
 
 		class Special {
-			displayName = "Special";
+			displayName = $STR_BUIO_SPECIAL;
 			class RadioShack : BuildObjectBase {
 				className = "Land_TBox_F";
-				displayName = "Radio Shack";
+				displayName = $STR_BUIO_RADIO;
 				buildResource = 100;
 				isRadio = true;
-				description = "A small building with radio equipment. Intercepts enemy radio communications in the range of ~5km, if you have the radio cryptokey";
+				description = $STR_BUIO_RADIO_DESC;
 			};
 		};
 	};

@@ -21,67 +21,58 @@ private _class = typeOf _building;
 private _type = T_GETV("type");
 if (_type == LOCATION_TYPE_CITY) exitWith {}; // We must be truly insane if we want to process all buildings in a city
 
+_calculateOffsetAndDir = {
+	params ["_bpArray", "_building"];
+	_bpArray params ["_dist", "_angle", "_height"];
+	private _bDir = direction _building;
+	private _dirOut = _bDir + _angle;
+	private _buildingPosATL = getPosATL _building;
+	private _offset = [_dist*(sin (_angle + _bDir)), _dist*(cos (_angle + _bDir)), _height];
+	private _posATL = _buildingPosATL vectorAdd _offset;
+	private _zCorrection = (getTerrainHeightASL _buildingPosATL) - (getTerrainHeightASL _posATL);
+	_posATL set [2, (_posATL#2) + _zCorrection];
+
+	#ifndef RELEASE_BUILD
+	private _arrow = "Sign_Arrow_Direction_Cyan_F" createVehicle _posATL;
+	_arrow setPosATL _posATL;
+	_arrow setDir _dirOut;
+	#endif
+
+	[_posATL, _dirOut];
+};
+
 //Pre-defined positions for static HMG and GMG in buildings. Check initBuildingTypes.sqf.
-private _index = location_bp_HGM_GMG_high findIf { _class in (_x select 0)};
-if(_index != -1) then {
-	private _bps = location_bp_HGM_GMG_high select _index;
+private _bps = location_bp_HGM_GMG_high getVariable _class;
+if(!isNil "_bps") then {
 	//Add every position from the array to the spawn positions array
 	{
 		_bp = _x;
 		_bdir = direction _building;
-		if(count _bp == 2) then { //This position is defined by building position ID and direction
-			_position = _building buildingPos (_bp select 0);
-			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _position, _bdir + (_bp select 1), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			T_CALLM("addSpawnPos", _args);
-			//diag_log format ["Addes HMG position: ID: %1", _bp select 0];
-		} else { //This position is defined by offset in cylindrical coordinates
-			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
-			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
+			([_bp, _building] call _calculateOffsetAndDir) params ["_posATL", "_dir"];
+			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
 			//diag_log format ["Addes HMG position: %1", _bp];
 		};
-	} forEach (_bps select 1);
+	} forEach _bps;
 };
 
 // Pre-defined positions for cargo boxes
-private _index = location_bp_cargo_medium findIf { _class in (_x select 0)};
+_bps = location_bp_cargo_medium getVariable _class;
 
 // We want to do this only for police stations.
 // It's very annoying when cargo boxes spawn in some random house at outpost instead of pre-defined position.
-if (_index != -1 && _type == LOCATION_TYPE_POLICE_STATION) then {
-	private _bps = location_bp_cargo_medium select _index;
+if (!(isNil "_bps") && _type == LOCATION_TYPE_POLICE_STATION) then {
 	{
 		_bp = _x;
 		_bdir = direction _building;
 		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
-			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
-			private _args = [T_PL_cargo_small_medium, [GROUP_TYPE_INF], _position, _bdir + (_bp select 3), _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+			([_bp, _building] call _calculateOffsetAndDir) params ["_posATL", "_dir"];
+			private _args = [T_PL_cargo_small_medium, [GROUP_TYPE_INF], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
 
 			//diag_log format ["Addes cargo box position: %1", _bp];
 		};
 
-	} forEach (_bps select 1);
+	} forEach _bps;
 };
-
-
-//Pre-defined positions for sentries inside buildings
-/*
-_bps = location_bp_sentry select { _class in (_x select 0)};
-if(count _bps > 0) then {
-	//Add every position from the array to the spawn positions array
-	{
-		_bp = _x;
-		_bdir = direction _object;
-		if(count _bp == 2) then {//This position is defined by building position ID and direction
-			_position = _building buildingPos (_bp select 0);
-			private _args = [T_PL_inf_main, [GROUP_TYPE_INF], _position, _bdir + (_bp select 1), _building]; // [P_ARRAY("_unitTypes"), P_ARRAY("_groupTypes"), P_ARRAY("_pos"), P_NUMBER("_dir"), P_OBJECT("_building") ];
-			T_CALLM("addSpawnPos", _args);
-		} else { //This position is defined by offset in cylindrical coordinates
-			_position = (getPosATL _building) vectorAdd [(_bp select 0)*(sin (_bdir + (_bp select 1))), (_bp select 0)*(cos (_bdir + (_bp select 1))), _bp select 2];
-			private _args = [T_PL_inf_main, [GROUP_TYPE_INF], _position, _bdir + (_bp select 3), _building]; // [P_ARRAY("_unitTypes"), P_ARRAY("_groupTypes"), P_ARRAY("_pos"), P_NUMBER("_dir"), P_OBJECT("_building") ];
-			T_CALLM("addSpawnPos", _args);
-		};
-	} forEach ((_bps select 0) select 1);
-};
-*/

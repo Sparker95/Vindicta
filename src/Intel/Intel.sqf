@@ -288,11 +288,11 @@ CLASS("IntelLocation", "Intel")
 			pr _type = T_GETV("type");
 			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
 			pr _text = if (_type == LOCATION_TYPE_UNKNOWN) then {
-				format ["%1 at %2.", _typeStr, mapGridPosition _pos];
+				format [localize "STR_INT_1_AT_2", _typeStr, mapGridPosition _pos];
 			} else {
-				format ["%1 at %2.", CALLM0(_loc, "getDisplayName"), mapGridPosition _pos];
+				format [localize "STR_INT_1_AT_2", CALLM0(_loc, "getDisplayName"), mapGridPosition _pos];
 			};
-			pr _args = ["LOCATION DISCOVERED", _text, ""];
+			pr _args = [localize "STR_INT_LOC_DISCOVERED", _text, ""];
 			CALLSM("NotificationFactory", "createIntelLocation", _args);
 		};
 	ENDMETHOD;
@@ -324,8 +324,8 @@ CLASS("IntelLocation", "Intel")
 		// Add notification
 		if (_needNotify && (! isRemoteExecutedJIP) && (time > 60) ) then {
 			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-			pr _text = format ["%1 at %2.", CALLM0(_loc, "getDisplayName"), mapGridPosition _pos];
-			pr _args = ["LOCATION INTEL UPDATED", _text, ""];
+			pr _text = format [localize "STR_INT_1_AT_2", CALLM0(_loc, "getDisplayName"), mapGridPosition _pos];
+			pr _args = [localize "STR_INT_LOC_INTEL_UPDATED", _text, ""];
 			CALLSM("NotificationFactory", "createIntelLocation", _args);
 		};
 
@@ -514,30 +514,30 @@ CLASS("IntelCommanderAction", "Intel")
 
 			// Make a string representation of time difference
 			pr _timeDiffStr = if (_h > 0) then {
-				format ["%1h %2m", _h, _m]
+				format [localize "STR_INT_HR_MIN", _h, _m]
 			} else {
-				format ["%1m", _m]
+				format [localize "STR_INT_MIN", _m]
 			};
 			pr _timeStr = if (_future) then {
-				format ["will start in %1", _timeDiffStr];
+				format [localize "STR_INT_WILL_START", _timeDiffStr];
 			} else {
-				format ["started %1 ago", _timeDiffStr];
+				format [localize "STR_INT_STARTED", _timeDiffStr];
 			};
 
 			pr _method = GETV(_intel, "method");
 			pr _categoryText = switch (_method) do {
 				case (INTEL_METHOD_INVENTORY_ITEM) : {
-					"INTEL FOUND IN TABLET"
+					localize "STR_INT_FOUND_IN_TABLET"
 				};
 				case (INTEL_METHOD_RADIO) : {
-					"INTEL INTERCEPTED BY RADIO"
+					localize "STR_INT_FOUND_BY_RADIO"
 				};
 				case INTEL_METHOD_CITY : {
-					"INTEL INTERCEPTED BY CITIZENS"
+					localize "STR_INT_FOUND_BY_CIV"
 				};
-				default {"INTEL INTERCEPTED";};
+				default {localize "STR_INT_FOUND";};
 			};
-			pr _text = format ["%1 %2", _actionName, _timeStr];
+			pr _text = format ["%1 %2", localize _actionName, _timeStr];
 			pr _args = [_categoryText, _text];
 			CALLSM("NotificationFactory", "createIntelCommanderAction", _args);
 		};
@@ -552,7 +552,7 @@ CLASS("IntelCommanderAction", "Intel")
 
 		//OOP_INFO_0("CLIENT REMOVE");
 
-		systemChat format ["Removed intel: %1", _thisObject];
+		systemChat format [localize "STR_INT_REMOVED", _thisObject];
 
 		// Notify ClientMapUI
 		CALLM1(gClientMapUI, "onIntelRemoved", _thisObject);
@@ -685,7 +685,12 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 	//  
 	public override METHOD(getShortName)
 		params [P_THISOBJECT];
-		T_GETV("type");
+		pr _type = T_GETV("type");
+		switch toUpper(_type) do {
+			case "ASSIGN NEW OFFICER" :	{ "STR_NOTI_ASSIGN_OFFICER" };
+			case "REINFORCE GARRISON" : { "STR_NOTI_REINFORCE_GARRISON" };
+			default { OOP_ERROR_1("Wrong enum value: %1", _type) };
+		};
 	ENDMETHOD;
 ENDCLASS;
 
@@ -783,12 +788,20 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 
 	public override METHOD(getShortName)
 		params [P_THISOBJECT];
-		T_GETV("type");
+		pr _type = T_GETV("type");
+		switch toUpper(_type) do {
+			case "BUILDING SUPPLIES" 			: 	{ "STR_NOTI_BUILDING_SUPPLIES" };
+			case "AMMUNITION" 					:	{ "STR_NOTI_AMMUNITION" };
+			case "EXPLOSIVES" 					:	{ "STR_NOTI_EXPLOSIVES" };
+			case "MEDICAL" 						:	{ "STR_NOTI_MEDICAL" };
+			case "MISCELLANEOUS" 				:	{ "STR_NOTI_MISC" };
+			default { OOP_ERROR_1("Wrong enum value: %1", _type) };
+		};
 	ENDMETHOD;
 
 	public override METHOD(getInfo)
 		params [P_THISOBJECT];
-		private _info = "<br/><t color='#FFFFFF' font='EtelkaMonospaceProBold'>Schedule</t><br/>";
+		private _info = localize "STR_INT_SCHEDULE";
 		// private _locations = [T_GETV("srcLocation")] + T_GETV("locations") + [T_GETV("tgtLocation")];
 		private _schedule = +T_GETV("schedule");
 		{
@@ -796,7 +809,7 @@ CLASS("IntelCommanderActionSupplyConvoy", "IntelCommanderAction")
 			_info = _info + format ["<t color='#FFFFFF'>%1 </t><t color='#AAAAFF'>%2<br/></t>", _forEachIndex + 1, _locName];
 			if(_forEachIndex < count _schedule) then {
 				private _date = _schedule#_forEachIndex;
-				_info = _info + format ["<t>  </t><t color='#AAAAAA' size='0.7'>depart %1</t><br/>", [_date] call vin_fnc_formatDate];
+				_info = _info + format [localize "STR_INT_DEPART", [_date] call vin_fnc_formatDate];
 			};
 		} forEach T_GETV("locations");
 
@@ -828,7 +841,7 @@ CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
 		// pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-		"Construct Roadblock" // Temp, since we only deploy roadblocks now anyway
+		"STR_NOTI_CONSTRUCT_ROADBLOCK" // Temp, since we only deploy roadblocks now anyway
 	ENDMETHOD;
 ENDCLASS;
 
@@ -855,7 +868,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 
 	//  
 	public override METHOD(getShortName)
-		"Attack"
+		"STR_NOTI_ATTACK"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -925,7 +938,7 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	ENDMETHOD;
 
 	public override METHOD(getShortName)
-		"Patrol"
+		"STR_NOTI_PATROL"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -941,7 +954,7 @@ CLASS("IntelCommanderActionRetreat", "IntelCommanderAction")
 	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
 
 	public override METHOD(getShortName)
-		"Retreat"
+		"STR_NOTI_RETREAT"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -953,7 +966,7 @@ The commander is planning something so he sends some recon squads!
 CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
 	//  
 	public override METHOD(getShortName)
-		"Recon"
+		"STR_NOTI_RECON"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -1064,11 +1077,11 @@ CLASS("IntelCluster", "Intel")
 		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
 
 		pr _eff = GETV(_intelSrc, "efficiency");
-		pr _text = "  Enemy ";
-		if (_eff#T_EFF_crew > 0) then {_text = _text + "Infantry "};
-		if ((_eff#T_EFF_medium > 0) || (_eff#T_EFF_armor > 0)) then {_text = _text + "Armor "};
-		if (_eff#T_EFF_air > 0) then {_text = _text + "Air "};
-		if (_eff#T_EFF_water > 0) then {_text = _text + "Water "};
+		pr _text = "  " + localize "STR_INT_SPACE_ENY" + " ";
+		if (_eff#T_EFF_crew > 0) then {_text = _text + localize "STR_CMUI_INFANTRY" + " "};
+		if ((_eff#T_EFF_medium > 0) || (_eff#T_EFF_armor > 0)) then {_text = _text + localize "STR_CMUI_ARMOR" + " "};
+		if (_eff#T_EFF_air > 0) then {_text = _text + localize "STR_CMUI_AIR" + " "};
+		if (_eff#T_EFF_water > 0) then {_text = _text + localize "STR_CMUI_WATER" + " "};
 
 		pr _dateNumberLastSpotted = GETV(_intelSrc, "dateNumberLastSpotted");
 		pr _dateNumberDiff = (dateToNumber date) - _dateNumberLastSpotted;
@@ -1076,7 +1089,7 @@ CLASS("IntelCluster", "Intel")
 		pr _minutes = (_dateDiff#4) + 60*(_dateDiff#3);
 
 		// Add age text
-		_text = _text + (format [", %1 min. ago", _minutes]);
+		_text = _text + (format [localize "STR_INT_MIN_AGO", _minutes]);
 
 		// Set center marker properties
 		_mrkName setMarkerPosLocal _pos;

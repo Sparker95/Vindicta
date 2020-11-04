@@ -25,6 +25,9 @@ params [P_THISOBJECT];
 
 if (T_GETV("isBuilt")) exitWith {};
 
+// Mark this place as built
+T_SETV_PUBLIC("isBuilt", true);
+
 if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 	pr _pos = T_GETV("pos");
 
@@ -107,9 +110,6 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 		[_x, _posWorld] remoteExec ["setPosWorld"];
 		[_x, [_vdir, _vup]] remoteExec ["setVectorDirAndUp"];
 	} forEach _objects;
-
-	// The End!
-	T_SETV_PUBLIC("isBuilt", true);
 };
 
 // OOP_ERROR_1("Build method is not implemented for location type: %1", T_GETV("type"));

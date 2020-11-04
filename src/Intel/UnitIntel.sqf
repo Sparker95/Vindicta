@@ -342,23 +342,23 @@ CLASS("UnitIntel", "")
 
 		// Make us some time while we are waiting for server response...
 		pr _endl = toString [13,10];
-		CALLM2(_inst,"appendTextDelay", "Welcome to TactiCool OS v28.3!" + _endl + "Detected 128 GB RAM, 16 TB SSD" + _endl, 0.1);
-		pr _text = format ["System date: %1, grid: %2" + _endl, date call misc_fnc_dateToISO8601, mapGridPosition player];
+		CALLM2(_inst,"appendTextDelay", localize "STR_TT_TABLET_MSG_1" + _endl + localize "STR_TT_TABLET_MSG_2" + _endl, 0.1);
+		pr _text = format [localize "STR_TT_TABLET_MSG_3" + _endl, date call misc_fnc_dateToISO8601, mapGridPosition player];
 		CALLM2(_inst,"appendTextDelay", _text, 0.2);
-		pr _text = format ["User class: %1" + _endl, typeof player];
+		pr _text = format [localize "STR_TT_TABLET_MSG_4" + _endl, typeof player];
 		CALLM2(_inst,"appendTextDelay", _text, 0.06);
-		pr _text = format ["Primary weapon: %1" + _endl, primaryWeapon player];
+		pr _text = format [localize "STR_TT_TABLET_MSG_5" + _endl, primaryWeapon player];
 		CALLM2(_inst,"appendTextDelay", _text, 0.06);
-		pr _text = format ["Secondary weapon: %1" + _endl, secondaryWeapon player];
+		pr _text = format [localize "STR_TT_TABLET_MSG_6" + _endl, secondaryWeapon player];
 		CALLM2(_inst,"appendTextDelay", _text, 0.06);
-		pr _text = format ["Dammage: %1 percent" + _endl, round ((damage player)*100)];
+		pr _text = format [localize "STR_TT_TABLET_MSG_7" + _endl, round ((damage player)*100)];
 		CALLM2(_inst,"appendTextDelay", _text, 0.05);
 
-		CALLM2(_inst,"appendTextDelay", _endl + "Tip of the day:" + _endl,  0.1 + random 0.2);
-		CALLM2(_inst,"appendTextDelay", selectrandom gCombatTips, 0);
+		CALLM2(_inst,"appendTextDelay", _endl + localize "STR_TT_TABLET_MSG_8" + _endl,  0.1 + random 0.2);
+		CALLM2(_inst,"appendTextDelay", localize (selectrandom gCombatTips), 0);
 		CALLM2(_inst,"appendTextDelay", _endl, 0);
 
-		CALLM2(_inst,"appendTextDelay", _endl + "Connecting to TactiCommNetwork server..." + _endl,  0.15 + random 0.2);
+		CALLM2(_inst,"appendTextDelay", _endl + localize "STR_TT_TABLET_MSG_9" + _endl,  0.15 + random 0.2);
 		CALLM2(_inst,"appendTextDelay", "Tx SYN" + _endl,  0.2 + random 0.2);
 		CALLM2(_inst,"appendTextDelay", "Rx SYN-ACK" + _endl + "Tx ACK" + _endl,  0.2 + random 0.2);
 		//CALLM2(_inst,"appendTextDelay", ".", 0.3);
@@ -366,10 +366,10 @@ CLASS("UnitIntel", "")
 		//CALLM2(_inst,"appendTextDelay", ".", 0.1);
 		CALLM2(_inst,"appendTextDelay", "Tx RQ-DATA" + _endl, 0.2);
 		CALLM2(_inst,"appendTextDelay", "Rx INTEL_CMDR_ACTION" + _endl, 0.2);
-		CALLM2(_inst,"appendTextDelay", _endl + "Connection established!" + _endl, 0.1);
+		CALLM2(_inst,"appendTextDelay", _endl + localize "STR_TT_TABLET_MSG_10" + _endl, 0.1);
 
-		CALLM2(_inst, "setTextDelay", "Logged in Altis Armed Forces TactiCommNetWork" + _endl, 0.4);
-		pr _text = format ["System date: %1" + _endl, date call misc_fnc_dateToISO8601];
+		CALLM2(_inst, "setTextDelay", localize "STR_TT_TABLET_MSG_11" + _endl, 0.4);
+		pr _text = format [localize "STR_TT_TABLET_MSG_12" + _endl, date call misc_fnc_dateToISO8601];
 		CALLM2(_inst, "appendTextDelay", _text, 0.1);
 
 		/*

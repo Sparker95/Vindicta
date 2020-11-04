@@ -93,7 +93,7 @@ ENDCLASS;
 #define OOP_CLASS_NAME MoveCmdrActionRecord
 CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
 	public client STATIC_METHOD(getText)
-		"MOVE"
+		"STR_CMUI_MOVE_MARKER"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -101,7 +101,7 @@ ENDCLASS;
 #define OOP_CLASS_NAME TakeLocationCmdrActionRecord
 CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
 	public client STATIC_METHOD(getText)
-		"CAPTURE"
+		"STR_CMUI_CAPTURE_MARKER"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -109,7 +109,7 @@ ENDCLASS;
 #define OOP_CLASS_NAME AttackCmdrActionRecord
 CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
 	public client STATIC_METHOD(getText)
-		"ATTACK"
+		"STR_CMUI_ATTACK_MARKER"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -117,7 +117,7 @@ ENDCLASS;
 #define OOP_CLASS_NAME ReinforceCmdrActionRecord
 CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
 	public client STATIC_METHOD(getText)
-		"REINFORCE"
+		"STR_CMUI_REINFORCE_MARKER"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -125,7 +125,7 @@ ENDCLASS;
 #define OOP_CLASS_NAME SupplyConvoyCmdrActionRecord
 CLASS("SupplyConvoyCmdrActionRecord", "DirectedCmdrActionRecord")
 	public client STATIC_METHOD(getText)
-		"SUPPLY"
+		"STR_CMUI_SUPPLY_MARKER"
 	ENDMETHOD;
 ENDCLASS;
 
@@ -145,6 +145,6 @@ ENDCLASS;
 #define OOP_CLASS_NAME PatrolCmdrActionRecord
 CLASS("PatrolCmdrActionRecord", "CmdrActionRecord")
 	public client STATIC_METHOD(getText)
-		"Patrol"
+		"STR_CMUI_PATROL_MARKER"
 	ENDMETHOD;
 ENDCLASS;
