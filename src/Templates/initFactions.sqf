@@ -86,6 +86,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\CUP_RUS_Police.sqf",
     "Templates\Factions\GSG9.sqf",
     "Templates\Factions\GM_WestGer_Police.sqf",
+    "Templates\Factions\GM_EastGer_Police.sqf",
     "Templates\Factions\GEXP_Police.sqf",
     "Templates\Factions\3CB_TPD.sqf",
     "Templates\Factions\3CB_TPD_O.sqf",
