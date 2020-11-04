@@ -1017,8 +1017,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith { false };
 
-		private _gar = _data select UNIT_DATA_ID_GARRISON;
-		if ( !IS_NULL_OBJECT(_gar) && {CALLM0(_gar, "getSide") == CIVILIAN} ) then {
+		if ((_hO isKindOf "LandVehicle") && (!(_hO isKindOf "StaticWeapon"))) then {
 			private _vehicleProperties = _data#UNIT_DATA_ID_VEHICLE_PROPERTIES;
 
 			private _savedDamages = (_vehicleProperties select 0);
