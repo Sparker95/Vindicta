@@ -516,7 +516,8 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 						};
 
 						//do our own randomization on vehicle textures exactly when we need it to happen and syncs up textures across clients, only for civilian vehicles, 
-						if ((_objectHandle isKindOf "LandVehicle") && (side _objectHandle == civilian )) then {
+						private _gar = _data select UNIT_DATA_ID_GARRISON;
+						if ( !IS_NULL_OBJECT(_gar) && {CALLM0(_gar, "getSide") == CIVILIAN} ) then {
 							_objectType = typeOf _objectHandle;
 							_textureSources = "true" configClasses (configFile >> "CfgVehicles" >> _objectType >> "TextureSources");
 							_availableTextures = [];
