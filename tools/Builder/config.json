@@ -126,6 +126,12 @@
             "CfgMissionsEntry": "vindicta_tembelan",
             "mapName": "tembelan",
             "briefingName": "Vindicta - Tembelan"
+        },
+        {
+            "folder": "Vindicta.cam_lao_nam",
+            "CfgMissionsEntry": "vindicta_cam_lao_nam",
+            "mapName": "cam_lao_nam",
+            "briefingName": "Vindicta - Cam Lao Nam"
         }
     ]
 }
