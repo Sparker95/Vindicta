@@ -124,6 +124,8 @@ _array set [T_VEH, _veh];
 // Inventory
 _inv = [T_INV] call t_fnc_newCategory;
 _inv set [T_INV_items, +t_miscItems_civ_modern ];
+_inv set [T_INV_backpacks, ["B_FieldPack_Blk", "gm_ge_backpack_satchel_80_blk"]];
+
 _array set [T_INV, _inv];
 
 // Return final array
