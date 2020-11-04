@@ -90,7 +90,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["vn_b_sf_static_m101_01", "vn_b_army_static_
 //_veh set [T_VEH_heli_light, [""]];
 //_veh set [T_VEH_heli_heavy, [""]];
 //_veh set [T_VEH_heli_cargo, [""]];
-_veh set [T_VEH_heli_attack, ["vn_air_ah1g_02", "vn_air_ah1g_03", "vn_air_ah1g_04", "vn_air_ah1g_01", "vn_b_air_oh6a_06", "vn_b_air_oh6a_05", "vn_b_air_oh6a_04", "vn_b_air_oh6a_07", "vn_b_air_oh6a_01", "vn_b_air_oh6a_03", "vn_b_air_oh6a_02", "vn_b_air_uh1c_06_02", "vn_b_air_uh1c_06_01", "vn_b_air_uh1c_04_02", "vn_b_air_uh1c_04_01", "vn_b_air_uh1c_02_02", "vn_b_air_uh1c_02_01", "vn_b_air_uh1c_05_02", "vn_b_air_uh1c_01_01", "vn_b_air_uh1c_03_01"]];
+_veh set [T_VEH_heli_attack, [/*"vn_air_ah1g_02", "vn_air_ah1g_03", "vn_air_ah1g_04", "vn_air_ah1g_01",*/ "vn_b_air_oh6a_06", "vn_b_air_oh6a_05", "vn_b_air_oh6a_04", "vn_b_air_oh6a_07", "vn_b_air_oh6a_01", "vn_b_air_oh6a_03", "vn_b_air_oh6a_02", "vn_b_air_uh1c_06_02", "vn_b_air_uh1c_06_01", "vn_b_air_uh1c_04_02", "vn_b_air_uh1c_04_01", "vn_b_air_uh1c_02_02", "vn_b_air_uh1c_02_01", "vn_b_air_uh1c_05_02", "vn_b_air_uh1c_01_01", "vn_b_air_uh1c_03_01"]];
 
 //_veh set [T_VEH_plane_attack, [""]];
 //_veh set [T_VEH_plane_fighter , [""]];

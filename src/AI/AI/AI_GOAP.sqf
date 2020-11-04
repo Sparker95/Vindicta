@@ -301,6 +301,9 @@ CLASS("AI_GOAP", "AI")
 					 // Because it changes after goal is processed first time
 					 pr __currentGoalParameters = _currentGoalParameters select {_x#0 != TAG_INSTANT};
 					 pr __goalParameters = _goalParameters select {_x#0 != TAG_INSTANT};
+					 OOP_INFO_1("  current goal params: %1", __currentGoalParameters);
+					 OOP_INFO_1("  new goal parameters: %1", __goalParameters);
+					 OOP_INFO_1("  equal: %1", __currentGoalParameters isEqualTo __goalParameters);
 					 __currentGoalParameters isEqualTo __goalParameters;
 				}
 			) then {

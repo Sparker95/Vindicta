@@ -86,7 +86,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		_buildings sort false;
 
 		private _freeAmbient = _ambientAnimObjects select {
-			!(_x getVariable ["vin_occupied", false])
+			!(_x getVariable ["vin_occupied", false]) &&
+			!(_x getVariable ["vin_preoccupied", false])
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist, "GoalUnitAmbientAnim", [
@@ -95,7 +96,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		};
 
 		private _freeTargets = _targetRangeObjects select {
-			!(_x getVariable ["vin_occupied", false])
+			!(_x getVariable ["vin_occupied", false]) &&
+			!(_x getVariable ["vin_preoccupied", false])
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist,"GoalUnitShootAtTargetRange", [
