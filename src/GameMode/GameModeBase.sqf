@@ -397,6 +397,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 			CALLM(_gar, "addUnit", [_newUnit]);
 		};
+		private _cBoats = CALLM0(_loc, "getMaxCivilianBoats");
+		for "_i" from 1 to _cBoats do {
+			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_boat_unarmed ARG -1 ARG ""]);
+			CALLM(_gar, "addUnit", [_newUnit]);
+		};
+
 		CALLM1(_gar, "setLocation", _loc);
 		CALLM0(_gar, "activate");
 

@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=4061;
+		nextID=4449;
 	};
 	class Camera
 	{
-		pos[]={23717.639,145.47736,21091.92};
-		dir[]={-0.36846277,-0.63720846,-0.67706144};
-		up[]={-0.30460325,0.77067256,-0.55971581};
-		aside[]={-0.87844855,-2.8943759e-007,0.47806269};
+		pos[]={15221.665,48.459126,15845.175};
+		dir[]={-0.24592973,-0.22089417,0.94379246};
+		up[]={-0.055701081,0.97529674,0.21376298};
+		aside[]={0.96769732,-1.0679651e-007,0.2521576};
 	};
 };
 binarizationWanted=0;
@@ -171,7 +171,7 @@ class AddonsMetaData
 		class Item10
 		{
 			className="A3_Props_F_Enoch";
-			name="Arma 3 Enoch - Decorative and Mission Objects";
+			name="Arma 3 Contact Platform - Decorative and Mission Objects";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
@@ -1374,7 +1374,6 @@ class Mission
 		{
 			dataType="Layer";
 			name="Cities";
-			state=1;
 			class Entities
 			{
 				items=54;
@@ -2402,12 +2401,13 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={16824.5,22.012426,12620.25};
+						position[]={16744.213,22.012426,12651.722};
 					};
-					areaSize[]={380,0,380};
+					areaSize[]={500.10742,0,460.28613};
 					flags=1;
 					id=728;
 					type="Vindicta_LocationSector";
+					atlOffset=2.1812057;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3655,15 +3655,15 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={12524.5,12.714225,14341.625};
+						position[]={12537.824,12.714225,14319.894};
 						angles[]={6.2392201,4.1623483,0.014660765};
 					};
-					areaSize[]={300,0,300};
+					areaSize[]={325.49051,0,300};
 					areaIsRectangle=1;
 					flags=1;
 					id=754;
 					type="Vindicta_LocationSector";
-					atlOffset=9.5367432e-007;
+					atlOffset=0.71744251;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3954,13 +3954,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={11761.125,13.213981,13718};
+						position[]={11776.696,13.213981,13673.623};
 						angles[]={0.02799508,4.3749294,0.016004669};
 					};
-					areaSize[]={160,0,160};
+					areaSize[]={207.0291,0,160};
 					flags=1;
 					id=758;
 					type="Vindicta_LocationSector";
+					atlOffset=0.86735249;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -4326,14 +4327,15 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={3845.625,44.410114,12271.75};
+						position[]={3812.3623,44.410114,12217.666};
 						angles[]={0.10098849,3.1381021,0.26681599};
 					};
-					areaSize[]={550,0,338.68872};
+					areaSize[]={583.45105,0,284.7207};
 					areaIsRectangle=1;
 					flags=1;
 					id=763;
 					type="Vindicta_LocationSector";
+					atlOffset=8.9479027;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -4475,14 +4477,15 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={3893.75,12.806343,11472.25};
+						position[]={3925.5918,12.806343,11382.806};
 						angles[]={6.2751913,6.2728529,0.030647982};
 					};
-					areaSize[]={540.64001,0,442.93201};
+					areaSize[]={509.72412,0,532.70093};
 					areaIsRectangle=1;
 					flags=1;
 					id=765;
 					type="Vindicta_LocationSector";
+					atlOffset=-0.38892651;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -4698,13 +4701,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={4039,23.738129,17248};
+						position[]={3951.4624,23.738129,17402.973};
 						angles[]={6.1848373,4.3749294,0.1986773};
 					};
-					areaSize[]={317.70386,0,150.71564};
+					areaSize[]={529.89124,0,213.57108};
 					flags=1;
 					id=768;
 					type="Vindicta_LocationSector";
+					atlOffset=3.6750641;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -5509,15 +5513,15 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={3639.5,15.76267,12868.625};
+						position[]={3399.0376,15.76267,12830.75};
 						angles[]={0.020315632,3.1381021,0.13772392};
 					};
-					areaSize[]={353.923,0,250};
+					areaSize[]={594.51624,0,287.03506};
 					areaIsRectangle=1;
 					flags=1;
 					id=912;
 					type="Vindicta_LocationSector";
-					atlOffset=0.15600014;
+					atlOffset=14.497157;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -5585,14 +5589,15 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={3730.625,11.086657,13321.375};
+						position[]={3707.4263,11.086657,13321.294};
 						angles[]={0.013327583,3.1381021,0.023993526};
 					};
-					areaSize[]={446.08154,0,200};
+					areaSize[]={469.2804,0,200};
 					areaIsRectangle=1;
 					flags=1;
 					id=913;
 					type="Vindicta_LocationSector";
+					atlOffset=0.15174198;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -5880,14 +5885,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={16623.699,0.58666992,20570.09};
+						position[]={16638.982,0.58666992,20575.121};
 						angles[]={0,0.80513078,0};
 					};
-					areaSize[]={177.05278,0,78.444901};
+					areaSize[]={184.01787,0,92.948952};
 					flags=1;
 					id=1073;
 					type="Vindicta_LocationSector";
-					atlOffset=-3.5014648;
+					atlOffset=-4.3555174;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -6569,7 +6574,7 @@ class Mission
 				};
 			};
 			id=8067;
-			atlOffset=-18.963436;
+			atlOffset=-18.948261;
 		};
 		class Item2
 		{
@@ -26199,7 +26204,7 @@ class Mission
 									};
 									id=1367;
 									type="B_Truck_01_transport_F";
-									atlOffset=2.2888184e-005;
+									atlOffset=-0.003288269;
 								};
 								class Item1
 								{
@@ -26267,7 +26272,7 @@ class Mission
 									};
 									id=1376;
 									type="B_Truck_01_transport_F";
-									atlOffset=-0.00037384033;
+									atlOffset=-0.040672302;
 								};
 								class Item5
 								{
@@ -26284,7 +26289,7 @@ class Mission
 									};
 									id=1377;
 									type="B_Truck_01_transport_F";
-									atlOffset=-1.5258789e-005;
+									atlOffset=-0.027900696;
 								};
 								class Item6
 								{
@@ -26488,7 +26493,7 @@ class Mission
 								};
 							};
 							id=3655;
-							atlOffset=-0.47503662;
+							atlOffset=-0.47355652;
 						};
 						class Item2
 						{
@@ -27914,7 +27919,7 @@ class Mission
 						};
 					};
 					id=3435;
-					atlOffset=-0.31154633;
+					atlOffset=-0.31147766;
 				};
 				class Item4
 				{
@@ -101047,7 +101052,7 @@ class Mission
 			alpha=0.60951996;
 			a=141.5137;
 			b=93.672745;
-			angle=307.62134;
+			angle=307.62131;
 			id=9617;
 			atlOffset=8.1462555;
 		};

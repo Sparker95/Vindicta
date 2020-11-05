@@ -38,14 +38,35 @@ CLASS("GoalUnitAmbientAnim", "GoalUnit")
 	ENDMETHOD;
 
 	STATIC_METHOD(onGoalChosen)
-		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_goalParameters")];
+		params [P_THISCLASS, P_OOP_OBJECT("_ai"), P_ARRAY("_parameters")];
+
+		// Mark this as occupied instantly
+		private _target = GET_PARAMETER_VALUE(_parameters, TAG_TARGET_AMBIENT_ANIM);
+		_target setVariable ["vin_preoccupied", true];
 
 		// Vehicle usage is forbidden
 		CALLM1(_ai, "setAllowVehicleWSP", false);
 
 		// Specify move radius
 		// We don't need it to be too precise
-		_goalParameters pushBack [TAG_MOVE_RADIUS, 2.5];
+		_parameters pushBack [TAG_MOVE_RADIUS, 2.5];
+	ENDMETHOD;
+
+	public STATIC_METHOD(onGoalAdded)
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+		
+		// Mark this as occupied instantly right when goal is added, so that group AI doesn't assign this place to many units
+		private _target = GET_PARAMETER_VALUE(_parameters, TAG_TARGET_AMBIENT_ANIM);
+		_target setVariable ["vin_preoccupied", true];
+		
+	ENDMETHOD;
+
+	public STATIC_METHOD(onGoalDeleted)
+		params ["_thisClass", P_OOP_OBJECT("_AI"), P_ARRAY("_parameters")];
+
+		private _target = GET_PARAMETER_VALUE(_parameters, TAG_TARGET_AMBIENT_ANIM);
+		_target setVariable ["vin_preoccupied", false];
+
 	ENDMETHOD;
 
 	// Must return a bool, true or false, if unit can talk while doing this goal
