@@ -213,7 +213,7 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
-		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain, true, true]; // !! Will be called unscheduled, start suspended
+		pr _args = [_thisObject, 3.5, _msg, gTimerServiceMain, true, true]; // !! Will be called unscheduled, start suspended
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 	ENDMETHOD;
@@ -625,6 +625,24 @@ CLASS("Garrison", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				for "_i" from _currCars to _maxCars do {
 					private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 					T_CALLM1("addUnit", _newUnit);
+				};
+			};
+
+			// Refresh boats
+			if (!_spawned) then {
+				private _maxBoats = CALLM0(_location, "getMaxCivilianBoats");
+				if (_maxBoats > 0) then {
+					private _query = [[T_VEH, T_VEH_boat_unarmed]];
+					private _currBoats = T_CALLM1("countUnits", _query);
+					OOP_INFO_2("Update boats: current: %1, max: %2", _currBoats, _maxBoats);
+					if (_currBoats < _maxBoats / 2) then {
+						OOP_INFO_0("  Adding more boats");
+						for "_i" from _currBoats to _maxBoats do {
+							private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_boat_unarmed ARG -1 ARG ""]);
+							T_CALLM1("addUnit", _newUnit);
+							OOP_INFO_1("  Added boat: %1", _newUnit);
+						};
+					};
 				};
 			};
 		};

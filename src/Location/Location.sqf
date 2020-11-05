@@ -1594,6 +1594,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		CLAMP(0.03 * _radius, 3, 12)
 	ENDMETHOD;
 
+	public METHOD(getMaxCivilianBoats)
+		params [P_THISOBJECT];
+		private _cap = T_CALLM("getUnitCapacity", [[T_VEH ARG T_VEH_boat_unarmed] ARG GROUP_TYPE_ALL]);
+		_cap min 4;
+	ENDMETHOD;
+
 	// File-based methods
 
 	// Handles messages
