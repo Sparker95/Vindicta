@@ -679,12 +679,6 @@ location_bt_helipad =
 	"Land_HelipadSquare_F"
 ];
 
-// Boats
-location_bt_boat =
-[
-	"Land_Nav_Boathouse_PierT"
-];
-
 /*
 // !!!!! USE THIS FOR location_bp_cargo_medium !!!!!
 // And for static guns too!
