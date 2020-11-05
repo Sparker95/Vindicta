@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=4255;
+		nextID=4449;
 	};
 	class Camera
 	{
-		pos[]={15414.481,48.459126,15928.842};
-		dir[]={-0.39267784,-0.32476178,0.86042798};
-		up[]={-0.13483565,0.94579577,0.29544953};
-		aside[]={0.90974009,6.9339876e-008,0.41518259};
+		pos[]={15221.665,48.459126,15845.175};
+		dir[]={-0.24592973,-0.22089417,0.94379246};
+		up[]={-0.055701081,0.97529674,0.21376298};
+		aside[]={0.96769732,-1.0679651e-007,0.2521576};
 	};
 };
 binarizationWanted=0;
@@ -85,7 +85,6 @@ addons[]=
 	"A3_Structures_F_Exp_Infrastructure_Airports",
 	"ace_concertina_wire",
 	"A3_Structures_F_Exp_Military_Camonets",
-	"Desert",
 	"A3_Structures_F_Mil_Shelters",
 	"A3_Structures_F_Tank_Military_RepairDepot",
 	"A3_Ui_F",
@@ -100,7 +99,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=36;
+		items=35;
 		class Item0
 		{
 			className="A3_Characters_F";
@@ -325,24 +324,19 @@ class AddonsMetaData
 		};
 		class Item32
 		{
-			className="Desert";
-			name="Desert";
-		};
-		class Item33
-		{
 			className="A3_Ui_F";
 			name="Arma 3 - User Interface";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item34
+		class Item33
 		{
 			className="A3_Props_F_Tank";
 			name="Arma 3 Tank - Decorative and Mission Objects";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item35
+		class Item34
 		{
 			className="A3_Props_F_Orange";
 			name="Arma 3 Orange - Decorative and Mission Objects";
