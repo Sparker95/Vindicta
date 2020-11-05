@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=585;
+	toggles=1609;
 	class ItemIDProvider
 	{
 		nextID=2553;
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=227;
+		nextID=228;
 	};
 	class Camera
 	{
-		pos[]={7393.9219,63.313286,7571.2842};
-		dir[]={0.31756207,-0.26145145,-0.91149974};
-		up[]={0.086018719,0.96521175,-0.24690032};
-		aside[]={-0.944345,1.9986328e-007,-0.32900521};
+		pos[]={11850.941,25.003811,2686.6172};
+		dir[]={-0.57028461,-0.52870834,-0.62870526};
+		up[]={-0.35522139,0.84880149,-0.39160991};
+		aside[]={-0.74069339,-5.5064447e-008,0.67186755};
 	};
 };
 binarizationWanted=0;
@@ -192,7 +192,7 @@ class AddonsMetaData
 		class Item17
 		{
 			className="A3_Props_F_Enoch";
-			name="Arma 3 Enoch - Decorative and Mission Objects";
+			name="Arma 3 Contact Platform - Decorative and Mission Objects";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
@@ -1820,15 +1820,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={14411.749,-15.289351,8861.4189};
+				position[]={14426.993,-15.289351,8861.584};
 				angles[]={0.018657569,6.2723465,0.0053407075};
 			};
-			areaSize[]={94.281998,0,133.98399};
+			areaSize[]={109.52668,0,133.98399};
 			areaIsRectangle=1;
 			flags=1;
 			id=1877;
 			type="Vindicta_LocationSector";
-			atlOffset=-21.277;
+			atlOffset=-20.237684;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -1896,15 +1896,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={14261.422,-13.825514,11594.093};
+				position[]={14274.881,-13.825514,11604.041};
 				angles[]={0.018657569,6.047112,0.0053407075};
 			};
-			areaSize[]={94.281998,0,115.743};
+			areaSize[]={109.6948,0,122.26685};
 			areaIsRectangle=1;
 			flags=1;
 			id=1878;
 			type="Vindicta_LocationSector";
-			atlOffset=-22.239;
+			atlOffset=-20.179762;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -2200,15 +2200,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={9612.6055,2.3102856,13371.202};
+				position[]={9607.0361,2.3102856,13393.445};
 				angles[]={0,0.33115879,0};
 			};
-			areaSize[]={473.85757,0,425.6232};
+			areaSize[]={499.6933,0,444.84726};
 			areaIsRectangle=1;
 			flags=1;
 			id=1882;
 			type="Vindicta_LocationSector";
-			atlOffset=-13.779125;
+			atlOffset=-13.088408;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -2427,15 +2427,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={6946.7969,3.3142877,13338.21};
+				position[]={6945.1797,3.3142877,13351.36};
 				angles[]={0.0026529003,6.1608205,0.010663962};
 			};
-			areaSize[]={222.537,0,133.791};
+			areaSize[]={222.537,0,147.04031};
 			areaIsRectangle=1;
 			flags=1;
 			id=1885;
 			type="Vindicta_LocationSector";
-			atlOffset=-2.948;
+			atlOffset=-1.8218012;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -8883,10 +8883,10 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={11187.804,1.9400001,5227.9727};
+				position[]={11173.896,1.9400001,5224.8867};
 				angles[]={0,6.0648446,0};
 			};
-			areaSize[]={170.69464,0,191.106};
+			areaSize[]={184.94115,0,191.106};
 			areaIsRectangle=1;
 			flags=1;
 			id=2232;
@@ -9034,15 +9034,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={11540.232,3.1699998,2625.1799};
+				position[]={11667.307,3.1699998,2628.4209};
 				angles[]={0,1.545297,0};
 			};
-			areaSize[]={210.11501,0,142.758};
+			areaSize[]={210.11501,0,269.87311};
 			areaIsRectangle=1;
 			flags=1;
 			id=2234;
 			type="Vindicta_LocationSector";
-			atlOffset=0.1099999;
+			atlOffset=0.054192066;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -9186,15 +9186,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={10360.188,2.2408535,2682.448};
+				position[]={10354.703,2.2408535,2667.3008};
 				angles[]={0,0.34746015,0};
 			};
-			areaSize[]={99.638,0,90.897003};
+			areaSize[]={99.638,0,107.00705};
 			areaIsRectangle=1;
 			flags=1;
 			id=2236;
 			type="Vindicta_LocationSector";
-			atlOffset=-0.016000032;
+			atlOffset=0.020853519;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -9262,15 +9262,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={9449.8857,6.5139999,4049.4661};
+				position[]={9452.458,6.5139999,4065.3752};
 				angles[]={0,0.1603085,0};
 			};
-			areaSize[]={210.313,0,222.884};
+			areaSize[]={210.313,0,238.99977};
 			areaIsRectangle=1;
 			flags=1;
 			id=2237;
 			type="Vindicta_LocationSector";
-			atlOffset=-0.71600008;
+			atlOffset=-0.77699137;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -9338,15 +9338,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={8951.709,8.334794,4714.7666};
+				position[]={8967.7383,8.334794,4751.7578};
 				angles[]={0,0.85016727,0};
 			};
-			areaSize[]={66.47271,0,90.897003};
+			areaSize[]={83.690811,0,127.34982};
 			areaIsRectangle=1;
 			flags=1;
 			id=2238;
 			type="Vindicta_LocationSector";
-			atlOffset=-0.095615387;
+			atlOffset=1.074738;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -9414,15 +9414,15 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={12710.661,3.4391804,3258.2334};
+				position[]={12716.476,3.4391804,3254.6851};
 				angles[]={6.09092,0.54793286,0.018675024};
 			};
-			areaSize[]={77.606491,0,55.823013};
+			areaSize[]={84.418091,0,55.823013};
 			areaIsRectangle=1;
 			flags=1;
 			id=2239;
 			type="Vindicta_LocationSector";
-			atlOffset=0.37743235;
+			atlOffset=0.68837833;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -14301,7 +14301,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={5636.6997,13.937782,10072.974};
-				angles[]={0,1.3613138,-0};
+				angles[]={0,1.3613138,0};
 			};
 			side="Empty";
 			flags=1;

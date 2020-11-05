@@ -72,12 +72,14 @@ _location_bp_HGM_GMG_high =
 location_bp_HGM_GMG_high = _location_bp_HGM_GMG_high call _createHashmapFromBuildingPositions;
 
 _location_bp_Boats =
-[
-    [ //CUP wooden pier
+[	
+	//CUP
+    [
         ["Land_Nav_Boathouse_PierT"],
         [[11.5012,-193.688,-0.00916433,-170.284], [9.56137,-149.089,-0.00916529,-174.449], [17.8938,-172.539,-0.00916481,-261.774]]
     ],
-	[ //vanilla piers Altis
+	//vanilla Altis
+	[ 
         ["Land_Pier_wall_F"],
         [[22.1456,179.977,-0.00916529,90]]
     ],
@@ -90,8 +92,7 @@ _location_bp_Boats =
         ["Land_nav_pier_m_F"],
         [[13.5562,41.5471,-0.00916529,-90.0297], [14.0945,-219.636,-0.00916481,-90.0297], [12.9259,-38.2878,-0.00916576,-90.0297], [12.6986,-140.898,-0.00916481,-90.0297]]
     ],
-
-	//tanoa
+	//Tanoa
 	[
         ["Land_PierConcrete_01_steps_F"],
         [[13.1842,355.612,-0.00916529,269.97]]
