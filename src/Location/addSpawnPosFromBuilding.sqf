@@ -23,9 +23,9 @@ private _type = T_GETV("type");
 
 _calculateOffsetAndDir = {
 	params ["_bpArray", "_building"];
-	_bpArray params ["_dist", "_angle", "_height"];
+	_bpArray params ["_dist", "_angle", "_height", "_objectDirOffset"];
 	private _bDir = direction _building;
-	private _dirOut = _bDir + _angle;
+	private _dirOut = _bDir + _objectDirOffset;
 	private _buildingPosATL = getPosATL _building;
 	private _offset = [_dist*(sin (_angle + _bDir)), _dist*(cos (_angle + _bDir)), _height];
 	private _posATL = _buildingPosATL vectorAdd _offset;
