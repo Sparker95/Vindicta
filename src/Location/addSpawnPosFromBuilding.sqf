@@ -66,9 +66,13 @@ if(!isNil "_bps") then {
 		_bdir = direction _building;
 		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
 			([_bp, _building] call _calculateOffsetAndDir) params ["_posATL", "_dir"];
-			private _args = [[[T_VEH, T_VEH_boat_unarmed]], [GROUP_TYPE_ALL], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
-			T_CALLM("addSpawnPos", _args);
-			diag_log format ["Addes BOAT position: %1", _bp];
+			if (surfaceIsWater _posATL) then {
+				private _args = [[[T_VEH, T_VEH_boat_unarmed]], [GROUP_TYPE_ALL], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+				T_CALLM("addSpawnPos", _args);
+				diag_log format ["Addes BOAT position: %1", _bp];
+			} else {
+				diag_log format ["Cant add BOAT Pos - position on land: %1", _bp];
+			};
 		};
 	} forEach _bps;
 };
