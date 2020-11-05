@@ -4,6 +4,9 @@
 #include "..\..\Undercover\UndercoverMonitor.hpp"
 #include "..\..\Intel\Intel.hpp"
 
+// How much we'll boost player's suspicion when he picks 'dangerous' dialogue options
+#define SUSP_BOOST_AMOUNT 0.7
+
 // Test dialogue class
 
 #define OOP_CLASS_NAME DialogueCivilian
@@ -111,11 +114,13 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: ask about military locations
 			NODE_OPTION("opt_locations", _phrasesPlayerAskMilitaryLocations),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]),
 			NODE_CALL("", "subroutineTellLocations"),
 			NODE_JUMP("", "node_anythingElse"),
 
 			// Option: ask about intel
 			NODE_OPTION("opt_intel", selectRandom _phrasesIntel),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]),
 			NODE_JUMP_IF("", "node_tellIntel", "knowsIntel", []),
 			NODE_SENTENCE("", TALKER_NPC, selectRandom _phrasesDontKnowIntel),
 			NODE_JUMP("", "node_anythingElse"),
@@ -125,10 +130,11 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: incite civilian
 			NODE_OPTION("opt_incite", _phrasesIncite),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]),
 			NODE_JUMP_IF("", "node_alreadyIncited", "isIncited", []),	// If already incited
 			NODE_SENTENCE("", TALKER_NPC, _phrasesCivilianInciteResponse),
 			NODE_CALL_METHOD("", "inciteCivilian", []),
-			NODE_SENTENCE("", TALKER_PLAYER, localize "STR_NODE_P_TITO"),
+			NODE_SENTENCE("", TALKER_PLAYER, localize "STR_NODE_P_TITO"), // Tell it to others!
 			NODE_JUMP("", "node_options"),
 
 			NODE_SENTENCE("node_alreadyIncited", TALKER_NPC, localize "STR_NODE_C_DANGEROUS_TO_DISCUSS"),
@@ -136,6 +142,7 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: ask for contribution
 			NODE_OPTION("opt_askContribute", selectRandom _phrasesAskHelp),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]),
 			NODE_JUMP_IF("", "node_alreadyContributed", "hasContributed", []),
 			NODE_JUMP_IF("", "node_giveBuildResources", "supportsResistance", []),
 			NODE_SENTENCE("", TALKER_NPC, selectRandom _phrasesDontSupportResistance),
@@ -150,6 +157,7 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: scare civilian
 			NODE_OPTION("opt_scare", _phrasesScare),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", SUSP_BOOST_AMOUNT),
 			NODE_CALL_METHOD("", "scareCivilian", []),
 			NODE_END(""),
 
@@ -271,7 +279,6 @@ CLASS("DialogueCivilian", "Dialogue")
 				// After this sentence is said, reveal the location
 				pr _args = [_loc, _type, _distance];
 				_a pushBack NODE_CALL_METHOD("", "revealLocation", _args);
-
 			} forEach _locsCivKnows;
 
 			// Civilian: I must go
@@ -449,6 +456,20 @@ CLASS("DialogueCivilian", "Dialogue")
 		params [P_THISOBJECT];
 		pr _civ = T_GETV("unit0");
 		CALLSM1("AIUnitCivilian", "dangerEventHandler", _civ);
+	ENDMETHOD;
+
+	METHOD(makeTalkersSuspicious)
+		params [P_THISOBJECT, P_NUMBER("_amount")];
+
+		// Boost player's suspiciousness
+		pr _player = T_GETV("unit1");
+		private _args = [_player, _amount];
+		REMOTE_EXEC_CALL_STATIC_METHOD("undercoverMonitor", "boostSuspicion", _args, _player, false);
+		
+		// Make civilian suspicious so cops will try to arrest him
+		pr _civ = T_GETV("unit0");
+		UNDERCOVER_SET_UNIT_SUSPICIOUS(_civ, true);
+
 	ENDMETHOD;
 
 	METHOD(giveBuildResources)
