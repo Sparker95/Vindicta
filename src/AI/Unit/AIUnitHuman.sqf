@@ -172,7 +172,7 @@ CLASS("AIUnitHuman", "AIUnit")
 					T_SETV("talkObject", objNull);
 
 					// Say a phrase why we can't talk any longer
-					pr _text = selectRandom g_phrasesCantTalkAnyMore;
+					pr _text = localize selectRandom g_phrasesCantTalkAnyMore;
 					CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 				};
 			};
@@ -1264,7 +1264,7 @@ CLASS("AIUnitHuman", "AIUnit")
 		} else {
 			// If the bot can't talk, he will say a phrase
 			OOP_INFO_0("  NPC is busy");
-			pr _text = selectRandom g_phrasesCantTalkBusy;
+			pr _text = localize selectRandom g_phrasesCantTalkBusy;
 			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 		};
 	ENDMETHOD;

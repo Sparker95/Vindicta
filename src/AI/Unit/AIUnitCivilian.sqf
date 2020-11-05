@@ -57,7 +57,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 
 		// Say something if we were not in danger but switched to danger
 		if (!_dangerCurrent) then {
-			pr _text = selectRandom g_phasesCivilianPanic;
+			pr _text = localize selectRandom g_phasesCivilianPanic;
 			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 		};
 
@@ -108,7 +108,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 
 		// Check if civilian is arrested
 		if (T_GETV("arrested")) exitWith {
-			pr _text = selectRandom g_phrasesCivilianCantTalkArrested;
+			pr _text = localize selectRandom g_phrasesCivilianCantTalkArrested;
 			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 			false;
 		};
@@ -118,7 +118,7 @@ CLASS("AIUnitCivilian", "AIUnitHuman")
 		pr _danger = WS_GET(_worldState, WSP_UNIT_HUMAN_IN_DANGER);
 
 		if (_danger) exitWith {
-			pr _text = selectRandom g_phrasesCivilianCantTalkScared;
+			pr _text = localize selectRandom g_phrasesCivilianCantTalkScared;
 			CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _hO, _text);
 			false;
 		};

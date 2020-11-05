@@ -9,7 +9,7 @@ CLASS("DialogueMilitary", "Dialogue")
 		params [P_THISOBJECT, P_OBJECT("_unit0"), P_OBJECT("_unit1")];
 
 		pr _array = [
-			NODE_SENTENCE("", TALKER_NPC, selectRandom g_phrasesCantTalkBusy)
+			NODE_SENTENCE("", TALKER_NPC, localize selectRandom g_phrasesCantTalkBusy)
 		];
 
 		_array;

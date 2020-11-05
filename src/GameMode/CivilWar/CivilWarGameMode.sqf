@@ -13,9 +13,9 @@ https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/
 FIX_LINE_NUMBERS()
 
 gCityStateData = [
-	[localize "STR_GMB_NEUTRAL",				[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
-	[localize "STR_GMB_REBEL_OCCUPIED",			[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
-	[localize "STR_GMB_ENY_OCCUPIED",			[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"] /* CITY_STATE_NEUTRAL */
+	[LOCALIZE "STR_GMB_NEUTRAL",				[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	[LOCALIZE "STR_GMB_REBEL_OCCUPIED",			[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_NEUTRAL */
+	[LOCALIZE "STR_GMB_ENY_OCCUPIED",			[1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"] /* CITY_STATE_NEUTRAL */
 ];
 
 /*
