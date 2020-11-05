@@ -99,7 +99,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=36;
+		items=35;
 		class Item0
 		{
 			className="A3_Characters_F";
