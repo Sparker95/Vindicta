@@ -159,6 +159,7 @@ CLASS("ActionUnitAmbientAnim", "ActionUnit")
 		private _target = T_GETV("target");
 		if(_target isEqualType objNull) then {
 			_target setVariable ["vin_occupied", false];
+			_target setVariable ["vin_preoccupied", false];
 		};
 
 		// Terminate the script
