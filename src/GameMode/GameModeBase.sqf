@@ -398,7 +398,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM(_gar, "addUnit", [_newUnit]);
 		};
 		private _cBoats = CALLM(_loc, "getUnitCapacity", [T_VEH_boat_unarmed ARG GROUP_TYPE_ALL]);
-		for "_i" from 0 to _cBoats do {
+
+		for "_i" from 0 to (_cBoats-1) do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_boat_unarmed ARG -1 ARG ""]);
 			CALLM(_gar, "addUnit", [_newUnit]);
 		};
