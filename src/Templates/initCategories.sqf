@@ -176,7 +176,7 @@ T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_plane_fighter,			25);	//Fighter plane
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_plane_cargo,			26);	//Cargo plane
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_plane_unarmed,			27);	//Light unarmed plane like cessna
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_plane_VTOL,			28);	//VTOL
-T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_boat_unarmed,			29);	//Unarmed boat
+T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_boat_unarmed,			29) [T_FACTION_Civ];	//Unarmed boat
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_boat_armed,			30);	//Armed boat
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_personal,				31);	//Quad bike or something for 1-2 men personal transport
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_truck_inf,				32)		[T_FACTION_Guer, T_FACTION_Military]; //Truck for infantry transport

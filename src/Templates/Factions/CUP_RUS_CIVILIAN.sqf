@@ -160,6 +160,7 @@ _array set [T_INF, _inf];
 _veh = [];
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, _civVehicles];
+_veh set [T_VEH_boat_unarmed, ["C_Boat_Civil_01_F","C_Rubberboat","C_Boat_Transport_02_F"]];
 _array set [T_VEH, _veh];
 
 // Inventory
