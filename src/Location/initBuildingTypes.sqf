@@ -7,7 +7,8 @@ location_fnc_objectClassHasSpawnPositions = {
 	// Like static AT guns from buildings, or static AAs, or whatever,
 	// We must add these into this code too
 	(! isNil {location_bp_HGM_GMG_high getVariable _this}) ||
-	(! isNil {location_bp_cargo_medium getVariable _this})
+	(! isNil {location_bp_cargo_medium getVariable _this}) ||
+	(! isNil {location_bp_Boats getVariable _this})
 };
 
 // Function to turn array with position markup into hash map for quicker access
@@ -69,6 +70,16 @@ _location_bp_HGM_GMG_high =
 ];
 
 location_bp_HGM_GMG_high = _location_bp_HGM_GMG_high call _createHashmapFromBuildingPositions;
+
+_location_bp_Boats =
+[
+    [ //CUP wooden pier
+        ["Land_Nav_Boathouse_PierT"],
+        [[11.5012,-193.688,-0.00916433,-170.284], [9.56137,-149.089,-0.00916529,-174.449], [17.8938,-172.539,-0.00916481,-261.774]]
+    ]
+];
+
+location_bp_Boats = _location_bp_Boats call _createHashmapFromBuildingPositions;
 
 // Capacities of buildings for infantry
 // Typically a building's inf capacity is amount of its buildingPos, however for some buildings we can override that here
@@ -666,6 +677,12 @@ location_bt_helipad =
 	"Land_HelipadEmpty_F",
 	"Land_HelipadRescue_F",
 	"Land_HelipadSquare_F"
+];
+
+// Boats
+location_bt_boat =
+[
+	"Land_Nav_Boathouse_PierT"
 ];
 
 /*
