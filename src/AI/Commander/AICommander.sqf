@@ -3219,7 +3219,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			array pushback [amount, subcat, name]; \
 		}
 		__ADD_UTIL_SPEC_SAFE(_utilitySpec, 2, T_VEH_truck_ammo, "supply trucks");
-		//__ADD_UTIL_SPEC_SAFE(_utilitySpec, 3, T_VEH_truck_inf, "infantry trucks");
+		__ADD_UTIL_SPEC_SAFE(_utilitySpec, 5, T_VEH_truck_inf, "infantry trucks");
 		__ADD_UTIL_SPEC_SAFE(_utilitySpec, 2, T_VEH_car_unarmed, "unarmed cars");
 
 		{
