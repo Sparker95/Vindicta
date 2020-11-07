@@ -152,7 +152,12 @@ _location_bp_Boats =
 	[["Pier3_clutter"],[[4.2606,13.296,-0.0875168,273.017]]],
 	[["Pier1_tyres"],[[3.95416,1.05426,-0.199099,273.017]]],
 	[["Pier2"],[[7.30126,269.192,-0.286825,181.581]]],
-	[["Pier1_clutter"],[[3.48324,356.23,-0.169113,273.017]]]]
+	[["Pier1_clutter"],[[3.48324,356.23,-0.169113,273.017]]],
+
+	// VN DLC
+	[["Land_vn_nav_boathouse_pierl"],[[7.72742,271.441,0.111567,0]]],
+	[["Land_vn_nav_boathouse_pierr"],[[8.36284,106.911,-0.234653,0]]],
+	[["Land_vn_nav_boathouse_piert"],[[17.8935,187.9,-0.104779,282.281],[17.7444,3.52008,-0.0254636,276.589]]]
 ];
 
 location_bp_Boats = _location_bp_Boats call _createHashmapFromBuildingPositions;

@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=513;
+	toggles=1538;
 	class ItemIDProvider
 	{
-		nextID=1506;
+		nextID=1603;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=214;
+		nextID=242;
 	};
 	class Camera
 	{
-		pos[]={2128.6157,240.64323,3536.6531};
-		dir[]={0.23066787,-0.25934738,0.9379586};
-		up[]={0.06196833,0.96572959,0.25199169};
-		aside[]={0.97117275,2.2588756e-006,-0.23882933};
+		pos[]={18136.967,29.036377,10604.764};
+		dir[]={0.83137441,-0.37064901,0.41405827};
+		up[]={0.33178169,0.92877251,0.16524057};
+		aside[]={0.44581199,-6.4785127e-008,-0.8951332};
 	};
 };
 binarizationWanted=0;
@@ -43,13 +43,14 @@ addons[]=
 	"objects_f_vietnam_c",
 	"A3_Structures_F_Mil_Helipads",
 	"A3_Characters_F",
-	"ace_explosives"
+	"ace_explosives",
+	"A3_Boat_F_Gamma_Boat_Civil_01"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=14;
+		items=15;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -146,6 +147,13 @@ class AddonsMetaData
 			author="ACE-Team";
 			url="http://ace3mod.com/";
 		};
+		class Item14
+		{
+			className="A3_Boat_F_Gamma";
+			name="Arma 3 - Boats and Submersibles";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 randomSeed=8605168;
@@ -204,7 +212,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=70;
+		items=140;
 		class Item0
 		{
 			dataType="Comment";
@@ -816,15 +824,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={15171.536,8.8270569,5729.646};
-						angles[]={6.251193,0.27668703,6.2771816};
+						position[]={15127.053,9.2901611,5701.8604};
+						angles[]={0,3.1403248,0};
 					};
-					areaSize[]={183.67506,0,100.16643};
-					areaIsRectangle=1;
+					areaSize[]={183.675,0,133.661};
 					flags=1;
 					id=1;
 					type="Vindicta_LocationSector";
-					atlOffset=-0.062735558;
+					atlOffset=-0.76525402;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -892,14 +899,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={18065.939,16.263,4247.752};
+						position[]={18137.871,16.263,4213.9082};
 					};
-					areaSize[]={98.558998,0,163.433};
+					areaSize[]={170.48965,0,197.27699};
 					areaIsRectangle=1;
 					flags=1;
 					id=2;
 					type="Vindicta_LocationSector";
-					atlOffset=0.072999954;
+					atlOffset=8.6430006;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -967,13 +974,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={18307.434,7.0500002,5360.7891};
+						position[]={18299.271,8.4631252,5443.9336};
 						angles[]={0,5.4525752,0};
 					};
-					areaSize[]={53.995266,0,84.67643};
+					areaSize[]={131.96758,0,171.61583};
 					flags=1;
 					id=3;
 					type="Vindicta_LocationSector";
+					atlOffset=5.844162;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -1041,15 +1049,15 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={17619.313,7.0993948,9181.7178};
+						position[]={17594.502,7.0993948,9219.7617};
 						angles[]={6.2711854,5.7583919,0};
 					};
-					areaSize[]={419.08719,0,338.79202};
+					areaSize[]={421.49759,0,384.14722};
 					areaIsRectangle=1;
 					flags=1;
 					id=4;
 					type="Vindicta_LocationSector";
-					atlOffset=0.68802023;
+					atlOffset=0.38057709;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -1266,15 +1274,15 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={13084.612,10.162001,13349.078};
-						angles[]={0,5.8858085,0};
+						position[]={13125.052,10.162001,13366.559};
+						angles[]={0,5.6418653,0};
 					};
-					areaSize[]={297.711,0,492.259};
+					areaSize[]={341.82159,0,492.259};
 					areaIsRectangle=1;
 					flags=1;
 					id=8;
 					type="Vindicta_LocationSector";
-					atlOffset=4.1020007;
+					atlOffset=2.3525076;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -1862,9 +1870,10 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={2853.4929,9.1899996,16838.109};
+						position[]={2801.5581,10.662705,16864.707};
+						angles[]={6.1736255,0,0.016002094};
 					};
-					areaSize[]={200.409,0,124.076};
+					areaSize[]={250.83917,0,161.0545};
 					flags=1;
 					id=23;
 					type="Vindicta_LocationSector";
@@ -1935,13 +1944,13 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={2318.4209,20.607159,17520.682};
+						position[]={2223.7275,20.607159,17506.578};
 					};
-					areaSize[]={276.51999,0,165.94099};
+					areaSize[]={371.21347,0,278.76324};
 					flags=1;
 					id=24;
 					type="Vindicta_LocationSector";
-					atlOffset=5.0470009;
+					atlOffset=10.433007;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -2158,14 +2167,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={7711.6299,3.8889551,11773.799};
+						position[]={7652.4092,3.8889551,11726.188};
 						angles[]={5.4760227,0,0.21308725};
 					};
-					areaSize[]={261.021,0,220.535};
+					areaSize[]={320.24194,0,268.14584};
 					flags=1;
 					id=28;
 					type="Vindicta_LocationSector";
-					atlOffset=-2.8800001;
+					atlOffset=0.064262867;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -2831,13 +2840,13 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={1483.196,5.928484,9527.6992};
+						position[]={1528.5374,5.928484,9466.6836};
 					};
-					areaSize[]={144.41,0,147.507};
+					areaSize[]={189.75131,0,208.52312};
 					flags=1;
 					id=80;
 					type="Vindicta_LocationSector";
-					atlOffset=0.78599977;
+					atlOffset=4.6521959;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -2967,7 +2976,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="Sihanoukville";
+									value="Old Fisher Village";
 								};
 							};
 						};
@@ -3351,14 +3360,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={1110.475,9.490572,15142.402};
+						position[]={1098.7051,9.490572,15158.09};
 						angles[]={6.179565,0,6.2771816};
 					};
-					areaSize[]={103.743,0,190.19501};
+					areaSize[]={125.47597,0,205.88348};
 					flags=1;
 					id=93;
 					type="Vindicta_LocationSector";
-					atlOffset=0.19699955;
+					atlOffset=0.13057232;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3500,14 +3509,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={15319.505,14.821969,2865.6069};
-						angles[]={6.2771816,0.23738223,0.0060039326};
+						position[]={15312.654,16.059364,2804.9094};
+						angles[]={0.097688377,0.23738223,0.025994543};
 					};
-					areaSize[]={93.112999,0,40.632999};
+					areaSize[]={131.79765,0,124.09557};
 					flags=1;
 					id=1034;
 					type="Vindicta_LocationSector";
-					atlOffset=0.13800049;
+					atlOffset=-1.0296497;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3575,13 +3584,13 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={19040,28.000002,3916};
+						position[]={19057.34,28.000002,3904.5254};
 					};
-					areaSize[]={126.588,0,110.913};
+					areaSize[]={143.92784,0,122.38761};
 					flags=1;
 					id=1491;
 					type="Vindicta_LocationSector";
-					atlOffset=18.492001;
+					atlOffset=19.878052;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3722,14 +3731,14 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={8623.8164,30.112,10489.437};
-						angles[]={0,0,0.047961645};
+						position[]={8716.3154,37.454479,10411.426};
+						angles[]={6.2392135,0,0};
 					};
-					areaSize[]={68.321999,0,62.491001};
+					areaSize[]={189.58517,0,184.48856};
 					flags=1;
 					id=1494;
 					type="Vindicta_LocationSector";
-					atlOffset=-0.47800064;
+					atlOffset=1.2185593;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3794,7 +3803,7 @@ class Mission
 				};
 			};
 			id=114;
-			atlOffset=-166.13882;
+			atlOffset=-159.40027;
 		};
 		class Item20
 		{
@@ -4673,7 +4682,7 @@ class Mission
 					colorName="ColorCIV";
 					a=7.3979998;
 					b=50;
-					angle=56.142914;
+					angle=56.14291;
 					id=161;
 				};
 			};
@@ -6947,7 +6956,7 @@ class Mission
 					};
 					id=625;
 					type="Land_vn_quonset_02_01";
-					atlOffset=0.0074386597;
+					atlOffset=0.0074462891;
 				};
 				class Item2
 				{
@@ -7032,6 +7041,7 @@ class Mission
 					};
 					id=630;
 					type="Land_vn_b_foxhole_01";
+					atlOffset=-7.6293945e-006;
 				};
 				class Item7
 				{
@@ -7048,7 +7058,7 @@ class Mission
 					};
 					id=631;
 					type="Land_vn_hlaska";
-					atlOffset=0.0074386597;
+					atlOffset=0.0074462891;
 				};
 				class Item8
 				{
@@ -7117,7 +7127,7 @@ class Mission
 					};
 					id=635;
 					type="vn_bar_01_campchair_01";
-					atlOffset=0.0076217651;
+					atlOffset=0.0076141357;
 				};
 				class Item12
 				{
@@ -7125,7 +7135,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={12466.047,112.41771,10894.785};
-						angles[]={-0,1.4978848,0.065904573};
+						angles[]={0,1.4978848,0.065904573};
 					};
 					side="Empty";
 					flags=4;
@@ -7151,7 +7161,7 @@ class Mission
 					};
 					id=637;
 					type="B_Truck_01_transport_F";
-					atlOffset=0.0053405762;
+					atlOffset=0.0053482056;
 				};
 				class Item14
 				{
@@ -7236,7 +7246,7 @@ class Mission
 					};
 					id=642;
 					type="B_Truck_01_transport_F";
-					atlOffset=0.0027389526;
+					atlOffset=0.002746582;
 				};
 				class Item19
 				{
@@ -7244,7 +7254,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={12467.516,113.73,10908.376};
-						angles[]={-0,4.0053539,0.089759029};
+						angles[]={0,4.0053539,0.089759029};
 					};
 					side="Empty";
 					flags=4;
@@ -7253,7 +7263,7 @@ class Mission
 					};
 					id=643;
 					type="B_Slingload_01_Cargo_F";
-					atlOffset=0.0060272217;
+					atlOffset=0.0060348511;
 				};
 				class Item20
 				{
@@ -7270,7 +7280,7 @@ class Mission
 					};
 					id=644;
 					type="B_Slingload_01_Cargo_F";
-					atlOffset=0.0063858032;
+					atlOffset=0.0062789917;
 				};
 				class Item21
 				{
@@ -7374,7 +7384,7 @@ class Mission
 					colorName="ColorCIV";
 					a=29.292999;
 					b=4.2600002;
-					angle=228.41237;
+					angle=228.41235;
 					id=647;
 				};
 				class Item24
@@ -9519,7 +9529,7 @@ class Mission
 					};
 					id=756;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071163177;
+					atlOffset=0.039979935;
 				};
 				class Item1
 				{
@@ -9535,7 +9545,7 @@ class Mission
 					};
 					id=757;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071163177;
+					atlOffset=0.039979935;
 				};
 				class Item2
 				{
@@ -9551,7 +9561,7 @@ class Mission
 					};
 					id=758;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071163177;
+					atlOffset=0.039979935;
 				};
 				class Item3
 				{
@@ -9567,7 +9577,7 @@ class Mission
 					};
 					id=759;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071163177;
+					atlOffset=0.039979935;
 				};
 				class Item4
 				{
@@ -9583,7 +9593,7 @@ class Mission
 					};
 					id=760;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071163177;
+					atlOffset=0.039979935;
 				};
 				class Item5
 				{
@@ -9599,7 +9609,7 @@ class Mission
 					};
 					id=761;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071163177;
+					atlOffset=0.039979935;
 				};
 				class Item6
 				{
@@ -9615,7 +9625,7 @@ class Mission
 					};
 					id=762;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071163177;
+					atlOffset=0.039979935;
 				};
 				class Item7
 				{
@@ -9631,7 +9641,7 @@ class Mission
 					};
 					id=763;
 					type="Land_HelipadEmpty_F";
-					atlOffset=0.0071191788;
+					atlOffset=0.039980888;
 				};
 				class Item8
 				{
@@ -17674,12 +17684,13 @@ class Mission
 						angles[]={6.2771854,2.0753472,0};
 					};
 					side="Empty";
+					flags=4;
 					class Attributes
 					{
 					};
 					id=1349;
 					type="B_Truck_01_transport_F";
-					atlOffset=1.0124207;
+					atlOffset=-0.0030670166;
 				};
 				class Item6
 				{
@@ -17893,7 +17904,7 @@ class Mission
 				};
 			};
 			id=1360;
-			atlOffset=-0.14523315;
+			atlOffset=-0.14628601;
 		};
 		class Item66
 		{
@@ -19155,6 +19166,2769 @@ class Mission
 				};
 			};
 			id=1493;
+		};
+		class Item70
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2393.5767,-4.2306156,5198.0166};
+			};
+			side="Empty";
+			flags=1;
+			class Attributes
+			{
+			};
+			id=1506;
+			type="Land_vn_nav_boathouse_pierl";
+			atlOffset=21.067736;
+		};
+		class Item71
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2393.5222,-4.2188301,5179.3901};
+			};
+			side="Empty";
+			flags=1;
+			class Attributes
+			{
+			};
+			id=1507;
+			type="Land_vn_nav_boathouse_pierr";
+			atlOffset=20.370659;
+		};
+		class Item72
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1549.2119,1.2970161,19176.125};
+				angles[]={0,5.0843358,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1508;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.4661938;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item73
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1545.4509,1.1362189,19167.537};
+				angles[]={0,5.0843358,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1511;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.4661938;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item74
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1543.1265,1.2582778,19154.857};
+				angles[]={0,5.0843358,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1512;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.4661938;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item75
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1573.1416,1.8781624,19202.311};
+				angles[]={0,5.0843358,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1513;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.6995182;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item76
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2122.062,1.2970161,17685.621};
+				angles[]={0,5.9782677,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1514;
+			type="C_Boat_Civil_01_F";
+			atlOffset=2.6150074;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item77
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2127.134,1.0969284,17688.477};
+				angles[]={0,5.9782677,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1515;
+			type="C_Boat_Civil_01_F";
+			atlOffset=2.6150074;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item78
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2145.002,0.5200367,17702.113};
+				angles[]={0,5.4874396,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1516;
+			type="C_Boat_Civil_01_F";
+			atlOffset=2.6150074;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item79
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2152.2117,0.36638975,17709.611};
+				angles[]={0,5.6192732,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1517;
+			type="C_Boat_Civil_01_F";
+			atlOffset=2.6150074;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item80
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2820.2097,1.2970161,16728.029};
+				angles[]={0,2.2767086,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1518;
+			type="C_Boat_Civil_01_F";
+			atlOffset=7.1413436;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item81
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2835.2109,1.2970161,16737.082};
+				angles[]={0,2.2767086,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1519;
+			type="C_Boat_Civil_01_F";
+			atlOffset=6.0026951;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item82
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2812.4514,1.2970161,16723.861};
+				angles[]={0,2.2767086,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1520;
+			type="C_Boat_Civil_01_F";
+			atlOffset=6.7358513;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item83
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2583.6047,1.2970161,16807.73};
+				angles[]={0,4.8404527,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1521;
+			type="C_Boat_Civil_01_F";
+			atlOffset=2.6591311;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item84
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2736.0803,1.2970161,17004.678};
+				angles[]={0,5.3037815,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1522;
+			type="C_Boat_Civil_01_F";
+			atlOffset=5.8480444;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item85
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={7531.978,-4.2306156,11674.811};
+				angles[]={0,5.3159103,0};
+			};
+			side="Empty";
+			flags=1;
+			class Attributes
+			{
+			};
+			id=1540;
+			type="Land_vn_nav_boathouse_pierl";
+			atlOffset=1.184072;
+		};
+		class Item86
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={7504.5801,1.2974567,11686.842};
+				angles[]={0,3.5924709,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1549;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.5159998;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item87
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={7505.7339,1.092762,11867.576};
+				angles[]={0,5.4391403,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1550;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.5159998;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item88
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={7492.3003,0.77626944,11855.979};
+				angles[]={0,5.4391403,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1551;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.5159998;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item89
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8850.1631,1.2970161,10477.656};
+				angles[]={0,1.2828898,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1552;
+			type="C_Boat_Civil_01_F";
+			atlOffset=6.3929076;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item90
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8864.6182,1.2970161,10469.449};
+				angles[]={0,1.2828898,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1553;
+			type="C_Boat_Civil_01_F";
+			atlOffset=9.3689651;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item91
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={8865.2764,1.5831103,10457.875};
+				angles[]={0,1.2828898,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1554;
+			type="C_Boat_Civil_01_F";
+			atlOffset=9.0379143;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item92
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={9030.0303,1.2970161,7224.0024};
+				angles[]={0,1.2828898,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1555;
+			type="C_Boat_Civil_01_F";
+			atlOffset=8.5856838;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item93
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={9002.208,1.2970161,7259.8984};
+				angles[]={0,1.2828898,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1556;
+			type="C_Boat_Civil_01_F";
+			atlOffset=8.8203735;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item94
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={9023.2197,1.2970161,7243.5239};
+				angles[]={0,1.2828898,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1557;
+			type="C_Boat_Civil_01_F";
+			atlOffset=9.3644257;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item95
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={15327.438,1.2970161,2700.9756};
+				angles[]={0,3.3373268,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1558;
+			type="C_Boat_Civil_01_F";
+			atlOffset=8.2378492;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item96
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={15313.594,1.2970161,2701.6055};
+				angles[]={0,3.3373268,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1559;
+			type="C_Boat_Civil_01_F";
+			atlOffset=9.264019;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item97
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={15339.479,1.2970161,2696.9941};
+				angles[]={0,3.3373268,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1560;
+			type="C_Boat_Civil_01_F";
+			atlOffset=11.407049;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item98
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={15288.729,1.2970161,2704.4866};
+				angles[]={0,3.3373268,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1561;
+			type="C_Boat_Civil_01_F";
+			atlOffset=10.391177;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item99
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={19121.676,1.2970161,3868.2029};
+				angles[]={0,2.0911527,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1562;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.3450236;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item100
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={19132.432,1.0592909,3867.7903};
+				angles[]={0,2.0911527,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1563;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.3450236;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item101
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={19149.813,1.2970161,3840.0659};
+				angles[]={0,2.0911527,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1564;
+			type="C_Boat_Civil_01_F";
+			atlOffset=7.2660251;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item102
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18285.771,1.731822,4054.3508};
+				angles[]={0,1.1787862,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1565;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.8600659;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item103
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18282.914,2.4239223,4038.3345};
+				angles[]={0,2.4126964,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1566;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.3450236;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item104
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18291.145,2.2224669,4089.9221};
+				angles[]={0,1.2051233,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1567;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.3450236;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item105
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18296.096,1.8125508,4113.3481};
+				angles[]={0,2.0911527,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1568;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.3450236;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item106
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18416.154,1.2970161,5495.5659};
+				angles[]={0,5.6384835,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1569;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.9736743;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item107
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18231.756,-0.0073955059,5556.4482};
+				angles[]={0,5.0850792,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1570;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.9736743;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item108
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18271.965,1.1369245,5554.4609};
+				angles[]={0,5.1375947,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1571;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.9736743;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item109
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18316.893,1.8490376,5544.3213};
+				angles[]={0,5.2860928,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1572;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.9736743;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item110
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={18364.201,1.8277571,5525.54};
+				angles[]={0,5.41365,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1573;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.9736743;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item111
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17150.215,1.2970161,9359.7793};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1574;
+			type="C_Boat_Civil_01_F";
+			atlOffset=6.9526863;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item112
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17171.229,0.19351149,9372.8164};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1575;
+			type="C_Boat_Civil_01_F";
+			atlOffset=5.3843164;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item113
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17093.885,5.2486386,9325.3447};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1576;
+			type="C_Boat_Civil_01_F";
+			atlOffset=6.1018038;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item114
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17113.381,1.2970161,9363.0293};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1577;
+			type="C_Boat_Civil_01_F";
+			atlOffset=10.983468;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item115
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17761.156,1.2970161,9525.8496};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1578;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.9321485;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item116
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17742.674,1.2970161,9536.1387};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1579;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.0120606;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item117
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17534.518,1.2970161,9614.0674};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1580;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.6855078;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item118
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={17508.547,1.2970161,9589.3408};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1581;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.6493945;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item119
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={13293.191,1.2970161,13693.479};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1582;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.8465649;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item120
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={13259.484,1.2970161,13718.916};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1583;
+			type="C_Boat_Civil_01_F";
+			atlOffset=2.6297803;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item121
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={13233.863,1.2970161,13745.135};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1584;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.5920117;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item122
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={13275.688,0.3704561,13720.156};
+				angles[]={0,5.4281778,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1585;
+			type="C_Boat_Civil_01_F";
+			atlOffset=1.8465649;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item123
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1678.5383,1.2970161,9443.9414};
+				angles[]={0,1.7158566,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1586;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.8127289;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item124
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1674.0752,1.2970161,9423.1641};
+				angles[]={0,1.7158566,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1587;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.5615258;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item125
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1672.2947,1.2970161,9391.2988};
+				angles[]={0,1.7158566,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1588;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.464416;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item126
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1666.6489,1.2970161,9369.2314};
+				angles[]={0,1.7158566,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1589;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.2842665;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item127
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1656.7388,1.2970161,9355.7334};
+				angles[]={0,1.7158566,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1590;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.4625509;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item128
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3099.3074,1.29702,9031.6025};
+				angles[]={0,4.7726774,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1591;
+			type="C_Boat_Civil_01_F";
+			atlOffset=3.0567498;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item129
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3093.6792,1.2970161,9017.5195};
+				angles[]={0,5.353744,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1592;
+			type="C_Boat_Civil_01_F";
+			atlOffset=2.3807764;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item130
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3094.0945,1.29702,9075.085};
+				angles[]={0,4.3029723,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1593;
+			type="C_Boat_Civil_01_F";
+			atlOffset=5.2555428;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item131
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3095.4502,1.2970161,9059.9795};
+				angles[]={0,4.8840389,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1594;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.0405087;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item132
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={3173.8589,9.668663,9029.9492};
+			};
+			areaSize[]={123.677,0,117.825};
+			flags=1;
+			id=1595;
+			type="Vindicta_LocationSector";
+			atlOffset=4.0389991;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Vindicta_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Vindicta_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Vindicta_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Sihanoukville";
+						};
+					};
+				};
+				nAttributes=3;
+			};
+		};
+		class Item133
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={15002.107,1.2970161,5632.9238};
+				angles[]={0,2.1975687,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1596;
+			type="C_Boat_Civil_01_F";
+			atlOffset=7.0975928;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item134
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={15025.706,1.2970161,5625.9243};
+				angles[]={0,2.8306637,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1597;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.6331234;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item135
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={15040.739,1.2970161,5618.395};
+				angles[]={0,2.7065215,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1598;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.311388;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item136
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={19784.191,1.2970161,7089.9692};
+				angles[]={0,5.2523112,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1599;
+			type="C_Boat_Civil_01_F";
+			atlOffset=8.5724001;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item137
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={19792.658,1.2970161,7095.4287};
+				angles[]={0,5.4085169,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1600;
+			type="C_Boat_Civil_01_F";
+			atlOffset=8.1440964;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item138
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={19807.076,1.2970161,7129.0674};
+				angles[]={0,5.12183,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1601;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.3266869;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item139
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={19766.758,1.2970161,7087.6343};
+				angles[]={0,5.6519928,0};
+			};
+			side="Empty";
+			class Attributes
+			{
+				disableSimulation=1;
+			};
+			id=1602;
+			type="C_Boat_Civil_01_F";
+			atlOffset=4.1084623;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[""FirstAidKit""],[6]],[[],[]],[[],[]],[[],[]]],false]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
 		};
 	};
 };
