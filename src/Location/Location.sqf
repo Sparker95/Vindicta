@@ -267,6 +267,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Setup location's spawn positions
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
+		private _locType = T_GETV("type");
 
 		#ifndef _SQF_VM
 		ASP_SCOPE_START(findNearestObjects);
@@ -387,6 +388,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 								T_CALLM2("addObject", _object, _object in _terrainObjects);
 								OOP_DEBUG_1("findAllObjects for %1: found predefined spawn positions for non-house", T_GETV("name"));
 							};
+							
+							// A boat defines a position for boat spawn positions
+							// Only relevant for cities
+							case (_type == "C_Boat_Civil_01_F" && _locType == LOCATION_TYPE_CITY): {
+								private _args = [[[T_VEH, T_VEH_boat_unarmed]], [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found city boat spawn position", T_GETV("name"));
+							};
+							
 						};
 					};
 				};
