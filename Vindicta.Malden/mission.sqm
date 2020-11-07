@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=585;
+	toggles=1609;
 	class ItemIDProvider
 	{
-		nextID=2194;
+		nextID=2200;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=221;
+		nextID=223;
 	};
 	class Camera
 	{
-		pos[]={2699.3491,239.59917,3834.1836};
-		dir[]={0,-0.70710683,0.70710683};
-		up[]={0,0.70710677,0.70710677};
-		aside[]={0.99999994,0,-0};
+		pos[]={7756.8311,50.284275,6180.6489};
+		dir[]={-0.85641354,-0.32894892,0.39796248};
+		up[]={-0.29831779,0.94434357,0.13862364};
+		aside[]={0.42141396,-6.0725142e-008,0.90688229};
 	};
 };
 binarizationWanted=0;
@@ -973,55 +973,17 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={3831.5669,50.169025,3193.593};
+				position[]={3817.0083,50.169025,3193.593};
 			};
-			areaSize[]={150,0,260};
+			areaSize[]={164.55847,0,260};
 			areaIsRectangle=1;
 			flags=1;
 			id=1864;
 			type="Vindicta_LocationSector";
-			atlOffset=27.812998;
+			atlOffset=22.175228;
 			class CustomAttributes
 			{
 				class Attribute0
-				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
 				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
@@ -1040,26 +1002,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1078,7 +1021,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -1097,7 +1040,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item6
@@ -1105,54 +1048,16 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={5408.332,67.337936,2759.6221};
+				position[]={5526.1445,67.337936,2634.1216};
 			};
-			areaSize[]={300,0,300};
+			areaSize[]={417.8125,0,425.50049};
 			flags=1;
 			id=1865;
 			type="Vindicta_LocationSector";
-			atlOffset=20.941425;
+			atlOffset=30.807304;
 			class CustomAttributes
 			{
 				class Attribute0
-				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
 				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
@@ -1171,26 +1076,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1209,7 +1095,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -1228,7 +1114,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item7
@@ -1247,44 +1133,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -1302,26 +1150,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1340,7 +1169,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -1359,7 +1188,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item8
@@ -1379,44 +1208,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -1434,26 +1225,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1472,7 +1244,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -1491,7 +1263,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item9
@@ -1510,44 +1282,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -1565,26 +1299,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1603,7 +1318,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -1622,7 +1337,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item10
@@ -1641,44 +1356,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -1696,26 +1373,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1734,7 +1392,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -1753,7 +1411,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item11
@@ -1772,44 +1430,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -1827,26 +1447,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1865,7 +1466,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -1884,7 +1485,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item12
@@ -1892,54 +1493,16 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={7142.5161,129.36243,8968.2236};
+				position[]={7184.8159,129.37108,8993.959};
 			};
 			areaSize[]={275,0,275};
 			flags=1;
 			id=1871;
 			type="Vindicta_LocationSector";
-			atlOffset=24.087006;
+			atlOffset=16.423981;
 			class CustomAttributes
 			{
 				class Attribute0
-				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
 				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
@@ -1958,26 +1521,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -1996,7 +1540,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -2015,7 +1559,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item13
@@ -2034,44 +1578,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -2089,26 +1595,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -2127,7 +1614,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -2146,7 +1633,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item14
@@ -2165,44 +1652,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -2220,26 +1669,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -2258,7 +1688,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -2277,7 +1707,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item15
@@ -2296,44 +1726,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -2351,26 +1743,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -2389,7 +1762,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -2408,7 +1781,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item16
@@ -2427,44 +1800,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -2482,26 +1817,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -2520,7 +1836,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -2539,7 +1855,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item17
@@ -2558,44 +1874,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -2613,26 +1891,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -2651,7 +1910,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -2670,7 +1929,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item18
@@ -2679,7 +1938,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7011.7271,126.37204,9994.9512};
-				angles[]={-0,6.2210622,0};
+				angles[]={0,6.2210622,0};
 			};
 			side="Empty";
 			flags=4;
@@ -2695,7 +1954,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7007.6392,126.37204,9964.75};
-				angles[]={-0,4.4764357,0};
+				angles[]={0,4.4764357,0};
 			};
 			side="Empty";
 			flags=4;
@@ -2711,7 +1970,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7040.5288,126.66676,10021.22};
-				angles[]={-0,4.699214,0};
+				angles[]={0,4.699214,0};
 			};
 			side="Empty";
 			flags=4;
@@ -2728,7 +1987,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7022.585,126.37204,10002.221};
-				angles[]={-0,1.3944094,0};
+				angles[]={0,1.3944094,0};
 			};
 			side="Empty";
 			flags=4;
@@ -2744,7 +2003,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7032.7661,126.4259,9966.666};
-				angles[]={-0,2.9961774,0};
+				angles[]={0,2.9961774,0};
 			};
 			side="Empty";
 			flags=4;
@@ -2753,7 +2012,7 @@ class Mission
 			};
 			id=1883;
 			type="B_Slingload_01_Cargo_F";
-			atlOffset=0.053855896;
+			atlOffset=0.053863525;
 		};
 		class Item23
 		{
@@ -2907,6 +2166,7 @@ class Mission
 			};
 			id=1890;
 			type="Land_New_WiredFence_10m_F";
+			atlOffset=-7.6293945e-006;
 		};
 		class Item30
 		{
@@ -2914,7 +2174,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7060.9248,125.01,9919.8906};
-				angles[]={-0,5.3258719,0};
+				angles[]={0,5.3258719,0};
 			};
 			areaSize[]={3,0,3};
 			flags=1;
@@ -2978,6 +2238,7 @@ class Mission
 			};
 			id=1892;
 			type="Land_New_WiredFence_5m_F";
+			atlOffset=7.6293945e-006;
 		};
 		class Item32
 		{
@@ -3033,7 +2294,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6986.5991,125.69772,10019.991};
-				angles[]={-0,4.762619,0.083803542};
+				angles[]={0,4.762619,0.083803542};
 			};
 			side="Empty";
 			flags=4;
@@ -3276,7 +2537,7 @@ class Mission
 			};
 			id=1913;
 			type="B_Truck_01_transport_F";
-			atlOffset=-0.0007019043;
+			atlOffset=-0.00067138672;
 		};
 		class Item50
 		{
@@ -3293,7 +2554,7 @@ class Mission
 			};
 			id=1914;
 			type="B_Truck_01_transport_F";
-			atlOffset=-0.00085449219;
+			atlOffset=-0.00086212158;
 		};
 		class Item51
 		{
@@ -3301,7 +2562,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7032.5747,126.09399,10057.073};
-				angles[]={-0,4.708003,0.031988446};
+				angles[]={0,4.708003,0.031988446};
 			};
 			side="Empty";
 			flags=4;
@@ -3310,7 +2571,7 @@ class Mission
 			};
 			id=1915;
 			type="B_Truck_01_transport_F";
-			atlOffset=-0.0043411255;
+			atlOffset=-0.0043487549;
 		};
 		class Item52
 		{
@@ -3377,6 +2638,7 @@ class Mission
 			};
 			id=1919;
 			type="Land_Mil_WallBig_4m_battered_F";
+			atlOffset=7.6293945e-006;
 		};
 		class Item56
 		{
@@ -3409,7 +2671,7 @@ class Mission
 			};
 			id=1921;
 			type="Land_Mil_WallBig_4m_battered_F";
-			atlOffset=9.1552734e-005;
+			atlOffset=9.9182129e-005;
 		};
 		class Item58
 		{
@@ -3528,7 +2790,7 @@ class Mission
 			};
 			id=1928;
 			type="Land_Mil_WallBig_4m_battered_F";
-			atlOffset=0.00012207031;
+			atlOffset=0.00011444092;
 		};
 		class Item65
 		{
@@ -3544,7 +2806,7 @@ class Mission
 			};
 			id=1929;
 			type="B_Slingload_01_Cargo_F";
-			atlOffset=0.28827667;
+			atlOffset=0.28826904;
 		};
 		class Item66
 		{
@@ -3579,44 +2841,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -3634,26 +2858,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -3672,7 +2877,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -3691,7 +2896,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item68
@@ -3700,7 +2905,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8302.1602,31.093067,10099.151};
-				angles[]={-0,4.2252035,6.282495};
+				angles[]={0,4.2252035,6.282495};
 			};
 			side="Empty";
 			flags=4;
@@ -3717,7 +2922,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8310.1924,31.086639,10092.48};
-				angles[]={-0,4.4468784,6.282495};
+				angles[]={0,4.4468784,6.282495};
 			};
 			side="Empty";
 			flags=4;
@@ -3733,7 +2938,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8282.126,31.099092,10040.347};
-				angles[]={-0,3.1566503,6.282495};
+				angles[]={0,3.1566503,6.282495};
 			};
 			side="Empty";
 			flags=4;
@@ -3749,7 +2954,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8268.5117,31.109983,10056.045};
-				angles[]={-0,3.1566503,6.282495};
+				angles[]={0,3.1566503,6.282495};
 			};
 			side="Empty";
 			flags=4;
@@ -3834,7 +3039,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8166.7212,31.078026,10257.658};
-				angles[]={-0,1.5790292,6.2816415};
+				angles[]={0,1.5790292,6.2816415};
 			};
 			side="Empty";
 			flags=4;
@@ -3851,7 +3056,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8166.5127,31.07836,10250.202};
-				angles[]={-0,1.5790292,6.2816415};
+				angles[]={0,1.5790292,6.2816415};
 			};
 			side="Empty";
 			flags=4;
@@ -3885,7 +3090,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8216.0215,30.132032,10278.361};
-				angles[]={-0,2.9961774,0};
+				angles[]={0,2.9961774,0};
 			};
 			side="Empty";
 			flags=4;
@@ -3902,7 +3107,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={8227.8984,30.252037,10126.149};
-				angles[]={-0,2.5962069,0};
+				angles[]={0,2.5962069,0};
 			};
 			side="Empty";
 			flags=4;
@@ -3943,7 +3148,7 @@ class Mission
 			};
 			id=1946;
 			type="B_Slingload_01_Cargo_F";
-			atlOffset=0.17840195;
+			atlOffset=0.17842484;
 		};
 		class Item83
 		{
@@ -4231,7 +3436,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7987.4238,30.733406,10045.656};
-				angles[]={-0,4.7807708,0};
+				angles[]={0,4.7807708,0};
 			};
 			side="Empty";
 			flags=4;
@@ -4258,44 +3463,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -4313,26 +3480,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -4351,7 +3499,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -4370,7 +3518,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item102
@@ -4389,44 +3537,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -4444,26 +3554,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -4482,7 +3573,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -4501,7 +3592,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item103
@@ -4561,7 +3652,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1573.7358,4.292037,4651.9102};
-				angles[]={-0,1.937553,0};
+				angles[]={0,1.937553,0};
 			};
 			side="Empty";
 			flags=4;
@@ -4612,7 +3703,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1551.3252,5.1547194,4621.1548};
-				angles[]={-0,1.3818001,0};
+				angles[]={0,1.3818001,0};
 			};
 			side="Empty";
 			flags=4;
@@ -4629,7 +3720,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1553.8518,5.1547909,4614.9585};
-				angles[]={-0,1.3176934,0};
+				angles[]={0,1.3176934,0};
 			};
 			side="Empty";
 			flags=4;
@@ -4663,7 +3754,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1548.7833,5.1547909,4626.7148};
-				angles[]={-0,1.3107107,0};
+				angles[]={0,1.3107107,0};
 			};
 			side="Empty";
 			flags=4;
@@ -4680,7 +3771,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1551.6019,5.1547909,4657.1831};
-				angles[]={-0,3.3147831,0};
+				angles[]={0,3.3147831,0};
 			};
 			side="Empty";
 			flags=4;
@@ -4714,7 +3805,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1564.0182,3.9709363,4576.0239};
-				angles[]={-0,1.0801526,0.022394964};
+				angles[]={0,1.0801526,0.022394964};
 			};
 			side="Empty";
 			flags=4;
@@ -4782,7 +3873,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1565.7562,3.13855,4583.0273};
-				angles[]={-0,4.9768357,0.022394964};
+				angles[]={0,4.9768357,0.022394964};
 			};
 			side="Empty";
 			flags=4;
@@ -4850,7 +3941,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={1564.6487,3.4105325,4575.6499};
-				angles[]={-0,5.6004858,0.022394964};
+				angles[]={0,5.6004858,0.022394964};
 			};
 			side="Empty";
 			flags=4;
@@ -4882,56 +3973,18 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={3575.552,2.6139467,3264.7991};
-				angles[]={6.2679834,0,0};
+				position[]={3549.8696,2.4904785,3264.3037};
+				angles[]={0.012000273,0,6.2671871};
 			};
 			areaSize[]={100,0,75};
 			areaIsRectangle=1;
 			flags=1;
 			id=1998;
 			type="Vindicta_LocationSector";
-			atlOffset=0.019000053;
+			atlOffset=3.4332275e-005;
 			class CustomAttributes
 			{
 				class Attribute0
-				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
 				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
@@ -4950,26 +4003,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -4988,7 +4022,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -5007,7 +4041,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item126
@@ -5084,7 +4118,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={3602.8711,4.7847905,3261.8103};
-				angles[]={-0,0.19140972,0};
+				angles[]={0,0.19140972,0};
 			};
 			side="Empty";
 			flags=4;
@@ -5238,7 +4272,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={3631.4241,3.9220371,3219.8306};
-				angles[]={-0,0.3041274,0};
+				angles[]={0,0.3041274,0};
 			};
 			side="Empty";
 			flags=4;
@@ -5264,44 +4298,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -5319,26 +4315,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -5357,7 +4334,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -5376,7 +4353,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item139
@@ -5543,7 +4520,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={3099.2786,232.35112,6841.2847};
-				angles[]={-0,3.5338318,0.004784164};
+				angles[]={0,3.5338318,0.004784164};
 			};
 			side="Empty";
 			flags=4;
@@ -5831,7 +4808,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={3092.5664,231.45638,6850.7095};
-				angles[]={-0,2.0262189,0.004784164};
+				angles[]={0,2.0262189,0.004784164};
 			};
 			side="Empty";
 			flags=4;
@@ -5881,7 +4858,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={3091.2947,231.94171,6805.1875};
-				angles[]={0,0.51857561,-0};
+				angles[]={0,0.51857561,0};
 			};
 			side="Empty";
 			flags=4;
@@ -6016,54 +4993,16 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={7063.1748,104.10791,7128.5439};
+				position[]={7046.4902,103.83905,7123.0117};
 			};
 			areaSize[]={220,0,220};
 			flags=1;
 			id=2047;
 			type="Vindicta_LocationSector";
-			atlOffset=24.086998;
+			atlOffset=23.921188;
 			class CustomAttributes
 			{
 				class Attribute0
-				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
 				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
@@ -6082,26 +5021,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -6120,7 +5040,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -6139,7 +5059,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item175
@@ -6158,44 +5078,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -6213,26 +5095,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -6251,7 +5114,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -6270,7 +5133,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item176
@@ -6290,44 +5153,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -6345,26 +5170,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -6383,7 +5189,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -6402,7 +5208,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item177
@@ -6462,7 +5268,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={4963.4126,73.897957,3965.2834};
-				angles[]={-0,3.7674937,0};
+				angles[]={0,3.7674937,0};
 			};
 			side="Empty";
 			flags=4;
@@ -6479,7 +5285,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={5015.2588,74.05204,3987.5881};
-				angles[]={-0,0.57698935,0};
+				angles[]={0,0.57698935,0};
 			};
 			side="Empty";
 			flags=4;
@@ -6495,7 +5301,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={5040.2173,74.251167,3966.3369};
-				angles[]={-0,5.3369017,0};
+				angles[]={0,5.3369017,0};
 			};
 			side="Empty";
 			flags=4;
@@ -6512,7 +5318,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={5011.7109,74.262604,3990.6604};
-				angles[]={-0,3.7184649,0};
+				angles[]={0,3.7184649,0};
 			};
 			side="Empty";
 			flags=4;
@@ -6529,7 +5335,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={5006.9995,74.271057,3999.9192};
-				angles[]={-0,2.107981,0};
+				angles[]={0,2.107981,0};
 			};
 			side="Empty";
 			flags=4;
@@ -7179,7 +5985,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={4850.1128,62.193275,3951.3994};
-				angles[]={-0,1.4112247,0.087773547};
+				angles[]={0,1.4112247,0.087773547};
 			};
 			side="Empty";
 			flags=4;
@@ -7800,7 +6606,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6563.3013,157.42787,6009.0498};
-				angles[]={-0,0.092959501,0};
+				angles[]={0,0.092959501,0};
 			};
 			side="Empty";
 			flags=4;
@@ -7817,7 +6623,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6559.5425,158.08228,6026.0776};
-				angles[]={0,1.6140734,-0};
+				angles[]={0,1.6140734,0};
 			};
 			side="Empty";
 			flags=4;
@@ -7834,7 +6640,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6573.6323,158.60327,6067.3706};
-				angles[]={-0,3.2009461,0.006394445};
+				angles[]={0,3.2009461,0.006394445};
 			};
 			side="Empty";
 			flags=4;
@@ -7851,7 +6657,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6560.9404,158.60208,6059.9336};
-				angles[]={-0,1.6016299,0.006394445};
+				angles[]={0,1.6016299,0.006394445};
 			};
 			side="Empty";
 			flags=4;
@@ -7867,7 +6673,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6589.8188,157.34937,6008.9536};
-				angles[]={-0,0.14588211,6.247201};
+				angles[]={0,0.14588211,6.247201};
 			};
 			side="Empty";
 			flags=4;
@@ -7884,7 +6690,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6567.9302,158.56677,6069.625};
-				angles[]={-0,4.5072093,0.006394445};
+				angles[]={0,4.5072093,0.006394445};
 			};
 			side="Empty";
 			flags=4;
@@ -7963,44 +6769,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -8018,26 +6786,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -8056,7 +6805,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -8075,7 +6824,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 		class Item260
@@ -8084,7 +6833,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6577.936,158.2948,6022.9766};
-				angles[]={-0,0.55336303,0};
+				angles[]={0,0.55336303,0};
 			};
 			side="Empty";
 			flags=4;
@@ -8100,7 +6849,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6583.5728,158.2948,6022.6182};
-				angles[]={-0,0.55336303,0};
+				angles[]={0,0.55336303,0};
 			};
 			side="Empty";
 			flags=4;
@@ -8116,7 +6865,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={6589.4585,158.23994,6021.6387};
-				angles[]={-0,0.55336303,6.2551923};
+				angles[]={0,0.55336303,6.2551923};
 			};
 			side="Empty";
 			flags=4;
@@ -8605,7 +7354,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={5205.1743,347.93848,8994.4082};
-				angles[]={-0,0.6927554,6.2320304};
+				angles[]={0,0.6927554,6.2320304};
 			};
 			side="Empty";
 			flags=4;
@@ -8655,7 +7404,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={5189.0083,348.89005,8982.5762};
-				angles[]={-0,0.90732431,6.2152901};
+				angles[]={0,0.90732431,6.2152901};
 			};
 			side="Empty";
 			flags=4;
@@ -8987,44 +7736,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="Vindicta_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Vindicta_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute2
-				{
 					property="Vindicta_LocationSector_type";
 					expression="_this setVariable ['Type',_value,true];";
 					class Value
@@ -9042,26 +7753,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute3
-				{
-					property="Vindicta_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=20;
-						};
-					};
-				};
-				class Attribute4
+				class Attribute1
 				{
 					property="Vindicta_LocationSector";
 					expression="_this setVariable ['Units',_value,true];";
@@ -9080,7 +7772,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute5
+				class Attribute2
 				{
 					property="Vindicta_LocationSector_name";
 					expression="_this setVariable ['Name',_value,true];";
@@ -9099,7 +7791,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=6;
+				nAttributes=3;
 			};
 		};
 	};

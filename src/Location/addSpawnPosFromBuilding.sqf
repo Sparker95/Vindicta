@@ -19,7 +19,7 @@ params [P_THISOBJECT, P_OBJECT("_building")];
 private _class = typeOf _building;
 
 private _type = T_GETV("type");
-if (_type == LOCATION_TYPE_CITY) exitWith {}; // We must be truly insane if we want to process all buildings in a city
+//if (_type == LOCATION_TYPE_CITY) exitWith {}; // We must be truly insane if we want to process all buildings in a city
 
 _calculateOffsetAndDir = {
 	params ["_bpArray", "_building"];
@@ -53,6 +53,26 @@ if(!isNil "_bps") then {
 			private _args = [T_PL_HMG_GMG_high, [GROUP_TYPE_INF, GROUP_TYPE_STATIC], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 			T_CALLM("addSpawnPos", _args);
 			//diag_log format ["Addes HMG position: %1", _bp];
+		};
+	} forEach _bps;
+};
+
+//Pre-defined positions for boats near piers. Check initBuildingTypes.sqf.
+private _bps = location_bp_Boats getVariable _class;
+if(!isNil "_bps") then {
+	//Add every position from the array to the spawn positions array
+	{
+		_bp = _x;
+		_bdir = direction _building;
+		if(count _bp >= 3) then { //This position is defined by offset in cylindrical coordinates
+			([_bp, _building] call _calculateOffsetAndDir) params ["_posATL", "_dir"];
+			if (surfaceIsWater _posATL) then {
+				private _args = [[[T_VEH, T_VEH_boat_unarmed]], [GROUP_TYPE_ALL], _posATL, _dir, _building]; // [["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
+				T_CALLM("addSpawnPos", _args);
+				OOP_INFO_1("Added BOAT position: %1", _bp);
+			} else {
+				OOP_INFO_1("Cant add BOAT Pos - position on land: %1", _bp);
+			};
 		};
 	} forEach _bps;
 };

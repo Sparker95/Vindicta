@@ -25,6 +25,11 @@ AI_misc_fnc_repairWithoutEngineer = {
 	
 	// Also refuel the car
 	_veh setFuel 0.8;
+
+	// Unflip if flipped
+	if ([_veh] call misc_fnc_isVehicleFlipped) then {
+		_veh setVectorUp [0, 0, 1];
+	};
 };
 
 // Returns true if any wheel or track is damaged on vehicle
