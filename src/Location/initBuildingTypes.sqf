@@ -148,7 +148,7 @@ _location_bp_Boats =
 	[["Pier3_clutter"],[[4.2606,13.296,-0.0875168,273.017]]],
 	[["Pier1_tyres"],[[3.95416,1.05426,-0.199099,273.017]]],
 	[["Pier2"],[[7.30126,269.192,-0.286825,181.581]]],
-	[["Pier1_clutter"],[[3.48324,356.23,-0.169113,273.017]]]]
+	[["Pier1_clutter"],[[3.48324,356.23,-0.169113,273.017]]]
 ];
 
 location_bp_Boats = _location_bp_Boats call _createHashmapFromBuildingPositions;
