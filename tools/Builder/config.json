@@ -126,6 +126,18 @@
             "CfgMissionsEntry": "vindicta_tembelan",
             "mapName": "tembelan",
             "briefingName": "Vindicta - Tembelan"
+        },
+        {
+            "folder": "Vindicta.Nam2",
+            "CfgMissionsEntry": "vindicta_nam2",
+            "mapName": "nam2",
+            "briefingName": "Vindicta - Nam2"
+        },
+        {
+            "folder": "Vindicta.psyfx_pht",
+            "CfgMissionsEntry": "vindicta_psyfx_pht",
+            "mapName": "psyfx_pht",
+            "briefingName": "Vindicta - Phuoc Tuy"
         }
     ]
 }
