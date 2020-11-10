@@ -52,7 +52,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("capacityInf"); 								// Infantry capacity
 				VARIABLE("capacityHeli"); 								// Helicopter capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
-	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
+	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build
 				VARIABLE_ATTR("buildProgress", [ATTR_SAVE]);			// How much of the location is built from 0 to 1
 				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
 				VARIABLE("buildableObjects");							// Objects that will be constructed
@@ -267,6 +267,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Setup location's spawn positions
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
+		private _locType = T_GETV("type");
 
 		#ifndef _SQF_VM
 		ASP_SCOPE_START(findNearestObjects);
@@ -387,6 +388,16 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 								T_CALLM2("addObject", _object, _object in _terrainObjects);
 								OOP_DEBUG_1("findAllObjects for %1: found predefined spawn positions for non-house", T_GETV("name"));
 							};
+							
+							// A boat defines a position for boat spawn positions
+							// Only relevant for cities
+							case (_type == "C_Boat_Civil_01_F" && _locType == LOCATION_TYPE_CITY): {
+								private _args = [[[T_VEH, T_VEH_boat_unarmed]], [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found city boat spawn position", T_GETV("name"));
+							};
+							
 						};
 					};
 				};
@@ -933,10 +944,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			// have resource constraints etc. Probably it should be in Garrison.process to build
 			// at location when they have resources?
 
-			// Only build when the location is not spawned to avoid popin
-			if(!T_GETV("spawned")) then {
-				T_CALLM("build", []);
-			};
+			T_CALLM("build", []);
 
 			// Update player respawn rules
 			pr _gmdata = T_GETV("gameModeData");
@@ -1592,6 +1600,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		params [P_THISOBJECT];
 		private _radius = T_GETV("boundingRadius");
 		CLAMP(0.03 * _radius, 3, 12)
+	ENDMETHOD;
+
+	public METHOD(getMaxCivilianBoats)
+		params [P_THISOBJECT];
+		private _cap = T_CALLM("getUnitCapacity", [[T_VEH ARG T_VEH_boat_unarmed] ARG GROUP_TYPE_ALL]);
+		_cap min 4;
 	ENDMETHOD;
 
 	// File-based methods

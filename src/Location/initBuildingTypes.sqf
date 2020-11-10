@@ -7,7 +7,8 @@ location_fnc_objectClassHasSpawnPositions = {
 	// Like static AT guns from buildings, or static AAs, or whatever,
 	// We must add these into this code too
 	(! isNil {location_bp_HGM_GMG_high getVariable _this}) ||
-	(! isNil {location_bp_cargo_medium getVariable _this})
+	(! isNil {location_bp_cargo_medium getVariable _this}) ||
+	(! isNil {location_bp_Boats getVariable _this})
 };
 
 // Function to turn array with position markup into hash map for quicker access
@@ -69,6 +70,88 @@ _location_bp_HGM_GMG_high =
 ];
 
 location_bp_HGM_GMG_high = _location_bp_HGM_GMG_high call _createHashmapFromBuildingPositions;
+
+_location_bp_Boats =
+[	
+	//CUP
+    [
+        ["Land_Nav_Boathouse_PierT"],
+        [[11.5012,-193.688,-0.00916433,-170.284], [9.56137,-149.089,-0.00916529,-174.449], [17.8938,-172.539,-0.00916481,-261.774]]
+    ],
+	//vanilla Altis
+	[ 
+        ["Land_Pier_wall_F"],
+        [[22.1456,179.977,-0.00916529,90]]
+    ],
+	[
+        ["Land_Pier_F"],
+        [[18.1456,179.972,-0.00916576,90]]
+    ],
+
+	[
+        ["Land_nav_pier_m_F"],
+        [[13.5562,41.5471,-0.00916529,-90.0297], [14.0945,-219.636,-0.00916481,-90.0297], [12.9259,-38.2878,-0.00916576,-90.0297], [12.6986,-140.898,-0.00916481,-90.0297]]
+    ],
+	//Tanoa
+	[
+        ["Land_PierConcrete_01_steps_F"],
+        [[13.1842,355.612,-0.00916529,269.97]]
+    ],
+	[
+        ["Land_QuayConcrete_01_20m_F"],
+        [[13.1455,359.962,-0.00916386,269.97]]
+    ],
+	[
+        ["Land_PierConcrete_01_end_F"],
+        [[9.14551,359.944,-0.00916481,269.972]]
+    ],
+	[
+        ["Land_PierConcrete_01_4m_ladders_F"],
+        [[9.14563,89.9434,-0.00916386,359.97], [8.85437,270.058,-0.00916481,359.97]]
+    ],
+	[
+        ["Land_PierConcrete_01_16m_F"],
+        [[8.85437,270.058,-0.00916529,359.97], [10.1456,89.949,-0.00916433,359.97]]
+    ],
+	[
+        ["Land_PierWooden_02_16m_F"],
+        [[6.22791,80.676,-0.00916481,359.97], [5.94069,279.779,-0.00916481,359.97]]
+    ],
+	[
+        ["Land_PierWooden_02_ladder_F"],
+        [[4.14576,359.877,-0.00916386,269.973]]
+    ],
+	[
+        ["Land_PierWooden_02_barrel_F"],
+        [[5.14551,359.904,-0.00916481,269.975]]
+    ],
+	[
+        ["Land_PierWooden_01_ladder_F"],
+        [[5.14576,359.902,-0.00916433,269.97]]
+    ],
+	[
+        ["Land_PierWooden_01_10m_noRails_F"],
+        [[4.8545,90.1066,-0.00916672,179.97], [4.64688,267.028,-0.00916529,179.97]]
+    ],
+	[
+        ["Land_PierWooden_01_hut_F"],
+        [[4.14576,359.879,-0.00916481,269.97]]
+    ],
+	[
+        ["Land_PierWooden_01_dock_F"],
+        [[12.1455,359.959,-0.00916481,269.97]]
+    ],
+
+	// Unsung
+	[["Land_molo_drevo_end"],[[5.98251,192.539,-0.0311432,273.017],[5.68377,354.557,-0.0388451,273.31]]],
+	[["Pier3_tyres"],[[5.12528,0.0832425,-0.0462704,273.017]]],
+	[["Pier3_clutter"],[[4.2606,13.296,-0.0875168,273.017]]],
+	[["Pier1_tyres"],[[3.95416,1.05426,-0.199099,273.017]]],
+	[["Pier2"],[[7.30126,269.192,-0.286825,181.581]]],
+	[["Pier1_clutter"],[[3.48324,356.23,-0.169113,273.017]]]
+];
+
+location_bp_Boats = _location_bp_Boats call _createHashmapFromBuildingPositions;
 
 // Capacities of buildings for infantry
 // Typically a building's inf capacity is amount of its buildingPos, however for some buildings we can override that here

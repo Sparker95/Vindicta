@@ -327,6 +327,8 @@ _veh set [T_VEH_default, [
     "C_Van_02_transport_F",     1
 ]];
 
+_veh set [T_VEH_boat_unarmed, ["C_Boat_Civil_01_F","C_Rubberboat","C_Boat_Transport_02_F"]];
+
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
 

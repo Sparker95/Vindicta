@@ -27,6 +27,11 @@ if (_type == LOCATION_TYPE_ROADBLOCK) exitWith {
 	(isOnRoad _pos) || (count (_pos nearRoads 8) > 0)
 };
 
+// If this is not built, we are allowed to be here
+if (!T_GETV("isBuilt")) exitWith {
+	true;
+};
+
 pr _areas = T_GETV("allowedAreas");
 
 pr _index = _areas findIf {
