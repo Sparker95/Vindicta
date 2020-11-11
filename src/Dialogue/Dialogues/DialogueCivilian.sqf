@@ -157,7 +157,7 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: scare civilian
 			NODE_OPTION("opt_scare", _phrasesScare),
-			NODE_CALL_METHOD("", "makeTalkersSuspicious", SUSP_BOOST_AMOUNT),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]),
 			NODE_CALL_METHOD("", "scareCivilian", []),
 			NODE_END(""),
 
