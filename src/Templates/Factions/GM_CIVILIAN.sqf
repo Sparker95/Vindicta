@@ -42,7 +42,7 @@ _array resize T_SIZE; //Make an array having the size equal to the number of cat
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tGM_Civilian"];
 _array set [T_DESCRIPTION, "Cold war era, civilians."];
-_array set [T_DISPLAY_NAME, "GM Civilians"];
+_array set [T_DISPLAY_NAME, "GM DLC - Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
 _array set [T_REQUIRED_ADDONS, ["gm_core"]];
 
@@ -119,11 +119,14 @@ _array set [T_INF, _inf];
 _veh = [];
 _veh resize T_VEH_SIZE;
 _veh set [T_VEH_default, _civVehicles];
+_veh set [T_VEH_boat_unarmed, ["C_Boat_Civil_01_F","C_Rubberboat","C_Boat_Transport_02_F"]];
 _array set [T_VEH, _veh];
 
 // Inventory
 _inv = [T_INV] call t_fnc_newCategory;
 _inv set [T_INV_items, +t_miscItems_civ_modern ];
+_inv set [T_INV_backpacks, ["B_FieldPack_Blk", "gm_ge_backpack_satchel_80_blk"]];
+
 _array set [T_INV, _inv];
 
 // Return final array

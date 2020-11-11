@@ -3,6 +3,9 @@
 // OOP_Light.h
 #include "OOP_Light\OOP_Light.h"
 
+// Common path
+#include "commonPath.hpp"
+
 // -----------------------------------------------------
 // |              L I N E   N U M B E R S              |
 // -----------------------------------------------------
@@ -82,14 +85,6 @@
 
 // private keyword
 #define pr private
-
-// ----------------------------------------------------------------------
-// |                       CALL COMPILE COMMON                          |
-// ----------------------------------------------------------------------
-// This macro appends common source folder path to passed path
-#define CALL_COMPILE_COMMON(path) call compile preprocessFileLineNumbers ("src\" + path)
-
-#define COMPILE_COMMON(path) compile preprocessFileLineNumbers ("src\" + path)
 
 // Code to string
 #define CODE_TO_STRING(code) 0 call {private __codeToStringTemp = str code; __codeToStringTemp select [1, (count __codeToStringTemp)-2];}

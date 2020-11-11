@@ -489,6 +489,18 @@ CLASS("GarrisonModel", "ModelBase")
 			// TODO: BUILD ROADBLOCK? This would be temporary, not sure what proper way to do it is...
 		};
 
+		// Cheat: add some cargo boxes when bots occupy something
+		if (!	(_locType in [	LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK,
+								LOCATION_TYPE_RESPAWN, LOCATION_TYPE_POLICE_STATION] ) &&
+			 	T_GETV("side") != CALLM0(gGameMode, "getPlayerSide")) then {
+			private _t = CALLM2(gGameMode, "getTemplate", T_GETV("side"), "military");
+			for "_i" from 0 to 1 do {
+				private _args = [_t, T_CARGO, T_CARGO_box_medium, -1];
+				private _newUnit = NEW("Unit", _args);
+				CALLM2(_actual, "postMethodAsync", "addUnit", [_newUnit]);
+			};
+		};
+
 		// private _AI = CALLM0(_actual, "getAI");
 		// private _parameters = [[TAG_LOCATION, _locationActual]];
 		// private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];

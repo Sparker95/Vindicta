@@ -29,7 +29,7 @@ class RecruitTab : MUI_GROUP
 			y = MAIN_PANEL_Y + MAIN_PANEL_HGT + OUTER_BORDER;
 			w = MAIN_PANEL_WID;
 			h = RECRUIT_BUTTON_HGT;
-			text = "RECRUIT";
+			text = $STR_RD_RECRUIT;
 			font = "PuristaMedium";
 			SizeEx = 0.050;
 			colorText[] = MUIC_BLACK;
@@ -70,7 +70,7 @@ class RecruitTab : MUI_GROUP
 			w = LOADOUT_WID;
 			h = LABEL_HGT;
 			style = ST_LEFT;
-			text = "AVAILABLE LOADOUTS:";
+			text = $STR_RD_LOADOUTS;
 		};
 
 		class TAB_RECRUIT_WEAPONS_LABEL : MUI_DESCRIPTION_ABS 
@@ -81,7 +81,7 @@ class RecruitTab : MUI_GROUP
 			w = WEAPONS_COL_WID;
 			h = LABEL_HGT;
 			style = ST_LEFT;
-			text = "WEAPONS:";
+			text = $STR_RD_WEAPONS;
 		};
 
 		class TAB_RECRUIT_GEAR_LABEL : MUI_DESCRIPTION_ABS 
@@ -92,7 +92,7 @@ class RecruitTab : MUI_GROUP
 			w = HELMET_VEST_COL_WID;
 			h = LABEL_HGT;
 			style = ST_LEFT;
-			text = "GEAR:";
+			text = $STR_RD_GEAR;
 		};
 
 		#define LISTBOX_TOP_Y (MAIN_PANEL_Y + LABEL_HGT + INNER_BORDER)

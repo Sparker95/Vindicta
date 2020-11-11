@@ -15,7 +15,7 @@ _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tGM_WestGer"]; 							// Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Cold war era, western Germany."]; 	// Template display description
-_array set [T_DISPLAY_NAME, "GM West Germany"]; 				// Template display name
+_array set [T_DISPLAY_NAME, "GM DLC - West Germany"]; 				// Template display name
 _array set [T_FACTION, T_FACTION_military]; 					// Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["gm_core"]]; 					// Addons required to play this template
 
@@ -55,8 +55,7 @@ _inf set [T_INF_recon_marksman, ["GM_WG_SF_Marksman"]]; // = 29
 _inf set [T_INF_recon_JTAC, ["GM_WG_SF_Signaller"]]; // = 30
 
 /* Vehicle classes */
-_veh = +(tDefault select T_VEH);
-_veh set [T_VEH_SIZE-1, nil];
+_veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_DEFAULT, ["gm_ge_army_typ1200_cargo"]]; // = 0 Default if nothing found
 
 _veh set [T_VEH_car_unarmed, ["gm_ge_army_iltis_cargo", "gm_ge_army_typ1200_cargo"]]; // = 1 – REQUIRED
@@ -68,7 +67,7 @@ _veh set [T_VEH_IFV, ["gm_ge_army_fuchsa0_reconnaissance", "gm_ge_army_fuchsa0_e
 _veh set [T_VEH_APC, ["gm_ge_army_m113a1g_apc", "gm_ge_army_m113a1g_apc_milan", "gm_ge_army_m113a1g_command"]]; // = 7 – REQUIRED
 _veh set [T_VEH_MBT, ["gm_ge_army_Leopard1a1", "gm_ge_army_Leopard1a1a1", "gm_ge_army_Leopard1a1a2", "gm_ge_army_Leopard1a3", "gm_ge_army_Leopard1a3a1", "gm_ge_army_Leopard1a5"]]; // = 8 – REQUIRED
 _veh set [T_VEH_SPAA, ["gm_ge_army_gepard1a1"]]; // = 11
-_veh set [T_VEH_stat_HMG_high, ["B_HMG_01_high_F"]]; // = 12 – REQUIRED
+_veh set [T_VEH_stat_HMG_high, ["gm_ge_army_mg3_aatripod"]]; // = 12 – REQUIRED
 _veh set [T_VEH_stat_AA, ["gm_ge_army_mg3_aatripod"]]; // = 16
 _veh set [T_VEH_stat_AT, ["gm_ge_army_milan_launcher_tripod"]]; // = 17
 _veh set [T_VEH_stat_mortar_light, ["B_Mortar_01_F"]]; // = 18 - REQUIRED

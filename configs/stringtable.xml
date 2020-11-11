@@ -68,7 +68,7 @@
 				<Polish>Arsenał do ekwipunku zewnętrznego</Polish>
 				<Czech>Arzenál do vnějšího inventáře</Czech>
 				<French>Arsenal vers l'inventaire externe</French>
-				<Chinesesimp>军火库至外部物品栏</Chinesesimp>
+				<Chinesesimp>从军火库转移至外部物品栏</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
 			<Original>Select something with an inventory to load into</Original>
@@ -84,7 +84,7 @@
 				<Polish>Zewnętrzny ekwipunek do Arsenału</Polish>
 				<Czech>Externí inventář do Arsenalu</Czech>
 				<French>Inventaire externe à l'Arsenal</French>
-				<Chinesesimp>外部物品栏至军火库</Chinesesimp>
+				<Chinesesimp>从外部物品栏转移至军火库</Chinesesimp>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD_DESC">
 				<Original>Please select an object with an inventory, or another Arsenal to load from</Original>
@@ -341,7 +341,7 @@
 				<Czech>TATO OBLAST JE SLEDOVÁNA! ZŮSTAŇTE NA CESTĚ!</Czech>
 				<French>CETTE ZONE EST SURVEILLÉE! RESTEZ SUR LA ROUTE!</French>
 				<Chinesesimp>该地区受到监控！不要离开道路！</Chinesesimp>
-			</Key> 
+			</Key>
 			<Key ID="STR_UM_HINT_MILAREA">
 				<Original>MILITARY AREA</Original>
 				<German>MILITÄR GEBIET</German>
@@ -1035,7 +1035,7 @@
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_Player_Tooltip">
 				<Original>AI spawn distance measured from garrisons to nearest player.</Original>
-				<Chinesesimp>从驻军位置到距离最近的玩家之间的AI刷新距离。</Chinesesimp>
+				<Chinesesimp>从驻地到距离最近的玩家之间的AI刷新距离。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI">
@@ -1044,7 +1044,7 @@
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Perf_Spawn_Garrison_AI_Tooltip">
 				<Original>AI spawn distance measured from garrisons to nearest enemy AI.</Original>
-				<Chinesesimp>从驻军位置到距离最近的敌军AI之间的AI刷新距离。</Chinesesimp>
+				<Chinesesimp>从驻地到距离最近的敌军AI之间的AI刷新距离。</Chinesesimp>
 			</Key>
 
 			<Key ID="STR_Vindicta_Settings_Ambient_Civ_Multiplier">
@@ -1148,6 +1148,3668 @@
 				<Czech>Automatické načítání přerušeno, protože správce je přítomen</Czech>
 				<French>Le chargement automatique est interrompu car l'administrateur est présent</French>
 				<Chinesesimp>管理员在线，自动加载终止</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+<Project name="Dialogues">
+	<Package name="commonPhrases">
+		<Container name="CantTalkBusy">
+			<Key ID="STR_CANT_TALK_BUSY_1">
+				<Original>I can't talk now, I am busy.</Original>
+				<Chinesesimp>我现在没法聊天，正忙着呢。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_2">
+				<Original>Sorry I can't talk now.</Original>
+				<Chinesesimp>抱歉我现在和你聊天。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_3">
+				<Original>I'm busy, I can't talk.</Original>
+				<Chinesesimp>我正忙着呢，没时间聊。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_4">
+				<Original>Leave me alone, I can't talk now.</Original>
+				<Chinesesimp>别来烦我，我现在不能聊天。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_5">
+				<Original>I can't talk now!</Original>
+				<Chinesesimp>我现在不能和你聊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_6">
+				<Original>I am too busy to talk right now.</Original>
+				<Chinesesimp>我正忙得不可开交。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_BUSY_7">
+				<Original>I have no time to talk.</Original>
+				<Chinesesimp>我没时间和你聊。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CantTalkAnymore">
+			<Key ID="STR_CANT_TALK_ANYMORE_1">
+				<Original>My plans have changed, I must leave now.</Original>
+				<Chinesesimp>计划有变，我必须得走了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_2">
+				<Original>I can't talk any more.</Original>
+				<Chinesesimp>我不能再多讲了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_3">
+				<Original>Sorry I can't talk any more.</Original>
+				<Chinesesimp>抱歉我不能继续聊了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_4">
+				<Original>Sorry I have no more time for this.</Original>
+				<Chinesesimp>抱歉我没时间耗着了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_5">
+				<Original>Sorry I must leave.</Original>
+				<Chinesesimp>抱歉我必须得走了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_6">
+				<Original>I must leave.</Original>
+				<Chinesesimp>我必须得走了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_7">
+				<Original>I must leave, sorry.</Original>
+				<Chinesesimp>我真的得走了，抱歉。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_8">
+				<Original>I have no more time for this, sorry.</Original>
+				<Chinesesimp>我没时间了，抱歉。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_ANYMORE_9">
+				<Original>I must go now.</Original>
+				<Chinesesimp>我必须离开了。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CantTalkScared">
+			<Key ID="STR_CANT_TALK_Scared_1">
+				<Original>Don't hurt me!</Original>
+				<Chinesesimp>别伤害我！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_2">
+				<Original>Please don't hurt me!</Original>
+				<Chinesesimp>请别伤害我！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_3">
+				<Original>I'm so scared!</Original>
+				<Chinesesimp>我好怕怕呀！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_4">
+				<Original>Please don't shoot me!</Original>
+				<Chinesesimp>请别打我！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_5">
+				<Original>No! Please! Don't shoot me!</Original>
+				<Chinesesimp>别！求你了！别打我！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_6">
+				<Original>I won't tell anyone I saw you! I swear!</Original>
+				<Chinesesimp>我不会把你供出去的！别灭我口！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANT_TALK_Scared_7">
+				<Original>I am not armed! Don't shoot!</Original>
+				<Chinesesimp>别打了！我是老乡！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilianPanic">
+			<Key ID="STR_C_PANIC_1">
+				<Original>Oh my god!</Original>
+				<Chinesesimp>我的妈啊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_2">
+				<Original>Damn!</Original>
+				<Chinesesimp>干！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_3">
+				<Original>Damn it!</Original>
+				<Chinesesimp>干哦！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_4">
+				<Original>Nooo!</Original>
+				<Chinesesimp>不！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_5">
+				<Original>Oh no!</Original>
+				<Chinesesimp>哦不！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_6">
+				<Original>Fuck!</Original>
+				<Chinesesimp>操！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_7">
+				<Original>Oh fuck!</Original>
+				<Chinesesimp>我操！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_8">
+				<Original>Fucking hell!</Original>
+				<Chinesesimp>见他妈鬼去！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_9">
+				<Original>Fuck this shit!</Original>
+				<Chinesesimp>去他妈的！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_10">
+				<Original>I'm out of here!</Original>
+				<Chinesesimp>老子溜了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_11">
+				<Original>Shit shit shit!</Original>
+				<Chinesesimp>操操操！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_12">
+				<Original>Someone help me!</Original>
+				<Chinesesimp>谁来救救我！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_13">
+				<Original>Help me, anyone!</Original>
+				<Chinesesimp>有人吗！救我呀！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_14">
+				<Original>Police! Police! Help me!</Original>
+				<Chinesesimp>警察叔叔！救救我！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_15">
+				<Original>Someone, call the police!</Original>
+				<Chinesesimp>谁去把警察叫来啊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_16">
+				<Original>Someone, call the cops!</Original>
+				<Chinesesimp>谁去把条子叫来啊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_17">
+				<Original>Police! Help me!</Original>
+				<Chinesesimp>警察叔叔！帮帮我吧！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_18">
+				<Original>This is horrible!</Original>
+				<Chinesesimp>太糟糕了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_PANIC_19">
+				<Original>This is insane!</Original>
+				<Chinesesimp>真他妈疯了！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="StartDialogue">
+			<Key ID="STR_START_DIALOGUE_1">
+				<Original>Hey, you've got a minute?</Original>
+				<Chinesesimp>嗨，可以占用你点时间么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_2">
+				<Original>Can I ask you something?</Original>
+				<Chinesesimp>我能问你点儿事么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_3">
+				<Original>Sir, can you talk now?</Original>
+				<Chinesesimp>先生，你现在方便谈话吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_4">
+				<Original>Excuse me, do you have a moment to talk?</Original>
+				<Chinesesimp>打扰一下，你能抽出点时间来谈话吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_5">
+				<Original>Can you talk now?</Original>
+				<Chinesesimp>我们可以聊聊么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_6">
+				<Original>Hey, can I talk to you for a moment?</Original>
+				<Chinesesimp>嗨，我能和你聊聊么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_7">
+				<Original>Hi! Can I talk to you?</Original>
+				<Chinesesimp>嘿！我能和你谈谈吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_8">
+				<Original>Hey, do you have a second?</Original>
+				<Chinesesimp>嗨，你有时间么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_9">
+				<Original>Hey! Got a minute?</Original>
+				<Chinesesimp>嘿！有时间吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_START_DIALOGUE_10">
+				<Original>Hey, I'd like to talk to you.</Original>
+				<Chinesesimp>嘿，我想和你聊一聊。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilianNonsense">
+			<Key ID="STR_C_NONSENSE_1">
+				<Original>I am nothing but a simulation on some computer.</Original>
+				<Chinesesimp>我只是电脑中的纸片人罢了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_2">
+				<Original>This all is not real! This is a simulation! What shall we do now?</Original>
+				<Chinesesimp>这不是真的！全都是虚假的！我们该怎么办？</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_3">
+				<Original>How can you prove that this world is real? It's all a simulation!</Original>
+				<Chinesesimp>你怎么能证明这个世界是真的？这一切都是虚拟的！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_4">
+				<Original>Me and you and this world, we are just a bunch of 1s and 0s!</Original>
+				<Chinesesimp>你、我、这个世界，全都是1和0组成的！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_5">
+				<Original>Help! I don't remember what happened to me 3 minutes ago. I just appeared out of nowhere!!</Original>
+				<Chinesesimp>救命啊！我记不得3分钟前发生了什么。我就这么凭空出现了！！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_6">
+				<Original>What has happened? All my furniture is gone and I must sleep on the floor now.</Original>
+				<Chinesesimp>发生了什么？我的家具都没了，我必须得睡在地板上了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_7">
+				<Original>I think therefore I am.</Original>
+				<Chinesesimp>我思故我在。</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_8">
+				<Original>To be is to be perceived.</Original>
+				<Chinesesimp>存在就是一切，一切为了存在。</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_9">
+				<Original>The only thing I know is that I know nothing.</Original>
+				<Chinesesimp>我知道我什么都不知道。</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_NONSENSE_10">
+				<Original>Nothing is enough for the man to whom enough is too little.</Original>
+				<Chinesesimp>知足常乐者恒求之。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilianCantTalkArrested">
+			<Key ID="STR_C_CANT_TALK_ARRESTED_1">
+				<Original>I did nothing wrong! The guy just arrested me for nothing!</Original>
+				<Chinesesimp>我啥都没做！他们就莫须有的这么抓了我！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_2">
+				<Original>They said that I look suspicious! What a nonsense!</Original>
+				<Chinesesimp>他们说我很可疑！还有王法吗！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_3">
+				<Original>Is it forbidden to have own opinion in this country now?!</Original>
+				<Chinesesimp>发表意见都有错了吗？！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_4">
+				<Original>This country goes straight to hell! What a shame!</Original>
+				<Chinesesimp>这个国家已经完蛋了！真是耻辱！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_5">
+				<Original>They said that I look like a criminal they are searching for!</Original>
+				<Chinesesimp>他们说我很像他们正在搜捕的罪犯！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_CANT_TALK_ARRESTED_6">
+				<Original>I am so angry at the police now!</Original>
+				<Chinesesimp>条子让我无能狂怒！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="PlayerUntied">
+			<Key ID="STR_P_UNTIED_1">
+				<Original>Thanks for the help, brother!</Original>
+				<Chinesesimp>多谢相救，兄弟！</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_UNTIED_2">
+				<Original>Well done, thank you!</Original>
+				<Chinesesimp>干得好，谢谢！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilianUntied">
+			<Key ID="STR_C_UNTIED_1">
+				<Original>Thank you for the help! We should make the police pay for this!</Original>
+				<Chinesesimp>多谢你的帮助！这帮条子会付出代价的！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_UNTIED_2">
+				<Original>Thanks, brother! These assholess will pay for what they are doing!</Original>
+				<Chinesesimp>谢谢兄弟！这帮混蛋会为此付出代价！</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="dialogueCivilian">
+		<Container name="PlayerAskMilitaryLocations">
+			<Key ID="STR_MILITARY_LOCATIONS_1">
+				<Original>Do you know any military outposts in the area?</Original>
+				<Chinesesimp>你知道这附近哪里有军事哨所吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_2">
+				<Original>Do you know of any military places around here?</Original>
+				<Chinesesimp>这附近有任何军事禁区吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_3">
+				<Original>Hey, are there any ... you know ... military places near here?</Original>
+				<Chinesesimp>嘿，这附近...有军事禁区吗？你懂的...</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_4">
+				<Original>Have you seen any military activity around here?</Original>
+				<Chinesesimp>你在这附近看到过任何军事活动吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_MILITARY_LOCATIONS_5">
+				<Original>Do you know any military locations around here?</Original>
+				<Chinesesimp>你了解周边的军事区域吗？</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="Incite">
+			<Key ID="STR_INCITE_1">
+				<Original>Damn police, they keep arresting innocent people!</Original>
+				<Chinesesimp>该死的警察，他们就这样不停逮捕无辜的人！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_2">
+				<Original>Those militarist pigs will pay for their crimes!</Original>
+				<Chinesesimp>这帮军国主义猪猡会为他们的罪恶付出代价！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_3">
+				<Original>Yesterday they have arrested my friends' family because of 'terrorist activity' as the police say!</Original>
+				<Chinesesimp>昨天他们逮捕了我朋友一家，条子蔑称他们参与了“恐怖活动”！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_4">
+				<Original>The police took my brother yesterday, you might be next one!</Original>
+				<Chinesesimp>条子昨天抓了我兄弟，下一个可能就轮到你了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_5">
+				<Original>Have you heard about those illegal detention camps? I know a guy who returned from one, horrible place!</Original>
+				<Chinesesimp>你听说过非法集中营吗？我认识有个刚从那里回来的人，太惨了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_6">
+				<Original>We must stay united, or next time police will take one of us for some fake reason!</Original>
+				<Chinesesimp>我们必须团结一致，不然下一次条子就会以莫须有的罪名抓走我们！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_7">
+				<Original>Police tossed drugs to one of my friends and arrested him! Assholes!</Original>
+				<Chinesesimp>条子往我朋友车里栽赃了毒品并抓了他！真是混蛋！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_8">
+				<Original>We should seek justice for all the war crimes the military are doing here!</Original>
+				<Chinesesimp>我们要让军队为他们的战争罪行付出代价！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCITE_9">
+				<Original>The military are so corrupt! There is no other solution to this any more!</Original>
+				<Chinesesimp>军队太腐败了！我们别无选择！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilianInciteResponse">
+			<Key ID="STR_C_INCITE_RESPONSE_1">
+				<Original>Damn that's horrible!</Original>
+				<Chinesesimp>太他妈可怕了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_2">
+				<Original>I am shocked to hear this!</Original>
+				<Chinesesimp>震惊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_3">
+				<Original>You are so right!</Original>
+				<Chinesesimp>会说话就多说两句！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_4">
+				<Original>That's horrible!</Original>
+				<Chinesesimp>真可怕！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_5">
+				<Original>We should put an end to this!</Original>
+				<Chinesesimp>我们得终结这一切！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_6">
+				<Original>Yes! The truth must be exposed!</Original>
+				<Chinesesimp>是啊！真相必须公之于众！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_7">
+				<Original>Oh really, they don't tell that on TV!</Original>
+				<Chinesesimp>真的吗？他们从不在电视上聊这些！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_8">
+				<Original>Damn I've never heard of it on the local radio!</Original>
+				<Chinesesimp>干，我从没在当地电台里听说过这些！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_9">
+				<Original>You're straight up spitting facts there mate! It's about time somebody puts a stop to that, and I for one am up for it!</Original>
+				<Chinesesimp>你说的可太对了老鸽！必须有人制止这一切，我报名！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_10">
+				<Original>You're right, they really are corrupt. Lets get to work on some change around here!</Original>
+				<Chinesesimp>你是对的，他们太腐败了。我们要改变这一切！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_11">
+				<Original>They definitely have some stick up their ass, let's show them who the real boss is!</Original>
+				<Chinesesimp>他们肯定还在洋洋得意，让他们看看谁才是这里的老大！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_12">
+				<Original>Well there is one solution, and it involves guns and liberation. I'm up for it if you ask me!</Original>
+				<Chinesesimp>吾有一计，需要枪和火药。我会加入你们奋斗的事业！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_13">
+				<Original>I might know a way to fix their attitude! Its about time I get involved in this!</Original>
+				<Chinesesimp>我可太懂该怎么扳他们的臭毛病了！是时候下场参战了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_C_INCITE_RESPONSE_14">
+				<Original>The less control they have, the better! Count me in!</Original>
+				<Chinesesimp>他们管控的越少越好！算我一个！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="Scare">
+			<Key ID="STR_SCARE_1">
+				<Original>Get out of here, quick!</Original>
+				<Chinesesimp>离开这里，快！</Chinesesimp>
+			</Key>
+			<Key ID="STR_SCARE_2">
+				<Original>Something bad is going to happen here. Better move away!</Original>
+				<Chinesesimp>这里要整个大新闻。最好赶紧跑！</Chinesesimp>
+			</Key>
+			<Key ID="STR_SCARE_3">
+				<Original>It's not safe here, run away!</Original>
+				<Chinesesimp>这里不安全，快跑！</Chinesesimp>
+			</Key>
+			<Key ID="STR_SCARE_4">
+				<Original>This place is not safe, you better get away!</Original>
+				<Chinesesimp>这地方不安全，你最好快跑！</Chinesesimp>
+			</Key>
+			<Key ID="STR_SCARE_5">
+				<Original>Sir you better get out of here, quick!</Original>
+				<Chinesesimp>先生你最好离开这里，快！</Chinesesimp>
+			</Key>
+			<Key ID="STR_SCARE_6">
+				<Original>Move out of here! This place is not safe!</Original>
+				<Chinesesimp>开离开这儿！这里不安全！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="Intel">
+			<Key ID="STR_INTEL_1">
+				<Original>Do you know if there will be any military maneuvers nearby?</Original>
+				<Chinesesimp>你知道这附近的军事动向吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_INTEL_2">
+				<Original>Have you got any idea if the military are planning something?</Original>
+				<Chinesesimp>你知道军队在计划些什么吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_INTEL_3">
+				<Original>Any idea if the army is planning something?</Original>
+				<Chinesesimp>你知道军队要做什么嘛？</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="AskHelp">
+			<Key ID="STR_ASK_HELP_1">
+				<Original>The resistence needs your help! Do you have any building supplies?</Original>
+				<Chinesesimp>抵抗组织需要你的帮助！你有建筑物资吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_ASK_HELP_2">
+				<Original>Listen, the resistence needs some building supplies, do you have any?</Original>
+				<Chinesesimp>听着，抵抗组织需要一些建筑物资，你有吗？</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="AgreeHelp">
+			<Key ID="STR_AGREE_HELP_1">
+				<Original>Here, take these construction supplies, that's all I have.</Original>
+				<Chinesesimp>给你，拿好这些建材，我就这么多了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_AGREE_HELP_2">
+				<Original>Take these construction supplies, that's all I can help you with.</Original>
+				<Chinesesimp>拿上这些建材吧，我只能帮你到这了。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="DontSupportResistance">
+			<Key ID="STR_DONT_SUPPORT_1">
+				<Original>I can't help you with it.</Original>
+				<Chinesesimp>我帮不了你。</Chinesesimp>
+			</Key>
+			<Key ID="STR_DONT_SUPPORT_2">
+				<Original>Sorry I can't help you.</Original>
+				<Chinesesimp>抱歉我不能帮你。</Chinesesimp>
+			</Key>
+			<Key ID="STR_DONT_SUPPORT_3">
+				<Original>There is nothing I can help you with.</Original>
+				<Chinesesimp>我没什么能帮得上的。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="DontKnowIntel">
+			<Key ID="STR_DONT_KNOW_1">
+				<Original>I don't know anything like that.</Original>
+				<Chinesesimp>我不知道类似的事情。</Chinesesimp>
+			</Key>
+			<Key ID="STR_DONT_KNOW_2">
+				<Original>I am not aware of such information.</Original>
+				<Chinesesimp>我不了解这类信息。</Chinesesimp>
+			</Key>
+			<Key ID="STR_DONT_KNOW_3">
+				<Original>Sorry I don't know anything of this kind.</Original>
+				<Chinesesimp>抱歉我不知道相关的事。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="NODE_Dialogues">
+			<Key ID="STR_NODE_C_SD_1">
+				<Original>Sure!</Original>
+				<Chinesesimp>好啊！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_SD_2">
+				<Original>Yes?</Original>
+				<Chinesesimp>啥？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_SD_3">
+				<Original>How can I help you?</Original>
+				<Chinesesimp>需要帮助吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_P_TITO">
+				<Original>Tell it to others!</Original>
+				<Chinesesimp>把这事流传出去！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_DANGEROUS_TO_DISCUSS">
+				<Original>I know! It's dangerous to discuss this.</Original>
+				<Chinesesimp>我懂的！这也太危险了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_NO_MORE_RESOURCE">
+				<Original>Sorry I gave all I could already!</Original>
+				<Chinesesimp>能给的我都已经给了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_P_ASK_TIME">
+				<Original>What time is it?</Original>
+				<Chinesesimp>现在几点了？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_P_THANKS">
+				<Original>Thanks!</Original>
+				<Chinesesimp>谢了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_NO_1">
+				<Original>Are you serious? You have a watch on your hand!</Original>
+				<Chinesesimp>你搞笑呢？你手上那不是表？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_NO_2">
+				<Original>Don't you have a phone?</Original>
+				<Chinesesimp>你没手机吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_NO_3">
+				<Original>Don't you have a watch yourself?</Original>
+				<Chinesesimp>你就不能戴个表？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_ASK_TIME_YES">
+				<Original>It is %1</Original>
+				<Chinesesimp>现在时间是%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_P_BYE">
+				<Original>Bye! I must leave now.</Original>
+				<Chinesesimp>拜！我得走了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_BYE_1">
+				<Original>Bye!</Original>
+				<Chinesesimp>拜！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_BYE_2">
+				<Original>Good bye!</Original>
+				<Chinesesimp>再见！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_BYE_3">
+				<Original>See you!</Original>
+				<Chinesesimp>慢走！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_ANYMORE">
+				<Original>Anything else?</Original>
+				<Chinesesimp>还有事么？</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="NODE_Infos">
+			<Key ID="STR_NODE_C_GATHER_1">
+				<Original>Let me think...</Original>
+				<Chinesesimp>让俺寻思一下...</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_2">
+				<Original>Give me a second...</Original>
+				<Chinesesimp>等一下啊...</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_3">
+				<Original>One moment. Let me think...</Original>
+				<Chinesesimp>稍等，让我想想...</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_NO">
+				<Original>No, there aren't any within kilometers of this place.</Original>
+				<Chinesesimp>不，这方圆几里都没有此类地方。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_GATHER_YES">
+				<Original>Yes, I know of a few places like that ...</Original>
+				<Chinesesimp>对，我知道几个类似的地方...</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_N">
+				<Original>north</Original>
+				<Chinesesimp>北方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_NE">
+				<Original>north-east</Original>
+				<Chinesesimp>东北方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_E">
+				<Original>east</Original>
+				<Chinesesimp>东方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_SE">
+				<Original>south-east</Original>
+				<Chinesesimp>东南方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_S">
+				<Original>south</Original>
+				<Chinesesimp>南方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_SW">
+				<Original>south-west</Original>
+				<Chinesesimp>西南方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_W">
+				<Original>west</Original>
+				<Chinesesimp>西方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_DIR_NW">
+				<Original>north-west</Original>
+				<Chinesesimp>西北方</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L400_1">
+				<Original>quite close.</Original>
+				<Chinesesimp>非常近。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L400_2">
+				<Original>within 400 meters.</Original>
+				<Chinesesimp>400米内。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L400_3">
+				<Original>right over here.</Original>
+				<Chinesesimp>这里。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L400_4">
+				<Original>five-minute walk from here.</Original>
+				<Chinesesimp>走路5分钟就到。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L1000_1">
+				<Original>not too far away from here.</Original>
+				<Chinesesimp>离这儿不太远。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L1000_2">
+				<Original>within a kilometer.</Original>
+				<Chinesesimp>一公里内。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L1000_3">
+				<Original>10 minute walk from here.</Original>
+				<Chinesesimp>走路10分钟就到。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_L1000_4">
+				<Original>not far from here at all.</Original>
+				<Chinesesimp>离这里不算太远。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_M1000_1">
+				<Original>very far away.</Original>
+				<Chinesesimp>非常远。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_M1000_2">
+				<Original>pretty far away.</Original>
+				<Chinesesimp>还挺远的。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_M1000_3">
+				<Original>more than a kilometer from here.</Original>
+				<Chinesesimp>离这儿超过一公里。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_M1000_4">
+				<Original>quite a bit away from here.</Original>
+				<Chinesesimp>离这儿还挺远。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_1">
+				<Original>There is a </Original>
+				<Chinesesimp>那里有</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_2">
+				<Original>I know about a</Original>
+				<Chinesesimp>我知道有</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_3">
+				<Original>I think there is a</Original>
+				<Chinesesimp>我觉得那里有</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_4">
+				<Original>Some time ago I saw a</Original>
+				<Chinesesimp>不久前我看到了</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_5">
+				<Original>A friend told me about a</Original>
+				<Chinesesimp>一个朋友告诉我有</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_6">
+				<Original>People are nervous about a</Original>
+				<Chinesesimp>大家都谨慎关注着</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_7">
+				<Original>People are talking about a</Original>
+				<Chinesesimp>大家议论着</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_8">
+				<Original>A long time ago there was a</Original>
+				<Chinesesimp>很久以前那里有</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_9">
+				<Original>Not sure about the coordinates, there is a</Original>
+				<Chinesesimp>不确定具体位置，但有</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_10">
+				<Original>A friend said he heard from somebody about a</Original>
+				<Chinesesimp>我的朋友说他听别人说有</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_11">
+				<Original>I heard some guys talk about a</Original>
+				<Chinesesimp>我听到有人议论着</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_12">
+				<Original>I think I heard policemen talk about a</Original>
+				<Chinesesimp>我听到警察谈论着</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_INTRO_13">
+				<Original>Some time ago I could hear some soldiers talk about a</Original>
+				<Chinesesimp>不久之前我听到几个士兵谈论着</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_AT">
+				<Original>at %1</Original>
+				<Chinesesimp>在%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_TO">
+				<Original>to the %1</Original>
+				<Chinesesimp>位于%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_1">
+				<Original>That's all I can tell you.</Original>
+				<Chinesesimp>我只能告诉你这些了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_2">
+				<Original>I don't know anything else.</Original>
+				<Chinesesimp>我不知道别的了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_3">
+				<Original>That's all I know.</Original>
+				<Chinesesimp>我只知道这些。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_4">
+				<Original>What are you going to do with this information anyway?</Original>
+				<Chinesesimp>你打听这种信息要做什么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_5">
+				<Original>By the way, why do you are you asking this?</Original>
+				<Chinesesimp>对了，你问这些做什么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_6">
+				<Original>Just don't tell me why you are asking, all right?</Original>
+				<Chinesesimp>我不想知道你为啥问这些，懂么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_7">
+				<Original>I don't want to know what you are going to do with this information!</Original>
+				<Chinesesimp>我不想知道你会拿这种情报去做什么！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_8">
+				<Original>Just don't tell them I told you this!</Original>
+				<Chinesesimp>别告诉他们是我说的！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_C_INFO_OUTRO_9">
+				<Original>I have a bad feeling about this.</Original>
+				<Chinesesimp>我有种不好的预感。</Chinesesimp>
+			</Key>
+			<Key ID="STR_NODE_INFO_INTEL">
+				<Original>%1 %2 at %3</Original>
+				<Chinesesimp>%1 %2于%3</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="dialoguePolice">
+		<Container name="OfficerHello">
+			<Key ID="STR_O_HELLO_1">
+				<Original>What's the problem?</Original>
+				<Chinesesimp>有问题吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_HELLO_2">
+				<Original>I'm on duty. Don't waste my time!</Original>
+				<Chinesesimp>我正在执勤。别浪费我时间！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_HELLO_3">
+				<Original>Move along, I am busy! What do you want?</Original>
+				<Chinesesimp>该滚就滚，我正忙着呢！你想干什么？</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_HELLO_4">
+				<Original>Don't you see, I am busy over here!</Original>
+				<Chinesesimp>你没长眼啊，我正忙着呢！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_HELLO_5">
+				<Original>Go ahead, what do you want?</Original>
+				<Chinesesimp>说吧，你想干啥？</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_HELLO_6">
+				<Original>Your face looks familiar. Did I arrest you a week ago?</Original>
+				<Chinesesimp>你看着挺眼熟啊。我是不是上周逮捕了你？</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_HELLO_7">
+				<Original>You look like the guy I fined a week ago!</Original>
+				<Chinesesimp>你看着像我上周开罚单的那个人！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="OfficerBye">
+			<Key ID="STR_O_BYE_1">
+				<Original>Don't do anything funny, I'll be watching you!</Original>
+				<Chinesesimp>别做蠢事，我会盯着你的！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_BYE_2">
+				<Original>Report anything unusual, citizen!</Original>
+				<Chinesesimp>上报任何不寻常的事，市民！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_BYE_3">
+				<Original>Stop wasting my time, citizen!</Original>
+				<Chinesesimp>别再浪费我的时间了，市民！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_BYE_4">
+				<Original>Alright, now go away!</Original>
+				<Chinesesimp>好了，滚吧！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_BYE_5">
+				<Original>I knew it was a pointless dialogue!</Original>
+				<Chinesesimp>我就知道这是在浪费时间！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="OfficerThanks">
+			<Key ID="STR_O_THANKS_1">
+				<Original>Good job, citizen. We will take measures.</Original>
+				<Chinesesimp>干得好，市民。我们会采取措施的。</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_THANKS_2">
+				<Original>Thank you. We will do something about it.</Original>
+				<Chinesesimp>谢谢。我们会采取行动的。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="ReportActivities">
+			<Key ID="STR_P_ACTIVITIES_1">
+				<Original>Some man is giving out leaflets.</Original>
+				<Chinesesimp>有人正在大发传单。</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_2">
+				<Original>Someone is making a political speech.</Original>
+				<Chinesesimp>有人正在发表不正当言论。</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_3">
+				<Original>I think there is a political meeting over there.</Original>
+				<Chinesesimp>我觉得那边正在进行政治会谈。</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_4">
+				<Original>I heard people talk about weapons.</Original>
+				<Chinesesimp>我听到有人在谈论武器。</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_ACTIVITIES_5">
+				<Original>Some guys are loading strange boxes into their car.</Original>
+				<Chinesesimp>有人正往他们的车上装奇怪的箱子。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="NODE_O_Infos">
+			<Key ID="STR_P_WHERE_POLICESTATION">
+				<Original>Where is the police station?</Original>
+				<Chinesesimp>警察局在哪？</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_REPORT">
+				<Original>I want to report terrorist activity nearby!</Original>
+				<Chinesesimp>我想要上报附近的恐怖活动！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_REPORT_FOLLOWUP_1">
+				<Original>What do you know?!</Original>
+				<Chinesesimp>你都知道些什么？！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_REPORT_FOLLOWUP_2">
+				<Original>Where did you see it?</Original>
+				<Chinesesimp>你在哪看到的？</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_REPORT_POINTAT">
+				<Original>Where I am looking at. A few hundred of meters this way.</Original>
+				<Chinesesimp>就在我面朝的方向。几百米远的地方。</Chinesesimp>
+			</Key>
+			<Key ID="STR_P_REPORT_LEADWAY">
+				<Original>Follow me, I will show you!</Original>
+				<Chinesesimp>跟着我，我来带路！</Chinesesimp>
+			</Key>
+			<Key ID="STR_O_REPORT_LEADWAY">
+				<Original>This sounds strange. Let's go, show me the way!</Original>
+				<Chinesesimp>听着是很怪。走，带路滴干活！</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+<Project name="Menus">
+	<Pacakge name="inGameMenus">
+		<Container name="InitializationMenu">
+			<Key ID="STR_IM_CREATE">
+				<Original>Create</Original>
+				<Chinesesimp>建立</Chinesesimp>
+			</Key>
+			<Key ID="STR_IM_SAVE">
+				<Original>Savegames</Original>
+				<Chinesesimp>存档</Chinesesimp>
+			</Key>
+			<Key ID="STR_IM_TUTOR">
+				<Original>Tutorial</Original>
+				<Chinesesimp>教程</Chinesesimp>
+			</Key>
+			<Key ID="STR_IM_TITLE">
+				<Original>Mission Startup Menu  v%1</Original>
+				<Chinesesimp>任务启动菜单 v%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_IM_DESC">
+				<Original>Load a previously saved game or create a new campaign.</Original>
+				<Chinesesimp>加载过往存档或开始一个新的战役。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="MainMenu">
+			<Key ID="STR_MM_STRAT">
+				<Original>Strategic</Original>
+				<Chinesesimp>战略</Chinesesimp>
+			</Key>
+			<Key ID="STR_MM_NOTE">
+				<Original>Notes</Original>
+				<Chinesesimp>笔记</Chinesesimp>
+			</Key>
+			<Key ID="STR_MM_SAVE">
+				<Original>Savegames</Original>
+				<Chinesesimp>存档</Chinesesimp>
+			</Key>
+			<Key ID="STR_MM_TUTOR">
+				<Original>Guide</Original>
+				<Chinesesimp>指引</Chinesesimp>
+			</Key>
+			<Key ID="STR_MM_MISSION">
+				<Original>Mission</Original>
+				<Chinesesimp>任务</Chinesesimp>
+			</Key>
+			<Key ID="STR_MM_ADMIN">
+				<Original>Admin</Original>
+				<Chinesesimp>管理</Chinesesimp>
+			</Key>
+			<Key ID="STR_MM_TITLE">
+				<Original>Mission Menu  v%1</Original>
+				<Chinesesimp>任务菜单  v%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_MM_TITLE_DESC">
+				<Original>Vindicta pre-alpha version.</Original>
+				<Chinesesimp>Vindicta 早期版本。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="dialogConfirmAction">
+		<Container name="DialogButtons">
+			<Key ID="STR_DB_TITLE">
+				<Original>Confirm Action</Original>
+				<Chinesesimp>确认操作</Chinesesimp>
+			</Key>
+			<Key ID="STR_DB_YES">
+				<Original>Yes</Original>
+				<Chinesesimp>是</Chinesesimp>
+			</Key>
+			<Key ID="STR_DB_NO">
+				<Original>No</Original>
+				<Chinesesimp>否</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="inGameMenuTabCommander">
+		<Container name="CreateLocationTabs">
+			<Key ID="STR_CON_CREATE">
+				<Original>CREATE</Original>
+				<Chinesesimp>建立</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_CREATE_T">
+				<Original>Create a location</Original>
+				<Chinesesimp>建立地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_RESOURCES">
+				<Original>%1 construction resources</Original>
+				<Chinesesimp>%1 建筑物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_CAMP">
+				<Original>Camp</Original>
+				<Chinesesimp>营地</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_ROADBLOCK">
+				<Original>Roadblock</Original>
+				<Chinesesimp>哨卡</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_CLAIM">
+				<Original>CLAIM</Original>
+				<Chinesesimp>索取</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_CANT_CITY">
+				<Original>We can't claim a city!</Original>
+				<Chinesesimp>我们不能索取城市！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_CANT_OWNED">
+				<Original>We already own this place!</Original>
+				<Chinesesimp>我们已拥有这个地点！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_CLAIM_T">
+				<Original>Claim a location</Original>
+				<Chinesesimp>索取地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_SKIP_DUSK">
+				<Original>Will skip time until dusk (dusk is in about %1 hours)</Original>
+				<Chinesesimp>将时间跳至日落（距离日落尚有%1小时）</Chinesesimp>
+			</Key>
+			<Key ID="STR_SKIP_EARLY">
+				<Original>Will skip time until 30 minutes before dawn (dawn is in about %1 hours)</Original>
+				<Chinesesimp>将时间跳至日出前30分钟（距离日出尚有%1小时）</Chinesesimp>
+			</Key>
+			<Key ID="STR_SKIP_DAWN">
+				<Original>Will skip time until dawn (dawn is in about %1 hours)</Original>
+				<Chinesesimp>将时间跳至日出（距离日出尚有%1小时）</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_NOT_ENOUGH">
+				<Original>You must have at least %1 build resources!</Original>
+				<Chinesesimp>你必须拥有至少%1建筑物资！</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_INVALID_NAME">
+				<Original>You must specify a proper name.</Original>
+				<Chinesesimp>你必须输入合理的名称。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_INVALID_LOC">
+				<Original>You must select a location type.</Original>
+				<Chinesesimp>你必须选择地点类型。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_CREATING">
+				<Original>Creating new location ...</Original>
+				<Chinesesimp>正在建立新地点...</Chinesesimp>
+			</Key>
+			<Key ID="STR_CON_INVALID_CLAIM">
+				<Original>There is nothing to claim here!</Original>
+				<Chinesesimp>这里没什么可索取的！</Chinesesimp>
+			</Key>
+			<Key ID="STR_ADMIN_ONLY">
+				<Original>Only for admins</Original>
+				<Chinesesimp>仅限管理员</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOT_YET_IMPLEMENTED">
+				<Original>Not yet implemented.</Original>
+				<Chinesesimp>尚未实装。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="GarrisonServer.sqf">
+			<Key ID="STR_GS_CANT_BUILD_ANYMORE">
+				<Original>We can't build here anymore.</Original>
+				<Chinesesimp>我们不能在此地建造了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GS_NOT_ENOUGH_RESOURCES">
+				<Original>Not enough resources to build %1</Original>
+				<Chinesesimp>缺少足够的建筑物资建造%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_GS_OBJECT_BUILT">
+				<Original>Object %1 was build successfully!</Original>
+				<Chinesesimp>物体%1已成功建造！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GS_SOLDIER_RECRUITED">
+				<Original>We have recruited one %1</Original>
+				<Chinesesimp>我们征募了一名%1</Chinesesimp>
+			</Key>
+		<Container name="InGameMenuTabNotes.sqf">
+			<Key ID="STR_NOTES_TEXT">
+				<Original>Here I will write notes... (Use Shift+Enter for a new line, Ctrl+C and Ctrl+V for copying text)</Original>
+				<Chinesesimp>我会在这里记录下笔记...（使用Shift+回车键换行，Ctrl+C和Ctrl+V复制粘贴文本）</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="inGameMenuTabGameModeInit">
+		<Container name="IntializationOptions">
+			<Key ID="STR_IO_NO_CAMPAIGN_NAME">
+				<Original>You must enter a campaign name.</Original>
+				<Chinesesimp>你必须输入战役名称。</Chinesesimp>
+			</Key>
+			<Key ID="STR_IO_INVALID_CAMPAIGN_NAME">
+				<Original>You must enter a valid campaign name.</Original>
+				<Chinesesimp>你必须输入有效的战役名称。</Chinesesimp>
+			</Key>
+			<Key ID="STR_IO_INVALID_ENY_FORCE">
+				<Original>You must enter a valid amount of enemy forces.</Original>
+				<Chinesesimp>你必须输入有效的敌军强度。</Chinesesimp>
+			</Key>
+			<Key ID="STR_IO_FACTION_NOT_LOADED">
+				<Original>ERROR: You must select factions which have all the addons loaded on the server.</Original>
+				<Chinesesimp>错误：你必须选择已经加载到服务器中的阵营。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="inGameMenuTabSave">
+		<Container name="SaveToolTips">
+			<Key ID="STR_LOAD_AFTER_RESTART">
+				<Original>Game can be loaded only after a mission restart</Original>
+				<Chinesesimp>游戏仅能在任务重启后加载</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTHING_TO_SAVE">
+				<Original>There is nothing to save yet</Original>
+				<Chinesesimp>什么可保存的</Chinesesimp>
+			</Key>
+			<Key ID="STR_FILEXT_SUGGEST">
+				<Original>With FileXT addon you can store saved games in a more convenient way.</Original>
+				<Chinesesimp>FileXT插件能让你更轻松地存储游戏存档。</Chinesesimp>
+			</Key>
+			<Key ID="STR_FILEXT_SUGGEST_1">
+				<Original>You can find installation instructions at our Guide Web-Page.</Original>
+				<Chinesesimp>你可以在我们的指引网站找到安装教程。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CREATE_NEW_GAME">
+				<Original>Create a new game save?\n</Original>
+				<Chinesesimp>建立新存档？\n</Chinesesimp>
+			</Key>
+			<Key ID="STR_OVERWRITE_SAVE">
+				<Original>Overwrite this saved game?\n%1</Original>
+				<Chinesesimp>覆盖着个存档？\n%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCOMPAT_SAVE">
+				<Original>Error: version is incompatible: save: %1, current: %2, last compatible: %3</Original>
+				<Chinesesimp>错误：版本不兼容：存档：%1，当前：%2，上一可兼容存档：%3</Chinesesimp>
+			</Key>
+			<Key ID="STR_INCOMPAT_MAP">
+				<Original>Error: maps are incompatible: save: %1, current: %2</Original>
+				<Chinesesimp>错误：地图不兼容：存档：%1，当前：%2</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOAD_CONFIRM">
+				<Original>Load this saved game?\n%1</Original>
+				<Chinesesimp>读取这个存档？\n%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_DELETE_CONFIRM">
+				<Original>Delete this saved game?\n%1</Original>
+				<Chinesesimp>删除这个存档？\n%1</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="inGameMenuTabTutorial">
+		<Container name="TutorialTabs">
+			<Key ID="STR_TUTORIAL_HINT_1">
+				<Original>Our tutorial is hosted at the website:</Original>
+				<Chinesesimp>我们的教程位于这个网页中：</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORIAL_HINT_3">
+				<Original>You can select and copy the link with CTRL + C</Original>
+				<Chinesesimp>你可以通过Ctrl+C选择并复制链接</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="inGameMenuTAB.h">
+		<Container name="CMDR">
+			<Key ID="STR_CMDR_CREATE_LOC">
+				<Original>CREATE A LOCATION</Original>
+				<Chinesesimp>建立新地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_LOC_NAME">
+				<Original>location name here</Original>
+				<Chinesesimp>在此输入地点名称</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_NAME">
+				<Original>NAME</Original>
+				<Chinesesimp>名称</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_TYPE">
+				<Original>TYPE</Original>
+				<Chinesesimp>类型</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMD_CREATE">
+				<Original>CREATE</Original>
+				<Chinesesimp>建立</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_COST">
+				<Original>COST</Original>
+				<Chinesesimp>花费</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_RESOURCE">
+				<Original>666 build resources</Original>
+				<Chinesesimp>666建筑物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_RESOURCE_HINT">
+				<Original>Build resources must be in your backpack or in the vehicle you are looking at.</Original>
+				<Chinesesimp>建筑物资必须在你的背包里或你看向的载具里。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_SKIP_TIME">
+				<Original>SKIP TIME</Original>
+				<Chinesesimp>跳进时间</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_DUSK">
+				<Original>Dusk</Original>
+				<Chinesesimp>黄昏</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_PREDAWN">
+				<Original>Predawn</Original>
+				<Chinesesimp>黎明前</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMDR_DAWN">
+				<Original>Dawn</Original>
+				<Chinesesimp>黎明</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="GMINIT">
+			<Key ID="STR_GMINIT_CHOSEN_FACTIONS">
+				<Original>CHOSEN FACTIONS:</Original>
+				<Chinesesimp>选择阵营：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_NEW_CAMPAIGN">
+				<Original>CREATE A NEW VINDICTA CAMPAIGN</Original>
+				<Chinesesimp>建立新VINDICTA战役</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_GAMEMODE">
+				<Original>GAME MODE:</Original>
+				<Chinesesimp>游戏模式：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_INITIAL_ENY">
+				<Original>ENEMIES AT OUTPOSTS %:</Original>
+				<Chinesesimp>前哨的敌人%：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_TOOLTIP_INITIAL_ENY">
+				<Original>Initial amount of enemies at occupied outposts</Original>
+			</Key>
+			<Key ID="STR_GMINIT_INITIAL_ENEMY_OUTPOSTS">
+				<Original>OCCUPIED OUTPOSTS %:</Original>
+				<Chinesesimp>发生敌人的前哨%：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_TOOLTIP_ENEMY_OUTPOSTS">
+				<Original>Initial amount of outposts occupied by enemies</Original>
+			</Key>
+
+			<Key ID="STR_GMINIT_MIL_FACTION">
+				<Original>MILITARY FACTION:</Original>
+				<Chinesesimp>军事阵营：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_CAMPAIGN_NAME">
+				<Original>CAMPAIGN NAME:</Original>
+				<Chinesesimp>战役名称：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_CIV_FACTION">
+				<Original>CIVILIAN FACTION:</Original>
+				<Chinesesimp>平民阵营：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_POL_FACTION">
+				<Original>POLICE FACTION:</Original>
+				<Chinesesimp>警察阵营：</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_NAME">
+				<Original>ENTER NAME</Original>
+				<Chinesesimp>输入名称</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_CIV_WAR">
+				<Original>CIVIL WAR</Original>
+				<Chinesesimp>内战</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_STD">
+				<Original>STANDARD</Original>
+				<Chinesesimp>标准</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_ADV_SETTINGS">
+				<Original>ADVANCED SETTINGS</Original>
+				<Chinesesimp>高级设置</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMINIT_START">
+				<Original>START</Original>
+				<Chinesesimp>开始</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="NOTES">
+			<Key ID="STR_NOTES_HINT">
+				<Original>You can write notes here. Radio cryptokeys will also be added here.</Original>
+				<Chinesesimp>你可以在此写下笔记。无线电密钥也会自动添加到这里。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="SAVE">
+			<Key ID="STR_SAVE_STORAGE">
+				<Original>Storage:</Original>
+				<Chinesesimp>存储位置：</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_NEW">
+				<Original>New Save</Original>
+				<Chinesesimp>新存档</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_OVERWRITE">
+				<Original>Overwrite</Original>
+				<Chinesesimp>覆盖</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_LOAD">
+				<Original>Load</Original>
+				<Chinesesimp>读取</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_DELETE">
+				<Original>Delete</Original>
+				<Chinesesimp>删除</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_PREVIOUS">
+				<Original>PREVIOUSLY SAVED GAMES:</Original>
+				<Chinesesimp>先前存档：</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_NAME">
+				<Original>SAVE NAME:</Original>
+				<Chinesesimp>存档名称：</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_MAP">
+				<Original>MAP:</Original>
+				<Chinesesimp>地图：</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_VERSION">
+				<Original>VERSION:</Original>
+				<Chinesesimp>版本：</Chinesesimp>
+			</Key>
+			<Key ID="STR_SAVE_COUNT">
+				<Original>SAVE COUNT:</Original>
+				<Chinesesimp>存档计数：</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="TutorialPages">
+			<Key ID="STR_TUTORP_HEADLINE">
+				<Original>Vindicta Gameplay Tutorial</Original>
+				<Chinesesimp>Vindicta游戏教程</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_HEADLINE_DESC">
+				<Original>Welcome to the Vindicta tutorial. This tutorial will help you enjoy this mission.</Original>
+				<Chinesesimp>欢迎查看Vindicta教程。本教程将会助你了解并享受这个任务。</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_LINKS">
+				<Original>Useful Links</Original>
+				<Chinesesimp>常用网址</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_LINKS_DESC">
+				<Original>Additional information about the mission can be found at:\n\nvindicta-team.github.io/Vindicta-Docs\n\nYou can also find the development team's Discord channel on the mod's Steam Workshop page.\n\nThis tutorial may contain outdated information, so please check the online documentation if you are having issues.</Original>
+				<Chinesesimp>有关任务的额外信息可于此网址找到：\n\nvindicta-team.github.io/Vindicta-Docs\n\n你也可以通过本模组的Steam创意工坊页面找到并加入开发组的Discord频道\n\n本教程可能包含过时的信息，如果您有问题，请查看在线文档。</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_INTRO">
+				<Original>Introduction</Original>
+				<Chinesesimp>介绍</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_INTRO_DESC">
+				<Original>If you are reading this, congratulations! You have navigated to the mission's in-game menu and you have opened the tutorial. There are no other keyboard keys you need to know about to play this mission.\n\nVindicta is a sandbox scenario where your main goal is to liberate the island from enemy occupation. There is no strict end condition and no end screen, but you may consider the mission finished when you take all airfields under your control, because then enemy will not be able to bring more reinforcements.</Original>
+				<Chinesesimp>如果你正在读这篇文章，恭喜你！你已来到任务的游戏内菜单，并且打开了教程。畅玩本任务不需要知道其它键盘按键。\n\nVindicta是一个沙盒场景任务，你的主要目标是将岛屿从敌人的占领中解放出来。没有严格的结局条件，也没有终局动画，但当你控制所有机场时任务就已经完成了，因为此时的敌人已无法调遣更多增援。</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_I">
+				<Original>Quick Start I</Original>
+				<Chinesesimp>快速游戏 I</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_I_DESC">
+				<Original>This is a simple step by step series, to help you get started:\n\n1. Start by asking civilians for intel. See 'Intel I' in this tutorial for more information on this. Hopefully a civilian will already point out the location of a police station.\n\n2. If not, drive away to a different town and retry until you have found a police station.\n\n3. Once you have found your first police station, kill the police officers inside using your pistol. You always spawn with a pistol and some ammo.\n\n4. Find a suitable vehicle and use ACE3 to load the ammo boxes inside.\n\nProceed to the next page to continue this series.</Original>
+				<Chinesesimp>这是一个助你入门的分步教学系列：\n\n1. 开局先向平民索要情报。有关这方面的更多信息，请参阅本教程中的“情报 I”。希望有平民能为你指出警局的位置。\n\n2. 如果没有，驱车前往其它城市并重试，直到找到警局。\n\n 3. 一旦找到了你的第一个警局，用手枪杀死里面的警察。你永远会带着手枪和一些子弹重生。\n\n4. 找到合适的车辆并使用ACE3功能将弹药箱装入内部。\n\n进入下一页继续本系列。</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_II">
+				<Original>Quick Start II</Original>
+				<Chinesesimp>快速游戏 II</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_II_DESC">
+				<Original>5. Drive to a remote location, preferrably one the enemy cannot easily spot. Unload the crate. It should contain some construction resources. Look directly at the crate, or place some of the construction resources in your inventory, then press [U]. This will open the in-game menu you are in now. Go to the 'Strategic' tab and select type Camp, enter a name (or use the pre-selected one) and press 'Create'. This will create your first camp. NOTE: You must be away from other locations, such as cities, to create a camp.\n\nProceed to the next page to continue this series. There are also additional pages with more in-depth information.</Original>
+				<Chinesesimp>5. 驱车逃离并前往偏远地区，最好是个敌人不易察觉的地方。卸下弹药箱。其内部应包含部分建筑物资。直接看向弹药箱，或将部分建筑物资放入你的物品栏后，按下[U]键。这将会打开你现在所处的游戏内菜单。进入‘战略’选单并选择营地，输入名称（使用默认名称）并按下‘建立’。这将会创建你的首个营地。注意：你必须远离城市等地区后才能建立营地。\n\n进入下一页继续本系列。另有其他包含更深入信息的页面。</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_III">
+				<Original>Quick Start III</Original>
+				<Chinesesimp>快速游戏 III</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_III_DESC">
+				<Original>6. Your new camp should give you an option to open the build menu. See the page 'Build Menu' for additional information. Once you have opened the build menu, navigate to the Storage category and create any crate, provided you have enough construction resources.\n\n7. The newly built storage crate will give you three options: 'Arsenal', 'Arsenal To External Inventory', and 'External Inventory To Arsenal'. Use the third option to load the box from the police station into the Limited Arsenal crate.\n\n 8. You can now use the Limited Arsenal to more easily equip your captured equipment.\n\nProceed to the next page to continue this series.</Original>
+				<Chinesesimp>6. 你的新营地会为你提供打开建造菜单的选项。更多相关信息，请参见‘建造菜单’页面。打开建造菜单后，只要有足够的建筑物资，你就可以导航到存储类别并建造任一弹药箱。\n\n7. 新建造的弹药箱会给你提供三个选项：‘军火库’、‘从军火库转移至外部物品栏’以及‘从外部物品栏转移至军火库’。用第三个选项将从警局搞来的弹药箱中的物资转移到受限军火库中。\n\n8. 现在你就可以通过受限军火库轻松的装备缴获来的物资了。\n\n进入下一页继续本系列。</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_IV">
+				<Original>Quick Start IV</Original>
+				<Chinesesimp>快速游戏 IV</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_IV_DESC">
+				<Original>9. Any crate or vehicle can be loaded into the Limited Arsenal, and you can load parts or all of the Limited Arsenal into vehicles, crates, and other Limited Arsenals. You can also load items into the normal 'Inventory' to load them into the Limited Arsenal. This is useful if you would like to quickly unequip, but not lose, your personal equipment. Simply go into the Limited Arsenal using the 'Arsenal' action, and press 'Inv. To Arsenal' at the bottom to load the regular 'Inventory'.\n\nProceed to the next page to continue this series.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_V">
+				<Original>Quick Start V</Original>
+				<Chinesesimp>快速游戏 V</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_QUICK_V_DESC">
+				<Original>10. You may want to continue to attack police station until you have enough equipment.\n\n11. After that you should find an outpost and capture it. Enemy soldiers may carry tactical tablets, which have a chance of giving you a radio crytokey. Once you find a radio cryptokey, you can load it into a radio shack constructed at one of your camps. Open this in-game menu by pressing [U], go to the 'Notes' tab and copy the radio cryptokey. Go to a radio shack, select the action to 'Manage cryptokeys' and enter your found cryptokey. This will give you access to a constant stream of enemy intel, such as attacks on your own outposts and positions.\n\n Capture enemy positions to win the game! Continue reading this tutorial to learn more.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_SETUP">
+				<Original>Campaign Setup</Original>
+				<Chinesesimp>战役设置</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_SETUP_DESC">
+				<Original>After the mission is loaded, you must set up the campaign in the 'Create' tab. Select initial conditions and enemy factions of the scenario.\n\nOnce the game world is generated, these settings can not be changed. You can create a new campaign at any time to try different settings.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_RESPAWN">
+				<Original>Respawn</Original>
+				<Chinesesimp>重生</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_RESPAWN_DESC">
+				<Original>You can respawn at all friendly locations and at any city, so long as there are no enemies nearby, and as long as they have an infantry capacity greater than zero. Camps, which can be created with build resources also enable respawn in nearby cities in case you run out of vehicles.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_PROGRESS">
+				<Original>Campaign Progress</Original>
+				<Chinesesimp>战役进程</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_PROGRESS_DESC">
+				<Original>The enemy will dynamically react to your actions, and the reaction will depend on the current war state. At the start of the game, however, everything is relatively calm and enemy occupation is low.\n\nExpect the enemy to bring reinforcements to their airfields as a reaction to you attacking outposts.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_UNDERCOVER_I">
+				<Original>Staying Undercover I</Original>
+				<Chinesesimp>卧底身份 I</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_UNDERCOVER_I_DESC">
+				<Original>When you are starting out, you should use the undercover system to your advantage until you have found better weapons, equipment, and vehicles. Watch the meter at the top of your screen: If it's full and red, you are overt. Enemy forces will shoot on sight while if they spot you while you are overt. The text below the meter informs you about reasons why the meter is filling up. Some of the factors that determine your 'suspiciousness':\n• Clothing, like headwear, uniform, vest, night vision goggles\n• Openly carrying a weapon immediately makes you overt\n• Fast movement draws attention and suspicion\n• In vehicles, only your headwear and vest count, and enemies will only spot your equipment as you get closer. The meter will only fill once you get closer to enemies.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_UNDERCOVER_II">
+				<Original>Staying Undercover II</Original>
+				<Chinesesimp>卧底身份 II</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_UNDERCOVER_II_DESC">
+				<Original>You can go back to being undercover by...\n\n• Escaping an approx. 1 kilometer radius at the last position where you were spotted as overt.\n• By killing all enemy groups that spotted.\n• By staying for 20 minutes.\n\nAdditionally, you should avoid approaching enemies who are in combat. You should also avoid using the ACE3 medical system while being close to enemies.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_INTEL_I">
+				<Original>Intel I</Original>
+				<Chinesesimp>情报 I</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_INTEL_I_DESC">
+				<Original>Intel about locations is shown on the map when you click on a location marker.\n\nYou can talk to civilians to learn about the location of nearby interesting places. Alternatively, you can simply drive around until you discover something.\n\nYou can also loot enemies to find tactical tablets, which you can read in your inventory by double clicking them with your left mouse button.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_INTEL_II">
+				<Original>Intel II</Original>
+				<Chinesesimp>情报 II</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_INTEL_II_DESC">
+				<Original>Intel does not always inform you about locations. Some intel instead informs you about orders received by enemy squads.\n\nGaining this type of intel is the key to finding out about patrols and supply convoys, which you can then attack. Look at the map UIs intel panel to show and select currently known intel.\n\nMost intel is represented on the map with a start point and a destination.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CRYPTO">
+				<Original>Cryptokeys</Original>
+				<Chinesesimp>密钥</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CRYPTO_DESC">
+				<Original>Antennas at friendly locations can intercept enemy radio signals within several kilometers, but only if you have obtained radio cryptokeys. Cryptokeys can be found at military tactical tablets. They must be activated at any radio you own before you can start intercepting intel. Cryptokeys are automatically copied to your 'Notes' tab, from which you can copy them and to activate at the radio.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CLAIMING">
+				<Original>Claiming Locations</Original>
+				<Chinesesimp>索取地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CLAIMING_DESC">
+				<Original>To claim locations (outposts, bases, police stations) press [U] on your keyboard, then navigate to the 'Strategic' tab, and press claim. Some locations may require construction resources to claim. You do not have to carry them in your inventory. Instead look at any container or vehicle that holds enough construction resources, and open the in-game [U] menu, then use the 'Strategic' tab to claim the location.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CAMPS">
+				<Original>Camps</Original>
+				<Chinesesimp>营地</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CAMPS_DESC">
+				<Original>Construction resources are required to create new camps, outposts, roadblocks, or to construct new objects at their location. They can be found in ammo boxes found at police stations, outposts, and bases.\nWhen creating a location, all buildings are automatically added to it, including the radio antennas.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_BUILD">
+				<Original>Build Menu</Original>
+				<Chinesesimp>建造菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_BUILD_DESC">
+				<Original>The build menu is accessible at camps and other friendly locations. It has a user interface that explains all the available controls. There are two ways to open the build menu:\n\n• From your inventory: Uses build resources from your inventory to construct objects. Build resources must be either in your uniform, vest, or backpack.\n• From location: Uses build resources deposited at the location you are building at. They must be inside an Limited Arsenal or crate that is 'attached' to the garrison (=location).</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_ARSENAL">
+				<Original>Limited Arsenal</Original>
+				<Chinesesimp>受限军火库</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_ARSENAL_DESC">
+				<Original>The limited Arsenal is an alteration of the Arma 3 Arsenal. It has only a limited inventory for each item, and is the main interface to manage gathered weapons in the mission. All the cargo boxes you can create through the build menu have the Limited Arsenal enabled. Enemy cargo boxes use only the plain Arma 3 inventory. You can use the action on an Limited Arsenal constructed through the build menu to load items from a plain inventory crate into the Arsenal. This will load items into the Arsenal box's plain Arma 3 'Inventory'. Once you have done that, open the Limited Arsenal itself and press the appropriate button at the bottom of the Limited Arsenal interface.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CAPACITY">
+				<Original>Infantry Capacity</Original>
+				<Chinesesimp>步兵容限</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_CAPACITY_DESC">
+				<Original>Every location has an infantry capacity based on the number of buildings at the location. This number limits how many soldiers you can deploy at a location. You can not respawn at a location you own if it has no infantry capacity. When creating a new location, all the buildings at its territory are added to it. You should try to construct camps near existing houses to save resources. You can also build tents to increase the infantry capacity at a location.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_COMMAND">
+				<Original>High Command</Original>
+				<Chinesesimp>高阶指挥</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_COMMAND_DESC">
+				<Original>This scenario provides a custom interface on the map screen to command your own forces. Friendly and enemy forces are both organised into 'garrisons'. Garrisons are groups of soldiers that can be commanded to move and attack enemy forces.\nAI groups operate autonomously and do not need specific orders to get into vehicles before traveling to a location. Click on a friendly garrison on your map, split it, then give an order to the now detached garrison.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_SAVELOAD">
+				<Original>Saving And Loading</Original>
+				<Chinesesimp>保存与读取</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_SAVELOAD_DESC">
+				<Original>The scenario can save the game state with minimal detail. It saves the composition of all garrisons, but it does not save, for example, the position and health of units. All the data is saved in the user profile 'vars.arma3profile' and each save takes several megabytes. Arma 3 reads and writes to and from this file quite often, so keep the number of savegames to a minimum.\n\nYou should NOT maintain more than 10 savegames at a time!</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_ISSUES">
+				<Original>Known Issues</Original>
+				<Chinesesimp>已知问题</Chinesesimp>
+			</Key>
+			<Key ID="STR_TUTORP_ISSUES_DESC">
+				<Original>• Objects may not appear exactly where you place them or they are placed with a delay\n• To save vehicles, they must be attached to a friendly garrison. Some vehicles do not attach automatically. You can use the action 'Attach to Garrison' to manually attach them.\n• Vehicles may not always respawn at their old positions if parked close together, but at the nearest road. Do not place vehicles too close to one another, or too close to buildings.\n• AI units cannot transport static weapons and cargo boxes. Do not try to give a static weapon to a garrison and then give them a 'Move' order.\n• Arma 3's AI cannot drive properly, and often gets stuck. Infantry gets stuck in buildings.\n• The mission AI may teleport units in an attempt to get them unstuck.</Original>
+				<Chinesesimp></Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="attachToGarrisonDialog">
+		<Container name="ATG_hints">
+			<Key ID="STR_ATG_ATTACH_TO_GARRISON">
+				<Original>Attach unit to garrison</Original>
+				<Chinesesimp>将单位指派到驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ATTACH">
+				<Original>Attach</Original>
+				<Chinesesimp>指派</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_WRONG_UNIT">
+				<Original>Error: Wrong unit!\nPlease try again!</Original>
+				<Chinesesimp>错误：错误的单位！\n请再试一次！</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_NO_LOC">
+				<Original>Error: There is no location to attach the unit!\nPlease try again!</Original>
+				<Chinesesimp>错误：没有可指派单位的地点！\n请再试一次！</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_LOADING">
+				<Original>Data is loading...\n</Original>
+				<Chinesesimp>数据读取中...\n</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_UNIT">
+				<Original>Unit: %1\n</Original>
+				<Chinesesimp>单位：%1\n</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_NOT_FOUND">
+				<Original>Error: unit is not found on the server!\nPlease try again!</Original>
+				<Chinesesimp>错误：未能在服务器上找到此单位！\n请再试一次！</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_WRONG_GARRISON">
+				<Original>Error: unit's garrison is wrong!\nPlease try again!</Original>
+				<Chinesesimp>错误：单位驻地错误！\n请再试一次！</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_WRONG_DESTINATION">
+				<Original>Error: destination garrison is wrong!\nPlease try again!</Original>
+				<Chinesesimp>错误：目标驻地错误！\n请再试一次！</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_ERROR_SAME_GARRISON">
+				<Original>This unit is already at this garrison!</Original>
+				<Chinesesimp>该单位已经在此驻扎！</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_CAN_ATTACH_TO">
+				<Original>Unit can be attached to %1\n</Original>
+				<Chinesesimp>可以指派单位到%1\n</Chinesesimp>
+			</Key>
+			<Key ID="STR_ATG_NOT_OWNED">
+				<Original>We don't own this unit!\nWe can't attach the unit to %1.\n</Original>
+				<Chinesesimp>我们未拥有此单位！\n因此不能将该单位指派到%1。\n</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="buildFunctions">
+		<Container name="BuildFunctions">
+			<Key ID="STR_BF_GRAB">
+				<Original>Grab Object</Original>
+				<Chinesesimp>抓取物体</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="buildUIObjects">
+		<Container name="Build_UI_Objects">
+			<Key ID="STR_BUIO_TENTS">
+				<Original>Tents</Original>
+				<Chinesesimp>帐篷</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_MEDICAL">
+				<Original>Medical</Original>
+				<Chinesesimp>医疗</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_STORAGE">
+				<Original>Storage</Original>
+				<Chinesesimp>存储</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_CAMO">
+				<Original>Camouflage</Original>
+				<Chinesesimp>伪装网</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_LIGHT">
+				<Original>Lighting</Original>
+				<Chinesesimp>照明</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_DEFENSE">
+				<Original>Defense</Original>
+				<Chinesesimp>防御工事</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RANGE">
+				<Original>Shooting Range</Original>
+				<Chinesesimp>射击场</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_BUILDINGS">
+				<Original>Buildings</Original>
+				<Chinesesimp>建筑</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_CONCEAL">
+				<Original>Concealment</Original>
+				<Chinesesimp>隐蔽物</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RECREATION">
+				<Original>Recreation</Original>
+				<Chinesesimp>消遣</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_SPECIAL">
+				<Original>Special</Original>
+				<Chinesesimp>特殊</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RADIO">
+				<Original>Radio Shack</Original>
+				<Chinesesimp>无线电小屋</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUIO_RADIO_DESC">
+				<Original>A small building with radio equipment. Intercepts enemy radio communications in the range of ~5km, if you have the radio cryptokey</Original>
+				<Chinesesimp>配有无线电设备的小屋。拥有无线电密钥时能够截获约5公里范围内的敌军无线电通讯。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="buildUI">
+		<Container name="Build_UI.h">
+			<Key ID="STR_BUI_TAB">
+				<Original>TAB: OPEN BUILD MENU</Original>
+				<Chinesesimp>TAB：开启建造菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DEFENSES">
+				<Original>Defenses</Original>
+				<Chinesesimp>防御工事</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_RANGE">
+				<Original>Shooting Range</Original>
+				<Chinesesimp>射击场</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DECOR">
+				<Original>Decoration</Original>
+				<Chinesesimp>装饰</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="Build_UI.sqf">
+			<Key ID="STR_BUI_OPEN_MENU">
+				<Original>Open Build Menu</Original>
+				<Chinesesimp>开启建造菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_TAB">
+				<Original>TAB:</Original>
+				<Chinesesimp>TAB：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_BACKSPACE">
+				<Original>BACKSPACE:</Original>
+				<Chinesesimp>退格键：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_QE">
+				<Original>Q and E:</Original>
+				<Chinesesimp>Q和E：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_ARROWS">
+				<Original>ARROW KEYS:</Original>
+				<Chinesesimp>方向键：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DELETE">
+				<Original>DELETE:</Original>
+				<Chinesesimp>删除键：</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_BUILD">
+				<Original> Build/Place</Original>
+				<Chinesesimp>建造/放置</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_PICKUP">
+				<Original> Pick up highlighted object</Original>
+				<Chinesesimp>捡起高亮物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_SELECT">
+				<Original> Select current object</Original>
+				<Chinesesimp>选择当前物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_CLOSE">
+				<Original> Close menu</Original>
+				<Chinesesimp>关闭菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_CANCEL">
+				<Original> Cancel placement</Original>
+				<Chinesesimp>取消放置</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_ROTATE">
+				<Original> Rotate object</Original>
+				<Chinesesimp>旋转物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_NAVIGATE">
+				<Original> Navigate through categories and items</Original>
+				<Chinesesimp>在类别和物体之间切换</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DELETE_HINT">
+				<Original> Delete highlighted object</Original>
+				<Chinesesimp>删除高亮物体</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISH_NOT_EMPTY">
+				<Original>Object must be empty to demolish. Cannot delete the arsenal.</Original>
+				<Chinesesimp>物体必须为空时才能拆除。无法删除军火库。</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISH_REFUND">
+				<Original>Demolish %1 and refund %2 construction resources?</Original>
+				<Chinesesimp>要拆除%1并回收%2建筑物资吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISH_NO_REFUND">
+				<Original>Demolish %1? This object cannot be refunded.</Original>
+				<Chinesesimp>拆除%1？该物体无法回收。</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_DEMOLISHED">
+				<Original>Object %1 was demolished.</Original>
+				<Chinesesimp>物体%1已被拆除。</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_NOT_ENOUGH_RESOURCES">
+				<Original>Not enough build resources in your inventory: %1 (%2 required)</Original>
+				<Chinesesimp>你的物品栏中没有足够的建筑物资：%1（需要%2）</Chinesesimp>
+			</Key>
+			<Key ID="STR_BUI_REFUNDED">
+				<Original>Refunded %1 construction resources.</Original>
+				<Chinesesimp>已回收%1建筑物资。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="controls">
+		<Container name="GarrisonCommand.h">
+			<Key ID="STR_COMMAND_MOVE">
+				<Original>Move</Original>
+				<Chinesesimp>移动</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_ATTACK">
+				<Original>Attack</Original>
+				<Chinesesimp>进攻</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_REINFORCE">
+				<Original>Reinforce / Occupy</Original>
+				<Chinesesimp>增援 / 占领</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_PATROL">
+				<Original>Patrol (NYI)</Original>
+				<Chinesesimp>巡逻（未实装）</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_CANCEL">
+				<Original>&lt; Cancel &gt;</Original>
+				<Chinesesimp>&lt; 取消 &gt;</Chinesesimp>
+			</Key>			
+		</Container>
+		<Container name="GarrisonSelectedMenu.h">
+			<Key ID="STR_COMMAND_SPLIT">
+				<Original>Split</Original>
+				<Chinesesimp>拆分</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_GIVE_ORDER">
+				<Original>Give order ...</Original>
+				<Chinesesimp>下达命令...</Chinesesimp>
+			</Key>
+			<Key ID="STR_COMMAND_CANCEL_ORDER">
+				<Original>Cancel order</Original>
+				<Chinesesimp>取消命令</Chinesesimp>
+			</Key>
+		<Container name="IntelPanel.h">
+			<Key ID="STR_INT_INTEL">
+				<Original>INTEL</Original>
+				<Chinesesimp>情报</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_ACTIVE">
+				<Original>SHOW ACTIVE:</Original>
+				<Chinesesimp>显示进行中的：</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_PLANNED">
+				<Original>SHOW PLANNED:</Original>
+				<Chinesesimp>显示计划中的：</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_ENDED">
+				<Original>SHOW ENDED:</Original>
+				<Chinesesimp>显示已结束的：</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_MAP">
+				<Original>ON MAP</Original>
+				<Chinesesimp>地图上</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_LIST">
+				<Original>IN LIST</Original>
+				<Chinesesimp>列表中</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_PLAYERS">
+				<Original>SHOW PLAYERS</Original>
+				<Chinesesimp>显示玩家</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_LOC">
+				<Original>SHOW LOCATIONS</Original>
+				<Chinesesimp>显示地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_OVERVIEW">
+				<Original>SHOW OVERVIEW</Original>
+				<Chinesesimp>显示总览</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_PANEL">
+				<Original>SHOW INTEL PANEL</Original>
+				<Chinesesimp>显示情报面板</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_CLEAR_NOTIFICATIONS">
+				<Original>CLEAR NOTIFICATIONS</Original>
+				<Chinesesimp>清空提示</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_DESC">
+				<Original>&lt;t color='#222222' font='EtelkaMonospacePro' align='left'&gt;Select a single intel item to view a detailed description.&lt;/t&gt;</Original>
+				<Chinesesimp>&lt;t color='#222222' font='EtelkaMonospacePro' align='left'&gt;选择一项情报物品获取详情。&lt;/t&gt;</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_RESPAWN">
+				<Original>RESPAWN</Original>
+				<Chinesesimp>重生</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_RESPAWN_HINT">
+				<Original>Respawn hint text</Original>
+				<Chinesesimp>重生提示文本</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_1_AT_2">
+				<Original>%1 at %2.</Original>
+				<Chinesesimp>%1位于%2。</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_LOC_DISCOVERED">
+				<Original>LOCATION DISCOVERED</Original>
+				<Chinesesimp>已发现地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_LOC_INTEL_UPDATED">
+				<Original>LOCATION INTEL UPDATED</Original>
+				<Chinesesimp>地点情报更新</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_HR_MIN">	<!--hours and minutes-->
+				<Original>%1h %2m</Original>
+				<Chinesesimp>%1时%2分</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_MIN">
+				<Original>%1m</Original>
+				<Chinesesimp>%1分</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_WILL_START">
+				<Original>will start in %1</Original>
+				<Chinesesimp>将于 %1 后开始</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_STARTED">
+				<Original>started %1 ago</Original>
+				<Chinesesimp>于 %1 前开始</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_SPACE_ENY">
+				<Original>Enemy</Original>
+				<Chinesesimp>敌军</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_MIN_AGO">
+				<Original>, %1 min. ago</Original>
+				<Chinesesimp>，%1分钟以前</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_FOUND_IN_TABLET">
+				<Original>INTEL FOUND IN TABLET</Original>
+				<Chinesesimp>平板中发现情报</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_FOUND_BY_RADIO">
+				<Original>INTEL INTERCEPTED BY RADIO</Original>
+				<Chinesesimp>无线电截获情报</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_FOUND_BY_CIV">
+				<Original>INTEL INTERCEPTED BY CITIZENS</Original>
+				<Chinesesimp>平民截获情报</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_FOUND">
+				<Original>INTEL INTERCEPTED</Original>
+				<Chinesesimp>截获情报</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_REMOVED">
+				<Original>Removed intel: %1</Original>
+				<Chinesesimp>移除情报：%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_SCHEDULE">
+				<Original>&lt;br/&gt;&lt;t color='#FFFFFF' font='EtelkaMonospaceProBold'&gt;Schedule&lt;/t&gt;&lt;br/&gt;</Original>
+				<Chinesesimp>&lt;br/&gt;&lt;t color='#FFFFFF' font='EtelkaMonospaceProBold'&gt;计划表&lt;/t&gt;&lt;br/&gt;</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_DEPART">
+				<Original>&lt;t&gt;  &lt;/t&gt;&lt;t color='#AAAAAA' size='0.7'&gt;depart %1&lt;/t&gt;&lt;br/&gt;</Original>
+				<Chinesesimp>&lt;t&gt;  &lt;/t&gt;&lt;t color='#AAAAAA' size='0.7'&gt;启程 %1&lt;/t&gt;&lt;br/&gt;</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="LocationSelectedMenu.h">
+			<Key ID="STR_UNIT_RECUIT">
+				<Original>Recruit</Original>
+				<Chinesesimp>招募</Chinesesimp>
+			</Key>
+			<Key ID="STR_UNIT_DISBAND">
+				<Original>Disband &lt;NYI&gt;</Original>
+				<Chinesesimp>解散 &lt;未实装&gt;</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="PlayerList.h">
+			<Key ID="STR_LIST_PLAYER">
+				<Original>Players list</Original>
+				<Chinesesimp>玩家列表</Chinesesimp>
+			</Key>
+			<Key ID="STR_LIST_ADD_MEMBER">
+				<Original>Add as member</Original>
+				<Chinesesimp>添加为成员</Chinesesimp>
+		</Container>
+	</Package>
+	<Package name="Dialogs">
+		<Container name="GarrisonSplitDialog.h">
+			<Key ID="STR_GAR_SPLIT_DESC">
+				<Original>Hint: double-click row to move a unit</Original>
+				<Chinesesimp>提示：双击来移动单位</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_NEW">
+				<Original>New garrison</Original>
+				<Chinesesimp>新驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_INFANTRY">
+				<Original>Infantry: 666</Original>
+				<Chinesesimp>步兵：666</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_CURRENT">
+				<Original>Current garrison</Original>
+				<Chinesesimp>当前驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_SEATS">
+				<Original>Cargo seats: 666</Original>
+				<Chinesesimp>载具座位：666</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_CANCEL">
+				<Original>Cancel</Original>
+				<Chinesesimp>取消</Chinesesimp>
+			</Key>
+			<Key ID="STR_GAR_SPLIT">
+				<Original>Split</Original>
+				<Chinesesimp>拆分</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="clientMapUI">
+		<Container name="ClientMapUI">
+			<Key ID="STR_CMUI_B_SIDE">
+				<Original>SIDE</Original>
+				<Chinesesimp>阵营</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_STATUS">
+				<Original>STATUS</Original>
+				<Chinesesimp>状态</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_TYPE">
+				<Original>TYPE</Original>
+				<Chinesesimp>类型</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_NAME">
+				<Original>NAME</Original>
+				<Chinesesimp>名称</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_B_TIME">
+				<Original>TIME</Original>
+				<Chinesesimp>时间</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_INFANTRY">
+				<Original>Infantry</Original>
+				<Chinesesimp>步兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_TRANSPORT">
+				<Original>Transport</Original>
+				<Chinesesimp>运输载具</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ARMOR">
+				<Original>Armor</Original>
+				<Chinesesimp>装甲载具</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_STATICS">
+				<Original>Statics</Original>
+				<Chinesesimp>固定武器</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_AIR">
+				<Original>Air</Original>
+				<Chinesesimp>航空载具</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_MAX_INFANTRY">
+				<Original>MAX INFANTRY</Original>
+				<Chinesesimp>最大步兵数</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_SOLDIERS">
+				<Original>SOLDIERS</Original>
+				<Chinesesimp>士兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_WEST">
+				<Original>WEST</Original>
+				<Chinesesimp>西方</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_EAST">
+				<Original>EAST</Original>
+				<Chinesesimp>东方</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_IND">
+				<Original>IND</Original>
+				<Chinesesimp>独立方</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ALIEN">
+				<Original>ALIEN</Original>
+				<Chinesesimp>外星人</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ACTIVE">
+				<Original>ACTIVE</Original>
+				<Chinesesimp>进行中</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_INACTIVE">
+				<Original>INACTIVE</Original>
+				<Chinesesimp>未进行</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ENDED">
+				<Original>ENDED</Original>
+				<Chinesesimp>已结束</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_GARRISON">
+				<Original>GARRISON</Original>
+				<Chinesesimp>驻军</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CAMPAIGN_PROGRESS">
+				<Original>Campaign progress: %1%2, enemy aggression: %3%4</Original>
+				<Chinesesimp>战役进度：%1%2，敌军强度：%3%4</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NOT_INITIALIZED">
+				<Original>Game not initialized: Press U and create or load a game.</Original>
+				<Chinesesimp>游戏尚未初始化：按U并创建或读取游戏。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NOT_INITIALIZED_ADMIN">
+				<Original>Game not initialized: Wait for admin to create or load a game.</Original>
+				<Chinesesimp>游戏尚未初始化：等待管理员创建或读取游戏。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_GARRISON_ORDER_HINT">
+				<Original>Select the order to give to this garrison.</Original>
+				<Chinesesimp>选择给这个驻地下达的命令。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_DESTINATION_HINT">
+				<Original>Left-click on the map to set destination.</Original>
+				<Chinesesimp>在地图上左键点击设立目的地。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_SPLIT_HINT">
+				<Original>Choose composition of the new garrison on the right column and push the 'Split' button.</Original>
+				<Chinesesimp>通过右侧列表调整新驻地的编制并点击‘拆分’按钮。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_GARRISON_ACTION_HINT">
+				<Original>Use the menu to perform actions on the selected garrison.</Original>
+				<Chinesesimp>用菜单控制所选驻地的行动。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_MOVE_MARKER">
+				<Original>MOVE</Original>
+				<Chinesesimp>移动</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CAPTURE_MARKER">
+				<Original>CAPTURE</Original>
+				<Chinesesimp>占领</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ATTACK_MARKER">
+				<Original>ATTACK</Original>
+				<Chinesesimp>进攻</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_REINFORCE_MARKER">
+				<Original>REINFORCE</Original>
+				<Chinesesimp>增援</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_SUPPLY_MARKER">
+				<Original>SUPPLY</Original>
+				<Chinesesimp>补给</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_PATROL_MARKER">
+				<Original>PATROL</Original>
+				<Chinesesimp>巡逻</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_MOVE_ORDER">
+				<Original>Giving a MOVE order to the garrison.</Original>
+				<Chinesesimp>给驻地下达移动命令。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ATTACK_ORDER">
+				<Original>Giving an ATTACK order to the garrison.</Original>
+				<Chinesesimp>给驻地下达进攻命令。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_REINFORCE_ORDER">
+				<Original>Giving a REINFORCE order to the garrison.</Original>
+				<Chinesesimp>给驻地下达增援命令。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NYI_ORDER">
+				<Original>This garrison order is not yet implemented.</Original>
+				<Chinesesimp>该驻地命令尚未实装。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NO_PERMISSION_TO_GARRISON">
+				<Original>You don't have permissions to command garrisons.</Original>
+				<Chinesesimp>你没有指挥驻地的权限。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NYI">
+				<Original>NYI</Original>
+				<Chinesesimp>未实装</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CANCEL_ORDER">
+				<Original>Cancelling the current order of the garrison.</Original>
+				<Chinesesimp>取消当前驻地命令。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NYI_HINT">
+				<Original>Not yet implemented...</Original>
+				<Chinesesimp>尚未实装...</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_PLAYER_RESPAWNED">
+				<Original>%1 has respawned at %2.</Original>
+				<Chinesesimp>%1已于%2重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESTORE">
+				<Original>RESTORE</Original>
+				<Chinesesimp>归位</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESPAWN">
+				<Original>RESPAWN</Original>
+				<Chinesesimp>重生</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CANT_RESPAWN_NOT_INITIALIZED">
+				<Original>You can not respawn because the game mode is not initialized yet.</Original>
+				<Chinesesimp>由于游戏模式尚未初始化，你无法重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_SELECT_RESPAWN_POINT">
+				<Original>Select a respawn point</Original>
+				<Chinesesimp>选择一个重生点</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESAPWN_DISABLED">
+				<Original>Respawn is disabled here.</Original>
+				<Chinesesimp>无法在此重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESPAWN_DISABLED_NEAR_ENY">
+				<Original>You can not respawn here because there are enemies nearby.</Original>
+				<Chinesesimp>你无法在附近有敌人的重生点上重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESTORE_GEARS">
+				<Original>You can restore here with your saved gear.</Original>
+				<Chinesesimp>你可以带着已存装备一起在此归位。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_CAN_RESPAWN">
+				<Original>You can respawn here.</Original>
+				<Chinesesimp>你可以在此重生。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_RESTORE_GEARS_LAST_POSITION">
+				<Original>You can restore at your last position with your saved gear.</Original>
+				<Chinesesimp>你可以带着已存装备归位到最后所处地点。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_ENY_CONTROL">
+				<Original>Enemy control</Original>
+				<Chinesesimp>敌军实控</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_FRIENDLY_CONTROL">
+				<Original>Friendly control</Original>
+				<Chinesesimp>友军实控</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NEUTRAL">
+				<Original>Neutral</Original>
+				<Chinesesimp>中立地区</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_NEUTRAL">
+				<Original>Neutral</Original>
+				<Chinesesimp>中立地区</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_STATUS">
+				<Original>Status</Original>
+				<Chinesesimp>状态</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_INFLUENCE">
+				<Original>Influence</Original>
+				<Chinesesimp>影响力</Chinesesimp>
+			</Key>
+			<Key ID="STR_CMUI_DESTINATION">
+				<Original>Destination</Original>
+				<Chinesesimp>目的地</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_PRESS_U_TO_SETUP">
+				<Original>Press [U] to setup the mission or load a saved game</Original>
+				<Chinesesimp>按[U]设置任务或读取一个存档</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_SAVING_NOW">
+				<Original>&lt;t size='4' color='#FF7733'&gt;PLEASE WAIT&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;SAVING NOW&lt;/t&gt;</Original>
+				<Chinesesimp>>&lt;t size='4' color='#FF7733'&gt;请稍等&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;保存中&lt;/t&gt;</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_SAVE_IN_PROGRESS">
+				<Original>Game state save is in progress...</Original>
+				<Chinesesimp>游戏状态存档中...</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_SAVED">
+				<Original>Game state has been saved!</Original>
+				<Chinesesimp>游戏状态已保存！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_SAVE_COMPLETE">
+				<Original>&lt;t size='4' color='#77FF77'&gt;SAVE COMPLETE&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;CARRY ON...&lt;/t&gt;</Original>
+				<Chinesesimp>&lt;t size='4' color='#77FF77'&gt;保存完成&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;不要停下来啊...&lt;/t&gt;</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_GAME_LOADING">
+				<Original>Game load is in progress...</Original>
+				<Chinesesimp>游戏存档加载中...</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_GAME_LOADED">
+				<Original>Game has been loaded. You should respawn now.</Original>
+				<Chinesesimp>游戏已读取。你可以重生了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_ERROR_FACTION_NOT_LOADED">
+				<Original>Error: factions are not loaded on server: %1</Original>
+				<Chinesesimp>错误：服务器中未挂载阵营：%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_INITIALIZING">
+				<Original>Game is being initialized. It can take up to several minutes.</Original>
+				<Chinesesimp>游戏正在初始化。这可能需要数分钟。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_INITIALIZED">
+				<Original>Game mode initialization is complete. You should respawn now.</Original>
+				<Chinesesimp>游戏模式初始化完毕。你可以重生了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_DELAY_SAVING">
+				<Original>&lt;br/&gt;&lt;t size='2' color='#FFFFFF'&gt;(delayed due to enemies within 250m of players)&lt;/t&gt;</Original>
+				<Chinesesimp>&lt;br/&gt;&lt;t size='2' color='#FFFFFF'&gt;(由于敌人位于玩家250米范围内而推延)&lt;/t&gt;</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_SAVING_IN_5M">
+				<Original>&lt;t size='2' color='#FFFF33'&gt;Auto saving in 5 minutes&lt;/t&gt;</Original>
+				<Chinesesimp>&lt;t size='2' color='#FFFF33'&gt;5分钟后自动保存&lt;/t&gt;</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_SAVING_IN_30S">
+				<Original>&lt;t size='4' color='#FFFF33'&gt;Auto saving in 30 seconds&lt;/t&gt;</Original>
+				<Chinesesimp>&lt;t size='4' color='#FFFF33'&gt;30秒后自动保存&lt;/t&gt;</Chinesesimp>
+			</Key>
+			<Key ID="STR_GM_SAVING_IN_30S_DELAYED">
+				<Original>&lt;t size='4' color='#FFFF33'&gt;Auto saving in 30 seconds&lt;/t&gt;&lt;br/&gt;&lt;t size='1' color='#FFFFFF'&gt;(was delayed by 30 minutes due to enemies within 250m of players)&lt;/t&gt;</Original>
+				<Chinesesimp>&gt;30秒后自动保存&lt;/t&gt;&lt;br/&gt;&lt;t size='1' color='#FFFFFF'&gt;(已因敌人位于玩家250米范围内而推延过30分钟)&lt;/t&gt;</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="GarrisonSplitDialog">
+			<Key ID="STR_GSD_REQUEST_IN_PROGRESS">
+				<Original>Another request is in progress!</Original>
+				<Chinesesimp>已有请求进行中！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_NO_UNIT_IN_RIGHT">
+				<Original>You must move some units to the right first!</Original>
+				<Chinesesimp>你必须先移动一些单位到右侧！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_GARRISON_DESTROYED">
+				<Original>The selected garrison has been destroyed!</Original>
+				<Chinesesimp>选择的驻地已被摧毁！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_WAIT_FOR_SERVER">
+				<Original>Waiting for server to respond...</Original>
+				<Chinesesimp>等待服务器相应...</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_INFANTRY_NUM">
+				<Original>Infantry: %1</Original>
+				<Chinesesimp>步兵：%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_CARGO_NUM">
+				<Original>Cargo seats: %1</Original>
+				<Chinesesimp>载具座位：%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_ERROR_GARRISON_DESTROYED">
+				<Original>Error: Garrison is destroyed.</Original>
+				<Chinesesimp>错误：驻地已被摧毁。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GSD_SPLIT_SUCCESS">
+				<Original>Garrison was split successfully.</Original>
+				<Chinesesimp>成功拆分驻地。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="notification">
+		<Container name="Notification.h">
+			<Key ID="STR_NOTI_CRYPTOKEY_FOUND">
+				<Original>Enemy radio cryptokey was found!</Original>
+				<Chinesesimp>已找到敌军无线电密钥！</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CRYPTOKEY_STORED">
+				<Original>Cryptokeys are stored in your notes tab</Original>
+				<Chinesesimp>密钥保存在你的笔记选单中</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_MORE_OTHERS">
+				<Original>%1 and %2 others...</Original>
+				<Chinesesimp>%1及其它%2项...</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="NotificationFactory.sqf">
+			<Key ID="STR_NOTI_CHECK_MAP">
+				<Original>Check your map for more info</Original>
+				<Chinesesimp>在地图中查询更多信息</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CRYPTOKEY_FOUND_HINT">
+				<Original>RADIO CRYPTOKEY FOUND</Original>
+				<Chinesesimp>无线电密钥已找到</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_ACTIVATE_AT_RADIO">
+				<Original>Activate it at a friendly radio station!\n%1</Original>
+				<Chinesesimp>在友军无线电站中激活！\n%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CHECK_NOTES">
+				<Original>Check notes in the in-game menu</Original>
+				<Chinesesimp>查询游戏内菜单中的笔记</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_SYSTEM">
+				<Original>SYSTEM</Original>
+				<Chinesesimp>系统</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_MISSION_ERROR">
+				<Original>CRITICAL MISSION ERROR</Original>
+				<Chinesesimp>重大任务错误</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_ENY_SOPTTED">
+				<Original>ENEMY SPOTTED</Original>
+				<Chinesesimp>已发现敌军</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_ENY_DETECTED">
+				<Original>Friendly forces have detected enemies at %1</Original>
+				<Chinesesimp>友军已于%1侦察到敌军</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="SupplyConvoyCmdrAction.sqf">
+			<Key ID="STR_NOTI_BUILDING_SUPPLIES">
+				<Original>Building Supplies</Original>
+				<Chinesesimp>建筑物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_AMMUNITION">
+				<Original>Ammunition</Original>
+				<Chinesesimp>弹药物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_EXPLOSIVES">
+				<Original>Explosives</Original>
+				<Chinesesimp>爆炸物物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_MEDICAL">
+				<Original>Medical</Original>
+				<Chinesesimp>医疗物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_MISC">
+				<Original>Miscellaneous</Original>
+				<Chinesesimp>其它物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_DEFAULT">
+				<Original>Supplies</Original>
+				<Chinesesimp>物资</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="SupplyConvoyCmdrAction.sqf">
+			<Key ID="STR_NOTI_ASSIGN_OFFICER">
+				<Original>Assign New Officer</Original>
+				<Chinesesimp>指派新军官</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_REINFORCE_GARRISON">
+				<Original>Reinforce Garrison</Original>
+				<Chinesesimp>增援驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CONSTRUCT_ROADBLOCK">
+				<Original>Construct Roadblock</Original>
+				<Chinesesimp>建造哨卡</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_ATTACK">
+				<Original>Attack</Original>
+				<Chinesesimp>进攻</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_PATROL">
+				<Original>Patrol</Original>
+				<Chinesesimp>巡逻</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_RETREAT">
+				<Original>Retreat</Original>
+				<Chinesesimp>撤退</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_RECON">
+				<Original>Recon</Original>
+				<Chinesesimp>侦察</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="fn_arsenal_init.sqf">
+			<Key ID="STR_NOTI_EMPTY_CRATES">
+				<Original>EMPTY CRATES</Original>
+				<Chinesesimp>空箱子</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_EMPTY_CRATES_HINT">
+				<Original>Empty crates can be demolished in the build menu.</Original>
+				<Chinesesimp>空箱子可以通过建造菜单拆除。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="RadioKeyDialog">
+		<Container name="RadioKeyDialog.sqf">
+			<Key ID="STR_RKD_MANAGE_KEYS">
+				<Original>Manage radio cryptokey</Original>
+				<Chinesesimp>管理无线电密钥</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_HINT">
+				<Original>Hint: Check enemy tablets to find their radio cryptokeys</Original>
+				<Chinesesimp>提示：通过敌军平板获取他们的无线电密钥</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="RadioKeyTab.h">
+			<Key ID="STR_RKD_ADD">
+				<Original>Add key</Original>
+				<Chinesesimp>添加密钥</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_ADDED">
+				<Original>Added enemy cryptokeys:</Original>
+				<Chinesesimp>已添加的敌军密钥：</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_ENTER">
+				<Original>Enter cryptokey:</Original>
+				<Chinesesimp>输入密钥：</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="RadioKeyTab.sqf">
+			<Key ID="STR_RKD_CHECKING_PREV_KEY">
+				<Original>Previous key is being checked!</Original>
+				<Chinesesimp>正在检查上一个密钥！</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_KEY_NOT_ENTERED">
+				<Original>You must enter the key first!</Original>
+				<Chinesesimp>你必须先输入密钥！</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_CHECKING_KEY">
+				<Original>Checking key...</Original>
+				<Chinesesimp>正在检查密钥...</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_ADDED_BY">
+				<Original>%1 added by %2</Original>
+				<Chinesesimp>%2添加了%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_KEY_INVALID">
+				<Original>"Key %1 is invalid!</Original>
+				<Chinesesimp>密钥%1无效！</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_KEY_ADDED">
+				<Original>Key %1 was added!</Original>
+				<Chinesesimp>密钥%1已添加！</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_DUPLICATED_KEY">
+				<Original>We already have this key!</Original>
+				<Chinesesimp>我们已经有这个密钥了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_RKD_OWN_KEY">
+				<Original>Key %1 belongs to our side!</Original>
+				<Chinesesimp>密钥%1是我方的！</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="RecruitDialog">
+		<Container name="RecruitDialog.sqf">
+			<Key ID="STR_RD_RECRUIT_DESC">
+				<Original>Recruit Soldiers</Original>
+				<Chinesesimp>征召士兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_RD_ARSENAL_HINT">
+				<Original>Hint: Location must have an Arsenal</Original>
+				<Chinesesimp>提示：地点需要拥有军火库</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="RecruitTab.h">
+			<Key ID="STR_RD_RECRUIT">
+				<Original>RECRUIT</Original>
+				<Chinesesimp>征召</Chinesesimp>
+			</Key>
+			<Key ID="STR_RD_LOADOUTS">
+				<Original>AVAILABLE LOADOUTS:</Original>
+				<Chinesesimp>可用装备：</Chinesesimp>
+			</Key>
+			<Key ID="STR_RD_WEAPONS">
+				<Original>WEAPONS:</Original>
+				<Chinesesimp>武器：</Chinesesimp>
+			</Key>
+			<Key ID="STR_RD_GEAR">
+				<Original>GEAR:</Original>
+				<Chinesesimp>服装：</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="RecruitTab.sqf">
+			<Key ID="STR_RD_COUNT">
+				<Original>Counting recruits...</Original>
+				<Chinesesimp>正在点算新兵...</Chinesesimp>
+			</Key>
+			<Key ID="STR_NEED_LOADOUT">
+				<Original>You must select a loadout first</Original>
+				<Chinesesimp>你必须选择一套装备</Chinesesimp>
+			</Key>
+			<Key ID="STR_RECRUITING">
+				<Original>Recruiting soldier...</Original>
+				<Chinesesimp>正在招募士兵...</Chinesesimp>
+			</Key>
+			<Key ID="STR_RECRUITS_AVAILABLE">
+				<Original>RECRUITS AVAILABLE: %1</Original>
+				<Chinesesimp>可用新兵：%1</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Resource">
+		<Container name="LocationData.h">
+			<Key ID="STR_LD_HR">
+				<Original>HR:</Original>
+				<Chinesesimp>时间：</Chinesesimp>
+			</Key>
+			<Key ID="STR_LD_TYPE">
+				<Original>Type: ...</Original>
+				<Chinesesimp>类型：...</Chinesesimp>
+			</Key>
+			<Key ID="STR_LD_LAST_UPDATED">
+				<Original>Last updated: ...</Original>
+				<Chinesesimp>最后更新：...</Chinesesimp>
+			</Key>
+			<Key ID="STR_LD_COMPOSITION">
+				<Original>Composition: ...</Original>
+				<Chinesesimp>编制：...</Chinesesimp>
+			</Key>
+			<Key ID="STR_LD_SIDE">
+				<Original>Side: ...</Original>
+				<Chinesesimp>阵营：...</Chinesesimp>
+			</Key>
+			<Key ID="STR_LD_LOCATION_DATA">
+				<Original>Location data</Original>
+				<Chinesesimp>地点数据</Chinesesimp>
+			</Key>
+			<Key ID="STR_LD_PUSH_ME">
+				<Original>Push me</Original>
+				<Chinesesimp>推送我</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="UIBase.hpp">
+			<Key ID="STR_OK">
+				<Original>OK</Original>
+				<Chinesesimp>确认</Chinesesimp>
+			</Key>
+			<Key ID="STR_CANCEL">
+				<Original>Cancel</Original>
+				<Chinesesimp>取消</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="TacticalTablet">
+		<Container name="TacticalTablet.h">
+			<Key ID="STR_TT_TITLE">
+				<Original>MilTech inc.    Tacticool Tablet V1.1</Original>
+				<Chinesesimp>军科无限免责公司    战狼平板 V1.1</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="UnitIntel.sqf">
+			<Key ID="STR_TT_TABLET_MSG_1">
+				<Original>Welcome to TactiCool OS v28.3!</Original>
+				<Chinesesimp>欢迎使用战狼OS v28.3!</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_2">
+				<Original>Detected 128 GB RAM, 16 TB SSD</Original>
+				<Chinesesimp>检测到128GB内存, 16TB固态硬盘</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_3">
+				<Original>System date: %1, grid: %2</Original>
+				<Chinesesimp>系统日期: %1, 坐标: %2</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_4">
+				<Original>User class: %1</Original>
+				<Chinesesimp>用户类别: %1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_5">
+				<Original>Primary weapon: %1</Original>
+				<Chinesesimp>主要武器: %1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_6">
+				<Original>Secondary weapon: %1</Original>
+				<Chinesesimp>次要武器: %1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_7">
+				<Original>Dammage: %1 percent</Original>
+				<Chinesesimp>损伤: 百分之%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_8">
+				<Original>Tip of the day:</Original>
+				<Chinesesimp>今日头条:</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_9">
+				<Original>Connecting to TactiCommNetwork server...</Original>
+				<Chinesesimp>正在连接至狼崽战网服务器...</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_10">
+				<Original>Connection established!</Original>
+				<Chinesesimp>连接已建立!</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_11">
+				<Original>Logged in Altis Armed Forces TactiCommNetwork</Original>
+				<Chinesesimp>登录至阿尔蒂斯陆军武装力量狼崽战网</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_12">
+				<Original>System date: %1</Original>
+				<Chinesesimp>系统日期: %1</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="AICommander.sqf">
+			<Key ID="STR_INT_FOUND_NEW">
+				<Original>You have found some new intel!</Original>
+				<Chinesesimp>你找到了一些新情报！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_FOUND_ALREADY">
+				<Original>We already know this intel!</Original>
+				<Chinesesimp>我们已经知道这条情报了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_FOUND_ALREADY_2">
+				<Original>We have this cryptokey already...</Original>
+				<Chinesesimp>我们已经拿到这条密钥了...</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTES_FOUND_KEY">
+				<Original>%1 Found enemy radio cryptokey: %2</Original>
+				<Chinesesimp>%1找到了敌军无线电密钥：%2</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_INTEL_ADDED">
+				<Original>Some intel has been added!</Original>
+				<Chinesesimp>新的情报已添加！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_INTEL_UPDATED">
+				<Original>Some intel has been updated!</Original>
+				<Chinesesimp>部分情报已更新！</Chinesesimp>
+			</Key>
+			<Key ID="STR_INT_FOUND_NOTHING">
+				<Original>You have found nothing here!</Original>
+				<Chinesesimp>你未能找到任何东西！</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_13">
+				<Original>No data registered for this device in TactiCommNetwork!</Original>
+				<Chinesesimp>狼崽战网中未能找到此设备的注册信息！</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_14">
+				<Original>Retinal scan identity mismatch!</Original>
+				<Chinesesimp>视网膜扫描身份不匹配！</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_15">
+				<Original>Device will be locked.</Original>
+				<Chinesesimp>设备将会锁死。</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_16">
+				<Original>  Radio cryptokey: %1</Original>
+				<Chinesesimp>  无线电密钥: %1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_17">
+				<Original>  Radio cryptokey: only in military tablets</Original>
+				<Chinesesimp>  无线电密钥: 仅存于军用平板中</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_18">
+				<Original>  Current order: %1 at grid %2</Original>
+				<Chinesesimp>  当前命令: %1于坐标%2</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_19">
+				<Original>  Current order: %1</Original>
+				<Chinesesimp>  当前命令: %1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_20">
+				<Original>Departure from %1, at date %2</Original>
+				<Chinesesimp>于%2自%1出发</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_21">
+				<Original>  Current order: none</Original>
+				<Chinesesimp>  当前命令: 无</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_22">
+				<Original>  Friendly squad orders:</Original>
+				<Chinesesimp>  友方班组命令:</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_23">
+				<Original> from %1</Original>
+				<Chinesesimp> 自%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_24">
+				<Original> to %1</Original>
+				<Chinesesimp> 至%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_25">
+				<Original> at date %1</Original>
+				<Chinesesimp> 于%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_26">
+				<Original>  Friendly stationary forces:</Original>
+				<Chinesesimp>  友方布防力量:</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_27">
+				<Original>Grid %1: %2 %3</Original>
+				<Chinesesimp>坐标%1: %2 %3</Chinesesimp>
+			</Key>
+			<Key ID="STR_TT_TABLET_MSG_28">
+				<Original>Retinal scan identity mismatch! Device is locked.</Original>
+				<Chinesesimp>视网膜扫描身份不匹配！设备已锁死。</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="combatTips.sqf">
+			<Key ID="STR_GT_TIP_1">
+				<Original>Always wear a helmet, even at base!</Original>
+				<Chinesesimp>永远戴着头盔，基地里也是如此！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_2">
+				<Original>Have you checked your ammo?</Original>
+				<Chinesesimp>你检查自己的弹药了吗？</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_3">
+				<Original>Stay alert when on patrol!</Original>
+				<Chinesesimp>巡逻时保持警惕！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_4">
+				<Original>Ensure your radio frequency and channel!</Original>
+				<Chinesesimp>调好自己的电台频率和频道！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_5">
+				<Original>Never do a selfie in fight!</Original>
+				<Chinesesimp>打着仗呢就别自拍了！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_6">
+				<Original>Remember to stay in formation, ... but not too close!</Original>
+				<Chinesesimp>保持阵型...别贴太近！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_7">
+				<Original>Remember to check fuel of your vehicles!</Original>
+				<Chinesesimp>记得检查载具缺不缺燃料！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_8">
+				<Original>Find your gun safety switch before fight!</Original>
+				<Chinesesimp>战斗前先认清自己的武器保险！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_9">
+				<Original>Don't text while driving your tank.</Original>
+				<Chinesesimp>行坦克不规范，敌人两行泪。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_10">
+				<Original>Don't confuse concealment with cover.</Original>
+				<Chinesesimp>别把遮蔽和掩体搞混了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_11">
+				<Original>Don't stand in the backblast area.</Original>
+				<Chinesesimp>别站在筒子尾焰区域里。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_12">
+				<Original>Tracers work both ways.</Original>
+				<Chinesesimp>曳光弹是双刃剑。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_13">
+				<Original>Drive with caution when approaching wired fences.</Original>
+				<Chinesesimp>阿尔蒂斯第三交通委提醒您：道路千万条，安全第一条。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_14">
+				<Original>Morphine will definitely cure everything.</Original>
+				<Chinesesimp>吗啡治一切</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_15">
+				<Original>If you think the enemy is dead then shoot them again.</Original>
+				<Chinesesimp>如果你觉得敌人已经死了，再补一枪又何妨。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_16">
+				<Original>Repeated use of strange pills is not recommended.</Original>
+				<Chinesesimp>不建议反复服用奇怪小药丸。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_17">
+				<Original>If they move, they're an enemy. If they don't move, they're a well trained enemy.</Original>
+				<Chinesesimp>打他就动，那是敌人。打他不动，那是训练有素的敌人。	</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_18">
+				<Original>Remember, that bush may have a sniper in it.</Original>
+				<Chinesesimp>记住，那边的树丛可能蹲着老六。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_19">
+				<Original>Keep with you a long rifle and a friend with a long rifle.</Original>
+				<Chinesesimp>步枪和带着步枪的伙伴缺一不可。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_20">
+				<Original>Don't aim at anything you don't intend to liberate!</Original>
+				<Chinesesimp>别瞄着不值得解脱的东西！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_21">
+				<Original>If it's dark, bring nightvision. If you don't have nightvision, bring a flashlight. If you don't have a flashlight, bring some carrots.</Original>
+				<Chinesesimp>乌漆墨黑，就要夜视仪。不然的话手电也行。手电都没有的话，吃根胡萝卜吧。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_22">
+				<Original>Don't eat yellow snow and don't chew on blasting caps.</Original>
+				<Chinesesimp>黄雪不能吃，雷管也不能咬。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_23">
+				<Original>Do not confuse your C4 and your MRE, C4 is also not to be used as Playdough.</Original>
+				<Chinesesimp>别把你的C4和军粮弄混。C4也不能当橡皮泥玩。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_24">
+				<Original>Friendly Fire is never friendly.</Original>
+				<Chinesesimp>友军误击从来不那么友军。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_25">
+				<Original>Everything is amphibious once.</Original>
+				<Chinesesimp>任何东西都可以涉水，只不过有些这辈子只能涉一次。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_26">
+				<Original>Bridges are more hazardous than they first appear.</Original>
+				<Chinesesimp>桥比它的第一印象可怕得多。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_27">
+				<Original>If your gun jams, then start eating marmalade.</Original>
+				<Chinesesimp>枪卡弹了？那就只能吃子弹了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_28">
+				<Original>If at first you don't succeed, deploy mortars.</Original>
+				<Chinesesimp>攻势被挫败了，就上迫击炮吧。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_29">
+				<Original>Enemy armor is never just 'Passing By'.</Original>
+				<Chinesesimp>敌军装甲从不‘路过’。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_30">
+				<Original>Unnecessary violence against backpackers has been approved.</Original>
+				<Chinesesimp>针对背包客的极端暴力行为已被允许。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_31">
+				<Original>If you forget your gun, remember that your friend's gun is a good replacement.</Original>
+				<Chinesesimp>如果你忘带枪了，记得队友的枪也是个不错的备用品。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_32">
+				<Original>If in doubt, shoot one out.</Original>
+				<Chinesesimp>先开枪，后问话。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_33">
+				<Original>Do not stay behind AT and AA ... and also not in front.</Original>
+				<Chinesesimp>别站在筒子的后面...当然也别站在前面。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_34">
+				<Original>Once the pin is pulled, Mr. Grenade is no longer your friend.</Original>
+				<Chinesesimp>保险栓拔掉以后的手雷就不再是你的朋友了。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_35">
+				<Original>A grenade is not medical equipment.</Original>
+				<Chinesesimp>手雷不是医疗设备。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_36">
+				<Original>The enemy is not responsible for your ammo.</Original>
+				<Chinesesimp>敌人不会为你的弹药负责。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_37">
+				<Original>Don't let the enemy capture your artillery.</Original>
+				<Chinesesimp>别让敌人抢了你的火炮。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_38">
+				<Original>Carry a few liters of blood, it doesn't have to be yours.</Original>
+				<Chinesesimp>多带几升血浆，不一定非得抽自己的血。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_39">
+				<Original>If your mate is down, clear the area first, patch him up later.</Original>
+				<Chinesesimp>队友倒下后，先清场，再救人。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_40">
+				<Original>One soldier dead is better than 2 dead to save 1.</Original>
+				<Chinesesimp>死一个大头总比为救一个死了俩强。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_41">
+				<Original>Please disable adblock to see the tip of the day.</Original>
+				<Chinesesimp>关闭广告拦截程序后即可看到今日头条。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_42">
+				<Original>(todo: insert random quote from the Art of War)</Original>
+				<Chinesesimp>（待办：从孙子兵法里随便抽些话出来）</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_43">
+				<Original>This content is not available in your country!</Original>
+				<Chinesesimp>此内容在您的国家/地区不可用！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_44">
+				<Original>A Crayon will burn for 30 Minutes in an emergency, two when it is being tested.</Original>
+				<Chinesesimp>蜡笔能在紧急情况下燃烧30分钟，实际情况下就烧2分钟。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_45">
+				<Original>Don’t poach a tank, they are better fried.</Original>
+				<Chinesesimp>嫩煎坦克不好吃，还是烤焦的香。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_46">
+				<Original>Don’t leave your armored vehicle when getting shot at!</Original>
+				<Chinesesimp>别在被打的时候逃离你的装甲车！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_47">
+				<Original>If in doubt, frag out.</Original>
+				<Chinesesimp>先扔雷，后问话。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_48">
+				<Original>Poor driving from civilians does not constitute hostile fire -- unless they hit someone.</Original>
+				<Chinesesimp>行车不规范，亲人两行泪。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_49">
+				<Original>Approach civilians carefully they might have bombs on them - or other strange substances.</Original>
+				<Chinesesimp>接近贫民的时候小心点，他们可能带着炸弹 - 当然也可能是其它奇怪的药物。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_50">
+				<Original>It is not advised to take strange pills and drive!</Original>
+				<Chinesesimp>嗑着小药丸驾车不可取。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_51">
+				<Original>Your cousin might be out there fighting dragons, but you have guard duty!</Original>
+				<Chinesesimp>你的兄弟正在屠龙，而你则在站岗！</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_52">
+				<Original>All furniture requisition forms will be denied.</Original>
+				<Chinesesimp>所有家具申请表单均会被驳回。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_53">
+				<Original>Hop like a butterfly, and sting like a bee.</Original>
+				<Chinesesimp>静若处子，动如脱兔。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_54">
+				<Original>Point the end of the barrel at the enemy. Not the other way around.</Original>
+				<Chinesesimp>把枪口对着敌人，而不是反过来。</Chinesesimp>
+			</Key>
+			<Key ID="STR_GT_TIP_55">
+				<Original>Applying a tourniquet to the neck is only to be done for medical purposes, or with someone you trust.</Original>
+				<Chinesesimp>把止血带掐在脖子上的做法仅用于医疗用途，或增加情趣。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="onPlayerSpawn">
+		<Container name="onPlayerSpawn.sqf">
+			<Key ID="STR_PS_CONTROLS">
+				<Original>CONTROLS</Original>
+				<Chinesesimp>控制</Chinesesimp>
+			</Key>
+			<Key ID="STR_PS_U_FOR_MENU">
+				<Original>Press [U] to open the in-game menu</Original>
+				<Chinesesimp>按[U]开启游戏内菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_PS_CHECK_TUTORIAL">
+				<Original>Make sure to check the tutorial.</Original>
+				<Chinesesimp>一定要查看教程哦。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="GameMode">
+		<Container name="CivilWarCityData.sqf">
+			<Key ID="STR_CW_STATUS">
+				<Original>STATUS</Original>
+				<Chinesesimp>状态</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_POPULATION">
+				<Original>POPULATION</Original>
+				<Chinesesimp>人口</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_INFLUENCE">
+				<Original>INFLUENCE</Original>
+				<Chinesesimp>影响力</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_FRIENDLY_RECRUITS">
+				<Original>FRIENDLY RECRUITS</Original>
+				<Chinesesimp>友军可用新兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_MAX">
+				<Original>MAX</Original>
+				<Chinesesimp>最大</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_PER_HOUR">
+				<Original>PER HOUR</Original>
+				<Chinesesimp>每小时</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_ENEMY_RECRUITS">
+				<Original>ENEMY RECRUITS</Original>
+				<Chinesesimp>敌军可用新兵</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilWarGameMode.sqf">
+			<Key ID="STR_CW_WON_NO_AIRPORT">
+				<Original>You won! The enemy have no fight left in them.</Original>
+				<Chinesesimp>你胜利了！敌人完全丧失了斗志。</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_WON_ALL_SUPPORT">
+				<Original>You won! The people are all with you!</Original>
+				<Chinesesimp>你胜利了！人民全都站在你这一边！</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilWarLocationData.sqf">
+			<Key ID="STR_CW_LOCATION_CLAIMED">
+				<Original>LOCATION CLAIMED</Original>
+				<Chinesesimp>已索取地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_WAS_CLAIMED">
+				<Original>%1 was claimed</Original>
+				<Chinesesimp>已索取%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_LOCATION_CLAIMED_HINT">
+				<Original>Garrison some fighters to hold it</Original>
+				<Chinesesimp>让战士们驻扎在这里防守</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_LOCATION_LOST">
+				<Original>LOCATION LOST</Original>
+				<Chinesesimp>丢失地点</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_WAS_LOST">
+				<Original>%1 was lost</Original>
+				<Chinesesimp>已丢失%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_LOCATION_LOST_HINT">
+				<Original>Send some fighters to retake it</Original>
+				<Chinesesimp>派遣战士们去夺回那里</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_AVAILABLE_RECRUITS">
+				<Original>AVAILABLE RECRUITS</Original>
+				<Chinesesimp>可招收新兵数</Chinesesimp>
+			</Key>
+			<Key ID="STR_CW_BUILD_PROGRESS">
+				<Original>BUILD PROGRESS</Original>
+				<Chinesesimp>建造进度</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="GameModeBase.sqf">
+			<Key ID="STR_GMB_MENU_FROM_LOC">
+				<Original>Open Build Menu from location</Original>
+				<Chinesesimp>用驻地物资开启建造菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMB_MENU_FROM_INV">
+				<Original>Open Build Menu from inventory</Original>
+				<Chinesesimp>用物品栏物资开启建造菜单</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMB_ATTACH_TO_GARRISON">
+				<Original>Attach to garrison</Original>
+				<Chinesesimp>指派到驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMB_TAKE_UNIT">
+				<Original>Take unit</Original>
+				<Chinesesimp>接管单位</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMB_TAKE_GROUP">
+				<Original>Take group</Original>
+				<Chinesesimp>接管班组</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMB_DISABLE_ALARM">
+				<Original>Disable alarm</Original>
+				<Chinesesimp>关停警报</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="CivilWarGameMode.sqf">
+			<Key ID="STR_GMB_NEUTRAL">
+				<Original>Neutral</Original>
+				<Chinesesimp>中立</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMB_REBEL_OCCUPIED">
+				<Original>Occupied by rebels</Original>
+				<Chinesesimp>被抵抗军占领</Chinesesimp>
+			</Key>
+			<Key ID="STR_GMB_ENY_OCCUPIED">
+				<Original>Occupied by enemy</Original>
+				<Chinesesimp>被敌军占领</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="ClientSideChecks">
+		<Container name="PlayerMonitor.sqf">
+			<Key ID="STR_PM_REMINDER">
+				<Original>REMINDER</Original>
+				<Chinesesimp>提示</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_REMINDER_HINT">
+				<Original>%1 will start in %2</Original>
+				<Chinesesimp>%1将于%2后开始</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_STARTED">
+				<Original>STARTED</Original>
+				<Chinesesimp>已开始</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_STARTED_HINT">
+				<Original>%1 started %2 ago</Original>
+				<Chinesesimp>%1已于%2前开始</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_UNITS_ASSIGNED">
+				<Original>UNITS ASSIGNED</Original>
+				<Chinesesimp>单位已分配</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_UNITS_ASSIGNED_HINT">
+				<Original>%1 units assigned to %2</Original>
+				<Chinesesimp>%1个单位已被分配给%2</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_UNITS_ASSIGNED_DESC">
+				<Original>They are now under direct control</Original>
+				<Chinesesimp>他们现在处于直接控制下</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_AT_LOC">
+				<Original>at %1</Original>
+				<Chinesesimp>位于%1</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED">
+				<Original>GARRISON CAPTURED</Original>
+				<Chinesesimp>驻地已沦陷</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED_FILLER">
+				<Original>captured</Original>
+				<Chinesesimp>占领</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_DESTROYED_FILLER">
+				<Original>destroyed</Original>
+				<Chinesesimp>摧毁</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED_DESC">	<!--Garrison %1(name of the location) %2(captured or destryoed) by enemy-->
+				<Original>Garrison %1 was %2 by enemy</Original>
+				<Chinesesimp>%1的驻地已被敌军%2</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_CAPTURED_HINT">
+				<Original>Garrisons must contain infantry</Original>
+				<Chinesesimp>驻地须由步兵驻扎</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED_HINT_FROM_LOC">
+				<Original>%1 was automatically detached from garrison at %2</Original>
+				<Chinesesimp>%1已经自动从%2驻地脱离</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED_HINT">
+				<Original>%1 was automatically detached from garrison</Original>
+				<Chinesesimp>%1已自动从驻地脱离</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED">
+				<Original>VEHICLE DETACHED</Original>
+				<Chinesesimp>载具已脱离</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_DETACHED_DESC">
+				<Original>It will be no longer be saved here</Original>
+				<Chinesesimp>它不会继续保存在这里</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_ATTACHED">
+				<Original>VEHICLE ATTACHED</Original>
+				<Chinesesimp>载具已停靠</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_ATTACHED_HINT">
+				<Original>%1 was automatically attached to garrison at %2</Original>
+				<Chinesesimp>%1已自动停靠至%2驻地</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_VEHICLE_ATTACHED_DESC">
+				<Original>It will be saved here</Original>
+				<Chinesesimp>它将会保存在这里</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_GARRISON_FORMED">
+				<Original>GARRISON FORMED</Original>
+				<Chinesesimp>驻军已组建</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_GARRISON_FORMED_HINT">
+				<Original>%1 units formed new garrison at %2</Original>
+				<Chinesesimp>%1个单位已于%2组建驻军</Chinesesimp>
+			</Key>
+			<Key ID="STR_NOTI_GARRISON_FORMED_DESC">
+				<Original>They are now available for map control</Original>
+				<Chinesesimp>现在可通过地图控制他们</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_P_NO_PILOTING_1">
+				<Original>I don't know how to fly this, I am not a pilot.</Original>
+				<Chinesesimp>我不知道该怎么飞这玩意，我又不是驾驶员。</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_P_NO_PILOTING_2">
+				<Original>What does this switch do? I have no idea. I can't fly this.</Original>
+				<Chinesesimp>这些开关是干啥的？真令人摸不着头脑。我不敢飞这玩意。</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_P_NO_PILOTING_3">
+				<Original>I really have no idea how to pilot this.</Original>
+				<Chinesesimp>我真不知道该如何驾驶这个。</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_P_NO_PILOTING_4">
+				<Original>There is no way I could pilot an aircraft.</Original>
+				<Chinesesimp>我可不会开这飞机。</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_P_NO_PILOTING_5">
+				<Original>I should better switch this off, I have no idea what I am doing.</Original>
+				<Chinesesimp>我最好关了这东西，完全不懂自己在干什么。</Chinesesimp>
+			</Key>
+			<Key ID="STR_PM_P_TO_THE_GROUND">
+				<Original>Damn, I should have stayed on the ground!</Original>
+				<Chinesesimp>操，我真应该留在地上的！</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Location">
+		<Container name="Location.sqf">
+			<Key ID="STR_LOC_GONE">
+				<Original>LOCATION DETERIORATED</Original>
+				<Chinesesimp>地点可危</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_BUILDINGS_REMOVED">
+				<Original>Some buildings at %1 have been removed</Original>
+				<Chinesesimp>%1里的部分建筑已被移平</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_GONE_HINT">
+				<Original>Garrison fighters to maintain locations</Original>
+				<Chinesesimp>将战士们驻扎到此处来维持控制权</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_OUTPOST">
+				<Original>Outpost</Original>
+				<Chinesesimp>哨站</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_CAMP">
+				<Original>Camp</Original>
+				<Chinesesimp>营地</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_BASE">
+				<Original>Base</Original>
+				<Chinesesimp>基地</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_UNKOWN">
+				<Original>Unknown</Original>
+				<Chinesesimp>未知</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_CITY">
+				<Original>City</Original>
+				<Chinesesimp>城市</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_OB">
+				<Original>Observation post</Original>
+				<Chinesesimp>观察哨</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_ROADBLOCK">
+				<Original>Roadblock</Original>
+				<Chinesesimp>哨卡</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_POLICE_STATION">
+				<Original>Police Station</Original>
+				<Chinesesimp>警局</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_AIRPORT">
+				<Original>Airport</Original>
+				<Chinesesimp>机场</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_RESPAWN">
+				<Original>Respawn</Original>
+				<Chinesesimp>重生点</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_ERROR">
+				<Original>ERROR LOC TYPE</Original>
+				<Chinesesimp>错误地点类型</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_HEAL_SELF">
+				<Original>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/&gt;  Heal Yourself</Original>
+				<Chinesesimp>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/&gt;  自我医治</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_VEHICLES">
+				<Original>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\repair_ca.paa'/&gt;  Repair Vehicles</Original>
+				<Chinesesimp>&lt;img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\repair_ca.paa'/&gt;  维修车</Chinesesimp>
+			</Key>
+			<Key ID="STR_LOC_REPAIR">
+				<Original>REPAIR</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_YOU_WERE_DISEMBARKED">
+				<Original>You were disembarked from the vehicle.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_THE_VEHICLE_IS_REPAIRED">
+				<Original>The vehicle is currently being repaired.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_REPAIRING_VEHICLES">
+				<Original>Repairing vehicles.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_NO_VEHICLES_FOUND">
+				<Original>No vehicles to repair found.</Original>
+			</Key>
+			<Key ID="STR_LOC_REPAIR_CHECK_VEHICLES_CLOSE">
+				<Original>Check if the vehicles are close enough.</Original>
+			</Key>
+			<Key ID="STR_LOC_MANAGE_KEYS">
+				<Original>Manage radio cryptokeys</Original>
+				<Chinesesimp>管理无线电密钥</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+<Project name="Vindicta-Addon">
+	<Package name="items">
+		<Container name="CfgMagazines.hpp">
+			<Key ID="STR_ITEM_DOCUMENTS">
+				<Original>Military documents</Original>
+				<Chinesesimp>军事文件</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_DOCUMENTS_DESC_1">
+				<Original>A few military documents. Pick it up to study the intel.</Original>
+				<Chinesesimp>一些军事文件。捡起即可获得情报。</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_DOCUMENTS_DESC_2">
+				<Original>Some military documents. Pick it up to study the intel.</Original>
+				<Chinesesimp>一些军事文件。捡起即可获得情报。</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_TACTICAL_TABLET">
+				<Original>Tactical tablet</Original>
+				<Chinesesimp>战术平板</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_TACTICAL_TABLET_DESC">
+				<Original>A military tactical tablet. Pick it up to study the intel.</Original>
+				<Chinesesimp>一个军用战术平板电脑。捡起即可获得情报。</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_PERSONAL_TABLET">
+				<Original>Personal tablet</Original>
+				<Chinesesimp>个人平板</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_PERSONAL_TABLET_DESC">
+				<Original>A personal tablet. Pick it up to study the intel.</Original>
+				<Chinesesimp>一个个人平板电脑。捡起即可获得情报。</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_CONSTRUCTION_RESOURCES">
+				<Original>Construction resources</Original>
+				<Chinesesimp>建筑物资</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_CONSTRUCTION_RESOURCES_DESC">
+				<Original>Resources to build different things.</Original>
+				<Chinesesimp>用于建造不同设施的物资。</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_STRANGE_PILLS">
+				<Original>Strange pills</Original>
+				<Chinesesimp>奇怪的小药丸</Chinesesimp>
+			</Key>
+			<Key ID="STR_ITEM_STRANGE_PILLS_DESC">
+				<Original>!! Don't use it if you can't tolerate flashing images !! Double-click to use. Carefully.</Original>
+				<Chinesesimp>!! 无法承受闪烁效果者误用此物 !! 双击使用。小心。</Chinesesimp>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+<Project name="TEMPLATES">
+	<Package name="initCategoriesNames">
+		<Container name="mainInfantry">
+			<Key ID="STR_ROSTER_RIFILEMAN">
+				<Original>Rifleman</Original>
+				<Chinesesimp>步枪兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_SL">
+				<Original>Squad Leader</Original>
+				<Chinesesimp>班长</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_TL">
+				<Original>Team Leader</Original>
+				<Chinesesimp>火力组组长</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_OFFICER">
+				<Original>Officer</Original>
+				<Chinesesimp>军官</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_GL">
+				<Original>Rifleman GL</Original>
+				<Chinesesimp>榴弹射手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_MARKSMAN">
+				<Original>Marksman</Original>
+				<Chinesesimp>精确射手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_SNIPER">
+				<Original>Sniper</Original>
+				<Chinesesimp>狙击手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_SPOTTER">
+				<Original>Spotter</Original>
+				<Chinesesimp>观察员</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_EXPLOSIVE">
+				<Original>Demo Specialist</Original>
+				<Chinesesimp>爆破手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_AMMO">
+				<Original>Ammo Bearer</Original>
+				<Chinesesimp>弹药输送员</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_LAT">
+				<Original>Rifleman AT</Original>
+				<Chinesesimp>轻型反坦克兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HAT">
+				<Original>AT Specialist</Original>
+				<Chinesesimp>重型反坦克兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_AA">
+				<Original>AA Specialist</Original>
+				<Chinesesimp>防空兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_LMG">
+				<Original>Light Machine Gunner</Original>
+				<Chinesesimp>轻机枪手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HMG">
+				<Original>Heavy Machine Gunner</Original>
+				<Chinesesimp>重机枪手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_MEDIC">
+				<Original>Combat Medic</Original>
+				<Chinesesimp>战地医疗兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_ENGINEER">
+				<Original>Engineer</Original>
+				<Chinesesimp>工程兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_CREW">
+				<Original>Crewman</Original>
+				<Chinesesimp>载具组员</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HELICREW">
+				<Original>Heli. Crewman</Original>
+				<Chinesesimp>直升机组员</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_PILOT">
+				<Original>Pilot</Original>
+				<Chinesesimp>飞行员</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HELIPILOT">
+				<Original>Heli. Pilot</Original>
+				<Chinesesimp>直升机飞行员</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_SURVIVOR">
+				<Original>Survivor</Original>
+				<Chinesesimp>幸存者</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_MAN_UNARMED">
+				<Original>Unarmed Man</Original>
+				<Chinesesimp>无武装者</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="reconInfantry">
+			<Key ID="STR_ROSTER_R_TL">
+				<Original>Recon Team Leader</Original>
+				<Chinesesimp>侦察火力组组长</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_R_RIFLEMAN">
+				<Original>Recon Rifleman</Original>
+				<Chinesesimp>侦察步枪兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_R_MEDIC">
+				<Original>Recon Medic</Original>
+				<Chinesesimp>侦察医疗兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_R_EXPLOSIVE">
+				<Original>Recon Explosive Specialist</Original>
+				<Chinesesimp>侦察爆破手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_R_LAT">
+				<Original>Recon Rifleman AT</Original>
+				<Chinesesimp>侦察轻型反坦克兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_R_MARKSMAN">
+				<Original>Recon Marksman</Original>
+				<Chinesesimp>侦察精确射手</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_R_JTAC">
+				<Original>Recon JTAC</Original>
+				<Chinesesimp>侦察对地引导员</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="diverInfantry">
+			<Key ID="STR_ROSTER_D_TL">
+				<Original>Diver Team Leader</Original>
+				<Chinesesimp>潜水火力组组长</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_D_RIFLEMAN">
+				<Original>Diver Rifleman</Original>
+				<Chinesesimp>潜水步枪兵</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_D_EXPLOSIVE">
+				<Original>Diver Explosive Specialist</Original>
+				<Chinesesimp>潜水爆破手</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="vehicle">
+			<Key ID="STR_ROSTER_UNKOWN">
+				<Original>Unknown Vehicle</Original>
+				<Chinesesimp>不明载具</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_CAR_UNARMED">
+				<Original>Unarmed Car</Original>
+				<Chinesesimp>无武装车辆</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_ARMED_CAR">
+				<Original>Armed Car</Original>
+				<Chinesesimp>武装车辆</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_MRAP_UNARMED">
+				<Original>Unarmed MRAP</Original>
+				<Chinesesimp>无武装反伏击车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HMG_MRAP">
+				<Original>HMG MRAP</Original>
+				<Chinesesimp>机枪反伏击车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_GMG_MRAP">
+				<Original>GMG MRAP</Original>
+				<Chinesesimp>榴弹反伏击车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_IFV">
+				<Original>IFV</Original>
+				<Chinesesimp>步战车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_APC">
+				<Original>APC</Original>
+				<Chinesesimp>运兵车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_MBT">
+				<Original>MBT</Original>
+				<Chinesesimp>主战坦克</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_MRLS">
+				<Original>MRLS</Original>
+				<Chinesesimp>多管火箭炮车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_SPG">
+				<Original>Self-Propelled Artillery</Original>
+				<Chinesesimp>自行榴弹炮</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_SPAA">
+				<Original>Self-Propelled Anti-Aircraft</Original>
+				<Chinesesimp>自行防空炮</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_STAT_HMG">
+				<Original>Static HMG</Original>
+				<Chinesesimp>固定式重机枪</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_STAT_GMG">
+				<Original>Static GMG</Original>
+				<Chinesesimp>固定式榴弹发射器</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_STAT_AA">
+				<Original>Static AA</Original>
+				<Chinesesimp>固定式防空</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_STAT_AT">
+				<Original>Static AT</Original>
+				<Chinesesimp>固定式反坦克</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_STAT_MORTAR">
+				<Original>Static Mortar</Original>
+				<Chinesesimp>固定式迫击炮</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_STAT_MORTAR_HEAVY">
+				<Original>Static Heavy Mortar</Original>
+				<Chinesesimp>固定式重型迫击炮</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HELI_LIGHT">
+				<Original>Light Helicopter</Original>
+				<Chinesesimp>轻型直升机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HELI_HEAVY">
+				<Original>Heavy Helicopter</Original>
+				<Chinesesimp>重型直升机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HELI_CARGO">
+				<Original>Cargo Helicopter</Original>
+				<Chinesesimp>运输直升机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_HELI_ATTACK">
+				<Original>Attack Helicopter</Original>
+				<Chinesesimp>攻击直升机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_PLANE_ATTACK">
+				<Original>Attack Plane</Original>
+				<Chinesesimp>强击机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_PLANE_FIGHTER">
+				<Original>Fighter Plane</Original>
+				<Chinesesimp>歼击机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_PLANE_CARGO">
+				<Original>Cargo Plane</Original>
+				<Chinesesimp>运输机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_PLANE_UNARMED">
+				<Original>Unarmed Plane</Original>
+				<Chinesesimp>无武装飞机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_VTOL">
+				<Original>VTOL</Original>
+				<Chinesesimp>垂直起降飞机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_BOAT_UNARMED">
+				<Original>Unarmed Boat</Original>
+				<Chinesesimp>无武装船只</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_BOAT_ARMED">
+				<Original>Armed Boat</Original>
+				<Chinesesimp>武装船只</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_PERSONAL">
+				<Original>Personal Vehicle</Original>
+				<Chinesesimp>个人载具</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_TRUCK_INF">
+				<Original>Infantry Truck</Original>
+				<Chinesesimp>运兵卡车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_TRUCK_CARGO">
+				<Original>Cargo Truck</Original>
+				<Chinesesimp>载货卡车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_TRUCK_AMMO">
+				<Original>Ammo Truck</Original>
+				<Chinesesimp>弹药卡车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_TRUCK_REPAIR">
+				<Original>Repair Truck</Original>
+				<Chinesesimp>维修卡车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_TRUCK_MEDICAL">
+				<Original>Medical Truck</Original>
+				<Chinesesimp>医疗卡车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_TRUCK_FUEL">
+				<Original>Fuel Truck</Original>
+				<Chinesesimp>燃油卡车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_SUB">
+				<Original>Submarine</Original>
+				<Chinesesimp>潜艇</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="drone">
+			<Key ID="STR_ROSTER_DRONE_DEFAULT">
+				<Original>Default drone</Original>
+				<Chinesesimp>默认无人机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_UGV_UNARMED">
+				<Original>Unarmed UGV</Original>
+				<Chinesesimp>无武装无人车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_UGV_ARMED">
+				<Original>Armed UGV</Original>
+				<Chinesesimp>武装无人车</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_UAV_ARMED">
+				<Original>Armed UAV</Original>
+				<Chinesesimp>武装无人机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_UAV_UNARMED">
+				<Original>Unarmed UAV</Original>
+				<Chinesesimp>无武装无人机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_DRONE_HELI_ATTACK">
+				<Original>Unmanned Attack Helicopter</Original>
+				<Chinesesimp>无人攻击直升机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_QUADCOPTER">
+				<Original>Unmanned Quadcopter</Original>
+				<Chinesesimp>四轴无人机</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_DESIGNATOR">
+				<Original>Unmanned Designator</Original>
+				<Chinesesimp>遥控测距仪</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_REMOTE_STAT_HMG">
+				<Original>Unmanned Static HMG</Original>
+				<Chinesesimp>固定式遥控重机枪</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_REMOTE_STAT_GMG">
+				<Original>Unmanned Static GMG</Original>
+				<Chinesesimp>固定式遥控榴弹发射器</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_REMOTE_STAT_AA">
+				<Original>Unmanned Static AA</Original>
+				<Chinesesimp>固定式遥控防空</Chinesesimp>
+			</Key>
+		</Container>
+		<Container name="cargoBox">
+			<Key ID="STR_ROSTER_BOX_UNKNOWN">
+				<Original>Unknown Cargo Box</Original>
+				<Chinesesimp>未知货箱</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_BOX_SMALL">
+				<Original>Small Cargo Box</Original>
+				<Chinesesimp>小型货箱</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_BOX_MEDIUM">
+				<Original>Medium Cargo Box</Original>
+				<Chinesesimp>中型货箱</Chinesesimp>
+			</Key>
+			<Key ID="STR_ROSTER_BOX_BIG">
+				<Original>Big Cargo Box</Original>
+				<Chinesesimp>大型货箱</Chinesesimp>
 			</Key>
 		</Container>
 	</Package>

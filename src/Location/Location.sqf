@@ -52,7 +52,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("capacityInf"); 								// Infantry capacity
 				VARIABLE("capacityHeli"); 								// Helicopter capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
-	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
+	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build
 				VARIABLE_ATTR("buildProgress", [ATTR_SAVE]);			// How much of the location is built from 0 to 1
 				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
 				VARIABLE("buildableObjects");							// Objects that will be constructed
@@ -267,6 +267,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Setup location's spawn positions
 		private _radius = T_GETV("boundingRadius");
 		private _locPos = T_GETV("pos");
+		private _locType = T_GETV("type");
 
 		#ifndef _SQF_VM
 		ASP_SCOPE_START(findNearestObjects);
@@ -382,6 +383,21 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 								T_CALLM2("addObject", _object, _object in _terrainObjects);
 								OOP_DEBUG_1("findAllObjects for %1: found helipad", T_GETV("name"));
 							};
+							// Spawn positions for non-houses
+							case (_type call location_fnc_objectClassHasSpawnPositions): {
+								T_CALLM2("addObject", _object, _object in _terrainObjects);
+								OOP_DEBUG_1("findAllObjects for %1: found predefined spawn positions for non-house", T_GETV("name"));
+							};
+							
+							// A boat defines a position for boat spawn positions
+							// Only relevant for cities
+							case (_type == "C_Boat_Civil_01_F" && _locType == LOCATION_TYPE_CITY): {
+								private _args = [[[T_VEH, T_VEH_boat_unarmed]], [GROUP_TYPE_INF, GROUP_TYPE_VEH], getPosATL _object, direction _object, objNull];
+								T_CALLM("addSpawnPos", _args);
+								deleteVehicle _object;
+								OOP_DEBUG_1("findAllObjects for %1: found city boat spawn position", T_GETV("name"));
+							};
+							
 						};
 					};
 				};
@@ -421,9 +437,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_array pushBackUnique _hObject;
 				// This variable records which positions in the building are occupied by a unit (it is modified in unit Actions)
 				_hObject setVariable ["vin_occupied_positions", []];
-				//if (_addSpawnPos) then {
-					T_CALLM1("addSpawnPosFromBuilding", _hObject);
-				//};
+				T_CALLM1("addSpawnPosFromBuilding", _hObject);
 				false 
 			}
 		} else {
@@ -432,6 +446,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				true
 			} else {
 				_array pushBackUnique _hObject;
+				T_CALLM1("addSpawnPosFromBuilding", _hObject);
 				false
 			}
 		};
@@ -466,6 +481,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Check if it is a medical object that requires initialization
 		if (_type in location_bt_medical) then {
 			CALLSM1("Location", "initMedicalObject", _hObject);
+		};
+
+		if (_type in location_bt_repair) then {
+			CALLSM1("Location", "initRepairObject", _hObject);
 		};
 
 		// Check for helipad
@@ -660,6 +679,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				private _buildRate = if(_manPower > 0) then { BUILD_RATE(_manPower, _dt / 3600) } else { 0 };
 				_buildProgress = SATURATE(_buildProgress + _buildRate);
 			} else {
+				/*
+				// Disabled the location build progress decay for now
 				private _playerSide = CALLM0(gGameMode, "getPlayerSide");
 				private _oldBuildProgress = T_GETV("buildProgress");
 				private _friendlyUnits = 0;
@@ -675,10 +696,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					// If progress has degraded by a 5% chunk
 					if(ALIASED_VALUE(_oldBuildProgress * 100, 5) < ALIASED_VALUE(_buildProgress * 100, 5)) then {
 						// Notify players of what happened
-						private _args = ["LOCATION DETERIORATED", format["Some buildings at %1 have been removed", T_GETV("name")], "Garrison fighters to maintain locations"];
+						private _args = [localize "STR_LOC_GONE", format[localize "STR_LOC_BUILDINGS_REMOVED", T_GETV("name")], localize "STR_LOC_GONE_HINT"];
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, ON_CLIENTS, NO_JIP);
 					};
 				};
+				*/
 			};
 
 			OOP_INFO_3("UpdateBuildProgress: %1 %2 %3", T_GETV("name"), _buildProgress, _buildables);
@@ -922,10 +944,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			// have resource constraints etc. Probably it should be in Garrison.process to build
 			// at location when they have resources?
 
-			// Only build when the location is not spawned to avoid popin
-			if(!T_GETV("spawned")) then {
-				T_CALLM("build", []);
-			};
+			T_CALLM("build", []);
 
 			// Update player respawn rules
 			pr _gmdata = T_GETV("gameModeData");
@@ -1024,17 +1043,17 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	public STATIC_METHOD(getTypeString)
 		params [P_THISCLASS, "_type"];
 		switch (_type) do {
-			case LOCATION_TYPE_OUTPOST: {"Outpost"};
-			case LOCATION_TYPE_CAMP: {"Camp"};
-			case LOCATION_TYPE_BASE: {"Base"};
-			case LOCATION_TYPE_UNKNOWN: {"Unknown"};
-			case LOCATION_TYPE_CITY: {"City"};
-			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
-			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
-			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
-			case LOCATION_TYPE_AIRPORT: {"Airport"};
-			case LOCATION_TYPE_RESPAWN: {"Respawn"};
-			default {"ERROR LOC TYPE"};
+			case LOCATION_TYPE_OUTPOST: {localize "STR_LOC_OUTPOST"};
+			case LOCATION_TYPE_CAMP: {localize "STR_LOC_CAMP"};
+			case LOCATION_TYPE_BASE: {localize "STR_LOC_BASE"};
+			case LOCATION_TYPE_UNKNOWN: {localize "STR_LOC_UNKOWN"};
+			case LOCATION_TYPE_CITY: {localize "STR_LOC_CITY"};
+			case LOCATION_TYPE_OBSERVATION_POST: {localize "STR_LOC_OB"};
+			case LOCATION_TYPE_ROADBLOCK: {localize "STR_LOC_ROADBLOCK"};
+			case LOCATION_TYPE_POLICE_STATION: {localize "STR_LOC_POLICE_STATION"};
+			case LOCATION_TYPE_AIRPORT: {localize "STR_LOC_AIRPORT"};
+			case LOCATION_TYPE_RESPAWN: {localize "STR_LOC_RESPAWN"};
+			default {localize "STR_LOC_ERROR"};
 		};
 	ENDMETHOD;
 
@@ -1583,69 +1602,75 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		CLAMP(0.03 * _radius, 3, 12)
 	ENDMETHOD;
 
+	public METHOD(getMaxCivilianBoats)
+		params [P_THISOBJECT];
+		private _cap = T_CALLM("getUnitCapacity", [[T_VEH ARG T_VEH_boat_unarmed] ARG GROUP_TYPE_ALL]);
+		_cap min 4;
+	ENDMETHOD;
+
 	// File-based methods
 
 	// Handles messages
-	public override METHOD_FILE(handleMessageEx, "src\Location\handleMessageEx.sqf");
+	public override METHOD_FILE(handleMessageEx, QUOTE_COMMON_PATH(Location\handleMessageEx.sqf));
 
 	// Sets border parameters
-	METHOD_FILE(updateWaypoints, "src\Location\updateWaypoints.sqf");
+	METHOD_FILE(updateWaypoints, QUOTE_COMMON_PATH(Location\updateWaypoints.sqf));
 
 	// Checks if given position is inside the border
-	public METHOD_FILE(isInBorder, "src\Location\isInBorder.sqf");
+	public METHOD_FILE(isInBorder, QUOTE_COMMON_PATH(Location\isInBorder.sqf));
 
 	// Adds a spawn position
-	METHOD_FILE(addSpawnPos, "src\Location\addSpawnPos.sqf");
+	METHOD_FILE(addSpawnPos, QUOTE_COMMON_PATH(Location\addSpawnPos.sqf));
 
 	// Adds multiple spawn positions from a building
-	METHOD_FILE(addSpawnPosFromBuilding, "src\Location\addSpawnposFromBuilding.sqf");
+	METHOD_FILE(addSpawnPosFromBuilding, QUOTE_COMMON_PATH(Location\addSpawnposFromBuilding.sqf));
 
 	// Calculates infantry capacity based on buildings at this location
 	// It's old and better not to use it
-	METHOD_FILE(calculateInfantryCapacity, "src\Location\calculateInfantryCapacity.sqf");
+	METHOD_FILE(calculateInfantryCapacity, QUOTE_COMMON_PATH(Location\calculateInfantryCapacity.sqf));
 
 	// Gets a spawn position to spawn some unit
-	public METHOD_FILE(getSpawnPos, "src\Location\getSpawnPos.sqf");
+	public METHOD_FILE(getSpawnPos, QUOTE_COMMON_PATH(Location\getSpawnPos.sqf));
 
 	// Returns a random position within border
-	public METHOD_FILE(getRandomPos, "src\Location\getRandomPos.sqf");
+	public METHOD_FILE(getRandomPos, QUOTE_COMMON_PATH(Location\getRandomPos.sqf));
 
 	// Returns how many units of this type and group type this location can hold
-	public METHOD_FILE(getUnitCapacity, "src\Location\getUnitCapacity.sqf");
+	public METHOD_FILE(getUnitCapacity, QUOTE_COMMON_PATH(Location\getUnitCapacity.sqf));
 
 	// Checks if given position is safe to spawn a vehicle here
-	public STATIC_METHOD_FILE(isPosSafe, "src\Location\isPosSafe.sqf");
+	public STATIC_METHOD_FILE(isPosSafe, QUOTE_COMMON_PATH(Location\isPosSafe.sqf));
 
 	// Checks if given position is even safer to spawn a vehicle here (conservative, doesn't allow spawning 
 	// in buildings etc.)
-	public STATIC_METHOD_FILE(isPosEvenSafer, "src\Location\isPosEvenSafer.sqf");
+	public STATIC_METHOD_FILE(isPosEvenSafer, QUOTE_COMMON_PATH(Location\isPosEvenSafer.sqf));
 
 	// Returns the nearest location to given position and distance to it
-	public STATIC_METHOD_FILE(getNearestLocation, "src\Location\getNearestLocation.sqf");
+	public STATIC_METHOD_FILE(getNearestLocation, QUOTE_COMMON_PATH(Location\getNearestLocation.sqf));
 
 	// Returns location that has its border overlapping given position
-	public STATIC_METHOD_FILE(getLocationAtPos, "src\Location\getLocationAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationAtPos, QUOTE_COMMON_PATH(Location\getLocationAtPos.sqf));
 
 	// Returns an array of locations that have their border overlapping given position
-	public STATIC_METHOD_FILE(getLocationsAtPos, "src\Location\getLocationsAtPos.sqf");
+	public STATIC_METHOD_FILE(getLocationsAtPos, QUOTE_COMMON_PATH(Location\getLocationsAtPos.sqf));
 
 	// Adds an allowed area
-	METHOD_FILE(addAllowedArea, "src\Location\addAllowedArea.sqf");
+	METHOD_FILE(addAllowedArea, QUOTE_COMMON_PATH(Location\addAllowedArea.sqf));
 
 	// Checks if player is in any of the allowed areas
-	public METHOD_FILE(isInAllowedArea, "src\Location\isInAllowedArea.sqf");
+	public METHOD_FILE(isInAllowedArea, QUOTE_COMMON_PATH(Location\isInAllowedArea.sqf));
 
 	// Handle PROCESS message
-	public METHOD_FILE(process, "src\Location\process.sqf");
+	public METHOD_FILE(process, QUOTE_COMMON_PATH(Location\process.sqf));
 
 	// Spawns the location
-	METHOD_FILE(spawn, "src\Location\spawn.sqf");
+	METHOD_FILE(spawn, QUOTE_COMMON_PATH(Location\spawn.sqf));
 
 	// Despawns the location
-	METHOD_FILE(despawn, "src\Location\despawn.sqf");
+	METHOD_FILE(despawn, QUOTE_COMMON_PATH(Location\despawn.sqf));
 
 	// Builds the location
-	METHOD_FILE(build, "src\Location\build.sqf");
+	METHOD_FILE(build, QUOTE_COMMON_PATH(Location\build.sqf));
 
 	/*
 	Method: isBuilt
@@ -1843,6 +1868,40 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		} forEach _locs;
 	ENDMETHOD;
 
+	STATIC_METHOD(initRepairObject)
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		if (!isServer) exitWith {
+			OOP_ERROR_0("initRepairObject must be called on server!");
+		};
+
+		// Generate a JIP ID
+		private _ID = 0;
+		if(isNil "location_repair_nextID") then {
+			location_repair_nextID = 0;
+			_ID = 0;
+		} else {
+			_ID = location_repair_nextID;
+		};
+		location_repair_nextID = location_repair_nextID + 1;
+
+		private _JIPID = format ["loc_repair_jip_%1", _ID];
+		_object setVariable ["loc_repair_jip", _JIPID];
+
+		// Add an event handler to delete the init from the JIP queue when the object is gone
+		_object addEventHandler ["Deleted", {
+			params ["_entity"];
+			private _JIPID = _entity getVariable "loc_repair_jip";
+			if (isNil "_JIPID") exitWith {
+				OOP_ERROR_1("loc_repair_jip not found for object %1", _entity);
+			};
+			remoteExecCall ["", _JIPID]; // Remove it from the queue
+		}];
+
+		REMOTE_EXEC_CALL_STATIC_METHOD("Location", "initRepairObjectAction", [_object], 0, _JIPID); // global, JIP
+
+	ENDMETHOD;
+
 	// Initalization of different objects
 	STATIC_METHOD(initMedicalObject)
 		params [P_THISCLASS, P_OBJECT("_object")];
@@ -1889,12 +1948,61 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_object setVariable["ACE_medical_isMedicalFacility", true];
 		_object allowdamage false;
 
-		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
+		_object addAction [localize "STR_LOC_HEAL_SELF", // title
 			{
 				player setdamage 0;
 				[player] call ace_medical_treatment_fnc_fullHealLocal;
 				player playMove "AinvPknlMstpSlayWrflDnon_medic";
 			}, 
+			0, // Arguments
+			100, // Priority
+			true, // ShowWindow
+			false, //hideOnUse
+			"", //shortcut
+			"true", //condition
+			_radius, //radius
+			false, //unconscious
+			"", //selection
+			""]; //memoryPoint
+	ENDMETHOD;
+
+	STATIC_METHOD(initRepairObjectAction)
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		OOP_INFO_1("INIT REPAIR OBJECT ACTION: %1", _object);
+
+		// Estimate usage radius
+		private _radius = (sizeof typeof _object) + 5;
+
+		_object setVariable["ACE_isRepairFacility", true];
+		_object allowdamage false;
+
+		_object addAction [localize "STR_LOC_REPAIR_VEHICLES", // title
+			{
+				_nearVehicles = [];
+				_nearVehicles = position (_this select 0) nearObjects ["LandVehicle", 14];
+				if (count _nearVehicles > 0) then{
+					private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_REPAIRING_VEHICLES", ""];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
+					{
+						[_x, false] remoteExec ['engineOn', _x]; //shut engine off
+
+						{
+							if (_x in allPlayers) then {
+								moveOut _x;
+								private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_YOU_WERE_DISEMBARKED", localize "STR_LOC_REPAIR_THE_VEHICLE_IS_REPAIRED"];
+								REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _x, NO_JIP);
+
+							};
+						} forEach crew _x; //disembark all crew
+
+    					[_x, 0] remoteExec ['setDamage', _x]; //repair vehicle
+					} forEach _nearVehicles;
+				} else {
+					private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_NO_VEHICLES_FOUND", localize "STR_LOC_REPAIR_CHECK_VEHICLES_CLOSE", localize "STR_LOC_REPAIR_CHECK_VEHICLES_CLOSE"];
+					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
+				};
+			},
 			0, // Arguments
 			100, // Priority
 			true, // ShowWindow
@@ -1951,7 +2059,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Estimate usage radius
 		private _radius = (sizeof typeof _object) + 5;
 
-		_object addAction ["Manage radio cryptokeys", // title
+		_object addAction [localize "STR_LOC_MANAGE_KEYS", // title
 			{
 				// Open the radio key dialog
 				private _dlg0 = NEW("RadioKeyDialog", []);

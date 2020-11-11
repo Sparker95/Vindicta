@@ -152,7 +152,7 @@ class GSPLIT_DIALOG
 			y = 0.00;
 			w = 0.65;
 			h = 0.04;
-			text = "Split garrison";			
+			text = $STR_GAR_SPLIT;			
 		};
 		class GSPLIT_HINTS : MUI_BG_BLACKSOLID_ABS 
 		{
@@ -162,7 +162,7 @@ class GSPLIT_DIALOG
 			w = 0.7;
 			h = 0.05;
 			style = 0;
-			text = "Hint: double-click row to move a unit";		
+			text = $STR_GAR_SPLIT_DESC;		
 		};
 		class GSPLIT_STATIC_NEW_GAR : MUI_BG_TRANSPARENT_ABS 
 		{
@@ -172,7 +172,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.04;
 			style = 2;
-			text = "New garrison";
+			text = $STR_GAR_NEW;
 			
 		};
 		class GSPLIT_STATIC_NEW_INF : MUI_BG_TRANSPARENT_ABS 
@@ -183,7 +183,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.04;
 			style = 0;
-			text = "Infantry: 666";
+			text = $STR_GAR_INFANTRY;
 			
 		};
 		class GSPLIT_STATIC_CURRENT_GAR : MUI_BG_TRANSPARENT_ABS 
@@ -194,7 +194,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.04;
 			style = 2;
-			text = "Current garrison";
+			text = $STR_GAR_CURRENT;
 			
 		};
 		class GSPLIT_STATIC_NEW_CARGO : MUI_BG_TRANSPARENT_ABS 
@@ -205,7 +205,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.04;
 			style = 0;
-			text = "Cargo seats: 666";
+			text = $STR_GAR_SEATS;
 		};
 		class GSPLIT_STATIC_CURRENT_CARGO : MUI_BG_TRANSPARENT_ABS 
 		{
@@ -215,7 +215,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.04;
 			style = 0;
-			text = "Cargo seats: 666";			
+			text = $STR_GAR_SEATS;			
 		};
 		class GSPLIT_STATIC_CURRENT_INF : MUI_BG_TRANSPARENT_ABS 
 		{
@@ -225,7 +225,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.04;
 			style = 0;
-			text = "Infantry: 666";			
+			text = $STR_GAR_INFANTRY;			
 		};
 		class GSPLIT_BUTTON_CLOSE : MUI_BUTTON_TXT_ABS 
 		{
@@ -245,7 +245,7 @@ class GSPLIT_DIALOG
 			y = 0.9;
 			w = 0.11;
 			h = 0.04;
-			text = "Cancel";
+			text = $STR_GAR_CANCEL;
 			borderSize = 0;
 		};
 		class GSPLIT_BUTTON_SPLIT : MUI_BUTTON_TXT_ABS 
@@ -255,7 +255,7 @@ class GSPLIT_DIALOG
 			y = 0.90;
 			w = 0.11;
 			h = 0.04;
-			text = "Split";
+			text = $STR_GAR_SPLIT;
 			borderSize = 0;
 		};
 		

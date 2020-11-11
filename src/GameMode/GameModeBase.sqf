@@ -74,8 +74,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE("playerInfoArray");
 	VARIABLE("startSuspendTime");
 
+	VARIABLE_ATTR("enemyInitialOutpostsRatio", [ATTR_SAVE_VER(30)]); // Value 0...1
+
 	METHOD(new)
-		params [P_THISOBJECT, P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"), P_STRING("_tNameCivilian"), P_NUMBER("_enemyForcePercent")];
+		params [P_THISOBJECT, P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"), P_STRING("_tNameCivilian"), P_NUMBER("_enemyForcePercent"), P_NUMBER("_enemyOutpostsPercent")];
 		T_SETV("name", "unnamed");
 		T_SETV("spawningEnabled", false);
 
@@ -118,6 +120,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
+
+		T_SETV("enemyInitialOutpostsRatio", _enemyOutpostsPercent/100);
 
 		T_SETV("locations", []);
 
@@ -364,7 +368,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						OOP_INFO_1("  revealing to commander: %1", _sideCommander);
 						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
 					} else {
-						if (_sideCommander != _playerSide && {CALLM0(_loc, "isBuilt")}) then { // Enemies are smart
+						if (_sideCommander != _playerSide) then { // Enemies are smart
 							// This part determines commander's knowledge about enemy locations at game init
 							// Only relevant for One AI vs Another AI Commander game mode I think
 							//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
@@ -393,6 +397,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 			CALLM(_gar, "addUnit", [_newUnit]);
 		};
+		private _cBoats = CALLM0(_loc, "getMaxCivilianBoats");
+		for "_i" from 1 to _cBoats do {
+			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_boat_unarmed ARG -1 ARG ""]);
+			CALLM(_gar, "addUnit", [_newUnit]);
+		};
+
 		CALLM1(_gar, "setLocation", _loc);
 		CALLM0(_gar, "activate");
 
@@ -763,7 +773,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		NEW("SoundMonitor", [_newUnit]);
 
 		// Action to start building stuff
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", localize "STR_GMB_MENU_FROM_LOC"], // title
 						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
 						0, // Arguments
 						0, // Priority
@@ -778,7 +788,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 
 		// Action to start building stuff
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from inventory"], // title
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", localize "STR_GMB_MENU_FROM_INV"], // title
 						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
 						0, // Arguments
 						-1, // Priority
@@ -803,7 +813,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != ''}		// Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive _co}														// Object must be alive
 		};
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", localize "STR_GMB_ATTACH_TO_GARRISON"], // title // pic: arrow pointing down
 						{
 							isNil {
 								private _co = cursorObject;
@@ -836,7 +846,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			&& {(['', _co] call unit_fnc_getUnitFromObjectHandle) != NULL_OBJECT}	// Object must be a valid unit OOP object (no shit spawned by zeus for now)
 			&& {alive _co}															// Object must be alive
 		};
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_singleplayer_ca.paa' />  %1", "Take unit"], // title // pic: arrow pointing down and single man
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_singleplayer_ca.paa' />  %1", localize "STR_GMB_TAKE_UNIT"], // title // pic: arrow pointing down and single man
 						{
 							isNil {
 								private _co = [7] call vin_fnc_coneTarget;
@@ -859,7 +869,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						""]; //memoryPoint
 
 		// Action to add units group to player group
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_multiplayer_ca.paa' />  %1", "Take group"], // title // pic: arrow pointing down and three men
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' /><img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_multiplayer_ca.paa' />  %1", localize "STR_GMB_TAKE_GROUP"], // title // pic: arrow pointing down and three men
 						{
 							isNil {
 								private _co = [7] call vin_fnc_coneTarget;
@@ -892,7 +902,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM1(_loc, "setAlarmDisabled", true);
 			};
 		};
-		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\igui\rscingameui\rscunitinfoairrtdfull\ico_cpt_sound_off_ca.paa' />  %1", "Disable alarm"], // title
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\igui\rscingameui\rscunitinfoairrtdfull\ico_cpt_sound_off_ca.paa' />  %1", localize "STR_GMB_DISABLE_ALARM"], // title
 						{call vin_fnc_disableAlarm}, // disable alarm
 						0, // Arguments
 						-1, // Priority
@@ -1275,10 +1285,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
 							private _policeStation = NEW_PUBLIC("Location", _args);
 							CALLM1(_policeStation, "setBorderCircle", 10);
-							CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
-							CALLM0(_policeStation, "addSpawnPosFromBuildings");
 							CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
 							CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
+							CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
+							CALLM0(_policeStation, "addSpawnPosFromBuildings");
 
 							// TODO: Get city size or building count and scale police capacity from that ?
 							CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));

@@ -1,4 +1,5 @@
 #include "..\Resources\UIProfileColors.h"
+#include "..\..\commonPath.hpp"
 #define __WIDTH 0.5
 
 class NOTIFICATION_GROUP : MUI_GROUP_ABS
@@ -37,7 +38,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			y = 0; 
 			w = 0.427; 
 			h = 0.035; 
-			text = "src\UI\Images\gradient_LtoR.paa";
+			text = QUOTE_COMMON_PATH(UI\Images\gradient_LtoR.paa);
 
 			colorText[] = MUIC_MISSION;
 			// colorBackground[] = MUIC_MISSION;
@@ -74,7 +75,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			colorBackground[] = {0, 0, 0, 0};
 
 			style = 0;
-			text = "INTEL";
+			text = $STR_INT_INTEL;
 			font = "PuristaSemibold";
 			sizeEx = 0.035;
 			onLoad = "uiNamespace setVariable ['vin_not_category', _this#0]"; // Dont delete this!
@@ -92,7 +93,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			colorBackground[] = {0, 0, 0, 0};
 
 			style = 0+16+512;
-			text = "Enemy radio cryptokey was found!";
+			text = $STR_NOTI_CRYPTOKEY_FOUND;
 			font = "RobotoCondensedLight";
 			sizeEx = 0.035;
 			lineSpacing = 1;
@@ -107,7 +108,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			y = 0.123; 
 			w = 0.427; 
 			h = 0.035; 
-			text = "src\UI\Images\gradient_LtoR.paa";
+			text = QUOTE_COMMON_PATH(UI\Images\gradient_LtoR.paa);
 
 			colorText[] = {0, 0, 0, 0.6};
 			//colorBackground[] = MUIC_BLACKTRANSP;
@@ -126,7 +127,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			colorBackground[] = {0, 0, 0, 0};
 
 			style = ST_LEFT;
-			text = "Cryptokeys are stored in your notes tab";
+			text = $STR_NOTI_CRYPTOKEY_STORED;
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensedLight";
 			sizeEx = 0.035;

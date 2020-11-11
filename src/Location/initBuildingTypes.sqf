@@ -1,5 +1,29 @@
 #include "..\common.h"
 
+// Functions to access building positions quickly
+location_fnc_objectClassHasSpawnPositions = {
+	// !!!!! Very Important !!!!!!
+	// If we want to add more spawn positions from buildings,
+	// Like static AT guns from buildings, or static AAs, or whatever,
+	// We must add these into this code too
+	(! isNil {location_bp_HGM_GMG_high getVariable _this}) ||
+	(! isNil {location_bp_cargo_medium getVariable _this}) ||
+	(! isNil {location_bp_Boats getVariable _this})
+};
+
+// Function to turn array with position markup into hash map for quicker access
+_createHashmapFromBuildingPositions = {
+	private _hm = [false] call CBA_fnc_createNamespace;
+	{
+		private _classNames = _x#0;
+		private _positions = _x#1;
+		{ // All class names share same set of positions
+			_hm setVariable [_x, _positions];
+		} forEach _classNames;
+	} forEach _this;
+	_hm;
+};
+
 /*
 Building positions suitable for specific roles.
 
@@ -21,51 +45,113 @@ The structure of each array with positions for specific type is:
 */
 
 //Positions where a high GMG or a high HMG can be placed and operated from.
-location_bp_HGM_GMG_high =
+_location_bp_HGM_GMG_high =
 [
 	[ //The giant military tower
 		["Land_Cargo_Tower_V1_F", "Land_Cargo_Tower_V2_F", "Land_Cargo_Tower_V3_F", "Land_Cargo_Tower_V4_F"],
-		[[11, 90], [13, 0], [14, 0], [16, 180], [17, 180]]
+		[[5.08573,99.9938,17.8895,89.9927],[5.62946,211.636,17.803,181.076],[5.82216,319.148,17.8895,0.203539],[5.75881,50.7726,17.8895,49.4819]]
 	],
 	[ //The small military watchtower
 		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F", "Land_Cargo_Patrol_V4_F"],
-		[[1.9, 220, 4.4, 180], [1.9, 130, 4.4, 180]]
-	]
+		[[1.55509,236.874,4.34404,181.819],[1.56281,126.451,4.34404,180.368]]
+	],
 
-	/*
-	[ //The military HQ
-		["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V2_F", "Land_Cargo_HQ_V3_F"],
-		[[4, 90], [5, 0], [6, -45], [7, 225], [8, 180]]
-	]
-	*/
+	[ //HBAR Tower
+        ["Land_HBarrier_01_big_tower_green_F"],
+        [[1.18102,189.651,4.20664,180]]
+    ],
+    [ //HBAR Bunker Tower
+        ["Land_HBarrier_01_tower_green_F"],
+        [[1.49471,14.0567,2.76688,315.001]]
+    ]
+
+	// Test
+	//[["Land_i_House_Small_03_V1_F"],[[6.23894,146.461,3.62,180],[5.25872,175.733,3.62,180],[5.65386,46.6535,3.62,48.776],[5.83554,311.685,3.62,311.112],[2.58857,218.237,3.62,232.053]]]
 ];
 
-//Positions where soldiers can freely shoot from.
-//Note that soldiers can also shoot well from HMG positions.
-location_bp_sentry =
-[
-	[ //The giant military tower
-		["Land_Cargo_Tower_V1_F", "Land_Cargo_Tower_V2_F", "Land_Cargo_Tower_V3_F", "Land_Cargo_Tower_V4_F"],
-		[[0, 0], [1, 0], [10, 180], [12, 0], [15, 270], [2, 0], [4, 180], [7, 90], [8, 270]]
-	],
-	[ //The small military watchtower
-		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F", "Land_Cargo_Patrol_V4_F"],
-		[[0, 180], [1, 180]]
-	],
-	[ //The military HQ
-		["Land_Cargo_HQ_V1_F", "Land_Cargo_HQ_V2_F", "Land_Cargo_HQ_V3_F"],
-		[[4, 90], [5, 0], [6, -45], [7, 225], [8, 180]]
-	],
-	//Global Mobilization
+location_bp_HGM_GMG_high = _location_bp_HGM_GMG_high call _createHashmapFromBuildingPositions;
+
+_location_bp_Boats =
+[	
+	//CUP
+    [
+        ["Land_Nav_Boathouse_PierT"],
+        [[11.5012,-193.688,-0.00916433,-170.284], [9.56137,-149.089,-0.00916529,-174.449], [17.8938,-172.539,-0.00916481,-261.774]]
+    ],
+	//vanilla Altis
 	[ 
-		["land_gm_tower_bt_6_fuest_80"],
-		[[2, 280], [3, 180], [4, 0]]
-	],
-	[ 
-		["land_gm_tower_bt_11_60"],
-		[[0, 180], [1, 180]]
-	]	
+        ["Land_Pier_wall_F"],
+        [[22.1456,179.977,-0.00916529,90]]
+    ],
+	[
+        ["Land_Pier_F"],
+        [[18.1456,179.972,-0.00916576,90]]
+    ],
+
+	[
+        ["Land_nav_pier_m_F"],
+        [[13.5562,41.5471,-0.00916529,-90.0297], [14.0945,-219.636,-0.00916481,-90.0297], [12.9259,-38.2878,-0.00916576,-90.0297], [12.6986,-140.898,-0.00916481,-90.0297]]
+    ],
+	//Tanoa
+	[
+        ["Land_PierConcrete_01_steps_F"],
+        [[13.1842,355.612,-0.00916529,269.97]]
+    ],
+	[
+        ["Land_QuayConcrete_01_20m_F"],
+        [[13.1455,359.962,-0.00916386,269.97]]
+    ],
+	[
+        ["Land_PierConcrete_01_end_F"],
+        [[9.14551,359.944,-0.00916481,269.972]]
+    ],
+	[
+        ["Land_PierConcrete_01_4m_ladders_F"],
+        [[9.14563,89.9434,-0.00916386,359.97], [8.85437,270.058,-0.00916481,359.97]]
+    ],
+	[
+        ["Land_PierConcrete_01_16m_F"],
+        [[8.85437,270.058,-0.00916529,359.97], [10.1456,89.949,-0.00916433,359.97]]
+    ],
+	[
+        ["Land_PierWooden_02_16m_F"],
+        [[6.22791,80.676,-0.00916481,359.97], [5.94069,279.779,-0.00916481,359.97]]
+    ],
+	[
+        ["Land_PierWooden_02_ladder_F"],
+        [[4.14576,359.877,-0.00916386,269.973]]
+    ],
+	[
+        ["Land_PierWooden_02_barrel_F"],
+        [[5.14551,359.904,-0.00916481,269.975]]
+    ],
+	[
+        ["Land_PierWooden_01_ladder_F"],
+        [[5.14576,359.902,-0.00916433,269.97]]
+    ],
+	[
+        ["Land_PierWooden_01_10m_noRails_F"],
+        [[4.8545,90.1066,-0.00916672,179.97], [4.64688,267.028,-0.00916529,179.97]]
+    ],
+	[
+        ["Land_PierWooden_01_hut_F"],
+        [[4.14576,359.879,-0.00916481,269.97]]
+    ],
+	[
+        ["Land_PierWooden_01_dock_F"],
+        [[12.1455,359.959,-0.00916481,269.97]]
+    ],
+
+	// Unsung
+	[["Land_molo_drevo_end"],[[5.98251,192.539,-0.0311432,273.017],[5.68377,354.557,-0.0388451,273.31]]],
+	[["Pier3_tyres"],[[5.12528,0.0832425,-0.0462704,273.017]]],
+	[["Pier3_clutter"],[[4.2606,13.296,-0.0875168,273.017]]],
+	[["Pier1_tyres"],[[3.95416,1.05426,-0.199099,273.017]]],
+	[["Pier2"],[[7.30126,269.192,-0.286825,181.581]]],
+	[["Pier1_clutter"],[[3.48324,356.23,-0.169113,273.017]]]
 ];
+
+location_bp_Boats = _location_bp_Boats call _createHashmapFromBuildingPositions;
 
 // Capacities of buildings for infantry
 // Typically a building's inf capacity is amount of its buildingPos, however for some buildings we can override that here
@@ -152,7 +238,7 @@ location_b_capacity =
 ];
 
 // Positions for cargo boxes
-location_bp_cargo_medium =
+_location_bp_cargo_medium =
 [
 	[
 		["Land_i_House_Small_01_V3_F", "Land_i_House_Small_01_V1_F", "Land_i_House_Small_01_V2_F", "Land_u_House_Small_01_V1_F"],
@@ -383,6 +469,8 @@ location_bp_cargo_medium =
     [["Land_rhspkl_hut_07"],[[0.730642,204.373,1.51519,0],[1.48428,349.72,1.51519,0]]],
     [["Land_rhspkl_hut_08"],[[1.25072,23.5531,1.1439,88.9171],[1.08291,-25.4642,1.1439,269.327]]]
 ];
+
+location_bp_cargo_medium = _location_bp_cargo_medium call _createHashmapFromBuildingPositions;
 
 // Buildings which can be used as police stations
 location_bt_police = 
@@ -647,6 +735,12 @@ location_bt_medical =
     "Land_MedicalTent_01_white_generic_outer_F"
 ];
 
+location_bt_repair =
+[
+    "B_Slingload_01_Repair_F",
+	"Land_Workshop_01_F"
+];
+
 // Helipads
 location_bt_helipad =
 [
@@ -659,20 +753,21 @@ location_bt_helipad =
 
 /*
 // !!!!! USE THIS FOR location_bp_cargo_medium !!!!!
-// This is BEAST of a code
+// And for static guns too!
 // You need to place houses and cargo boxes inside houses
 // Then select them all, and run the code to export cargo box positions
 
 _objects = get3DENSelected "object";
 
 _houses = _objects select {_x isKindOf "House"};
-_boxes = _objects select {_x isKindOf "ReammoBox_F"};
+_boxes = _objects select {! (_x isKindOf "House")};
 
 _return = [];
 
 {
     private _house = _x;
     private _housePos = getPosWorld _house;
+	private _housePosATL = getPosATL _house;
     private _bb = boundingBoxReal _house;
     (_bb#0) params ["_sx", "_sy", "_sz"];
     private _radius = sqrt(_sx^2 + _sy^2);
@@ -680,10 +775,11 @@ _return = [];
     private _boxPositions = [];
     {
         private _box = _x;
-        _boxPos = getPosWorld _x;
+        _boxPos = getPosWorld _box;
+		_posATL = getPosATL _box;
 
-        private _dirRel = (_housePos getDir _boxPos) - (direction _box);
-        private _zRel = _boxPos#2 - _housePos#2;
+        private _dirRel = (_housePosATL getDir _posATL) - (direction _house);
+        private _zRel = (_posATL#2) - (_housePosATL#2);
         private _distRel = _housePos distance2D _boxPos;
 
         _objDir = (direction _box) - (direction _house);

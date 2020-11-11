@@ -82,11 +82,12 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		private _targetRangeObjects = if (_loc != NULL_OBJECT) then {CALLM0(_loc, "getTargetRangeObjects")} else {[]};
 
 		// // Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
-		// _buildings = _buildings apply {[2 * (abs ((boundingBoxReal _x) select 1 select 2)), _x]};
-		// _buildings sort false;
+		_buildings = _buildings apply {[2 * (abs ((boundingBoxReal _x) select 1 select 2)), _x]};
+		_buildings sort false;
 
 		private _freeAmbient = _ambientAnimObjects select {
-			!(_x getVariable ["vin_occupied", false])
+			!(_x getVariable ["vin_occupied", false]) &&
+			!(_x getVariable ["vin_preoccupied", false])
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist, "GoalUnitAmbientAnim", [
@@ -95,7 +96,8 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		};
 
 		private _freeTargets = _targetRangeObjects select {
-			!(_x getVariable ["vin_occupied", false])
+			!(_x getVariable ["vin_occupied", false]) &&
+			!(_x getVariable ["vin_preoccupied", false])
 		} apply {
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _x distance _nearPos };
 			[_dist,"GoalUnitShootAtTargetRange", [
@@ -105,7 +107,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 
 		private _freeBuildingLocs = [];
 		{
-			private _building = _x;
+			private _building = _x#1;
 			private _dist = if(_nearPos isEqualTo []) then { 0 } else { _building distance _nearPos };
 			private _countPos = count (_building buildingPos -1);
 			private _allBuildingPosIDs = [];
@@ -123,12 +125,20 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		} forEach _buildings;
 
 		// Assign random activities to unoccupied units
-		private _allActivities = (_freeAmbient + _freeTargets + _freeBuildingLocs) call BIS_fnc_arrayShuffle;
+		//private _allActivities = (_freeAmbient + _freeTargets + _freeBuildingLocs) call BIS_fnc_arrayShuffle;
 
+		// Probably we want to use ambient animations first of all
+		// and use houses last of all
+		private _allActivities =	(_freeAmbient select { _x#0 <= _maxDistance }) 
+									+ (_freeTargets select { _x#0 <= _maxDistance })
+									+ (_freeBuildingLocs select { _x#0 <= _maxDistance });
+
+		/*
 		if !(_nearPos isEqualTo []) then {
 			_allActivities = _allActivities select { _x#0 <= _maxDistance };
 			_allActivities sort ASCENDING;
 		};
+		*/
 
 		private _AI = T_GETV("AI");
 

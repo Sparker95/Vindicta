@@ -16,34 +16,34 @@ CLASS("DialoguePolice", "Dialogue")
 		params [P_THISOBJECT, P_OBJECT("_unit0"), P_OBJECT("_unit1")];
 
 		pr _sentenceOfficerHello = selectRandom [
-			"What's the problem?",
-			"I'm on duty. Don't waste my time!",
-			"Move along, I am busy! What do you want?",
-			"Don't you see, I am busy over here!",
-			"Go ahead, what do you want?",
-			"Your face looks familiar. Did I arrest you a week ago?",
-			"You look like the guy I fined a week ago!"
+			localize "STR_O_HELLO_1",
+			localize "STR_O_HELLO_2",
+			localize "STR_O_HELLO_3",
+			localize "STR_O_HELLO_4",
+			localize "STR_O_HELLO_5",
+			localize "STR_O_HELLO_6",
+			localize "STR_O_HELLO_7"
 		];
 
 		pr _sentenceOfficerBye = selectRandom [
-			"Don't do anything funny, I'll be watching you!",
-			"Report anything unusual, citizen!",
-			"Stop wasting my time, citizen!",
-			"Allright, now go away!",
-			"I knew it was a pointless dialogue!"
+			localize "STR_O_BYE_1",
+			localize "STR_O_BYE_2",
+			localize "STR_O_BYE_3",
+			localize "STR_O_BYE_4",
+			localize "STR_O_BYE_5"
 		];
 
 		pr _sentenceThanksForReport = selectRandom [
-			"Good job, citizen. We will take measures.",
-			"Thank you. We will do something about it."
+			localize "STR_O_THANKS_1",
+			localize "STR_O_THANKS_2"
 		];
 
 		pr _activities = [
-			"Some man is giving out leaflets.",
-			"Someone is making a political speech.",
-			"I think there is a political meeting over there.",
-			"I heard people talk about weapons.",
-			"Some guys are loading strange boxes into their car."
+			localize "STR_P_ACTIVITIES_1",
+			localize "STR_P_ACTIVITIES_2",
+			localize "STR_P_ACTIVITIES_3",
+			localize "STR_P_ACTIVITIES_4",
+			localize "STR_P_ACTIVITIES_5"
 		];
 
 		pr _array = [
@@ -54,14 +54,14 @@ CLASS("DialoguePolice", "Dialogue")
 			NODE_OPTIONS("options", ["opt_wherePoliceStation" ARG "opt_reportActivity" ARG "opt_bye"]),
 
 			// Option: ask where is the police station
-			NODE_OPTION("opt_wherePoliceStation", "Where is the police station?"),
+			NODE_OPTION("opt_wherePoliceStation", localize "STR_P_WHERE_POLICESTATION"),
 			NODE_SENTENCE_METHOD("", TALKER_NPC, "sentencePoliceStation"),
-			NODE_SENTENCE("", TALKER_PLAYER, "Thanks!"),
+			NODE_SENTENCE("", TALKER_PLAYER, localize "STR_NODE_P_THANKS"),
 			NODE_JUMP("", "anythingElse"),
 
 			// Option: report activity to officer
-			NODE_OPTION("opt_reportActivity", "I want to report terrorist activity nearby!"),
-			NODE_SENTENCE("", TALKER_NPC, "What do you know?!"),
+			NODE_OPTION("opt_reportActivity", localize "STR_P_REPORT"),
+			NODE_SENTENCE("", TALKER_NPC, localize "STR_O_REPORT_FOLLOWUP_1"),
 			NODE_OPTIONS("", ["opt_report0" ARG "opt_report1" ARG "opt_report2" ARG "opt_report3" ARG "opt_report4"]),
 
 			NODE_OPTION("opt_report0", _activities select 0), NODE_JUMP("", "reportPos"),
@@ -70,27 +70,27 @@ CLASS("DialoguePolice", "Dialogue")
 			NODE_OPTION("opt_report3", _activities select 3), NODE_JUMP("", "reportPos"),
 			NODE_OPTION("opt_report4", _activities select 4), NODE_JUMP("", "reportPos"),
 
-			NODE_SENTENCE("reportPos", TALKER_NPC, "Where did you see it?"),
+			NODE_SENTENCE("reportPos", TALKER_NPC, localize "STR_O_REPORT_FOLLOWUP_2"),
 			NODE_OPTIONS("", ["opt_tellBearing" ARG "opt_followMe"]),
 
 				NODE_CALL_METHOD("opt_tellBearing", "playPlayerGesture", []), // Player points with his arm somewhere
-				NODE_OPTION("", "Where I am looking at. A few hundred of meters this way."),
+				NODE_OPTION("", localize "STR_P_REPORT_POINTAT"),
 				NODE_CALL_METHOD("", "reportActivity", []),
 				NODE_SENTENCE("", TALKER_NPC, _sentenceThanksForReport),
 				NODE_END(""),
 
-				NODE_OPTION("opt_followMe", "Follow me, I will show you!"),
-				NODE_SENTENCE("", TALKER_NPC, "This sounds strange. Let's go, show me the way!"),			
+				NODE_OPTION("opt_followMe", localize "STR_P_REPORT_LEADWAY"),
+				NODE_SENTENCE("", TALKER_NPC, localize "STR_O_REPORT_LEADWAY"),			
 				NODE_CALL_METHOD("", "follow", []),
 				NODE_END(""),
 
 			// Option: leave
-			NODE_OPTION("opt_bye", "Bye! I must leave now."),
+			NODE_OPTION("opt_bye", localize "STR_NODE_P_BYE"),
 			NODE_SENTENCE("", TALKER_NPC, _sentenceOfficerBye),
 			NODE_END(""),
 
 			// Generic 'Anything else?' reply after the end of some option branch
-			NODE_SENTENCE("anythingElse", TALKER_NPC, "Anything else?"),
+			NODE_SENTENCE("anythingElse", TALKER_NPC, localize "STR_NODE_C_ANYMORE"),
 			NODE_JUMP("", "options") // Go back to options
 		];
 

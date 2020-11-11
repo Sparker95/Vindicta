@@ -539,7 +539,7 @@ CLASS("Dialogue", "")
 		};
 
 		// Player will say something
-		pr _text = selectRandom g_phrasesPlayerStartDialogue;
+		pr _text = localize selectRandom g_phrasesPlayerStartDialogue;
 		CALLSM3("Dialogue", "objectSaySentence", NULL_OBJECT, _unitPlayer, _text);
 
 		CALLM2(_aiHuman, "startNewDialogue", _unitPlayer, _playerOwner);

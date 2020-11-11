@@ -66,6 +66,47 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// Split to one group per vehicle
 		// CALLM0(_gar, "splitVehicleGroups");
 
+		// At this point we have one group per each vehicle
+		// Ungroup vehicle groups which don't have any combat vehicles,
+		// Make drivers of such vehicles join any infantry group
+		pr _groups = CALLM0(_gar, "getGroups");
+		pr _anyInfGroupID = _groups findIf { CALLM0(_x, "getType") == GROUP_TYPE_INF };
+		if (_anyInfGroupID != -1) then {
+			pr _anyInfGroup = _groups # _anyInfGroupID;
+			pr _vehGroups = CALLM0(_gar, "getGroups") select { CALLM0(_x, "getType") == GROUP_TYPE_VEH; };
+			OOP_INFO_0("Clearing up non-combat vehicle groups");
+			{
+				pr _vehGroup = _x;
+				OOP_INFO_1("  Checking group: %1", _vehGroup);
+				// Chech vehicle types of this vehicle group
+				pr _vehUnits = CALLM0(_vehGroup, "getVehicleUnits");
+				pr _countCombatVehicles = {
+					pr _subcatID = CALLM0(_x, "getSubcategory");
+					_subcatID in T_VEH_combat;
+				} count _vehUnits;
+				
+				// If there are no combat vehicles
+				if (_countCombatVehicles == 0) then {
+					OOP_INFO_0("  No combat vehicles in this group");
+					// Move infantry to another group
+					{
+						CALLM1(_anyInfGroup, "addUnit", _x);
+					} forEach CALLM0(_vehGroup, "getInfantryUnits");
+					// Ungroup the vehicle so that "rebalanceGroups" doesn't attempt to assign a driver to it
+					// Essentially we are marking this vehicle as useless for the job
+					{
+						CALLM1(_vehGroup, "removeUnit", _x);
+					} forEach CALLM0(_vehGroup, "getVehicleUnits");
+				} else {
+					OOP_INFO_0("  There are combat vehicles in this group");
+				};
+			} forEach _vehGroups;
+
+			// Clear up those empty vehicle groups, we don't need them any more
+			CALLM0(_gar, "deleteEmptyGroups");
+		};
+
+
 		// Rebalance groups, ensure all the vehicle groups have drivers, balance the infantry groups
 		// We do this explictly and not as an action precondition because we will be unbalancing the groups
 		// when we assign inf protection squads to vehicle groups
@@ -73,12 +114,13 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		CALLM0(_gar, "rebalanceGroups");
 
 		// Determine group size and type
-		pr _groups = CALLM0(_gar, "getGroups") apply {
+		_groups = CALLM0(_gar, "getGroups") apply {
 			[
 				CALLM0(_x, "getType") == GROUP_TYPE_VEH,
 				_x
 			]
 		};
+
 		// Inf groups sorted in strength from strongest to weakest (we will assign stronger ones on sweep)
 		pr _infGroups = _groups select {
 			!(_x#0)

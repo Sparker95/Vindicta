@@ -163,10 +163,30 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			ACTION_STATE_FAILED
 		};
 
+		// Set the vehicle upright if its a static
+		pr _unitVeh = T_GETV("unitVeh");
+		if (CALLM0(_unitVeh, "isStatic")) then {
+			if ((vectorUp _hVeh) select 2 < 0.5) then {	//0.5 roughly 45 degrees of tilt
+				private _posASL = getPosASL _hVeh;
+				private _heightAboveGround = (_posASL#2) - (getTerrainHeightASL _posASL);
+				
+				if (_heightAboveGround > 1.5) then {
+					// If static gun is on a building
+					_hVeh setVectorUp [0, 0, 1];
+					_hVeh setPosASL [_posASL#0, _posASL#1, (_posASL#2) + 0.3];
+				} else {
+					// If static gun is on the ground
+					_hVeh setVectorUp surfaceNormal position _hVeh;
+					_terrainHeight = getTerrainHeightASL position _hVeh; 
+					_position = [(getPosASL _hVeh) select 0,(getPosASL _hVeh) select 1, _terrainHeight];
+					_hVeh setPosASL _position;
+				};
+			};
+		};
+
 		// Assign vehicle
 		pr _vehRole = T_GETV("vehRole");
 		pr _turretPath = T_GETV("turretPath");
-		pr _unitVeh = T_GETV("unitVeh");
 		pr _success = CALLM3(_ai, "_assignVehicle", _vehRole, _turretPath, _unitVeh);
 		if (_success) then {
 			OOP_INFO_0("ACTIVATEd successfully");
