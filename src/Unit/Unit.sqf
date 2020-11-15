@@ -511,7 +511,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						_objectHandle setVariable ["BIS_enableRandomization", false]; //disable vanilla randomization
 
-						if (active3CBFactions == true) then {
+						if (active3CBFactions) then {
 							_objectHandle call UK3CB_Factions_Vehicles_fnc_disable_randomize; //disable 3cb randomization on vehicle for texture persistence as they have custom randomization
 						};
 
@@ -1189,7 +1189,7 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 			private _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 			if (isNull _hO) exitWith {};
 
-			if ((_hO isKindOf "LandVehicle") && ((_hO isKindOf "StaticWeapon") == false)) then {
+			if ((_hO isKindOf "LandVehicle") && (!(_hO isKindOf "StaticWeapon"))) then {
 				private _vehicleProperties = [];
 				_vehicleProperties resize UNIT_VEH_PROPERTIES_SIZE;
 				private _savedTexture = getObjectTextures _hO;
