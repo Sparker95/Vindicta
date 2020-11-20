@@ -52,7 +52,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				VARIABLE("capacityInf"); 								// Infantry capacity
 				VARIABLE("capacityHeli"); 								// Helicopter capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
-	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
+	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build
 				VARIABLE_ATTR("buildProgress", [ATTR_SAVE]);			// How much of the location is built from 0 to 1
 				VARIABLE("lastBuildProgressTime");						// Time build progress was last updated
 				VARIABLE("buildableObjects");							// Objects that will be constructed
@@ -944,10 +944,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			// have resource constraints etc. Probably it should be in Garrison.process to build
 			// at location when they have resources?
 
-			// Only build when the location is not spawned to avoid popin
-			if(!T_GETV("spawned")) then {
-				T_CALLM("build", []);
-			};
+			T_CALLM("build", []);
 
 			// Update player respawn rules
 			pr _gmdata = T_GETV("gameModeData");
