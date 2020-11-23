@@ -137,8 +137,9 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 			DESERIALIZE_ALL(_header, _headerSerial);
 			[_recordName, _header, _errors];
 		};
-		// They are in order of when they were created so reverse them so we get newest at the top
-		reverse _recordDataLocal;
+		
+		// Sort save games based on their creation time that is stored in the systemTimeUTC save game header
+		_recordDataLocal = [_recordDataLocal, [], { _x params ["", "_header", ""]; GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601 }, "DESCEND"] call BIS_fnc_sortBy;
 
 		T_CALLM0("clearRecordData");
 

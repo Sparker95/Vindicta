@@ -24,7 +24,9 @@ misc_fnc_polygonCollision = COMPILE_COMMON("Misc\Math\fn_polygonCollision.sqf");
 
 misc_fnc_createCampComposition = COMPILE_COMMON("Misc\fn_createCampComposition.sqf");
 
+misc_fnc_numberToStringZeroPad = COMPILE_COMMON("Misc\fn_numberToStringZeroPad.sqf");
 misc_fnc_dateToISO8601 = COMPILE_COMMON("Misc\fn_dateToISO8601.sqf");
+misc_fnc_systemTimeToISO8601 = COMPILE_COMMON("Misc\fn_systemTimeToISO8601.sqf");
 misc_fnc_getVehiclesInBuilding = COMPILE_COMMON("Misc\fn_getVehiclesInBuilding.sqf");
 
 

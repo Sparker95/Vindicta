@@ -554,10 +554,9 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		pr _dataForLoad = _checkResult apply {
 			_x params ["_recordName", "_header", "_errors"];
-			DELETE(_header);
-			[_recordName, _errors]
+			[_recordName, _header, _errors]
 		} select {
-			!(INCOMPATIBLE_WORLD_NAME in _x#1)
+			!(INCOMPATIBLE_WORLD_NAME in _x#2)
 		};
 
 		// Log
@@ -570,9 +569,10 @@ CLASS("GameManager", "MessageReceiverEx")
 			LOC("Autoload_NoSavesForMap") call vin_fnc_autoLoadMsg;
 		};
 
-		reverse _dataForLoad;
+		// Sort save games based on their creation time that is stored in the systemTimeUTC save game header
+		_dataForLoad = [_dataForLoad, [], { _x params ["", "_header", ""]; GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601 }, "DESCEND"] call BIS_fnc_sortBy;
 
-		_dataForLoad#0 params ["_recordName", "_errors"];
+		_dataForLoad#0 params ["_recordName", "", "_errors"];
 
 		diag_log format ["[Vindicta Autoload] Selected saved game: %1", _recordName];
 

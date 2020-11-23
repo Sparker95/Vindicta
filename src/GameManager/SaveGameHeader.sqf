@@ -19,6 +19,7 @@ CLASS("SaveGameHeader", "Storable")
 	VARIABLE("date");				// In-game date in format of date command
 	VARIABLE("campaignStartDate");	// In-game date when campaign was started
 	VARIABLE("templates");			// Array with selected template names (strings)
+	VARIABLE("systemTimeUTC");		// Date-time in format of the systemTimeUTC command, representing time at which the game was saved, in UTC to ignore daylight savings
 	
 	/*
 	todo:
@@ -39,6 +40,7 @@ CLASS("SaveGameHeader", "Storable")
 		T_SETV("date", date);
 		T_SETV("campaignStartDate", date);		// Must be set externally
 		T_SETV("templates", []);				// Must be set externally
+		T_SETV("systemTimeUTC", systemTimeUTC);
 	ENDMETHOD;
 
 	// STORAGE
