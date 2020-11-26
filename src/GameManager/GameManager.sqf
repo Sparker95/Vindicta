@@ -570,7 +570,14 @@ CLASS("GameManager", "MessageReceiverEx")
 		};
 
 		// Sort save games based on their creation time that is stored in the systemTimeUTC save game header
-		_dataForLoad = [_dataForLoad, [], { _x params ["", "_header", ""]; GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601 }, "DESCEND"] call BIS_fnc_sortBy;
+		_dataForLoad = [_dataForLoad, [], {
+				_x params ["", "_header", ""];
+				if(parseNumber GETV(_header, "saveVersion") <= 30) then {
+					"1970-01-01T00:00:00.000" // Default value in case systemTimeUTC is not available
+				} else {
+					GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601
+				}
+			}, "DESCEND"] call BIS_fnc_sortBy;
 
 		_dataForLoad#0 params ["_recordName", "", "_errors"];
 
