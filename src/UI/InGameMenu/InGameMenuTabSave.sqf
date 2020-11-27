@@ -195,7 +195,7 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 			default {0}; // Error?
 		};
 
-		if (call misc_fnc_isAdminLocal) then {
+		if (call misc_fnc_isAdminLocal && CALLM0(gGameManager, "isGameModeInitialized")) then { // Only admin can save when the game is intialized
 			if (count T_GETV("recordData") > _saveGameLimit) then {
 				pr _newSaveBtn = T_CALLM1("findControl", "TAB_SAVE_BUTTON_NEW");
 				_newSaveBtn ctrlEnable false;
