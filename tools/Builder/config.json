@@ -3,7 +3,7 @@
     "displayName": "Vindicta",
     "cfgMissionsClassName": "vindicta_missions",
     "combinedMissionsFolderName": "vindicta_missions",
-    
+
     "comment00": "List of files to copy during the build",
     "comment01": "'from' is relative to repository root, 'to' is relative to mission.sqm",
     "copyFiles": [
@@ -21,23 +21,23 @@
         },
         {
             "from": "configs\\cba_settings.sqf",
-            "to": "" 
+            "to": ""
         },
         {
             "from": "configs\\description.ext",
-            "to": "" 
+            "to": ""
         },
         {
             "from": "configs\\init.sqf",
-            "to": "" 
+            "to": ""
         },
         {
             "from": "configs\\onPlayerRespawn.sqf",
-            "to": "" 
+            "to": ""
         },
         {
             "from": "configs\\stringtable.xml",
-            "to": "" 
+            "to": ""
         }
     ],
 
@@ -93,7 +93,7 @@
         },
         {
             "folder": "Vindicta.saralite",
-            "CfgMissionsEntry": "vindicta_rhspkl",
+            "CfgMissionsEntry": "vindicta_saralite",
             "mapName": "saralite",
             "briefingName": "Vindicta - Southern Sahrani"
         },
