@@ -5,7 +5,7 @@ It is a multiplayer Co-Op mission for ARMA III. The goal of this project is to m
 
 ## How do I run it??
 You should download the mission from steam workshop. **The GitHub releases are severely outdated.**
-https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+https://steamcommunity.com/sharedfiles/filedetails/?id=2185874952
 
 **For running on your dedicated server, install the folder you download from Workshop as a mod.**
 
@@ -22,7 +22,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
 The project is in 'Alpha' stage. Most of the features are implemented.
 
 ## Links
-Steam WorkShop download: https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+Steam WorkShop download: https://steamcommunity.com/sharedfiles/filedetails/?id=2185874952
 
 BI Forum thread: https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
 
