@@ -813,7 +813,7 @@
 				<Czech>Povolení nebo zakázání systému automatického ukládání</Czech>
 				<French>Activer/désactiver le système de sauvegarde automatique</French>
 				<Chinesesimp>开启/停止自动保存系统</Chinesesimp>
-				<Russian>Включение / Отключение системы автосохранения</Russian>
+				<Russian>Включение/Отключение системы автосохранения</Russian>
 			</Key>
 			<Key ID="STR_Vindicta_Settings_Autosave_On_Empty">
 				<Original>On empty</Original>
@@ -1626,17 +1626,17 @@
 			<Key ID="STR_C_CANT_TALK_ARRESTED_2">
 				<Original>They said that I look suspicious! What a nonsense!</Original>
 				<Chinesesimp>他们说我很可疑！还有王法吗！</Chinesesimp>
-				<Russian>Они сказали, что я выгляжу подозрительно! Что за вздор!</Russian>
+				<Russian>Они сказали, что я выгляжу подозрительно! Что за чушь!</Russian>
 			</Key>
 			<Key ID="STR_C_CANT_TALK_ARRESTED_3">
 				<Original>Is it forbidden to have own opinion in this country now?!</Original>
 				<Chinesesimp>发表意见都有错了吗？！</Chinesesimp>
-				<Russian>Разве теперь в этой стране запрещено иметь собственное мнение?!</Russian>
+				<Russian>Разве мне запрещено иметь собственное мнение?!</Russian>
 			</Key>
 			<Key ID="STR_C_CANT_TALK_ARRESTED_4">
 				<Original>This country goes straight to hell! What a shame!</Original>
 				<Chinesesimp>这个国家已经完蛋了！真是耻辱！</Chinesesimp>
-				<Russian>Эта страна катится прямиком в ад! Какой позор!</Russian>
+				<Russian>Это просто невыносимо!</Russian>
 			</Key>
 			<Key ID="STR_C_CANT_TALK_ARRESTED_5">
 				<Original>They said that I look like a criminal they are searching for!</Original>
@@ -1646,7 +1646,7 @@
 			<Key ID="STR_C_CANT_TALK_ARRESTED_6">
 				<Original>I am so angry at the police now!</Original>
 				<Chinesesimp>条子让我无能狂怒！</Chinesesimp>
-				<Russian>Я так зол на полицию!</Russian>
+				<Russian>Я так зол на все это!</Russian>
 			</Key>
 		</Container>
 		<Container name="PlayerUntied">
@@ -1665,7 +1665,7 @@
 			<Key ID="STR_C_UNTIED_1">
 				<Original>Thank you for the help! We should make the police pay for this!</Original>
 				<Chinesesimp>多谢你的帮助！这帮条子会付出代价的！</Chinesesimp>
-				<Russian>Спасибо вам за помощь! Мы должны заставить полицию заплатить за это!</Russian>
+				<Russian>Спасибо вам за помощь! Мы должны заставить их заплатить за это!</Russian>
 			</Key>
 			<Key ID="STR_C_UNTIED_2">
 				<Original>Thanks, brother! These assholess will pay for what they are doing!</Original>
@@ -1706,22 +1706,22 @@
 			<Key ID="STR_INCITE_1">
 				<Original>Damn police, they keep arresting innocent people!</Original>
 				<Chinesesimp>该死的警察，他们就这样不停逮捕无辜的人！</Chinesesimp>
-				<Russian>Проклятая полиция, они продолжают арестовывать невинных людей!</Russian>
+				<Russian>Проклятье, они продолжают арестовывать невинных людей!</Russian>
 			</Key>
 			<Key ID="STR_INCITE_2">
 				<Original>Those militarist pigs will pay for their crimes!</Original>
 				<Chinesesimp>这帮军国主义猪猡会为他们的罪恶付出代价！</Chinesesimp>
-				<Russian>Эти милитаристские свиньи заплатят за свои преступления!</Russian>
+				<Russian>Эти свиньи заплатят за свои преступления!</Russian>
 			</Key>
 			<Key ID="STR_INCITE_3">
 				<Original>Yesterday they have arrested my friends' family because of 'terrorist activity' as the police say!</Original>
 				<Chinesesimp>昨天他们逮捕了我朋友一家，条子蔑称他们参与了“恐怖活动”！</Chinesesimp>
-				<Russian>Вчера арестовали семью моих друзей за «террористическую деятельность», как говорят в полиции!</Russian>
+				<Russian>Вчера арестовали семью моих друзей за «террористическую деятельность», так они сказали!</Russian>
 			</Key>
 			<Key ID="STR_INCITE_4">
 				<Original>The police took my brother yesterday, you might be next one!</Original>
 				<Chinesesimp>条子昨天抓了我兄弟，下一个可能就轮到你了！</Chinesesimp>
-				<Russian>Вчера полиция забрала моего брата, ты можешь стать следующим!</Russian>
+				<Russian>Вчера забрали моего брата, ты можешь стать следующим!</Russian>
 			</Key>
 			<Key ID="STR_INCITE_5">
 				<Original>Have you heard about those illegal detention camps? I know a guy who returned from one, horrible place!</Original>
@@ -1731,12 +1731,12 @@
 			<Key ID="STR_INCITE_6">
 				<Original>We must stay united, or next time police will take one of us for some fake reason!</Original>
 				<Chinesesimp>我们必须团结一致，不然下一次条子就会以莫须有的罪名抓走我们！</Chinesesimp>
-				<Russian>Мы должны держаться вместе, или в следующий раз полиция заберет одного из нас по какой-то фальшивой причине!</Russian>
+				<Russian>Мы должны держаться вместе, или в следующий раз заберут одного из нас по какой-то фальшивой причине!</Russian>
 			</Key>
 			<Key ID="STR_INCITE_7">
 				<Original>Police tossed drugs to one of my friends and arrested him! Assholes!</Original>
 				<Chinesesimp>条子往我朋友车里栽赃了毒品并抓了他！真是混蛋！</Chinesesimp>
-				<Russian>Полиция подбросила наркотики одному из моих друзей и арестовала его! Сволочи!</Russian>
+				<Russian>Недавно они забрали одного из моих друзей! Сволочи!</Russian>
 			</Key>
 			<Key ID="STR_INCITE_8">
 				<Original>We should seek justice for all the war crimes the military are doing here!</Original>
@@ -1746,7 +1746,7 @@
 			<Key ID="STR_INCITE_9">
 				<Original>The military are so corrupt! There is no other solution to this any more!</Original>
 				<Chinesesimp>军队太腐败了！我们别无选择！</Chinesesimp>
-				<Russian>Военные настолько коррумпированы! Другого решения этой проблемы больше нет!</Russian>
+				<Russian>Военные настолько обнаглели! Другого решения этой проблемы больше нет!</Russian>
 			</Key>
 		</Container>
 		<Container name="CivilianInciteResponse">
@@ -1798,7 +1798,7 @@
 			<Key ID="STR_C_INCITE_RESPONSE_10">
 				<Original>You're right, they really are corrupt. Lets get to work on some change around here!</Original>
 				<Chinesesimp>你是对的，他们太腐败了。我们要改变这一切！</Chinesesimp>
-				<Russian>Вы правы, они действительно коррумпированы. Давайте поработаем здесь над некоторыми изменениями!</Russian>
+				<Russian>Вы правы, давайте поработаем здесь над некоторыми изменениями!</Russian>
 			</Key>
 			<Key ID="STR_C_INCITE_RESPONSE_11">
 				<Original>They definitely have some stick up their ass, let's show them who the real boss is!</Original>
@@ -4009,7 +4009,7 @@
 			<Key ID="STR_GM_SAVE_COMPLETE">
 				<Original>&lt;t size='4' color='#77FF77'&gt;SAVE COMPLETE&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;CARRY ON...&lt;/t&gt;</Original>
 				<Chinesesimp>&lt;t size='4' color='#77FF77'&gt;保存完成&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;不要停下来啊...&lt;/t&gt;</Chinesesimp>
-				<Russian>&lt;t size='4' color='#77FF77'&gt;СОХРАНЕНО&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;ПРОДОЛЖАТЬ...&lt;/t&gt;</Russian>
+				<Russian>&lt;t size='4' color='#77FF77'&gt;СОХРАНЕНО&lt;/t&gt;&lt;br/&gt;&lt;t size='6' color='#FFFFFF'&gt;ПРОДОЛЖИТЬ...&lt;/t&gt;</Russian>
 			</Key>
 			<Key ID="STR_GM_GAME_LOADING">
 				<Original>Game load is in progress...</Original>
@@ -5420,7 +5420,7 @@
 			<Key ID="STR_ROSTER_EXPLOSIVE">
 				<Original>Demo Specialist</Original>
 				<Chinesesimp>爆破手</Chinesesimp>
-				<Russian>Demo Specialist</Russian>
+				<Russian>Подрывник</Russian>
 			</Key>
 			<Key ID="STR_ROSTER_AMMO">
 				<Original>Ammo Bearer</Original>
