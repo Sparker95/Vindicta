@@ -4489,12 +4489,6 @@
 				<Chinesesimp>中立地区</Chinesesimp>
 				<Russian>Нейтральный</Russian>
 			</Key>
-			<Key ID="STR_CMUI_NEUTRAL">
-				<Original>Neutral</Original>
-				<Czech>Neutrální</Czech>
-				<Chinesesimp>中立地区</Chinesesimp>
-				<Russian>Нейтральный</Russian>
-			</Key>
 			<Key ID="STR_CMUI_STATUS">
 				<Original>Status</Original>
 				<Czech>Stav</Czech>
