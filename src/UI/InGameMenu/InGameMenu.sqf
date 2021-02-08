@@ -38,7 +38,7 @@ CLASS("InGameMenu", "DialogBase")
 
 			pr _text = format [localize "STR_MM_TITLE", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
-			T_CALLM1("setHintText", localize "STR_MM_DESC");
+			//T_CALLM1("setHintText", localize "STR_MM_DESC"); // Not found in stringtable, but it's not important anyway
 		};
 
 		T_CALLM1("enableMultiTab", true);

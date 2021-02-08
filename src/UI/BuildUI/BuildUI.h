@@ -64,7 +64,7 @@ class BuildUI
 			w = safeZoneW * 0.38020834;
 			h = safeZoneH * 0.0175926;
 			style = 2;
-			text = $STR_BUI_TAB;
+			text = $STR_BUI_TAB_TOOLTIP;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = MUIC_BLACK;
 			font = "RobotoCondensed";
@@ -80,7 +80,7 @@ class BuildUI
 			w = safeZoneW * 0.38020834;
 			h = safeZoneH * 0.0175926;
 			style = 2;
-			text = $STR_BUI_TAB;
+			text = $STR_BUI_TAB_TOOLTIP;
 			colorBackground[] = {0,0,0,0};
 			colorText[] = MUIC_BLACK;
 			font = "RobotoCondensed";
