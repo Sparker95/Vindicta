@@ -3707,7 +3707,7 @@
 	</Package>
 	<Package name="buildUI">
 		<Container name="Build_UI.h">
-			<Key ID="STR_BUI_TAB">
+			<Key ID="STR_BUI_TAB_TOOLTIP">
 				<Original>TAB: OPEN BUILD MENU</Original>
 				<Czech>TAB: OTEVŘÍT NABÍDKU STAVĚNÍ</Czech>
 				<Chinesesimp>TAB：开启建造菜单</Chinesesimp>
@@ -4115,6 +4115,7 @@
 				<Czech>Přidat člena</Czech>
 				<Chinesesimp>添加为成员</Chinesesimp>
 				<Russian>Добавить как участника</Russian>
+			</Key>
 		</Container>
 	</Package>
 	<Package name="Dialogs">
