@@ -4927,8 +4927,8 @@
 				<Russian>ДОСТУПНЫЕ ЗАГРУЗКИ:</Russian>
 			</Key>
 			<Key ID="STR_RD_WEAPONS">
-				<Czech>Zbraně:</Czech>
 				<Original>WEAPONS:</Original>
+				<Czech>Zbraně:</Czech>
 				<Chinesesimp>武器：</Chinesesimp>
 				<Russian>ОРУЖИЕ:</Russian>
 			</Key>
@@ -5794,12 +5794,13 @@
 			</Key>
 			<Key ID="STR_PM_STARTED_HINT">
 				<Original>%1 started %2 ago</Original>
+				<Czech>%1 bylo zahájeno před %2</Czech>
 				<Chinesesimp>%1已于%2前开始</Chinesesimp>
 				<Russian>%1 начато %2 назад</Russian>
 			</Key>
 			<Key ID="STR_NOTI_UNITS_ASSIGNED">
 				<Original>UNITS ASSIGNED</Original>
-				<Czech>%1 bylo zahájeno před %2</Czech>
+				<Czech>PŘIŘAZENÉ JEDNOTKY</Czech>
 				<Chinesesimp>单位已分配</Chinesesimp>
 				<Russian>ЮНИТ НАЗНАЧЕН</Russian>
 			</Key>
@@ -6547,7 +6548,7 @@
 			</Key>
 			<Key ID="STR_ROSTER_TRUCK_INF">
 				<Original>Infantry Truck</Original>
-				<Czech>Pšchotní nákladní vůz</Czech>
+				<Czech>Pěchotní nákladní vůz</Czech>
 				<Chinesesimp>运兵卡车</Chinesesimp>
 				<Russian>Военный Грузовик</Russian>
 			</Key>
