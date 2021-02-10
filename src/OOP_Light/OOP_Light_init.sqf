@@ -1406,7 +1406,7 @@ OOP_deserialize_save = {
 
 	if((count _array - 2) != count _memList) exitWith {
 		
-		OOP_ERROR_2("Saved object is invalid, saved array %1 doesn't match expected member list %2", _array, _memList);
+		OOP_ERROR_3("Saved object is invalid, saved array %1 doesn't match expected member list %2 for version %3", _array, _memList, _version);
 		diag_log _array;
 		diag_log _memList;
 		false
