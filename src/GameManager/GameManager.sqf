@@ -232,6 +232,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 			pr _errors = [];
 			pr _headerSaveVersion = parseNumber GETV(_header, "saveVersion");
+			pr _systemTimeUtc = GETV(_header, "systemTimeUTC");
 			if (_headerSaveVersion > _saveVersion || _headerSaveVersion < _saveBreakVersion) then {
 				_errors pushBack INCOMPATIBLE_SAVE_VERSION;
 				OOP_INFO_3("  incompatible save version: %1, current: %2, last compatible: %3", _headerSaveVersion, _saveVersion, _headerSaveVersion);
@@ -552,11 +553,9 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Check all headers for loadability
 		pr _checkResult = T_CALLM1("checkAllHeadersForLoading", _recordNamesAndHeaders);
 
-		pr _dataForLoad = _checkResult apply {
+		pr _dataForLoad = _checkResult select {
 			_x params ["_recordName", "_header", "_errors"];
-			[_recordName, _header, _errors]
-		} select {
-			!(INCOMPATIBLE_WORLD_NAME in _x#2)
+			!(INCOMPATIBLE_WORLD_NAME in _errors)
 		};
 
 		// Log
@@ -571,13 +570,9 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Sort save games based on their creation time that is stored in the systemTimeUTC save game header
 		_dataForLoad = [_dataForLoad, [], {
-				_x params ["", "_header", ""];
-				if(parseNumber GETV(_header, "saveVersion") <= 30) then {
-					"1970-01-01T00:00:00.000" // Default value in case systemTimeUTC is not available
-				} else {
-					GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601
-				}
-			}, "DESCEND"] call BIS_fnc_sortBy;
+			_x params ["_recordName", "_header", "_errors"];
+			GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601;
+		}, "DESCEND"] call BIS_fnc_sortBy;
 
 		_dataForLoad#0 params ["_recordName", "", "_errors"];
 
@@ -619,6 +614,12 @@ CLASS("GameManager", "MessageReceiverEx")
 			pr _args = [_recordName, T_GETV("storageClassName")];
 			T_CALLM2("postMethodAsync", "loadGame", _args);
 		};
+
+		// Delete created header objects, we needed them temporary
+		{
+			_x params ["_recordName", "_header", "_errors"];
+			DELETE(_header);
+		} forEach _dataForLoad;
 
 		#undef LOC_SCOPE
 	ENDMETHOD;

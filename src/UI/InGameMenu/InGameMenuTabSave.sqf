@@ -140,12 +140,8 @@ CLASS("InGameMenuTabSave", "DialogTabBase")
 		
 		// Sort save games based on their creation time that is stored in the systemTimeUTC save game header
 		_recordDataLocal = [_recordDataLocal, [], {
-				_x params ["", "_header", ""];
-				if(parseNumber GETV(_header, "saveVersion") <= 30) then {
-					"1970-01-01T00:00:00.000" // Default value in case systemTimeUTC is not available
-				} else {
-					GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601
-				}
+				_x params ["_recordName", "_header", "_errors"];
+				GETV(_header, "systemTimeUTC") call misc_fnc_systemTimeToISO8601
 			}, "DESCEND"] call BIS_fnc_sortBy;
 
 		T_CALLM0("clearRecordData");
