@@ -60,11 +60,11 @@ CLASS("SaveGameHeader", "Storable")
 
 		private _saveVersion = parseNumber T_GETV("saveVersion");
 
-			// SAVEBREAK patch system time for old headers
-			if (_saveVersion < 31) then {
-						private _timeZero = [0,0,0,0,0,0,0];
-				T_SETV("systemTimeUTC", _timeZero);
-			};
+		// SAVEBREAK patch system time for old headers
+		if (_saveVersion < 31) then {
+					private _timeZero = [0,0,0,0,0,0,0];
+			T_SETV("systemTimeUTC", _timeZero);
+		};
 		true
 	ENDMETHOD;
 

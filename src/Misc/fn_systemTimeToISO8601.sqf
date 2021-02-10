@@ -13,7 +13,8 @@ Return value: "2020-11-23T13:37:42.123"
 */
 
 _date = _this;
+private _year4 = [_date#0, 4] call misc_fnc_numberToStringZeroPad;
 private _ms = [_date#6, 3] call misc_fnc_numberToStringZeroPad; // Zero-pad numbers below 100
 _date = _date apply { [_x, 2] call misc_fnc_numberToStringZeroPad }; // Zero-pad numbers below 10
 _date params ["_year", "_month", "_day", "_h", "_m", "_s"];
-format ["%1-%2-%3T%4:%5:%6.%7", _year, _month, _day, _h, _m, _s, _ms]
+format ["%1-%2-%3T%4:%5:%6.%7", _year4, _month, _day, _h, _m, _s, _ms]
