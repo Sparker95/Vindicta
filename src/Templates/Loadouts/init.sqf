@@ -59,6 +59,7 @@ CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_LDF\LDF_Recon\init.sqf");
 //Arma3_POLICE
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_POLICE\Police\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_POLICE\Police_DLC\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_POLICE\Police_RHS\init.sqf");
 //Arma3_CIVILIAN
 CALL_COMPILE_COMMON("Templates\Loadouts\Arma3_CIVILIAN\init.sqf");
 //RHS_AFRF

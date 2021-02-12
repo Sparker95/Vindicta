@@ -81,8 +81,10 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 				// Chech vehicle types of this vehicle group
 				pr _vehUnits = CALLM0(_vehGroup, "getVehicleUnits");
 				pr _countCombatVehicles = {
-					pr _subcatID = CALLM0(_x, "getSubcategory");
-					_subcatID in T_VEH_combat;
+					pr _hO = CALLM0(_x, "getObjectHandle");
+					([_hO] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
+					pr _nTurrets = (count _copilotTurrets) + (count _stdTurrets);
+					_nTurrets > 0;
 				} count _vehUnits;
 				
 				// If there are no combat vehicles
