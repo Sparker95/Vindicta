@@ -42,7 +42,7 @@ if ($verMajor.Count -gt 1) {
     exit 100
 }
 if ($verMinor.Count -gt 1) {
-    "ERROR: minirVersion.hpp countains a new line"
+    "ERROR: minorVersion.hpp countains a new line"
     exit 100
 }
 # VerPatch is wrapped in quotes because we can put a string into buildVersion, although typically it is a number
@@ -187,6 +187,8 @@ $sConfigCPP | Out-File -FilePath "$combinedMissionsLocation\config.cpp" -NoNewli
 
 # Copy one src folder for all the missions
 Copy-Item "src" -Destination $combinedMissionsLocation -Recurse
+
+Copy-Item "_build\missions\buildVersion.hpp" -Destination "$combinedMissionsLocation\src\config"
 
 # Copy other files
 
