@@ -14,7 +14,6 @@ private _num = t_classnames_hashmap getVariable [_className, -1];
 // If it's not added yet, then add it to the hashmap
 if (_num == -1) then {
 	_num = t_classnames_array pushBack _className;
-	publicVariable "t_classnames_array";
 	t_classnames_hashmap setVariable [_className, _num, true];
 	// diag_log format ["[Template::classNameToNumber] Added class name: %1, id: %2", _className, _num];
 };

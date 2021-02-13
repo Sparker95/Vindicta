@@ -32,5 +32,6 @@ if (IS_SERVER) then {
 	#ifndef _SQF_VM
 	publicVariable "t_validTemplates";
 	publicVariable "t_allTemplates";
+	publicVariable "t_classnames_array";
 	#endif
 };
