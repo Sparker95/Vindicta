@@ -603,6 +603,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 
 						// Initialize vehicle lock
 						T_CALLM0("updateVehicleLock");
+
+						// Set vehicle cargo space
+						T_CALLM0("initObjectCargoSpace");
 					};
 					case T_DRONE: {
 					};
@@ -1460,6 +1463,30 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 				_hO addItemToUniform "vin_pills";
 			};
 		};
+	ENDMETHOD;
+
+	// Initializes ACE cargo space for vehicles
+	METHOD(initObjectCargoSpace)
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+		pr _catid = _data select UNIT_DATA_ID_CAT;
+		
+		// Bail if not vehicle
+		if (_catID != T_VEH) exitWith {};
+		
+		pr _subcatId = _data select UNIT_DATA_ID_SUBCAT;
+		
+		// Bail if default subcategory (civilian cars use those)
+		if (_subcatId == T_VEH_default) exitWith {};
+		
+		pr _cargoSpace = T_cargoSpace#_subcatId;
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		
+		[_hO, _cargoSpace] call ace_cargo_fnc_setSpace;
+
+		OOP_INFO_2("Set cargo space of %1 to %2", _hO, _cargoSpace);
+
 	ENDMETHOD;
 
 	//                            D E S P A W N
