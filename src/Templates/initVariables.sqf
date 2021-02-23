@@ -25,6 +25,7 @@ CALL_COMPILE_COMMON("Templates\initCategoriesNames.sqf");
 CALL_COMPILE_COMMON("Templates\initEfficiency.sqf");
 CALL_COMPILE_COMMON("Templates\initComposition.sqf");
 CALL_COMPILE_COMMON("Templates\initLoadouts.sqf");
+CALL_COMPILE_COMMON("Templates\initCargoSpace.sqf");
 CALL_COMPILE_COMMON("Templates\combatTips.sqf");
 
 if (IS_SERVER) then {
@@ -32,5 +33,6 @@ if (IS_SERVER) then {
 	#ifndef _SQF_VM
 	publicVariable "t_validTemplates";
 	publicVariable "t_allTemplates";
+	publicVariable "t_classnames_array";
 	#endif
 };

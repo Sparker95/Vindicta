@@ -130,14 +130,15 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: incite civilian
 			NODE_OPTION("opt_incite", _phrasesIncite),
-			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]),
 			NODE_JUMP_IF("", "node_alreadyIncited", "isIncited", []),	// If already incited
 			NODE_SENTENCE("", TALKER_NPC, _phrasesCivilianInciteResponse),
 			NODE_CALL_METHOD("", "inciteCivilian", []),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]), // Must place it to the end, otherwise isIncited always returns true
 			NODE_SENTENCE("", TALKER_PLAYER, localize "STR_NODE_P_TITO"), // Tell it to others!
 			NODE_JUMP("", "node_options"),
 
 			NODE_SENTENCE("node_alreadyIncited", TALKER_NPC, localize "STR_NODE_C_DANGEROUS_TO_DISCUSS"),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]), // Must place it to the end, otherwise isIncited always returns true
 			NODE_JUMP("", "node_options"),
 
 			// Option: ask for contribution
@@ -157,7 +158,7 @@ CLASS("DialogueCivilian", "Dialogue")
 
 			// Option: scare civilian
 			NODE_OPTION("opt_scare", _phrasesScare),
-			NODE_CALL_METHOD("", "makeTalkersSuspicious", SUSP_BOOST_AMOUNT),
+			NODE_CALL_METHOD("", "makeTalkersSuspicious", [SUSP_BOOST_AMOUNT]),
 			NODE_CALL_METHOD("", "scareCivilian", []),
 			NODE_END(""),
 

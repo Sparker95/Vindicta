@@ -68,6 +68,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     [_x] call t_fnc_initializeTemplateFromFile;
 } forEach [
     "Templates\Factions\CIVILIAN.sqf", 
+    "Templates\Factions\CIVILIAN_RHS.sqf",
     "Templates\Factions\GM_CIVILIAN.sqf", 
     "Templates\Factions\CUP_RUS_CIVILIAN.sqf",
     "Templates\Factions\CUP_TKA_CIVILIAN.sqf",
@@ -82,6 +83,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
 } forEach [
     "Templates\Factions\POLICE.sqf",
     "Templates\Factions\POLICE_DLC.sqf",
+    "Templates\Factions\POLICE_RHS.sqf",
     "Templates\Factions\RHS_AAF_police.sqf",
     "Templates\Factions\RHS_LDF_ranger.sqf",
     "Templates\Factions\CUP_RUS_Police.sqf",
@@ -94,5 +96,5 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\3CB_CPD.sqf",
     "Templates\Factions\Expansion_Police.sqf",
     "Templates\Factions\DSI.sqf",
-    "Templates\Factions\AT.sqf"
+    "Templates\Factions\AT.sqf" 
 ];

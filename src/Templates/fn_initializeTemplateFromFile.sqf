@@ -83,7 +83,9 @@ _t set [T_VALID, _isValid];
 #ifndef _SQF_VM
 // Convert class names to numbers, so that t_fnc_numberToClassName can work later
 // Makes no use for tests with SQF VM
-[_t] call t_fnc_convertTemplateClassNamesToNumbers;
+if (_isValid) then {
+	[_t] call t_fnc_convertTemplateClassNamesToNumbers;
+};
 #endif
 
 // Process inventory items
