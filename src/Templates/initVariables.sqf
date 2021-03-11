@@ -25,6 +25,7 @@ CALL_COMPILE_COMMON("Templates\initCategoriesNames.sqf");
 CALL_COMPILE_COMMON("Templates\initEfficiency.sqf");
 CALL_COMPILE_COMMON("Templates\initComposition.sqf");
 CALL_COMPILE_COMMON("Templates\initLoadouts.sqf");
+CALL_COMPILE_COMMON("Templates\initCargoSpace.sqf");
 CALL_COMPILE_COMMON("Templates\combatTips.sqf");
 
 if (IS_SERVER) then {
