@@ -54,12 +54,13 @@ if (true) exitWith {_errorCount}; // Return no errors with SQF VM, since we can'
 	_x params ["_catID", "_catSize"];
 	{ // forEach (_t#_catID);
 		private _classArray = _x;
+		private _subcatID = _forEachIndex;
 		{ // forEach (_classArray);
 			private _classOrLoadout = _x;
 			private _isClass = isClass (configFile >> "cfgVehicles" >> _classOrLoadout);
 			private _isLoadout = [_classOrLoadout] call t_fnc_isLoadout;
 			if ((!_isClass) && (!_isLoadout)) then {
-				diag_log format ["validateTemplate: error: class or loadout %1 was not resolved", _classOrLoadout];
+				diag_log format ["validateTemplate: error: class or loadout %1 was not resolved. Category: %2, subcategory: %3", _classOrLoadout, _catID, _subcatID];
 				_errorCount = _errorCount + 1;
 			};
 		} forEach (_classArray select { _x isEqualType "" }); // Weighted arrays contain numbers as well, so we ignore them

@@ -111,7 +111,10 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 		if(_onlyCombat) then {
 			_vehicles = _vehicles select {
-				CALLM0(_x, "getSubcategory") in T_VEH_combat
+				pr _hO = CALLM0(_x, "getObjectHandle");
+				([_hO] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
+				pr _nTurrets = (count _copilotTurrets) + (count _stdTurrets);
+				_nTurrets > 0
 			};
 		};
 
