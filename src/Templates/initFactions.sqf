@@ -42,6 +42,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\RHS_USAF.sqf",
     "Templates\Factions\RHS_USAF_UCP.sqf", 
 	"Templates\Factions\RHS_USMC_W.sqf", 
+    "Templates\Factions\RHS_USMC_D.sqf", 
     "Templates\Factions\RHS_CDF.sqf",	
     "Templates\Factions\CUP_TKA.sqf", 	
     "Templates\Factions\CUP_AFRF.sqf", 
