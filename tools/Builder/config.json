@@ -138,6 +138,12 @@
             "CfgMissionsEntry": "vindicta_psyfx_pht",
             "mapName": "psyfx_pht",
             "briefingName": "Vindicta - Phuoc Tuy"
+        },
+        {
+            "folder": "Vindicta.lingor3",
+            "CfgMissionsEntry": "vindicta_lingor3",
+            "mapName": "lingor3",
+            "briefingName": "Vindicta - Lingor Island"
         }
     ]
 }
