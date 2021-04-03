@@ -73,7 +73,7 @@ _veh set [T_VEH_MRAP_HMG, ["vn_b_wheeled_m54_mg_01"]];
 
 //_veh set [T_VEH_IFV, [""]];
 //_veh set [T_VEH_APC, [""]];
-//_veh set [T_VEH_MBT, [""]];
+_veh set [T_VEH_MBT, ["vn_b_armor_m41_01_02"]];
 //_veh set [T_VEH_MRLS, [""]];
 //_veh set [T_VEH_SPA, [""]];
 _veh set [T_VEH_SPAA, ["vn_b_wheeled_m54_mg_02"]];
