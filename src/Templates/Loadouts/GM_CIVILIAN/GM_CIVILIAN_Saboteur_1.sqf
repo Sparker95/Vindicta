@@ -13,7 +13,12 @@ this forceAddUniform selectRandom [
 	"gm_gc_civ_uniform_man_01_80_blk",
 	"gm_gc_civ_uniform_man_01_80_blu",
 	"gm_gc_civ_uniform_man_02_80_brn",
-	"gm_ge_civ_uniform_blouse_80_gry"
+	"gm_ge_civ_uniform_blouse_80_gry",
+	"gm_gc_civ_uniform_man_03_80_blu", 
+	"gm_gc_civ_uniform_man_03_80_grn", 
+	"gm_gc_civ_uniform_man_03_80_gry", 
+	"gm_gc_civ_uniform_man_04_80_blu", 
+	"gm_gc_civ_uniform_man_04_80_gry"
 ];
 
 this addBackpack selectRandom [

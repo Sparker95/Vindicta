@@ -42,7 +42,7 @@ if ($verMajor.Count -gt 1) {
     exit 100
 }
 if ($verMinor.Count -gt 1) {
-    "ERROR: minirVersion.hpp countains a new line"
+    "ERROR: minorVersion.hpp countains a new line"
     exit 100
 }
 # VerPatch is wrapped in quotes because we can put a string into buildVersion, although typically it is a number
@@ -105,6 +105,9 @@ forEach ($folderConfig in $config.missionFolders) {
 
     # Delete src folder, it's no longer needed for the upcoming combined pbo build
     Remove-Item -Path "$tempMissionLocation\src" -Recurse
+
+    # Delete stringtable.xml, it's only needed once in the mod pbo
+    Remove-Item -Path "$tempMissionLocation\stringtable.xml"
 }
 
 # GENERATE CONFIG.CPP
@@ -188,6 +191,8 @@ $sConfigCPP | Out-File -FilePath "$combinedMissionsLocation\config.cpp" -NoNewli
 # Copy one src folder for all the missions
 Copy-Item "src" -Destination $combinedMissionsLocation -Recurse
 
+Copy-Item "_build\missions\buildVersion.hpp" -Destination "$combinedMissionsLocation\src\config"
+
 # Copy other files
 
 $missionFolders = Get-Childitem $combinedMissionsLocation -name "*" -Directory
@@ -202,6 +207,9 @@ forEach ($pathPair in $config.copyFiles) {
         Copy-Item $pathPair.from -Destination $pathDest -Recurse
     }
 }
+
+# Copy stringtable.xml, it's special, we need it once in the root of mod pbo file, and not in each mission folder within that pbo
+Copy-Item "configs\stringtable.xml" -Destination "$combinedMissionsLocation" -Force
 
 $sw = [system.diagnostics.stopwatch]::startNew()
 .$PSScriptRoot\hemtt armake build --force -i include $combinedMissionsLocation "_build\missions\$combinedFolderName.pbo" -w unquoted-string -w redefinition-wo-undef -w excessive-concatenation

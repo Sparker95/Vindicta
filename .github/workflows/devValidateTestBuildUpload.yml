@@ -33,7 +33,8 @@ jobs:
       run: |
         cd src
         New-Item .\config\user_local_config.hpp -ItemType File
-        ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\src\Tests\RunTests.sqf
+        cd ..\
+        .\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\src\Tests\RunTests.sqf
 
   build:
     runs-on: windows-latest

@@ -4,7 +4,7 @@ _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tRHS_USAF_UCP"]; // 														Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "RHS US Army with the worst camo pattern to roam the planet."]; // 			Template display description
-_array set [T_DISPLAY_NAME, "RHS USAF UCP"]; // 											Template display name
+_array set [T_DISPLAY_NAME, "RHS USAF (UCP)"]; // 											Template display name
 _array set [T_FACTION, T_FACTION_military]; // 											Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, ["rhsusf_infantry"]]; // 								Addons required to play this template
 
