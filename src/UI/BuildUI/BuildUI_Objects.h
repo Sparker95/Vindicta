@@ -82,6 +82,8 @@ class BuildObjects
 			displayName = "Repair";
 
 			__BUILD_OBJECT_CLASS(CatRepair,Land_Workshop_01_F,								100);
+			__BUILD_OBJECT_CLASS(CatRepair,ACE_Wheel,										10);
+			__BUILD_OBJECT_CLASS(CatRepair,ACE_Track,										10);
 		};
 
 		class CatStorage {
