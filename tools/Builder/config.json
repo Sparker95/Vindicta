@@ -133,6 +133,12 @@
             "mapName": "nam2",
             "briefingName": "Vindicta - Nam2"
         },
+		{
+            "folder": "Vindicta.eden",
+            "CfgMissionsEntry": "vindicta_eden",
+            "mapName": "eden",
+            "briefingName": "Vindicta - Everon"
+        },
         {
             "folder": "Vindicta.psyfx_pht",
             "CfgMissionsEntry": "vindicta_psyfx_pht",
