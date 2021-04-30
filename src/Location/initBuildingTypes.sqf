@@ -467,7 +467,12 @@ _location_bp_cargo_medium =
     [["Land_rhspkl_hut_05"],[[5.61876,180.351,1.40414,0],[3.74854,179.922,1.40414,0]]],
     [["Land_rhspkl_hut_06"],[[1.01065,329.404,1.91617,1.18239],[1.09486,198.851,1.91617,0]]],
     [["Land_rhspkl_hut_07"],[[0.730642,204.373,1.51519,0],[1.48428,349.72,1.51519,0]]],
-    [["Land_rhspkl_hut_08"],[[1.25072,23.5531,1.1439,88.9171],[1.08291,-25.4642,1.1439,269.327]]]
+    [["Land_rhspkl_hut_08"],[[1.25072,23.5531,1.1439,88.9171],[1.08291,-25.4642,1.1439,269.327]]],
+
+	// CUP Everon
+	[["Land_Dum_rasovna"],[[3.65276,40.5764,0.0847626,270.783],[1.87904,359.315,0.0847626,271.821]]],
+	[["Land_Dum_mesto2"],[[5.02563,190.865,0.301716,0],[2.52303,201.789,0.301716,0]]],
+	[["Land_cwa_hospoda_mesto"],[[7.96237,224.625,0.243176,0],[6.19223,230.468,0.243176,0]]]
 ];
 
 location_bp_cargo_medium = _location_bp_cargo_medium call _createHashmapFromBuildingPositions;
@@ -584,7 +589,12 @@ location_bt_police =
     "Land_rhspkl_hut_05",
     "Land_rhspkl_hut_06",
     "Land_rhspkl_hut_07",
-    "Land_rhspkl_hut_08"
+    "Land_rhspkl_hut_08",
+
+	// CUP Everon
+	"Land_Dum_rasovna",
+	"Land_Dum_mesto2",
+	"Land_cwa_hospoda_mesto"
 ];
 
 location_decorations_police =
