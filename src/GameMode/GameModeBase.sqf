@@ -719,6 +719,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _cCargoBoxes = 2;
 			private _args = [_locationType, _side, _cInf, _cVehGround, _cHMGGMG, _cCargoBoxes, 80];
 			_garrisons pushBack T_CALLM("createMilitaryGarrison", _args);
+			private _cVehAA = switch (_locationType) do {
+				case LOCATION_TYPE_AIRPORT: {5};
+				case LOCATION_TYPE_BASE: {3};
+				case LOCATION_TYPE_OUTPOST: {1};
+				default {5;};
+			};
+			private _args = [_side, _cVehAA];
+			_garrisons pushBack T_CALLM("createAntiAirGarrison", _args);
 		};
 		if(_locationType == LOCATION_TYPE_POLICE_STATION) then {
 			private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
@@ -1630,6 +1638,29 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// 	private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
 		// 	OOP_INFO_MSG("%1: Created heli group %2", [_gar ARG _newGroup]);
 		// };
+		#endif
+		FIX_LINE_NUMBERS()
+
+		_gar
+	ENDMETHOD;
+
+	#define ADD_AA
+	METHOD(createAntiAirGarrison)
+		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cVehAA")];
+
+		private _templateName = CALLM2(gGameMode, "getTemplateName", _side, _faction);
+		//private _template = [_templateName] call t_fnc_getTemplate;
+
+		private _args = [GARRISON_TYPE_ANTIAIR, _side, [], _faction, _templateName];
+		private _gar = NEW("Garrison", _args);
+
+		// Helis 
+		#ifdef ADD_AA
+		for "_i" from 0 to _cVehAA - 1 do {
+			private _type = T_VEH_SPAA;
+			private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+			OOP_INFO_MSG("%1: Created AA group %2", [_gar ARG _newGroup]);
+		};
 		#endif
 		FIX_LINE_NUMBERS()
 
