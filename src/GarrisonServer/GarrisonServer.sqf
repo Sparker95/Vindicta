@@ -214,7 +214,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	public server METHOD(buildFromGarrison)
 		OOP_INFO_1("BUILD FROM GARRISON: %1", _this);
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_STRING("_catCfgClassNameStr"), 
-				P_STRING("_objCfgClassNameStr"), P_POSITION("_vecDir"), P_POSITION("_pos"), P_BOOL("_checkGarrisonBuildRes")];
+				P_STRING("_objCfgClassNameStr"), P_POSITION("_vecDir"), P_POSITION("_pos"), P_BOOL("_checkGarrisonBuildRes"),
+				P_BOOL("_registerObject")];
 		
 		// Sanity checks
 		if (_catCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Category config class name is empty. _this: %1", _this); };
@@ -257,7 +258,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			pr _surfaceVectorUp = surfaceNormal _groundPos;
 			_hO setVectorDirAndUp [_vecDir, _surfaceVectorUp];
 
-			if (_catID != -1) then {
+			if (_registerObject && _catID != -1) then {
 				pr _args = [[], _catID, _subcatID, -1, "", _hO];
 				pr _unit = NEW("Unit", _args);
 				pr _isValid = CALLM0(_unit, "isValid");
@@ -278,18 +279,20 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		CALLSM2("BuildUI", "setObjectMovable", _hO, true);
 
 		// Add the built object to the location
-		pr _loc = CALLM0(_gar, "getLocation");
-		if (!IS_NULL_OBJECT(_loc)) then {
-			// Add this object to location, if it's not a Unit object but a basic object
-			if (_catID == -1) then {
-				CALLM1(_loc, "addObject", _hO);
-			};
+		if (_registerObject) then {
+			pr _loc = CALLM0(_gar, "getLocation");
+			if (!IS_NULL_OBJECT(_loc)) then {
+				// Add this object to location, if it's not a Unit object but a basic object
+				if (_catID == -1) then {
+					CALLM1(_loc, "addObject", _hO);
+				};
 
-			// Player might have added an object which affects location's player respawn capabilities,
-			// so we must update it
-			pr _gmdata = CALLM0(_loc, "getGameModeData");
-			if (!IS_NULL_OBJECT(_gmdata)) then {
-				CALLM0(_gmdata, "updatePlayerRespawn");
+				// Player might have added an object which affects location's player respawn capabilities,
+				// so we must update it
+				pr _gmdata = CALLM0(_loc, "getGameModeData");
+				if (!IS_NULL_OBJECT(_gmdata)) then {
+					CALLM0(_gmdata, "updatePlayerRespawn");
+				};
 			};
 		};
 

@@ -235,6 +235,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		params [P_THISOBJECT, P_NUMBER("_value")];
 		pr _population = T_GETV("population");
 		pr _mult = (_population/1000)^(-0.75); // https://www.desmos.com/calculator/mkpvvijqze
+		_mult = _mult min 1.55; //10 soldiers for 100 influence at base 0.07 per kill
 		_value = _value * _mult;
 		OOP_INFO_3("addInfluenceScaled: %1, multiplier: %2, population: %3", _value, _mult, _population);
 		T_CALLM1("addInfluence", _value);
