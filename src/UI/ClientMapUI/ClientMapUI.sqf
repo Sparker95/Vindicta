@@ -2461,7 +2461,7 @@ CLASS("ClientMapUI", "")
 						SETV(_x, "microPanel", [_ctrl]);
 					};
 
-					CALLSM3("ClientMapUI", "updateMiniPanelPosition", _ctrl, _ctrlMap, GETV(_x, "pos"));
+					CALLSM3("ClientMapUI", "updateMiniPanel", _ctrl, _ctrlMap, _x);
 				};
 
 
@@ -2498,7 +2498,7 @@ CLASS("ClientMapUI", "")
 						};
 					};
 
-					CALLSM3("ClientMapUI", "updateMiniPanelPosition", _ctrl, _ctrlMap, GETV(_x, "pos"));
+					CALLSM3("ClientMapUI", "updateMiniPanel", _ctrl, _ctrlMap, _x);
 				};
 			} forEach _allMapMarkers;
 		} else {
@@ -2509,15 +2509,21 @@ CLASS("ClientMapUI", "")
 		};
 	ENDMETHOD;
 
-	STATIC_METHOD(updateMiniPanelPosition)
-		params [P_THISCLASS, P_CONTROL("_ctrl"), P_CONTROL("_ctrlMap"), P_POSITION("_pos")];
+	STATIC_METHOD(updateMiniPanel)
+		params [P_THISCLASS, P_CONTROL("_ctrl"), P_CONTROL("_ctrlMap"), P_OOP_OBJECT("_marker")];
+
+		if (GETV(_marker, "selected")) exitWith {
+			_ctrl ctrlShow false;
+		};
 
 		// Update panel position
+		pr _pos = GETV(_marker, "pos");
 		pr _posScreen = _ctrlMap posWorldToScreen _pos;
 		_posScreen params ["_xScreen", "_yScreen"];
 		if (_yScreen < safeZoneY) then {_yScreen = -1;};
 		(ctrlPosition _ctrl) params ["__x", "__y", "_w", "_h"];
 		_ctrl ctrlSetPosition [_xScreen - 0.5*_w, _yScreen + 0.03, _w, _h];
+		_ctrl ctrlShow true;
 		_ctrl ctrlCommit 0;
 	ENDMETHOD;
 
