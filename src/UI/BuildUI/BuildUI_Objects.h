@@ -39,6 +39,16 @@ class BuildObjects
 
 		// If set to true, will be providing radio functionality
 		isRadio = false;
+
+		// If set to false, the object will be spawned once but will not be registered within the mission.
+		// It means it will not be attached to location and will not be created as a Unit
+		// So it will not be saved
+		registerObject = true;
+	};
+
+	// persistence is disabled for these
+	class BuildObjectAceRepairBase {
+		registerObject = false;
 	};
 
 	// Below are buildUI categories, inside which we have actual objects
@@ -82,8 +92,16 @@ class BuildObjects
 			displayName = "Repair";
 
 			__BUILD_OBJECT_CLASS(CatRepair,Land_Workshop_01_F,								100);
-			__BUILD_OBJECT_CLASS(CatRepair,ACE_Wheel,										10);
-			__BUILD_OBJECT_CLASS(CatRepair,ACE_Track,										10);
+
+			class CatRepair_ACE_Wheel : BuildObjectAceRepairBase {
+				className = "ACE_Wheel";
+				buildResource = 10;
+			};
+
+			class CatRepair_ACE_Track : BuildObjectAceRepairBase {
+				className = "ACE_Track";
+				buildResource = 10;
+			};
 		};
 
 		class CatStorage {
