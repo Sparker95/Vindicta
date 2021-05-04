@@ -96,7 +96,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_WD"]];
 _veh set [T_VEH_heli_light, ["RHS_MELB_MH6M"]];
 _veh set [T_VEH_heli_heavy, ["RHS_UH60M"]];
 //_veh set [T_VEH_heli_cargo, [""]];
-_veh set [T_VEH_heli_attack, ["RHS_AH1Z"]];
+_veh set [T_VEH_heli_attack, ["RHS_UH1Y_FFAR_d"]];
 
 _veh set [T_VEH_plane_attack, ["rhs_l39_cdf"]];
 _veh set [T_VEH_plane_fighter, ["rhs_l159_CDF"]];

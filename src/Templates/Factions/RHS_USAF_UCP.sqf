@@ -96,7 +96,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_WD"]]; // = 19 – UNUSED
 _veh set [T_VEH_heli_light, ["RHS_UH60M", "RHS_UH60M2", "RHS_UH60M_ESSS", "RHS_UH60M_ESSS2"]]; // = 20
 _veh set [T_VEH_heli_heavy, ["RHS_CH_47F"]]; // = 21
 _veh set [T_VEH_heli_cargo, ["RHS_CH_47F"]]; // = 22
-_veh set [T_VEH_heli_attack, ["RHS_AH64D"]]; // = 23
+_veh set [T_VEH_heli_attack, ["RHS_UH1Y_FFAR_d"]]; // = 23
 
 _veh set [T_VEH_plane_attack, ["RHS_A10"]]; // = 24
 _veh set [T_VEH_plane_fighter , ["rhsusf_f22"]]; // = 25
