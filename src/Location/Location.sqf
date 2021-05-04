@@ -1161,6 +1161,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 
 	/*
+	Method: getCapacityAAForType
+	Returns absolute maximum AA capacity for given location type.
+	*/
+	public STATIC_METHOD(getCapacityAAForType)
+		params [P_THISOBJECT, P_STRING("_type")];
+		switch (_type) do {
+			case LOCATION_TYPE_BASE: { 3 };
+			case LOCATION_TYPE_OUTPOST: { 1 };
+			case LOCATION_TYPE_AIRPORT: { 4 };
+			default { 2 };
+		};
+	ENDMETHOD;
+
+	/*
 	Method: getCapacityHeli
 	Returns helicopter capacity of this location -- how many helicopters can be stationed here
 

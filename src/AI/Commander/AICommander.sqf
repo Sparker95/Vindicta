@@ -3078,6 +3078,45 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		} select {
 			!(_x isEqualTo [])
 		};
+	
+		// Locations that we can reinforce with AA units
+		private _antiAirReinfInfo = _reinfLocations select {
+			GETV(_x, "type") == LOCATION_TYPE_AIRPORT || GETV(_x, "type") == LOCATION_TYPE_BASE} 
+			apply {
+			private _loc = GETV(_x, "actual");
+			private _AAGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_ANTIAIR);
+
+			if(count _AAGarrisons > 0) then {
+				private _nAA = 0;
+				// We want to include all garrisons that consider this location home, not just the one at the location currently
+				// (i.e. QRFs, attacks, convoys etc, that may return again) - just in case we decide to move the SPAA later
+				{
+					_nAA = _nAA + CALLM1(_x, "countUnits", [[T_VEH ARG T_VEH_SPAA]]);
+				} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_ANTIAIR);
+				private _AAGar = _AAGarrisons # 0;
+				private _locType = CALLM0(_loc, "getType");
+				private _nAASpace = CALLM1(_loc, "getCapacityAAForType", _locType);
+				private _nAAMax = ceil (_nAASpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
+				[
+					_AAGar,
+					(CLAMP(_nAAMax, 0, _nAASpace) - _nAA) min 1
+				]
+			} else {
+				[]
+			};
+		};
+
+		// Add AA
+		if (_progressScaled > 0.1 && ([_t, T_VEH, T_VEH_SPAA, 0] call t_fnc_isValid)) then {
+			{
+				_x params ["_AAGarrison", "_nAARequired"];
+				for "_i" from 0 to _nAARequired - 1 do {
+					private _type = T_VEH_SPAA;
+					private _newGroup = CALLM2(_AAGarrison, "postMethodAsync", "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+					OOP_INFO_MSG("%1: Created AA group %2", [_AAGarrison ARG _newGroup]);
+				};
+			} forEach _antiAirReinfInfo;
+		};
 
 		// Locations that we can reinforce with air units
 		private _airReinfInfo = _reinfLocations select {
