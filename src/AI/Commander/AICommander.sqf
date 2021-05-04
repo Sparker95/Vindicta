@@ -2175,8 +2175,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 						EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
 					}
 				) or {
-					// Consider all air garrisons and AA garrisons
-					GETV(_x, "type") == GARRISON_TYPE_AIR || GETV(_x, "type") == GARRISON_TYPE_ANTIAIR
+					// Consider all air garrisons
+					GETV(_x, "type") == GARRISON_TYPE_AIR
 				}
 			};
 
