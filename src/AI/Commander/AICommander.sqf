@@ -3084,30 +3084,37 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _loc = GETV(_x, "actual");
 			private _AAGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_ANTIAIR);
 
-			if(count _AAGarrisons > 0) then {
-				private _nAA = 0;
-				// We want to include all garrisons that consider this location home, not just the one at the location currently
-				// (i.e. QRFs, attacks, convoys etc, that may return again) - just in case we decide to move the SPAA later
-				{
-					_nAA = _nAA + CALLM1(_x, "countUnits", [[T_VEH ARG T_VEH_SPAA]]);
-				} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_ANTIAIR);
-				private _AAGar = _AAGarrisons # 0;
-				private _locType = CALLM0(_loc, "getType");
-
-				private _locName = CALLM0(_loc, "getName");
-
-				private _nAASpace = CALLM1(_loc, "getCapacityAAForType", _locType);
-				private _nAAMax = ceil (_nAASpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
-
-				OOP_INFO_MSG("%1: Reinforcing %2 space %3 max %4 current num %5", [_AAGar ARG _locName ARG _nAASpace ARG _nAAMax ARG _nAA]);
-
-				[
-					_AAGar,
-					(CLAMP(_nAAMax, 0, _nAASpace) - _nAA) min 1
-				]
+			// Create AA garrison if it doesn't exist
+			private _AAGar = if(count _AAGarrisons == 0) then {
+				private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
+				private _args = [GARRISON_TYPE_ANTIAIR, _side, [], "military", _templateName];
+				private _gar = NEW("Garrison", _args);
+				CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+				CALLM0(_gar, "activateCmdrThread");
+				_gar
 			} else {
-				[]
+				_AAGarrisons # 0
 			};
+
+			private _nAA = 0;
+			// We want to include all garrisons that consider this location home, not just the one at the location currently
+			// (i.e. QRFs, attacks, convoys etc, that may return again) - just in case we decide to move the SPAA later
+			{
+				_nAA = _nAA + CALLM1(_x, "countUnits", [[T_VEH ARG T_VEH_SPAA]]);
+			} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_ANTIAIR);
+			private _locType = CALLM0(_loc, "getType");
+
+			private _locName = CALLM0(_loc, "getName");
+
+			private _nAASpace = CALLM1(_loc, "getCapacityAAForType", _locType);
+			private _nAAMax = ceil (_nAASpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
+
+			OOP_INFO_MSG("%1: Reinforcing %2 space %3 max %4 current num %5", [_AAGar ARG _locName ARG _nAASpace ARG _nAAMax ARG _nAA]);
+
+			[
+				_AAGar,
+				(CLAMP(_nAAMax, 0, _nAASpace) - _nAA) min 1
+			]
 		};
 
 		// Add AA
