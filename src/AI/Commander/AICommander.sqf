@@ -2175,8 +2175,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 						EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
 					}
 				) or {
-					// Consider all air garrisons
-					GETV(_x, "type") == GARRISON_TYPE_AIR
+					// Consider all air garrisons and AA garrisons
+					GETV(_x, "type") == GARRISON_TYPE_AIR || GETV(_x, "type") == GARRISON_TYPE_ANTIAIR
 				}
 			};
 
@@ -3080,9 +3080,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 	
 		// Locations that we can reinforce with AA units
-		private _antiAirReinfInfo = _reinfLocations select {
-			GETV(_x, "type") == LOCATION_TYPE_AIRPORT || GETV(_x, "type") == LOCATION_TYPE_BASE} 
-			apply {
+		private _antiAirReinfInfo = _reinfLocations	apply {
 			private _loc = GETV(_x, "actual");
 			private _AAGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_ANTIAIR);
 
@@ -3095,8 +3093,14 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_ANTIAIR);
 				private _AAGar = _AAGarrisons # 0;
 				private _locType = CALLM0(_loc, "getType");
+
+				private _locName = CALLM0(_loc, "getName");
+
 				private _nAASpace = CALLM1(_loc, "getCapacityAAForType", _locType);
 				private _nAAMax = ceil (_nAASpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
+
+				OOP_INFO_MSG("%1: Reinforcing %2 space %3 max %4 current num %5", [_AAGar ARG _locName ARG _nAASpace ARG _nAAMax ARG _nAA]);
+
 				[
 					_AAGar,
 					(CLAMP(_nAAMax, 0, _nAASpace) - _nAA) min 1
