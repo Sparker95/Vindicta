@@ -579,12 +579,13 @@ CLASS("AICommander", "AI")
 		// Otherwise try to find any garrisons there
 		pr _isFriendly = false;
 		pr _garFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
-		pr _gar = if (count _garFriendly != 0) then {
+		pr _garrisons = if (count _garFriendly != 0) then {
 			_isFriendly = true;
-			_garFriendly#0
+			_garFriendly;
 		} else {
-			pr _allGars = CALLM0(_loc, "getGarrisons");
-			if (count _allGars != 0) then { _allGars#0 } else { "" };
+			pr _args = [0, [GARRISON_TYPE_GENERAL, GARRISON_TYPE_ANTIAIR, GARRISON_TYPE_AIR]];
+			pr _allGars = CALLM(_loc, "getGarrisons", _args);
+			_allGars;
 		};
 		
 		pr _value = NEW("IntelLocation", []);
@@ -618,7 +619,8 @@ CLASS("AICommander", "AI")
 		
 		// Set side
 		if (_updateLevel >= CLD_UPDATE_LEVEL_SIDE) then {
-			if (!IS_NULL_OBJECT(_gar)) then {
+			if (count _garrisons > 0) then {
+				pr _gar = _garrisons#0;
 				SETV(_value, "side", CALLM0(_gar, "getSide"));
 			} else {
 				SETV(_value, "side", CLD_SIDE_UNKNOWN);
@@ -626,28 +628,37 @@ CLASS("AICommander", "AI")
 		} else {
 			SETV(_value, "side", CLD_SIDE_UNKNOWN);
 		};
-		
-		// Set efficiency
-		if (!_isFriendly) then {
-			// Set these fields if it's enemy location
-			if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
-				if (!IS_NULL_OBJECT(_gar)) then {
-					pr _comp = CALLM0(_gar, "getCompositionNumbers");
-					pr _eff = CALLM0(_gar, "getEfficiencyTotal");
-					SETV(_value, "unitData", _comp);
-					SETV(_value, "efficiency", _eff);
-				} else {
-					SETV(_value, "unitData", +T_comp_null);
-					SETV(_value, "efficiency", +T_eff_null);
-				};
-			} else {
-				SETV(_value, "unitData", []);
-				SETV(_value, "efficiency", +T_eff_null);
-			};
-		} else {
+
+		if (_isFriendly) then {
 			// For friendly locations it makes no sense
 			SETV(_value, "unitData", +T_comp_null);
 			SETV(_value, "efficiency", +T_eff_null);
+		} else {
+			if (count _garrisons != 0) then {
+				// Calculate the sum of all compositions
+				pr _compSum = +T_comp_null; // Filled with 0
+				pr _effSum = +T_eff_null;
+				{	// forEach _garrisons;
+					pr _gar = _x;
+					
+					// Set these fields if it's enemy location
+					if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
+						pr _comp = CALLM0(_gar, "getCompositionNumbers");
+						pr _eff = CALLM0(_gar, "getEfficiencyTotal");
+						[_compSum, _comp] call comp_fnc_addAccumulate;
+						[_effSum, _eff] call eff_fnc_acc_add;
+					} else {
+						SETV(_value, "unitData", []);
+						SETV(_value, "efficiency", +T_eff_null);
+					};
+				} forEach _garrisons;
+
+				SETV(_value, "unitData", _compSum);
+				SETV(_value, "efficiency", _effSum);
+			} else {
+				SETV(_value, "unitData", +T_comp_null);
+				SETV(_value, "efficiency", +T_eff_null);
+			};
 		};
 		
 		// Set ref to location object
