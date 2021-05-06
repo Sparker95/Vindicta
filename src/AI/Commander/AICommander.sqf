@@ -3129,7 +3129,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Add AA
-		if (_progressScaled > 0.1 && ([_t, T_VEH, T_VEH_SPAA, 0] call t_fnc_isValid)) then {
+		if (_progressScaled > 0.4 && ([_t, T_VEH, T_VEH_SPAA, 0] call t_fnc_isValid)) then {
 			{
 				_x params ["_AAGarrison", "_nAARequired"];
 				for "_i" from 0 to _nAARequired - 1 do {
