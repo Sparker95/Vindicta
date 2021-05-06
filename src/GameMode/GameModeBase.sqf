@@ -719,9 +719,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _cCargoBoxes = 2;
 			private _args = [_locationType, _side, _cInf, _cVehGround, _cHMGGMG, _cCargoBoxes, 80];
 			_garrisons pushBack T_CALLM("createMilitaryGarrison", _args);
-			private _cVehAA = 0;
-			private _args = [_side, _cVehAA];
-			_garrisons pushBack T_CALLM("createAntiAirGarrison", _args);
 		};
 		if(_locationType == LOCATION_TYPE_POLICE_STATION) then {
 			private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
@@ -735,6 +732,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _cVehPlanes = 0; //CALLM0(_loc, "getCapacityPlane");
 			private _args = [_side, _cVehHeli, _cVehPlanes];
 			_garrisons pushBack T_CALLM("createAirGarrison", _args);
+
+			// Add anti-air
+			private _cVehAA = 0;
+			private _args = [_side, _cVehAA];
+			_garrisons pushBack T_CALLM("createAntiAirGarrison", _args);
 		};
 		_garrisons
 	ENDMETHOD;
