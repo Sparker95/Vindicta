@@ -147,7 +147,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_D"]];
 _veh set [T_VEH_heli_light, ["RHS_UH1Y_FFAR_d","RHS_UH1Y_d","RHS_UH1Y_UNARMED_d"]];
 _veh set [T_VEH_heli_heavy, ["rhsusf_CH53E_USMC_D"]];
 _veh set [T_VEH_heli_cargo, ["rhsusf_CH53e_USMC_D_cargo"]];
-_veh set [T_VEH_heli_attack, ["RHS_AH1Z"]];
+_veh set [T_VEH_heli_attack, ["RHS_UH1Y_FFAR_d"]];
 
 _veh set [T_VEH_plane_attack, ["RHS_A10"]];
 _veh set [T_VEH_plane_fighter , ["rhsusf_f22"]];

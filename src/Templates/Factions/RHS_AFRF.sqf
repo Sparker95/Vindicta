@@ -95,7 +95,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["rhs_D30_msv"]];
 _veh set [T_VEH_heli_light, ["rhs_ka60_c"]];
 _veh set [T_VEH_heli_heavy, ["RHS_Mi8AMTSh_vvsc","RHS_Mi8MTV3_vvsc","RHS_Mi8MTV3_heavy_vvsc","RHS_Mi8mt_vvsc"]];
 _veh set [T_VEH_heli_cargo, ["RHS_Mi8mtv3_Cargo_vvsc", "RHS_Mi8mt_Cargo_vvsc"]];
-_veh set [T_VEH_heli_attack, ["RHS_Ka52_vvsc", "rhs_mi28n_vvsc","RHS_Mi24V_vvsc","RHS_Mi24P_vvsc"]];
+_veh set [T_VEH_heli_attack, ["RHS_Mi8MTV3_heavy_vvsc", "RHS_Mi8MTV3_vvsc","RHS_Mi8AMTSh_vvsc"]];
 
 _veh set [T_VEH_plane_attack, ["RHS_Su25SM_vvsc"]];
 _veh set [T_VEH_plane_fighter, ["rhs_mig29s_vvsc","rhs_mig29sm_vvsc"]];

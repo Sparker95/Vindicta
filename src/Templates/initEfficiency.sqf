@@ -38,6 +38,7 @@ T_EFF_def_mask =							[1,		1,		1,		1,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0];
 T_EFF_def_att_mask = 						[1,		1,		1,		1,		1,		1,		1,		1,		0,		0,		0,		0,		0,		0];
 T_EFF_ground_mask =							[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0,		0];
 T_EFF_air_mask =							[0,		0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0];
+T_EFF_antiair_mask = 						[0,		0,		0,		0,		0,		0,		0,		1,		0,		0,		0,		0,		0,		0];
 T_EFF_water_mask =							[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0];
 T_EFF_transport_mask =						[0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0,		0,		0];
 T_EFF_infantry_mask =						[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1];
@@ -123,7 +124,7 @@ _eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0,		0,		0,		1,		0,		
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_veh set [T_VEH_MRLS,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
 _eff_veh set [T_VEH_SPA,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
-_eff_veh set [T_VEH_SPAA,					[0,		0,		1,		0,		0,		0,		0,		6,		0,		0,		1,		0,		2,		0]];
+_eff_veh set [T_VEH_SPAA,					[0,		0,		1,		0,		10,		0,		0,		20,		0,		0,		1,		0,		2,		0]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_veh set [T_VEH_stat_HMG_high,			[3,		0,		0,		0,		3,		2,		0,		0,		0.2,	0,		1,		0,		1,		0]];

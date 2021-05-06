@@ -579,12 +579,13 @@ CLASS("AICommander", "AI")
 		// Otherwise try to find any garrisons there
 		pr _isFriendly = false;
 		pr _garFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
-		pr _gar = if (count _garFriendly != 0) then {
+		pr _garrisons = if (count _garFriendly != 0) then {
 			_isFriendly = true;
-			_garFriendly#0
+			_garFriendly;
 		} else {
-			pr _allGars = CALLM0(_loc, "getGarrisons");
-			if (count _allGars != 0) then { _allGars#0 } else { "" };
+			pr _args = [0, [GARRISON_TYPE_GENERAL, GARRISON_TYPE_ANTIAIR, GARRISON_TYPE_AIR]];
+			pr _allGars = CALLM(_loc, "getGarrisons", _args);
+			_allGars;
 		};
 		
 		pr _value = NEW("IntelLocation", []);
@@ -618,7 +619,8 @@ CLASS("AICommander", "AI")
 		
 		// Set side
 		if (_updateLevel >= CLD_UPDATE_LEVEL_SIDE) then {
-			if (!IS_NULL_OBJECT(_gar)) then {
+			if (count _garrisons > 0) then {
+				pr _gar = _garrisons#0;
 				SETV(_value, "side", CALLM0(_gar, "getSide"));
 			} else {
 				SETV(_value, "side", CLD_SIDE_UNKNOWN);
@@ -626,28 +628,37 @@ CLASS("AICommander", "AI")
 		} else {
 			SETV(_value, "side", CLD_SIDE_UNKNOWN);
 		};
-		
-		// Set efficiency
-		if (!_isFriendly) then {
-			// Set these fields if it's enemy location
-			if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
-				if (!IS_NULL_OBJECT(_gar)) then {
-					pr _comp = CALLM0(_gar, "getCompositionNumbers");
-					pr _eff = CALLM0(_gar, "getEfficiencyTotal");
-					SETV(_value, "unitData", _comp);
-					SETV(_value, "efficiency", _eff);
-				} else {
-					SETV(_value, "unitData", +T_comp_null);
-					SETV(_value, "efficiency", +T_eff_null);
-				};
-			} else {
-				SETV(_value, "unitData", []);
-				SETV(_value, "efficiency", +T_eff_null);
-			};
-		} else {
+
+		if (_isFriendly) then {
 			// For friendly locations it makes no sense
 			SETV(_value, "unitData", +T_comp_null);
 			SETV(_value, "efficiency", +T_eff_null);
+		} else {
+			if (count _garrisons != 0) then {
+				// Calculate the sum of all compositions
+				pr _compSum = +T_comp_null; // Filled with 0
+				pr _effSum = +T_eff_null;
+				{	// forEach _garrisons;
+					pr _gar = _x;
+					
+					// Set these fields if it's enemy location
+					if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
+						pr _comp = CALLM0(_gar, "getCompositionNumbers");
+						pr _eff = CALLM0(_gar, "getEfficiencyTotal");
+						[_compSum, _comp] call comp_fnc_addAccumulate;
+						[_effSum, _eff] call eff_fnc_acc_add;
+					} else {
+						SETV(_value, "unitData", []);
+						SETV(_value, "efficiency", +T_eff_null);
+					};
+				} forEach _garrisons;
+
+				SETV(_value, "unitData", _compSum);
+				SETV(_value, "efficiency", _effSum);
+			} else {
+				SETV(_value, "unitData", +T_comp_null);
+				SETV(_value, "efficiency", +T_eff_null);
+			};
 		};
 		
 		// Set ref to location object
@@ -2176,7 +2187,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					}
 				) or {
 					// Consider all air garrisons
-					GETV(_x, "type") == GARRISON_TYPE_AIR
+					GETV(_x, "type") in [ GARRISON_TYPE_AIR, GARRISON_TYPE_ANTIAIR]
 				}
 			};
 
@@ -2882,7 +2893,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		OOP_INFO_1("  More infantry required: %1", _infMoreRequired);
 
-		private _squadTypes = [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad];
+		private _squadTypes = [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad, T_GROUP_inf_weapons_squad];
 		OOP_INFO_1("  Trying to add %1 more infantry...", _infMoreRequired);
 
 		// Try to add recruits
@@ -3016,7 +3027,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#ifdef REINFORCEMENT_TESTING
 		if(isNil "gDebugReinfProgress") then { gDebugReinfProgress = 0; };
 		private _progress = gDebugReinfProgress;
-		gDebugReinfProgress = gDebugReinfProgress + 0.1;
+		gDebugReinfProgress = (gDebugReinfProgress + 0.1) min 1;
 		systemChat format ["Reinforcing %1 now at %2 progress", _side, _progress];
 		#else
 		private _progress = CALLM0(gGameMode, "getAggression"); // 0..1
@@ -3077,6 +3088,56 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			};
 		} select {
 			!(_x isEqualTo [])
+		};
+	
+		// Locations that we can reinforce with AA units
+		private _antiAirReinfInfo = _reinfLocations	apply {
+			private _loc = GETV(_x, "actual");
+			private _AAGarrisons = CALLM2(_loc, "getGarrisons", _side, GARRISON_TYPE_ANTIAIR);
+
+			// Create AA garrison if it doesn't exist
+			private _AAGar = if(count _AAGarrisons == 0) then {
+				private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "military");
+				private _args = [GARRISON_TYPE_ANTIAIR, _side, [], "military", _templateName];
+				private _gar = NEW("Garrison", _args);
+				CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+				CALLM0(_gar, "activateCmdrThread");
+				_gar
+			} else {
+				_AAGarrisons # 0
+			};
+
+			private _nAA = 0;
+			// We want to include all garrisons that consider this location home, not just the one at the location currently
+			// (i.e. QRFs, attacks, convoys etc, that may return again) - just in case we decide to move the SPAA later
+			{
+				_nAA = _nAA + CALLM1(_x, "countUnits", [[T_VEH ARG T_VEH_SPAA]]);
+			} forEach CALLM2(_loc, "getHomeGarrisons", _side, GARRISON_TYPE_ANTIAIR);
+			private _locType = CALLM0(_loc, "getType");
+
+			private _locName = CALLM0(_loc, "getName");
+
+			private _nAASpace = CALLM1(_loc, "getCapacityAAForType", _locType);
+			private _nAAMax = ceil (_nAASpace * VEHICLE_STOCK_FN(_progressScaled, 1) * 1.3);
+
+			OOP_INFO_MSG("%1: Reinforcing %2 space %3 max %4 current num %5", [_AAGar ARG _locName ARG _nAASpace ARG _nAAMax ARG _nAA]);
+
+			[
+				_AAGar,
+				(CLAMP(_nAAMax, 0, _nAASpace) - _nAA) min 1
+			]
+		};
+
+		// Add AA
+		if (_progressScaled > 0.4 && ([_t, T_VEH, T_VEH_SPAA, 0] call t_fnc_isValid)) then {
+			{
+				_x params ["_AAGarrison", "_nAARequired"];
+				for "_i" from 0 to _nAARequired - 1 do {
+					private _type = T_VEH_SPAA;
+					private _newGroup = CALLM2(_AAGarrison, "postMethodAsync", "createAddVehGroup", [_side ARG T_VEH ARG _type ARG -1]);
+					OOP_INFO_MSG("%1: Created AA group %2", [_AAGarrison ARG _newGroup]);
+				};
+			} forEach _antiAirReinfInfo;
 		};
 
 		// Locations that we can reinforce with air units

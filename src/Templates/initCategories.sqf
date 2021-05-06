@@ -158,7 +158,7 @@ T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_APC,					 7)		[T_FACTION_Guer, T_FACTION_Milita
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_MBT,					 8)		[T_FACTION_Guer, T_FACTION_Military]; //Main Battle Tank
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_MRLS,					 9);	//Multiple Rocket Launch System
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_SPA,					10);	//Self-Propelled Artillery
-T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_SPAA,					11);	//Self-Propelled Anti-Aircraft system
+T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_SPAA,					11)	[T_FACTION_Guer, T_FACTION_Military]; //Self-Propelled Anti-Aircraft system
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_stat_HMG_high,			12);
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_stat_GMG_high,			13);
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_stat_HMG_low,			14);

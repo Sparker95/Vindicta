@@ -220,10 +220,11 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		OOP_INFO_1("CURRENT LOCATIONS: %1", T_GETV("currentLocations"));
 
 		// Check if player is trying to fly an aircraft
+		/*
 		private _veh = vehicle player;
 		if (_veh isKindOf "Air") then {
 			//pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_veh);
-			if ( /*!IS_NULL_OBJECT(_veh) &&*/ (isEngineOn _veh)) then {
+			if ( (isEngineOn _veh)) then {
 				pr _phrasesCantFly = [
 					localize "STR_PM_P_NO_PILOTING_1",
 					localize "STR_PM_P_NO_PILOTING_2",
@@ -249,6 +250,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				};
 			};
 		};
+		*/
 
 		T_SETV("prevPos", getPosASL _unit);
 	ENDMETHOD;
