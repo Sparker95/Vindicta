@@ -2893,7 +2893,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		OOP_INFO_1("  More infantry required: %1", _infMoreRequired);
 
-		private _squadTypes = [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad];
+		private _squadTypes = [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad, T_GROUP_inf_weapons_squad];
 		OOP_INFO_1("  Trying to add %1 more infantry...", _infMoreRequired);
 
 		// Try to add recruits
