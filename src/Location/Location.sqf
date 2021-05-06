@@ -1167,10 +1167,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	public STATIC_METHOD(getCapacityAAForType)
 		params [P_THISOBJECT, P_STRING("_type")];
 		switch (_type) do {
-			case LOCATION_TYPE_BASE: { 3 };
-			case LOCATION_TYPE_OUTPOST: { 1 };
-			case LOCATION_TYPE_AIRPORT: { 4 };
-			default { 2 };
+			case LOCATION_TYPE_AIRPORT: { 2 };
+			default { 0 };
 		};
 	ENDMETHOD;
 
