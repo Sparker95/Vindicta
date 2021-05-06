@@ -13,6 +13,7 @@ Initialize variables related to composition
 // Precalculate composition masks from efficiency masks
 _CALCULATE_COMP_MASK_FROM_EFF(T_comp_ground_mask, T_EFF_ground_mask)
 _CALCULATE_COMP_MASK_FROM_EFF(T_comp_air_mask, T_EFF_air_mask)
+_CALCULATE_COMP_MASK_FROM_EFF(T_comp_antiair_mask, T_EFF_antiair_mask)
 _CALCULATE_COMP_MASK_FROM_EFF(T_comp_water_mask, T_EFF_water_mask)
 _CALCULATE_COMP_MASK_FROM_EFF(T_comp_transport_mask, T_EFF_transport_mask)
 _CALCULATE_COMP_MASK_FROM_EFF(T_comp_infantry_mask, T_EFF_infantry_mask)

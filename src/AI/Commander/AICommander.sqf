@@ -2187,7 +2187,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 					}
 				) or {
 					// Consider all air garrisons
-					GETV(_x, "type") == GARRISON_TYPE_AIR
+					GETV(_x, "type") in [ GARRISON_TYPE_AIR, GARRISON_TYPE_ANTIAIR]
 				}
 			};
 
@@ -3027,7 +3027,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#ifdef REINFORCEMENT_TESTING
 		if(isNil "gDebugReinfProgress") then { gDebugReinfProgress = 0; };
 		private _progress = gDebugReinfProgress;
-		gDebugReinfProgress = gDebugReinfProgress + 0.1;
+		gDebugReinfProgress = (gDebugReinfProgress + 0.1) min 1;
 		systemChat format ["Reinforcing %1 now at %2 progress", _side, _progress];
 		#else
 		private _progress = CALLM0(gGameMode, "getAggression"); // 0..1

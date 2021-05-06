@@ -338,7 +338,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					OOP_DEBUG_MSG("Creating garrison %1 for location %2 (%3)", [_gar ARG _loc ARG _side]);
 					CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 					// CALLM1(_loc, "registerGarrison", _gar); // I think it's not needed? setLocation should register it as well
-					CALLM0(_gar, "activate");
+					CALLM2(_gar, "postMethodAsync", "activate", []);	// Must postMethodAsync this so that activate is called after setLocation
 				} forEach T_CALLM2("initGarrisons", _loc, _side);
 				// if(!IS_NULL_OBJECT(_gar)) then {
 				// 	OOP_DEBUG_MSG("Creating garrison %1 for location %2 (%3)", [_gar ARG _loc ARG _side]);
@@ -1599,6 +1599,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD(createAirGarrison)
 		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cVehHeli"), P_NUMBER("_cVehPlane")];
 
+		private _faction = "military";
 		private _templateName = CALLM2(gGameMode, "getTemplateName", _side, _faction);
 		//private _template = [_templateName] call t_fnc_getTemplate;
 
@@ -1642,6 +1643,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD(createAntiAirGarrison)
 		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cVehAA")];
 
+		private _faction = "military";
 		private _templateName = CALLM2(gGameMode, "getTemplateName", _side, _faction);
 
 		private _args = [GARRISON_TYPE_ANTIAIR, _side, [], _faction, _templateName];
