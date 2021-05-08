@@ -513,7 +513,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				};
 				_mrk setVariable ["vin_parent", _hObject];
 				_mrk setVariable ["vin_anim", _anim];
-				_mrk hideObjectGlobal true;
+				//_mrk hideObjectGlobal true;
 				_ambientAnimObjects pushBack _mrk;
 			} forEach _animMarkers;
 
