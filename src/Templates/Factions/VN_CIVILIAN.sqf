@@ -200,10 +200,7 @@ _inf set [T_INF_survivor, [
     "VN_CIVILIAN_Militant_1"
 ]];
 
-//==== Vehicles ====
-_veh = +(tDefault select T_VEH);
-_veh resize T_VEH_SIZE;
-_veh set [T_VEH_default, [
+private _civCars = [
     "vn_c_bicycle_01",          10,
     "vn_c_wheeled_m151_01",     30,
     "vn_c_wheeled_m151_02",     30,
@@ -219,9 +216,10 @@ _veh set [T_VEH_default, [
     "vn_o_wheeled_z157_01",   2,
     "vn_b_wheeled_m151_01",   4,
     "vn_b_wheeled_m151_01",   4*/
-]];
+];
+private _civCarsClasses = _civCars select {_x isEqualType "";};
 
-_veh set [T_VEH_boat_unarmed, [
+private _civBoats = [
         "C_Boat_Civil_01_F", 30,
         "vn_c_boat_01_00", 10,
         "vn_c_boat_02_00", 10,
@@ -229,8 +227,17 @@ _veh set [T_VEH_boat_unarmed, [
         "vn_c_boat_08_01", 10,
         "vn_c_boat_07_02", 10,
         "vn_c_boat_07_01", 10
-    ]
 ];
+private _civBoatsClasses = _civBoats select {_x isEqualType "";};
+
+private _civVehiclesOnlyNames = _civCarsClasses + _civBoatsClasses;
+
+//==== Vehicles ====
+_veh = [];
+_veh resize T_VEH_SIZE;
+
+_veh set [T_VEH_default, _civCars];
+_veh set [T_VEH_boat_unarmed, _civBoats];
 
 
 //==== Cargo ====
@@ -240,6 +247,16 @@ _cargo = +(tDefault select T_CARGO);
 _inv = [T_INV] call t_fnc_newCategory;
 _inv set [T_INV_items, +t_miscItems_civ_modern ];
 _inv set [T_INV_backpacks, ["vn_c_pack_01", "vn_c_pack_01_medic_pl", "vn_c_pack_01_engineer_pl", "vn_c_pack_02"]];
+
+// ==== Undercover ====
+_uc = [];
+_uc resize T_UC_SIZE;
+_uc set[T_UC_headgear, []];
+_uc set[T_UC_facewear, []];
+_uc set[T_UC_uniforms, []];
+_uc set[T_UC_backpacks, []];
+_uc set[T_UC_civVehs, +_civVehiclesOnlyNames];
+_array set [T_UC, _uc];
 
 //==== Arrays ====
 _array set [T_INF, _inf];

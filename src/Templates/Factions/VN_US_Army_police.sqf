@@ -39,7 +39,7 @@ _cargo = +(tDefault select T_CARGO);
 _group = +(tDefault select T_GROUP);
 
 //==== Arrays ====
-_array set [T_API, _api];
+_array set [T_API, {}];
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
