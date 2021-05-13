@@ -40,7 +40,7 @@ respawnTemplates[] = {"Counter"};
 
 class Header
 {
-    gameType = COOP; // I want my own game type plz :3
+    gameType = vin;
     minplayers=1;
     maxplayers=50;
 };

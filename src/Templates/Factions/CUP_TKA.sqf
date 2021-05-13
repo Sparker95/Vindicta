@@ -98,7 +98,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["rhs_D30_msv"]];
 _veh set [T_VEH_heli_light, ["CUP_O_UH1H_TKA"]];
 _veh set [T_VEH_heli_heavy, ["CUP_O_Mi17_TK"]];
 //_veh set [T_VEH_heli_cargo, [""]];
-_veh set [T_VEH_heli_attack, ["CUP_O_Mi24_D_Dynamic_TK", "CUP_O_UH1H_armed_TKA","CUP_O_UH1H_gunship_SLA_TKA"]];
+_veh set [T_VEH_heli_attack, ["CUP_O_UH1H_armed_TKA","CUP_O_UH1H_gunship_SLA_TKA"]];
 
 _veh set [T_VEH_plane_attack, ["CUP_O_Su25_Dyn_TKA", "CUP_O_Su25_Dyn_TKA"]];
 _veh set [T_VEH_plane_fighter, ["CUP_O_L39_TK"]];

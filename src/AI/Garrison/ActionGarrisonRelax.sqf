@@ -25,6 +25,7 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 
 		// Give goals to groups
 		pr _gar = GETV(T_GETV("AI"), "agent");
+		pr _garType = CALLM0(_gar, "getType");
 		pr _loc = CALLM0(_gar, "getLocation");
 		pr _buildings = if (_loc != NULL_OBJECT) then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
 		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
@@ -118,21 +119,26 @@ CLASS("ActionGarrisonRelax", "ActionGarrisonBehaviour")
 					};
 
 					case GROUP_TYPE_VEH: {
-						if (!_atLocation) then {
-							// Get into vehicles when not at a location
-							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _extraParams, _AI]; // Occupy only combat vehicles
+						if (_garType == GARRISON_TYPE_ANTIAIR) then {
+							// Anti air crew always chills in their tank
+							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _extraParams, _AI];
 						} else {
-							// Crew of vehicle groups stays around their vehicle
-							pr _vehUnits = CALLM0(_group, "getVehicleUnits");
-							pr _goalParams = if (count _vehUnits > 0) then {
-								pr _vehUnit = selectRandom _vehUnits;
-								pr _pos = CALLM0(_vehUnit, "getPos");
-								// Relax within 50 meters of the vehicle
-								[[TAG_POS, _pos], [TAG_MOVE_RADIUS, 50]]
+							if (!_atLocation) then {
+								// Get into vehicles when not at a location
+								_args = ["GoalGroupGetInVehiclesAsCrew", 0, [[TAG_ONLY_COMBAT_VEHICLES, true]] + _extraParams, _AI]; // Occupy only combat vehicles
 							} else {
-								[]
+								// Crew of vehicle groups stays around their vehicle
+								pr _vehUnits = CALLM0(_group, "getVehicleUnits");
+								pr _goalParams = if (count _vehUnits > 0) then {
+									pr _vehUnit = selectRandom _vehUnits;
+									pr _pos = CALLM0(_vehUnit, "getPos");
+									// Relax within 50 meters of the vehicle
+									[[TAG_POS, _pos], [TAG_MOVE_RADIUS, 50]]
+								} else {
+									[]
+								};
+								_args = ["GoalGroupRelax", 0, _goalParams + _extraParams, _AI]; // They will patrol next to their vehicles
 							};
-							_args = ["GoalGroupRelax", 0, _goalParams + _extraParams, _AI]; // They will patrol next to their vehicles
 						};
 					};
 				};

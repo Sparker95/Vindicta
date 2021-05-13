@@ -366,12 +366,18 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		pr _locs = CALLSM0("Location", "getAll") select { CALLM0(_x, "getType") in _locTypes; };
 		pr _nCapturedLocs = 0;
 		pr _nCapturedAirports = 0;
+		pr _commanderAI = CALLSM("AICommander", "getAICommander", [ENEMY_SIDE]);
 		{
 			pr _garrisons = CALLM1(_x, "getGarrisons", FRIENDLY_SIDE);
 			if (count _garrisons > 0) then {
-				_nCapturedLocs = _nCapturedLocs + 1;
-				if (CALLM0(_x, "getType") == LOCATION_TYPE_AIRPORT) then {
-					_nCapturedAirports = _nCapturedAirports + 1;
+				// Also check if commander knows anything about this location
+				// He might not know about player-built places like camps
+				pr _intel = CALLM1(_commanderAI, "getIntelAboutLocation", _x);
+				if (!IS_NULL_OBJECT(_intel)) then {
+					_nCapturedLocs = _nCapturedLocs + 1;
+					if (CALLM0(_x, "getType") == LOCATION_TYPE_AIRPORT) then {
+						_nCapturedAirports = _nCapturedAirports + 1;
+					};
 				};
 			};
 		} forEach _locs;

@@ -82,6 +82,7 @@ T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_backpacks,		 9);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_uniforms,		10);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_facewear,		11);
 T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_headgear,		12);
+T_DECLARE_ENTRY_OPT(T_ARSENAL, T_ARSENAL_grenades,		13);
 
 // = = = = = = = = = U N D E R C O V E R = = = = = = = = =
 
@@ -158,7 +159,7 @@ T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_APC,					 7)		[T_FACTION_Guer, T_FACTION_Milita
 T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_MBT,					 8)		[T_FACTION_Guer, T_FACTION_Military]; //Main Battle Tank
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_MRLS,					 9);	//Multiple Rocket Launch System
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_SPA,					10);	//Self-Propelled Artillery
-T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_SPAA,					11);	//Self-Propelled Anti-Aircraft system
+T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_SPAA,					11)	[T_FACTION_Guer, T_FACTION_Military]; //Self-Propelled Anti-Aircraft system
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_stat_HMG_high,			12);
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_stat_GMG_high,			13);
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_stat_HMG_low,			14);

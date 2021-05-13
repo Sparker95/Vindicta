@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tRHS_USMC (W)"];
-_array set [T_DESCRIPTION, "RHS USMC (W) units."];
-_array set [T_DISPLAY_NAME, "RHS USMC (W)"];
+_array set [T_DESCRIPTION, "RHS USMC (Woodland) units."];
+_array set [T_DISPLAY_NAME, "RHS USMC (Woodland)"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 	"rhsusf_c_troops"	// RHSUSAF
@@ -93,7 +93,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_WD"]];
 _veh set [T_VEH_heli_light, ["RHS_UH1Y_UNARMED","RHS_UH1Y","RHS_UH1Y_FFAR"]];
 _veh set [T_VEH_heli_heavy, ["rhsusf_CH53E_USMC"]];
 _veh set [T_VEH_heli_cargo, ["rhsusf_CH53e_USMC_cargo"]];
-_veh set [T_VEH_heli_attack, ["RHS_AH1Z_wd"]];
+_veh set [T_VEH_heli_attack, ["RHS_UH1Y_FFAR_d"]];
 
 _veh set [T_VEH_plane_attack, ["RHS_A10"]];
 _veh set [T_VEH_plane_fighter , ["rhsusf_f22"]];

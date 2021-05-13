@@ -113,5 +113,7 @@ CALL_COMPILE_COMMON("Templates\Loadouts\3CB_CCIVS\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TCIV\init.sqf");
 // 3CB Takistan Army
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TNA_B\init.sqf");
+//VN_CIVILIAN
+CALL_COMPILE_COMMON("Templates\Loadouts\VN_CIVILIAN\init.sqf");
 // RHS USAF
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_USAF\RHS_USAF_UCP\init.sqf");

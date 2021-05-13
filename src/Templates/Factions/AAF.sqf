@@ -76,7 +76,7 @@ _veh set [T_VEH_APC, ["I_APC_Wheeled_03_cannon_F_1"]];
 _veh set [T_VEH_MBT, ["I_MBT_03_cannon_F_1", "I_MBT_03_cannon_F_2", "I_MBT_03_cannon_F_3", "I_MBT_03_cannon_F_4"]];
 _veh set [T_VEH_MRLS, ["I_Truck_02_MRL_F"]];
 _veh set [T_VEH_SPA, ["I_Truck_02_MRL_F"]];
-_veh set [T_VEH_SPAA, ["I_LT_01_AA_F"]];
+_veh set [T_VEH_SPAA, ["B_APC_Tracked_01_AA_F"]]; // Like NATO "I_LT_01_AA_F"
 
 _veh set [T_VEH_stat_HMG_high, ["I_E_HMG_01_high_F", 1,"I_HMG_02_high_F", 4]];
 _veh set [T_VEH_stat_GMG_high, ["I_GMG_01_high_F"]];

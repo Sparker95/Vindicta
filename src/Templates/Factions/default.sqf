@@ -141,6 +141,7 @@ _group set [T_GROUP_inf_rifle_squad, [
 		T_INF_LMG,
 		T_INF_GL,
 		T_INF_LAT,
+		T_INF_AA,
 		T_INF_TL,
 		T_INF_GL,
 		T_INF_marksman,
@@ -170,7 +171,8 @@ _group set [T_GROUP_inf_weapons_squad, [
 		T_INF_TL,
 		T_INF_AT,
 		T_INF_ammo,
-		T_INF_LAT
+		T_INF_LAT,
+		T_INF_AA
 	] apply { [T_INF, _x] }
 ]];
 _group set [T_GROUP_inf_sniper_team, [

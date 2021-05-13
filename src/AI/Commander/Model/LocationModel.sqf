@@ -109,7 +109,7 @@ CLASS("LocationModel", "ModelBase")
 
 		private _world = T_GETV("world");
 
-		private _garrisonActuals = CALLM2(_actual, "getGarrisons", 0, [GARRISON_TYPE_GENERAL ARG GARRISON_TYPE_AIR]);
+		private _garrisonActuals = CALLM2(_actual, "getGarrisons", 0, [GARRISON_TYPE_GENERAL ARG GARRISON_TYPE_AIR ARG GARRISON_TYPE_ANTIAIR]);
 		private _garrisonIds = [];
 		{
 			private _garrison = CALLM1(_world, "findGarrisonByActual", _x);

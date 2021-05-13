@@ -1145,6 +1145,7 @@ CLASS("BuildUI", "")
 				pr _objConfigClassNameStr = configName _objClass; // "Tent1" and such
 				pr _className = getText (_objClass >> "className");
 				pr _buildRes = getNumber (_objClass >> "buildResource");
+				pr _register = [false, true] select (getNumber (_objClass >> "registerObject"));
 
 				if (T_GETV("resourceSource") == __RESOURCE_SOURCE_INVENTORY) then {
 					// Check player's resources
@@ -1152,13 +1153,13 @@ CLASS("BuildUI", "")
 					if (_playerBuildRes >= _buildRes) then {
 						CALLSM2("Unit", "removeInfantryBuildResources", player, _buildRes);
 						_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
-						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, false];
+						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, false, _register];
 						// Send the request to server
 						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 					} else {
 						// God mode
 						if(!isDamageAllowed player) then {
-							pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, false];
+							pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, false, _register];
 							// Send the request to server
 							CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 						} else {
@@ -1169,7 +1170,7 @@ CLASS("BuildUI", "")
 					
 				} else {
 					// We are building from the location garrison's resources
-					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, true];
+					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _vecDir, _currPos, true, _register];
 
 					// Send the request to server
 					CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
