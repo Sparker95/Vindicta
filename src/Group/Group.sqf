@@ -834,12 +834,13 @@ CLASS("Group", ["MessageReceiverEx" ARG "GOAP_Agent"]);
 				if (count _vehUnits > count _posAndDir) then {
 					OOP_WARNING_0("Not enough positions for all vehicles!");
 				};
+				pr _posSearch = if (count _startPos > 0) then {_startPos;} else {(_posAndDir#0) select [0,3]};
 				{
 					CALLM0(_x, "getMainData") params ["_cat", "_subcat", "_className"];
 					pr _posAndDir = if(_cat == T_VEH && _subcat in T_VEH_ground) then {
-						CALLSM3("Location", "findSafePosOnRoad", _pos, _className, 300)
+						CALLSM3("Location", "findSafePosOnRoad", _posSearch, _className, 300)
 					} else {
-						CALLSM3("Location", "findSafePos", _pos, _className, 300)
+						CALLSM3("Location", "findSafePos", _posSearch, _className, 300)
 					};
 					CALLM(_x, "spawn", _posAndDir);
 				} forEach _vehUnits;
