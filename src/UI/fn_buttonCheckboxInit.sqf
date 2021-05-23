@@ -29,7 +29,7 @@ OOP_INFO_2("Created dummy button: %1 %2", _ctrlButton, _buttonClassName);
 [_ctrlButton, false, false] call _fnc_setState;
 
 // test
-_ctrlButton ctrlSetBackgroundColor [1, 0, 0, 0.4];
+//_ctrlButton ctrlSetBackgroundColor [1, 0, 0, 0.4];
 
 // Link the controls together
 _ctrlButton _setv ["_static", _ctrlStatic];
