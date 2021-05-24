@@ -29,6 +29,11 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 		pr _text = GETSV("InGameMenuTabNotes", "text");
 		pr _ctrl = T_CALLM1("findControl", "TAB_NOTES_EDIT");
 		_ctrl ctrlSetText _text;
+		pr _textHeight = ctrlTextHeight _ctrl;
+		#ifndef _SQF_VM
+		_ctrl ctrlSetPositionH ((1.0*_textHeight) + 0.25);
+		_ctrl ctrlCommit 0;
+		#endif
 
 	ENDMETHOD;
 
