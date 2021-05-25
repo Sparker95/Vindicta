@@ -865,12 +865,31 @@ CLASS("ClientMapUI", "")
 				((findDisplay 12) displayCtrl _x) ctrlSetTooltip localize "STR_CMUI_NO_PERMISSION_TO_GARRISON";
 			} forEach [IDC_GSELECT_BUTTON_SPLIT, IDC_GSELECT_BUTTON_MERGE, IDC_GSELECT_BUTTON_GIVE_ORDER, IDC_GSELECT_BUTTON_CANCEL_ORDER];
 		} else {
+			private _garRecord = T_GETV("garRecordCurrent");
+			// Check if we can give orders to this garrison
+			// Commanding should be disabled if garrison is attached to a location
+			pr _canCommand = false;
+			if (!IS_NULL_OBJECT(_garRecord)) then {
+				pr _loc = GETV(_garRecord, "location");
+				_canCommand = IS_NULL_OBJECT(_loc);
+			};
+
+			// Enable the give order button
+			if (_canCommand) then {
+				((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_GIVE_ORDER) ctrlEnable true;
+				((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_GIVE_ORDER) ctrlSetTooltip "";
+			} else {
+				((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_GIVE_ORDER) ctrlEnable false;
+				((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_GIVE_ORDER) ctrlSetTooltip (localize "STR_CMUI_CANT_COMMAND_ATTACHED_GARRISON");
+			};
+
+			// Enable other buttons
 			((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlEnable false;
 			((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlSetTooltip localize "STR_CMUI_NYI";
 			{
 				((findDisplay 12) displayCtrl _x) ctrlEnable true;
 				((findDisplay 12) displayCtrl _x) ctrlSetTooltip "";
-			} forEach [IDC_GSELECT_BUTTON_SPLIT, IDC_GSELECT_BUTTON_GIVE_ORDER, IDC_GSELECT_BUTTON_CANCEL_ORDER];
+			} forEach [IDC_GSELECT_BUTTON_SPLIT, IDC_GSELECT_BUTTON_CANCEL_ORDER];
 		};
 
 		T_CALLM0("updateHintTextFromContext");
