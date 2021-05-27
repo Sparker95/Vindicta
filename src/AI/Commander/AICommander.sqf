@@ -765,7 +765,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
 
 		pr _thisSide = GETV(_intel, "side");
-		pr _thisAI = CALLSM1("AICommander", "getAICommander", _side);
+		pr _thisAI = CALLSM1("AICommander", "getAICommander", _thisSide);
 		pr _radioKey = CALLM1(_thisAI, "getRadioKey", _pos); // Enemies must have the radio key to intercept this data
 		{
 			pr _ai = CALLSM1("AICommander", "getAICommander", _x);
