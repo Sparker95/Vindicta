@@ -2910,16 +2910,23 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _nGroups = floor (_availRecruits / _countInfInGroup);
 
 			for "_groupID" from 0 to (_nGroups - 1) do {
-				// Create a group
-				private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
-				CALLM2(_group, "createUnitsFromTemplate", _t, _subcatID);
-				CALLM2(_garActual, "postMethodAsync", "addGroup", [_group]);
-				OOP_INFO_1("   Added group: %1", _group);
+				if (_nInf < _locMaxInf) then {
+					// Create a group
+					private _group = NEW("Group", [_side ARG GROUP_TYPE_INF]);
+					CALLM2(_group, "createUnitsFromTemplate", _t, _subcatID);
+					CALLM2(_garActual, "postMethodAsync", "addGroup", [_group]);
+					OOP_INFO_1("   Added group: %1", _group);
 
-				// Decrease the counter
-				_infMoreRequired = _infMoreRequired - _countInfInGroup;
+					// Decrease the counter
+					_infMoreRequired = _infMoreRequired - _countInfInGroup;
 
-				OOP_INFO_4("  Added group %1 of %2 units to %3 at %4", _group, _countInfInGroup, _garActual, CALLM0(_locActual, "getName"));
+					_nInf = _nInf + _countInfInGroup;
+
+					OOP_INFO_4("  Added group %1 of %2 units to %3 at %4", _group, _countInfInGroup, _garActual, CALLM0(_locActual, "getName"));
+				} else {
+					OOP_INFO_4("  Did not add group, reached max infantry capacity at this location", _group, _countInfInGroup, _garActual, CALLM0(_locActual, "getName"));
+					break;
+				};
 			};
 
 			_reinfData deleteAt 0;
