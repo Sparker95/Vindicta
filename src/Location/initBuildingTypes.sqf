@@ -616,7 +616,23 @@ location_bt_police =
     "Land_rhspkl_hut_05",
     "Land_rhspkl_hut_06",
     "Land_rhspkl_hut_07",
-    "Land_rhspkl_hut_08"
+    "Land_rhspkl_hut_08",
+
+	// VN DLC
+	"Land_vn_shop_town_01_f",
+	"Land_vn_shop_town_03_f",
+	"Land_vn_garageshelter_01_f",
+	"Land_vn_slum_01_f",
+	"Land_vn_slum_02_f",
+	"Land_vn_slum_03_f",
+	"Land_vn_house_c_12_ep1",
+	"Land_vn_hut_07",
+	"Land_vn_hut_06",
+	"Land_vn_hut_05",
+	"Land_vn_hut_02",
+	"Land_vn_hut_01",
+	"Land_vn_hut_village_01",
+	"Land_vn_hut_village_02"
 ];
 
 location_decorations_police =
