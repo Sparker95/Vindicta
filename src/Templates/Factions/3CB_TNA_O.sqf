@@ -95,7 +95,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["UK3CB_TKA_O_D30"]];
 _veh set [T_VEH_heli_light, ["UK3CB_TKA_O_UH1H"]];
 _veh set [T_VEH_heli_heavy, ["UK3CB_TKA_O_Mi8AMTSh"]];
 _veh set [T_VEH_heli_cargo, ["UK3CB_TKA_O_UH1H", "UK3CB_TKA_O_Mi8"]];
-_veh set [T_VEH_heli_attack, ["UK3CB_TKA_O_Mi_24P", "UK3CB_TKA_O_Mi_24V"]];
+_veh set [T_VEH_heli_attack, ["UK3CB_TKA_O_Mi8AMTSh", "UK3CB_TKA_O_UH1H_GUNSHIP", "UK3CB_TKA_O_UH1H_M240"]];
 
 //_veh set [T_VEH_plane_attack, [""]];
 //_veh set [T_VEH_plane_fighter, [""]];

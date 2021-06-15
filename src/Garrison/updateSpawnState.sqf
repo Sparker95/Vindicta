@@ -10,7 +10,9 @@ ASP_SCOPE_START(Garrison_fnc_updateSpawnState);
 
 ASSERT_THREAD(_thisObject);
 
-if !(T_GETV("type") in GARRISON_TYPES_AUTOSPAWN) exitWith {
+pr _type = T_GETV("type");
+
+if !(_type in GARRISON_TYPES_AUTOSPAWN) exitWith {
 	// Not an autospawning garrison
 };
 
@@ -29,13 +31,26 @@ pr _hysteresis = [0, 100] select _spawned; // If we are currently spawned, we ch
 pr _side = T_GETV("side");
 pr _pos = locationPosition T_GETV("helperObject");
 
+// Resolve the spawn distance depending on type
+pr _minDistToPlayer = 0;
+pr _minDistToAi = 0;
+
+if (_type == GARRISON_TYPE_ANTIAIR) then {
+	// Anti-air garrison is very special
+	_minDistToPlayer = 10000;	// These are hardcoded for now
+	_minDistToAi = 4000;
+} else {
+	_minDistToPlayer = vin_spawnDist_garrisonToPlayer;
+	_minDistToAi = vin_spawnDist_garrisonToAI;
+};
+
 // Check if there are any enemy garrisons nearby
 pr _nearEnemyGarrisons = false;
 pr _nearPlayers = false;
 pr _nearEnemyAI = false;
 
 if (_side != CIVILIAN) then {	// Ignore garrisons for civilian garrisons
-	pr _nearGarHelpers = nearestLocations  [_pos, ["vin_garrison"], vin_spawnDist_garrisonToAI + _hysteresis];
+	pr _nearGarHelpers = nearestLocations  [_pos, ["vin_garrison"], _minDistToAi + _hysteresis];
 	pr _ignoreSides = [_side, CIVILIAN];
 	pr _index = _nearGarHelpers findIf {
 		pr _gar = GET_GARRISON_FROM_HELPER_OBJECT(_x);
@@ -49,7 +64,7 @@ if (_side != CIVILIAN) then {	// Ignore garrisons for civilian garrisons
 
 // Check if there are any players nearby
 if (!_nearEnemyGarrisons) then {
-	pr _distanceCheck = vin_spawnDist_garrisonToPlayer + _hysteresis;
+	pr _distanceCheck = _minDistToPlayer + _hysteresis;
 	pr _index = allPlayers findIf {
 		(_x distance2D _pos) < _distanceCheck;
 	};
@@ -58,7 +73,7 @@ if (!_nearEnemyGarrisons) then {
 
 // Check if there are enemy AIs nearby
 if (!_nearEnemyGarrisons && !_nearPlayers) then {
-	pr _distanceCheck = vin_spawnDist_garrisonToAI + _hysteresis;
+	pr _distanceCheck = _minDistToAi + _hysteresis;
 	pr _index = CALLM(gLUAP, "getUnitArray", [_side]) findIf {(_x distance2D _pos) < _distanceCheck};
 	_nearEnemyAI = _index != -1;
 };

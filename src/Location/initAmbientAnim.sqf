@@ -10,8 +10,16 @@ gObjectAnimMarkers = [false] call CBA_fnc_createNamespace;
 // Add animation markers to hashmap
 {
 	private _modelPath = getText (configFile >> "cfgVehicles" >> (_x#0) >> "model");
-	private _modelPathSplit = _modelPath splitString "\";
-	private _modelName = _modelPathSplit select (count _modelPathSplit - 1);
-	gObjectAnimMarkers setVariable [_modelName, _x];
+	if (_modelPath != "") then {	// Check if this vehicle class exists, because it might come from some DLC
+		private _modelPathSplit = _modelPath splitString "\";
+		private _modelName = _modelPathSplit select (count _modelPathSplit - 1);
+
+		// Fix for objects which don't have a ".p3d" at the end of their model name in config
+		if (! (".p3d" in _modelName)) then {
+			_modelName = _modelName + ".p3d";
+		};
+
+		gObjectAnimMarkers setVariable [_modelName, _x];
+	};
 } forEach _animMarkers;
 

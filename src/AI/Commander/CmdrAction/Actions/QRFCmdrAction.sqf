@@ -116,13 +116,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _srcGarrComp = GETV(_srcGarr, "composition");
 		private _srcType = GETV(_srcGarr, "type");
 
-		#ifdef OOP_INFO
-		if (_srcType == GARRISON_TYPE_AIR) then {
-			OOP_INFO_0("  Garrison type: air");
-		} else {
-			OOP_INFO_0("  Garrison type: ground");
-		};
-		#endif
+		OOP_INFO_1("  Garrison type: %1", _srcType);
 		
 		ASSERT_OBJECT(_srcGarr);
 
@@ -183,6 +177,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			};
 
 			// Ground counterattack must calculate distance from simplified terrain grid
+			case GARRISON_TYPE_ANTIAIR;
 			case GARRISON_TYPE_GENERAL: {
 				private _distanceOverGround = CALLM2(gStrategicNavGrid, "calculateGroundDistance", _srcGarrPos, _tgtClusterPos);
 				_distanceOverGround;
@@ -197,6 +192,21 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
 			_needTransport = true;
+		};
+
+		// If this is an AA garrison, it must only fight against pure air targets
+		// Only some infantry is allowed to compensate for crew of the helicopter
+		if (_srcType == GARRISON_TYPE_ANTIAIR &&
+			{_enemyEff#T_EFF_medium>0 || _enemyEff#T_EFF_armor>0}) exitWith {
+			OOP_DEBUG_MSG("  Target cluster has non-air units, src garrison is anti-air", []);
+			T_CALLM1("setScore", ZERO_SCORE);
+		};
+
+		// If this is an AA garrison, ensure there are some air targets
+		if (_srcType == GARRISON_TYPE_ANTIAIR &&
+			{_enemyEff#T_EFF_air == 0}) exitWith {
+			OOP_DEBUG_MSG("  Target cluster no air units, src garrison is anti-air", []);
+			T_CALLM1("setScore", ZERO_SCORE);
 		};
 
 		// Try to allocate units
@@ -217,6 +227,18 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			FIX_LINE_NUMBERS()
 			case GARRISON_TYPE_AIR: {
 				private _payloadWhitelistMask = T_comp_air_mask;
+				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+				private _transportBlacklistMask = [];
+				_allocArgs = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+				CALLSM("GarrisonModel", "allocateUnits", _allocArgs)
+			};
+
+			FIX_LINE_NUMBERS()
+			case GARRISON_TYPE_ANTIAIR: {
+				private _payloadWhitelistMask = T_comp_antiair_mask;
 				private _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
 				private _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 				private _transportBlacklistMask = [];
@@ -246,7 +268,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		};
 		*/
 		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
-			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
+			OOP_DEBUG_1("  Remaining crew requirement not satisfied: %1", _effRemaining);
 			T_CALLM1("setScore", ZERO_SCORE);
 		};
 		

@@ -133,11 +133,29 @@
             "mapName": "nam2",
             "briefingName": "Vindicta - Nam2"
         },
+		{
+            "folder": "Vindicta.eden",
+            "CfgMissionsEntry": "vindicta_eden",
+            "mapName": "eden",
+            "briefingName": "Vindicta - Everon"
+        },
         {
             "folder": "Vindicta.psyfx_pht",
             "CfgMissionsEntry": "vindicta_psyfx_pht",
             "mapName": "psyfx_pht",
             "briefingName": "Vindicta - Phuoc Tuy"
+        },
+        {
+            "folder": "Vindicta.lingor3",
+            "CfgMissionsEntry": "vindicta_lingor3",
+            "mapName": "lingor3",
+            "briefingName": "Vindicta - Lingor Island"
+        },
+        {
+            "folder": "Vindicta.cam_lao_nam",
+            "CfgMissionsEntry": "vindicta_cam_lao_nam",
+            "mapName": "cam_lao_nam",
+            "briefingName": "Vindicta - Cam Lao Nam"
         }
     ]
 }

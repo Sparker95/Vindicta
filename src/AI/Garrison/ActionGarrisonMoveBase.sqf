@@ -368,7 +368,23 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 
 		private _gar = T_GETV("gar");
 
-		if (CALLM0(_gar, "getType") != GARRISON_TYPE_AIR) then {
+		if (CALLM0(_gar, "getType") == GARRISON_TYPE_AIR) then {
+
+			private _garPos = CALLM0(_gar, "getPos");
+			{
+				private _group = _x;
+				if(CALLM0(_group, "isAirGroup")) then {
+					CALLM1(_x, "spawnInAir", _garPos);
+				} else {
+					CALLM2(_x, "spawnVehiclesOnRoad", [], _garPos);
+				};
+
+			} forEach CALLM0(_gar, "getGroups");
+
+			// Spawn single units
+			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
+			true
+		} else {
 			// Perform standard spawning if we are a non air garrison, and there is not a valid virtual route
 			// We need a valid virtual route to generate road positions, other wise we can't do any particlarly good spawning for normal garrisons
 			private _vr = T_GETV("virtualRoute");
@@ -411,22 +427,6 @@ CLASS("ActionGarrisonMoveBase", "ActionGarrison")
 					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
 				};
 			} forEach _groups;
-
-			// Spawn single units
-			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
-			true
-		} else {
-			private _garPos = CALLM0(_gar, "getPos");
-
-			{
-				private _group = _x;
-				if(CALLM0(_group, "isAirGroup")) then {
-					CALLM1(_x, "spawnInAir", _garPos);
-				} else {
-					CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
-				};
-
-			} forEach CALLM0(_gar, "getGroups");
 
 			// Spawn single units
 			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);

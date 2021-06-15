@@ -87,7 +87,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["O_Mortar_01_F"]];
 _veh set [T_VEH_heli_light, ["O_Heli_Light_02_unarmed_F", "I_Heli_light_03_unarmed_F"]];
 _veh set [T_VEH_heli_heavy, ["O_Heli_Transport_04_covered_F", "I_Heli_Transport_02_F"]];
 _veh set [T_VEH_heli_cargo, ["O_Heli_Transport_04_box_F", "I_Heli_Transport_02_F"]];
-_veh set [T_VEH_heli_attack, ["O_Heli_Light_02_dynamicLoadout_F", "O_Heli_Attack_02_dynamicLoadout_F", "I_Heli_light_03_dynamicLoadout_F"]];
+_veh set [T_VEH_heli_attack, ["O_Heli_Light_02_dynamicLoadout_F", "I_Heli_light_03_dynamicLoadout_F"]];
 
 //_veh set [T_VEH_plane_attack, [""]];
 //_veh set [T_VEH_plane_fighter, [""]];

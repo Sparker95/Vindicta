@@ -1161,6 +1161,18 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	ENDMETHOD;
 
 	/*
+	Method: getCapacityAAForType
+	Returns absolute maximum AA capacity for given location type.
+	*/
+	public STATIC_METHOD(getCapacityAAForType)
+		params [P_THISOBJECT, P_STRING("_type")];
+		switch (_type) do {
+			case LOCATION_TYPE_AIRPORT: { 2 };
+			default { 0 };
+		};
+	ENDMETHOD;
+
+	/*
 	Method: getCapacityHeli
 	Returns helicopter capacity of this location -- how many helicopters can be stationed here
 
@@ -1980,7 +1992,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_object addAction [localize "STR_LOC_REPAIR_VEHICLES", // title
 			{
 				_nearVehicles = [];
-				_nearVehicles = position (_this select 0) nearObjects ["LandVehicle", 14];
+				_nearVehicles = position (_this select 0) nearObjects ["AllVehicles", 14];
 				if (count _nearVehicles > 0) then{
 					private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_REPAIRING_VEHICLES", ""];
 					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
