@@ -1992,7 +1992,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_object addAction [localize "STR_LOC_REPAIR_VEHICLES", // title
 			{
 				_nearVehicles = [];
-				_nearVehicles = position (_this select 0) nearObjects ["LandVehicle", 14];
+				_nearVehicles = position (_this select 0) nearObjects ["AllVehicles", 14];
 				if (count _nearVehicles > 0) then{
 					private _args = [localize "STR_LOC_REPAIR", localize "STR_LOC_REPAIR_REPAIRING_VEHICLES", ""];
 					REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createHint", _args, _this select 1, NO_JIP);
