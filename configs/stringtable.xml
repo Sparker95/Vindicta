@@ -4406,6 +4406,10 @@
 				<Chinesesimp>取消当前驻地命令。</Chinesesimp>
 				<Russian>Отмена действующего приказа гарнизона.</Russian>
 			</Key>
+			<Key ID="STR_CMUI_CANT_COMMAND_ATTACHED_GARRISON">
+				<Original>You must split garrison first.</Original>\
+				<Russian>Сначала нужно разделить гарнизон.</Russian>
+			</Key>
 			<Key ID="STR_CMUI_NYI_HINT">
 				<Original>Not yet implemented...</Original>
 				<Czech>Dosud není načteno</Czech>

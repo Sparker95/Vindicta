@@ -23,6 +23,7 @@ class TAB_NOTES : MUI_GROUP_ABS
 			colorText[] = MUIC_WHITE;
 			font = "EtelkaMonospacePro";
 			text = $STR_NOTES_HINT;
+			maxChars = 99999999;
 		};		
 	};
 	

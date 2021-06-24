@@ -397,9 +397,7 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 		// Custom air spawning
 		private _gar = T_GETV("gar");
 
-		if (CALLM0(_gar, "getType") != GARRISON_TYPE_AIR) then {
-			false
-		} else {
+		if (CALLM0(_gar, "getType") == GARRISON_TYPE_AIR) then {
 			private _garPos = CALLM0(_gar, "getPos");
 
 			{
@@ -415,6 +413,8 @@ CLASS("ActionGarrisonClearArea", "ActionGarrisonBehaviour")
 			// Spawn single units
 			CALLSM1("ActionGarrisonMoveBase", "spawnSingleUnits", _gar);
 			true
+		} else {
+			false
 		};
 	ENDMETHOD;
 ENDCLASS;

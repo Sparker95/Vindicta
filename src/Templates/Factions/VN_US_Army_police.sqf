@@ -38,8 +38,13 @@ _cargo = +(tDefault select T_CARGO);
 //==== Groups ====
 _group = +(tDefault select T_GROUP);
 
+//==== API ====
+_api = []; _api resize T_API_SIZE;
+_api set [T_API_SIZE-1, nil]; 										//Make an array full of nil
+_api set [T_API_fnc_VEH_siren, {}];
+
 //==== Arrays ====
-_array set [T_API, {}];
+_array set [T_API, _api];
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
