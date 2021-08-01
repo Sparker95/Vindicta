@@ -321,8 +321,9 @@ switch _mode do {
 			_ctrlTab ctrlSetBackgroundColor _color;
 			_ctrlTab ctrlSetForegroundColor _color;
 		} forEach jnva_loadout;
-	};
 */
+	};
+
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	case "TabSelect": {
