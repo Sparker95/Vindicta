@@ -306,6 +306,7 @@ switch _mode do {
 	///////////////////////////////////////////////////////////////////////////////////////////
 	case "ColorTabs":{
 		params["_display"];
+/*		
 		{
 			_ctrlTab = _display displayctrl (IDC_RSCDISPLAYARSENAL_TAB + _forEachIndex);
 
@@ -321,6 +322,7 @@ switch _mode do {
 			_ctrlTab ctrlSetForegroundColor _color;
 		} forEach jnva_loadout;
 	};
+*/
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	case "TabSelect": {
