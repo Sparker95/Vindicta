@@ -156,12 +156,6 @@
             "CfgMissionsEntry": "vindicta_cam_lao_nam",
             "mapName": "cam_lao_nam",
             "briefingName": "Vindicta - Cam Lao Nam"
-        },
-        {
-            "folder": "Vindicta.Bornholm",
-            "CfgMissionsEntry": "vindicta_bornholm",
-            "mapName": "Bornholm",
-            "briefingName": "Vindicta - Bornholm"
         }
     ]
 }
