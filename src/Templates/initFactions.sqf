@@ -74,6 +74,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     [_x] call t_fnc_initializeTemplateFromFile;
 } forEach [
     "Templates\Factions\CIVILIAN.sqf", 
+    "Templates\Factions\CIVILIAN_SMALL_ARMS.sqf", 
     "Templates\Factions\CIVILIAN_RHS.sqf",
     "Templates\Factions\GM_CIVILIAN.sqf", 
     "Templates\Factions\CUP_RUS_CIVILIAN.sqf",
