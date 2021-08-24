@@ -131,4 +131,7 @@ CALL_COMPILE_COMMON("GarrisonServer\initClasses.sqf");
 // Initialize dialogue
 CALL_COMPILE_COMMON("Dialogue\initClasses.sqf");
 
+// Initialize weather
+CALL_COMPILE_COMMON("Weather\initWeather.sqf");
+
 diag_log "[initModules] Done!";

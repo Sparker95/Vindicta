@@ -3,7 +3,6 @@
 #include "common.h"
 
 // Most normal init code is handled in GameMode init functions.
-
 // Code which adds all objects to be edited by zeus
 if (isServer) then {  
     [] spawn { 
