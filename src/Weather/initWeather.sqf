@@ -10,7 +10,7 @@ if isServer then {
 
 		// Random Weather
 			while {true} do {
-				private _randomTime = (random 1800 + 900);
+				private _randomTime = (random 3600 + 1200);
 				_randomTime setOvercast random 1;
 				sleep (_randomTime + 300);
 		};
