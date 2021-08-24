@@ -882,6 +882,8 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Game
 		["vin_server_gameSpeed",		"SLIDER",	[LOC("Game_Speed"),				LOC("Game_Speed_Tooltip")],				[_section, LOC("Game")],		[0.1, 5, 1, 1],	true] call CBA_fnc_addSetting;
 
+		["vin_server_weather",		"CHECKBOX",	[LOC("Weather"),				LOC("Weather_Tooltip")],				[_section, LOC("Game")],		true,	true] call CBA_fnc_addSetting;
+
 		#undef LOC_SCOPE
 	ENDMETHOD;
 

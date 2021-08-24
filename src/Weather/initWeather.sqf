@@ -1,6 +1,6 @@
 // Code for Random weather, Credits to Sil Carmikas @ https://forums.bohemia.net/forums/topic/202392-sils-simple-random-weather-script/
 // Edited by Jasperdoit
-if isServer then {
+if (isServer && vin_server_weather) then {
 	[] spawn {
 
 		//Initial weather vodoo
