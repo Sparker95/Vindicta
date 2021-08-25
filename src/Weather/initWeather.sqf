@@ -1,8 +1,8 @@
 // Code for Random weather, Credits to Sil Carmikas @ https://forums.bohemia.net/forums/topic/202392-sils-simple-random-weather-script/
 // Edited by Jasperdoit
-
-if isServer then {
-	[] spawn {
+gWeather_Script = [] spawn {
+	if isServer then {
+	
 
 		private _weather = [
 			[

@@ -881,7 +881,12 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Game
 		["vin_server_gameSpeed",		"SLIDER",	[LOC("Game_Speed"),				LOC("Game_Speed_Tooltip")],				[_section, LOC("Game")],		[0.1, 5, 1, 1],	true] call CBA_fnc_addSetting;
-		["vin_server_weather_toggle",	"LIST",		[LOC("Weather_Toggle"),			LOC("Weather_Toggle_Tooltip")],			[_section, LOC("Game")],		[[0, 1, 2], [LOC("Weather_Toggle_Disabled"), LOC("Weather_Toggle_Clouds"), LOC("Weather_Toggle_Enabled")], 0],	true] call CBA_fnc_addSetting;
+		["vin_server_weather_toggle",	"LIST",		[LOC("Weather_Toggle"),			LOC("Weather_Toggle_Tooltip")],			[_section, LOC("Game")],		[[0, 1, 2], [LOC("Weather_Toggle_Disabled"), LOC("Weather_Toggle_Clouds"), LOC("Weather_Toggle_Enabled")], 0],	true,
+		{
+			terminate gWeather_Script;
+			CALL_COMPILE_COMMON("Weather\initWeather.sqf");
+		}	
+		] call CBA_fnc_addSetting;
 
 		#undef LOC_SCOPE
 	ENDMETHOD;
