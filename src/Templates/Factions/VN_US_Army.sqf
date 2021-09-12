@@ -65,10 +65,10 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["vn_b_wheeled_m151_01"]];
 
 _veh set [T_VEH_car_unarmed, ["vn_b_wheeled_m151_01", "vn_b_wheeled_m151_02"]];
-_veh set [T_VEH_car_armed, ["vn_b_wheeled_m151_mg_02", "vn_b_wheeled_m151_mg_04", "vn_b_wheeled_m151_mg_03"]];
+_veh set [T_VEH_car_armed, ["vn_b_wheeled_m151_mg_02", "vn_b_wheeled_m151_mg_04", "vn_b_wheeled_m151_mg_03", "vn_b_wheeled_m151_mg_05"]];
 
 //_veh set [T_VEH_MRAP_unarmed, [""]];
-_veh set [T_VEH_MRAP_HMG, ["vn_b_wheeled_m54_mg_01"]];
+_veh set [T_VEH_MRAP_HMG, ["vn_b_wheeled_m54_mg_01", "vn_b_wheeled_m54_mg_03"]];
 //_veh set [T_VEH_MRAP_GMG, [""]];
 
 //_veh set [T_VEH_IFV, [""]];
@@ -82,7 +82,7 @@ _veh set [T_VEH_stat_HMG_high, ["vn_b_army_static_m1919a4_high", "vn_b_sf_static
 //_veh set [T_VEH_stat_GMG_high, [""]];
 _veh set [T_VEH_stat_HMG_low, ["vn_b_army_static_m1919a4_low", "vn_b_army_static_m2_low", "vn_b_army_static_m60_low"]];
 //_veh set [T_VEH_stat_GMG_low, [""]];
-_veh set [T_VEH_stat_AA, ["vn_b_army_static_m45"]];
+_veh set [T_VEH_stat_AA, ["vn_b_army_static_m45", "vn_b_navy_static_l60mk3", "vn_b_navy_static_l70mk2"]];
 _veh set [T_VEH_stat_AT, ["vn_b_sf_static_tow"]];
 _veh set [T_VEH_stat_mortar_light, ["vn_b_army_static_mortar_m2", "vn_b_sf_static_mortar_m29"]];
 _veh set [T_VEH_stat_mortar_heavy, ["vn_b_sf_static_m101_01", "vn_b_army_static_m101_02"]];
