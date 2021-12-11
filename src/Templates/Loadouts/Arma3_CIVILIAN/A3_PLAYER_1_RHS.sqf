@@ -110,4 +110,4 @@ this addItemToUniform "ACE_tourniquet";
 this addItemToUniform "ACE_Flashlight_Maglite_ML300L";
 
 //====Identity====
-[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+[this, selectRandom gVanillaFaces] call BIS_fnc_setIdentity;

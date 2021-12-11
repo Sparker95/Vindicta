@@ -143,4 +143,4 @@ this addItemToUniform "ACE_packingBandage";
 this addItemToUniform "ACE_quikclot";*/
 
 //====Identity====
-[this, "", "ace_novoice"] call BIS_fnc_setIdentity;
+[this, ""] call BIS_fnc_setIdentity;

@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+[this, selectRandom gVanillaFaces] call BIS_fnc_setIdentity;
 
 private _uniforms = [
 	"UK3CB_CHC_C_U_HIKER_01",
