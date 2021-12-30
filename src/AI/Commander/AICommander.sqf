@@ -2241,6 +2241,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _srcGarrisons = CALLM0(_worldNow, "getAliveGarrisons") select { 
 			// Must be on our side and not involved in another action
 			GETV(_x, "side") == _side and 
+			{
+				// General garrison (not anti-air or air)
+				CALLM0(_x, "getType") == GARRISON_TYPE_GENERAL
+			} and
 			{ !CALLM0(_x, "isBusy") } and
 			{
 				// Must have at least a minimum strength of twice min efficiency
@@ -2253,6 +2257,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _tgtGarrisons = CALLM0(_worldFuture, "getAliveGarrisons") select { 
 			// Must be on our side
 			GETV(_x, "side") == _side and 
+			{
+				// General garrison (not anti-air or air)
+				CALLM0(_x, "getType") == GARRISON_TYPE_GENERAL
+			} and
 			{
 				// Not involved in another reinforce action
 				private _action = CALLM0(_x, "getAction");

@@ -37,8 +37,8 @@ pr _minDistToAi = 0;
 
 if (_type == GARRISON_TYPE_ANTIAIR) then {
 	// Anti-air garrison is very special
-	_minDistToPlayer = 10000;	// These are hardcoded for now
-	_minDistToAi = 4000;
+	_minDistToPlayer = 5000;	// Hardcoded for now
+	_minDistToAi = vin_spawnDist_garrisonToAI;
 } else {
 	_minDistToPlayer = vin_spawnDist_garrisonToPlayer;
 	_minDistToAi = vin_spawnDist_garrisonToAI;

@@ -1652,6 +1652,15 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		// Remove all weapons
 		removeAllWeapons _hO;
 
+		// Add FAKs to uniform
+		for "_i" from 0 to 1 do {_hO addItemToUniform "FirstAidKit";};
+
+		// Add misc items
+		_hO linkItem "ItemMap";
+		_hO linkItem "ItemCompass";
+		_hO linkItem "ItemWatch";
+		_hO linkItem "ItemRadio";
+
 		// Set headgear
 		removeHeadgear _hO;
 		pr _headgear = _gear#UNIT_GEAR_ID_HEADGEAR;
@@ -1664,6 +1673,9 @@ CLASS("Unit", ["Storable" ARG "GOAP_Agent"])
 		pr _vest = _gear#UNIT_GEAR_ID_VEST;
 		if(_vest != "") then {
 			_hO addVest _vest;
+
+			// Add FAKs to vest
+			for "_i" from 0 to 2 do {_hO addItemToUniform "FirstAidKit";};
 		};
 
 		// Add main gun

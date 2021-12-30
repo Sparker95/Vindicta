@@ -11,10 +11,10 @@ private _s = WSP_GAR_COUNT;
 // ---------------- Goal relevance values and effects
 // The actual relevance returned by goal can be different from the one which is set below
 ["GoalGarrisonSurrender",					60	] call AI_misc_fnc_setGoalIntrinsicRelevance; // Only runs when not in combat
-["GoalGarrisonRepairAllVehicles",			50	] call AI_misc_fnc_setGoalIntrinsicRelevance; // Only runs when not in combat
 ["GoalGarrisonAttackAssignedTargets", 		36	] call AI_misc_fnc_setGoalIntrinsicRelevance; // Gets activated when garrison can see any of the assigned targets
 ["GoalGarrisonRebalanceVehicleGroups",		35	] call AI_misc_fnc_setGoalIntrinsicRelevance; // Needs to be higher than defend actions
 ["GoalGarrisonDefendActive",				34	] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonRepairAllVehicles",			33	] call AI_misc_fnc_setGoalIntrinsicRelevance; // Only runs when not in combat
 ["GoalGarrisonClearArea",					32	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGarrisonJoinLocation",				12	] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGarrisonMove",						11	] call AI_misc_fnc_setGoalIntrinsicRelevance;

@@ -14,6 +14,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
 	VARIABLE("hVeh");
 	VARIABLE("timeActivated");
+	VARIABLE("timeRepairAnimation");
 	
 	public override METHOD(getPossibleParameters)
 		[
@@ -38,6 +39,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		pr _hVeh = T_GETV("hVeh");
 		
 		_hO action ["repairVehicle", _hVeh];
+		T_SETV("timeRepairAnimation", GAME_TIME);
 
 		pr _ai = T_GETV("ai");
 		SETV(_ai, "interactionObject", _hVeh);
@@ -63,10 +65,18 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		pr _state = T_CALLM0("activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
-			// Makethe actual repair affects lag behind the animation
-			if (GAME_TIME - T_GETV("timeActivated") > 10) then {
-				pr _hO = T_GETV("hO");
-				pr _hveh = T_GETV("hVeh");
+
+			pr _hO = T_GETV("hO");
+			pr _hveh = T_GETV("hVeh");
+
+			// Repeat the repair animation periodically
+			if (GAME_TIME - T_GETV("timeRepairAnimation") > 7) then	{
+				_hO action ["repairVehicle", _hVeh];
+				T_SETV("timeRepairAnimation", GAME_TIME);
+			};
+
+			// Make the actual repair affects lag behind the animation
+			if (GAME_TIME - T_GETV("timeActivated") > 45) then {
 				// Check if the unit is not an actual engineer
 				// Doesn't matter much actually
 				// Sometimes engineers can be without toolkit and thus unable to repair vehicle in arma-native way

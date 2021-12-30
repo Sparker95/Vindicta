@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+[this, selectRandom gVanillaFaces] call BIS_fnc_setIdentity;
 
 this forceAddUniform selectRandom [
 	"gm_gc_civ_uniform_man_01_80_blk",
@@ -26,4 +26,4 @@ this addBackpack selectRandom [
 	"gm_ge_backpack_satchel_80_san"
 ];
 
-[this, selectRandom gVanillaFaces, "ace_novoice"] call BIS_fnc_setIdentity;
+[this, selectRandom gVanillaFaces] call BIS_fnc_setIdentity;

@@ -204,11 +204,11 @@ private _civCars = [
     "vn_c_bicycle_01",          10,
     "vn_c_wheeled_m151_01",     30,
     "vn_c_wheeled_m151_02",     30,
-    "C_Truck_02_box_F",         10,
-    "C_Offroad_02_unarmed_F",   30,
+    "vn_c_car_04_01",         10,
+    "vn_c_car_02_01",   30,
     "C_Truck_02_transport_F",   10,
     "C_Truck_02_covered_F",     10,
-    "C_Offroad_01_F",           10,
+    "vn_c_car_03_01",           10,
     "C_Tractor_01_F",           3
 
     /*
