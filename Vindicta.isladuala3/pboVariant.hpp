@@ -2,4 +2,4 @@
 // or a pbo with many missions combined into one
 // !!!! Note that this must be copied both to src/config folder and mission root folder!
 
-#define PBO_VARIANT_STANDALONE_MISSION
+#define PBO_VARIANT_COMBINED
