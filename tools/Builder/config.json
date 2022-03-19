@@ -156,6 +156,12 @@
             "CfgMissionsEntry": "vindicta_cam_lao_nam",
             "mapName": "cam_lao_nam",
             "briefingName": "Vindicta - Cam Lao Nam"
+        },
+        {
+            "folder": "Vindicta.isladuala3",
+            "CfgMissionsEntry": "vindicta_isla_duala",
+            "mapName": "isladuala3",
+            "briefingName": "Vindicta - Isla Duala"
         }
     ]
 }
