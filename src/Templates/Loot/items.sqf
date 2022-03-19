@@ -181,7 +181,12 @@ t_ACEMiscItems = [
 					["ACE_RangeCard",0.3],
 					["ACE_HandFlare_White", 3], // Flares
 					["ACE_key_lockpick", 3],	// Lockpick
-					["ACE_Banana", 2]
+					["ACE_Banana", 2],
+					["ACE_Canteen", 1],
+                    ["ACE_MRE_BeefStew", 0.5],
+                    ["ACE_MRE_CreamChickenSoup", 0.5],
+                    ["ACE_MRE_CreamTomatoSoup", 0.5],
+                    ["ACE_MRE_MeatballsPasta", 0.5]
 				];
 
 // ACE medical items for cargo boxes
