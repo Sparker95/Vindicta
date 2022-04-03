@@ -152,10 +152,23 @@
             "briefingName": "Vindicta - Lingor Island"
         },
         {
+        {
             "folder": "Vindicta.cam_lao_nam",
             "CfgMissionsEntry": "vindicta_cam_lao_nam",
             "mapName": "cam_lao_nam",
             "briefingName": "Vindicta - Cam Lao Nam"
+        },
+        {
+            "folder": "Vindicta.isladuala3",
+            "CfgMissionsEntry": "vindicta_isladuala3",
+            "mapName": "isladuala3",
+            "briefingName": "Vindicta - Isla Duala"
+        },
+        {
+            "folder": "Vindicta.K9S_Wallaroo.",
+            "CfgMissionsEntry": "Vindicta.K9S_Wallaroo",
+            "mapName": "K9S_Wallaroo",
+            "briefingName": "Vindicta - Straya"
         }
     ]
 }
