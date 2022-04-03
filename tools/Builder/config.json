@@ -164,8 +164,8 @@
             "briefingName": "Vindicta - Isla Duala"
         },
         {
-            "folder": "Vindicta.K9S_Wallaroo.",
-            "CfgMissionsEntry": "Vindicta.K9S_Wallaroo",
+            "folder": "Vindicta.K9S_Wallaroo",
+            "CfgMissionsEntry": "vindicta_K9S_Wallaroo",
             "mapName": "K9S_Wallaroo",
             "briefingName": "Vindicta - Straya"
         }
