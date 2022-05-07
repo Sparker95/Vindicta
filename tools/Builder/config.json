@@ -159,15 +159,27 @@
         },
         {
             "folder": "Vindicta.isladuala3",
-            "CfgMissionsEntry": "vindicta_isla_duala",
+            "CfgMissionsEntry": "vindicta_isladuala3",
             "mapName": "isladuala3",
             "briefingName": "Vindicta - Isla Duala"
         },
         {
             "folder": "Vindicta.K9S_Wallaroo",
-            "CfgMissionsEntry": "vindicta_K9S_Wallaroo",
+            "CfgMissionsEntry": "vindicta_k9s_wallaroo",
             "mapName": "K9S_Wallaroo",
             "briefingName": "Vindicta - Straya"
+        },
+        {
+            "folder": "Vindicta.Edaly_Map_Alpha",
+            "CfgMissionsEntry": "vindicta_edaly_map_alpha",
+            "mapName": "Edaly_Map_Alpha",
+            "briefingName": "Vindicta - Isla Nueva"
+        },
+        {
+            "folder": "Vindicta.OPTRE_Madrigal",
+            "CfgMissionsEntry": "vindicta_optre_madrigal",
+            "mapName": "OPTRE_Madrigal",
+            "briefingName": "Vindicta - Madrigal"
         }
     ]
 }
