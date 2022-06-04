@@ -244,7 +244,6 @@ location_b_capacity =
 		["gm_gc_tent_5x5m"],
 		8
 	]
-	
 ];
 
 // Positions for cargo boxes
@@ -499,7 +498,15 @@ _location_bp_cargo_medium =
 	[["Land_vn_hut_02"],[[2.76185,9.78456,2.31609,0],[0.319123,253.922,2.31609,0]]],
 	[["Land_vn_hut_01"],[[2.23798,23.8191,2.20195,0],[1.03077,127.155,2.21769,0]]],
 	[["Land_vn_hut_village_01"],[[3.74615,252.743,-0.747732,0],[2.18911,34.6533,-0.747732,0]]],
-	[["Land_vn_hut_village_02"],[[3.56025,126.862,-0.533976,0],[3.32959,60.7491,-0.533976,0]]]
+	[["Land_vn_hut_village_02"],[[3.56025,126.862,-0.533976,0],[3.32959,60.7491,-0.533976,0]]],
+
+	//Libertad Isla Nueva
+	[["Land_Police_01_F"],[[7.16392,98.6713,0.0691242,0],[7.59371,112.926,0.0691247,0]]],
+
+	//OPTRE
+	[["Land_Urban_Building_03"],[[5.95648,246.009,5.36727,0],[7.63412,225.728,5.40115,0]]],
+	[["Land_Urban_Building_02"],[[4.68536,229.522,0.544062,0],[6.0303,215.639,0.561588,0]]],
+	[["Land_building01"],[[13.1239,289.831,3.66379,0],[12.473,273.426,3.51251,0]]]
 ];
 
 location_bp_cargo_medium = _location_bp_cargo_medium call _createHashmapFromBuildingPositions;
@@ -632,7 +639,15 @@ location_bt_police =
 	"Land_vn_hut_02",
 	"Land_vn_hut_01",
 	"Land_vn_hut_village_01",
-	"Land_vn_hut_village_02"
+	"Land_vn_hut_village_02",
+
+	//Libertad Isla Nueva
+	"Land_Police_01_F",
+
+	//OPTRE
+	"Land_Urban_Building_03",
+	"Land_Urban_Building_02",
+	"Land_building01"
 ];
 
 location_decorations_police =
