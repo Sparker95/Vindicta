@@ -506,7 +506,37 @@ _location_bp_cargo_medium =
 	//OPTRE
 	[["Land_Urban_Building_03"],[[5.95648,246.009,5.36727,0],[7.63412,225.728,5.40115,0]]],
 	[["Land_Urban_Building_02"],[[4.68536,229.522,0.544062,0],[6.0303,215.639,0.561588,0]]],
-	[["Land_building01"],[[13.1239,289.831,3.66379,0],[12.473,273.426,3.51251,0]]]
+	[["Land_building01"],[[13.1239,289.831,3.66379,0],[12.473,273.426,3.51251,0]]],
+
+	//TIOW
+	[["land_TIOW_Hab1Blue"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+	[["land_TIOW_Hab1Blue_Ranch"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Brown"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Brown_Ranch"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1DarkGrey"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1DarkGrey_Ranch"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1DarkTan"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1DarkTan_Ranch"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Grey"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Grey_Ranch"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Red"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Red_Ranch"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Tan"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+    [["land_TIOW_Hab1Tan_Ranch"],[[2.43869,141.377,0.536353,0],[1.71313,54.6882,0.414039,0]]],
+	[["land_TIOW_Hab3Blue"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+	[["land_TIOW_Hab3Blue_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Brown"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Brown_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3DarkGrey"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3DarkGrey_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3DarkTan"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3DarkTan_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Grey"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Grey_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Red"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Red_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Tan"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+    [["land_TIOW_Hab3Tan_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]]
 ];
 
 location_bp_cargo_medium = _location_bp_cargo_medium call _createHashmapFromBuildingPositions;
@@ -647,7 +677,37 @@ location_bt_police =
 	//OPTRE
 	"Land_Urban_Building_03",
 	"Land_Urban_Building_02",
-	"Land_building01"
+	"Land_building01",
+
+	//TIOW
+    "land_TIOW_Hab1Blue",
+    "land_TIOW_Hab1Blue_Ranch",
+    "land_TIOW_Hab1Brown",
+    "land_TIOW_Hab1Brown_Ranch",
+    "land_TIOW_Hab1DarkGrey",
+    "land_TIOW_Hab1DarkGrey_Ranch",
+    "land_TIOW_Hab1DarkTan",
+    "land_TIOW_Hab1DarkTan_Ranch",
+    "land_TIOW_Hab1Grey",
+    "land_TIOW_Hab1Grey_Ranch",
+    "land_TIOW_Hab1Red",
+    "land_TIOW_Hab1Red__Ranch",
+    "land_TIOW_Hab1Tan",
+    "land_TIOW_Hab1Tan__Ranch",
+    "land_TIOW_Hab3Blue",
+    "land_TIOW_Hab3Blue_Ranch",
+    "land_TIOW_Hab3Brown",
+    "land_TIOW_Hab3Brown_Ranch",
+    "land_TIOW_Hab3DarkGrey",
+    "land_TIOW_Hab3DarkGrey_Ranch",
+    "land_TIOW_Hab3DarkTan",
+    "land_TIOW_Hab3DarkTan_Ranch",
+    "land_TIOW_Hab3Grey",
+    "land_TIOW_Hab3Grey_Ranch",
+    "land_TIOW_Hab3Red",
+    "land_TIOW_Hab3Red_Ranch",
+    "land_TIOW_Hab3Tan",
+    "land_TIOW_Hab3Tan_Ranch"
 ];
 
 location_decorations_police =
