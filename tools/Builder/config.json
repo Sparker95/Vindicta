@@ -180,6 +180,12 @@
             "CfgMissionsEntry": "vindicta_optre_madrigal",
             "mapName": "OPTRE_Madrigal",
             "briefingName": "Vindicta - Madrigal"
+        },
+        {
+            "folder": "Vindicta.OrbitaClivoCadminae",
+            "CfgMissionsEntry": "vindicta_orbitaclivocadminae",
+            "mapName": "OrbitaClivoCadminae",
+            "briefingName": "Vindicta - Orbita Clivo Cadminae"
         }
     ]
 }
