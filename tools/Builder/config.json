@@ -180,6 +180,12 @@
             "CfgMissionsEntry": "vindicta_optre_madrigal",
             "mapName": "OPTRE_Madrigal",
             "briefingName": "Vindicta - Madrigal"
+        },
+        {
+            "folder": "Vindicta.Kunduz",
+            "CfgMissionsEntry": "vindicta_kunduz",
+            "mapName": "kunduz",
+            "briefingName": "Vindicta - Kunduz"
         }
     ]
 }
