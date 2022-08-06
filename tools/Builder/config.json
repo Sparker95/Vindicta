@@ -182,6 +182,12 @@
             "briefingName": "Vindicta - Madrigal"
         },
         {
+            "folder": "Vindicta.OrbitaClivoCadminae",
+            "CfgMissionsEntry": "vindicta_orbitaclivocadminae",
+            "mapName": "OrbitaClivoCadminae",
+            "briefingName": "Vindicta - Orbita Clivo Cadminae"
+        },
+        {
             "folder": "Vindicta.Kunduz",
             "CfgMissionsEntry": "vindicta_kunduz",
             "mapName": "kunduz",
