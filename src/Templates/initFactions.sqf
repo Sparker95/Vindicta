@@ -62,11 +62,12 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\NATOAAF.sqf",
     "Templates\Factions\AAFCSAT.sqf",
     "Templates\Factions\NATOCSAT.sqf",
+    "Templates\Factions\SPE_Wehrmacht.sqf",
+    "Templates\Factions\SPE_US_Army.sqf",
     "Templates\Factions\VN_US_Army.sqf",
-    "Templates\Factions\VN_ARVN.sqf"/*
-    "Templates\Factions\VN_NVA.sqf",/*
-    "Templates\Factions\VN_ARVN.sqf",
-    "Templates\Factions\VN_VC.sqf"*/
+    "Templates\Factions\VN_ARVN.sqf"
+    //"Templates\Factions\VN_NVA.sqf",
+    //"Templates\Factions\VN_VC.sqf"
 ];
 
 
@@ -82,7 +83,9 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\3CB_CCIVS.sqf",
     "Templates\Factions\3CB_TCIV.sqf",
     "Templates\Factions\GUERRILLA.sqf",
+    "Templates\Factions\SPE_CIVILIAN.sqf",
     "Templates\Factions\VN_CIVILIAN.sqf"
+    
 ];
 
 // Police factions
@@ -106,6 +109,8 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     "Templates\Factions\DSI.sqf",
     "Templates\Factions\AT.sqf",
     "Templates\Factions\VN_US_Army_police.sqf",
-    "Templates\Factions\VN_ARVN_police.sqf"/*
-    "Templates\Factions\VN_VC_police.sqf"*/
+    "Templates\Factions\VN_ARVN_police.sqf",
+    "Templates\Factions\SPE_Wehrmacht_police.sqf",
+    "Templates\Factions\SPE_US_Army_police.sqf"
+    //"Templates\Factions\VN_VC_police.sqf"
 ];
