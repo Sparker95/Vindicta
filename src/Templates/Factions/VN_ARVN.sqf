@@ -4,7 +4,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tVN_ARVN"];
-_array set [T_DESCRIPTION, "Vietman war ARVN military made using content from S.O.G. Prairie Fire DLC.."];
+_array set [T_DESCRIPTION, "Vietman war ARVN made using content from S.O.G. Prairie Fire DLC."];
 _array set [T_DISPLAY_NAME, "SOG DLC - ARVN"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [

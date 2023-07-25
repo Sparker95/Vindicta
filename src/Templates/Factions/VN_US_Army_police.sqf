@@ -3,7 +3,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 _array set [T_NAME, "tVN_US_Army_police"]; 									//Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vietman war US Army military police made using content from S.O.G. Prairie Fire DLC.."]; 	//Template display description
+_array set [T_DESCRIPTION, "Vietman war US Army military police made using content from S.O.G. Prairie Fire DLC."]; 	//Template display description
 _array set [T_DISPLAY_NAME, "SOG DLC - US Military Police"]; 						//Template display name
 _array set [T_FACTION, T_FACTION_Police]; 							//Faction type: police, T_FACTION_military, T_FACTION_Police
 _array set [T_REQUIRED_ADDONS, [

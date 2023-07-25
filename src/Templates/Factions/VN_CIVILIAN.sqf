@@ -3,7 +3,7 @@ _array = [];
 _array set [T_SIZE-1, nil]; //Make an array having the size equal to the number of categories first
 
 _array set [T_NAME, "tVN_CIVILIAN"];                           //Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Vietnam war Civilians."];     //Template display description
+_array set [T_DESCRIPTION, "Vietnam war Civilians made using content from S.O.G. Prairie Fire DLC."];     //Template display description
 _array set [T_DISPLAY_NAME, "SOG DLC - Civilians"];      //Template display name
 _array set [T_FACTION, T_FACTION_Civ];                      //Faction type
 _array set [T_REQUIRED_ADDONS, [
@@ -201,32 +201,32 @@ _inf set [T_INF_survivor, [
 ]];
 
 private _civCars = [
-    "vn_c_bicycle_01",          10,
-    "vn_c_wheeled_m151_01",     30,
-    "vn_c_wheeled_m151_02",     30,
-    "vn_c_car_04_01",         10,
-    "vn_c_car_02_01",   30,
-    "C_Truck_02_transport_F",   10,
-    "C_Truck_02_covered_F",     10,
+    "vn_c_bicycle_01",          15,
+    "vn_c_car_01_01",           10,
     "vn_c_car_03_01",           10,
-    "C_Tractor_01_F",           3
-
-    /*
-    "vn_o_wheeled_z157_02",   2,
-    "vn_o_wheeled_z157_01",   2,
-    "vn_b_wheeled_m151_01",   4,
-    "vn_b_wheeled_m151_01",   4*/
+    "vn_c_car_02_01",           10,
+    "vn_c_car_01_02",           10,
+    "vn_c_wheeled_m151_02",     10,
+    "vn_c_wheeled_m151_01",     10,
+    "vn_c_car_04_01",           5
 ];
 private _civCarsClasses = _civCars select {_x isEqualType "";};
 
 private _civBoats = [
-        "C_Boat_Civil_01_F", 30,
-        "vn_c_boat_01_00", 10,
-        "vn_c_boat_02_00", 10,
-        "vn_c_boat_08_02", 10,
-        "vn_c_boat_08_01", 10,
-        "vn_c_boat_07_02", 10,
-        "vn_c_boat_07_01", 10
+    "vn_c_boat_01_03", 10,
+    "vn_c_boat_01_04", 10,
+    "vn_c_boat_01_00", 10,
+    "vn_c_boat_01_01", 10,
+    "vn_c_boat_01_02", 10,
+    "vn_c_boat_02_03", 10,
+    "vn_c_boat_02_04", 10,
+    "vn_c_boat_02_00", 10,
+    "vn_c_boat_02_01", 10,
+    "vn_c_boat_02_02", 10,
+    "vn_c_boat_07_02", 10,
+    "vn_c_boat_07_01", 10,
+    "vn_c_boat_08_02", 5,
+    "vn_c_boat_08_01", 5
 ];
 private _civBoatsClasses = _civBoats select {_x isEqualType "";};
 
