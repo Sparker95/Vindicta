@@ -58,7 +58,10 @@ _arsenal set[T_ARSENAL_ammo, [
     "vn_pm_mag",
     "vn_tt33_mag"
 ]];
-_arsenal set[T_ARSENAL_items, []];
+_arsenal set[T_ARSENAL_items, [
+    "ACE_Flashlight_Maglite_ML300L",
+    "ACE_HandFlare_White"
+]];
 _arsenal set[T_ARSENAL_vests, [
     "vn_o_vest_vc_01",
     "vn_o_vest_vc_05",
