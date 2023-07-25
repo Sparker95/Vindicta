@@ -4,8 +4,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tVN_ARVN"];
-_array set [T_DESCRIPTION, "Vietman war ARVN."];
-_array set [T_DISPLAY_NAME, "VN DLC - ARVN"];
+_array set [T_DESCRIPTION, "Vietman war ARVN military made using content from S.O.G. Prairie Fire DLC.."];
+_array set [T_DISPLAY_NAME, "SOG DLC - ARVN"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
 		"A3_Characters_F", 
@@ -36,8 +36,8 @@ _inf set [T_INF_HMG, ["vn_i_men_army_06"]];
 _inf set [T_INF_medic, ["vn_i_men_army_03"]];
 _inf set [T_INF_engineer, ["vn_i_men_army_04"]];
 _inf set [T_INF_crew, ["vn_i_men_army_13", "vn_i_men_army_14"]];
-_inf set [T_INF_crew_heli, ["vn_i_men_aircrew_01"]];
-_inf set [T_INF_pilot, ["vn_i_men_aircrew_01"]];
+_inf set [T_INF_crew_heli, ["vn_i_men_aircrew_02"]];
+_inf set [T_INF_pilot, ["vn_i_men_aircrew_05"]];
 _inf set [T_INF_pilot_heli, ["vn_i_men_aircrew_01"]];
 _inf set [T_INF_survivor, ["vn_i_men_army_15", "vn_i_men_army_16", "vn_i_men_army_18", "vn_i_men_army_19", "vn_i_men_army_20", "vn_i_men_army_21"]];
 _inf set [T_INF_unarmed, ["vn_i_men_army_15", "vn_i_men_army_16", "vn_i_men_army_18", "vn_i_men_army_19", "vn_i_men_army_20", "vn_i_men_army_21"]];
@@ -62,20 +62,20 @@ _inf set [T_INF_diver_exp, [""]];*/
 //==== Vehicles ====
 _veh = []; _veh resize T_VEH_SIZE;
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, ["vn_i_wheeled_m151_01"]];
+_veh set [T_VEH_DEFAULT, ["vn_b_wheeled_m151_01"]];
 
-_veh set [T_VEH_car_unarmed, ["vn_i_wheeled_m151_01", "vn_i_wheeled_m151_02"]];
-_veh set [T_VEH_car_armed, ["vn_i_wheeled_m151_mg_01", "vn_b_wheeled_m151_mg_02", "vn_b_wheeled_m151_mg_04", "vn_b_wheeled_m151_mg_03", "vn_b_wheeled_m151_mg_05"]];
+_veh set [T_VEH_car_unarmed, ["vn_b_wheeled_m151_01", "vn_b_wheeled_m151_02", "vn_b_wheeled_m274_01_01"]];
+_veh set [T_VEH_car_armed, ["vn_b_wheeled_m151_mg_02", "vn_b_wheeled_m151_mg_03", "vn_b_wheeled_m274_mg_01_01"]];
 
 //_veh set [T_VEH_MRAP_unarmed, [""]];
-_veh set [T_VEH_MRAP_HMG, ["vn_b_wheeled_m54_mg_01", "vn_b_wheeled_m54_mg_03"]];
-//_veh set [T_VEH_MRAP_GMG, [""]];
+_veh set [T_VEH_MRAP_HMG, ["vn_b_wheeled_m151_mg_04", "vn_b_wheeled_m274_mg_03_01"]];
+_veh set [T_VEH_MRAP_GMG, ["vn_b_wheeled_m151_mg_05", "vn_b_wheeled_m151_mg_06", "vn_b_wheeled_m274_mg_02_01"]];
 
-//_veh set [T_VEH_IFV, [""]];
-//_veh set [T_VEH_APC, [""]];
-_veh set [T_VEH_MBT, ["vn_i_armor_m41_01", "vn_i_armor_type63_01"]];
+_veh set [T_VEH_IFV, ["vn_i_armor_m132_01"]];
+_veh set [T_VEH_APC, ["vn_i_armor_m113_acav_04", "vn_i_armor_m113_acav_02", "vn_i_armor_m113_acav_01", "vn_i_armor_m113_acav_06", "vn_i_armor_m113_acav_03", "vn_i_armor_m113_acav_05", "vn_i_armor_m113_01"]];
+_veh set [T_VEH_MBT, ["vn_i_armor_m41_01", "vn_i_armor_m48_01_01", "vn_i_armor_m67_01_01"]];
 //_veh set [T_VEH_MRLS, [""]];
-//_veh set [T_VEH_SPA, [""]];
+_veh set [T_VEH_SPA, ["vn_i_armor_m125_01"]];
 _veh set [T_VEH_SPAA, ["vn_b_wheeled_m54_mg_02"]];
 
 _veh set [T_VEH_stat_HMG_high, ["vn_b_army_static_m1919a4_high", "vn_b_sf_static_m2_high", "vn_b_army_static_m60_high"]];
@@ -107,7 +107,7 @@ _veh set [T_VEH_truck_inf, ["vn_i_wheeled_m54_01", "vn_i_wheeled_m54_02"]];
 _veh set [T_VEH_truck_cargo, ["vn_i_wheeled_m54_01", "vn_i_wheeled_m54_02"]];
 _veh set [T_VEH_truck_ammo, ["vn_i_wheeled_m54_ammo"]];
 _veh set [T_VEH_truck_repair, ["vn_i_wheeled_m54_repair"]];
-_veh set [T_VEH_truck_medical , ["vn_i_wheeled_m54_03"]];
+_veh set [T_VEH_truck_medical , ["vn_i_armor_m577_02"]];
 _veh set [T_VEH_truck_fuel, ["vn_i_wheeled_m54_fuel"]];
 
 //_veh set [T_VEH_submarine, [""]];

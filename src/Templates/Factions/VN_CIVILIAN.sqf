@@ -4,7 +4,7 @@ _array set [T_SIZE-1, nil]; //Make an array having the size equal to the number 
 
 _array set [T_NAME, "tVN_CIVILIAN"];                           //Template name + variable (not displayed)
 _array set [T_DESCRIPTION, "Vietnam war Civilians."];     //Template display description
-_array set [T_DISPLAY_NAME, "VN DLC - Civilians"];      //Template display name
+_array set [T_DISPLAY_NAME, "SOG DLC - Civilians"];      //Template display name
 _array set [T_FACTION, T_FACTION_Civ];                      //Faction type
 _array set [T_REQUIRED_ADDONS, [
 		"A3_Characters_F", 
