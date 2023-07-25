@@ -77,9 +77,9 @@ _veh set [T_VEH_MBT, ["SPE_M10", "SPE_M18_Hellcat", "SPE_M4A0_75_Early", "SPE_M4
 //_veh set [T_VEH_SPA, [""]];
 _veh set [T_VEH_SPAA, ["SPE_US_M16_Halftrack"]];
 
-//_veh set [T_VEH_stat_HMG_high, [""]];
+_veh set [T_VEH_stat_HMG_high, ["SPE_GER_SearchLight"]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
-//_veh set [T_VEH_stat_HMG_low, [""]];
+_veh set [T_VEH_stat_HMG_low, ["SPE_M1919_M2"]];
 //_veh set [T_VEH_stat_GMG_low, [""]];
 _veh set [T_VEH_stat_AA, ["SPE_M45_Quadmount"]];
 _veh set [T_VEH_stat_AT, ["SPE_57mm_M1"]];

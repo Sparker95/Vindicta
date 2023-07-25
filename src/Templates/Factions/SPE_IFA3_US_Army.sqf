@@ -90,7 +90,7 @@ _veh set [T_VEH_stat_mortar_light, ["SPE_M1_81"]];
 //_veh set [T_VEH_heli_light, [""]];
 //_veh set [T_VEH_heli_heavy, [""]];
 //_veh set [T_VEH_heli_cargo, [""]];
-_veh set [T_VEH_heli_attack, ["SPE_P47", "LIB_US_P39", "LIB_US_P39_2"]];
+//_veh set [T_VEH_heli_attack, [""]];
 
 //_veh set [T_VEH_plane_attack, [""]];
 //_veh set [T_VEH_plane_fighter , [""]];
