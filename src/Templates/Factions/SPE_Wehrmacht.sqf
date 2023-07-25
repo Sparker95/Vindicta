@@ -4,7 +4,7 @@ _array set [T_SIZE-1, nil];
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tSPE_Wehrmacht"];
-_array set [T_DESCRIPTION, "World War 2 Wehrmacht."];
+_array set [T_DESCRIPTION, "World War 2 Wehrmacht made using content from Spearhead 1944 DLC."];
 _array set [T_DISPLAY_NAME, "SPE DLC - Wehrmacht"];
 _array set [T_FACTION, T_FACTION_Military];
 _array set [T_REQUIRED_ADDONS, [
