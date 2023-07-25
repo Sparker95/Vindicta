@@ -83,6 +83,8 @@ CALL_COMPILE_COMMON("Templates\Loadouts\RHS_LAF\LAF_Recon\init.sqf");
 //RHS_HIDF
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\RHS_HIDF\HIDF_Recon\init.sqf");
+// RHS USAF
+CALL_COMPILE_COMMON("Templates\Loadouts\RHS_USAF\RHS_USAF_UCP\init.sqf");
 //GM_WestGer
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\GM_WestGer\WestGer_Police\init.sqf");
@@ -113,9 +115,8 @@ CALL_COMPILE_COMMON("Templates\Loadouts\3CB_CCIVS\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TCIV\init.sqf");
 // 3CB Takistan Army
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TNA_B\init.sqf");
-// VN_CIVILIAN
-CALL_COMPILE_COMMON("Templates\Loadouts\VN_CIVILIAN\init.sqf");
-// RHS USAF
-CALL_COMPILE_COMMON("Templates\Loadouts\RHS_USAF\RHS_USAF_UCP\init.sqf");
 // SPE_CIVILIAN
 CALL_COMPILE_COMMON("Templates\Loadouts\SPE_CIVILIAN\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\SPE_CIVILIAN_IFA3\init.sqf");
+// VN_CIVILIAN
+CALL_COMPILE_COMMON("Templates\Loadouts\VN_CIVILIAN\init.sqf");
