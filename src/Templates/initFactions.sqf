@@ -48,8 +48,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     // S.O.G. Prairie Fire DLC Factions
     "Templates\Factions\VN_US_Army.sqf",
     "Templates\Factions\VN_ARVN.sqf",
-    //"Templates\Factions\VN_NVA.sqf",
-    //"Templates\Factions\VN_VC.sqf",
+    "Templates\Factions\VN_NVA.sqf",
     // Global Mobilization - Cold War Germany DLC Factions
     "Templates\Factions\GM_WestGer.sqf",
     "Templates\Factions\GM_EastGer.sqf",
@@ -129,7 +128,7 @@ private _classes = "isClass _x" configClasses (configFile >> "VinExternalFaction
     // S.O.G. Prairie Fire DLC Factions
     "Templates\Factions\VN_US_Army_police.sqf",
     "Templates\Factions\VN_ARVN_police.sqf",
-    //"Templates\Factions\VN_VC_police.sqf",
+    "Templates\Factions\VN_VC_police.sqf",
     // Global Mobilization - Cold War Germany DLC Factions
     "Templates\Factions\GM_WestGer_Police.sqf",
     "Templates\Factions\GM_EastGer_Police.sqf",
