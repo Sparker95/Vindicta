@@ -23,7 +23,10 @@ _arsenal set[T_ARSENAL_secondary_items, []];
 _arsenal set[T_ARSENAL_handgun, []];
 _arsenal set[T_ARSENAL_handgun_items, []];
 _arsenal set[T_ARSENAL_ammo, []];
-_arsenal set[T_ARSENAL_items, []];
+_arsenal set[T_ARSENAL_items, [
+    "ACE_Flashlight_Maglite_ML300L",
+    "ACE_HandFlare_White"
+]];
 _arsenal set[T_ARSENAL_vests, []];
 _arsenal set[T_ARSENAL_backpacks, [
     "B_SPE_CIV_musette",
