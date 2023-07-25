@@ -3,7 +3,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 // Name, description, faction, addons, etc
-_array set [T_NAME, "tSPE_US_Army_police_IFA3"];
+_array set [T_NAME, "tSPE_IFA3_US_Army_police"];
 _array set [T_DESCRIPTION, "World War 2 US Army made using content from Spearhead 1944 DLC + Iron Front."];
 _array set [T_DISPLAY_NAME, "SPE DLC + IFA3 - US Army (Police)"];
 _array set [T_FACTION, T_FACTION_Police];

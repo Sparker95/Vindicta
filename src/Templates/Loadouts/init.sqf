@@ -117,6 +117,6 @@ CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TCIV\init.sqf");
 CALL_COMPILE_COMMON("Templates\Loadouts\3CB_TNA_B\init.sqf");
 // SPE_CIVILIAN
 CALL_COMPILE_COMMON("Templates\Loadouts\SPE_CIVILIAN\init.sqf");
-CALL_COMPILE_COMMON("Templates\Loadouts\SPE_CIVILIAN_IFA3\init.sqf");
+CALL_COMPILE_COMMON("Templates\Loadouts\SPE_IFA3_CIVILIAN\init.sqf");
 // VN_CIVILIAN
 CALL_COMPILE_COMMON("Templates\Loadouts\VN_CIVILIAN\init.sqf");

@@ -93,7 +93,7 @@ this addBackpack selectRandom [
 ];
 
 //====Items====
-for "_i" from 1 to 3 do { this addItemToUniform _ammo };
+for "_i" from 1 to 6 do { this addItemToUniform _ammo };
 
 //====ACE Items====
 this addItemToUniform "FirstAidKit";

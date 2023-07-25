@@ -89,8 +89,20 @@ if (random 5 < 1) then { this addHeadgear selectRandom _headgear;
 
 private _gunsAndAmmo = [
 	// pistols
-	["SPE_P08", 						"SPE_8Rnd_9x19_P08", 		true],	1,
-	["SPE_M1911", 						"SPE_7Rnd_45ACP_1911", 		true],	1
+	["SPE_P08", 						"SPE_8Rnd_9x19_P08", 		true],	2,
+	["SPE_M1911", 						"SPE_7Rnd_45ACP_1911", 		true],	2,
+    ["LIB_M1896", 						"LIB_10Rnd_9x19_M1896",     true],	2,
+    ["LIB_M1895", 						"lib_7rnd_762x38", 		    true],	2,
+    ["LIB_P38", 						"lib_8rnd_9x19", 		    true],	2,
+    ["LIB_TT33", 						"lib_8rnd_762x25", 		    true],	2,
+    ["LIB_WaltherPPK", 					"lib_7rnd_765x17_ppk", 		true],	2,
+    ["LIB_Webley_mk6", 					"lib_6rnd_455", 		    true],	2,
+    ["LIB_Welrod_mk1", 					"lib_6rnd_9x19_welrod", 	true],	2,
+    // rifles
+    ["LIB_DELISLE", 					"lib_7rnd_45acp_delisle", 	true],	1,
+    // shotguns
+    ["SPE_Fusil_Mle_208_12", 			"spe_2rnd_12x65_pellets", 	true],	1,
+    ["SPE_Fusil_Mle_208_12_Sawedoff", 	"spe_2rnd_12x65_pellets", 	true],	1
 ];
 
 (selectRandomWeighted _gunsAndAmmo) params ["_gun", "_ammo", "_isPistol"];
@@ -103,7 +115,7 @@ if(_isPistol) then {
 	this addWeaponItem [_gun, _ammo];
 };
 //====Items====
-for "_i" from 1 to 3 do { this addItemToUniform _ammo };
+for "_i" from 1 to 6 do { this addItemToUniform _ammo };
 
 //====ACE Items====
 this addItemToUniform "FirstAidKit";

@@ -3,7 +3,7 @@ _array = [];
 _array set [T_SIZE-1, nil];
 
 // Name, description, faction, addons, etc
-_array set [T_NAME, "tSPE_CIVILIAN_IFA3"];
+_array set [T_NAME, "tSPE_IFA3_CIVILIAN"];
 _array set [T_DESCRIPTION, "World War 2 Civilians made using content from Spearhead 1944 DLC + Iron Front."];
 _array set [T_DISPLAY_NAME, "SPE DLC + IFA3 - Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
@@ -137,19 +137,19 @@ _arsenal set [T_ARSENAL_grenades, []];
 //==== Infantry ====
 _inf = [];
 _inf resize T_INF_SIZE;
-_inf = _inf apply { ["SPE_CIVILIAN_IFA3_Default"] };
+_inf = _inf apply { ["SPE_IFA3_CIVILIAN_Default"] };
 _inf set [T_INF_default, ["SPE_CIV_Citizen_1"]];
 _inf set [T_INF_rifleman, [
-    "SPE_PLAYER_IFA3_1"
+    "SPE_IFA3_PLAYER_1"
 ]];
 _inf set [T_INF_unarmed, [
-    "SPE_CIVILIAN_IFA3_1"
+    "SPE_IFA3_CIVILIAN_1"
 ]];
 _inf set [T_INF_exp, [
-    "SPE_CIVILIAN_IFA3_Saboteur_1"
+    "SPE_IFA3_CIVILIAN_Saboteur_1"
 ]];
 _inf set [T_INF_survivor, [
-    "SPE_CIVILIAN_IFA3_Militant_1"
+    "SPE_IFA3_CIVILIAN_Militant_1"
 ]];
 
 private _civCars = [
