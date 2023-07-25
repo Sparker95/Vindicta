@@ -78,10 +78,10 @@ _veh set [T_VEH_MBT, ["SPE_PzKpfwIII_J", "SPE_PzKpfwIII_L", "SPE_PzKpfwIII_M", "
 _veh set [T_VEH_SPA, ["LIB_SdKfz124"]];
 _veh set [T_VEH_SPAA, ["SPE_OpelBlitz_Flak38", "LIB_SdKfz_7_AA", "LIB_FlakPanzerIV_Wirbelwind"]];
 
-_veh set [T_VEH_stat_HMG_high, ["SPE_GER_SearchLight"]];
-_veh set [T_VEH_stat_GMG_high, ["SPE_GER_SearchLight"]];
+_veh set [T_VEH_stat_HMG_high, [""]];
+//_veh set [T_VEH_stat_GMG_high, ["SPE_GER_SearchLight"]];
 _veh set [T_VEH_stat_HMG_low, ["SPE_MG34_Lafette_low_Deployed", "SPE_MG42_Lafette_low_Deployed"]];
-_veh set [T_VEH_stat_GMG_low, ["SPE_MG34_Lafette_low_Deployed", "SPE_MG42_Lafette_low_Deployed"]];
+//_veh set [T_VEH_stat_GMG_low, [""]];
 _veh set [T_VEH_stat_AA, ["SPE_FlaK_30", "SPE_FlaK_38", "SPE_FlaK_36_AA", "LIB_Flakvierling_38"]];
 _veh set [T_VEH_stat_AT, ["SPE_leFH18_AT", "SPE_Pak40", "SPE_FlaK_36"]];
 _veh set [T_VEH_stat_mortar_light, ["SPE_GrW278_1"]];
@@ -92,8 +92,8 @@ _veh set [T_VEH_stat_mortar_heavy, ["SPE_leFH18"]];
 //_veh set [T_VEH_heli_cargo, [""]];
 _veh set [T_VEH_heli_attack, ["SPE_FW190F8", "LIB_Ju87"]];
 
-_veh set [T_VEH_plane_attack, ["SPE_FW190F8", "LIB_Ju87"]];
-_veh set [T_VEH_plane_fighter , ["SPE_FW190F8", "LIB_Ju87"]];
+//_veh set [T_VEH_plane_attack, [""]];
+//_veh set [T_VEH_plane_fighter , [""]];
 //_veh set [T_VEH_plane_cargo, [""]];
 //_veh set [T_VEH_plane_unarmed , [""]];
 //_veh set [T_VEH_plane_VTOL, [""]];

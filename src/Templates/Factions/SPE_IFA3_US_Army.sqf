@@ -79,9 +79,9 @@ _veh set [T_VEH_MRLS, ["SPE_M4A1_T34_Calliope"]];
 _veh set [T_VEH_SPAA, ["SPE_US_M16_Halftrack"]];
 
 _veh set [T_VEH_stat_HMG_high, ["SPE_GER_SearchLight"]];
-_veh set [T_VEH_stat_GMG_high, ["SPE_GER_SearchLight"]];
+//_veh set [T_VEH_stat_GMG_high, [""]];
 _veh set [T_VEH_stat_HMG_low, ["SPE_M1919_M2"]];
-_veh set [T_VEH_stat_GMG_low, ["SPE_M1919_M2"]];
+//_veh set [T_VEH_stat_GMG_low, [""]];
 _veh set [T_VEH_stat_AA, ["SPE_M45_Quadmount"]];
 _veh set [T_VEH_stat_AT, ["SPE_57mm_M1"]];
 _veh set [T_VEH_stat_mortar_light, ["SPE_M1_81"]];
@@ -89,12 +89,12 @@ _veh set [T_VEH_stat_mortar_light, ["SPE_M1_81"]];
 
 //_veh set [T_VEH_heli_light, [""]];
 //_veh set [T_VEH_heli_heavy, [""]];
-_veh set [T_VEH_heli_cargo, ["LIB_C47_Skytrain"]];
+//_veh set [T_VEH_heli_cargo, [""]];
 _veh set [T_VEH_heli_attack, ["SPE_P47", "LIB_US_P39", "LIB_US_P39_2"]];
 
-_veh set [T_VEH_plane_attack, ["SPE_P47", "LIB_US_P39", "LIB_US_P39_2"]];
-_veh set [T_VEH_plane_fighter , ["SPE_P47", "LIB_US_P39", "LIB_US_P39_2"]];
-_veh set [T_VEH_plane_cargo, ["LIB_C47_Skytrain"]];
+//_veh set [T_VEH_plane_attack, [""]];
+//_veh set [T_VEH_plane_fighter , [""]];
+//_veh set [T_VEH_plane_cargo, [""]];
 //_veh set [T_VEH_plane_unarmed , [""]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
