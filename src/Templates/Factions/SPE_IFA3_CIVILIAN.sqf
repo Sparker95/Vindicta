@@ -4,7 +4,7 @@ _array set [T_SIZE-1, nil];
 
 // Name, description, faction, addons, etc
 _array set [T_NAME, "tSPE_IFA3_CIVILIAN"];
-_array set [T_DESCRIPTION, "World War 2 Civilians made using content from Spearhead 1944 DLC + Iron Front."];
+_array set [T_DESCRIPTION, "World War 2 Civilians made using content from Spearhead 1944 DLC + Iron Front mod."];
 _array set [T_DISPLAY_NAME, "SPE DLC + IFA3 - Civilians"];
 _array set [T_FACTION, T_FACTION_Civ];
 _array set [T_REQUIRED_ADDONS, [
