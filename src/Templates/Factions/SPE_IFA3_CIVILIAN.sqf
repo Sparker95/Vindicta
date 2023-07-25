@@ -154,7 +154,9 @@ _inf set [T_INF_survivor, [
 
 private _civCars = [
     "LIB_GazM1",          10,
-    "LIB_GazM1_dirty",    10
+    "LIB_GazM1_dirty",    10,
+    "LIB_GazM1_SOV",       5,
+    "LIB_Zis5v",           5
 ];
 private _civCarsClasses = _civCars select {_x isEqualType "";};
 
