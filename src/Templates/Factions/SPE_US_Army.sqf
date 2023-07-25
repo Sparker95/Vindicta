@@ -72,7 +72,7 @@ _veh set [T_VEH_MRAP_HMG, ["SPE_US_M3_Halftrack"]];
 
 //_veh set [T_VEH_IFV, [""]];
 //_veh set [T_VEH_APC, [""]];
-_veh set [T_VEH_MBT, ["vn_b_armor_m41_01_02"]];
+_veh set [T_VEH_MBT, ["SPE_M10", "SPE_M18_Hellcat", "SPE_M4A0_75_Early", "SPE_M4A0_75", "SPE_M4A1_76", "SPE_M4A1_75", "SPE_M4A1_T34_Calliope_Direct"]];
 //_veh set [T_VEH_MRLS, [""]];
 //_veh set [T_VEH_SPA, [""]];
 _veh set [T_VEH_SPAA, ["SPE_US_M16_Halftrack"]];
