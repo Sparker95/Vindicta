@@ -536,7 +536,23 @@ _location_bp_cargo_medium =
     [["land_TIOW_Hab3Red"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
     [["land_TIOW_Hab3Red_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
     [["land_TIOW_Hab3Tan"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
-    [["land_TIOW_Hab3Tan_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]]
+    [["land_TIOW_Hab3Tan_Ranch"],[[3.42008,172.729,0.163934,0],[4.62341,221.112,0.192134,0]]],
+
+	
+	//SPE
+	[["Land_SPE_Office_Small_01"],[[1.4382,98.7683,0.253738,177],[2.94388,146.473,0.253738,177]]],
+	[["Land_SPE_Farmhouse_01"],[[6.05088,262.931,0.12,0],[3.25649,256.172,0.12,0]]],
+    [["Land_SPE_Office_Small_02"],[[3.74085,50.9653,0.274698,0],[4.97515,34.6695,0.274698,0]]],
+    [["Land_SPE_Shop_03"],[[0.936713,225.148,0.243686,0],[1.29295,121.157,0.243686,0]]],
+    [["Land_SPE_Shop_04"],[[1.7056,202.593,0.19,0],[2.86736,242.737,0.19,0]]],
+    [["Land_SPE_House_Small_01"],[[7.27376,349.307,0.168909,0],[7.73439,336.461,0.168909,0]]],
+    [["Land_SPE_House_Small_03"],[[6.44997,165.331,0.253742,0],[4.73687,160.207,0.253742,0]]],
+    [["Land_SPE_House_Small_04"],[[2.52794,190.348,0.69,0],[2.89647,146.28,0.69,0]]],
+    [["Land_SPE_House_Thatch_01"],[[3.80105,19.4568,0.151809,0],[3.921,348.864,0.151809,0]]],
+    [["Land_SPE_House_Thatch_02	"],[[2.11873,183.515,0.439073,0],[3.56701,181.051,0.439073,0]]],	
+    [["Land_SPE_House_Thatch_04"],[[4.00128,26.0522,0.216572,0],[2.83912,41.6605,0.216572,0]]],
+    [["Land_SPE_House_Thatch_05"],[[3.08674,146.426,0.320164,0],[4.07149,154.102,0.320164,0]]],
+    [["Land_SPE_Townhall"],[[2.70508,30.1195,1.19562,0],[2.84488,325.178,1.19562,0]]]
 ];
 
 location_bp_cargo_medium = _location_bp_cargo_medium call _createHashmapFromBuildingPositions;
@@ -707,7 +723,22 @@ location_bt_police =
     "land_TIOW_Hab3Red",
     "land_TIOW_Hab3Red_Ranch",
     "land_TIOW_Hab3Tan",
-    "land_TIOW_Hab3Tan_Ranch"
+    "land_TIOW_Hab3Tan_Ranch",
+
+    //SPE
+	"Land_SPE_Office_Small_01",
+    "Land_SPE_Farmhouse_01",
+    "Land_SPE_Office_Small_02",
+    "Land_SPE_Shop_03",
+    "Land_SPE_Shop_04",
+    "Land_SPE_House_Small_01",
+    "Land_SPE_House_Small_03",
+    "Land_SPE_House_Small_04",
+    "Land_SPE_House_Thatch_01",
+    "Land_SPE_House_Thatch_02",
+    "Land_SPE_House_Thatch_04",
+    "Land_SPE_House_Thatch_05",
+    "Land_SPE_Townhall"
 ];
 
 location_decorations_police =
