@@ -192,6 +192,12 @@
             "CfgMissionsEntry": "vindicta_kunduz",
             "mapName": "kunduz",
             "briefingName": "Vindicta - Kunduz"
+        },
+        {
+            "folder": "Vindicta.SPE_Normandy",
+            "CfgMissionsEntry": "vindicta_spe_normandy",
+            "mapName": "SPE_Normandy",
+            "briefingName": "Vindicta - Normandy"
         }
     ]
 }
