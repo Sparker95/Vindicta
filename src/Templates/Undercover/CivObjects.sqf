@@ -440,7 +440,7 @@ g_UM_civBackpacks = [
     "vn_c_pack_01",
     "vn_c_pack_01_medic_pl",
     "vn_c_pack_01_engineer_pl",
-    "vn_c_pack_02"
+    "vn_c_pack_02",
 
     // World War 2 CDLC
     "B_SPE_CIV_musette",
