@@ -159,7 +159,69 @@ g_UM_civUniforms = [
     "vn_o_uniform_vc_05_04",
     "vn_o_uniform_vc_05_03",
     "vn_o_uniform_vc_05_02",
-    "vn_o_uniform_vc_mf_09_07"
+    "vn_o_uniform_vc_mf_09_07",
+
+    // World War 2 CDLC
+    "U_SPE_CIV_Citizen_1",
+	"U_SPE_CIV_Citizen_1_trop",
+	"U_SPE_CIV_Citizen_1_tie",
+	"U_SPE_CIV_Citizen_2",
+	"U_SPE_CIV_Citizen_2_trop",
+	"U_SPE_CIV_Citizen_2_tie",
+	"U_SPE_CIV_Citizen_3",
+	"U_SPE_CIV_Citizen_3_trop",
+	"U_SPE_CIV_Citizen_3_tie",
+	"U_SPE_CIV_Citizen_4",
+	"U_SPE_CIV_Citizen_4_trop",
+	"U_SPE_CIV_Citizen_4_tie",
+	"U_SPE_CIV_Citizen_5",
+	"U_SPE_CIV_Citizen_5_trop",
+	"U_SPE_CIV_Citizen_5_tie",
+	"U_SPE_CIV_Citizen_6",
+	"U_SPE_CIV_Citizen_6_trop",
+	"U_SPE_CIV_Citizen_6_tie",
+	"U_SPE_CIV_Citizen_7",
+	"U_SPE_CIV_Citizen_7_trop",
+	"U_SPE_CIV_Citizen_7_tie",
+	"U_SPE_CIV_Worker_1",
+	"U_SPE_CIV_Worker_1_trop",
+	"U_SPE_CIV_Worker_1_tie",
+	"U_SPE_CIV_Worker_2",
+    "U_SPE_CIV_Worker_2_trop",
+    "U_SPE_CIV_Worker_2_tie",
+    "U_SPE_CIV_Worker_3",
+    "U_SPE_CIV_Worker_3_trop",
+    "U_SPE_CIV_Worker_3_tie",
+    "U_SPE_CIV_Worker_4",
+    "U_SPE_CIV_Worker_4_trop",
+    "U_SPE_CIV_Worker_4_tie",
+    "U_SPE_CIV_Worker_Coverall_1",
+    "U_SPE_CIV_Worker_Coverall_1_trop",
+    "U_SPE_CIV_Worker_Coverall_2",
+    "U_SPE_CIV_Worker_Coverall_2_trop",
+    "U_SPE_CIV_Worker_Coverall_3",
+    "U_SPE_CIV_Worker_Coverall_3_trop",
+    "U_SPE_CIV_pak2_bruin",
+    "U_SPE_CIV_pak2_bruin_tie",
+    "U_SPE_CIV_pak2_bruin_swetr",
+    "U_SPE_CIV_pak2_grijs",
+    "U_SPE_CIV_pak2_grijs_tie",
+    "U_SPE_CIV_pak2_grijs_swetr",
+    "U_SPE_CIV_pak2_zwart",
+    "U_SPE_CIV_pak2_zwart_alt",
+    "U_SPE_CIV_pak2_zwart_tie",
+    "U_SPE_CIV_pak2_zwart_tie_alt",
+    "U_SPE_CIV_pak2_zwart_swetr",
+    "U_SPE_CIV_Swetr_1",
+    "U_SPE_CIV_Swetr_1_vest",
+    "U_SPE_CIV_Swetr_2",
+    "U_SPE_CIV_Swetr_2_vest",
+    "U_SPE_CIV_Swetr_3",
+    "U_SPE_CIV_Swetr_3_vest",
+    "U_SPE_CIV_Swetr_4",
+    "U_SPE_CIV_Swetr_4_vest",
+    "U_SPE_CIV_Swetr_5",
+    "U_SPE_CIV_Swetr_5_vest"
 ];
 publicVariable "g_UM_civUniforms";
 
@@ -266,7 +328,18 @@ g_UM_civHeadgear = [
     "vn_c_conehat_02",
     "vn_b_bandana_03",
     "vn_b_bandana_01",
-    "vn_o_boonie_vc_01_01"
+    "vn_o_boonie_vc_01_01",
+
+    // World War 2 CDLC
+    "H_SPE_CIV_Worker_Cap_1",
+    "H_SPE_CIV_Worker_Cap_2",
+    "H_SPE_CIV_Worker_Cap_3",
+    "H_SPE_CIV_Fedora_Cap_1",
+    "H_SPE_CIV_Fedora_Cap_2",
+    "H_SPE_CIV_Fedora_Cap_3",
+    "H_SPE_CIV_Fedora_Cap_4",
+    "H_SPE_CIV_Fedora_Cap_5",
+    "H_SPE_CIV_Fedora_Cap_6"
 ];
 publicVariable "g_UM_civHeadgear";
 
@@ -367,7 +440,11 @@ g_UM_civBackpacks = [
     "vn_c_pack_01",
     "vn_c_pack_01_medic_pl",
     "vn_c_pack_01_engineer_pl",
-    "vn_c_pack_02"
+    "vn_c_pack_02",
+
+    // World War 2 CDLC
+    "B_SPE_CIV_musette",
+	"B_SPE_CIV_satchel"
 ];
 publicVariable "g_UM_civBackpacks";
 

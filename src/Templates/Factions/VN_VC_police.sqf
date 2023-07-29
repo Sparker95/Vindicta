@@ -1,52 +1,32 @@
-
-//██████╗  ██████╗ ██╗     ██╗ ██████╗███████╗
-//██╔══██╗██╔═══██╗██║     ██║██╔════╝██╔════╝
-//██████╔╝██║   ██║██║     ██║██║     █████╗  
-//██╔═══╝ ██║   ██║██║     ██║██║     ██╔══╝  
-//██║     ╚██████╔╝███████╗██║╚██████╗███████╗
-//╚═╝      ╚═════╝ ╚══════╝╚═╝ ╚═════╝╚══════╝
-//http://patorjk.com/software/taag/#p=display&v=3&f=ANSI%20Shadow&t=Police
-
 _array = [];
 
 _array set [T_SIZE-1, nil];
 
-_array set [T_NAME, "tPolice"]; 									//Template name + variable (not displayed)
-_array set [T_DESCRIPTION, "Standard Arma police. No DLC required."]; 	//Template display description
-_array set [T_DISPLAY_NAME, "Arma 3 Police"]; 						//Template display name
+_array set [T_NAME, "tVN_VC_police"]; 									//Template name + variable (not displayed)
+_array set [T_DESCRIPTION, "Vietman war VC police made using content from S.O.G. Prairie Fire DLC."]; 	//Template display description
+_array set [T_DISPLAY_NAME, "SOG DLC - VC (Police)"]; 						//Template display name
 _array set [T_FACTION, T_FACTION_Police]; 							//Faction type: police, T_FACTION_military, T_FACTION_Police
-_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]]; 				//Addons required to play this template
+_array set [T_REQUIRED_ADDONS, [
+		"A3_Characters_F", 
+		"vn_weapons", 
+		"vn_data_f"
+		]]; 				//Addons required to play this template
 
-//====API====
-_api = []; _api resize T_API_SIZE;
-_api set [T_API_SIZE-1, nil]; 										//Make an array full of nil
-_api set [T_API_fnc_VEH_siren, {
-	params ["_vehicle", "_siren"];
-	if(typeOf _vehicle in ["B_GEN_Offroad_01_gen_F"]) then {
-		private _beacon = if(typeOf _vehicle in ["B_GEN_Offroad_01_gen_F"]) then { 'beaconsstart' };
-		if(_siren) then {
-			[_vehicle, 'CustomSoundController1', 1, 0.2] remoteExec ['BIS_fnc_setCustomSoundController'];
-			_vehicle animate [_beacon, 1, true];
-		} else {
-			[_vehicle, 'CustomSoundController1', 0, 0.4] remoteExec ['BIS_fnc_setCustomSoundController'];
-			_vehicle animate [_beacon, 0, true];
-		};
-	};
-}];
+//==== API ====
 
 //==== Infantry ====
 _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 					//Make an array full of nil
-_inf set [T_INF_default, ["B_GEN_Soldier_F"]];	//Default infantry if nothing is found
+_inf set [T_INF_default, ["vn_b_men_army_22"]];	//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["Arma3_police_officer", 0.50, /*"Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_12", 0.75, "Arma3_police_11", 0.75, */ "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
-_inf set [T_INF_TL, ["Arma3_police_officer", 0.50, /*"Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_12", 0.75, "Arma3_police_11", 0.75, */ "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
-_inf set [T_INF_officer, ["Arma3_police_officer", 0.50, /*"Arma3_police_14", 0.75, "Arma3_police_13", 0.75, "Arma3_police_12", 0.75, "Arma3_police_11", 0.75, */ "Arma3_police_1", 1, "Arma3_police_2", 1, "Arma3_police_3", 1, "Arma3_police_4", 1, "Arma3_police_5", 1.25, "Arma3_police_6", 1.25, "Arma3_police_7", 1.25, "Arma3_police_8", 1.25, "Arma3_police_9", 1.25, "Arma3_police_10", 1.25]];
+_inf set [T_INF_SL, ["vn_o_men_vc_regional_04", "vn_o_men_vc_regional_02", "vn_o_men_vc_regional_06", "vn_o_men_vc_regional_05", "vn_o_men_vc_regional_01", "vn_o_men_vc_regional_07", "vn_o_men_vc_regional_13"]];
+_inf set [T_INF_TL, ["vn_o_men_vc_regional_04", "vn_o_men_vc_regional_02", "vn_o_men_vc_regional_06", "vn_o_men_vc_regional_05", "vn_o_men_vc_regional_01", "vn_o_men_vc_regional_07", "vn_o_men_vc_regional_13"]];
+_inf set [T_INF_officer, ["vn_o_men_vc_regional_04", "vn_o_men_vc_regional_02", "vn_o_men_vc_regional_06", "vn_o_men_vc_regional_05", "vn_o_men_vc_regional_01", "vn_o_men_vc_regional_07", "vn_o_men_vc_regional_13"]];
 
 //==== Vehicles ====
 _veh = []; _veh resize T_VEH_SIZE;
-_veh set [T_VEH_DEFAULT, ["B_GEN_Offroad_01_gen_F"]];
-_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F_1"]];
+_veh set [T_VEH_DEFAULT, ["vn_o_car_01_01"]];
+_veh set [T_VEH_car_unarmed, ["vn_o_car_01_01", "vn_o_car_03_01", "vn_o_car_02_01", "vn_o_car_04_01", "vn_o_car_04_mg_01", "vn_o_wheeled_z157_01_vcmf", "vn_o_wheeled_z157_02_vcmf"]];
 
 //==== Drones ====
 _drone = []; _drone resize T_DRONE_SIZE;
@@ -57,6 +37,11 @@ _cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
 _group = +(tDefault select T_GROUP);
+
+//==== API ====
+_api = []; _api resize T_API_SIZE;
+_api set [T_API_SIZE-1, nil]; 										//Make an array full of nil
+_api set [T_API_fnc_VEH_siren, {}];
 
 //==== Arrays ====
 _array set [T_API, _api];
