@@ -929,6 +929,24 @@
 				<Chinesesimp>决定游戏中时间的流速</Chinesesimp>
 				<Russian>Определяет, как быстро проходит время в игре</Russian>
 			</Key>
+			<Key ID="STR_Vindicta_Settings_Weather_Toggle">
+				<Original>Weather</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Weather_Toggle_Tooltip">
+				<Original>Determines the changing of weather over time (Requires mission restart)</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Weather_Toggle">
+				<Original>Weather</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Weather_Toggle_Disabled">
+				<Original>Disabled</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Weather_Toggle_Clouds">
+				<Original>No Rain</Original>
+			</Key>
+			<Key ID="STR_Vindicta_Settings_Weather_Toggle_Enabled">
+				<Original>Enabled</Original>
+			</Key>				
 		</Container>
 		<Container name="Diff">
 			<Key ID="STR_Vindicta_Settings_Diff">
