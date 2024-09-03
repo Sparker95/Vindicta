@@ -85,21 +85,21 @@ jobs:
     needs: [build]
     steps:
     - name: Download build
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4.1.7
       with:
         name: armaAddon
 
     - name: Download missions build
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4.1.7
       with:
         name: armaMissions
 
-    - uses: actions/download-artifact@v1
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: _uploadurl
         path: .
         
-    - uses: actions/download-artifact@v1
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: _changelog
         path: .

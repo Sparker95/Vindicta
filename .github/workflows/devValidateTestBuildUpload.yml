@@ -68,13 +68,13 @@ jobs:
     needs: [build]
     steps:
     - name: Download addon artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: armaAddon
         path: armaAddon
 
     - name: Download separate missions artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
       with:
         name: separateMissions
         path: separateMissions
